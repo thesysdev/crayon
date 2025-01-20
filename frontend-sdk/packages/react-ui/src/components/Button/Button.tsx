@@ -5,7 +5,7 @@ import "./button.scss";
 export type ButtonVariant = "primary" | "secondary" | "tertiary";
 export type ButtonSize = "small" | "medium" | "large";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: React.ReactNode;
   variant?: ButtonVariant;
   size?: ButtonSize;
