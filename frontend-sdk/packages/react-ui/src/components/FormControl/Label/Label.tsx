@@ -1,6 +1,7 @@
 import * as LabelPrimitive from "@radix-ui/react-label";
 import clsx from "clsx";
 import React, { forwardRef } from "react";
+import "./label.scss";
 
 interface LabelProps extends React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> {
   children: React.ReactNode;
