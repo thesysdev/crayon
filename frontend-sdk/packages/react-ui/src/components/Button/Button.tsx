@@ -20,8 +20,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => 
       style={props.style}
       onClick={props.onClick}
     >
-      {props.text}
       {props.iconLeft}
+      {props.text}
       {props.iconRight}
     </button>
   );
