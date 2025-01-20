@@ -35,11 +35,11 @@ export const WithLabelAndHint: Story = {
 export const WithCustomStyle: Story = {
   args: {
     children: (
-      <>
+      <FormControl>
         <Label>Email</Label>
         <Input placeholder="Enter email" />
         <Hint>We'll never share your email</Hint>
-      </>
+      </FormControl>
     ),
     style: {
       width: "300px",
@@ -51,11 +51,11 @@ export const WithCustomStyle: Story = {
 export const WithCustomClass: Story = {
   args: {
     children: (
-      <>
+      <FormControl>
         <Label>Password</Label>
         <Input type="password" placeholder="Enter password" />
         <Hint>Use a strong password with mixed characters</Hint>
-      </>
+      </FormControl>
     ),
     className: "custom-form-control",
   },
