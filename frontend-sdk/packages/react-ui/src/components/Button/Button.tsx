@@ -1,3 +1,5 @@
+import React from "react";
+import "./button.scss";
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: React.ReactNode;
   variant?: "primary" | "secondary" | "tertiary";
@@ -10,10 +12,21 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   onClick?: () => void;
 }
 
-const Button = (props: ButtonProps) => {
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    
+    <button
+      ref={ref}
+      className={`crayon-button-base ${props.className}`}
+      style={props.style}
+      onClick={props.onClick}
+    >
+      {props.text}
+      {props.iconLeft}
+      {props.iconRight}
+    </button>
   );
-};
+});
+
+Button.displayName = "Button";
 
 export default Button;
