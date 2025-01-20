@@ -36,8 +36,8 @@ export const WithCustomStyle: Story = {
   args: {
     children: (
       <>
-        <Label>Email</Label>
-        <Input placeholder="Enter email" />
+        <Label htmlFor="email">Email</Label>
+        <Input placeholder="Enter email" id="email" type="email" />
         <Hint>We'll never share your email</Hint>
       </>
     ),
@@ -52,8 +52,8 @@ export const WithCustomClass: Story = {
   args: {
     children: (
       <>
-        <Label>Password</Label>
-        <Input type="password" placeholder="Enter password" />
+        <Label htmlFor="password">Password</Label>
+        <Input type="password" placeholder="Enter password" id="password" />
         <Hint>Use a strong password with mixed characters</Hint>
       </>
     ),
@@ -64,8 +64,8 @@ export const WithCustomClass: Story = {
 export const WithMultipleChildren: Story = {
   render: () => (
     <FormControl>
-      <Label>Profile Information</Label>
-      <Input placeholder="Full name" />
+      <Label htmlFor="profile-information">Profile Information</Label>
+      <Input placeholder="Full name" id="profile-information" />
       <Input placeholder="Bio" />
       <Hint>This information will be displayed on your public profile</Hint>
     </FormControl>
