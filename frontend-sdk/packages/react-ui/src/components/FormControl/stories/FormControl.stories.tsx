@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import Input from "../../Input";
 import FormControl from "../FormControl";
+import { Label } from "../Label";
+import { Hint } from "../Hint";
 
 const meta: Meta<typeof FormControl> = {
   title: "Components/FormControl",
@@ -20,9 +22,25 @@ export const Basic: Story = {
   },
 };
 
+export const WithLabelAndHint: Story = {
+  render: () => (
+    <FormControl>
+      <Label>Username</Label>
+      <Input placeholder="Enter username" />
+      <Hint>Must be at least 4 characters long</Hint>
+    </FormControl>
+  ),
+};
+
 export const WithCustomStyle: Story = {
   args: {
-    children: <Input placeholder="Custom styled input" />,
+    children: (
+      <>
+        <Label>Email</Label>
+        <Input placeholder="Enter email" />
+        <Hint>We'll never share your email</Hint>
+      </>
+    ),
     style: {
       width: "300px",
       margin: "20px",
@@ -32,7 +50,13 @@ export const WithCustomStyle: Story = {
 
 export const WithCustomClass: Story = {
   args: {
-    children: <Input placeholder="Custom class input" />,
+    children: (
+      <>
+        <Label>Password</Label>
+        <Input type="password" placeholder="Enter password" />
+        <Hint>Use a strong password with mixed characters</Hint>
+      </>
+    ),
     className: "custom-form-control",
   },
 };
@@ -40,9 +64,10 @@ export const WithCustomClass: Story = {
 export const WithMultipleChildren: Story = {
   render: () => (
     <FormControl>
-      <label>Username</label>
-      <Input placeholder="Enter username" />
-      <small style={{ color: "gray" }}>Enter your username above</small>
+      <Label>Profile Information</Label>
+      <Input placeholder="Full name" />
+      <Input placeholder="Bio" />
+      <Hint>This information will be displayed on your public profile</Hint>
     </FormControl>
   ),
 };
