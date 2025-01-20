@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Download, ArrowRight } from "lucide-react";
 import Button from "../Button";
 
 const meta: Meta<typeof Button> = {
@@ -60,28 +61,28 @@ export const Large: Story = {
   },
 };
 
-// // With icons
-// export const WithLeftIcon: Story = {
-//   args: {
-//     text: "Download",
-//     variant: "primary",
-//     iconLeft: <FiDownload />,
-//   },
-// };
+// With icons
+export const WithLeftIcon: Story = {
+  args: {
+    text: "Download",
+    variant: "primary",
+    iconLeft: <Download size={18} />,
+  },
+};
 
-// export const WithRightIcon: Story = {
-//   args: {
-//     text: "Next",
-//     variant: "primary",
-//     iconRight: <FiArrowRight />,
-//   },
-// };
+export const WithRightIcon: Story = {
+  args: {
+    text: "Next",
+    variant: "primary",
+    iconRight: <ArrowRight size={18} />,
+  },
+};
 
-// // Disabled state
-// export const Disabled: Story = {
-//   args: {
-//     text: "Disabled Button",
-//     variant: "primary",
-//     disabled: true,
-//   },
-// };
+// Disabled state
+export const Disabled: Story = {
+  args: {
+    text: "Disabled Button",
+    variant: "primary",
+    disabled: true,
+  },
+};
