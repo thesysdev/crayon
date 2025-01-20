@@ -11,7 +11,6 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
-  disabled?: boolean;
   className?: string;
   style?: React.CSSProperties;
   onClick?: () => void;
@@ -25,7 +24,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       size = "medium",
       iconLeft,
       iconRight,
-      disabled,
       className,
       style,
       onClick,
@@ -40,9 +38,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           "crayon-button-base",
           `crayon-button-base-${variant}`,
           `crayon-button-base-${size}`,
-          {
-            "is-disabled": disabled,
-          },
           className,
         )}
         style={style}

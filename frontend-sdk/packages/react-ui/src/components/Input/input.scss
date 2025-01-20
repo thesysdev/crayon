@@ -1,17 +1,48 @@
-.input {
+@use "sass:map";
+@use "../../cssUtils" as cssUtils;
+
+.crayon-input-container {
   padding: 8px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  font-size: 16px;
-  line-height: 1.5;
+  border: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+  border-radius: map.get(cssUtils.$radius, "xs");
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 300px;
+  gap: map.get(cssUtils.$spacing, "xs");
+
+  &-small {
+    padding: map.get(cssUtils.$spacing, "2xs") map.get(cssUtils.$spacing, "s");
+  }
+
+  &-medium {
+    padding: map.get(cssUtils.$spacing, "xs") map.get(cssUtils.$spacing, "s");
+  }
+
+  &-large {
+    padding: map.get(cssUtils.$spacing, "s");
+  }
 
   &:focus {
     outline: none;
-    border-color: var(--primary-color);
+    border-color: map.get(cssUtils.$colors, "strokes", "interactive-el-hover");
   }
 
+  &-disabled {
+    background-color: map.get(cssUtils.$colors, "fills", "container");
+    // border: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+    border: 1px solid red;
+    cursor: not-allowed;
+  }
+}
+
+.crayon-input {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
   &:disabled {
-    background-color: var(--disabled-bg);
     cursor: not-allowed;
   }
 }

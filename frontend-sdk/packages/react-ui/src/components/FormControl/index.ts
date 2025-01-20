@@ -1,5 +1,5 @@
 import FormControl from "./FormControl";
-import { Label } from "./Label";
 import { Hint } from "./Hint";
+import { Label } from "./Label";
 
-export { FormControl, Label, Hint }
+export { FormControl, Hint, Label };

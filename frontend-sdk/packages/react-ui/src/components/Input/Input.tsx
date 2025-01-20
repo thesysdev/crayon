@@ -8,14 +8,25 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
   size?: "small" | "medium" | "large";
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
+  disabled?: boolean;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, styles, size, iconLeft, iconRight, ...props }, ref) => {
+  ({ className, styles, size, iconLeft, iconRight, disabled, ...props }, ref) => {
     return (
-      <div className={clsx("input-container", className)} style={styles}>
+      <div
+        className={clsx(
+          "crayon-input-container",
+          `crayon-input-container-${size}`,
+          {
+            "crayon-input-container-disabled": disabled,
+          },
+          className,
+        )}
+        style={styles}
+      >
         {iconLeft}
-        <input ref={ref} className={clsx("input")} {...props} />
+        <input ref={ref} className={clsx("crayon-input")} disabled={disabled} {...props} />
         {iconRight}
       </div>
     );
