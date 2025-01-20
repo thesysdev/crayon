@@ -12,7 +12,7 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, styles, size, iconLeft, iconRight, disabled, ...props }, ref) => {
+  ({ className, styles, size = "medium", iconLeft, iconRight, disabled, ...props }, ref) => {
     return (
       <div
         className={clsx(
