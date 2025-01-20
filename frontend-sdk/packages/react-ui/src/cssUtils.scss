@@ -1,0 +1,114 @@
+@use "sass:map";
+@use "./variables";
+
+$colors: (
+  fills: (
+    background: var(--background-fills),
+    brand-el: var(--brand-el-fills),
+    brand-el-hover: var(--brand-el-hover-fills),
+    container: var(--container-fills),
+    overlay: var(--overlay-fills),
+    sunk: var(--sunk-fills),
+    container-hover: var(--container-hover-fills),
+    danger: var(--danger-fills),
+    success: var(--success-fills),
+  ),
+  strokes: (
+    default: var(--strokes-default),
+    interactive-el: var(--stocks-interactive-el),
+    interactive-el-hover: var(--stocks-interactive-el-hover),
+    interactive-el-selected: var(--strokes-interactive-el-selected),
+  ),
+  text: (
+    brand: var(--brand-text),
+    brand-secondary: var(--brand-secondary-text),
+    primary: var(--primary-text),
+    secondary: var(--secondary-text),
+    disabled: var(--disabled-text),
+    danger: var(--danger-text),
+    success: var(--success-text),
+    link: var(--link-text),
+    info: var(--info-text),
+  ),
+);
+
+$spacing: (
+  "0": var(--spacing-0),
+  "3xs": var(--spacing-3xs),
+  "2xs": var(--spacing-2xs),
+  "xs": var(--spacing-xs),
+  "s": var(--spacing-s),
+  "m": var(--spacing-m),
+  "l": var(--spacing-l),
+  "xl": var(--spacing-xl),
+  "2xl": var(--spacing-2xl),
+  "3xl": var(--spacing-3xl),
+);
+
+$radius: (
+  "0": var(--rounded-0),
+  "3xs": var(--rounded-3xs),
+  "2xs": var(--rounded-2xs),
+  "xs": var(--rounded-xs),
+  "s": var(--rounded-s),
+  "m": var(--rounded-m),
+  "l": var(--rounded-l),
+  "xl": var(--rounded-xl),
+  "2xl": var(--rounded-2xl),
+  "3xl": var(--rounded-3xl),
+  "full": var(--rounded-full),
+);
+
+$shadow: (
+  "s": var(--shadow-s),
+  "m": var(--shadow-m),
+  "l": var(--shadow-l),
+  "xl": var(--shadow-xl),
+  "2xl": var(--shadow-2xl),
+  "3xl": var(--shadow-3xl),
+);
+
+@function typography($font-name) {
+  @return (font: var(--#{$font-name}), letter-spacing: var(--#{$font-name}-letter-spacing));
+}
+
+$typography: (
+  body: (
+    default: typography(font-body),
+    link: typography(font-body-link),
+    heavy: typography(font-body-heavy),
+    medium: typography(font-body-medium),
+    small: typography(font-body-small),
+    small-heavy: typography(font-body-small-heavy),
+  ),
+  label: (
+    default: typography(font-label),
+    heavy: typography(font-label-heavy),
+    small: typography(font-label-small),
+    small-heavy: typography(font-label-small-heavy),
+    extra-small: typography(font-label-extra-small),
+    extra-small-heavy: typography(font-label-extra-small-heavy),
+    large: typography(font-label-large),
+    large-heavy: typography(font-label-large-heavy),
+    medium: typography(font-label-medium),
+    medium-heavy: typography(font-label-medium-heavy),
+  ),
+  heading: (
+    large: typography(font-heading-large),
+    medium: typography(font-heading-medium),
+    small: typography(font-heading-small),
+  ),
+  primary: (
+    default: typography(font-primary),
+  ),
+  title: (
+    default: typography(font-title),
+    medium: typography(font-title-medium),
+    small: typography(font-title-small),
+  ),
+);
+
+@mixin typography($font-name, $font-variant) {
+  font: map.get($typography, $font-name, $font-variant, font);
+  letter-spacing: map.get($typography, $font-name, $font-variant, letter-spacing);
+}

@@ -1,49 +1,62 @@
+@use "sass:map";
+@use "../../cssUtils" as cssUtils;
+
 .crayon-button-base {
-  font: var(--font-body);
-  padding: var(--spacing-m);
-  border-radius: var(--rounded-m);
+  @include cssUtils.typography(body, default);
+  padding: map.get(cssUtils.$spacing, "m");
+  border-radius: map.get(cssUtils.$radius, "m");
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.2s ease;
   // Primary variant
   &-primary {
-    background-color: var(--brand-el-fills);
-    color: var(--brand-text);
+    background-color: map.get(cssUtils.$colors, "fills", "brand-el");
+    color: map.get(cssUtils.$colors, "text", "brand");
     &:hover {
-      background-color: var(--brand-el-hover-fills);
+      background-color: map.get(cssUtils.$colors, "fills", "brand-el-hover");
     }
     &:disabled {
-      background-color: var(--disabled-text);
+      opacity: 0.5;
       cursor: not-allowed;
     }
   }
   // Secondary variant
   &-secondary {
-    background-color: var(--container-fills);
-    color: var(--primary-text);
-    border-color: var(--strokes-default);
+    background-color: map.get(cssUtils.$colors, "fills", "container");
+    color: map.get(cssUtils.$colors, "text", "primary");
+    border-color: map.get(cssUtils.$colors, "strokes", "default");
     &:hover {
-      background-color: var(--container-hover-fills);
+      background-color: map.get(cssUtils.$colors, "fills", "container-hover");
     }
     &:disabled {
-      color: var(--disabled-text);
-      border-color: var(--disabled-text);
+      color: map.get(cssUtils.$colors, "text", "disabled");
+      border-color: map.get(cssUtils.$colors, "text", "disabled");
       cursor: not-allowed;
     }
   }
   // Tertiary variant
   &-tertiary {
     background-color: transparent;
-    color: var(--primary-text);
+    color: map.get(cssUtils.$colors, "text", "primary");
     &:hover {
-      background-color: var(--container-hover-fills);
+      background-color: map.get(cssUtils.$colors, "fills", "container-hover");
     }
     &:disabled {
-      color: var(--disabled-text);
+      color: map.get(cssUtils.$colors, "text", "disabled");
       cursor: not-allowed;
     }
   }
+
+  // Sizes
   &-small {
-    padding: var(--spacing-s);
+    padding: map.get(cssUtils.$spacing, "2xs") map.get(cssUtils.$spacing, "xs");
+  }
+
+  &-medium {
+    padding: map.get(cssUtils.$spacing, "xs") map.get(cssUtils.$spacing, "m");
+  }
+
+  &-large {
+    padding: map.get(cssUtils.$spacing, "s") map.get(cssUtils.$spacing, "m");
   }
 }
