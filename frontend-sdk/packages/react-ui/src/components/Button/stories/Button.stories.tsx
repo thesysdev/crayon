@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ArrowRight, Download } from "lucide-react";
 import Button from "../Button";
+import "../button.scss";
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",

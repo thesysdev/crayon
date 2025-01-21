@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import React from "react";
-import "./button.scss";
 
 export type ButtonVariant = "primary" | "secondary" | "tertiary";
 export type ButtonSize = "small" | "medium" | "large";
