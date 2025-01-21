@@ -29,3 +29,5 @@ export const Header = forwardRef<HTMLDivElement, HeaderProps>((props, ref) => {
     </div>
   );
 });
+
+Header.displayName = "Header";

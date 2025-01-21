@@ -45,3 +45,5 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((
     </button>
   );
 });
+
+IconButton.displayName = "IconButton";
