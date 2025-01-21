@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import React from "react";
-import "./input.scss";
 
 export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
   styles?: React.CSSProperties;

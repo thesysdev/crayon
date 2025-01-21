@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { TextArea } from "../TextArea";
+import "../textArea.scss";
 
 const meta = {
   title: "Components/TextArea",
@@ -22,14 +23,14 @@ export const Default: Story = {
 export const Small: Story = {
   args: {
     placeholder: "Small textarea",
-    size: "small",
+    rows: 2,
   },
 };
 
 export const Large: Story = {
   args: {
     placeholder: "Large textarea",
-    size: "large",
+    rows: 4,
   },
 };
 

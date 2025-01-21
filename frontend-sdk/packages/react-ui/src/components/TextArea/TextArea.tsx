@@ -1,18 +1,26 @@
+import clsx from "clsx";
 import React from "react";
-import "./textArea.scss";
 
 export interface TextAreaProps
   extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "size"> {
   className?: string;
   styles?: React.CSSProperties;
   placeholder?: string;
-  size?: "small" | "medium" | "large";
+  rows?: number;
 }
 
 const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>((props, ref) => {
-  const { className, styles, size = "medium", ...rest } = props;
+  const { className, styles, rows = 3, ...rest } = props;
 
-  return <textarea ref={ref} className="crayon-textarea" {...rest} />;
+  return (
+    <textarea
+      ref={ref}
+      className={clsx("crayon-textarea", className)}
+      style={styles}
+      {...rest}
+      rows={rows}
+    />
+  );
 });
 
 TextArea.displayName = "TextArea";
