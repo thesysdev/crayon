@@ -10,6 +10,9 @@ const meta: Meta<typeof Input> = {
       control: "radio",
       options: ["small", "medium", "large"],
     },
+    disabled: {
+      control: "boolean",
+    },
   },
   tags: ["autodocs"],
 };
@@ -21,15 +24,7 @@ export const Default: Story = {
   args: {
     size: "medium",
     placeholder: "Enter text...",
-  },
-  render: (args) => <Input size={args.size} placeholder={args.placeholder} />,
-};
-
-export const Disabled: Story = {
-  args: {
-    size: "medium",
-    placeholder: "Disabled input",
-    disabled: true,
+    disabled: false,
   },
   render: (args) => (
     <Input size={args.size} placeholder={args.placeholder} disabled={args.disabled} />
@@ -41,5 +36,5 @@ export const WithValue: Story = {
     size: "medium",
     value: "Hello World",
   },
-  render: (args) => <Input size={args.size} value={args.value} />,
+  render: (args) => <Input size={args.size} value={args.value} disabled={args.disabled} />,
 };
