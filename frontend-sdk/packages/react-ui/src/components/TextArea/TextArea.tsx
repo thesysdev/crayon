@@ -9,12 +9,10 @@ export interface TextAreaProps
   placeholder?: string;
   disabled?: boolean;
   size?: "small" | "medium" | "large";
-  iconLeft?: React.ReactNode;
-  iconRight?: React.ReactNode;
 }
 
 const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>((props, ref) => {
-  const { className, styles, size = "medium", iconLeft, iconRight, disabled, ...rest } = props;
+  const { className, styles, size = "medium", disabled, ...rest } = props;
 
   return (
     <div
@@ -29,13 +27,11 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>((props, re
       )}
       style={styles}
     >
-      {iconLeft}
       <textarea ref={ref} className="crayon-textarea" {...rest} disabled={disabled} />
-      {iconRight}
     </div>
   );
 });
 
 TextArea.displayName = "TextArea";
 
-export default TextArea;
+export { TextArea };

@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { Activity } from "lucide-react";
-import Input from "../Input";
+import { Input } from "../Input";
 
 const meta: Meta<typeof Input> = {
   title: "Components/Input",

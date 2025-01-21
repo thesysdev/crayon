@@ -20,4 +20,4 @@ const Hint = forwardRef<HTMLDivElement, HintProps>(
 
 Hint.displayName = "Hint";
 
-export default Hint;
+export { Hint };

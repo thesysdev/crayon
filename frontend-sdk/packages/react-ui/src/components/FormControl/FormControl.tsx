@@ -18,4 +18,4 @@ const FormControl = forwardRef<HTMLDivElement, FormControlProps>((props, ref) =>
 
 FormControl.displayName = "FormControl";
 
-export default FormControl;
+export { FormControl };
