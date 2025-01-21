@@ -18,21 +18,21 @@ type Story = StoryObj<typeof Button>;
 // Basic button stories
 export const Primary: Story = {
   args: {
-    text: "Primary Button",
+    children: "Primary Button",
     variant: "primary",
   },
 };
 
 export const Secondary: Story = {
   args: {
-    text: "Secondary Button",
+    children: "Secondary Button",
     variant: "secondary",
   },
 };
 
 export const Tertiary: Story = {
   args: {
-    text: "Tertiary Button",
+    children: "Tertiary Button",
     variant: "tertiary",
   },
 };
@@ -40,7 +40,7 @@ export const Tertiary: Story = {
 // Size variations
 export const Small: Story = {
   args: {
-    text: "Small Button",
+    children: "Small Button",
     size: "small",
     variant: "primary",
   },
@@ -48,7 +48,7 @@ export const Small: Story = {
 
 export const Medium: Story = {
   args: {
-    text: "Medium Button",
+    children: "Medium Button",
     size: "medium",
     variant: "primary",
   },
@@ -56,7 +56,7 @@ export const Medium: Story = {
 
 export const Large: Story = {
   args: {
-    text: "Large Button",
+    children: "Large Button",
     size: "large",
     variant: "primary",
   },
@@ -65,7 +65,7 @@ export const Large: Story = {
 // With icons
 export const WithLeftIcon: Story = {
   args: {
-    text: "Download",
+    children: "Download",
     variant: "primary",
     iconLeft: <Download size={18} />,
   },
@@ -73,7 +73,7 @@ export const WithLeftIcon: Story = {
 
 export const WithRightIcon: Story = {
   args: {
-    text: "Next",
+    children: "Next",
     variant: "primary",
     iconRight: <ArrowRight size={18} />,
   },
@@ -82,7 +82,7 @@ export const WithRightIcon: Story = {
 // Disabled state
 export const Disabled: Story = {
   args: {
-    text: "Disabled Button",
+    children: "Disabled Button",
     variant: "primary",
     disabled: true,
   },

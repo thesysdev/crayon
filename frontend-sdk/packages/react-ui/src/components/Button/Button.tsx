@@ -5,7 +5,7 @@ export type ButtonVariant = "primary" | "secondary" | "tertiary";
 export type ButtonSize = "small" | "medium" | "large";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  text: React.ReactNode;
+  children: React.ReactNode;
   variant?: ButtonVariant;
   size?: ButtonSize;
   iconLeft?: React.ReactNode;
@@ -18,7 +18,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
-      text,
+      children,
       variant = "primary",
       size = "medium",
       iconLeft,
@@ -44,7 +44,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {iconLeft}
-        {text}
+        {children}
         {iconRight}
       </button>
     );
