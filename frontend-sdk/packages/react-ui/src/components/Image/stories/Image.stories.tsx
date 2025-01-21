@@ -2,7 +2,6 @@ import { Meta, StoryObj } from "@storybook/react";
 import { Card } from "../../Card";
 import { Image } from "../Image";
 import "../image.scss";
-import "./image.stories.scss";
 
 const meta: Meta<typeof Image> = {
   title: "Components/Image",
@@ -10,7 +9,15 @@ const meta: Meta<typeof Image> = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="image-story-container">
+      <div
+        style={{
+          maxWidth: 600,
+          margin: "20px auto",
+          padding: "20px",
+          backgroundColor: "#f5f5f5",
+          borderRadius: "8px",
+        }}
+      >
         <Story />
       </div>
     ),
