@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { Card } from "../../Card";
-import { Image, ImageProps } from "../Image";
+import { Image } from "../Image";
 import "../image.scss";
 import "./image.stories.scss";
 
@@ -38,23 +38,6 @@ export const Default: Story = {
   },
 };
 
-export const WithAspectRatio: Story = {
-  args: {
-    src: "https://picsum.photos/800/600",
-    alt: "Sample image with aspect ratio",
-    aspectRatio: "16:9",
-  },
-};
-
-export const WithScaleFit: Story = {
-  args: {
-    src: "https://picsum.photos/800/600",
-    alt: "Sample image with fit scaling",
-    aspectRatio: "1:1",
-    scale: "fit",
-  },
-};
-
 export const WithScaleFill: Story = {
   args: {
     src: "https://picsum.photos/800/600",
@@ -78,44 +61,6 @@ export const InCard: Story = {
     aspectRatio: "16:9",
     scale: "fill",
   },
-};
-
-// Grid showing different aspect ratios
-export const AspectRatioGrid: Story = {
-  render: () => (
-    <div className="image-grid">
-      {["1:1", "3:2", "3:4", "4:3", "16:9"].map((ratio) => (
-        <div key={ratio} className="image-grid-item">
-          <h4>Aspect Ratio: {ratio}</h4>
-          <Image
-            src="https://picsum.photos/800/600"
-            alt={`Aspect ratio ${ratio}`}
-            aspectRatio={ratio as ImageProps["aspectRatio"]}
-            scale="fill"
-          />
-        </div>
-      ))}
-    </div>
-  ),
-};
-
-// Grid showing fit vs fill
-export const ScaleComparison: Story = {
-  render: () => (
-    <div className="image-grid">
-      {["fit", "fill"].map((scaleType) => (
-        <div key={scaleType} className="image-grid-item">
-          <h4>Scale: {scaleType}</h4>
-          <Image
-            src="https://picsum.photos/800/600"
-            alt={`Scale ${scaleType}`}
-            aspectRatio="16:9"
-            scale={scaleType as ImageProps["scale"]}
-          />
-        </div>
-      ))}
-    </div>
-  ),
 };
 
 export const WithCustomStyles: Story = {

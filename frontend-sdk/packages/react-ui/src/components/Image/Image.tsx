@@ -1,51 +1,54 @@
-import React from 'react';
-import clsx from 'clsx';
-import * as AspectRatio from '@radix-ui/react-aspect-ratio';
+import * as AspectRatio from "@radix-ui/react-aspect-ratio";
+import clsx from "clsx";
+import React, { forwardRef } from "react";
 
-export interface ImageProps {
+type AspectRatioType = "1:1" | "3:2" | "3:4" | "4:3" | "16:9";
+type ScaleType = "fit" | "fill";
+
+export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
   alt: string;
   styles?: React.CSSProperties;
   className?: string;
-  aspectRatio?: "1:1" | "3:2" | "3:4" | "4:3" | "16:9";
-  scale?: "fit" | "fill";
+  aspectRatio?: AspectRatioType;
+  scale?: ScaleType;
 }
 
-const aspectRatioMap = {
+const aspectRatioMap: Record<AspectRatioType, number> = {
   "1:1": 1,
-  "3:2": 3/2,
-  "3:4": 3/4,
-  "4:3": 4/3,
-  "16:9": 16/9,
+  "3:2": 3 / 2,
+  "3:4": 3 / 4,
+  "4:3": 4 / 3,
+  "16:9": 16 / 9,
 };
 
-export const Image = (props: ImageProps) => {
-  const { src, alt, styles, className, aspectRatio = "1:1", scale = "fit" } = props;
+export const Image = forwardRef<HTMLImageElement, ImageProps>((props, ref) => {
+  const { src, alt, styles, className, aspectRatio = "3:2", scale = "fit", ...rest } = props;
 
   const imageClasses = clsx(
-    'image',
+    "image",
     {
       [`image-${scale}`]: scale,
     },
-    className
+    className,
   );
 
   const image = (
-    <img 
-      src={src} 
-      alt={alt} 
-      className={imageClasses} 
+    <img
+      ref={ref}
+      src={src}
+      alt={alt}
+      className={imageClasses}
       style={styles}
+      onError={(e) => {
+        e.currentTarget.style.display = "none";
+        console.error(`Failed to load image: ${src}`);
+      }}
+      {...rest}
     />
   );
 
-  if (aspectRatio) {
-    return (
-      <AspectRatio.Root ratio={aspectRatioMap[aspectRatio]}>
-        {image}
-      </AspectRatio.Root>
-    );
-  }
+  return <AspectRatio.Root ratio={aspectRatioMap[aspectRatio]}>{image}</AspectRatio.Root>;
+});
 
-  return image;
-};
+Image.displayName = "Image";
