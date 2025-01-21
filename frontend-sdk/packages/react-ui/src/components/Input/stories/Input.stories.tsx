@@ -5,6 +5,12 @@ import "../input.scss";
 const meta: Meta<typeof Input> = {
   title: "Components/Input",
   component: Input,
+  argTypes: {
+    size: {
+      control: "radio",
+      options: ["small", "medium", "large"],
+    },
+  },
   tags: ["autodocs"],
 };
 
@@ -16,6 +22,7 @@ export const Default: Story = {
     size: "medium",
     placeholder: "Enter text...",
   },
+  render: (args) => <Input size={args.size} placeholder={args.placeholder} />,
 };
 
 export const Disabled: Story = {
@@ -24,6 +31,9 @@ export const Disabled: Story = {
     placeholder: "Disabled input",
     disabled: true,
   },
+  render: (args) => (
+    <Input size={args.size} placeholder={args.placeholder} disabled={args.disabled} />
+  ),
 };
 
 export const WithValue: Story = {
@@ -31,4 +41,5 @@ export const WithValue: Story = {
     size: "medium",
     value: "Hello World",
   },
+  render: (args) => <Input size={args.size} value={args.value} />,
 };

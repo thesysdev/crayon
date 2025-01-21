@@ -9,6 +9,19 @@ const meta: Meta<typeof Button> = {
   parameters: {
     layout: "centered",
   },
+  argTypes: {
+    variant: {
+      control: "radio",
+      options: ["primary", "secondary", "tertiary"],
+    },
+    size: {
+      control: "radio",
+      options: ["small", "medium", "large"],
+    },
+    disabled: {
+      control: "boolean",
+    },
+  },
   tags: ["autodocs"],
 };
 
@@ -16,50 +29,18 @@ export default meta;
 type Story = StoryObj<typeof Button>;
 
 // Basic button stories
-export const Primary: Story = {
+export const ButtonStory: Story = {
   args: {
     children: "Primary Button",
     variant: "primary",
-  },
-};
-
-export const Secondary: Story = {
-  args: {
-    children: "Secondary Button",
-    variant: "secondary",
-  },
-};
-
-export const Tertiary: Story = {
-  args: {
-    children: "Tertiary Button",
-    variant: "tertiary",
-  },
-};
-
-// Size variations
-export const Small: Story = {
-  args: {
-    children: "Small Button",
-    size: "small",
-    variant: "primary",
-  },
-};
-
-export const Medium: Story = {
-  args: {
-    children: "Medium Button",
     size: "medium",
-    variant: "primary",
+    disabled: false,
   },
-};
-
-export const Large: Story = {
-  args: {
-    children: "Large Button",
-    size: "large",
-    variant: "primary",
-  },
+  render: (args) => (
+    <Button variant={args.variant} size={args.size} disabled={args.disabled}>
+      {args.children}
+    </Button>
+  ),
 };
 
 // With icons
@@ -69,6 +50,16 @@ export const WithLeftIcon: Story = {
     variant: "primary",
     iconLeft: <Download size={18} />,
   },
+  render: (args) => (
+    <Button
+      variant={args.variant}
+      size={args.size}
+      disabled={args.disabled}
+      iconLeft={args.iconLeft}
+    >
+      {args.children}
+    </Button>
+  ),
 };
 
 export const WithRightIcon: Story = {
@@ -77,13 +68,14 @@ export const WithRightIcon: Story = {
     variant: "primary",
     iconRight: <ArrowRight size={18} />,
   },
-};
-
-// Disabled state
-export const Disabled: Story = {
-  args: {
-    children: "Disabled Button",
-    variant: "primary",
-    disabled: true,
-  },
+  render: (args) => (
+    <Button
+      variant={args.variant}
+      size={args.size}
+      disabled={args.disabled}
+      iconRight={args.iconRight}
+    >
+      {args.children}
+    </Button>
+  ),
 };
