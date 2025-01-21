@@ -3,7 +3,7 @@ import clsx from "clsx";
 import React, { forwardRef } from "react";
 import "./label.scss";
 
-interface LabelProps extends React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> {
+export interface LabelProps extends React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;

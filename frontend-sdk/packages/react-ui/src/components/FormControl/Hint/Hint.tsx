@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React, { forwardRef } from "react";
 import "./hint.scss";
 
-interface HintProps extends React.ComponentPropsWithoutRef<"div"> {
+export interface HintProps extends React.ComponentPropsWithoutRef<"div"> {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;

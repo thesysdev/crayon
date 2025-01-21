@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React, { forwardRef } from "react";
 import "./formControl.scss";
 
-interface FormControlProps {
+export interface FormControlProps {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;

@@ -1,5 +1,7 @@
-import FormControl from "./FormControl";
-import { Hint } from "./Hint";
-import { Label } from "./Label";
+import FormControl, { FormControlProps } from "./FormControl";
+import { Hint, HintProps } from "./Hint";
+import Label, { LabelProps } from "./Label";
+export { default } from "./FormControl";
 
 export { FormControl, Hint, Label };
+export type { FormControlProps, HintProps, LabelProps };
