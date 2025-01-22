@@ -2,21 +2,21 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ChevronRight, Mail, User } from "lucide-react";
 import { ListItem } from "../../ListItem";
 import "../../ListItem/listItem.scss";
-import List from "../List";
-import "../list.scss";
+import { ListBlock } from "../ListBlock";
+import "../listBlock.scss";
 
-const meta: Meta<typeof List> = {
-  title: "Components/List",
-  component: List,
+const meta: Meta<typeof ListBlock> = {
+  title: "Components/ListBlock",
+  component: ListBlock,
   tags: ["autodocs"],
 };
 
 export default meta;
-type Story = StoryObj<typeof List>;
+type Story = StoryObj<typeof ListBlock>;
 
 export const Default: Story = {
   render: () => (
-    <List>
+    <ListBlock>
       <ListItem
         decorativeIcon={User}
         title="John Doe"
@@ -35,28 +35,28 @@ export const Default: Story = {
         subtitle="Without icons"
         actionIcon={ChevronRight}
       />
-    </List>
+    </ListBlock>
   ),
 };
 
 export const SingleItem: Story = {
   render: () => (
-    <List>
+    <ListBlock>
       <ListItem
         decorativeIcon={User}
         title="Single Item"
         subtitle="With icons"
         actionIcon={ChevronRight}
       />
-    </List>
+    </ListBlock>
   ),
 };
 
 export const NoIcons: Story = {
   render: () => (
-    <List>
+    <ListBlock>
       <ListItem title="First Item" subtitle="Description here" />
       <ListItem title="Second Item" subtitle="Another description" />
-    </List>
+    </ListBlock>
   ),
 };
