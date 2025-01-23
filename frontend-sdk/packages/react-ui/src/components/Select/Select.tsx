@@ -3,13 +3,13 @@ import clsx from "clsx";
 import { Check, ChevronDown } from "lucide-react";
 import React, { forwardRef } from "react";
 
-const Select = SelectPrimitive.Root;
+export const Select = SelectPrimitive.Root;
 
-const SelectGroup = SelectPrimitive.Group;
+export const SelectGroup = SelectPrimitive.Group;
 
-const SelectValue = SelectPrimitive.Value;
+export const SelectValue = SelectPrimitive.Value;
 
-interface SelectTriggerProps
+export interface SelectTriggerProps
   extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> {
   className?: string;
   style?: React.CSSProperties;
@@ -18,7 +18,7 @@ interface SelectTriggerProps
   size?: "sm" | "md" | "lg";
 }
 
-const SelectTrigger = forwardRef<
+export const SelectTrigger = forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Trigger>,
   SelectTriggerProps
 >(({ className, style, children, hideDropdownIcon, size = "md", ...props }, ref) => (
@@ -35,7 +35,7 @@ const SelectTrigger = forwardRef<
   </SelectPrimitive.Trigger>
 ));
 
-interface SelectContentProps
+export interface SelectContentProps
   extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> {
   className?: string;
   style?: React.CSSProperties;
@@ -43,7 +43,7 @@ interface SelectContentProps
   position?: "item-aligned" | "popper";
 }
 
-const SelectContent = forwardRef<
+export const SelectContent = forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Content>,
   SelectContentProps
 >(({ className, children, position = "popper", ...props }, ref) => (
@@ -61,23 +61,26 @@ const SelectContent = forwardRef<
   </SelectPrimitive.Portal>
 ));
 
-interface SelectLabelProps extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label> {
+export interface SelectLabelProps
+  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label> {
   className?: string;
   style?: React.CSSProperties;
 }
 
-const SelectLabel = forwardRef<React.ComponentRef<typeof SelectPrimitive.Label>, SelectLabelProps>(
-  ({ className, style, ...props }, ref) => (
-    <SelectPrimitive.Label
-      ref={ref}
-      className={clsx("crayon-select-label", className)}
-      style={style}
-      {...props}
-    />
-  ),
-);
+export const SelectLabel = forwardRef<
+  React.ComponentRef<typeof SelectPrimitive.Label>,
+  SelectLabelProps
+>(({ className, style, ...props }, ref) => (
+  <SelectPrimitive.Label
+    ref={ref}
+    className={clsx("crayon-select-label", className)}
+    style={style}
+    {...props}
+  />
+));
 
-interface SelectItemProps extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item> {
+export interface SelectItemProps
+  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item> {
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
@@ -85,40 +88,41 @@ interface SelectItemProps extends React.ComponentPropsWithoutRef<typeof SelectPr
   showTick?: boolean;
 }
 
-const SelectItem = forwardRef<React.ComponentRef<typeof SelectPrimitive.Item>, SelectItemProps>(
-  ({ className, style, children, showTick = true, textValue, ...props }, ref) => (
-    <SelectPrimitive.Item
-      ref={ref}
-      className={clsx(
-        "crayon-select-item",
-        showTick ? "crayon-select-item--with-tick" : "crayon-select-item--without-tick",
-        className,
-      )}
-      style={style}
-      {...props}
-    >
-      {showTick && (
-        <span className="crayon-select-item-check-wrapper">
-          <SelectPrimitive.ItemIndicator>
-            <Check className="crayon-select-item-check-icon" />
-          </SelectPrimitive.ItemIndicator>
-        </span>
-      )}
-      <SelectPrimitive.ItemText className="crayon-select-item-text">
-        {children}
-      </SelectPrimitive.ItemText>
-      {textValue && <span className="crayon-select-item-text-value">{textValue}</span>}
-    </SelectPrimitive.Item>
-  ),
-);
+export const SelectItem = forwardRef<
+  React.ComponentRef<typeof SelectPrimitive.Item>,
+  SelectItemProps
+>(({ className, style, children, showTick = true, textValue, ...props }, ref) => (
+  <SelectPrimitive.Item
+    ref={ref}
+    className={clsx(
+      "crayon-select-item",
+      showTick ? "crayon-select-item--with-tick" : "crayon-select-item--without-tick",
+      className,
+    )}
+    style={style}
+    {...props}
+  >
+    {showTick && (
+      <span className="crayon-select-item-check-wrapper">
+        <SelectPrimitive.ItemIndicator>
+          <Check className="crayon-select-item-check-icon" />
+        </SelectPrimitive.ItemIndicator>
+      </span>
+    )}
+    <SelectPrimitive.ItemText className="crayon-select-item-text">
+      {children}
+    </SelectPrimitive.ItemText>
+    {textValue && <span className="crayon-select-item-text-value">{textValue}</span>}
+  </SelectPrimitive.Item>
+));
 
-interface SelectSeparatorProps
+export interface SelectSeparatorProps
   extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator> {
   className?: string;
   style?: React.CSSProperties;
 }
 
-const SelectSeparator = forwardRef<
+export const SelectSeparator = forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Separator>,
   SelectSeparatorProps
 >(({ className, style, ...props }, ref) => (
@@ -129,14 +133,3 @@ const SelectSeparator = forwardRef<
     {...props}
   />
 ));
-
-export {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-};
