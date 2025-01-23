@@ -1,14 +1,13 @@
 import clsx from "clsx";
-import { type LucideIcon } from "lucide-react";
 import React from "react";
 
 export interface ListItemProps {
   className?: string;
   style?: React.CSSProperties;
-  decorativeIcon?: LucideIcon;
+  decorativeIcon?: React.ReactNode;
   title?: React.ReactNode;
   subtitle?: React.ReactNode;
-  actionIcon?: LucideIcon;
+  actionIcon?: React.ReactNode;
   onClick?: () => void;
 }
 
@@ -16,21 +15,21 @@ const ListItem = (props: ListItemProps) => {
   const {
     className,
     style,
-    decorativeIcon: DecorativeIcon,
+    decorativeIcon,
     title,
     subtitle,
-    actionIcon: ActionIcon,
+    actionIcon,
     onClick,
     ...rest
   } = props;
   return (
     <div className={clsx("crayon-list-item", className)} style={style} onClick={onClick} {...rest}>
       <div className="crayon-list-item-content">
-        {DecorativeIcon && <DecorativeIcon size={16} />}
+        {decorativeIcon && decorativeIcon}
         {title && <div className="crayon-list-item-title">{title}</div>}
         {subtitle && <div className="crayon-list-item-subtitle">{subtitle}</div>}
       </div>
-      {ActionIcon && <ActionIcon size={16} />}
+      {actionIcon && actionIcon}
     </div>
   );
 };

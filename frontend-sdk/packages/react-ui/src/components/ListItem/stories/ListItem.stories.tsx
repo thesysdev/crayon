@@ -39,8 +39,8 @@ export const Default: Story = {
   args: {
     title: "List Item Title",
     subtitle: "Subtitle text goes here",
-    decorativeIcon: Mail,
-    actionIcon: ChevronRight,
+    decorativeIcon: <Mail size={16} />,
+    actionIcon: <ChevronRight size={16} />,
   },
 };
 
@@ -55,7 +55,7 @@ export const OnlyDecorativeIcon: Story = {
   args: {
     title: "List Item with Icon",
     subtitle: "Has only decorative icon",
-    decorativeIcon: User,
+    decorativeIcon: <User size={16} />,
   },
 };
 
@@ -63,7 +63,7 @@ export const OnlyActionIcon: Story = {
   args: {
     title: "List Item with Action",
     subtitle: "Has only action icon",
-    actionIcon: ChevronRight,
+    actionIcon: <ChevronRight size={16} />,
   },
 };
 
@@ -82,7 +82,7 @@ export const CustomStyling: Story = {
         Custom styled subtitle with different color and size
       </div>
     ),
-    decorativeIcon: Mail,
-    actionIcon: ChevronRight,
+    decorativeIcon: <Mail size={16} />,
+    actionIcon: <ChevronRight size={16} />,
   },
 };

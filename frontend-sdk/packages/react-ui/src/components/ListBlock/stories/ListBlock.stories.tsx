@@ -18,22 +18,22 @@ export const Default: Story = {
   render: () => (
     <ListBlock>
       <ListItem
-        decorativeIcon={User}
+        decorativeIcon={<User size={16} />}
         title="John Doe"
         subtitle="Software Engineer"
-        actionIcon={ChevronRight}
+        actionIcon={<ChevronRight size={16} />}
       />
       <ListItem
-        decorativeIcon={Mail}
+        decorativeIcon={<Mail size={16} />}
         title="Jane Smith"
         subtitle="Product Designer"
-        actionIcon={ChevronRight}
+        actionIcon={<ChevronRight size={16} />}
       />
       <ListItem
-        decorativeIcon={Mail}
+        decorativeIcon={<Mail size={16} />}
         title="Simple Item"
         subtitle="Without icons"
-        actionIcon={ChevronRight}
+        actionIcon={<ChevronRight size={16} />}
       />
     </ListBlock>
   ),
@@ -43,10 +43,10 @@ export const SingleItem: Story = {
   render: () => (
     <ListBlock>
       <ListItem
-        decorativeIcon={User}
+        decorativeIcon={<User size={16} />}
         title="Single Item"
         subtitle="With icons"
-        actionIcon={ChevronRight}
+        actionIcon={<ChevronRight size={16} />}
       />
     </ListBlock>
   ),
