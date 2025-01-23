@@ -11,19 +11,16 @@ export interface ListItemProps {
   onClick?: () => void;
 }
 
-const ListItem = (props: ListItemProps) => {
-  const {
-    className,
-    style,
-    decorativeIcon,
-    title,
-    subtitle,
-    actionIcon,
-    onClick,
-    ...rest
-  } = props;
+const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>((props, ref) => {
+  const { className, style, decorativeIcon, title, subtitle, actionIcon, onClick, ...rest } = props;
   return (
-    <div className={clsx("crayon-list-item", className)} style={style} onClick={onClick} {...rest}>
+    <div
+      ref={ref}
+      className={clsx("crayon-list-item", className)}
+      style={style}
+      onClick={onClick}
+      {...rest}
+    >
       <div className="crayon-list-item-content">
         {decorativeIcon && decorativeIcon}
         {title && <div className="crayon-list-item-title">{title}</div>}
@@ -32,6 +29,8 @@ const ListItem = (props: ListItemProps) => {
       {actionIcon && actionIcon}
     </div>
   );
-};
+});
+
+ListItem.displayName = "ListItem";
 
 export { ListItem };

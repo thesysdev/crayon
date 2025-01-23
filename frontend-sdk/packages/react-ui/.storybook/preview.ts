@@ -11,6 +11,4 @@ const preview: Preview = {
   },
 };
 
-// write decoratorators and global styles here
-
 export default preview;

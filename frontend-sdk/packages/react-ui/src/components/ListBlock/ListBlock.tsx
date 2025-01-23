@@ -8,12 +8,14 @@ export interface ListBlockProps {
   style?: React.CSSProperties;
 }
 
-const ListBlock = (props: ListBlockProps) => {
+const ListBlock = React.forwardRef<HTMLDivElement, ListBlockProps>((props, ref) => {
   return (
-    <div className={clsx("crayon-list-block", props.className)} style={props.style}>
+    <div ref={ref} className={clsx("crayon-list-block", props.className)} style={props.style}>
       {props.children}
     </div>
   );
-};
+});
+
+ListBlock.displayName = "ListBlock";
 
 export { ListBlock };
