@@ -1,0 +1,155 @@
+@use "sass:map";
+@use "../../cssUtils" as cssUtils;
+
+.crayon-select-trigger {
+  background-color: map.get(cssUtils.$colors, "fills", "background");
+  color: map.get(cssUtils.$colors, "strokes", "primary");
+  @include cssUtils.typography(label, default);
+  border: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &:hover {
+    background: map.get(cssUtils.$colors, "fills", "container-hover");
+    border-color: map.get(cssUtils.$colors, "strokes", "interactive-el");
+    color: map.get(cssUtils.$colors, "text", "secondary");
+  }
+
+  &:disabled {
+    background-color: map.get(cssUtils.$colors, "fills", "sunk");
+    color: map.get(cssUtils.$colors, "text", "disabled");
+    border-color: map.get(cssUtils.$colors, "text", "disabled");
+    cursor: not-allowed;
+  }
+
+  &[data-state="open"] {
+    border-color: map.get(cssUtils.$colors, "strokes", "interactive-el");
+    background-color: map.get(cssUtils.$colors, "fills", "background");
+  }
+  &[data-placeholder] {
+    color: map.get(cssUtils.$colors, "text", "disabled");
+  }
+
+  &-sm {
+    padding: map.get(cssUtils.$spacing, "2xs") map.get(cssUtils.$spacing, "s");
+    border-radius: map.get(cssUtils.$radius, "2xs");
+  }
+  &-md {
+    padding: map.get(cssUtils.$spacing, "xs") map.get(cssUtils.$spacing, "s");
+    border-radius: map.get(cssUtils.$radius, "xs");
+  }
+  &-lg {
+    padding: map.get(cssUtils.$spacing, "s");
+    border-radius: map.get(cssUtils.$radius, "s");
+  }
+  &-icon {
+    height: 16px;
+    width: 16px;
+  }
+}
+
+.crayon-select-content {
+  position: relative;
+  z-index: 50;
+  max-height: 380px;
+  min-width: var(--radix-select-trigger-width);
+  overflow: hidden;
+  border-radius: map.get(cssUtils.$radius, "m");
+  background-color: map.get(cssUtils.$colors, "fills", "background");
+  box-shadow: map.get(cssUtils.$shadow, "m");
+}
+
+.crayon-select-viewport {
+  padding: 4px;
+
+  &[data-position="popper"] {
+    width: 100%;
+  }
+}
+
+.crayon-select-label {
+  padding: map.get(cssUtils.$spacing, "xs") map.get(cssUtils.$spacing, "s");
+  @include cssUtils.typography(primary, default);
+}
+
+.crayon-select-item {
+  position: relative;
+  display: flex;
+  cursor: default;
+  user-select: none;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: map.get(cssUtils.$radius, "s");
+  padding-top: 6px;
+  padding-bottom: 6px;
+  @include cssUtils.typography(primary, default);
+  color: map.get(cssUtils.$colors, "text", "primary");
+  outline: 0;
+
+  // Variants based on showTick
+  &--with-tick {
+    padding-left: map.get(cssUtils.$spacing, "xs");
+    padding-right: map.get(cssUtils.$spacing, "xl");
+  }
+
+  &--without-tick {
+    padding-left: map.get(cssUtils.$spacing, "xs");
+    padding-right: map.get(cssUtils.$spacing, "xl");
+  }
+
+  // States
+  &[data-disabled] {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  &[data-highlighted] {
+    color: map.get(cssUtils.$colors, "text", "highlight");
+  }
+
+  &:focus {
+    background-color: map.get(cssUtils.$colors, "fills", "sunk");
+    color: map.get(cssUtils.$colors, "text", "accent-foreground");
+    outline: 1px solid map.get(cssUtils.$colors, "strokes", "sunk");
+    outline-offset: -1px;
+  }
+
+  &[data-state="checked"] {
+    background-color: map.get(cssUtils.$colors, "fills", "sunk");
+    outline: 1px solid map.get(cssUtils.$colors, "strokes", "sunk");
+    outline-offset: -1px;
+  }
+
+  // Check indicator
+  &-check-wrapper {
+    position: absolute;
+    right: 8px;
+    height: 14px;
+    width: 14px;
+  }
+
+  &-check-icon {
+    height: 16px;
+    width: 16px;
+    color: aliceblue;
+  }
+
+  // Text content
+  &-text {
+    flex: 1;
+    @include cssUtils.typography(primary, default);
+    color: map.get(cssUtils.$colors, "text", "disabled");
+  }
+
+  &-value {
+    color: map.get(cssUtils.$colors, "text", "secondary");
+  }
+}
+
+.crayon-select-separator {
+  margin: 4px -4px;
+  height: 1px;
+  border-top: 1px solid map.get(cssUtils.$colors, "strokes", "primary-el");
+}
