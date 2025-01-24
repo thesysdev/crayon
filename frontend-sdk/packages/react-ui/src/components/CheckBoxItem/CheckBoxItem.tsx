@@ -19,7 +19,7 @@ export interface CheckBoxItemProps {
 }
 
 const CheckBoxItem = React.forwardRef<HTMLButtonElement, CheckBoxItemProps>((props, ref) => {
-  const { label, onChange, className, ...rest } = props;
+  const { label, onChange, className, disabled, ...rest } = props;
   const id = useId();
   return (
     <div className="crayon-checkbox-item-container">
@@ -29,12 +29,17 @@ const CheckBoxItem = React.forwardRef<HTMLButtonElement, CheckBoxItemProps>((pro
         {...rest}
         id={id}
         className={clsx("crayon-checkbox-item-root", className)}
+        disabled={disabled}
       >
         <Checkbox.Indicator className="crayon-checkbox-item-indicator">
           <Check size={11} />
         </Checkbox.Indicator>
       </Checkbox.Root>
-      {label && <Label htmlFor={id}>{label}</Label>}
+      {label && (
+        <Label htmlFor={id} className="crayon-checkbox-item-label" disabled={disabled}>
+          {label}
+        </Label>
+      )}
     </div>
   );
 });

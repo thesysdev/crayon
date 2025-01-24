@@ -2,7 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Input } from "../../Input";
 import { FormControl } from "../FormControl";
 import { Hint } from "../Hint";
+import "../Hint/hint.scss";
 import { Label } from "../Label";
+import "../Label/label.scss";
 
 const meta: Meta<typeof FormControl> = {
   title: "Components/FormControl",

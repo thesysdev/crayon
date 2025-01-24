@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import "../../FormControl/Label/label.scss";
 import { CheckBoxItem } from "../CheckBoxItem";
 import "../checkBoxItem.scss";
 

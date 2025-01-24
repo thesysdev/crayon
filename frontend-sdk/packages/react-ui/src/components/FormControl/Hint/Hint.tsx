@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import React, { forwardRef } from "react";
-import "./hint.scss";
 
 export interface HintProps extends React.ComponentPropsWithoutRef<"div"> {
   children: React.ReactNode;
