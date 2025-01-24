@@ -24,4 +24,4 @@ const CheckBoxGroup = React.forwardRef<HTMLDivElement, CheckBoxGroupProps>((prop
 
 CheckBoxGroup.displayName = "CheckBoxGroup";
 
-export { CheckBoxGroup };
+export { CheckBoxGroup, type CheckBoxGroupProps };
