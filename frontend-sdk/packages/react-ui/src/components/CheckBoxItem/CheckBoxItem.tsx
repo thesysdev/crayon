@@ -15,7 +15,7 @@ export interface CheckBoxItemProps {
   name?: string;
   value?: string;
   checkedIcon?: React.ReactNode;
-  onChange: (checked: boolean) => void;
+  onChange?: (checked: boolean) => void;
 }
 
 const CheckBoxItem = React.forwardRef<HTMLButtonElement, CheckBoxItemProps>((props, ref) => {

@@ -1,0 +1,62 @@
+@use "sass:map";
+@use "../../cssUtils" as cssUtils;
+
+.crayon-switch-item-container {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: map.get(cssUtils.$spacing, "2xs");
+  max-width: 100%;
+  width: 100%;
+  overflow: hidden;
+  padding-top: map.get(cssUtils.$spacing, "3xs");
+  padding-bottom: map.get(cssUtils.$spacing, "3xs");
+  padding-left: map.get(cssUtils.$spacing, "0");
+  padding-right: map.get(cssUtils.$spacing, "xs");
+}
+
+.crayon-switch-item-root {
+  position: relative;
+  display: inline-block;
+  height: 15px;
+  width: 24px;
+  cursor: pointer;
+  border-radius: map.get(cssUtils.$radius, "full");
+  padding: map.get(cssUtils.$spacing, "3xs");
+  border: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+  background-color: map.get(cssUtils.$colors, "fills", "background");
+  transition: background-color 0.2s ease-in-out;
+
+  &:not([data-disabled]):hover {
+    background-color: map.get(cssUtils.$colors, "fills", "sunk");
+  }
+
+  &[data-state="checked"] {
+    background-color: map.get(cssUtils.$colors, "fills", "brand-el");
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.crayon-switch-item-thumb {
+  position: absolute;
+  display: block;
+  height: 10px;
+  width: 10px;
+  border-radius: map.get(cssUtils.$radius, "full");
+  border: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+  background-color: map.get(cssUtils.$colors, "fills", "container");
+  transform: translateY(-50%) translateX(-1px);
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  box-shadow: map.get(cssUtils.$shadow, "s");
+
+  &[data-state="checked"] {
+    transform: translateY(-50%) translateX(7.5px);
+    border-color: map.get(cssUtils.$colors, "strokes", "interactive-el");
+  }
+}
