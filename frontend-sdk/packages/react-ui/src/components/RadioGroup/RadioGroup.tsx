@@ -1,5 +1,6 @@
 import * as Radio from "@radix-ui/react-radio-group";
 import clsx from "clsx";
+import { forwardRef } from "react";
 import { RadioItemProps } from "../RadioItem";
 
 interface RadioGroupProps extends Radio.RadioGroupProps {
@@ -9,10 +10,11 @@ interface RadioGroupProps extends Radio.RadioGroupProps {
   style?: React.CSSProperties;
 }
 
-const RadioGroup = (props: RadioGroupProps) => {
+const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>((props, ref) => {
   const { children, className, style, variant = "clear", ...rest } = props;
   return (
     <Radio.Root
+      ref={ref}
       className={clsx("crayon-radio-group", `crayon-radio-group-${variant}`, className)}
       style={style}
       {...rest}
@@ -20,6 +22,8 @@ const RadioGroup = (props: RadioGroupProps) => {
       {children}
     </Radio.Root>
   );
-};
+});
+
+RadioGroup.displayName = "RadioGroup";
 
 export { RadioGroup, type RadioGroupProps };
