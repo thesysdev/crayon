@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { CircleCheck, CreditCard, DollarSign, Stamp } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -27,10 +28,10 @@ export const Basic: Story = {
       <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead>Invoice</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Method</TableHead>
-          <TableHead>Amount</TableHead>
+          <TableHead label="Invoice" icon={<Stamp size={14} />} />
+          <TableHead label="Status" icon={<CircleCheck size={14} />} />
+          <TableHead label="Method" icon={<CreditCard size={14} />} />
+          <TableHead label="Amount" icon={<DollarSign size={14} />} />
         </TableRow>
       </TableHeader>
       <TableBody>

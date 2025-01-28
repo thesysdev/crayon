@@ -41,12 +41,21 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
 );
 TableRow.displayName = "TableRow";
 
-const TableHead = React.forwardRef<
-  HTMLTableCellElement,
-  React.ThHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
-  <th ref={ref} className={clsx("crayon-table-head", className)} {...props} />
-));
+export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
+  label?: React.ReactNode;
+  icon?: React.ReactNode;
+}
+
+const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
+  ({ className, label, icon, ...props }, ref) => (
+    <th ref={ref} className={clsx("crayon-table-head", className)} {...props}>
+      <div className="crayon-table-head-content">
+        {icon && <div className="crayon-table-head-icon">{icon}</div>}
+        <div className="crayon-table-head-label">{label}</div>
+      </div>
+    </th>
+  ),
+);
 TableHead.displayName = "TableHead";
 
 const TableCell = React.forwardRef<
