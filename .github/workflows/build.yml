@@ -9,7 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: frontend-sdk
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,7 +29,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build affected projects
-        run: pnpm --filter "...[origin/main]" build
+        run: pnpm -r build
 
       - name: Check affected projects
-        run: pnpm --filter "...[origin/main]" ci
+        run: pnpm -r run ci
