@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { CircleCheck, CreditCard, DollarSign, Stamp } from "lucide-react";
+import { CircleCheck, CreditCard, DollarSign, Package, Stamp } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -28,10 +28,10 @@ export const Basic: Story = {
       <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead label="Invoice" icon={<Stamp size={14} />} />
-          <TableHead label="Status" icon={<CircleCheck size={14} />} />
-          <TableHead label="Method" icon={<CreditCard size={14} />} />
-          <TableHead label="Amount" icon={<DollarSign size={14} />} />
+          <TableHead icon={<Stamp size={14} />}>Invoice</TableHead>
+          <TableHead icon={<CircleCheck size={14} />}>Status</TableHead>
+          <TableHead icon={<CreditCard size={14} />}>Method</TableHead>
+          <TableHead icon={<DollarSign size={14} />}>Amount</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -64,10 +64,10 @@ export const WithFooter: Story = {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Product</TableHead>
-          <TableHead>Quantity</TableHead>
-          <TableHead>Price</TableHead>
-          <TableHead>Total</TableHead>
+          <TableHead icon={<Package size={14} />}>Product</TableHead>
+          <TableHead icon={<Package size={14} />}>Quantity</TableHead>
+          <TableHead icon={<Package size={14} />}>Price</TableHead>
+          <TableHead icon={<Package size={14} />}>Total</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
