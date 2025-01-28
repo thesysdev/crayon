@@ -12,7 +12,6 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   iconRight?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
-  onClick?: () => void;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -25,7 +24,6 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       iconRight,
       className,
       style,
-      onClick,
       ...props
     },
     ref,
@@ -40,7 +38,6 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           className,
         )}
         style={style}
-        onClick={onClick}
         {...props}
       >
         {iconLeft}
