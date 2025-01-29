@@ -10,7 +10,6 @@ export const useThreadManagerStore = (inputThreadManager: ThreadManager) => {
 
   const [threadManagerStore] = useState(() =>
     create<ThreadManager>(() => ({
-      isDisabled: inputThreadManager.isDisabled,
       isRunning: inputThreadManager.isRunning,
       messages: inputThreadManager.messages,
       error: inputThreadManager.error,
@@ -26,13 +25,11 @@ export const useThreadManagerStore = (inputThreadManager: ThreadManager) => {
 
   useEffect(() => {
     threadManagerStore.setState({
-      isDisabled: inputThreadManager.isDisabled,
       isRunning: inputThreadManager.isRunning,
       messages: inputThreadManager.messages,
       error: inputThreadManager.error,
     });
-    // no dependency array, since we want to update these values on each rerender
-  });
+  }, [inputThreadManager.isRunning, inputThreadManager.messages, inputThreadManager.error]);
 
   if (inputThreadManagerRef.current.responseTemplates !== inputThreadManager.responseTemplates) {
     throw new Error("memoize response templates");

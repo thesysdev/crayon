@@ -1,6 +1,6 @@
 import * as Radio from "@radix-ui/react-radio-group";
 import clsx from "clsx";
-import React, { useId } from "react";
+import React, { forwardRef, useId } from "react";
 import { Label } from "../FormControl/Label";
 
 export interface RadioItemProps {
@@ -12,12 +12,13 @@ export interface RadioItemProps {
   value: string;
 }
 
-const RadioItem = (props: RadioItemProps) => {
+const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>((props, ref) => {
   const { label, className, style, disabled, required, value } = props;
   const id = useId();
   return (
     <div className="crayon-radio-item-container">
       <Radio.Item
+        ref={ref}
         className={clsx("crayon-radio-item-root", className)}
         value={value}
         disabled={disabled}
@@ -56,6 +57,8 @@ const RadioItem = (props: RadioItemProps) => {
       )}
     </div>
   );
-};
+});
+
+RadioItem.displayName = "RadioItem";
 
 export { RadioItem };

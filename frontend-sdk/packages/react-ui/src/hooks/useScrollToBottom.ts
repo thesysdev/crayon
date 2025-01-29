@@ -2,16 +2,18 @@ import { RefObject, useEffect } from "react";
 
 export const useScrollToBottom = <T extends HTMLElement | null>(
   ref: RefObject<T>,
-  // if the triggerValue changes, scroll to bottom
-  triggerValue: any,
+  // scroll to bottom when this value changes
+  triggerScroll: any,
 ) => {
   useEffect(() => {
     const element = ref.current;
-    if (!element) return;
+    if (!element || !triggerScroll) {
+      return;
+    }
 
     element.scrollTo({
       top: element.scrollHeight,
       behavior: "smooth",
     });
-  }, [ref, triggerValue]);
+  }, [ref, triggerScroll]);
 };

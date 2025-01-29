@@ -1,0 +1,77 @@
+@use "sass:map";
+@use "../../cssUtils" as cssUtils;
+
+.crayon-table-container {
+  position: relative;
+  width: 100%;
+  overflow: auto;
+}
+
+.crayon-table {
+  @include cssUtils.typography(label, heavy);
+  width: 100%;
+  caption-side: bottom;
+  border-collapse: collapse;
+  border: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+}
+
+.crayon-table-header {
+  & tr {
+    border-bottom: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+    border-top: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+    background-color: map.get(cssUtils.$colors, "fills", "sunk");
+  }
+
+  & tr td {
+    border-left: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+  }
+}
+
+.crayon-table-body {
+  & tr {
+    &:hover {
+      background-color: map.get(cssUtils.$colors, "fills", "hover");
+    }
+  }
+
+  & tr:last-child {
+    border-bottom: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+  }
+}
+
+.crayon-table-footer {
+  border-top: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+
+  & > tr:last-child {
+    border-bottom: 0;
+  }
+}
+
+.crayon-table-cell,
+.crayon-table-head {
+  padding: map.get(cssUtils.$spacing, "m");
+  border: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+}
+
+.crayon-table-head {
+  background-color: map.get(cssUtils.$colors, "fills", "sunk");
+  & .crayon-table-head-label {
+    @include cssUtils.typography(label, heavy);
+    color: map.get(cssUtils.$colors, "text", "primary");
+    display: inline-flex;
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  & .crayon-table-head-content {
+    display: flex;
+    align-items: center;
+    gap: map.get(cssUtils.$spacing, "2xs");
+  }
+}
+
+.crayon-table-caption {
+  @include cssUtils.typography(label, heavy);
+  color: map.get(cssUtils.$colors, "text", "primary");
+  margin-top: map.get(cssUtils.$spacing, "m");
+}

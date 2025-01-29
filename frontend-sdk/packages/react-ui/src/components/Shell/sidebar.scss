@@ -1,0 +1,106 @@
+@use "../../cssUtils" as cssUtils;
+@use "sass:map";
+
+$sidebar-width: 272px;
+$sidebar-padding: map.get(cssUtils.$spacing, "m");
+$sidebar-mobile-width: 294px;
+$sidebar-mobile-padding: map.get(cssUtils.$spacing, "l");
+
+.crayon-shell-sidebar-container {
+  //todo: fills elevated container
+  background: rgba(255, 255, 255, 0.60);
+  height: 100%;
+  width: $sidebar-width;
+  border-radius: 12px;
+  padding: $sidebar-padding;
+  display: flex;
+  flex-direction: column;
+  gap: map.get(cssUtils.$spacing, "m");
+
+  .crayon-shell-container--mobile & {
+    width: $sidebar-mobile-width;
+    padding: $sidebar-mobile-padding;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    background-color: map.get(cssUtils.$colors, fills, container);
+    border-radius: 0;
+    transition: left 0.3s ease-in-out;
+  }
+
+  &--collapsed {
+    width: min-content;
+    height: min-content;
+
+    .crayon-shell-container--mobile & {
+      width: $sidebar-mobile-width;
+      height: 100%;
+      left: -$sidebar-mobile-width;
+    }
+  }
+}
+
+.crayon-shell-sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: map.get(cssUtils.$spacing, "s");
+
+  &__logo {
+    width: 36px;
+    height: 36px;
+    // todo check the border radius
+    border-radius: map.get(cssUtils.$radius, "s");
+  }
+
+  &__agent-name {
+    @include cssUtils.typography(primary, default);
+    flex-grow: 1;
+    color: map.get(cssUtils.$colors, "primary");
+
+    .crayon-shell-sidebar-container--collapsed & {
+      display: none;
+    }
+  }
+}
+
+.crayon-shell-sidebar-content {
+  width: calc($sidebar-width - ($sidebar-padding * 2));
+
+  .crayon-shell-container--mobile & {
+    width: 100%;
+  }
+
+  display: flex;
+  flex-direction: column;
+  gap: map.get(cssUtils.$spacing, "m");
+  overflow: hidden;
+}
+
+.crayon-shell-sidebar-separator {
+  height: 1px;
+  width: 100%;
+  background-color: map.get(cssUtils.$colors, strokes, default);
+}
+
+.crayon-shell-sidebar-header__toggle-button {
+
+  .crayon-shell-container--mobile & {
+    display: none;
+  }
+}
+
+.crayon-shell-sidebar-container__overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: map.get(cssUtils.$colors, fills, overlay);
+  transition: opacity 0.3s ease-in-out;
+  
+  &--collapsed {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
