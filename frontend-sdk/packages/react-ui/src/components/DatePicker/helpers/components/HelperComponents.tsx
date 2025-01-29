@@ -55,8 +55,9 @@ const SelectContent = forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> & {
     container?: HTMLDivElement | null;
+    viewportClassName?: string;
   }
->(({ className, children, position = "popper", container, ...props }, ref) => (
+>(({ className, children, position = "popper", viewportClassName, container, ...props }, ref) => (
   <SelectPrimitive.Portal container={container || document.body}>
     <SelectPrimitive.Content
       ref={ref}
@@ -64,7 +65,10 @@ const SelectContent = forwardRef<
       position={position}
       {...props}
     >
-      <SelectPrimitive.Viewport className="crayon-select-viewport" data-position={position}>
+      <SelectPrimitive.Viewport
+        className={clsx("crayon-select-viewport", viewportClassName)}
+        data-position={position}
+      >
         {children}
       </SelectPrimitive.Viewport>
     </SelectPrimitive.Content>
@@ -135,7 +139,7 @@ export const MonthsDropdown = (
       </SelectTrigger>
       <SelectContent
         container={container}
-        className="crayon-select-content-months"
+        className="crayon-date-picker-select-content-months"
         sideOffset={12}
         alignOffset={0}
         style={{
@@ -148,6 +152,101 @@ export const MonthsDropdown = (
             key={option.value}
             value={getMonthName(option.value)}
             disabled={option.disabled}
+          >
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+};
+
+export const YearDropdown = (
+  props: {
+    classNames: ClassNames;
+    components: CustomComponents;
+    options?: DropdownOption[];
+  } & Omit<
+    DetailedHTMLProps<SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>,
+    "children"
+  > & {
+      container?: HTMLDivElement | null;
+      botType: "mobile" | "fullscreen" | "tray" | "copilot";
+    },
+) => {
+  const {
+    className,
+    disabled,
+    onChange,
+    options,
+    value,
+    key,
+    "aria-label": ariaLabel,
+    container,
+    botType,
+  } = props;
+
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(0);
+
+  useEffect(() => {
+    if (!container) return;
+
+    const targetElement = container.children[0]?.children[0];
+    if (!targetElement) return;
+
+    const resizeObserver = new ResizeObserver(
+      debounce((entries) => {
+        const { width, height } = entries[0]?.contentRect || {};
+        setContainerWidth(width || 0);
+        setContainerHeight(height || 0);
+      }, 100),
+    );
+
+    resizeObserver.observe(targetElement);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [container]);
+
+  return (
+    <Select
+      onValueChange={(value) =>
+        onChange?.({
+          target: { value: Number(value) },
+        } as any)
+      }
+      value={String(value)}
+      disabled={disabled}
+      key={key}
+      aria-label={ariaLabel}
+    >
+      <SelectTrigger className={className}>
+        <SelectValue placeholder={"Select a month"} />
+      </SelectTrigger>
+      <SelectContent
+        container={container}
+        className="crayon-date-picker-select-content-years"
+        viewportClassName={clsx(
+          "crayon-date-picker-select-viewport",
+          botType === "mobile" && "crayon-date-picker-select-viewport-mobile",
+        )}
+        sideOffset={12}
+        alignOffset={-111}
+        style={{
+          minHeight: `${containerHeight - 45}px`,
+          maxHeight: `${containerHeight - 45}px`,
+          minWidth: `${containerWidth + 10}px`,
+          maxWidth: `${containerWidth + 10}px`,
+        }}
+      >
+        {options?.map((option) => (
+          <SelectItem
+            key={option.value}
+            value={String(option.value)}
+            disabled={option.disabled}
+            className="crayon-date-picker-select-item"
           >
             {option.label}
           </SelectItem>
