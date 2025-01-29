@@ -13,7 +13,7 @@ import {
 import { ClassNames, CustomComponents, DropdownOption } from "react-day-picker";
 import "react-day-picker/style.css";
 import { IconButton } from "../../../IconButton";
-import { Select, SelectTrigger, SelectValue } from "../../../Select";
+import { Select, SelectItem, SelectTrigger, SelectValue } from "../../../Select";
 import { getMonthName, getMonthNumber } from "../utils/helperFn";
 
 export const PreviousMonthButton = (
@@ -133,6 +133,26 @@ export const MonthsDropdown = (
       <SelectTrigger className={className}>
         <SelectValue placeholder={"Select a month"} />
       </SelectTrigger>
+      <SelectContent
+        container={container}
+        className="crayon-select-content-months"
+        sideOffset={12}
+        alignOffset={0}
+        style={{
+          maxHeight: `${containerHeight - 45}px`,
+          minWidth: `${containerWidth}px`,
+        }}
+      >
+        {options?.map((option) => (
+          <SelectItem
+            key={option.value}
+            value={getMonthName(option.value)}
+            disabled={option.disabled}
+          >
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
     </Select>
   );
 };
