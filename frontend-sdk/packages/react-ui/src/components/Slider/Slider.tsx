@@ -1,4 +1,5 @@
 import * as SliderPrimitive from "@radix-ui/react-slider";
+import clsx from "clsx";
 import { forwardRef, useEffect, useMemo, useState } from "react";
 
 export interface SliderProps extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
@@ -32,7 +33,7 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
     };
 
     const sliderProps = useMemo(() => {
-      const baseProps = { min, max };
+      const baseProps = { min, max, ...props };
       switch (variant) {
         case "continuous":
           return { ...baseProps, value: [internalValue] };
@@ -104,7 +105,7 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
     return (
       <SliderPrimitive.Root
         ref={ref}
-        className={`slider-root ${disabled ? "slider--disabled" : ""}`}
+        className={clsx("slider-root", { "slider--disabled": disabled }, className)}
         {...sliderProps}
         onValueChange={handleValueChange}
         minStepsBetweenThumbs={1}

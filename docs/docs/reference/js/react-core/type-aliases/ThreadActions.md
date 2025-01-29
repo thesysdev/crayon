@@ -1,48 +1,14 @@
 ```ts
-type ThreadActions<T> = {
-  convertMessage: T extends Message ? MessageConverter<T> | undefined : MessageConverter<T>;
-  onAddToolResult: (props: {
-     result: any;
-     toolCallId: string;
-    }) => Promise<void> | void;
+type ThreadActions = {
+  appendMessages: (...messages: Message[]) => void;
   onCancel: () => void;
-  onNew: (message: CreateMessage) => void;
-  onReload: (messageId: string) => undefined;
+  processMessage: (message: CreateMessage) => Promise<void>;
+  setMessages: (messages: Message[]) => void;
+  updateMessage: (message: Message) => void;
 };
 ```
 
 Actions available for managing a thread
-
-## Type Parameters
-
-<table>
-<thead>
-<tr>
-<th>Type Parameter</th>
-<th>Default type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-
-`T`
-
-</td>
-<td>
-
-[`Message`](Message.md)
-
-</td>
-<td>
-
-The message type used in the thread
-
-</td>
-</tr>
-</tbody>
-</table>
 
 ## Type declaration
 
@@ -58,44 +24,24 @@ The message type used in the thread
 <tr>
 <td>
 
-`convertMessage`
+`appendMessages`
 
 </td>
 <td>
 
-`T` *extends* [`Message`](Message.md) ? [`MessageConverter`](MessageConverter.md)\<`T`\> \| `undefined` : [`MessageConverter`](MessageConverter.md)\<`T`\>
+(...`messages`: [`Message`](Message.md)[]) => `void`
 
 </td>
 <td>
 
-[packages/react-core/src/types.ts:45](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L45)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`onAddToolResult`?
-
-</td>
-<td>
-
-(`props`: \{
-  `result`: `any`;
-  `toolCallId`: `string`;
- \}) => `Promise`\<`void`\> \| `void`
-
-</td>
-<td>
-
-[packages/react-core/src/types.ts:42](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L42)
+[packages/react-core/src/types/chatManager.ts:24](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L24)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`onCancel`?
+`onCancel`
 
 </td>
 <td>
@@ -105,47 +51,68 @@ The message type used in the thread
 </td>
 <td>
 
-[packages/react-core/src/types.ts:41](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L41)
+[packages/react-core/src/types/chatManager.ts:26](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L26)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`onNew`
+`processMessage`
 
 </td>
 <td>
 
-(`message`: [`CreateMessage`](CreateMessage.md)) => `void`
+(`message`: [`CreateMessage`](CreateMessage.md)) => `Promise`\<`void`\>
 
 </td>
 <td>
 
-[packages/react-core/src/types.ts:39](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L39)
+[packages/react-core/src/types/chatManager.ts:23](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L23)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`onReload`?
+`setMessages`
 
 </td>
 <td>
 
-(`messageId`: `string`) => `undefined`
+(`messages`: [`Message`](Message.md)[]) => `void`
 
 </td>
 <td>
 
-[packages/react-core/src/types.ts:40](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L40)
+[packages/react-core/src/types/chatManager.ts:27](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L27)
+
+</td>
+</tr>
+<tr>
+<td>
+
+`updateMessage`
+
+</td>
+<td>
+
+(`message`: [`Message`](Message.md)) => `void`
+
+</td>
+<td>
+
+[packages/react-core/src/types/chatManager.ts:25](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L25)
 
 </td>
 </tr>
 </tbody>
 </table>
 
+## Template
+
+The message type used in the thread
+
 ## Defined in
 
-[packages/react-core/src/types.ts:38](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L38)
+[packages/react-core/src/types/chatManager.ts:22](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L22)

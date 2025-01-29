@@ -1,0 +1,54 @@
+@use "sass:map";
+@use "../../cssUtils" as cssUtils;
+
+.crayon-carousel {
+  position: relative;
+  display: flex;
+
+  &-content {
+    position: relative;
+    display: flex;
+    width: 100%;
+    gap: map.get(cssUtils.$spacing, "xl");
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-x: hidden;
+    scrollbar-width: none;
+
+    & > * {
+      box-sizing: border-box;
+      scroll-snap-align: start;
+    }
+  }
+  &-item {
+    @include cssUtils.typography(body, default);
+    display: flex;
+    flex-direction: column;
+    gap: map.get(cssUtils.$spacing, "s");
+    min-width: 200px;
+    max-width: 200px;
+    border-radius: map.get(cssUtils.$radius, "m");
+    background-color: map.get(cssUtils.$colors, "fills", "primary");
+    padding: map.get(cssUtils.$spacing, "m");
+    border: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+  }
+
+  &-button {
+    position: absolute;
+    top: 50%;
+    z-index: 10;
+    transform: translateY(-50%);
+
+    &-left {
+      left: 0;
+    }
+
+    &-right {
+      right: 0;
+    }
+  }
+}

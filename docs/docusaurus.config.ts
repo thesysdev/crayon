@@ -58,7 +58,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: "./sidebars.ts",
-          editUrl: "https://github.com/thesysdev/crayonai/tree/main/docs",
+          editUrl: "https://github.com/thesysdev/crayon/tree/main/docs",
           sidebarCollapsible: false,
         },
         theme: {
@@ -72,7 +72,7 @@ const config: Config = {
     colorMode: {
       respectPrefersColorScheme: true,
     },
-    image: "img/docusaurus-social-card.jpg",
+    image: "img/social-card.png",
     navbar: {
       title: "CrayonAI",
       logo: {
@@ -93,7 +93,7 @@ const config: Config = {
           label: "Reference",
         },
         {
-          href: "https://github.com/thesysdev/crayonai",
+          href: "https://github.com/thesysdev/crayon",
           label: "GitHub",
           position: "right",
         },
@@ -142,7 +142,7 @@ const config: Config = {
             },
             {
               label: "GitHub",
-              href: "https://github.com/thesysdev/crayonai",
+              href: "https://github.com/thesysdev/crayon",
             },
           ],
         },

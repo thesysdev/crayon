@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
-import { ThreadListManager, ThreadManager } from "../types";
-import { StoreApi } from "zustand";
 import invariant from "tiny-invariant";
+import { StoreApi } from "zustand";
+import { ThreadListManager, ThreadManager } from "../types";
 
 export const ChatContext = createContext<{
   threadListManager: StoreApi<ThreadListManager>;

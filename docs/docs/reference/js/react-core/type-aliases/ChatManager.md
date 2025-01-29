@@ -31,7 +31,7 @@ Main chat manager combining thread and thread list management
 </td>
 <td>
 
-[packages/react-core/src/types.ts:93](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L93)
+[packages/react-core/src/types/chatManager.ts:82](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L82)
 
 </td>
 </tr>
@@ -48,7 +48,7 @@ Main chat manager combining thread and thread list management
 </td>
 <td>
 
-[packages/react-core/src/types.ts:94](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L94)
+[packages/react-core/src/types/chatManager.ts:83](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L83)
 
 </td>
 </tr>
@@ -57,4 +57,4 @@ Main chat manager combining thread and thread list management
 
 ## Defined in
 
-[packages/react-core/src/types.ts:92](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L92)
+[packages/react-core/src/types/chatManager.ts:81](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L81)

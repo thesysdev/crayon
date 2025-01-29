@@ -1,9 +1,9 @@
 ```ts
-type Message = VercelMessage;
+type Message = 
+  | UserMessage
+  | AssistantMessage;
 ```
-
-Represents a chat message, extending Vercel's Message type
 
 ## Defined in
 
-[packages/react-core/src/types.ts:4](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L4)
+[packages/react-core/src/types/message.ts:35](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/message.ts#L35)

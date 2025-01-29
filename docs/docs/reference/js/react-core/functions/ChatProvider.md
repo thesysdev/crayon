@@ -57,4 +57,4 @@ It serves as the top-level provider for thread and thread list management functi
 
 ## Defined in
 
-[packages/react-core/src/ChatProvider.tsx:31](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/ChatProvider.tsx#L31)
+[packages/react-core/src/ChatProvider.tsx:30](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/ChatProvider.tsx#L30)

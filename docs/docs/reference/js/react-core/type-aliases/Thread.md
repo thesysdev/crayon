@@ -39,14 +39,14 @@ Creation timestamp
 </td>
 <td>
 
-[packages/react-core/src/types.ts:29](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L29)
+[packages/react-core/src/types/chatManager.ts:13](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L13)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`isRunning`
+`isRunning`?
 
 </td>
 <td>
@@ -61,7 +61,7 @@ Indicates if the thread is currently processing
 </td>
 <td>
 
-[packages/react-core/src/types.ts:31](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L31)
+[packages/react-core/src/types/chatManager.ts:15](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L15)
 
 </td>
 </tr>
@@ -83,7 +83,7 @@ Unique identifier for the thread
 </td>
 <td>
 
-[packages/react-core/src/types.ts:25](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L25)
+[packages/react-core/src/types/chatManager.ts:9](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L9)
 
 </td>
 </tr>
@@ -105,7 +105,7 @@ Title of the thread
 </td>
 <td>
 
-[packages/react-core/src/types.ts:27](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L27)
+[packages/react-core/src/types/chatManager.ts:11](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L11)
 
 </td>
 </tr>
@@ -114,4 +114,4 @@ Title of the thread
 
 ## Defined in
 
-[packages/react-core/src/types.ts:23](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L23)
+[packages/react-core/src/types/chatManager.ts:7](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L7)

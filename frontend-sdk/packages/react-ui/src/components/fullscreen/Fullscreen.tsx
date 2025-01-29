@@ -256,18 +256,6 @@ export const ScrollArea = ({
   );
 };
 
-export const Messages = ({ className }: { className?: string }) => {
-  const { messages } = useThreadState();
-
-  return (
-    <div className={clsx("cui-fullscreen-messages", className)}>
-      {messages.map((message) => (
-        <RenderMessage key={message.id} message={message} />
-      ))}
-    </div>
-  );
-};
-
 const FallbackTemplate = () => {
   return <div>Unable to render the response</div>;
 };
@@ -302,6 +290,18 @@ export const RenderMessage = ({ message, className }: { message: Message; classN
       )}
     >
       {message.message}
+    </div>
+  );
+};
+
+export const Messages = ({ className }: { className?: string }) => {
+  const { messages } = useThreadState();
+
+  return (
+    <div className={clsx("cui-fullscreen-messages", className)}>
+      {messages.map((message) => (
+        <RenderMessage key={message.id} message={message} />
+      ))}
     </div>
   );
 };

@@ -1,44 +1,14 @@
 ```ts
-type ThreadState<T> = {
+type ThreadState = {
   error: Error | null | undefined;
   isDisabled: boolean;
   isRunning: boolean;
-  messages: T[];
+  messages: Message[];
+  responseTemplates: {};
 };
 ```
 
 Represents the state of a thread
-
-## Type Parameters
-
-<table>
-<thead>
-<tr>
-<th>Type Parameter</th>
-<th>Default type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-
-`T`
-
-</td>
-<td>
-
-[`Message`](Message.md)
-
-</td>
-<td>
-
-The message type used in the thread
-
-</td>
-</tr>
-</tbody>
-</table>
 
 ## Type declaration
 
@@ -47,6 +17,7 @@ The message type used in the thread
 <tr>
 <th>Name</th>
 <th>Type</th>
+<th>Description</th>
 <th>Defined in</th>
 </tr>
 </thead>
@@ -64,7 +35,12 @@ The message type used in the thread
 </td>
 <td>
 
-[packages/react-core/src/types.ts:56](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L56)
+&hyphen;
+
+</td>
+<td>
+
+[packages/react-core/src/types/chatManager.ts:38](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L38)
 
 </td>
 </tr>
@@ -81,7 +57,12 @@ The message type used in the thread
 </td>
 <td>
 
-[packages/react-core/src/types.ts:53](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L53)
+&hyphen;
+
+</td>
+<td>
+
+[packages/react-core/src/types/chatManager.ts:34](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L34)
 
 </td>
 </tr>
@@ -98,7 +79,12 @@ The message type used in the thread
 </td>
 <td>
 
-[packages/react-core/src/types.ts:54](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L54)
+Indicates if the thread is currently processing and controls should be disabled
+
+</td>
+<td>
+
+[packages/react-core/src/types/chatManager.ts:36](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L36)
 
 </td>
 </tr>
@@ -110,12 +96,39 @@ The message type used in the thread
 </td>
 <td>
 
-`T`[]
+[`Message`](Message.md)[]
 
 </td>
 <td>
 
-[packages/react-core/src/types.ts:55](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L55)
+&hyphen;
+
+</td>
+<td>
+
+[packages/react-core/src/types/chatManager.ts:37](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L37)
+
+</td>
+</tr>
+<tr>
+<td>
+
+`responseTemplates`
+
+</td>
+<td>
+
+\{\}
+
+</td>
+<td>
+
+&hyphen;
+
+</td>
+<td>
+
+[packages/react-core/src/types/chatManager.ts:39](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L39)
 
 </td>
 </tr>
@@ -124,4 +137,4 @@ The message type used in the thread
 
 ## Defined in
 
-[packages/react-core/src/types.ts:52](https://github.com/thesysdev/crayonai/blob/6eac6f4f2cad380ceb23505021a977f1a24045b3/frontend-sdk/packages/react-core/src/types.ts#L52)
+[packages/react-core/src/types/chatManager.ts:33](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L33)
