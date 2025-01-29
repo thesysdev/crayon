@@ -1,0 +1,108 @@
+@use "../../cssUtils" as cssUtils;
+@use "sass:map";
+
+.crayon-shell-thread-container {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+$center-align-spacing: calc(32px + map.get(cssUtils.$spacing, "s"));
+
+.crayon-shell-thread-scroll-area {
+  width: 100%;
+  flex: 1;
+  overflow: auto;
+  padding: map.get(cssUtils.$spacing, "m") $center-align-spacing 0;
+
+  .crayon-shell-container--mobile & {
+    padding: map.get(cssUtils.$spacing, "l");
+  }
+}
+
+.crayon-shell-thread-messages {
+  max-width: 776px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: calc(2 * map.get(cssUtils.$spacing, "l"));
+}
+
+.crayon-shell-thread-message-assistant {
+  width: 100%;
+  display: flex;
+  gap: map.get(cssUtils.$spacing, "s");
+  padding-right: $center-align-spacing;
+  overflow: hidden;
+
+  .crayon-shell-container--mobile & {
+    padding: 0;
+  }
+
+  &__text {
+    margin-top: map.get(cssUtils.$spacing, "xs");
+    @include cssUtils.typography(primary, default);
+  }
+
+  &__logo {
+    width: 32px;
+    height: 32px;
+    border-radius: map.get(cssUtils.$radius, "m");
+  }
+}
+
+.crayon-shell-thread-message-user {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 $center-align-spacing;
+
+  .crayon-shell-container--mobile & {
+    padding: 0;
+  }
+
+  &__content {
+    @include cssUtils.typography(primary, default);
+    padding: map.get(cssUtils.$spacing, "m") map.get(cssUtils.$spacing, "l");
+    // todo: update with css variable
+    background-color: #000;
+    color: #fff;
+    border-radius: map.get(cssUtils.$radius, "2xl");
+    overflow-wrap: break-word;
+    max-width: 100%;
+  }
+}
+
+.crayon-shell-thread-composer {
+  max-width: 776px;
+  width: 100%;
+  margin: 0 auto map.get(cssUtils.$spacing, "m");
+  padding: 0 $center-align-spacing;
+
+  .crayon-shell-container--mobile & {
+    margin: 0;
+    padding: map.get(cssUtils.$spacing, "m") 14px;
+    background-color: map.get(cssUtils.$colors, fills, container);
+  }
+
+  &__input-wrapper {
+    border: 1.256px solid map.get(cssUtils.$colors, strokes, default);
+    border-radius: map.get(cssUtils.$radius, "xl");
+    display: flex;
+    align-items: center;
+    gap: map.get(cssUtils.$spacing, "s");
+    padding: map.get(cssUtils.$spacing, "m");
+  }
+
+  &__input {
+    flex-grow: 1;
+    padding: 0;
+    resize: none;
+    height: 1.5em;
+    outline: none;
+    border: none;
+    background: transparent;
+    overflow: hidden;
+    @include cssUtils.typography(primary, default);
+  }
+}

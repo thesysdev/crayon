@@ -13,7 +13,6 @@ export const useThreadState = (): ThreadState => {
 
   return {
     isRunning: useStore(threadManager, (store) => store.isRunning),
-    isDisabled: useStore(threadManager, (store) => store.isDisabled),
     messages: useStore(threadManager, (store) => store.messages),
     error: useStore(threadManager, (store) => store.error),
     responseTemplates: useStore(threadManager, (store) => store.responseTemplates),

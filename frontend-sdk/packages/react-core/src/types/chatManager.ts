@@ -31,7 +31,6 @@ export type ThreadActions = {
  * Represents the state of a thread
  */
 export type ThreadState = {
-  isDisabled?: boolean | undefined;
   /** Indicates if the thread is currently processing and controls should be disabled */
   isRunning?: boolean | undefined;
   messages: Message[];
