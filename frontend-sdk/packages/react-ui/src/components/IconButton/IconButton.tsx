@@ -12,7 +12,6 @@ export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
   shape?: IconButtonShape;
   className?: string;
   style?: React.CSSProperties;
-  onClick?: () => void;
 }
 
 export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((props, ref) => {
@@ -23,7 +22,6 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((
     variant = "primary",
     size = "medium",
     shape = "square",
-    onClick,
     ...rest
   } = props;
 
@@ -38,7 +36,6 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((
         className,
       )}
       style={style}
-      onClick={onClick}
       {...rest}
     >
       {icon}
