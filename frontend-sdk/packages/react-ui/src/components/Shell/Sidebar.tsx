@@ -10,7 +10,9 @@ export const SidebarContainer = ({ children }: { children?: React.ReactNode }) =
     isSidebarOpen: state.isSidebarOpen,
     setIsSidebarOpen: state.setIsSidebarOpen,
   }));
-  const { isMobile } = useLayoutContext() || {};
+  const { layout } = useLayoutContext() || {};
+
+  const isMobile = layout === "mobile";
 
   useEffect(() => {
     if (isMobile) {

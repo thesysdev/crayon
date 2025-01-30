@@ -13,13 +13,14 @@ interface ContainerProps {
 export const Container = ({ children, logoUrl, agentName }: ContainerProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const { width } = useElementSize({ ref }) || {};
+  // TODO: revisit this logic
   const isMobile = width > 0 && width < 768;
   const isFullScreen = width > 768;
-  const isTray = false;
+  const layout = isMobile ? "mobile" : isFullScreen ? "fullscreen" : "tray";
 
   return (
     <ShellStoreProvider logoUrl={logoUrl} agentName={agentName}>
-      <LayoutContextProvider isTray={isTray} isFullScreen={isFullScreen} isMobile={isMobile}>
+      <LayoutContextProvider layout={layout}>
         <div
           className={clsx("crayon-shell-container", { "crayon-shell-container--mobile": isMobile })}
           ref={ref}

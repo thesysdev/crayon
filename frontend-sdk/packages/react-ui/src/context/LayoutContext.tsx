@@ -1,26 +1,17 @@
 import { createContext, useContext, useMemo } from "react";
 
 export const LayoutContext = createContext<{
-  isMobile: boolean;
-  isFullScreen: boolean;
-  isTray: boolean;
+  layout: "mobile" | "fullscreen" | "tray" | "copilot";
 } | null>(null);
 
 export const LayoutContextProvider = ({
   children,
-  isTray,
-  isFullScreen,
-  isMobile,
+  layout,
 }: {
   children: React.ReactNode;
-  isTray: boolean;
-  isFullScreen: boolean;
-  isMobile: boolean;
+  layout: "mobile" | "fullscreen" | "tray" | "copilot";
 }) => {
-  const value = useMemo(
-    () => ({ isMobile, isFullScreen, isTray }),
-    [isMobile, isFullScreen, isTray],
-  );
+  const value = useMemo(() => ({ layout }), [layout]);
   return <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>;
 };
 
