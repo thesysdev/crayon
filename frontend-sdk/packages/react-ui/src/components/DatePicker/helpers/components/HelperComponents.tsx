@@ -161,7 +161,7 @@ export const MonthsDropdown = (
   );
 };
 
-export const YearDropdown = (
+export const YearsDropdown = (
   props: {
     classNames: ClassNames;
     components: CustomComponents;

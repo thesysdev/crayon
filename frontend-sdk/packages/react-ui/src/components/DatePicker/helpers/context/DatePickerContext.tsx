@@ -2,27 +2,27 @@ import React, { createContext, useContext } from "react";
 import { DateRange } from "react-day-picker";
 
 interface DatePickerContextType {
-  selectedDate: Date | null;
+  selectedDate: Date | undefined;
   selectedRange: DateRange;
   isOpen: boolean;
   mode: "single" | "range";
-  botType: "mobile" | "fullScreen" | "tray" | "copilot";
+  botType: "mobile" | "fullscreen" | "tray" | "copilot";
 
-  setSelectedDate: (date: Date | null) => void;
-  setSelectedRange: (range: DateRange) => void;
+  setSelectedDate: (date: Date | undefined) => void;
+  setSelectedRange: (range: DateRange | undefined) => void;
   setIsOpen: (isOpen: boolean) => void;
   setMode: (mode: "single" | "range") => void;
 }
 
 const defaultContext: DatePickerContextType = {
-  selectedDate: null,
+  selectedDate: undefined,
   selectedRange: { from: undefined, to: undefined },
   isOpen: false,
   mode: "single",
-  botType: "fullScreen",
+  botType: "fullscreen",
 
-  setSelectedDate: (date: Date | null) => {},
-  setSelectedRange: (range: DateRange) => {},
+  setSelectedDate: (date: Date | undefined) => {},
+  setSelectedRange: (range: DateRange | undefined) => {},
   setIsOpen: (isOpen: boolean) => {},
   setMode: (mode: "single" | "range") => {},
 };
@@ -39,14 +39,14 @@ export const useDatePicker = () => {
 
 interface DatePickerProviderProps {
   children: React.ReactNode;
-  selectedDate: Date | null;
+  selectedDate: Date | undefined;
   selectedRange: DateRange;
   mode: "single" | "range";
   isOpen: boolean;
-  botType: "mobile" | "fullScreen" | "tray" | "copilot";
+  botType: "mobile" | "fullscreen" | "tray" | "copilot";
 
-  setSelectedDate: (date: Date | null) => void;
-  setSelectedRange: (range: DateRange) => void;
+  setSelectedDate: (date: Date | undefined) => void;
+  setSelectedRange: (range: DateRange | undefined) => void;
   setMode: (mode: "single" | "range") => void;
   setIsOpen: (isOpen: boolean) => void;
 }

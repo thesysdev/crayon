@@ -19,14 +19,14 @@ export const getDayPickerStyles = (botType: "mobile" | "fullscreen" | "tray" | "
     years_dropdown: `crayon-date-picker-years-dropdown`,
   };
 
-  const DataSingleClasses: Partial<ClassNames> = {
+  const DateSingleClasses: Partial<ClassNames> = {
     ...commonClassNames,
     day_button: "crayon-date-picker-single-day-button",
     day: "crayon-date-picker-single-day",
     selected: "crayon-date-picker-single-day-selected",
   };
 
-  const DataRangeClasses: Partial<ClassNames> = {
+  const DateRangeClasses: Partial<ClassNames> = {
     ...commonClassNames,
     selected: "",
     range_start: "crayon-date-picker-range-start",
@@ -37,7 +37,7 @@ export const getDayPickerStyles = (botType: "mobile" | "fullscreen" | "tray" | "
   };
 
   return {
-    DataSingleClasses,
-    DataRangeClasses,
+    DateSingleClasses,
+    DateRangeClasses,
   };
 };
