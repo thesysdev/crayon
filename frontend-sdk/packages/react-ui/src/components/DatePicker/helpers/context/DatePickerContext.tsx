@@ -3,7 +3,7 @@ import { DateRange } from "react-day-picker";
 
 interface DatePickerContextType {
   selectedDate: Date | undefined;
-  selectedRange: DateRange;
+  selectedRange: DateRange | undefined;
   isOpen: boolean;
   mode: "single" | "range";
   botType: "mobile" | "fullscreen" | "tray" | "copilot";

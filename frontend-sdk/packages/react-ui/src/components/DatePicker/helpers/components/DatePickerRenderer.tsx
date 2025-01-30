@@ -18,7 +18,7 @@ const DatepickerRenderer = forwardRef<HTMLDivElement>((_, ref) => {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const assignRef = useMultipleRefs(ref, containerRef);
+  const assignRef = useMultipleRefs(ref, containerRef); // TODO: fix this ref assignment
 
   const commonProps = {
     captionLayout: "dropdown" as const,
@@ -36,7 +36,7 @@ const DatepickerRenderer = forwardRef<HTMLDivElement>((_, ref) => {
 
   if (mode === "single") {
     return (
-      <div  className="crayon-date-picker-renderer-single-mode">
+      <div ref={containerRef} className="crayon-date-picker-renderer-single-mode">
         <DayPicker
           mode="single"
           selected={selectedDate}
