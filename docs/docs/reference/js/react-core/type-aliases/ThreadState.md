@@ -1,7 +1,6 @@
 ```ts
 type ThreadState = {
   error: Error | null | undefined;
-  isDisabled: boolean;
   isRunning: boolean;
   messages: Message[];
   responseTemplates: {};
@@ -40,29 +39,7 @@ Represents the state of a thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:38](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L38)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`isDisabled`?
-
-</td>
-<td>
-
-`boolean`
-
-</td>
-<td>
-
-&hyphen;
-
-</td>
-<td>
-
-[packages/react-core/src/types/chatManager.ts:34](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L34)
+[packages/react-core/src/types/chatManager.ts:37](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/chatManager.ts#L37)
 
 </td>
 </tr>
@@ -84,7 +61,7 @@ Indicates if the thread is currently processing and controls should be disabled
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:36](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L36)
+[packages/react-core/src/types/chatManager.ts:35](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/chatManager.ts#L35)
 
 </td>
 </tr>
@@ -106,7 +83,7 @@ Indicates if the thread is currently processing and controls should be disabled
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:37](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L37)
+[packages/react-core/src/types/chatManager.ts:36](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/chatManager.ts#L36)
 
 </td>
 </tr>
@@ -128,7 +105,7 @@ Indicates if the thread is currently processing and controls should be disabled
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:39](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L39)
+[packages/react-core/src/types/chatManager.ts:38](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/chatManager.ts#L38)
 
 </td>
 </tr>
@@ -137,4 +114,4 @@ Indicates if the thread is currently processing and controls should be disabled
 
 ## Defined in
 
-[packages/react-core/src/types/chatManager.ts:33](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L33)
+[packages/react-core/src/types/chatManager.ts:33](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/chatManager.ts#L33)

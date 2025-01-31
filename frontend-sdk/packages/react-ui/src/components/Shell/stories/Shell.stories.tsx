@@ -4,6 +4,7 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
+import "../../Button/button.scss";
 import "../../IconButton/iconButton.scss";
 import { Container } from "../Container";
 import { MobileHeader } from "../MobileHeader";

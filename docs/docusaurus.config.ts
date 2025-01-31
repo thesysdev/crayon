@@ -93,6 +93,11 @@ const config: Config = {
           label: "Reference",
         },
         {
+          href: "https://crayonai.org/ui/?path=/docs/configure-your-project--docs",
+          label: "UI",
+          position: "left",
+        },
+        {
           href: "https://github.com/thesysdev/crayon",
           label: "GitHub",
           position: "right",
@@ -166,16 +171,16 @@ const config: Config = {
       },
     ],
 
-    [
-      "docusaurus-plugin-typedoc",
-      {
-        id: "react-ui",
-        entryPoints: ["../frontend-sdk/packages/react-ui/src/index.ts"],
-        tsconfig: "../frontend-sdk/tsconfig.json",
-        out: "./docs/reference/js/react-ui",
-        ...typeDocConfig,
-      },
-    ],
+    // [
+    //   "docusaurus-plugin-typedoc",
+    //   {
+    //     id: "react-ui",
+    //     entryPoints: ["../frontend-sdk/packages/react-ui/src/index.ts"],
+    //     tsconfig: "../frontend-sdk/tsconfig.json",
+    //     out: "./docs/reference/js/react-ui",
+    //     ...typeDocConfig,
+    //   },
+    // ],
   ],
 };
 

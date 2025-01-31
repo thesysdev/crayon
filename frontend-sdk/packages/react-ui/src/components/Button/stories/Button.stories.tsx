@@ -3,33 +3,10 @@ import { ArrowRight, Download } from "lucide-react";
 import { Button } from "../Button";
 import "../button.scss";
 
-const meta: Meta<typeof Button> = {
-  title: "Components/Button",
-  component: Button,
-  parameters: {
-    layout: "centered",
-  },
-  argTypes: {
-    variant: {
-      control: "radio",
-      options: ["primary", "secondary", "tertiary"],
-    },
-    size: {
-      control: "radio",
-      options: ["small", "medium", "large"],
-    },
-    disabled: {
-      control: "boolean",
-    },
-  },
-  tags: ["autodocs"],
-};
-
-export default meta;
 type Story = StoryObj<typeof Button>;
 
 // Basic button stories
-export const ButtonStory: Story = {
+export const Primary: Story = {
   args: {
     children: "Primary Button",
     variant: "primary",
@@ -41,6 +18,21 @@ export const ButtonStory: Story = {
       {args.children}
     </Button>
   ),
+};
+
+export const Secondary: Story = {
+  args: {
+    children: "Secondary",
+    variant: "secondary",
+  },
+};
+
+export const Tertiary: Story = {
+  name: "Tertiary (Ghost)",
+  args: {
+    children: "Tertiary",
+    variant: "tertiary",
+  },
 };
 
 // With icons
@@ -79,3 +71,35 @@ export const WithRightIcon: Story = {
     </Button>
   ),
 };
+
+const meta: Meta<typeof Button> = {
+  title: "Components/Button",
+  component: Button,
+  parameters: {
+    layout: "centered",
+  },
+  argTypes: {
+    variant: {
+      control: "radio",
+      options: ["primary", "secondary", "tertiary"],
+    },
+    size: {
+      control: "radio",
+      options: ["small", "medium", "large"],
+    },
+    disabled: {
+      control: "boolean",
+    },
+    iconLeft: {
+      control: false,
+      description: "Any react icon component",
+    },
+    iconRight: {
+      control: false,
+      description: "Any react icon component",
+    },
+  },
+  tags: ["autodocs"],
+};
+
+export default meta;

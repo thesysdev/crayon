@@ -4,11 +4,7 @@ import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
-  addons: [
-    "@storybook/addon-essentials",
-    "@chromatic-com/storybook",
-    "@storybook/addon-interactions",
-  ],
+  addons: ["@storybook/addon-essentials"],
   framework: {
     name: "@storybook/react-vite",
     options: {},
@@ -28,6 +24,7 @@ const config: StorybookConfig = {
   `,
   viteFinal: async (config) => {
     return mergeConfig(config, {
+      base: "/ui/",
       resolve: {
         alias: {
           "@crayonai/react-core": path.resolve(__dirname, "../../react-core/src/index.ts"),

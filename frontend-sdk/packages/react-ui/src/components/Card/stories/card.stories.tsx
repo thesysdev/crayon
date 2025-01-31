@@ -1,8 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { FormControl, Label } from "../../FormControl";
+import "../../FormControl/formControl.scss";
 import { Input } from "../../Input";
+import "../../Input/input.scss";
 import { Card } from "../Card";
 import "../card.scss";
+import { Header } from "../../Header";
+import "../../Header/header.scss";
 
 const meta: Meta<typeof Card> = {
   title: "Components/Card",
@@ -35,6 +39,7 @@ export const CardStory: Story = {
   render: (args) => (
     <div style={{ width: "500px" }}>
       <Card variant={args.variant} width={args.width}>
+        <Header title="Card Title" subtitle="Card Description" actions={[]} />
         <FormControl>
           <Label>Username</Label>
           <Input placeholder="Enter username" />

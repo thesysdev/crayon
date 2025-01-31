@@ -33,7 +33,7 @@ Represents the state of the thread list
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:56](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L56)
+[packages/react-core/src/types/chatManager.ts:55](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/chatManager.ts#L55)
 
 </td>
 </tr>
@@ -50,7 +50,7 @@ Represents the state of the thread list
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:55](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L55)
+[packages/react-core/src/types/chatManager.ts:54](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/chatManager.ts#L54)
 
 </td>
 </tr>
@@ -67,7 +67,7 @@ Represents the state of the thread list
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:57](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L57)
+[packages/react-core/src/types/chatManager.ts:56](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/chatManager.ts#L56)
 
 </td>
 </tr>
@@ -84,7 +84,7 @@ Represents the state of the thread list
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:54](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L54)
+[packages/react-core/src/types/chatManager.ts:53](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/chatManager.ts#L53)
 
 </td>
 </tr>
@@ -93,4 +93,4 @@ Represents the state of the thread list
 
 ## Defined in
 
-[packages/react-core/src/types/chatManager.ts:53](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L53)
+[packages/react-core/src/types/chatManager.ts:52](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/chatManager.ts#L52)

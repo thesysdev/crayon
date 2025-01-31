@@ -38,7 +38,7 @@ type AssistantMessage = common & {
 </td>
 <td>
 
-[packages/react-core/src/types/message.ts:25](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/message.ts#L25)
+[packages/react-core/src/types/message.ts:25](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/message.ts#L25)
 
 </td>
 </tr>
@@ -55,7 +55,7 @@ type AssistantMessage = common & {
 </td>
 <td>
 
-[packages/react-core/src/types/message.ts:28](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/message.ts#L28)
+[packages/react-core/src/types/message.ts:28](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/message.ts#L28)
 
 </td>
 </tr>
@@ -75,7 +75,7 @@ type AssistantMessage = common & {
 </td>
 <td>
 
-[packages/react-core/src/types/message.ts:29](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/message.ts#L29)
+[packages/react-core/src/types/message.ts:29](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/message.ts#L29)
 
 </td>
 </tr>
@@ -92,7 +92,7 @@ type AssistantMessage = common & {
 </td>
 <td>
 
-[packages/react-core/src/types/message.ts:24](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/message.ts#L24)
+[packages/react-core/src/types/message.ts:24](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/message.ts#L24)
 
 </td>
 </tr>
@@ -101,4 +101,4 @@ type AssistantMessage = common & {
 
 ## Defined in
 
-[packages/react-core/src/types/message.ts:23](https://github.com/thesysdev/crayonai/blob/f566456db11ebf0674916d45b40423bef47282cf/frontend-sdk/packages/react-core/src/types/message.ts#L23)
+[packages/react-core/src/types/message.ts:23](https://github.com/thesysdev/crayonai/blob/c138be830e4251fbc51e4da049a797e65138f6cd/frontend-sdk/packages/react-core/src/types/message.ts#L23)
