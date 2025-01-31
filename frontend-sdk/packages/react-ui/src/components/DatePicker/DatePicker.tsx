@@ -15,7 +15,9 @@ export interface DatePickerProps {
 }
 
 const DatePicker = (props: DatePickerProps) => {
+
   const { layout } = useLayoutContext() || {};
+
   const {
     mode = "single",
     variant = "docked",
