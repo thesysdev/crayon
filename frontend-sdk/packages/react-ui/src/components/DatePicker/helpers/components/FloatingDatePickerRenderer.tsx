@@ -1,7 +1,8 @@
 import { autoUpdate, flip, useFloating } from "@floating-ui/react-dom";
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
-import { forwardRef, useEffect, useRef } from "react";
+import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useMultipleRefs } from "../../../../hooks/useMultipleRefs";
 import { useDatePicker } from "../context/DatePickerContext";
 import { formatDateRange, formatSingleDate } from "../utils/helperFn";
 import { DatepickerRenderer } from "./DatePickerRenderer";
@@ -68,6 +69,13 @@ const FloatingDateInput = () => {
 
 const FloatingDatePicker = forwardRef<HTMLDivElement>((_, ref) => {
   const { isOpen } = useDatePicker();
+  const menuPositionDivRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+
+  useLayoutEffect(() => {
+    if (!menuPositionDivRef.current || !isOpen) return;
+    setWidth(menuPositionDivRef.current.offsetWidth);
+  }, [isOpen]);
 
   const {
     refs: { setFloating, setReference },
@@ -79,22 +87,25 @@ const FloatingDatePicker = forwardRef<HTMLDivElement>((_, ref) => {
     middleware: [flip()],
   });
 
+  const menuPositionDivRefs = useMultipleRefs(setReference, menuPositionDivRef);
+  const floatingRef = useMultipleRefs(setFloating, ref);
+
   if (!isOpen) {
     return null;
   }
 
   return (
-    <div className="crayon-date-picker-renderer-floating-wrapper-container" ref={ref}>
-      <div ref={setReference} className="crayon-date-picker-renderer-floating-reference" />
+    <>
+      <div ref={menuPositionDivRefs} className="crayon-date-picker-renderer-floating-reference" />
       <div
-        ref={setFloating}
-        style={floatingStyles}
+        ref={floatingRef}
+        style={{ ...floatingStyles, width: `${width}px`, marginTop: "5px" }}
         className="crayon-date-picker-renderer-floating-content"
       >
         <div className="crayon-date-picker-renderer-floating-menu">
           <DatepickerRenderer />
         </div>
       </div>
-    </div>
+    </>
   );
 });
