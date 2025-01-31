@@ -1,18 +1,17 @@
-import { ForwardedRef } from "react";
+import { Ref, RefObject } from "react";
 
 /**
  * Assigns a value to a ref.
- * if we need to assign same value to multiple refs, we cannot do it directly. there are lot of checks since the type of
- * forwarded ref is ((instance: T | null) => void) | MutableRefObject<T | null> | null, this util helps with this.
+ * Handles both callback refs and ref objects safely.
  *
- * @param ref - The ref to assign the value to.
- * @param value - The value to assign.
- *
+ * @template T - The type of the ref value
+ * @param ref - The ref to assign the value to (can be callback, ref object, or null)
+ * @param value - The value to assign
  */
-export const assignRef = (ref: ForwardedRef<any>, value: any) => {
+export const assignRef = <T = unknown>(ref: Ref<T> | null, value: T | null): void => {
   if (typeof ref === "function") {
     ref(value);
   } else if (ref) {
-    ref.current = value;
+    (ref as RefObject<T | null>).current = value;
   }
 };
