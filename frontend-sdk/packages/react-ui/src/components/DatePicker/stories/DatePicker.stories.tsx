@@ -20,6 +20,11 @@ type Story = StoryObj<typeof meta>;
 
 // Basic single date picker with docked variant
 export const Default: Story = {
+  render: (args) => (
+    <div style={{ width: "400px", height: `${args.variant === "docked" ? "unset" : "400px"}` }}>
+      <DatePicker {...args} />
+    </div>
+  ),
   args: {
     mode: "single",
     variant: "docked",
