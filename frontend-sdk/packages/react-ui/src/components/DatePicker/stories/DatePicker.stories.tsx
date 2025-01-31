@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
+import "../../IconButton/iconButton.scss";
+import "../../Select/select.scss";
 import { DatePicker } from "../DatePicker";
 import "../datePicker.scss";
 

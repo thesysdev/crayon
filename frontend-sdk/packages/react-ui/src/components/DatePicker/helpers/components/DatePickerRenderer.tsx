@@ -1,6 +1,6 @@
-import { useMultipleRefs } from "@/hooks/useMultipleRefs";
 import { forwardRef, useRef } from "react";
 import { DayPicker } from "react-day-picker";
+import { useMultipleRefs } from "../../../../hooks/useMultipleRefs";
 import { useDatePicker } from "../context/DatePickerContext";
 import { getDayPickerStyles } from "../utils/styles";
 import {
@@ -18,7 +18,7 @@ const DatepickerRenderer = forwardRef<HTMLDivElement>((_, ref) => {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const assignRef = useMultipleRefs<HTMLDivElement>(ref, containerRef);
+  const assignRef = useMultipleRefs(ref, containerRef);
 
   const commonProps = {
     captionLayout: "dropdown" as const,
