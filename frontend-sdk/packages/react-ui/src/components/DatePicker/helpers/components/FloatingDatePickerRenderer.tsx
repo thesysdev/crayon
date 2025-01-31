@@ -1,40 +1,39 @@
 import { autoUpdate, flip, useFloating } from "@floating-ui/react-dom";
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
+import { forwardRef, useEffect, useRef } from "react";
 import { useDatePicker } from "../context/DatePickerContext";
 import { formatDateRange, formatSingleDate } from "../utils/helperFn";
 import { DatepickerRenderer } from "./DatePickerRenderer";
-import { forwardRef, useEffect, useRef } from "react";
-
 
 const FloatingDatePickerRenderer = () => {
-    const { isOpen, setIsOpen } = useDatePicker();
-    const menuRef = useRef<HTMLDivElement>(null);
+  const { isOpen, setIsOpen } = useDatePicker();
+  const menuRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (!isOpen) return
-    
-        const handleClick = (e: MouseEvent) => {
-          if (menuRef.current?.contains(e.target as Node)) {
-            return
-          }
-          setIsOpen(false)
-        }
-    
-        document.body.addEventListener('click', handleClick)
-    
-        return () => {
-          document.body.removeEventListener('click', handleClick)
-        }
-      }, [isOpen, setIsOpen])
+  useEffect(() => {
+    if (!isOpen) return;
 
-      return (
-        <div className="crayon-date-picker-renderer-floating-container">
-          <FloatingDateInput />
-          <FloatingDatePicker ref={menuRef} />
-        </div>
-      )
-}
+    const handleClick = (e: MouseEvent) => {
+      if (menuRef.current?.contains(e.target as Node)) {
+        return;
+      }
+      setIsOpen(false);
+    };
+
+    document.body.addEventListener("click", handleClick);
+
+    return () => {
+      document.body.removeEventListener("click", handleClick);
+    };
+  }, [isOpen, setIsOpen]);
+
+  return (
+    <div className="crayon-date-picker-renderer-floating-container">
+      <FloatingDateInput />
+      <FloatingDatePicker ref={menuRef} />
+    </div>
+  );
+};
 
 const FloatingDateInput = () => {
   const { mode, selectedDate, selectedRange, isOpen, setIsOpen } = useDatePicker();

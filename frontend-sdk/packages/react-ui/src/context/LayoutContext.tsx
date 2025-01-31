@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo } from "react";
 
 export const LayoutContext = createContext<{
   layout: "mobile" | "fullscreen" | "tray" | "copilot";
-} | null>(null);
+}>({ layout: "fullscreen" });
 
 export const LayoutContextProvider = ({
   children,

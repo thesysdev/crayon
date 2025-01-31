@@ -1,5 +1,5 @@
-import { ForwardedRef, useCallback } from "react";
 import { assignRef } from "@/utils/ref";
+import { ForwardedRef, useCallback } from "react";
 
 /*
  * Custom hook to merge multiple refs into a single ref callback.

@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { DateRange } from "react-day-picker";
 
 interface DatePickerContextType {
@@ -11,7 +11,6 @@ interface DatePickerContextType {
   setSelectedDate: (date: Date | undefined) => void;
   setSelectedRange: (range: DateRange | undefined) => void;
   setIsOpen: (isOpen: boolean) => void;
-  setMode: (mode: "single" | "range") => void;
 }
 
 const defaultContext: DatePickerContextType = {
@@ -24,7 +23,6 @@ const defaultContext: DatePickerContextType = {
   setSelectedDate: (date: Date | undefined) => {},
   setSelectedRange: (range: DateRange | undefined) => {},
   setIsOpen: (isOpen: boolean) => {},
-  setMode: (mode: "single" | "range") => {},
 };
 
 const DatePickerContext = createContext<DatePickerContextType>(defaultContext);
@@ -39,42 +37,44 @@ export const useDatePicker = () => {
 
 interface DatePickerProviderProps {
   children: React.ReactNode;
-  selectedDate: Date | undefined;
-  selectedRange: DateRange;
+  // DatePicker State needed from parent
+  selectedDateFromParent: Date | undefined;
+  selectedRangeFromParent: DateRange | undefined;
   mode: "single" | "range";
-  isOpen: boolean;
   botType: "mobile" | "fullscreen" | "tray" | "copilot";
 
-  setSelectedDate: (date: Date | undefined) => void;
-  setSelectedRange: (range: DateRange | undefined) => void;
-  setMode: (mode: "single" | "range") => void;
-  setIsOpen: (isOpen: boolean) => void;
+  setSelectedDateFromParent: (date: Date | undefined) => void;
+  setSelectedRangeFromParent: (range: DateRange | undefined) => void;
 }
 
 export const DatePickerProvider: React.FC<DatePickerProviderProps> = ({
   children,
-  selectedDate,
-  selectedRange,
+
+  selectedDateFromParent,
+  selectedRangeFromParent,
+  setSelectedDateFromParent,
+  setSelectedRangeFromParent,
+
   mode,
-  isOpen,
   botType,
-  setSelectedDate,
-  setSelectedRange,
-  setMode,
-  setIsOpen,
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <DatePickerContext.Provider
       value={{
-        selectedDate,
-        selectedRange,
+        // DatePicker State needed from parent
+        selectedDate: selectedDateFromParent,
+        selectedRange: selectedRangeFromParent,
+        setSelectedDate: setSelectedDateFromParent,
+        setSelectedRange: setSelectedRangeFromParent,
+
         mode,
+
         isOpen,
-        botType,
-        setSelectedDate,
-        setSelectedRange,
-        setMode,
         setIsOpen,
+
+        botType,
       }}
     >
       {children}
