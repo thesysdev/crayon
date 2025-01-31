@@ -6,7 +6,7 @@ import { useDatePicker } from "../context/DatePickerContext";
 import { formatDateRange, formatSingleDate } from "../utils/helperFn";
 import { DatepickerRenderer } from "./DatePickerRenderer";
 
-const FloatingDatePickerRenderer = () => {
+export const FloatingDatePickerRenderer = () => {
   const { isOpen, setIsOpen } = useDatePicker();
   const menuRef = useRef<HTMLDivElement>(null);
 

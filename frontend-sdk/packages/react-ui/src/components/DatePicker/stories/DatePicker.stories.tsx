@@ -36,10 +36,11 @@ export const RangePicker: Story = {
 
 // Single date picker with floating variant
 export const FloatingPicker: Story = {
-  args: {
-    mode: "single",
-    variant: "floating",
-  },
+  render: () => (
+    <div style={{ width: "600px" }}>
+      <DatePicker mode="single" variant="floating" />
+    </div>
+  ),
 };
 
 // Controlled single date picker

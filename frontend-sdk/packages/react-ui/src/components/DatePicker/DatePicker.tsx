@@ -3,6 +3,7 @@ import { DateRange } from "react-day-picker";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { DatepickerRenderer } from "./helpers/components/DatePickerRenderer";
 import { DatePickerProvider } from "./helpers/context/DatePickerContext";
+import { FloatingDatePickerRenderer } from "./helpers/components/FloatingDatePickerRenderer";
 
 export interface DatePickerProps {
   mode?: "single" | "range";
@@ -67,7 +68,7 @@ const DatePicker = (props: DatePickerProps) => {
       setSelectedDateFromParent={selectedDateHandler}
       setSelectedRangeFromParent={selectedRangeHandler}
     >
-      {variant === "docked" ? <DatepickerRenderer /> : <div>Floating</div>}
+      {variant === "docked" ? <DatepickerRenderer /> : <FloatingDatePickerRenderer />}
     </DatePickerProvider>
   );
 };
