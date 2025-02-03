@@ -8,6 +8,7 @@ import "../checkBoxGroup.scss";
 const meta = {
   title: "Components/CheckBoxGroup",
   component: CheckBoxGroup,
+  subcomponents: { CheckBoxItem } as any,
   parameters: {
     layout: "centered",
   },
@@ -32,6 +33,7 @@ const meta = {
         type: {
           summary: "ReactNode[] | ReactNode",
         },
+        expanded: false,
       },
     },
     className: {
@@ -42,6 +44,7 @@ const meta = {
         type: {
           summary: "string",
         },
+        expanded: false,
       },
     },
     style: {
@@ -52,6 +55,7 @@ const meta = {
         type: {
           summary: "CSSProperties",
         },
+        expanded: false,
       },
     },
   },
