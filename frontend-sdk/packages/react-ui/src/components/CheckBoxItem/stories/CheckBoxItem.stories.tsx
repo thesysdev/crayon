@@ -141,25 +141,3 @@ export const DisabledChecked: Story = {
     onChange: (checked) => console.log("Checkbox changed:", checked),
   },
 };
-
-export const Required: Story = {
-  args: {
-    label: "Required Checkbox",
-    required: true,
-    onChange: (checked) => console.log("Checkbox changed:", checked),
-  },
-};
-
-export const WithCustomClassName: Story = {
-  args: {
-    label: "Custom Styled Checkbox",
-    className: "custom-checkbox",
-    onChange: (checked) => console.log("Checkbox changed:", checked),
-  },
-};
-
-export const WithoutLabel: Story = {
-  args: {
-    onChange: (checked) => console.log("Checkbox changed:", checked),
-  },
-};
