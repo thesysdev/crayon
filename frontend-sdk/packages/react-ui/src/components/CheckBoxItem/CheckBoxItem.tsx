@@ -14,7 +14,6 @@ export interface CheckBoxItemProps {
   required?: boolean;
   name?: string;
   value?: string;
-  checkedIcon?: ReactNode;
   onChange?: (checked: boolean) => void;
 }
 

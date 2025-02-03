@@ -20,6 +20,89 @@ const meta: Meta<typeof CheckBoxItem> = {
         },
       },
     },
+    checked: {
+      control: "boolean",
+      description: "State of the checkbox, used for controlled mode",
+      table: {
+        type: {
+          summary: "boolean",
+        },
+        defaultValue: { summary: "false" },
+      },
+    },
+    defaultChecked: {
+      control: false,
+      description:
+        "The checked state of the checkbox when it is initially rendered. Use when you do not need to control its checked state.",
+      table: {
+        type: {
+          summary: "boolean",
+        },
+        defaultValue: { summary: "false" },
+      },
+    },
+    disabled: {
+      control: "boolean",
+      description: "Whether the checkbox is disabled or not",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
+    required: {
+      control: "boolean",
+      description:
+        "When true, indicates that the user must check the checkbox before the owning form can be submitted.",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
+    name: {
+      control: false,
+      description:
+        "The name of the checkbox. Submitted with its owning form as part of a name/value pair.",
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    value: {
+      control: false,
+      description: "The value given as data when submitted with a `name`/`value` pair.",
+      table: {
+        type: { summary: "string" },
+      },
+    },
+    onChange: {
+      control: false,
+      description: "The function to call when the checkbox is changed",
+      table: {
+        type: {
+          summary: "(checked: boolean) => void",
+        },
+      },
+    },
+    className: {
+      control: false,
+      description: "The class name of the checkbox",
+      table: {
+        category: "Appearance",
+        type: {
+          summary: "string",
+        },
+      },
+    },
+    style: {
+      control: false,
+      description: "The style of the checkbox",
+      table: {
+        category: "Appearance",
+        type: {
+          summary: "CSSProperties",
+        },
+      },
+    },
   },
   tags: ["autodocs"],
 };
