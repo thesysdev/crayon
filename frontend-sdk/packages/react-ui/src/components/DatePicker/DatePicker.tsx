@@ -12,6 +12,8 @@ export interface DatePickerProps {
   selectedRangeDates?: DateRange;
   setSelectedSingleDate?: (date?: Date) => void;
   setSelectedRangeDates?: (range?: DateRange) => void;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 const DatePicker = (props: DatePickerProps) => {
@@ -25,6 +27,8 @@ const DatePicker = (props: DatePickerProps) => {
     selectedRangeDates,
     setSelectedSingleDate,
     setSelectedRangeDates,
+    className,
+    style,
   } = props;
 
   const [internalSelectedDate, setInternalSelectedDate] = useState<Date | undefined>(
@@ -70,7 +74,7 @@ const DatePicker = (props: DatePickerProps) => {
       setSelectedDateFromParent={selectedDateHandler}
       setSelectedRangeFromParent={selectedRangeHandler}
     >
-      {variant === "docked" ? <DatepickerRenderer /> : <FloatingDatePickerRenderer />}
+      {variant === "docked" ? <DatepickerRenderer className={className} style={style} /> : <FloatingDatePickerRenderer className={className} style={style} />}
     </DatePickerProvider>
   );
 };

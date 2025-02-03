@@ -7,7 +7,7 @@ import { useDatePicker } from "../context/DatePickerContext";
 import { formatDateRange, formatSingleDate } from "../utils/helperFn";
 import { DatepickerRenderer } from "./DatePickerRenderer";
 
-export const FloatingDatePickerRenderer = () => {
+export const FloatingDatePickerRenderer = ({ className, style }: { className?: string; style?: React.CSSProperties }) => {
   const { isOpen, setIsOpen } = useDatePicker();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -29,7 +29,7 @@ export const FloatingDatePickerRenderer = () => {
   }, [isOpen, setIsOpen]);
 
   return (
-    <div className="crayon-date-picker-renderer-floating-container">
+    <div className={clsx("crayon-date-picker-renderer-floating-container", className)} style={style}>
       <FloatingDateInput />
       <FloatingDatePicker ref={menuRef} />
     </div>
