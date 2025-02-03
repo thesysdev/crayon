@@ -11,29 +11,63 @@ const meta = {
   parameters: {
     layout: "centered",
   },
+  argTypes: {
+    variant: {
+      control: "radio",
+      options: ["clear", "card", "sunk"],
+      description: "The visual style variant of the checkbox group",
+      table: {
+        category: "Appearance",
+        type: {
+          summary: "'clear' | 'card' | 'sunk'",
+        },
+        defaultValue: { summary: "clear" },
+      },
+    },
+    children: {
+      control: false,
+      description: "The child elements of the checkbox group that accept CheckBoxItem components",
+      table: {
+        category: "Content",
+        type: {
+          summary: "ReactNode[] | ReactNode",
+        },
+      },
+    },
+    className: {
+      control: false,
+      description: "Additional CSS class name for custom styling",
+      table: {
+        category: "Styling",
+        type: {
+          summary: "string",
+        },
+      },
+    },
+    style: {
+      control: false,
+      description: "Inline CSS styles for custom styling",
+      table: {
+        category: "Styling",
+        type: {
+          summary: "CSSProperties",
+        },
+      },
+    },
+  },
   tags: ["autodocs"],
 } satisfies Meta<typeof CheckBoxGroup>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  args: {
-    children: [
-      <CheckBoxItem key="1" label="Option 1" onChange={() => {}} />,
-      <CheckBoxItem key="2" label="Option 2" onChange={() => {}} />,
-      <CheckBoxItem key="3" label="Option 3" onChange={() => {}} />,
-    ],
-  },
-};
-
 export const ClearVariant: Story = {
   args: {
     variant: "clear",
     children: [
-      <CheckBoxItem key="1" label="Clear Option 1" onChange={() => {}} />,
-      <CheckBoxItem key="2" label="Clear Option 2" onChange={() => {}} />,
-      <CheckBoxItem key="3" label="Clear Option 3" onChange={() => {}} />,
+      <CheckBoxItem key="1" label="Option 1" />,
+      <CheckBoxItem key="2" label="Option 2" />,
+      <CheckBoxItem key="3" label="Option 3" />,
     ],
   },
 };
@@ -42,9 +76,9 @@ export const CardVariant: Story = {
   args: {
     variant: "card",
     children: [
-      <CheckBoxItem key="1" label="Card Option 1" onChange={() => {}} />,
-      <CheckBoxItem key="2" label="Card Option 2" onChange={() => {}} />,
-      <CheckBoxItem key="3" label="Card Option 3" onChange={() => {}} />,
+      <CheckBoxItem key="1" label="Card Option 1" />,
+      <CheckBoxItem key="2" label="Card Option 2" />,
+      <CheckBoxItem key="3" label="Card Option 3" />,
     ],
   },
 };
@@ -53,30 +87,9 @@ export const SunkVariant: Story = {
   args: {
     variant: "sunk",
     children: [
-      <CheckBoxItem key="1" label="Sunk Option 1" onChange={() => {}} />,
-      <CheckBoxItem key="2" label="Sunk Option 2" onChange={() => {}} />,
-      <CheckBoxItem key="3" label="Sunk Option 3" onChange={() => {}} />,
-    ],
-  },
-};
-
-export const WithCustomClassName: Story = {
-  args: {
-    className: "custom-class",
-    children: [
-      <CheckBoxItem key="1" label="Custom Class Option 1" onChange={() => {}} />,
-      <CheckBoxItem key="2" label="Custom Class Option 2" onChange={() => {}} />,
-    ],
-  },
-};
-
-export const WithCustomStyle: Story = {
-  args: {
-    style: { maxWidth: "300px" },
-    variant: "card",
-    children: [
-      <CheckBoxItem key="1" label="Custom Style Option 1" onChange={() => {}} />,
-      <CheckBoxItem key="2" label="Custom Style Option 2" onChange={() => {}} />,
+      <CheckBoxItem key="1" label="Sunk Option 1" />,
+      <CheckBoxItem key="2" label="Sunk Option 2" />,
+      <CheckBoxItem key="3" label="Sunk Option 3" />,
     ],
   },
 };
