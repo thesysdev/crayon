@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { forwardRef, useRef } from "react";
 import { DayPicker } from "react-day-picker";
 import { useMultipleRefs } from "../../../../hooks/useMultipleRefs";
@@ -9,9 +10,11 @@ import {
   PreviousMonthButton,
   YearsDropdown,
 } from "./HelperComponents";
-import clsx from "clsx";
 
-const DatepickerRenderer = forwardRef<HTMLDivElement, { className?: string; style?: React.CSSProperties }>(({ className, style }, ref) => {
+const DatepickerRenderer = forwardRef<
+  HTMLDivElement,
+  { className?: string; style?: React.CSSProperties }
+>(({ className, style }, ref) => {
   const { selectedDate, selectedRange, mode, botType, setSelectedDate, setSelectedRange } =
     useDatePicker();
 
@@ -37,7 +40,11 @@ const DatepickerRenderer = forwardRef<HTMLDivElement, { className?: string; styl
 
   if (mode === "single") {
     return (
-      <div ref={assignRef} className={clsx("crayon-date-picker-renderer-single-mode", className)} style={style}>
+      <div
+        ref={assignRef}
+        className={clsx("crayon-date-picker-renderer-single-mode", className)}
+        style={style}
+      >
         <DayPicker
           mode="single"
           selected={selectedDate}
@@ -50,7 +57,11 @@ const DatepickerRenderer = forwardRef<HTMLDivElement, { className?: string; styl
   }
 
   return (
-    <div ref={assignRef} className={clsx("crayon-date-picker-renderer-range-mode", className)} style={style}>
+    <div
+      ref={assignRef}
+      className={clsx("crayon-date-picker-renderer-range-mode", className)}
+      style={style}
+    >
       <DayPicker
         mode="range"
         selected={selectedRange}

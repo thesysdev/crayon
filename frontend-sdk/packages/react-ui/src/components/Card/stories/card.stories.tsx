@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { FormControl, Label } from "../../FormControl";
 import "../../FormControl/formControl.scss";
+import { Header } from "../../Header";
+import "../../Header/header.scss";
 import { Input } from "../../Input";
 import "../../Input/input.scss";
 import { Card } from "../Card";
 import "../card.scss";
-import { Header } from "../../Header";
-import "../../Header/header.scss";
 
 const meta: Meta<typeof Card> = {
   title: "Components/Card",
