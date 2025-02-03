@@ -1,0 +1,221 @@
+@use "sass:map";
+@use "../../cssUtils" as cssUtils;
+
+.crayon-chart {
+  // Container styles
+  &-container {
+    display: flex;
+    aspect-ratio: 1/1;
+    justify-content: center;
+    font-size: 12px;
+    line-height: 16px;
+
+    // Text and fills
+    .recharts-cartesian-axis-tick text {
+      fill: map.get(cssUtils.$colors, "text", "primary");
+    }
+
+    .recharts-radial-bar-background-sector {
+      fill: map.get(cssUtils.$colors, "fills", "background");
+    }
+
+    .recharts-rectangle.recharts-tooltip-cursor {
+      fill: map.get(cssUtils.$colors, "fills", "background");
+    }
+
+    // Strokes and borders
+    .recharts-cartesian-grid line[stroke="#ccc"],
+    .recharts-curve.recharts-tooltip-cursor,
+    .recharts-polar-grid[stroke="#ccc"],
+    .recharts-reference-line[stroke="#ccc"] {
+      stroke: map.get(cssUtils.$colors, "strokes", "default");
+    }
+
+    // Transparency settings
+    .recharts-dot[stroke="#fff"],
+    .recharts-sector[stroke="#fff"] {
+      stroke: transparent;
+    }
+
+    // Outline resets
+    .recharts-layer,
+    .recharts-sector,
+    .recharts-surface {
+      outline: none;
+    }
+  }
+
+  // Tooltip styles
+  &-tooltip {
+    display: grid;
+    align-items: start;
+    min-width: 128px;
+    gap: map.get(cssUtils.$spacing, "xs");
+    padding: map.get(cssUtils.$spacing, "xs");
+    color: map.get(cssUtils.$colors, "text", "primary");
+    @include cssUtils.typography(label, default);
+    border-radius: map.get(cssUtils.$radius, "s");
+    border: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+    background-color: map.get(cssUtils.$colors, "fills", "container");
+    box-shadow: map.get(cssUtils.$shadow, "small");
+    text-transform: capitalize;
+
+    &-label {
+      @include cssUtils.typography(label, default);
+    }
+
+    &-label-heavy {
+      @include cssUtils.typography(label, heavy);
+    }
+
+    &-content {
+      display: grid;
+      align-items: start;
+      min-width: 128px;
+      gap: map.get(cssUtils.$spacing, "xs");
+      padding: map.get(cssUtils.$spacing, "xs");
+      color: map.get(cssUtils.$colors, "text", "primary");
+      @include cssUtils.typography(label, default);
+      border-radius: map.get(cssUtils.$radius, "s");
+      border: 1px solid map.get(cssUtils.$colors, "strokes", "default");
+      background-color: map.get(cssUtils.$colors, "fills", "container");
+      box-shadow: map.get(cssUtils.$shadow, "small");
+      text-transform: capitalize;
+
+      &-item {
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        gap: map.get(cssUtils.$spacing, "xs");
+        align-items: stretch;
+        &--dot {
+          align-items: center;
+        }
+
+        svg {
+          height: 10px;
+          width: 10px;
+          color: map.get(cssUtils.$colors, "text", "primary");
+        }
+      }
+      & &-indicator {
+        flex-shrink: 0;
+        border-radius: map.get(cssUtils.$radius, "3xs");
+
+        &--dot {
+          height: 10px;
+          width: 10px;
+          background-color: var(--color-bg);
+          border-color: var(--color-border);
+        }
+
+        &--line {
+          width: 4px;
+          height: 100%;
+          background-color: var(--color-bg);
+          border-color: var(--color-border);
+        }
+
+        &--dashed {
+          width: 0;
+          border: 1.5px dashed var(--color-border);
+          background-color: transparent;
+        }
+
+        &--nested-dashed {
+          margin: map.get(cssUtils.$spacing, "3xs") 0;
+        }
+      }
+
+      &-value-wrapper {
+        display: flex;
+        flex: 1;
+        justify-content: space-between;
+        line-height: 1;
+
+        &--nested {
+          align-items: flex-end;
+        }
+
+        &--standard {
+          align-items: center;
+        }
+      }
+
+      &-label {
+        display: grid;
+        gap: map.get(cssUtils.$spacing, "xs");
+        color: map.get(cssUtils.$colors, "text", "primary");
+        @include cssUtils.typography(label, default);
+      }
+
+      &-value {
+        font-variant-numeric: tabular-nums;
+        color: map.get(cssUtils.$colors, "text", "primary");
+        @include cssUtils.typography(label, default);
+
+        &--percentage {
+          padding-left: map.get(cssUtils.$spacing, "s");
+        }
+      }
+    }
+  }
+
+  // Legend styles
+  &-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    text-transform: capitalize;
+
+    &--top {
+      padding-bottom: map.get(cssUtils.$spacing, "s");
+    }
+
+    &--bottom {
+      padding-top: map.get(cssUtils.$spacing, "m");
+    }
+
+    &-item {
+      display: flex;
+      align-items: center;
+      gap: map.get(cssUtils.$spacing, "xs");
+
+      svg {
+        height: map.get(cssUtils.$spacing, "m");
+        width: map.get(cssUtils.$spacing, "m");
+        color: map.get(cssUtils.$colors, "text", "primary");
+      }
+
+      &-indicator {
+        height: map.get(cssUtils.$spacing, "s");
+        width: map.get(cssUtils.$spacing, "s");
+        flex-shrink: 0;
+        border-radius: map.get(cssUtils.$radius, "3xs");
+        background-color: var(--color-bg);
+      }
+
+      &-label {
+        @include cssUtils.typography(label, heavy);
+        max-width: 64px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: map.get(cssUtils.$colors, "text", "primary");
+      }
+    }
+  }
+}
+
+.crayon-chart-cartesian-grid {
+  stroke: map.get(cssUtils.$colors, "strokes", "default");
+}
+
+.crayon-chart-polar-grid {
+  stroke: map.get(cssUtils.$colors, "strokes", "default");
+}
+
+.crayon-chart-label-list {
+  fill: map.get(cssUtils.$colors, "fills", "secondary");
+}
