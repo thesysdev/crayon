@@ -43,7 +43,7 @@ export const CardStory: Story = {
     ],
   },
   render: (args) => (
-    <div style={{ width: "500px", backgroundColor: "gray" }}>
+    <div style={{ width: "500px" }}>
       <Header {...args} />
     </div>
   ),

@@ -7,7 +7,7 @@ export interface HeaderProps {
   icon?: React.ReactNode;
   title?: React.ReactNode;
   subtitle?: React.ReactNode;
-  actions:
+  actions?:
     | React.ReactElement<typeof Button | typeof IconButton>
     | React.ReactElement<typeof Button | typeof IconButton>[];
   className?: string;
@@ -20,10 +20,14 @@ export const Header = forwardRef<HTMLDivElement, HeaderProps>((props, ref) => {
     <div ref={ref} className={clsx("crayon-header", className)} style={styles} {...rest}>
       <div className="crayon-header-top">
         <div className="crayon-header-top-left">
-          {icon}
+          {icon && <span className="crayon-header-top-left-icon">{icon}</span>}
           {title}
         </div>
-        <div className="crayon-header-top-right">{actions}</div>
+        <div className="crayon-header-top-right">
+          {Array.isArray(actions)
+            ? actions.map((action, index) => React.cloneElement(action, { key: index }))
+            : actions}
+        </div>
       </div>
       <div className="crayon-header-bottom">{subtitle}</div>
     </div>

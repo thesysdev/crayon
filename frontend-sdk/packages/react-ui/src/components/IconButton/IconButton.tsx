@@ -38,7 +38,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((
       style={style}
       {...rest}
     >
-      {icon}
+      {icon && <span className="crayon-icon-button-icon">{icon}</span>}
     </button>
   );
 });

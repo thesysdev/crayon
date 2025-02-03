@@ -58,7 +58,7 @@ export const AccordionTrigger = forwardRef<
       {...props}
     >
       <div className="crayon-accordion-trigger-content">
-        {icon}
+        {icon && <span className="crayon-accordion-trigger-content-icon">{icon}</span>}
         {text}
       </div>
       <ChevronDownIcon className="crayon-accordion-trigger-icon" />
