@@ -9,6 +9,18 @@ const meta: Meta<typeof CheckBoxItem> = {
   parameters: {
     layout: "centered",
   },
+  argTypes: {
+    label: {
+      control: "text",
+      defaultValue: "Default Checkbox",
+      description: "The label of the checkbox",
+      table: {
+        type: {
+          summary: "string",
+        },
+      },
+    },
+  },
   tags: ["autodocs"],
 };
 

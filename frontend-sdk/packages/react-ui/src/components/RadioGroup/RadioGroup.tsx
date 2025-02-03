@@ -4,7 +4,7 @@ import { forwardRef } from "react";
 import { RadioItemProps } from "../RadioItem";
 
 interface RadioGroupProps extends Radio.RadioGroupProps {
-  children: React.ReactElement<RadioItemProps>;
+  children: React.ReactElement<RadioItemProps> | React.ReactElement<RadioItemProps>[];
   variant?: "clear" | "card" | "sunk";
   className?: string;
   style?: React.CSSProperties;
