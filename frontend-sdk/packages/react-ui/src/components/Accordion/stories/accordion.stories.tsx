@@ -65,50 +65,23 @@ const meta: Meta<AccordionStoryProps> = {
 export default meta;
 type Story = StoryObj<AccordionStoryProps>;
 
-export const Demo: Story = {
+export const Single: Story = {
   render: (args) => {
     const items = [
       {
         value: "item-1",
         title: "Accordion 1",
-        content: (
-          <>
-            <Header
-              title="Title"
-              subtitle="Subtitle"
-              actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-            />
-            <Image src="https://picsum.photos/400/600" alt="Image" scale="fill" />
-          </>
-        ),
+        imageId: "600",
       },
       {
         value: "item-2",
         title: "Accordion 2",
-        content: (
-          <>
-            <Header
-              title="Title"
-              subtitle="Subtitle"
-              actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-            />
-            <Image src="https://picsum.photos/400/700" alt="Image" scale="fill" />
-          </>
-        ),
+        imageId: "700",
       },
       {
         value: "item-3",
         title: "Accordion 3",
-        content: (
-          <>
-            <Header
-              title="Title"
-              subtitle="Subtitle"
-              actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-            />
-            <Image src="https://picsum.photos/400/900" alt="Image" scale="fill" />
-          </>
-        ),
+        imageId: "900",
       },
     ];
 
@@ -121,7 +94,14 @@ export const Demo: Story = {
                 text={item.title}
                 icon={args.showIcons ? <Download /> : undefined}
               />
-              <AccordionContent>{item.content}</AccordionContent>
+              <AccordionContent>
+                <Header
+                  title="Title"
+                  subtitle="Subtitle"
+                  actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
+                />
+                <Image src={`https://picsum.photos/400/${item.imageId}`} alt="Image" scale="fill" />
+              </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
@@ -133,7 +113,14 @@ export const Demo: Story = {
                 text={item.title}
                 icon={args.showIcons ? <Download /> : undefined}
               />
-              <AccordionContent>{item.content}</AccordionContent>
+              <AccordionContent>
+                <Header
+                  title="Title"
+                  subtitle="Subtitle"
+                  actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
+                />
+                <Image src={`https://picsum.photos/400/${item.imageId}`} alt="Image" scale="fill" />
+              </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
@@ -150,8 +137,19 @@ export const Demo: Story = {
 };
 
 export const Multiple: Story = {
-  render: () => (
-    <Accordion type="multiple">
+  args: {
+    type: "multiple",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "An example of an Accordion that allows multiple items to be open simultaneously. This variant gives users the flexibility to view multiple content sections at once.",
+      },
+    },
+  },
+  render: (args) => (
+    <Accordion type={args.type}>
       <AccordionItem value="item-1">
         <AccordionTrigger text="Accordion 1" />
         <AccordionContent>
@@ -190,8 +188,13 @@ export const Multiple: Story = {
 };
 
 export const withIcon: Story = {
-  render: () => (
-    <Accordion type="single" collapsible>
+  args: {
+    type: "single",
+    collapsible: true,
+    showIcons: true,
+  },
+  render: (args) => (
+    <Accordion type={args.type} collapsible={args.collapsible}>
       <AccordionItem value="item-1">
         <AccordionTrigger text="Accordion 1" icon={<Download />} />
         <AccordionContent>
@@ -230,9 +233,14 @@ export const withIcon: Story = {
 };
 
 export const CardVariant: Story = {
-  render: () => (
-    <Accordion type="single" collapsible>
-      <AccordionItem value="item-1" variant="card">
+  args: {
+    type: "single",
+    collapsible: true,
+    variant: "card",
+  },
+  render: (args) => (
+    <Accordion type={args.type} collapsible={args.collapsible}>
+      <AccordionItem value="item-1" variant={args.variant}>
         <AccordionTrigger text="Accordion 1" />
         <AccordionContent>
           <Header
@@ -243,7 +251,7 @@ export const CardVariant: Story = {
           <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-2" variant="card">
+      <AccordionItem value="item-2" variant={args.variant}>
         <AccordionTrigger text="Accordion 2" />
         <AccordionContent>
           <Header
@@ -254,7 +262,7 @@ export const CardVariant: Story = {
           <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-3" variant="card">
+      <AccordionItem value="item-3" variant={args.variant}>
         <AccordionTrigger text="Accordion 3" />
         <AccordionContent>
           <Header
@@ -270,9 +278,14 @@ export const CardVariant: Story = {
 };
 
 export const SunkVariant: Story = {
-  render: () => (
-    <Accordion type="single" collapsible>
-      <AccordionItem value="item-1" variant="sunk">
+  args: {
+    type: "single",
+    collapsible: true,
+    variant: "sunk",
+  },
+  render: (args) => (
+    <Accordion type={args.type} collapsible={args.collapsible}>
+      <AccordionItem value="item-1" variant={args.variant}>
         <AccordionTrigger text="Accordion 1" />
         <AccordionContent>
           <Header
@@ -283,7 +296,7 @@ export const SunkVariant: Story = {
           <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-2" variant="sunk">
+      <AccordionItem value="item-2" variant={args.variant}>
         <AccordionTrigger text="Accordion 2" />
         <AccordionContent>
           <Header
@@ -294,7 +307,7 @@ export const SunkVariant: Story = {
           <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-3" variant="sunk">
+      <AccordionItem value="item-3" variant={args.variant}>
         <AccordionTrigger text="Accordion 3" />
         <AccordionContent>
           <Header
