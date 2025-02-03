@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import React, { forwardRef } from "react";
-import "./formControl.scss";
 
 export interface FormControlProps {
   children: React.ReactNode;
