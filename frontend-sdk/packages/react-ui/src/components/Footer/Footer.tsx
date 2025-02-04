@@ -14,12 +14,17 @@ export interface FooterProps extends HTMLAttributes<HTMLDivElement> {
   style?: CSSProperties;
 }
 
+const variantMap: Record<FooterVariant, string> = {
+  vertical: "crayon-footer-vertical",
+  horizontal: "crayon-footer-horizontal",
+};
+
 export const Footer = forwardRef<HTMLDivElement, FooterProps>((props, ref) => {
   const { className, style, variant = "horizontal", children, ...rest } = props;
   return (
     <div
       ref={ref}
-      className={clsx("crayon-footer", `crayon-footer-${variant}`, className)}
+      className={clsx("crayon-footer", variantMap[variant], className)}
       style={style}
       {...rest}
     >
