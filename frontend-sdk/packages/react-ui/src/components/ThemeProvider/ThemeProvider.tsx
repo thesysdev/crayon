@@ -165,7 +165,7 @@ const defaultTheme: ThemeProviderProps = {
   rounded3xl: "20px",
   rounded4xl: "24px",
   roundedFull: "999px",
-  roundedClickable:'6px',
+  roundedClickable: "6px",
 
   // Primary Font
   fontPrimary: '400 14px/20px "Inter"',
@@ -241,7 +241,7 @@ const defaultTheme: ThemeProviderProps = {
   // Extra Small
   fontLabelExtraSmall: '400 8px/12px "Inter"',
   fontLabelExtraSmallLetterSpacing: "0px",
-  
+
   fontLabelExtraSmallHeavy: '500 8px/12px "Inter"',
   fontLabelExtraSmallHeavyLetterSpacing: "0px",
 

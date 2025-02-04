@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 import { Input } from "../Input";
 import "../input.scss";
-import { useState } from "react";
 
 const meta: Meta<typeof Input> = {
   title: "Components/Input",
@@ -103,7 +103,14 @@ export const Default: Story = {
 const ControlledInput = () => {
   const [value, setValue] = useState<string | undefined>();
 
-  return <Input size="medium" value={value} onChange={(e) => setValue(e.target.value)} placeholder="Enter text..." />;
+  return (
+    <Input
+      size="medium"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder="Enter text..."
+    />
+  );
 };
 
 export const Controlled: Story = {
