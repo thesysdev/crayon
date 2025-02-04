@@ -11,6 +11,9 @@ import {
   CarouselPrevious,
 } from "../Carousel";
 import "../carousel.scss";
+import "../../Header/header.scss";
+import "../../Image/image.scss";
+import "../../IconButton/iconButton.scss";
 
 interface CarouselStoryProps {
   itemsToScroll: number;
