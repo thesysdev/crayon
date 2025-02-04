@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
 import "../../Label/Label.scss";
 import { SwitchItem } from "../SwitchItem";
 import "../switchItem.scss";
@@ -12,10 +11,88 @@ const meta = {
   },
   tags: ["autodocs"],
   argTypes: {
-    label: { control: "text" },
-    disabled: { control: "boolean" },
-    checked: { control: "boolean" },
-    onChange: { action: "changed" },
+    label: {
+      control: "text",
+      description: "The label of the switch item",
+      table: {
+        category: "Content",
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    disabled: {
+      control: "boolean",
+      description: "Whether the switch item is disabled",
+      table: {
+        category: "Behavior",
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
+    required: {
+      control: "boolean",
+      description: "Whether the switch item is required",
+      table: {
+        category: "Behavior",
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
+    checked: {
+      control: "boolean",
+      description: "Whether the switch item is checked Or can be used for controlled mode",
+      table: {
+        category: "Behavior",
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
+    name: {
+      table: {
+        disable: true,
+      },
+    },
+    value: {
+      control: false,
+      description: "The value of the switch item",
+      table: {
+        category: "Property",
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    defaultChecked: {
+      table: {
+        disable: true,
+      },
+    },
+    className: {
+      control: false,
+      description: "Additional CSS class name for custom styling",
+      table: {
+        category: "Styling",
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    style: {
+      control: false,
+      description: "Additional CSS style for custom styling",
+      table: {
+        category: "Styling",
+        type: { summary: "CSSProperties" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    onChange: {
+      control: false,
+      description: "The callback function when the switch item is clicked",
+      table: {
+        category: "Behavior",
+        type: { summary: "function" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
   },
 } satisfies Meta<typeof SwitchItem>;
 
@@ -26,69 +103,9 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     label: "Switch Item",
-    onChange: () => {},
-  },
-};
-
-// With description
-export const WithDescription: Story = {
-  args: {
-    label: "Notifications",
-    onChange: () => {},
-  },
-};
-
-// Disabled state
-export const Disabled: Story = {
-  args: {
-    label: "Disabled Switch",
-    disabled: true,
-    onChange: () => {},
-  },
-};
-
-// Checked state
-export const Checked: Story = {
-  args: {
-    label: "Checked Switch",
-    checked: true,
-    onChange: () => {},
-  },
-};
-
-// Controlled component example
-export const ControlledSwitchTemplate = () => {
-  const [isChecked, setIsChecked] = useState(false);
-
-  return (
-    <SwitchItem
-      label="Controlled Switch"
-      checked={isChecked}
-      onChange={(checked) => setIsChecked(checked)}
-    />
-  );
-};
-
-export const Controlled: Story = {
-  args: {
-    label: "Controlled Switch",
     checked: false,
+    disabled: false,
+    required: false,
   },
-};
-
-// Long text example
-export const LongText: Story = {
-  args: {
-    label:
-      "Switch with a very long label that might wrap to multiple lines to test the component's layout handling",
-    onChange: () => {},
-  },
-};
-
-// Error state (if supported)
-export const WithError: Story = {
-  args: {
-    label: "Switch with Error",
-    onChange: () => {},
-  },
+  render: (args) => <SwitchItem {...args} />,
 };

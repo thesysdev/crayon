@@ -1,12 +1,12 @@
 import * as Switch from "@radix-ui/react-switch";
 import clsx from "clsx";
-import React, { useId } from "react";
+import { CSSProperties, forwardRef, ReactNode, useId } from "react";
 import { Label } from "../FormControl";
 
 interface SwitchItemProps {
-  label?: React.ReactNode;
+  label?: ReactNode;
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   checked?: boolean;
   disabled?: boolean;
   defaultChecked?: boolean;
@@ -16,23 +16,29 @@ interface SwitchItemProps {
   onChange?: (value: boolean) => void;
 }
 
-const SwitchItem = React.forwardRef<HTMLButtonElement, SwitchItemProps>((props, ref) => {
-  const { label, onChange, className, disabled, ...rest } = props;
+const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>((props, ref) => {
+  const { label, onChange, className, disabled, required, ...rest } = props;
   const id = useId();
   return (
     <div className="crayon-switch-item-container">
       <Switch.Root
         ref={ref}
         onCheckedChange={onChange}
-        {...rest}
         id={id}
         className={clsx("crayon-switch-item-root", className)}
         disabled={disabled}
+        required={required}
+        {...rest}
       >
         <Switch.Thumb className="crayon-switch-item-thumb" />
       </Switch.Root>
       {label && (
-        <Label htmlFor={id} className="crayon-switch-item-label" disabled={disabled}>
+        <Label
+          htmlFor={id}
+          className="crayon-switch-item-label"
+          disabled={disabled}
+          required={required}
+        >
           {label}
         </Label>
       )}
