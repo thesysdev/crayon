@@ -8,6 +8,44 @@ const meta = {
   parameters: {
     layout: "centered",
   },
+  argTypes: {
+    placeholder: {
+      control: "text",
+      description: "The placeholder text of the text area",
+      table: {
+        category: "Content",
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    rows: {
+      control: "number",
+      description: "The number of rows of the text area",
+      table: {
+        category: "Appearance",
+        type: { summary: "number" },
+        defaultValue: { summary: "3" },
+      },
+    },
+    className: {
+      control: false,
+      description: "Additional CSS class name for custom styling",
+      table: {
+        category: "Styling",
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    style: {
+      control: false,
+      description: "Additional CSS style for custom styling",
+      table: {
+        category: "Styling",
+        type: { summary: "CSSProperties" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+  },
   tags: ["autodocs"],
 } satisfies Meta<typeof TextArea>;
 
@@ -17,53 +55,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     placeholder: "Enter your text here",
-  },
-};
-
-export const Small: Story = {
-  args: {
-    placeholder: "Small textarea",
-    rows: 2,
-  },
-};
-
-export const Large: Story = {
-  args: {
-    placeholder: "Large textarea",
-    rows: 4,
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    disabled: true,
-    placeholder: "This textarea is disabled",
-    value: "This textarea is disabled",
-  },
-};
-
-export const WithValue: Story = {
-  args: {
-    value: "This is a pre-filled textarea with some content",
-    placeholder: "Enter notes",
-  },
-};
-
-export const WithCustomStyle: Story = {
-  args: {
-    placeholder: "Custom styled textarea",
-    styles: {
-      width: "400px",
-      margin: "20px",
-    },
-  },
-};
-
-// Example with icons (you'll need to import your icon components)
-export const WithIcons: Story = {
-  args: {
-    placeholder: "Textarea with icons",
-    // iconLeft: <YourLeftIcon />,
-    // iconRight: <YourRightIcon />,
+    rows: 3,
   },
 };
