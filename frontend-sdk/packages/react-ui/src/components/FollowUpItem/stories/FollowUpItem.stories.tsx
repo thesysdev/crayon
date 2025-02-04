@@ -6,19 +6,37 @@ import "../FollowUpItem.scss";
 const meta: Meta<typeof FollowUpItem> = {
   title: "Components/FollowUpItem",
   component: FollowUpItem,
+  parameters: {
+    layout: "centered",
+  },
   tags: ["autodocs"],
   argTypes: {
     text: {
       control: "text",
       description: "The text content of the follow-up item",
+      table: {
+        category: "Content",
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
     },
     icon: {
-      control: "boolean",
-      description: "Whether to show an icon",
+      control: false,
+      description: "",
+      table: {
+        category: "Content",
+        type: { summary: "ReactNode" },
+        defaultValue: { summary: "undefined" },
+      },
     },
     className: {
-      control: "text",
+      control: false,
       description: "Additional CSS class names",
+      table: {
+        category: "Styling",
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
     },
   },
 };
@@ -29,25 +47,6 @@ type Story = StoryObj<typeof FollowUpItem>;
 export const Default: Story = {
   args: {
     text: "Continue with this topic",
-  },
-};
-
-export const WithIcon: Story = {
-  args: {
-    text: "Tell me more",
     icon: <ArrowRight size={16} />,
-  },
-};
-
-export const CustomStyling: Story = {
-  args: {
-    text: "Custom styled button",
-    icon: <ArrowRight size={16} />,
-    className: "custom-follow-up",
-    style: {
-      backgroundColor: "#f0f9ff",
-      borderColor: "#bae6fd",
-      color: "#0369a1",
-    },
   },
 };
