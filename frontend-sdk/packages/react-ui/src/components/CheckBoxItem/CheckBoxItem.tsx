@@ -18,7 +18,7 @@ export interface CheckBoxItemProps {
 }
 
 const CheckBoxItem = forwardRef<HTMLButtonElement, CheckBoxItemProps>((props, ref) => {
-  const { label, onChange, className, disabled, ...rest } = props;
+  const { label, onChange, className, disabled, required, ...rest } = props;
   const id = useId();
   return (
     <div className="crayon-checkbox-item-container">
@@ -29,13 +29,19 @@ const CheckBoxItem = forwardRef<HTMLButtonElement, CheckBoxItemProps>((props, re
         id={id}
         className={clsx("crayon-checkbox-item-root", className)}
         disabled={disabled}
+        required={required}
       >
         <Checkbox.Indicator className="crayon-checkbox-item-indicator">
           <Check size={11} />
         </Checkbox.Indicator>
       </Checkbox.Root>
       {label && (
-        <Label htmlFor={id} className="crayon-checkbox-item-label" disabled={disabled}>
+        <Label
+          htmlFor={id}
+          className="crayon-checkbox-item-label"
+          disabled={disabled}
+          required={required}
+        >
           {label}
         </Label>
       )}
