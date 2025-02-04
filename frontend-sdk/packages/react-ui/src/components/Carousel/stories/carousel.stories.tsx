@@ -1,8 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Bell, ChevronLeft, ChevronRight } from "lucide-react";
 import { Header } from "../../Header";
+import "../../Header/header.scss";
 import { IconButton } from "../../IconButton";
+import "../../IconButton/iconButton.scss";
 import { Image } from "../../Image";
+import "../../Image/image.scss";
 import {
   Carousel,
   CarouselContent,
@@ -11,9 +14,6 @@ import {
   CarouselPrevious,
 } from "../Carousel";
 import "../carousel.scss";
-import "../../Header/header.scss";
-import "../../Image/image.scss";
-import "../../IconButton/iconButton.scss";
 
 interface CarouselStoryProps {
   itemsToScroll: number;

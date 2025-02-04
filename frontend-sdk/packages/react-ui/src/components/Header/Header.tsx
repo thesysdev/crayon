@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { cloneElement, CSSProperties, forwardRef, ReactElement, ReactNode } from "react";
+import { cloneElement, CSSProperties, forwardRef, ReactElement, ReactNode } from "react";
 import { ButtonProps } from "../Button";
 import { IconButtonProps } from "../IconButton";
 
