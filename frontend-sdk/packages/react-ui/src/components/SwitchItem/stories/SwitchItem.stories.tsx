@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import "../../FormControl/Label/Label.scss";
+import "../../Label/Label.scss";
 import { SwitchItem } from "../SwitchItem";
 import "../switchItem.scss";
 

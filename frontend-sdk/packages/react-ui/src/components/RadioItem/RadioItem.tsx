@@ -1,7 +1,7 @@
 import * as Radio from "@radix-ui/react-radio-group";
 import clsx from "clsx";
 import React, { forwardRef, useId } from "react";
-import { Label } from "../FormControl/Label";
+import { Label } from "../Label";
 
 export interface RadioItemProps {
   label?: React.ReactNode;
