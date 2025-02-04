@@ -18,6 +18,7 @@ const generateTailwindPlugin = async () => {
   const templateFileContents = readTemplateFile();
   const componentTypes = await generateComponentTypes();
   const includeAllComponents = await generateIncludeAllComponents();
+  const componentDependencyMap = await generateComponentDependencyMap();
   const addComponentCalls = await generateAddComponentsCalls();
 
   if (!componentTypes || !addComponentCalls)
@@ -45,6 +46,12 @@ const generateTailwindPlugin = async () => {
     pluginFileContents,
     "INCLUDE_ALL_COMPONENTS",
     includeAllComponents.toString(),
+  );
+
+  pluginFileContents = replacePlaceholderWithContent(
+    pluginFileContents,
+    "COMPONENT_DEPENDENCY_MAP",
+    JSON.stringify(componentDependencyMap),
   );
 
   const formattedPluginFile = await formatPluginFile(pluginFileContents);
@@ -154,17 +161,18 @@ const transformCssToJson = async (css: string) => {
   return convertNumericValuesToStrings(json);
 };
 
-const getComponentDependencies = (componentPath: string): string[] | null => {
-  const dependenciesFilePath = path.join(componentPath, "dependencies.js");
-  if (!fs.existsSync(dependenciesFilePath)) return null;
-  const fileContent = fs.readFileSync(dependenciesFilePath, "utf-8");
+const generateComponentDependencyMap = async () => {
+  const componentsAndPaths = await extractComponentsAndPaths();
+  if (!componentsAndPaths) return;
+  const componentDepsMap: Record<string, string[]> = {};
 
-  const dependenciesArray = fileContent.match(/dependencies\s*=\s*(\[[\s\S]*?\])/);
-  if (!dependenciesArray) return null;
+  for (const component of componentsAndPaths) {
+    const dependencies = await getComponentsDependencies([component.name]);
+    if (!dependencies) continue;
+    componentDepsMap[component.name] = dependencies;
+  }
 
-  const dependencies = eval(dependenciesArray[1]);
-  console.log("dependencies for component", componentPath, dependencies);
-  return dependencies;
+  return componentDepsMap;
 };
 
 generateTailwindPlugin();

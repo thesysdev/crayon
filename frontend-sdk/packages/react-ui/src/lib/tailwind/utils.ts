@@ -1,8 +1,11 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const extractComponentsAndPaths = () => {
-  const componentsDir = path.resolve("../dist", "components");
+  const componentsDir = path.resolve(dirname, "../../../dist/components");
 
   if (!fs.existsSync(componentsDir)) {
     console.error(`${componentsDir} does not exist`);
@@ -31,8 +34,18 @@ export const extractComponentsAndPaths = () => {
   return Promise.all(promises);
 };
 
-export const getComponentsDependencies = async (componentNames: string[]) => {
+export const getComponentsDependencies = async (
+  componentNames: string[],
+  componentDependencyMap?: Record<string, string[]>,
+) => {
   if (componentNames.length === 0) return [];
+
+  if (componentDependencyMap) {
+    const dependencies = componentNames
+      .map((componentName) => componentDependencyMap[componentName])
+      .flat();
+    return Array.from(new Set([...componentNames, ...dependencies]));
+  }
 
   const componentsAndPaths = await extractComponentsAndPaths();
   if (!componentsAndPaths) throw new Error("Failed to extract components and paths");
@@ -41,8 +54,6 @@ export const getComponentsDependencies = async (componentNames: string[]) => {
     componentNames.includes(component.name),
   );
   if (!components) throw new Error(`Components ${componentNames.join(", ")} not found`);
-
-  console.log(`dependencies for component ${componentNames.join(", ")}:`, components.map((component) => component.dependencies).flat());
 
   return components.map((component) => component.dependencies).flat();
 };

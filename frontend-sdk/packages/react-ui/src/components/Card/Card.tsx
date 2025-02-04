@@ -22,6 +22,7 @@ const widthMap: Record<CardWidth, string> = {
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>((props, ref) => {
   const { className, children, variant = "card", width = "standard", ...rest } = props;
+
   return (
     <div
       ref={ref}
