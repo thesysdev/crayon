@@ -18,6 +18,12 @@ export interface SelectTriggerProps
   size?: "sm" | "md" | "lg";
 }
 
+const sizeMap: Record<string, string> = {
+  sm: "crayon-select-trigger-sm",
+  md: "crayon-select-trigger-md",
+  lg: "crayon-select-trigger-lg",
+};
+
 export const SelectTrigger = forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Trigger>,
   SelectTriggerProps
@@ -52,6 +58,7 @@ export const SelectContent = forwardRef<
       ref={ref}
       className={clsx("crayon-select-content", className)}
       position={position}
+      sideOffset={2}
       {...props}
     >
       <SelectPrimitive.Viewport className="crayon-select-viewport" data-position={position}>
