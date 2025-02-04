@@ -1,3 +1,13 @@
+type JSONValue =
+  | string
+  | number
+  | boolean
+  | {
+      [value: string]: JSONValue;
+    }
+  | JSONValue[]
+  | null;
+
 type common = {
   id: string;
   isVisuallyHidden?: boolean;
@@ -5,31 +15,22 @@ type common = {
 
 export type UserMessage = common & {
   role: "user";
-} & (
-    | {
-        type: "prompt";
-        message?: string;
-      }
-    | {
-        type: "action";
-        message?: string;
-        context?: {
-          formState?: Record<string, any>;
-        };
-        actionDetails?: string;
-      }
-  );
+} & {
+  type: "prompt";
+  message?: string;
+  context?: JSONValue[];
+};
 
 export type AssistantMessage = common & {
   role: "assistant";
-  context?: {
-    uiState?: Record<string, any>;
-  };
-  message?: string;
-  responseTemplate?: {
-    name: string;
-    templateProps: any;
-  };
+  context?: JSONValue[];
+  message?: (
+    | string
+    | {
+        name: string;
+        templateProps: any;
+      }
+  )[];
 };
 
 export type Message = UserMessage | AssistantMessage;

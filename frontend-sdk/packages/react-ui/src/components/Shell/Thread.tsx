@@ -70,13 +70,7 @@ export const AssistantMessageContainer = ({
   return (
     <div className={clsx("crayon-shell-thread-message-assistant", className)}>
       <img src={logoUrl} alt="Assistant" className="crayon-shell-thread-message-assistant__logo" />
-      <div
-        className={clsx({
-          "crayon-shell-thread-message-assistant__text": typeof children === "string",
-        })}
-      >
-        {children}
-      </div>
+      <div>{children}</div>
     </div>
   );
 };
@@ -100,18 +94,24 @@ export const RenderMessage = ({ message, className }: { message: Message; classN
   const MessageContainer =
     message.role === "user" ? UserMessageContainer : AssistantMessageContainer;
 
-  if (message.role === "assistant" && message.responseTemplate) {
-    const Template = responseTemplates[message.responseTemplate.name];
-
-    const Fallback = responseTemplates["fallback"]?.Component || FallbackTemplate;
-
+  if (message.role === "assistant") {
     return (
       <MessageContainer className={className}>
-        {Template ? (
-          <Template.Component {...message.responseTemplate.templateProps} />
-        ) : (
-          <Fallback {...message.responseTemplate.templateProps} />
-        )}
+        {message.message?.map((stringOrTemplate) => {
+          if (typeof stringOrTemplate === "string") {
+            return (
+              <div className="crayon-shell-thread-message-assistant__text">{stringOrTemplate}</div>
+            );
+          }
+
+          const Template = responseTemplates[stringOrTemplate.name];
+          const Fallback = responseTemplates["fallback"]?.Component || FallbackTemplate;
+          return Template ? (
+            <Template.Component {...stringOrTemplate.templateProps} />
+          ) : (
+            <Fallback />
+          );
+        })}
       </MessageContainer>
     );
   }

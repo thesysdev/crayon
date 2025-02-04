@@ -65,7 +65,7 @@ export const Default = {
             id: crypto.randomUUID(),
             role: "assistant",
             type: "response",
-            message: "Hello",
+            message: ["Hello"],
           },
         ];
       },
@@ -80,7 +80,7 @@ export const Default = {
             id: crypto.randomUUID(),
             role: "assistant",
             type: "response",
-            message: "sadfasdf",
+            message: ["sadfasdf"],
           },
         ];
       },
