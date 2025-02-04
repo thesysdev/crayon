@@ -197,13 +197,16 @@ const defaultTheme: ThemeProviderProps = {
   // Regular
   fontBody: '400 14px/18px "Inter"',
   fontBodyLetterSpacing: "0px",
+
   fontBodyMedium: '400 16px/24px "Inter"',
   fontBodyMediumLetterSpacing: "0px",
+
   fontBodySmall: '400 14px/20px "Inter"',
   fontBodySmallLetterSpacing: "0px",
   // Heavy
   fontBodyHeavy: '600 16px/24px "Inter"',
   fontBodyHeavyLetterSpacing: "0px",
+
   fontBodySmallHeavy: '600 14px/20px "Inter"',
   fontBodySmallHeavyLetterSpacing: "0px",
   // Special
@@ -214,26 +217,31 @@ const defaultTheme: ThemeProviderProps = {
   // Large
   fontLabelLarge: '400 12px/16px "Inter"',
   fontLabelLargeLetterSpacing: "0px",
+
   fontLabelLargeHeavy: '500 12px/16px "Inter"',
   fontLabelLargeHeavyLetterSpacing: "0px",
   // Regular
   fontLabel: '400 12px/16px "Inter"',
   fontLabelLetterSpacing: "0px",
+
   fontLabelHeavy: '500 12px/16px "Inter"',
   fontLabelHeavyLetterSpacing: "0px",
   // Medium
   fontLabelMedium: '400 10px/16px "Inter"',
   fontLabelMediumLetterSpacing: "0px",
+
   fontLabelMediumHeavy: '600 10px/16px "Inter"',
   fontLabelMediumHeavyLetterSpacing: "0px",
   // Small
   fontLabelSmall: '400 10px/16px "Inter"',
   fontLabelSmallLetterSpacing: "0px",
+
   fontLabelSmallHeavy: '500 10px/16px "Inter"',
   fontLabelSmallHeavyLetterSpacing: "0px",
   // Extra Small
   fontLabelExtraSmall: '400 8px/12px "Inter"',
   fontLabelExtraSmallLetterSpacing: "0px",
+  
   fontLabelExtraSmallHeavy: '500 8px/12px "Inter"',
   fontLabelExtraSmallHeavyLetterSpacing: "0px",
 

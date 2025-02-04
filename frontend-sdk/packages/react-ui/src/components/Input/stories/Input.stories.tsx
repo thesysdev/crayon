@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { Input } from "../Input";
 import "../input.scss";
+import { useState } from "react";
 
 const meta: Meta<typeof Input> = {
   title: "Components/Input",
@@ -87,8 +88,6 @@ export const Default: Story = {
     size: "medium",
     placeholder: "Enter text...",
     disabled: false,
-    value: undefined,
-    onChange: () => {},
   },
   render: (args) => (
     <Input
@@ -101,10 +100,26 @@ export const Default: Story = {
   ),
 };
 
-export const WithValue: Story = {
-  args: {
-    size: "medium",
-    value: "Hello World",
+const ControlledInput = () => {
+  const [value, setValue] = useState<string | undefined>();
+
+  return <Input size="medium" value={value} onChange={(e) => setValue(e.target.value)} placeholder="Enter text..." />;
+};
+
+export const Controlled: Story = {
+  render: () => <ControlledInput />,
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { useState } from "react";
+
+const ControlledInput = () => {
+  const [value, setValue] = useState<string | undefined>();
+
+  return <Input size="medium" value={value} onChange={(e) => setValue(e.target.value)} placeholder="Enter text..." />;
+};`,
+      },
+    },
   },
-  render: (args) => <Input size={args.size} value={args.value} disabled={args.disabled} />,
 };
