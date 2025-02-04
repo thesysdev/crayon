@@ -3,9 +3,9 @@ import { Monitor, TabletSmartphone } from "lucide-react";
 import { Card } from "../../../Card";
 import "../../../Card/card.scss";
 import "../../charts.scss";
-import { AreaChart, AreaChartProps } from "../AreaChart";
+import { BarChart, BarChartProps } from "../BarChart";
 
-const areaChartData = [
+const barChartData = [
   { month: "January", desktop: 150, mobile: 90 },
   { month: "February", desktop: 280, mobile: 180 },
   { month: "March", desktop: 220, mobile: 140 },
@@ -19,9 +19,9 @@ const icons = {
   mobile: TabletSmartphone,
 } as const;
 
-const meta: Meta<AreaChartProps<typeof areaChartData>> = {
-  title: "Components/Charts/AreaChart",
-  component: AreaChart,
+const meta: Meta<BarChartProps<typeof barChartData>> = {
+  title: "Components/Charts/BarChart",
+  component: BarChart,
   parameters: {
     layout: "centered",
   },
@@ -82,18 +82,17 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       description:
         "The interpolation method used to create the area curves. 'linear' creates straight lines between points, 'natural' creates smooth curves, and 'step' creates a stepped line.",
       control: "radio",
-      options: ["linear", "natural", "step"],
+      options: ["grouped", "stacked"],
       table: {
-        defaultValue: { summary: "natural" },
+        defaultValue: { summary: "grouped" },
       },
     },
-    opacity: {
-      description:
-        "The opacity of the filled area beneath each line (0 = fully transparent, 1 = fully opaque)",
+    radius: {
+      description: "The radius of the rounded corners of the bars",
       control: false,
       table: {
         type: { summary: "number" },
-        defaultValue: { summary: "0.5" },
+        defaultValue: { summary: "4" },
       },
     },
     grid: {
@@ -122,35 +121,35 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       },
     },
   },
-} satisfies Meta<typeof AreaChart>;
+} satisfies Meta<typeof BarChart>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const AreaChartStory: Story = {
-  name: "Area Chart",
+export const BarChartStory: Story = {
+  name: "Bar Chart",
   args: {
-    data: areaChartData,
+    data: barChartData,
     categoryKey: "month",
     theme: "ocean",
-    variant: "linear",
+    variant: "grouped",
     width: 460,
     height: 300,
-    opacity: 0.5,
+    radius: 4,
     grid: true,
-    legend: true,
     label: true,
+    legend: true,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
-      <AreaChart {...args} />
+      <BarChart {...args} />
     </Card>
   ),
   parameters: {
     docs: {
       source: {
         code: `
-const areaChartData = [
+const barChartData = [
   { month: "January", desktop: 150, mobile: 90 },
   { month: "February", desktop: 280, mobile: 180 },
   { month: "March", desktop: 220, mobile: 140 },
@@ -158,35 +157,40 @@ const areaChartData = [
   { month: "May", desktop: 250, mobile: 120 },
   { month: "June", desktop: 300, mobile: 180 },
 ];
-
-<Card style={{ width: "500px" }}>
-  <AreaChart
-    data={areaChartData}
+        
+<Card
+  style={{
+    width: '500px'
+  }}
+>
+  <BarChart
     categoryKey="month"
-    width={460}
+    data={barChartData}
+    grid
     height={300}
-    theme="ocean"
-    variant="linear"
-    opacity={0.5}
-    grid={true}
-    legend={true}
-    label={true}
+    label
+    legend
+    radius={4}
+    theme="sunset"
+    variant="grouped"
+    width={460}
   />
-</Card>`,
+</Card>
+`,
       },
     },
   },
 };
 
-export const AreaChartStoryWithIcons: Story = {
-  name: "Area Chart with Icons",
+export const BarChartStoryWithIcons: Story = {
+  name: "Bar Chart with Icons",
   args: {
-    ...AreaChartStory.args,
+    ...BarChartStory.args,
     icons: icons,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
-      <AreaChart {...args} />
+      <BarChart {...args} />
     </Card>
   ),
   parameters: {
@@ -194,36 +198,41 @@ export const AreaChartStoryWithIcons: Story = {
       source: {
         code: `
   import { Monitor, TabletSmartphone } from "lucide-react";
-  
-  const areaChartData = [
-    { month: "January", desktop: 150, mobile: 90 },
-    { month: "February", desktop: 280, mobile: 180 },
-    { month: "March", desktop: 220, mobile: 140 },
-    { month: "April", desktop: 180, mobile: 160 },
-    { month: "May", desktop: 250, mobile: 120 },
-    { month: "June", desktop: 300, mobile: 180 },
-  ];
-  
-  const icons = {
-    desktop: Monitor,
-    mobile: TabletSmartphone,
-  };
-  
-  <Card style={{ width: "500px" }}>
-    <AreaChart
-      data={areaChartData}
-      categoryKey="month"
-      width={460}
-      height={300}
-      theme="ocean"
-      variant="linear"
-      opacity={0.5}
-      grid={true}
-      legend={true}
-      label={true}
-      icons={icons}
-    />
-  </Card>`,
+
+    const barChartData = [
+      { month: "January", desktop: 150, mobile: 90 },
+      { month: "February", desktop: 280, mobile: 180 },
+      { month: "March", desktop: 220, mobile: 140 },
+      { month: "April", desktop: 180, mobile: 160 },
+      { month: "May", desktop: 250, mobile: 120 },
+      { month: "June", desktop: 300, mobile: 180 },
+    ];
+    
+    const icons = {
+      desktop: Monitor,
+      mobile: TabletSmartphone,
+    };
+            
+    <Card
+      style={{
+        width: '500px'
+      }}
+    >
+      <BarChart
+        categoryKey="month"
+        data={barChartData}
+        grid
+        height={300}
+        label
+        legend
+        radius={4}
+        theme="sunset"
+        variant="grouped"
+        width={460}
+        icons={icons}
+      />
+    </Card>
+    `,
       },
     },
   },
