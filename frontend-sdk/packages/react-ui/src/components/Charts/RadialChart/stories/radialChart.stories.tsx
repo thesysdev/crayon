@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "../../../Card";
 import "../../../Card/card.scss";
 import "../../charts.scss";
-import { PieChart, PieChartProps } from "../PieChart";
+import { RadialChart, RadialChartProps } from "../RadialChart";
 
-const pieChartData = [
+const radialChartData = [
   { month: "January", value: 400 },
   { month: "February", value: 300 },
   { month: "March", value: 300 },
@@ -14,9 +14,9 @@ const pieChartData = [
   { month: "July", value: 300 },
 ];
 
-const meta: Meta<PieChartProps<typeof pieChartData>> = {
-  title: "Components/Charts/PieChart",
-  component: PieChart,
+const meta: Meta<RadialChartProps<typeof radialChartData>> = {
+  title: "Components/Charts/RadialChart",
+  component: RadialChart,
   parameters: {
     layout: "centered",
   },
@@ -33,7 +33,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
     },
     categoryKey: {
       description:
-        "The key from your data object to be used as the segment labels (e.g., 'month', 'category', 'name')",
+        "The key from your data object to be used as the category labels for each segment (e.g., 'month', 'year', 'category')",
       control: false,
       table: {
         type: { summary: "string" },
@@ -41,7 +41,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
     },
     dataKey: {
       description:
-        "The key from your data object to be used as the values that determine the slice sizes (e.g., 'value', 'count', 'amount')",
+        "The key from your data object to be used as the values that determine the segment sizes (e.g., 'value', 'count', 'amount')",
       control: false,
       table: {
         type: { summary: "string" },
@@ -74,11 +74,11 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
     },
     variant: {
       description:
-        "The style of the pie chart. 'pie' shows a pie chart, while 'donut' shows a donut chart.",
+        "The style of the pie chart. 'circular' shows a circular chart, while 'semicircle' shows a semicircle chart.",
       control: "radio",
-      options: ["pie", "donut"],
+      options: ["circular", "semicircle"],
       table: {
-        defaultValue: { summary: "pie" },
+        defaultValue: { summary: "circular" },
       },
     },
     format: {
@@ -106,43 +106,52 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
         defaultValue: { summary: "true" },
       },
     },
+    grid: {
+      description: "Whether to display the grid lines",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
+      },
+    },
   },
-} satisfies Meta<typeof PieChart>;
+} satisfies Meta<typeof RadialChart>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const PieChartStory: Story = {
-  name: "Pie Chart",
+export const RadialChartStory: Story = {
+  name: "Radial Chart",
   args: {
-    data: pieChartData,
+    data: radialChartData,
     categoryKey: "month",
     dataKey: "value",
     theme: "ocean",
-    variant: "pie",
+    variant: "circular",
     format: "number",
     legend: true,
     label: true,
+    grid: true,
     width: 460,
     height: 300,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
-      <PieChart {...args} />
+      <RadialChart {...args} />
     </Card>
   ),
   parameters: {
     docs: {
       source: {
         code: `
-        const pieChartData = [
-  { month: "January", value: 400 },
-  { month: "February", value: 300 },
-  { month: "March", value: 300 },
-  { month: "April", value: 400 },
-  { month: "May", value: 300 },
-  { month: "June", value: 300 },
-  { month: "July", value: 300 },
+const radialChartData = [
+    { month: "January", value: 400 },
+    { month: "February", value: 300 },
+    { month: "March", value: 300 },
+    { month: "April", value: 400 },
+    { month: "May", value: 300 },
+    { month: "June", value: 300 },
+    { month: "July", value: 300 },
 ];
 
 <Card
@@ -150,17 +159,18 @@ export const PieChartStory: Story = {
     width: '500px'
   }}
 >
-  <PieChart
+  <RadialChart
     categoryKey="month"
-    data={pieChartData}
+    data={radialChartData}
     dataKey="value"
-    format="percentage"
-    height={300}
+    format="number"
+    grid
     label
     legend
     theme="ocean"
-    variant="donut"
+    variant="circular"
     width={460}
+    height={300}
   />
 </Card>
         `,
