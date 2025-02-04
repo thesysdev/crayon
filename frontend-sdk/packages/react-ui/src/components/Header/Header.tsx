@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { CSSProperties, forwardRef, ReactElement, ReactNode } from "react";
+import React, { cloneElement, CSSProperties, forwardRef, ReactElement, ReactNode } from "react";
 import { ButtonProps } from "../Button";
 import { IconButtonProps } from "../IconButton";
 
@@ -25,7 +25,7 @@ export const Header = forwardRef<HTMLDivElement, HeaderProps>((props, ref) => {
         </div>
         <div className="crayon-header-top-right">
           {Array.isArray(actions)
-            ? actions.map((action, index) => React.cloneElement(action, { key: index }))
+            ? actions.map((action, index) => cloneElement(action, { key: index }))
             : actions}
         </div>
       </div>
