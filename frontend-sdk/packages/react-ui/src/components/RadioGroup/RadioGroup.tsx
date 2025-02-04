@@ -1,21 +1,28 @@
 import * as Radio from "@radix-ui/react-radio-group";
 import clsx from "clsx";
-import { forwardRef } from "react";
+import { CSSProperties, forwardRef, ReactElement } from "react";
 import { RadioItemProps } from "../RadioItem";
 
+type RadioGroupVariant = "clear" | "card" | "sunk";
 interface RadioGroupProps extends Radio.RadioGroupProps {
-  children: React.ReactElement<RadioItemProps> | React.ReactElement<RadioItemProps>[];
-  variant?: "clear" | "card" | "sunk";
+  children: ReactElement<RadioItemProps> | ReactElement<RadioItemProps>[];
+  variant?: RadioGroupVariant;
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }
+
+const variants: Record<RadioGroupVariant, string> = {
+  clear: "crayon-radio-group-clear",
+  card: "crayon-radio-group-card",
+  sunk: "crayon-radio-group-sunk",
+};
 
 const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>((props, ref) => {
   const { children, className, style, variant = "clear", ...rest } = props;
   return (
     <Radio.Root
       ref={ref}
-      className={clsx("crayon-radio-group", `crayon-radio-group-${variant}`, className)}
+      className={clsx("crayon-radio-group", variants[variant], className)}
       style={style}
       {...rest}
     >
