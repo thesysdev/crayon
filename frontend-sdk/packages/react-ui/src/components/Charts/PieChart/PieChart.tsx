@@ -28,6 +28,13 @@ export interface PieChartProps<T extends PieChartData> {
   height?: number;
 }
 
+const layoutMap: Record<string, string> = {
+  mobile: "crayon-pie-chart-container-mobile",
+  fullscreen: "crayon-pie-chart-container-fullscreen",
+  tray: "crayon-pie-chart-container-tray",
+  copilot: "crayon-pie-chart-container-copilot",
+};
+
 // Helper function to calculate percentage
 const calculatePercentage = (value: number, total: number): number => {
   if (total === 0) {
@@ -145,7 +152,7 @@ export const PieChart = <T extends PieChartData>({
     <ChartContainer
       ref={containerRef}
       config={chartConfig}
-      className={clsx("crayon-pie-chart-container", `crayon-pie-chart-container-${layout}`)}
+      className={clsx("crayon-pie-chart-container", layoutMap[layout])}
     >
       <RechartsPieChart width={width} height={height}>
         <ChartTooltip content={<ChartTooltipContent showPercentage={format === "percentage"} />} />
