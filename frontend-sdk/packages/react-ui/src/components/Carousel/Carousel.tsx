@@ -6,7 +6,7 @@ interface CarouselContextType {
   scrollDivRef: React.RefObject<HTMLDivElement | null>;
   scroll: (direction: "left" | "right") => void;
   itemsToScroll: number;
-  hasWrappingDivForCards?: boolean;
+  noSnap?: boolean;
   showButtons?: boolean;
 }
 
@@ -20,22 +20,12 @@ const useCarousel = () => {
 
 export interface CarouselProps extends React.HTMLAttributes<HTMLDivElement> {
   itemsToScroll?: number;
-  hasWrappingDivForCards?: boolean;
+  noSnap?: boolean;
   showButtons?: boolean;
 }
 
 export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
-  (
-    {
-      itemsToScroll = 1,
-      hasWrappingDivForCards,
-      showButtons = true,
-      className,
-      children,
-      ...props
-    },
-    ref,
-  ) => {
+  ({ itemsToScroll = 1, noSnap, showButtons = true, className, children, ...props }, ref) => {
     const scrollDivRef = useRef<HTMLDivElement>(null);
 
     const scroll = (direction: "left" | "right") => {
@@ -45,7 +35,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
 
         const spacingEl = children.splice(0, 1)[0] as HTMLElement;
 
-        if (hasWrappingDivForCards) {
+        if (noSnap) {
           children = Array.from(children[0]!.children);
         }
 
@@ -74,7 +64,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
 
     return (
       <CarouselContext.Provider
-        value={{ scrollDivRef, scroll, itemsToScroll, hasWrappingDivForCards, showButtons }}
+        value={{ scrollDivRef, scroll, itemsToScroll, noSnap, showButtons }}
       >
         <div className={clsx("crayon-carousel", className)} ref={ref} {...props}>
           {children}
@@ -86,12 +76,18 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
 
 export const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => {
-    const { scrollDivRef } = useCarousel();
+    const { scrollDivRef, noSnap } = useCarousel();
+
+    const content = noSnap ? (
+      <div className="crayon-carousel-content-wrapper">{children}</div>
+    ) : (
+      children
+    );
 
     return (
       <div ref={scrollDivRef} className={clsx("crayon-carousel-content", className)} {...props}>
-        <div className="" />
-        {children}
+        <div />
+        {content}
       </div>
     );
   },
