@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Info } from "lucide-react";
 import { Input } from "../../Input";
+import "../../Input/input.scss";
 import { Label } from "../../Label";
 import "../../Label/label.scss";
 import { FormControl } from "../FormControl";
@@ -13,54 +15,51 @@ const meta: Meta<typeof FormControl> = {
   parameters: {
     layout: "centered",
   },
+  argTypes: {
+    children: {
+      control: false,
+      description:
+        "The child elements of the form control that accept Label, Input, and Hint components",
+      table: {
+        category: "Content",
+        type: { summary: "ReactNode[] | ReactNode" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    className: {
+      control: false,
+      description: "Additional CSS class name for custom styling",
+      table: {
+        category: "Styling",
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    style: {
+      control: false,
+      description: "Inline CSS styles for custom styling",
+      table: {
+        category: "Styling",
+        type: { summary: "CSSProperties" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof FormControl>;
-
-export const Basic: Story = {
-  args: {
-    children: <Input placeholder="Enter text..." />,
-  },
-};
 
 export const WithLabelAndHint: Story = {
   render: () => (
     <FormControl>
       <Label>Username</Label>
       <Input placeholder="Enter username" />
-      <Hint>Must be at least 4 characters long</Hint>
+      <Hint>
+        <Info size={14} /> Must be at least 4 characters long
+      </Hint>
     </FormControl>
   ),
-};
-
-export const WithCustomStyle: Story = {
-  args: {
-    children: (
-      <>
-        <Label htmlFor="email">Email</Label>
-        <Input placeholder="Enter email" id="email" type="email" />
-        <Hint>We'll never share your email</Hint>
-      </>
-    ),
-    style: {
-      width: "300px",
-      margin: "20px",
-    },
-  },
-};
-
-export const WithCustomClass: Story = {
-  args: {
-    children: (
-      <>
-        <Label htmlFor="password">Password</Label>
-        <Input type="password" placeholder="Enter password" id="password" />
-        <Hint>Use a strong password with mixed characters</Hint>
-      </>
-    ),
-    className: "custom-form-control",
-  },
 };
 
 export const WithMultipleChildren: Story = {
