@@ -13,7 +13,7 @@ import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
 type LineChartData = Array<Record<string, string | number>>;
 
-interface LineChartProps<T extends LineChartData> {
+export interface LineChartProps<T extends LineChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
@@ -89,7 +89,7 @@ export const LineChart = <T extends LineChartData>({
           textAnchor="middle"
           tickFormatter={(value) => value.slice(0, 4)}
         />
-        <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
+        <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
         {dataKeys.map((key) => {
           const color = `var(--color-${key})`;
           if (label) {
