@@ -80,7 +80,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
     },
     variant: {
       description:
-        "The interpolation method used to create the area curves. 'linear' creates straight lines between points, 'natural' creates smooth curves, and 'step' creates a stepped line.",
+        "The interpolation method used to create the area curves. 'linear' creates straight lines between points, 'natural' creates smooth curves, and 'step' creates a stepped area.",
       control: "radio",
       options: ["linear", "natural", "step"],
       table: {

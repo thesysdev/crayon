@@ -80,7 +80,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
     },
     variant: {
       description:
-        "The interpolation method used to create the area curves. 'linear' creates straight lines between points, 'natural' creates smooth curves, and 'step' creates a stepped line.",
+        "The style of the bar chart. 'grouped' shows bars side by side, while 'stacked' shows bars stacked on top of each other.",
       control: "radio",
       options: ["grouped", "stacked"],
       table: {

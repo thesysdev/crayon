@@ -3,10 +3,10 @@ import { Monitor, TabletSmartphone } from "lucide-react";
 import { Card } from "../../../Card";
 import "../../../Card/card.scss";
 import "../../charts.scss";
-import { LineChart, LineChartProps } from "../LineChart";
+import { RadarChart, RadarChartProps } from "../RadarChart";
 
-const lineChartData = [
-  { month: "January", desktop: 150, mobile: 90 },
+const radarChartData = [
+  { month: "January", desktop: 250, mobile: 150 },
   { month: "February", desktop: 280, mobile: 180 },
   { month: "March", desktop: 220, mobile: 140 },
   { month: "April", desktop: 180, mobile: 160 },
@@ -19,9 +19,9 @@ const icons = {
   mobile: TabletSmartphone,
 } as const;
 
-const meta: Meta<LineChartProps<typeof lineChartData>> = {
-  title: "Components/Charts/LineChart",
-  component: LineChart,
+const meta: Meta<RadarChartProps<typeof radarChartData>> = {
+  title: "Components/Charts/RadarChart",
+  component: RadarChart,
   parameters: {
     layout: "centered",
   },
@@ -80,11 +80,11 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
     },
     variant: {
       description:
-        "The interpolation method used to create the line curves. 'linear' creates straight lines between points, 'natural' creates smooth curves, and 'step' creates a stepped line.",
+        "The style of the radar chart. 'line' shows only the connecting lines between data points, while 'area' fills the shape created by the data points.",
       control: "radio",
-      options: ["linear", "natural", "step"],
+      options: ["line", "area"],
       table: {
-        defaultValue: { summary: "natural" },
+        defaultValue: { summary: "area" },
       },
     },
     strokeWidth: {
@@ -103,12 +103,12 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
         defaultValue: { summary: "true" },
       },
     },
-    label: {
-      description: "Whether to display data point labels above each point on the chart",
-      control: "boolean",
+    areaOpacity: {
+      description: "The opacity of the area fill",
+      control: false,
       table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "true" },
+        type: { summary: "number" },
+        defaultValue: { summary: "0.7" },
       },
     },
     legend: {
@@ -121,112 +121,113 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       },
     },
   },
-} satisfies Meta<typeof LineChart>;
+} satisfies Meta<typeof RadarChart>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const LineChartStory: Story = {
-  name: "Line Chart",
+export const RadarChartStory: Story = {
+  name: "Radar Chart",
   args: {
-    data: lineChartData,
+    data: radarChartData,
     categoryKey: "month",
     theme: "ocean",
-    variant: "natural",
+    variant: "area",
     width: 460,
     height: 300,
     strokeWidth: 2,
-    grid: true,
-    label: true,
+    areaOpacity: 0.5,
     legend: true,
+    grid: true,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
-      <LineChart {...args} />
+      <RadarChart {...args} />
     </Card>
   ),
   parameters: {
     docs: {
       source: {
         code: `
-const lineChartData = [
-  { month: "January", desktop: 150, mobile: 90 },
-  { month: "February", desktop: 280, mobile: 180 },
-  { month: "March", desktop: 220, mobile: 140 },
-  { month: "April", desktop: 180, mobile: 160 },
-  { month: "May", desktop: 250, mobile: 120 },
-  { month: "June", desktop: 300, mobile: 180 },
+        const radarChartData = [
+    { month: "January", desktop: 250, mobile: 150 },
+    { month: "February", desktop: 280, mobile: 180 },
+    { month: "March", desktop: 220, mobile: 140 },
+    { month: "April", desktop: 180, mobile: 160 },
+    { month: "May", desktop: 250, mobile: 120 },
+    { month: "June", desktop: 300, mobile: 180 },
 ];
+
 <Card
   style={{
     width: '500px'
   }}
 >
-  <LineChart
+  <RadarChart
+    areaOpacity={0.5}
     categoryKey="month"
-    data={lineChartData}
+    data={radarChartData}
     grid
     height={300}
-    label
     legend
     strokeWidth={2}
-    theme="ocean"
-    variant="natural"
+    theme="sunset"
+    variant="area"
     width={460}
   />
 </Card>
-`,
+        `,
       },
     },
   },
 };
 
-export const LineChartStoryWithIcons: Story = {
-  name: "Line Chart with Icons",
+export const RadarChartStoryWithIcons: Story = {
+  name: "Radar Chart with Icons",
   args: {
-    ...LineChartStory.args,
+    ...RadarChartStory.args,
     icons: icons,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
-      <LineChart {...args} />
+      <RadarChart {...args} />
     </Card>
   ),
   parameters: {
     docs: {
       source: {
         code: `
-        import { Monitor, TabletSmartphone } from "lucide-react";
+import { Monitor, TabletSmartphone } from "lucide-react";
 
-  const lineChartData = [
-  { month: "January", desktop: 150, mobile: 90 },
-  { month: "February", desktop: 280, mobile: 180 },
-  { month: "March", desktop: 220, mobile: 140 },
-  { month: "April", desktop: 180, mobile: 160 },
-  { month: "May", desktop: 250, mobile: 120 },
-  { month: "June", desktop: 300, mobile: 180 },
+const radarChartData = [
+    { month: "January", desktop: 250, mobile: 150 },
+    { month: "February", desktop: 280, mobile: 180 },
+    { month: "March", desktop: 220, mobile: 140 },
+    { month: "April", desktop: 180, mobile: 160 },
+    { month: "May", desktop: 250, mobile: 120 },
+    { month: "June", desktop: 300, mobile: 180 },
 ];
 
 const icons = {
   desktop: Monitor,
   mobile: TabletSmartphone,
-};
+} as const;
 
 <Card
   style={{
     width: '500px'
   }}
 >
-  <LineChart
+  <RadarChart
+    areaOpacity={0.5}
     categoryKey="month"
-    data={lineChartData}
+    data={radarChartData}
     grid
     height={300}
-    label
     legend
     strokeWidth={2}
-    theme="ocean"
-    variant="natural"
+    theme="sunset"
+    variant="area"
     width={460}
     icons={icons}
   />
