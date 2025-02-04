@@ -13,7 +13,7 @@ import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
 type AreaChartData = Array<Record<string, string | number>>;
 
-interface AreaChartProps<T extends AreaChartData> {
+export interface AreaChartProps<T extends AreaChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
