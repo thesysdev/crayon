@@ -146,23 +146,6 @@ export const FloatingPicker: Story = {
   },
 };
 
-// Controlled single date picker
-const ControlledSinglePicker = () => {
-  const [selectedDate, setSelectedDate] = useState<Date>();
-
-  return (
-    <div>
-      <DatePicker
-        mode="single"
-        variant="docked"
-        selectedSingleDate={selectedDate}
-        setSelectedSingleDate={setSelectedDate}
-      />
-      <div style={{ marginTop: "1rem" }}>Selected date: {selectedDate?.toLocaleDateString()}</div>
-    </div>
-  );
-};
-
 export const ControlledSingle: Story = {
   render: (args) => {
     const [selectedDate, setSelectedDate] = useState<Date>();
