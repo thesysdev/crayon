@@ -12,11 +12,67 @@ const meta: Meta<typeof RadioItem> = {
   },
   decorators: [
     (Story) => (
-      <Radio.Root defaultValue="default">
+      <Radio.Root>
         <Story />
       </Radio.Root>
     ),
   ],
+  argTypes: {
+    value: {
+      control: "text",
+      description: "The value of the radio item",
+      table: {
+        category: "Property",
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    label: {
+      control: "text",
+      description: "The label of the radio item",
+      table: {
+        category: "Content",
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    required: {
+      control: "boolean",
+      description: "Whether the radio item is required",
+      table: {
+        category: "Property",
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
+    disabled: {
+      control: "boolean",
+      description: "Whether the radio item is disabled",
+      table: {
+        category: "Property",
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
+    className: {
+      control: false,
+      description: "Additional CSS class name for custom styling",
+      table: {
+        category: "Styling",
+        defaultValue: { summary: "undefined" },
+        type: { summary: "string" },
+      },
+    },
+    style: {
+      control: false,
+      description: "Additional CSS style for custom styling",
+      table: {
+        category: "Styling",
+        defaultValue: { summary: "undefined" },
+        type: { summary: "CSSProperties" },
+      },
+    },
+  },
   tags: ["autodocs"],
 };
 
@@ -26,49 +82,8 @@ type Story = StoryObj<typeof RadioItem>;
 export const Default: Story = {
   args: {
     value: "default",
-  },
-};
-
-export const WithLabel: Story = {
-  args: {
-    value: "with-label",
-    label: "Radio Option",
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    value: "disabled",
-    label: "Disabled Option",
-    disabled: true,
-  },
-};
-
-export const Required: Story = {
-  args: {
-    value: "required",
-    label: "Required Option",
-    required: true,
-  },
-};
-
-export const MultipleOptions: Story = {
-  render: () => (
-    <Radio.Root defaultValue="option1">
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <RadioItem value="option1" label="Option 1" />
-        <RadioItem value="option2" label="Option 2" />
-        <RadioItem value="option3" label="Option 3" />
-      </div>
-    </Radio.Root>
-  ),
-};
-
-export const CustomStyling: Story = {
-  args: {
-    value: "custom",
-    label: "Custom Styled Option",
-    className: "custom-radio",
-    style: { marginLeft: "16px" },
+    label: "Default",
+    required: false,
+    disabled: false,
   },
 };
