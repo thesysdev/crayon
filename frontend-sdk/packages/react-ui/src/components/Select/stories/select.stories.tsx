@@ -1,4 +1,4 @@
-import type { Meta } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 import {
   Select,
   SelectContent,
@@ -11,29 +11,82 @@ import {
 } from "../Select";
 import "../select.scss";
 
-type SelectProps = React.ComponentProps<typeof Select | typeof SelectTrigger>;
+interface SelectStoryProps {
+  size?: "sm" | "md" | "lg";
+  showTick?: boolean;
+  hideDropdownIcon?: boolean;
+  placeholder?: string;
+}
 
-const meta: Meta<SelectProps> = {
+const meta: Meta<SelectStoryProps> = {
   title: "Components/Select",
-  args: {
-    size: "lg",
+  component: Select as any,
+  tags: ["autodocs"],
+  parameters: {
+    layout: "centered",
   },
+  decorators: [
+    (Story) => (
+      <div style={{ width: "240px" }}>
+        <Story />
+      </div>
+    ),
+  ],
   argTypes: {
     size: {
-      control: { type: "select" },
-      options: ["lg", "md", "sm"],
+      control: "radio",
+      options: ["sm", "md", "lg"],
+      description: "The size of the select trigger",
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "md" },
+      },
+    },
+    showTick: {
+      control: "boolean",
+      description: "Whether to show the tick icon for selected items",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
+      },
+    },
+    hideDropdownIcon: {
+      control: "boolean",
+      description: "Whether to hide the dropdown icon in the trigger",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
+    placeholder: {
+      control: "text",
+      description: "Placeholder text for the select",
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
     },
   },
-  tags: ["autodocs"],
 };
 
 export default meta;
+type Story = StoryObj<SelectStoryProps>;
 
-export const SelectDemo = (args: any) => {
-  return (
+export const Basic: Story = {
+  args: {
+    size: "md",
+    showTick: true,
+    hideDropdownIcon: false,
+    placeholder: "Select an option",
+  },
+  render: (args) => (
     <Select>
-      <SelectTrigger style={{ width: "228px" }} size={args.size}>
-        <SelectValue placeholder="Select a fruit" />
+      <SelectTrigger
+        style={{ width: "228px" }}
+        hideDropdownIcon={args.hideDropdownIcon}
+        size={args.size}
+      >
+        <SelectValue placeholder={args.placeholder} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
@@ -55,5 +108,5 @@ export const SelectDemo = (args: any) => {
         </SelectGroup>
       </SelectContent>
     </Select>
-  );
+  ),
 };
