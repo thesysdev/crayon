@@ -2,17 +2,25 @@ import * as TabsPrimitive from "@radix-ui/react-tabs";
 import clsx from "clsx";
 import React, { forwardRef } from "react";
 
+type TabsVariant = "clear" | "card" | "sunk";
+
 export interface TabsProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root> {
   className?: string;
   style?: React.CSSProperties;
-  variant?: "clear" | "card" | "sunk";
+  variant?: TabsVariant;
 }
+
+const tabsVariants: Record<TabsVariant, string> = {
+  clear: "crayon-tabs-clear",
+  card: "crayon-tabs-card",
+  sunk: "crayon-tabs-sunk",
+};
 
 export const Tabs = forwardRef<React.ComponentRef<typeof TabsPrimitive.Root>, TabsProps>(
   ({ className, style, variant = "clear", ...props }, ref) => (
     <TabsPrimitive.Root
       ref={ref}
-      className={clsx("crayon-tabs", className, `crayon-tabs-${variant}`)}
+      className={clsx("crayon-tabs", tabsVariants[variant], className)}
       style={style}
       {...props}
     />
