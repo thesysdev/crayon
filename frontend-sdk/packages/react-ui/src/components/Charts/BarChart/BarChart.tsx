@@ -13,7 +13,7 @@ import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
 type BarChartData = Array<Record<string, string | number>>;
 
-interface BarChartProps<T extends BarChartData> {
+export interface BarChartProps<T extends BarChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
