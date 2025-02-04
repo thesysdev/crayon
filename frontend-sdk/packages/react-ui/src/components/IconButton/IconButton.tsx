@@ -18,12 +18,14 @@ const iconButtonVariants = {
   secondary: "crayon-icon-button-secondary",
   tertiary: "crayon-icon-button-tertiary",
 } as const;
+
 const iconButtonSizes = {
   "extra-small": "crayon-icon-button-extra-small",
   small: "crayon-icon-button-small",
   medium: "crayon-icon-button-medium",
   large: "crayon-icon-button-large",
 } as const;
+
 const iconButtonShapes = {
   square: "crayon-icon-button-square",
   circle: "crayon-icon-button-circle",
