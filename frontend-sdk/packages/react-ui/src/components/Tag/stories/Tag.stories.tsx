@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Heart, Tag as TagIcon, User } from "lucide-react";
+import { User } from "lucide-react";
 import { Tag } from "../Tag";
 import "../tag.scss";
 
@@ -8,6 +8,44 @@ const meta: Meta<typeof Tag> = {
   component: Tag,
   parameters: {
     layout: "centered",
+  },
+  argTypes: {
+    text: {
+      control: "text",
+      description: "The text content of the tag",
+      table: {
+        category: "Content",
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    icon: {
+      control: false,
+      description: "The icon to display in the tag",
+      table: {
+        category: "Content",
+        type: { summary: "ReactNode" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    className: {
+      control: false,
+      description: "Additional CSS class name for custom styling",
+      table: {
+        category: "Styling",
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    styles: {
+      control: false,
+      description: "Additional CSS styles for custom styling",
+      table: {
+        category: "Styling",
+        type: { summary: "CSSProperties" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
   },
   tags: ["autodocs"],
 };
@@ -18,70 +56,7 @@ type Story = StoryObj<typeof Tag>;
 // Basic Tag
 export const Default: Story = {
   args: {
-    text: "Basic Tag",
-  },
-};
-
-// Tag with Icon
-export const WithIcon: Story = {
-  args: {
     text: "User Tag",
     icon: <User size={16} />,
-  },
-};
-
-// Tag with Custom Style
-export const CustomStyle: Story = {
-  args: {
-    text: "Custom Tag",
-    styles: {
-      backgroundColor: "#e6f4ff",
-      color: "#0066cc",
-      borderColor: "#91caff",
-    },
-  },
-};
-
-export const CustomStyleWithIcon: Story = {
-  args: {
-    text: "Custom Tag",
-    icon: <User size={16} />,
-    styles: {
-      backgroundColor: "#e6f4ff",
-      color: "#0066cc",
-      borderColor: "#91caff",
-    },
-  },
-};
-
-// Multiple Tags Example
-export const MultipleTagsExample: Story = {
-  render: () => (
-    <div style={{ display: "flex", gap: "8px" }}>
-      <Tag text="Feature" icon={<TagIcon className="mr-1" size={16} />} />
-      <Tag text="Important" icon={<Heart className="mr-1" size={16} />} />
-      <Tag text="New" />
-    </div>
-  ),
-};
-
-// Long Text Tag
-export const LongTextTag: Story = {
-  args: {
-    text: "This is a very long tag text that should be truncated when it exceeds the available space",
-    styles: {
-      maxWidth: "200px",
-    },
-  },
-};
-
-// Long Text Tag
-export const LongTextTagWithIcon: Story = {
-  args: {
-    text: "This is a very long tag text that should be truncated when it exceeds the available space",
-    icon: <User size={16} />,
-    styles: {
-      maxWidth: "200px",
-    },
   },
 };
