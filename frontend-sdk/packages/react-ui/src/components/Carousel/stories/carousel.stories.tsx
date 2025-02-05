@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Bell, ChevronLeft, ChevronRight } from "lucide-react";
-import { Header } from "../../Header";
-import "../../Header/header.scss";
+import { CardHeader } from "../../CardHeader";
+import "../../CardHeader/cardHeader.scss";
 import { IconButton } from "../../IconButton";
 import "../../IconButton/iconButton.scss";
 import { Image } from "../../Image";
@@ -98,7 +98,7 @@ const CarouselDemo = ({ itemsToScroll, noSnap, showButtons }: CarouselStoryProps
 
   const carouselItems = repeatedItems.map((item) => (
     <CarouselItem key={item.id}>
-      <Header
+      <CardHeader
         title={item.title}
         subtitle={item.subtitle}
         actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}

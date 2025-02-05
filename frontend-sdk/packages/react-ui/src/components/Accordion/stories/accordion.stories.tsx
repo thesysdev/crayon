@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Bell, Download } from "lucide-react";
-import { Header } from "../../Header";
-import "../../Header/header.scss";
+import { Header } from "../../CardHeader";
+import "../../CardHeader/header.scss";
 import { IconButton } from "../../IconButton";
 import "../../IconButton/iconButton.scss";
 import { Image } from "../../Image";

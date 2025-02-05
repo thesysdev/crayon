@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Bell, Settings, ShieldCheck, UserRound } from "lucide-react";
-import { Header } from "../../Header";
-import "../../Header/header.scss";
+import { CardHeader } from "../../CardHeader";
+import "../../CardHeader/cardHeader.scss";
 import { IconButton } from "../../IconButton";
 import "../../IconButton/iconButton.scss";
 import { Image } from "../../Image";
@@ -79,7 +79,7 @@ export const Default: Story = {
         <TabsTrigger value="tab3" text="Settings" />
       </TabsList>
       <TabsContent value="tab1">
-        <Header
+        <CardHeader
           title="Title"
           subtitle="Subtitle"
           actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -87,7 +87,7 @@ export const Default: Story = {
         <Image src="https://picsum.photos/700/700" alt="Image" scale="fill" />
       </TabsContent>
       <TabsContent value="tab2">
-        <Header
+        <CardHeader
           title="Title"
           subtitle="Subtitle"
           actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -95,7 +95,7 @@ export const Default: Story = {
         <Image src="https://picsum.photos/700/750" alt="Image" scale="fill" />
       </TabsContent>
       <TabsContent value="tab3">
-        <Header
+        <CardHeader
           title="Title"
           subtitle="Subtitle"
           actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -119,7 +119,7 @@ export const WithIcon: Story = {
         <TabsTrigger value="tab3" text="Settings" icon={<Settings />} />
       </TabsList>
       <TabsContent value="tab1">
-        <Header
+        <CardHeader
           title="Title"
           subtitle="Subtitle"
           actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -127,7 +127,7 @@ export const WithIcon: Story = {
         <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
       </TabsContent>
       <TabsContent value="tab2">
-        <Header
+        <CardHeader
           title="Title"
           subtitle="Subtitle"
           actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -135,7 +135,7 @@ export const WithIcon: Story = {
         <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
       </TabsContent>
       <TabsContent value="tab3">
-        <Header
+        <CardHeader
           title="Title"
           subtitle="Subtitle"
           actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}

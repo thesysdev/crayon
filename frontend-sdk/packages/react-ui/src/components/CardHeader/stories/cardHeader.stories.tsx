@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ArrowRight, Download } from "lucide-react";
 import { IconButton } from "../../IconButton";
 import "../../IconButton/iconButton.scss";
-import { Header } from "../Header";
-import "../header.scss";
+import { CardHeader } from "../CardHeader";
+import "../cardHeader.scss";
 
-const meta: Meta<typeof Header> = {
-  title: "Components/Header",
-  component: Header,
+const meta: Meta<typeof CardHeader> = {
+  title: "Components/CardHeader",
+  component: CardHeader,
   parameters: {
     layout: "centered",
   },
@@ -25,7 +25,6 @@ const meta: Meta<typeof Header> = {
       table: {
         category: "Content",
         type: { summary: "ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     title: {
@@ -34,7 +33,6 @@ const meta: Meta<typeof Header> = {
       table: {
         category: "Content",
         type: { summary: "ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     subtitle: {
@@ -43,7 +41,6 @@ const meta: Meta<typeof Header> = {
       table: {
         category: "Content",
         type: { summary: "ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     actions: {
@@ -52,7 +49,6 @@ const meta: Meta<typeof Header> = {
       table: {
         category: "Content",
         type: { summary: "ReactElement<ButtonProps | IconButtonProps>[]" },
-        defaultValue: { summary: "undefined" },
       },
     },
     className: {
@@ -61,7 +57,6 @@ const meta: Meta<typeof Header> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     styles: {
@@ -70,7 +65,6 @@ const meta: Meta<typeof Header> = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },
@@ -78,7 +72,7 @@ const meta: Meta<typeof Header> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Header>;
+type Story = StoryObj<typeof CardHeader>;
 
 // Basic button stories
 export const HeaderStory: Story = {
@@ -86,11 +80,22 @@ export const HeaderStory: Story = {
     icon: <ArrowRight />,
     title: "Thesys Crayon",
     subtitle: "Crayon UI is a set of React components.",
+    actions: [<IconButton variant="tertiary" size="small" icon={<Download />} />],
+  },
+  render: (args) => <CardHeader {...args} />,
+};
+
+export const HeaderStoryWithMultipleActions: Story = {
+  parameters: {
+  },
+  args: {
+    icon: <ArrowRight />,
+    title: "Thesys Crayon",
+    subtitle: "Crayon UI is a set of React components.",
     actions: [
-      <IconButton variant="tertiary" size="extra-small" icon={<Download />} />,
-      <IconButton variant="tertiary" size="extra-small" icon={<Download />} />,
-      <IconButton variant="tertiary" size="extra-small" icon={<Download />} />,
+      <IconButton variant="tertiary" size="small" icon={<Download />} />,
+      <IconButton variant="tertiary" size="small" icon={<Download />} />,
     ],
   },
-  render: (args) => <Header {...args} />,
+  render: (args) => <CardHeader {...args} />,
 };
