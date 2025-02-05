@@ -11,7 +11,7 @@ import {
 import { cartesianGrid } from "../cartesianGrid";
 import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
-type LineChartData = Array<Record<string, string | number>>;
+export type LineChartData = Array<Record<string, string | number>>;
 
 export interface LineChartProps<T extends LineChartData> {
   data: T;

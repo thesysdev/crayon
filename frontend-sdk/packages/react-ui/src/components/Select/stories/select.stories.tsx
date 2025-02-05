@@ -38,6 +38,7 @@ const meta: Meta<SelectStoryProps> = {
       </div>
     ),
   ],
+
   argTypes: {
     size: {
       control: "radio",
@@ -46,6 +47,7 @@ const meta: Meta<SelectStoryProps> = {
       table: {
         type: { summary: "string" },
         defaultValue: { summary: "md" },
+        category: "Appearance",
       },
     },
     showTick: {
@@ -54,6 +56,7 @@ const meta: Meta<SelectStoryProps> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
     hideDropdownIcon: {
@@ -62,6 +65,7 @@ const meta: Meta<SelectStoryProps> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "false" },
+        category: "Display",
       },
     },
     placeholder: {
@@ -69,6 +73,8 @@ const meta: Meta<SelectStoryProps> = {
       description: "Placeholder text for the select",
       table: {
         type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+        category: "Content",
       },
     },
   },

@@ -25,10 +25,21 @@ const meta: Meta<typeof Card> = {
     width: {
       control: "radio",
       options: ["standard", "full"],
+      description: "Controls the width of the card component",
+      table: {
+        category: "Appearance",
+        defaultValue: { summary: "standard" },
+      },
     },
     variant: {
       control: "radio",
       options: ["card", "clear", "sunk"],
+      description: "Determines the visual style of the card",
+
+      table: {
+        defaultValue: { summary: "card" },
+        category: "Appearance",
+      },
     },
   },
   tags: ["autodocs", "!dev"],

@@ -43,27 +43,44 @@ const meta: Meta<AccordionStoryProps> = {
       options: ["single", "multiple"],
       description: "The type of accordion behavior - single item open or multiple items",
       defaultValue: "single",
+      table: {
+        category: "Behavior",
+      },
     },
     collapsible: {
       control: "boolean",
       description: "Whether the accordion items can be collapsed (only available for single type)",
       defaultValue: true,
       if: { arg: "type", eq: "single" },
+      table: {
+        category: "Behavior",
+      },
     },
     defaultValue: {
       description: 'The default opened item value (only for type="single")',
       control: false,
+      table: {
+        category: "Behavior",
+      },
     },
+
+    // Visual Props
     variant: {
       control: "radio",
       options: ["card", "sunk"],
       description: "The visual style variant of the accordion",
       defaultValue: "card",
+      table: {
+        category: "Appearance",
+      },
     },
     showIcons: {
       control: "boolean",
       description: "Whether to show icons in the accordion triggers",
       defaultValue: false,
+      table: {
+        category: "Appearance",
+      },
     },
   },
 };

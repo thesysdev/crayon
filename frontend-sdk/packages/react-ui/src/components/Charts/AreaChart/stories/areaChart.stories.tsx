@@ -26,7 +26,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { AreaChart } from '@crayon-ui/react-ui';\n```",
+        component: "```tsx\nimport { AreaChart } from '@crayon-ui/react-ui/Charts/AreaChart';\n```",
       },
     },
   },
@@ -39,6 +39,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       table: {
         type: { summary: "Array<Record<string, string | number>>" },
         defaultValue: { summary: "[]" },
+        category: "Data",
       },
     },
     categoryKey: {
@@ -47,6 +48,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        category: "Data",
       },
     },
     width: {
@@ -55,6 +57,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "800" },
+        category: "Dimensions",
       },
     },
     height: {
@@ -63,6 +66,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "400" },
+        category: "Dimensions",
       },
     },
     theme: {
@@ -72,6 +76,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
+        category: "Appearance",
       },
     },
     icons: {
@@ -81,6 +86,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       table: {
         type: { summary: "Record<string, React.ComponentType>" },
         defaultValue: { summary: "{}" },
+        category: "Appearance",
       },
     },
     variant: {
@@ -90,6 +96,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       options: ["linear", "natural", "step"],
       table: {
         defaultValue: { summary: "natural" },
+        category: "Appearance",
       },
     },
     opacity: {
@@ -99,6 +106,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "0.5" },
+        category: "Appearance",
       },
     },
     grid: {
@@ -107,6 +115,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
     label: {
@@ -115,6 +124,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
     legend: {
@@ -124,6 +134,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
   },

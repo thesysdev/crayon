@@ -13,7 +13,7 @@ import {
 } from "../Charts";
 import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
-type RadialChartData = Array<Record<string, string | number>>;
+export type RadialChartData = Array<Record<string, string | number>>;
 
 export interface RadialChartProps<T extends RadialChartData> {
   data: T;

@@ -26,7 +26,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { BarChart } from '@crayon-ui/react-ui';\n```",
+        component: "```tsx\nimport { BarChart } from '@crayon-ui/react-ui/Charts/BarChart';\n```",
       },
     },
   },
@@ -39,6 +39,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       table: {
         type: { summary: "Array<Record<string, string | number>>" },
         defaultValue: { summary: "[]" },
+        category: "Data",
       },
     },
     categoryKey: {
@@ -47,6 +48,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        category: "Data",
       },
     },
     width: {
@@ -55,6 +57,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "800" },
+        category: "Dimensions",
       },
     },
     height: {
@@ -63,6 +66,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "400" },
+        category: "Dimensions",
       },
     },
     theme: {
@@ -72,6 +76,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
+        category: "Appearance",
       },
     },
     icons: {
@@ -81,6 +86,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       table: {
         type: { summary: "Record<string, React.ComponentType>" },
         defaultValue: { summary: "{}" },
+        category: "Appearance",
       },
     },
     variant: {
@@ -90,6 +96,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       options: ["grouped", "stacked"],
       table: {
         defaultValue: { summary: "grouped" },
+        category: "Appearance",
       },
     },
     radius: {
@@ -98,6 +105,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "4" },
+        category: "Appearance",
       },
     },
     grid: {
@@ -106,6 +114,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
     label: {
@@ -114,6 +123,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
     legend: {
@@ -123,6 +133,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
   },
