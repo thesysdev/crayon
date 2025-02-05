@@ -2,6 +2,34 @@ import { Thread, useThreadListActions, useThreadListState } from "@crayonai/reac
 import clsx from "clsx";
 import { Fragment, useEffect } from "react";
 
+export const ThreadButton = ({
+  id,
+  title,
+  className,
+}: {
+  id: string;
+  title: string;
+  className?: string;
+}) => {
+  const { selectThread } = useThreadListActions();
+  const { selectedThreadId } = useThreadListState();
+
+  return (
+    <button
+      onClick={() => selectThread(id)}
+      className={clsx(
+        "crayon-shell-thread-button",
+        {
+          "crayon-shell-thread-button--selected": selectedThreadId === id,
+        },
+        className,
+      )}
+    >
+      {title}
+    </button>
+  );
+};
+
 export const ThreadList = ({ className }: { className?: string }) => {
   let { threads } = useThreadListState();
   const { load } = useThreadListActions();
@@ -78,33 +106,5 @@ export const ThreadList = ({ className }: { className?: string }) => {
           </Fragment>
         ))}
     </div>
-  );
-};
-
-export const ThreadButton = ({
-  id,
-  title,
-  className,
-}: {
-  id: string;
-  title: string;
-  className?: string;
-}) => {
-  const { selectThread } = useThreadListActions();
-  const { selectedThreadId } = useThreadListState();
-
-  return (
-    <button
-      onClick={() => selectThread(id)}
-      className={clsx(
-        "crayon-shell-thread-button",
-        {
-          "crayon-shell-thread-button--selected": selectedThreadId === id,
-        },
-        className,
-      )}
-    >
-      {title}
-    </button>
   );
 };

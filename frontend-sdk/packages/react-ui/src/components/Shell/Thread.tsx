@@ -40,18 +40,6 @@ export const ScrollArea = ({
   );
 };
 
-export const Messages = ({ className }: { className?: string }) => {
-  const { messages } = useThreadState();
-
-  return (
-    <div className={clsx("crayon-shell-thread-messages", className)}>
-      {messages.map((message) => (
-        <RenderMessage key={message.id} message={message} />
-      ))}
-    </div>
-  );
-};
-
 const FallbackTemplate = () => {
   return <div>Unable to render the response</div>;
 };
@@ -117,6 +105,18 @@ export const RenderMessage = ({ message, className }: { message: Message; classN
   }
 
   return <MessageContainer>{message.message}</MessageContainer>;
+};
+
+export const Messages = ({ className }: { className?: string }) => {
+  const { messages } = useThreadState();
+
+  return (
+    <div className={clsx("crayon-shell-thread-messages", className)}>
+      {messages.map((message) => (
+        <RenderMessage key={message.id} message={message} />
+      ))}
+    </div>
+  );
 };
 
 export const Composer = ({ className }: { className?: string }) => {

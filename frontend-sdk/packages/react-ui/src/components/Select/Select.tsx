@@ -30,7 +30,7 @@ export const SelectTrigger = forwardRef<
 >(({ className, style, children, hideDropdownIcon, size = "md", ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
-    className={clsx("crayon-select-trigger", `crayon-select-trigger-${size}`, className)}
+    className={clsx("crayon-select-trigger", sizeMap[size], className)}
     style={style}
     {...props}
   >

@@ -140,6 +140,13 @@ export const RangePicker: Story = {
     mode: "range",
     variant: "docked",
   },
+  parameters: {
+    docs: {
+      description: {
+        story: "Range picker with docked variant. Select dates by dragging across the calendar",
+      },
+    },
+  },
 };
 
 // Single date picker with floating variant
