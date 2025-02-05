@@ -123,7 +123,7 @@ export const RenderMessage = ({ message, className }: { message: Message; classN
 
 export const Composer = ({ className }: { className?: string }) => {
   const { textContent, setTextContent } = useComposerState();
-  const { processMessage } = useThreadActions();
+  const { processMessage, onCancel } = useThreadActions();
   const { isRunning } = useThreadState();
 
   const handleSubmit = () => {
@@ -155,7 +155,7 @@ export const Composer = ({ className }: { className?: string }) => {
           }}
         />
         <IconButton
-          onClick={handleSubmit}
+          onClick={isRunning ? onCancel : handleSubmit}
           icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowRight size="1em" />}
         />
       </div>

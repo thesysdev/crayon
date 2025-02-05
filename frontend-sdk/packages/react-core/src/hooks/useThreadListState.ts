@@ -15,6 +15,6 @@ export const useThreadListState = (): ThreadListState => {
     threads: useStore(threadListManager, (store) => store.threads),
     error: useStore(threadListManager, (store) => store.error),
     selectedThreadId: useStore(threadListManager, (store) => store.selectedThreadId),
-    shouldLoadThread: useStore(threadListManager, (store) => store.shouldLoadThread),
+    shouldResetThreadState: useStore(threadListManager, (store) => store.shouldResetThreadState),
   };
 };

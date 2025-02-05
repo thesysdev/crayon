@@ -36,12 +36,12 @@ export const useThreadListManager = (props: Props): DefaultManager => {
 
       return {
         selectedThreadId: null,
-        shouldLoadThread: false,
+        shouldResetThreadState: false,
         threads: [] as Thread[],
         error: null,
         isLoading: true,
         selectThread: (threadId, shouldLoadThread = true) => {
-          set({ selectedThreadId: threadId, shouldLoadThread });
+          set({ selectedThreadId: threadId, shouldResetThreadState: shouldLoadThread });
           propsRef.current.onSelectThread(threadId);
         },
         load: () => {
@@ -90,7 +90,7 @@ export const useThreadListManager = (props: Props): DefaultManager => {
             });
         },
         switchToNewThread: () => {
-          set({ selectedThreadId: null });
+          set({ selectedThreadId: null, shouldResetThreadState: true });
           propsRef.current.onSwitchToNew();
         },
       };

@@ -15,7 +15,7 @@ export const useThreadListManagerStore = (inputThreadListManager: ThreadListMana
         isLoading: inputThreadListManagerRef.current.isLoading,
         error: inputThreadListManagerRef.current.error,
         selectedThreadId: inputThreadListManagerRef.current.selectedThreadId,
-        shouldLoadThread: inputThreadListManagerRef.current.shouldLoadThread,
+        shouldResetThreadState: inputThreadListManagerRef.current.shouldResetThreadState,
 
         switchToNewThread: () => inputThreadListManagerRef.current.switchToNewThread(),
         load: () => inputThreadListManagerRef.current.load(),
@@ -33,7 +33,7 @@ export const useThreadListManagerStore = (inputThreadListManager: ThreadListMana
       isLoading: inputThreadListManager.isLoading,
       error: inputThreadListManager.error,
       selectedThreadId: inputThreadListManager.selectedThreadId,
-      shouldLoadThread: inputThreadListManager.shouldLoadThread,
+      shouldResetThreadState: inputThreadListManager.shouldResetThreadState,
     });
     // no dependency array, since zustand will handle rerendering automatically
   });

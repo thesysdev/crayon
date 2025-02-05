@@ -4,7 +4,7 @@ import { CreateMessage, Message, ResponseTemplate, ThreadManager } from "./types
 
 type Props = {
   threadId: string | null;
-  shouldLoadThread?: boolean;
+  shouldResetThreadState?: boolean;
   loadThread: (threadId: string) => Promise<Message[]>;
   onProcessMessage: (props: {
     message: CreateMessage;
@@ -86,7 +86,7 @@ export const useThreadManager = (props: Props): ThreadManager => {
   }, [propsRef]);
 
   useEffect(() => {
-    if (!props.shouldLoadThread) {
+    if (!props.shouldResetThreadState) {
       return;
     }
 
@@ -111,7 +111,7 @@ export const useThreadManager = (props: Props): ThreadManager => {
           store.setState({ abortController: null, isRunning: false });
         });
     }
-  }, [props.threadId, props.shouldLoadThread]);
+  }, [props.threadId, props.shouldResetThreadState]);
 
   return useStore(store);
 };

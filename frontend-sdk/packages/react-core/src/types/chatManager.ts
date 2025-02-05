@@ -54,7 +54,7 @@ export type ThreadListState = {
   isLoading: boolean;
   error: Error | null | undefined;
   selectedThreadId: string | null;
-  shouldLoadThread: boolean;
+  shouldResetThreadState: boolean;
 };
 
 /**
@@ -64,7 +64,7 @@ export type ThreadListActions = {
   load: () => void;
   switchToNewThread: () => void;
   createThread: (firstMessage: UserMessage) => Promise<Thread>;
-  selectThread: (threadId: string, shouldLoadThread?: boolean) => void;
+  selectThread: (threadId: string, shouldResetThreadState?: boolean) => void;
   updateThread: (thread: Thread) => void;
   deleteThread: (threadId: string) => void;
 };
