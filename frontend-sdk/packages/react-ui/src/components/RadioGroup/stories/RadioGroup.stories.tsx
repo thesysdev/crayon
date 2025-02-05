@@ -19,16 +19,9 @@ const meta: Meta<typeof RadioGroup> = {
       },
     },
   },
-  decorators: [
-    (Story) => (
-      <div style={{ width: "350px" }}>
-        <Story />
-      </div>
-    ),
-  ],
   argTypes: {
     variant: {
-      control: "select",
+      control: "radio",
       options: ["clear", "card", "sunk"],
       description: "The variant of the radio group",
       table: {
@@ -69,31 +62,6 @@ type Story = StoryObj<typeof RadioGroup>;
 export const Default: Story = {
   args: {
     variant: "clear",
-  },
-  render: (args) => (
-    <RadioGroup {...args}>
-      <RadioItem value="option1" label="Option 1" />
-      <RadioItem value="option2" label="Option 2" />
-      <RadioItem value="option3" label="Option 3" />
-    </RadioGroup>
-  ),
-};
-export const Card: Story = {
-  args: {
-    variant: "card",
-  },
-  render: (args) => (
-    <RadioGroup {...args}>
-      <RadioItem value="option1" label="Option 1" />
-      <RadioItem value="option2" label="Option 2" />
-      <RadioItem value="option3" label="Option 3" />
-    </RadioGroup>
-  ),
-};
-
-export const Sunk: Story = {
-  args: {
-    variant: "sunk",
   },
   render: (args) => (
     <RadioGroup {...args}>

@@ -19,16 +19,9 @@ const meta: Meta<typeof SwitchGroup> = {
       },
     },
   },
-  decorators: [
-    (Story) => (
-      <div style={{ width: "350px" }}>
-        <Story />
-      </div>
-    ),
-  ],
   argTypes: {
     variant: {
-      control: "select",
+      control: "radio",
       options: ["clear", "card", "sunk"],
       defaultValue: "clear",
       description: "The variant of the switch group",
@@ -69,7 +62,7 @@ type Story = StoryObj<typeof SwitchGroup>;
 
 export const SwitchGroupStory: Story = {
   args: {
-    variant: "clear",
+    variant: "card",
   },
   render: (args) => (
     <SwitchGroup {...args}>
