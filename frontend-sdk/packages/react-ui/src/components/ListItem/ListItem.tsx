@@ -1,13 +1,13 @@
 import clsx from "clsx";
-import React from "react";
+import React, { CSSProperties, ReactNode } from "react";
 
 export interface ListItemProps {
   className?: string;
-  style?: React.CSSProperties;
-  decorativeIcon?: React.ReactNode;
-  title?: React.ReactNode;
-  subtitle?: React.ReactNode;
-  actionIcon?: React.ReactNode;
+  style?: CSSProperties;
+  decorativeIcon?: ReactNode;
+  title?: ReactNode;
+  subtitle?: ReactNode;
+  actionIcon?: ReactNode;
   onClick?: () => void;
 }
 

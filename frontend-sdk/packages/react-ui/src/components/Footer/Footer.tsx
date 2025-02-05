@@ -1,25 +1,30 @@
 import clsx from "clsx";
-import React from "react";
-import { Button } from "../Button";
-import { IconButton } from "../IconButton";
+import { CSSProperties, forwardRef, HTMLAttributes, ReactElement } from "react";
+import { ButtonProps } from "../Button";
+import { IconButtonProps } from "../IconButton";
 
-export type FooterVariant = "vertical" | "horizontal";
+type FooterVariant = "vertical" | "horizontal";
 
-export interface FooterProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface FooterProps extends HTMLAttributes<HTMLDivElement> {
   variant?: FooterVariant;
   children:
-    | React.ReactElement<typeof Button | typeof IconButton>
-    | React.ReactElement<typeof Button | typeof IconButton>[];
+    | ReactElement<ButtonProps | IconButtonProps>
+    | ReactElement<ButtonProps | IconButtonProps>[];
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }
 
-export const Footer = React.forwardRef<HTMLDivElement, FooterProps>((props, ref) => {
-  const { className, style, variant, children, ...rest } = props;
+const variantMap: Record<FooterVariant, string> = {
+  vertical: "crayon-footer-vertical",
+  horizontal: "crayon-footer-horizontal",
+};
+
+export const Footer = forwardRef<HTMLDivElement, FooterProps>((props, ref) => {
+  const { className, style, variant = "horizontal", children, ...rest } = props;
   return (
     <div
       ref={ref}
-      className={clsx("crayon-footer", `crayon-footer-${variant}`, className)}
+      className={clsx("crayon-footer", variantMap[variant], className)}
       style={style}
       {...rest}
     >

@@ -1,11 +1,11 @@
 import clsx from "clsx";
-import React, { forwardRef } from "react";
+import { CSSProperties, forwardRef, ReactNode } from "react";
 
 export interface TagProps {
   className?: string;
-  styles?: React.CSSProperties;
-  icon?: React.ReactNode;
-  text: React.ReactNode;
+  styles?: CSSProperties;
+  icon?: ReactNode;
+  text: ReactNode;
 }
 
 export const Tag = forwardRef<HTMLDivElement, TagProps>((props, ref) => {

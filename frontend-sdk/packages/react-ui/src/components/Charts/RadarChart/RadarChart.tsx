@@ -12,7 +12,7 @@ import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
 type RadarChartData = Array<Record<string, string | number>>;
 
-interface RadarChartProps<T extends RadarChartData> {
+export interface RadarChartProps<T extends RadarChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";

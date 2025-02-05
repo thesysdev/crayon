@@ -1,10 +1,10 @@
 import clsx from "clsx";
-import React, { forwardRef } from "react";
+import { CSSProperties, forwardRef, ReactElement } from "react";
 import { Tag } from "../Tag";
 
 export interface TagBlockProps {
-  children: React.ReactElement<typeof Tag> | React.ReactElement<typeof Tag>[];
-  styles?: React.CSSProperties;
+  children: ReactElement<typeof Tag> | ReactElement<typeof Tag>[];
+  styles?: CSSProperties;
   className?: string;
 }
 

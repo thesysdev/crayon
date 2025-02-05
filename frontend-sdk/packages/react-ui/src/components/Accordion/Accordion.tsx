@@ -19,20 +19,27 @@ export const Accordion = forwardRef<
   />
 ));
 
+type AccordionItemVariant = "card" | "sunk";
 export interface AccordionItemProps
   extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> {
   className?: string;
   style?: React.CSSProperties;
   value: string;
-  variant?: "card" | "sunk";
+  variant?: AccordionItemVariant;
 }
+
+const variantMap: Record<AccordionItemVariant, string> = {
+  card: "crayon-accordion-item-card",
+  sunk: "crayon-accordion-item-sunk",
+};
+
 export const AccordionItem = forwardRef<
   React.ComponentRef<typeof AccordionPrimitive.Item>,
   AccordionItemProps
 >(({ className, style, value, variant = "card", ...props }, ref) => (
   <AccordionPrimitive.Item
     ref={ref}
-    className={clsx("crayon-accordion-item", `crayon-accordion-item-${variant}`, className)}
+    className={clsx("crayon-accordion-item", variantMap[variant], className)}
     style={style}
     value={value}
     {...props}

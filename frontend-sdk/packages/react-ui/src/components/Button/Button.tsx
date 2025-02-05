@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import { forwardRef, ReactNode } from "react";
 
-export type ButtonVariant = "primary" | "secondary" | "tertiary";
-export type ButtonSize = "small" | "medium" | "large";
+type ButtonVariant = "primary" | "secondary" | "tertiary";
+type ButtonSize = "small" | "medium" | "large";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -10,6 +10,18 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   iconLeft?: ReactNode;
   iconRight?: ReactNode;
 }
+
+const variantMap: Record<ButtonVariant, string> = {
+  primary: "crayon-button-base-primary",
+  secondary: "crayon-button-base-secondary",
+  tertiary: "crayon-button-base-tertiary",
+};
+
+const sizeMap: Record<ButtonSize, string> = {
+  small: "crayon-button-base-small",
+  medium: "crayon-button-base-medium",
+  large: "crayon-button-base-large",
+};
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -19,12 +31,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={clsx(
-          "crayon-button-base",
-          `crayon-button-base-${variant}`,
-          `crayon-button-base-${size}`,
-          className,
-        )}
+        className={clsx("crayon-button-base", variantMap[variant], sizeMap[size], className)}
         {...props}
       >
         {iconLeft}

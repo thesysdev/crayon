@@ -1,17 +1,17 @@
 import clsx from "clsx";
-import React, { forwardRef } from "react";
-import { Button } from "../Button";
-import { IconButton } from "../IconButton";
+import { cloneElement, CSSProperties, forwardRef, ReactElement, ReactNode } from "react";
+import { ButtonProps } from "../Button";
+import { IconButtonProps } from "../IconButton";
 
 export interface HeaderProps {
-  icon?: React.ReactNode;
-  title?: React.ReactNode;
-  subtitle?: React.ReactNode;
+  icon?: ReactNode;
+  title?: ReactNode;
+  subtitle?: ReactNode;
   actions?:
-    | React.ReactElement<typeof Button | typeof IconButton>
-    | React.ReactElement<typeof Button | typeof IconButton>[];
+    | ReactElement<ButtonProps | IconButtonProps>
+    | ReactElement<ButtonProps | IconButtonProps>[];
   className?: string;
-  styles?: React.CSSProperties;
+  styles?: CSSProperties;
 }
 
 export const Header = forwardRef<HTMLDivElement, HeaderProps>((props, ref) => {
@@ -25,7 +25,7 @@ export const Header = forwardRef<HTMLDivElement, HeaderProps>((props, ref) => {
         </div>
         <div className="crayon-header-top-right">
           {Array.isArray(actions)
-            ? actions.map((action, index) => React.cloneElement(action, { key: index }))
+            ? actions.map((action, index) => cloneElement(action, { key: index }))
             : actions}
         </div>
       </div>

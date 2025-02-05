@@ -15,7 +15,7 @@ import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
 type PieChartData = Array<Record<string, string | number>>;
 
-interface PieChartProps<T extends PieChartData> {
+export interface PieChartProps<T extends PieChartData> {
   data: T;
   categoryKey: keyof T[number];
   dataKey: keyof T[number];
@@ -24,11 +24,16 @@ interface PieChartProps<T extends PieChartData> {
   format?: "percentage" | "number";
   legend?: boolean;
   label?: boolean;
-  outerRadius?: number;
-  innerRadius?: number;
   width?: number;
   height?: number;
 }
+
+const layoutMap: Record<string, string> = {
+  mobile: "crayon-pie-chart-container-mobile",
+  fullscreen: "crayon-pie-chart-container-fullscreen",
+  tray: "crayon-pie-chart-container-tray",
+  copilot: "crayon-pie-chart-container-copilot",
+};
 
 // Helper function to calculate percentage
 const calculatePercentage = (value: number, total: number): number => {
@@ -47,8 +52,6 @@ export const PieChart = <T extends PieChartData>({
   format = "number",
   legend = true,
   label = true,
-  outerRadius,
-  innerRadius,
   width = 800,
   height = 400,
 }: PieChartProps<T>) => {
@@ -85,14 +88,14 @@ export const PieChart = <T extends PieChartData>({
           }
         }
 
-        setCalculatedOuterRadius(outerRadius ?? newOuterRadius);
-        setCalculatedInnerRadius(innerRadius ?? newInnerRadius);
+        setCalculatedOuterRadius(newOuterRadius);
+        setCalculatedInnerRadius(newInnerRadius);
       }, 100),
     );
 
     resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
-  }, [layout, label, variant, outerRadius, innerRadius]);
+  }, [layout, label, variant]);
 
   // Calculate total for percentage calculations
   const total = data.reduce((sum, item) => sum + Number(item[dataKey]), 0);
@@ -149,7 +152,7 @@ export const PieChart = <T extends PieChartData>({
     <ChartContainer
       ref={containerRef}
       config={chartConfig}
-      className={clsx("crayon-pie-chart-container", `crayon-pie-chart-container-${layout}`)}
+      className={clsx("crayon-pie-chart-container", layoutMap[layout])}
     >
       <RechartsPieChart width={width} height={height}>
         <ChartTooltip content={<ChartTooltipContent showPercentage={format === "percentage"} />} />

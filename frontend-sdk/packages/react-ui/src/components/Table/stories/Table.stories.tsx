@@ -23,8 +23,8 @@ type Story = StoryObj<typeof Table>;
 
 // Basic Table Story
 export const Basic: Story = {
-  render: () => (
-    <Table>
+  render: (args) => (
+    <Table {...args}>
       <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
         <TableRow>
@@ -90,33 +90,6 @@ export const WithFooter: Story = {
           <TableCell>$175.00</TableCell>
         </TableRow>
       </TableFooter>
-    </Table>
-  ),
-};
-
-// Table with Custom Styling Story
-export const CustomStyling: Story = {
-  render: () => (
-    <Table className="border rounded-lg">
-      <TableHeader>
-        <TableRow className="bg-gray-100">
-          <TableHead className="font-bold">Name</TableHead>
-          <TableHead className="font-bold">Email</TableHead>
-          <TableHead className="font-bold">Role</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        <TableRow>
-          <TableCell className="font-medium">John Doe</TableCell>
-          <TableCell>john@example.com</TableCell>
-          <TableCell>Admin</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="font-medium">Jane Smith</TableCell>
-          <TableCell>jane@example.com</TableCell>
-          <TableCell>User</TableCell>
-        </TableRow>
-      </TableBody>
     </Table>
   ),
 };

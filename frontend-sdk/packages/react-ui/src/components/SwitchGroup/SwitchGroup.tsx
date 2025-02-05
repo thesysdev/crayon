@@ -1,20 +1,27 @@
 import clsx from "clsx";
-import React, { forwardRef } from "react";
+import { CSSProperties, forwardRef, ReactElement } from "react";
 import { SwitchItemProps } from "../SwitchItem";
 
+type SwitchGroupVariant = "clear" | "card" | "sunk";
 export interface SwitchGroupProps {
-  children: React.ReactElement<SwitchItemProps> | React.ReactElement<SwitchItemProps>[];
+  children: ReactElement<SwitchItemProps> | ReactElement<SwitchItemProps>[];
   className?: string;
-  style?: React.CSSProperties;
-  variant?: "clear" | "card" | "sunk";
+  style?: CSSProperties;
+  variant?: SwitchGroupVariant;
 }
+
+const variants: Record<SwitchGroupVariant, string> = {
+  clear: "crayon-switch-group-clear",
+  card: "crayon-switch-group-card",
+  sunk: "crayon-switch-group-sunk",
+};
 
 const SwitchGroup = forwardRef<HTMLDivElement, SwitchGroupProps>((props, ref) => {
   const { children, className, style, variant = "clear" } = props;
   return (
     <div
       ref={ref}
-      className={clsx("crayon-switch-group", `crayon-switch-group-${variant}`, className)}
+      className={clsx("crayon-switch-group", variants[variant], className)}
       style={style}
     >
       {children}

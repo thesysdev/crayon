@@ -1,14 +1,14 @@
 import clsx from "clsx";
-import React from "react";
+import { CSSProperties, forwardRef, ReactElement } from "react";
 import { ListItemProps } from "../ListItem";
 
 export interface ListBlockProps {
-  children: React.ReactElement<ListItemProps> | React.ReactElement<ListItemProps>[];
+  children: ReactElement<ListItemProps> | ReactElement<ListItemProps>[];
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }
 
-const ListBlock = React.forwardRef<HTMLDivElement, ListBlockProps>((props, ref) => {
+const ListBlock = forwardRef<HTMLDivElement, ListBlockProps>((props, ref) => {
   return (
     <div ref={ref} className={clsx("crayon-list-block", props.className)} style={props.style}>
       {props.children}

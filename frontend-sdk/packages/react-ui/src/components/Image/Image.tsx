@@ -7,7 +7,7 @@ type ScaleType = "fit" | "fill";
 
 export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
-  alt: string;
+  alt?: string;
   styles?: React.CSSProperties;
   className?: string;
   aspectRatio?: AspectRatioType;
@@ -22,13 +22,18 @@ const aspectRatioMap: Record<AspectRatioType, number> = {
   "16:9": 16 / 9,
 };
 
+const scaleMap: Record<ScaleType, string> = {
+  fit: "crayon-image-fit",
+  fill: "crayon-image-fill",
+};
+
 export const Image = forwardRef<HTMLImageElement, ImageProps>((props, ref) => {
   const { src, alt, styles, className, aspectRatio = "3:2", scale = "fit", ...rest } = props;
 
   const imageClasses = clsx(
-    "image",
+    "crayon-image",
     {
-      [`image-${scale}`]: scale,
+      [`${scaleMap[scale]}`]: scale,
     },
     className,
   );

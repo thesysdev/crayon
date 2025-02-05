@@ -15,7 +15,7 @@ import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
 type RadialChartData = Array<Record<string, string | number>>;
 
-interface RadialChartProps<T extends RadialChartData> {
+export interface RadialChartProps<T extends RadialChartData> {
   data: T;
   categoryKey: keyof T[number];
   dataKey: keyof T[number];
@@ -25,11 +25,16 @@ interface RadialChartProps<T extends RadialChartData> {
   legend?: boolean;
   label?: boolean;
   grid?: boolean;
-  outerRadius?: number;
-  innerRadius?: number;
   width?: number;
   height?: number;
 }
+
+const layoutMap: Record<string, string> = {
+  mobile: "crayon-pie-chart-container-mobile",
+  fullscreen: "crayon-pie-chart-container-fullscreen",
+  tray: "crayon-pie-chart-container-tray",
+  copilot: "crayon-pie-chart-container-copilot",
+};
 
 // Helper function to calculate percentage
 const calculatePercentage = (value: number, total: number): number => {
@@ -47,8 +52,6 @@ export const RadialChart = <T extends RadialChartData>({
   legend = true,
   label = true,
   grid = true,
-  outerRadius,
-  innerRadius,
   width = 800,
   height = 400,
 }: RadialChartProps<T>) => {
@@ -86,14 +89,14 @@ export const RadialChart = <T extends RadialChartData>({
           newInnerRadius = 30;
         }
 
-        setCalculatedOuterRadius(outerRadius ?? newOuterRadius);
-        setCalculatedInnerRadius(innerRadius ?? newInnerRadius);
+        setCalculatedOuterRadius(newOuterRadius);
+        setCalculatedInnerRadius(newInnerRadius);
       }, 100),
     );
 
     resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
-  }, [layout, label, outerRadius, innerRadius]);
+  }, [layout, label]);
 
   // Calculate total for percentage calculations
   const total = data.reduce((sum, item) => sum + Number(item[dataKey]), 0);
@@ -140,11 +143,7 @@ export const RadialChart = <T extends RadialChartData>({
     <ChartContainer
       ref={containerRef}
       config={chartConfig}
-      className={clsx(
-        "crayon-radial-chart-container",
-        `crayon-radial-chart-container-${layout}`,
-        "aspect-square",
-      )}
+      className={clsx("crayon-radial-chart-container", layoutMap[layout], "aspect-square")}
     >
       <RadialBarChart
         width={width}

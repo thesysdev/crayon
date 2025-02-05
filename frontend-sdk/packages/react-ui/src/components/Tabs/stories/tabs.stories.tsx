@@ -13,21 +13,66 @@ const meta: Meta<typeof Tabs> = {
   title: "Components/Tabs",
   component: Tabs,
   tags: ["autodocs"],
+  parameters: {
+    layout: "centered",
+  },
   decorators: [
     (Story) => (
-      <div style={{ maxWidth: "600px", margin: "2rem" }}>
+      <div style={{ width: "400px", margin: "2rem" }}>
         <Story />
       </div>
     ),
   ],
+  argTypes: {
+    variant: {
+      control: {
+        type: "select",
+        options: ["clear", "card", "sunk"],
+      },
+      description: "The variant of the tabs",
+      table: {
+        type: {
+          summary: "clear | card | sunk",
+        },
+        defaultValue: { summary: "clear" },
+        category: "Appearance",
+      },
+    },
+    defaultValue: {
+      control: false,
+      description: "The default value of the tabs which is used to determine which tab is selected",
+      table: {
+        defaultValue: { summary: "undefined" },
+        category: "Behavior",
+      },
+    },
+    className: {
+      control: false,
+      description: "Additional class name for the tabs",
+      table: {
+        category: "Styling",
+      },
+    },
+    style: {
+      control: false,
+      description: "Additional style for the tabs",
+      table: {
+        category: "Styling",
+      },
+    },
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof Tabs>;
 
 export const Default: Story = {
-  render: () => (
-    <Tabs defaultValue="tab1">
+  args: {
+    variant: "clear",
+    defaultValue: "tab1",
+  },
+  render: (args) => (
+    <Tabs {...args}>
       <TabsList>
         <TabsTrigger value="tab1" text="Account" />
         <TabsTrigger value="tab2" text="Password" />
@@ -39,7 +84,7 @@ export const Default: Story = {
           subtitle="Subtitle"
           actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
         />
-        <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
+        <Image src="https://picsum.photos/700/700" alt="Image" scale="fill" />
       </TabsContent>
       <TabsContent value="tab2">
         <Header
@@ -47,7 +92,7 @@ export const Default: Story = {
           subtitle="Subtitle"
           actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
         />
-        <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
+        <Image src="https://picsum.photos/700/750" alt="Image" scale="fill" />
       </TabsContent>
       <TabsContent value="tab3">
         <Header
@@ -55,190 +100,23 @@ export const Default: Story = {
           subtitle="Subtitle"
           actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
         />
-        <Image src="https://picsum.photos/400/500" alt="Image" scale="fill" />
-      </TabsContent>
-    </Tabs>
-  ),
-};
-
-export const Disabled: Story = {
-  render: () => (
-    <Tabs defaultValue="tab1">
-      <TabsList>
-        <TabsTrigger value="tab1" text="Active Tab" />
-        <TabsTrigger value="tab2" disabled text="Disabled Tab" />
-        <TabsTrigger value="tab3" text="Another Tab" />
-      </TabsList>
-      <TabsContent value="tab1">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
-      </TabsContent>
-      <TabsContent value="tab2">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
-      </TabsContent>
-      <TabsContent value="tab3">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/400/500" alt="Image" scale="fill" />
-      </TabsContent>
-    </Tabs>
-  ),
-};
-
-export const CustomStyling: Story = {
-  render: () => (
-    <Tabs defaultValue="tab1" className="custom-tabs">
-      <TabsList className="custom-tabs-list">
-        <TabsTrigger value="tab1" text="Tab 1" />
-        <TabsTrigger value="tab2" text="Tab 2" />
-      </TabsList>
-      <TabsContent value="tab1" className="custom-content">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
-      </TabsContent>
-      <TabsContent value="tab2" className="custom-content">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
+        <Image src="https://picsum.photos/700/760" alt="Image" scale="fill" />
       </TabsContent>
     </Tabs>
   ),
 };
 
 export const WithIcon: Story = {
-  render: () => (
-    <Tabs defaultValue="tab1" variant="clear">
+  args: {
+    variant: "clear",
+    defaultValue: "tab2",
+  },
+  render: (args) => (
+    <Tabs {...args}>
       <TabsList>
         <TabsTrigger value="tab1" text="Account" icon={<UserRound />} />
         <TabsTrigger value="tab2" text="Password" icon={<ShieldCheck />} />
         <TabsTrigger value="tab3" text="Settings" icon={<Settings />} />
-      </TabsList>
-      <TabsContent value="tab1">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
-      </TabsContent>
-      <TabsContent value="tab2">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
-      </TabsContent>
-      <TabsContent value="tab3">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/400/500" alt="Image" scale="fill" />
-      </TabsContent>
-    </Tabs>
-  ),
-};
-
-export const Clear: Story = {
-  render: () => (
-    <Tabs defaultValue="tab1" variant="clear">
-      <TabsList>
-        <TabsTrigger value="tab1" text="Account" />
-        <TabsTrigger value="tab2" text="Password" />
-        <TabsTrigger value="tab3" text="Settings" />
-      </TabsList>
-      <TabsContent value="tab1">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
-      </TabsContent>
-      <TabsContent value="tab2">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
-      </TabsContent>
-      <TabsContent value="tab3">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/400/500" alt="Image" scale="fill" />
-      </TabsContent>
-    </Tabs>
-  ),
-};
-
-export const Card: Story = {
-  render: () => (
-    <Tabs defaultValue="tab2" variant="card">
-      <TabsList>
-        <TabsTrigger value="tab1" text="Account" />
-        <TabsTrigger value="tab2" text="Password" />
-        <TabsTrigger value="tab3" text="Settings" />
-      </TabsList>
-      <TabsContent value="tab1">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
-      </TabsContent>
-      <TabsContent value="tab2">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
-      </TabsContent>
-      <TabsContent value="tab3">
-        <Header
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-        />
-        <Image src="https://picsum.photos/400/500" alt="Image" scale="fill" />
-      </TabsContent>
-    </Tabs>
-  ),
-};
-
-export const Sunk: Story = {
-  render: () => (
-    <Tabs defaultValue="tab3" variant="sunk">
-      <TabsList>
-        <TabsTrigger value="tab1" text="Account" />
-        <TabsTrigger value="tab2" text="Password" />
-        <TabsTrigger value="tab3" text="Settings" />
       </TabsList>
       <TabsContent value="tab1">
         <Header

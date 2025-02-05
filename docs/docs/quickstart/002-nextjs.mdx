@@ -1,0 +1,92 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# NextJS
+
+## Create a new NextJS project
+<Tabs groupId="js-package-manager">
+  <TabItem value="npm" label="npm">
+  ```bash
+  npx create-next-app@latest my-agent
+  ```
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+
+  ```bash
+  pnpm dlx create-next-app@latest my-agent
+  ```
+  </TabItem>
+
+  <TabItem value="yarn" label="yarn">
+  ```bash
+  yarn create-next-app@latest my-agent
+  ```
+  </TabItem>
+</Tabs>
+
+## Install the crayon packages:
+
+<Tabs groupId="js-package-manager">
+  <TabItem value="npm" label="npm">
+```bash
+npm install @crayonai/react-ui @crayonai/react-core
+```
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+```bash
+pnpm add @crayonai/crayon-ui @crayonai/react-core
+```
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+```bash
+yarn add @crayonai/crayon-ui @crayonai/react-core
+```
+  </TabItem>
+</Tabs>
+
+
+## Add the CrayonProvider to your app
+
+```tsx
+import { CrayonChat } from "@crayonai/react-ui";
+
+export default function App() {
+  return <CrayonChat url="http://localhost:3000/api/chat" />;
+}
+```
+
+## Integrate LLM with your backend route
+
+```tsx
+export async function POST(req: NextRequest) {
+  const { messages } = await req.json();
+  const client = new OpenAI();
+  const stream = client.chat.completions.create({
+    model: "gpt-4o",
+    messages: messages,
+    stream: true,
+  });
+  const streamResponse = new NextResponse(stream);
+  return NextResponse.json(response);
+}
+```
+
+### Serve the NextJS app
+
+<Tabs groupId="js-package-manager">
+  <TabItem value="npm" label="npm">
+  ```bash
+  npm run dev
+    ```
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+  ```bash
+  pnpm dev
+  ```
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+  ```bash
+  yarn dev
+  ```
+  </TabItem>
+</Tabs>
