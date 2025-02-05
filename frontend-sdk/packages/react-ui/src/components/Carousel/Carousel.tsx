@@ -75,7 +75,7 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
 );
 
 export const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, children, ...props }, _ref) => {
     const { scrollDivRef, noSnap } = useCarousel();
 
     const content = noSnap ? (
