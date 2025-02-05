@@ -8,6 +8,11 @@ const meta: Meta<typeof IconButton> = {
   component: IconButton,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { IconButton } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     icon: {

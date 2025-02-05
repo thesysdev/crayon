@@ -14,6 +14,11 @@ const meta: Meta<typeof FormControl> = {
   tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { FormControl, Hint } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     children: {
@@ -53,8 +58,8 @@ type Story = StoryObj<typeof FormControl>;
 export const WithLabelAndHint: Story = {
   render: (args) => (
     <FormControl>
-      <Label>Username</Label>
-      <Input placeholder="Enter username" />
+      <Label htmlFor="username">Username</Label>
+      <Input placeholder="Enter username" id="username" />
       <Hint>
         <Info size={14} />
         <span>Must be at least 4 characters long</span>

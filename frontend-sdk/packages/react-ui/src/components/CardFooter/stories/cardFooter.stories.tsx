@@ -4,12 +4,12 @@ import { Button } from "../../Button";
 import "../../Button/button.scss";
 import { IconButton } from "../../IconButton";
 import "../../IconButton/iconButton.scss";
-import { Footer } from "../Footer";
-import "../footer.scss";
+import { CardFooter } from "../CardFooter";
+import "../cardFooter.scss";
 
-const meta: Meta<typeof Footer> = {
-  title: "Components/Footer",
-  component: Footer,
+const meta: Meta<typeof CardFooter> = {
+  title: "Components/CardFooter",
+  component: CardFooter,
   parameters: {
     layout: "centered",
     docs: {
@@ -20,7 +20,7 @@ const meta: Meta<typeof Footer> = {
   },
   decorators: [
     (Story) => (
-      <div style={{ width: "500px" }}>
+      <div style={{ width: "350px" }}>
         <Story />
       </div>
     ),
@@ -70,7 +70,7 @@ const meta: Meta<typeof Footer> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Footer>;
+type Story = StoryObj<typeof CardFooter>;
 
 // Basic footer stories
 export const FooterStory: Story = {
@@ -78,10 +78,10 @@ export const FooterStory: Story = {
     variant: "horizontal",
   },
   render: (args) => (
-    <Footer variant={args.variant}>
+    <CardFooter variant={args.variant}>
       <Button>Cancel</Button>
       <Button>Save</Button>
       <IconButton icon={<ArrowLeft size={16} />} />
-    </Footer>
+    </CardFooter>
   ),
 };

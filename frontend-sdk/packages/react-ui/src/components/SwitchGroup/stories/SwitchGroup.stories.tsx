@@ -13,6 +13,11 @@ const meta: Meta<typeof SwitchGroup> = {
   },
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { SwitchGroup, SwitchItem } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   decorators: [
     (Story) => (

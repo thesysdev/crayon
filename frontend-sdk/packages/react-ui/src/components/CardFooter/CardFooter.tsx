@@ -5,7 +5,7 @@ import { IconButtonProps } from "../IconButton";
 
 type FooterVariant = "vertical" | "horizontal";
 
-export interface FooterProps extends HTMLAttributes<HTMLDivElement> {
+export interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {
   variant?: FooterVariant;
   children:
     | ReactElement<ButtonProps | IconButtonProps>
@@ -19,7 +19,7 @@ const variantMap: Record<FooterVariant, string> = {
   horizontal: "crayon-footer-horizontal",
 };
 
-export const Footer = forwardRef<HTMLDivElement, FooterProps>((props, ref) => {
+export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>((props, ref) => {
   const { className, style, variant = "horizontal", children, ...rest } = props;
   return (
     <div
@@ -33,4 +33,4 @@ export const Footer = forwardRef<HTMLDivElement, FooterProps>((props, ref) => {
   );
 });
 
-Footer.displayName = "Footer";
+CardFooter.displayName = "CardFooter";

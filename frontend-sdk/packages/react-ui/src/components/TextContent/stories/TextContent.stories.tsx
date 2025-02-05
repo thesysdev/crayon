@@ -7,6 +7,11 @@ const meta: Meta<typeof TextContent> = {
   tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { TextContent } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     variant: {

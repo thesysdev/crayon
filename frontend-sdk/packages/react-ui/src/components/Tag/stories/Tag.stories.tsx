@@ -8,6 +8,11 @@ const meta: Meta<typeof Tag> = {
   component: Tag,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { Tag } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     text: {

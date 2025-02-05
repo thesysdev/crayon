@@ -10,6 +10,11 @@ const meta: Meta<typeof TagBlock> = {
   component: TagBlock,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { TagBlock, Tag } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     children: {

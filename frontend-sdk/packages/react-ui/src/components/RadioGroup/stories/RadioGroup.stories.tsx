@@ -13,6 +13,11 @@ const meta: Meta<typeof RadioGroup> = {
   },
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { RadioGroup, RadioItem } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   decorators: [
     (Story) => (

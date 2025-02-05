@@ -15,6 +15,12 @@ const meta: Meta<typeof Tabs> = {
   tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component:
+          "```tsx\nimport { Tabs, TabsContent, TabsList, TabsTrigger } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   decorators: [
     (Story) => (

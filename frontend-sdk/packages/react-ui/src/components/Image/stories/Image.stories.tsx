@@ -18,6 +18,13 @@ const meta: Meta<typeof Image> = {
       </div>
     ),
   ],
+  parameters: {
+    docs: {
+      description: {
+        component: "```tsx\nimport { Image } from '@crayon-ui/react-ui';\n```",
+      },
+    },
+  },
   argTypes: {
     className: {
       control: false,

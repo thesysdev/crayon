@@ -6,9 +6,14 @@ import "../listItem.scss";
 const meta: Meta<typeof ListItem> = {
   title: "Components/ListItem",
   component: ListItem,
-  tags: ["!dev", "autodocs"],
+  tags: ["!dev", "!autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { ListItem } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     decorativeIcon: {

@@ -8,6 +8,11 @@ const meta: Meta<typeof Input> = {
   component: Input,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { Input } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   decorators: [
     (Story) => (
@@ -117,6 +122,10 @@ export const Controlled: Story = {
   render: () => <ControlledInput />,
   parameters: {
     docs: {
+      description: {
+        story:
+          "This is a controlled input example. The input value is managed by the component's state.",
+      },
       source: {
         code: `
 import { useState } from "react";

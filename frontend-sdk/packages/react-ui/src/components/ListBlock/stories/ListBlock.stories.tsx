@@ -12,6 +12,11 @@ const meta: Meta<typeof ListBlock> = {
   },
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { ListBlock, ListItem } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   decorators: [
     (Story) => (
