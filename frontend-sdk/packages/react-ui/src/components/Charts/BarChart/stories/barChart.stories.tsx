@@ -24,6 +24,11 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
   component: BarChart,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { BarChart } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   tags: ["!dev", "autodocs"],
   argTypes: {

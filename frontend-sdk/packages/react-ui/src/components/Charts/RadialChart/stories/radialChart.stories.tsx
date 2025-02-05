@@ -19,6 +19,11 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
   component: RadialChart,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { RadialChart } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   tags: ["!dev", "autodocs"],
   argTypes: {

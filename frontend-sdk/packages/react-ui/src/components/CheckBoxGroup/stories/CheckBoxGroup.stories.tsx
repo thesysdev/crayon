@@ -11,6 +11,12 @@ const meta = {
   subcomponents: { CheckBoxItem } as any,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component:
+          "```tsx\nimport { CheckBoxGroup, CheckBoxItem } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     variant: {

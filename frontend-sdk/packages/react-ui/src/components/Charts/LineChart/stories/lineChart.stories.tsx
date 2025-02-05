@@ -24,6 +24,11 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
   component: LineChart,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { LineChart } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   tags: ["!dev", "autodocs"],
   argTypes: {

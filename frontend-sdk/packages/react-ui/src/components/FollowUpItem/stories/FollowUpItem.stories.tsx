@@ -8,6 +8,11 @@ const meta: Meta<typeof FollowUpItem> = {
   component: FollowUpItem,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { FollowUpItem } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   tags: ["!dev", "!autodocs"],
   argTypes: {

@@ -8,6 +8,11 @@ const meta: Meta<typeof CheckBoxItem> = {
   component: CheckBoxItem,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { CheckBoxItem } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     label: {

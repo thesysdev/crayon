@@ -12,6 +12,11 @@ const meta: Meta<typeof Footer> = {
   component: Footer,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { CardFooter } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   decorators: [
     (Story) => (

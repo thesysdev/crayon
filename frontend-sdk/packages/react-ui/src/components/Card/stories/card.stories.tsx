@@ -13,6 +13,11 @@ const meta: Meta<typeof Card> = {
   component: Card,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { Card } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     width: {

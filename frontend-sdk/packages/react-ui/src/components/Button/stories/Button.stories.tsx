@@ -77,6 +77,11 @@ const meta: Meta<typeof Button> = {
   component: Button,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { Button } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     variant: {

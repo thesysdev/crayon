@@ -24,6 +24,11 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
   component: RadarChart,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { RadarChart } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   tags: ["!dev", "autodocs"],
   argTypes: {

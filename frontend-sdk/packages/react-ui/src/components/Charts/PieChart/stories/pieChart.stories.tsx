@@ -24,6 +24,11 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
   component: PieChart,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { PieChart } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   tags: ["!dev", "autodocs"],
   argTypes: {

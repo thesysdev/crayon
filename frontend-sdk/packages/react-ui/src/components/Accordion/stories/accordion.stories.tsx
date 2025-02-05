@@ -23,6 +23,12 @@ const meta: Meta<AccordionStoryProps> = {
   tags: ["autodocs", "!dev"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component:
+          "```tsx\nimport { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   decorators: [
     (Story) => (

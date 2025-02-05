@@ -24,6 +24,11 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
   component: AreaChart,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { AreaChart } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   tags: ["!dev", "autodocs"],
   argTypes: {
