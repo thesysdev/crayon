@@ -29,21 +29,16 @@ function copyCssFiles() {
       return;
     }
 
-    // Look specifically for style.css
-    // const stylePath = path.join(componentSrcPath, 'style.css');
-    const styleFilenames = fs.readdirSync(componentSrcPath).filter((file) => file.endsWith(".css"));
-    console.log("styleFilenames: ", styleFilenames);
-
-    for (const styleFilename of styleFilenames) {
-      const stylePath = path.join(componentSrcPath, styleFilename);
-      if (fs.existsSync(stylePath)) {
-        // Copy style.css to dist/styles/<component>.css
-        const distFile = path.join(distDir, `${component}.css`);
-        fs.copyFileSync(stylePath, distFile);
-        console.log(`Copied ${stylePath} to ${distFile}`);
-      }
+    const stylePath = path.join(
+      componentSrcPath,
+      `${component[0].toLowerCase()}${component.substring(1)}.css`,
+    );
+    const distFile = path.join(distDir, `${component}.css`);
+    if (fs.existsSync(stylePath)) {
+      fs.copyFileSync(stylePath, distFile);
     }
   });
+  fs.copyFileSync(path.join(dirname, "src", "variables.css"), path.join(distDir, "variables.css"));
 }
 
 try {

@@ -1,6 +1,6 @@
 import { useMemo, useRef } from "react";
 import { createStore, useStore } from "zustand";
-import { Thread, ThreadListManager } from "./types";
+import { Thread, ThreadListManager, UserMessage } from "./types";
 
 type Props = {
   fetchThreadList: () => Promise<Thread[]>;
@@ -9,6 +9,7 @@ type Props = {
   // allows user to clear chat state when switched to new thread
   onSwitchToNew: () => void;
   onSelectThread: (threadId: string) => void;
+  createThread: (firstMessage: UserMessage) => Promise<Thread>;
 };
 
 type DefaultManager = ThreadListManager;
@@ -35,15 +36,14 @@ export const useThreadListManager = (props: Props): DefaultManager => {
 
       return {
         selectedThreadId: null,
+        shouldLoadThread: false,
         threads: [] as Thread[],
         error: null,
         isLoading: true,
-        selectThread: (threadId) => {
-          set({ selectedThreadId: threadId });
+        selectThread: (threadId, shouldLoadThread = true) => {
+          set({ selectedThreadId: threadId, shouldLoadThread });
           propsRef.current.onSelectThread(threadId);
         },
-        // todo: implement
-        loadMore: () => {},
         load: () => {
           set({ isLoading: true });
           propsRef.current
@@ -54,6 +54,13 @@ export const useThreadListManager = (props: Props): DefaultManager => {
             .catch((e) => {
               set({ isLoading: false, error: e });
             });
+        },
+        createThread: async (firstMessage: UserMessage) => {
+          const thread = await propsRef.current.createThread(firstMessage);
+          set((state) => ({
+            threads: [thread, ...state.threads],
+          }));
+          return thread;
         },
         deleteThread: (id) => {
           updateThreadRunningStatus(id, true);

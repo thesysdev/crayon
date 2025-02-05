@@ -15,8 +15,8 @@ export const useThreadListActions = (): ThreadListActions => {
     load: useStore(threadListManager, (store) => store.load),
     switchToNewThread: useStore(threadListManager, (store) => store.switchToNewThread),
     selectThread: useStore(threadListManager, (store) => store.selectThread),
+    createThread: useStore(threadListManager, (store) => store.createThread),
     deleteThread: useStore(threadListManager, (store) => store.deleteThread),
     updateThread: useStore(threadListManager, (store) => store.updateThread),
-    loadMore: useStore(threadListManager, (store) => store.loadMore),
   };
 };

@@ -1,6 +1,8 @@
 import { Thread, useThreadListActions, useThreadListState } from "@crayonai/react-core";
 import clsx from "clsx";
 import { Fragment, useEffect } from "react";
+import { useLayoutContext } from "../../context/LayoutContext";
+import { useShellStore } from "./store";
 
 export const ThreadList = ({ className }: { className?: string }) => {
   let { threads } = useThreadListState();
@@ -92,10 +94,20 @@ export const ThreadButton = ({
 }) => {
   const { selectThread } = useThreadListActions();
   const { selectedThreadId } = useThreadListState();
+  const { isSidebarOpen, setIsSidebarOpen } = useShellStore((state) => ({
+    isSidebarOpen: state.isSidebarOpen,
+    setIsSidebarOpen: state.setIsSidebarOpen,
+  }));
+  const { layout } = useLayoutContext();
 
   return (
     <button
-      onClick={() => selectThread(id)}
+      onClick={() => {
+        if (layout === "mobile") {
+          setIsSidebarOpen(!isSidebarOpen);
+        }
+        selectThread(id);
+      }}
       className={clsx(
         "crayon-shell-thread-button",
         {

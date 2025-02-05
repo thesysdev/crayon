@@ -1,4 +1,4 @@
-import { CreateMessage, Message } from "./message";
+import { CreateMessage, Message, UserMessage } from "./message";
 import { ResponseTemplate } from "./responseTemplate";
 
 /**
@@ -54,6 +54,7 @@ export type ThreadListState = {
   isLoading: boolean;
   error: Error | null | undefined;
   selectedThreadId: string | null;
+  shouldLoadThread: boolean;
 };
 
 /**
@@ -61,10 +62,9 @@ export type ThreadListState = {
  */
 export type ThreadListActions = {
   load: () => void;
-  // todo: remove
-  loadMore: () => void;
   switchToNewThread: () => void;
-  selectThread: (threadId: string) => void;
+  createThread: (firstMessage: UserMessage) => Promise<Thread>;
+  selectThread: (threadId: string, shouldLoadThread?: boolean) => void;
   updateThread: (thread: Thread) => void;
   deleteThread: (threadId: string) => void;
 };

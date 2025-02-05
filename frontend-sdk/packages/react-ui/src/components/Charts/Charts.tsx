@@ -2,7 +2,6 @@ import clsx from "clsx";
 import { uniqueId } from "lodash-es";
 import { ComponentProps, createContext, forwardRef, useContext, useId, useMemo } from "react";
 import * as RechartsPrimitive from "recharts";
-import "./Charts.scss";
 
 /**
  * @module Charts

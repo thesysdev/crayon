@@ -11,11 +11,11 @@ interface ShellState {
   setLogoUrl: (url: string) => void;
 }
 
-export const createShellStore = () =>
+export const createShellStore = ({ logoUrl, agentName }: { logoUrl: string; agentName: string }) =>
   create<ShellState>((set) => ({
     isSidebarOpen: true,
-    agentName: "",
-    logoUrl: "",
+    agentName: agentName,
+    logoUrl: logoUrl,
 
     setIsSidebarOpen: (isOpen: boolean) => set({ isSidebarOpen: isOpen }),
     setAgentName: (name: string) => set({ agentName: name }),
@@ -42,7 +42,8 @@ export const ShellStoreProvider = ({
   logoUrl: string;
   agentName: string;
 }) => {
-  const shellStore = useMemo(() => createShellStore(), []);
+  const shellStore = useMemo(() => createShellStore({ agentName, logoUrl }), []);
+
   useEffect(() => {
     const { setAgentName, setLogoUrl } = shellStore.getState();
     setAgentName(agentName);
