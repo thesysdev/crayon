@@ -35,7 +35,8 @@ const meta: Meta<typeof Carousel> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious } from '@crayon-ui/react-ui';\n```",
+        component:
+          "```tsx\nimport { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious } from '@crayon-ui/react-ui';\n```",
       },
     },
   },
@@ -80,7 +81,6 @@ const meta: Meta<typeof Carousel> = {
       table: {
         category: "Content",
         type: { summary: "ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     className: {
@@ -89,7 +89,6 @@ const meta: Meta<typeof Carousel> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     style: {
@@ -98,7 +97,6 @@ const meta: Meta<typeof Carousel> = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },

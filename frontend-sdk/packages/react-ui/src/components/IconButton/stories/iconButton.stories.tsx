@@ -21,7 +21,6 @@ const meta: Meta<typeof IconButton> = {
       table: {
         category: "Content",
         type: { summary: "ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     variant: {
@@ -69,7 +68,6 @@ const meta: Meta<typeof IconButton> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },

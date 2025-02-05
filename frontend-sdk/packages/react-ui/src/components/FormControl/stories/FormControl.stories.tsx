@@ -28,7 +28,6 @@ const meta: Meta<typeof FormControl> = {
       table: {
         category: "Content",
         type: { summary: "ReactNode[] | ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     className: {
@@ -37,7 +36,6 @@ const meta: Meta<typeof FormControl> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     style: {
@@ -46,7 +44,6 @@ const meta: Meta<typeof FormControl> = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },

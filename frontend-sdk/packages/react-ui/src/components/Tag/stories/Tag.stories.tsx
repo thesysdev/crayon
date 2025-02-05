@@ -21,7 +21,6 @@ const meta: Meta<typeof Tag> = {
       table: {
         category: "Content",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     icon: {
@@ -30,7 +29,6 @@ const meta: Meta<typeof Tag> = {
       table: {
         category: "Content",
         type: { summary: "ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     className: {
@@ -39,7 +37,6 @@ const meta: Meta<typeof Tag> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     styles: {
@@ -48,7 +45,6 @@ const meta: Meta<typeof Tag> = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },

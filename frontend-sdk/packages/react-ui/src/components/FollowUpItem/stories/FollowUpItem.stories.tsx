@@ -22,7 +22,6 @@ const meta: Meta<typeof FollowUpItem> = {
       table: {
         category: "Content",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     icon: {
@@ -31,7 +30,6 @@ const meta: Meta<typeof FollowUpItem> = {
       table: {
         category: "Content",
         type: { summary: "ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     className: {
@@ -40,7 +38,6 @@ const meta: Meta<typeof FollowUpItem> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },

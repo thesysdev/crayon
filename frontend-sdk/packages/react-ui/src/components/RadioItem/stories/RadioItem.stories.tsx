@@ -24,7 +24,6 @@ const meta: Meta<typeof RadioItem> = {
       table: {
         category: "Property",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     label: {
@@ -33,7 +32,6 @@ const meta: Meta<typeof RadioItem> = {
       table: {
         category: "Content",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     required: {
@@ -59,7 +57,7 @@ const meta: Meta<typeof RadioItem> = {
       description: "Additional CSS class name for custom styling",
       table: {
         category: "Styling",
-        defaultValue: { summary: "undefined" },
+
         type: { summary: "string" },
       },
     },
@@ -68,7 +66,7 @@ const meta: Meta<typeof RadioItem> = {
       description: "Additional CSS style for custom styling",
       table: {
         category: "Styling",
-        defaultValue: { summary: "undefined" },
+
         type: { summary: "CSSProperties" },
       },
     },

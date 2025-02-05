@@ -48,7 +48,6 @@ const meta: Meta<typeof Tabs> = {
       control: false,
       description: "The default value of the tabs which is used to determine which tab is selected",
       table: {
-        defaultValue: { summary: "undefined" },
         category: "Behavior",
       },
     },

@@ -69,7 +69,6 @@ const meta: Meta<SelectStoryProps> = {
       description: "Placeholder text for the select",
       table: {
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },

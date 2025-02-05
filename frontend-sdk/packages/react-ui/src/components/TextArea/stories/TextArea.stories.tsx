@@ -20,7 +20,6 @@ const meta = {
       table: {
         category: "Content",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     rows: {
@@ -38,7 +37,6 @@ const meta = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     style: {
@@ -47,7 +45,6 @@ const meta = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },

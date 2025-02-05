@@ -44,7 +44,6 @@ const meta: Meta<typeof CardFooter> = {
           summary:
             "ReactNode[]<ButtonProps | IconButtonProps> | ReactNode<ButtonProps | IconButtonProps>",
         },
-        defaultValue: { summary: "undefined" },
       },
     },
     className: {
@@ -53,7 +52,6 @@ const meta: Meta<typeof CardFooter> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     style: {
@@ -62,7 +60,6 @@ const meta: Meta<typeof CardFooter> = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },

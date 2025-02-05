@@ -30,7 +30,6 @@ const meta: Meta<typeof TextContent> = {
       table: {
         category: "Content",
         type: { summary: "string | ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     className: {
@@ -39,7 +38,6 @@ const meta: Meta<typeof TextContent> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     style: {
@@ -48,7 +46,6 @@ const meta: Meta<typeof TextContent> = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },

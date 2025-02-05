@@ -47,7 +47,6 @@ const meta: Meta<typeof Input> = {
       table: {
         category: "Content",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     value: {
@@ -56,7 +55,6 @@ const meta: Meta<typeof Input> = {
       table: {
         category: "Content",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     onChange: {

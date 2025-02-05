@@ -69,7 +69,6 @@ const meta: Meta<typeof CheckBoxItem> = {
         "The name of the checkbox. Submitted with its owning form as part of a name/value pair.",
       table: {
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     value: {

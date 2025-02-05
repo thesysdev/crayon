@@ -2,7 +2,7 @@ import * as Checkbox from "@radix-ui/react-checkbox";
 import clsx from "clsx";
 import { Check } from "lucide-react";
 import { CSSProperties, forwardRef, ReactNode, useId } from "react";
-import { Label } from "../FormControl";
+import { Label } from "../Label";
 
 export interface CheckBoxItemProps {
   label?: ReactNode;
