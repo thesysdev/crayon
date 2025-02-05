@@ -13,7 +13,7 @@ import {
 } from "../Charts";
 import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
-type PieChartData = Array<Record<string, string | number>>;
+export type PieChartData = Array<Record<string, string | number>>;
 
 export interface PieChartProps<T extends PieChartData> {
   data: T;

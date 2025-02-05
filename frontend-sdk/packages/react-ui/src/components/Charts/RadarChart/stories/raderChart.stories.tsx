@@ -26,11 +26,13 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { RadarChart } from '@crayon-ui/react-ui';\n```",
+        component:
+          "```tsx\nimport { RadarChart } from '@crayon-ui/react-ui/Charts/RadarChart';\n```",
       },
     },
   },
   tags: ["!dev", "autodocs"],
+
   argTypes: {
     data: {
       description:
@@ -39,6 +41,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
       table: {
         type: { summary: "Array<Record<string, string | number>>" },
         defaultValue: { summary: "[]" },
+        category: "Data",
       },
     },
     categoryKey: {
@@ -47,6 +50,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        category: "Data",
       },
     },
     width: {
@@ -55,6 +59,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "800" },
+        category: "Dimensions",
       },
     },
     height: {
@@ -63,6 +68,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "400" },
+        category: "Dimensions",
       },
     },
     theme: {
@@ -72,6 +78,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
+        category: "Appearance",
       },
     },
     icons: {
@@ -81,6 +88,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
       table: {
         type: { summary: "Record<string, React.ComponentType>" },
         defaultValue: { summary: "{}" },
+        category: "Appearance",
       },
     },
     variant: {
@@ -90,6 +98,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
       options: ["line", "area"],
       table: {
         defaultValue: { summary: "area" },
+        category: "Appearance",
       },
     },
     strokeWidth: {
@@ -98,6 +107,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "2" },
+        category: "Appearance",
       },
     },
     grid: {
@@ -106,6 +116,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
     areaOpacity: {
@@ -114,6 +125,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "0.7" },
+        category: "Appearance",
       },
     },
     legend: {
@@ -123,6 +135,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
   },

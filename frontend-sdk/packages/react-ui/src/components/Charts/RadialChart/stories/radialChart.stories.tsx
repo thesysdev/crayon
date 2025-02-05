@@ -21,11 +21,13 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { RadialChart } from '@crayon-ui/react-ui';\n```",
+        component:
+          "```tsx\nimport { RadialChart } from '@crayon-ui/react-ui/Charts/RadialChart';\n```",
       },
     },
   },
   tags: ["!dev", "autodocs"],
+
   argTypes: {
     data: {
       description:
@@ -34,6 +36,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
       table: {
         type: { summary: "Array<Record<string, string | number>>" },
         defaultValue: { summary: "[]" },
+        category: "Data",
       },
     },
     categoryKey: {
@@ -42,6 +45,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        category: "Data",
       },
     },
     dataKey: {
@@ -50,6 +54,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        category: "Data",
       },
     },
     width: {
@@ -58,6 +63,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "800" },
+        category: "Dimensions",
       },
     },
     height: {
@@ -66,6 +72,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "400" },
+        category: "Dimensions",
       },
     },
     theme: {
@@ -75,6 +82,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
+        category: "Appearance",
       },
     },
     variant: {
@@ -84,6 +92,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
       options: ["circular", "semicircle"],
       table: {
         defaultValue: { summary: "circular" },
+        category: "Appearance",
       },
     },
     format: {
@@ -93,6 +102,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
       options: ["percentage", "number"],
       table: {
         defaultValue: { summary: "percentage" },
+        category: "Display",
       },
     },
     legend: {
@@ -101,6 +111,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
     label: {
@@ -109,6 +120,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
     grid: {
@@ -117,6 +129,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
   },

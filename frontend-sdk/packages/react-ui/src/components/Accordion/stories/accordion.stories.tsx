@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Bell, Download } from "lucide-react";
+import { Bird, Dog, Fish } from "lucide-react";
 import { CardHeader } from "../../CardHeader";
 import "../../CardHeader/cardHeader.scss";
 import { IconButton } from "../../IconButton";
@@ -19,7 +19,7 @@ interface AccordionStoryProps {
 
 const meta: Meta<AccordionStoryProps> = {
   title: "Components/Accordion",
-  component: Accordion as any, // Type casting needed since we're using a custom props interface
+  component: Accordion as any,
   tags: ["autodocs", "!dev"],
   parameters: {
     layout: "centered",
@@ -43,27 +43,42 @@ const meta: Meta<AccordionStoryProps> = {
       options: ["single", "multiple"],
       description: "The type of accordion behavior - single item open or multiple items",
       defaultValue: "single",
+      table: {
+        category: "Behavior",
+      },
     },
     collapsible: {
       control: "boolean",
       description: "Whether the accordion items can be collapsed (only available for single type)",
       defaultValue: true,
       if: { arg: "type", eq: "single" },
+      table: {
+        category: "Behavior",
+      },
     },
     defaultValue: {
       description: 'The default opened item value (only for type="single")',
       control: false,
+      table: {
+        category: "Behavior",
+      },
     },
     variant: {
       control: "radio",
       options: ["card", "sunk"],
       description: "The visual style variant of the accordion",
       defaultValue: "card",
+      table: {
+        category: "Appearance",
+      },
     },
     showIcons: {
       control: "boolean",
       description: "Whether to show icons in the accordion triggers",
       defaultValue: false,
+      table: {
+        category: "Appearance",
+      },
     },
   },
 };
@@ -71,259 +86,176 @@ const meta: Meta<AccordionStoryProps> = {
 export default meta;
 type Story = StoryObj<AccordionStoryProps>;
 
-export const Single: Story = {
-  render: (args) => {
-    const items = [
-      {
-        value: "item-1",
-        title: "Accordion 1",
-        imageId: "600",
-      },
-      {
-        value: "item-2",
-        title: "Accordion 2",
-        imageId: "700",
-      },
-      {
-        value: "item-3",
-        title: "Accordion 3",
-        imageId: "900",
-      },
-    ];
-
-    const AccordionComponent =
-      args.type === "single" ? (
-        <Accordion type="single" collapsible={args.collapsible} defaultValue={args.defaultValue}>
-          {items.map((item) => (
-            <AccordionItem key={item.value} value={item.value} variant={args.variant}>
-              <AccordionTrigger
-                text={item.title}
-                icon={args.showIcons ? <Download /> : undefined}
-              />
-              <AccordionContent>
-                <CardHeader
-                  title="Title"
-                  subtitle="Subtitle"
-                  actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-                />
-                <Image src={`https://picsum.photos/400/${item.imageId}`} alt="Image" scale="fill" />
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      ) : (
-        <Accordion type="multiple">
-          {items.map((item) => (
-            <AccordionItem key={item.value} value={item.value} variant={args.variant}>
-              <AccordionTrigger
-                text={item.title}
-                icon={args.showIcons ? <Download /> : undefined}
-              />
-              <AccordionContent>
-                <CardHeader
-                  title="Title"
-                  subtitle="Subtitle"
-                  actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-                />
-                <Image src={`https://picsum.photos/400/${item.imageId}`} alt="Image" scale="fill" />
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      );
-
-    return AccordionComponent;
+const cityItems = [
+  {
+    value: "city-1",
+    title: "New York",
+    subtitle: "The Big Apple",
+    description: "Iconic skyline and urban culture",
+    image:
+      "https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
+  {
+    value: "city-2",
+    title: "Tokyo",
+    subtitle: "Modern Metropolis",
+    description: "Blend of tradition and technology",
+    image:
+      "https://images.pexels.com/photos/2506923/pexels-photo-2506923.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    value: "city-3",
+    title: "Paris",
+    subtitle: "City of Light",
+    description: "Romance and architecture",
+    image:
+      "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=3820&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  },
+];
+
+const landscapeItems = [
+  {
+    value: "landscape-1",
+    title: "Mountains",
+    subtitle: "Alpine Views",
+    description: "Majestic mountain ranges",
+    image:
+      "https://images.pexels.com/photos/1761279/pexels-photo-1761279.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    value: "landscape-2",
+    title: "Beaches",
+    subtitle: "Coastal Beauty",
+    description: "Pristine shorelines",
+    image:
+      "https://images.pexels.com/photos/1032650/pexels-photo-1032650.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    value: "landscape-3",
+    title: "Forests",
+    subtitle: "Woodland Wonder",
+    description: "Dense forest landscapes",
+    image:
+      "https://images.pexels.com/photos/240040/pexels-photo-240040.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+];
+
+const animalItems = [
+  {
+    value: "animal-1",
+    title: "Big Cats",
+    icon: <Dog />,
+    subtitle: "Majestic Felines",
+    description: "Lions, tigers, and leopards",
+    image:
+      "https://images.pexels.com/photos/145939/pexels-photo-145939.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    value: "animal-2",
+    title: "Marine Life",
+    icon: <Fish />,
+    subtitle: "Ocean Dwellers",
+    description: "Underwater creatures",
+    image:
+      "https://plus.unsplash.com/premium_photo-1661835524331-cbba987ba74c?q=80&w=3878&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  },
+  {
+    value: "animal-3",
+    title: "Birds",
+    icon: <Bird />,
+    subtitle: "Aerial Beauty",
+    description: "Colorful avian species",
+    image:
+      "https://images.pexels.com/photos/326900/pexels-photo-326900.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+];
+
+export const SingleAccordion: Story = {
   args: {
     type: "single",
     collapsible: true,
     variant: "card",
-    showIcons: false,
-  },
-};
-
-export const Multiple: Story = {
-  args: {
-    type: "multiple",
+    showIcons: true,
   },
   parameters: {
     docs: {
       description: {
-        story:
-          "An example of an Accordion that allows multiple items to be open simultaneously. This variant gives users the flexibility to view multiple content sections at once.",
+        story: "An accordion showcasing different cities and their urban landscapes.",
       },
     },
   },
   render: (args) => (
-    <Accordion type={args.type}>
-      <AccordionItem value="item-1">
-        <AccordionTrigger text="Accordion 1" />
-        <AccordionContent>
-          <CardHeader
-            title="Title"
-            subtitle="Subtitle"
-            actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-          />
-          <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-2">
-        <AccordionTrigger text="Accordion 2" />
-        <AccordionContent>
-          <CardHeader
-            title="Title"
-            subtitle="Subtitle"
-            actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-          />
-          <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-3">
-        <AccordionTrigger text="Accordion 3" />
-        <AccordionContent>
-          <CardHeader
-            title="Title"
-            subtitle="Subtitle"
-            actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-          />
-          <Image src="https://picsum.photos/400/500" alt="Image" scale="fill" />
-        </AccordionContent>
-      </AccordionItem>
+    <Accordion type={args.type} collapsible={args.collapsible}>
+      {cityItems.map((item) => (
+        <AccordionItem key={item.value} value={item.value} variant={args.variant}>
+          <AccordionTrigger text={item.title} />
+          <AccordionContent>
+            <CardHeader title={item.subtitle} subtitle={item.description} />
+            <Image src={item.image} alt={item.title} scale="fill" />
+          </AccordionContent>
+        </AccordionItem>
+      ))}
     </Accordion>
   ),
 };
 
-export const withIcon: Story = {
+export const MultipleAccordion: Story = {
   args: {
-    type: "single",
-    collapsible: true,
+    type: "multiple",
+    variant: "card",
     showIcons: true,
   },
+  parameters: {
+    docs: {
+      description: {
+        story: "An example of an Accordion that allows multiple items to be open simultaneously.",
+      },
+    },
+  },
   render: (args) => (
-    <Accordion type={args.type} collapsible={args.collapsible}>
-      <AccordionItem value="item-1">
-        <AccordionTrigger text="Accordion 1" icon={<Download />} />
-        <AccordionContent>
-          <CardHeader
-            title="Title"
-            subtitle="Subtitle"
-            actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-          />
-          <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-2">
-        <AccordionTrigger text="Accordion 2" icon={<Download />} />
-        <AccordionContent>
-          <CardHeader
-            title="Title"
-            subtitle="Subtitle"
-            actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-          />
-          <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-3">
-        <AccordionTrigger text="Accordion 3" icon={<Download />} />
-        <AccordionContent>
-          <CardHeader
-            title="Title"
-            subtitle="Subtitle"
-            actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-          />
-          <Image src="https://picsum.photos/400/500" alt="Image" scale="fill" />
-        </AccordionContent>
-      </AccordionItem>
+    <Accordion type="multiple">
+      {landscapeItems.map((item) => (
+        <AccordionItem key={item.value} value={item.value} variant={args.variant}>
+          <AccordionTrigger text={item.title} />
+          <AccordionContent>
+            <CardHeader title={item.subtitle} subtitle={item.description} />
+            <Image src={item.image} alt={item.title} scale="fill" />
+          </AccordionContent>
+        </AccordionItem>
+      ))}
     </Accordion>
   ),
 };
 
-export const CardVariant: Story = {
+export const WithIconsAccordion: Story = {
   args: {
     type: "single",
     collapsible: true,
     variant: "card",
+    showIcons: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "An accordion displaying different categories of animals and wildlife.",
+      },
+    },
   },
   render: (args) => (
     <Accordion type={args.type} collapsible={args.collapsible}>
-      <AccordionItem value="item-1" variant={args.variant}>
-        <AccordionTrigger text="Accordion 1" />
-        <AccordionContent>
-          <CardHeader
-            title="Title"
-            subtitle="Subtitle"
-            actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-          />
-          <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-2" variant={args.variant}>
-        <AccordionTrigger text="Accordion 2" />
-        <AccordionContent>
-          <CardHeader
-            title="Title"
-            subtitle="Subtitle"
-            actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-          />
-          <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-3" variant={args.variant}>
-        <AccordionTrigger text="Accordion 3" />
-        <AccordionContent>
-          <CardHeader
-            title="Title"
-            subtitle="Subtitle"
-            actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-          />
-          <Image src="https://picsum.photos/400/500" alt="Image" scale="fill" />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  ),
-};
-
-export const SunkVariant: Story = {
-  args: {
-    type: "single",
-    collapsible: true,
-    variant: "sunk",
-  },
-  render: (args) => (
-    <Accordion type={args.type} collapsible={args.collapsible}>
-      <AccordionItem value="item-1" variant={args.variant}>
-        <AccordionTrigger text="Accordion 1" />
-        <AccordionContent>
-          <CardHeader
-            title="Title"
-            subtitle="Subtitle"
-            actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-          />
-          <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-2" variant={args.variant}>
-        <AccordionTrigger text="Accordion 2" />
-        <AccordionContent>
-          <CardHeader
-            title="Title"
-            subtitle="Subtitle"
-            actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-          />
-          <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-3" variant={args.variant}>
-        <AccordionTrigger text="Accordion 3" />
-        <AccordionContent>
-          <CardHeader
-            title="Title"
-            subtitle="Subtitle"
-            actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
-          />
-          <Image src="https://picsum.photos/400/500" alt="Image" scale="fill" />
-        </AccordionContent>
-      </AccordionItem>
+      {animalItems.map((item) => (
+        <AccordionItem key={item.value} value={item.value} variant={args.variant}>
+          <AccordionTrigger text={item.title} icon={item.icon} />
+          <AccordionContent>
+            <CardHeader
+              title={item.subtitle}
+              subtitle={item.description}
+              actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
+            />
+            <Image src={item.image} alt={item.title} scale="fill" />
+          </AccordionContent>
+        </AccordionItem>
+      ))}
     </Accordion>
   ),
 };

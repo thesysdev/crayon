@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Bell, Settings, ShieldCheck, UserRound } from "lucide-react";
+import { BusFront, PlaneTakeoff, Ship } from "lucide-react";
 import { CardHeader } from "../../CardHeader";
 import "../../CardHeader/cardHeader.scss";
 import { IconButton } from "../../IconButton";
@@ -79,33 +79,45 @@ export const Default: Story = {
   render: (args) => (
     <Tabs {...args}>
       <TabsList>
-        <TabsTrigger value="tab1" text="Account" />
-        <TabsTrigger value="tab2" text="Password" />
-        <TabsTrigger value="tab3" text="Settings" />
+        <TabsTrigger value="tab1" text="Paris" />
+        <TabsTrigger value="tab2" text="Tokyo" />
+        <TabsTrigger value="tab3" text="New York" />
       </TabsList>
       <TabsContent value="tab1">
         <CardHeader
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
+          title="Paris, France"
+          subtitle="The City of Light"
+          actions={[<IconButton variant="tertiary" size="small" icon={<PlaneTakeoff />} />]}
         />
-        <Image src="https://picsum.photos/700/700" alt="Image" scale="fill" />
+        <Image
+          src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34"
+          alt="Eiffel Tower in Paris"
+          scale="fill"
+        />
       </TabsContent>
       <TabsContent value="tab2">
         <CardHeader
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
+          title="Tokyo, Japan"
+          subtitle="Where Tradition Meets Future"
+          actions={[<IconButton variant="tertiary" size="small" icon={<Ship />} />]}
         />
-        <Image src="https://picsum.photos/700/750" alt="Image" scale="fill" />
+        <Image
+          src="https://images.unsplash.com/photo-1536098561742-ca998e48cbcc"
+          alt="Tokyo cityscape with Mount Fuji"
+          scale="fill"
+        />
       </TabsContent>
       <TabsContent value="tab3">
         <CardHeader
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
+          title="New York City, USA"
+          subtitle="The City That Never Sleeps"
+          actions={[<IconButton variant="tertiary" size="small" icon={<BusFront />} />]}
         />
-        <Image src="https://picsum.photos/700/760" alt="Image" scale="fill" />
+        <Image
+          src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9"
+          alt="New York City skyline"
+          scale="fill"
+        />
       </TabsContent>
     </Tabs>
   ),
@@ -119,33 +131,45 @@ export const WithIcon: Story = {
   render: (args) => (
     <Tabs {...args}>
       <TabsList>
-        <TabsTrigger value="tab1" text="Account" icon={<UserRound />} />
-        <TabsTrigger value="tab2" text="Password" icon={<ShieldCheck />} />
-        <TabsTrigger value="tab3" text="Settings" icon={<Settings />} />
+        <TabsTrigger value="tab1" text="Venice" icon={<PlaneTakeoff />} />
+        <TabsTrigger value="tab2" text="Kyoto" icon={<Ship />} />
+        <TabsTrigger value="tab3" text="Dubai" icon={<BusFront />} />
       </TabsList>
       <TabsContent value="tab1">
         <CardHeader
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
+          title="Venice, Italy"
+          subtitle="The Floating City"
+          actions={[<IconButton variant="tertiary" size="small" icon={<PlaneTakeoff />} />]}
         />
-        <Image src="https://picsum.photos/200/300" alt="Image" scale="fill" />
+        <Image
+          src="https://images.unsplash.com/photo-1514890547357-a9ee288728e0"
+          alt="Venice canals and gondolas"
+          scale="fill"
+        />
       </TabsContent>
       <TabsContent value="tab2">
         <CardHeader
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
+          title="Kyoto, Japan"
+          subtitle="The Cultural Heart of Japan"
+          actions={[<IconButton variant="tertiary" size="small" icon={<Ship />} />]}
         />
-        <Image src="https://picsum.photos/300/400" alt="Image" scale="fill" />
+        <Image
+          src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e"
+          alt="Traditional temple in Kyoto"
+          scale="fill"
+        />
       </TabsContent>
       <TabsContent value="tab3">
         <CardHeader
-          title="Title"
-          subtitle="Subtitle"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
+          title="Dubai, UAE"
+          subtitle="City of the Future"
+          actions={[<IconButton variant="tertiary" size="small" icon={<BusFront />} />]}
         />
-        <Image src="https://picsum.photos/400/500" alt="Image" scale="fill" />
+        <Image
+          src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c"
+          alt="Dubai skyline"
+          scale="fill"
+        />
       </TabsContent>
     </Tabs>
   ),
