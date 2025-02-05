@@ -1,4 +1,5 @@
 import fs from "fs";
+import { camelCase } from "lodash-es";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -19,7 +20,9 @@ export const extractComponentsAndPaths = () => {
     .map(async (component) => {
       const componentPath = path.join(componentsDir, component);
       const componentFiles = fs.readdirSync(componentPath);
-      const componentStylePath = componentFiles.find((file) => file.endsWith(".css"));
+      const componentStylePath = componentFiles.find(
+        (file) => file === `${camelCase(component)}.css`,
+      );
       let dependencies: string[] = [];
       const dependenciesPath = path.join(componentPath, "dependencies.js");
 

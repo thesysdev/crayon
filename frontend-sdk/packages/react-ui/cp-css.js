@@ -1,4 +1,5 @@
 import fs from "fs";
+import { camelCase } from "lodash-es";
 import path from "path";
 
 const dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -23,25 +24,19 @@ function copyCssFiles() {
 
   components.forEach((component) => {
     const componentSrcPath = path.join(srcDir, component);
+    const componentStylesheetName = `${camelCase(component)}.css`;
 
     // Skip if not a directory
     if (!fs.statSync(componentSrcPath).isDirectory()) {
       return;
     }
 
-    // Look specifically for style.css
-    // const stylePath = path.join(componentSrcPath, 'style.css');
-    const styleFilenames = fs.readdirSync(componentSrcPath).filter((file) => file.endsWith(".css"));
-    console.log("styleFilenames: ", styleFilenames);
-
-    for (const styleFilename of styleFilenames) {
-      const stylePath = path.join(componentSrcPath, styleFilename);
-      if (fs.existsSync(stylePath)) {
-        // Copy style.css to dist/styles/<component>.css
-        const distFile = path.join(distDir, `${component}.css`);
-        fs.copyFileSync(stylePath, distFile);
-        console.log(`Copied ${stylePath} to ${distFile}`);
-      }
+    const stylePath = path.join(componentSrcPath, componentStylesheetName);
+    const distFile = path.join(distDir, componentStylesheetName);
+    if (fs.existsSync(stylePath)) {
+      fs.copyFileSync(stylePath, distFile);
+    } else {
+      console.warn(`No stylesheet found for ${component}`);
     }
   });
 }

@@ -8,6 +8,7 @@ import prettier from "prettier/standalone";
 import { extractComponentsAndPaths, getComponentsDependencies } from "./utils";
 
 const dirname = path.dirname(new URL(import.meta.url).pathname);
+const UNSTYLED_COMPONENTS = new Set(["ThemeProvider", "fullscreen"]);
 
 const generateTailwindPlugin = async () => {
   const componentsAndPaths = extractComponentsAndPaths();
@@ -90,6 +91,7 @@ const generateAddComponentsCalls = async () => {
   if (!componentsAndPaths) return;
 
   const addComponentsCallPromises = componentsAndPaths.map(async (component) => {
+    if (UNSTYLED_COMPONENTS.has(component.name)) return;
     if (!component.stylePath) throw new Error(`No styles found for component: ${component.name}`);
 
     const componentStyle = fs.readFileSync(path.join(component.path, component.stylePath), "utf-8");
