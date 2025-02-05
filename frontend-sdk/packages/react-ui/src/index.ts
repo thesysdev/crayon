@@ -25,4 +25,5 @@ export * from "./components/Tabs";
 export * from "./components/Tag";
 export * from "./components/TagBlock";
 export * from "./components/TextArea";
+export * from './components/ThemeProvider'
 export * from "./components/TextContent";
