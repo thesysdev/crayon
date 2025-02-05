@@ -12,7 +12,7 @@ const meta: Meta<typeof CardHeader> = {
     layout: "centered",
     docs: {
       description: {
-        component: "`import { CardHeader } from '@crayon-ui/react-ui'`",
+        component: "```tsx\nimport { CardHeader } from '@crayon-ui/react-ui';\n```",
       },
     },
   },

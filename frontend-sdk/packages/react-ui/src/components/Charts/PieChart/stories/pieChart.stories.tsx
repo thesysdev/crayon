@@ -5,13 +5,18 @@ import "../../charts.scss";
 import { PieChart, PieChartProps } from "../PieChart";
 
 const pieChartData = [
-  { month: "January", value: 400 },
-  { month: "February", value: 300 },
-  { month: "March", value: 300 },
-  { month: "April", value: 400 },
-  { month: "May", value: 300 },
-  { month: "June", value: 300 },
-  { month: "July", value: 300 },
+  { month: "January", value: 4250 },
+  { month: "February", value: 3820 },
+  { month: "March", value: 4680 },
+  { month: "April", value: 4120 },
+  { month: "May", value: 5340 },
+  { month: "June", value: 6250 },
+  { month: "July", value: 5890 },
+  { month: "August", value: 5760 },
+  { month: "September", value: 4980 },
+  { month: "October", value: 4560 },
+  { month: "November", value: 5120 },
+  { month: "December", value: 6780 },
 ];
 
 const meta: Meta<PieChartProps<typeof pieChartData>> = {

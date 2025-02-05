@@ -11,6 +11,11 @@ const meta: Meta<typeof DatePicker> = {
   component: DatePicker,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { DatePicker } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   decorators: [
     (Story) => (

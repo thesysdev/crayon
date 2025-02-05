@@ -1,7 +1,7 @@
 import { create } from "@storybook/theming";
 
 export default create({
-  base: "light",
+  base: "dark",
   brandTitle: "Crayon Components",
   brandUrl: "https://crayonai.org/docs/ui",
   brandImage: "https://crayonai.org/img/logo.png",

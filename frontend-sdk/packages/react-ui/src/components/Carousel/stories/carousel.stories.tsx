@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { 
-  ChevronLeft, 
-  ChevronRight,
-  Camera,
+import {
   Building2,
+  Camera,
+  ChevronLeft,
+  ChevronRight,
   Cpu,
+  Dog,
+  Music,
   Palette,
   Plane,
-  UtensilsCrossed,
-  Trophy,
   Shirt,
-  Music,
-  Dog
+  Trophy,
+  UtensilsCrossed,
 } from "lucide-react";
 import { CardHeader } from "../../CardHeader";
 import "../../CardHeader/cardHeader.scss";
@@ -39,6 +39,12 @@ const meta: Meta<CarouselStoryProps> = {
   component: Carousel as any,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component:
+          "```tsx\nimport {  Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   tags: ["autodocs", "!dev"],
   decorators: [
@@ -172,7 +178,7 @@ export const Default: Story = {
                 subtitle={item.subtitle}
                 actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
               />
-              <Image src={item.imageUrl ?? ''} alt={`${item.title} image`} scale="fill" />
+              <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
             </CarouselItem>
           ))}
         </CarouselContent>
