@@ -8,7 +8,7 @@ const meta: Meta<SliderProps> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   argTypes: {
     variant: {
       control: "radio",

@@ -27,7 +27,7 @@ const meta: Meta<CarouselStoryProps> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  tags: ["autodocs", "!dev"],
   decorators: [
     (Story) => (
       <div style={{ width: "100%", maxWidth: "28rem" }}>

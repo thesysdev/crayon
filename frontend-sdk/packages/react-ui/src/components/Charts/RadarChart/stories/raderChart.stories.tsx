@@ -25,7 +25,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   argTypes: {
     data: {
       description:

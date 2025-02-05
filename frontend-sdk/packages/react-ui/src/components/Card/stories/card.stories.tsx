@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { FormControl, Label } from "../../FormControl";
-import "../../FormControl/formControl.scss";
 import { CardHeader } from "../../CardHeader";
 import "../../CardHeader/cardHeader.scss";
+import { FormControl, Label } from "../../FormControl";
+import "../../FormControl/formControl.scss";
 import { Input } from "../../Input";
 import "../../Input/input.scss";
 import { Card } from "../Card";
@@ -24,7 +24,7 @@ const meta: Meta<typeof Card> = {
       options: ["card", "clear", "sunk"],
     },
   },
-  tags: ["autodocs"],
+  tags: ["autodocs", "!dev"],
 };
 
 export default meta;

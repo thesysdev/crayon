@@ -20,7 +20,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   argTypes: {
     data: {
       description:

@@ -12,7 +12,7 @@ import "../tabs.scss";
 const meta: Meta<typeof Tabs> = {
   title: "Components/Tabs",
   component: Tabs,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
   },

@@ -46,7 +46,7 @@ const meta = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 } satisfies Meta<typeof TextArea>;
 
 export default meta;

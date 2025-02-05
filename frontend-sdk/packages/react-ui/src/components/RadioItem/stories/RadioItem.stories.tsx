@@ -73,7 +73,7 @@ const meta: Meta<typeof RadioItem> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "!autodocs"],
 };
 
 export default meta;

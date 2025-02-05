@@ -21,7 +21,7 @@ interface SelectStoryProps {
 const meta: Meta<SelectStoryProps> = {
   title: "Components/Select",
   component: Select as any,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
   },

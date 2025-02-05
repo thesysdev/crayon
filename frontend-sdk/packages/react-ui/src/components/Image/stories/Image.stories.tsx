@@ -5,7 +5,7 @@ import "../image.scss";
 const meta: Meta<typeof Image> = {
   title: "Components/Image",
   component: Image,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   decorators: [
     (Story) => (
       <div

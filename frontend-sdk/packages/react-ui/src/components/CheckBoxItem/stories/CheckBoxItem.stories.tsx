@@ -104,7 +104,7 @@ const meta: Meta<typeof CheckBoxItem> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "!autodocs"],
 };
 
 export default meta;

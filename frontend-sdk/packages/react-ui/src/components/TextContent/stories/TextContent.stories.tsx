@@ -4,7 +4,7 @@ import "../textContent.scss";
 const meta: Meta<typeof TextContent> = {
   title: "Components/TextContent",
   component: TextContent,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
   },

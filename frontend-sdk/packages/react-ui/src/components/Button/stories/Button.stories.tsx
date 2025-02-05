@@ -99,7 +99,7 @@ const meta: Meta<typeof Button> = {
       description: "Any react icon component",
     },
   },
-  tags: ["autodocs"],
+  tags: ["autodocs", "!dev"],
 };
 
 export default meta;

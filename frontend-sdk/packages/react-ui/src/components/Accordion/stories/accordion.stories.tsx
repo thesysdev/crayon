@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Bell, Download } from "lucide-react";
-import { Header } from "../../CardHeader";
-import "../../CardHeader/header.scss";
+import { CardHeader } from "../../CardHeader";
+import "../../CardHeader/cardHeader.scss";
 import { IconButton } from "../../IconButton";
 import "../../IconButton/iconButton.scss";
 import { Image } from "../../Image";
@@ -20,7 +20,7 @@ interface AccordionStoryProps {
 const meta: Meta<AccordionStoryProps> = {
   title: "Components/Accordion",
   component: Accordion as any, // Type casting needed since we're using a custom props interface
-  tags: ["autodocs"],
+  tags: ["autodocs", "!dev"],
   parameters: {
     layout: "centered",
   },
@@ -95,7 +95,7 @@ export const Single: Story = {
                 icon={args.showIcons ? <Download /> : undefined}
               />
               <AccordionContent>
-                <Header
+                <CardHeader
                   title="Title"
                   subtitle="Subtitle"
                   actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -114,7 +114,7 @@ export const Single: Story = {
                 icon={args.showIcons ? <Download /> : undefined}
               />
               <AccordionContent>
-                <Header
+                <CardHeader
                   title="Title"
                   subtitle="Subtitle"
                   actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -153,7 +153,7 @@ export const Multiple: Story = {
       <AccordionItem value="item-1">
         <AccordionTrigger text="Accordion 1" />
         <AccordionContent>
-          <Header
+          <CardHeader
             title="Title"
             subtitle="Subtitle"
             actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -164,7 +164,7 @@ export const Multiple: Story = {
       <AccordionItem value="item-2">
         <AccordionTrigger text="Accordion 2" />
         <AccordionContent>
-          <Header
+          <CardHeader
             title="Title"
             subtitle="Subtitle"
             actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -175,7 +175,7 @@ export const Multiple: Story = {
       <AccordionItem value="item-3">
         <AccordionTrigger text="Accordion 3" />
         <AccordionContent>
-          <Header
+          <CardHeader
             title="Title"
             subtitle="Subtitle"
             actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -198,7 +198,7 @@ export const withIcon: Story = {
       <AccordionItem value="item-1">
         <AccordionTrigger text="Accordion 1" icon={<Download />} />
         <AccordionContent>
-          <Header
+          <CardHeader
             title="Title"
             subtitle="Subtitle"
             actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -209,7 +209,7 @@ export const withIcon: Story = {
       <AccordionItem value="item-2">
         <AccordionTrigger text="Accordion 2" icon={<Download />} />
         <AccordionContent>
-          <Header
+          <CardHeader
             title="Title"
             subtitle="Subtitle"
             actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -220,7 +220,7 @@ export const withIcon: Story = {
       <AccordionItem value="item-3">
         <AccordionTrigger text="Accordion 3" icon={<Download />} />
         <AccordionContent>
-          <Header
+          <CardHeader
             title="Title"
             subtitle="Subtitle"
             actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -243,7 +243,7 @@ export const CardVariant: Story = {
       <AccordionItem value="item-1" variant={args.variant}>
         <AccordionTrigger text="Accordion 1" />
         <AccordionContent>
-          <Header
+          <CardHeader
             title="Title"
             subtitle="Subtitle"
             actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -254,7 +254,7 @@ export const CardVariant: Story = {
       <AccordionItem value="item-2" variant={args.variant}>
         <AccordionTrigger text="Accordion 2" />
         <AccordionContent>
-          <Header
+          <CardHeader
             title="Title"
             subtitle="Subtitle"
             actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -265,7 +265,7 @@ export const CardVariant: Story = {
       <AccordionItem value="item-3" variant={args.variant}>
         <AccordionTrigger text="Accordion 3" />
         <AccordionContent>
-          <Header
+          <CardHeader
             title="Title"
             subtitle="Subtitle"
             actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -288,7 +288,7 @@ export const SunkVariant: Story = {
       <AccordionItem value="item-1" variant={args.variant}>
         <AccordionTrigger text="Accordion 1" />
         <AccordionContent>
-          <Header
+          <CardHeader
             title="Title"
             subtitle="Subtitle"
             actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -299,7 +299,7 @@ export const SunkVariant: Story = {
       <AccordionItem value="item-2" variant={args.variant}>
         <AccordionTrigger text="Accordion 2" />
         <AccordionContent>
-          <Header
+          <CardHeader
             title="Title"
             subtitle="Subtitle"
             actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}
@@ -310,7 +310,7 @@ export const SunkVariant: Story = {
       <AccordionItem value="item-3" variant={args.variant}>
         <AccordionTrigger text="Accordion 3" />
         <AccordionContent>
-          <Header
+          <CardHeader
             title="Title"
             subtitle="Subtitle"
             actions={[<IconButton variant="tertiary" size="small" icon={<Bell />} />]}

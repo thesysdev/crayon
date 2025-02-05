@@ -61,7 +61,7 @@ const meta: Meta<typeof Footer> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 };
 
 export default meta;

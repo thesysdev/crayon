@@ -77,7 +77,7 @@ const meta: Meta<typeof Input> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 };
 
 export default meta;

@@ -112,7 +112,7 @@ const meta: Meta<typeof DatePicker> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 } satisfies Meta<typeof DatePicker>;
 
 export default meta;

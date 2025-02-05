@@ -15,7 +15,7 @@ import "../table.scss";
 const meta: Meta<typeof Table> = {
   title: "Components/Table",
   component: Table,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 };
 
 export default meta;

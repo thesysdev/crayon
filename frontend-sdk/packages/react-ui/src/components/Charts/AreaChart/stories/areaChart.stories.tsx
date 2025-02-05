@@ -25,7 +25,7 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   argTypes: {
     data: {
       description:

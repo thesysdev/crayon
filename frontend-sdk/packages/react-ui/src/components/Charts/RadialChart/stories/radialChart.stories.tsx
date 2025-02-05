@@ -20,7 +20,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   argTypes: {
     data: {
       description:

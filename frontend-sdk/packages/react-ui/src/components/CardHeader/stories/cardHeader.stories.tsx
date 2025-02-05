@@ -10,6 +10,11 @@ const meta: Meta<typeof CardHeader> = {
   component: CardHeader,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "`import { CardHeader } from '@crayon-ui/react-ui'`",
+      },
+    },
   },
   decorators: [
     (Story) => (
@@ -68,7 +73,7 @@ const meta: Meta<typeof CardHeader> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["autodocs", "!dev"],
 };
 
 export default meta;
@@ -87,6 +92,12 @@ export const HeaderStory: Story = {
 
 export const HeaderStoryWithMultipleActions: Story = {
   parameters: {
+    docs: {
+      description: {
+        story:
+          "Passing multiple actions to the header. The actions are displayed in the right corner of the header.",
+      },
+    },
   },
   args: {
     icon: <ArrowRight />,

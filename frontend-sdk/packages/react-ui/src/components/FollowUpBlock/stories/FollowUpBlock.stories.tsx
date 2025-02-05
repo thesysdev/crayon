@@ -9,7 +9,7 @@ const meta: Meta<typeof FollowUpBlock> = {
   title: "Components/FollowUpBlock",
   component: FollowUpBlock,
   subcomponents: { FollowUpItem } as any,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
   },

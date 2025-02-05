@@ -9,7 +9,7 @@ const meta: Meta<typeof FollowUpItem> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "!autodocs"],
   argTypes: {
     text: {
       control: "text",

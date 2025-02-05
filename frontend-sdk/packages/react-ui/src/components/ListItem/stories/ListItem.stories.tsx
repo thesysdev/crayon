@@ -6,7 +6,7 @@ import "../listItem.scss";
 const meta: Meta<typeof ListItem> = {
   title: "Components/ListItem",
   component: ListItem,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
   },

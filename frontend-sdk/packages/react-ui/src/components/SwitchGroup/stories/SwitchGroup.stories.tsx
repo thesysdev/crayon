@@ -56,7 +56,7 @@ const meta: Meta<typeof SwitchGroup> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 };
 
 export default meta;

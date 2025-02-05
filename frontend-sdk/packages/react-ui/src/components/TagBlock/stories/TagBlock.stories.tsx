@@ -40,7 +40,7 @@ const meta: Meta<typeof TagBlock> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 };
 
 export default meta;

@@ -59,7 +59,7 @@ const meta = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 } satisfies Meta<typeof CheckBoxGroup>;
 
 export default meta;

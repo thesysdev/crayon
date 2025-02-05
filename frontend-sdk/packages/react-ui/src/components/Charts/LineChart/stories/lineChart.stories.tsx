@@ -25,7 +25,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   argTypes: {
     data: {
       description:

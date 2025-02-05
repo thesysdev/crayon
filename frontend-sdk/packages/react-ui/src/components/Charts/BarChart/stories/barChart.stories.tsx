@@ -25,7 +25,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   argTypes: {
     data: {
       description:

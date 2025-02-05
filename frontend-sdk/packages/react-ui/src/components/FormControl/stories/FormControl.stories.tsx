@@ -11,7 +11,7 @@ import "../Hint/hint.scss";
 const meta: Meta<typeof FormControl> = {
   title: "Components/FormControl",
   component: FormControl,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
   },
@@ -51,19 +51,20 @@ export default meta;
 type Story = StoryObj<typeof FormControl>;
 
 export const WithLabelAndHint: Story = {
-  render: () => (
+  render: (args) => (
     <FormControl>
       <Label>Username</Label>
       <Input placeholder="Enter username" />
       <Hint>
-        <Info size={14} /> Must be at least 4 characters long
+        <Info size={14} />
+        <span>Must be at least 4 characters long</span>
       </Hint>
     </FormControl>
   ),
 };
 
 export const WithMultipleChildren: Story = {
-  render: () => (
+  render: (args) => (
     <FormControl>
       <Label htmlFor="profile-information">Profile Information</Label>
       <Input placeholder="Full name" id="profile-information" />

@@ -44,7 +44,7 @@ const meta: Meta<typeof ListBlock> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 };
 
 export default meta;

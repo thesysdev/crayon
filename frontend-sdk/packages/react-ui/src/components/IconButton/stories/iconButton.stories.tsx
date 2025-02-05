@@ -68,7 +68,7 @@ const meta: Meta<typeof IconButton> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 };
 
 export default meta;
