@@ -142,6 +142,10 @@ export const RadialChartStory: Story = {
   ),
   parameters: {
     docs: {
+      description: {
+        story:
+        "A radial chart that displays data in a circular or semicircular format, with customizable themes, labels, and grid options.",
+      },
       source: {
         code: `
 const radialChartData = [
