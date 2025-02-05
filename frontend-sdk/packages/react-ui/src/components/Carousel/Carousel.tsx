@@ -134,7 +134,7 @@ export const CarouselPrevious = forwardRef<
   if (!show || !showButtons) return null;
 
   return (
-    <div className="crayon-carousel-button crayon-carousel-button-left">
+    <div className={clsx("crayon-carousel-button crayon-carousel-button-left", className)}>
       <IconButton
         ref={ref}
         shape="circle"
@@ -179,7 +179,7 @@ export const CarouselNext = forwardRef<HTMLButtonElement, React.ComponentProps<t
     if (!show || !showButtons) return null;
 
     return (
-      <div className="crayon-carousel-button crayon-carousel-button-right">
+      <div className={clsx("crayon-carousel-button crayon-carousel-button-right", className)}>
         <IconButton
           ref={ref}
           shape="circle"
