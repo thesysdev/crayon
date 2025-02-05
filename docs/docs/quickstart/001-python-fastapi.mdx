@@ -1,0 +1,87 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Python FastAPI
+
+### Create a new FastAPI project
+```bash
+pip install fastapi
+```
+
+### Integrate LLM with your backend route
+```py title="main.py"
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.post("/chat")
+def chat(request: Request):
+    messages = await request.json()
+    client = OpenAI()
+    stream = client.chat.completions.create(
+        model="gpt-4o",
+        messages=messages,
+        stream=True,
+    )
+    return stream
+```
+
+```bash
+fastapi dev main.py
+```
+
+### Create a new React project & install the crayon packages
+<Tabs groupId="js-package-manager">
+  <TabItem value="npm" label="npm">
+
+```bash
+npx create-react-app my-agent
+npm install @crayonai/react-ui @crayonai/react-core
+```
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+
+```bash
+pnpm create react-app my-agent
+pnpm install @crayonai/react-ui @crayonai/react-core
+```
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+
+```bash
+yarn create react-app my-agent
+yarn add @crayonai/react-ui @crayonai/react-core
+```
+  </TabItem>
+</Tabs>
+
+
+### Add the CrayonProvider to your app
+
+```tsx title="App.tsx"
+import { CrayonChat } from "@crayonai/react-ui";
+
+export default function App() {
+  return <CrayonChat url="http://localhost:8000/chat" />;
+}
+```
+
+### Serve the React app
+
+<Tabs groupId="js-package-manager">
+  <TabItem value="npm" label="npm">
+  ```bash
+  npm run dev
+    ```
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+  ```bash
+  pnpm dev
+  ```
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+  ```bash
+  yarn dev
+  ```
+  </TabItem>
+</Tabs>

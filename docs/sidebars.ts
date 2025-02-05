@@ -16,7 +16,15 @@ const sidebars: SidebarsConfig = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
   docsSidebar: [
     "index",
-    "quickstart",
+    {
+      type: "category",
+      label: "Quickstart",
+      link: {
+        type: "doc",
+        id: "quickstart/index",
+      },
+      items: ["quickstart/python-fastapi", "quickstart/nextjs"],
+    },
     {
       type: "category",
       label: "Concepts",

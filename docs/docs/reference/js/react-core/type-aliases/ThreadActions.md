@@ -34,7 +34,7 @@ Actions available for managing a thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:24](https://github.com/thesysdev/crayonai/blob/7dc7bf9ad93dbd5ed62d55332e6a7a3cdb656cdf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L24)
+[packages/react-core/src/types/chatManager.ts:24](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/frontend-sdk/packages/react-core/src/types/chatManager.ts#L24)
 
 </td>
 </tr>
@@ -51,7 +51,7 @@ Actions available for managing a thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:26](https://github.com/thesysdev/crayonai/blob/7dc7bf9ad93dbd5ed62d55332e6a7a3cdb656cdf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L26)
+[packages/react-core/src/types/chatManager.ts:26](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/frontend-sdk/packages/react-core/src/types/chatManager.ts#L26)
 
 </td>
 </tr>
@@ -68,7 +68,7 @@ Actions available for managing a thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:23](https://github.com/thesysdev/crayonai/blob/7dc7bf9ad93dbd5ed62d55332e6a7a3cdb656cdf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L23)
+[packages/react-core/src/types/chatManager.ts:23](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/frontend-sdk/packages/react-core/src/types/chatManager.ts#L23)
 
 </td>
 </tr>
@@ -85,7 +85,7 @@ Actions available for managing a thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:27](https://github.com/thesysdev/crayonai/blob/7dc7bf9ad93dbd5ed62d55332e6a7a3cdb656cdf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L27)
+[packages/react-core/src/types/chatManager.ts:27](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/frontend-sdk/packages/react-core/src/types/chatManager.ts#L27)
 
 </td>
 </tr>
@@ -102,7 +102,7 @@ Actions available for managing a thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:25](https://github.com/thesysdev/crayonai/blob/7dc7bf9ad93dbd5ed62d55332e6a7a3cdb656cdf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L25)
+[packages/react-core/src/types/chatManager.ts:25](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/frontend-sdk/packages/react-core/src/types/chatManager.ts#L25)
 
 </td>
 </tr>
@@ -115,4 +115,4 @@ The message type used in the thread
 
 ## Defined in
 
-[packages/react-core/src/types/chatManager.ts:22](https://github.com/thesysdev/crayonai/blob/7dc7bf9ad93dbd5ed62d55332e6a7a3cdb656cdf/frontend-sdk/packages/react-core/src/types/chatManager.ts#L22)
+[packages/react-core/src/types/chatManager.ts:22](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/frontend-sdk/packages/react-core/src/types/chatManager.ts#L22)
