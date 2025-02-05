@@ -72,7 +72,7 @@ export const RadialChart = <T extends RadialChartData>({
         if (layout === "mobile") {
           newOuterRadius = label ? (width > 300 ? 110 : 90) : width > 300 ? 95 : 80;
         } else if (layout === "fullscreen") {
-          newOuterRadius = 200;
+          newOuterRadius = 160;
         } else if (layout === "tray" || layout === "copilot") {
           newOuterRadius = 130;
         } else {
