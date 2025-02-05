@@ -11,9 +11,14 @@ import "../Hint/hint.scss";
 const meta: Meta<typeof FormControl> = {
   title: "Components/FormControl",
   component: FormControl,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { FormControl, Hint } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     children: {
@@ -23,7 +28,6 @@ const meta: Meta<typeof FormControl> = {
       table: {
         category: "Content",
         type: { summary: "ReactNode[] | ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     className: {
@@ -32,7 +36,6 @@ const meta: Meta<typeof FormControl> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     style: {
@@ -41,7 +44,6 @@ const meta: Meta<typeof FormControl> = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },
@@ -51,19 +53,20 @@ export default meta;
 type Story = StoryObj<typeof FormControl>;
 
 export const WithLabelAndHint: Story = {
-  render: () => (
+  render: (args) => (
     <FormControl>
-      <Label>Username</Label>
-      <Input placeholder="Enter username" />
+      <Label htmlFor="username">Username</Label>
+      <Input placeholder="Enter username" id="username" />
       <Hint>
-        <Info size={14} /> Must be at least 4 characters long
+        <Info size={14} />
+        <span>Must be at least 4 characters long</span>
       </Hint>
     </FormControl>
   ),
 };
 
 export const WithMultipleChildren: Story = {
-  render: () => (
+  render: (args) => (
     <FormControl>
       <Label htmlFor="profile-information">Profile Information</Label>
       <Input placeholder="Full name" id="profile-information" />

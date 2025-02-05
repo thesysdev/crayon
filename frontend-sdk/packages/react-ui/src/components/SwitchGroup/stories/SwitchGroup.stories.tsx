@@ -13,17 +13,15 @@ const meta: Meta<typeof SwitchGroup> = {
   },
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { SwitchGroup, SwitchItem } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
-  decorators: [
-    (Story) => (
-      <div style={{ width: "350px" }}>
-        <Story />
-      </div>
-    ),
-  ],
   argTypes: {
     variant: {
-      control: "select",
+      control: "radio",
       options: ["clear", "card", "sunk"],
       defaultValue: "clear",
       description: "The variant of the switch group",
@@ -56,7 +54,7 @@ const meta: Meta<typeof SwitchGroup> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 };
 
 export default meta;
@@ -64,7 +62,7 @@ type Story = StoryObj<typeof SwitchGroup>;
 
 export const SwitchGroupStory: Story = {
   args: {
-    variant: "clear",
+    variant: "card",
   },
   render: (args) => (
     <SwitchGroup {...args}>

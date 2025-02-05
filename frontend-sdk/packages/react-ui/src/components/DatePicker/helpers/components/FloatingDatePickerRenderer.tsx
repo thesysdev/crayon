@@ -7,44 +7,6 @@ import { useDatePicker } from "../context/DatePickerContext";
 import { formatDateRange, formatSingleDate } from "../utils/helperFn";
 import { DatepickerRenderer } from "./DatePickerRenderer";
 
-export const FloatingDatePickerRenderer = ({
-  className,
-  style,
-}: {
-  className?: string;
-  style?: React.CSSProperties;
-}) => {
-  const { isOpen, setIsOpen } = useDatePicker();
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleClick = (e: MouseEvent) => {
-      if (menuRef.current?.contains(e.target as Node)) {
-        return;
-      }
-      setIsOpen(false);
-    };
-
-    document.body.addEventListener("click", handleClick);
-
-    return () => {
-      document.body.removeEventListener("click", handleClick);
-    };
-  }, [isOpen, setIsOpen]);
-
-  return (
-    <div
-      className={clsx("crayon-date-picker-renderer-floating-container", className)}
-      style={style}
-    >
-      <FloatingDateInput />
-      <FloatingDatePicker ref={menuRef} />
-    </div>
-  );
-};
-
 const FloatingDateInput = () => {
   const { mode, selectedDate, selectedRange, isOpen, setIsOpen } = useDatePicker();
   const hasSelectedDate =
@@ -118,3 +80,41 @@ const FloatingDatePicker = forwardRef<HTMLDivElement>((_, ref) => {
     </>
   );
 });
+
+export const FloatingDatePickerRenderer = ({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) => {
+  const { isOpen, setIsOpen } = useDatePicker();
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClick = (e: MouseEvent) => {
+      if (menuRef.current?.contains(e.target as Node)) {
+        return;
+      }
+      setIsOpen(false);
+    };
+
+    document.body.addEventListener("click", handleClick);
+
+    return () => {
+      document.body.removeEventListener("click", handleClick);
+    };
+  }, [isOpen, setIsOpen]);
+
+  return (
+    <div
+      className={clsx("crayon-date-picker-renderer-floating-container", className)}
+      style={style}
+    >
+      <FloatingDateInput />
+      <FloatingDatePicker ref={menuRef} />
+    </div>
+  );
+};

@@ -1,7 +1,7 @@
 import * as Switch from "@radix-ui/react-switch";
 import clsx from "clsx";
 import { CSSProperties, forwardRef, ReactNode, useId } from "react";
-import { Label } from "../FormControl";
+import { Label } from "../Label";
 
 interface SwitchItemProps {
   label?: ReactNode;

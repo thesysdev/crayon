@@ -5,7 +5,7 @@ import "../image.scss";
 const meta: Meta<typeof Image> = {
   title: "Components/Image",
   component: Image,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   decorators: [
     (Story) => (
       <div
@@ -18,6 +18,13 @@ const meta: Meta<typeof Image> = {
       </div>
     ),
   ],
+  parameters: {
+    docs: {
+      description: {
+        component: "```tsx\nimport { Image } from '@crayon-ui/react-ui';\n```",
+      },
+    },
+  },
   argTypes: {
     className: {
       control: false,

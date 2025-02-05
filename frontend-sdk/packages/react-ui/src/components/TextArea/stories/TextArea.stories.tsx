@@ -7,6 +7,11 @@ const meta = {
   component: TextArea,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { TextArea } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     placeholder: {
@@ -15,7 +20,6 @@ const meta = {
       table: {
         category: "Content",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     rows: {
@@ -33,7 +37,6 @@ const meta = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     style: {
@@ -42,11 +45,10 @@ const meta = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 } satisfies Meta<typeof TextArea>;
 
 export default meta;

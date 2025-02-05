@@ -4,18 +4,23 @@ import { Button } from "../../Button";
 import "../../Button/button.scss";
 import { IconButton } from "../../IconButton";
 import "../../IconButton/iconButton.scss";
-import { Footer } from "../Footer";
-import "../footer.scss";
+import { CardFooter } from "../CardFooter";
+import "../cardFooter.scss";
 
-const meta: Meta<typeof Footer> = {
-  title: "Components/Footer",
-  component: Footer,
+const meta: Meta<typeof CardFooter> = {
+  title: "Components/CardFooter",
+  component: CardFooter,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { CardFooter } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   decorators: [
     (Story) => (
-      <div style={{ width: "500px" }}>
+      <div style={{ width: "350px" }}>
         <Story />
       </div>
     ),
@@ -39,7 +44,6 @@ const meta: Meta<typeof Footer> = {
           summary:
             "ReactNode[]<ButtonProps | IconButtonProps> | ReactNode<ButtonProps | IconButtonProps>",
         },
-        defaultValue: { summary: "undefined" },
       },
     },
     className: {
@@ -48,7 +52,6 @@ const meta: Meta<typeof Footer> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     style: {
@@ -57,15 +60,14 @@ const meta: Meta<typeof Footer> = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 };
 
 export default meta;
-type Story = StoryObj<typeof Footer>;
+type Story = StoryObj<typeof CardFooter>;
 
 // Basic footer stories
 export const FooterStory: Story = {
@@ -73,10 +75,10 @@ export const FooterStory: Story = {
     variant: "horizontal",
   },
   render: (args) => (
-    <Footer variant={args.variant}>
+    <CardFooter variant={args.variant}>
       <Button>Cancel</Button>
       <Button>Save</Button>
       <IconButton icon={<ArrowLeft size={16} />} />
-    </Footer>
+    </CardFooter>
   ),
 };

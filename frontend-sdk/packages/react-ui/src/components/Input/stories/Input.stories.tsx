@@ -8,6 +8,11 @@ const meta: Meta<typeof Input> = {
   component: Input,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { Input } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   decorators: [
     (Story) => (
@@ -42,7 +47,6 @@ const meta: Meta<typeof Input> = {
       table: {
         category: "Content",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     value: {
@@ -51,7 +55,6 @@ const meta: Meta<typeof Input> = {
       table: {
         category: "Content",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     onChange: {
@@ -77,7 +80,7 @@ const meta: Meta<typeof Input> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 };
 
 export default meta;
@@ -117,6 +120,10 @@ export const Controlled: Story = {
   render: () => <ControlledInput />,
   parameters: {
     docs: {
+      description: {
+        story:
+          "This is a controlled input example. The input value is managed by the component's state.",
+      },
       source: {
         code: `
 import { useState } from "react";

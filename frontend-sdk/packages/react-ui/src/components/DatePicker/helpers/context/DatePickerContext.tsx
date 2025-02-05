@@ -20,9 +20,9 @@ const defaultContext: DatePickerContextType = {
   mode: "single",
   botType: "fullscreen",
 
-  setSelectedDate: (date: Date | undefined) => {},
-  setSelectedRange: (range: DateRange | undefined) => {},
-  setIsOpen: (isOpen: boolean) => {},
+  setSelectedDate: (_date: Date | undefined) => {},
+  setSelectedRange: (_range: DateRange | undefined) => {},
+  setIsOpen: (_isOpen: boolean) => {},
 };
 
 const DatePickerContext = createContext<DatePickerContextType>(defaultContext);

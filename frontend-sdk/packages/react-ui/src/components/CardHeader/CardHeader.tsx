@@ -3,7 +3,7 @@ import { cloneElement, CSSProperties, forwardRef, ReactElement, ReactNode } from
 import { ButtonProps } from "../Button";
 import { IconButtonProps } from "../IconButton";
 
-export interface HeaderProps {
+export interface CardHeaderProps {
   icon?: ReactNode;
   title?: ReactNode;
   subtitle?: ReactNode;
@@ -14,7 +14,7 @@ export interface HeaderProps {
   styles?: CSSProperties;
 }
 
-export const Header = forwardRef<HTMLDivElement, HeaderProps>((props, ref) => {
+export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>((props, ref) => {
   const { icon, title, subtitle, actions, className, styles, ...rest } = props;
   return (
     <div ref={ref} className={clsx("crayon-header", className)} style={styles} {...rest}>
@@ -34,4 +34,4 @@ export const Header = forwardRef<HTMLDivElement, HeaderProps>((props, ref) => {
   );
 });
 
-Header.displayName = "Header";
+CardHeader.displayName = "CardHeader";

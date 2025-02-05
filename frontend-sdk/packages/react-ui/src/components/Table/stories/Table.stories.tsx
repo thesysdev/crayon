@@ -15,7 +15,15 @@ import "../table.scss";
 const meta: Meta<typeof Table> = {
   title: "Components/Table",
   component: Table,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "```tsx\nimport { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@crayon-ui/react-ui';\n```",
+      },
+    },
+  },
 };
 
 export default meta;

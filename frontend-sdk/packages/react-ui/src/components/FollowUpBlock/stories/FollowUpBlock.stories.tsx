@@ -9,9 +9,15 @@ const meta: Meta<typeof FollowUpBlock> = {
   title: "Components/FollowUpBlock",
   component: FollowUpBlock,
   subcomponents: { FollowUpItem } as any,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component:
+          "```tsx\nimport { FollowUpBlock, FollowUpItem } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     children: {

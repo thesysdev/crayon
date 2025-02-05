@@ -7,8 +7,14 @@ const meta: Meta<SliderProps> = {
   component: Slider,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { Slider } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
+
   argTypes: {
     variant: {
       control: "radio",
@@ -16,21 +22,33 @@ const meta: Meta<SliderProps> = {
       description:
         "The type of slider - continuous for smooth sliding, discrete for stepped values, or range for selecting a range",
       defaultValue: "continuous",
+      table: {
+        category: "Appearance",
+      },
     },
     min: {
       control: "number",
       description: "Minimum value of the slider",
       defaultValue: 0,
+      table: {
+        category: "Value",
+      },
     },
     max: {
       control: "number",
       description: "Maximum value of the slider",
       defaultValue: 100,
+      table: {
+        category: "Value",
+      },
     },
     step: {
       control: "number",
       description: "Step increment (required for discrete variant)",
       defaultValue: 1,
+      table: {
+        category: "Value",
+      },
     },
     disabled: {
       control: "boolean",
@@ -38,18 +56,23 @@ const meta: Meta<SliderProps> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "State",
       },
     },
     value: {
       control: false,
       description:
         "Current value(s) of the slider. Single number for continuous/discrete, array of two numbers for range",
+      table: {
+        category: "Value",
+      },
     },
     className: {
       control: "text",
       description: "Additional CSS class names",
       table: {
         disable: true,
+        category: "Appearance",
       },
     },
     style: {
@@ -57,9 +80,11 @@ const meta: Meta<SliderProps> = {
       description: "Additional inline styles",
       table: {
         disable: true,
+        category: "Appearance",
       },
     },
   },
+
   decorators: [
     (Story) => (
       <div style={{ width: "400px", padding: "2rem" }}>
@@ -123,61 +148,6 @@ export const Range: Story = {
     docs: {
       description: {
         story: "A range slider allows selection of a value range using two handles.",
-      },
-    },
-  },
-};
-
-export const SmallSteps: Story = {
-  args: {
-    variant: "discrete",
-    min: 0,
-    max: 1,
-    step: 0.1,
-    value: [0.5],
-    onValueChange: (value) => console.log("Value changed:", value),
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "Slider configured with small decimal steps, useful for precise value selection.",
-      },
-    },
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    variant: "continuous",
-    min: 0,
-    max: 100,
-    step: 1,
-    disabled: true,
-    value: [50],
-    onValueChange: (value) => console.log("Value changed:", value),
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "A disabled slider prevents user interaction and shows a visual disabled state.",
-      },
-    },
-  },
-};
-
-export const CustomRange: Story = {
-  args: {
-    variant: "continuous",
-    min: -50,
-    max: 50,
-    step: 5,
-    value: [0],
-    onValueChange: (value) => console.log("Value changed:", value),
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "A slider with a custom range, including negative values.",
       },
     },
   },

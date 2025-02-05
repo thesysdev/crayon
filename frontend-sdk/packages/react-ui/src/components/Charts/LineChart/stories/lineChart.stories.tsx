@@ -24,8 +24,14 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
   component: LineChart,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { LineChart } from '@crayon-ui/react-ui/Charts/LineChart';\n```",
+      },
+    },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
+
   argTypes: {
     data: {
       description:
@@ -34,6 +40,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       table: {
         type: { summary: "Array<Record<string, string | number>>" },
         defaultValue: { summary: "[]" },
+        category: "Data",
       },
     },
     categoryKey: {
@@ -42,6 +49,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        category: "Data",
       },
     },
     width: {
@@ -50,6 +58,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "800" },
+        category: "Dimensions",
       },
     },
     height: {
@@ -58,6 +67,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "400" },
+        category: "Dimensions",
       },
     },
     theme: {
@@ -67,6 +77,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
+        category: "Appearance",
       },
     },
     icons: {
@@ -76,6 +87,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       table: {
         type: { summary: "Record<string, React.ComponentType>" },
         defaultValue: { summary: "{}" },
+        category: "Appearance",
       },
     },
     variant: {
@@ -85,6 +97,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       options: ["linear", "natural", "step"],
       table: {
         defaultValue: { summary: "natural" },
+        category: "Appearance",
       },
     },
     strokeWidth: {
@@ -93,6 +106,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "2" },
+        category: "Appearance",
       },
     },
     grid: {
@@ -101,6 +115,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
     label: {
@@ -109,6 +124,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
     legend: {
@@ -118,6 +134,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
   },

@@ -5,13 +5,13 @@ import "../../charts.scss";
 import { PieChart, PieChartProps } from "../PieChart";
 
 const pieChartData = [
-  { month: "January", value: 400 },
-  { month: "February", value: 300 },
-  { month: "March", value: 300 },
-  { month: "April", value: 400 },
-  { month: "May", value: 300 },
-  { month: "June", value: 300 },
-  { month: "July", value: 300 },
+  { month: "January", value: 4250 },
+  { month: "February", value: 3820 },
+  { month: "March", value: 4680 },
+  { month: "April", value: 4120 },
+  { month: "May", value: 5340 },
+  { month: "June", value: 6250 },
+  { month: "July", value: 5890 },
 ];
 
 const meta: Meta<PieChartProps<typeof pieChartData>> = {
@@ -19,8 +19,14 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
   component: PieChart,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { PieChart } from '@crayon-ui/react-ui/Charts/PieChart';\n```",
+      },
+    },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
+
   argTypes: {
     data: {
       description:
@@ -29,6 +35,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
       table: {
         type: { summary: "Array<Record<string, string | number>>" },
         defaultValue: { summary: "[]" },
+        category: "Data",
       },
     },
     categoryKey: {
@@ -37,6 +44,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        category: "Data",
       },
     },
     dataKey: {
@@ -45,6 +53,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        category: "Data",
       },
     },
     width: {
@@ -53,6 +62,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "800" },
+        category: "Dimensions",
       },
     },
     height: {
@@ -61,6 +71,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "400" },
+        category: "Dimensions",
       },
     },
     theme: {
@@ -70,6 +81,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
+        category: "Appearance",
       },
     },
     variant: {
@@ -79,6 +91,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
       options: ["pie", "donut"],
       table: {
         defaultValue: { summary: "pie" },
+        category: "Appearance",
       },
     },
     format: {
@@ -88,6 +101,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
       options: ["percentage", "number"],
       table: {
         defaultValue: { summary: "percentage" },
+        category: "Display",
       },
     },
     legend: {
@@ -96,6 +110,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
     label: {
@@ -104,6 +119,7 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
   },

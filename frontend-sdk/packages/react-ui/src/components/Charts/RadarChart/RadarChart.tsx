@@ -10,7 +10,7 @@ import {
 } from "../Charts";
 import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
-type RadarChartData = Array<Record<string, string | number>>;
+export type RadarChartData = Array<Record<string, string | number>>;
 
 export interface RadarChartProps<T extends RadarChartData> {
   data: T;

@@ -17,10 +17,11 @@ import logoUrl from "./thesysdev_logo.jpeg";
 
 export default {
   title: "Shell",
+  tags: ["dev", "!autodocs"],
 };
 
 export const Default = {
-  render: () => {
+  render: (args: any) => {
     const threadListManager = useThreadListManager({
       createThread: async () => {
         return {

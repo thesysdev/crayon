@@ -8,6 +8,11 @@ const meta: Meta<typeof IconButton> = {
   component: IconButton,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { IconButton } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     icon: {
@@ -16,7 +21,6 @@ const meta: Meta<typeof IconButton> = {
       table: {
         category: "Content",
         type: { summary: "ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     variant: {
@@ -64,11 +68,10 @@ const meta: Meta<typeof IconButton> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 };
 
 export default meta;

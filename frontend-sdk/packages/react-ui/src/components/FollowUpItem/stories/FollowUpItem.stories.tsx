@@ -8,8 +8,13 @@ const meta: Meta<typeof FollowUpItem> = {
   component: FollowUpItem,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { FollowUpItem } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "!autodocs"],
   argTypes: {
     text: {
       control: "text",
@@ -17,7 +22,6 @@ const meta: Meta<typeof FollowUpItem> = {
       table: {
         category: "Content",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     icon: {
@@ -26,7 +30,6 @@ const meta: Meta<typeof FollowUpItem> = {
       table: {
         category: "Content",
         type: { summary: "ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     className: {
@@ -35,7 +38,6 @@ const meta: Meta<typeof FollowUpItem> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },

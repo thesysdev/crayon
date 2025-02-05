@@ -11,6 +11,12 @@ const meta = {
   subcomponents: { CheckBoxItem } as any,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component:
+          "```tsx\nimport { CheckBoxGroup, CheckBoxItem } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     variant: {
@@ -59,7 +65,7 @@ const meta = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 } satisfies Meta<typeof CheckBoxGroup>;
 
 export default meta;
@@ -67,33 +73,11 @@ type Story = StoryObj<typeof meta>;
 
 export const ClearVariant: Story = {
   args: {
-    variant: "clear",
+    variant: "card",
     children: [
       <CheckBoxItem key="1" label="Option 1" />,
       <CheckBoxItem key="2" label="Option 2" />,
       <CheckBoxItem key="3" label="Option 3" />,
-    ],
-  },
-};
-
-export const CardVariant: Story = {
-  args: {
-    variant: "card",
-    children: [
-      <CheckBoxItem key="1" label="Card Option 1" />,
-      <CheckBoxItem key="2" label="Card Option 2" />,
-      <CheckBoxItem key="3" label="Card Option 3" />,
-    ],
-  },
-};
-
-export const SunkVariant: Story = {
-  args: {
-    variant: "sunk",
-    children: [
-      <CheckBoxItem key="1" label="Sunk Option 1" />,
-      <CheckBoxItem key="2" label="Sunk Option 2" />,
-      <CheckBoxItem key="3" label="Sunk Option 3" />,
     ],
   },
 };

@@ -8,8 +8,16 @@ import "../TagBlock.scss";
 const meta: Meta<typeof TagBlock> = {
   title: "Components/TagBlock",
   component: TagBlock,
+  subcomponents: {
+    Tag: Tag as any,
+  },
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { TagBlock, Tag } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     children: {
@@ -18,7 +26,6 @@ const meta: Meta<typeof TagBlock> = {
       table: {
         category: "Content",
         type: { summary: "ReactElement<typeof Tag> | ReactElement<typeof Tag>[]" },
-        defaultValue: { summary: "undefined" },
       },
     },
     className: {
@@ -27,7 +34,6 @@ const meta: Meta<typeof TagBlock> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     styles: {
@@ -36,11 +42,10 @@ const meta: Meta<typeof TagBlock> = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 };
 
 export default meta;

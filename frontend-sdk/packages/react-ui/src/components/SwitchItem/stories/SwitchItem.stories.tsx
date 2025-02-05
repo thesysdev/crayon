@@ -9,7 +9,7 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "!autodocs"],
   argTypes: {
     label: {
       control: "text",
@@ -17,7 +17,6 @@ const meta = {
       table: {
         category: "Content",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     disabled: {
@@ -58,7 +57,6 @@ const meta = {
       table: {
         category: "Property",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     defaultChecked: {
@@ -72,7 +70,6 @@ const meta = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     style: {
@@ -81,7 +78,6 @@ const meta = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
     onChange: {
@@ -90,7 +86,6 @@ const meta = {
       table: {
         category: "Behavior",
         type: { summary: "function" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },

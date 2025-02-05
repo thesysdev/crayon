@@ -11,6 +11,11 @@ const meta: Meta<typeof DatePicker> = {
   component: DatePicker,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { DatePicker } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   decorators: [
     (Story) => (
@@ -112,7 +117,7 @@ const meta: Meta<typeof DatePicker> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
 } satisfies Meta<typeof DatePicker>;
 
 export default meta;
@@ -134,6 +139,13 @@ export const RangePicker: Story = {
   args: {
     mode: "range",
     variant: "docked",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Range picker with docked variant. Select dates by dragging across the calendar",
+      },
+    },
   },
 };
 

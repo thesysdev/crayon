@@ -4,9 +4,14 @@ import "../textContent.scss";
 const meta: Meta<typeof TextContent> = {
   title: "Components/TextContent",
   component: TextContent,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { TextContent } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     variant: {
@@ -25,7 +30,6 @@ const meta: Meta<typeof TextContent> = {
       table: {
         category: "Content",
         type: { summary: "string | ReactNode" },
-        defaultValue: { summary: "undefined" },
       },
     },
     className: {
@@ -34,7 +38,6 @@ const meta: Meta<typeof TextContent> = {
       table: {
         category: "Styling",
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
       },
     },
     style: {
@@ -43,7 +46,6 @@ const meta: Meta<typeof TextContent> = {
       table: {
         category: "Styling",
         type: { summary: "CSSProperties" },
-        defaultValue: { summary: "undefined" },
       },
     },
   },

@@ -77,29 +77,49 @@ const meta: Meta<typeof Button> = {
   component: Button,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { Button } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   argTypes: {
     variant: {
       control: "radio",
       options: ["primary", "secondary", "tertiary"],
+      table: {
+        category: "Appearance",
+      },
     },
     size: {
       control: "radio",
       options: ["small", "medium", "large"],
+      table: {
+        category: "Appearance",
+      },
     },
     disabled: {
       control: "boolean",
+      table: {
+        category: "State",
+      },
     },
     iconLeft: {
       control: false,
       description: "Any react icon component",
+      table: {
+        category: "Icons",
+      },
     },
     iconRight: {
       control: false,
       description: "Any react icon component",
+      table: {
+        category: "Icons",
+      },
     },
   },
-  tags: ["autodocs"],
+  tags: ["autodocs", "!dev"],
 };
 
 export default meta;

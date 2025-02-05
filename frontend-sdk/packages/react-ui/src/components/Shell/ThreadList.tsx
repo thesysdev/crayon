@@ -4,6 +4,44 @@ import { Fragment, useEffect } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { useShellStore } from "./store";
 
+export const ThreadButton = ({
+  id,
+  title,
+  className,
+}: {
+  id: string;
+  title: string;
+  className?: string;
+}) => {
+  const { selectThread } = useThreadListActions();
+  const { selectedThreadId } = useThreadListState();
+  const { isSidebarOpen, setIsSidebarOpen } = useShellStore((state) => ({
+    isSidebarOpen: state.isSidebarOpen,
+    setIsSidebarOpen: state.setIsSidebarOpen,
+  }));
+  const { layout } = useLayoutContext();
+
+  return (
+    <button
+      onClick={() => {
+        if (layout === "mobile") {
+          setIsSidebarOpen(!isSidebarOpen);
+        }
+        selectThread(id);
+      }}
+      className={clsx(
+        "crayon-shell-thread-button",
+        {
+          "crayon-shell-thread-button--selected": selectedThreadId === id,
+        },
+        className,
+      )}
+    >
+      {title}
+    </button>
+  );
+};
+
 export const ThreadList = ({ className }: { className?: string }) => {
   let { threads } = useThreadListState();
   const { load } = useThreadListActions();
@@ -80,43 +118,5 @@ export const ThreadList = ({ className }: { className?: string }) => {
           </Fragment>
         ))}
     </div>
-  );
-};
-
-export const ThreadButton = ({
-  id,
-  title,
-  className,
-}: {
-  id: string;
-  title: string;
-  className?: string;
-}) => {
-  const { selectThread } = useThreadListActions();
-  const { selectedThreadId } = useThreadListState();
-  const { isSidebarOpen, setIsSidebarOpen } = useShellStore((state) => ({
-    isSidebarOpen: state.isSidebarOpen,
-    setIsSidebarOpen: state.setIsSidebarOpen,
-  }));
-  const { layout } = useLayoutContext();
-
-  return (
-    <button
-      onClick={() => {
-        if (layout === "mobile") {
-          setIsSidebarOpen(!isSidebarOpen);
-        }
-        selectThread(id);
-      }}
-      className={clsx(
-        "crayon-shell-thread-button",
-        {
-          "crayon-shell-thread-button--selected": selectedThreadId === id,
-        },
-        className,
-      )}
-    >
-      {title}
-    </button>
   );
 };

@@ -21,9 +21,15 @@ interface SelectStoryProps {
 const meta: Meta<SelectStoryProps> = {
   title: "Components/Select",
   component: Select as any,
-  tags: ["autodocs"],
+  tags: ["!dev", "autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component:
+          "```tsx\nimport { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from '@crayon-ui/react-ui';\n```",
+      },
+    },
   },
   decorators: [
     (Story) => (
@@ -32,6 +38,7 @@ const meta: Meta<SelectStoryProps> = {
       </div>
     ),
   ],
+
   argTypes: {
     size: {
       control: "radio",
@@ -40,6 +47,7 @@ const meta: Meta<SelectStoryProps> = {
       table: {
         type: { summary: "string" },
         defaultValue: { summary: "md" },
+        category: "Appearance",
       },
     },
     showTick: {
@@ -48,6 +56,7 @@ const meta: Meta<SelectStoryProps> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+        category: "Display",
       },
     },
     hideDropdownIcon: {
@@ -56,6 +65,7 @@ const meta: Meta<SelectStoryProps> = {
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "false" },
+        category: "Display",
       },
     },
     placeholder: {
@@ -64,6 +74,7 @@ const meta: Meta<SelectStoryProps> = {
       table: {
         type: { summary: "string" },
         defaultValue: { summary: "undefined" },
+        category: "Content",
       },
     },
   },
