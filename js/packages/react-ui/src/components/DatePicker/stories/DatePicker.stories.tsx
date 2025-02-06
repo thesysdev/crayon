@@ -230,6 +230,8 @@ export const ControlledRange: Story = {
     docs: {
       source: {
         code: `
+import { DateRange } from "react-day-picker";
+
 const ControlledRangePicker = () => {
   const [dateRange, setDateRange] = useState<DateRange>();
 
