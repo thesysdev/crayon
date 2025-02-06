@@ -7,6 +7,7 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
+  keyTransform,
 } from "../Charts";
 import { cartesianGrid } from "../cartesianGrid";
 import { getDistributedColors, getPalette } from "../utils/PalletUtils";
@@ -92,7 +93,8 @@ export const AreaChart = <T extends AreaChartData>({
 
         <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
         {dataKeys.map((key) => {
-          const color = `var(--color-${key})`;
+          const transformedKey = keyTransform(key);
+          const color = `var(--color-${transformedKey})`;
           if (label) {
             return (
               <Area

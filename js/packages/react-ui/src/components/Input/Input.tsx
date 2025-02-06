@@ -7,12 +7,18 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
   size?: "small" | "medium" | "large";
 }
 
+const sizes = {
+  small: "crayon-input-small",
+  medium: "crayon-input-medium",
+  large: "crayon-input-large",
+} as const;
+
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, styles, size = "medium", ...props }, ref) => {
     return (
       <input
         ref={ref}
-        className={clsx("crayon-input", `crayon-input-${size}`, className)}
+        className={clsx("crayon-input", sizes[size], className)}
         style={styles}
         {...props}
       />

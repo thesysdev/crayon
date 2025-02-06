@@ -7,6 +7,7 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
+  keyTransform,
 } from "../Charts";
 import { cartesianGrid } from "../cartesianGrid";
 import { getDistributedColors, getPalette } from "../utils/PalletUtils";
@@ -90,7 +91,8 @@ export const BarChart = <T extends BarChartData>({
 
         <ChartTooltip content={<ChartTooltipContent />} />
         {dataKeys.map((key) => {
-          const color = `var(--color-${key})`;
+          const transformedKey = keyTransform(key);
+          const color = `var(--color-${transformedKey})`;
           if (label) {
             return (
               <Bar

@@ -51,6 +51,10 @@ function useChart() {
   return context;
 }
 
+export function keyTransform(key: string) {
+  return key.replaceAll(/\s/g, "-");
+}
+
 /**
  * Component that generates theme-specific styles for chart elements
  */
@@ -70,9 +74,10 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     ${prefix} [data-chart=${id}] {
     ${colorConfig
       .map(([key, itemConfig]) => {
+        const transformedKey = keyTransform(key);
         const color =
           itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
-        return color ? `  --color-${key}: ${color};` : null;
+        return color ? `  --color-${transformedKey}: ${color};` : null;
       })
       .filter(Boolean)
       .join("\n")}

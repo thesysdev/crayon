@@ -7,6 +7,7 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
+  keyTransform,
 } from "../Charts";
 import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
@@ -71,7 +72,8 @@ export const RadarChart = <T extends RadarChartData>({
 
         <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
         {dataKeys.map((key) => {
-          const color = `var(--color-${key})`;
+          const transformedKey = keyTransform(key);
+          const color = `var(--color-${transformedKey})`;
           if (variant === "line") {
             return (
               <Radar
