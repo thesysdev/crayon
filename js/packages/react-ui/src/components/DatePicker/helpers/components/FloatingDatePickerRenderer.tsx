@@ -1,7 +1,8 @@
-import { autoUpdate, flip, useFloating } from "@floating-ui/react-dom";
+import { autoUpdate, flip, offset, useFloating } from "@floating-ui/react-dom";
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
 import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useMultipleRefs } from "../../../../hooks/useMultipleRefs";
 import { useDatePicker } from "../context/DatePickerContext";
 import { formatDateRange, formatSingleDate } from "../utils/helperFn";
@@ -55,7 +56,7 @@ const FloatingDatePicker = forwardRef<HTMLDivElement>((_, ref) => {
     strategy: "absolute",
     placement: "bottom-start",
     whileElementsMounted: autoUpdate,
-    middleware: [flip()],
+    middleware: [offset(5), flip()],
   });
 
   const menuPositionDivRefs = useMultipleRefs(setReference, menuPositionDivRef);
@@ -68,15 +69,18 @@ const FloatingDatePicker = forwardRef<HTMLDivElement>((_, ref) => {
   return (
     <>
       <div ref={menuPositionDivRefs} className="crayon-date-picker-renderer-floating-reference" />
-      <div
-        ref={floatingRef}
-        style={{ ...floatingStyles, width: `${width}px`, marginTop: "5px" }}
-        className="crayon-date-picker-renderer-floating-content"
-      >
-        <div className="crayon-date-picker-renderer-floating-menu">
-          <DatepickerRenderer />
-        </div>
-      </div>
+      {createPortal(
+        <div
+          ref={floatingRef}
+          style={{ ...floatingStyles, width: `${width}px` }}
+          className="crayon-date-picker-renderer-floating-content"
+        >
+          <div className="crayon-date-picker-renderer-floating-menu">
+            <DatepickerRenderer />
+          </div>
+        </div>,
+        document.body,
+      )}
     </>
   );
 });

@@ -21,8 +21,7 @@ const meta: Meta<typeof DatePicker> = {
     (Story) => (
       <div
         style={{
-          width: "400px",
-          height: "400px",
+          width: "350px",
         }}
       >
         <Story />
