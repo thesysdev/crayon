@@ -92,7 +92,10 @@ const generateAddComponentsCalls = async () => {
 
   const addComponentsCallPromises = componentsAndPaths.map(async (component) => {
     if (UNSTYLED_COMPONENTS.has(component.name)) return;
-    if (!component.stylePath) throw new Error(`No styles found for component: ${component.name}`);
+    if (!component.stylePath)
+      throw new Error(
+        `No styles found for component: ${component.name}. If this is intentional, add component name to UNSTYLED_COMPONENTS in generateTailwindPlugin.ts`,
+      );
 
     const componentStyle = fs.readFileSync(path.join(component.path, component.stylePath), "utf-8");
 
