@@ -1,6 +1,4 @@
 import plugin from "tailwindcss/plugin";
-import type { Config, PluginCreator } from "tailwindcss/types/config";
-import { getComponentsDependencies } from "./utils";
 
 interface CrayonPluginOptions {
   components?: `<COMPONENT_TYPES$>`;
@@ -12,7 +10,7 @@ const crayonPlugin = plugin.withOptions<CrayonPluginOptions>(
       const includeAllComponents = `<INCLUDE_ALL_COMPONENTS$>`;
       const includeAll =
         components?.some((component) => includeAllComponents.has(component)) || !components;
-      const dependencies = await getComponentsDependencies(components ?? [], componentDependencyMap);
+      const dependencies = await getComponentDependencies(components ?? []);
 
       const componentsToAdd = Array.from(new Set([...(components ?? []), ...dependencies]));
 
@@ -21,5 +19,12 @@ const crayonPlugin = plugin.withOptions<CrayonPluginOptions>(
 );
 
 const componentDependencyMap = `<COMPONENT_DEPENDENCY_MAP$>`;
+
+const getComponentDependencies = async (componentNames: (keyof typeof componentDependencyMap)[]) => {
+  const dependencies = componentNames
+    .map((componentName) => componentDependencyMap[componentName])
+    .flat();
+  return Array.from(new Set([...componentNames, ...dependencies]));
+};
 
 export default crayonPlugin;
