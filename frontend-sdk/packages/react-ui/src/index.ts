@@ -13,6 +13,7 @@ export * from "./components/FormControl";
 export * from "./components/IconButton";
 export * from "./components/Image";
 export * from "./components/Input";
+export * from "./components/Label";
 export * from "./components/ListBlock";
 export * from "./components/ListItem";
 export * from "./components/RadioGroup";
@@ -27,6 +28,5 @@ export * from "./components/Tabs";
 export * from "./components/Tag";
 export * from "./components/TagBlock";
 export * from "./components/TextArea";
-export * from './components/ThemeProvider'
 export * from "./components/TextContent";
 export * from "./components/ThemeProvider";
