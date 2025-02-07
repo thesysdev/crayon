@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../Select";
-import "../select.scss";
 
 interface SelectStoryProps {
   size?: "sm" | "md" | "lg";

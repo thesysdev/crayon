@@ -14,11 +14,8 @@ import {
   UtensilsCrossed,
 } from "lucide-react";
 import { CardHeader } from "../../CardHeader";
-import "../../CardHeader/cardHeader.scss";
 import { IconButton } from "../../IconButton";
-import "../../IconButton/iconButton.scss";
 import { Image } from "../../Image";
-import "../../Image/image.scss";
 import {
   Carousel,
   CarouselContent,

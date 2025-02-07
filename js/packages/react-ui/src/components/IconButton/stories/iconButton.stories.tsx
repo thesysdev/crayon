@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Download } from "lucide-react";
 import { IconButton } from "../IconButton";
-import "../iconButton.scss";
 
 const meta: Meta<typeof IconButton> = {
   title: "Components/IconButton",

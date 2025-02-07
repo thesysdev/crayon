@@ -1,11 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../../Button";
-import "../../Button/button.scss";
 import { IconButton } from "../../IconButton";
-import "../../IconButton/iconButton.scss";
 import { CardFooter } from "../CardFooter";
-import "../cardFooter.scss";
 
 const meta: Meta<typeof CardFooter> = {
   title: "Components/CardFooter",

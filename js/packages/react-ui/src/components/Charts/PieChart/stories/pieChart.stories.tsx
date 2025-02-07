@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "../../../Card";
-import "../../../Card/card.scss";
-import "../../charts.scss";
 import { PieChart, PieChartProps } from "../PieChart";
 
 const pieChartData = [

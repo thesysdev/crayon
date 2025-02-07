@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Slider, SliderProps } from "../Slider";
-import "../slider.scss";
 
 const meta: Meta<SliderProps> = {
   title: "Components/Slider",

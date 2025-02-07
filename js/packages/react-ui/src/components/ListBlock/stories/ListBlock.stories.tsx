@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ChevronRight, Mail, User } from "lucide-react";
 import { ListItem } from "../../ListItem";
-import "../../ListItem/listItem.scss";
 import { ListBlock } from "../ListBlock";
-import "../listBlock.scss";
+
 const meta: Meta<typeof ListBlock> = {
   title: "Components/ListBlock",
   component: ListBlock,

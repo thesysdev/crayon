@@ -1,6 +1,5 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { TextArea } from "../TextArea";
-import "../textArea.scss";
 
 const meta = {
   title: "Components/TextArea",

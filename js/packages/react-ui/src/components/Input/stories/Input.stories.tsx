@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { Input } from "../Input";
-import "../input.scss";
 
 const meta: Meta<typeof Input> = {
   title: "Components/Input",

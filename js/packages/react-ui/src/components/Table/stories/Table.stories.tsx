@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "../Table";
-import "../table.scss";
 
 const meta: Meta<typeof Table> = {
   title: "Components/Table",

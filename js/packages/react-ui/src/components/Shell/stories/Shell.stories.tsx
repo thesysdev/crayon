@@ -4,12 +4,9 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
-import "../../Button/button.scss";
-import "../../IconButton/iconButton.scss";
 import { Container } from "../Container";
 import { MobileHeader } from "../MobileHeader";
 import { NewChatButton } from "../NewChatButton";
-import "../shell.scss";
 import { SidebarContainer, SidebarContent, SidebarHeader, SidebarSeparator } from "../Sidebar";
 import { Composer, Messages, ScrollArea, ThreadContainer } from "../Thread";
 import { ThreadList } from "../ThreadList";

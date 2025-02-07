@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import "../../Label/Label.scss";
 import { SwitchItem } from "../SwitchItem";
-import "../switchItem.scss";
 
 const meta = {
   title: "Components/SwitchItem",
