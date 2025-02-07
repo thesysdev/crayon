@@ -1,13 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Bird, Dog, Fish } from "lucide-react";
 import { CardHeader } from "../../CardHeader";
-import "../../CardHeader/cardHeader.scss";
 import { IconButton } from "../../IconButton";
-import "../../IconButton/iconButton.scss";
 import { Image } from "../../Image";
-import "../../Image/image.scss";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../Accordion";
-import "../accordion.scss";
 
 interface AccordionStoryProps {
   type: "single" | "multiple";
