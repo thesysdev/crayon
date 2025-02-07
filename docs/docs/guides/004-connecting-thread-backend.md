@@ -22,9 +22,11 @@ const threadManager = useThreadManager({...});
 import { CrayonChat } from "@crayonai/react-ui";
 
 export default function App() {
-  return <CrayonChat url="http://localhost:3000/api/chat"
-    threadListManager={threadListManager}
-    threadManager={threadManager} />;
+  return (
+    <CrayonChat {...crayonChatProps}
+      threadListManager={threadListManager}
+      threadManager={threadManager} />
+  );
 }
 ```
 

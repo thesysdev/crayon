@@ -93,7 +93,7 @@ const config: Config = {
           label: "Reference",
         },
         {
-          href: "https://crayonai.org/ui/?path=/docs/configure-your-project--docs",
+          href: "https://crayonai.org/ui/",
           label: "UI",
           position: "left",
         },

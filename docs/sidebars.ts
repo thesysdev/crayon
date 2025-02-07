@@ -19,11 +19,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Quickstart",
-      link: {
-        type: "doc",
-        id: "quickstart/index",
-      },
-      items: ["quickstart/python-fastapi", "quickstart/nextjs"],
+      items: ["quickstart/nextjs"],
     },
     {
       type: "category",

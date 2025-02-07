@@ -1,0 +1,28 @@
+# Streaming Protocol
+
+To enable streaming of both text and UI, Crayon uses a standard
+streaming protocol inspired from [AI SDK's streaming protocol](https://sdk.vercel.ai/docs/ai-sdk-ui/stream-protocol) as described here. This stream defines the format of the data that is sent to the client. It is a simple text stream with a few special tokens that is agnostic of the backend language or the LLM model used.
+
+You can implement this protocol in your custom backend and integrate it with Crayon to build your own. For example you can use a Python FastAPI backend that integrates with Deepseek models and use Crayon to build a UI for it.
+
+### Text Part
+```
+0:<text>
+```
+A simple text chunk is prefixed with `0:`.
+Multiple consequtive text chunks are appended to the stream as they are generated to create a single
+text block.
+
+### Response Template Part
+```
+1:{name: <name>, templateProps: <templateProps>}
+```
+A response template is prefixed with `1:`. It contains the name of the template and the props to pass to it.
+Multiple response templates can be sent in a single stream.
+
+### Context Part
+```
+8:{context}
+```
+A context is prefixed with `8:`.
+Multiple consequtive context parts can be sent in a single stream.

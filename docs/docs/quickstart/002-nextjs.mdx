@@ -45,29 +45,47 @@ yarn add @crayonai/crayon-ui @crayonai/react-core
 </Tabs>
 
 
-## Add the CrayonProvider to your app
+## Add the CrayonChat component to your app
 
-```tsx
+```tsx title="page.tsx"
 import { CrayonChat } from "@crayonai/react-ui";
+import "@crayonai/react-ui/styles/index.css";
 
-export default function App() {
-  return <CrayonChat url="http://localhost:3000/api/chat" />;
+export default function Home() {
+  return <CrayonChat agentName="Crayon" logoUrl="" />;
 }
+
 ```
 
 ## Integrate LLM with your backend route
 
-```tsx
+```tsx title="api/chat/route.ts"
+import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
+
 export async function POST(req: NextRequest) {
   const { messages } = await req.json();
   const client = new OpenAI();
-  const stream = client.chat.completions.create({
+  const llmStream = await client.chat.completions.create({
     model: "gpt-4o",
     messages: messages,
     stream: true,
   });
-  const streamResponse = new NextResponse(stream);
-  return NextResponse.json(response);
+  const responseStream = new ReadableStream({
+    start: async (controller) => {
+      for await (const chunk of llmStream) {
+        controller.enqueue(chunk.choices[0].delta.content);
+      }
+    },
+  });
+
+  return new NextResponse(responseStream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+    },
+  });
 }
 ```
 
