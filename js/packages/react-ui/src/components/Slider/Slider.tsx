@@ -1,6 +1,6 @@
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import clsx from "clsx";
-import { forwardRef, useEffect, useMemo, useState } from "react";
+import { forwardRef, useMemo, useState } from "react";
 
 export interface SliderProps extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
   variant: "continuous" | "discrete" | "range";
@@ -8,44 +8,31 @@ export interface SliderProps extends React.ComponentPropsWithoutRef<typeof Slide
   max: number;
   step?: number;
   disabled?: boolean;
-  onValueChange: (value: number | number[]) => void;
-  value: number[];
+  defaultValue?: number[];
   className?: string;
   style?: React.CSSProperties;
 }
 
 export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>, SliderProps>(
   (
-    { variant, min, max, step, disabled, onValueChange, value, className, style, ...props },
+    {
+      variant,
+      min,
+      max,
+      step,
+      disabled,
+      value,
+      onValueChange,
+      defaultValue,
+      className,
+      style,
+      ...props
+    },
     ref,
   ) => {
-    const [internalValue, setInternalValue] = useState(variant === "range" ? value : value);
-
-    useEffect(() => {
-      setInternalValue(variant === "range" ? value : value);
-    }, [variant, min, max, value]);
-
-    const handleValueChange = (newValue: number[]) => {
-      const value = variant === "range" ? newValue : newValue[0];
-      if (value === undefined) return;
-      setInternalValue(Array.isArray(value) ? value : [value]);
-      if (onValueChange) onValueChange(value);
-    };
-
-    const sliderProps = useMemo(() => {
-      const baseProps = { min, max, ...props };
-      switch (variant) {
-        case "continuous":
-          return { ...baseProps, value: [internalValue] };
-        case "discrete":
-          if (step === undefined) {
-            throw new Error("Step is required for discrete slider");
-          }
-          return { ...baseProps, step, value: [internalValue] };
-        case "range":
-          return { ...baseProps, value: internalValue };
-      }
-    }, [variant, min, max, step, internalValue]);
+    // used to show the correct value on thumb
+    const [internalValue, setInternalValue] = useState(value || defaultValue);
+    const valueToShow = value || internalValue;
 
     const thumbs = useMemo(() => {
       const thumbClass = "slider-thumb-handle";
@@ -59,9 +46,7 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
                 <div className="slider-thumb-handle-inner-dot" />
               </div>
               {!disabled && (
-                <div className={valueIndicatorClass}>
-                  {Array.isArray(internalValue) ? internalValue[0] : internalValue}
-                </div>
+                <div className={valueIndicatorClass}>{valueToShow && valueToShow[0]}</div>
               )}
             </div>
           </SliderPrimitive.Thumb>
@@ -71,9 +56,7 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
                 <div className="slider-thumb-handle-inner-dot" />
               </div>
               {!disabled && (
-                <div className={valueIndicatorClass}>
-                  {Array.isArray(internalValue) ? internalValue[1] : internalValue}
-                </div>
+                <div className={valueIndicatorClass}>{valueToShow && valueToShow[1]}</div>
               )}
             </div>
           </SliderPrimitive.Thumb>
@@ -84,11 +67,13 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
             <div className="slider-thumb-handle-inner">
               <div className="slider-thumb-handle-inner-dot" />
             </div>
-            {!disabled && <div className={valueIndicatorClass}>{internalValue}</div>}
+            {!disabled && (
+              <div className={valueIndicatorClass}>{valueToShow && valueToShow[0]}</div>
+            )}
           </div>
         </SliderPrimitive.Thumb>
       );
-    }, [variant, internalValue, disabled]);
+    }, [variant, defaultValue, disabled, valueToShow]);
 
     const renderDots = () => {
       if (variant === "discrete" && step) {
@@ -106,12 +91,19 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
       <SliderPrimitive.Root
         ref={ref}
         className={clsx("slider-root", { "slider--disabled": disabled }, className)}
-        {...sliderProps}
-        onValueChange={handleValueChange}
+        {...props}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onValueChange={(value) => {
+          setInternalValue(value);
+          onValueChange?.(value);
+        }}
         minStepsBetweenThumbs={1}
         disabled={disabled}
         key={variant}
-        value={Array.isArray(internalValue) ? internalValue : [internalValue]}
+        defaultValue={defaultValue}
         style={style}
       >
         <SliderPrimitive.Track className="slider-track">

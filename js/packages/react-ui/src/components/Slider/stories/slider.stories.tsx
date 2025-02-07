@@ -59,8 +59,8 @@ const meta: Meta<SliderProps> = {
         category: "State",
       },
     },
-    value: {
-      control: false,
+    defaultValue: {
+      control: "object",
       description:
         "Current value(s) of the slider. Single number for continuous/discrete, array of two numbers for range",
       table: {
@@ -103,8 +103,7 @@ export const Continuous: Story = {
     min: 0,
     max: 100,
     step: 1,
-    value: [50],
-    onValueChange: (value) => console.log("Value changed:", value),
+    defaultValue: [25],
     disabled: false,
   },
   parameters: {
@@ -122,8 +121,7 @@ export const Discrete: Story = {
     min: 0,
     max: 100,
     step: 10,
-    value: [50],
-    onValueChange: (value) => console.log("Value changed:", value),
+    defaultValue: [50],
   },
   parameters: {
     docs: {
@@ -141,8 +139,7 @@ export const Range: Story = {
     min: 0,
     max: 100,
     step: 1,
-    value: [25, 75],
-    onValueChange: (value) => console.log("Range changed:", value),
+    defaultValue: [25, 75],
   },
   parameters: {
     docs: {
