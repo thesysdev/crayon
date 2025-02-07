@@ -17,13 +17,15 @@ const meta: Meta<SliderProps> = {
 
   argTypes: {
     variant: {
-      control: "radio",
+      control: false,
       options: ["continuous", "discrete", "range"],
       description:
         "The type of slider - continuous for smooth sliding, discrete for stepped values, or range for selecting a range",
       defaultValue: "continuous",
       table: {
         category: "Appearance",
+        type: { summary: "'continuous' | 'discrete' | 'range'" },
+        required: true,
       },
     },
     min: {
@@ -32,6 +34,8 @@ const meta: Meta<SliderProps> = {
       defaultValue: 0,
       table: {
         category: "Value",
+        type: { summary: "number" },
+        required: true,
       },
     },
     max: {
@@ -40,6 +44,8 @@ const meta: Meta<SliderProps> = {
       defaultValue: 100,
       table: {
         category: "Value",
+        type: { summary: "number" },
+        required: true,
       },
     },
     step: {
@@ -48,6 +54,7 @@ const meta: Meta<SliderProps> = {
       defaultValue: 1,
       table: {
         category: "Value",
+        type: { summary: "number" },
       },
     },
     disabled: {
@@ -59,28 +66,46 @@ const meta: Meta<SliderProps> = {
         category: "State",
       },
     },
-    defaultValue: {
-      control: "object",
+    value: {
+      control: false,
       description:
-        "Current value(s) of the slider. Single number for continuous/discrete, array of two numbers for range",
+        "Controlled value(s) of the slider. Single number for continuous/discrete, array of two numbers for range",
       table: {
         category: "Value",
+        type: { summary: "number[]" },
+      },
+    },
+    defaultValue: {
+      description:
+        "Default value(s) of the slider. Single number for continuous/discrete, array of two numbers for range",
+      control: false,
+      table: {
+        category: "Value",
+        type: { summary: "number[]" },
+      },
+    },
+    onValueChange: {
+      control: false,
+      description: "Callback when the value changes",
+      table: {
+        category: "Events",
+        type: { summary: "(value: number[]) => void" },
       },
     },
     className: {
       control: "text",
       description: "Additional CSS class names",
       table: {
-        disable: true,
         category: "Appearance",
+        type: { summary: "string" },
       },
     },
     style: {
       control: "object",
       description: "Additional inline styles",
       table: {
-        disable: true,
         category: "Appearance",
+        type: { summary: "React.CSSProperties" },
       },
     },
   },
