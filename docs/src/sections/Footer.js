@@ -1,5 +1,4 @@
-import Image from "next/image";
-import SecondaryButton from "@/components/SecondaryButton";
+import SecondaryButton from "../components/SecondaryButton";
 import styles from "./Footer.module.css";
 
 export default function Footer() {
@@ -7,8 +6,8 @@ export default function Footer() {
     <div className={styles.footerSection}>
       <div className={styles.socialCard}>
         <div className={styles.socialIcons}>
-          <Image
-            src="/social-icons.png"
+          <img
+            src="/img/social-icons.png"
             alt="social-icons"
             width={270}
             height={164}
@@ -21,16 +20,28 @@ export default function Footer() {
           the latest from Crayon.
         </p>
         <div className={styles.socialButtons}>
-          <SecondaryButton>Discord</SecondaryButton>
-          <SecondaryButton>Follow on X</SecondaryButton>
+          <a
+            href="https://discord.com/invite/Pbv5PsqUSv"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <SecondaryButton>Discord</SecondaryButton>
+          </a>
+          <a
+            href="https://x.com/thesysdev"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <SecondaryButton>Follow on X</SecondaryButton>
+          </a>
         </div>
       </div>
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
           <div className={styles.footerMain}>
             <div className={styles.footerLogo}>
-              <Image
-                src="/thesys-logo.svg"
+              <img
+                src="/img/thesys-logo.svg"
                 alt="Thesys"
                 width={90}
                 height={36}
@@ -41,10 +52,12 @@ export default function Footer() {
                 <h4>Resources</h4>
                 <ul>
                   <li>
-                    <a href="#">JS Reference</a>
+                    <a href="https://crayonai.org/docs/reference/js">
+                      JS Reference
+                    </a>
                   </li>
                   <li>
-                    <a href="#">Documentation</a>
+                    <a href="https://crayonai.org/docs">Documentation</a>
                   </li>
                 </ul>
               </div>
@@ -52,13 +65,15 @@ export default function Footer() {
                 <h4>About thesys</h4>
                 <ul>
                   <li>
-                    <a href="#">thesys</a>
+                    <a href="https://www.thesys.dev/">thesys</a>
                   </li>
                   <li>
-                    <a href="#">LinkedIn</a>
+                    <a href="https://www.linkedin.com/company/thesysdev/">
+                      LinkedIn
+                    </a>
                   </li>
                   <li>
-                    <a href="#">X</a>
+                    <a href="https://x.com/thesysdev">X</a>
                   </li>
                 </ul>
               </div>
@@ -67,11 +82,6 @@ export default function Footer() {
           <div className={styles.footerBottom}>
             <div className={styles.footerText}>
               © 2025 Thesys Inc. All rights reserved.
-            </div>
-            <div className={styles.footerLinks}>
-              <a href="#">Privacy Policy</a>
-              <a href="#">Terms of Use</a>
-              <a href="#">Terms of Service</a>
             </div>
           </div>
         </div>

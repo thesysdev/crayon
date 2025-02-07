@@ -1,7 +1,3 @@
-import Image from "next/image";
-import { Smartphone, Code2 } from "lucide-react";
-import PrimaryButton from "@/components/PrimaryButton";
-import SecondaryButton from "@/components/SecondaryButton";
 import styles from "./Features.module.css";
 
 export default function Features() {
@@ -14,7 +10,7 @@ export default function Features() {
         <div className={styles.featureBlockContainer}>
           <div className={styles.featureBlock}>
             <div className={styles.featureIcon}>
-              <img src="./tablet-smartphone.png"></img>
+              <img src="./img/tablet-smartphone.png"></img>
             </div>
             <div className={styles.featureContent}>
               <div className={styles.featureBlockTitle}>
@@ -29,7 +25,7 @@ export default function Features() {
           </div>
           <div className={styles.featureBlock}>
             <div className={styles.featureIcon}>
-              <img src="./tablet-smartphone.png"></img>
+              <img src="./img/tablet-smartphone.png"></img>
             </div>
             <div className={styles.featureContent}>
               <div className={styles.featureBlockTitle}>
@@ -46,7 +42,7 @@ export default function Features() {
         <div className={styles.featureBlockContainer}>
           <div className={styles.featureBlock}>
             <div className={styles.featureIcon}>
-              <img src="./tablet-smartphone.png"></img>
+              <img src="./img/tablet-smartphone.png"></img>
             </div>
             <div className={styles.featureContent}>
               <div className={styles.featureBlockTitle}>
@@ -61,7 +57,7 @@ export default function Features() {
           </div>
           <div className={styles.featureBlock}>
             <div className={styles.featureIcon}>
-              <img src="./tablet-smartphone.png"></img>
+              <img src="./img/tablet-smartphone.png"></img>
             </div>
             <div className={styles.featureContent}>
               <div className={styles.featureBlockTitle}>

@@ -1,6 +1,5 @@
-import Image from "next/image";
-import PrimaryButton from "@/components/PrimaryButton";
-import SecondaryButton from "@/components/SecondaryButton";
+import PrimaryButton from "@site/src/components/PrimaryButton";
+import SecondaryButton from "@site/src/components/SecondaryButton";
 import styles from "./Hero.module.css";
 import { useState, useEffect } from "react";
 
@@ -32,14 +31,26 @@ export default function Hero() {
             <div className={styles.row1block3} id={styles.fillerblock}></div>
           </div>
           <div className={styles.row2}>
-            <img src="./crayon-logo.svg"></img>
+            <img src="./img/crayon-logo.svg"></img>
           </div>
           <div className={styles.row3}>
             <div className={styles.row3block1} id={styles.fillerblock}></div>
             <div className={styles.ctaBlock}>
               <div className={styles.ctaContainer}>
-                <PrimaryButton>Get Started</PrimaryButton>
-                <SecondaryButton>Watch Tutorial</SecondaryButton>
+                <a
+                  href="https://crayonai.org/docs"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <PrimaryButton>Get Started</PrimaryButton>
+                </a>
+                <a
+                  href="https:/crayonai.org/docs"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <SecondaryButton>Tutorial</SecondaryButton>
+                </a>
               </div>
               <div className={styles.ctaBuild}>~ npx import crayon</div>
             </div>
@@ -48,12 +59,12 @@ export default function Hero() {
         </div>
         <div className={styles.componentContainer}>
           <img
-            src="/components.png"
+            src="/img/components.png"
             alt="Components"
             className={`${styles.componentsImage} ${styles.desktopImage}`}
           />
           <img
-            src="/components-mobile.png"
+            src="/img/components-mobile.png"
             alt="Components"
             className={`${styles.componentsImage} ${styles.mobileImage}`}
           />

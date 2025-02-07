@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import styles from "./Navbar.module.css";
 
@@ -11,17 +10,13 @@ export default function Navbar() {
             href="https://www.thesys.dev"
             target="_blank"
             rel="noopener noreferrer"
+            className={styles.thesysT}
           >
-            <Image
-              src="/thesys-t.svg"
-              alt="Crayon Logo"
-              width={24}
-              height={24}
-            />
+            <img src="/img/thesys-t.svg" alt="Crayon Logo" />
           </a>
           <span className={styles.logoSlash}>/</span>
-          <Image
-            src="/crayon-logo.svg"
+          <img
+            src="/img/crayon-logo.svg"
             alt="Crayon Logo"
             width={96}
             height={24}
@@ -29,7 +24,7 @@ export default function Navbar() {
         </div>
         <div className={styles.buttons}>
           <a
-            href="https://crayonai.org"
+            href="https://crayonai.org/Docs"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -42,13 +37,13 @@ export default function Navbar() {
             </button>
           </a>
           <a
-            href="https://crayonai.org"
+            href="https://github.com/thesysdev/crayon"
             target="_blank"
             rel="noopener noreferrer"
           >
             <button className={styles.navButton}>
-              <Image
-                src="/github-logo.svg"
+              <img
+                src="/img/github-logo.svg"
                 alt="GitHub"
                 width={20}
                 height={20}
