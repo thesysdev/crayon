@@ -19,10 +19,10 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
     { variant, min, max, step, disabled, onValueChange, value, className, style, ...props },
     ref,
   ) => {
-    const [internalValue, setInternalValue] = useState(variant === "range" ? [min, max] : value);
+    const [internalValue, setInternalValue] = useState(variant === "range" ? value : value);
 
     useEffect(() => {
-      setInternalValue(variant === "range" ? [min, max] : (value ?? min));
+      setInternalValue(variant === "range" ? value : value);
     }, [variant, min, max, value]);
 
     const handleValueChange = (newValue: number[]) => {
