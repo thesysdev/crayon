@@ -139,7 +139,7 @@ export const PieChart = <T extends PieChartData>({
           y={y}
           textAnchor={textAnchor}
           dominantBaseline={dominantBaseline}
-          className="fill-t-comp-secondary p-0"
+          className="crayon-pie-chart-label"
         >
           {formattedValue}
           {format === "percentage" ? "%" : ""}
