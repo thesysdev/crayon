@@ -5,7 +5,7 @@ export default function Features() {
     <>
       <div className={styles.featureContainer}>
         <div className={styles.featuresTitle}>
-          All you need for shipping <br /> stunning agents.
+          All you need for shipping <br /> stunning AI Interfaces.
         </div>
         <div className={styles.featureBlockContainer}>
           <div className={styles.featureBlock}>
@@ -17,9 +17,9 @@ export default function Features() {
                 Build once. Ship everywhere.
               </div>
               <p>
-                Every single one of our components and the entire shell are
-                meticulously designed to be fully responsive and expertly
-                crafted.
+                Every single one of our components and shell are
+                designed to be fully responsive and effortlessly adapt
+                to all forms factors - agents, chatbots, copilots.
               </p>
             </div>
           </div>
@@ -29,12 +29,12 @@ export default function Features() {
             </div>
             <div className={styles.featureContent}>
               <div className={styles.featureBlockTitle}>
-                All the functions you’ll need.
+                Batteries included
               </div>
               <p>
-                Every single one of our components and the entire shell are
-                meticulously designed to be fully responsive and expertly
-                crafted.
+                Crayon Core provide a powerful abstraction for client-server communication
+                in conversational interfaces that can be easily adapted to a vareity of use
+                cases including extending it to support your own.
               </p>
             </div>
           </div>
@@ -46,12 +46,12 @@ export default function Features() {
             </div>
             <div className={styles.featureContent}>
               <div className={styles.featureBlockTitle}>
-                Build once. Ship everywhere.
+                Backend Agnostic
               </div>
               <p>
-                Every single one of our components and the entire shell are
-                meticulously designed to be fully responsive and expertly
-                crafted.
+                Crayon Core's communication interface is
+                framework agnostic and doesn't impose any restrictions on the language or
+                libraries that can be used in the backend.
               </p>
             </div>
           </div>
@@ -61,12 +61,12 @@ export default function Features() {
             </div>
             <div className={styles.featureContent}>
               <div className={styles.featureBlockTitle}>
-                All the functions you’ll need.
+                Customizable & Accessible
               </div>
               <p>
-                Every single one of our components and the entire shell are
-                meticulously designed to be fully responsive and expertly
-                crafted.
+                Crayon UI components are built on top of Radix headless components and expose
+                an easy way to theme them at the framework level or override specific styles
+                in each component.
               </p>
             </div>
           </div>

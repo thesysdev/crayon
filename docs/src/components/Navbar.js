@@ -24,7 +24,7 @@ export default function Navbar() {
         </div>
         <div className={styles.buttons}>
           <a
-            href="https://crayonai.org/Docs"
+            href="/Docs"
             target="_blank"
             rel="noopener noreferrer"
           >

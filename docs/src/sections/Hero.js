@@ -25,7 +25,7 @@ export default function Hero() {
             <div className={styles.row1block1} id={styles.fillerblock}></div>
             <div className={styles.row1block2}>
               <div className={styles.subtitle}>
-                The Generative UI Toolkit for building Agents
+                The Generative UI Toolkit for building AI Interfaces.
               </div>
             </div>
             <div className={styles.row1block3} id={styles.fillerblock}></div>
@@ -38,21 +38,19 @@ export default function Hero() {
             <div className={styles.ctaBlock}>
               <div className={styles.ctaContainer}>
                 <a
-                  href="https://crayonai.org/docs"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/docs/quickstart/nextjs"
                 >
                   <PrimaryButton>Get Started</PrimaryButton>
                 </a>
                 <a
-                  href="https:/crayonai.org/docs"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/docs/tutorials/Fino/"
                 >
                   <SecondaryButton>Tutorial</SecondaryButton>
                 </a>
               </div>
-              <div className={styles.ctaBuild}>~ npx import crayon</div>
+              <div className={styles.ctaBuild}>
+                ~ npm install @crayonai/react-core <br />
+              </div>
             </div>
             <div className={styles.row3block3} id={styles.fillerblock}></div>
           </div>

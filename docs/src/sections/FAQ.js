@@ -35,24 +35,28 @@ export default function FAQ() {
         "Crayon is a Generative UI Toolkit designed specifically for building AI agents. It provides a comprehensive set of components and tools to create sophisticated, responsive agent interfaces.",
     },
     {
+      question: "What can I use it for?",
+      answer:
+        "Crayon can be used to build AI agents, chatbots, copilots or pretty much anything else.",
+    },
+    {
       question: "How do I get started?",
       answer:
-        "Getting started with Crayon is simple. Just install the package using npm or yarn, and you'll have access to our full suite of components and documentation to guide you through the process.",
+        <>Getting started with Crayon is simple. <br/>
+        Check out the <a style={{cursor: "pointer"}} href="/docs/quickstart/nextjs">Getting Started Guide</a>
+        {" "}to get started with building a NextJS app using Crayon.</>,
     },
     {
       question: "Is Crayon free to use?",
       answer:
-        "Yes, Crayon is open-source and free to use for both personal and commercial projects. We believe in making AI development accessible to everyone.",
+        "Yes, Crayon is MIT licensed and free to use for both personal and commercial projects. We believe in making AI development accessible to everyone.",
     },
     {
       question: "Can I customize the components?",
       answer:
-        "Absolutely! All Crayon components are highly customizable. You can modify styles, behaviors, and functionality to match your specific needs and brand requirements.",
-    },
-    {
-      question: "Can I customize the components?",
-      answer:
-        "Absolutely! All Crayon components are highly customizable. You can modify styles, behaviors, and functionality to match your specific needs and brand requirements.",
+        <>
+        Absolutely! All Crayon components are highly customizable. You can modify styles, behaviors, and functionality to match your specific needs and brand requirements. <br />
+        See <a style={{cursor: "pointer"}} href="/docs/guides/ui-customization">Customization Guide</a> for more details.</>,
     },
   ];
 
