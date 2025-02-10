@@ -18,7 +18,7 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => (
-      <ThemeProvider>
+      <ThemeProvider mode="dark">
         <Story />
       </ThemeProvider>
     ),
