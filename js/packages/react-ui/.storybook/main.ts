@@ -4,10 +4,16 @@ import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
-  addons: ["@storybook/addon-essentials", "@storybook/addon-themes"],
-  framework: {
-    name: "@storybook/react-vite",
-    options: {},
+  addons: [
+    "@storybook/addon-essentials",
+    "@storybook/addon-interactions",
+    "@storybook/addon-onboarding",
+    "@storybook/core-events",
+    "@storybook/blocks",
+  ],
+  framework: "@storybook/react-vite",
+  features: {
+    argTypeTargetsV7: true,
   },
   previewHead: (head) => `
   ${head}
