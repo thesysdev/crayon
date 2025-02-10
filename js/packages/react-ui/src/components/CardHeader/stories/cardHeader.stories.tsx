@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ArrowRight, Download } from "lucide-react";
 import { IconButton } from "../../IconButton";
-import "../../IconButton/iconButton.scss";
 import { CardHeader } from "../CardHeader";
-import "../cardHeader.scss";
 
 const meta: Meta<typeof CardHeader> = {
   title: "Components/CardHeader",

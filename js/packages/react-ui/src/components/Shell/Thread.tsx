@@ -115,10 +115,10 @@ export const Messages = ({ className }: { className?: string }) => {
   return (
     <div className={clsx("crayon-shell-thread-messages", className)}>
       {messages.map((message) => {
-        if(message.isVisuallyHidden) {
-          return null
+        if (message.isVisuallyHidden) {
+          return null;
         }
-        return <RenderMessage key={message.id} message={message} />
+        return <RenderMessage key={message.id} message={message} />;
       })}
     </div>
   );

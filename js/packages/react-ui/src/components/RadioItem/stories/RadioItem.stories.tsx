@@ -1,8 +1,6 @@
 import * as Radio from "@radix-ui/react-radio-group";
 import type { Meta, StoryObj } from "@storybook/react";
-import "../../Label/label.scss";
 import { RadioItem } from "../RadioItem";
-import "../radioItem.scss";
 
 const meta: Meta<typeof RadioItem> = {
   title: "Components/RadioItem",

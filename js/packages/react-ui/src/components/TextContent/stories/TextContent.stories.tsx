@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { TextContent } from "../TextContent";
-import "../textContent.scss";
+
 const meta: Meta<typeof TextContent> = {
   title: "Components/TextContent",
   component: TextContent,
@@ -56,7 +56,7 @@ type Story = StoryObj<typeof TextContent>;
 
 export const Default: Story = {
   args: {
-    children: "This is some sample text content.",
+    children: "Hi There Welcome to Crayon UI",
     variant: "sunk",
   },
 };

@@ -1,13 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { BusFront, PlaneTakeoff, Ship } from "lucide-react";
 import { CardHeader } from "../../CardHeader";
-import "../../CardHeader/cardHeader.scss";
 import { IconButton } from "../../IconButton";
-import "../../IconButton/iconButton.scss";
 import { Image } from "../../Image";
-import "../../Image/image.scss";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../Tabs";
-import "../tabs.scss";
 
 const meta: Meta<typeof Tabs> = {
   title: "Components/Tabs",

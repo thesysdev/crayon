@@ -1,12 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Info } from "lucide-react";
 import { Input } from "../../Input";
-import "../../Input/input.scss";
 import { Label } from "../../Label";
-import "../../Label/label.scss";
 import { FormControl } from "../FormControl";
 import { Hint } from "../Hint";
-import "../Hint/hint.scss";
 
 const meta: Meta<typeof FormControl> = {
   title: "Components/FormControl",

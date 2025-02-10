@@ -21,7 +21,6 @@ function copyCssFiles() {
 
   // Read all component directories
   const components = fs.readdirSync(srcDir);
-  let indexCSSContent = ''
 
   components.forEach((component) => {
     const componentSrcPath = path.join(srcDir, component);
@@ -35,13 +34,13 @@ function copyCssFiles() {
     const stylePath = path.join(componentSrcPath, componentStylesheetName);
     const distFile = path.join(distDir, componentStylesheetName);
     if (fs.existsSync(stylePath)) {
-      const content = fs.readFileSync(stylePath, "utf8").replaceAll('\n', '');
-      indexCSSContent += content;
       fs.copyFileSync(stylePath, distFile);
     } else {
       console.warn(`No stylesheet found for ${component}`);
     }
   });
+
+  const indexCSSContent = fs.readFileSync(path.join(srcDir, "index.css"), "utf8");
   fs.writeFileSync(path.join(distDir, "index.css"), indexCSSContent);
 }
 

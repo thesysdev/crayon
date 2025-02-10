@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Heart, Star, User } from "lucide-react";
 import { Tag } from "../../Tag";
-import "../../Tag/tag.scss";
 import { TagBlock } from "../TagBlock";
-import "../tagBlock.scss";
 
 const meta: Meta<typeof TagBlock> = {
   title: "Components/TagBlock",

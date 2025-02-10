@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Monitor, TabletSmartphone } from "lucide-react";
 import { Card } from "../../../Card";
-import "../../../Card/card.scss";
-import "../../charts.scss";
 import { BarChart, BarChartProps } from "../BarChart";
 
 const barChartData = [
