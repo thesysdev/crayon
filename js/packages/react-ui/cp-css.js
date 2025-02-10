@@ -39,6 +39,9 @@ function copyCssFiles() {
       console.warn(`No stylesheet found for ${component}`);
     }
   });
+
+  const indexCSSContent = fs.readFileSync(path.join(srcDir, "index.css"), "utf8");
+  fs.writeFileSync(path.join(distDir, "index.css"), indexCSSContent);
 }
 
 try {
