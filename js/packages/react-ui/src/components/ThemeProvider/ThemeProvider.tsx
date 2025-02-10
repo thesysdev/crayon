@@ -42,8 +42,8 @@ const lightTheme: ColorTheme = {
 const darkTheme: ColorTheme = {
   // Background colors
   backgroundFills: "rgb(28, 28, 28)",
-  brandElFills: "rgb(0, 0, 0)",
-  brandElHoverFills: "rgba(0, 0, 0, 0.8)",
+  brandElFills: "rgb(255, 255, 255)",
+  brandElHoverFills: "rgba(255, 255, 255, 0.8)",
   containerFills: "rgb(43, 43, 43)",
   overlayFills: "rgba(0, 0, 0, 0.4)",
   sunkFills: "rgba(0, 0, 0, 0.2)",
@@ -58,7 +58,7 @@ const darkTheme: ColorTheme = {
   strokesInteractiveElSelected: "rgba(255, 255, 255, 1)",
 
   // Text colors
-  brandText: "rgba(255, 255, 255, 1)",
+  brandText: "rgba(0, 0, 0, 1)",
   brandSecondaryText: "rgba(255, 255, 255, 0.4)",
   primaryText: "rgba(255, 255, 255, 1)",
   secondaryText: "rgba(255, 255, 255, 0.6)",
@@ -85,16 +85,16 @@ const layoutTheme: LayoutTheme = {
 
   // Radius
   rounded0: "0px",
-  rounded3xs: "1px",
-  rounded2xs: "2px",
-  roundedXs: "4px",
-  roundedS: "6px",
-  roundedM: "8px",
-  roundedL: "10px",
-  roundedXl: "12px",
-  rounded2xl: "16px",
-  rounded3xl: "20px",
-  rounded4xl: "24px",
+  rounded3xs: "4px",
+  rounded2xs: "8px",
+  roundedXs: "10px",
+  roundedS: "12px",
+  roundedM: "20px",
+  roundedL: "20px",
+  roundedXl: "24px",
+  rounded2xl: "28px",
+  rounded3xl: "32px",
+  rounded4xl: "48px",
   roundedFull: "999px",
   roundedClickable: "6px",
 } as const;
