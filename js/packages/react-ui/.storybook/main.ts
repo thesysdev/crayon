@@ -14,6 +14,7 @@ const config: StorybookConfig = {
   framework: "@storybook/react-vite",
   features: {
     argTypeTargetsV7: true,
+    backgroundsStoryGlobals: true,
   },
   previewHead: (head) => `
   ${head}

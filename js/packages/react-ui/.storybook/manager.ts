@@ -4,4 +4,6 @@ import theme from "./theme";
 
 addons.setConfig({
   theme: theme,
+  
 });
+
