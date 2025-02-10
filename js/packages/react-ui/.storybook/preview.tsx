@@ -3,7 +3,6 @@ import { themes } from "@storybook/theming";
 import "../src/components/index.scss";
 import { ThemeProvider } from "../src/components/ThemeProvider";
 import React from "react";
-
 const preview: Preview = {
   parameters: {
     controls: {
@@ -14,9 +13,6 @@ const preview: Preview = {
     },
     backgrounds: {
       disable: true,
-      grid: {
-        disable: true,
-      },
     },
     docs: {
       theme: themes.dark,

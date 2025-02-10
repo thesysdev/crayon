@@ -27,6 +27,7 @@ const config: StorybookConfig = {
       body {
         margin: 0 !important;
         padding: 0 !important;
+        background-color: #1B1C1D;
       }
     </style>
   `,
