@@ -1,5 +1,5 @@
 import type { Preview } from "@storybook/react";
-import { background, themes } from "@storybook/theming";
+import { themes } from "@storybook/theming";
 import "../src/components/index.scss";
 import { ThemeProvider } from "../src/components/ThemeProvider";
 import React from "react";
@@ -13,16 +13,7 @@ const preview: Preview = {
       },
     },
     backgrounds: {
-      values: [
-        { name: "Dark", value: "#333" },
-        { name: "Light", value: "#F7F9F2" },
-      ],
-      default: "Light",
-      toolbar: {
-        // cant hide it from the tool bar because it's a global setting
-        hidden: true,
-        disable: true,
-      },
+      disable: true,
       grid: {
         disable: true,
       },
@@ -30,7 +21,6 @@ const preview: Preview = {
     docs: {
       theme: themes.dark,
     },
-    
   },
   initialGlobals: {
     backgrounds: {
@@ -64,22 +54,20 @@ const preview: Preview = {
     (Story, context) => {
       // Use the selected theme from toolbar
       const selectedTheme = context.globals.theme;
-      const [, forceUpdate] = React.useState({});
-
-      React.useEffect(() => {
-        // Set background based on theme
-        context.globals.backgrounds = {
-          value: selectedTheme === 'dark' ? '#333' : '#F7F9F2'
-        };
-        // Force rerender
-        forceUpdate({});
-      }, [selectedTheme]);
-
 
       return (
-        <ThemeProvider mode={selectedTheme}>
-          <Story />
-        </ThemeProvider>
+        <>
+          <style>
+            {`
+            .docs-story {
+              background-color: ${selectedTheme === "dark" ? "#333" : "#F7F9F2"};
+            }
+          `}
+          </style>
+          <ThemeProvider mode={selectedTheme}>
+            <Story />
+          </ThemeProvider>
+        </>
       );
     },
   ],
