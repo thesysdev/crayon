@@ -12,10 +12,7 @@ const config: StorybookConfig = {
     "@storybook/blocks",
   ],
   framework: "@storybook/react-vite",
-  features: {
-    argTypeTargetsV7: true,
-    backgroundsStoryGlobals: true,
-  },
+  features: {},
   previewHead: (head) => `
   ${head}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css">
