@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import postcss from "postcss";
 import postcssJs from "postcss-js";
+import postcssDiscardDuplicates from "postcss-remove-duplicate-values";
 import prettierTypescriptParser from "prettier/parser-typescript";
 import prettierEstreePlugin from "prettier/plugins/estree";
 import prettier from "prettier/standalone";
@@ -161,8 +162,8 @@ const convertNumericValuesToStrings = (obj: object): object => {
 };
 
 const transformCssToJson = async (css: string) => {
-  const root = postcss.parse(css);
-  const json = replaceNullWithObject(postcssJs.objectify(root));
+  const parsed = await postcss([postcssDiscardDuplicates({})]).process(css, {from: undefined});
+  const json = replaceNullWithObject(postcssJs.objectify(parsed.root));
   return convertNumericValuesToStrings(json);
 };
 
