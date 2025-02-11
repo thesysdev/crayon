@@ -162,7 +162,7 @@ const convertNumericValuesToStrings = (obj: object): object => {
 };
 
 const transformCssToJson = async (css: string) => {
-  const parsed = await postcss([postcssDiscardDuplicates({})]).process(css, {from: undefined});
+  const parsed = await postcss([postcssDiscardDuplicates({})]).process(css, { from: undefined });
   const json = replaceNullWithObject(postcssJs.objectify(parsed.root));
   return convertNumericValuesToStrings(json);
 };
