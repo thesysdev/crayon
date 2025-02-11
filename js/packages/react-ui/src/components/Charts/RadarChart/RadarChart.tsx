@@ -70,7 +70,7 @@ export const RadarChart = <T extends RadarChartData>({
         {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
         <PolarAngleAxis dataKey={categoryKey as string} />
 
-        <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
+        <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
         {dataKeys.map((key) => {
           const transformedKey = keyTransform(key);
           const color = `var(--color-${transformedKey})`;

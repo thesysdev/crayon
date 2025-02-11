@@ -54,6 +54,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       description: "The width of the chart area in pixels. This excludes margins and padding.",
       control: false,
       table: {
+        disable: true,
         type: { summary: "number" },
         defaultValue: { summary: "800" },
         category: "Dimensions",
@@ -63,6 +64,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       description: "The height of the chart area in pixels. This excludes margins and padding.",
       control: false,
       table: {
+        disable: true,
         type: { summary: "number" },
         defaultValue: { summary: "400" },
         category: "Dimensions",

@@ -2,16 +2,16 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../../Button";
 import { IconButton } from "../../IconButton";
-import { CardFooter } from "../CardFooter";
+import { Buttons } from "../Buttons";
 
-const meta: Meta<typeof CardFooter> = {
-  title: "Components/CardFooter",
-  component: CardFooter,
+const meta: Meta<typeof Buttons> = {
+  title: "Components/Buttons",
+  component: Buttons,
   parameters: {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { CardFooter } from '@crayon-ui/react-ui';\n```",
+        component: "```tsx\nimport { Buttons } from '@crayon-ui/react-ui';\n```",
       },
     },
   },
@@ -64,18 +64,18 @@ const meta: Meta<typeof CardFooter> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof CardFooter>;
+type Story = StoryObj<typeof Buttons>;
 
 // Basic footer stories
-export const FooterStory: Story = {
+export const ButtonsStory: Story = {
   args: {
     variant: "horizontal",
   },
   render: (args) => (
-    <CardFooter variant={args.variant}>
+    <Buttons variant={args.variant}>
       <Button>Cancel</Button>
       <Button>Save</Button>
       <IconButton icon={<ArrowLeft size={16} />} />
-    </CardFooter>
+    </Buttons>
   ),
 };
