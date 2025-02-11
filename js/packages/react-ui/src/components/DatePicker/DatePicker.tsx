@@ -7,7 +7,7 @@ import { DatePickerProvider } from "./helpers/context/DatePickerContext";
 
 export interface DatePickerProps {
   mode?: "single" | "range";
-  variant?: "docked" | "floating";
+  variant?: "docked" | "popover";
   selectedSingleDate?: Date;
   selectedRangeDates?: DateRange;
   setSelectedSingleDate?: (date?: Date) => void;

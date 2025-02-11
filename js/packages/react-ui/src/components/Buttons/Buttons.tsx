@@ -3,10 +3,10 @@ import { CSSProperties, forwardRef, HTMLAttributes, ReactElement } from "react";
 import { ButtonProps } from "../Button";
 import { IconButtonProps } from "../IconButton";
 
-type FooterVariant = "vertical" | "horizontal";
+type ButtonsVariant = "vertical" | "horizontal";
 
-export interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {
-  variant?: FooterVariant;
+export interface ButtonsProps extends HTMLAttributes<HTMLDivElement> {
+  variant?: ButtonsVariant;
   children:
     | ReactElement<ButtonProps | IconButtonProps>
     | ReactElement<ButtonProps | IconButtonProps>[];
@@ -14,17 +14,17 @@ export interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {
   style?: CSSProperties;
 }
 
-const variantMap: Record<FooterVariant, string> = {
-  vertical: "crayon-footer-vertical",
-  horizontal: "crayon-footer-horizontal",
+const variantMap: Record<ButtonsVariant, string> = {
+  vertical: "crayon-buttons-vertical",
+  horizontal: "crayon-buttons-horizontal",
 };
 
-export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>((props, ref) => {
+export const Buttons = forwardRef<HTMLDivElement, ButtonsProps>((props, ref) => {
   const { className, style, variant = "horizontal", children, ...rest } = props;
   return (
     <div
       ref={ref}
-      className={clsx("crayon-footer", variantMap[variant], className)}
+      className={clsx("crayon-buttons", variantMap[variant], className)}
       style={style}
       {...rest}
     >
@@ -33,4 +33,4 @@ export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>((props, re
   );
 });
 
-CardFooter.displayName = "CardFooter";
+Buttons.displayName = "Buttons";

@@ -40,12 +40,12 @@ const meta: Meta<typeof DatePicker> = {
     },
     variant: {
       control: "radio",
-      options: ["docked", "floating"],
+      options: ["docked", "popover"],
       description: "The visual presentation style of the date picker",
       table: {
         category: "Appearance",
         type: {
-          summary: "'docked' | 'floating'",
+          summary: "'docked' | 'popover'",
         },
         defaultValue: { summary: "docked" },
       },
@@ -150,7 +150,7 @@ export const FloatingPicker: Story = {
   render: (args) => <DatePicker {...args} style={{ width: "350px" }} />,
   args: {
     mode: "single",
-    variant: "floating",
+    variant: "popover",
   },
 };
 
