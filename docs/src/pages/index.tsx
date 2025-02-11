@@ -51,7 +51,7 @@ import Navbar from "../components/Navbar";
 
 export default function Home() {
   return (
-    <>
+    <div className={styles.bodyWrapper}>
       <Navbar/>
       <div className={styles.pageContainer}>
       <Hero />
@@ -62,6 +62,6 @@ export default function Home() {
       {/* 
       */}
       </div>
-    </>
+    </div>
   );
 }

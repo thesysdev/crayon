@@ -41,10 +41,20 @@ export default function FAQ() {
     },
     {
       question: "How do I get started?",
-      answer:
-        <>Getting started with Crayon is simple. <br/>
-        Check out the <a style={{cursor: "pointer"}} href="/docs/quickstart/nextjs">Getting Started Guide</a>
-        {" "}to get started with building a NextJS app using Crayon.</>,
+      answer: (
+        <>
+          Getting started with Crayon is simple. <br />
+          Check out the{" "}
+          <a
+            className={styles.primaryText}
+            style={{ cursor: "pointer" }}
+            href="/docs/quickstart/nextjs"
+          >
+            Getting Started Guide
+          </a>{" "}
+          to get started with building a NextJS app using Crayon.
+        </>
+      ),
     },
     {
       question: "Is Crayon free to use?",
@@ -53,10 +63,22 @@ export default function FAQ() {
     },
     {
       question: "Can I customize the components?",
-      answer:
+      answer: (
         <>
-        Absolutely! All Crayon components are highly customizable. You can modify styles, behaviors, and functionality to match your specific needs and brand requirements. <br />
-        See <a style={{cursor: "pointer"}} href="/docs/guides/ui-customization">Customization Guide</a> for more details.</>,
+          Absolutely! All Crayon components are highly customizable. You can
+          modify styles, behaviors, and functionality to match your specific
+          needs and brand requirements. <br />
+          See{" "}
+          <a
+            className={styles.primaryText}
+            style={{ cursor: "pointer" }}
+            href="/docs/guides/ui-customization"
+          >
+            Customization Guide
+          </a>{" "}
+          for more details.
+        </>
+      ),
     },
   ];
 

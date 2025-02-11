@@ -23,13 +23,9 @@ export default function Navbar() {
           />
         </div>
         <div className={styles.buttons}>
-          <a
-            href="/Docs"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href="/Docs" target="_blank" rel="noopener noreferrer">
             <button
-              className={`${styles.navButton} ${styles.docButton}`}
+              className={` ${styles.docButton}`}
               id={styles.mobileDisappear}
             >
               Documentation

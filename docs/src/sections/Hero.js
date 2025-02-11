@@ -37,14 +37,10 @@ export default function Hero() {
             <div className={styles.row3block1} id={styles.fillerblock}></div>
             <div className={styles.ctaBlock}>
               <div className={styles.ctaContainer}>
-                <a
-                  href="/docs/quickstart/nextjs"
-                >
+                <a href="/docs/quickstart/nextjs">
                   <PrimaryButton>Get Started</PrimaryButton>
                 </a>
-                <a
-                  href="/docs/tutorials/Fino/"
-                >
+                <a href="/docs/tutorials/Fino/">
                   <SecondaryButton>Tutorial</SecondaryButton>
                 </a>
               </div>
