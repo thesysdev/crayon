@@ -8,9 +8,10 @@ interface ContainerProps {
   children?: React.ReactNode;
   logoUrl: string;
   agentName: string;
+  className?: string;
 }
 
-export const Container = ({ children, logoUrl, agentName }: ContainerProps) => {
+export const Container = ({ children, logoUrl, agentName, className }: ContainerProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const { width } = useElementSize({ ref }) || {};
   // TODO: revisit this logic
@@ -22,7 +23,13 @@ export const Container = ({ children, logoUrl, agentName }: ContainerProps) => {
     <ShellStoreProvider logoUrl={logoUrl} agentName={agentName}>
       <LayoutContextProvider layout={layout}>
         <div
-          className={clsx("crayon-shell-container", { "crayon-shell-container--mobile": isMobile })}
+          className={clsx(
+            "crayon-shell-container",
+            {
+              "crayon-shell-container--mobile": isMobile,
+            },
+            className,
+          )}
           ref={ref}
         >
           {children}
