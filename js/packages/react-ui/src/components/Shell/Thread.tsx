@@ -6,7 +6,7 @@ import {
 } from "@crayonai/react-core";
 import clsx from "clsx";
 import { ArrowRight, Square } from "lucide-react";
-import React, { useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../hooks/useComposerState";
 import { useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { IconButton } from "../IconButton";
@@ -139,6 +139,7 @@ export const Composer = ({ className }: { className?: string }) => {
   const { textContent, setTextContent } = useComposerState();
   const { processMessage, onCancel } = useThreadActions();
   const { isRunning } = useThreadState();
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = () => {
     if (!textContent.trim() || isRunning) {
@@ -153,10 +154,21 @@ export const Composer = ({ className }: { className?: string }) => {
     setTextContent("");
   };
 
+  useLayoutEffect(() => {
+    const input = inputRef.current;
+    if (!input) {
+      return;
+    }
+
+    input.style.height = "0px";
+    input.style.height = `${input.scrollHeight}px`;
+  }, [textContent]);
+
   return (
     <div className={clsx("crayon-shell-thread-composer", className)}>
       <div className="crayon-shell-thread-composer__input-wrapper">
         <textarea
+          ref={inputRef}
           value={textContent}
           onChange={(e) => setTextContent(e.target.value)}
           className="crayon-shell-thread-composer__input"
