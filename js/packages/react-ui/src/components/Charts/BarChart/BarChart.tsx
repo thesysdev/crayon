@@ -26,6 +26,7 @@ export interface BarChartProps<T extends BarChartData> {
   height?: number;
   radius?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
+  isAnimationActive?: boolean;
 }
 
 export const BarChart = <T extends BarChartData>({
@@ -40,6 +41,7 @@ export const BarChart = <T extends BarChartData>({
   height = 400,
   icons = {},
   radius = 4,
+  isAnimationActive = true,
 }: BarChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
@@ -101,6 +103,7 @@ export const BarChart = <T extends BarChartData>({
                 fill={color}
                 radius={radius}
                 stackId={variant === "stacked" ? "a" : undefined}
+                isAnimationActive={isAnimationActive}
               >
                 {label && (
                   <LabelList
@@ -120,6 +123,7 @@ export const BarChart = <T extends BarChartData>({
               fill={color}
               radius={radius}
               stackId={variant === "stacked" ? "a" : undefined}
+              isAnimationActive={isAnimationActive}
             />
           );
         })}

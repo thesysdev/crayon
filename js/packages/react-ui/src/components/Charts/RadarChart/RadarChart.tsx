@@ -25,6 +25,7 @@ export interface RadarChartProps<T extends RadarChartData> {
   strokeWidth?: number;
   areaOpacity?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
+  isAnimationActive?: boolean;
 }
 
 export const RadarChart = <T extends RadarChartData>({
@@ -39,6 +40,7 @@ export const RadarChart = <T extends RadarChartData>({
   strokeWidth = 2,
   areaOpacity = 0.5,
   icons = {},
+  isAnimationActive = true,
 }: RadarChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
@@ -83,10 +85,19 @@ export const RadarChart = <T extends RadarChartData>({
                 fillOpacity={0}
                 stroke={color}
                 strokeWidth={strokeWidth}
+                isAnimationActive={isAnimationActive}
               />
             );
           } else {
-            return <Radar key={key} dataKey={key} fill={color} fillOpacity={areaOpacity} />;
+            return (
+              <Radar
+                key={key}
+                dataKey={key}
+                fill={color}
+                fillOpacity={areaOpacity}
+                isAnimationActive={isAnimationActive}
+              />
+            );
           }
         })}
 

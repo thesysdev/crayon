@@ -26,6 +26,7 @@ export interface LineChartProps<T extends LineChartData> {
   height?: number;
   strokeWidth?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
+  isAnimationActive?: boolean;
 }
 
 export const LineChart = <T extends LineChartData>({
@@ -40,6 +41,7 @@ export const LineChart = <T extends LineChartData>({
   height = 400,
   strokeWidth = 2,
   icons = {},
+  isAnimationActive = true,
 }: LineChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
@@ -109,6 +111,7 @@ export const LineChart = <T extends LineChartData>({
                 activeDot={{
                   r: 6,
                 }}
+                isAnimationActive={isAnimationActive}
               >
                 {label && (
                   <LabelList
@@ -132,6 +135,7 @@ export const LineChart = <T extends LineChartData>({
               dot={{
                 fill: color,
               }}
+              isAnimationActive={isAnimationActive}
             />
           );
         })}

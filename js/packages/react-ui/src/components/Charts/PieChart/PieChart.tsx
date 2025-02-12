@@ -26,6 +26,7 @@ export interface PieChartProps<T extends PieChartData> {
   label?: boolean;
   width?: number;
   height?: number;
+  isAnimationActive?: boolean;
 }
 
 const layoutMap: Record<string, string> = {
@@ -54,6 +55,7 @@ export const PieChart = <T extends PieChartData>({
   label = true,
   width = 800,
   height = 400,
+  isAnimationActive = true,
 }: PieChartProps<T>) => {
   const { layout } = useLayoutContext();
   const [calculatedOuterRadius, setCalculatedOuterRadius] = useState(120);
@@ -165,6 +167,7 @@ export const PieChart = <T extends PieChartData>({
           outerRadius={calculatedOuterRadius}
           innerRadius={calculatedInnerRadius}
           label={label ? renderCustomLabel : false}
+          isAnimationActive={isAnimationActive}
         >
           {Object.entries(chartConfig).map(([key, config]) => (
             <Cell key={key} fill={config.color} />

@@ -27,6 +27,7 @@ export interface RadialChartProps<T extends RadialChartData> {
   grid?: boolean;
   width?: number;
   height?: number;
+  isAnimationActive?: boolean;
 }
 
 const layoutMap: Record<string, string> = {
@@ -54,6 +55,7 @@ export const RadialChart = <T extends RadialChartData>({
   grid = true,
   width = 800,
   height = 400,
+  isAnimationActive = true,
 }: RadialChartProps<T>) => {
   const { layout } = useLayoutContext();
   const [calculatedOuterRadius, setCalculatedOuterRadius] = useState(110);
@@ -175,6 +177,7 @@ export const RadialChart = <T extends RadialChartData>({
           dataKey={format === "percentage" ? "percentage" : String(dataKey)}
           background={!grid}
           cornerRadius={10}
+          isAnimationActive={isAnimationActive}
         >
           {Object.entries(chartConfig).map(([key, config]) => (
             <Cell key={key} fill={config.color} />

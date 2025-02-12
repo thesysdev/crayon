@@ -26,6 +26,7 @@ export interface AreaChartProps<T extends AreaChartData> {
   height?: number;
   opacity?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
+  isAnimationActive?: boolean;
 }
 
 export const AreaChart = <T extends AreaChartData>({
@@ -40,6 +41,7 @@ export const AreaChart = <T extends AreaChartData>({
   height = 400,
   opacity = 0.5,
   icons = {},
+  isAnimationActive = true,
 }: AreaChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
@@ -111,6 +113,7 @@ export const AreaChart = <T extends AreaChartData>({
                 activeDot={{
                   r: 6,
                 }}
+                isAnimationActive={isAnimationActive}
               >
                 {label && (
                   <LabelList
@@ -138,6 +141,7 @@ export const AreaChart = <T extends AreaChartData>({
               activeDot={{
                 r: 6,
               }}
+              isAnimationActive={isAnimationActive}
             />
           );
         })}
