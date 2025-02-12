@@ -1,11 +1,4 @@
-import {
-  ColorTheme,
-  EffectTheme,
-  LayoutTheme,
-  Theme,
-  ThemeMode,
-  TypographyTheme,
-} from "./types";
+import { ColorTheme, EffectTheme, LayoutTheme, Theme, ThemeMode, TypographyTheme } from "./types";
 
 export type ThemeProps = {
   mode?: ThemeMode;
@@ -13,7 +6,7 @@ export type ThemeProps = {
   // merged with lightTheme or darkTheme(if darkTheme is not provided)
   theme?: Theme;
   darkTheme?: Theme;
-}
+};
 
 const lightTheme: ColorTheme = {
   // Background colors
@@ -200,10 +193,15 @@ const themes = {
   dark: { ...layoutTheme, ...darkTheme, ...typographyTheme, ...effectTheme },
 } as const;
 
-export const ThemeProvider = ({ mode = "light", children, theme: userTheme = {}, darkTheme: userDarkTheme }: ThemeProps) => {
+export const ThemeProvider = ({
+  mode = "light",
+  children,
+  theme: userTheme = {},
+  darkTheme: userDarkTheme,
+}: ThemeProps) => {
   const baseTheme = themes[mode];
-  const lightTheme = {...baseTheme, ...userTheme};
-  const darkTheme = {...baseTheme, ...(userDarkTheme || userTheme)};
+  const lightTheme = { ...baseTheme, ...userTheme };
+  const darkTheme = { ...baseTheme, ...(userDarkTheme || userTheme) };
   const theme = mode === "light" ? lightTheme : darkTheme;
 
   return (
