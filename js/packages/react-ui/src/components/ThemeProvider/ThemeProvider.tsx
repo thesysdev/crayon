@@ -2,12 +2,18 @@ import {
   ColorTheme,
   EffectTheme,
   LayoutTheme,
-  ThemeConfig,
+  Theme,
   ThemeMode,
   TypographyTheme,
 } from "./types";
 
-type ThemeProps = ColorTheme & LayoutTheme & TypographyTheme & EffectTheme & ThemeConfig;
+export type ThemeProps = {
+  mode?: ThemeMode;
+  children?: React.ReactNode;
+  // merged with lightTheme or darkTheme(if darkTheme is not provided)
+  theme?: Theme;
+  darkTheme?: Theme;
+}
 
 const lightTheme: ColorTheme = {
   // Background colors
@@ -85,16 +91,16 @@ const layoutTheme: LayoutTheme = {
 
   // Radius
   rounded0: "0px",
-  rounded3xs: "4px",
-  rounded2xs: "8px",
-  roundedXs: "10px",
-  roundedS: "12px",
-  roundedM: "20px",
-  roundedL: "20px",
-  roundedXl: "24px",
-  rounded2xl: "28px",
-  rounded3xl: "32px",
-  rounded4xl: "48px",
+  rounded3xs: "1px",
+  rounded2xs: "2px",
+  roundedXs: "4px",
+  roundedS: "6px",
+  roundedM: "8px",
+  roundedL: "10px",
+  roundedXl: "12px",
+  rounded2xl: "16px",
+  rounded3xl: "20px",
+  rounded4xl: "24px",
   roundedFull: "999px",
   roundedClickable: "6px",
 } as const;
@@ -189,14 +195,16 @@ const effectTheme: EffectTheme = {
   shadow3xl: "0px 12px 24px -4px rgba(0, 0, 0, 0.14), 0px 16px 32px -6px rgba(0, 0, 0, 0.12)",
 } as const;
 
-const themes: Record<ThemeMode, ThemeProps> = {
+const themes = {
   light: { ...layoutTheme, ...lightTheme, ...typographyTheme, ...effectTheme },
   dark: { ...layoutTheme, ...darkTheme, ...typographyTheme, ...effectTheme },
 } as const;
 
-export const ThemeProvider = ({ mode = "light", children, ...props }: ThemeProps) => {
+export const ThemeProvider = ({ mode = "light", children, theme: userTheme = {}, darkTheme: userDarkTheme }: ThemeProps) => {
   const baseTheme = themes[mode];
-  const theme = { ...baseTheme, ...props };
+  const lightTheme = {...baseTheme, ...userTheme};
+  const darkTheme = {...baseTheme, ...(userDarkTheme || userTheme)};
+  const theme = mode === "light" ? lightTheme : darkTheme;
 
   return (
     <>

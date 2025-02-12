@@ -1,12 +1,6 @@
 // Add at the top of the file
 export type ThemeMode = "light" | "dark";
 
-// Add ThemeConfig interface before ColorTheme
-export interface ThemeConfig {
-  mode?: ThemeMode;
-  children?: React.ReactNode;
-}
-
 // Color-related theme properties
 export interface ColorTheme {
   // Background colors
@@ -137,3 +131,5 @@ export interface EffectTheme {
   shadow2xl?: string;
   shadow3xl?: string;
 }
+
+export interface Theme extends ColorTheme, LayoutTheme, TypographyTheme, EffectTheme {}
