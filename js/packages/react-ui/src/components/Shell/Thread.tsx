@@ -25,24 +25,29 @@ export const ThreadContainer = ({
 export const ScrollArea = ({
   children,
   className,
-  scrollToBottomOnce = false,
+  scrollVariant = "always",
+  userMessageSelector,
 }: {
   children?: React.ReactNode;
   className?: string;
   /**
    * Scroll to bottom once the last message is added
    */
-  scrollToBottomOnce?: boolean;
+  scrollVariant?: "always" | "once" | "user-message-anchor";
+  /**
+   * Selector for the user message
+   */
+  userMessageSelector?: string;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const { messages } = useThreadState();
 
-  useScrollToBottom(
+  useScrollToBottom({
     ref,
-    scrollToBottomOnce
-      ? messages[messages.length - 1]?.id
-      : JSON.stringify(messages[messages.length - 1]),
-  );
+    lastMessage: messages[messages.length - 1] || { id: "" },
+    scrollVariant,
+    userMessageSelector,
+  });
 
   return (
     <div ref={ref} className={clsx("crayon-shell-thread-scroll-area", className)}>
