@@ -55,26 +55,6 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
         category: "Data",
       },
     },
-    width: {
-      description: "The width of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "800" },
-        category: "Dimensions",
-      },
-    },
-    height: {
-      description: "The height of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "400" },
-        category: "Dimensions",
-      },
-    },
     theme: {
       description:
         "The color palette theme for the chart. Each theme provides a different set of colors for the areas.",
@@ -132,6 +112,15 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
         category: "Display",
       },
     },
+    isAnimationActive: {
+      description: "Whether to animate the chart",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
+        category: "Display",
+      },
+    },
   },
 } satisfies Meta<typeof RadialChart>;
 
@@ -150,8 +139,7 @@ export const RadialChartStory: Story = {
     legend: true,
     label: true,
     grid: true,
-    width: 460,
-    height: 300,
+    isAnimationActive: true,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
@@ -189,10 +177,9 @@ const radialChartData = [
     grid
     label
     legend
+    isAnimationActive
     theme="ocean"
     variant="circular"
-    width={460}
-    height={300}
   />
 </Card>
         `,

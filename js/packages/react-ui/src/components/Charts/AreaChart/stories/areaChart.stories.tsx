@@ -49,26 +49,6 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
         category: "Data",
       },
     },
-    width: {
-      description: "The width of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "800" },
-        category: "Dimensions",
-      },
-    },
-    height: {
-      description: "The height of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "400" },
-        category: "Dimensions",
-      },
-    },
     theme: {
       description:
         "The color palette theme for the chart. Each theme provides a different set of colors for the areas.",
@@ -137,6 +117,15 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
         category: "Display",
       },
     },
+    isAnimationActive: {
+      description: "Whether to animate the chart",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
+        category: "Display",
+      },
+    },
   },
 } satisfies Meta<typeof AreaChart>;
 
@@ -150,12 +139,11 @@ export const AreaChartStory: Story = {
     categoryKey: "month",
     theme: "ocean",
     variant: "linear",
-    width: 460,
-    height: 300,
     opacity: 0.5,
     grid: true,
     legend: true,
     label: true,
+    isAnimationActive: true,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
@@ -187,6 +175,7 @@ const areaChartData = [
     grid={true}
     legend={true}
     label={true}
+    isAnimationActive
   />
 </Card>`,
       },
@@ -229,8 +218,6 @@ export const AreaChartStoryWithIcons: Story = {
     <AreaChart
       data={areaChartData}
       categoryKey="month"
-      width={460}
-      height={300}
       theme="ocean"
       variant="linear"
       opacity={0.5}
@@ -238,6 +225,7 @@ export const AreaChartStoryWithIcons: Story = {
       legend={true}
       label={true}
       icons={icons}
+      isAnimationActive
     />
   </Card>`,
       },

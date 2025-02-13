@@ -49,26 +49,6 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
         category: "Data",
       },
     },
-    width: {
-      description: "The width of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "800" },
-        category: "Dimensions",
-      },
-    },
-    height: {
-      description: "The height of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "400" },
-        category: "Dimensions",
-      },
-    },
     theme: {
       description:
         "The color palette theme for the chart. Each theme provides a different set of colors for the areas.",
@@ -136,6 +116,15 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
         category: "Display",
       },
     },
+    isAnimationActive: {
+      description: "Whether to animate the chart",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
+        category: "Display",
+      },
+    },
   },
 } satisfies Meta<typeof BarChart>;
 
@@ -149,12 +138,11 @@ export const BarChartStory: Story = {
     categoryKey: "month",
     theme: "ocean",
     variant: "grouped",
-    width: 460,
-    height: 300,
     radius: 4,
     grid: true,
     label: true,
     legend: true,
+    isAnimationActive: true,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
@@ -183,13 +171,12 @@ const barChartData = [
     categoryKey="month"
     data={barChartData}
     grid
-    height={300}
     label
     legend
     radius={4}
     theme="sunset"
     variant="grouped"
-    width={460}
+    isAnimationActive
   />
 </Card>
 `,
@@ -229,23 +216,18 @@ export const BarChartStoryWithIcons: Story = {
       mobile: TabletSmartphone,
     };
             
-    <Card
-      style={{
-        width: '500px'
-      }}
-    >
+    <Card style={{ width: "500px" }}>
       <BarChart
         categoryKey="month"
         data={barChartData}
         grid
-        height={300}
         label
         legend
         radius={4}
         theme="sunset"
         variant="grouped"
-        width={460}
         icons={icons}
+        isAnimationActive
       />
     </Card>
     `,

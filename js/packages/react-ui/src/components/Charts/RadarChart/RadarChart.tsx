@@ -20,8 +20,6 @@ export interface RadarChartProps<T extends RadarChartData> {
   variant?: "line" | "area";
   grid?: boolean;
   legend?: boolean;
-  width?: number;
-  height?: number;
   strokeWidth?: number;
   areaOpacity?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
@@ -35,8 +33,6 @@ export const RadarChart = <T extends RadarChartData>({
   variant = "line",
   grid = true,
   legend = true,
-  width = 800,
-  height = 400,
   strokeWidth = 2,
   areaOpacity = 0.5,
   icons = {},
@@ -63,12 +59,7 @@ export const RadarChart = <T extends RadarChartData>({
 
   return (
     <ChartContainer config={chartConfig}>
-      <RechartsRadarChart
-        width={width}
-        height={height}
-        data={data}
-        margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
-      >
+      <RechartsRadarChart data={data} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
         {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
         <PolarAngleAxis dataKey={categoryKey as string} />
 
