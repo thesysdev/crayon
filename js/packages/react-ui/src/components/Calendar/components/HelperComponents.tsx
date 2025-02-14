@@ -96,7 +96,7 @@ export const MonthsDropdown = (
       </SelectTrigger>
       <SelectContent
         container={container}
-        className="crayon-date-picker-select-content-months"
+        className="crayon-calendar-select-content-months"
         sideOffset={12}
         alignOffset={0}
         style={{
@@ -184,10 +184,10 @@ export const YearsDropdown = (
       </SelectTrigger>
       <SelectContent
         container={container}
-        className="crayon-date-picker-select-content-years"
+        className="crayon-calendar-select-content-years"
         viewportClassName={clsx(
-          "crayon-date-picker-select-viewport",
-          botType === "mobile" && "crayon-date-picker-select-viewport-mobile",
+          "crayon-calendar-select-viewport",
+          botType === "mobile" && "crayon-calendar-select-viewport-mobile",
         )}
         sideOffset={12}
         alignOffset={-95}
@@ -204,7 +204,7 @@ export const YearsDropdown = (
             value={String(option.value)}
             disabled={option.disabled}
             showTick={false}
-            className="crayon-date-picker-select-item"
+            className="crayon-calendar-select-item"
           >
             {option.label}
           </SelectItem>
