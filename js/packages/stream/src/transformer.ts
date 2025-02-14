@@ -31,7 +31,7 @@ export class CrayonDataStreamTransformer implements TransformStream<InputType, O
               if (typeof newContent === "string") {
                 const textPart = newContent.substring(lastContent.length);
                 if (textPart.length > 0) {
-                  controller.enqueue(new TextChunk(textPart).toString());
+                  controller.enqueue(new TextChunk(textPart).toSSEString());
                 }
               }
             } else {

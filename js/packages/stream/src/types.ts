@@ -10,7 +10,7 @@ export class TextChunk implements Chunk {
   constructor(private readonly data: string) {}
 
   toSSEString(): string {
-    return `0:${escapeString(this.data)}`;
+    return `0:${escapeString(this.data)}\n`;
   }
 }
 
