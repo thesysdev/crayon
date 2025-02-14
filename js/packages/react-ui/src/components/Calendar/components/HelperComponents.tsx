@@ -102,6 +102,7 @@ export const MonthsDropdown = (
         style={{
           maxHeight: `${containerHeight - 45}px`,
           minWidth: `${containerWidth}px`,
+          border: "none",
         }}
       >
         {options?.map((option) => (
@@ -196,6 +197,7 @@ export const YearsDropdown = (
           maxHeight: `${containerHeight - 45}px`,
           minWidth: `${containerWidth + 10}px`,
           maxWidth: `${containerWidth + 10}px`,
+          border: "none",
         }}
       >
         {options?.map((option) => (
