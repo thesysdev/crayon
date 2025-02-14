@@ -1,54 +1,11 @@
 import * as SelectPrimitive from "@radix-ui/react-select";
 import clsx from "clsx";
 import debounce from "lodash-es/debounce";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import {
-  ButtonHTMLAttributes,
-  DetailedHTMLProps,
-  forwardRef,
-  SelectHTMLAttributes,
-  useEffect,
-  useState,
-} from "react";
+import { DetailedHTMLProps, forwardRef, SelectHTMLAttributes, useEffect, useState } from "react";
 import { ClassNames, CustomComponents, DropdownOption } from "react-day-picker";
 import "react-day-picker/style.css";
-import { IconButton } from "../../IconButton";
 import { Select, SelectItem, SelectTrigger, SelectValue } from "../../Select";
 import { getMonthName, getMonthNumber } from "../utils/helperFn";
-
-export const PreviousMonthButton = (
-  props: DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>,
-) => {
-  const { onClick, disabled, className, ...rest } = props;
-  return (
-    <IconButton
-      icon={<ChevronLeft size={18} />}
-      variant="secondary"
-      size="medium"
-      onClick={onClick}
-      disabled={disabled}
-      className={className}
-      {...rest}
-    />
-  );
-};
-
-export const NextMonthButton = (
-  props: DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>,
-) => {
-  const { onClick, disabled, className, ...rest } = props;
-  return (
-    <IconButton
-      icon={<ChevronRight size={18} />}
-      variant="secondary"
-      size="medium"
-      onClick={onClick}
-      disabled={disabled}
-      className={className}
-      {...rest}
-    />
-  );
-};
 
 // this component is overriding the default SelectContent component to allow for a container prop we do not wish to give to the user
 const SelectContent = forwardRef<

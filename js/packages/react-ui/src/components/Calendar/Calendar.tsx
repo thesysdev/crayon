@@ -2,12 +2,7 @@ import React, { forwardRef, useRef } from "react";
 import { DayPicker } from "react-day-picker";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { useMultipleRefs } from "../../hooks/useMultipleRefs";
-import {
-  MonthsDropdown,
-  NextMonthButton,
-  PreviousMonthButton,
-  YearsDropdown,
-} from "./components/HelperComponents";
+import { MonthsDropdown, YearsDropdown } from "./components/HelperComponents";
 import { getDayPickerStyles } from "./utils/styles";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
@@ -22,8 +17,6 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
     const commonProps = {
       captionLayout: "dropdown" as const,
       components: {
-        NextMonthButton,
-        PreviousMonthButton,
         MonthsDropdown: (props: any) => (
           <MonthsDropdown {...props} container={containerRef.current} />
         ),
