@@ -32,6 +32,7 @@ export const getDayPickerStyles = (botType: BotType) => {
     month: `crayon-calendar-month`,
     months_dropdown: `crayon-calendar-months-dropdown`,
     years_dropdown: `crayon-calendar-years-dropdown`,
+    footer: `crayon-calendar-footer`,
   };
 
   const DateSingleClasses: Partial<ClassNames> = {

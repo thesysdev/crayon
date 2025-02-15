@@ -6,6 +6,17 @@ const meta: Meta<typeof Calendar> = {
   component: Calendar,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: `
+A flexible \`calendar\` component built on top of [react-day-picker](https://react-day-picker.js.org/).
+
+\`\`\`tsx
+import { Calendar } from '@crayon-ui/react-ui';
+\`\`\`
+`,
+      },
+    },
   },
   decorators: [
     (Story) => (
