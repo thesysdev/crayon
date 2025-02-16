@@ -22,7 +22,7 @@ export const CalendarPopover: Story = {
         <Button>Pick a date</Button>
       </PopoverTrigger>
       <PopoverContent>
-        
+        <Calendar mode="single" autoFocus />
       </PopoverContent>
     </Popover>
   ),
