@@ -1,5 +1,5 @@
 import React from "react";
-import { Area, LabelList, AreaChart as RechartsAreaChart, XAxis } from "recharts";
+import { Area, LabelList, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
 import { useLayoutContext } from "../../../context/LayoutContext";
 import {
   ChartConfig,
@@ -26,6 +26,7 @@ export interface AreaChartProps<T extends AreaChartData> {
   opacity?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
+  showYAxis?: boolean;
 }
 
 export const AreaChart = <T extends AreaChartData>({
@@ -39,6 +40,7 @@ export const AreaChart = <T extends AreaChartData>({
   opacity = 0.5,
   icons = {},
   isAnimationActive = true,
+  showYAxis = false,
 }: AreaChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
@@ -147,7 +149,7 @@ export const AreaChart = <T extends AreaChartData>({
         data={data}
         margin={{
           top: label ? 20 : 10,
-          left: 12,
+          left: showYAxis ? 0 : 12,
           right: 12,
         }}
       >
@@ -162,6 +164,7 @@ export const AreaChart = <T extends AreaChartData>({
           tickFormatter={getTickFormatter(data)}
           interval="preserveStartEnd"
         />
+        {showYAxis && <YAxis />}
 
         <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
         {dataKeys.map((key) => {

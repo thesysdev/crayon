@@ -1,5 +1,5 @@
 import React from "react";
-import { Bar, LabelList, BarChart as RechartsBarChart, XAxis } from "recharts";
+import { Bar, LabelList, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { useLayoutContext } from "../../../context/LayoutContext";
 import {
   ChartConfig,
@@ -26,6 +26,7 @@ export interface BarChartProps<T extends BarChartData> {
   radius?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
+  showYAxis?: boolean;
 }
 
 export const BarChart = <T extends BarChartData>({
@@ -39,6 +40,7 @@ export const BarChart = <T extends BarChartData>({
   icons = {},
   radius = 4,
   isAnimationActive = true,
+  showYAxis = false,
 }: BarChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
@@ -160,7 +162,7 @@ export const BarChart = <T extends BarChartData>({
           tickFormatter={getTickFormatter(data)}
           interval="preserveStartEnd"
         />
-
+        {showYAxis && <YAxis />}
         <ChartTooltip content={<ChartTooltipContent />} />
         {dataKeys.map((key) => {
           const transformedKey = keyTransform(key);

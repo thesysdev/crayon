@@ -126,6 +126,15 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
         category: "Display",
       },
     },
+    showYAxis: {
+      description: "Whether to display the y-axis",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+        category: "Display",
+      },
+    },
   },
 } satisfies Meta<typeof LineChart>;
 
@@ -144,6 +153,7 @@ export const LineChartStory: Story = {
     label: true,
     legend: true,
     isAnimationActive: true,
+    showYAxis: false,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
@@ -232,6 +242,56 @@ const icons = {
     variant="natural"
     icons={icons}
     isAnimationActive
+  />
+</Card>
+        `,
+      },
+    },
+  },
+};
+
+export const LineChartStoryWithYAxis: Story = {
+  name: "Line Chart with Y-Axis",
+  args: {
+    ...LineChartStory.args,
+    showYAxis: true,
+  },
+  render: (args) => (
+    <Card style={{ width: "500px" }}>
+      <LineChart {...args} />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code: `
+        import { Monitor, TabletSmartphone } from "lucide-react";
+
+  const lineChartData = [
+  { month: "January", desktop: 150, mobile: 90 },
+  { month: "February", desktop: 280, mobile: 180 },
+  { month: "March", desktop: 220, mobile: 140 },
+  { month: "April", desktop: 180, mobile: 160 },
+  { month: "May", desktop: 250, mobile: 120 },
+  { month: "June", desktop: 300, mobile: 180 },
+];
+
+<Card
+  style={{
+    width: '500px'
+  }}
+>
+  <LineChart
+    categoryKey="month"
+    data={lineChartData}
+    grid
+    label
+    legend
+    strokeWidth={2}
+    theme="ocean"
+    variant="natural"
+    isAnimationActive
+    showYAxis
   />
 </Card>
         `,

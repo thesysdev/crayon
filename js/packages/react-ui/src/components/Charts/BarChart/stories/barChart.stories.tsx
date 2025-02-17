@@ -125,6 +125,15 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
         category: "Display",
       },
     },
+    showYAxis: {
+      description: "Whether to display the y-axis",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+        category: "Display",
+      },
+    },
   },
 } satisfies Meta<typeof BarChart>;
 
@@ -143,6 +152,7 @@ export const BarChartStory: Story = {
     label: true,
     legend: true,
     isAnimationActive: true,
+    showYAxis: false,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
@@ -228,6 +238,52 @@ export const BarChartStoryWithIcons: Story = {
         variant="grouped"
         icons={icons}
         isAnimationActive
+      />
+    </Card>
+    `,
+      },
+    },
+  },
+};
+
+export const BarChartStoryWithYAxis: Story = {
+  name: "Bar Chart with Y-Axis",
+  args: {
+    ...BarChartStory.args,
+    showYAxis: true,
+  },
+  render: (args) => (
+    <Card style={{ width: "500px" }}>
+      <BarChart {...args} />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code: `
+  import { Monitor, TabletSmartphone } from "lucide-react";
+
+    const barChartData = [
+      { month: "January", desktop: 150, mobile: 90 },
+      { month: "February", desktop: 280, mobile: 180 },
+      { month: "March", desktop: 220, mobile: 140 },
+      { month: "April", desktop: 180, mobile: 160 },
+      { month: "May", desktop: 250, mobile: 120 },
+      { month: "June", desktop: 300, mobile: 180 },
+    ];
+
+    <Card style={{ width: "500px" }}>
+      <BarChart
+        categoryKey="month"
+        data={barChartData}
+        grid
+        label
+        legend
+        radius={4}
+        theme="sunset"
+        variant="grouped"
+        isAnimationActive
+        showYAxis
       />
     </Card>
     `,

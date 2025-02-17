@@ -1,5 +1,5 @@
 import React from "react";
-import { LabelList, Line, LineChart as RechartsLineChart, XAxis } from "recharts";
+import { LabelList, Line, LineChart as RechartsLineChart, XAxis, YAxis } from "recharts";
 import { useLayoutContext } from "../../../context/LayoutContext";
 import {
   ChartConfig,
@@ -26,6 +26,7 @@ export interface LineChartProps<T extends LineChartData> {
   strokeWidth?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
+  showYAxis?: boolean;
 }
 
 export const LineChart = <T extends LineChartData>({
@@ -39,6 +40,7 @@ export const LineChart = <T extends LineChartData>({
   strokeWidth = 2,
   icons = {},
   isAnimationActive = true,
+  showYAxis = false,
 }: LineChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
@@ -146,7 +148,7 @@ export const LineChart = <T extends LineChartData>({
         accessibilityLayer
         data={data}
         margin={{
-          top: label ? 20 : 10,
+          top: label ? 30 : 10,
           left: 12,
           right: 12,
         }}
@@ -162,6 +164,7 @@ export const LineChart = <T extends LineChartData>({
           tickFormatter={getTickFormatter(data)}
           interval="preserveStartEnd"
         />
+        {showYAxis && <YAxis />}
         <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
         {dataKeys.map((key) => {
           const transformedKey = keyTransform(key);
