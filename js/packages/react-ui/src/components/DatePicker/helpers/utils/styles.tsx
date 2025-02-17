@@ -18,27 +18,13 @@ export const getDayPickerStyles = (botType: BotType) => {
     copilot: "crayon-date-picker-dropdowns-copilot",
   };
 
-  const botTypeMapButtonNext: Record<BotType, string> = {
-    mobile: "crayon-date-picker-button-next-mobile",
-    fullscreen: "crayon-date-picker-button-next-fullscreen",
-    tray: "crayon-date-picker-button-next-tray",
-    copilot: "crayon-date-picker-button-next-copilot",
-  };
-
-  const botTypeMapButtonPrevious: Record<BotType, string> = {
-    mobile: "crayon-date-picker-button-previous-mobile",
-    fullscreen: "crayon-date-picker-button-previous-fullscreen",
-    tray: "crayon-date-picker-button-previous-tray",
-    copilot: "crayon-date-picker-button-previous-copilot",
-  };
-
   const commonClassNames: Partial<ClassNames> = {
     root: `${defaultClassNames.root} crayon-date-picker-root`,
     nav: `${defaultClassNames.nav} ${botTypeMapNav[botType]}`,
     dropdowns: `${defaultClassNames.dropdowns} ${botTypeMapDropdowns[botType]}`,
     month_grid: `crayon-date-picker-month-grid`,
-    button_next: `crayon-date-picker-button-next ${botTypeMapButtonNext[botType]}`,
-    button_previous: `crayon-date-picker-button-previous ${botTypeMapButtonPrevious[botType]}`,
+    button_next: `crayon-date-picker-button-next`,
+    button_previous: `crayon-date-picker-button-previous`,
     today: `crayon-date-picker-today`,
     disabled: `crayon-date-picker-disabled`,
     weekdays: `crayon-date-picker-weekdays`,

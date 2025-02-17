@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { useLayoutContext } from "../../context/LayoutContext";
-import { DatepickerRenderer } from "./helpers/components/DatePickerRenderer";
 import { FloatingDatePickerRenderer } from "./helpers/components/FloatingDatePickerRenderer";
 import { DatePickerProvider } from "./helpers/context/DatePickerContext";
 
 export interface DatePickerProps {
   mode?: "single" | "range";
-  variant?: "docked" | "popover";
   selectedSingleDate?: Date;
   selectedRangeDates?: DateRange;
   setSelectedSingleDate?: (date?: Date) => void;
@@ -21,7 +19,6 @@ const DatePicker = (props: DatePickerProps) => {
 
   const {
     mode = "single",
-    variant = "docked",
     selectedSingleDate,
     selectedRangeDates,
     setSelectedSingleDate,
@@ -73,11 +70,7 @@ const DatePicker = (props: DatePickerProps) => {
       setSelectedDateFromParent={selectedDateHandler}
       setSelectedRangeFromParent={selectedRangeHandler}
     >
-      {variant === "docked" ? (
-        <DatepickerRenderer className={className} style={style} />
-      ) : (
-        <FloatingDatePickerRenderer className={className} style={style} />
-      )}
+      <FloatingDatePickerRenderer className={className} style={style} />
     </DatePickerProvider>
   );
 };

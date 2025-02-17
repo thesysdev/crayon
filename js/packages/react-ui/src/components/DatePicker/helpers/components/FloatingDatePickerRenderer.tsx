@@ -1,7 +1,7 @@
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/react-dom";
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
-import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useMultipleRefs } from "../../../../hooks/useMultipleRefs";
 import { useDatePicker } from "../context/DatePickerContext";
@@ -42,12 +42,6 @@ const FloatingDateInput = () => {
 const FloatingDatePicker = forwardRef<HTMLDivElement>((_, ref) => {
   const { isOpen } = useDatePicker();
   const menuPositionDivRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(0);
-
-  useLayoutEffect(() => {
-    if (!menuPositionDivRef.current || !isOpen) return;
-    setWidth(menuPositionDivRef.current.offsetWidth);
-  }, [isOpen]);
 
   const {
     refs: { setFloating, setReference },
@@ -72,7 +66,7 @@ const FloatingDatePicker = forwardRef<HTMLDivElement>((_, ref) => {
       {createPortal(
         <div
           ref={floatingRef}
-          style={{ ...floatingStyles, width: `${width}px` }}
+          style={{ ...floatingStyles, width: "fit-content" }}
           className="crayon-date-picker-renderer-floating-content"
         >
           <div className="crayon-date-picker-renderer-floating-menu">

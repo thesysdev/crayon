@@ -29,7 +29,20 @@ import { Calendar } from '@crayon-ui/react-ui';
       </div>
     ),
   ],
-  tags: ["autodocs"],
+  argTypes: {
+    mode: {
+      description: "Selection mode for the calendar",
+      control: {
+        type: "radio",
+      },
+      options: ["single", "multiple", "range"],
+      defaultValue: "single",
+      table: {
+        defaultValue: { summary: "single" },
+      },
+    },
+  },
+  tags: ["autodocs", "!dev"],
 };
 
 export default meta;
@@ -38,7 +51,6 @@ type Story = StoryObj<typeof Calendar>;
 export const SingleDate: Story = {
   args: {
     mode: "single",
-    selected: new Date(),
   },
 };
 
@@ -56,14 +68,6 @@ export const DateRange: Story = {
       from: new Date(),
       to: new Date(Date.now() + 86400000 * 7), // Today to 7 days later
     },
-  },
-};
-
-export const WithFooter: Story = {
-  args: {
-    mode: "single",
-    selected: new Date(),
-    footer: "This is a footer",
   },
 };
 

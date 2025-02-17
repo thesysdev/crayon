@@ -7,7 +7,7 @@ import { getDayPickerStyles } from "./utils/styles";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
-const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
+export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
   ({ className, classNames, ...props }, ref) => {
     const { layout } = useLayoutContext();
     const { DateSingleClasses, DateRangeClasses } = getDayPickerStyles(layout);
@@ -27,7 +27,7 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
     };
 
     return (
-      <div ref={assignRef}>
+      <div ref={assignRef} className={className}>
         <DayPicker
           {...commonProps}
           {...props}
@@ -37,11 +37,8 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
               : DateRangeClasses),
             ...classNames,
           }}
-          className={className}
         />
       </div>
     );
   },
 );
-
-export { Calendar };
