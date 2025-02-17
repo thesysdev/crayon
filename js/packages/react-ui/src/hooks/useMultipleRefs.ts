@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { assignRef } from "../InternalUtils/ref";
+import { assignRef } from "../internalUtils/ref";
 
 type RefType<T> = React.Ref<T> | React.RefObject<T> | React.ForwardedRef<T>;
 

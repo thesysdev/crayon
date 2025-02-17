@@ -2,7 +2,7 @@ import React, { forwardRef, useRef } from "react";
 import { DayPicker } from "react-day-picker";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { useMultipleRefs } from "../../hooks/useMultipleRefs";
-import { MonthsDropdown, YearsDropdown } from "./components/HelperComponents";
+import { MonthsDropdown, YearsDropdown } from "./helperComponents";
 import { getDayPickerStyles } from "./utils/styles";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
