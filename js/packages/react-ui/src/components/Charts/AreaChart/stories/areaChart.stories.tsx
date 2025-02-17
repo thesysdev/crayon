@@ -46,27 +46,8 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        defaultValue: { summary: "string" },
         category: "Data",
-      },
-    },
-    width: {
-      description: "The width of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "800" },
-        category: "Dimensions",
-      },
-    },
-    height: {
-      description: "The height of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "400" },
-        category: "Dimensions",
       },
     },
     theme: {
@@ -137,6 +118,42 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
         category: "Display",
       },
     },
+    isAnimationActive: {
+      description: "Whether to animate the chart",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
+        category: "Display",
+      },
+    },
+    showYAxis: {
+      description: "Whether to display the y-axis",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+        category: "Display",
+      },
+    },
+    xAxisLabel: {
+      description: "The label for the x-axis",
+      control: false,
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "string" },
+        category: "Data",
+      },
+    },
+    yAxisLabel: {
+      description: "The label for the y-axis",
+      control: false,
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "string" },
+        category: "Data",
+      },
+    },
   },
 } satisfies Meta<typeof AreaChart>;
 
@@ -150,12 +167,12 @@ export const AreaChartStory: Story = {
     categoryKey: "month",
     theme: "ocean",
     variant: "linear",
-    width: 460,
-    height: 300,
     opacity: 0.5,
     grid: true,
     legend: true,
     label: true,
+    isAnimationActive: true,
+    showYAxis: false,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
@@ -187,6 +204,7 @@ const areaChartData = [
     grid={true}
     legend={true}
     label={true}
+    isAnimationActive
   />
 </Card>`,
       },
@@ -229,8 +247,6 @@ export const AreaChartStoryWithIcons: Story = {
     <AreaChart
       data={areaChartData}
       categoryKey="month"
-      width={460}
-      height={300}
       theme="ocean"
       variant="linear"
       opacity={0.5}
@@ -238,6 +254,56 @@ export const AreaChartStoryWithIcons: Story = {
       legend={true}
       label={true}
       icons={icons}
+      isAnimationActive
+    />
+  </Card>`,
+      },
+    },
+  },
+};
+
+export const AreaChartStoryWithYAxis: Story = {
+  name: "Area Chart with Y-Axis and Axis Labels",
+  args: {
+    ...AreaChartStory.args,
+    showYAxis: true,
+    xAxisLabel: "Time Period",
+    yAxisLabel: "Number of Users",
+  },
+  render: (args) => (
+    <Card style={{ width: "500px" }}>
+      <AreaChart {...args} />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code: `
+  import { Monitor, TabletSmartphone } from "lucide-react";
+  
+  const areaChartData = [
+    { month: "January", desktop: 150, mobile: 90 },
+    { month: "February", desktop: 280, mobile: 180 },
+    { month: "March", desktop: 220, mobile: 140 },
+    { month: "April", desktop: 180, mobile: 160 },
+    { month: "May", desktop: 250, mobile: 120 },
+    { month: "June", desktop: 300, mobile: 180 },
+  ];
+  
+  <Card style={{ width: "500px" }}>
+    <AreaChart
+      data={areaChartData}
+      categoryKey="month"
+      theme="ocean"
+      variant="linear"
+      opacity={0.5}
+      grid={true}
+      legend={true}
+      label={true}
+      isAnimationActive
+      showYAxis
+      xAxisLabel="Time Period"
+      yAxisLabel="Number of Users"
     />
   </Card>`,
       },

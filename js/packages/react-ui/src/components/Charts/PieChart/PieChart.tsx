@@ -24,8 +24,6 @@ export interface PieChartProps<T extends PieChartData> {
   format?: "percentage" | "number";
   legend?: boolean;
   label?: boolean;
-  width?: number;
-  height?: number;
   isAnimationActive?: boolean;
 }
 
@@ -53,8 +51,6 @@ export const PieChart = <T extends PieChartData>({
   format = "number",
   legend = true,
   label = true,
-  width = 800,
-  height = 400,
   isAnimationActive = true,
 }: PieChartProps<T>) => {
   const { layout } = useLayoutContext();
@@ -156,7 +152,7 @@ export const PieChart = <T extends PieChartData>({
       config={chartConfig}
       className={clsx("crayon-pie-chart-container", layoutMap[layout])}
     >
-      <RechartsPieChart width={width} height={height}>
+      <RechartsPieChart>
         <ChartTooltip content={<ChartTooltipContent showPercentage={format === "percentage"} />} />
         {legend && <ChartLegend content={<ChartLegendContent nameKey={String(categoryKey)} />} />}
         <Pie

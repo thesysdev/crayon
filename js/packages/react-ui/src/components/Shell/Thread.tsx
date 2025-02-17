@@ -6,7 +6,7 @@ import {
 } from "@crayonai/react-core";
 import clsx from "clsx";
 import { ArrowRight, Square } from "lucide-react";
-import React, { useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../hooks/useComposerState";
 import { useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { IconButton } from "../IconButton";
@@ -25,13 +25,29 @@ export const ThreadContainer = ({
 export const ScrollArea = ({
   children,
   className,
+  scrollVariant = "always",
+  userMessageSelector,
 }: {
   children?: React.ReactNode;
   className?: string;
+  /**
+   * Scroll to bottom once the last message is added
+   */
+  scrollVariant?: "always" | "once" | "user-message-anchor";
+  /**
+   * Selector for the user message
+   */
+  userMessageSelector?: string;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const { messages } = useThreadState();
-  useScrollToBottom(ref, JSON.stringify(messages[messages.length - 1]));
+
+  useScrollToBottom({
+    ref,
+    lastMessage: messages[messages.length - 1] || { id: "" },
+    scrollVariant,
+    userMessageSelector,
+  });
 
   return (
     <div ref={ref} className={clsx("crayon-shell-thread-scroll-area", className)}>
@@ -128,6 +144,7 @@ export const Composer = ({ className }: { className?: string }) => {
   const { textContent, setTextContent } = useComposerState();
   const { processMessage, onCancel } = useThreadActions();
   const { isRunning } = useThreadState();
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = () => {
     if (!textContent.trim() || isRunning) {
@@ -142,10 +159,21 @@ export const Composer = ({ className }: { className?: string }) => {
     setTextContent("");
   };
 
+  useLayoutEffect(() => {
+    const input = inputRef.current;
+    if (!input) {
+      return;
+    }
+
+    input.style.height = "0px";
+    input.style.height = `${input.scrollHeight}px`;
+  }, [textContent]);
+
   return (
     <div className={clsx("crayon-shell-thread-composer", className)}>
       <div className="crayon-shell-thread-composer__input-wrapper">
         <textarea
+          ref={inputRef}
           value={textContent}
           onChange={(e) => setTextContent(e.target.value)}
           className="crayon-shell-thread-composer__input"

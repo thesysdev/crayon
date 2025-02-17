@@ -46,27 +46,8 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        defaultValue: { summary: "string" },
         category: "Data",
-      },
-    },
-    width: {
-      description: "The width of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "800" },
-        category: "Dimensions",
-      },
-    },
-    height: {
-      description: "The height of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "400" },
-        category: "Dimensions",
       },
     },
     theme: {
@@ -136,6 +117,42 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
         category: "Display",
       },
     },
+    isAnimationActive: {
+      description: "Whether to animate the chart",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
+        category: "Display",
+      },
+    },
+    showYAxis: {
+      description: "Whether to display the y-axis",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+        category: "Display",
+      },
+    },
+    xAxisLabel: {
+      description: "The label for the x-axis",
+      control: false,
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "string" },
+        category: "Data",
+      },
+    },
+    yAxisLabel: {
+      description: "The label for the y-axis",
+      control: false,
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "string" },
+        category: "Data",
+      },
+    },
   },
 } satisfies Meta<typeof BarChart>;
 
@@ -149,12 +166,12 @@ export const BarChartStory: Story = {
     categoryKey: "month",
     theme: "ocean",
     variant: "grouped",
-    width: 460,
-    height: 300,
     radius: 4,
     grid: true,
     label: true,
     legend: true,
+    isAnimationActive: true,
+    showYAxis: false,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
@@ -183,13 +200,12 @@ const barChartData = [
     categoryKey="month"
     data={barChartData}
     grid
-    height={300}
     label
     legend
     radius={4}
     theme="sunset"
     variant="grouped"
-    width={460}
+    isAnimationActive
   />
 </Card>
 `,
@@ -229,23 +245,68 @@ export const BarChartStoryWithIcons: Story = {
       mobile: TabletSmartphone,
     };
             
-    <Card
-      style={{
-        width: '500px'
-      }}
-    >
+    <Card style={{ width: "500px" }}>
       <BarChart
         categoryKey="month"
         data={barChartData}
         grid
-        height={300}
         label
         legend
         radius={4}
         theme="sunset"
         variant="grouped"
-        width={460}
         icons={icons}
+        isAnimationActive
+      />
+    </Card>
+    `,
+      },
+    },
+  },
+};
+
+export const BarChartStoryWithYAxis: Story = {
+  name: "Bar Chart with Y-Axis and Axis Labels",
+  args: {
+    ...BarChartStory.args,
+    showYAxis: true,
+    xAxisLabel: "Time Period",
+    yAxisLabel: "Number of Users",
+  },
+  render: (args) => (
+    <Card style={{ width: "500px" }}>
+      <BarChart {...args} />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code: `
+  import { Monitor, TabletSmartphone } from "lucide-react";
+
+    const barChartData = [
+      { month: "January", desktop: 150, mobile: 90 },
+      { month: "February", desktop: 280, mobile: 180 },
+      { month: "March", desktop: 220, mobile: 140 },
+      { month: "April", desktop: 180, mobile: 160 },
+      { month: "May", desktop: 250, mobile: 120 },
+      { month: "June", desktop: 300, mobile: 180 },
+    ];
+
+    <Card style={{ width: "500px" }}>
+      <BarChart
+        categoryKey="month"
+        data={barChartData}
+        grid
+        label
+        legend
+        radius={4}
+        theme="sunset"
+        variant="grouped"
+        isAnimationActive
+        showYAxis
+        xAxisLabel="Time Period"
+        yAxisLabel="Number of Users"
       />
     </Card>
     `,

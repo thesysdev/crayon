@@ -63,8 +63,8 @@ export const TabsTrigger = forwardRef<
     value={value}
     {...props}
   >
-    {icon}
-    {text}
+    {icon && <span className="crayon-tabs-trigger-icon">{icon}</span>}
+    {text && <span className="crayon-tabs-trigger-text">{text}</span>}
   </TabsPrimitive.Trigger>
 ));
 

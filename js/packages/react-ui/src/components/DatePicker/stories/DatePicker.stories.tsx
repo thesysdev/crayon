@@ -18,7 +18,7 @@ const meta: Meta<typeof DatePicker> = {
     (Story) => (
       <div
         style={{
-          width: "350px",
+          width: "400px",
         }}
       >
         <Story />
@@ -36,18 +36,6 @@ const meta: Meta<typeof DatePicker> = {
           summary: "'single' | 'range'",
         },
         defaultValue: { summary: "single" },
-      },
-    },
-    variant: {
-      control: "radio",
-      options: ["docked", "popover"],
-      description: "The visual presentation style of the date picker",
-      table: {
-        category: "Appearance",
-        type: {
-          summary: "'docked' | 'popover'",
-        },
-        defaultValue: { summary: "docked" },
       },
     },
     selectedSingleDate: {
@@ -121,12 +109,9 @@ type Story = StoryObj<typeof meta>;
 
 // Basic single date picker with docked variant
 export const SinglePicker: Story = {
-  render: (args) => (
-    <DatePicker style={{ width: args.variant === "docked" ? "unset" : "350px" }} {...args} />
-  ),
+  render: (args) => <DatePicker {...args} style={{ width: "400px" }} />,
   args: {
     mode: "single",
-    variant: "docked",
   },
 };
 
@@ -134,7 +119,6 @@ export const SinglePicker: Story = {
 export const RangePicker: Story = {
   args: {
     mode: "range",
-    variant: "docked",
   },
   parameters: {
     docs: {
@@ -150,7 +134,6 @@ export const FloatingPicker: Story = {
   render: (args) => <DatePicker {...args} style={{ width: "350px" }} />,
   args: {
     mode: "single",
-    variant: "popover",
   },
 };
 
@@ -161,7 +144,6 @@ export const ControlledSingle: Story = {
       <div>
         <DatePicker
           mode={args.mode}
-          variant={args.variant}
           selectedSingleDate={selectedDate}
           setSelectedSingleDate={setSelectedDate}
         />
@@ -171,7 +153,6 @@ export const ControlledSingle: Story = {
   },
   args: {
     mode: "single",
-    variant: "docked",
   },
   parameters: {
     docs: {
@@ -184,7 +165,6 @@ const ControlledDatePickerExample = () => {
     <div>
       <DatePicker
         mode="single"
-        variant="docked"
         selectedSingleDate={selectedDate}
         setSelectedSingleDate={setSelectedDate}
       />
@@ -209,7 +189,6 @@ const ControlledRangePicker = () => {
     <div>
       <DatePicker
         mode="range"
-        variant="docked"
         selectedRangeDates={dateRange}
         setSelectedRangeDates={setDateRange}
       />
@@ -236,7 +215,6 @@ const ControlledRangePicker = () => {
     <div>
       <DatePicker
         mode="range"
-        variant="docked"
         selectedRangeDates={dateRange}
         setSelectedRangeDates={setDateRange}
       />

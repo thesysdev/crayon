@@ -1,6 +1,7 @@
 export * from "./components/Accordion";
 export * from "./components/Button";
 export * from "./components/Buttons";
+export * from "./components/Calendar";
 export * from "./components/Card";
 export * from "./components/CardHeader";
 export * from "./components/Carousel";
