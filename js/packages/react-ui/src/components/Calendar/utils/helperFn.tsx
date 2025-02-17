@@ -1,6 +1,3 @@
-import { format } from "date-fns";
-import { DateRange } from "react-day-picker";
-
 export const getMonthName = (monthNumber: number): string => {
   switch (monthNumber) {
     case 0:
@@ -61,27 +58,4 @@ export const getMonthNumber = (monthName: string): number => {
     default:
       return -1;
   }
-};
-
-export const formatDateRange = (range: DateRange | undefined): string => {
-  if (!range) return "Select a range";
-
-  const { from, to } = range;
-
-  if (!from) return "Select a range";
-
-  if (!to) {
-    return format(from, "MMM d, yyyy");
-  }
-
-  if (from.toDateString() === to.toDateString()) {
-    return format(from, "MMM d, yyyy");
-  }
-
-  return `${format(from, "MMM d, yyyy")} - ${format(to, "MMM d, yyyy")}`;
-};
-
-export const formatSingleDate = (date: Date | undefined): string => {
-  if (!date) return "Select a date";
-  return format(date, "MMM d, yyyy");
 };
