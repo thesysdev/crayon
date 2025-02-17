@@ -28,8 +28,8 @@ export class CrayonDataStreamTransformer implements TransformStream<InputType, O
             if (previousParsed.response.length === parsed.response.length) {
               const newContent = parsed.response.pop();
               const lastContent = previousParsed.response.pop();
-              if (typeof newContent === "string") {
-                const textPart = newContent.substring(lastContent.length);
+              if (newContent.type === "text" && newContent.text) {
+                const textPart = newContent.text.substring(lastContent.text?.length);
                 if (textPart.length > 0) {
                   controller.enqueue(new TextChunk(textPart).toSSEString());
                 }
@@ -42,7 +42,7 @@ export class CrayonDataStreamTransformer implements TransformStream<InputType, O
 
               const newContent = parsed.response.pop();
 
-              if (typeof newContent === "string") {
+              if (newContent.type === "text" && newContent.text) {
                 controller.enqueue(new TextChunk(newContent).toSSEString());
               }
             }
@@ -54,7 +54,11 @@ export class CrayonDataStreamTransformer implements TransformStream<InputType, O
 
       flush: async (controller: TransformStreamDefaultController<OutputType>) => {
         const parsed = parse(streamedContent);
-        if (parsed.response && typeof parsed.response[parsed.response.length - 1] === "object") {
+        if (
+          parsed.response &&
+          parsed.response.length &&
+          parsed.response[parsed.response.length - 1]?.type !== "text"
+        ) {
           const lastTemplate = parsed.response.pop();
           controller.enqueue(new ResponseTemplateChunk(lastTemplate).toSSEString());
         }
