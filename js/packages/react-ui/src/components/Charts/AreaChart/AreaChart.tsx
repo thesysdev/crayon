@@ -27,6 +27,8 @@ export interface AreaChartProps<T extends AreaChartData> {
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
   showYAxis?: boolean;
+  xAxisLabel?: string;
+  yAxisLabel?: string;
 }
 
 export const AreaChart = <T extends AreaChartData>({
@@ -41,6 +43,8 @@ export const AreaChart = <T extends AreaChartData>({
   icons = {},
   isAnimationActive = true,
   showYAxis = false,
+  xAxisLabel,
+  yAxisLabel,
 }: AreaChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
@@ -163,8 +167,23 @@ export const AreaChart = <T extends AreaChartData>({
           textAnchor="middle"
           tickFormatter={getTickFormatter(data)}
           interval="preserveStartEnd"
+          label={{
+            value: xAxisLabel,
+            position: "insideBottom",
+            offset: -10,
+            className: "crayon-chart-axis-label",
+          }}
         />
-        {showYAxis && <YAxis />}
+        {showYAxis && (
+          <YAxis
+            label={{
+              value: yAxisLabel,
+              position: "insideLeft",
+              angle: -90,
+              className: "crayon-chart-axis-label",
+            }}
+          />
+        )}
 
         <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
         {dataKeys.map((key) => {

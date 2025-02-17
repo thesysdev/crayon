@@ -47,6 +47,7 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        defaultValue: { summary: "string" },
         category: "Data",
       },
     },
@@ -133,6 +134,24 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
         type: { summary: "boolean" },
         defaultValue: { summary: "false" },
         category: "Display",
+      },
+    },
+    xAxisLabel: {
+      description: "The label for the x-axis",
+      control: false,
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "string" },
+        category: "Data",
+      },
+    },
+    yAxisLabel: {
+      description: "The label for the y-axis",
+      control: false,
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "string" },
+        category: "Data",
       },
     },
   },
@@ -251,10 +270,12 @@ const icons = {
 };
 
 export const LineChartStoryWithYAxis: Story = {
-  name: "Line Chart with Y-Axis",
+  name: "Line Chart with Y-Axis and Axis Labels",
   args: {
     ...LineChartStory.args,
     showYAxis: true,
+    xAxisLabel: "Time Period",
+    yAxisLabel: "Number of Users",
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
@@ -292,6 +313,8 @@ export const LineChartStoryWithYAxis: Story = {
     variant="natural"
     isAnimationActive
     showYAxis
+    xAxisLabel: "Time Period",
+    yAxisLabel: "Number of Users",
   />
 </Card>
         `,

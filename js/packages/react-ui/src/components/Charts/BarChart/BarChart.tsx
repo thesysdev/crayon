@@ -27,6 +27,8 @@ export interface BarChartProps<T extends BarChartData> {
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
   showYAxis?: boolean;
+  xAxisLabel?: string;
+  yAxisLabel?: string;
 }
 
 export const BarChart = <T extends BarChartData>({
@@ -41,6 +43,8 @@ export const BarChart = <T extends BarChartData>({
   radius = 4,
   isAnimationActive = true,
   showYAxis = false,
+  xAxisLabel,
+  yAxisLabel,
 }: BarChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
@@ -161,8 +165,23 @@ export const BarChart = <T extends BarChartData>({
           textAnchor="middle"
           tickFormatter={getTickFormatter(data)}
           interval="preserveStartEnd"
+          label={{
+            value: xAxisLabel,
+            position: "insideBottom",
+            offset: -10,
+            className: "crayon-chart-axis-label",
+          }}
         />
-        {showYAxis && <YAxis />}
+        {showYAxis && (
+          <YAxis
+            label={{
+              value: yAxisLabel,
+              position: "insideLeft",
+              angle: -90,
+              className: "crayon-chart-axis-label",
+            }}
+          />
+        )}
         <ChartTooltip content={<ChartTooltipContent />} />
         {dataKeys.map((key) => {
           const transformedKey = keyTransform(key);

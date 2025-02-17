@@ -46,6 +46,7 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        defaultValue: { summary: "string" },
         category: "Data",
       },
     },
@@ -132,6 +133,24 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
         type: { summary: "boolean" },
         defaultValue: { summary: "false" },
         category: "Display",
+      },
+    },
+    xAxisLabel: {
+      description: "The label for the x-axis",
+      control: false,
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "string" },
+        category: "Data",
+      },
+    },
+    yAxisLabel: {
+      description: "The label for the y-axis",
+      control: false,
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "string" },
+        category: "Data",
       },
     },
   },
@@ -247,10 +266,12 @@ export const BarChartStoryWithIcons: Story = {
 };
 
 export const BarChartStoryWithYAxis: Story = {
-  name: "Bar Chart with Y-Axis",
+  name: "Bar Chart with Y-Axis and Axis Labels",
   args: {
     ...BarChartStory.args,
     showYAxis: true,
+    xAxisLabel: "Time Period",
+    yAxisLabel: "Number of Users",
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
@@ -284,6 +305,8 @@ export const BarChartStoryWithYAxis: Story = {
         variant="grouped"
         isAnimationActive
         showYAxis
+        xAxisLabel="Time Period"
+        yAxisLabel="Number of Users"
       />
     </Card>
     `,

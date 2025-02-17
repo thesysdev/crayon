@@ -27,6 +27,8 @@ export interface LineChartProps<T extends LineChartData> {
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
   showYAxis?: boolean;
+  xAxisLabel?: string;
+  yAxisLabel?: string;
 }
 
 export const LineChart = <T extends LineChartData>({
@@ -41,6 +43,8 @@ export const LineChart = <T extends LineChartData>({
   icons = {},
   isAnimationActive = true,
   showYAxis = false,
+  xAxisLabel,
+  yAxisLabel,
 }: LineChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
@@ -149,6 +153,7 @@ export const LineChart = <T extends LineChartData>({
         data={data}
         margin={{
           top: label ? 30 : 10,
+          bottom: legend ? 0 : 10,
           left: 12,
           right: 12,
         }}
@@ -163,8 +168,23 @@ export const LineChart = <T extends LineChartData>({
           textAnchor="middle"
           tickFormatter={getTickFormatter(data)}
           interval="preserveStartEnd"
+          label={{
+            value: xAxisLabel,
+            position: "insideBottom",
+            offset: -10,
+            className: "crayon-chart-axis-label",
+          }}
         />
-        {showYAxis && <YAxis />}
+        {showYAxis && (
+          <YAxis
+            label={{
+              value: yAxisLabel,
+              position: "insideLeft",
+              angle: -90,
+              className: "crayon-chart-axis-label",
+            }}
+          />
+        )}
         <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
         {dataKeys.map((key) => {
           const transformedKey = keyTransform(key);
