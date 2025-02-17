@@ -26,7 +26,7 @@ const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>((props, ref) =>
         {title && <div className="crayon-list-item-title">{title}</div>}
         {subtitle && <div className="crayon-list-item-subtitle">{subtitle}</div>}
       </div>
-      {actionIcon && actionIcon}
+      {actionIcon && <div className="crayon-list-item-content-action-icon">{actionIcon}</div>}
     </div>
   );
 });

@@ -47,27 +47,8 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
       control: false,
       table: {
         type: { summary: "string" },
+        defaultValue: { summary: "string" },
         category: "Data",
-      },
-    },
-    width: {
-      description: "The width of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "800" },
-        category: "Dimensions",
-      },
-    },
-    height: {
-      description: "The height of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "400" },
-        category: "Dimensions",
       },
     },
     theme: {
@@ -137,6 +118,42 @@ const meta: Meta<LineChartProps<typeof lineChartData>> = {
         category: "Display",
       },
     },
+    isAnimationActive: {
+      description: "Whether to animate the chart",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
+        category: "Display",
+      },
+    },
+    showYAxis: {
+      description: "Whether to display the y-axis",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+        category: "Display",
+      },
+    },
+    xAxisLabel: {
+      description: "The label for the x-axis",
+      control: false,
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "string" },
+        category: "Data",
+      },
+    },
+    yAxisLabel: {
+      description: "The label for the y-axis",
+      control: false,
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "string" },
+        category: "Data",
+      },
+    },
   },
 } satisfies Meta<typeof LineChart>;
 
@@ -150,12 +167,12 @@ export const LineChartStory: Story = {
     categoryKey: "month",
     theme: "ocean",
     variant: "natural",
-    width: 460,
-    height: 300,
     strokeWidth: 2,
     grid: true,
     label: true,
     legend: true,
+    isAnimationActive: true,
+    showYAxis: false,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
@@ -183,13 +200,12 @@ const lineChartData = [
     categoryKey="month"
     data={lineChartData}
     grid
-    height={300}
     label
     legend
     strokeWidth={2}
     theme="ocean"
     variant="natural"
-    width={460}
+    isAnimationActive
   />
 </Card>
 `,
@@ -238,14 +254,67 @@ const icons = {
     categoryKey="month"
     data={lineChartData}
     grid
-    height={300}
     label
     legend
     strokeWidth={2}
     theme="ocean"
     variant="natural"
-    width={460}
     icons={icons}
+    isAnimationActive
+  />
+</Card>
+        `,
+      },
+    },
+  },
+};
+
+export const LineChartStoryWithYAxis: Story = {
+  name: "Line Chart with Y-Axis and Axis Labels",
+  args: {
+    ...LineChartStory.args,
+    showYAxis: true,
+    xAxisLabel: "Time Period",
+    yAxisLabel: "Number of Users",
+  },
+  render: (args) => (
+    <Card style={{ width: "500px" }}>
+      <LineChart {...args} />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code: `
+        import { Monitor, TabletSmartphone } from "lucide-react";
+
+  const lineChartData = [
+  { month: "January", desktop: 150, mobile: 90 },
+  { month: "February", desktop: 280, mobile: 180 },
+  { month: "March", desktop: 220, mobile: 140 },
+  { month: "April", desktop: 180, mobile: 160 },
+  { month: "May", desktop: 250, mobile: 120 },
+  { month: "June", desktop: 300, mobile: 180 },
+];
+
+<Card
+  style={{
+    width: '500px'
+  }}
+>
+  <LineChart
+    categoryKey="month"
+    data={lineChartData}
+    grid
+    label
+    legend
+    strokeWidth={2}
+    theme="ocean"
+    variant="natural"
+    isAnimationActive
+    showYAxis
+    xAxisLabel: "Time Period",
+    yAxisLabel: "Number of Users",
   />
 </Card>
         `,

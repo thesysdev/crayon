@@ -51,26 +51,6 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
         category: "Data",
       },
     },
-    width: {
-      description: "The width of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "800" },
-        category: "Dimensions",
-      },
-    },
-    height: {
-      description: "The height of the chart area in pixels. This excludes margins and padding.",
-      control: false,
-      table: {
-        disable: true,
-        type: { summary: "number" },
-        defaultValue: { summary: "400" },
-        category: "Dimensions",
-      },
-    },
     theme: {
       description:
         "The color palette theme for the chart. Each theme provides a different set of colors for the areas.",
@@ -138,6 +118,15 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
         category: "Display",
       },
     },
+    isAnimationActive: {
+      description: "Whether to animate the chart",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
+        category: "Display",
+      },
+    },
   },
 } satisfies Meta<typeof RadarChart>;
 
@@ -151,12 +140,11 @@ export const RadarChartStory: Story = {
     categoryKey: "month",
     theme: "ocean",
     variant: "area",
-    width: 460,
-    height: 300,
     strokeWidth: 2,
     areaOpacity: 0.5,
     legend: true,
     grid: true,
+    isAnimationActive: true,
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
@@ -186,12 +174,11 @@ export const RadarChartStory: Story = {
     categoryKey="month"
     data={radarChartData}
     grid
-    height={300}
     legend
     strokeWidth={2}
     theme="sunset"
     variant="area"
-    width={460}
+    isAnimationActive
   />
 </Card>
         `,
@@ -241,13 +228,12 @@ const icons = {
     categoryKey="month"
     data={radarChartData}
     grid
-    height={300}
     legend
     strokeWidth={2}
     theme="sunset"
     variant="area"
-    width={460}
     icons={icons}
+    isAnimationActive
   />
 </Card>
         `,

@@ -1,5 +1,6 @@
 import React from "react";
-import { Bar, LabelList, BarChart as RechartsBarChart, XAxis } from "recharts";
+import { Bar, LabelList, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
+import { useLayoutContext } from "../../../context/LayoutContext";
 import {
   ChartConfig,
   ChartContainer,
@@ -22,11 +23,12 @@ export interface BarChartProps<T extends BarChartData> {
   grid?: boolean;
   label?: boolean;
   legend?: boolean;
-  width?: number;
-  height?: number;
   radius?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
+  showYAxis?: boolean;
+  xAxisLabel?: string;
+  yAxisLabel?: string;
 }
 
 export const BarChart = <T extends BarChartData>({
@@ -37,17 +39,19 @@ export const BarChart = <T extends BarChartData>({
   grid = true,
   label = true,
   legend = true,
-  width = 800,
-  height = 400,
   icons = {},
   radius = 4,
   isAnimationActive = true,
+  showYAxis = false,
+  xAxisLabel,
+  yAxisLabel,
 }: BarChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
 
   const palette = getPalette(theme);
   const colors = getDistributedColors(palette, dataKeys.length);
+  const { layout } = useLayoutContext();
 
   // Create Config
   const chartConfig: ChartConfig = dataKeys.reduce(
@@ -62,8 +66,81 @@ export const BarChart = <T extends BarChartData>({
     {},
   );
 
+  const getTickFormatter = (data: T) => {
+    const dataLength = data.length;
+    const maxLengthMap = {
+      mobile: {
+        default: 5,
+        10: 4,
+        11: 4,
+      },
+      tray: {
+        default: 5,
+        8: 4,
+        9: 4,
+        10: 4,
+        11: 4,
+      },
+      copilot: {
+        default: 5,
+        8: 4,
+        9: 4,
+        10: 4,
+        11: 4,
+      },
+      fullscreen: {
+        default: 5,
+        11: 4,
+      },
+    };
+
+    const layoutConfig =
+      maxLengthMap[layout as keyof typeof maxLengthMap] || maxLengthMap.fullscreen;
+
+    const maxLength =
+      dataLength >= 11
+        ? 4
+        : layoutConfig[dataLength as keyof typeof layoutConfig] || layoutConfig.default;
+
+    return (value: string) => {
+      if (value.length > maxLength) {
+        return `${value.slice(0, maxLength)}...`;
+      }
+      return value;
+    };
+  };
   const getAxisAngle = (data: T) => {
-    return data.length <= 6 ? 0 : -90;
+    const angleConfig = {
+      mobile: {
+        default: 0,
+        ranges: [
+          { min: 6, max: 9, angle: -45 },
+          { min: 10, max: 10, angle: -60 },
+          { min: 11, max: Infinity, angle: -75 },
+        ],
+      },
+      tray: {
+        default: 0,
+        ranges: [{ min: 8, max: Infinity, angle: -45 }],
+      },
+      copilot: {
+        default: 0,
+        ranges: [{ min: 8, max: Infinity, angle: -45 }],
+      },
+      fullscreen: {
+        default: 0,
+        ranges: [{ min: 12, max: Infinity, angle: -45 }],
+      },
+    };
+
+    const layoutConfig = angleConfig[layout as keyof typeof angleConfig] || angleConfig.fullscreen;
+    const dataLength = data.length;
+
+    const matchRange = layoutConfig.ranges.find(
+      (range) => dataLength >= range.min && dataLength <= range.max,
+    );
+
+    return matchRange?.angle ?? layoutConfig.default;
   };
   const getTickMargin = (data: T) => {
     return data.length <= 6 ? 10 : 15;
@@ -73,8 +150,6 @@ export const BarChart = <T extends BarChartData>({
     <ChartContainer config={chartConfig}>
       <RechartsBarChart
         accessibilityLayer
-        width={width}
-        height={height}
         data={data}
         margin={{
           top: label ? 30 : 20,
@@ -88,9 +163,25 @@ export const BarChart = <T extends BarChartData>({
           axisLine={false}
           angle={getAxisAngle(data)}
           textAnchor="middle"
-          tickFormatter={(value) => value.slice(0, 4)}
+          tickFormatter={getTickFormatter(data)}
+          interval="preserveStartEnd"
+          label={{
+            value: xAxisLabel,
+            position: "insideBottom",
+            offset: -10,
+            className: "crayon-chart-axis-label",
+          }}
         />
-
+        {showYAxis && (
+          <YAxis
+            label={{
+              value: yAxisLabel,
+              position: "insideLeft",
+              angle: -90,
+              className: "crayon-chart-axis-label",
+            }}
+          />
+        )}
         <ChartTooltip content={<ChartTooltipContent />} />
         {dataKeys.map((key) => {
           const transformedKey = keyTransform(key);

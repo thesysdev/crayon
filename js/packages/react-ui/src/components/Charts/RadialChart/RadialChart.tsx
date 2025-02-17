@@ -25,8 +25,6 @@ export interface RadialChartProps<T extends RadialChartData> {
   legend?: boolean;
   label?: boolean;
   grid?: boolean;
-  width?: number;
-  height?: number;
   isAnimationActive?: boolean;
 }
 
@@ -53,8 +51,6 @@ export const RadialChart = <T extends RadialChartData>({
   legend = true,
   label = true,
   grid = true,
-  width = 800,
-  height = 400,
   isAnimationActive = true,
 }: RadialChartProps<T>) => {
   const { layout } = useLayoutContext();
@@ -148,8 +144,6 @@ export const RadialChart = <T extends RadialChartData>({
       className={clsx("crayon-radial-chart-container", layoutMap[layout], "aspect-square")}
     >
       <RadialBarChart
-        width={width}
-        height={height}
         data={transformedData}
         startAngle={variant === "circular" ? -90 : 0}
         endAngle={variant === "circular" ? 270 : 180}
