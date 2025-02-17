@@ -36,8 +36,8 @@ interface CrayonChatProps {
   createThread?: (message: CreateMessage) => Promise<Thread>;
   threadManager?: ThreadManager;
   threadListManager?: ThreadListManager;
-  logoUrl: string;
-  agentName: string;
+  logoUrl?: string;
+  agentName?: string;
   responseTemplates?: ResponseTemplate[];
 }
 
@@ -45,8 +45,8 @@ export const CrayonChat = ({
   processMessage,
   threadManager: userThreadManager,
   threadListManager: userThreadListManager,
-  logoUrl,
-  agentName,
+  logoUrl = "https://crayonai.org/img/logo.png",
+  agentName = "My Agent",
   responseTemplates,
   createThread,
 }: CrayonChatProps) => {
