@@ -25,8 +25,12 @@ export type AssistantMessage = common & {
   role: "assistant";
   context?: JSONValue[];
   message?: (
-    | string
     | {
+        type: "text";
+        text: string;
+      }
+    | {
+        type: "template";
         name: string;
         templateProps: any;
       }

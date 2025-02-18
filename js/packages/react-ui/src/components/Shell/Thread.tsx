@@ -57,8 +57,23 @@ export const ScrollArea = ({
   );
 };
 
-const FallbackTemplate = () => {
-  return <div>Unable to render the response</div>;
+const FallbackTemplate = ({ name, templateProps }: { name: string; templateProps: any }) => {
+  return (
+    <div>
+      Unable to render template: {name} with props:
+      {JSON.stringify(templateProps)}
+    </div>
+  );
+};
+
+const DefaultTextRenderer = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return <div className={className}>{children}</div>;
 };
 
 export const AssistantMessageContainer = ({
@@ -103,11 +118,13 @@ export const RenderMessage = ({ message, className }: { message: Message; classN
     return (
       <MessageContainer className={className}>
         {message.message?.map((stringOrTemplate, i) => {
-          if (typeof stringOrTemplate === "string") {
+          if (stringOrTemplate.type === "text") {
+            const TextRenderer = responseTemplates["text"]?.Component || DefaultTextRenderer;
+
             return (
-              <div key={i} className="crayon-shell-thread-message-assistant__text">
-                {stringOrTemplate}
-              </div>
+              <TextRenderer key={i} className="crayon-shell-thread-message-assistant__text">
+                {stringOrTemplate.text}
+              </TextRenderer>
             );
           }
 
@@ -116,7 +133,11 @@ export const RenderMessage = ({ message, className }: { message: Message; classN
           return Template ? (
             <Template.Component key={i} {...stringOrTemplate.templateProps} />
           ) : (
-            <Fallback key={i} />
+            <Fallback
+              key={i}
+              name={stringOrTemplate.name}
+              templateProps={stringOrTemplate.templateProps}
+            />
           );
         })}
       </MessageContainer>
@@ -136,8 +157,8 @@ export const Messages = ({ className }: { className?: string }) => {
           return null;
         }
         return (
-          <MessageProvider message={message}>
-            <RenderMessage key={message.id} message={message} />
+          <MessageProvider key={message.id} message={message}>
+            <RenderMessage message={message} />
           </MessageProvider>
         );
       })}

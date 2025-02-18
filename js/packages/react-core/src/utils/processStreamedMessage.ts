@@ -76,15 +76,21 @@ export const processStreamedMessage = async ({
       const chunkType = chunk.substring(0, firstSeparatorIndex);
       const content = chunk.substring(firstSeparatorIndex + 1);
       const lastMessageContent = messageContent[messageContent.length - 1];
-      const isLastMessageContentString = typeof lastMessageContent === "string";
+      const isLastMessageContentString = lastMessageContent?.type === "text";
       const messageContentLength = messageContent.length;
 
       switch (chunkType) {
         case "0": {
           if (isLastMessageContentString) {
-            messageContent[messageContentLength - 1] = lastMessageContent + content;
+            messageContent[messageContentLength - 1] = {
+              type: "text",
+              text: lastMessageContent.text + content,
+            };
           } else {
-            messageContent.push(content);
+            messageContent.push({
+              type: "text",
+              text: content,
+            });
           }
           break;
         }
