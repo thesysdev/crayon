@@ -57,8 +57,23 @@ export const ScrollArea = ({
   );
 };
 
-const FallbackTemplate = () => {
-  return <div>Unable to render the response</div>;
+const FallbackTemplate = ({ name, templateProps }: { name: string; templateProps: any }) => {
+  return (
+    <div>
+      Unable to render template: {name} with props:
+      {JSON.stringify(templateProps)}
+    </div>
+  );
+};
+
+const DefaultTextRenderer = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return <div className={className}>{children}</div>;
 };
 
 export const AssistantMessageContainer = ({
@@ -98,6 +113,8 @@ export const RenderMessage = ({ message, className }: { message: Message; classN
   const responseTemplates = useThreadManagerSelector((store) => store.responseTemplates);
   const MessageContainer =
     message.role === "user" ? UserMessageContainer : AssistantMessageContainer;
+  const Fallback = responseTemplates["fallback"]?.Component || FallbackTemplate;
+  const TextRenderer = responseTemplates["text"]?.Component || DefaultTextRenderer;
 
   if (message.role === "assistant") {
     return (
@@ -105,18 +122,17 @@ export const RenderMessage = ({ message, className }: { message: Message; classN
         {message.message?.map((stringOrTemplate, i) => {
           if (typeof stringOrTemplate === "string") {
             return (
-              <div key={i} className="crayon-shell-thread-message-assistant__text">
+              <TextRenderer key={i} className="crayon-shell-thread-message-assistant__text">
                 {stringOrTemplate}
-              </div>
+              </TextRenderer>
             );
           }
 
           const Template = responseTemplates[stringOrTemplate.name];
-          const Fallback = responseTemplates["fallback"]?.Component || FallbackTemplate;
           return Template ? (
             <Template.Component key={i} {...stringOrTemplate.templateProps} />
           ) : (
-            <Fallback key={i} />
+            <Fallback key={i} {...stringOrTemplate} />
           );
         })}
       </MessageContainer>
@@ -136,8 +152,8 @@ export const Messages = ({ className }: { className?: string }) => {
           return null;
         }
         return (
-          <MessageProvider message={message}>
-            <RenderMessage key={message.id} message={message} />
+          <MessageProvider message={message} key={message.id}>
+            <RenderMessage message={message} />
           </MessageProvider>
         );
       })}
