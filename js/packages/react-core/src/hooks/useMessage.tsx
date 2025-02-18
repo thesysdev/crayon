@@ -19,7 +19,7 @@ export const MessageProvider = ({
   message: Message;
   children: React.ReactNode;
 }) => {
-  const ctxValue = useShallow((s: void) => ({ message }))();
+  const ctxValue = useShallow((_s: void) => ({ message }))();
 
   return <MessageContext.Provider value={ctxValue}>{children}</MessageContext.Provider>;
 };
