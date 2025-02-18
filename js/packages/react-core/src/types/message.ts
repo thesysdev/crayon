@@ -39,4 +39,4 @@ export type Message = UserMessage | AssistantMessage;
  * Represents a message being created, with an optional ID
  * @extends Omit<Message, "id">
  */
-export type CreateMessage = Omit<Message, "id">;
+export type CreateMessage = Omit<UserMessage, "id">;

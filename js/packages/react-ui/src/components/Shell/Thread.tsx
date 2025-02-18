@@ -152,6 +152,7 @@ export const Composer = ({ className }: { className?: string }) => {
     }
 
     processMessage({
+      type: "prompt",
       role: "user",
       message: textContent,
     });
