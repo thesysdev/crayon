@@ -29,17 +29,17 @@ import TabItem from '@theme/TabItem';
 <Tabs groupId="js-package-manager">
   <TabItem value="npm" label="npm">
 ```bash
-npm install @crayonai/react-ui @crayonai/react-core
+npm install @crayonai/react-ui @crayonai/react-core @crayonai/stream
 ```
   </TabItem>
   <TabItem value="pnpm" label="pnpm">
 ```bash
-pnpm add @crayonai/crayon-ui @crayonai/react-core
+pnpm add @crayonai/crayon-ui @crayonai/react-core @crayonai/stream
 ```
   </TabItem>
   <TabItem value="yarn" label="yarn">
 ```bash
-yarn add @crayonai/crayon-ui @crayonai/react-core
+yarn add @crayonai/crayon-ui @crayonai/react-core @crayonai/stream
 ```
   </TabItem>
 </Tabs>
@@ -48,13 +48,36 @@ yarn add @crayonai/crayon-ui @crayonai/react-core
 ## Add the CrayonChat component to your app
 
 ```tsx title="page.tsx"
+"use client";
+
+import type { Message } from "@crayonai/react-core";
 import { CrayonChat } from "@crayonai/react-ui";
 import "@crayonai/react-ui/styles/index.css";
 
-export default function Home() {
-  return <CrayonChat agentName="Crayon" logoUrl="" />;
-}
+const processMessage = async ({
+  threadId,
+  messages,
+  abortController,
+}: {
+  threadId: string;
+  messages: Message[];
+  abortController: AbortController;
+}) => {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    body: JSON.stringify({ threadId, messages }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+    },
+    signal: abortController.signal,
+  });
+  return response;
+};
 
+export default function Home() {
+  return <CrayonChat processMessage={processMessage} />;
+}
 ```
 
 ## Integrate LLM with your backend route
@@ -62,23 +85,41 @@ export default function Home() {
 ```tsx title="api/chat/route.ts"
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import {
+  fromOpenAICompletion,
+  TextResponseSchema,
+  toOpenAIMessages,
+} from "@crayonai/stream";
+import { Message } from "@crayonai/react-core";
+
+const TemplatesJsonSchema = {
+  type: "object",
+  properties: {
+    response: {
+      type: "array",
+      items: {
+        oneOf: [TextResponseSchema],
+      },
+    },
+  },
+} as const;
 
 export async function POST(req: NextRequest) {
-  const { messages } = await req.json();
+  const { messages } = (await req.json()) as { messages: Message[] };
   const client = new OpenAI();
   const llmStream = await client.chat.completions.create({
     model: "gpt-4o",
-    messages: messages,
+    messages: toOpenAIMessages(messages),
     stream: true,
-  });
-  const responseStream = new ReadableStream({
-    start: async (controller) => {
-      for await (const chunk of llmStream) {
-        controller.enqueue(chunk.choices[0].delta.content);
-      }
+    response_format: {
+      type: "json_schema",
+      json_schema: {
+        name: "json_schema",
+        schema: TemplatesJsonSchema,
+      },
     },
   });
-
+  const responseStream = fromOpenAICompletion(llmStream);
   return new NextResponse(responseStream, {
     headers: {
       "Content-Type": "text/event-stream",
