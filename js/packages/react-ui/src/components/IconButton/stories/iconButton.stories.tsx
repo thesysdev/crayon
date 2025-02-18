@@ -81,6 +81,9 @@ export const PrimaryButton: Story = {
   args: {
     icon: <Download />,
     disabled: false,
+    variant: "primary",
+    shape: "square",
+    size: "medium",
   },
   render: (args) => <IconButton {...args} />,
 };

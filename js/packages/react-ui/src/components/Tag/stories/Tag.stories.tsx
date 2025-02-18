@@ -47,7 +47,7 @@ const meta: Meta<typeof Tag> = {
       },
     },
   },
-  tags: ["!dev", "autodocs"],
+  tags: ["!dev", "!autodocs"],
 };
 
 export default meta;
