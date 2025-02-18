@@ -1,5 +1,6 @@
 export { ChatProvider } from "./ChatProvider";
 // Re-export hooks from react-core
+export { MessageContext, MessageProvider, useMessage } from "./hooks/useMessage";
 export { useThreadActions } from "./hooks/useThreadActions";
 export { useThreadListActions } from "./hooks/useThreadListActions";
 export { useThreadListState } from "./hooks/useThreadListState";

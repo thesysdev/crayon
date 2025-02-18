@@ -1,5 +1,6 @@
 import {
   Message,
+  MessageProvider,
   useThreadActions,
   useThreadManagerSelector,
   useThreadState,
@@ -134,7 +135,11 @@ export const Messages = ({ className }: { className?: string }) => {
         if (message.isVisuallyHidden) {
           return null;
         }
-        return <RenderMessage key={message.id} message={message} />;
+        return (
+          <MessageProvider message={message}>
+            <RenderMessage key={message.id} message={message} />
+          </MessageProvider>
+        );
       })}
     </div>
   );
