@@ -32,4 +32,4 @@ export * from "./components/Tag";
 export * from "./components/TagBlock";
 export * from "./components/TextArea";
 export * from "./components/TextContent";
-export * from "./components/ThemeProvider";
+export { Theme, ThemeProvider } from "./components/ThemeProvider";
