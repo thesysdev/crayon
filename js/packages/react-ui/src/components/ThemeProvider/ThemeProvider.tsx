@@ -309,6 +309,12 @@ export const ThemeProvider = ({
           --crayon-shadow-xl: ${theme.shadowXl};
           --crayon-shadow-2xl: ${theme.shadow2xl};
           --crayon-shadow-3xl: ${theme.shadow3xl};
+
+          --crayon-chat-container-bg: ${theme.chatContainerBg || theme.backgroundFills};
+          --crayon-chat-assistant-response-bg: ${theme.chatAssistantResponseBg || theme.containerFills};
+          --crayon-chat-assistant-response-text: ${theme.chatAssistantResponseText || theme.primaryText};
+          --crayon-chat-user-response-bg: ${theme.chatUserResponseBg || theme.brandElFills};
+          --crayon-chat-user-response-text: ${theme.chatUserResponseText || theme.brandText};
         }
       `}</style>
       {children}

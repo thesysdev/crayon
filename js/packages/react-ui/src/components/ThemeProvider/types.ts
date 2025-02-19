@@ -30,6 +30,13 @@ export interface ColorTheme {
   successText?: string;
   linkText?: string;
   infoText?: string;
+
+  // chat colors
+  chatContainerBg?: string;
+  chatAssistantResponseBg?: string;
+  chatAssistantResponseText?: string;
+  chatUserResponseBg?: string;
+  chatUserResponseText?: string;
 }
 
 // Layout-related theme properties
