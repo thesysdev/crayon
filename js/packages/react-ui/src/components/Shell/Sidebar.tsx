@@ -5,7 +5,13 @@ import { useLayoutContext } from "../../context/LayoutContext";
 import { IconButton } from "../IconButton";
 import { useShellStore } from "./store";
 
-export const SidebarContainer = ({ children }: { children?: React.ReactNode }) => {
+export const SidebarContainer = ({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) => {
   const { isSidebarOpen, setIsSidebarOpen } = useShellStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
     setIsSidebarOpen: state.setIsSidebarOpen,
@@ -35,9 +41,13 @@ export const SidebarContainer = ({ children }: { children?: React.ReactNode }) =
         />
       )}
       <div
-        className={clsx("crayon-shell-sidebar-container", {
-          "crayon-shell-sidebar-container--collapsed": !isSidebarOpen,
-        })}
+        className={clsx(
+          "crayon-shell-sidebar-container",
+          {
+            "crayon-shell-sidebar-container--collapsed": !isSidebarOpen,
+          },
+          className,
+        )}
       >
         {children}
       </div>
@@ -45,7 +55,7 @@ export const SidebarContainer = ({ children }: { children?: React.ReactNode }) =
   );
 };
 
-export const SidebarHeader = () => {
+export const SidebarHeader = ({ className }: { className?: string }) => {
   const { agentName, logoUrl, setIsSidebarOpen, isSidebarOpen } = useShellStore((state) => ({
     agentName: state.agentName,
     logoUrl: state.logoUrl,
@@ -54,7 +64,7 @@ export const SidebarHeader = () => {
   }));
 
   return (
-    <div className="crayon-shell-sidebar-header">
+    <div className={clsx("crayon-shell-sidebar-header", className)}>
       <img src={logoUrl} alt={agentName} className="crayon-shell-sidebar-header__logo" />
       <div className="crayon-shell-sidebar-header__agent-name">{agentName}</div>
       <IconButton
@@ -70,7 +80,13 @@ export const SidebarHeader = () => {
   );
 };
 
-export const SidebarContent = ({ children }: { children?: React.ReactNode }) => {
+export const SidebarContent = ({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) => {
   const { isSidebarOpen } = useShellStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
   }));
@@ -79,7 +95,7 @@ export const SidebarContent = ({ children }: { children?: React.ReactNode }) => 
     return null;
   }
 
-  return <div className="crayon-shell-sidebar-content">{children}</div>;
+  return <div className={clsx("crayon-shell-sidebar-content", className)}>{children}</div>;
 };
 
 export const SidebarSeparator = () => {

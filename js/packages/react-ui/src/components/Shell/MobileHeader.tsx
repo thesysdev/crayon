@@ -1,9 +1,10 @@
 import { useThreadListActions } from "@crayonai/react-core";
+import clsx from "clsx";
 import { Menu, Plus } from "lucide-react";
 import { IconButton } from "../IconButton";
 import { useShellStore } from "./store";
 
-export const MobileHeader = () => {
+export const MobileHeader = ({ className }: { className?: string }) => {
   const { switchToNewThread } = useThreadListActions();
   const { logoUrl, agentName, setIsSidebarOpen } = useShellStore((state) => ({
     logoUrl: state.logoUrl,
@@ -12,7 +13,7 @@ export const MobileHeader = () => {
   }));
 
   return (
-    <div className="crayon-shell-mobile-header">
+    <div className={clsx("crayon-shell-mobile-header", className)}>
       <IconButton
         size="medium"
         icon={<Menu size="1em" />}

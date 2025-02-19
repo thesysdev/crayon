@@ -114,7 +114,7 @@ export const RenderMessage = memo(
     const responseTemplates = useThreadManagerSelector((store) => store.responseTemplates);
     const MessageContainer =
       message.role === "user" ? UserMessageContainer : AssistantMessageContainer;
-    console.log("adslfjlkasdfj");
+
     if (message.role === "assistant") {
       return (
         <MessageContainer className={className}>
