@@ -7,7 +7,7 @@ import {
 } from "@crayonai/react-core";
 import clsx from "clsx";
 import { ArrowRight, Square } from "lucide-react";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { memo, useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../hooks/useComposerState";
 import { useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { IconButton } from "../IconButton";
@@ -109,43 +109,45 @@ export const UserMessageContainer = ({
   );
 };
 
-export const RenderMessage = ({ message, className }: { message: Message; className?: string }) => {
-  const responseTemplates = useThreadManagerSelector((store) => store.responseTemplates);
-  const MessageContainer =
-    message.role === "user" ? UserMessageContainer : AssistantMessageContainer;
+export const RenderMessage = memo(
+  ({ message, className }: { message: Message; className?: string }) => {
+    const responseTemplates = useThreadManagerSelector((store) => store.responseTemplates);
+    const MessageContainer =
+      message.role === "user" ? UserMessageContainer : AssistantMessageContainer;
+    console.log("adslfjlkasdfj");
+    if (message.role === "assistant") {
+      return (
+        <MessageContainer className={className}>
+          {message.message?.map((stringOrTemplate, i) => {
+            if (stringOrTemplate.type === "text") {
+              const TextRenderer = responseTemplates["text"]?.Component || DefaultTextRenderer;
 
-  if (message.role === "assistant") {
-    return (
-      <MessageContainer className={className}>
-        {message.message?.map((stringOrTemplate, i) => {
-          if (stringOrTemplate.type === "text") {
-            const TextRenderer = responseTemplates["text"]?.Component || DefaultTextRenderer;
+              return (
+                <TextRenderer key={i} className="crayon-shell-thread-message-assistant__text">
+                  {stringOrTemplate.text}
+                </TextRenderer>
+              );
+            }
 
-            return (
-              <TextRenderer key={i} className="crayon-shell-thread-message-assistant__text">
-                {stringOrTemplate.text}
-              </TextRenderer>
+            const Template = responseTemplates[stringOrTemplate.name];
+            const Fallback = responseTemplates["fallback"]?.Component || FallbackTemplate;
+            return Template ? (
+              <Template.Component key={i} {...stringOrTemplate.templateProps} />
+            ) : (
+              <Fallback
+                key={i}
+                name={stringOrTemplate.name}
+                templateProps={stringOrTemplate.templateProps}
+              />
             );
-          }
+          })}
+        </MessageContainer>
+      );
+    }
 
-          const Template = responseTemplates[stringOrTemplate.name];
-          const Fallback = responseTemplates["fallback"]?.Component || FallbackTemplate;
-          return Template ? (
-            <Template.Component key={i} {...stringOrTemplate.templateProps} />
-          ) : (
-            <Fallback
-              key={i}
-              name={stringOrTemplate.name}
-              templateProps={stringOrTemplate.templateProps}
-            />
-          );
-        })}
-      </MessageContainer>
-    );
-  }
-
-  return <MessageContainer>{message.message}</MessageContainer>;
-};
+    return <MessageContainer>{message.message}</MessageContainer>;
+  },
+);
 
 export const Messages = ({ className }: { className?: string }) => {
   const { messages } = useThreadState();
