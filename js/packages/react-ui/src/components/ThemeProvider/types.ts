@@ -13,7 +13,7 @@ export interface ColorTheme {
   containerHoverFills?: string;
   dangerFills?: string;
   successFills?: string;
-
+  infoFills?: string;
   // Border colors
   strokeDefault?: string;
   strokeInteractiveEl?: string;
