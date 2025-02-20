@@ -16,9 +16,10 @@ const lightTheme: ColorTheme = {
   containerFills: "rgb(255, 255, 255)",
   overlayFills: "rgba(0, 0, 0, 0.4)",
   sunkFills: "rgba(0, 0, 0, 0.04)",
-  containerHoverFills: "rgba(255, 255, 255, 0.04)",
+  containerHoverFills: "rgba(0, 0, 0, 0.04)",
   dangerFills: "rgba(217, 45, 32, 0.08)",
   successFills: "rgba(7, 148, 85, 0.08)",
+  infoFills: "rgba(56, 148, 255, 0.08)",
 
   // Border colors
   strokeDefault: "rgba(0, 0, 0, 0.06)",
@@ -35,7 +36,7 @@ const lightTheme: ColorTheme = {
   dangerText: "rgba(217, 45, 32, 1)",
   successText: "rgba(7, 148, 85, 1)",
   linkText: "rgba(0, 0, 0, 1)",
-  infoText: "rgba(0, 0, 0, 0.4)",
+  infoText: "rgba(56, 148, 255, 1)",
 } as const;
 
 const darkTheme: ColorTheme = {
@@ -49,6 +50,7 @@ const darkTheme: ColorTheme = {
   containerHoverFills: "rgba(255, 255, 255, 0.1)",
   dangerFills: "rgba(217, 45, 32, 0.1)",
   successFills: "rgba(7, 148, 85, 0.1)",
+  infoFills: "rgba(56, 148, 255, 0.1)",
 
   // Border colors
   strokeDefault: "rgba(255, 255, 255, 0.06)",
@@ -65,7 +67,7 @@ const darkTheme: ColorTheme = {
   dangerText: "rgba(253, 162, 155, 1)",
   successText: "rgba(117, 224, 167, 1)",
   linkText: "rgba(255, 255, 255, 1)",
-  infoText: "rgba(255, 255, 255, 0.6)",
+  infoText: "rgba(125, 179, 247, 1)",
 } as const;
 
 // Shared theme properties that don't change between light/dark modes
@@ -217,6 +219,7 @@ export const ThemeProvider = ({
           --crayon-container-hover-fills: ${theme.containerHoverFills};
           --crayon-danger-fills: ${theme.dangerFills};
           --crayon-success-fills: ${theme.successFills};
+          --crayon-info-fills: ${theme.infoFills};
 
           --crayon-stroke-default: ${theme.strokeDefault};
           --crayon-stroke-interactive-el: ${theme.strokeInteractiveEl};
