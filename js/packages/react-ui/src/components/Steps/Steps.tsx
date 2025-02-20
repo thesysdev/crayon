@@ -1,7 +1,7 @@
 import React from "react";
 
 export interface Step {
-  title: string;
+  title: React.ReactNode;
   details: React.ReactNode;
 }
 

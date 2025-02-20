@@ -27,8 +27,8 @@ export interface LineChartProps<T extends LineChartData> {
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
   showYAxis?: boolean;
-  xAxisLabel?: string;
-  yAxisLabel?: string;
+  xAxisLabel?: React.ReactNode;
+  yAxisLabel?: React.ReactNode;
 }
 
 export const LineChart = <T extends LineChartData>({

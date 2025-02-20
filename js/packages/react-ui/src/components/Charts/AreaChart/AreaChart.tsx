@@ -27,8 +27,8 @@ export interface AreaChartProps<T extends AreaChartData> {
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
   showYAxis?: boolean;
-  xAxisLabel?: string;
-  yAxisLabel?: string;
+  xAxisLabel?: React.ReactNode;
+  yAxisLabel?: React.ReactNode;
 }
 
 export const AreaChart = <T extends AreaChartData>({
