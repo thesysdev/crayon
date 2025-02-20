@@ -21,10 +21,10 @@ const lightTheme: ColorTheme = {
   successFills: "rgba(7, 148, 85, 0.08)",
 
   // Border colors
-  strokesDefault: "rgba(0, 0, 0, 0.06)",
-  stocksInteractiveEl: "rgba(0, 0, 0, 0.12)",
-  stocksInteractiveElHover: "rgba(0, 0, 0, 0.4)",
-  strokesInteractiveElSelected: "rgb(0, 0, 0)",
+  strokeDefault: "rgba(0, 0, 0, 0.06)",
+  strokeInteractiveEl: "rgba(0, 0, 0, 0.12)",
+  strokeInteractiveElHover: "rgba(0, 0, 0, 0.4)",
+  strokeInteractiveElSelected: "rgb(0, 0, 0)",
 
   // Text colors
   brandText: "rgba(255, 255, 255, 1)",
@@ -51,10 +51,10 @@ const darkTheme: ColorTheme = {
   successFills: "rgba(7, 148, 85, 0.1)",
 
   // Border colors
-  strokesDefault: "rgba(255, 255, 255, 0.06)",
-  stocksInteractiveEl: "rgba(255, 255, 255, 0.12)",
-  stocksInteractiveElHover: "rgba(255, 255, 255, 0.4)",
-  strokesInteractiveElSelected: "rgba(255, 255, 255, 1)",
+  strokeDefault: "rgba(255, 255, 255, 0.06)",
+  strokeInteractiveEl: "rgba(255, 255, 255, 0.12)",
+  strokeInteractiveElHover: "rgba(255, 255, 255, 0.4)",
+  strokeInteractiveElSelected: "rgba(255, 255, 255, 1)",
 
   // Text colors
   brandText: "rgba(0, 0, 0, 1)",
@@ -218,10 +218,10 @@ export const ThemeProvider = ({
           --crayon-danger-fills: ${theme.dangerFills};
           --crayon-success-fills: ${theme.successFills};
 
-          --crayon-strokes-default: ${theme.strokesDefault};
-          --crayon-stocks-interactive-el: ${theme.stocksInteractiveEl};
-          --crayon-stocks-interactive-el-hover: ${theme.stocksInteractiveElHover};
-          --crayon-strokes-interactive-el-selected: ${theme.strokesInteractiveElSelected};
+          --crayon-stroke-default: ${theme.strokeDefault};
+          --crayon-stroke-interactive-el: ${theme.strokeInteractiveEl};
+          --crayon-stroke-interactive-el-hover: ${theme.strokeInteractiveElHover};
+          --crayon-stroke-interactive-el-selected: ${theme.strokeInteractiveElSelected};
 
           --crayon-brand-text: ${theme.brandText};
           --crayon-brand-secondary-text: ${theme.brandSecondaryText};

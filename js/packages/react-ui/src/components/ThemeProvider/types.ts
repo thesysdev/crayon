@@ -15,10 +15,10 @@ export interface ColorTheme {
   successFills?: string;
 
   // Border colors
-  strokesDefault?: string;
-  stocksInteractiveEl?: string;
-  stocksInteractiveElHover?: string;
-  strokesInteractiveElSelected?: string;
+  strokeDefault?: string;
+  strokeInteractiveEl?: string;
+  strokeInteractiveElHover?: string;
+  strokeInteractiveElSelected?: string;
 
   // Text colors
   brandText?: string;
