@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Info } from "lucide-react";
 import { Callout, CalloutProps } from "../Callout";
-import "../callout.scss";
 
 const meta: Meta<CalloutProps> = {
   title: "Components/Callout",
