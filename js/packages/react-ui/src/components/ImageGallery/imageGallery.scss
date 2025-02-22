@@ -1,4 +1,3 @@
-// ImageGallery.scss
 .crayon-gallery {
   display: grid;
   grid-template-columns: repeat(var(--column-count, 3), 1fr);
@@ -7,23 +6,40 @@
   max-width: 1200px;
   margin: 0 auto;
 
+  &--loading {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #666;
+  }
+
   &__column {
     display: flex;
     flex-direction: column;
+    height: 100%;
   }
 
   &__item {
-    break-inside: avoid;
+    position: relative;
     margin-bottom: var(--gap, 10px);
     transition: transform 0.3s ease;
 
+    &:last-child {
+      margin-bottom: 0;
+    }
+
     &:hover {
       transform: translateY(-5px);
+      z-index: 1;
     }
   }
 
   &__image-container {
     position: relative;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -31,13 +47,30 @@
 
   &__image {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
     object-fit: cover;
     transition: transform 0.5s ease;
 
     &:hover {
       transform: scale(1.03);
+    }
+  }
+
+  &__caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    .crayon-gallery__item:hover & {
+      opacity: 1;
     }
   }
 
