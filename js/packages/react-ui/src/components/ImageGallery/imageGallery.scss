@@ -1,7 +1,9 @@
+@use "../../cssUtils.scss" as cssUtils;
+
 .crayon-gallery {
   display: grid;
   grid-template-columns: repeat(var(--column-count, 3), 1fr);
-  gap: var(--gap, 10px);
+  gap: var(--gap, cssUtils.$spacing-m);
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -11,8 +13,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    color: #666;
+    @include cssUtils.typography(label, default);
+    color: cssUtils.$secondary-text;
   }
 
   &__column {
@@ -23,7 +25,7 @@
 
   &__item {
     position: relative;
-    margin-bottom: var(--gap, 10px);
+    margin-bottom: var(--gap, cssUtils.$spacing-m);
     transition: transform 0.3s ease;
 
     &:last-child {
@@ -41,8 +43,8 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: cssUtils.$rounded-m;
+    box-shadow: cssUtils.$shadow-m;
   }
 
   &__image {
@@ -62,10 +64,10 @@
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 8px 12px;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    font-size: 0.9rem;
+    padding: cssUtils.$spacing-s cssUtils.$spacing-m;
+    background: cssUtils.$bg-container;
+    color: cssUtils.$primary-text;
+    @include cssUtils.typography(label, default);
     opacity: 0;
     transition: opacity 0.3s ease;
 
@@ -81,11 +83,11 @@
 
   @media (max-width: 768px) {
     --column-count: 2;
-    --gap: 8px;
+    --gap: cssUtils.$spacing-m;
   }
 
   @media (max-width: 480px) {
     --column-count: 1;
-    --gap: 6px;
+    --gap: cssUtils.$spacing-m;
   }
 }
