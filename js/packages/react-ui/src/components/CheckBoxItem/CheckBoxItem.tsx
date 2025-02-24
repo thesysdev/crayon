@@ -2,7 +2,6 @@ import * as Checkbox from "@radix-ui/react-checkbox";
 import clsx from "clsx";
 import { Check } from "lucide-react";
 import { CSSProperties, forwardRef, ReactNode, useId } from "react";
-import { Label } from "../Label";
 
 export interface CheckBoxItemProps {
   label?: ReactNode;
@@ -36,14 +35,9 @@ const CheckBoxItem = forwardRef<HTMLButtonElement, CheckBoxItemProps>((props, re
         </Checkbox.Indicator>
       </Checkbox.Root>
       {label && (
-        <Label
-          htmlFor={id}
-          className="crayon-checkbox-item-label"
-          disabled={disabled}
-          required={required}
-        >
+        <label htmlFor={id} className="crayon-checkbox-item-label">
           {label}
-        </Label>
+        </label>
       )}
     </div>
   );

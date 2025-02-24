@@ -1,7 +1,6 @@
 import * as Switch from "@radix-ui/react-switch";
 import clsx from "clsx";
 import { CSSProperties, forwardRef, ReactNode, useId } from "react";
-import { Label } from "../Label";
 
 interface SwitchItemProps {
   label?: ReactNode;
@@ -33,14 +32,9 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>((props, ref) =
         <Switch.Thumb className="crayon-switch-item-thumb" />
       </Switch.Root>
       {label && (
-        <Label
-          htmlFor={id}
-          className="crayon-switch-item-label"
-          disabled={disabled}
-          required={required}
-        >
+        <label htmlFor={id} className="crayon-switch-item-label">
           {label}
-        </Label>
+        </label>
       )}
     </div>
   );

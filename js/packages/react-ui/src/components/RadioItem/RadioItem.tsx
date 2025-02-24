@@ -1,7 +1,6 @@
 import * as Radio from "@radix-ui/react-radio-group";
 import clsx from "clsx";
 import { CSSProperties, forwardRef, ReactNode, useId } from "react";
-import { Label } from "../Label";
 
 export interface RadioItemProps {
   label?: ReactNode;
@@ -51,14 +50,9 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>((props, ref) => 
         </svg>
       </Radio.Item>
       {label && (
-        <Label
-          htmlFor={id}
-          className="crayon-radio-item-label"
-          disabled={disabled}
-          required={required}
-        >
+        <label htmlFor={id} className="crayon-radio-item-label">
           {label}
-        </Label>
+        </label>
       )}
     </div>
   );
