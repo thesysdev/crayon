@@ -48,32 +48,6 @@ const extractImageUrls = (children: React.ReactNode): string[] => {
   return urls;
 };
 
-// Calculates and adjusts column heights to ensure balanced layout
-
-const calculateColumnHeights = (columns: Image[][]) => {
-  const avgColumnHeight = columns.reduce((maxHeight, column) => {
-    const columnHeight = column.reduce(
-      (sum, img) => sum + (img.aspectRatio ? 1 / img.aspectRatio : 1),
-      0,
-    );
-    return Math.max(maxHeight, columnHeight);
-  }, 0);
-
-  columns.forEach((column) => {
-    const totalRatio = column.reduce(
-      (sum, img) => sum + (img.aspectRatio ? 1 / img.aspectRatio : 1),
-      0,
-    );
-    const scaleFactor = avgColumnHeight / totalRatio;
-
-    column.forEach((image) => {
-      image.adjustedHeight = image.aspectRatio ? (1 / image.aspectRatio) * scaleFactor : 1;
-    });
-  });
-
-  return columns;
-};
-
 export const ImageGallery: React.FC<ImageGalleryProps> = ({
   children,
   columnCount = 3,
@@ -128,13 +102,24 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
   const getColumns = () => {
     if (isLoading || images.length === 0) return [];
 
+    // Initialize columns
     const columns: Image[][] = Array.from({ length: columnCount }, () => []);
-    images.forEach((image, index) => {
-      const columnIndex = index % columnCount;
-      columns[columnIndex]!.push(image);
+
+    // First, distribute images to shortest column
+    images.forEach((image) => {
+      // Calculate current height of each column
+      const columnHeights = columns.map((column) =>
+        column.reduce((sum, img) => sum + img.height / img.width, 0),
+      );
+
+      // Find the column with minimum height
+      const shortestColumnIndex = columnHeights.indexOf(Math.min(...columnHeights));
+
+      // Add image to shortest column
+      columns[shortestColumnIndex]!.push(image);
     });
 
-    return calculateColumnHeights(columns);
+    return columns;
   };
 
   if (isLoading) {
@@ -154,13 +139,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
       {getColumns().map((column, columnIndex) => (
         <div key={`column-${columnIndex}`} className="crayon-gallery__column">
           {column.map((image) => (
-            <div
-              key={image.id}
-              className="crayon-gallery__item"
-              style={{
-                flex: image.adjustedHeight,
-              }}
-            >
+            <div key={image.id} className="crayon-gallery__item">
               <div className="crayon-gallery__image-container">
                 <img src={image.url} alt="" loading="lazy" className="crayon-gallery__image" />
                 {image.caption && <div className="crayon-gallery__caption">{image.caption}</div>}
