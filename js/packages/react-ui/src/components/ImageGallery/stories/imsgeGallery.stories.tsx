@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Card } from "../../Card";
+import { Image } from "../../Image/Image";
 import { ImageGallery } from "../ImageGallery";
-
 const meta: Meta<typeof ImageGallery> = {
   title: "Components/ImageGallery",
   component: ImageGallery,
@@ -39,20 +40,36 @@ type Story = StoryObj<typeof ImageGallery>;
 export const ImageGalleryStory: Story = {
   args: {
     columnCount: 3,
-    gap: 10,
+    gap: 18,
   },
   render: (args) => (
-    <div style={{ width: "800px" }}>
-      <ImageGallery
-        {...args}
-        urls={[
-          "https://plus.unsplash.com/premium_photo-1736946873496-cb261d1c4962?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw4OHx8fGVufDB8fHx8fA%3D%3D",
-          "https://images.unsplash.com/photo-1739890390449-609b1c6d2125?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMDR8fHxlbnwwfHx8fHw%3D",
-          "https://images.unsplash.com/photo-1739826155350-db63e78c098c?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw5OHx8fGVufDB8fHx8fA%3D%3D",
-          "https://images.unsplash.com/photo-1739560116855-23a8c43afb5c?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMjR8fHxlbnwwfHx8fHw%3D",
-          "https://plus.unsplash.com/premium_photo-1738907349895-62b86fda1f42?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0Nnx8fGVufDB8fHx8fA%3D%3D",
-        ]}
-      />
-    </div>
+    <Card style={{ width: "800px" }}>
+      <ImageGallery {...args}>
+        <Image
+          src="https://plus.unsplash.com/premium_photo-1736946873496-cb261d1c4962?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw4OHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Image 1"
+        />
+        <Image
+          src="https://images.unsplash.com/photo-1739890390449-609b1c6d2125?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMDR8fHxlbnwwfHx8fHw%3D"
+          alt="Image 1"
+        />
+        <Image
+          src="https://images.unsplash.com/photo-1736332654737-1224ed263915?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxNzd8fHxlbnwwfHx8fHw%3D"
+          alt="Image 1"
+        />
+        <Image
+          src="https://images.unsplash.com/photo-1739560116855-23a8c43afb5c?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMjR8fHxlbnwwfHx8fHw%3D"
+          alt="Image 1"
+        />
+        <Image
+          src="https://plus.unsplash.com/premium_photo-1738907349895-62b86fda1f42?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0Nnx8fGVufDB8fHx8fA%3D%3D"
+          alt="Image 1"
+        />
+        <Image
+          src="https://images.unsplash.com/photo-1739826155350-db63e78c098c?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw5OHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Image 1"
+        />
+      </ImageGallery>
+    </Card>
   ),
 };

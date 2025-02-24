@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { Children, isValidElement, useEffect, useState } from "react";
+import { Image, ImageProps } from "../Image";
 import "./ImageGallery.scss";
 
 interface Image {
@@ -12,32 +13,83 @@ interface Image {
 }
 
 interface ImageGalleryProps {
-  urls: string[];
+  children: React.ReactNode;
   columnCount?: number;
   gap?: number;
 }
 
-export const ImageGallery: React.FC<ImageGalleryProps> = ({ urls, columnCount = 3, gap = 10 }) => {
+// Loads and returns dimensions of an image given its URL
+
+const getImageDimensions = (url: string): Promise<{ width: number; height: number }> => {
+  return new Promise((resolve) => {
+    const img = new window.Image();
+    img.onload = () => {
+      resolve({
+        width: img.width,
+        height: img.height,
+      });
+    };
+    img.src = url;
+  });
+};
+
+// Extracts image URLs from child Image components
+
+const extractImageUrls = (children: React.ReactNode): string[] => {
+  const urls: string[] = [];
+  Children.forEach(children, (child) => {
+    if (isValidElement(child) && child.type === Image) {
+      const imageProps = child.props as ImageProps;
+      if (imageProps.src) {
+        urls.push(imageProps.src);
+      }
+    }
+  });
+  return urls;
+};
+
+// Calculates and adjusts column heights to ensure balanced layout
+
+const calculateColumnHeights = (columns: Image[][]) => {
+  const avgColumnHeight = columns.reduce((maxHeight, column) => {
+    const columnHeight = column.reduce(
+      (sum, img) => sum + (img.aspectRatio ? 1 / img.aspectRatio : 1),
+      0,
+    );
+    return Math.max(maxHeight, columnHeight);
+  }, 0);
+
+  columns.forEach((column) => {
+    const totalRatio = column.reduce(
+      (sum, img) => sum + (img.aspectRatio ? 1 / img.aspectRatio : 1),
+      0,
+    );
+    const scaleFactor = avgColumnHeight / totalRatio;
+
+    column.forEach((image) => {
+      image.adjustedHeight = image.aspectRatio ? (1 / image.aspectRatio) * scaleFactor : 1;
+    });
+  });
+
+  return columns;
+};
+
+export const ImageGallery: React.FC<ImageGalleryProps> = ({
+  children,
+  columnCount = 3,
+  gap = 10,
+}) => {
   const [images, setImages] = useState<Image[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const getImageDimensions = (url: string): Promise<{ width: number; height: number }> => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        resolve({
-          width: img.width,
-          height: img.height,
-        });
-      };
-      img.src = url;
-    });
-  };
+  // Loads images and their dimensions when children change
 
   useEffect(() => {
-    setIsLoading(true);
+    let mounted = true;
+
     const loadImages = async () => {
       try {
+        const urls = extractImageUrls(children);
         const imagesWithDimensions = await Promise.all(
           urls.map(async (url, index) => {
             const dimensions = await getImageDimensions(url);
@@ -49,52 +101,40 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ urls, columnCount = 
             };
           }),
         );
-
-        setImages(imagesWithDimensions);
+        // Only update state if component is still mounted
+        if (mounted) {
+          setImages(imagesWithDimensions);
+        }
       } catch (error) {
         console.error("Error loading images:", error);
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
+    setIsLoading(true);
     loadImages();
-  }, [urls]);
+
+    // Cleanup function to prevent setting state on unmounted component
+    return () => {
+      mounted = false;
+    };
+  }, [children]);
+
+  // Distributes images across columns and calculates their heights
 
   const getColumns = () => {
-    if (isLoading || images.length === 0) {
-      return [];
-    }
+    if (isLoading || images.length === 0) return [];
 
     const columns: Image[][] = Array.from({ length: columnCount }, () => []);
-
-    // Distribute images evenly across columns
     images.forEach((image, index) => {
       const columnIndex = index % columnCount;
       columns[columnIndex]!.push(image);
     });
 
-    // Calculate the ideal height for each column
-    const avgColumnHeight = columns.reduce((maxHeight, column) => {
-      const columnHeight = column.reduce((sum, img) => {
-        return sum + (img.aspectRatio ? 1 / img.aspectRatio : 1);
-      }, 0);
-      return Math.max(maxHeight, columnHeight);
-    }, 0);
-
-    // Adjust image heights in each column
-    columns.forEach((column) => {
-      const totalRatio = column.reduce((sum, img) => {
-        return sum + (img.aspectRatio ? 1 / img.aspectRatio : 1);
-      }, 0);
-      const scaleFactor = avgColumnHeight / totalRatio;
-
-      column.forEach((image) => {
-        image.adjustedHeight = image.aspectRatio ? (1 / image.aspectRatio) * scaleFactor : 1;
-      });
-    });
-
-    return columns;
+    return calculateColumnHeights(columns);
   };
 
   if (isLoading) {
