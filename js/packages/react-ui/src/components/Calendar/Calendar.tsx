@@ -1,10 +1,10 @@
+import clsx from "clsx";
 import React, { forwardRef, useRef } from "react";
 import { DayPicker } from "react-day-picker";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { useMultipleRefs } from "../../hooks/useMultipleRefs";
 import { MonthsDropdown, YearsDropdown } from "./components/helperComponents";
 import { getDayPickerStyles } from "./utils/styles";
-
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
@@ -27,7 +27,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
     };
 
     return (
-      <div ref={assignRef} className={className}>
+      <div ref={assignRef} className={clsx("crayon-calendar-container", className)}>
         <DayPicker
           {...commonProps}
           {...props}
