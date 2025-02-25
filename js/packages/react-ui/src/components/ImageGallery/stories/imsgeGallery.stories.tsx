@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "../../Card";
 import { Image } from "../../Image/Image";
 import { ImageGallery } from "../ImageGallery";
+
 const meta: Meta<typeof ImageGallery> = {
   title: "Components/ImageGallery",
   component: ImageGallery,

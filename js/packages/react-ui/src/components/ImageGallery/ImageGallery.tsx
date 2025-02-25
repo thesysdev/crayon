@@ -1,6 +1,5 @@
 import React, { Children, isValidElement, useEffect, useState } from "react";
 import { Image, ImageProps } from "../Image";
-import "./ImageGallery.scss";
 
 interface Image {
   id: string;
