@@ -25,6 +25,7 @@ export * from "./components/RadioItem";
 export * from "./components/Select";
 export * as Shell from "./components/Shell";
 export * from "./components/Slider";
+export * from "./components/Steps";
 export * from "./components/SwitchGroup";
 export * from "./components/SwitchItem";
 export * from "./components/Table";
