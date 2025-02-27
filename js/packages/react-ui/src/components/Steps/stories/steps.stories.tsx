@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "../../Card";
-import { Steps, StepsProps } from "../Steps";
+import { Steps, StepsItem, StepsProps } from "../Steps";
 
 const stepsData = [
   {
@@ -32,20 +32,19 @@ const meta: Meta<StepsProps> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { Steps } from '@crayon-ui/react-ui';\n```",
+        component: "```tsx\nimport { Steps, StepsItem } from '@crayon-ui/react-ui';\n```",
       },
     },
   },
   tags: ["!dev", "autodocs"],
   argTypes: {
-    steps: {
+    children: {
       control: false,
-      description:
-        "Array of step objects containing title and details. Title is a string and details is a React Node.",
+      description: "StepsItem components to be rendered",
       table: {
         category: "Content",
-        type: { summary: "Step[]" },
-        defaultValue: { summary: "[]" },
+        type: { summary: "React.ReactNode" },
+        defaultValue: { summary: "undefined" },
         required: true,
       },
     },
@@ -57,12 +56,13 @@ type Story = StoryObj<typeof meta>;
 
 export const StepsStory: Story = {
   name: "Steps",
-  args: {
-    steps: stepsData,
-  },
-  render: (args) => (
+  render: () => (
     <Card style={{ width: "500px" }}>
-      <Steps {...args} />
+      <Steps>
+        {stepsData.map((step, index) => (
+          <StepsItem key={index} {...step} />
+        ))}
+      </Steps>
     </Card>
   ),
   parameters: {
@@ -89,7 +89,11 @@ const steps = [
 ];
 
 <Card style={{ width: "500px" }}>
-  <Steps steps={steps} />
+  <Steps>
+    {steps.map((step, index) => (
+      <StepsItem key={index} title={step.title} details={step.details} />
+    ))}
+  </Steps>
 </Card>`,
       },
     },
