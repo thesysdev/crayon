@@ -20,6 +20,7 @@ const lightTheme: ColorTheme = {
   dangerFills: "rgba(217, 45, 32, 0.08)",
   successFills: "rgba(7, 148, 85, 0.08)",
   infoFills: "rgba(56, 148, 255, 0.08)",
+  elevatedFills: "rgba(255, 255, 255, 0.3)",
 
   // Border colors
   strokeDefault: "rgba(0, 0, 0, 0.06)",
@@ -51,6 +52,7 @@ const darkTheme: ColorTheme = {
   dangerFills: "rgba(217, 45, 32, 0.1)",
   successFills: "rgba(7, 148, 85, 0.1)",
   infoFills: "rgba(56, 148, 255, 0.1)",
+  elevatedFills: "rgba(255, 255, 255, 0.1)",
 
   // Border colors
   strokeDefault: "rgba(255, 255, 255, 0.06)",
@@ -220,6 +222,7 @@ export const ThemeProvider = ({
           --crayon-danger-fills: ${theme.dangerFills};
           --crayon-success-fills: ${theme.successFills};
           --crayon-info-fills: ${theme.infoFills};
+          --crayon-elevated-fills: ${theme.elevatedFills};
 
           --crayon-stroke-default: ${theme.strokeDefault};
           --crayon-stroke-interactive-el: ${theme.strokeInteractiveEl};

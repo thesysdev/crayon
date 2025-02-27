@@ -14,6 +14,7 @@ export interface ColorTheme {
   dangerFills?: string;
   successFills?: string;
   infoFills?: string;
+  elevatedFills?: string;
   // Border colors
   strokeDefault?: string;
   strokeInteractiveEl?: string;
