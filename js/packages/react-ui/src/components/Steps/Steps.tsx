@@ -27,7 +27,7 @@ export const StepsItem: React.FC<StepsItemProps> = ({ title, details }) => {
   const stepNumber = useContext(StepNumberContext);
 
   return (
-    <div className={`crayon-step-item`}>
+    <div className="crayon-step-item">
       <div className="crayon-step-connector">
         <div className="crayon-step-number">
           <div className="crayon-step-number-inner">{stepNumber}</div>
