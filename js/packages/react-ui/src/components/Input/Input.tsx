@@ -17,6 +17,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, styles, size = "medium", ...props }, ref) => {
     return (
       <input
+        autoComplete="off"
         ref={ref}
         className={clsx("crayon-input", sizes[size], className)}
         style={styles}
