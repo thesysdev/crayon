@@ -1,6 +1,8 @@
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import clsx from "clsx";
-import React, { forwardRef } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
+import { IconButton } from "../IconButton";
 
 type TabsVariant = "clear" | "card" | "sunk";
 
@@ -33,14 +35,98 @@ export interface TabsListProps extends React.ComponentPropsWithoutRef<typeof Tab
 }
 
 export const TabsList = forwardRef<React.ComponentRef<typeof TabsPrimitive.List>, TabsListProps>(
-  ({ className, style, ...props }, ref) => (
-    <TabsPrimitive.List
-      ref={ref}
-      className={clsx("crayon-tabs-list", className)}
-      style={style}
-      {...props}
-    />
-  ),
+  ({ className, style, ...props }, ref) => {
+    const listRef = useRef<HTMLDivElement>(null);
+    const [showLeftButton, setShowLeftButton] = useState(false);
+    const [showRightButton, setShowRightButton] = useState(false);
+
+    // Check if scrolling is needed
+    useEffect(() => {
+      const checkScroll = () => {
+        if (listRef.current) {
+          const { scrollLeft, scrollWidth, clientWidth } = listRef.current;
+          setShowLeftButton(scrollLeft > 0);
+          setShowRightButton(scrollLeft < scrollWidth - clientWidth - 1); // -1 for rounding errors
+        }
+      };
+
+      // Initial check
+      checkScroll();
+
+      // Add event listener for scroll
+      const currentRef = listRef.current;
+      if (currentRef) {
+        currentRef.addEventListener("scroll", checkScroll);
+
+        // Also add resize observer to handle responsive changes
+        const resizeObserver = new ResizeObserver(checkScroll);
+        resizeObserver.observe(currentRef);
+
+        return () => {
+          currentRef.removeEventListener("scroll", checkScroll);
+          resizeObserver.disconnect();
+        };
+      }
+      return () => {};
+    }, []);
+
+    // Scroll functions
+    const scrollLeft = () => {
+      if (listRef.current) {
+        // Scroll one tab to the left
+        listRef.current.scrollBy({ left: -120, behavior: "smooth" });
+      }
+    };
+
+    const scrollRight = () => {
+      if (listRef.current) {
+        // Scroll one tab to the right
+        listRef.current.scrollBy({ left: 120, behavior: "smooth" });
+      }
+    };
+
+    return (
+      <div className="crayon-tabs-list-container">
+        {showLeftButton && (
+          <IconButton
+            className="crayon-tabs-scroll-button crayon-tabs-scroll-left"
+            onClick={scrollLeft}
+            aria-label="Scroll tabs left"
+            icon={<ArrowLeft />}
+            variant="secondary"
+            size="small"
+          />
+        )}
+
+        <TabsPrimitive.List
+          ref={(node) => {
+            // Forward the ref to the original ref prop if provided
+            if (typeof ref === "function") {
+              ref(node);
+            } else if (ref) {
+              ref.current = node;
+            }
+            // Also store it in our local ref
+            listRef.current = node;
+          }}
+          className={clsx("crayon-tabs-list", className)}
+          style={style}
+          {...props}
+        />
+
+        {showRightButton && (
+          <IconButton
+            className="crayon-tabs-scroll-button crayon-tabs-scroll-right"
+            onClick={scrollRight}
+            aria-label="Scroll tabs right"
+            icon={<ArrowRight />}
+            variant="secondary"
+            size="small"
+          />
+        )}
+      </div>
+    );
+  },
 );
 
 export interface TabsTriggerProps
