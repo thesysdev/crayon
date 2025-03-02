@@ -130,6 +130,15 @@ export const WithIcon: Story = {
         <TabsTrigger value="tab1" text="Venice" icon={<PlaneTakeoff />} />
         <TabsTrigger value="tab2" text="Kyoto" icon={<Ship />} />
         <TabsTrigger value="tab3" text="Dubai" icon={<BusFront />} />
+        <TabsTrigger value="tab1" text="Venice" icon={<PlaneTakeoff />} />
+        <TabsTrigger value="tab2" text="Kyoto" icon={<Ship />} />
+        <TabsTrigger value="tab3" text="Dubai" icon={<BusFront />} />
+        <TabsTrigger value="tab1" text="Venice" icon={<PlaneTakeoff />} />
+        <TabsTrigger value="tab2" text="Kyoto" icon={<Ship />} />
+        <TabsTrigger value="tab3" text="Dubai" icon={<BusFront />} />
+        <TabsTrigger value="tab1" text="Venice" icon={<PlaneTakeoff />} />
+        <TabsTrigger value="tab2" text="Kyoto" icon={<Ship />} />
+        <TabsTrigger value="tab3" text="Dubai" icon={<BusFront />} />
       </TabsList>
       <TabsContent value="tab1">
         <CardHeader

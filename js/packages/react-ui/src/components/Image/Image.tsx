@@ -28,7 +28,7 @@ const scaleMap: Record<ScaleType, string> = {
 };
 
 export const Image = forwardRef<HTMLImageElement, ImageProps>((props, ref) => {
-  const { src, alt, styles, className, aspectRatio = "3:2", scale = "fit", ...rest } = props;
+  const { src, alt, styles, className, aspectRatio = "3:2", scale = "fill", ...rest } = props;
 
   const imageClasses = clsx(
     "crayon-image",

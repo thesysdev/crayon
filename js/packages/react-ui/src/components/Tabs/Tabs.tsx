@@ -1,6 +1,6 @@
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { forwardRef, useEffect, useRef, useState } from "react";
 import { IconButton } from "../IconButton";
 
@@ -92,7 +92,7 @@ export const TabsList = forwardRef<React.ComponentRef<typeof TabsPrimitive.List>
             className="crayon-tabs-scroll-button crayon-tabs-scroll-left"
             onClick={scrollLeft}
             aria-label="Scroll tabs left"
-            icon={<ArrowLeft />}
+            icon={<ChevronLeft />}
             variant="secondary"
             size="small"
           />
@@ -119,7 +119,7 @@ export const TabsList = forwardRef<React.ComponentRef<typeof TabsPrimitive.List>
             className="crayon-tabs-scroll-button crayon-tabs-scroll-right"
             onClick={scrollRight}
             aria-label="Scroll tabs right"
-            icon={<ArrowRight />}
+            icon={<ChevronRight />}
             variant="secondary"
             size="small"
           />
