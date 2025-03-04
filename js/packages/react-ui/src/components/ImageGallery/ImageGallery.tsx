@@ -3,7 +3,6 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "../Button";
 import { IconButton } from "../IconButton";
-import "./imageGallery.scss";
 
 interface CrayonGalleryProps {
   images: string[];
