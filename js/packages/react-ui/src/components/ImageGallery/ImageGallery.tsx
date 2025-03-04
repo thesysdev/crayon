@@ -1,152 +1,171 @@
-import React, { Children, isValidElement, useEffect, useState } from "react";
-import { Image, ImageProps } from "../Image";
+import clsx from "clsx";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Button } from "../Button";
+import { IconButton } from "../IconButton";
+import "./imageGallery.scss";
 
-interface Image {
-  id: string;
-  url: string;
-  width: number;
-  height: number;
-  aspectRatio?: number;
-  adjustedHeight?: number;
-  caption?: string;
+interface CrayonGalleryProps {
+  images: string[];
 }
 
-interface ImageGalleryProps {
-  children: React.ReactNode;
-  columnCount?: number;
-  gap?: number;
-}
-
-// Loads and returns dimensions of an image given its URL
-
-const getImageDimensions = (url: string): Promise<{ width: number; height: number }> => {
-  return new Promise((resolve) => {
-    const img = new window.Image();
-    img.onload = () => {
-      resolve({
-        width: img.width,
-        height: img.height,
-      });
-    };
-    img.src = url;
-  });
+const getLayoutClassName = (imageCount: number): string => {
+  switch (imageCount) {
+    case 1:
+      return "crayon-gallery--single";
+    case 2:
+      return "crayon-gallery--double";
+    case 3:
+      return "crayon-gallery--triple";
+    case 4:
+      return "crayon-gallery--quad";
+    default:
+      return "crayon-gallery--default";
+  }
 };
 
-// Extracts image URLs from child Image components
+export const ImageGallery: React.FC<CrayonGalleryProps> = ({ images }) => {
+  const [showAll, setShowAll] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showLeftButton, setShowLeftButton] = useState(false);
+  const [showRightButton, setShowRightButton] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const layoutClass = getLayoutClassName(images.length);
 
-const extractImageUrls = (children: React.ReactNode): string[] => {
-  const urls: string[] = [];
-  Children.forEach(children, (child) => {
-    if (isValidElement(child) && child.type === Image) {
-      const imageProps = child.props as ImageProps;
-      if (imageProps.src) {
-        urls.push(imageProps.src);
-      }
-    }
-  });
-  return urls;
-};
-
-export const ImageGallery: React.FC<ImageGalleryProps> = ({
-  children,
-  columnCount = 3,
-  gap = 10,
-}) => {
-  const [images, setImages] = useState<Image[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Loads images and their dimensions when children change
-
+  // Check if scrolling is needed
   useEffect(() => {
-    let mounted = true;
-
-    const loadImages = async () => {
-      try {
-        const urls = extractImageUrls(children);
-        const imagesWithDimensions = await Promise.all(
-          urls.map(async (url, index) => {
-            const dimensions = await getImageDimensions(url);
-            return {
-              id: `image-${index}`,
-              url,
-              ...dimensions,
-              aspectRatio: dimensions.width / dimensions.height,
-            };
-          }),
-        );
-        // Only update state if component is still mounted
-        if (mounted) {
-          setImages(imagesWithDimensions);
-        }
-      } catch (error) {
-        console.error("Error loading images:", error);
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
+    const checkScroll = () => {
+      if (carouselRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+        setShowLeftButton(scrollLeft > 0);
+        setShowRightButton(scrollLeft < scrollWidth - clientWidth - 1);
       }
     };
 
-    setIsLoading(true);
-    loadImages();
+    // Initial check
+    checkScroll();
 
-    // Cleanup function to prevent setting state on unmounted component
-    return () => {
-      mounted = false;
-    };
-  }, [children]);
+    const currentRef = carouselRef.current;
+    if (currentRef) {
+      currentRef.addEventListener("scroll", checkScroll);
 
-  // Distributes images across columns and calculates their heights
+      const resizeObserver = new ResizeObserver(checkScroll);
+      resizeObserver.observe(currentRef);
 
-  const getColumns = () => {
-    if (isLoading || images.length === 0) return [];
+      return () => {
+        currentRef.removeEventListener("scroll", checkScroll);
+        resizeObserver.disconnect();
+      };
+    }
+    return () => {};
+  }, [showAll]);
 
-    // Initialize columns
-    const columns: Image[][] = Array.from({ length: columnCount }, () => []);
-
-    // First, distribute images to shortest column
-    images.forEach((image) => {
-      // Calculate current height of each column
-      const columnHeights = columns.map((column) =>
-        column.reduce((sum, img) => sum + img.height / img.width, 0),
-      );
-
-      // Find the column with minimum height
-      const shortestColumnIndex = columnHeights.indexOf(Math.min(...columnHeights));
-
-      // Add image to shortest column
-      columns[shortestColumnIndex]!.push(image);
-    });
-
-    return columns;
+  const scrollLeft = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: -140, behavior: "smooth" });
+    }
   };
 
-  if (isLoading) {
-    return <div className="crayon-gallery crayon-gallery--loading">Loading...</div>;
-  }
+  const scrollRight = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: 140, behavior: "smooth" });
+    }
+  };
+
+  const toggleShowAll = () => {
+    setShowAll(!showAll);
+  };
+
+  const handleImageClick = (index: number) => {
+    setSelectedImageIndex(index);
+    setShowAll(true);
+  };
+
+  const shouldShowButton = images.length > 5;
 
   return (
-    <div
-      className="crayon-gallery"
-      style={
-        {
-          "--column-count": columnCount,
-          "--gap": `${gap}px`,
-        } as React.CSSProperties
-      }
-    >
-      {getColumns().map((column, columnIndex) => (
-        <div key={`column-${columnIndex}`} className="crayon-gallery__column">
-          {column.map((image) => (
-            <div key={image.id} className="crayon-gallery__item">
-              <div className="crayon-gallery__image-container">
-                <img src={image.url} alt="" loading="lazy" className="crayon-gallery__image" />
-                {image.caption && <div className="crayon-gallery__caption">{image.caption}</div>}
-              </div>
+    <div className={clsx("crayon-gallery", layoutClass)}>
+      <div className="crayon-gallery__grid">
+        {images.slice(0, 5).map((image, index) => (
+          <div
+            key={index}
+            className={clsx("crayon-gallery__image", index === 0 && "crayon-gallery__image--main")}
+            onClick={() => handleImageClick(index)}
+          >
+            <img src={image} alt={`Gallery image ${index + 1}`} />
+          </div>
+        ))}
+        {shouldShowButton && (
+          <div className="crayon-gallery__show-all-button">
+            <Button variant="primary" size="small" onClick={toggleShowAll}>
+              Show All
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {showAll && (
+        <div className="crayon-gallery__modal">
+          <div className="crayon-gallery__modal-content">
+            <IconButton
+              className="crayon-gallery__close-button"
+              icon={<X />}
+              onClick={toggleShowAll}
+              aria-label="Close gallery"
+            />
+            <div className="crayon-gallery__modal-main">
+              <img
+                src={images[selectedImageIndex]}
+                alt={`Gallery image ${selectedImageIndex + 1}`}
+              />
             </div>
-          ))}
+            <div className="crayon-gallery__modal-carousel-container">
+              {showLeftButton && (
+                <IconButton
+                  className={clsx(
+                    "crayon-gallery__carousel-button",
+                    "crayon-gallery__carousel-button--left",
+                  )}
+                  onClick={scrollLeft}
+                  aria-label="Scroll images left"
+                  icon={<ChevronLeft />}
+                  variant="secondary"
+                  size="small"
+                />
+              )}
+
+              <div className="crayon-gallery__modal-carousel" ref={carouselRef}>
+                {images.map((image, index) => (
+                  <div
+                    key={index}
+                    className={clsx(
+                      "crayon-gallery__modal-thumbnail",
+                      index === selectedImageIndex && "crayon-gallery__modal-thumbnail--active",
+                    )}
+                    onClick={() => setSelectedImageIndex(index)}
+                  >
+                    <img src={image} alt={`Gallery thumbnail ${index + 1}`} />
+                  </div>
+                ))}
+              </div>
+
+              {showRightButton && (
+                <IconButton
+                  className={clsx(
+                    "crayon-gallery__carousel-button",
+                    "crayon-gallery__carousel-button--right",
+                  )}
+                  onClick={scrollRight}
+                  aria-label="Scroll images right"
+                  icon={<ChevronRight />}
+                  variant="secondary"
+                  size="small"
+                />
+              )}
+            </div>
+          </div>
         </div>
-      ))}
+      )}
     </div>
   );
 };

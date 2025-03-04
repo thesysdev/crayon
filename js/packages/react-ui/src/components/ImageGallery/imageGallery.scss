@@ -1,94 +1,245 @@
-@use "../../cssUtils.scss" as cssUtils;
+@use "../../cssUtils" as cssUtils;
 
 .crayon-gallery {
-  display: grid;
-  grid-template-columns: repeat(var(--column-count, 3), 1fr);
-  gap: var(--gap, cssUtils.$spacing-m);
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  border-radius: cssUtils.$rounded-m;
+  overflow: hidden;
+  position: relative;
 
-  &--loading {
-    min-height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    @include cssUtils.typography(label, default);
-    color: cssUtils.$secondary-text;
-  }
-
-  &__column {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
-  &__item {
-    position: relative;
-    margin-bottom: var(--gap, cssUtils.$spacing-m);
-    transition: transform 0.3s ease;
-    flex-grow: 1;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-
-    &:hover {
-      transform: translateY(-5px);
-      z-index: 1;
-    }
-  }
-
-  &__image-container {
-    position: relative;
+  &__grid {
+    display: grid;
+    grid-gap: cssUtils.$spacing-s;
     width: 100%;
-    height: 100%;
-    overflow: hidden;
-    border-radius: cssUtils.$rounded-m;
-    box-shadow: cssUtils.$shadow-m;
+    // max-height: 340px;
+  }
+
+  // Layout variations
+  &--single &__grid {
+    grid-template-columns: 1fr;
+  }
+
+  &--double &__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  &--triple &__grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+
+    .crayon-gallery__image:first-child {
+      grid-row: 1 / -1;
+    }
+  }
+
+  &--quad &__grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  &--default &__grid {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+
+    .crayon-gallery__image:first-child {
+      grid-row: 1 / -1;
+    }
   }
 
   &__image {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    transition: transform 0.5s ease;
+    position: relative;
+    overflow: hidden;
 
-    &:hover {
-      transform: scale(1.03);
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    &--main {
+      img {
+        height: 100%;
+      }
     }
   }
 
-  &__caption {
+  &__show-all-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: cssUtils.$spacing-s cssUtils.$spacing-m;
-    background: cssUtils.$bg-container;
-    color: cssUtils.$primary-text;
-    @include cssUtils.typography(label, default);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    bottom: 5px;
+    right: 5px;
+  }
 
-    .crayon-gallery__item:hover & {
+  // Modal styles
+  &__modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+  }
+
+  &__modal-content {
+    position: relative;
+    width: 100%;
+    // max-width: 1200px;
+    border: 1px solid cssUtils.$stroke-default;
+    height: 100%;
+    overflow-y: auto;
+    background-color: cssUtils.$bg-container;
+    border-radius: cssUtils.$rounded-m;
+    padding: cssUtils.$spacing-l;
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$spacing-l;
+  }
+
+  &__modal-main {
+    width: 100%;
+    height: 30vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: cssUtils.$rounded-xs;
+    }
+  }
+
+  &__modal-carousel-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  &__modal-carousel {
+    display: flex;
+    gap: cssUtils.$spacing-s;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: cssUtils.$spacing-s 0;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+
+    &--left {
+      left: 0;
+    }
+
+    &--right {
+      right: 0;
+    }
+  }
+
+  &__modal-thumbnail {
+    flex: 1;
+    height: 70px;
+    min-width: 140px;
+    cursor: pointer;
+    opacity: 0.6;
+    border-radius: cssUtils.$rounded-s;
+    overflow: hidden;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &--active {
       opacity: 1;
+      border: 1px solid cssUtils.$stroke-interactive-el-selected;
+      border-radius: cssUtils.$rounded-s;
+      box-sizing: border-box;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   }
 
   // Responsive adjustments
-  @media (max-width: 1024px) {
-    --column-count: 3;
-  }
-
   @media (max-width: 768px) {
-    --column-count: 2;
-    --gap: cssUtils.$spacing-m;
+    &--default &__grid {
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      grid-template-areas:
+        "img1 img1 img1  img2 img2 img2 "
+        "img3 img3 img4  img4 img5 img5";
+
+      .crayon-gallery__image {
+        &:nth-child(1) {
+          grid-area: img1;
+        }
+        &:nth-child(2) {
+          grid-area: img2;
+        }
+        &:nth-child(3) {
+          grid-area: img3;
+        }
+        &:nth-child(4) {
+          grid-area: img4;
+        }
+        &:nth-child(5) {
+          grid-area: img5;
+        }
+      }
+    }
+    &--triple &__grid {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      grid-template-areas:
+        "img1 img1"
+        "img2 img3";
+
+      .crayon-gallery__image {
+        &:nth-child(1) {
+          grid-area: img1;
+        }
+        &:nth-child(2) {
+          grid-area: img2;
+        }
+        &:nth-child(3) {
+          grid-area: img3;
+        }
+      }
+    }
   }
 
-  @media (max-width: 480px) {
-    --column-count: 1;
-    --gap: cssUtils.$spacing-m;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 }
