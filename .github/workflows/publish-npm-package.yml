@@ -2,6 +2,15 @@ name: Publish NPM packages
 
 on:
   workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to publish (react-ui, react-core, or stream)'
+        required: true
+        type: choice
+        options:
+          - react-ui
+          - react-core
+          - stream
 
 jobs:
   build:
@@ -29,21 +38,8 @@ jobs:
       - name: Build projects
         run: pnpm -r run ci
 
-      - name: Publish react-ui
-        working-directory: ./js/packages/react-ui
+      - name: Publish package
+        working-directory: ./js/packages/${{ inputs.package }}
         run: pnpm publish --access public
         env:
             NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish react-core
-        working-directory: ./js/packages/react-core
-        run: pnpm publish --access public
-        env:
-            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-
-      - name: Publish stream package
-        working-directory: ./js/packages/stream
-        run: pnpm publish --access public
-        env:
-            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}            
