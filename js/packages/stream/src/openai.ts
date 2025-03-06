@@ -11,7 +11,7 @@ interface ChatCompletionChunk {
 }
 interface OpenAIMessage {
   role: string;
-  content: string | { type: "text"; text: string }[];
+  content: string | null;
 }
 
 type ChatCompletionStreamingRunner = AsyncIterable<ChatCompletionChunk>;
@@ -52,11 +52,7 @@ export const toOpenAIMessages = (messages: Message[]) => {
     } else if (Array.isArray(message.message)) {
       openAIMessages.push({
         role: message.role,
-        content: message.message.map((m) =>
-          typeof m === "string"
-            ? { type: "text", text: m }
-            : { type: "text", text: JSON.stringify(m) },
-        ),
+        content: JSON.stringify(message.message),
       });
     }
   }
