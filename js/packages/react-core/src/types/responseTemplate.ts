@@ -1,4 +1,4 @@
 export interface ResponseTemplate {
   name: string;
-  Component: React.ComponentType;
+  Component: React.ComponentType<any>;
 }
