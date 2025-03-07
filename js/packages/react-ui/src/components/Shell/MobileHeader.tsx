@@ -22,7 +22,7 @@ export const MobileHeader = ({ className }: { className?: string }) => {
       />
       <div className="crayon-shell-mobile-header-logo-container">
         <img className="crayon-shell-mobile-header-logo" src={logoUrl} alt="Logo" />
-        <div>{agentName}</div>
+        <span className="crayon-shell-mobile-header-agent-name">{agentName}</span>
       </div>
       <IconButton
         size="medium"
