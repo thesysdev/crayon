@@ -16,6 +16,7 @@ export * from "./components/FollowUpItem";
 export * from "./components/FormControl";
 export * from "./components/IconButton";
 export * from "./components/Image";
+export * from "./components/ImageGallery";
 export * from "./components/Input";
 export * from "./components/Label";
 export * from "./components/ListBlock";
