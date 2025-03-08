@@ -1,0 +1,325 @@
+# Generative UI
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+This guide demonstrates how to build a generative UI application using structured outputs and streaming. We'll build a simple recipe generator that shows how to:
+1. Define structured templates for LLM responses
+2. Stream responses to the UI
+3. Render dynamic components based on LLM output
+
+## Project Structure
+```
+src/
+├── app/
+│   ├── page.tsx           # Main chat interface
+│   ├── api/
+│   │   └── chat/
+│   │       └── route.ts   # API endpoint
+│   └── templates/
+│       └── recipe.tsx     # Recipe template component
+└── types/
+    └── recipe.ts          # Type definitions and schema
+```
+
+## Understanding Structured Outputs
+
+When building generative UI applications, we want the LLM to generate responses that our UI can understand and render consistently. Instead of dealing with raw text or markdown, we can define structured templates that the LLM must follow.
+
+### Example: Recipe Generator
+
+Let's build a recipe generator that produces structured recipe data. First, we'll define our schema:
+
+<Tabs groupId="backend-lang">
+  <TabItem value="ts" label="TypeScript">
+```typescript title="types/recipe.ts"
+import { z } from "zod";
+
+export const RecipeTemplateSchema = z.object({
+  title: z.string(),
+  cuisine: z.string(),
+  cookingTime: z.number(),
+  ingredients: z.array(z.string()),
+  instructions: z.array(z.string())
+});
+
+export type RecipeTemplateProps = z.infer<typeof RecipeTemplateSchema>;
+```
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+```javascript title="types/recipe.js"
+import { z } from "zod";
+
+export const RecipeTemplateSchema = z.object({
+  title: z.string(),
+  cuisine: z.string(),
+  cookingTime: z.number(),
+  ingredients: z.array(z.string()),
+  instructions: z.array(z.string())
+});
+```
+  </TabItem>
+</Tabs>
+
+## Building the UI Components
+
+We create React components that can render our structured data. Here's a simplified recipe component:
+
+<Tabs groupId="frontend-lang">
+  <TabItem value="ts" label="TypeScript">
+```typescript title="app/templates/recipe.tsx"
+import { Card } from "@crayonai/react-ui";
+import { RecipeTemplateProps } from "@/types/recipe";
+
+export const RecipeTemplate: React.FC<RecipeTemplateProps> = ({
+  title,
+  cuisine,
+  cookingTime,
+  ingredients,
+  instructions,
+}) => {
+  return (
+    <Card>
+      <h2>{title}</h2>
+      <p>{cuisine} • {cookingTime} mins</p>
+
+      <h3>Ingredients</h3>
+      <ul>
+        {ingredients.map((ingredient, i) => (
+          <li key={i}>{ingredient}</li>
+        ))}
+      </ul>
+
+      <h3>Instructions</h3>
+      <ol>
+        {instructions.map((step, i) => (
+          <li key={i}>{step}</li>
+        ))}
+      </ol>
+    </Card>
+  );
+};
+```
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+```javascript title="app/templates/recipe.jsx"
+import { Card } from "@crayonai/react-ui";
+
+export const RecipeTemplate = ({
+  title,
+  cuisine,
+  cookingTime,
+  ingredients,
+  instructions,
+}) => {
+  return (
+    <Card>
+      <h2>{title}</h2>
+      <p>{cuisine} • {cookingTime} mins</p>
+
+      <h3>Ingredients</h3>
+      <ul>
+        {ingredients.map((ingredient, i) => (
+          <li key={i}>{ingredient}</li>
+        ))}
+      </ul>
+
+      <h3>Instructions</h3>
+      <ol>
+        {instructions.map((step, i) => (
+          <li key={i}>{step}</li>
+        ))}
+      </ol>
+    </Card>
+  );
+};
+```
+  </TabItem>
+</Tabs>
+
+## Setting Up the Chat Interface
+
+The main chat interface uses `CrayonChat` which handles the streaming protocol and state management:
+
+<Tabs groupId="frontend-lang">
+  <TabItem value="ts" label="TypeScript">
+```typescript title="app/page.tsx"
+"use client";
+
+import type { Message } from "@crayonai/react-core";
+import { CrayonChat } from "@crayonai/react-ui";
+import "@crayonai/react-ui/styles/index.css";
+import { RecipeTemplate } from "./templates/recipe";
+
+const processMessage = async ({
+  threadId,
+  messages,
+  abortController,
+}: {
+  threadId: string;
+  messages: Message[];
+  abortController: AbortController;
+}) => {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    body: JSON.stringify({ threadId, messages }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+    },
+    signal: abortController.signal,
+  });
+  return response;
+};
+
+export default function Home() {
+  return (
+    <CrayonChat
+      processMessage={processMessage}
+      responseTemplates={[
+        {
+          name: "recipe",
+          Component: RecipeTemplate,
+        }
+      ]}
+    />
+  );
+}
+```
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+```javascript title="app/page.jsx"
+"use client";
+
+import { CrayonChat } from "@crayonai/react-ui";
+import "@crayonai/react-ui/styles/index.css";
+import { RecipeTemplate } from "./templates/recipe";
+
+const processMessage = async ({ threadId, messages, abortController }) => {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    body: JSON.stringify({ threadId, messages }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+    },
+    signal: abortController.signal,
+  });
+  return response;
+};
+
+export default function Home() {
+  return (
+    <CrayonChat
+      processMessage={processMessage}
+      responseTemplates={[
+        {
+          name: "recipe",
+          Component: RecipeTemplate,
+        }
+      ]}
+    />
+  );
+}
+```
+  </TabItem>
+</Tabs>
+
+## Handling API Responses
+
+The API route handles communication with the LLM and streams the responses:
+
+<Tabs groupId="backend-lang">
+  <TabItem value="ts" label="TypeScript">
+```typescript title="app/api/chat/route.ts"
+import { NextRequest } from "next/server";
+import OpenAI from "openai";
+import {
+  fromOpenAICompletion,
+  toOpenAIMessages,
+  templatesToResponseFormat,
+} from "@crayonai/stream";
+import { RecipeTemplateSchema } from "@/types/recipe";
+
+export async function POST(req: NextRequest) {
+  const { messages } = await req.json();
+  const client = new OpenAI();
+
+  // Convert our template schema into OpenAI's response format
+  const responseFormat = templatesToResponseFormat({
+    schema: RecipeTemplateSchema,
+    name: "recipe",
+    description: "Use this template to generate a recipe"
+  });
+
+  // Stream the LLM response
+  const llmStream = await client.chat.completions.create({
+    model: "gpt-4",
+    messages: toOpenAIMessages(messages),
+    stream: true,
+    response_format: responseFormat,
+  });
+
+  // Convert OpenAI stream to our streaming protocol
+  const responseStream = fromOpenAICompletion(llmStream);
+
+  return new Response(responseStream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+    },
+  });
+}
+```
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+```javascript title="app/api/chat/route.js"
+import OpenAI from "openai";
+import {
+  fromOpenAICompletion,
+  toOpenAIMessages,
+  templatesToResponseFormat,
+} from "@crayonai/stream";
+import { RecipeTemplateSchema } from "@/types/recipe";
+
+export async function POST(req) {
+  const { messages } = await req.json();
+  const client = new OpenAI();
+
+  // Convert our template schema into OpenAI's response format
+  const responseFormat = templatesToResponseFormat({
+    schema: RecipeTemplateSchema,
+    name: "recipe",
+    description: "Use this template to generate a recipe"
+  });
+
+  // Stream the LLM response
+  const llmStream = await client.chat.completions.create({
+    model: "gpt-4",
+    messages: toOpenAIMessages(messages),
+    stream: true,
+    response_format: responseFormat,
+  });
+
+  // Convert OpenAI stream to our streaming protocol
+  const responseStream = fromOpenAICompletion(llmStream);
+
+  return new Response(responseStream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+    },
+  });
+}
+```
+  </TabItem>
+</Tabs>
+
+## Key Benefits
+
+1. **Type Safety**: The schema ensures the LLM generates responses in a predictable format
+2. **Real-time Updates**: Streaming enables immediate feedback to users
+3. **Component-based**: Separate templates for different response types
+4. **Structured Data**: All responses follow a predefined schema for consistency
