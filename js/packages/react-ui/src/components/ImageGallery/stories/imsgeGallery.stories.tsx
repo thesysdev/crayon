@@ -15,25 +15,15 @@ const meta: Meta<typeof ImageGallery> = {
   },
   argTypes: {
     images: {
-      control: { type: "object" },
+      control: false,
+      description: "The images to display in the gallery",
+      table: {
+        category: "Content",
+        type: { summary: "string[]" },
+      },
     },
   },
   tags: ["autodocs", "!dev"],
-  decorators: [
-    (Story) => (
-      <div
-        style={{
-          height: "1000px",
-          width: "1000px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Story />
-      </div>
-    ),
-  ],
 };
 
 export default meta;
@@ -41,7 +31,7 @@ type Story = StoryObj<typeof ImageGallery>;
 
 export const ImageGalleryStory: Story = {
   render: (args) => (
-    <Card style={{ width: "1000px" }}>
+    <Card style={{ width: "600px" }}>
       <ImageGallery
         {...args}
         images={[
