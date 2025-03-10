@@ -14,19 +14,34 @@ const meta: Meta<typeof ImageGallery> = {
     },
   },
   argTypes: {
-    children: {
+    images: {
       control: { type: "object" },
     },
   },
   tags: ["autodocs", "!dev"],
-} as Meta<typeof ImageGallery>;
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          height: "1000px",
+          width: "1000px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};
 
 export default meta;
 type Story = StoryObj<typeof ImageGallery>;
 
 export const ImageGalleryStory: Story = {
   render: (args) => (
-    <Card style={{ width: "600px" }}>
+    <Card style={{ width: "1000px" }}>
       <ImageGallery
         {...args}
         images={[

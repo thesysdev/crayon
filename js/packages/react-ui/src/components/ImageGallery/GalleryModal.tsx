@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IconButton } from "../IconButton";
 
 interface GalleryModalProps {
@@ -19,18 +19,19 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
   const [scrollButtons, setScrollButtons] = useState({ showLeft: false, showRight: false });
   const carouselRef = useRef<HTMLDivElement>(null);
 
+  // Memoize scroll check function
+  const checkScroll = useCallback(() => {
+    if (carouselRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+      setScrollButtons({
+        showLeft: scrollLeft > 0,
+        showRight: scrollLeft < scrollWidth - clientWidth - 1,
+      });
+    }
+  }, []);
+
   // Check if scrolling is needed
   useEffect(() => {
-    const checkScroll = () => {
-      if (carouselRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-        setScrollButtons({
-          showLeft: scrollLeft > 0,
-          showRight: scrollLeft < scrollWidth - clientWidth - 1,
-        });
-      }
-    };
-
     // Initial check
     checkScroll();
 
@@ -47,25 +48,33 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
       };
     }
     return;
-  }, []);
+  }, [checkScroll]);
 
-  const scrollLeft = () => {
+  // Memoize scroll handlers
+  const scrollLeft = useCallback(() => {
     if (carouselRef.current) {
       carouselRef.current.scrollBy({ left: -140, behavior: "smooth" });
     }
-  };
+  }, []);
 
-  const scrollRight = () => {
+  const scrollRight = useCallback(() => {
     if (carouselRef.current) {
       carouselRef.current.scrollBy({ left: 140, behavior: "smooth" });
     }
-  };
+  }, []);
+
+  // Memoize thumbnail click handler
+  const handleThumbnailClick = useCallback(
+    (index: number) => () => setSelectedImageIndex(index),
+    [setSelectedImageIndex],
+  );
 
   return (
     <div className="crayon-gallery__modal">
       <div className="crayon-gallery__modal-content">
-        <div className="crayon-gallery__modal-close-button">
-          <IconButton size="small" variant="secondary" icon={<X />} onClick={onClose} />
+        <div className="crayon-gallery__modal-header">
+          <span className="crayon-gallery__modal-heading">All Photos</span>
+          <IconButton size="extra-small" variant="secondary" icon={<X />} onClick={onClose} />
         </div>
         <div className="crayon-gallery__modal-main">
           <img src={images[selectedImageIndex]} alt={`Gallery image ${selectedImageIndex + 1}`} />
@@ -93,7 +102,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
                   "crayon-gallery__modal-thumbnail",
                   index === selectedImageIndex && "crayon-gallery__modal-thumbnail--active",
                 )}
-                onClick={() => setSelectedImageIndex(index)}
+                onClick={handleThumbnailClick(index)}
               >
                 <img src={image} alt={`Gallery thumbnail ${index + 1}`} />
               </div>

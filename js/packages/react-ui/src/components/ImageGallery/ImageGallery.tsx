@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Button } from "../Button";
 import { GalleryModal } from "./GalleryModal";
 
@@ -26,23 +26,34 @@ const getLayoutClassName = (imageCount: number): string => {
 export const ImageGallery: React.FC<CrayonGalleryProps> = ({ images }) => {
   const [showAll, setShowAll] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const layoutClass = getLayoutClassName(images.length);
 
-  const toggleShowAll = () => {
-    setShowAll(!showAll);
-  };
+  // Memoize layout class to prevent recalculation
+  const layoutClass = useMemo(() => getLayoutClassName(images.length), [images.length]);
 
-  const handleImageClick = (index: number) => {
+  // Memoize whether to show button
+  const shouldShowButton = useMemo(() => images.length > MAX_GRID_IMAGES, [images.length]);
+
+  // Memoize visible images
+  const visibleImages = useMemo(() => images.slice(0, MAX_GRID_IMAGES), [images]);
+
+  // Memoize callbacks
+  const toggleShowAll = useCallback(() => {
+    setShowAll((prev) => !prev);
+  }, []);
+
+  const handleImageClick = useCallback((index: number) => {
     setSelectedImageIndex(index);
     setShowAll(true);
-  };
+  }, []);
 
-  const shouldShowButton = images.length > MAX_GRID_IMAGES;
+  const setSelectedImageIndexMemoized = useCallback((index: number) => {
+    setSelectedImageIndex(index);
+  }, []);
 
   return (
     <div className={clsx("crayon-gallery", layoutClass)}>
       <div className="crayon-gallery__grid">
-        {images.slice(0, MAX_GRID_IMAGES).map((image, index) => (
+        {visibleImages.map((image, index) => (
           <div
             key={index}
             className={clsx("crayon-gallery__image", index === 0 && "crayon-gallery__image--main")}
@@ -64,7 +75,7 @@ export const ImageGallery: React.FC<CrayonGalleryProps> = ({ images }) => {
         <GalleryModal
           images={images}
           selectedImageIndex={selectedImageIndex}
-          setSelectedImageIndex={setSelectedImageIndex}
+          setSelectedImageIndex={setSelectedImageIndexMemoized}
           onClose={toggleShowAll}
         />
       )}
