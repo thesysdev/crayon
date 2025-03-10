@@ -1,13 +1,13 @@
 import clsx from "clsx";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "../Button";
-import { IconButton } from "../IconButton";
+import { GalleryModal } from "./GalleryModal";
 
 interface CrayonGalleryProps {
   images: string[];
 }
 
+const MAX_GRID_IMAGES = 5;
 const getLayoutClassName = (imageCount: number): string => {
   switch (imageCount) {
     case 1:
@@ -26,50 +26,7 @@ const getLayoutClassName = (imageCount: number): string => {
 export const ImageGallery: React.FC<CrayonGalleryProps> = ({ images }) => {
   const [showAll, setShowAll] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [showLeftButton, setShowLeftButton] = useState(false);
-  const [showRightButton, setShowRightButton] = useState(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
   const layoutClass = getLayoutClassName(images.length);
-
-  // Check if scrolling is needed
-  useEffect(() => {
-    const checkScroll = () => {
-      if (carouselRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-        setShowLeftButton(scrollLeft > 0);
-        setShowRightButton(scrollLeft < scrollWidth - clientWidth - 1);
-      }
-    };
-
-    // Initial check
-    checkScroll();
-
-    const currentRef = carouselRef.current;
-    if (currentRef) {
-      currentRef.addEventListener("scroll", checkScroll);
-
-      const resizeObserver = new ResizeObserver(checkScroll);
-      resizeObserver.observe(currentRef);
-
-      return () => {
-        currentRef.removeEventListener("scroll", checkScroll);
-        resizeObserver.disconnect();
-      };
-    }
-    return () => {};
-  }, [showAll]);
-
-  const scrollLeft = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -140, behavior: "smooth" });
-    }
-  };
-
-  const scrollRight = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 140, behavior: "smooth" });
-    }
-  };
 
   const toggleShowAll = () => {
     setShowAll(!showAll);
@@ -80,12 +37,12 @@ export const ImageGallery: React.FC<CrayonGalleryProps> = ({ images }) => {
     setShowAll(true);
   };
 
-  const shouldShowButton = images.length > 5;
+  const shouldShowButton = images.length > MAX_GRID_IMAGES;
 
   return (
     <div className={clsx("crayon-gallery", layoutClass)}>
       <div className="crayon-gallery__grid">
-        {images.slice(0, 5).map((image, index) => (
+        {images.slice(0, MAX_GRID_IMAGES).map((image, index) => (
           <div
             key={index}
             className={clsx("crayon-gallery__image", index === 0 && "crayon-gallery__image--main")}
@@ -104,63 +61,12 @@ export const ImageGallery: React.FC<CrayonGalleryProps> = ({ images }) => {
       </div>
 
       {showAll && (
-        <div className="crayon-gallery__modal">
-          <div className="crayon-gallery__modal-content">
-            <div className="crayon-gallery__modal-close-button">
-              <IconButton size="small" variant="secondary" icon={<X />} onClick={toggleShowAll} />
-            </div>
-            <div className="crayon-gallery__modal-main">
-              <img
-                src={images[selectedImageIndex]}
-                alt={`Gallery image ${selectedImageIndex + 1}`}
-              />
-            </div>
-            <div className="crayon-gallery__modal-carousel-container">
-              {showLeftButton && (
-                <IconButton
-                  className={clsx(
-                    "crayon-gallery__carousel-button",
-                    "crayon-gallery__carousel-button--left",
-                  )}
-                  onClick={scrollLeft}
-                  aria-label="Scroll images left"
-                  icon={<ChevronLeft />}
-                  variant="secondary"
-                  size="small"
-                />
-              )}
-
-              <div className="crayon-gallery__modal-carousel" ref={carouselRef}>
-                {images.map((image, index) => (
-                  <div
-                    key={index}
-                    className={clsx(
-                      "crayon-gallery__modal-thumbnail",
-                      index === selectedImageIndex && "crayon-gallery__modal-thumbnail--active",
-                    )}
-                    onClick={() => setSelectedImageIndex(index)}
-                  >
-                    <img src={image} alt={`Gallery thumbnail ${index + 1}`} />
-                  </div>
-                ))}
-              </div>
-
-              {showRightButton && (
-                <IconButton
-                  className={clsx(
-                    "crayon-gallery__carousel-button",
-                    "crayon-gallery__carousel-button--right",
-                  )}
-                  onClick={scrollRight}
-                  aria-label="Scroll images right"
-                  icon={<ChevronRight />}
-                  variant="secondary"
-                  size="small"
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        <GalleryModal
+          images={images}
+          selectedImageIndex={selectedImageIndex}
+          setSelectedImageIndex={setSelectedImageIndex}
+          onClose={toggleShowAll}
+        />
       )}
     </div>
   );
