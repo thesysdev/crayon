@@ -106,12 +106,9 @@ export const ImageGallery: React.FC<CrayonGalleryProps> = ({ images }) => {
       {showAll && (
         <div className="crayon-gallery__modal">
           <div className="crayon-gallery__modal-content">
-            <IconButton
-              className="crayon-gallery__close-button"
-              icon={<X />}
-              onClick={toggleShowAll}
-              aria-label="Close gallery"
-            />
+            <div className="crayon-gallery__modal-close-button">
+              <IconButton size="small" variant="secondary" icon={<X />} onClick={toggleShowAll} />
+            </div>
             <div className="crayon-gallery__modal-main">
               <img
                 src={images[selectedImageIndex]}
