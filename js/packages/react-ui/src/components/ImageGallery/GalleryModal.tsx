@@ -2,9 +2,10 @@ import clsx from "clsx";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IconButton } from "../IconButton";
+import { ImageItem } from "./ImageGallery";
 
 interface GalleryModalProps {
-  images: string[];
+  images: ImageItem[];
   selectedImageIndex: number;
   setSelectedImageIndex: (index: number) => void;
   onClose: () => void;
@@ -77,7 +78,20 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
           <IconButton size="extra-small" variant="secondary" icon={<X />} onClick={onClose} />
         </div>
         <div className="crayon-gallery__modal-main">
-          <img src={images[selectedImageIndex]} alt={`Gallery image ${selectedImageIndex + 1}`} />
+          <img
+            src={images[selectedImageIndex]?.src}
+            alt={images[selectedImageIndex]?.alt || `Gallery image ${selectedImageIndex + 1}`}
+          />
+          {images[selectedImageIndex]?.details && (
+            <div className="crayon-gallery__modal-details">
+              <span className="crayon-gallery__modal-details-title">
+                {images[selectedImageIndex].alt}
+              </span>
+              <span className="crayon-gallery__modal-details-text">
+                {images[selectedImageIndex].details}
+              </span>
+            </div>
+          )}
         </div>
         <div className="crayon-gallery__modal-carousel-container">
           {scrollButtons.showLeft && (
@@ -104,7 +118,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
                 )}
                 onClick={handleThumbnailClick(index)}
               >
-                <img src={image} alt={`Gallery thumbnail ${index + 1}`} />
+                <img src={image.src} alt={image.alt || `Gallery thumbnail ${index + 1}`} />
               </div>
             ))}
           </div>
