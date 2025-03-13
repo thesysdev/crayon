@@ -2,6 +2,8 @@
 function useThreadManager(props: Props): ThreadManager
 ```
 
+Defined in: [packages/react-core/src/useThreadManager.ts:17](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/useThreadManager.ts#L17)
+
 ## Parameters
 
 <table>
@@ -30,7 +32,3 @@ function useThreadManager(props: Props): ThreadManager
 ## Returns
 
 [`ThreadManager`](../type-aliases/ThreadManager.md)
-
-## Defined in
-
-[packages/react-core/src/useThreadManager.ts:16](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/useThreadManager.ts#L16)

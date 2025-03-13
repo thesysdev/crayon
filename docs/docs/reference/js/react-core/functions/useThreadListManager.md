@@ -1,6 +1,8 @@
 ```ts
-function useThreadListManager(props: Props): ThreadListManager
+function useThreadListManager(props: ThreadListManagerProps): ThreadListManager
 ```
+
+Defined in: [packages/react-core/src/useThreadListManager.ts:32](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/useThreadListManager.ts#L32)
 
 ## Parameters
 
@@ -9,6 +11,7 @@ function useThreadListManager(props: Props): ThreadListManager
 <tr>
 <th>Parameter</th>
 <th>Type</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
@@ -20,7 +23,12 @@ function useThreadListManager(props: Props): ThreadListManager
 </td>
 <td>
 
-`Props`
+`ThreadListManagerProps`
+
+</td>
+<td>
+
+Contains an explanation
 
 </td>
 </tr>
@@ -31,6 +39,8 @@ function useThreadListManager(props: Props): ThreadListManager
 
 [`ThreadListManager`](../type-aliases/ThreadListManager.md)
 
-## Defined in
+A ThreadListManager instance
 
-[packages/react-core/src/useThreadListManager.ts:16](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/useThreadListManager.ts#L16)
+## Remarks
+
+Some remark

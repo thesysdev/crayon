@@ -8,6 +8,8 @@ type ThreadActions = {
 };
 ```
 
+Defined in: [packages/react-core/src/types/chatManager.ts:22](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L22)
+
 Actions available for managing a thread
 
 ## Type declaration
@@ -24,7 +26,7 @@ Actions available for managing a thread
 <tr>
 <td>
 
-`appendMessages`
+<a id="appendmessages"></a> `appendMessages`
 
 </td>
 <td>
@@ -34,14 +36,14 @@ Actions available for managing a thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:24](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L24)
+[packages/react-core/src/types/chatManager.ts:24](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L24)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`onCancel`
+<a id="oncancel"></a> `onCancel`
 
 </td>
 <td>
@@ -51,14 +53,14 @@ Actions available for managing a thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:26](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L26)
+[packages/react-core/src/types/chatManager.ts:26](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L26)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`processMessage`
+<a id="processmessage"></a> `processMessage`
 
 </td>
 <td>
@@ -68,14 +70,14 @@ Actions available for managing a thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:23](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L23)
+[packages/react-core/src/types/chatManager.ts:23](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L23)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`setMessages`
+<a id="setmessages"></a> `setMessages`
 
 </td>
 <td>
@@ -85,14 +87,14 @@ Actions available for managing a thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:27](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L27)
+[packages/react-core/src/types/chatManager.ts:27](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L27)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`updateMessage`
+<a id="updatemessage"></a> `updateMessage`
 
 </td>
 <td>
@@ -102,7 +104,7 @@ Actions available for managing a thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:25](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L25)
+[packages/react-core/src/types/chatManager.ts:25](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L25)
 
 </td>
 </tr>
@@ -112,7 +114,3 @@ Actions available for managing a thread
 ## Template
 
 The message type used in the thread
-
-## Defined in
-
-[packages/react-core/src/types/chatManager.ts:22](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L22)

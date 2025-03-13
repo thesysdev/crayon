@@ -20,9 +20,10 @@ const typeDocConfig = {
   hidePageTitle: true,
   expandObjects: true,
   expandParameters: true,
+  watch: process.env.TYPEDOC_WATCH,
 
   // typedoc options
-  plugin: ["typedoc-plugin-markdown"],
+  plugin: ["typedoc-plugin-markdown", "./custom/plugins/inject-custom-docs.mjs"],
 };
 
 const config: Config = {
@@ -168,8 +169,8 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} <a href="https://www.thesys.dev">Thesys, Inc.</a>`,
     },
     prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      theme: prismThemes.nightOwlLight,
+      darkTheme: prismThemes.nightOwl,
     },
   } satisfies Preset.ThemeConfig,
   plugins: [
@@ -178,11 +179,17 @@ const config: Config = {
       {
         id: "react-core",
         entryPoints: ["../js/packages/react-core/src/index.ts"],
-        tsconfig: "../js/tsconfig.json",
+        tsconfig: "../js/packages/react-core/tsconfig.json",
         out: "./docs/reference/js/react-core",
         ...typeDocConfig,
       },
     ],
+    // [
+    //   "typedoc-plugin-missing-exports",
+    //   {
+    //     placeInternalsInOwningModule: true,
+    //   },
+    // ],
 
     // [
     //   "docusaurus-plugin-typedoc",

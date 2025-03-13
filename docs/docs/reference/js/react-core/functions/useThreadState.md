@@ -2,6 +2,8 @@
 function useThreadState(): ThreadState
 ```
 
+Defined in: [packages/react-core/src/hooks/useThreadState.ts:11](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/hooks/useThreadState.ts#L11)
+
 ## Returns
 
 [`ThreadState`](../type-aliases/ThreadState.md)
@@ -9,7 +11,3 @@ function useThreadState(): ThreadState
 ## Remarks
 
 useThreadState
-
-## Defined in
-
-[packages/react-core/src/hooks/useThreadState.ts:11](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/hooks/useThreadState.ts#L11)

@@ -3,9 +3,12 @@ type ThreadListState = {
   error: Error | null | undefined;
   isLoading: boolean;
   selectedThreadId: string | null;
+  shouldResetThreadState: boolean;
   threads: Thread[];
 };
 ```
+
+Defined in: [packages/react-core/src/types/chatManager.ts:52](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L52)
 
 Represents the state of the thread list
 
@@ -23,7 +26,7 @@ Represents the state of the thread list
 <tr>
 <td>
 
-`error`
+<a id="error"></a> `error`
 
 </td>
 <td>
@@ -33,14 +36,14 @@ Represents the state of the thread list
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:55](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L55)
+[packages/react-core/src/types/chatManager.ts:55](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L55)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`isLoading`
+<a id="isloading"></a> `isLoading`
 
 </td>
 <td>
@@ -50,14 +53,14 @@ Represents the state of the thread list
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:54](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L54)
+[packages/react-core/src/types/chatManager.ts:54](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L54)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`selectedThreadId`
+<a id="selectedthreadid"></a> `selectedThreadId`
 
 </td>
 <td>
@@ -67,14 +70,31 @@ Represents the state of the thread list
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:56](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L56)
+[packages/react-core/src/types/chatManager.ts:56](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L56)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`threads`
+<a id="shouldresetthreadstate"></a> `shouldResetThreadState`
+
+</td>
+<td>
+
+`boolean`
+
+</td>
+<td>
+
+[packages/react-core/src/types/chatManager.ts:57](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L57)
+
+</td>
+</tr>
+<tr>
+<td>
+
+<a id="threads"></a> `threads`
 
 </td>
 <td>
@@ -84,13 +104,9 @@ Represents the state of the thread list
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:53](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L53)
+[packages/react-core/src/types/chatManager.ts:53](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L53)
 
 </td>
 </tr>
 </tbody>
 </table>
-
-## Defined in
-
-[packages/react-core/src/types/chatManager.ts:52](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L52)
