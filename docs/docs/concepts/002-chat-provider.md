@@ -1,4 +1,4 @@
-# Building Blocks
+# Chat Components
 
 # Message
 Message object represent a single message in a thread.

@@ -47,7 +47,9 @@ yarn add @crayonai/crayon-ui @crayonai/react-core @crayonai/stream
 
 ## Add the CrayonChat component to your app
 
-```tsx title="page.tsx"
+<Tabs groupId="frontend-lang">
+  <TabItem value="ts" label="TypeScript">
+```typescript title="page.tsx"
 "use client";
 
 import type { Message } from "@crayonai/react-core";
@@ -79,45 +81,91 @@ export default function Home() {
   return <CrayonChat processMessage={processMessage} />;
 }
 ```
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+```javascript title="page.jsx"
+"use client";
+
+import { CrayonChat } from "@crayonai/react-ui";
+import "@crayonai/react-ui/styles/index.css";
+
+const processMessage = async ({ threadId, messages, abortController }) => {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    body: JSON.stringify({ threadId, messages }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+    },
+    signal: abortController.signal,
+  });
+  return response;
+};
+
+export default function Home() {
+  return <CrayonChat processMessage={processMessage} />;
+}
+```
+  </TabItem>
+</Tabs>
 
 ## Integrate LLM with your backend route
 
-```tsx title="api/chat/route.ts"
+<Tabs groupId="backend-lang">
+  <TabItem value="ts" label="TypeScript">
+```typescript title="api/chat/route.ts"
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import {
   fromOpenAICompletion,
-  TextResponseSchema,
+  templatesToResponseFormat,
   toOpenAIMessages,
 } from "@crayonai/stream";
 import { Message } from "@crayonai/react-core";
-
-const TemplatesJsonSchema = {
-  type: "object",
-  properties: {
-    response: {
-      type: "array",
-      items: {
-        oneOf: [TextResponseSchema],
-      },
-    },
-  },
-} as const;
 
 export async function POST(req: NextRequest) {
   const { messages } = (await req.json()) as { messages: Message[] };
   const client = new OpenAI();
   const llmStream = await client.chat.completions.create({
     model: "gpt-4o",
+    messages: toOpenAIMessages(
+      messages
+    ) as OpenAI.Chat.ChatCompletionMessageParam[],
+    stream: true,
+    response_format: templatesToResponseFormat(),
+  });
+  const responseStream = fromOpenAICompletion(llmStream);
+  return new NextResponse(
+    responseStream as unknown as ReadableStream<Uint8Array>,
+    {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+      },
+    }
+  );
+}
+```
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+```javascript title="api/chat/route.js"
+import { NextResponse } from "next/server";
+import OpenAI from "openai";
+import {
+  fromOpenAICompletion,
+  templatesToResponseFormat,
+  toOpenAIMessages,
+} from "@crayonai/stream";
+
+export async function POST(req) {
+  const { messages } = await req.json();
+  const client = new OpenAI();
+  const llmStream = await client.chat.completions.create({
+    model: "gpt-4o",
     messages: toOpenAIMessages(messages),
     stream: true,
-    response_format: {
-      type: "json_schema",
-      json_schema: {
-        name: "json_schema",
-        schema: TemplatesJsonSchema,
-      },
-    },
+    response_format: templatesToResponseFormat(),
   });
   const responseStream = fromOpenAICompletion(llmStream);
   return new NextResponse(responseStream, {
@@ -129,6 +177,8 @@ export async function POST(req: NextRequest) {
   });
 }
 ```
+  </TabItem>
+</Tabs>
 
 ### Serve the NextJS app
 
