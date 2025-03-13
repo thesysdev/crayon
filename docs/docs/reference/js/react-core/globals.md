@@ -6,6 +6,7 @@
 
 - [useThreadActions](functions/useThreadActions.md)
 - [useThreadListActions](functions/useThreadListActions.md)
+- [useThreadListManager](functions/useThreadListManager.md)
 - [useThreadListState](functions/useThreadListState.md)
 - [useThreadManagerSelector](functions/useThreadManagerSelector.md)
 - [useThreadState](functions/useThreadState.md)
@@ -25,5 +26,8 @@
 - [ThreadManager](type-aliases/ThreadManager.md)
 - [ThreadState](type-aliases/ThreadState.md)
 - [UserMessage](type-aliases/UserMessage.md)
-- [useThreadListManager](functions/useThreadListManager.md)
+- [MessageContext](functions/MessageContext.md)
+- [MessageProvider](functions/MessageProvider.md)
+- [processStreamedMessage](functions/processStreamedMessage.md)
+- [useMessage](functions/useMessage.md)
 - [useThreadManager](functions/useThreadManager.md)

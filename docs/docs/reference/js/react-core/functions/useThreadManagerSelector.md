@@ -2,6 +2,8 @@
 function useThreadManagerSelector<R>(accessor: AtomicAccessor<R>): R
 ```
 
+Defined in: [packages/react-core/src/hooks/useThreadManagerSelector.ts:13](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/hooks/useThreadManagerSelector.ts#L13)
+
 ## Type Parameters
 
 <table>
@@ -53,7 +55,3 @@ function useThreadManagerSelector<R>(accessor: AtomicAccessor<R>): R
 ## Remarks
 
 useThreadManager
-
-## Defined in
-
-[packages/react-core/src/hooks/useThreadManagerSelector.ts:13](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/hooks/useThreadManagerSelector.ts#L13)

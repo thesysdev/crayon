@@ -7,6 +7,8 @@ type Thread = {
 };
 ```
 
+Defined in: [packages/react-core/src/types/chatManager.ts:7](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L7)
+
 Represents a chat thread
 
 ## Type declaration
@@ -24,7 +26,7 @@ Represents a chat thread
 <tr>
 <td>
 
-`createdAt`
+<a id="createdat"></a> `createdAt`
 
 </td>
 <td>
@@ -39,14 +41,14 @@ Creation timestamp
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:13](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L13)
+[packages/react-core/src/types/chatManager.ts:13](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L13)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`isRunning`?
+<a id="isrunning"></a> `isRunning`?
 
 </td>
 <td>
@@ -61,14 +63,14 @@ Indicates if the thread is currently processing
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:15](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L15)
+[packages/react-core/src/types/chatManager.ts:15](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L15)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`threadId`
+<a id="threadid"></a> `threadId`
 
 </td>
 <td>
@@ -83,14 +85,14 @@ Unique identifier for the thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:9](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L9)
+[packages/react-core/src/types/chatManager.ts:9](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L9)
 
 </td>
 </tr>
 <tr>
 <td>
 
-`title`
+<a id="title"></a> `title`
 
 </td>
 <td>
@@ -105,13 +107,9 @@ Title of the thread
 </td>
 <td>
 
-[packages/react-core/src/types/chatManager.ts:11](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L11)
+[packages/react-core/src/types/chatManager.ts:11](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L11)
 
 </td>
 </tr>
 </tbody>
 </table>
-
-## Defined in
-
-[packages/react-core/src/types/chatManager.ts:7](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L7)
