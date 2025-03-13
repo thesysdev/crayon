@@ -3,8 +3,14 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Button } from "../Button";
 import { GalleryModal } from "./GalleryModal";
 
+export interface ImageItem {
+  src: string;
+  alt?: string;
+  details?: string;
+}
+
 interface CrayonGalleryProps {
-  images: string[];
+  images: ImageItem[];
 }
 
 const MAX_GRID_IMAGES = 5;
@@ -59,7 +65,7 @@ export const ImageGallery: React.FC<CrayonGalleryProps> = ({ images }) => {
             className={clsx("crayon-gallery__image", index === 0 && "crayon-gallery__image--main")}
             onClick={() => handleImageClick(index)}
           >
-            <img src={image} alt={`Gallery image ${index + 1}`} />
+            <img src={image.src} alt={image.alt || `Gallery image ${index + 1}`} />
           </div>
         ))}
         {shouldShowButton && (

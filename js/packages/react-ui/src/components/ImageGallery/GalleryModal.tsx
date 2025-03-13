@@ -2,9 +2,10 @@ import clsx from "clsx";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IconButton } from "../IconButton";
+import { ImageItem } from "./ImageGallery";
 
 interface GalleryModalProps {
-  images: string[];
+  images: ImageItem[];
   selectedImageIndex: number;
   setSelectedImageIndex: (index: number) => void;
   onClose: () => void;
@@ -19,49 +20,56 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
   const [scrollButtons, setScrollButtons] = useState({ showLeft: false, showRight: false });
   const carouselRef = useRef<HTMLDivElement>(null);
 
-  // Memoize scroll check function
+  // Check if scrolling is needed
   const checkScroll = useCallback(() => {
-    if (carouselRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-      setScrollButtons({
-        showLeft: scrollLeft > 0,
-        showRight: scrollLeft < scrollWidth - clientWidth - 1,
-      });
-    }
+    if (!carouselRef.current) return;
+
+    const container = carouselRef.current;
+    setScrollButtons({
+      showLeft: container.scrollLeft > 0,
+      showRight: container.scrollLeft + container.offsetWidth < container.scrollWidth,
+    });
   }, []);
 
-  // Check if scrolling is needed
   useEffect(() => {
+    if (!carouselRef.current) {
+      return;
+    }
+
+    const container = carouselRef.current;
     // Initial check
     checkScroll();
 
-    const currentRef = carouselRef.current;
-    if (currentRef) {
-      currentRef.addEventListener("scroll", checkScroll);
+    const resizeObserver = new ResizeObserver(checkScroll);
+    resizeObserver.observe(container);
 
-      const resizeObserver = new ResizeObserver(checkScroll);
-      resizeObserver.observe(currentRef);
+    container.addEventListener("scroll", checkScroll);
 
-      return () => {
-        currentRef.removeEventListener("scroll", checkScroll);
-        resizeObserver.disconnect();
-      };
-    }
-    return;
+    return () => {
+      container.removeEventListener("scroll", checkScroll);
+      resizeObserver.disconnect();
+    };
   }, [checkScroll]);
 
-  // Memoize scroll handlers
-  const scrollLeft = useCallback(() => {
+  const scroll = (direction: "left" | "right") => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -140, behavior: "smooth" });
-    }
-  }, []);
+      const container = carouselRef.current;
+      const containerRect = container.getBoundingClientRect();
+      const scrollAmount = containerRect.width * 0.28;
 
-  const scrollRight = useCallback(() => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 140, behavior: "smooth" });
+      if (direction === "left") {
+        container.scrollBy({
+          left: -scrollAmount,
+          behavior: "smooth",
+        });
+      } else {
+        container.scrollBy({
+          left: scrollAmount,
+          behavior: "smooth",
+        });
+      }
     }
-  }, []);
+  };
 
   // Memoize thumbnail click handler
   const handleThumbnailClick = useCallback(
@@ -77,7 +85,10 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
           <IconButton size="extra-small" variant="secondary" icon={<X />} onClick={onClose} />
         </div>
         <div className="crayon-gallery__modal-main">
-          <img src={images[selectedImageIndex]} alt={`Gallery image ${selectedImageIndex + 1}`} />
+          <img
+            src={images[selectedImageIndex]?.src}
+            alt={images[selectedImageIndex]?.alt || `Gallery image ${selectedImageIndex + 1}`}
+          />
         </div>
         <div className="crayon-gallery__modal-carousel-container">
           {scrollButtons.showLeft && (
@@ -86,7 +97,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
                 "crayon-gallery__carousel-button",
                 "crayon-gallery__carousel-button--left",
               )}
-              onClick={scrollLeft}
+              onClick={() => scroll("left")}
               aria-label="Scroll images left"
               icon={<ChevronLeft />}
               variant="secondary"
@@ -104,7 +115,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
                 )}
                 onClick={handleThumbnailClick(index)}
               >
-                <img src={image} alt={`Gallery thumbnail ${index + 1}`} />
+                <img src={image.src} alt={image.alt || `Gallery thumbnail ${index + 1}`} />
               </div>
             ))}
           </div>
@@ -115,7 +126,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
                 "crayon-gallery__carousel-button",
                 "crayon-gallery__carousel-button--right",
               )}
-              onClick={scrollRight}
+              onClick={() => scroll("right")}
               aria-label="Scroll images right"
               icon={<ChevronRight />}
               variant="secondary"
