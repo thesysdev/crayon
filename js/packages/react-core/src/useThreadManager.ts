@@ -2,7 +2,12 @@ import { useEffect, useMemo, useRef } from "react";
 import { createStore, useStore } from "zustand";
 import { CreateMessage, Message, ResponseTemplate, ThreadManager } from "./types";
 
-type Props = {
+/**
+ * Parameters to be passed to the {@link useThreadManager} hook
+ *
+ * @category Types
+ */
+export type UseThreadManagerParams = {
   threadId: string | null;
   shouldResetThreadState?: boolean;
   loadThread: (threadId: string) => Promise<Message[]>;
@@ -14,9 +19,13 @@ type Props = {
   responseTemplates: ResponseTemplate[];
 };
 
-export const useThreadManager = (props: Props): ThreadManager => {
-  const propsRef = useRef(props);
-  propsRef.current = props;
+/**
+ * @category Hooks
+ * @returns The thread manager
+ */
+export const useThreadManager = (params: UseThreadManagerParams): ThreadManager => {
+  const propsRef = useRef(params);
+  propsRef.current = params;
 
   const store = useMemo(() => {
     return createStore<
@@ -87,11 +96,11 @@ export const useThreadManager = (props: Props): ThreadManager => {
   }, [propsRef]);
 
   useEffect(() => {
-    if (!props.shouldResetThreadState) {
+    if (!params.shouldResetThreadState) {
       return;
     }
 
-    const threadId = props.threadId;
+    const threadId = params.threadId;
     // cancel any previous requests
     store.getState().onCancel();
 
@@ -99,7 +108,7 @@ export const useThreadManager = (props: Props): ThreadManager => {
 
     if (threadId) {
       store.setState({ isLoadingMessages: true });
-      props
+      params
         .loadThread(threadId)
         .then((messages) => {
           store.setState({ messages });
@@ -111,7 +120,7 @@ export const useThreadManager = (props: Props): ThreadManager => {
           store.setState({ isLoadingMessages: false });
         });
     }
-  }, [props.threadId, props.shouldResetThreadState]);
+  }, [params.threadId, params.shouldResetThreadState]);
 
   return useStore(store);
 };

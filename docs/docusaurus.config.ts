@@ -5,15 +5,14 @@ import type * as Preset from "@docusaurus/preset-classic";
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const typeDocConfig = {
-  sidebar: {
-    autoConfiguration: false,
-  },
+  sidebar: { pretty: true },
 
-  parametersFormat: "htmlTable",
+  indexFormat: 'table',
+  parametersFormat: "list",
   interfacePropertiesFormat: "htmlTable",
   classPropertiesFormat: "htmlTable",
   propertyMembersFormat: "htmlTable",
-  typeDeclarationFormat: "htmlTable",
+  typeDeclarationFormat: "list",
   typeDeclarationVisibility: "compact",
   useCodeBlocks: true,
   hidePageHeader: true,
@@ -23,7 +22,10 @@ const typeDocConfig = {
   watch: process.env.TYPEDOC_WATCH,
 
   // typedoc options
-  plugin: ["typedoc-plugin-markdown", "./custom/plugins/inject-custom-docs.mjs"],
+  plugin: [
+    "typedoc-plugin-markdown",
+    "./custom/plugins/inject-custom-docs.mjs",
+  ],
 };
 
 const config: Config = {
@@ -184,23 +186,6 @@ const config: Config = {
         ...typeDocConfig,
       },
     ],
-    // [
-    //   "typedoc-plugin-missing-exports",
-    //   {
-    //     placeInternalsInOwningModule: true,
-    //   },
-    // ],
-
-    // [
-    //   "docusaurus-plugin-typedoc",
-    //   {
-    //     id: "react-ui",
-    //     entryPoints: ["../js/packages/react-ui/src/index.ts"],
-    //     tsconfig: "../js/tsconfig.json",
-    //     out: "./docs/reference/js/react-ui",
-    //     ...typeDocConfig,
-    //   },
-    // ],
   ],
 };
 

@@ -3,6 +3,8 @@ import { ResponseTemplate } from "./responseTemplate";
 
 /**
  * Represents a chat thread
+ *
+ * @category Types
  */
 export type Thread = {
   /** Unique identifier for the thread */
@@ -18,6 +20,8 @@ export type Thread = {
 /**
  * Actions available for managing a thread
  * @template T - The message type used in the thread
+ *
+ * @category Types
  */
 export type ThreadActions = {
   processMessage: (message: CreateMessage) => Promise<void>;
@@ -29,6 +33,8 @@ export type ThreadActions = {
 
 /**
  * Represents the state of a thread
+ *
+ * @category Types
  */
 export type ThreadState = {
   /** Indicates if the thread is currently processing and controls should be disabled */
@@ -45,11 +51,15 @@ export type ThreadState = {
 /**
  * Combines thread state and actions
  * @template T - The message type used in the thread
+ *
+ * @category Types
  */
 export type ThreadManager = ThreadState & ThreadActions;
 
 /**
  * Represents the state of the thread list
+ *
+ * @category Types
  */
 export type ThreadListState = {
   threads: Thread[];
@@ -61,6 +71,8 @@ export type ThreadListState = {
 
 /**
  * Actions available for managing the thread list
+ *
+ * @category Types
  */
 export type ThreadListActions = {
   load: () => void;
@@ -73,11 +85,15 @@ export type ThreadListActions = {
 
 /**
  * Combines thread list state and actions
+ *
+ * @category Types
  */
 export type ThreadListManager = ThreadListState & ThreadListActions;
 
 /**
  * Main chat manager combining thread and thread list management
+ *
+ * @category Types
  */
 export type ChatManager = {
   threadListManager: ThreadListManager;

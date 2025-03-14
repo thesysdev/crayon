@@ -1,33 +1,51 @@
 ## Components
 
-- [ChatProvider](functions/ChatProvider.md)
+| Function | Description |
+| ------ | ------ |
+| [ChatProvider](functions/ChatProvider.md) | - |
+| [MessageProvider](functions/MessageProvider.md) | - |
+
+## Contexts
+
+| Function | Description |
+| ------ | ------ |
+| [MessageContext](functions/MessageContext.md) | - |
 
 ## Hooks
 
-- [useThreadActions](functions/useThreadActions.md)
-- [useThreadListActions](functions/useThreadListActions.md)
-- [useThreadListManager](functions/useThreadListManager.md)
-- [useThreadListState](functions/useThreadListState.md)
-- [useThreadManagerSelector](functions/useThreadManagerSelector.md)
-- [useThreadState](functions/useThreadState.md)
+| Function | Description |
+| ------ | ------ |
+| [useMessage](functions/useMessage.md) | - |
+| [useThreadActions](functions/useThreadActions.md) | - |
+| [useThreadListActions](functions/useThreadListActions.md) | - |
+| [useThreadListManager](functions/useThreadListManager.md) | - |
+| [useThreadListState](functions/useThreadListState.md) | - |
+| [useThreadManager](functions/useThreadManager.md) | - |
+| [useThreadManagerSelector](functions/useThreadManagerSelector.md) | - |
+| [useThreadState](functions/useThreadState.md) | - |
 
-## Other
+## Types
 
-- [ResponseTemplate](interfaces/ResponseTemplate.md)
-- [AssistantMessage](type-aliases/AssistantMessage.md)
-- [ChatManager](type-aliases/ChatManager.md)
-- [CreateMessage](type-aliases/CreateMessage.md)
-- [Message](type-aliases/Message.md)
-- [Thread](type-aliases/Thread.md)
-- [ThreadActions](type-aliases/ThreadActions.md)
-- [ThreadListActions](type-aliases/ThreadListActions.md)
-- [ThreadListManager](type-aliases/ThreadListManager.md)
-- [ThreadListState](type-aliases/ThreadListState.md)
-- [ThreadManager](type-aliases/ThreadManager.md)
-- [ThreadState](type-aliases/ThreadState.md)
-- [UserMessage](type-aliases/UserMessage.md)
-- [MessageContext](functions/MessageContext.md)
-- [MessageProvider](functions/MessageProvider.md)
-- [processStreamedMessage](functions/processStreamedMessage.md)
-- [useMessage](functions/useMessage.md)
-- [useThreadManager](functions/useThreadManager.md)
+| Name | Description |
+| ------ | ------ |
+| [ResponseTemplate](interfaces/ResponseTemplate.md) | - |
+| [AssistantMessage](type-aliases/AssistantMessage.md) | - |
+| [ChatManager](type-aliases/ChatManager.md) | Main chat manager combining thread and thread list management |
+| [CreateMessage](type-aliases/CreateMessage.md) | Represents a message being created, with an optional ID |
+| [Message](type-aliases/Message.md) | See [UserMessage](type-aliases/UserMessage.md) and [AssistantMessage](type-aliases/AssistantMessage.md) for more information. |
+| [Thread](type-aliases/Thread.md) | Represents a chat thread |
+| [ThreadActions](type-aliases/ThreadActions.md) | Actions available for managing a thread |
+| [ThreadListActions](type-aliases/ThreadListActions.md) | Actions available for managing the thread list |
+| [ThreadListManager](type-aliases/ThreadListManager.md) | Combines thread list state and actions |
+| [ThreadListState](type-aliases/ThreadListState.md) | Represents the state of the thread list |
+| [ThreadManager](type-aliases/ThreadManager.md) | Combines thread state and actions |
+| [ThreadState](type-aliases/ThreadState.md) | Represents the state of a thread |
+| [UserMessage](type-aliases/UserMessage.md) | - |
+| [UseThreadListManagerParams](type-aliases/UseThreadListManagerParams.md) | Parameters to be passed to the [useThreadListManager](functions/useThreadListManager.md) hook |
+| [UseThreadManagerParams](type-aliases/UseThreadManagerParams.md) | Parameters to be passed to the [useThreadManager](functions/useThreadManager.md) hook |
+
+## Utilities
+
+| Function | Description |
+| ------ | ------ |
+| [processStreamedMessage](functions/processStreamedMessage.md) | - |

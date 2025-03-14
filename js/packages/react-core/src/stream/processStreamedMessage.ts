@@ -10,6 +10,9 @@ import { createParser } from "eventsource-parser";
 import invariant from "tiny-invariant";
 import { AssistantMessage } from "../types";
 
+/**
+ * @category Utilities
+ */
 export const processStreamedMessage = async ({
   response,
   createMessage,
