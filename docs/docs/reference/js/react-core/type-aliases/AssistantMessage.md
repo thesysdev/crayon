@@ -2,23 +2,24 @@
 type AssistantMessage = {
   id: string;
   isVisuallyHidden: boolean;
- } & {
+} & {
   context: JSONValue[];
   message: (
-     | {
-     text: string;
-     type: "text";
-    }
-     | {
-     name: string;
-     templateProps: any;
-     type: "template";
-    })[];
+    | {
+        text: string;
+        type: "text";
+      }
+    | {
+        name: string;
+        templateProps: any;
+        type: "template";
+      }
+  )[];
   role: "assistant";
 };
 ```
 
-Defined in: [packages/react-core/src/types/message.ts:33](https://github.com/thesysdev/crayon/blob/42bf9c916a4f4ba514db529a08f9461bfbbad8ca/js/packages/react-core/src/types/message.ts#L33)
+Defined in: [packages/react-core/src/types/message.ts:33](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/types/message.ts#L33)
 
 ## Type declaration
 

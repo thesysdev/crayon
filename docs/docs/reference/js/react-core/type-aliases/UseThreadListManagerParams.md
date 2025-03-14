@@ -9,7 +9,7 @@ type UseThreadListManagerParams = {
 };
 ```
 
-Defined in: [packages/react-core/src/useThreadListManager.ts:11](https://github.com/thesysdev/crayon/blob/42bf9c916a4f4ba514db529a08f9461bfbbad8ca/js/packages/react-core/src/useThreadListManager.ts#L11)
+Defined in: [packages/react-core/src/useThreadListManager.ts:11](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/useThreadListManager.ts#L11)
 
 Parameters to be passed to the [useThreadListManager](../functions/useThreadListManager.md) hook
 
@@ -18,7 +18,7 @@ Parameters to be passed to the [useThreadListManager](../functions/useThreadList
 ### createThread()
 
 ```ts
-(firstMessage: UserMessage) => Promise<Thread>
+(firstMessage: UserMessage) => Promise<Thread>;
 ```
 
 Creates a new thread when user sends the first message
@@ -26,13 +26,13 @@ Creates a new thread when user sends the first message
 ### deleteThread()
 
 ```ts
-(id: string) => Promise<void>
+(id: string) => Promise<void>;
 ```
 
 ### fetchThreadList()
 
 ```ts
-() => Promise<Thread[]>
+() => Promise<Thread[]>;
 ```
 
 ### onSelectThread()
@@ -52,5 +52,5 @@ Allows user to clear chat state when switched to new thread
 ### updateThread()
 
 ```ts
-(updated: Thread) => Promise<Thread>
+(updated: Thread) => Promise<Thread>;
 ```
