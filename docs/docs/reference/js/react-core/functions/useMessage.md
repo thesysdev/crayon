@@ -4,7 +4,7 @@ function useMessage(): {
 }
 ```
 
-Defined in: [packages/react-core/src/hooks/useMessage.tsx:7](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/hooks/useMessage.tsx#L7)
+Defined in: [packages/react-core/src/hooks/useMessage.tsx:14](https://github.com/thesysdev/crayon/blob/42bf9c916a4f4ba514db529a08f9461bfbbad8ca/js/packages/react-core/src/hooks/useMessage.tsx#L14)
 
 ## Returns
 
@@ -14,6 +14,10 @@ Defined in: [packages/react-core/src/hooks/useMessage.tsx:7](https://github.com/
 }
 ```
 
-| Name | Type | Defined in |
-| ------ | ------ | ------ |
-| <a id="message"></a> `message` | [`Message`](../type-aliases/Message.md) | [packages/react-core/src/hooks/useMessage.tsx:5](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/hooks/useMessage.tsx#L5) |
+The current message. See [Message](../type-aliases/Message.md) for more information.
+
+### message
+
+```ts
+message: Message;
+```

@@ -1,5 +1,8 @@
 ```ts
-type AssistantMessage = common & {
+type AssistantMessage = {
+  id: string;
+  isVisuallyHidden: boolean;
+ } & {
   context: JSONValue[];
   message: (
      | {
@@ -15,78 +18,47 @@ type AssistantMessage = common & {
 };
 ```
 
-Defined in: [packages/react-core/src/types/message.ts:24](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/message.ts#L24)
+Defined in: [packages/react-core/src/types/message.ts:33](https://github.com/thesysdev/crayon/blob/42bf9c916a4f4ba514db529a08f9461bfbbad8ca/js/packages/react-core/src/types/message.ts#L33)
 
 ## Type declaration
 
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Defined in</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
+### id
 
-`context`?
+```ts
+id: string;
+```
 
-</td>
-<td>
+### isVisuallyHidden?
 
-`JSONValue`[]
+```ts
+optional isVisuallyHidden: boolean;
+```
 
-</td>
-<td>
+## Type declaration
 
-[packages/react-core/src/types/message.ts:26](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/message.ts#L26)
+### context?
 
-</td>
-</tr>
-<tr>
-<td>
+```ts
+optional context: JSONValue[];
+```
 
-`message`?
+### message?
 
-</td>
-<td>
+```ts
+optional message: (
+  | {
+  text: string;
+  type: "text";
+ }
+  | {
+  name: string;
+  templateProps: any;
+  type: "template";
+ })[];
+```
 
-(
-  \| \{
-  `text`: `string`;
-  `type`: `"text"`;
- \}
-  \| \{
-  `name`: `string`;
-  `templateProps`: `any`;
-  `type`: `"template"`;
- \})[]
+### role
 
-</td>
-<td>
-
-[packages/react-core/src/types/message.ts:27](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/message.ts#L27)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`role`
-
-</td>
-<td>
-
-`"assistant"`
-
-</td>
-<td>
-
-[packages/react-core/src/types/message.ts:25](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/message.ts#L25)
-
-</td>
-</tr>
-</tbody>
-</table>
+```ts
+role: "assistant";
+```

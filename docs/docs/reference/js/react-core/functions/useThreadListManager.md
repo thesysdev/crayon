@@ -1,46 +1,50 @@
 ```ts
-function useThreadListManager(props: ThreadListManagerProps): ThreadListManager
+function useThreadListManager(params: {
+  createThread: (firstMessage: UserMessage) => Promise<Thread>;
+  deleteThread: (id: string) => Promise<void>;
+  fetchThreadList: () => Promise<Thread[]>;
+  onSelectThread: (threadId: string) => void;
+  onSwitchToNew: () => void;
+  updateThread: (updated: Thread) => Promise<Thread>;
+ }): ThreadListManager
 ```
 
-Defined in: [packages/react-core/src/useThreadListManager.ts:32](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/useThreadListManager.ts#L32)
+Defined in: [packages/react-core/src/useThreadListManager.ts:28](https://github.com/thesysdev/crayon/blob/42bf9c916a4f4ba514db529a08f9461bfbbad8ca/js/packages/react-core/src/useThreadListManager.ts#L28)
 
 ## Parameters
 
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
+### params
 
-`props`
+#### createThread
 
-</td>
-<td>
+(`firstMessage`: [`UserMessage`](../type-aliases/UserMessage.md)) => `Promise`\<[`Thread`](../type-aliases/Thread.md)\>
 
-`ThreadListManagerProps`
+Creates a new thread when user sends the first message
 
-</td>
-<td>
+#### deleteThread
 
-Contains an explanation
+(`id`: `string`) => `Promise`\<`void`\>
 
-</td>
-</tr>
-</tbody>
-</table>
+#### fetchThreadList
+
+() => `Promise`\<[`Thread`](../type-aliases/Thread.md)[]\>
+
+#### onSelectThread
+
+(`threadId`: `string`) => `void`
+
+#### onSwitchToNew
+
+() => `void`
+
+Allows user to clear chat state when switched to new thread
+
+#### updateThread
+
+(`updated`: [`Thread`](../type-aliases/Thread.md)) => `Promise`\<[`Thread`](../type-aliases/Thread.md)\>
 
 ## Returns
 
 [`ThreadListManager`](../type-aliases/ThreadListManager.md)
 
 A ThreadListManager instance
-
-## Remarks
-
-Some remark

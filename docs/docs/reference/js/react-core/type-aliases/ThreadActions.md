@@ -8,108 +8,41 @@ type ThreadActions = {
 };
 ```
 
-Defined in: [packages/react-core/src/types/chatManager.ts:22](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L22)
+Defined in: [packages/react-core/src/types/chatManager.ts:26](https://github.com/thesysdev/crayon/blob/42bf9c916a4f4ba514db529a08f9461bfbbad8ca/js/packages/react-core/src/types/chatManager.ts#L26)
 
 Actions available for managing a thread
 
 ## Type declaration
 
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Defined in</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
+### appendMessages()
 
-<a id="appendmessages"></a> `appendMessages`
+```ts
+(...messages: Message[]) => void
+```
 
-</td>
-<td>
+### onCancel()
 
-(...`messages`: [`Message`](Message.md)[]) => `void`
+```ts
+() => void
+```
 
-</td>
-<td>
+### processMessage()
 
-[packages/react-core/src/types/chatManager.ts:24](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L24)
+```ts
+(message: CreateMessage) => Promise<void>
+```
 
-</td>
-</tr>
-<tr>
-<td>
+### setMessages()
 
-<a id="oncancel"></a> `onCancel`
+```ts
+(messages: Message[]) => void
+```
 
-</td>
-<td>
+### updateMessage()
 
-() => `void`
-
-</td>
-<td>
-
-[packages/react-core/src/types/chatManager.ts:26](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L26)
-
-</td>
-</tr>
-<tr>
-<td>
-
-<a id="processmessage"></a> `processMessage`
-
-</td>
-<td>
-
-(`message`: [`CreateMessage`](CreateMessage.md)) => `Promise`\<`void`\>
-
-</td>
-<td>
-
-[packages/react-core/src/types/chatManager.ts:23](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L23)
-
-</td>
-</tr>
-<tr>
-<td>
-
-<a id="setmessages"></a> `setMessages`
-
-</td>
-<td>
-
-(`messages`: [`Message`](Message.md)[]) => `void`
-
-</td>
-<td>
-
-[packages/react-core/src/types/chatManager.ts:27](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L27)
-
-</td>
-</tr>
-<tr>
-<td>
-
-<a id="updatemessage"></a> `updateMessage`
-
-</td>
-<td>
-
-(`message`: [`Message`](Message.md)) => `void`
-
-</td>
-<td>
-
-[packages/react-core/src/types/chatManager.ts:25](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/chatManager.ts#L25)
-
-</td>
-</tr>
-</tbody>
-</table>
+```ts
+(message: Message) => void
+```
 
 ## Template
 

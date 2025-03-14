@@ -2,8 +2,15 @@ import { createContext, useContext } from "react";
 import { useShallow } from "zustand/shallow";
 import { Message } from "../types";
 
+/**
+ * @category Contexts
+ */
 export const MessageContext = createContext<{ message: Message } | null>(null);
 
+/**
+ * @category Hooks
+ * @returns The current message. See {@link Message} for more information.
+ */
 export const useMessage = () => {
   const context = useContext(MessageContext);
   if (!context) {
@@ -12,6 +19,9 @@ export const useMessage = () => {
   return context;
 };
 
+/**
+ * @category Components
+ */
 export const MessageProvider = ({
   message,
   children,

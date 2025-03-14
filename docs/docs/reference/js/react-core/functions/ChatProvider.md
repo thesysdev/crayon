@@ -4,38 +4,15 @@ This is custom ChatProvider documentation
 function ChatProvider(props: PropsWithChildren<ChatManager>): ReactNode | Promise<ReactNode>
 ```
 
-Defined in: [packages/react-core/src/ChatProvider.tsx:30](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/ChatProvider.tsx#L30)
+Defined in: [packages/react-core/src/ChatProvider.tsx:30](https://github.com/thesysdev/crayon/blob/42bf9c916a4f4ba514db529a08f9461bfbbad8ca/js/packages/react-core/src/ChatProvider.tsx#L30)
 
 ## Parameters
 
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-
-`props`
-
-</td>
-<td>
+### props
 
 `PropsWithChildren`\<[`ChatManager`](../type-aliases/ChatManager.md)\>
 
-</td>
-<td>
-
 The component props
-
-</td>
-</tr>
-</tbody>
-</table>
 
 ## Returns
 

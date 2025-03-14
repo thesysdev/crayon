@@ -3,17 +3,19 @@ import { createStore, useStore } from "zustand";
 import { Thread, ThreadListManager, UserMessage } from "./types";
 
 /**
- * Props for the {@link useThreadListManager} hook
+ * Parameters to be passed to the {@link useThreadListManager} hook
  *
- * @expand
+ * @inline
+ * @category Types
  */
-type ThreadListManagerProps = {
+export type UseThreadListManagerParams = {
   fetchThreadList: () => Promise<Thread[]>;
   deleteThread: (id: string) => Promise<void>;
   updateThread: (updated: Thread) => Promise<Thread>;
   /** Allows user to clear chat state when switched to new thread */
   onSwitchToNew: () => void;
   onSelectThread: (threadId: string) => void;
+  /** Creates a new thread when user sends the first message */
   createThread: (firstMessage: UserMessage) => Promise<Thread>;
 };
 
@@ -21,17 +23,11 @@ type DefaultManager = ThreadListManager;
 
 /**
  * @category Hooks
- *
- * @remarks
- * Some remark
- *
- * @param {ThreadListManagerProps} props - Contains an explanation
- *
  * @returns A ThreadListManager instance
  */
-export const useThreadListManager = (props: ThreadListManagerProps): DefaultManager => {
-  const propsRef = useRef(props);
-  propsRef.current = props;
+export const useThreadListManager = (params: UseThreadListManagerParams): DefaultManager => {
+  const propsRef = useRef(params);
+  propsRef.current = params;
 
   const store = useMemo(() => {
     return createStore<DefaultManager>((set) => {

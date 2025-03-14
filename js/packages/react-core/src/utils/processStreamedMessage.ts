@@ -1,5 +1,8 @@
 import { AssistantMessage } from "../types";
 
+/**
+ * @category Utilities
+ */
 export const processStreamedMessage = async ({
   response,
   createMessage,

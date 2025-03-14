@@ -1,5 +1,8 @@
 ```ts
-type UserMessage = common & {
+type UserMessage = {
+  id: string;
+  isVisuallyHidden: boolean;
+ } & {
   role: "user";
  } & {
   context: JSONValue[];
@@ -8,100 +11,46 @@ type UserMessage = common & {
 };
 ```
 
-Defined in: [packages/react-core/src/types/message.ts:16](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/message.ts#L16)
+Defined in: [packages/react-core/src/types/message.ts:22](https://github.com/thesysdev/crayon/blob/42bf9c916a4f4ba514db529a08f9461bfbbad8ca/js/packages/react-core/src/types/message.ts#L22)
 
 ## Type declaration
 
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Defined in</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
+### id
 
-`role`
+```ts
+id: string;
+```
 
-</td>
-<td>
+### isVisuallyHidden?
 
-`"user"`
-
-</td>
-<td>
-
-[packages/react-core/src/types/message.ts:17](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/message.ts#L17)
-
-</td>
-</tr>
-</tbody>
-</table>
+```ts
+optional isVisuallyHidden: boolean;
+```
 
 ## Type declaration
 
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Defined in</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
+### role
 
-`context`?
+```ts
+role: "user";
+```
 
-</td>
-<td>
+## Type declaration
 
-`JSONValue`[]
+### context?
 
-</td>
-<td>
+```ts
+optional context: JSONValue[];
+```
 
-[packages/react-core/src/types/message.ts:21](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/message.ts#L21)
+### message?
 
-</td>
-</tr>
-<tr>
-<td>
+```ts
+optional message: string;
+```
 
-`message`?
+### type
 
-</td>
-<td>
-
-`string`
-
-</td>
-<td>
-
-[packages/react-core/src/types/message.ts:20](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/message.ts#L20)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`type`
-
-</td>
-<td>
-
-`"prompt"`
-
-</td>
-<td>
-
-[packages/react-core/src/types/message.ts:19](https://github.com/thesysdev/crayon/blob/1acfae208f58ec7415d64dc97edfea87130a9e7e/js/packages/react-core/src/types/message.ts#L19)
-
-</td>
-</tr>
-</tbody>
-</table>
+```ts
+type: "prompt";
+```
