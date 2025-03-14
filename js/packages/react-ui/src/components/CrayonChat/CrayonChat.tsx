@@ -10,7 +10,7 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
-import { processStreamedMessage } from "@crayonai/react-core/dist/utils/processStreamedMessage";
+import { processStreamedMessage } from "@crayonai/stream";
 import { useEffect, useRef } from "react";
 import invariant from "tiny-invariant";
 import {

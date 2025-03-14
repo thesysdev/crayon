@@ -14,38 +14,39 @@ export class CrayonDataStreamTransformer implements TransformStream<InputType, O
 
   constructor(opts?: TransformerOpts) {
     let streamedContent = "";
+    let previouslyStreamedTextContent: string = "";
+    let hasPendingTemplateToStream: boolean = false;
+
     const transform = new TransformStream({
       transform: async (
         content: InputType,
         controller: TransformStreamDefaultController<OutputType>,
       ) => {
         try {
-          const previousParsed = parse(streamedContent);
           streamedContent += content;
+
           const parsed = parse(streamedContent);
+          const newContent = parsed?.response?.pop?.();
 
-          if (previousParsed.response && parsed.response) {
-            if (previousParsed.response.length === parsed.response.length) {
-              const newContent = parsed.response.pop();
-              const lastContent = previousParsed.response.pop();
-              if (newContent.type === "text" && newContent.text) {
-                const textPart = newContent.text.substring(lastContent.text?.length);
-                if (textPart.length > 0) {
-                  controller.enqueue(new TextChunk(textPart).toSSEString());
-                }
-              }
-            } else {
-              const lastTemplate = previousParsed.response.pop();
-              if (typeof lastTemplate === "object") {
-                controller.enqueue(new ResponseTemplateChunk(lastTemplate).toSSEString());
-              }
+          if (newContent?.type === "text") {
+            const prevContent = parsed.response.pop();
+            const newText = newContent.text || "";
 
-              const newContent = parsed.response.pop();
-
-              if (newContent.type === "text" && newContent.text) {
-                controller.enqueue(new TextChunk(newContent).toSSEString());
-              }
+            if (hasPendingTemplateToStream && prevContent && prevContent?.type !== "text") {
+              controller.enqueue(new ResponseTemplateChunk(prevContent).toSSEString());
+              hasPendingTemplateToStream = false;
             }
+
+            const textContent = newText.substring(previouslyStreamedTextContent.length);
+
+            if (textContent.length > 0) {
+              controller.enqueue(new TextChunk(textContent).toSSEString());
+            }
+
+            previouslyStreamedTextContent = newText;
+          } else {
+            hasPendingTemplateToStream = true;
+            previouslyStreamedTextContent = "";
           }
         } catch (error) {
           controller.error(error);
@@ -54,14 +55,12 @@ export class CrayonDataStreamTransformer implements TransformStream<InputType, O
 
       flush: async (controller: TransformStreamDefaultController<OutputType>) => {
         const parsed = parse(streamedContent);
-        if (
-          parsed.response &&
-          parsed.response.length &&
-          parsed.response[parsed.response.length - 1]?.type !== "text"
-        ) {
-          const lastTemplate = parsed.response.pop();
-          controller.enqueue(new ResponseTemplateChunk(lastTemplate).toSSEString());
+        const lastContent = parsed?.response?.pop?.();
+
+        if (hasPendingTemplateToStream && lastContent && lastContent.type !== "text") {
+          controller.enqueue(new ResponseTemplateChunk(lastContent).toSSEString());
         }
+
         await opts?.onFinish(controller);
       },
     });
