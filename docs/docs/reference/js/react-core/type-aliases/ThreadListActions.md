@@ -1,132 +1,52 @@
 ```ts
 type ThreadListActions = {
+  createThread: (firstMessage: UserMessage) => Promise<Thread>;
   deleteThread: (threadId: string) => void;
   load: () => void;
-  loadMore: () => void;
-  selectThread: (threadId: string) => void;
+  selectThread: (threadId: string, shouldResetThreadState?: boolean) => void;
   switchToNewThread: () => void;
   updateThread: (thread: Thread) => void;
 };
 ```
 
+Defined in: [packages/react-core/src/types/chatManager.ts:75](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/types/chatManager.ts#L75)
+
 Actions available for managing the thread list
 
 ## Type declaration
 
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Defined in</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
+### createThread()
 
-`deleteThread`
+```ts
+(firstMessage: UserMessage) => Promise<Thread>;
+```
 
-</td>
-<td>
+### deleteThread()
 
-(`threadId`: `string`) => `void`
+```ts
+(threadId: string) => void
+```
 
-</td>
-<td>
+### load()
 
-[packages/react-core/src/types/chatManager.ts:69](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L69)
+```ts
+() => void
+```
 
-</td>
-</tr>
-<tr>
-<td>
+### selectThread()
 
-`load`
+```ts
+(threadId: string, shouldResetThreadState?: boolean) => void
+```
 
-</td>
-<td>
+### switchToNewThread()
 
-() => `void`
+```ts
+() => void
+```
 
-</td>
-<td>
+### updateThread()
 
-[packages/react-core/src/types/chatManager.ts:63](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L63)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`loadMore`
-
-</td>
-<td>
-
-() => `void`
-
-</td>
-<td>
-
-[packages/react-core/src/types/chatManager.ts:65](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L65)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`selectThread`
-
-</td>
-<td>
-
-(`threadId`: `string`) => `void`
-
-</td>
-<td>
-
-[packages/react-core/src/types/chatManager.ts:67](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L67)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`switchToNewThread`
-
-</td>
-<td>
-
-() => `void`
-
-</td>
-<td>
-
-[packages/react-core/src/types/chatManager.ts:66](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L66)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`updateThread`
-
-</td>
-<td>
-
-(`thread`: [`Thread`](Thread.md)) => `void`
-
-</td>
-<td>
-
-[packages/react-core/src/types/chatManager.ts:68](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L68)
-
-</td>
-</tr>
-</tbody>
-</table>
-
-## Defined in
-
-[packages/react-core/src/types/chatManager.ts:62](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L62)
+```ts
+(thread: Thread) => void
+```

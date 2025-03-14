@@ -5,24 +5,29 @@ import type * as Preset from "@docusaurus/preset-classic";
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const typeDocConfig = {
-  sidebar: {
-    autoConfiguration: false,
-  },
+  sidebar: { pretty: true },
 
-  parametersFormat: "htmlTable",
+  indexFormat: "htmlTable",
+  parametersFormat: "list",
   interfacePropertiesFormat: "htmlTable",
   classPropertiesFormat: "htmlTable",
   propertyMembersFormat: "htmlTable",
-  typeDeclarationFormat: "htmlTable",
+  typeDeclarationFormat: "list",
   typeDeclarationVisibility: "compact",
   useCodeBlocks: true,
   hidePageHeader: true,
   hidePageTitle: true,
   expandObjects: true,
   expandParameters: true,
+  mergeReadme: true,
+  formatWithPrettier: true,
+  watch: process.env.TYPEDOC_WATCH,
 
   // typedoc options
-  plugin: ["typedoc-plugin-markdown"],
+  plugin: [
+    "typedoc-plugin-markdown",
+    "./custom/plugins/inject-custom-docs.mjs",
+  ],
 };
 
 const config: Config = {
@@ -168,8 +173,8 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} <a href="https://www.thesys.dev">Thesys, Inc.</a>`,
     },
     prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      theme: prismThemes.nightOwlLight,
+      darkTheme: prismThemes.nightOwl,
     },
   } satisfies Preset.ThemeConfig,
   plugins: [
@@ -178,22 +183,11 @@ const config: Config = {
       {
         id: "react-core",
         entryPoints: ["../js/packages/react-core/src/index.ts"],
-        tsconfig: "../js/tsconfig.json",
+        tsconfig: "../js/packages/react-core/tsconfig.json",
         out: "./docs/reference/js/react-core",
         ...typeDocConfig,
       },
     ],
-
-    // [
-    //   "docusaurus-plugin-typedoc",
-    //   {
-    //     id: "react-ui",
-    //     entryPoints: ["../js/packages/react-ui/src/index.ts"],
-    //     tsconfig: "../js/tsconfig.json",
-    //     out: "./docs/reference/js/react-ui",
-    //     ...typeDocConfig,
-    //   },
-    // ],
   ],
 };
 

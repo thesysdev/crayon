@@ -1,52 +1,56 @@
 ```ts
-type UserMessage = common & {
+type UserMessage = {
+  id: string;
+  isVisuallyHidden: boolean;
+} & {
   role: "user";
- } & 
-  | {
+} & {
+  context: JSONValue[];
   message: string;
   type: "prompt";
- }
-  | {
-  actionDetails: string;
-  context: {
-     formState: Record<string, any>;
-    };
-  message: string;
-  type: "action";
 };
+```
+
+Defined in: [packages/react-core/src/types/message.ts:22](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/types/message.ts#L22)
+
+## Type declaration
+
+### id
+
+```ts
+id: string;
+```
+
+### isVisuallyHidden?
+
+```ts
+optional isVisuallyHidden: boolean;
 ```
 
 ## Type declaration
 
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Defined in</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
+### role
 
-`role`
+```ts
+role: "user";
+```
 
-</td>
-<td>
+## Type declaration
 
-`"user"`
+### context?
 
-</td>
-<td>
+```ts
+optional context: JSONValue[];
+```
 
-[packages/react-core/src/types/message.ts:7](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/message.ts#L7)
+### message?
 
-</td>
-</tr>
-</tbody>
-</table>
+```ts
+optional message: string;
+```
 
-## Defined in
+### type
 
-[packages/react-core/src/types/message.ts:6](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/message.ts#L6)
+```ts
+type: "prompt";
+```

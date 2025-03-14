@@ -1,6 +1,8 @@
 ```ts
-function useThreadListActions(): ThreadListActions
+function useThreadListActions(): ThreadListActions;
 ```
+
+Defined in: [packages/react-core/src/hooks/useThreadListActions.ts:11](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/hooks/useThreadListActions.ts#L11)
 
 ## Returns
 
@@ -9,7 +11,3 @@ function useThreadListActions(): ThreadListActions
 ## Remarks
 
 useThreadListActions
-
-## Defined in
-
-[packages/react-core/src/hooks/useThreadListActions.ts:11](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/hooks/useThreadListActions.ts#L11)

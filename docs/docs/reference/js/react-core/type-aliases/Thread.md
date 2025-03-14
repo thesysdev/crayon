@@ -7,111 +7,40 @@ type Thread = {
 };
 ```
 
+Defined in: [packages/react-core/src/types/chatManager.ts:9](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/types/chatManager.ts#L9)
+
 Represents a chat thread
 
 ## Type declaration
 
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Defined in</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
+### createdAt
 
-`createdAt`
-
-</td>
-<td>
-
-`Date`
-
-</td>
-<td>
+```ts
+createdAt: Date;
+```
 
 Creation timestamp
 
-</td>
-<td>
+### isRunning?
 
-[packages/react-core/src/types/chatManager.ts:13](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L13)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`isRunning`?
-
-</td>
-<td>
-
-`boolean`
-
-</td>
-<td>
+```ts
+optional isRunning: boolean;
+```
 
 Indicates if the thread is currently processing
 
-</td>
-<td>
+### threadId
 
-[packages/react-core/src/types/chatManager.ts:15](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L15)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`threadId`
-
-</td>
-<td>
-
-`string`
-
-</td>
-<td>
+```ts
+threadId: string;
+```
 
 Unique identifier for the thread
 
-</td>
-<td>
+### title
 
-[packages/react-core/src/types/chatManager.ts:9](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L9)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`title`
-
-</td>
-<td>
-
-`string`
-
-</td>
-<td>
+```ts
+title: string;
+```
 
 Title of the thread
-
-</td>
-<td>
-
-[packages/react-core/src/types/chatManager.ts:11](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L11)
-
-</td>
-</tr>
-</tbody>
-</table>
-
-## Defined in
-
-[packages/react-core/src/types/chatManager.ts:7](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/chatManager.ts#L7)

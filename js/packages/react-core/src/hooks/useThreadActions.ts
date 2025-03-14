@@ -4,9 +4,6 @@ import { ThreadActions } from "../types";
 
 /**
  * @category Hooks
- *
- * @remarks
- * useThreadActions
  */
 export const useThreadActions = (): ThreadActions => {
   const { threadManager } = useChatContext();

@@ -8,12 +8,18 @@ type JSONValue =
   | JSONValue[]
   | null;
 
-type common = {
+/**
+ * @inline
+ */
+type Common = {
   id: string;
   isVisuallyHidden?: boolean;
 };
 
-export type UserMessage = common & {
+/**
+ * @category Types
+ */
+export type UserMessage = Common & {
   role: "user";
 } & {
   type: "prompt";
@@ -21,7 +27,10 @@ export type UserMessage = common & {
   context?: JSONValue[];
 };
 
-export type AssistantMessage = common & {
+/**
+ * @category Types
+ */
+export type AssistantMessage = Common & {
   role: "assistant";
   context?: JSONValue[];
   message?: (
@@ -37,10 +46,17 @@ export type AssistantMessage = common & {
   )[];
 };
 
+/**
+ * See {@link UserMessage} and {@link AssistantMessage} for more information.
+ *
+ * @category Types
+ */
 export type Message = UserMessage | AssistantMessage;
 
 /**
  * Represents a message being created, with an optional ID
  * @extends Omit<Message, "id">
+ *
+ * @category Types
  */
 export type CreateMessage = Omit<UserMessage, "id">;

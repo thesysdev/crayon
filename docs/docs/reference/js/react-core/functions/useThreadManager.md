@@ -1,36 +1,17 @@
 ```ts
-function useThreadManager(props: Props): ThreadManager
+function useThreadManager(params: UseThreadManagerParams): ThreadManager;
 ```
+
+Defined in: [packages/react-core/src/useThreadManager.ts:26](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/useThreadManager.ts#L26)
 
 ## Parameters
 
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
+### params
 
-`props`
-
-</td>
-<td>
-
-`Props`
-
-</td>
-</tr>
-</tbody>
-</table>
+[`UseThreadManagerParams`](../type-aliases/UseThreadManagerParams.md)
 
 ## Returns
 
 [`ThreadManager`](../type-aliases/ThreadManager.md)
 
-## Defined in
-
-[packages/react-core/src/useThreadManager.ts:16](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/useThreadManager.ts#L16)
+The thread manager

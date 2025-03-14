@@ -1,7 +1,8 @@
+Defined in: [packages/react-core/src/types/responseTemplate.ts:4](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/types/responseTemplate.ts#L4)
+
 ## Properties
 
-| Property | Type | Defined in |
-| ------ | ------ | ------ |
-| `Component` | `ComponentType`\<\{\}\> | [packages/react-core/src/types/responseTemplate.ts:3](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/responseTemplate.ts#L3) |
-| `name` | `string` | [packages/react-core/src/types/responseTemplate.ts:2](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/responseTemplate.ts#L2) |
-| `renderWithoutMessageContainer?` | `boolean` | [packages/react-core/src/types/responseTemplate.ts:4](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/responseTemplate.ts#L4) |
+| Property                           | Type                     | Defined in                                                                                                                                                                                       |
+| ---------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <a id="component"></a> `Component` | `ComponentType`\<`any`\> | [packages/react-core/src/types/responseTemplate.ts:6](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/types/responseTemplate.ts#L6) |
+| <a id="name"></a> `name`           | `string`                 | [packages/react-core/src/types/responseTemplate.ts:5](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/types/responseTemplate.ts#L5) |

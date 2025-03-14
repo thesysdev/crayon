@@ -1,104 +1,65 @@
 ```ts
-type AssistantMessage = common & {
-  context: {
-     uiState: Record<string, any>;
-    };
-  message: string;
-  responseTemplate: {
-     name: string;
-     templateProps: any;
-    };
+type AssistantMessage = {
+  id: string;
+  isVisuallyHidden: boolean;
+} & {
+  context: JSONValue[];
+  message: (
+    | {
+        text: string;
+        type: "text";
+      }
+    | {
+        name: string;
+        templateProps: any;
+        type: "template";
+      }
+  )[];
   role: "assistant";
 };
 ```
 
+Defined in: [packages/react-core/src/types/message.ts:33](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/types/message.ts#L33)
+
 ## Type declaration
 
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Defined in</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
+### id
 
-`context`?
+```ts
+id: string;
+```
 
-</td>
-<td>
+### isVisuallyHidden?
 
-\{
-  `uiState`: `Record`\<`string`, `any`\>;
- \}
+```ts
+optional isVisuallyHidden: boolean;
+```
 
-</td>
-<td>
+## Type declaration
 
-[packages/react-core/src/types/message.ts:25](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/message.ts#L25)
+### context?
 
-</td>
-</tr>
-<tr>
-<td>
+```ts
+optional context: JSONValue[];
+```
 
-`message`?
+### message?
 
-</td>
-<td>
+```ts
+optional message: (
+  | {
+  text: string;
+  type: "text";
+ }
+  | {
+  name: string;
+  templateProps: any;
+  type: "template";
+ })[];
+```
 
-`string`
+### role
 
-</td>
-<td>
-
-[packages/react-core/src/types/message.ts:28](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/message.ts#L28)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`responseTemplate`?
-
-</td>
-<td>
-
-\{
-  `name`: `string`;
-  `templateProps`: `any`;
- \}
-
-</td>
-<td>
-
-[packages/react-core/src/types/message.ts:29](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/message.ts#L29)
-
-</td>
-</tr>
-<tr>
-<td>
-
-`role`
-
-</td>
-<td>
-
-`"assistant"`
-
-</td>
-<td>
-
-[packages/react-core/src/types/message.ts:24](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/message.ts#L24)
-
-</td>
-</tr>
-</tbody>
-</table>
-
-## Defined in
-
-[packages/react-core/src/types/message.ts:23](https://github.com/thesysdev/crayonai/blob/868f459d859250eef3283635b1127c3c68c35546/js/packages/react-core/src/types/message.ts#L23)
+```ts
+role: "assistant";
+```
