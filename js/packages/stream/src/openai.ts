@@ -1,6 +1,6 @@
 import type { Message } from "@crayonai/react-core";
-import { CrayonDataStreamTransformer, TransformerOpts } from "./transformer";
 import { crayonStream } from "./crayonStream";
+import { TransformerOpts } from "./transformer";
 // These types are defined here so as to not introduce a dependency
 // on openai library directly.
 interface ChatCompletionChunk {
