@@ -6,7 +6,7 @@ export class TextChunk implements Chunk {
   constructor(private readonly data: string) {}
 
   toSSEString(): string {
-    return `0:${this.data}\n`;
+    return `0:${this.data.replaceAll(/\n/g, "\\n")}\n`;
   }
 }
 

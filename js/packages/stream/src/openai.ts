@@ -1,5 +1,6 @@
 import type { Message } from "@crayonai/react-core";
 import { CrayonDataStreamTransformer, TransformerOpts } from "./transformer";
+import { crayonStream } from "./crayonStream";
 // These types are defined here so as to not introduce a dependency
 // on openai library directly.
 interface ChatCompletionChunk {
@@ -16,26 +17,26 @@ interface OpenAIMessage {
 
 type ChatCompletionStreamingRunner = AsyncIterable<ChatCompletionChunk>;
 
-export const fromOpenAICompletion = (
+export const fromOpenAICompletion = async (
   completion: ChatCompletionStreamingRunner,
   opts?: TransformerOpts,
 ) => {
-  const readableStream = new ReadableStream({
-    async start(controller) {
-      try {
-        for await (const chunk of completion) {
-          const content = chunk.choices[0]?.delta?.content;
-          if (content) {
-            controller.enqueue(content);
-          }
-        }
-        controller.close();
-      } catch (error) {
-        controller.error(error);
-      }
-    },
-  });
-  return readableStream.pipeThrough(new CrayonDataStreamTransformer(opts));
+  const { stream, onText, onEnd, onError, onLLMEnd } = crayonStream(opts);
+  try {
+    for await (const chunk of completion) {
+      const content = chunk.choices[0]?.delta?.content;
+      content && onText(content);
+    }
+    onLLMEnd();
+    onEnd();
+  } catch (error) {
+    if (error instanceof Error) {
+      onError(error);
+    } else {
+      onError(new Error(String(error)));
+    }
+  }
+  return stream;
 };
 
 export const toOpenAIMessages = (messages: Message[]) => {

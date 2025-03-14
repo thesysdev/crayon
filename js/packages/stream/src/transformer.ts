@@ -11,18 +11,33 @@ export interface TransformerOpts {
 export class CrayonDataStreamTransformer implements TransformStream<InputType, OutputType> {
   readonly readable: ReadableStream<OutputType>;
   readonly writable: WritableStream<InputType>;
+  private streamedContent: string = "";
+  private controller: TransformStreamDefaultController<OutputType> | null = null;
+
+  reset() {
+    const parsed = parse(this.streamedContent);
+    if (
+      parsed.response &&
+      parsed.response.length &&
+      parsed.response[parsed.response.length - 1]?.type !== "text"
+    ) {
+      const lastTemplate = parsed.response.pop();
+      this.controller?.enqueue(new ResponseTemplateChunk(lastTemplate).toSSEString());
+    }
+    this.streamedContent = "";
+  }
 
   constructor(opts?: TransformerOpts) {
-    let streamedContent = "";
     const transform = new TransformStream({
       transform: async (
         content: InputType,
         controller: TransformStreamDefaultController<OutputType>,
       ) => {
+        this.controller = controller;
         try {
-          const previousParsed = parse(streamedContent);
-          streamedContent += content;
-          const parsed = parse(streamedContent);
+          const previousParsed = parse(this.streamedContent);
+          this.streamedContent += content;
+          const parsed = parse(this.streamedContent);
 
           if (previousParsed.response && parsed.response) {
             if (previousParsed.response.length === parsed.response.length) {
@@ -53,16 +68,9 @@ export class CrayonDataStreamTransformer implements TransformStream<InputType, O
       },
 
       flush: async (controller: TransformStreamDefaultController<OutputType>) => {
-        const parsed = parse(streamedContent);
-        if (
-          parsed.response &&
-          parsed.response.length &&
-          parsed.response[parsed.response.length - 1]?.type !== "text"
-        ) {
-          const lastTemplate = parsed.response.pop();
-          controller.enqueue(new ResponseTemplateChunk(lastTemplate).toSSEString());
-        }
+        this.reset();
         await opts?.onFinish(controller);
+        this.controller = null;
       },
     });
 
