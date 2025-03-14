@@ -2,17 +2,17 @@
 type UseThreadManagerParams = {
   loadThread: (threadId: string) => Promise<Message[]>;
   onProcessMessage: (props: {
-     abortController: AbortController;
-     message: CreateMessage;
-     threadManager: ThreadManager;
-    }) => Promise<Message[]>;
+    abortController: AbortController;
+    message: CreateMessage;
+    threadManager: ThreadManager;
+  }) => Promise<Message[]>;
   responseTemplates: ResponseTemplate[];
   shouldResetThreadState: boolean;
   threadId: string | null;
 };
 ```
 
-Defined in: [packages/react-core/src/useThreadManager.ts:10](https://github.com/thesysdev/crayon/blob/42bf9c916a4f4ba514db529a08f9461bfbbad8ca/js/packages/react-core/src/useThreadManager.ts#L10)
+Defined in: [packages/react-core/src/useThreadManager.ts:10](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/useThreadManager.ts#L10)
 
 Parameters to be passed to the [useThreadManager](../functions/useThreadManager.md) hook
 
@@ -21,7 +21,7 @@ Parameters to be passed to the [useThreadManager](../functions/useThreadManager.
 ### loadThread()
 
 ```ts
-(threadId: string) => Promise<Message[]>
+(threadId: string) => Promise<Message[]>;
 ```
 
 ### onProcessMessage()
@@ -31,7 +31,7 @@ Parameters to be passed to the [useThreadManager](../functions/useThreadManager.
   abortController: AbortController;
   message: CreateMessage;
   threadManager: ThreadManager;
-}) => Promise<Message[]>
+}) => Promise<Message[]>;
 ```
 
 ### responseTemplates

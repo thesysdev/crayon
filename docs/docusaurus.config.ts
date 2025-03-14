@@ -7,7 +7,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 const typeDocConfig = {
   sidebar: { pretty: true },
 
-  indexFormat: 'table',
+  indexFormat: "htmlTable",
   parametersFormat: "list",
   interfacePropertiesFormat: "htmlTable",
   classPropertiesFormat: "htmlTable",
@@ -19,6 +19,8 @@ const typeDocConfig = {
   hidePageTitle: true,
   expandObjects: true,
   expandParameters: true,
+  mergeReadme: true,
+  formatWithPrettier: true,
   watch: process.env.TYPEDOC_WATCH,
 
   // typedoc options

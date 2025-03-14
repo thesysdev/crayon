@@ -4,10 +4,10 @@ function processStreamedMessage(__namedParameters: {
   deleteMessage: (messageId: string) => void;
   response: Response;
   updateMessage: (message: AssistantMessage) => void;
-}): Promise<void>
+}): Promise<void>;
 ```
 
-Defined in: [packages/react-core/src/utils/processStreamedMessage.ts:6](https://github.com/thesysdev/crayon/blob/42bf9c916a4f4ba514db529a08f9461bfbbad8ca/js/packages/react-core/src/utils/processStreamedMessage.ts#L6)
+Defined in: [packages/react-core/src/utils/processStreamedMessage.ts:6](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/utils/processStreamedMessage.ts#L6)
 
 ## Parameters
 
