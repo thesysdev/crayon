@@ -2,7 +2,7 @@ import {
   ContextUpdate,
   MessageUpdate,
   ResponseTemplate,
-  ResponseTemplateArgsChunk,
+  ResponseTemplatePropsChunk,
   SSEType,
   TextChunk,
 } from "@crayonai/stream";
@@ -77,12 +77,12 @@ export const processStreamedMessage = async ({
           messageContent = messageContent.concat({
             type: "template",
             name: responseTemplate.name,
-            templateProps: responseTemplate.templateArgs,
+            templateProps: responseTemplate.templateProps,
           });
           break;
         }
-        case SSEType.ResponseTemplateArgsChunk: {
-          const responseTemplateArgs = ResponseTemplateArgsChunk.fromSSEData(event.data);
+        case SSEType.ResponseTemplatePropsChunk: {
+          const responseTemplateProps = ResponseTemplatePropsChunk.fromSSEData(event.data);
           invariant(lastMessageContent?.type === "template", "response template expected");
           messageContent.pop();
           messageContent = messageContent.concat({
@@ -91,7 +91,7 @@ export const processStreamedMessage = async ({
             templateProps: {
               ...(lastMessageContent.templateProps || {}),
               content:
-                (lastMessageContent.templateProps?.content || "") + responseTemplateArgs.chunk,
+                (lastMessageContent.templateProps?.content || "") + responseTemplateProps.chunk,
             },
           });
           break;

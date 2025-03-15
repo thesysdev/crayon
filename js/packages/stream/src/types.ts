@@ -13,8 +13,8 @@ export type JSONValue =
 
 export enum SSEType {
   TextDelta = "text",
-  ResponseTemplate = "response_tpl",
-  ResponseTemplateArgsChunk = "response_tpl_args_chunk",
+  ResponseTemplate = "tpl",
+  ResponseTemplatePropsChunk = "tpl_props_chunk",
   ContextAppend = "context_append",
   MessageUpdate = "message_update",
 }
@@ -40,35 +40,35 @@ export class TextChunk implements Chunk {
 export class ResponseTemplate implements Chunk {
   constructor(
     readonly name: string,
-    readonly templateArgs?: object,
+    readonly templateProps?: object,
   ) {}
 
   toSSEString(): string {
     return encode({
       event: SSEType.ResponseTemplate,
-      data: JSON.stringify({ name: this.name, templateArgs: this.templateArgs }),
+      data: JSON.stringify({ name: this.name, templateProps: this.templateProps }),
     });
   }
 
   static fromSSEData(data: string): ResponseTemplate {
-    const { name, templateArgs } = JSON.parse(data);
+    const { name, templateProps } = JSON.parse(data);
     invariant(name, "name is required in ResponseTemplate");
-    return new ResponseTemplate(name, templateArgs);
+    return new ResponseTemplate(name, templateProps);
   }
 }
 
-export class ResponseTemplateArgsChunk implements Chunk {
+export class ResponseTemplatePropsChunk implements Chunk {
   constructor(readonly chunk: string) {}
 
   toSSEString(): string {
     return encode({
-      event: SSEType.ResponseTemplateArgsChunk,
+      event: SSEType.ResponseTemplatePropsChunk,
       data: this.chunk,
     });
   }
 
-  static fromSSEData(data: string): ResponseTemplateArgsChunk {
-    return new ResponseTemplateArgsChunk(data);
+  static fromSSEData(data: string): ResponseTemplatePropsChunk {
+    return new ResponseTemplatePropsChunk(data);
   }
 }
 
