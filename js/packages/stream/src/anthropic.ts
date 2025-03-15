@@ -1,5 +1,3 @@
-import type { Message } from "@crayonai/react-core";
-
 // These types are defined here so as to not introduce a dependency
 // on anthropic-ai-sdk library directly.
 interface AnthropicAIMessage {
@@ -7,7 +5,7 @@ interface AnthropicAIMessage {
   content: string;
 }
 
-export const toAnthropicAIMessages = (messages: Message[]) => {
+export const toAnthropicAIMessages = (messages: any[]) => {
   const anthropicAIMessages: AnthropicAIMessage[] = [];
   for (const message of messages) {
     if (!message.message) {
