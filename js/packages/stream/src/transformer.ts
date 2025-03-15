@@ -12,32 +12,46 @@ export interface TransformerOpts {
 export class CrayonDataStreamTransformer implements TransformStream<InputType, OutputType> {
   readonly readable: ReadableStream<OutputType>;
   readonly writable: WritableStream<InputType>;
+  private streamedContent: string = "";
+  private controller: TransformStreamDefaultController<OutputType> | null = null;
+  private hasPendingTemplateToStream: boolean = false;
+
+  reset() {
+    const parsed = parse(this.streamedContent);
+    const lastContent = parsed?.response?.pop?.();
+
+    if (this.hasPendingTemplateToStream && lastContent && lastContent.type !== "text") {
+      const { name, templateProps } = lastContent;
+      invariant(name, "name is required in ResponseTemplate");
+      this.controller?.enqueue(new ResponseTemplate(name, templateProps).toSSEString());
+    }
+    this.streamedContent = "";
+  }
 
   constructor(opts?: TransformerOpts) {
-    let streamedContent = "";
     let previouslyStreamedTextContent: string = "";
-    let hasPendingTemplateToStream: boolean = false;
 
     const transform = new TransformStream({
       transform: async (
         content: InputType,
         controller: TransformStreamDefaultController<OutputType>,
       ) => {
+        this.controller = controller;
         try {
-          streamedContent += content;
+          this.streamedContent += content;
 
-          const parsed = parse(streamedContent);
+          const parsed = parse(this.streamedContent);
           const newContent = parsed?.response?.pop?.();
 
           if (newContent?.type === "text") {
             const prevContent = parsed.response.pop();
             const newText = newContent.text || "";
 
-            if (hasPendingTemplateToStream && prevContent && prevContent?.type !== "text") {
+            if (this.hasPendingTemplateToStream && prevContent && prevContent?.type !== "text") {
               const { name, templateProps } = prevContent;
               invariant(name, "name is required in ResponseTemplate");
               controller.enqueue(new ResponseTemplate(name, templateProps).toSSEString());
-              hasPendingTemplateToStream = false;
+              this.hasPendingTemplateToStream = false;
             }
 
             const textContent = newText.substring(previouslyStreamedTextContent.length);
@@ -48,7 +62,7 @@ export class CrayonDataStreamTransformer implements TransformStream<InputType, O
 
             previouslyStreamedTextContent = newText;
           } else {
-            hasPendingTemplateToStream = true;
+            this.hasPendingTemplateToStream = true;
             previouslyStreamedTextContent = "";
           }
         } catch (error) {
@@ -57,16 +71,9 @@ export class CrayonDataStreamTransformer implements TransformStream<InputType, O
       },
 
       flush: async (controller: TransformStreamDefaultController<OutputType>) => {
-        const parsed = parse(streamedContent);
-        const lastContent = parsed?.response?.pop?.();
-
-        if (hasPendingTemplateToStream && lastContent && lastContent.type !== "text") {
-          const { name, templateProps } = lastContent;
-          invariant(name, "name is required in ResponseTemplate");
-          controller.enqueue(new ResponseTemplate(name, templateProps).toSSEString());
-        }
-
+        this.reset();
         await opts?.onFinish(controller);
+        this.controller = null;
       },
     });
 

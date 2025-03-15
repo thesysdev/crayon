@@ -1,4 +1,5 @@
-import { CrayonDataStreamTransformer, TransformerOpts } from "./transformer";
+import { crayonStream } from "./crayonStream";
+import { TransformerOpts } from "./transformer";
 
 // These types are defined here so as to not introduce a dependency
 // on openai library directly.
@@ -20,22 +21,24 @@ export const fromOpenAICompletion = (
   completion: ChatCompletionStreamingRunner,
   opts?: TransformerOpts,
 ) => {
-  const readableStream = new ReadableStream({
-    async start(controller) {
-      try {
-        for await (const chunk of completion) {
-          const content = chunk.choices[0]?.delta?.content;
-          if (content) {
-            controller.enqueue(content);
-          }
-        }
-        controller.close();
-      } catch (error) {
-        controller.error(error);
+  const { stream, onText, onEnd, onError, onLLMEnd } = crayonStream(opts);
+  (async () => {
+    try {
+      for await (const chunk of completion) {
+        const content = chunk.choices[0]?.delta?.content;
+        content && onText(content);
       }
-    },
-  });
-  return readableStream.pipeThrough(new CrayonDataStreamTransformer(opts));
+      onLLMEnd();
+      onEnd();
+    } catch (error) {
+      if (error instanceof Error) {
+        onError(error);
+      } else {
+        onError(new Error(String(error)));
+      }
+    }
+  })();
+  return stream;
 };
 
 // This is a utility function to convert a Crayon message to an OpenAI message.
