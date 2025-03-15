@@ -1,5 +1,5 @@
 import { parse } from "best-effort-json-parser";
-import { ResponseTemplateChunk, TextChunk } from "./types";
+import { ResponseTemplate, TextChunk } from "./types";
 // Define the types for the data flowing through the stream
 type InputType = string; // Change this to match your input type
 type OutputType = string; // Change this to match your output type
@@ -33,7 +33,7 @@ export class CrayonDataStreamTransformer implements TransformStream<InputType, O
             const newText = newContent.text || "";
 
             if (hasPendingTemplateToStream && prevContent && prevContent?.type !== "text") {
-              controller.enqueue(new ResponseTemplateChunk(prevContent).toSSEString());
+              controller.enqueue(new ResponseTemplate(prevContent).toSSEString());
               hasPendingTemplateToStream = false;
             }
 
@@ -58,7 +58,7 @@ export class CrayonDataStreamTransformer implements TransformStream<InputType, O
         const lastContent = parsed?.response?.pop?.();
 
         if (hasPendingTemplateToStream && lastContent && lastContent.type !== "text") {
-          controller.enqueue(new ResponseTemplateChunk(lastContent).toSSEString());
+          controller.enqueue(new ResponseTemplate(lastContent).toSSEString());
         }
 
         await opts?.onFinish(controller);

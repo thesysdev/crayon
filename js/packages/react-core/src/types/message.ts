@@ -1,12 +1,4 @@
-type JSONValue =
-  | string
-  | number
-  | boolean
-  | {
-      [value: string]: JSONValue;
-    }
-  | JSONValue[]
-  | null;
+import { JSONValue } from "@crayonai/stream";
 
 type common = {
   id: string;

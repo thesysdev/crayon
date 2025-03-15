@@ -1,5 +1,5 @@
-import type { Message } from "@crayonai/react-core";
 import { CrayonDataStreamTransformer, TransformerOpts } from "./transformer";
+
 // These types are defined here so as to not introduce a dependency
 // on openai library directly.
 interface ChatCompletionChunk {
@@ -38,23 +38,21 @@ export const fromOpenAICompletion = (
   return readableStream.pipeThrough(new CrayonDataStreamTransformer(opts));
 };
 
-export const toOpenAIMessages = (messages: Message[]) => {
+// This is a utility function to convert a Crayon message to an OpenAI message.
+// Use this only when you are passing the Crayon messages directly to your backend
+// and not converting them.
+// Note: This type is specified as any so as to not introduce a dependency on the
+// Crayon frontendmessage type.
+export const toOpenAIMessages = (messages: any[]) => {
   const openAIMessages: OpenAIMessage[] = [];
   for (const message of messages) {
     if (!message.message) {
       continue;
     }
-    if (typeof message.message === "string") {
-      openAIMessages.push({
-        role: message.role,
-        content: message.message,
-      });
-    } else if (Array.isArray(message.message)) {
-      openAIMessages.push({
-        role: message.role,
-        content: JSON.stringify(message.message),
-      });
-    }
+    openAIMessages.push({
+      role: message.role,
+      content: JSON.stringify(message.message),
+    });
   }
   return openAIMessages;
 };

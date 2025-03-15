@@ -1,7 +1,14 @@
-import { AssistantMessage } from "@crayonai/react-core/src/types";
+import {
+  ContextUpdate,
+  MessageUpdate,
+  ResponseTemplate,
+  ResponseTemplateArgsChunk,
+  SSEType,
+  TextChunk,
+} from "@crayonai/stream";
 import { createParser } from "eventsource-parser";
 import invariant from "tiny-invariant";
-import { SSEType } from "./types";
+import { AssistantMessage } from "../types";
 
 export const processStreamedMessage = async ({
   response,
@@ -50,43 +57,54 @@ export const processStreamedMessage = async ({
 
       switch (event.event) {
         case SSEType.TextDelta: {
+          const textChunk = TextChunk.fromSSEData(event.data);
           if (isLastMessageContentString) {
             messageContent.pop();
             messageContent = messageContent.concat({
               type: "text",
-              text: lastMessageContent.text + event.data,
+              text: lastMessageContent.text + textChunk.chunk,
             });
           } else {
             messageContent = messageContent.concat({
               type: "text",
-              text: event.data,
+              text: textChunk.chunk,
             });
           }
           break;
         }
         case SSEType.ResponseTemplate: {
-          messageContent = messageContent.concat(JSON.parse(event.data));
+          const responseTemplate = ResponseTemplate.fromSSEData(event.data);
+          messageContent = messageContent.concat({
+            type: "template",
+            name: responseTemplate.name,
+            templateProps: responseTemplate.templateArgs,
+          });
           break;
         }
-        case SSEType.ResponseTemplatePropsStream: {
+        case SSEType.ResponseTemplateArgs: {
+          const responseTemplateArgs = ResponseTemplateArgsChunk.fromSSEData(event.data);
           invariant(lastMessageContent?.type === "template", "response template expected");
           messageContent.pop();
           messageContent = messageContent.concat({
             type: "template",
             name: lastMessageContent.name,
+            // XXX: This doesn't look right.
             templateProps: {
               ...(lastMessageContent.templateProps || {}),
-              content: (lastMessageContent.templateProps?.content || "") + event.data,
+              content:
+                (lastMessageContent.templateProps?.content || "") + responseTemplateArgs.chunk,
             },
           });
           break;
         }
-        case SSEType.ContextUpdate: {
-          messageContext = messageContext.concat(JSON.parse(event.data));
+        case SSEType.ContextAppend: {
+          const ctxUpdate = ContextUpdate.fromSSEData(event.data);
+          messageContext = messageContext.concat(ctxUpdate.contextItem);
           break;
         }
-        case SSEType.MessageIdUpdate: {
-          messageId = event.data;
+        case SSEType.MessageUpdate: {
+          const messageUpdate = MessageUpdate.fromSSEData(event.data);
+          messageId = messageUpdate.id;
           break;
         }
       }

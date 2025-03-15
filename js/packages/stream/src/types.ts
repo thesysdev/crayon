@@ -1,11 +1,22 @@
 import { encode } from "eventsource-encoder";
+import invariant from "tiny-invariant";
+
+export type JSONValue =
+  | string
+  | number
+  | boolean
+  | {
+      [value: string]: JSONValue;
+    }
+  | JSONValue[]
+  | null;
 
 export enum SSEType {
-  TextDelta = "T",
-  ResponseTemplate = "R",
-  ResponseTemplatePropsStream = "C",
-  ContextUpdate = "U",
-  MessageIdUpdate = "M",
+  TextDelta = "text",
+  ResponseTemplate = "response_tpl",
+  ResponseTemplateArgs = "response_tpl_args",
+  ContextAppend = "context_append",
+  MessageUpdate = "message_update",
 }
 
 interface Chunk {
@@ -13,37 +24,82 @@ interface Chunk {
 }
 
 export class TextChunk implements Chunk {
-  constructor(private readonly data: string) {}
+  constructor(readonly chunk: string) {}
 
   toSSEString(): string {
     return encode({
       event: SSEType.TextDelta,
-      data: this.data,
+      data: this.chunk,
     });
   }
-}
 
-export interface ResponseTemplate {
-  name: string;
-  templateProps: object;
+  static fromSSEData(data: string): TextChunk {
+    return new TextChunk(data);
+  }
 }
-
-export class ResponseTemplateChunk implements Chunk {
-  constructor(private readonly template: ResponseTemplate) {}
+export class ResponseTemplate implements Chunk {
+  constructor(
+    readonly name: string,
+    readonly templateArgs?: object,
+  ) {}
 
   toSSEString(): string {
     return encode({
       event: SSEType.ResponseTemplate,
-      data: JSON.stringify(this.template),
+      data: JSON.stringify({ name: this.name, templateArgs: this.templateArgs }),
     });
   }
 
-  // this is used to stream the templateProps
-  // on client side, this will be accumulated in responseTemplates.content just like text stream
-  static SSETemplateContentProp(content: string): string {
+  static fromSSEData(data: string): ResponseTemplate {
+    const { name, templateArgs } = JSON.parse(data);
+    invariant(name, "name is required in ResponseTemplate");
+    return new ResponseTemplate(name, templateArgs);
+  }
+}
+
+export class ResponseTemplateArgsChunk implements Chunk {
+  constructor(readonly chunk: string) {}
+
+  toSSEString(): string {
     return encode({
-      event: SSEType.ResponseTemplatePropsStream,
-      data: content,
+      event: SSEType.ResponseTemplateArgs,
+      data: this.chunk,
     });
+  }
+
+  static fromSSEData(data: string): ResponseTemplateArgsChunk {
+    return new ResponseTemplateArgsChunk(data);
+  }
+}
+
+export class ContextUpdate implements Chunk {
+  constructor(readonly contextItem: JSONValue) {}
+
+  toSSEString(): string {
+    return encode({
+      event: SSEType.ContextAppend,
+      data: JSON.stringify(this.contextItem),
+    });
+  }
+
+  static fromSSEData(data: string): ContextUpdate {
+    return new ContextUpdate(JSON.parse(data));
+  }
+}
+
+export class MessageUpdate implements Chunk {
+  constructor(readonly id: string) {}
+
+  toSSEString(): string {
+    return encode({
+      event: SSEType.MessageUpdate,
+      data: JSON.stringify({ id: this.id }),
+    });
+  }
+
+  static fromSSEData(data: string): MessageUpdate {
+    const { id } = JSON.parse(data);
+    invariant(id, "id is required in MessageUpdate");
+    return new MessageUpdate(id);
   }
 }
