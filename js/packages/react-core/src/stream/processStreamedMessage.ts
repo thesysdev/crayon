@@ -81,7 +81,7 @@ export const processStreamedMessage = async ({
           });
           break;
         }
-        case SSEType.ResponseTemplateArgs: {
+        case SSEType.ResponseTemplateArgsChunk: {
           const responseTemplateArgs = ResponseTemplateArgsChunk.fromSSEData(event.data);
           invariant(lastMessageContent?.type === "template", "response template expected");
           messageContent.pop();
@@ -104,6 +104,10 @@ export const processStreamedMessage = async ({
         case SSEType.MessageUpdate: {
           const messageUpdate = MessageUpdate.fromSSEData(event.data);
           messageId = messageUpdate.id;
+          break;
+        }
+        default: {
+          console.warn(`Unknown event type: ${event.event}`);
           break;
         }
       }

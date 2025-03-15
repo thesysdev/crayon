@@ -14,7 +14,7 @@ export type JSONValue =
 export enum SSEType {
   TextDelta = "text",
   ResponseTemplate = "response_tpl",
-  ResponseTemplateArgs = "response_tpl_args",
+  ResponseTemplateArgsChunk = "response_tpl_args_chunk",
   ContextAppend = "context_append",
   MessageUpdate = "message_update",
 }
@@ -62,7 +62,7 @@ export class ResponseTemplateArgsChunk implements Chunk {
 
   toSSEString(): string {
     return encode({
-      event: SSEType.ResponseTemplateArgs,
+      event: SSEType.ResponseTemplateArgsChunk,
       data: this.chunk,
     });
   }
