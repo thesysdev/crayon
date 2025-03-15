@@ -49,7 +49,14 @@ export const useThreadListManager = (props: Props): DefaultManager => {
           propsRef.current
             .fetchThreadList()
             .then((threads) => {
-              set({ isLoading: false, threads });
+              const existingThreads = store.getState().threads;
+              const newThreads = threads.filter(
+                (t) => !existingThreads.some((t2) => t2.threadId === t.threadId),
+              );
+              // we merge the existing threads so that if a thread is created while the fetching is in progress
+              // it won't be removed
+              const updatedThreads = [...existingThreads, ...newThreads];
+              set({ isLoading: false, threads: updatedThreads });
             })
             .catch((e) => {
               set({ isLoading: false, error: e });
