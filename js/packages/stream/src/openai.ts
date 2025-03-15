@@ -17,25 +17,27 @@ interface OpenAIMessage {
 
 type ChatCompletionStreamingRunner = AsyncIterable<ChatCompletionChunk>;
 
-export const fromOpenAICompletion = async (
+export const fromOpenAICompletion = (
   completion: ChatCompletionStreamingRunner,
   opts?: TransformerOpts,
 ) => {
   const { stream, onText, onEnd, onError, onLLMEnd } = crayonStream(opts);
-  try {
-    for await (const chunk of completion) {
-      const content = chunk.choices[0]?.delta?.content;
-      content && onText(content);
+  (async () => {
+    try {
+      for await (const chunk of completion) {
+        const content = chunk.choices[0]?.delta?.content;
+        content && onText(content);
+      }
+      onLLMEnd();
+      onEnd();
+    } catch (error) {
+      if (error instanceof Error) {
+        onError(error);
+      } else {
+        onError(new Error(String(error)));
+      }
     }
-    onLLMEnd();
-    onEnd();
-  } catch (error) {
-    if (error instanceof Error) {
-      onError(error);
-    } else {
-      onError(new Error(String(error)));
-    }
-  }
+  })();
   return stream;
 };
 
