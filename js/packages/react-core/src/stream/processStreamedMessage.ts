@@ -88,7 +88,6 @@ export const processStreamedMessage = async ({
           messageContent = messageContent.concat({
             type: "template",
             name: lastMessageContent.name,
-            // XXX: This doesn't look right.
             templateProps: {
               ...(lastMessageContent.templateProps || {}),
               content:
