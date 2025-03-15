@@ -1,6 +1,6 @@
 import { parse } from "best-effort-json-parser";
-import { ResponseTemplate, TextChunk } from "./types";
 import invariant from "tiny-invariant";
+import { ResponseTemplate, TextChunk } from "./types";
 // Define the types for the data flowing through the stream
 type InputType = string; // Change this to match your input type
 type OutputType = string; // Change this to match your output type

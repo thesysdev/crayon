@@ -2,6 +2,7 @@ import {
   ChatProvider,
   CreateMessage,
   Message,
+  processStreamedMessage,
   ResponseTemplate,
   Thread,
   ThreadListManager,
@@ -10,7 +11,6 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
-import { processStreamedMessage } from "@crayonai/react-core";
 import { useEffect, useRef } from "react";
 import invariant from "tiny-invariant";
 import {
