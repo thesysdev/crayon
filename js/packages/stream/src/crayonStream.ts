@@ -10,13 +10,13 @@ export const crayonStream = (opts?: TransformerOpts) => {
   });
   const crayonTransformer = new CrayonDataStreamTransformer(opts);
   const onText = (text: string) => {
-    controller?.enqueue(text);
+    controller!.enqueue(text);
   };
   const onEnd = () => {
-    controller?.close();
+    controller!.close();
   };
   const onError = (e: Error) => {
-    controller?.error(e);
+    controller!.error(e);
   };
   const onLLMEnd = () => {
     crayonTransformer.reset();

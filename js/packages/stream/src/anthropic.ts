@@ -11,15 +11,17 @@ export const toAnthropicAIMessages = (messages: any[]) => {
     if (!message.message) {
       continue;
     }
-    if (typeof message.message === "string") {
+    if (message.role === "user") {
       anthropicAIMessages.push({
         role: message.role,
         content: message.message,
       });
-    } else if (Array.isArray(message.message)) {
+    } else if (message.role === "assistant") {
       anthropicAIMessages.push({
         role: message.role,
-        content: JSON.stringify(message.message),
+        content: JSON.stringify({
+          response: message.message,
+        }),
       });
     }
   }

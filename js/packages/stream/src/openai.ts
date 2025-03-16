@@ -52,10 +52,19 @@ export const toOpenAIMessages = (messages: any[]) => {
     if (!message.message) {
       continue;
     }
-    openAIMessages.push({
-      role: message.role,
-      content: JSON.stringify(message.message),
-    });
+    if (message.role === "user") {
+      openAIMessages.push({
+        role: message.role,
+        content: message.message,
+      });
+    } else if (message.role === "assistant") {
+      openAIMessages.push({
+        role: message.role,
+        content: JSON.stringify({
+          response: message.message,
+        }),
+      });
+    }
   }
   return openAIMessages;
 };
