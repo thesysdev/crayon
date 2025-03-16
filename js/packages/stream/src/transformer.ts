@@ -25,10 +25,13 @@ export class CrayonDataStreamTransformer implements TransformStream<InputType, O
       invariant(name, "name is required in ResponseTemplate");
       this.controller?.enqueue(new ResponseTemplate(name, templateProps).toSSEString());
     }
+    this.hasPendingTemplateToStream = false;
     this.streamedContent = "";
   }
 
   constructor(opts?: TransformerOpts) {
+    this.hasPendingTemplateToStream = false;
+    this.streamedContent = "";
     let previouslyStreamedTextContent: string = "";
 
     const transform = new TransformStream({
