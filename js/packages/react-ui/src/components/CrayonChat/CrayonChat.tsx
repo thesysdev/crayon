@@ -13,19 +13,9 @@ import {
 } from "@crayonai/react-core";
 import { useEffect, useRef } from "react";
 import invariant from "tiny-invariant";
-import {
-  Container,
-  MobileHeader,
-  NewChatButton,
-  SidebarContainer,
-  SidebarContent,
-  SidebarHeader,
-  SidebarSeparator,
-  ThreadContainer,
-} from "../Shell";
-import { Composer, Messages, ScrollArea } from "../Shell/Thread";
-import { ThreadList } from "../Shell/ThreadList";
 import { ThemeProvider } from "../ThemeProvider";
+import { ComposedCopilot } from "./ComposedCopilot";
+import { ComposedStandalone } from "./ComposedStandalone";
 
 interface CrayonChatProps {
   processMessage?: (params: {
@@ -39,6 +29,7 @@ interface CrayonChatProps {
   logoUrl?: string;
   agentName?: string;
   responseTemplates?: ResponseTemplate[];
+  type?: "copilot" | "standalone";
 }
 
 export const CrayonChat = ({
@@ -49,6 +40,7 @@ export const CrayonChat = ({
   agentName = "My Agent",
   responseTemplates,
   createThread,
+  type = "standalone",
 }: CrayonChatProps) => {
   invariant(processMessage || userThreadManager, "processMessage or threadManager is required");
 
@@ -129,23 +121,11 @@ export const CrayonChat = ({
   return (
     <ThemeProvider>
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
-        <Container logoUrl={logoUrl} agentName={agentName}>
-          <SidebarContainer>
-            <SidebarHeader />
-            <SidebarContent>
-              <NewChatButton />
-              <SidebarSeparator />
-              <ThreadList />
-            </SidebarContent>
-          </SidebarContainer>
-          <ThreadContainer>
-            <MobileHeader />
-            <ScrollArea>
-              <Messages />
-            </ScrollArea>
-            <Composer />
-          </ThreadContainer>
-        </Container>
+        {type === "copilot" ? (
+          <ComposedCopilot logoUrl={logoUrl} agentName={agentName} />
+        ) : (
+          <ComposedStandalone logoUrl={logoUrl} agentName={agentName} />
+        )}
       </ChatProvider>
     </ThemeProvider>
   );
