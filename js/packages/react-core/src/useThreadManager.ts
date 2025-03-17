@@ -51,7 +51,7 @@ export const useThreadManager = (props: Props): ThreadManager => {
             const newMessages = await propsRef.current.onProcessMessage({
               message,
               threadManager: store.getState(),
-              abortController: new AbortController(),
+              abortController,
             });
 
             store.getState().appendMessages(...newMessages);
