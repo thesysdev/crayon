@@ -33,6 +33,8 @@ export type ThreadActions = {
 export type ThreadState = {
   /** Indicates if the thread is currently processing and controls should be disabled */
   isRunning?: boolean | undefined;
+  /** Indicates if the messages are currently loading */
+  isLoadingMessages: boolean | undefined;
   messages: Message[];
   error: Error | null | undefined;
   responseTemplates: {

@@ -10,6 +10,7 @@ export const useThreadManagerStore = (inputThreadManager: ThreadManager) => {
 
   const [threadManagerStore] = useState(() =>
     create<ThreadManager>(() => ({
+      isLoadingMessages: inputThreadManager.isLoadingMessages,
       isRunning: inputThreadManager.isRunning,
       messages: inputThreadManager.messages,
       error: inputThreadManager.error,
@@ -28,8 +29,14 @@ export const useThreadManagerStore = (inputThreadManager: ThreadManager) => {
       isRunning: inputThreadManager.isRunning,
       messages: inputThreadManager.messages,
       error: inputThreadManager.error,
+      isLoadingMessages: inputThreadManager.isLoadingMessages,
     });
-  }, [inputThreadManager.isRunning, inputThreadManager.messages, inputThreadManager.error]);
+  }, [
+    inputThreadManager.isRunning,
+    inputThreadManager.messages,
+    inputThreadManager.error,
+    inputThreadManager.isLoadingMessages,
+  ]);
 
   if (inputThreadManagerRef.current.responseTemplates !== inputThreadManager.responseTemplates) {
     throw new Error("memoize response templates");
