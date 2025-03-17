@@ -17,6 +17,7 @@ export enum SSEType {
   ResponseTemplatePropsChunk = "tpl_props_chunk",
   ContextAppend = "context_append",
   MessageUpdate = "message_update",
+  Error = "error",
 }
 
 interface Chunk {
@@ -101,5 +102,20 @@ export class MessageUpdate implements Chunk {
     const { id } = JSON.parse(data);
     invariant(id, "id is required in MessageUpdate");
     return new MessageUpdate(id);
+  }
+}
+
+export class Error implements Chunk {
+  constructor(readonly error: string) {}
+
+  toSSEString(): string {
+    return encode({
+      event: SSEType.Error,
+      data: this.error,
+    });
+  }
+
+  static fromSSEData(data: string): Error {
+    return new Error(data);
   }
 }
