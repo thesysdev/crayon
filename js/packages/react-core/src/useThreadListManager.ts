@@ -50,13 +50,7 @@ export const useThreadListManager = (props: Props): DefaultManager => {
             .fetchThreadList()
             .then((threads) => {
               const existingThreads = store.getState().threads;
-              const newThreads = threads.filter(
-                (t) => !existingThreads.some((t2) => t2.threadId === t.threadId),
-              );
-              // we merge the existing threads so that if a thread is created while the fetching is in progress
-              // it won't be removed
-              const updatedThreads = [...existingThreads, ...newThreads];
-              set({ isLoading: false, threads: updatedThreads });
+              set({ isLoading: false, threads: mergeThreadList(existingThreads, threads) });
             })
             .catch((e) => {
               set({ isLoading: false, error: e });
@@ -65,7 +59,7 @@ export const useThreadListManager = (props: Props): DefaultManager => {
         createThread: async (firstMessage: UserMessage) => {
           const thread = await propsRef.current.createThread(firstMessage);
           set((state) => ({
-            threads: [thread, ...state.threads],
+            threads: mergeThreadList(state.threads, [thread]),
           }));
           return thread;
         },
@@ -105,4 +99,10 @@ export const useThreadListManager = (props: Props): DefaultManager => {
   }, []);
 
   return useStore(store);
+};
+
+const mergeThreadList = (existingThreads: Thread[], newThreads: Thread[]) => {
+  return Array.from(
+    new Map([...existingThreads, ...newThreads].map((t) => [t.threadId, t])).values(),
+  ).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 };
