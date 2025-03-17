@@ -82,7 +82,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
       <div className="crayon-gallery__modal-content">
         <div className="crayon-gallery__modal-header">
           <span className="crayon-gallery__modal-heading">All Photos</span>
-          <IconButton size="extra-small" variant="secondary" icon={<X />} onClick={onClose} />
+          <IconButton size="small" variant="secondary" icon={<X />} onClick={onClose} />
         </div>
         <div className="crayon-gallery__modal-main">
           <img
@@ -101,7 +101,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
               aria-label="Scroll images left"
               icon={<ChevronLeft />}
               variant="secondary"
-              size="small"
+              size="extra-small"
             />
           )}
 
@@ -130,7 +130,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
               aria-label="Scroll images right"
               icon={<ChevronRight />}
               variant="secondary"
-              size="small"
+              size="extra-small"
             />
           )}
         </div>
