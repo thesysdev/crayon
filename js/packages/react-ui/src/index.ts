@@ -9,6 +9,7 @@ export * from "./components/Carousel";
 export * from "./components/Charts";
 export * from "./components/CheckBoxGroup";
 export * from "./components/CheckBoxItem";
+export * from "./components/CopilotShell";
 export * from "./components/CrayonChat";
 export * from "./components/DatePicker";
 export * from "./components/FollowUpBlock";
