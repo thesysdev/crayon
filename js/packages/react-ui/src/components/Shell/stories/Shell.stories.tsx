@@ -8,7 +8,7 @@ import { Container } from "../Container";
 import { MobileHeader } from "../MobileHeader";
 import { NewChatButton } from "../NewChatButton";
 import { SidebarContainer, SidebarContent, SidebarHeader, SidebarSeparator } from "../Sidebar";
-import { Composer, Messages, ScrollArea, ThreadContainer } from "../Thread";
+import { Composer, MessageLoading, Messages, ScrollArea, ThreadContainer } from "../Thread";
 import { ThreadList } from "../ThreadList";
 import logoUrl from "./thesysdev_logo.jpeg";
 
@@ -79,9 +79,9 @@ export const Default = {
         const newMessage = Object.assign({}, message, {
           id: crypto.randomUUID(),
         }) as Message;
-
+        threadManager.appendMessages(newMessage);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         return [
-          newMessage,
           {
             id: crypto.randomUUID(),
             role: "assistant",
@@ -107,7 +107,7 @@ export const Default = {
           <ThreadContainer>
             <MobileHeader />
             <ScrollArea>
-              <Messages />
+              <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <Composer />
           </ThreadContainer>

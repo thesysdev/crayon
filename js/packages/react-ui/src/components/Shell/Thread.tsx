@@ -11,6 +11,7 @@ import React, { memo, useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../hooks/useComposerState";
 import { useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { IconButton } from "../IconButton";
+import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
 import { useShellStore } from "./store";
 
 export const ThreadContainer = ({
@@ -41,13 +42,14 @@ export const ScrollArea = ({
   userMessageSelector?: string;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const { messages } = useThreadState();
+  const { messages, isRunning } = useThreadState();
 
   useScrollToBottom({
     ref,
     lastMessage: messages[messages.length - 1] || { id: "" },
     scrollVariant,
     userMessageSelector,
+    isRunning,
   });
 
   return (
@@ -149,7 +151,27 @@ export const RenderMessage = memo(
   },
 );
 
-export const Messages = ({ className }: { className?: string }) => {
+export const MessageLoading = () => {
+  const { isRunning } = useThreadState();
+
+  if (!isRunning) {
+    return null;
+  }
+
+  return (
+    <div className="crayon-shell-thread-message-loading">
+      <MessageLoadingComponent />
+    </div>
+  );
+};
+
+export const Messages = ({
+  className,
+  loader,
+}: {
+  className?: string;
+  loader?: React.ReactNode;
+}) => {
   const { messages } = useThreadState();
 
   return (
@@ -164,6 +186,7 @@ export const Messages = ({ className }: { className?: string }) => {
           </MessageProvider>
         );
       })}
+      {loader}
     </div>
   );
 };
@@ -171,11 +194,11 @@ export const Messages = ({ className }: { className?: string }) => {
 export const Composer = ({ className }: { className?: string }) => {
   const { textContent, setTextContent } = useComposerState();
   const { processMessage, onCancel } = useThreadActions();
-  const { isRunning } = useThreadState();
+  const { isRunning, isLoadingMessages } = useThreadState();
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = () => {
-    if (!textContent.trim() || isRunning) {
+    if (!textContent.trim() || isRunning || isLoadingMessages) {
       return;
     }
 

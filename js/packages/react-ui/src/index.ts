@@ -22,6 +22,7 @@ export * from "./components/Input";
 export * from "./components/Label";
 export * from "./components/ListBlock";
 export * from "./components/ListItem";
+export * from "./components/MessageLoading";
 export * from "./components/RadioGroup";
 export * from "./components/RadioItem";
 export * from "./components/Select";

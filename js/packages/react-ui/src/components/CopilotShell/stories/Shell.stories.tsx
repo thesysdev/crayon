@@ -8,6 +8,7 @@ import {
   Composer,
   Container,
   Header,
+  MessageLoading,
   Messages,
   ScrollArea,
   ThreadContainer,
@@ -83,9 +84,9 @@ export const Default = {
         const newMessage = Object.assign({}, message, {
           id: crypto.randomUUID(),
         }) as Message;
-
+        threadManager.appendMessages(newMessage);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         return [
-          newMessage,
           {
             id: crypto.randomUUID(),
             role: "assistant",
@@ -105,7 +106,7 @@ export const Default = {
             <ThreadContainer>
               <Header />
               <ScrollArea>
-                <Messages />
+                <Messages loader={<MessageLoading />} />
               </ScrollArea>
               <Composer />
             </ThreadContainer>

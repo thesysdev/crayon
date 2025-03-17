@@ -5,12 +5,14 @@ export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: 
   lastMessage,
   scrollVariant,
   userMessageSelector = ".crayon-shell-thread-message-user",
+  isRunning,
 }: {
   ref: RefObject<T>;
   // scroll to bottom when this value changes
   lastMessage: L;
   scrollVariant: "always" | "once" | "user-message-anchor";
   userMessageSelector?: string;
+  isRunning?: boolean;
 }) => {
   const previousLastMessage = useRef<L | null>(null);
   const lastUserMessage = useRef<HTMLElement | null>(null);
@@ -59,4 +61,13 @@ export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: 
 
     previousLastMessage.current = lastMessage;
   }, [ref, lastMessage, scrollVariant, userMessageSelector]);
+
+  useEffect(() => {
+    if (isRunning) {
+      ref.current?.scrollTo({
+        top: ref.current?.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [isRunning]);
 };
