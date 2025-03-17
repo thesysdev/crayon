@@ -34,15 +34,16 @@ const config: StorybookConfig = {
       resolve: {
         alias: {
           "@crayonai/react-core": path.resolve(__dirname, "../../react-core/src/index.ts"),
+          "@crayonai/stream": path.resolve(__dirname, "../../stream/src/index.ts"),
         },
       },
       optimizeDeps: {
-        exclude: ["@crayonai/react-core"],
+        exclude: ["@crayonai/react-core", "@crayonai/stream"],
         include: ["react", "react-dom"],
       },
       build: {
         commonjsOptions: {
-          include: [/@crayonai\/react-core/, /node_modules/],
+          include: [/@crayonai\/react-core/, /node_modules/, /@crayonai\/stream/],
         },
       },
     });
