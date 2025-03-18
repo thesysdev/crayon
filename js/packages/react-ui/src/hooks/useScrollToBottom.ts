@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef } from "react";
+import { RefObject, useCallback, useEffect, useRef } from "react";
 
 export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: string }>({
   ref,
@@ -17,7 +17,7 @@ export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: 
   const previousLastMessage = useRef<L | null>(null);
   const lastUserMessage = useRef<HTMLElement | null>(null);
 
-  useEffect(() => {
+  const scrollToBottom = useCallback(() => {
     const element = ref.current;
     if (!element) {
       return;
@@ -63,11 +63,12 @@ export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: 
   }, [ref, lastMessage, scrollVariant, userMessageSelector]);
 
   useEffect(() => {
+    scrollToBottom();
+  }, [scrollToBottom]);
+
+  useCallback(() => {
     if (isRunning) {
-      ref.current?.scrollTo({
-        top: ref.current?.scrollHeight,
-        behavior: "smooth",
-      });
+      scrollToBottom();
     }
   }, [isRunning]);
 };
