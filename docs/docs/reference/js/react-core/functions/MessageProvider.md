@@ -5,7 +5,7 @@ function MessageProvider(__namedParameters: {
 }): Element;
 ```
 
-Defined in: [packages/react-core/src/hooks/useMessage.tsx:25](https://github.com/thesysdev/crayon/blob/808d53cdbf57dfd9386204060478ba44146d3921/js/packages/react-core/src/hooks/useMessage.tsx#L25)
+Defined in: [packages/react-core/src/hooks/useMessage.tsx:25](https://github.com/thesysdev/crayon/blob/f26f6e3fea35942286effcb2ff9bd07ac1f92984/js/packages/react-core/src/hooks/useMessage.tsx#L25)
 
 ## Parameters
 
