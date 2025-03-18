@@ -1,9 +1,9 @@
 from typing import Any, Optional
 
 
-def invariant(condition: bool, message: Optional[str] = None):
+def invariant(condition: bool, message: Optional[str] = None) -> None:
     if not condition:
-        raise ValueError(message or "Invariant violation")
+        raise ValueError(message or "invalid json")
 
 
 def parse(text: str) -> Any:
