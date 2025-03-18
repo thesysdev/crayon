@@ -19,15 +19,13 @@ export const ComposedCopilot = ({
 }: ComposedCopilotProps) => {
   return (
     <Container logoUrl={logoUrl} agentName={agentName}>
-      <Container logoUrl={logoUrl} agentName="Crayon">
-        <ThreadContainer>
-          <Header />
-          <ScrollArea>
-            <Messages loader={<MessageLoading />} />
-          </ScrollArea>
-          <Composer />
-        </ThreadContainer>
-      </Container>
+      <ThreadContainer>
+        <Header />
+        <ScrollArea>
+          <Messages loader={<MessageLoading />} />
+        </ScrollArea>
+        <Composer />
+      </ThreadContainer>
     </Container>
   );
 };
