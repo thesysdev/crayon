@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://crayonai.org">Homepage</a> ·
-  <a href="https://crayonai.org/docs/getting-started">Documentation</a> ·
+  <a href="https://crayonai.org/docs">Documentation</a> ·
   <a href="https://thesys.dev">Thesys</a>
 </p>
 
