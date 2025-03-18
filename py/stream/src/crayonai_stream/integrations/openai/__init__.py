@@ -1,7 +1,7 @@
 from crayonai_stream.integrations.openai.helper import toOpenAIMessage
-from crayonai_stream.integrations.openai.stream import crayon_stream
+from crayonai_stream.integrations.openai.stream import openai_crayon_stream
 
 __all__ = [
     "toOpenAIMessage",
-    "crayon_stream",
+    "openai_crayon_stream",
 ]

@@ -14,6 +14,7 @@ from crayonai_stream.protocol import (
     SSEType,
     TextChunk,
 )
+from crayonai_stream.stream import crayon_stream
 
 __all__ = [
     "Chunk",
@@ -29,4 +30,5 @@ __all__ = [
     "TextResponseSchema",
     "CrayonMessage",
     "TemplateDefinition",
+    "crayon_stream",
 ]

@@ -3,7 +3,6 @@ from typing import Union
 
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
-    ChatCompletionSystemMessageParam,
     ChatCompletionUserMessageParam,
 )
 
@@ -24,7 +23,6 @@ def toOpenAIMessage(
 ) -> Union[
     ChatCompletionUserMessageParam,
     ChatCompletionAssistantMessageParam,
-    ChatCompletionSystemMessageParam,
 ]:
     if msg.role == "user":
         return ChatCompletionUserMessageParam(

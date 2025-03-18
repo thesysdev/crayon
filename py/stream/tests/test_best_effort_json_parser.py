@@ -122,3 +122,10 @@ def test_unicode_characters():
     assert parse('{"a": "mixed unicode 🌟 and \\"quotes\\""') == {
         "a": 'mixed unicode 🌟 and "quotes"'
     }
+
+
+# This test doesn't pass because the parser is not handling
+# the case where the key is not closed.
+# def test_partial_key():
+#     """Test partial key in JSON"""
+#     assert parse('{"a' == {})
