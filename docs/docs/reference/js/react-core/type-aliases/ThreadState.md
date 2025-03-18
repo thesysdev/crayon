@@ -1,6 +1,7 @@
 ```ts
 type ThreadState = {
   error: Error | null | undefined;
+  isLoadingMessages: boolean | undefined;
   isRunning: boolean;
   messages: Message[];
   responseTemplates: {};
@@ -18,6 +19,14 @@ Represents the state of a thread
 ```ts
 error: Error | null | undefined;
 ```
+
+### isLoadingMessages
+
+```ts
+isLoadingMessages: boolean | undefined;
+```
+
+Indicates if the messages are currently loading
 
 ### isRunning?
 
