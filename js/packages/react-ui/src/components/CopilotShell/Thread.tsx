@@ -12,7 +12,6 @@ import { useComposerState } from "../../hooks/useComposerState";
 import { useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { IconButton } from "../IconButton";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
-import { useShellStore } from "../Shell/store";
 
 export const ThreadContainer = ({
   children,
@@ -85,10 +84,6 @@ export const AssistantMessageContainer = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const { logoUrl } = useShellStore((store) => ({
-    logoUrl: store.logoUrl,
-  }));
-
   return (
     <div className={clsx("crayon-copilot-shell-thread-message-assistant", className)}>
       <div className="crayon-copilot-shell-thread-message-assistant__content">{children}</div>
