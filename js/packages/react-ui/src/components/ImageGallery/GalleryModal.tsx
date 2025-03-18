@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IconButton } from "../IconButton";
 import { ImageItem } from "./ImageGallery";
 
-interface GalleryModalProps {
+export interface GalleryModalProps {
   images: ImageItem[];
   selectedImageIndex: number;
   setSelectedImageIndex: (index: number) => void;

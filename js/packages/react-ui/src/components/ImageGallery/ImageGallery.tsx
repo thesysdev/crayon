@@ -9,7 +9,7 @@ export interface ImageItem {
   details?: string;
 }
 
-interface CrayonGalleryProps {
+export interface CrayonGalleryProps {
   images: ImageItem[];
 }
 
