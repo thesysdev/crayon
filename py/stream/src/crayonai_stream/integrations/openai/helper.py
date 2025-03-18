@@ -6,7 +6,6 @@ from openai.types.chat import (
     ChatCompletionSystemMessageParam,
     ChatCompletionUserMessageParam,
 )
-from pydantic import BaseModel
 
 from crayonai_stream.crayon_message import CrayonMessage
 

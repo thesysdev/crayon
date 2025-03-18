@@ -1,6 +1,6 @@
 from typing import List, Literal, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class CrayonMessage(BaseModel):
@@ -8,5 +8,4 @@ class CrayonMessage(BaseModel):
     role: Literal["user", "assistant"]
     message: Union[str, List[dict]]
 
-    class Config:
-        extra = "allow"  # Allow extra fields
+    model_config = ConfigDict(extra="allow")  # Allow extra fields

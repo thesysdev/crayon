@@ -4,7 +4,6 @@ from crayonai_stream.js_schema_helpers import (
     pydantic_to_template_schema,
     templates_to_response_format,
 )
-from crayonai_stream.openai_helper import toOpenAIMessage
 from crayonai_stream.protocol import (
     Chunk,
     ContextUpdate,
@@ -15,7 +14,6 @@ from crayonai_stream.protocol import (
     SSEType,
     TextChunk,
 )
-from crayonai_stream.stream import crayon_stream
 
 __all__ = [
     "Chunk",
@@ -29,8 +27,6 @@ __all__ = [
     "pydantic_to_template_schema",
     "templates_to_response_format",
     "TextResponseSchema",
-    "toOpenAIMessage",
-    "crayon_stream",
     "CrayonMessage",
     "TemplateDefinition",
 ]
