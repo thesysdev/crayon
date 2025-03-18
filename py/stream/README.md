@@ -15,7 +15,7 @@ pip install crayonai_stream
 Convert Pydantic models to template schemas:
 
 ```python
-from crayonai_stream.jsonSchemaHelpers import pydantic_to_template_schema
+from crayonai_stream import pydantic_to_template_schema
 from pydantic import BaseModel
 
 class MyTemplate(BaseModel):
@@ -28,7 +28,7 @@ schema = pydantic_to_template_schema(MyTemplate, "my_template", "A sample templa
 Create response formats with multiple templates:
 
 ```python
-from crayonai_stream.jsonSchemaHelpers import templates_to_response_format, TemplateDefinition
+from crayonai_stream import templates_to_response_format, TemplateDefinition
 
 response_format = templates_to_response_format(
     TemplateDefinition(
@@ -47,12 +47,8 @@ Install development dependencies:
 pip install -e ".[dev]"
 ```
 
-Run tests:
+Run all checks (useful for CI):
 
 ```bash
-pytest
+make ci
 ```
-
-## License
-
-MIT License
