@@ -11,7 +11,7 @@ type UserMessage = {
 };
 ```
 
-Defined in: [packages/react-core/src/types/message.ts:22](https://github.com/thesysdev/crayon/blob/f26f6e3fea35942286effcb2ff9bd07ac1f92984/js/packages/react-core/src/types/message.ts#L22)
+Defined in: [packages/react-core/src/types/message.ts:14](https://github.com/thesysdev/crayon/blob/0127003ed9bff74d06359995c8d9eea4558f4151/js/packages/react-core/src/types/message.ts#L14)
 
 ## Type declaration
 

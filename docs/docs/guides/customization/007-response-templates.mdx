@@ -1,0 +1,211 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Creating Response Templates
+
+Response templates are a powerful feature in Crayon that allow you to control how AI responses are structured and displayed. They combine a React component for visualization with a schema that tells the LLM exactly how to format its response. This guide will show you how to create custom response templates using a recipe card example.
+
+For Crayon, a response template is a React component. Something as simple as this:
+```tsx
+const responseTemplate = {
+    name: "recipe",  // Unique identifier for this template
+    Component: RecipeTemplate  // React component that renders the response
+}
+```
+
+The frontend can send a list of such templates, and the backend can tell the LLM which template to choose for which situation. Crayon automatically handles the rest.
+For example, if you wanted to create an agent that helps the users with cooking recipes, you could do so in 3 simple steps:
+
+## Step 1: Creating a `RecipeTemplate` component
+For the purpose of this guide, let's create a simple card that renders a cooking recipe.
+<Tabs groupId="frontend-lang">
+<TabItem value="ts" label="TypeScript">
+```tsx
+interface RecipeTemplateProps {
+  title: string;      // Name of the recipe
+  ingredients: string[];  // List of required ingredients
+  steps: string[];    // Step-by-step cooking instructions
+}
+export default function RecipeTemplate(props: RecipeTemplateProps) {
+  return (
+    <div style={styles.card}>
+      <h1>{props.title}</h1>
+      <hr />
+      <h3>Ingredients</h3>
+      <ul>
+        {props.ingredients.map((ingredient) => (
+          <li key={ingredient}>{ingredient}</li>
+        ))}
+      </ul>
+      <h3>Steps</h3>
+      <ol>
+        {props.steps.map((step) => (
+          <li key={step}>{step}</li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+const styles: Record<string, React.CSSProperties> = {
+  card: {
+    borderRadius: "16px",
+    boxShadow: "0 0 8px rgba(0, 0, 0, 0.4)",
+    padding: "4px 8px",
+    fontFamily: "system-ui, sans-serif",
+  },
+};
+```
+</TabItem>
+<TabItem value="js" label="JavaScript">
+```jsx
+export default function RecipeTemplate(props) {
+  return (
+    <div style={styles.card}>
+      <h1>{props.title}</h1>
+      <hr />
+      <h3>Ingredients</h3>
+      <ul>
+        {props.ingredients.map((ingredient) => (
+          <li key={ingredient}>{ingredient}</li>
+        ))}
+      </ul>
+      <h3>Steps</h3>
+      <ol>
+        {props.steps.map((step) => (
+          <li key={step}>{step}</li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+const styles = {
+  card: {
+    borderRadius: "16px",
+    boxShadow: "0 0 8px rgba(0, 0, 0, 0.4)",
+    padding: "4px 8px",
+    fontFamily: "system-ui, sans-serif",
+  },
+};
+```
+</TabItem>
+</Tabs>
+
+
+## Step 2: Creating a schema for the response template
+
+We need to tell the LLM about the structure in which it needs to respond in order to be compatible with our response template component. For this, we define a zod schema:
+
+```ts
+mport { z } from "zod";
+
+export const RecipeTemplateSchema = z.object({
+  title: z.string(),
+  ingredients: z.array(z.string()),
+  steps: z
+    .array(z.string())
+    .describe(
+      "The instructions to cook the recipe. Do not prefix it with numbers or use markdown, just the instructions."
+    ),
+});
+```
+
+## Step 3: Creating a backend endpoint to tell the LLM about the schema
+
+Now that we have our template and its schema ready, we need a backend endpoint that our frontend will call to get the agent's response. This endpoint will be responsible for telling the LLM about the template. Crayon provides some handy utility functions through `crayon/stream` to help with this.
+
+<Tabs groupId="frontend-lang">
+<TabItem value='ts' label="TypeScript">
+```tsx
+import { NextRequest } from "next/server";
+import OpenAI from "openai";
+import {
+  fromOpenAICompletion,
+  toOpenAIMessages,
+  templatesToResponseFormat,
+} from "@crayonai/stream";
+import { Message } from "@crayonai/react-core";
+import { RecipeTemplateSchema } from "@/types/recipe";
+
+export async function POST(req: NextRequest) {
+  const { messages } = (await req.json()) as { messages: Message[] };
+  const client = new OpenAI();
+  const responseFormat = templatesToResponseFormat({
+    schema: RecipeTemplateSchema,
+    name: "recipe",
+    description: "Use this template to generate a recipe",
+  });
+  const llmStream = await client.chat.completions.create({
+    model: "gpt-4o",
+    messages: toOpenAIMessages(
+      messages
+    ) as OpenAI.Chat.ChatCompletionMessageParam[],
+    stream: true,
+    response_format: responseFormat,
+  });
+  const responseStream = fromOpenAICompletion(llmStream);
+  return new Response(responseStream as unknown as ReadableStream<Uint8Array>, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+    },
+  });
+}
+```
+</TabItem>
+
+<TabItem value='js' label="JavaScript">
+```jsx
+import { NextRequest } from "next/server";
+import OpenAI from "openai";
+import {
+  fromOpenAICompletion,
+  toOpenAIMessages,
+  templatesToResponseFormat,
+} from "@crayonai/stream";
+import { Message } from "@crayonai/react-core";
+import { RecipeTemplateSchema } from "@/types/recipe";
+
+export async function POST(req) {
+  const { messages } = await req.json();
+  const client = new OpenAI();
+  const responseFormat = templatesToResponseFormat({
+    schema: RecipeTemplateSchema,
+    name: "recipe",
+    description: "Use this template to generate a recipe",
+  });
+  const llmStream = await client.chat.completions.create({
+    model: "gpt-4o",
+    messages: toOpenAIMessages(
+      messages
+    ),
+    stream: true,
+    response_format: responseFormat,
+  });
+  const responseStream = fromOpenAICompletion(llmStream);
+  return new Response(responseStream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+    },
+  });
+}
+```
+</TabItem>
+</Tabs>
+
+This API can then be used in the `processMessage` method as shown in <ins>[Getting started with Crayon](../006-getting-started.mdx)</ins>, and this response template can be passed to `CrayonChat` as follows:
+```tsx
+<CrayonChat
+  processMessage={processMessage}
+  responseTemplates={[
+    {
+      name: "text",
+      Component: TextTemplate,
+    },
+  ]}
+/>
+```

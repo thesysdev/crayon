@@ -1,0 +1,126 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Getting Started with Crayon
+
+Crayon provides a `CrayonChat` component, which does most of the heavy lifting for both logic and UI. Using the CrayonChat component is as simple as implementing a `processMessage` function, and providing the `responseTemplates` you wish to use.
+
+## Step 1: Implementing `processMessage`
+
+The `processMessage` function is the core of your chat implementation. It receives three parameters:
+- `threadId`: A unique identifier for the chat conversation
+- `messages`: An array containing all messages in the conversation, including the new one
+- `abortController`: Used to cancel the request if needed
+
+This function should make an API call to your backend and return a response following the <ins>[Streaming Protocol](../concepts/003-data-format.mdx)</ins>. Here's a basic example that calls a `/api/chat` endpoint:
+
+<Tabs groupId="frontend-lang">
+<TabItem value="ts" label="TypeScript">
+```tsx
+const processMessage = async ({
+  threadId,
+  messages,
+  abortController,
+}: {
+  threadId: string;
+  messages: Message[];
+  abortController: AbortController;
+}) => {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    body: JSON.stringify({ threadId, messages }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+    },
+    signal: abortController.signal,
+  });
+  return response;
+};
+```
+</TabItem>
+<TabItem value="js" label="JavaScript">
+```jsx
+const processMessage = async ({
+  threadId,
+  messages,
+  abortController,
+}) => {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    body: JSON.stringify({ threadId, messages }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+    },
+    signal: abortController.signal,
+  });
+  return response;
+};
+```
+</TabItem>
+</Tabs>
+
+## Step 2: Implementing a response template component
+
+Response templates are React components that define how different types of chat responses should be displayed. For example, you might have different templates for text messages, code blocks, or rich media content. For detailed information, see <ins>[Creating Response Templates](./customization/007-response-templates.mdx)</ins>.
+
+Here's a simple example that renders text in red:
+
+<Tabs groupId="frontend-lang">
+<TabItem value="ts" label="TypeScript">
+```tsx
+export const TextTemplate: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  return <div style={{color: 'red'}}>{children}</div>;
+};
+```
+</TabItem>
+<TabItem value="js" label="JavaScript">
+```jsx
+export const TextTemplate = ({ children }) => {
+  return <div style={{color: 'red'}}>{children}</div>;
+};
+```
+</TabItem>
+</Tabs>
+
+## Step 3: Putting it all together
+
+Now we can combine everything into a working chat interface. The `CrayonChat` component will handle:
+- Rendering the chat UI
+- Managing message threads
+- Making API calls
+- Displaying responses using your templates
+
+Here's how to set it up:
+
+<Tabs groupId="frontend-lang">
+<TabItem value="ts" label="TypeScript">
+```tsx
+<CrayonChat
+  processMessage={processMessage}
+  responseTemplates={[
+    {
+      name: "text",
+      Component: TextTemplate,
+    },
+  ]}
+/>
+```
+</TabItem>
+<TabItem value="js" label="JavaScript">
+```jsx
+<CrayonChat
+  processMessage={processMessage}
+  responseTemplates={[
+    {
+      name: "text",
+      Component: TextTemplate,
+    },
+  ]}
+/>
+```
+</TabItem>
+</Tabs>
