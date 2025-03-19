@@ -1,5 +1,7 @@
 from typing import Any, Optional
 
+from crayonai_stream.logger import logger
+
 
 def invariant(condition: bool, message: Optional[str] = None) -> None:
     if not condition:
@@ -64,4 +66,6 @@ def parse(text: str) -> Any:
 
     import json
 
-    return json.loads(completed_json)
+    js = json.loads(completed_json)
+    logger.debug(f"parsed: {js}")
+    return js
