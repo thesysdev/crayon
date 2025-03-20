@@ -1,0 +1,124 @@
+# Customizing Crayon UI
+
+For simple use cases, the `CrayonChat` component is sufficient and gives you a ready-to-use UI. However, for more complex use cases, you might want to customize the UI.
+Crayon exposes all components used in the `CrayonChat` component individually, so you can customize them by passing props and by mixing your own custom components with them.
+
+The following JSX would create the same UI as the `CrayonChat` component but with individual components that you can customize as necessary:
+
+```tsx
+import {
+  ChatProvider,
+  useThreadListManager,
+  useThreadManager,
+} from "@crayonai/react-core";
+import {
+  Container,
+  SidebarContainer,
+  SidebarHeader,
+  SidebarContent,
+  SidebarSeparator,
+  ThreadList,
+  ThreadContainer,
+  MobileHeader,
+  ScrollArea,
+  Messages,
+  Composer,
+  NewChatButton,
+} from "@crayonai/react-ui/Shell";
+import { ThemeProvider } from "@crayonai/react-ui/ThemeProvider";
+
+const YourComponent = () => {
+  const threadListManager = useThreadListManager({
+    // /implement as necessary
+  });
+  const threadManager = useThreadManager({
+    // implement as necessary
+  });
+
+  const logoUrl = ""; // URL to the agent logo
+
+  return (
+    <ThemeProvider>
+      <ChatProvider
+        threadListManager={threadListManager}
+        threadManager={threadManager}
+      >
+        <Container logoUrl={logoUrl} agentName="Crayon">
+          <SidebarContainer>
+            <SidebarHeader />
+            <SidebarContent>
+              <NewChatButton />
+              <SidebarSeparator />
+              <ThreadList />
+            </SidebarContent>
+          </SidebarContainer>
+          <ThreadContainer>
+            <MobileHeader />
+            <ScrollArea>
+              <Messages />
+            </ScrollArea>
+            <Composer />
+          </ThreadContainer>
+        </Container>
+      </ChatProvider>
+    </ThemeProvider>
+  );
+};
+```
+
+You could then customize the UI to fit your needs. For example, if you wanted to get rid of the existing sidebar and implement your own, you could do so by just replacing
+the `SidebarContainer` component with your own `CustomSidebar` component.
+
+```tsx
+<ThemeProvider>
+  <ChatProvider
+    threadListManager={threadListManager}
+    threadManager={threadManager}
+  >
+    <Container logoUrl={logoUrl} agentName="Crayon">
+      <CustomSidebar />
+      <ThreadContainer>
+        <MobileHeader />
+        <ScrollArea>
+          <Messages />
+        </ScrollArea>
+        <Composer />
+      </ThreadContainer>
+    </Container>
+  </ChatProvider>
+</ThemeProvider>
+```
+
+## Customizing the styling
+
+There are 2 ways to customize the existing Crayon components:
+
+1. By passing custom classes to the components that support them.
+2. By providing a custom theme to the `ThemeProvider` component.
+
+### Passing custom classes
+
+Many of the components in the Crayon UI library support a `className` prop. This prop can be used to pass custom classes to the component, which can then be used to style the component using CSS.
+For example, you could style the thread list in the sidebar to stand out more by passing custom classes that add a background color and some padding:
+
+```tsx
+<SidebarContainer>
+  <SidebarHeader />
+  <SidebarContent>
+    <NewChatButton />
+    <SidebarSeparator />
+    <ThreadList className="rounded-md p-2 bg-gray-100" />
+  </SidebarContent>
+</SidebarContainer>
+```
+
+### Providing a custom theme
+
+The second way to customize the Crayon components is by providing a custom theme to the `ThemeProvider` component. This allows you to customize the styling of the UI globally.
+For example, if you wanted all the components to be rendered in their dark mode variant, and change the background of the UI to black, you could do something like this:
+
+```tsx
+<ThemeProvider mode="dark" theme={{ backgroundFills: "#000" }}>
+  {/* Rest of the crayon components you wish to include in the UI */}
+</ThemeProvider>
+```

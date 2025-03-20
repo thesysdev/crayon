@@ -1,0 +1,198 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Connecting Your Data
+
+Crayon is highly customizable in terms of UI, data and logic. If you are building an agent, chances are you would like to persist the threads that a user creates across sessions. Crayon exposes hooks that enable you to connect your backend APIs to list threads and their content.
+
+Detailed explanations of all of the hooks mentioned in this guide is available in the <ins>[API Reference](../../reference/js/react-core).</ins>
+
+## Managing the list of threads
+
+The `useThreadListManager` hook takes multiple functions that let you control every action on the theads list. Here is one example of how it can be used to control the actions and sync with your backend
+
+<Tabs groupId="frontend-lang">
+<TabItem value="ts" label="TypeScript">
+```tsx
+  const threadListManager = useThreadListManager({
+    fetchThreadList: async () => {
+      const response = await fetch("/api/threads");
+      const data = await response.json();
+      return data.threads.map((thread: Thread) => ({
+        threadId: +thread.threadId,
+        title: thread.title,
+        createdAt: new Date(thread.createdAt),
+        isRunning: false,
+      }));
+    },
+    createThread: (firstMessage) => {
+      return fetch("/api/threads", {
+        method: "POST",
+        body: JSON.stringify({
+          title: firstMessage.message!,
+        }),
+      }).then((res) => res.json());
+    },
+    deleteThread: async () => {}, // Called when the user deletes a thread. Use your delete thread API here
+    updateThread: async (t) => t, // Called when the user makes changes to an existing thread. Use your update thread API here
+    onSwitchToNew: () => {}, // Called when the user switches to a new thread.
+    onSelectThread: () => {}, // Called when the user selects an existing thread.
+  });
+```
+</TabItem>
+<TabItem value="js" label="JavaScript">
+```jsx
+  const threadListManager = useThreadListManager({
+    fetchThreadList: async () => {
+      const response = await fetch("/api/threads");
+      const data = await response.json();
+      return data.threads.map((thread) => ({
+        threadId: Number(thread.threadId),
+        title: thread.title,
+        createdAt: new Date(thread.createdAt),
+        isRunning: false,
+      }));
+    },
+    createThread: (firstMessage) => {
+      return fetch("/api/threads", {
+        method: "POST",
+        body: JSON.stringify({
+          title: firstMessage.message,
+        }),
+      }).then((res) => res.json());
+    },
+    deleteThread: async () => {}, // Called when the user deletes a thread. Use your delete API here
+    updateThread: async (t) => t, // Called when the user makes changes to an existing thread. Use your update thread API here
+    onSwitchToNew: () => {}, // Called when the user switches threads. This can be used to clear the chat when switching between threads
+    onSelectThread: () => {}, // Called when the user selects an existing thread.
+  });
+```
+</TabItem>
+</Tabs>
+
+## Managing data inside a thread
+
+The `useThreadManager` hook lets you handle the data and events inside a thread. Here's an example of how you can manage the selected thread. The `threadListManager` returned by `useThreadListManager` makes things easier by providing a few things you might need.
+
+<Tabs groupId="frontend-lang">
+<TabItem value="ts" label="TypeScript">
+```tsx
+  const threadManager = useThreadManager({
+    threadId: threadListManager.selectedThreadId,
+    shouldResetThreadState: threadListManager.shouldResetThreadState,
+    loadThread: async () => {
+      // Called to load the data for this specific thread. In this case, you would use your backend API that returns the selected thread's messages
+      const response = await fetch(
+        `/api/messages?threadId=${threadListManager.selectedThreadId}`
+      );
+      const data = await response.json();
+      return data.messages;
+    },
+    onProcessMessage: async ({ message, threadManager, abortController }) => {
+      // This is called when the user posts a message. Here, you might want to call your backend API that pushes messages inside the selected thread.
+      threadManager.appendMessages({
+        id: crypto.randomUUID(),
+        role: "user",
+        type: "prompt",
+        message: message.message as string,
+      });
+
+      let threadId = threadListManager.selectedThreadId;
+      // If this is a new thread that currently has not been created on the backend, create a thread, otherwise push message to an existing thread
+      if (!threadId) {
+        const thread = await threadListManager.createThread(
+          message as UserMessage
+        );
+        threadListManager.selectThread(thread.threadId!, false);
+        threadId = thread.threadId;
+      }
+      const response = await fetch("/api/ask", {
+        method: "POST",
+        body: JSON.stringify({ threadId, ...message }),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        signal: abortController.signal,
+      });
+
+      // This is a utility function provided by crayon to make handling streamed messages more convenient.
+      await processStreamedMessage({
+        response,
+        createMessage: threadManager.appendMessages,
+        updateMessage: threadManager.updateMessage,
+        deleteMessage: (messageId) => {
+          const newMessages = threadManager.messages.filter(
+            (message) => message.id !== messageId
+          );
+          threadManager.setMessages(newMessages);
+        },
+      });
+      return [];
+    },
+    responseTemplates: templates,
+  });
+```
+</TabItem>
+<TabItem value="js" label="JavaScript">
+```jsx
+  const threadManager = useThreadManager({
+    threadId: threadListManager.selectedThreadId,
+    shouldResetThreadState: threadListManager.shouldResetThreadState,
+    loadThread: async () => {
+      // Called to load the data for this specific thread. In this case, you would use your backend API that returns the selected thread's messages
+      const response = await fetch(
+        `/api/messages?threadId=${threadListManager.selectedThreadId}`
+      );
+      const data = await response.json();
+      return data.messages;
+    },
+    onProcessMessage: async ({ message, threadManager, abortController }) => {
+      // This is called when the user posts a message. Here, you might want to call your backend API that pushes messages inside the selected thread.
+      threadManager.appendMessages({
+        id: crypto.randomUUID(),
+        role: "user",
+        type: "prompt",
+        message: message.message,
+      });
+
+      let threadId = threadListManager.selectedThreadId;
+      // If this is a new thread that currently has not been created on the backend, create a thread, otherwise push message to an existing thread
+      if (!threadId) {
+        const thread = await threadListManager.createThread(message);
+        threadListManager.selectThread(thread.threadId, false);
+        threadId = thread.threadId;
+      }
+      const response = await fetch("/api/ask", {
+        method: "POST",
+        body: JSON.stringify({ threadId, ...message }),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        signal: abortController.signal,
+      });
+
+      // This is a utility function provided by crayon to make handling streamed messages more convenient.
+      await processStreamedMessage({
+        response,
+        createMessage: threadManager.appendMessages,
+        updateMessage: threadManager.updateMessage,
+        deleteMessage: (messageId) => {
+          const newMessages = threadManager.messages.filter(
+            (message) => message.id !== messageId
+          );
+          threadManager.setMessages(newMessages);
+        },
+      });
+      return [];
+    },
+    responseTemplates: templates,
+  });
+```
+</TabItem>
+</Tabs>
+
+---
+
+The `threadListManager` and `threadManager` can then be passed to multiple crayon components such as the `ChatProvider` and `CrayonChat` to customize them to your needs. This enables usage of the Crayon UI with any type of backend.

@@ -9,7 +9,7 @@ type ThreadListActions = {
 };
 ```
 
-Defined in: [packages/react-core/src/types/chatManager.ts:77](https://github.com/thesysdev/crayon/blob/0127003ed9bff74d06359995c8d9eea4558f4151/js/packages/react-core/src/types/chatManager.ts#L77)
+Defined in: [packages/react-core/src/types/chatManager.ts:77](https://github.com/thesysdev/crayon/blob/d0d1410263fe0f83e2b52bc1d37c0693717089fe/js/packages/react-core/src/types/chatManager.ts#L77)
 
 Actions available for managing the thread list
 
