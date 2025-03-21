@@ -12,7 +12,7 @@ type UseThreadManagerParams = {
 };
 ```
 
-Defined in: [packages/react-core/src/useThreadManager.ts:10](https://github.com/thesysdev/crayon/blob/764dfdfef65ac5751288cdbd014d2017f4c5dc0d/js/packages/react-core/src/useThreadManager.ts#L10)
+Defined in: [packages/react-core/src/useThreadManager.ts:10](https://github.com/thesysdev/crayon/blob/98ce97833eb11214d1a262c86636536d46fccc04/js/packages/react-core/src/useThreadManager.ts#L10)
 
 Parameters to be passed to the [useThreadManager](../functions/useThreadManager.md) hook
 

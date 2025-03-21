@@ -8,7 +8,7 @@ type ThreadListState = {
 };
 ```
 
-Defined in: [packages/react-core/src/types/chatManager.ts:64](https://github.com/thesysdev/crayon/blob/764dfdfef65ac5751288cdbd014d2017f4c5dc0d/js/packages/react-core/src/types/chatManager.ts#L64)
+Defined in: [packages/react-core/src/types/chatManager.ts:64](https://github.com/thesysdev/crayon/blob/98ce97833eb11214d1a262c86636536d46fccc04/js/packages/react-core/src/types/chatManager.ts#L64)
 
 Represents the state of the thread list
 

@@ -4,7 +4,7 @@ function ChatProvider(
 ): ReactNode | Promise<ReactNode>;
 ```
 
-Defined in: [packages/react-core/src/ChatProvider.tsx:30](https://github.com/thesysdev/crayon/blob/764dfdfef65ac5751288cdbd014d2017f4c5dc0d/js/packages/react-core/src/ChatProvider.tsx#L30)
+Defined in: [packages/react-core/src/ChatProvider.tsx:30](https://github.com/thesysdev/crayon/blob/98ce97833eb11214d1a262c86636536d46fccc04/js/packages/react-core/src/ChatProvider.tsx#L30)
 
 ## Parameters
 
