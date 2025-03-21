@@ -16,6 +16,7 @@ export type UseThreadManagerParams = {
     threadManager: ThreadManager;
     abortController: AbortController;
   }) => Promise<Message[]>;
+  onUpdateMessage?: (props: { message: Message }) => void;
   responseTemplates: ResponseTemplate[];
 };
 
@@ -76,6 +77,7 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
             }
             return m;
           });
+          propsRef.current.onUpdateMessage?.({ message });
           set({ messages });
         },
         onCancel: () => {

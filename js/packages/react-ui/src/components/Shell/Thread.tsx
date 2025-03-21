@@ -152,12 +152,6 @@ export const RenderMessage = memo(
 );
 
 export const MessageLoading = () => {
-  const { isRunning } = useThreadState();
-
-  if (!isRunning) {
-    return null;
-  }
-
   return (
     <div className="crayon-shell-thread-message-loading">
       <MessageLoadingComponent />
@@ -172,7 +166,7 @@ export const Messages = ({
   className?: string;
   loader?: React.ReactNode;
 }) => {
-  const { messages } = useThreadState();
+  const { messages, isRunning } = useThreadState();
 
   return (
     <div className={clsx("crayon-shell-thread-messages", className)}>
@@ -186,7 +180,7 @@ export const Messages = ({
           </MessageProvider>
         );
       })}
-      {loader}
+      {isRunning && loader}
     </div>
   );
 };
