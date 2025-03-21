@@ -68,3 +68,21 @@ This is accomplished by providing a schema to the LLM that instructs it on how t
 
 A detailed example of how structured outputs can be implemented in a backend API can be found at -
 <ins>[Creating Response Templates: Backend API](../guides/customization/007-response-templates.mdx#step-3-creating-a-backend-endpoint-to-tell-the-llm-about-the-schema).</ins>
+
+Here's a sequence diagram that shows how response templates and structured outputs work together:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant LLM API
+
+    User->>Frontend: Posts message
+    Frontend->>Backend: Requests agent response
+    Backend->>LLM API: Provides schema for all response templates and requests LLM response
+    LLM API->>LLM API: Selects appropriate response template
+    LLM API-->>Backend: Returns structured response with selected template
+    Backend-->>Frontend: Replies with agent response and template name and component props
+    Frontend-->>User: Renders the agent response using the given response template component
+```
