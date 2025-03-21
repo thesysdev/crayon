@@ -19,7 +19,7 @@ type AssistantMessage = {
 };
 ```
 
-Defined in: [packages/react-core/src/types/message.ts:25](https://github.com/thesysdev/crayon/blob/d0d1410263fe0f83e2b52bc1d37c0693717089fe/js/packages/react-core/src/types/message.ts#L25)
+Defined in: [packages/react-core/src/types/message.ts:25](https://github.com/thesysdev/crayon/blob/764dfdfef65ac5751288cdbd014d2017f4c5dc0d/js/packages/react-core/src/types/message.ts#L25)
 
 ## Type declaration
 
