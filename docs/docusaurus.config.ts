@@ -139,7 +139,7 @@ const config: Config = {
             },
             {
               label: "JS Reference",
-              to: "/docs/reference/js",
+              to: "/docs/reference/js/react-core",
             },
           ],
         },
