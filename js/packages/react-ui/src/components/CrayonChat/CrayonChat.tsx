@@ -17,20 +17,29 @@ import { ThemeProvider } from "../ThemeProvider";
 import { ComposedCopilot } from "./ComposedCopilot";
 import { ComposedStandalone } from "./ComposedStandalone";
 
-interface CrayonChatProps {
+type CrayonChatProps = {
+  // options used when threadManager not provided
   processMessage?: (params: {
     threadId: string;
     messages: Message[];
     abortController: AbortController;
   }) => Promise<Response>;
+  onUpdateMessage?: (props: { message: Message }) => void;
+  processStreamedMessage?: typeof processStreamedMessage;
+  responseTemplates?: ResponseTemplate[];
+
+  // options used when threadListManager is not provided
   createThread?: (message: CreateMessage) => Promise<Thread>;
+
   threadManager?: ThreadManager;
   threadListManager?: ThreadListManager;
+
   logoUrl?: string;
   agentName?: string;
-  responseTemplates?: ResponseTemplate[];
   type?: "copilot" | "standalone";
-}
+
+  MessageLoadingComponent?: () => React.ReactNode;
+};
 
 export const CrayonChat = ({
   processMessage,
@@ -40,6 +49,9 @@ export const CrayonChat = ({
   agentName = "My Agent",
   responseTemplates,
   createThread,
+  onUpdateMessage,
+  processStreamedMessage: userProcessStreamedMessage,
+  MessageLoadingComponent,
   type = "standalone",
 }: CrayonChatProps) => {
   invariant(processMessage || userThreadManager, "processMessage or threadManager is required");
@@ -72,6 +84,7 @@ export const CrayonChat = ({
       const messages = threadMessages.current[threadId] ?? [];
       return Promise.resolve(messages);
     },
+    onUpdateMessage,
     onProcessMessage: async ({ message, abortController, threadManager }) => {
       const newMessage: UserMessage = {
         id: crypto.randomUUID(),
@@ -95,7 +108,7 @@ export const CrayonChat = ({
         messages: [...threadManager.messages, newMessage],
         abortController,
       });
-      await processStreamedMessage({
+      await (userProcessStreamedMessage || processStreamedMessage)({
         response,
         createMessage: threadManager.appendMessages,
         updateMessage: threadManager.updateMessage,
@@ -122,9 +135,17 @@ export const CrayonChat = ({
     <ThemeProvider>
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         {type === "copilot" ? (
-          <ComposedCopilot logoUrl={logoUrl} agentName={agentName} />
+          <ComposedCopilot
+            logoUrl={logoUrl}
+            agentName={agentName}
+            MessageLoadingComponent={MessageLoadingComponent}
+          />
         ) : (
-          <ComposedStandalone logoUrl={logoUrl} agentName={agentName} />
+          <ComposedStandalone
+            logoUrl={logoUrl}
+            agentName={agentName}
+            MessageLoadingComponent={MessageLoadingComponent}
+          />
         )}
       </ChatProvider>
     </ThemeProvider>
