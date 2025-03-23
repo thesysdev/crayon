@@ -28,7 +28,7 @@ class TextChunk(Chunk):
     chunk: str
 
     def toSSEString(self) -> str:
-        return encode_sse(SSEType.TextDelta, self.chunk)
+        return encode_sse(SSEType.TextDelta.value, self.chunk)
 
 
 class ResponseTemplate(Chunk):
@@ -37,32 +37,32 @@ class ResponseTemplate(Chunk):
 
     def toSSEString(self) -> str:
         data = {"name": self.name, "templateProps": self.templateProps}
-        return encode_json_sse(SSEType.ResponseTemplate, data)
+        return encode_json_sse(SSEType.ResponseTemplate.value, data)
 
 
 class ResponseTemplatePropsChunk(Chunk):
     chunk: str
 
     def toSSEString(self) -> str:
-        return encode_sse(SSEType.ResponseTemplatePropsChunk, self.chunk)
+        return encode_sse(SSEType.ResponseTemplatePropsChunk.value, self.chunk)
 
 
 class ContextUpdate(Chunk):
     contextItem: JSONValue
 
     def toSSEString(self) -> str:
-        return encode_json_sse(SSEType.ContextAppend, self.contextItem)
+        return encode_json_sse(SSEType.ContextAppend.value, self.contextItem)
 
 
 class MessageUpdate(Chunk):
     id: str
 
     def toSSEString(self) -> str:
-        return encode_json_sse(SSEType.MessageUpdate, {"id": self.id})
+        return encode_json_sse(SSEType.MessageUpdate.value, {"id": self.id})
 
 
 class Error(Chunk):
     error: str
 
     def toSSEString(self) -> str:
-        return encode_sse(SSEType.Error, self.error)
+        return encode_sse(SSEType.Error.value, self.error)
