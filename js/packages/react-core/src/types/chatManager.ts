@@ -26,9 +26,10 @@ export type Thread = {
 export type ThreadActions = {
   processMessage: (message: CreateMessage) => Promise<void>;
   appendMessages: (...messages: Message[]) => void;
-  updateMessage: (message: Message) => void;
+  updateMessage: (message: Message, shouldTriggerCallback?: boolean) => void;
   onCancel: () => void;
   setMessages: (messages: Message[]) => void;
+  deleteMessage: (messageId: string) => void;
 };
 
 /**

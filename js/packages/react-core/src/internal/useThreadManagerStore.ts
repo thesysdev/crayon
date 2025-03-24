@@ -21,6 +21,7 @@ export const useThreadManagerStore = (inputThreadManager: ThreadManager) => {
       updateMessage: (...props) => inputThreadManagerRef.current.updateMessage(...props),
       appendMessages: (...props) => inputThreadManagerRef.current.appendMessages(...props),
       setMessages: (...props) => inputThreadManagerRef.current.setMessages(...props),
+      deleteMessage: (...props) => inputThreadManagerRef.current.deleteMessage(...props),
     })),
   );
 

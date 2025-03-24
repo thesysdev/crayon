@@ -14,5 +14,6 @@ export const useThreadActions = (): ThreadActions => {
     updateMessage: useStore(threadManager, (store) => store.updateMessage),
     setMessages: useStore(threadManager, (store) => store.setMessages),
     onCancel: useStore(threadManager, (store) => store.onCancel),
+    deleteMessage: useStore(threadManager, (store) => store.deleteMessage),
   };
 };

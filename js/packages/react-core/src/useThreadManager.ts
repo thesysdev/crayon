@@ -70,14 +70,18 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
             set({ abortController: null, isRunning: false });
           }
         },
-        updateMessage: (message: Message) => {
+        updateMessage: (message: Message, shouldTriggerCallback?: boolean) => {
           const messages = store.getState().messages.map((m) => {
             if (m.id === message.id) {
               return message;
             }
             return m;
           });
-          propsRef.current.onUpdateMessage?.({ message });
+
+          if (shouldTriggerCallback) {
+            propsRef.current.onUpdateMessage?.({ message });
+          }
+
           set({ messages });
         },
         onCancel: () => {
@@ -85,6 +89,10 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
           if (abortController) {
             abortController.abort();
           }
+        },
+        deleteMessage: (messageId: string) => {
+          const messages = store.getState().messages.filter((m) => m.id !== messageId);
+          set({ messages });
         },
         responseTemplates: propsRef.current.responseTemplates.reduce(
           (acc, template) => {

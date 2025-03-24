@@ -112,10 +112,7 @@ export const CrayonChat = ({
         response,
         createMessage: threadManager.appendMessages,
         updateMessage: threadManager.updateMessage,
-        deleteMessage: (messageId: string) => {
-          const newMessages = threadManager.messages.filter((message) => message.id !== messageId);
-          threadManager.setMessages(newMessages);
-        },
+        deleteMessage: threadManager.deleteMessage,
       });
 
       return [];
