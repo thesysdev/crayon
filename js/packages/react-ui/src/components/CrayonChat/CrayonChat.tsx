@@ -38,7 +38,7 @@ type CrayonChatProps = {
   agentName?: string;
   type?: "copilot" | "standalone";
 
-  MessageLoadingComponent?: () => React.ReactNode;
+  messageLoadingComponent?: () => React.ReactNode;
 };
 
 export const CrayonChat = ({
@@ -51,7 +51,7 @@ export const CrayonChat = ({
   createThread,
   onUpdateMessage,
   processStreamedMessage: userProcessStreamedMessage,
-  MessageLoadingComponent,
+  messageLoadingComponent,
   type = "standalone",
 }: CrayonChatProps) => {
   invariant(processMessage || userThreadManager, "processMessage or threadManager is required");
@@ -138,13 +138,13 @@ export const CrayonChat = ({
           <ComposedCopilot
             logoUrl={logoUrl}
             agentName={agentName}
-            MessageLoadingComponent={MessageLoadingComponent}
+            messageLoadingComponent={messageLoadingComponent}
           />
         ) : (
           <ComposedStandalone
             logoUrl={logoUrl}
             agentName={agentName}
-            MessageLoadingComponent={MessageLoadingComponent}
+            messageLoadingComponent={messageLoadingComponent}
           />
         )}
       </ChatProvider>

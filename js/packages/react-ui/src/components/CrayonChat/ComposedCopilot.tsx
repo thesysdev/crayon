@@ -11,13 +11,13 @@ import {
 interface ComposedCopilotProps {
   logoUrl?: string;
   agentName?: string;
-  MessageLoadingComponent?: () => React.ReactNode;
+  messageLoadingComponent?: () => React.ReactNode;
 }
 
 export const ComposedCopilot = ({
   logoUrl = "https://crayonai.org/img/logo.png",
   agentName = "My Agent",
-  MessageLoadingComponent = MessageLoading,
+  messageLoadingComponent: MessageLoadingComponent = MessageLoading,
 }: ComposedCopilotProps) => {
   return (
     <Container logoUrl={logoUrl} agentName={agentName}>

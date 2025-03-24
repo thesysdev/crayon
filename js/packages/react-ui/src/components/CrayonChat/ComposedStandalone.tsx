@@ -17,13 +17,13 @@ import {
 interface ComposedStandaloneProps {
   logoUrl?: string;
   agentName?: string;
-  MessageLoadingComponent?: () => React.ReactNode;
+  messageLoadingComponent?: () => React.ReactNode;
 }
 
 export const ComposedStandalone = ({
   logoUrl = "https://crayonai.org/img/logo.png",
   agentName = "My Agent",
-  MessageLoadingComponent = MessageLoading,
+  messageLoadingComponent: MessageLoadingComponent = MessageLoading,
 }: ComposedStandaloneProps) => {
   return (
     <Container logoUrl={logoUrl} agentName={agentName}>
