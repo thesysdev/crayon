@@ -81,6 +81,7 @@ export const useThreadListManager = (params: UseThreadListManagerParams): Defaul
             .then(() => {
               set((state) => ({
                 threads: state.threads.filter((t) => t.threadId !== id),
+                selectedThreadId: state.selectedThreadId === id ? null : state.selectedThreadId,
               }));
             })
             .catch(() => {
