@@ -1,4 +1,4 @@
-# Concepts
+# Core Concepts
 
 This document explains various concepts that Crayon is built around as well as how they relate to each other. It is
 recommended to go through this document to get a complete picture of the system.

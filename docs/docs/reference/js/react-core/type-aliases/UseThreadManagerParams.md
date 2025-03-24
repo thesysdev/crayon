@@ -34,6 +34,14 @@ Parameters to be passed to the [useThreadManager](../functions/useThreadManager.
 }) => Promise<Message[]>;
 ```
 
+### onUpdateMessage()?
+
+```ts
+(props: {
+  message: Message;
+ }) => void
+```
+
 ### responseTemplates
 
 ```ts

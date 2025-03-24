@@ -20,6 +20,12 @@ Actions available for managing a thread
 (...messages: Message[]) => void
 ```
 
+### deleteMessage()
+
+```ts
+(messageId: string) => void
+```
+
 ### onCancel()
 
 ```ts
@@ -41,7 +47,7 @@ Actions available for managing a thread
 ### updateMessage()
 
 ```ts
-(message: Message) => void
+(message: Message, shouldTriggerCallback?: boolean) => void
 ```
 
 ## Template
