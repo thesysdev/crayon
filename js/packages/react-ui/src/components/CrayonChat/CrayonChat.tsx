@@ -84,7 +84,7 @@ export const CrayonChat = ({
       const messages = threadMessages.current[threadId] ?? [];
       return Promise.resolve(messages);
     },
-    onUpdateMessage,
+    onUpdateMessage: onUpdateMessage,
     onProcessMessage: async ({ message, abortController, threadManager }) => {
       const newMessage: UserMessage = {
         id: crypto.randomUUID(),
