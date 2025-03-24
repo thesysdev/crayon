@@ -1,7 +1,9 @@
-name: Deploy to GitHub Pages
+name: Build and deploy docs
 
 on:
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ main ]
 
 defaults:
@@ -34,12 +36,14 @@ jobs:
         run: pnpm build
 
       - name: Upload Build Artifact
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs/build
 
   deploy:
     name: Deploy to GitHub Pages
+    if: github.ref == 'refs/heads/main'
     needs: build
 
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
