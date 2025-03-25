@@ -1,4 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import rehypeKatex from "rehype-katex";
+import remarkBreaks from "remark-breaks";
+import remarkEmoji from "remark-emoji";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import { MarkDownRenderer } from "../MarkDownRenderer";
 
 const meta: Meta<typeof MarkDownRenderer> = {
@@ -32,6 +37,17 @@ const meta: Meta<typeof MarkDownRenderer> = {
       },
     },
   },
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          width: "600px",
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
   tags: ["autodocs"],
 };
 
@@ -62,6 +78,10 @@ export const WithSunk: Story = {
 export const WithRichMarkdown: Story = {
   args: {
     variant: "card",
+    options: {
+      remarkPlugins: [remarkGfm, remarkMath, remarkEmoji, [remarkBreaks, { breaks: true }]],
+      rehypePlugins: [rehypeKatex],
+    },
     textMarkdown: `# Rich Markdown Example
 
 ## Text Formatting
@@ -75,6 +95,7 @@ export const WithRichMarkdown: Story = {
 - Item 2
   - Nested item
   - Another nested item
+    - Nested item 3
 - Item 3
 
 ### Ordered List
