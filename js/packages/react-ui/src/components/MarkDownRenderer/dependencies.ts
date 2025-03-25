@@ -1,5 +1,5 @@
-import IconButtonDeps from "../IconButton/dependencies";
+import CodeBlockDeps from "../CodeBlock/dependencies";
 
-const dependencies = ["MarkDownRenderer", ...IconButtonDeps];
+const dependencies = ["MarkDownRenderer", ...CodeBlockDeps];
 
 export default dependencies;
