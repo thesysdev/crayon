@@ -1,5 +1,136 @@
-// Code Block Styles
+@use "../../cssUtils" as cssUtils;
+@import "katex/dist/katex.min.css";
 
+/* Code Block Styles */
 .crayon-rmr-code-block-wrapper {
   position: relative;
+
+  &:hover {
+    .crayon-rmr-copy-button {
+      opacity: 1;
+    }
+  }
+
+  .crayon-rmr-copy-button {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    &.crayon-rmr-copy-button-copied {
+      color: cssUtils.$success-text;
+      background-color: cssUtils.$bg-success;
+    }
+  }
+
+  .crayon-rmr-syntax-highlighter {
+    margin: 0 !important;
+    border-radius: 0.5rem;
+  }
+}
+
+.crayon-rmr-code {
+  border-radius: 4px;
+  padding: 2px 4px;
+  background-color: cssUtils.$bg-sunk;
+  border: 1px solid cssUtils.$stroke-default;
+  color: cssUtils.$primary-text;
+  @include cssUtils.typography(body, link);
+}
+.crayon-rmr-code::after {
+  content: "";
+  display: hidden;
+}
+
+.crayon-rmr-code::before {
+  content: "";
+  display: hidden;
+}
+
+/* Card Styles */
+.crayon-rmr-card {
+  background-color: cssUtils.$bg-container;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.crayon-rmr-card-sunk {
+  background-color: cssUtils.$bg-sunk;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+/* Link Styles */
+.crayon-rmr-link {
+  color: cssUtils.$info-text;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+  @include cssUtils.typography(body, link);
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* generic tag styles */
+.crayon-markdown-renderer {
+  /* Heading Styles */
+  & h1 {
+    @include cssUtils.typography(heading, large);
+  }
+
+  & h2 {
+    @include cssUtils.typography(heading, medium);
+  }
+
+  & h3 {
+    @include cssUtils.typography(heading, small);
+  }
+
+  // todo: add style for heading 4,5,6
+  & h4 {
+    @include cssUtils.typography(heading, small);
+  }
+
+  & h5 {
+    @include cssUtils.typography(heading, small);
+  }
+
+  & h6 {
+    @include cssUtils.typography(heading, small);
+  }
+
+  /* Paragraph Styles */
+  & p {
+    @include cssUtils.typography(body, medium);
+  }
+
+  /* Blockquote Styles */
+  & blockquote {
+    border-left: 4px solid cssUtils.$stroke-default;
+    padding: 0px 0 0px 8px;
+    margin-left: 1rem;
+  }
+
+  /* List Styles */
+  & ul {
+    padding-left: 28px;
+  }
+
+  & ol {
+    padding-left: 28px;
+  }
+
+  & li {
+    @include cssUtils.typography(body, default);
+  }
+
+  /* Table Styles */
+  & thead {
+    @include cssUtils.typography(body, default);
+  }
+
+  & tbody {
+    @include cssUtils.typography(body, default);
+  }
 }

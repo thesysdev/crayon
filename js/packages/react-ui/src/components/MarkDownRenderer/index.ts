@@ -1,1 +1,1 @@
-export { MarkDownRenderer } from "./MarkDownRenderer";
+export * from "./MarkDownRenderer";
