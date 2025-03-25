@@ -6,6 +6,38 @@ const meta: Meta<typeof CodeBlock> = {
   component: CodeBlock,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: "```tsx\nimport { CodeBlock } from '@crayonai/react-ui';\n```",
+      },
+    },
+  },
+  argTypes: {
+    language: {
+      control: false,
+      description: "The language of the code block",
+      table: {
+        category: "Appearance",
+        type: { summary: "string" },
+      },
+    },
+    codeString: {
+      control: "text",
+      description: "The code to display in the block",
+      table: {
+        category: "Content",
+        type: { summary: "string" },
+      },
+    },
+    theme: {
+      control: false,
+      description:
+        "The theme of the code block, see theme options [here](https://github.com/react-syntax-highlighter/react-syntax-highlighter/blob/master/AVAILABLE_STYLES_PRISM.MD)",
+      table: {
+        category: "Appearance",
+        type: { summary: `{ [key: string]: CSSProperties; }` },
+      },
+    },
   },
   tags: ["autodocs", "!dev"],
 };

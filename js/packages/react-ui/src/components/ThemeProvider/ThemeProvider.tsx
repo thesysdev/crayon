@@ -1,3 +1,4 @@
+import React, { createContext, useContext } from "react";
 import { ColorTheme, EffectTheme, LayoutTheme, Theme, ThemeMode, TypographyTheme } from "./types";
 
 export type ThemeProps = {
@@ -6,6 +7,26 @@ export type ThemeProps = {
   // merged with lightTheme or darkTheme(if darkTheme is not provided)
   theme?: Theme;
   darkTheme?: Theme;
+};
+
+type ThemeContextType = {
+  theme: Theme;
+  mode: ThemeMode;
+};
+
+// Update the context to include both theme and mode
+export const ThemeContext = createContext<ThemeContextType>({} as ThemeContextType);
+
+// Update the hook to return both theme and mode
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    return {
+      theme: lightTheme,
+      mode: "light",
+    };
+  }
+  return context;
 };
 
 const lightTheme: ColorTheme = {
@@ -209,7 +230,7 @@ export const ThemeProvider = ({
   const theme = mode === "light" ? lightTheme : darkTheme;
 
   return (
-    <>
+    <ThemeContext.Provider value={{ theme, mode }}>
       <style>{`
         body {
           --crayon-background-fills: ${theme.backgroundFills};
@@ -324,6 +345,6 @@ export const ThemeProvider = ({
         }
       `}</style>
       {children}
-    </>
+    </ThemeContext.Provider>
   );
 };

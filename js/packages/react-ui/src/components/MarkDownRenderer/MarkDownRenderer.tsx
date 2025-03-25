@@ -1,7 +1,9 @@
 import clsx from "clsx";
 import { memo } from "react";
 import ReactMarkdown, { Components, type Options } from "react-markdown";
+import { oneLight, vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { CodeBlock } from "../CodeBlock";
+import { useTheme } from "../ThemeProvider";
 
 const variantStyles = {
   clear: "",
@@ -16,6 +18,8 @@ export interface MarkDownRendererProps {
 }
 
 export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
+  const { mode } = useTheme();
+  const theme = mode === "dark" ? vscDarkPlus : oneLight;
   const components: Components = {
     code({ className, children, ...props }) {
       const match = /language-(\w+)/.exec(className || "");
@@ -23,7 +27,7 @@ export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
       if (match || (!className && String(children).includes("\n"))) {
         const language = match?.[1] ?? "text";
         const codeString = String(children).trim();
-        return <CodeBlock language={language} codeString={codeString} />;
+        return <CodeBlock language={language} codeString={codeString} theme={theme} />;
       }
 
       return (
@@ -47,6 +51,11 @@ export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
     },
   };
 
+  const markdownProps = {
+    ...props.options,
+    components: { ...components, ...props.options?.components },
+  };
+
   return (
     <div
       className={clsx(
@@ -54,9 +63,7 @@ export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
         "crayon-markdown-renderer",
       )}
     >
-      <ReactMarkdown components={components} {...props.options}>
-        {props.textMarkdown}
-      </ReactMarkdown>
+      <ReactMarkdown {...markdownProps}>{props.textMarkdown}</ReactMarkdown>
     </div>
   );
 });
