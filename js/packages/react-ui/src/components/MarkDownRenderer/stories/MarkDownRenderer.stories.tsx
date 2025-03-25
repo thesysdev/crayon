@@ -36,6 +36,14 @@ const meta: Meta<typeof MarkDownRenderer> = {
         type: { summary: "string" },
       },
     },
+    options: {
+      control: false,
+      description:
+        "The options for the markdown renderer. See https://github.com/remarkjs/react-markdown?tab=readme-ov-file#markdown",
+      table: {
+        category: "Options",
+      },
+    },
   },
   decorators: [
     (Story) => (
@@ -48,7 +56,7 @@ const meta: Meta<typeof MarkDownRenderer> = {
       </div>
     ),
   ],
-  tags: ["autodocs"],
+  tags: ["autodocs", "dev"],
 };
 
 export default meta;
