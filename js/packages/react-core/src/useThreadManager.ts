@@ -8,19 +8,33 @@ import { CreateMessage, Message, ResponseTemplate, ThreadManager } from "./types
  * @category Types
  */
 export type UseThreadManagerParams = {
+  /** Unique identifier for the thread. If the thread is not created yet, the value should be `null` */
   threadId: string | null;
+  /** Whether to reset the thread state when switching to a new thread */
   shouldResetThreadState?: boolean;
+  /** A function that defines how the thread should be loaded. Useful for integrating a backend API to load a thread. */
   loadThread: (threadId: string) => Promise<Message[]>;
+  /** A function that defines how message should be processed. Useful for integrating a backend API to process a message and request the agent for the response */
   onProcessMessage: (props: {
     message: CreateMessage;
     threadManager: ThreadManager;
     abortController: AbortController;
   }) => Promise<Message[]>;
+  /** A function that defines how a message should be updated. Useful for integrating a backend API to update a message. */
   onUpdateMessage?: (props: { message: Message }) => void;
+  /** A list of response templates available to the thread. */
   responseTemplates: ResponseTemplate[];
 };
 
 /**
+ * `useThreadManager` takes the necessary arguments and helps create a {@link ThreadManager} instance. This instance is necessary to define how a thread should
+ * be loaded and how a message in the thread should be processed or updated. This can be useful for multiple reasons, including but not limited to:
+ *
+ * - The hook makes it incredibly easy to manage the thread and does not require you to implement a thread manager from scratch manually
+ * - You can use the thread manager to load a thread from a backend API
+ * - You can use the thread manager to process a message and request the agent for the response
+ * - You can use the thread manager to update a message
+ *
  * @category Hooks
  * @returns The thread manager
  */

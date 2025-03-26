@@ -3,10 +3,12 @@ import { useChatContext } from "../internal/ChatContext";
 import { ThreadListState } from "../types";
 
 /**
- * @category Hooks
+ * `useThreadListState` allows you to access the {@link ThreadListState}. This is helpful for multiple reasons, including but not limited to:
  *
- * @remarks
- * useThreadListState
+ * - You can use the state to render the thread list UI
+ * - You can use the state to trigger actions on the thread list
+ *
+ * @category Hooks
  */
 export const useThreadListState = (): ThreadListState => {
   const { threadListManager } = useChatContext();

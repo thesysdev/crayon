@@ -9,19 +9,26 @@ import { Thread, ThreadListManager, UserMessage } from "./types";
  * @category Types
  */
 export type UseThreadListManagerParams = {
+  /** A function that defines how the thread list should be fetched. Useful for integrating a backend API to fetch the thread list. */
   fetchThreadList: () => Promise<Thread[]>;
+  /** A function that defines how a thread should be deleted. Useful for integrating a backend API to delete a thread. */
   deleteThread: (id: string) => Promise<void>;
+  /** A function that defines how a thread should be updated. Useful for integrating a backend API to update a thread. */
   updateThread: (updated: Thread) => Promise<Thread>;
-  /** Allows user to clear chat state when switched to new thread */
+  /** Runs when the user switches to a new thread */
   onSwitchToNew: () => void;
+  /** Runs when the user selects a thread */
   onSelectThread: (threadId: string) => void;
-  /** Creates a new thread when user sends the first message */
+  /** Creates a new thread when the user sends the first message. Useful for integrating a backend API to create a new thread. */
   createThread: (firstMessage: UserMessage) => Promise<Thread>;
 };
 
 type DefaultManager = ThreadListManager;
 
 /**
+ * `useThreadListManager` takes the necessary arguments and helps create a {@link ThreadListManager} instance. This instance is necessary to define how a thread list should
+ * be fetched, updated, deleted, and selected and which backend APIs should be called at any of these events or actions.
+ *
  * @category Hooks
  * @returns A ThreadListManager instance
  */

@@ -20,21 +20,7 @@ This package provides the core framework and hooks for managing state and agents
 </td>
 <td>
 
-**Remarks**
-
-ChatProvider is a React component that provides chat management context to its children.
-It serves as the top-level provider for thread and thread list management functionality.
-
-**Example**
-
-```tsx
-<ChatProvider
-  threadManager={myThreadManager}
-  threadListManager={myThreadListManager}
->
-  <App />
-</ChatProvider>
-```
+&hyphen;
 
 </td>
 </tr>
@@ -108,7 +94,7 @@ It serves as the top-level provider for thread and thread list management functi
 </td>
 <td>
 
-&hyphen;
+`useThreadActions` allows you to modify the [ThreadState](type-aliases/ThreadState.md) by providing access to [ThreadActions](type-aliases/ThreadActions.md) which contains methods to modify the state.
 
 </td>
 </tr>
@@ -120,9 +106,7 @@ It serves as the top-level provider for thread and thread list management functi
 </td>
 <td>
 
-**Remarks**
-
-useThreadListActions
+`useThreadListActions` allows you to modify the [ThreadListState](type-aliases/ThreadListState.md) by providing access to [ThreadListActions](type-aliases/ThreadListActions.md) which contains methods to modify the state.
 
 </td>
 </tr>
@@ -134,7 +118,8 @@ useThreadListActions
 </td>
 <td>
 
-&hyphen;
+`useThreadListManager` takes the necessary arguments and helps create a [ThreadListManager](type-aliases/ThreadListManager.md) instance. This instance is necessary to define how a thread list should
+be fetched, updated, deleted, and selected and which backend APIs should be called at any of these events or actions.
 
 </td>
 </tr>
@@ -146,9 +131,10 @@ useThreadListActions
 </td>
 <td>
 
-**Remarks**
+`useThreadListState` allows you to access the [ThreadListState](type-aliases/ThreadListState.md). This is helpful for multiple reasons, including but not limited to:
 
-useThreadListState
+- You can use the state to render the thread list UI
+- You can use the state to trigger actions on the thread list
 
 </td>
 </tr>
@@ -160,7 +146,13 @@ useThreadListState
 </td>
 <td>
 
-&hyphen;
+`useThreadManager` takes the necessary arguments and helps create a [ThreadManager](type-aliases/ThreadManager.md) instance. This instance is necessary to define how a thread should
+be loaded and how a message in the thread should be processed or updated. This can be useful for multiple reasons, including but not limited to:
+
+- The hook makes it incredibly easy to manage the thread and does not require you to implement a thread manager from scratch manually
+- You can use the thread manager to load a thread from a backend API
+- You can use the thread manager to process a message and request the agent for the response
+- You can use the thread manager to update a message
 
 </td>
 </tr>
@@ -186,9 +178,10 @@ useThreadManager
 </td>
 <td>
 
-**Remarks**
+`useThreadState` allows you to access the [ThreadState](type-aliases/ThreadState.md). This is helpful for multiple reasons, including but not limited to:
 
-useThreadState
+- You can use the state to render the thread UI
+- You can use the state to trigger actions on the thread
 
 </td>
 </tr>
@@ -225,7 +218,7 @@ useThreadState
 </td>
 <td>
 
-&hyphen;
+A type that represents a message sent by the assistant / agent
 
 </td>
 </tr>
@@ -249,7 +242,7 @@ Main chat manager combining thread and thread list management
 </td>
 <td>
 
-Represents a message being created, with an optional ID
+Contains all of the information required to create a message. Usually passed to the [ThreadManager](type-aliases/ThreadManager.md)'s `processMessage` method.
 
 </td>
 </tr>
@@ -261,7 +254,7 @@ Represents a message being created, with an optional ID
 </td>
 <td>
 
-See [UserMessage](type-aliases/UserMessage.md) and [AssistantMessage](type-aliases/AssistantMessage.md) for more information.
+Represents a message in a [Thread](type-aliases/Thread.md). See [UserMessage](type-aliases/UserMessage.md) and [AssistantMessage](type-aliases/AssistantMessage.md) for more information.
 
 </td>
 </tr>
@@ -285,11 +278,7 @@ Represents a chat thread
 </td>
 <td>
 
-Actions available for managing a thread
-
-**Template**
-
-The message type used in the thread
+Actions available for managing the state of a thread
 
 </td>
 </tr>
@@ -301,7 +290,7 @@ The message type used in the thread
 </td>
 <td>
 
-Actions available for managing the thread list
+Actions available for managing the state of a thread list
 
 </td>
 </tr>
@@ -313,7 +302,7 @@ Actions available for managing the thread list
 </td>
 <td>
 
-Combines thread list state and actions
+&hyphen;
 
 </td>
 </tr>
@@ -337,11 +326,7 @@ Represents the state of the thread list
 </td>
 <td>
 
-Combines thread state and actions
-
-**Template**
-
-The message type used in the thread
+&hyphen;
 
 </td>
 </tr>
@@ -365,7 +350,7 @@ Represents the state of a thread
 </td>
 <td>
 
-&hyphen;
+A type that represents a message sent by the user
 
 </td>
 </tr>
