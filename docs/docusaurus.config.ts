@@ -12,8 +12,10 @@ const typeDocConfig = {
   interfacePropertiesFormat: "htmlTable",
   classPropertiesFormat: "htmlTable",
   propertyMembersFormat: "htmlTable",
-  typeDeclarationFormat: "list",
+  typeDeclarationFormat: "htmlTable",
   typeDeclarationVisibility: "compact",
+  sourceLinkTemplate:
+    "https://github.com/thesysdev/crayon/blob/main/{path}#L{line}",
   useCodeBlocks: true,
   hidePageHeader: true,
   hidePageTitle: true,
