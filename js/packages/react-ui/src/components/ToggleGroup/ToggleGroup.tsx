@@ -1,16 +1,21 @@
-import React from 'react'
-import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group'
+import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group";
+import clsx from "clsx";
+import { ReactElement } from "react";
+import { ToggleItemProps } from "../ToggleItem";
 
-interface ToggleGroupProps {
-    children: React.ReactNode
-}
+type RadixToggleGroupProps =
+  | ToggleGroupPrimitive.ToggleGroupSingleProps
+  | ToggleGroupPrimitive.ToggleGroupMultipleProps;
 
-const ToggleGroup = ({ children }: ToggleGroupProps) => {
+export type ToggleGroupProps = RadixToggleGroupProps & {
+  className?: string;
+  children: ReactElement<ToggleItemProps> | ReactElement<ToggleItemProps>[];
+};
+
+export const ToggleGroup = ({ children, className, ...props }: ToggleGroupProps) => {
   return (
-    <ToggleGroupPrimitive.Root type="single">
-      <ToggleGroupPrimitive.Item value="1">1</ToggleGroupPrimitive.Item>
+    <ToggleGroupPrimitive.Root className={clsx("crayon-toggle-group", className)} {...props}>
+      {children}
     </ToggleGroupPrimitive.Root>
-  )
-}
-
-export default ToggleGroup
+  );
+};

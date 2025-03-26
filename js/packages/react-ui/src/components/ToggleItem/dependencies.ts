@@ -1,2 +1,3 @@
-const dependencies = ["TextContent"];
+const dependencies = ["ToggleItem"];
+
 export default dependencies;
