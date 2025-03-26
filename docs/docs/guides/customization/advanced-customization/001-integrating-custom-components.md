@@ -20,7 +20,7 @@ The sidebar generally contains a CTA to start a new conversation and a list of e
 
 Crayon provides an easy way to do this through the [`useThreadListState`](../../../reference/js/react-core/functions/useThreadListState.md) and
 [`useThreadListActions`](../../../reference/js/react-core/functions/useThreadListActions.md) hooks. The following code snippet demonstrates how you can create a custom sidebar
-by accessing and modifying this state. For the same of simplicity, this example uses tailwindcss for styling.
+by accessing and modifying this state. For the sake of simplicity, this example uses tailwindcss for styling.
 
 <Tabs groupId='frontend-lang'>
 
@@ -196,7 +196,7 @@ Building a custom composer would be very similar to building a custom sidebar. T
 [`Thread`](../../../reference/js/react-core/type-aliases/Thread.md). To accomplish this, Crayon provides the
 [`useThreadState`](../../../reference/js/react-core/functions/useThreadState.md) and [`useThreadActions`](../../../reference/js/react-core/functions/useThreadActions.md) hooks.
 
-The following code snippet demonstrates and example of how you might use these hooks to build a custom composer:
+The following code snippet demonstrates an example of how you might use these hooks to build a custom composer:
 
 <Tabs groupId='frontend-lang'>
 
@@ -336,5 +336,4 @@ return (
 
 These customization options allow you to build a fully personalized chat interface while maintaining the core functionality of Crayon's state management system.
 
-By following these patterns, you can create your own custom components that seamlessly integrate with Crayon's ecosystem while maintaining full control over the user interface and experience. You can also use the `useThreadState` and `useThreadActions` hooks to create a custom component to display the list of messages, allowing a
-fully customized UI.
+By following these patterns, you can create your own custom components that seamlessly integrate with Crayon's ecosystem while maintaining full control over the user interface and experience. Additionally, you can use the `useThreadState` and `useThreadActions` hooks to create custom components for displaying message lists, enabling a fully customized UI.
