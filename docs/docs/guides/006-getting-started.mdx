@@ -1,5 +1,5 @@
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 # Getting Started with Crayon
 
@@ -8,6 +8,7 @@ Crayon provides a `CrayonChat` component, which does most of the heavy lifting f
 ## Step 1: Implementing `processMessage`
 
 The `processMessage` function is the core of your chat implementation. It receives three parameters:
+
 - `threadId`: A unique identifier for the chat conversation
 - `messages`: An array containing all messages in the conversation, including the new one
 - `abortController`: Used to cancel the request if needed
@@ -86,9 +87,107 @@ export const TextTemplate = ({ children }) => {
 </TabItem>
 </Tabs>
 
-## Step 3: Putting it all together
+## Step 3: Creating a backend endpoint
+
+Now that we have a response template, we need to tell the LLM about the response format when requesting a response. This can be done by providing a JSON schema to the LLM.
+A NextJS backend endpoint that does this may look something like this:
+
+<Tabs groupId='frontend-lang'>
+
+<TabItem value="ts" label="TypeScript">
+
+```ts
+import { NextRequest } from "next/server";
+import OpenAI from "openai";
+import { fromOpenAICompletion, toOpenAIMessages } from "@crayonai/stream";
+import { Message } from "@crayonai/react-core";
+
+const textResponseSchema = {
+  type: "object",
+  description: "Use this schema to generate a text response",
+  properties: {
+    type: { const: "text" },
+    text: {
+      type: "string",
+      description: "Plaintext message to be displayed to the user",
+    },
+  },
+  required: ["type", "text"],
+  additionalProperties: false,
+};
+
+export async function POST(req: NextRequest) {
+  const { messages } = (await req.json()) as { messages: Message[] };
+  const client = new OpenAI();
+  const llmStream = await client.chat.completions.create({
+    model: "gpt-4o",
+    messages: toOpenAIMessages(
+      messages
+    ) as OpenAI.Chat.ChatCompletionMessageParam[],
+    stream: true,
+    response_format: textResponseSchema,
+  });
+  const responseStream = fromOpenAICompletion(llmStream);
+  return new Response(responseStream as unknown as ReadableStream<Uint8Array>, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+    },
+  });
+}
+```
+
+</TabItem>
+
+<TabItem value="js" label="JavaScript">
+
+```js
+import OpenAI from "openai";
+import { fromOpenAICompletion, toOpenAIMessages } from "@crayonai/stream";
+
+const textResponseSchema = {
+  type: "object",
+  description: "Use this schema to generate a text response",
+  properties: {
+    type: { const: "text" },
+    text: {
+      type: "string",
+      description: "Plaintext message to be displayed to the user",
+    },
+  },
+  required: ["type", "text"],
+  additionalProperties: false,
+};
+
+export async function POST(req) {
+  const { messages } = await req.json();
+  const client = new OpenAI();
+  const llmStream = await client.chat.completions.create({
+    model: "gpt-4o",
+    messages: toOpenAIMessages(messages),
+    stream: true,
+    response_format: textResponseSchema,
+  });
+  const responseStream = fromOpenAICompletion(llmStream);
+  return new Response(responseStream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+    },
+  });
+}
+```
+
+</TabItem>
+
+</Tabs>
+
+## Step 4: Putting it all together
 
 Now we can combine everything into a working chat interface. The `CrayonChat` component will handle:
+
 - Rendering the chat UI
 - Managing message threads
 - Making API calls
@@ -97,30 +196,30 @@ Now we can combine everything into a working chat interface. The `CrayonChat` co
 Here's how to set it up:
 
 <Tabs groupId="frontend-lang">
-<TabItem value="ts" label="TypeScript">
-```tsx
-<CrayonChat
-  processMessage={processMessage}
-  responseTemplates={[
-    {
-      name: "text",
-      Component: TextTemplate,
-    },
-  ]}
-/>
-```
-</TabItem>
-<TabItem value="js" label="JavaScript">
-```jsx
-<CrayonChat
-  processMessage={processMessage}
-  responseTemplates={[
-    {
-      name: "text",
-      Component: TextTemplate,
-    },
-  ]}
-/>
-```
-</TabItem>
+  <TabItem value="ts" label="TypeScript">
+    ```tsx
+    <CrayonChat
+      processMessage={processMessage}
+      responseTemplates={[
+        {
+          name: "text",
+          Component: TextTemplate,
+        },
+      ]}
+    />
+    ```
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+    ```jsx
+    <CrayonChat
+      processMessage={processMessage}
+      responseTemplates={[
+        {
+          name: "text",
+          Component: TextTemplate,
+        },
+      ]}
+    />
+    ```
+  </TabItem>
 </Tabs>
