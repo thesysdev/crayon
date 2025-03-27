@@ -3,10 +3,9 @@ import { useChatContext } from "../internal/ChatContext";
 import { ThreadListActions } from "../types";
 
 /**
- * @category Hooks
+ * `useThreadListActions` allows you to modify the {@link ThreadListState} by providing access to {@link ThreadListActions} which contains methods to modify the state.
  *
- * @remarks
- * useThreadListActions
+ * @category Hooks
  */
 export const useThreadListActions = (): ThreadListActions => {
   const { threadListManager } = useChatContext();

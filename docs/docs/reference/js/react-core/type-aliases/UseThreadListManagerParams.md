@@ -9,48 +9,153 @@ type UseThreadListManagerParams = {
 };
 ```
 
-Defined in: [packages/react-core/src/useThreadListManager.ts:11](https://github.com/thesysdev/crayon/blob/cbecbe8e16fae54d735cb8e1fe31b72f51300d52/js/packages/react-core/src/useThreadListManager.ts#L11)
+Defined in: [js/packages/react-core/src/useThreadListManager.ts:11](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadListManager.ts#L11)
 
 Parameters to be passed to the [useThreadListManager](../functions/useThreadListManager.md) hook
 
 ## Type declaration
 
-### createThread()
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Defined in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
 
-```ts
-(firstMessage: UserMessage) => Promise<Thread>;
-```
+<a id="createthread"></a> `createThread`
 
-Creates a new thread when user sends the first message
+</td>
+<td>
 
-### deleteThread()
+(`firstMessage`: [`UserMessage`](UserMessage.md)) => `Promise`\<[`Thread`](Thread.md)\>
 
-```ts
-(id: string) => Promise<void>;
-```
+</td>
+<td>
 
-### fetchThreadList()
+Creates a new thread when the user sends the first message. Useful for integrating a backend API to create a new thread.
 
-```ts
-() => Promise<Thread[]>;
-```
+</td>
+<td>
 
-### onSelectThread()
+[js/packages/react-core/src/useThreadListManager.ts:23](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadListManager.ts#L23)
 
-```ts
-(threadId: string) => void
-```
+</td>
+</tr>
+<tr>
+<td>
 
-### onSwitchToNew()
+<a id="deletethread"></a> `deleteThread`
 
-```ts
-() => void
-```
+</td>
+<td>
 
-Allows user to clear chat state when switched to new thread
+(`id`: `string`) => `Promise`\<`void`\>
 
-### updateThread()
+</td>
+<td>
 
-```ts
-(updated: Thread) => Promise<Thread>;
-```
+A function that defines how a thread should be deleted. Useful for integrating a backend API to delete a thread.
+
+</td>
+<td>
+
+[js/packages/react-core/src/useThreadListManager.ts:15](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadListManager.ts#L15)
+
+</td>
+</tr>
+<tr>
+<td>
+
+<a id="fetchthreadlist"></a> `fetchThreadList`
+
+</td>
+<td>
+
+() => `Promise`\<[`Thread`](Thread.md)[]\>
+
+</td>
+<td>
+
+A function that defines how the thread list should be fetched. Useful for integrating a backend API to fetch the thread list.
+
+</td>
+<td>
+
+[js/packages/react-core/src/useThreadListManager.ts:13](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadListManager.ts#L13)
+
+</td>
+</tr>
+<tr>
+<td>
+
+<a id="onselectthread"></a> `onSelectThread`
+
+</td>
+<td>
+
+(`threadId`: `string`) => `void`
+
+</td>
+<td>
+
+Runs when the user selects a thread
+
+</td>
+<td>
+
+[js/packages/react-core/src/useThreadListManager.ts:21](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadListManager.ts#L21)
+
+</td>
+</tr>
+<tr>
+<td>
+
+<a id="onswitchtonew"></a> `onSwitchToNew`
+
+</td>
+<td>
+
+() => `void`
+
+</td>
+<td>
+
+Runs when the user switches to a new thread
+
+</td>
+<td>
+
+[js/packages/react-core/src/useThreadListManager.ts:19](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadListManager.ts#L19)
+
+</td>
+</tr>
+<tr>
+<td>
+
+<a id="updatethread"></a> `updateThread`
+
+</td>
+<td>
+
+(`updated`: [`Thread`](Thread.md)) => `Promise`\<[`Thread`](Thread.md)\>
+
+</td>
+<td>
+
+A function that defines how a thread should be updated. Useful for integrating a backend API to update a thread.
+
+</td>
+<td>
+
+[js/packages/react-core/src/useThreadListManager.ts:17](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadListManager.ts#L17)
+
+</td>
+</tr>
+</tbody>
+</table>

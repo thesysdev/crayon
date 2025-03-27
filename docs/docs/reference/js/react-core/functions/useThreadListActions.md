@@ -2,12 +2,10 @@
 function useThreadListActions(): ThreadListActions;
 ```
 
-Defined in: [packages/react-core/src/hooks/useThreadListActions.ts:11](https://github.com/thesysdev/crayon/blob/cbecbe8e16fae54d735cb8e1fe31b72f51300d52/js/packages/react-core/src/hooks/useThreadListActions.ts#L11)
+Defined in: [js/packages/react-core/src/hooks/useThreadListActions.ts:10](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/hooks/useThreadListActions.ts#L10)
+
+`useThreadListActions` allows you to modify the [ThreadListState](../type-aliases/ThreadListState.md) by providing access to [ThreadListActions](../type-aliases/ThreadListActions.md) which contains methods to modify the state.
 
 ## Returns
 
 [`ThreadListActions`](../type-aliases/ThreadListActions.md)
-
-## Remarks
-
-useThreadListActions

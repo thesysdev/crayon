@@ -3,10 +3,12 @@ import { useChatContext } from "../internal/ChatContext";
 import { ThreadState } from "../types";
 
 /**
- * @category Hooks
+ * `useThreadState` allows you to access the {@link ThreadState}. This is helpful for multiple reasons, including but not limited to:
  *
- * @remarks
- * useThreadState
+ * - You can use the state to render the thread UI
+ * - You can use the state to trigger actions on the thread
+ *
+ * @category Hooks
  */
 export const useThreadState = (): ThreadState => {
   const { threadManager } = useChatContext();

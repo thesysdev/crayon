@@ -3,6 +3,8 @@ import { useChatContext } from "../internal/ChatContext";
 import { ThreadActions } from "../types";
 
 /**
+ * `useThreadActions` allows you to modify the {@link ThreadState} by providing access to {@link ThreadActions} which contains methods to modify the state.
+ *
  * @category Hooks
  */
 export const useThreadActions = (): ThreadActions => {

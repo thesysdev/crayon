@@ -18,23 +18,3 @@ and [`ThreadListManager`](../type-aliases/ThreadListManager.md).
   threadListManager={myThreadListManager}
 >
 ```
-
----
-
-```ts
-function ChatProvider(
-  props: PropsWithChildren<ChatManager>,
-): ReactNode | Promise<ReactNode>;
-```
-
-Defined in: [js/packages/react-core/src/ChatProvider.tsx:10](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/ChatProvider.tsx#L10)
-
-## Parameters
-
-### props
-
-`PropsWithChildren`\<[`ChatManager`](../type-aliases/ChatManager.md)\>
-
-## Returns
-
-`ReactNode` \| `Promise`\<`ReactNode`\>
