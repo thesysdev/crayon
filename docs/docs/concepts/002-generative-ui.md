@@ -26,4 +26,4 @@ to generate structured outputs passing it a schema of the possible
 outputs - the name of the template and the arguments it takes.
 
 ## How to use it?
-See the [Generative UI guide](/docs/guides/generative-ui) for more information.
+See the [Getting Started with Crayon](/docs/guides/getting-started) guide for more information.
