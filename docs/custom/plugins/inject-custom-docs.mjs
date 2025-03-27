@@ -9,13 +9,11 @@ export function load(app) {
   app.renderer.markdownHooks.on("page.begin", (page) => {
     const dirname = path.dirname(new URL(import.meta.url).pathname);
     const customFilePath = page.page.filename.split("/").slice(-5).join("/"); // -5 because we want the path starting from the reference directory
-    const filePath = path.resolve(
-      dirname,
-      "..",
-      customFilePath
-    );
+    const filePath = path.resolve(dirname, "..", customFilePath);
     if (fs.existsSync(filePath)) {
-      return fs.readFileSync(filePath, "utf-8");
+      const fileContent = fs.readFileSync(filePath, "utf-8");
+      const separatedFileContent = fileContent.concat("\n---\n");
+      return separatedFileContent;
     }
   });
 }

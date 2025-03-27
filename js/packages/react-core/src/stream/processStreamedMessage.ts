@@ -11,6 +11,19 @@ import invariant from "tiny-invariant";
 import { AssistantMessage } from "../types";
 
 /**
+ * @inline
+ */
+interface Parameters {
+  response: Response;
+  /** A function that creates a new assistant message in the thread */
+  createMessage: (message: AssistantMessage) => void;
+  /** A function that updates an existing assistant message in the thread */
+  updateMessage: (message: AssistantMessage) => void;
+  /** A function that deletes an assistant message from the thread */
+  deleteMessage: (messageId: string) => void;
+}
+
+/**
  * @category Utilities
  */
 export const processStreamedMessage = async ({
@@ -18,12 +31,7 @@ export const processStreamedMessage = async ({
   createMessage,
   updateMessage,
   deleteMessage,
-}: {
-  response: Response;
-  createMessage: (message: AssistantMessage) => void;
-  updateMessage: (message: AssistantMessage) => void;
-  deleteMessage: (messageId: string) => void;
-}) => {
+}: Parameters) => {
   const stream = response.body?.getReader();
   if (!stream) {
     throw new Error("No stream");

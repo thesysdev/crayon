@@ -2,6 +2,8 @@ A type that contains information about the name of the response template and the
 For detailed information on response templates, see [Core Concepts](../../../../concepts/001-core-concepts.md#response-templates), and for a guide on how to implement and use response templates,
 see [Creating Response Templates](../../../../guides/customization/007-response-templates.mdx).
 
+---
+
 Defined in: [js/packages/react-core/src/types/responseTemplate.ts:4](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/types/responseTemplate.ts#L4)
 
 ## Properties

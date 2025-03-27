@@ -19,6 +19,8 @@ and [`ThreadListManager`](../type-aliases/ThreadListManager.md).
 >
 ```
 
+---
+
 ```ts
 function ChatProvider(
   props: PropsWithChildren<ChatManager>,

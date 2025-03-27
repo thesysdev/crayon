@@ -17,6 +17,8 @@ const { messages, templates } = useThreadManagerSelector<MessagesAndTemplates>(
 );
 ```
 
+---
+
 ```ts
 function useThreadManagerSelector<R>(accessor: AtomicAccessor<R>): R;
 ```
