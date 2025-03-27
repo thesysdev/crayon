@@ -1,29 +1,14 @@
-```ts
-function ChatProvider(
-  props: PropsWithChildren<ChatManager>,
-): ReactNode | Promise<ReactNode>;
-```
+ChatProvider is a top-level React context provider component that makes it possible for hooks like the [`useThreadListManager`](../functions/useThreadListManager.md) and
+[`useThreadManager`](../functions/useThreadManager) to work. It contains the entire application context, including the [`ThreadManager`](../type-aliases/ThreadManager.md)
+and [`ThreadListManager`](../type-aliases/ThreadListManager.md).
 
-Defined in: [packages/react-core/src/ChatProvider.tsx:30](https://github.com/thesysdev/crayon/blob/cbecbe8e16fae54d735cb8e1fe31b72f51300d52/js/packages/react-core/src/ChatProvider.tsx#L30)
+## Props
 
-## Parameters
-
-### props
-
-`PropsWithChildren`\<[`ChatManager`](../type-aliases/ChatManager.md)\>
-
-The component props
-
-## Returns
-
-`ReactNode` \| `Promise`\<`ReactNode`\>
-
-A ChatContext.Provider wrapping the children components
-
-## Remarks
-
-ChatProvider is a React component that provides chat management context to its children.
-It serves as the top-level provider for thread and thread list management functionality.
+| Prop                | Description                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `threadManager`     | The [ThreadManager](../type-aliases/ThreadManager.md) instance for handling individual chat threads          |
+| `threadListManager` | The [ThreadListManager](../type-aliases/ThreadListManager.md) instance for handling the list of chat threads |
+| `children`          | The child components that will be provided and will have access to this chat context                         |
 
 ## Example
 
@@ -32,6 +17,22 @@ It serves as the top-level provider for thread and thread list management functi
   threadManager={myThreadManager}
   threadListManager={myThreadListManager}
 >
-  <App />
-</ChatProvider>
 ```
+
+```ts
+function ChatProvider(
+  props: PropsWithChildren<ChatManager>,
+): ReactNode | Promise<ReactNode>;
+```
+
+Defined in: [js/packages/react-core/src/ChatProvider.tsx:10](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/ChatProvider.tsx#L10)
+
+## Parameters
+
+### props
+
+`PropsWithChildren`\<[`ChatManager`](../type-aliases/ChatManager.md)\>
+
+## Returns
+
+`ReactNode` \| `Promise`\<`ReactNode`\>

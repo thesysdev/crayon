@@ -13,50 +13,159 @@ type UseThreadManagerParams = {
 };
 ```
 
-Defined in: [packages/react-core/src/useThreadManager.ts:10](https://github.com/thesysdev/crayon/blob/cbecbe8e16fae54d735cb8e1fe31b72f51300d52/js/packages/react-core/src/useThreadManager.ts#L10)
+Defined in: [js/packages/react-core/src/useThreadManager.ts:10](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadManager.ts#L10)
 
 Parameters to be passed to the [useThreadManager](../functions/useThreadManager.md) hook
 
 ## Type declaration
 
-### loadThread()
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Defined in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
 
-```ts
-(threadId: string) => Promise<Message[]>;
-```
+<a id="loadthread"></a> `loadThread`
 
-### onProcessMessage()
+</td>
+<td>
 
-```ts
-(props: {
-  abortController: AbortController;
-  message: CreateMessage;
-  threadManager: ThreadManager;
-}) => Promise<Message[]>;
-```
+(`threadId`: `string`) => `Promise`\<[`Message`](Message.md)[]\>
 
-### onUpdateMessage()?
+</td>
+<td>
 
-```ts
-(props: {
-  message: Message;
- }) => void
-```
+A function that defines how the thread should be loaded. Useful for integrating a backend API to load a thread.
 
-### responseTemplates
+</td>
+<td>
 
-```ts
-responseTemplates: ResponseTemplate[];
-```
+[js/packages/react-core/src/useThreadManager.ts:16](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadManager.ts#L16)
 
-### shouldResetThreadState?
+</td>
+</tr>
+<tr>
+<td>
 
-```ts
-optional shouldResetThreadState: boolean;
-```
+<a id="onprocessmessage"></a> `onProcessMessage`
 
-### threadId
+</td>
+<td>
 
-```ts
-threadId: string | null;
-```
+(`props`: \{
+`abortController`: `AbortController`;
+`message`: [`CreateMessage`](CreateMessage.md);
+`threadManager`: [`ThreadManager`](ThreadManager.md);
+\}) => `Promise`\<[`Message`](Message.md)[]\>
+
+</td>
+<td>
+
+A function that defines how message should be processed. Useful for integrating a backend API to process a message and request the agent for the response
+
+</td>
+<td>
+
+[js/packages/react-core/src/useThreadManager.ts:18](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadManager.ts#L18)
+
+</td>
+</tr>
+<tr>
+<td>
+
+<a id="onupdatemessage"></a> `onUpdateMessage`?
+
+</td>
+<td>
+
+(`props`: \{
+`message`: [`Message`](Message.md);
+\}) => `void`
+
+</td>
+<td>
+
+A function that defines how a message should be updated. Useful for integrating a backend API to update a message.
+
+</td>
+<td>
+
+[js/packages/react-core/src/useThreadManager.ts:24](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadManager.ts#L24)
+
+</td>
+</tr>
+<tr>
+<td>
+
+<a id="responsetemplates"></a> `responseTemplates`
+
+</td>
+<td>
+
+[`ResponseTemplate`](../interfaces/ResponseTemplate.md)[]
+
+</td>
+<td>
+
+A list of response templates available to the thread.
+
+</td>
+<td>
+
+[js/packages/react-core/src/useThreadManager.ts:26](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadManager.ts#L26)
+
+</td>
+</tr>
+<tr>
+<td>
+
+<a id="shouldresetthreadstate"></a> `shouldResetThreadState`?
+
+</td>
+<td>
+
+`boolean`
+
+</td>
+<td>
+
+Whether to reset the thread state when switching to a new thread
+
+</td>
+<td>
+
+[js/packages/react-core/src/useThreadManager.ts:14](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadManager.ts#L14)
+
+</td>
+</tr>
+<tr>
+<td>
+
+<a id="threadid-1"></a> `threadId`
+
+</td>
+<td>
+
+`string` \| `null`
+
+</td>
+<td>
+
+Unique identifier for the thread. If the thread is not created yet, the value should be `null`
+
+</td>
+<td>
+
+[js/packages/react-core/src/useThreadManager.ts:12](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/useThreadManager.ts#L12)
+
+</td>
+</tr>
+</tbody>
+</table>

@@ -7,7 +7,7 @@ function processStreamedMessage(__namedParameters: {
 }): Promise<void>;
 ```
 
-Defined in: [packages/react-core/src/stream/processStreamedMessage.ts:16](https://github.com/thesysdev/crayon/blob/cbecbe8e16fae54d735cb8e1fe31b72f51300d52/js/packages/react-core/src/stream/processStreamedMessage.ts#L16)
+Defined in: [js/packages/react-core/src/stream/processStreamedMessage.ts:16](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/stream/processStreamedMessage.ts#L16)
 
 ## Parameters
 

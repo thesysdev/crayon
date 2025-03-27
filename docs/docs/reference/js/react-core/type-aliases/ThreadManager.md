@@ -1,11 +1,8 @@
+The Thread Manager is an entity that encapsulates the [`ThreadState`](./ThreadState.md) and actions ([`ThreadActions`](./ThreadActions.md)) that help modify the state.
+It can be passed to the `ChatProvider` or the `CrayonChat` component to dictate how a thread should be managed, and what APIs should be called on each event.
+
 ```ts
 type ThreadManager = ThreadState & ThreadActions;
 ```
 
-Defined in: [packages/react-core/src/types/chatManager.ts:58](https://github.com/thesysdev/crayon/blob/cbecbe8e16fae54d735cb8e1fe31b72f51300d52/js/packages/react-core/src/types/chatManager.ts#L58)
-
-Combines thread state and actions
-
-## Template
-
-The message type used in the thread
+Defined in: [js/packages/react-core/src/types/chatManager.ts:65](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/types/chatManager.ts#L65)

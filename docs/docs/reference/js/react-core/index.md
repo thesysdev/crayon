@@ -164,9 +164,7 @@ be loaded and how a message in the thread should be processed or updated. This c
 </td>
 <td>
 
-**Remarks**
-
-useThreadManager
+&hyphen;
 
 </td>
 </tr>
