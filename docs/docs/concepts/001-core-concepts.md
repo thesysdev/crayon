@@ -24,7 +24,7 @@ The following image shows one of the available shells - The "Standalone" Shell.
 
 ![Visual Guide](./assets/visual-guide.png)
 
-For a detailed guide on how to customize the UI, see <ins>[Customizing Crayon UI](../guides/customization/009-customizing-ui.mdx).</ins>
+For a detailed guide on how to customize the UI, see <ins>[Customizing Crayon UI](../guides/customization/004-customizing-ui.mdx).</ins>
 
 ## Thread
 
@@ -59,7 +59,7 @@ This system allows you to:
 - Define custom response formats for the agent response
 - Ensure type-safe and predicable props for your React components
 
-For a detailed implementation guide, see <ins>[Creating Response Templates](../guides/customization/007-response-templates.mdx).</ins>
+For a detailed implementation guide, see <ins>[Creating Response Templates](../guides/customization/005-response-templates.mdx).</ins>
 
 ## Structured Outputs
 
@@ -67,7 +67,7 @@ If you are using <ins>[Response Templates](#response-templates)</ins>, you would
 This is accomplished by providing a schema to the LLM that instructs it on how to structure its response. This part is generally handled by the backend API that calls the LLM.
 
 A detailed example of how structured outputs can be implemented in a backend API can be found at -
-<ins>[Creating Response Templates: Backend API](../guides/customization/007-response-templates.mdx#step-3-creating-a-backend-endpoint-to-tell-the-llm-about-the-schema).</ins>
+<ins>[Creating Response Templates: Backend API](../guides/customization/005-response-templates.mdx#step-3-creating-a-backend-endpoint-to-tell-the-llm-about-the-schema).</ins>
 
 Here's a sequence diagram that shows how response templates and structured outputs work together:
 
