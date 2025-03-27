@@ -40,9 +40,6 @@ export default function Hero() {
                 <a href="/docs/quickstart/nextjs">
                   <PrimaryButton>Get Started</PrimaryButton>
                 </a>
-                <a href="/docs/tutorials/Fino/">
-                  <SecondaryButton>Tutorial</SecondaryButton>
-                </a>
               </div>
               <div className={styles.ctaBuild}>
                 ~ npm install @crayonai/react-core <br />

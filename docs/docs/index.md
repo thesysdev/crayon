@@ -25,8 +25,6 @@ Agents, Chatbots, Copilots - pretty much any application that is powered by an L
 Its designed to be extremely lightweight and work with any backend framework - [LangChain](https://www.langchain.com/), [CrewAI](https://www.crewai.com/) or a simple [FastAPI](https://fastapi.tiangolo.com/) server
 integrated with [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Google Gemini](https://deepmind.google/technologies/gemini/), etc.
 
-To get an idea of what you can build with Crayon, check out the example [Personal Finance Assistant](/docs/tutorials/Fino) we built with it.
-
 <!-- TODO: Insert a link to the live app or gif once we have it. -->
 
 ## Features
