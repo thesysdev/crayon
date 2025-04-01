@@ -31,7 +31,7 @@ export const processStreamedMessage = async ({
   createMessage,
   updateMessage,
   deleteMessage,
-}: Parameters) => {
+}: Parameters): Promise<AssistantMessage | void> => {
   const stream = response.body?.getReader();
   if (!stream) {
     throw new Error("No stream");
@@ -40,8 +40,10 @@ export const processStreamedMessage = async ({
   let isMessagePushed = false;
   let messageId: string = crypto.randomUUID();
   let previousMessageId = messageId;
+  let finalMessage: AssistantMessage | undefined = undefined;
 
   const onMessageUpdate = (message: AssistantMessage) => {
+    finalMessage = message;
     if (messageId !== message.id) {
       previousMessageId = messageId;
       messageId = message.id;
@@ -144,4 +146,6 @@ export const processStreamedMessage = async ({
       break;
     }
   }
+
+  return finalMessage;
 };
