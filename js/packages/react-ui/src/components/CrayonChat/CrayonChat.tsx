@@ -27,7 +27,6 @@ type CrayonChatProps = {
   onUpdateMessage?: (props: { message: Message }) => void;
   processStreamedMessage?: typeof processStreamedMessage;
   responseTemplates?: ResponseTemplate[];
-  onStreamComplete?: (newMessages: Message[]) => void;
 
   theme?: ThemeProps;
 
@@ -57,7 +56,6 @@ export const CrayonChat = ({
   messageLoadingComponent,
   type = "standalone",
   theme,
-  onStreamComplete,
 }: CrayonChatProps) => {
   invariant(processMessage || userThreadManager, "processMessage or threadManager is required");
 
@@ -113,16 +111,12 @@ export const CrayonChat = ({
         messages: [...threadManager.messages, newMessage],
         abortController,
       });
-      const finalMessage = await (userProcessStreamedMessage || processStreamedMessage)({
+      await (userProcessStreamedMessage || processStreamedMessage)({
         response,
         createMessage: threadManager.appendMessages,
         updateMessage: threadManager.updateMessage,
         deleteMessage: threadManager.deleteMessage,
       });
-
-      if (finalMessage) {
-        onStreamComplete?.([newMessage, finalMessage]);
-      }
 
       return [];
     },
