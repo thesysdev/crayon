@@ -23,13 +23,13 @@ export const CodeBlock = ({ language, codeString, theme }: CodeBlockProps) => {
   };
 
   return (
-    <div className="crayon-rmr-code-block-wrapper">
+    <div className="crayon-code-block-wrapper">
       <IconButton
         onClick={handleCopy}
         variant="secondary"
         size={"small"}
-        className={clsx("crayon-rmr-copy-button", {
-          "crayon-rmr-copy-button-copied": copied,
+        className={clsx("crayon-code-block-copy-button", {
+          "crayon-code-block-copy-button-copied": copied,
         })}
         icon={copied ? <CheckCheck /> : <Copy />}
       />
@@ -37,7 +37,7 @@ export const CodeBlock = ({ language, codeString, theme }: CodeBlockProps) => {
         style={theme ?? vscDarkPlus}
         language={language}
         PreTag="div"
-        className="crayon-rmr-syntax-highlighter "
+        className="crayon-code-block-syntax-highlighter"
       >
         {codeString}
       </SyntaxHighlighter>

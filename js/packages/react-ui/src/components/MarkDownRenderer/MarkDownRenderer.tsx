@@ -7,8 +7,8 @@ import { useTheme } from "../ThemeProvider";
 
 const variantStyles = {
   clear: "",
-  card: "crayon-rmr-card",
-  sunk: "crayon-rmr-card-sunk",
+  card: "crayon-markdown-renderer-card",
+  sunk: "crayon-markdown-renderer-card-sunk",
 };
 
 export interface MarkDownRendererProps {
@@ -31,7 +31,7 @@ export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
       }
 
       return (
-        <code className={clsx("crayon-rmr-code", className)} {...props}>
+        <code className={clsx("crayon-markdown-renderer-code", className)} {...props}>
           {children}
         </code>
       );
@@ -42,7 +42,7 @@ export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="crayon-rmr-link"
+          className="crayon-markdown-renderer-link"
           {...props}
         >
           {children}
