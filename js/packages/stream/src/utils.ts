@@ -1,4 +1,4 @@
-export const transformStream = <T, R>(stream: AsyncIterable<T>, transformer: (chunk: T) => R) => {
+export const transformStream = <T, R>(stream: AsyncIterable<T>, transformer: (data: T) => R) => {
   return new ReadableStream({
     async start(c) {
       try {
