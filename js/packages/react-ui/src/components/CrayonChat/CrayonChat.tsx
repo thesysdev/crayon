@@ -91,9 +91,7 @@ export const CrayonChat = ({
     onProcessMessage: async ({ message, abortController, threadManager }) => {
       const newMessage: UserMessage = {
         id: crypto.randomUUID(),
-        role: "user",
-        type: "prompt",
-        message: message.message,
+        ...message,
       };
       threadManager.appendMessages(newMessage);
 
