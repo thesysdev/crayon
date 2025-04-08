@@ -50,24 +50,12 @@ export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
         </a>
       );
     },
-    table: ({ children, ...props }) => {
-      return <Table {...props}>{children}</Table>;
-    },
-    thead: ({ children, ...props }) => {
-      return <TableHeader {...props}>{children}</TableHeader>;
-    },
-    th: ({ children, ...props }) => {
-      return <TableHead {...props}>{children}</TableHead>;
-    },
-    tbody: ({ children, ...props }) => {
-      return <TableBody {...props}>{children}</TableBody>;
-    },
-    tr: ({ children, ...props }) => {
-      return <TableRow {...props}>{children}</TableRow>;
-    },
-    td: ({ children, ...props }) => {
-      return <TableCell {...props}>{children}</TableCell>;
-    },
+    table: Table,
+    thead: TableHeader,
+    th: TableHead,
+    tbody: TableBody,
+    tr: TableRow,
+    td: TableCell,
   };
 
   const markdownProps = {
