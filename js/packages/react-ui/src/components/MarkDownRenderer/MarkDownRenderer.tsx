@@ -16,6 +16,7 @@ export interface MarkDownRendererProps {
   variant?: "clear" | "card" | "sunk";
   textMarkdown: string;
   options?: Options;
+  className?: string;
 }
 
 export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
@@ -68,6 +69,7 @@ export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
       className={clsx(
         props["variant"] && variantStyles[props["variant"] as keyof typeof variantStyles],
         "crayon-markdown-renderer",
+        props.className,
       )}
     >
       <ReactMarkdown {...markdownProps}>{props.textMarkdown}</ReactMarkdown>
