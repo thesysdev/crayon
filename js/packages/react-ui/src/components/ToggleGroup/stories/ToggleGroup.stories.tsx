@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { MoveHorizontal, MoveLeft, MoveRight } from "lucide-react";
 import { ToggleItem } from "../../ToggleItem";
 import { ToggleGroup } from "../ToggleGroup";
 
@@ -50,7 +51,7 @@ const meta: Meta<typeof ToggleGroup> = {
       },
     },
   },
-  tags: ["autodocs"],
+  tags: ["autodocs", "!dev"],
 };
 
 export default meta;
@@ -106,9 +107,15 @@ export const WithIcons: Story = {
   },
   render: (args) => (
     <ToggleGroup {...args} aria-label="Text alignment">
-      <ToggleItem value="left">←</ToggleItem>
-      <ToggleItem value="center">↔</ToggleItem>
-      <ToggleItem value="right">→</ToggleItem>
+      <ToggleItem value="left">
+        <MoveLeft size={14} />
+      </ToggleItem>
+      <ToggleItem value="center">
+        <MoveHorizontal size={14} />
+      </ToggleItem>
+      <ToggleItem value="right">
+        <MoveRight size={14} />
+      </ToggleItem>
     </ToggleGroup>
   ),
 };

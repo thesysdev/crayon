@@ -48,35 +48,62 @@
 .crayon-markdown-renderer {
   color: cssUtils.$primary-text;
   @include cssUtils.typography(body, default);
+
   /* Heading Styles */
-  & h1 {
-    @include cssUtils.typography(heading, large);
-  }
-
-  & h2 {
-    @include cssUtils.typography(heading, medium);
-  }
-
-  & h3 {
-    @include cssUtils.typography(heading, small);
-  }
-
-  // todo: add style for heading 4,5,6
-  & h4 {
-    @include cssUtils.typography(heading, small);
-  }
-
-  & h5 {
-    @include cssUtils.typography(heading, small);
-  }
-
+  & h1,
+  & h2,
+  & h3,
+  & h4,
+  & h5,
   & h6 {
-    @include cssUtils.typography(heading, small);
-  }
+    font-weight: 300;
+    margin-top: 12px;
+    margin-bottom: 8px;
+    font-size: 16px;
+    line-height: 1.4;
 
+    @media (prefers-color-scheme: dark) {
+      color: color-mix(in oklab, cssUtils.$primary-text 70%, transparent);
+    }
+  }
   /* Paragraph Styles */
   & p {
-    @include cssUtils.typography(body, medium);
+    line-height: 1.4;
+    margin-bottom: 20px;
+    font-weight: 300;
+
+    @media (prefers-color-scheme: dark) {
+      color: color-mix(in oklab, cssUtils.$primary-text 70%, transparent);
+    }
+  }
+
+  & strong {
+    color: cssUtils.$primary-text;
+  }
+
+  & li {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding-left: 6px;
+    font-weight: 300;
+    &::marker {
+      font-weight: 400;
+      color: color-mix(in oklab, cssUtils.$primary-text 65%, transparent);
+    }
+  }
+
+  & ol {
+    list-style-type: decimal;
+    padding-left: 20px;
+    margin-bottom: 20px;
+    font-weight: 300;
+  }
+
+  & ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-bottom: 20px;
+    font-weight: 300;
   }
 
   /* Blockquote Styles */
@@ -86,12 +113,53 @@
     margin-left: 1rem;
   }
 
-  /* List Styles */
-  & ul {
-    padding-left: 28px;
+  & .crayon-code-block-syntax-highlighter {
+    padding: 25px !important;
+    margin-top: 8px !important;
+    margin-bottom: 8px !important;
   }
 
-  & ol {
-    padding-left: 28px;
+  & hr {
+    color: color-mix(in oklab, cssUtils.$primary-text 30%, transparent);
+    margin-top: 48px;
+    margin-bottom: 48px;
+  }
+
+  & blockquote {
+    color: cssUtils.$primary-text;
+    font-style: italic;
+    margin-left: 0;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    padding-left: 16px;
+    border-color: color-mix(in oklab, cssUtils.$primary-text 70%, transparent);
+    quotes: "\201C" "\201D" "\2018" "\2019";
+    line-height: 1.625;
+  }
+
+  & blockquote strong {
+    font-weight: 600;
+  }
+
+  & blockquote > *:first-child::before {
+    content: open-quote;
+    font-size: 1em;
+    line-height: 1;
+    vertical-align: top;
+    margin-right: 0.2em;
+  }
+
+  & blockquote > *:last-child::after {
+    content: close-quote;
+    font-size: 1em;
+    line-height: 1.5;
+    vertical-align: top;
+    margin-left: 0.2em;
+  }
+
+  & blockquote * {
+    font-style: inherit;
+    color: inherit;
+    line-height: inherit;
   }
 }
