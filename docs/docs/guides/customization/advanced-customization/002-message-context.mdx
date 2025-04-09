@@ -1,0 +1,410 @@
+---
+description: Using message context to implement forms or modify messages
+---
+
+import { Steps, Step } from "@site/components/Steps/Steps";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Interactive Agent Responses
+
+The best part of being able to use response templates and rendering the agent response as a rich user interface is that it allows for an _interactive_ experience. For example,
+instead of making the user type out long responses, they can conveniently fill out a form or press buttons in the agent response. This can be achieved by using **message context**.
+
+Message context is a tool that allows you to access the [`Message`](../../../reference/js/react-core/type-aliases/Message.md) object in your response template components.
+This is useful if you want to modify or format the message before rendering it, or if you want to implement persistent forms in your response template.
+
+Here's an example demonstrating how to implement a form that collects the user's name and email address, and persist it using message context.
+
+<Steps>
+
+<Step title="Create a form component">
+
+First, create a form component that will be used to render the response template to collect the user's name and email address.
+
+<Tabs groupId="frontend-lang">
+
+<TabItem value="ts" label="TypeScript">
+
+```tsx title="Form.tsx"
+import { useState } from "react";
+import { useThreadActions } from "@crayonai/react-core";
+
+export const Form = () => {
+  const { processMessage } = useThreadActions();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
+    await processMessage({
+      role: "user",
+      message: `Name: ${name}, Email: ${email}`,
+      type: "prompt",
+      isVisuallyHidden: true, // This will hide the message from the user but still send it to the LLM
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+      />
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+      />
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+```
+
+</TabItem>
+
+<TabItem value="js" label="JavaScript">
+
+```jsx title="Form.jsx"
+import { useState } from "react";
+import { useThreadActions } from "@crayonai/react-core";
+
+export const Form = () => {
+  const { processMessage } = useThreadActions();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await processMessage({
+      role: "user",
+      message: `Name: ${name}, Email: ${email}`,
+      type: "prompt",
+      isVisuallyHidden: true, // This will hide the message from the user but still send it to the LLM
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+      />
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+      />
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+```
+
+</TabItem>
+
+</Tabs>
+
+</Step>
+
+<Step title="Pass the form as a response template">
+
+```tsx title="App.tsx"
+import { Form } from "./Form";
+
+const App = () => {
+  // ... rest of your code
+
+  return (
+    <CrayonChat
+      processMessage={processMessage}
+      // highlight-next-line
+      responseTemplates={[{ name: "form", component: Form }]}
+    />
+  );
+};
+```
+
+</Step>
+
+<Step title="Update your backend to handle the form response template">
+
+First, define the schema for the form response template:
+
+<Tabs groupId="form-schema-lang">
+
+<TabItem value="ts" label="TypeScript">
+
+```ts title="formTemplate.ts"
+import { z } from "zod";
+
+export const FormTemplateSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+});
+
+export type FormTemplateProps = z.infer<typeof FormTemplateSchema>;
+```
+
+</TabItem>
+
+<TabItem value="js" label="JavaScript">
+
+```js title="formTemplate.js"
+import { z } from "zod";
+
+export const FormTemplateSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+});
+```
+
+</TabItem>
+
+</Tabs>
+
+Next, pass the response template schema to the LLM:
+
+<Tabs groupId="frontend-lang">
+
+<TabItem value="ts" label="TypeScript">
+
+```ts title="route.ts"
+// ... rest of your imports
+import {
+  fromOpenAICompletion,
+  templatesToResponseFormat,
+} from "@crayonai/stream";
+import { FormTemplateSchema } from "./formTemplate";
+
+export async function POST(req: NextRequest) {
+  // ... rest of your code
+  // highlight-start
+  const responseFormat = templatesToResponseFormat({
+    schema: FormTemplateSchema,
+    name: "form",
+    description:
+      "Use this template to collect the user's name and email address",
+  });
+  // highlight-end
+
+  // pass the response format to the LLM
+  const llmStream = await client.chat.completions.create({
+    model: "gpt-4o",
+    messages: toOpenAIMessages(
+      messages
+    ) as OpenAI.Chat.ChatCompletionMessageParam[],
+    stream: true,
+    // highlight-next-line
+    response_format: responseFormat,
+  });
+
+  // convert the LLM stream to a Crayon stream
+  const responseStream = fromOpenAICompletion(llmStream);
+  return new Response(responseStream as unknown as ReadableStream<Uint8Array>, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+    },
+  });
+}
+```
+
+</TabItem>
+
+<TabItem value="js" label="JavaScript">
+
+```js title="route.js"
+// ... rest of your imports
+import {
+  fromOpenAICompletion,
+  templatesToResponseFormat,
+} from "@crayonai/stream";
+import { FormTemplateSchema } from "./formTemplate";
+
+export async function POST(req) {
+  // ... rest of your code
+  // highlight-start
+  const responseFormat = templatesToResponseFormat({
+    schema: FormTemplateSchema,
+    name: "form",
+    description:
+      "Use this template to collect the user's name and email address",
+  });
+  // highlight-end
+
+  // pass the response format to the LLM
+  const llmStream = await client.chat.completions.create({
+    model: "gpt-4o",
+    messages: toOpenAIMessages(
+      messages
+    ),
+    stream: true,
+    // highlight-next-line
+    response_format: responseFormat,
+  });
+
+  // convert the LLM stream to a Crayon stream
+  const responseStream = fromOpenAICompletion(llmStream);
+  return new Response(responseStream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+    },
+  });
+}
+```
+</TabItem>
+
+</Tabs>
+
+</Step>
+
+<Step title="Use message context to persist the form data">
+
+Now the form is functional, but it would be odd if the user filled and submitted the form, but the form appeared empty the next time they reloaded the page. To prefill the
+form with the previously submitted data, you can use message context to access the `Message` object and subsequently use this object to update the `AssistantMessage` metadata.
+
+This can be done by making the following modifications to the form component:
+
+<Tabs groupId="frontend-lang">
+
+<TabItem value="ts" label="TypeScript">
+
+```tsx title="Form.tsx"
+import { useState } from "react";
+import { useThreadActions, useMessage } from "@crayonai/react-core";
+
+export const Form = () => {
+  // highlight-next-line
+  const { message } = useMessage(); // access the message using message context
+  const { processMessage, updateMessage } = useThreadActions();
+
+  const [name, setName] = useState<string>(
+    // highlight-next-line
+    (message.context?.[0]?.name as string) ?? "" // prefill if the message context contains a name
+  );
+  const [email, setEmail] = useState<string>(
+    // highlight-next-line
+    (message.context?.[0]?.email as string) ?? "" // prefill if the message context contains an email
+  );
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
+    await processMessage({
+      role: "user",
+      message: `Name: ${name}, Email: ${email}`,
+      type: "prompt",
+      isVisuallyHidden: true, // This will hide the message from the user but still send it to the LLM
+    });
+
+    // highlight-start
+    // store the newly submitted data in the message context
+    message.context = [{ name, email }];
+    // update the assistant message metadata to contain the newly submitted data
+    updateMessage(message, true);
+    // highlight-end
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+      />
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+      />
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+```
+
+</TabItem>
+
+<TabItem value="js" label="JavaScript">
+
+```jsx title="Form.jsx"
+import { useState } from "react";
+import { useThreadActions, useMessage } from "@crayonai/react-core";
+
+export const Form = () => {
+  // highlight-next-line
+  const { message } = useMessage(); // access the message using message context
+  const { processMessage, updateMessage } = useThreadActions();
+
+  const [name, setName] = useState(
+    // highlight-next-line
+    (message.context?.[0]?.name) ?? "" // prefill if the message context contains a name
+  );
+  const [email, setEmail] = useState(
+    // highlight-next-line
+    (message.context?.[0]?.email) ?? "" // prefill if the message context contains an email
+  );
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await processMessage({
+      role: "user",
+      message: `Name: ${name}, Email: ${email}`,
+      type: "prompt",
+      isVisuallyHidden: true, // This will hide the message from the user but still send it to the LLM
+    });
+
+    // highlight-start
+    // store the newly submitted data in the message context
+    message.context = [{ name, email }];
+    // update the assistant message metadata to contain the newly submitted data
+    updateMessage(message, true);
+    // highlight-end
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+      />
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+      />
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+```
+
+</TabItem>
+
+</Tabs>
+
+:::note
+Message context does not refer to `message.context`, which is the metadata associated with the `Message` object. Instead, it refers to the actual
+<ins>[`MessageContext`](../../../reference/js/react-core/functions/MessageContext.md)</ins> that allows you to access the `Message` object.
+:::
+
+</Step>
+
+</Steps>
