@@ -57,14 +57,16 @@
   & h4,
   & h5,
   & h6 {
+    @include cssUtils.typography(title, medium);
     font-weight: 300;
     margin-top: 12px;
     margin-bottom: 8px;
-    font-size: 16px;
-    line-height: 1.4;
+    + * {
+      margin-top: 0;
+    }
 
-    @media (prefers-color-scheme: dark) {
-      color: color-mix(in oklab, cssUtils.$primary-text 70%, transparent);
+    + strong {
+      font-weight: 400;
     }
   }
   /* Paragraph Styles */
@@ -72,14 +74,11 @@
     line-height: 1.4;
     margin-bottom: 20px;
     font-weight: 300;
-
-    @media (prefers-color-scheme: dark) {
-      color: color-mix(in oklab, cssUtils.$primary-text 70%, transparent);
-    }
   }
 
   & strong {
     color: cssUtils.$primary-text;
+    font-weight: 600;
   }
 
   & li {
@@ -107,33 +106,40 @@
     font-weight: 300;
   }
 
-  /* Blockquote Styles */
-  & blockquote {
-    border-left: 4px solid cssUtils.$stroke-default;
-    padding: 0px 0 0px 8px;
-    margin-left: 1rem;
-  }
-
   & .crayon-code-block-syntax-highlighter {
     padding: 25px !important;
     margin-top: 8px !important;
     margin-bottom: 8px !important;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 
   & hr {
     color: color-mix(in oklab, cssUtils.$primary-text 30%, transparent);
     margin-top: 48px;
     margin-bottom: 48px;
+    + * {
+      margin-top: 0;
+    }
   }
 
+  /* Blockquote Styles */
   & blockquote {
     color: cssUtils.$primary-text;
+    border-left: 4px solid color-mix(in oklab, cssUtils.$primary-text 70%, transparent);
+    padding: 0px 0 0px 8px;
+    margin-left: 1rem;
     font-style: italic;
     margin-left: 0;
     margin-top: 25px;
     margin-bottom: 25px;
     padding-left: 16px;
-    border-color: color-mix(in oklab, cssUtils.$primary-text 70%, transparent);
     quotes: "\201C" "\201D" "\2018" "\2019";
     line-height: 1.625;
   }
@@ -166,5 +172,25 @@
 
   & .crayon-table-container {
     margin-bottom: 20px;
+  }
+
+  > *:first-child {
+    margin-top: 0 !important;
+  }
+
+  > *:last-child {
+    margin-bottom: 0 !important;
+  }
+}
+
+.crayon-markdown-renderer-dark-mode {
+  & p,
+  & h1,
+  & h2,
+  & h3,
+  & h4,
+  & h5,
+  & h6 {
+    color: color-mix(in oklab, cssUtils.$primary-text 70%, transparent);
   }
 }
