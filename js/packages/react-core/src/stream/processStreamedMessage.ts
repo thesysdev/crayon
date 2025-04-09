@@ -15,8 +15,6 @@ import { AssistantMessage } from "../types";
  */
 interface Parameters {
   response: Response;
-  /** The id to be assigned to the agent response message. A random UUID will be assigned if not provided */
-  responseMessageId?: string;
   /** A function that creates a new assistant message in the thread */
   createMessage: (message: AssistantMessage) => void;
   /** A function that updates an existing assistant message in the thread */
@@ -30,7 +28,6 @@ interface Parameters {
  */
 export const processStreamedMessage = async ({
   response,
-  responseMessageId,
   createMessage,
   updateMessage,
   deleteMessage,
@@ -41,7 +38,7 @@ export const processStreamedMessage = async ({
   }
 
   let isMessagePushed = false;
-  let messageId: string = responseMessageId ?? crypto.randomUUID();
+  let messageId: string = crypto.randomUUID();
   let previousMessageId = messageId;
   let finalMessage: AssistantMessage | undefined = undefined;
 
