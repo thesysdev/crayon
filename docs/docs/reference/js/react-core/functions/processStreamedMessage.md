@@ -20,11 +20,12 @@ function processStreamedMessage(__namedParameters: {
   createMessage: (message: AssistantMessage) => void;
   deleteMessage: (messageId: string) => void;
   response: Response;
+  responseMessageId: string;
   updateMessage: (message: AssistantMessage) => void;
-}): Promise<void>;
+}): Promise<void | AssistantMessage>;
 ```
 
-Defined in: [js/packages/react-core/src/stream/processStreamedMessage.ts:29](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/stream/processStreamedMessage.ts#L29)
+Defined in: [js/packages/react-core/src/stream/processStreamedMessage.ts:31](https://github.com/thesysdev/crayon/blob/main/js/packages/react-core/src/stream/processStreamedMessage.ts#L31)
 
 ## Parameters
 
@@ -46,6 +47,12 @@ A function that deletes an assistant message from the thread
 
 `Response`
 
+#### responseMessageId?
+
+`string`
+
+The id to be assigned to the agent response message. A random UUID will be assigned if not provided
+
 #### updateMessage
 
 (`message`: [`AssistantMessage`](../type-aliases/AssistantMessage.md)) => `void`
@@ -54,4 +61,4 @@ A function that updates an existing assistant message in the thread
 
 ## Returns
 
-`Promise`\<`void`\>
+`Promise`\<`void` \| [`AssistantMessage`](../type-aliases/AssistantMessage.md)\>

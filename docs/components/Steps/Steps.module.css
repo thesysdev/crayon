@@ -1,0 +1,86 @@
+:root {
+  --light-mode-background: #f1eff4;
+  --dark-mode-background: #26292e;
+  --light-mode-text: #28262c;
+  --dark-mode-text: white;
+  --badge-size: 1.75rem;
+  --step-gap: 0.5rem; /* gap between steps */
+}
+
+.stepsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--step-gap);
+}
+
+.step {
+  display: flex;
+  gap: 2rem; /* Space between number column and content column */
+}
+
+.leftColumn {
+  flex-shrink: 0; /* Prevent the left column from shrinking */
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--step-gap);
+}
+
+.stepNumberBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--badge-size);
+  height: var(--badge-size);
+  border-radius: 0.5rem;
+  background: var(--light-mode-background);
+  color: var(--light-mode-text);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.stepLine {
+  width: 1px;
+  flex-grow: 1;
+  background-color: var(--light-mode-background);
+  margin-left: calc(var(--badge-size) / 2);
+}
+
+.stepContent {
+  flex-grow: 1; /* Allow content area to take remaining space */
+}
+
+.stepTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: calc(14px - 0.55rem); /* try to center the title with the badge */
+  margin-bottom: 20px;
+  line-height: 1;
+}
+
+.step:last-child .stepLine {
+  background: linear-gradient(
+    to bottom,
+    var(--light-mode-background) 40%,
+    transparent
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  .stepNumberBadge {
+    background: var(--dark-mode-background);
+    color: var(--dark-mode-text);
+  }
+
+  .stepLine {
+    background-color: var(--dark-mode-background);
+  }
+
+  .step:last-child .stepLine {
+    background: linear-gradient(
+      to bottom,
+      var(--dark-mode-background) 40%,
+      transparent
+    );
+  }
+}

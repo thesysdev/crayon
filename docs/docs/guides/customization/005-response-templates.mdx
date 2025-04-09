@@ -2,28 +2,34 @@
 description: Creating and using response templates in Crayon
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import { Steps, Step } from "@site/components/Steps/Steps";
 
 # Creating Response Templates
 
 Response templates are a powerful feature in Crayon that allow you to control how AI responses are structured and displayed. They combine a React component for visualization with a schema that tells the LLM exactly how to format its response. This guide will show you how to create custom response templates using a recipe card example.
 
 For Crayon, a response template is a React component. Something as simple as this:
+
 ```tsx
 const responseTemplate = {
-    name: "recipe",  // Unique identifier for this template
-    Component: RecipeTemplate  // React component that renders the response
-}
+  name: "recipe", // Unique identifier for this template
+  Component: RecipeTemplate, // React component that renders the response
+};
 ```
 
 The frontend can send a list of such templates, and the backend can tell the LLM which template to choose for which situation. Crayon automatically handles the rest.
 For example, if you wanted to create an agent that helps the users with cooking recipes, you could do so in 3 simple steps:
 
-## Step 1: Creating a `RecipeTemplate` component
+<Steps>
+
+<Step title={<>Creating a <code>RecipeTemplate</code> component</>}>
 
 For the purpose of this guide, let's create a simple card that renders a cooking recipe. You can either manually create a card or design a simple card on the
-<ins>[Thesys Canvas](https://app.thesys.dev/home?redirect_uri=/)</ins> and use the CodeGen feature to generate the React code.
+
+<ins>[Thesys Canvas](https://app.thesys.dev/home?redirect_uri=/)</ins> and use
+the CodeGen feature to generate the React code.
 
 <Tabs groupId="frontend-lang">
 <TabItem value="ts" label="TypeScript">
@@ -33,9 +39,9 @@ import { FlaskConical as FlaskConicalIcon } from "lucide-react";
 import { StepsItem, Steps } from "@crayonai/react-ui/Steps";
 
 interface RecipeTemplateProps {
-  title: string;      // Name of the recipe
-  ingredients: string[];  // List of required ingredients
-  steps: string[];    // Step-by-step cooking instructions
+title: string; // Name of the recipe
+ingredients: string[]; // List of required ingredients
+steps: string[]; // Step-by-step cooking instructions
 }
 
 export default function RecipeTemplate(props: RecipeTemplateProps) {
@@ -61,6 +67,7 @@ export default function RecipeTemplate(props: RecipeTemplateProps) {
 ```
 
 </TabItem>
+
 <TabItem value="js" label="JavaScript">
 ```jsx
 import { Card, CardHeader, Tag, TagBlock } from "@crayonai/react-ui";
@@ -91,8 +98,9 @@ export default function RecipeTemplate(props) {
 </TabItem>
 </Tabs>
 
+</Step>
 
-## Step 2: Creating a schema for the response template
+<Step title="Creating a schema for the response template">
 
 We need to tell the LLM about the structure in which it needs to respond in order to be compatible with our response template component. For this, we define a zod schema:
 
@@ -110,7 +118,9 @@ export const RecipeTemplateSchema = z.object({
 });
 ```
 
-## Step 3: Creating a backend endpoint to tell the LLM about the schema
+</Step>
+
+<Step title="Creating a backend endpoint to tell the LLM about the schema">
 
 Now that we have our template and its schema ready, we need a backend endpoint that our frontend will call to get the agent's response. This endpoint will be responsible for telling the LLM about the template. Crayon provides some handy utility functions through `crayon/stream` to help with this.
 
@@ -194,7 +204,12 @@ export async function POST(req) {
 </TabItem>
 </Tabs>
 
+</Step>
+
+</Steps>
+
 This API can then be used in the `processMessage` method as shown in <ins>[Getting started with Crayon](../001-getting-started.mdx)</ins>, and this response template can be passed to `CrayonChat` as follows:
+
 ```tsx
 <CrayonChat
   processMessage={processMessage}
