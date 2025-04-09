@@ -69,9 +69,6 @@ export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
       className={clsx(
         props["variant"] && variantStyles[props["variant"] as keyof typeof variantStyles],
         "crayon-markdown-renderer",
-        {
-          "crayon-markdown-renderer-dark-mode": mode === "dark",
-        },
         props.className,
       )}
     >
