@@ -1,28 +1,83 @@
 # Streaming Protocol
 
 To enable streaming of both text and UI, Crayon uses a standard
-streaming protocol inspired from [AI SDK's streaming protocol](https://sdk.vercel.ai/docs/ai-sdk-ui/stream-protocol) as described here. This stream defines the format of the data that is sent to the client. It is a simple text stream with a few special tokens that is agnostic of the backend language or the LLM model used.
+streaming protocol that utilizes Server-Sent Events (SSE). This protocol defines the format of the data that is sent to the client. It is a simple text stream with specific event types that is agnostic of the backend language or the LLM model used.
 
-You can implement this protocol in your custom backend and integrate it with Crayon to build your own. For example you can use a Python FastAPI backend that integrates with Deepseek models and use Crayon to build a UI for it.
+You can implement this protocol in your custom backend and integrate it with Crayon to build your own. For example, you can use a Python FastAPI backend that integrates with custom models and use Crayon to build a UI for it.
 
-### Text Part
-```
-0:<text>
-```
-A simple text chunk is prefixed with `0:`.
-Multiple consequtive text chunks are appended to the stream as they are generated to create a single
-text block.
+## Event Types
 
-### Response Template Part
-```
-1:{name: <name>, templateProps: <templateProps>}
-```
-A response template is prefixed with `1:`. It contains the name of the template and the props to pass to it.
-Multiple response templates can be sent in a single stream.
+The protocol supports several types of events as defined in the `SSEType` enum:
 
-### Context Part
+```typescript
+export enum SSEType {
+  TextDelta = "text",
+  ResponseTemplate = "tpl",
+  ResponseTemplatePropsChunk = "tpl_props_chunk",
+  ContextAppend = "context_append",
+  MessageUpdate = "message_update",
+  Error = "error",
+}
 ```
-8:{context}
+
+### Text Delta
+
+A `TextDelta` represents a unit of text in the stream:
+
+```typescript
+event: text
+data: <text content>
 ```
-A context is prefixed with `8:`.
-Multiple consequtive context parts can be sent in a single stream.
+
+Multiple consecutive text deltas are appended to the stream as they are generated to create a single text block.
+
+### Response Template
+
+A `ResponseTemplate` defines a UI component to render, with a name and optional properties:
+
+```typescript
+event: tpl
+data: {"name": "<template name>", "templateProps": <response template props>}
+```
+
+The template name refers to a registered UI component, and the properties are passed to that component.
+
+### Response Template Properties Chunk
+
+`ResponseTemplatePropsChunk` allows for streaming of the props for a response template:
+
+```typescript
+event: tpl_props_chunk
+data: <response template props chunk>
+```
+
+### Context Append
+
+`ContextAppend` adds a new context item to the conversation:
+
+```typescript
+event: context_append
+data: <JSON context item>
+```
+
+### Message Update
+
+`MessageUpdate` sends an update about a specific message by ID:
+
+```typescript
+event: message_update
+data: {"id": "<message ID>"}
+```
+
+### Error
+
+`Error` provides information about errors during streaming:
+
+```typescript
+event: error
+data: <error message>
+```
+
+## Encoding
+
+The protocol uses the `eventsource-encoder` package to properly encode the SSE events, ensuring they follow the correct format with appropriate event types and data fields.
