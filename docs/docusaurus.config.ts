@@ -182,7 +182,7 @@ const config: Config = {
     },
     prism: {
       theme: prismThemes.nightOwlLight,
-      darkTheme: prismThemes.nightOwl,
+      darkTheme: prismThemes.vsDark,
     },
   } satisfies Preset.ThemeConfig,
   plugins: [
