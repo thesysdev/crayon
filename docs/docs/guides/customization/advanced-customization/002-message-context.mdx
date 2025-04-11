@@ -1,20 +1,21 @@
 ---
-description: Using message context to implement forms or modify messages
+description: Using useMessage to implement forms or modify messages
 ---
 
 import { Steps, Step } from "@site/components/Steps/Steps";
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 # Interactive Agent Responses
 
 The best part of being able to use response templates and rendering the agent response as a rich user interface is that it allows for an _interactive_ experience. For example,
-instead of making the user type out long responses, they can conveniently fill out a form or press buttons in the agent response. This can be achieved by using **message context**.
+instead of making the user type out long responses, they can conveniently fill out a form or press buttons in the agent response. This can be achieved by utilizing
+[`useMessage`](../../../reference/js/react-core/functions/useMessage.md).
 
-Message context is a tool that allows you to access the [`Message`](../../../reference/js/react-core/type-aliases/Message.md) object in your response template components.
+`useMessage` is a hook that allows you to access the [`Message`](../../../reference/js/react-core/type-aliases/Message.md) object in your response template components.
 This is useful if you want to modify or format the message before rendering it, or if you want to implement persistent forms in your response template.
 
-Here's an example demonstrating how to implement a form that collects the user's name and email address, and persist it using message context.
+Here's an example demonstrating how to implement a form that collects the user's name and email address, and persist it by storing the values in `message.context`.
 
 <Steps>
 
@@ -138,41 +139,7 @@ const App = () => {
 
 <Step title="Update your backend to handle the form response template">
 
-First, define the schema for the form response template:
-
-<Tabs groupId="form-schema-lang">
-
-<TabItem value="ts" label="TypeScript">
-
-```ts title="formTemplate.ts"
-import { z } from "zod";
-
-export const FormTemplateSchema = z.object({
-  name: z.string(),
-  email: z.string(),
-});
-
-export type FormTemplateProps = z.infer<typeof FormTemplateSchema>;
-```
-
-</TabItem>
-
-<TabItem value="js" label="JavaScript">
-
-```js title="formTemplate.js"
-import { z } from "zod";
-
-export const FormTemplateSchema = z.object({
-  name: z.string(),
-  email: z.string(),
-});
-```
-
-</TabItem>
-
-</Tabs>
-
-Next, pass the response template schema to the LLM:
+Pass the response template schema to the LLM:
 
 <Tabs groupId="frontend-lang">
 
@@ -184,13 +151,13 @@ import {
   fromOpenAICompletion,
   templatesToResponseFormat,
 } from "@crayonai/stream";
-import { FormTemplateSchema } from "./formTemplate";
+import { z } from "zod";
 
 export async function POST(req: NextRequest) {
   // ... rest of your code
   // highlight-start
   const responseFormat = templatesToResponseFormat({
-    schema: FormTemplateSchema,
+    schema: z.object({}),
     name: "form",
     description:
       "Use this template to collect the user's name and email address",
@@ -230,13 +197,13 @@ import {
   fromOpenAICompletion,
   templatesToResponseFormat,
 } from "@crayonai/stream";
-import { FormTemplateSchema } from "./formTemplate";
+import { z } from "zod";
 
 export async function POST(req) {
   // ... rest of your code
   // highlight-start
   const responseFormat = templatesToResponseFormat({
-    schema: FormTemplateSchema,
+    schema: z.object({}),
     name: "form",
     description:
       "Use this template to collect the user's name and email address",
@@ -246,9 +213,7 @@ export async function POST(req) {
   // pass the response format to the LLM
   const llmStream = await client.chat.completions.create({
     model: "gpt-4o",
-    messages: toOpenAIMessages(
-      messages
-    ),
+    messages: toOpenAIMessages(messages),
     stream: true,
     // highlight-next-line
     response_format: responseFormat,
@@ -265,16 +230,17 @@ export async function POST(req) {
   });
 }
 ```
+
 </TabItem>
 
 </Tabs>
 
 </Step>
 
-<Step title="Use message context to persist the form data">
+<Step title={<>Use <code>useMessage</code> to persist the form data</>}>
 
 Now the form is functional, but it would be odd if the user filled and submitted the form, but the form appeared empty the next time they reloaded the page. To prefill the
-form with the previously submitted data, you can use message context to access the `Message` object and subsequently use this object to update the `AssistantMessage` metadata.
+form with the previously submitted data, you can store the values in the assistant message's `message.context` and retrieve them when loading the response.
 
 This can be done by making the following modifications to the form component:
 
@@ -288,7 +254,7 @@ import { useThreadActions, useMessage } from "@crayonai/react-core";
 
 export const Form = () => {
   // highlight-next-line
-  const { message } = useMessage(); // access the message using message context
+  const { message } = useMessage();
   const { processMessage, updateMessage } = useThreadActions();
 
   const [name, setName] = useState<string>(
@@ -310,10 +276,8 @@ export const Form = () => {
     });
 
     // highlight-start
-    // store the newly submitted data in the message context
-    message.context = [{ name, email }];
-    // update the assistant message metadata to contain the newly submitted data
-    updateMessage(message, true);
+    message.context = [{ name, email }]; // store the newly submitted data in the message context
+    updateMessage(message, true); // update the assistant message context with the updated values
     // highlight-end
   };
 
@@ -347,16 +311,16 @@ import { useThreadActions, useMessage } from "@crayonai/react-core";
 
 export const Form = () => {
   // highlight-next-line
-  const { message } = useMessage(); // access the message using message context
+  const { message } = useMessage();
   const { processMessage, updateMessage } = useThreadActions();
 
   const [name, setName] = useState(
     // highlight-next-line
-    (message.context?.[0]?.name) ?? "" // prefill if the message metadata contains a name
+    message.context?.[0]?.name ?? "" // prefill if the message metadata contains a name
   );
   const [email, setEmail] = useState(
     // highlight-next-line
-    (message.context?.[0]?.email) ?? "" // prefill if the message metadata contains an email
+    message.context?.[0]?.email ?? "" // prefill if the message metadata contains an email
   );
 
   const handleSubmit = async (e) => {
@@ -369,10 +333,8 @@ export const Form = () => {
     });
 
     // highlight-start
-    // store the newly submitted data in the message context
-    message.context = [{ name, email }];
-    // update the assistant message metadata to contain the newly submitted data
-    updateMessage(message, true);
+    message.context = [{ name, email }]; // store the newly submitted data in the message context
+    updateMessage(message, true); // update the assistant message context with the updated values
     // highlight-end
   };
 
@@ -399,11 +361,6 @@ export const Form = () => {
 </TabItem>
 
 </Tabs>
-
-:::note
-Message context does not refer to `message.context`, which is the metadata associated with the `Message` object. Instead, it refers to the actual
-<ins>[`MessageContext`](../../../reference/js/react-core/functions/MessageContext.md)</ins> that allows you to access the `Message` object.
-:::
 
 </Step>
 
