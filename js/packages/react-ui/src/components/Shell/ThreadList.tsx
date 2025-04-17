@@ -1,5 +1,7 @@
 import { Thread, useThreadListActions, useThreadListState } from "@crayonai/react-core";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
+import { EllipsisVerticalIcon, Trash2Icon } from "lucide-react";
 import { Fragment, useEffect } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { useShellStore } from "./store";
@@ -22,13 +24,7 @@ export const ThreadButton = ({
   const { layout } = useLayoutContext();
 
   return (
-    <button
-      onClick={() => {
-        if (layout === "mobile") {
-          setIsSidebarOpen(!isSidebarOpen);
-        }
-        selectThread(id);
-      }}
+    <div
       className={clsx(
         "crayon-shell-thread-button",
         {
@@ -37,8 +33,36 @@ export const ThreadButton = ({
         className,
       )}
     >
-      {title}
-    </button>
+      <button
+        className="crayon-shell-thread-button-title"
+        onClick={() => {
+          if (layout === "mobile") {
+            setIsSidebarOpen(!isSidebarOpen);
+          }
+          selectThread(id);
+        }}
+      >
+        {title}
+      </button>
+      <DropdownMenu.Root modal={false}>
+        <DropdownMenu.Trigger asChild>
+          <button className="crayon-shell-thread-button-dropdown-trigger">
+            <EllipsisVerticalIcon size={14} />
+          </button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content
+          className="crayon-shell-thread-button-dropdown-menu"
+          side="bottom"
+          align="start"
+          sideOffset={2}
+        >
+          <DropdownMenu.Item className="crayon-shell-thread-button-dropdown-menu-item">
+            <Trash2Icon size={14} className="crayon-shell-thread-button-dropdown-menu-item-icon" />
+            Delete
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    </div>
   );
 };
 
