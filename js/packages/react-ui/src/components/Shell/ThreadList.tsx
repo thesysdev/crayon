@@ -15,7 +15,7 @@ export const ThreadButton = ({
   title: string;
   className?: string;
 }) => {
-  const { selectThread } = useThreadListActions();
+  const { selectThread, deleteThread } = useThreadListActions();
   const { selectedThreadId } = useThreadListState();
   const { isSidebarOpen, setIsSidebarOpen } = useShellStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
@@ -56,7 +56,12 @@ export const ThreadButton = ({
           align="start"
           sideOffset={2}
         >
-          <DropdownMenu.Item className="crayon-shell-thread-button-dropdown-menu-item">
+          <DropdownMenu.Item
+            className="crayon-shell-thread-button-dropdown-menu-item"
+            onSelect={() => {
+              deleteThread(id);
+            }}
+          >
             <Trash2Icon size={14} className="crayon-shell-thread-button-dropdown-menu-item-icon" />
             Delete
           </DropdownMenu.Item>
