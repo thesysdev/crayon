@@ -37,7 +37,7 @@ export const useThreadListManager = (params: UseThreadListManagerParams): Defaul
   propsRef.current = params;
 
   const store = useMemo(() => {
-    return createStore<DefaultManager>((set) => {
+    return createStore<DefaultManager>((set, get) => {
       const updateThreadRunningStatus = (id: string, isRunning: boolean) => {
         set((state) => ({
           threads: state.threads.map((t) => {
@@ -86,10 +86,13 @@ export const useThreadListManager = (params: UseThreadListManagerParams): Defaul
           propsRef.current
             .deleteThread(id)
             .then(() => {
-              set((state) => ({
+              const state = get();
+              set({
                 threads: state.threads.filter((t) => t.threadId !== id),
-                selectedThreadId: state.selectedThreadId === id ? null : state.selectedThreadId,
-              }));
+              });
+              if (state.selectedThreadId === id) {
+                state.switchToNewThread();
+              }
             })
             .catch(() => {
               updateThreadRunningStatus(id, false);
