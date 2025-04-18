@@ -44,28 +44,33 @@ export const ThreadButton = ({
       >
         {title}
       </button>
-      <DropdownMenu.Root modal>
+      <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
           <button className="crayon-shell-thread-button-dropdown-trigger">
             <EllipsisVerticalIcon size={14} />
           </button>
         </DropdownMenu.Trigger>
-        <DropdownMenu.Content
-          className="crayon-shell-thread-button-dropdown-menu"
-          side="bottom"
-          align="start"
-          sideOffset={2}
-        >
-          <DropdownMenu.Item
-            className="crayon-shell-thread-button-dropdown-menu-item"
-            onSelect={() => {
-              deleteThread(id);
-            }}
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content
+            className="crayon-shell-thread-button-dropdown-menu"
+            side="bottom"
+            align="start"
+            sideOffset={2}
           >
-            <Trash2Icon size={14} className="crayon-shell-thread-button-dropdown-menu-item-icon" />
-            Delete
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
+            <DropdownMenu.Item
+              className="crayon-shell-thread-button-dropdown-menu-item"
+              onSelect={() => {
+                deleteThread(id);
+              }}
+            >
+              <Trash2Icon
+                size={14}
+                className="crayon-shell-thread-button-dropdown-menu-item-icon"
+              />
+              Delete
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
       </DropdownMenu.Root>
     </div>
   );
