@@ -44,7 +44,7 @@ export const ThreadButton = ({
       >
         {title}
       </button>
-      <DropdownMenu.Root modal={false}>
+      <DropdownMenu.Root modal>
         <DropdownMenu.Trigger asChild>
           <button className="crayon-shell-thread-button-dropdown-trigger">
             <EllipsisVerticalIcon size={14} />
