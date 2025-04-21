@@ -191,7 +191,7 @@ export const YearsDropdown = (
           botType === "mobile" && "crayon-calendar-select-viewport-mobile",
         )}
         sideOffset={12}
-        alignOffset={-95}
+        alignOffset={-75}
         style={{
           minHeight: `${containerHeight - 45}px`,
           maxHeight: `${containerHeight - 45}px`,
