@@ -114,8 +114,6 @@ export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: 
           element.getBoundingClientRect().top +
           element.scrollTop;
 
-        console.log("trying to scroll to", scrollPosition);
-
         element.scrollTo({ top: scrollPosition, behavior: "smooth" });
         lastUserMessage.current = lastUserMessageDiv;
       }
@@ -125,10 +123,6 @@ export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: 
   }, [ref, lastMessage, scrollVariant, userMessageSelector]);
 
   useEffect(() => {
-    console.log("isRunning", isRunning);
-    console.log("hasUserScrolledWhenIsRunning", hasUserScrolledWhenIsRunning.current);
-    console.log("wasScrolledToBottomAfterLoading", wasScrolledToBottomAfterLoading.current);
-    console.log("isLoadingMessages", isLoadingMessages);
     if (
       (isRunning && !hasUserScrolledWhenIsRunning.current) || // scroll to bottom if user hasn't scrolled when isRunning is true
       (!wasScrolledToBottomAfterLoading.current && !isLoadingMessages) // scroll to bottom once when messages are loaded
