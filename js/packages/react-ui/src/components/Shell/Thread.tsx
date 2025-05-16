@@ -9,7 +9,7 @@ import clsx from "clsx";
 import { ArrowRight, Square } from "lucide-react";
 import React, { memo, useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../hooks/useComposerState";
-import { useScrollToBottom } from "../../hooks/useScrollToBottom";
+import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { IconButton } from "../IconButton";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
 import { useShellStore } from "./store";
@@ -27,7 +27,7 @@ export const ThreadContainer = ({
 export const ScrollArea = ({
   children,
   className,
-  scrollVariant = "always",
+  scrollVariant = "user-message-anchor",
   userMessageSelector,
 }: {
   children?: React.ReactNode;
@@ -35,14 +35,14 @@ export const ScrollArea = ({
   /**
    * Scroll to bottom once the last message is added
    */
-  scrollVariant?: "always" | "once" | "user-message-anchor";
+  scrollVariant?: ScrollVariant;
   /**
    * Selector for the user message
    */
   userMessageSelector?: string;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const { messages, isRunning } = useThreadState();
+  const { messages, isRunning, isLoadingMessages } = useThreadState();
 
   useScrollToBottom({
     ref,
@@ -50,10 +50,21 @@ export const ScrollArea = ({
     scrollVariant,
     userMessageSelector,
     isRunning,
+    isLoadingMessages,
   });
 
   return (
-    <div ref={ref} className={clsx("crayon-shell-thread-scroll-area", className)}>
+    <div
+      ref={ref}
+      className={clsx(
+        "crayon-shell-thread-scroll-area",
+        {
+          "crayon-shell-thread-scroll-area--user-message-anchor":
+            scrollVariant === "user-message-anchor",
+        },
+        className,
+      )}
+    >
       {children}
     </div>
   );
@@ -180,7 +191,7 @@ export const Messages = ({
           </MessageProvider>
         );
       })}
-      {isRunning && loader}
+      {isRunning && <div>{loader}</div>}
     </div>
   );
 };
