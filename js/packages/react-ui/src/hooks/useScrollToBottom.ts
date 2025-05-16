@@ -1,21 +1,76 @@
 import { RefObject, useCallback, useEffect, useRef } from "react";
 
+export type ScrollVariant = "always" | "once" | "user-message-anchor";
 export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: string }>({
   ref,
   lastMessage,
   scrollVariant,
   userMessageSelector = ".crayon-shell-thread-message-user",
   isRunning,
+  isLoadingMessages,
 }: {
   ref: RefObject<T>;
   // scroll to bottom when this value changes
   lastMessage: L;
-  scrollVariant: "always" | "once" | "user-message-anchor";
+  scrollVariant: ScrollVariant;
   userMessageSelector?: string;
+  // if true, scroll to bottom logic will work
   isRunning?: boolean;
+  isLoadingMessages?: boolean;
 }) => {
   const previousLastMessage = useRef<L | null>(null);
   const lastUserMessage = useRef<HTMLElement | null>(null);
+  const hasUserScrolledWhenIsRunning = useRef(false);
+  const wasScrolledToBottomAfterLoading = useRef(false);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!isRunning || !element) {
+      hasUserScrolledWhenIsRunning.current = false;
+      return;
+    }
+    let isUserScrolling = false;
+
+    const userScrollingDisabler = () => {
+      isUserScrolling = false;
+    };
+
+    const userScrollingEnabler = () => {
+      isUserScrolling = true;
+    };
+
+    const scrollListener = () => {
+      if (!isUserScrolling) {
+        return;
+      }
+      hasUserScrolledWhenIsRunning.current = true;
+      removeListeners();
+    };
+
+    const addListeners = () => {
+      element.addEventListener("scroll", scrollListener);
+      element.addEventListener("click", userScrollingDisabler);
+      element.addEventListener("touchmove", userScrollingEnabler);
+      element.addEventListener("wheel", userScrollingEnabler);
+      element.addEventListener("keydown", userScrollingEnabler);
+      element.addEventListener("mousedown", userScrollingEnabler);
+    };
+
+    const removeListeners = () => {
+      element.removeEventListener("scroll", scrollListener);
+      element.removeEventListener("click", userScrollingDisabler);
+      element.removeEventListener("touchmove", userScrollingEnabler);
+      element.removeEventListener("wheel", userScrollingEnabler);
+      element.removeEventListener("keydown", userScrollingEnabler);
+      element.removeEventListener("mousedown", userScrollingEnabler);
+    };
+
+    addListeners();
+
+    return () => {
+      removeListeners();
+    };
+  }, [isRunning]);
 
   const scrollToBottom = useCallback(() => {
     const element = ref.current;
@@ -25,10 +80,15 @@ export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: 
 
     if (scrollVariant === "always") {
       if (previousLastMessage.current !== lastMessage) {
-        element.scrollTo({
-          top: element.scrollHeight,
-          behavior: "smooth",
-        });
+        const scrollBy = element.scrollHeight - element.scrollTop - element.clientHeight;
+        if (scrollBy > 90) {
+          element.scrollTo({
+            top: element.scrollHeight,
+            behavior: "smooth",
+          });
+        } else {
+          element.scrollTop = element.scrollHeight;
+        }
       }
     } else if (scrollVariant === "once") {
       if (previousLastMessage.current?.id !== lastMessage.id) {
@@ -42,10 +102,10 @@ export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: 
         | HTMLElement
         | undefined;
       const lastUserMessageNextSibling = lastUserMessageDiv?.nextElementSibling;
-
       if (
         lastUserMessageDiv &&
-        !lastUserMessageNextSibling?.nextElementSibling &&
+        (!lastUserMessageNextSibling?.nextElementSibling ||
+          !wasScrolledToBottomAfterLoading.current) &&
         previousLastMessage.current?.id !== lastMessage.id
       ) {
         // scroll to last user message till there is only 1 more message
@@ -53,6 +113,8 @@ export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: 
           lastUserMessageDiv.getBoundingClientRect().top -
           element.getBoundingClientRect().top +
           element.scrollTop;
+
+        console.log("trying to scroll to", scrollPosition);
 
         element.scrollTo({ top: scrollPosition, behavior: "smooth" });
         lastUserMessage.current = lastUserMessageDiv;
@@ -63,12 +125,20 @@ export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: 
   }, [ref, lastMessage, scrollVariant, userMessageSelector]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [scrollToBottom]);
-
-  useCallback(() => {
-    if (isRunning) {
+    console.log("isRunning", isRunning);
+    console.log("hasUserScrolledWhenIsRunning", hasUserScrolledWhenIsRunning.current);
+    console.log("wasScrolledToBottomAfterLoading", wasScrolledToBottomAfterLoading.current);
+    console.log("isLoadingMessages", isLoadingMessages);
+    if (
+      (isRunning && !hasUserScrolledWhenIsRunning.current) || // scroll to bottom if user hasn't scrolled when isRunning is true
+      (!wasScrolledToBottomAfterLoading.current && !isLoadingMessages) // scroll to bottom once when messages are loaded
+    ) {
       scrollToBottom();
+      wasScrolledToBottomAfterLoading.current = true;
     }
-  }, [isRunning]);
+
+    if (isLoadingMessages) {
+      wasScrolledToBottomAfterLoading.current = false;
+    }
+  }, [scrollToBottom, isRunning, isLoadingMessages]);
 };

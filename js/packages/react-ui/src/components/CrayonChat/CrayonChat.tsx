@@ -13,6 +13,7 @@ import {
 } from "@crayonai/react-core";
 import { useEffect, useRef } from "react";
 import invariant from "tiny-invariant";
+import { ScrollVariant } from "../../hooks/useScrollToBottom";
 import { ThemeProps, ThemeProvider } from "../ThemeProvider";
 import { ComposedCopilot } from "./ComposedCopilot";
 import { ComposedStandalone } from "./ComposedStandalone";
@@ -39,6 +40,7 @@ type CrayonChatProps = {
   logoUrl?: string;
   agentName?: string;
   type?: "copilot" | "standalone";
+  scrollVariant?: ScrollVariant;
 
   messageLoadingComponent?: () => React.ReactNode;
 };
@@ -56,6 +58,7 @@ export const CrayonChat = ({
   messageLoadingComponent,
   type = "standalone",
   theme,
+  scrollVariant = "user-message-anchor",
 }: CrayonChatProps) => {
   invariant(processMessage || userThreadManager, "processMessage or threadManager is required");
 
@@ -137,12 +140,14 @@ export const CrayonChat = ({
             logoUrl={logoUrl}
             agentName={agentName}
             messageLoadingComponent={messageLoadingComponent}
+            scrollVariant={scrollVariant}
           />
         ) : (
           <ComposedStandalone
             logoUrl={logoUrl}
             agentName={agentName}
             messageLoadingComponent={messageLoadingComponent}
+            scrollVariant={scrollVariant}
           />
         )}
       </ChatProvider>
