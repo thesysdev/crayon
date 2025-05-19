@@ -27,7 +27,7 @@ export const ScrollArea = ({
   children,
   className,
   scrollVariant = "user-message-anchor",
-  userMessageSelector,
+  userMessageSelector = ".crayon-copilot-shell-thread-message-user",
 }: {
   children?: React.ReactNode;
   className?: string;
