@@ -180,7 +180,6 @@ export const BarChartV2 = <T extends BarChartData>({
         config={chartConfig}
         ref={chartContainerRef}
         style={{ width, minWidth: "100%", aspectRatio: "16/9" }}
-       
       >
         <RechartsBarChart
           accessibilityLayer
