@@ -13,9 +13,9 @@ import {
 } from "../Charts";
 import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
-export type PieChartData = Array<Record<string, string | number>>;
+export type PieChartCardData = Array<Record<string, string | number>>;
 
-export interface PieChartProps<T extends PieChartData> {
+export interface PieChartCardProps<T extends PieChartCardData> {
   data: T;
   categoryKey: keyof T[number];
   dataKey: keyof T[number];
@@ -42,17 +42,17 @@ const calculatePercentage = (value: number, total: number): number => {
   return Number(((value / total) * 100).toFixed(2));
 };
 
-export const PieChart = <T extends PieChartData>({
+export const PieChartCard = <T extends PieChartCardData>({
   data,
   categoryKey,
   dataKey,
   theme = "ocean",
   variant = "pie",
   format = "number",
-  legend = true,
+  legend = false,
   label = true,
   isAnimationActive = true,
-}: PieChartProps<T>) => {
+}: PieChartCardProps<T>) => {
   const { layout } = useLayoutContext();
   const [calculatedOuterRadius, setCalculatedOuterRadius] = useState(120);
   const [calculatedInnerRadius, setCalculatedInnerRadius] = useState(0);
@@ -103,7 +103,7 @@ export const PieChart = <T extends PieChartData>({
     ...item,
     percentage: calculatePercentage(Number(item[dataKey as string]), total),
     originalValue: item[dataKey as string],
-  }));
+  })) as (T[number] & { percentage: number; originalValue: string | number })[];
 
   // Get color palette and distribute colors
   const palette = getPalette(theme);
@@ -147,29 +147,74 @@ export const PieChart = <T extends PieChartData>({
   };
 
   return (
-    <ChartContainer
-      ref={containerRef}
-      config={chartConfig}
-      className={clsx("crayon-pie-chart-container", layoutMap[layout])}
-    >
-      <RechartsPieChart>
-        <ChartTooltip content={<ChartTooltipContent showPercentage={format === "percentage"} />} />
-        {legend && <ChartLegend content={<ChartLegendContent nameKey={String(categoryKey)} />} />}
-        <Pie
-          data={transformedData}
-          dataKey={format === "percentage" ? "percentage" : String(dataKey)}
-          nameKey={String(categoryKey)}
-          labelLine={false}
-          outerRadius={calculatedOuterRadius}
-          innerRadius={calculatedInnerRadius}
-          label={label ? renderCustomLabel : false}
-          isAnimationActive={isAnimationActive}
-        >
-          {Object.entries(chartConfig).map(([key, config]) => (
-            <Cell key={key} fill={config.color} />
-          ))}
-        </Pie>
-      </RechartsPieChart>
-    </ChartContainer>
+    <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "row" }}>
+      <ChartContainer
+        ref={containerRef}
+        config={chartConfig}
+        className={clsx("crayon-pie-chart-container", layoutMap[layout])}
+      >
+        <RechartsPieChart>
+          <ChartTooltip
+            content={<ChartTooltipContent showPercentage={format === "percentage"} />}
+          />
+          {legend && (
+            <ChartLegend
+              align="right"
+              content={<ChartLegendContent nameKey={String(categoryKey)} />}
+            />
+          )}
+          <Pie
+            data={transformedData}
+            dataKey={format === "percentage" ? "percentage" : String(dataKey)}
+            nameKey={String(categoryKey)}
+            labelLine={false}
+            outerRadius={calculatedOuterRadius}
+            innerRadius={calculatedInnerRadius}
+            label={label ? renderCustomLabel : false}
+            isAnimationActive={isAnimationActive}
+          >
+            {Object.entries(chartConfig).map(([key, config]) => (
+              <Cell key={key} fill={config.color} />
+            ))}
+          </Pie>
+        </RechartsPieChart>
+      </ChartContainer>
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
+        {transformedData.map((item, index) => (
+          <div
+            key={String(item[categoryKey])}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "8px",
+              padding: "4px 8px",
+            }}
+          >
+            <div
+              style={{
+                width: "12px",
+                height: "12px",
+                backgroundColor: colors[index],
+                marginRight: "8px",
+                borderRadius: "2px",
+              }}
+            />
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ fontWeight: 500 }}>{item[categoryKey]}</div>
+              <div style={{ fontSize: "0.875rem", color: "#666" }}>
+                {format === "percentage" ? `${item.percentage}%` : item.originalValue}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };

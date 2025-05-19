@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Monitor, TabletSmartphone } from "lucide-react";
 import { Card } from "../../../Card";
-import { BarChartV2, BarChartPropsV2 } from "../BarChartV2";
+import { BarChartPropsV2, BarChartV2 } from "../BarChartV2";
 
 const barChartData = [
   { month: "January", desktop: 150, mobile: 90 },
   { month: "February", desktop: 280, mobile: 180 },
   { month: "March", desktop: 220, mobile: 140 },
-//   { month: "April", desktop: 180, mobile: 160 },
-//   { month: "May", desktop: 250, mobile: 120 },
-//   { month: "June", desktop: 300, mobile: 180 },
+  //   { month: "April", desktop: 180, mobile: 160 },
+  //   { month: "May", desktop: 250, mobile: 120 },
+  //   { month: "June", desktop: 300, mobile: 180 },
 ];
 
 const icons = {
@@ -24,7 +24,8 @@ const meta: Meta<BarChartPropsV2<typeof barChartData>> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { BarChartV2 } from '@crayon-ui/react-ui/Charts/BarChartV2';\n```",
+        component:
+          "```tsx\nimport { BarChartV2 } from '@crayon-ui/react-ui/Charts/BarChartV2';\n```",
       },
     },
   },
@@ -399,4 +400,4 @@ const barChartData = [
       },
     },
   },
-}; 
+};
