@@ -1,1 +1,1 @@
-export * from "./BarChartv2";
+export * from "./BarChartV2";

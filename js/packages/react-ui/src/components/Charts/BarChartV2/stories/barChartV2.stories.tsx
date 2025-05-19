@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Monitor, TabletSmartphone } from "lucide-react";
 import { Card } from "../../../Card";
-import { BarChartV2, BarChartProps } from "../BarChartv2";
+import { BarChartV2, BarChartPropsV2 } from "../BarChartV2";
 
 const barChartData = [
   { month: "January", desktop: 150, mobile: 90 },
@@ -17,7 +17,7 @@ const icons = {
   mobile: TabletSmartphone,
 } as const;
 
-const meta: Meta<BarChartProps<typeof barChartData>> = {
+const meta: Meta<BarChartPropsV2<typeof barChartData>> = {
   title: "Components/Charts/BarChartV2",
   component: BarChartV2,
   parameters: {
@@ -173,7 +173,7 @@ export const BarChartV2Story: Story = {
     isAnimationActive: true,
     showYAxis: false,
   },
-  render: (args) => (
+  render: (args: BarChartPropsV2<typeof barChartData>) => (
     <Card style={{ width: "500px" }}>
       <BarChartV2 {...args} />
     </Card>
@@ -220,7 +220,7 @@ export const BarChartV2WithIcons: Story = {
     ...BarChartV2Story.args,
     icons: icons,
   },
-  render: (args) => (
+  render: (args: BarChartPropsV2<typeof barChartData>) => (
     <Card style={{ width: "500px" }}>
       <BarChartV2 {...args} />
     </Card>
@@ -273,7 +273,7 @@ export const BarChartV2WithYAxis: Story = {
     xAxisLabel: "Time Period",
     yAxisLabel: "Number of Users",
   },
-  render: (args) => (
+  render: (args: BarChartPropsV2<typeof barChartData>) => (
     <Card style={{ width: "500px" }}>
       <BarChartV2 {...args} />
     </Card>

@@ -15,7 +15,7 @@ import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
 export type BarChartData = Array<Record<string, string | number>>;
 
-export interface BarChartProps<T extends BarChartData> {
+export interface BarChartPropsV2<T extends BarChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
@@ -45,7 +45,7 @@ export const BarChartV2 = <T extends BarChartData>({
   showYAxis = false,
   xAxisLabel,
   yAxisLabel,
-}: BarChartProps<T>) => {
+}: BarChartPropsV2<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
 
