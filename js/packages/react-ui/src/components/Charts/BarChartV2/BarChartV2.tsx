@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Bar, LabelList, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { useLayoutContext } from "../../../context/LayoutContext";
 import {
@@ -12,14 +12,17 @@ import {
 } from "../Charts";
 import { cartesianGrid } from "../cartesianGrid";
 import { getDistributedColors, getPalette } from "../utils/PalletUtils";
+import { getPadding, getRadiusArray, getWidthOfData } from "./utils";
 
 export type BarChartData = Array<Record<string, string | number>>;
+
+export type Variant = "grouped" | "stacked";
 
 export interface BarChartPropsV2<T extends BarChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
-  variant?: "grouped" | "stacked";
+  variant?: Variant;
   grid?: boolean;
   label?: boolean;
   legend?: boolean;
@@ -146,47 +149,100 @@ export const BarChartV2 = <T extends BarChartData>({
     return data.length <= 6 ? 10 : 15;
   };
 
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+
+  useEffect(() => {
+    if (!chartContainerRef.current) {
+      return () => {};
+    }
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(chartContainerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  const padding = getPadding(data, categoryKey as string, containerWidth);
+  const width = getWidthOfData(data, categoryKey as string);
+  console.log(width);
+
   return (
-    <ChartContainer config={chartConfig}>
-      <RechartsBarChart
-        accessibilityLayer
-        data={data}
-        margin={{
-          top: label ? 30 : 20,
-        }}
+    <div style={{ width: "100%", overflowX: "auto" }}>
+      <ChartContainer
+        config={chartConfig}
+        ref={chartContainerRef}
+        style={{ width, minWidth: "100%", aspectRatio: "16/9" }}
+       
       >
-        {grid && cartesianGrid()}
-        <XAxis
-          dataKey={categoryKey as string}
-          tickLine={false}
-          tickMargin={getTickMargin(data)}
-          axisLine={false}
-          angle={getAxisAngle(data)}
-          textAnchor="middle"
-          tickFormatter={getTickFormatter(data)}
-          interval="preserveStartEnd"
-          label={{
-            value: xAxisLabel,
-            position: "insideBottom",
-            offset: -10,
-            className: "crayon-chart-axis-label",
+        <RechartsBarChart
+          accessibilityLayer
+          data={data}
+          margin={{
+            top: label ? 30 : 20,
           }}
-        />
-        {showYAxis && (
-          <YAxis
+        >
+          {grid && cartesianGrid()}
+          <XAxis
+            dataKey={categoryKey as string}
+            tickLine={false}
+            tickMargin={getTickMargin(data)}
+            axisLine={false}
+            angle={getAxisAngle(data)}
+            textAnchor="middle"
+            tickFormatter={getTickFormatter(data)}
+            interval="preserveStartEnd"
             label={{
-              value: yAxisLabel,
-              position: "insideLeft",
-              angle: -90,
+              value: xAxisLabel,
+              position: "insideBottom",
+              offset: -10,
               className: "crayon-chart-axis-label",
             }}
+            padding={padding}
           />
-        )}
-        <ChartTooltip content={<ChartTooltipContent />} />
-        {dataKeys.map((key) => {
-          const transformedKey = keyTransform(key);
-          const color = `var(--color-${transformedKey})`;
-          if (label) {
+          {showYAxis && (
+            <YAxis
+              label={{
+                value: yAxisLabel,
+                position: "insideLeft",
+                angle: -90,
+                className: "crayon-chart-axis-label",
+              }}
+            />
+          )}
+          <ChartTooltip content={<ChartTooltipContent />} />
+          {dataKeys.map((key) => {
+            const transformedKey = keyTransform(key);
+            const color = `var(--color-${transformedKey})`;
+            if (label) {
+              return (
+                <Bar
+                  key={key}
+                  dataKey={key}
+                  fill={color}
+                  radius={getRadiusArray(variant, radius)}
+                  stackId={variant === "stacked" ? "a" : undefined}
+                  isAnimationActive={isAnimationActive}
+                  maxBarSize={8}
+                >
+                  {label && (
+                    <LabelList
+                      position="top"
+                      offset={12}
+                      className="crayon-chart-label-list"
+                      fontSize={12}
+                    />
+                  )}
+                </Bar>
+              );
+            }
             return (
               <Bar
                 key={key}
@@ -195,32 +251,12 @@ export const BarChartV2 = <T extends BarChartData>({
                 radius={radius}
                 stackId={variant === "stacked" ? "a" : undefined}
                 isAnimationActive={isAnimationActive}
-                maxBarSize={8}
-              >
-                {label && (
-                  <LabelList
-                    position="top"
-                    offset={12}
-                    className="crayon-chart-label-list"
-                    fontSize={12}
-                  />
-                )}
-              </Bar>
+              />
             );
-          }
-          return (
-            <Bar
-              key={key}
-              dataKey={key}
-              fill={color}
-              radius={radius}
-              stackId={variant === "stacked" ? "a" : undefined}
-              isAnimationActive={isAnimationActive}
-            />
-          );
-        })}
-        {legend && <ChartLegend content={<ChartLegendContent />} />}
-      </RechartsBarChart>
-    </ChartContainer>
+          })}
+          {legend && <ChartLegend content={<ChartLegendContent />} />}
+        </RechartsBarChart>
+      </ChartContainer>
+    </div>
   );
 };
