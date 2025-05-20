@@ -7,9 +7,15 @@ const barChartData = [
   { month: "January", desktop: 150, mobile: 90 },
   { month: "February", desktop: 280, mobile: 180 },
   { month: "March", desktop: 220, mobile: 140 },
-  //   { month: "April", desktop: 180, mobile: 160 },
-  //   { month: "May", desktop: 250, mobile: 120 },
-  //   { month: "June", desktop: 300, mobile: 180 },
+  { month: "April", desktop: 180, mobile: 160 },
+  { month: "May", desktop: 250, mobile: 120 },
+  { month: "June", desktop: 300, mobile: 180 },
+  { month: "July", desktop: 350, mobile: 200 },
+  { month: "August", desktop: 400, mobile: 220 },
+  { month: "September", desktop: 450, mobile: 240 },
+  { month: "October", desktop: 500, mobile: 260 },
+  { month: "November", desktop: 550, mobile: 280 },
+  { month: "December", desktop: 600, mobile: 300 },
 ];
 
 const icons = {
