@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { debounce } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
-import { useLayoutContext } from "../../../context/LayoutContext";
+import { useLayoutContext } from "../../../../context/LayoutContext";
 import {
   ChartConfig,
   ChartContainer,
@@ -10,8 +10,8 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-} from "../Charts";
-import { getDistributedColors, getPalette } from "../utils/PalletUtils";
+} from "../../Charts";
+import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 
 export type PieChartCardData = Array<Record<string, string | number>>;
 

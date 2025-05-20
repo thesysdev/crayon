@@ -11,8 +11,8 @@ import {
   keyTransform,
 } from "../../Charts";
 import { cartesianGrid } from "../../cartesianGrid";
-import { getPadding, getRadiusArray, getWidthOfData } from "../../utils/BarChartUtils";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
+import { getPadding, getRadiusArray, getWidthOfData } from "../utils/BarChartUtils";
 
 export type BarChartData = Array<Record<string, string | number>>;
 
