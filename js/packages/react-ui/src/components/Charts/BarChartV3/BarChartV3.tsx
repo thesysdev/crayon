@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Bar, BarChart, XAxis } from "recharts";
-import { getPadding, getWidthOfData } from "../BarChartV2/utils";
 import { ChartConfig, ChartContainer, keyTransform } from "../Charts";
+import { getPadding, getWidthOfData } from "../utils/BarChartUtils";
 import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
 export type BarChartV3Data = Array<Record<string, string | number>>;
