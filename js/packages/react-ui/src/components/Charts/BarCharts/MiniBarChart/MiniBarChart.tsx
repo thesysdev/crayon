@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Bar, BarChart, XAxis } from "recharts";
-import { ChartConfig, ChartContainer, keyTransform } from "../Charts";
-import { getPadding, getWidthOfData } from "../utils/BarChartUtils";
-import { getDistributedColors, getPalette } from "../utils/PalletUtils";
+import { ChartConfig, ChartContainer, keyTransform } from "../../Charts";
+import { getPadding, getWidthOfData } from "../../utils/BarChartUtils";
+import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 
-export type BarChartV3Data = Array<Record<string, string | number>>;
+export type MiniBarChartData = Array<Record<string, string | number>>;
 
 export type Variant = "grouped" | "stacked";
 
-export interface BarChartPropsV3<T extends BarChartV3Data> {
+export interface MiniBarChartProps<T extends MiniBarChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
@@ -18,7 +18,7 @@ export interface BarChartPropsV3<T extends BarChartV3Data> {
   label?: string;
 }
 
-export const BarChartV3 = <T extends BarChartV3Data>({
+export const MiniBarChart = <T extends MiniBarChartData>({
   data,
   categoryKey,
   theme = "ocean",
@@ -26,7 +26,7 @@ export const BarChartV3 = <T extends BarChartV3Data>({
   radius = 4,
   isAnimationActive = true,
   label,
-}: BarChartPropsV3<T>) => {
+}: MiniBarChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
 
@@ -70,7 +70,7 @@ export const BarChartV3 = <T extends BarChartV3Data>({
   const width = getWidthOfData(data, categoryKey as string);
 
   // Helper function to calculate total
-  const calculateTotal = <T extends BarChartV3Data>(
+  const calculateTotal = <T extends MiniBarChartData>(
     data: T,
     categoryKey: keyof T[number],
   ): number => {

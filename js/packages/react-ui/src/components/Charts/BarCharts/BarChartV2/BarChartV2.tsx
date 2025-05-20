@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Bar, LabelList, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
-import { useLayoutContext } from "../../../context/LayoutContext";
+import { useLayoutContext } from "../../../../context/LayoutContext";
 import {
   ChartConfig,
   ChartContainer,
@@ -9,10 +9,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
   keyTransform,
-} from "../Charts";
-import { cartesianGrid } from "../cartesianGrid";
-import { getPadding, getRadiusArray, getWidthOfData } from "../utils/BarChartUtils";
-import { getDistributedColors, getPalette } from "../utils/PalletUtils";
+} from "../../Charts";
+import { cartesianGrid } from "../../cartesianGrid";
+import { getPadding, getRadiusArray, getWidthOfData } from "../../utils/BarChartUtils";
+import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 
 export type BarChartData = Array<Record<string, string | number>>;
 
