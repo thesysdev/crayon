@@ -247,9 +247,10 @@ export const BarChartV2 = <T extends BarChartData>({
                 key={key}
                 dataKey={key}
                 fill={color}
-                radius={radius}
+                radius={getRadiusArray(variant, radius)}
                 stackId={variant === "stacked" ? "a" : undefined}
                 isAnimationActive={isAnimationActive}
+                maxBarSize={8}
               />
             );
           })}
