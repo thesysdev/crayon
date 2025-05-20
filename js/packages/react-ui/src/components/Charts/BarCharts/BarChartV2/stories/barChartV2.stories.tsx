@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Monitor, TabletSmartphone } from "lucide-react";
-import { Card } from "../../../Card";
+import { Card } from "../../../../Card";
 import { BarChartPropsV2, BarChartV2 } from "../BarChartV2";
 
 const barChartData = [
@@ -24,7 +24,7 @@ const icons = {
 } as const;
 
 const meta: Meta<BarChartPropsV2<typeof barChartData>> = {
-  title: "Components/Charts/BarChartV2",
+  title: "Components/Charts/BarCharts/BarChartV2",
   component: BarChartV2,
   parameters: {
     layout: "centered",

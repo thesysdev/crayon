@@ -2,13 +2,13 @@ import clsx from "clsx";
 import { debounce } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
-import { useLayoutContext } from "../../../context/LayoutContext";
-import { ChartConfig, ChartContainer } from "../Charts";
-import { getDistributedColors, getPalette } from "../utils/PalletUtils";
+import { useLayoutContext } from "../../../../context/LayoutContext";
+import { ChartConfig, ChartContainer } from "../../Charts";
+import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 
-export type PieChartV3Data = Array<Record<string, string | number>>;
+export type MiniPieChartData = Array<Record<string, string | number>>;
 
-export interface PieChartV3Props<T extends PieChartV3Data> {
+export interface MiniPieChartProps<T extends MiniPieChartData> {
   data: T;
   categoryKey: keyof T[number];
   dataKey: keyof T[number];
@@ -61,7 +61,7 @@ const calculateChartDimensions = (
   return { outerRadius, innerRadius };
 };
 
-export const PieChartV3 = <T extends PieChartV3Data>({
+export const MiniPieChart = <T extends MiniPieChartData>({
   data,
   categoryKey,
   dataKey,
@@ -70,7 +70,7 @@ export const PieChartV3 = <T extends PieChartV3Data>({
   format = "number",
   label = true,
   isAnimationActive = true,
-}: PieChartV3Props<T>) => {
+}: MiniPieChartProps<T>) => {
   const { layout } = useLayoutContext();
   const [calculatedOuterRadius, setCalculatedOuterRadius] = useState(120);
   const [calculatedInnerRadius, setCalculatedInnerRadius] = useState(0);

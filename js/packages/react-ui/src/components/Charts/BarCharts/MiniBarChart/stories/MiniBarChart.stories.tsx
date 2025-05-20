@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Monitor, TabletSmartphone } from "lucide-react";
-import { Card } from "../../../Card";
-import { BarChartPropsV3, BarChartV3 } from "../BarChartV3";
+import { Card } from "../../../../Card";
+import { MiniBarChart, MiniBarChartProps } from "../MiniBarChart";
 
 const barChartData = [
   { month: "January", desktop: 1500000 },
@@ -16,15 +16,15 @@ const icons = {
   mobile: TabletSmartphone,
 } as const;
 
-const meta: Meta<BarChartPropsV3<typeof barChartData>> = {
-  title: "Components/Charts/BarChartV3",
-  component: BarChartV3,
+const meta: Meta<MiniBarChartProps<typeof barChartData>> = {
+  title: "Components/Charts/BarCharts/MiniBarChart",
+  component: MiniBarChart,
   parameters: {
     layout: "centered",
     docs: {
       description: {
         component:
-          "```tsx\nimport { BarChartV3 } from '@crayon-ui/react-ui/Charts/BarChartV3';\n```",
+          "```tsx\nimport { MiniBarChart } from '@crayon-ui/react-ui/Charts/BarCharts/MiniBarChart';\n```",
       },
     },
   },
@@ -97,7 +97,7 @@ const meta: Meta<BarChartPropsV3<typeof barChartData>> = {
       },
     },
   },
-} satisfies Meta<typeof BarChartV3>;
+} satisfies Meta<typeof MiniBarChart>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -113,9 +113,9 @@ export const BarChartV3Story: Story = {
     radius: 4,
     isAnimationActive: true,
   },
-  render: (args: BarChartPropsV3<typeof barChartData>) => (
+  render: (args: MiniBarChartProps<typeof barChartData>) => (
     <Card style={{ width: "440px" }}>
-      <BarChartV3 {...args} />
+      <MiniBarChart {...args} />
     </Card>
   ),
   parameters: {

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Card } from "../../../Card";
-import { PieChartV2, PieChartV2Props } from "../PieChartV2";
+import { Card } from "../../../../Card";
+import { MiniPieChart, MiniPieChartProps } from "../MiniPieChart";
 
 const pieChartData = [
   { month: "January", value: 4250 },
@@ -12,9 +12,9 @@ const pieChartData = [
   { month: "July", value: 5890 },
 ];
 
-const meta: Meta<PieChartV2Props<typeof pieChartData>> = {
-  title: "Components/Charts/PieChartV2",
-  component: PieChartV2,
+const meta: Meta<MiniPieChartProps<typeof pieChartData>> = {
+  title: "Components/Charts/PieCharts/MiniPieChart",
+  component: MiniPieChart,
   parameters: {
     layout: "centered",
     docs: {
@@ -112,7 +112,7 @@ const meta: Meta<PieChartV2Props<typeof pieChartData>> = {
       },
     },
   },
-} satisfies Meta<typeof PieChartV2>;
+} satisfies Meta<typeof MiniPieChart>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -132,7 +132,7 @@ export const PieChartStory: Story = {
   },
   render: (args) => (
     <Card style={{ width: "500px" }}>
-      <PieChartV2 {...args} />
+      <MiniPieChart {...args} />
     </Card>
   ),
   parameters: {
