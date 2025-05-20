@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Card } from "../../Card";
+import { Card } from "../../../Card";
 import { PieChartCard, PieChartCardProps } from "./PieChartCard";
 
 const pieChartCardData = [
@@ -13,7 +13,7 @@ const pieChartCardData = [
 ];
 
 const meta: Meta<PieChartCardProps<typeof pieChartCardData>> = {
-  title: "Components/Charts/PieChartCard",
+  title: "Components/Charts/PieCharts/PieChartCard",
   component: PieChartCard,
   parameters: {
     layout: "centered",

@@ -1,4 +1,4 @@
-import { Variant } from "../BarCharts/BarChartV2";
+import { Variant } from "../BarChartV2";
 
 const getPadding = (
   data: Array<Record<string, string | number>>,

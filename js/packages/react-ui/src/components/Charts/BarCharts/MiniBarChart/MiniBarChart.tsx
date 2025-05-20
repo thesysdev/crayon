@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Bar, BarChart, XAxis } from "recharts";
 import { ChartConfig, ChartContainer, keyTransform } from "../../Charts";
-import { getPadding, getWidthOfData } from "../../utils/BarChartUtils";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
+import { getPadding, getWidthOfData } from "../utils/BarChartUtils";
 
 export type MiniBarChartData = Array<Record<string, string | number>>;
 
