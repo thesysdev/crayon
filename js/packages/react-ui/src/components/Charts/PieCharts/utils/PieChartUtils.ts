@@ -1,6 +1,7 @@
 /**
  * Utility functions for pie charts
  */
+import { useState } from "react";
 
 // Helper function to calculate percentage
 export const calculatePercentage = (value: number, total: number): number => {
@@ -66,4 +67,32 @@ export const layoutMap: Record<string, string> = {
   fullscreen: "crayon-pie-chart-container-fullscreen",
   tray: "crayon-pie-chart-container-tray",
   copilot: "crayon-pie-chart-container-copilot",
+};
+
+// Reusable hook for chart hover effects
+export const useChartHover = () => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  const handleMouseEnter = (_: any, index: number) => {
+    setActiveIndex(index);
+  };
+
+  const handleMouseLeave = () => {
+    setActiveIndex(null);
+  };
+
+  return {
+    activeIndex,
+    handleMouseEnter,
+    handleMouseLeave,
+  };
+};
+
+// Default hover style properties for cells
+export const getHoverStyles = (index: number, activeIndex: number | null) => {
+  return {
+    opacity: activeIndex === null || activeIndex === index ? 1 : 0.6,
+    stroke: activeIndex === index ? "#fff" : "none",
+    strokeWidth: activeIndex === index ? 2 : 0,
+  };
 };

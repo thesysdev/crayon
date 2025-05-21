@@ -8,7 +8,9 @@ import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 import {
   calculatePercentage,
   calculateTwoLevelChartDimensions,
+  getHoverStyles,
   layoutMap,
+  useChartHover,
 } from "../utils/PieChartUtils";
 
 export type TwoLevelPieChartData = Array<Record<string, string | number>>;
@@ -39,6 +41,7 @@ export const TwoLevelPieChart = <T extends TwoLevelPieChartData>({
   const [calculatedOuterRadius, setCalculatedOuterRadius] = useState(160);
   const [calculatedMiddleRadius, setCalculatedMiddleRadius] = useState(140);
   const [calculatedInnerRadius, setCalculatedInnerRadius] = useState(40);
+  const { activeIndex, handleMouseEnter, handleMouseLeave } = useChartHover();
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Calculate dynamic radius
@@ -110,10 +113,16 @@ export const TwoLevelPieChart = <T extends TwoLevelPieChartData>({
           paddingAngle={0.5}
           startAngle={appearance === "semiCircular" ? 0 : 0}
           endAngle={appearance === "semiCircular" ? 180 : 360}
+          // Add hover event handlers to inner ring
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          {Object.entries(chartConfig).map(([key, config]) => (
-            <Cell key={key} fill={"lightgray"} />
-          ))}
+          {transformedData.map((entry, index) => {
+            const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
+            const hoverStyles = getHoverStyles(index, activeIndex);
+            // Apply neutral color for inner ring
+            return <Cell key={`inner-cell-${index}`} fill={"lightgray"} {...hoverStyles} />;
+          })}
         </Pie>
         <Pie
           data={transformedData}
@@ -127,10 +136,23 @@ export const TwoLevelPieChart = <T extends TwoLevelPieChartData>({
           paddingAngle={0.5}
           startAngle={appearance === "semiCircular" ? 0 : 0}
           endAngle={appearance === "semiCircular" ? 180 : 360}
+          // Add hover event handlers to outer ring
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          {Object.entries(chartConfig).map(([key, config]) => (
-            <Cell key={key} fill={config.color} />
-          ))}
+          {transformedData.map((entry, index) => {
+            const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
+            const config = chartConfig[categoryValue];
+            const hoverStyles = getHoverStyles(index, activeIndex);
+
+            return (
+              <Cell
+                key={`outer-cell-${index}`}
+                fill={config?.color || colors[index]}
+                {...hoverStyles}
+              />
+            );
+          })}
         </Pie>
       </RechartsPieChart>
     </ChartContainer>
