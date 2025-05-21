@@ -36,6 +36,31 @@ export const calculateChartDimensions = (
   return { outerRadius, innerRadius };
 };
 
+// Dynamic resize function for two-level pie chart
+export const calculateTwoLevelChartDimensions = (
+  width: number,
+  label: boolean,
+): { outerRadius: number; middleRadius: number; innerRadius: number } => {
+  const baseRadiusPercentage = 0.4; // 40% of container width
+
+  let outerRadius = Math.round(width * baseRadiusPercentage);
+
+  if (label) {
+    outerRadius = Math.round(outerRadius * 0.9);
+  }
+
+  // Set minimum and maximum bounds for radius
+  outerRadius = Math.max(50, Math.min(outerRadius, width / 2 - 10));
+
+  // Calculate middle radius (inner ring's outer boundary)
+  const middleRadius = Math.round(outerRadius * 0.85);
+
+  // Calculate inner radius - always has a value in two-level chart
+  const innerRadius = Math.round(middleRadius * 0.28);
+
+  return { outerRadius, middleRadius, innerRadius };
+};
+
 export const layoutMap: Record<string, string> = {
   mobile: "crayon-pie-chart-container-mobile",
   fullscreen: "crayon-pie-chart-container-fullscreen",
