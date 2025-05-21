@@ -64,6 +64,16 @@ const meta: Meta<PieChartV2Props<typeof pieChartData>> = {
         category: "Appearance",
       },
     },
+    appearance: {
+      description:
+        "The appearance of the chart. 'circular' shows a full circle, while 'semiCircular' shows a half circle.",
+      control: "radio",
+      options: ["circular", "semiCircular"],
+      table: {
+        defaultValue: { summary: "circular" },
+        category: "Appearance",
+      },
+    },
     variant: {
       description:
         "The style of the pie chart. 'pie' shows a pie chart, while 'donut' shows a donut chart.",
