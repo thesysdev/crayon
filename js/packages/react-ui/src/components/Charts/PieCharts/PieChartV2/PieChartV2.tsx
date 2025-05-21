@@ -12,7 +12,13 @@ import {
   ChartTooltipContent,
 } from "../../Charts";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
-import { calculateChartDimensions, calculatePercentage, layoutMap } from "../utils/PieChartUtils";
+import {
+  calculateChartDimensions,
+  calculatePercentage,
+  getHoverStyles,
+  layoutMap,
+  useChartHover,
+} from "../utils/PieChartUtils";
 
 export type PieChartV2Data = Array<Record<string, string | number>>;
 
@@ -44,6 +50,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   const { layout } = useLayoutContext();
   const [calculatedOuterRadius, setCalculatedOuterRadius] = useState(120);
   const [calculatedInnerRadius, setCalculatedInnerRadius] = useState(0);
+  const { activeIndex, handleMouseEnter, handleMouseLeave } = useChartHover();
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Calculate dynamic radius
@@ -137,10 +144,18 @@ export const PieChartV2 = <T extends PieChartV2Data>({
           isAnimationActive={isAnimationActive}
           startAngle={appearance === "semiCircular" ? 0 : 0}
           endAngle={appearance === "semiCircular" ? 180 : 360}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          {Object.entries(chartConfig).map(([key, config]) => (
-            <Cell key={key} fill={config.color} />
-          ))}
+          {transformedData.map((entry, index) => {
+            const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
+            const config = chartConfig[categoryValue];
+            const hoverStyles = getHoverStyles(index, activeIndex);
+
+            return (
+              <Cell key={`cell-${index}`} fill={config?.color || colors[index]} {...hoverStyles} />
+            );
+          })}
         </Pie>
       </RechartsPieChart>
     </ChartContainer>
