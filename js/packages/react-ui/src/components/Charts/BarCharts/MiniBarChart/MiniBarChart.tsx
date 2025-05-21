@@ -66,8 +66,8 @@ export const MiniBarChart = <T extends MiniBarChartData>({
     };
   }, []);
 
-  const padding = getPadding(data, categoryKey as string, containerWidth);
-  const width = getWidthOfData(data, categoryKey as string);
+  const padding = getPadding(data, categoryKey as string, containerWidth, variant);
+  const width = getWidthOfData(data, categoryKey as string, variant);
 
   // Helper function to calculate total
   const calculateTotal = <T extends MiniBarChartData>(
