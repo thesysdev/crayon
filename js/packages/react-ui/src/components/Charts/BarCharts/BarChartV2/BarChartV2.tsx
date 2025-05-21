@@ -1,11 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Bar, LabelList, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
-import { useLayoutContext } from "../../../../context/LayoutContext";
 import {
   ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   keyTransform,
@@ -25,13 +22,13 @@ export interface BarChartPropsV2<T extends BarChartData> {
   variant?: Variant;
   grid?: boolean;
   label?: boolean;
-  legend?: boolean;
   radius?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
   showYAxis?: boolean;
   xAxisLabel?: React.ReactNode;
   yAxisLabel?: React.ReactNode;
+  onBarsClick?: (data: any) => void;
 }
 
 export const BarChartV2 = <T extends BarChartData>({
@@ -41,20 +38,19 @@ export const BarChartV2 = <T extends BarChartData>({
   variant = "grouped",
   grid = true,
   label = true,
-  legend = true,
   icons = {},
-  radius = 4,
+  radius = 2,
   isAnimationActive = true,
   showYAxis = false,
   xAxisLabel,
   yAxisLabel,
+  onBarsClick,
 }: BarChartPropsV2<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
 
   const palette = getPalette(theme);
   const colors = getDistributedColors(palette, dataKeys.length);
-  const { layout } = useLayoutContext();
 
   // Create Config
   const chartConfig: ChartConfig = dataKeys.reduce(
@@ -69,84 +65,15 @@ export const BarChartV2 = <T extends BarChartData>({
     {},
   );
 
-  const getTickFormatter = (data: T) => {
-    const dataLength = data.length;
-    const maxLengthMap = {
-      mobile: {
-        default: 5,
-        10: 4,
-        11: 4,
-      },
-      tray: {
-        default: 5,
-        8: 4,
-        9: 4,
-        10: 4,
-        11: 4,
-      },
-      copilot: {
-        default: 5,
-        8: 4,
-        9: 4,
-        10: 4,
-        11: 4,
-      },
-      fullscreen: {
-        default: 5,
-        11: 4,
-      },
-    };
-
-    const layoutConfig =
-      maxLengthMap[layout as keyof typeof maxLengthMap] || maxLengthMap.fullscreen;
-
-    const maxLength =
-      dataLength >= 11
-        ? 4
-        : layoutConfig[dataLength as keyof typeof layoutConfig] || layoutConfig.default;
+  const getTickFormatter = () => {
+    const maxLength = 3;
 
     return (value: string) => {
       if (value.length > maxLength) {
-        return `${value.slice(0, maxLength)}...`;
+        return `${value.slice(0, maxLength)}`;
       }
       return value;
     };
-  };
-  const getAxisAngle = (data: T) => {
-    const angleConfig = {
-      mobile: {
-        default: 0,
-        ranges: [
-          { min: 6, max: 9, angle: -45 },
-          { min: 10, max: 10, angle: -60 },
-          { min: 11, max: Infinity, angle: -75 },
-        ],
-      },
-      tray: {
-        default: 0,
-        ranges: [{ min: 8, max: Infinity, angle: -45 }],
-      },
-      copilot: {
-        default: 0,
-        ranges: [{ min: 8, max: Infinity, angle: -45 }],
-      },
-      fullscreen: {
-        default: 0,
-        ranges: [{ min: 12, max: Infinity, angle: -45 }],
-      },
-    };
-
-    const layoutConfig = angleConfig[layout as keyof typeof angleConfig] || angleConfig.fullscreen;
-    const dataLength = data.length;
-
-    const matchRange = layoutConfig.ranges.find(
-      (range) => dataLength >= range.min && dataLength <= range.max,
-    );
-
-    return matchRange?.angle ?? layoutConfig.default;
-  };
-  const getTickMargin = (data: T) => {
-    return data.length <= 6 ? 10 : 15;
   };
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -170,9 +97,8 @@ export const BarChartV2 = <T extends BarChartData>({
     };
   }, []);
 
-  const padding = getPadding(data, categoryKey as string, containerWidth);
-  const width = getWidthOfData(data, categoryKey as string);
-  console.log(width);
+  const padding = getPadding(data, categoryKey as string, containerWidth, variant);
+  const width = getWidthOfData(data, categoryKey as string, variant);
 
   return (
     <div style={{ width: "100%", overflowX: "auto" }}>
@@ -186,47 +112,59 @@ export const BarChartV2 = <T extends BarChartData>({
           data={data}
           margin={{
             top: label ? 30 : 20,
+            bottom: xAxisLabel ? 20 : 0,
           }}
+          onClick={onBarsClick}
         >
           {grid && cartesianGrid()}
           <XAxis
             dataKey={categoryKey as string}
             tickLine={false}
-            tickMargin={getTickMargin(data)}
             axisLine={false}
-            angle={getAxisAngle(data)}
             textAnchor="middle"
-            tickFormatter={getTickFormatter(data)}
+            tickFormatter={getTickFormatter()}
             interval="preserveStartEnd"
+            // label can take all attribute of the label from recharts
             label={{
               value: xAxisLabel,
               position: "insideBottom",
               offset: -10,
-              className: "crayon-chart-axis-label",
+              className: "crayon-chart-xAxis-label",
             }}
+            // gives the padding on the 2 sides see the function for reference
             padding={padding}
           />
           {showYAxis && (
             <YAxis
+              tickLine={false}
+              axisLine={false}
               label={{
                 value: yAxisLabel,
                 position: "insideLeft",
                 angle: -90,
-                className: "crayon-chart-axis-label",
+                className: "crayon-chart-yAxis-label",
               }}
             />
           )}
           <ChartTooltip content={<ChartTooltipContent />} />
-          {dataKeys.map((key) => {
+          {dataKeys.map((key, index) => {
             const transformedKey = keyTransform(key);
             const color = `var(--color-${transformedKey})`;
+            const isFirstInStack = index === 0;
+            const isLastInStack = index === dataKeys.length - 1;
+
             if (label) {
               return (
                 <Bar
                   key={key}
                   dataKey={key}
                   fill={color}
-                  radius={getRadiusArray(variant, radius)}
+                  radius={getRadiusArray(
+                    variant,
+                    radius,
+                    variant === "stacked" ? isFirstInStack : undefined,
+                    variant === "stacked" ? isLastInStack : undefined,
+                  )}
                   stackId={variant === "stacked" ? "a" : undefined}
                   isAnimationActive={isAnimationActive}
                   maxBarSize={8}
@@ -247,14 +185,18 @@ export const BarChartV2 = <T extends BarChartData>({
                 key={key}
                 dataKey={key}
                 fill={color}
-                radius={getRadiusArray(variant, radius)}
+                radius={getRadiusArray(
+                  variant,
+                  radius,
+                  variant === "stacked" ? isFirstInStack : undefined,
+                  variant === "stacked" ? isLastInStack : undefined,
+                )}
                 stackId={variant === "stacked" ? "a" : undefined}
                 isAnimationActive={isAnimationActive}
                 maxBarSize={8}
               />
             );
           })}
-          {legend && <ChartLegend content={<ChartLegendContent />} />}
         </RechartsBarChart>
       </ChartContainer>
     </div>

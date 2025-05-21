@@ -41,4 +41,4 @@ export const layoutMap: Record<string, string> = {
   fullscreen: "crayon-pie-chart-container-fullscreen",
   tray: "crayon-pie-chart-container-tray",
   copilot: "crayon-pie-chart-container-copilot",
-}; 
+};

@@ -91,29 +91,29 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   );
 
   // Custom label renderer
-  const renderCustomLabel = ({ payload, cx, cy, x, y, textAnchor, dominantBaseline }: any) => {
-    if (payload.percentage <= 10) return null;
-    const displayValue = format === "percentage" ? payload.percentage : payload[dataKey];
-    const formattedValue =
-      String(displayValue).length > 7 ? `${String(displayValue).slice(0, 7)}...` : displayValue;
+  // const renderCustomLabel = ({ payload, cx, cy, x, y, textAnchor, dominantBaseline }: any) => {
+  //   if (payload.percentage <= 10) return null;
+  //   const displayValue = format === "percentage" ? payload.percentage : payload[dataKey];
+  //   const formattedValue =
+  //     String(displayValue).length > 7 ? `${String(displayValue).slice(0, 7)}...` : displayValue;
 
-    return (
-      <g>
-        <text
-          cx={cx}
-          cy={cy}
-          x={x}
-          y={y}
-          textAnchor={textAnchor}
-          dominantBaseline={dominantBaseline}
-          className="crayon-pie-chart-label"
-        >
-          {formattedValue}
-          {format === "percentage" ? "%" : ""}
-        </text>
-      </g>
-    );
-  };
+  //   return (
+  //     <g>
+  //       <text
+  //         cx={cx}
+  //         cy={cy}
+  //         x={x}
+  //         y={y}
+  //         textAnchor={textAnchor}
+  //         dominantBaseline={dominantBaseline}
+  //         className="crayon-pie-chart-label"
+  //       >
+  //         {formattedValue}
+  //         {format === "percentage" ? "%" : ""}
+  //       </text>
+  //     </g>
+  //   );
+  // };
 
   return (
     <ChartContainer

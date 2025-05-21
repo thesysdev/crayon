@@ -4,7 +4,7 @@ import { Card } from "../../../../Card";
 import { BarChartPropsV2, BarChartV2 } from "../BarChartV2";
 
 const barChartData = [
-  { month: "January", desktop: 150, mobile: 90 },
+  { month: "January", desktop: 45, mobile: 90 },
   { month: "February", desktop: 280, mobile: 180 },
   { month: "March", desktop: 220, mobile: 140 },
   { month: "April", desktop: 180, mobile: 160 },
@@ -35,7 +35,7 @@ const meta: Meta<BarChartPropsV2<typeof barChartData>> = {
       },
     },
   },
-  tags: ["!dev", "autodocs"],
+  tags: ["dev", "autodocs"],
   argTypes: {
     data: {
       description:
@@ -114,16 +114,16 @@ const meta: Meta<BarChartPropsV2<typeof barChartData>> = {
         category: "Display",
       },
     },
-    legend: {
-      description:
-        "Whether to display the chart legend showing the data series names and their corresponding colors/icons",
-      control: "boolean",
-      table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "true" },
-        category: "Display",
-      },
-    },
+    // legend: {
+    //   description:
+    //     "Whether to display the chart legend showing the data series names and their corresponding colors/icons",
+    //   control: "boolean",
+    //   table: {
+    //     type: { summary: "boolean" },
+    //     defaultValue: { summary: "true" },
+    //     category: "Display",
+    //   },
+    // },
     isAnimationActive: {
       description: "Whether to animate the chart",
       control: "boolean",
@@ -173,10 +173,9 @@ export const BarChartV2Story: Story = {
     categoryKey: "month",
     theme: "ocean",
     variant: "grouped",
-    radius: 4,
+    radius: 2,
     grid: true,
     label: true,
-    legend: true,
     isAnimationActive: true,
     showYAxis: false,
   },
@@ -273,7 +272,7 @@ const icons = {
 };
 
 export const BarChartV2WithYAxis: Story = {
-  name: "Bar Chart V2 with Y-Axis and Axis Labels",
+  name: "Bar Chart V2 with Y-Axis and X-Axis Labels",
   args: {
     ...BarChartV2Story.args,
     showYAxis: true,
@@ -406,4 +405,18 @@ const barChartData = [
       },
     },
   },
+};
+
+export const BarChartV2Experimental: Story = {
+  name: "Bar Chart V2 Experimental",
+  args: {
+    ...BarChartV2Story.args,
+    theme: "emerald",
+    variant: "grouped",
+  },
+  render: (args) => (
+    <Card style={{ width: "500px" }}>
+      <BarChartV2 {...args} onBarsClick={(data) => console.log(data)} />
+    </Card>
+  ),
 };
