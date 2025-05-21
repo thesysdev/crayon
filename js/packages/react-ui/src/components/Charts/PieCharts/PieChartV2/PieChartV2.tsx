@@ -26,6 +26,7 @@ export interface PieChartV2Props<T extends PieChartV2Data> {
   legend?: boolean;
   label?: boolean;
   isAnimationActive?: boolean;
+  appearance?: "circular" | "semiCircular";
 }
 
 export const PieChartV2 = <T extends PieChartV2Data>({
@@ -38,6 +39,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   legend = true,
   label = true,
   isAnimationActive = true,
+  appearance = "circular",
 }: PieChartV2Props<T>) => {
   const { layout } = useLayoutContext();
   const [calculatedOuterRadius, setCalculatedOuterRadius] = useState(120);
@@ -90,7 +92,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     {},
   );
 
-  // Custom label renderer
+  //Custom label renderer
   // const renderCustomLabel = ({ payload, cx, cy, x, y, textAnchor, dominantBaseline }: any) => {
   //   if (payload.percentage <= 10) return null;
   //   const displayValue = format === "percentage" ? payload.percentage : payload[dataKey];
@@ -133,6 +135,8 @@ export const PieChartV2 = <T extends PieChartV2Data>({
           innerRadius={calculatedInnerRadius}
           label={false}
           isAnimationActive={isAnimationActive}
+          startAngle={appearance === "semiCircular" ? 0 : 0}
+          endAngle={appearance === "semiCircular" ? 180 : 360}
         >
           {Object.entries(chartConfig).map(([key, config]) => (
             <Cell key={key} fill={config.color} />
