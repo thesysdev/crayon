@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Monitor, TabletSmartphone } from "lucide-react";
 import { Card } from "../../../Card";
-import { RadarChart, RadarChartProps } from "../RadarChart";
+import { RadarChart } from "../RadarChart";
 
 const radarChartData = [
   { month: "January", desktop: 250, mobile: 150 },
@@ -17,7 +17,7 @@ const icons = {
   mobile: TabletSmartphone,
 } as const;
 
-const meta: Meta<RadarChartProps<typeof radarChartData>> = {
+const meta: Meta<typeof RadarChart> = {
   title: "Components/Charts/RadarChart",
   component: RadarChart,
   parameters: {

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Monitor, TabletSmartphone } from "lucide-react";
 import { Card } from "../../../Card";
-import { LineChart, LineChartProps } from "../LineChart";
+import { LineChart } from "../LineChart";
 
 const lineChartData = [
   { month: "January", desktop: 150, mobile: 90 },
@@ -17,7 +17,7 @@ const icons = {
   mobile: TabletSmartphone,
 } as const;
 
-const meta: Meta<LineChartProps<typeof lineChartData>> = {
+const meta: Meta<typeof LineChart> = {
   title: "Components/Charts/LineChart",
   component: LineChart,
   parameters: {

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useCallback, useMemo, useState } from "react";
+import { forwardRef, useCallback, useMemo, useState } from "react";
 import { Button } from "../Button";
 import { GalleryModal } from "./GalleryModal";
 
@@ -29,7 +29,7 @@ const getLayoutClassName = (imageCount: number): string => {
   }
 };
 
-export const ImageGallery: React.FC<CrayonGalleryProps> = ({ images }) => {
+export const ImageGallery = forwardRef<HTMLDivElement, CrayonGalleryProps>(({ images }, ref) => {
   const [showAll, setShowAll] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
@@ -57,7 +57,7 @@ export const ImageGallery: React.FC<CrayonGalleryProps> = ({ images }) => {
   }, []);
 
   return (
-    <div className={clsx("crayon-gallery", layoutClass)}>
+    <div className={clsx("crayon-gallery", layoutClass)} ref={ref}>
       <div className="crayon-gallery__grid">
         {visibleImages.map((image, index) => (
           <div
@@ -87,4 +87,4 @@ export const ImageGallery: React.FC<CrayonGalleryProps> = ({ images }) => {
       )}
     </div>
   );
-};
+});

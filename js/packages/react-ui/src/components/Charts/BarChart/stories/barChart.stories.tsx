@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Monitor, TabletSmartphone } from "lucide-react";
 import { Card } from "../../../Card";
-import { BarChart, BarChartProps } from "../BarChart";
+import { BarChart } from "../BarChart";
 
 const barChartData = [
   { month: "January", desktop: 150, mobile: 90 },
@@ -17,7 +17,7 @@ const icons = {
   mobile: TabletSmartphone,
 } as const;
 
-const meta: Meta<BarChartProps<typeof barChartData>> = {
+const meta: Meta<typeof BarChart> = {
   title: "Components/Charts/BarChart",
   component: BarChart,
   parameters: {

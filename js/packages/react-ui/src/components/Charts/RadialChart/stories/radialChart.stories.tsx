@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "../../../Card";
-import { RadialChart, RadialChartProps } from "../RadialChart";
+import { RadialChart } from "../RadialChart";
 
 const radialChartData = [
   { month: "January", value: 400 },
@@ -12,7 +12,7 @@ const radialChartData = [
   { month: "July", value: 300 },
 ];
 
-const meta: Meta<RadialChartProps<typeof radialChartData>> = {
+const meta: Meta<typeof RadialChart> = {
   title: "Components/Charts/RadialChart",
   component: RadialChart,
   parameters: {

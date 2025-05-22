@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { CSSProperties, ReactNode } from "react";
+import { CSSProperties, ReactNode, forwardRef } from "react";
 
 export type TextContentVariant = "clear" | "card" | "sunk";
 
@@ -16,14 +16,14 @@ const variants: Record<TextContentVariant, string> = {
   sunk: "text-content-sunk",
 };
 
-const TextContent = (props: TextContentProps) => {
-  const { children, variant = "sunk", className, style } = props;
-
-  return (
-    <div className={clsx("text-content", variants[variant], className)} style={style}>
-      {children}
-    </div>
-  );
-};
+const TextContent = forwardRef<HTMLDivElement, TextContentProps>(
+  ({ children, variant = "sunk", className, style }: TextContentProps, ref) => {
+    return (
+      <div className={clsx("text-content", variants[variant], className)} style={style} ref={ref}>
+        {children}
+      </div>
+    );
+  },
+);
 
 export { TextContent };

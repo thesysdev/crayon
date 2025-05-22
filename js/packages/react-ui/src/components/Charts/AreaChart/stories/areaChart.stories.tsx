@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Monitor, TabletSmartphone } from "lucide-react";
 import { Card } from "../../../Card";
-import { AreaChart, AreaChartProps } from "../AreaChart";
+import { AreaChart } from "../AreaChart";
 
 const areaChartData = [
   { month: "January", desktop: 150, mobile: 90 },
@@ -17,7 +17,7 @@ const icons = {
   mobile: TabletSmartphone,
 } as const;
 
-const meta: Meta<AreaChartProps<typeof areaChartData>> = {
+const meta: Meta<typeof AreaChart> = {
   title: "Components/Charts/AreaChart",
   component: AreaChart,
   parameters: {
