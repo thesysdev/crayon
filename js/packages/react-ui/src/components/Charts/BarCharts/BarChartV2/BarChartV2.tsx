@@ -106,6 +106,9 @@ export const BarChartV2 = <T extends BarChartData>({
         config={chartConfig}
         ref={chartContainerRef}
         style={{ width, minWidth: "100%", aspectRatio: "16/9" }}
+        rechartsProps={{
+          aspect: 16 / 9,
+        }}
       >
         <RechartsBarChart
           accessibilityLayer
@@ -115,6 +118,7 @@ export const BarChartV2 = <T extends BarChartData>({
             bottom: xAxisLabel ? 20 : 0,
           }}
           onClick={onBarsClick}
+          
         >
           {grid && cartesianGrid()}
           <XAxis
