@@ -3,6 +3,7 @@ import React, { createContext, useContext } from "react";
 export interface StepsItemProps {
   title: React.ReactNode;
   details: React.ReactNode;
+  number?: number;
 }
 
 export interface StepsProps {
@@ -23,14 +24,16 @@ export const Steps: React.FC<StepsProps> = ({ children }) => {
   );
 };
 
-export const StepsItem: React.FC<StepsItemProps> = ({ title, details }) => {
+export const StepsItem: React.FC<StepsItemProps> = ({ title, details, number }) => {
   const stepNumber = useContext(StepNumberContext);
 
   return (
     <div className="crayon-step-item">
       <div className="crayon-step-connector">
         <div className="crayon-step-number">
-          <div className="crayon-step-number-inner">{stepNumber}</div>
+          <div className="crayon-step-number-inner">
+            {Number.isInteger(number) ? number : stepNumber}
+          </div>
         </div>
         <div className="crayon-connector-line" />
       </div>
