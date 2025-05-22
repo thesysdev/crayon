@@ -5,6 +5,7 @@ export interface StepsItemProps {
   title: React.ReactNode;
   details?: React.ReactNode;
   className?: string;
+  number?: number;
 }
 
 export interface StepsProps {
@@ -34,7 +35,9 @@ export const StepsItem = forwardRef<HTMLDivElement, StepsItemProps>(
       <div className={clsx("crayon-step-item", className)} ref={ref}>
         <div className="crayon-step-connector">
           <div className="crayon-step-number">
-            <div className="crayon-step-number-inner">{stepNumber}</div>
+            <div className="crayon-step-number-inner">
+            {Number.isInteger(number) ? number : stepNumber}
+          </div>
           </div>
           <div className="crayon-connector-line" />
         </div>
