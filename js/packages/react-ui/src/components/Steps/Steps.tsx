@@ -3,9 +3,9 @@ import React, { createContext, forwardRef, useContext } from "react";
 
 export interface StepsItemProps {
   title: React.ReactNode;
-  details?: React.ReactNode;
-  className?: string;
+  details: React.ReactNode;
   number?: number;
+  className?: string;
 }
 
 export interface StepsProps {
@@ -27,25 +27,23 @@ export const Steps = forwardRef<HTMLDivElement, StepsProps>(({ children, classNa
   );
 });
 
-export const StepsItem = forwardRef<HTMLDivElement, StepsItemProps>(
-  ({ title, details, className }, ref) => {
-    const stepNumber = useContext(StepNumberContext);
+export const StepsItem: React.FC<StepsItemProps> = ({ title, details, number }) => {
+  const stepNumber = useContext(StepNumberContext);
 
-    return (
-      <div className={clsx("crayon-step-item", className)} ref={ref}>
-        <div className="crayon-step-connector">
-          <div className="crayon-step-number">
-            <div className="crayon-step-number-inner">
+  return (
+    <div className="crayon-step-item">
+      <div className="crayon-step-connector">
+        <div className="crayon-step-number">
+          <div className="crayon-step-number-inner">
             {Number.isInteger(number) ? number : stepNumber}
           </div>
-          </div>
-          <div className="crayon-connector-line" />
         </div>
-        <div className="crayon-step-content">
-          <span className="crayon-step-title">{title}</span>
-          <div className="crayon-step-details">{details}</div>
-        </div>
+        <div className="crayon-connector-line" />
       </div>
-    );
-  },
-);
+      <div className="crayon-step-content">
+        <span className="crayon-step-title">{title}</span>
+        <div className="crayon-step-details">{details}</div>
+      </div>
+    </div>
+  );
+};
