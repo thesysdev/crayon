@@ -16,6 +16,7 @@ export interface MiniBarChartProps<T extends MiniBarChartData> {
   radius?: number;
   isAnimationActive?: boolean;
   label?: string;
+  onBarsClick?: (data: any) => void;
 }
 
 export const MiniBarChart = <T extends MiniBarChartData>({
@@ -25,7 +26,7 @@ export const MiniBarChart = <T extends MiniBarChartData>({
   variant = "grouped",
   radius = 4,
   isAnimationActive = true,
-  label,
+  onBarsClick,
 }: MiniBarChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
@@ -81,41 +82,42 @@ export const MiniBarChart = <T extends MiniBarChartData>({
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "row", gap: 18 }}>
-      <div style={{ width: "100%", overflowX: "auto" }}>
-        <ChartContainer
-          config={chartConfig}
-          ref={chartContainerRef}
-          style={{ width, minWidth: "100%", aspectRatio: "1.6/1" }}
-        >
-          <BarChart accessibilityLayer data={data}>
-            <XAxis padding={padding} hide={true} />
-            {dataKeys.map((key) => {
-              const transformedKey = keyTransform(key);
-              const color = `var(--color-${transformedKey})`;
-              return (
-                <Bar
-                  key={key}
-                  dataKey={key}
-                  fill={color}
-                  radius={radius}
-                  stackId={variant === "stacked" ? "a" : undefined}
-                  isAnimationActive={isAnimationActive}
-                  maxBarSize={8}
-                />
-              );
-            })}
-          </BarChart>
-        </ChartContainer>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
-        <span style={{ fontSize: 24, fontWeight: "600", color: "black", lineHeight: "28px" }}>
-          {calculateTotal(data, categoryKey).toLocaleString()}
-        </span>
-        <span style={{ fontSize: 14, color: "gray", lineHeight: "20px", fontWeight: "400" }}>
-          {label}
-        </span>
-      </div>
-    </div>
+    // <div style={{ display: "flex", flexDirection: "row", gap: 18 }}>
+    //   <div style={{ width: "100%", overflowX: "auto" }}>
+    <ChartContainer
+      config={chartConfig}
+      ref={chartContainerRef}
+      style={{ width, minWidth: "100%", aspectRatio: "1.6/1" }}
+      onClick={onBarsClick}
+    >
+      <BarChart accessibilityLayer data={data}>
+        <XAxis padding={padding} hide={true} />
+        {dataKeys.map((key) => {
+          const transformedKey = keyTransform(key);
+          const color = `var(--color-${transformedKey})`;
+          return (
+            <Bar
+              key={key}
+              dataKey={key}
+              fill={color}
+              radius={radius}
+              stackId={variant === "stacked" ? "a" : undefined}
+              isAnimationActive={isAnimationActive}
+              maxBarSize={8}
+            />
+          );
+        })}
+      </BarChart>
+    </ChartContainer>
+    //   {/* </div>
+    //   <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
+    //     <span style={{ fontSize: 24, fontWeight: "600", color: "black", lineHeight: "28px" }}>
+    //       {calculateTotal(data, categoryKey).toLocaleString()}
+    //     </span>
+    //     <span style={{ fontSize: 14, color: "gray", lineHeight: "20px", fontWeight: "400" }}>
+    //       {label}
+    //     </span>
+    //   </div>
+    // </div> */}
   );
 };

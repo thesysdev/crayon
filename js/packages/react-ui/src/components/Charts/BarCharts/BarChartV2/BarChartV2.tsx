@@ -118,7 +118,6 @@ export const BarChartV2 = <T extends BarChartData>({
             bottom: xAxisLabel ? 20 : 0,
           }}
           onClick={onBarsClick}
-          
         >
           {grid && cartesianGrid()}
           <XAxis
