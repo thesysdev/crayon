@@ -32,6 +32,8 @@ const meta: Meta<BarChartPropsV2<typeof barChartData>> = {
       description: {
         component:
           "```tsx\nimport { BarChartV2 } from '@crayon-ui/react-ui/Charts/BarChartV2';\n```",
+        component:
+          "```tsx\nimport { BarChartV2 } from '@crayon-ui/react-ui/Charts/BarChartV2';\n```",
       },
     },
   },

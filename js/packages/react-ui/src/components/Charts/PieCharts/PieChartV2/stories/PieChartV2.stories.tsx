@@ -136,12 +136,12 @@ export const PieChartStory: Story = {
     theme: "ocean",
     variant: "pie",
     format: "number",
-    legend: true,
-    label: true,
+    legend: false,
+    label: false,
     isAnimationActive: true,
   },
   render: (args) => (
-    <Card style={{ width: "500px" }}>
+    <Card style={{ width: "700px" }}>
       <PieChartV2 {...args} />
     </Card>
   ),
