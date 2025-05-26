@@ -1,36 +1,35 @@
 import React from "react";
-import { Area, AreaChart as RechartsAreaChart, XAxis } from "recharts";
-import { useLayoutContext } from "../../../../context/LayoutContext";
+import { Line, LineChart as RechartsLineChart, XAxis } from "recharts";
 import { ChartConfig, ChartContainer, keyTransform } from "../../Charts";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 
-export type MiniAreaChartData = Array<Record<string, string | number>>;
+export type MiniLineChartData = Array<Record<string, string | number>>;
 
-export interface MiniAreaChartProps<T extends MiniAreaChartData> {
+export interface MiniLineChartProps<T extends MiniLineChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
   variant?: "linear" | "natural" | "step";
-  opacity?: number;
+  strokeWidth?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
 }
 
-export const MiniAreaChart = <T extends MiniAreaChartData>({
+export const MiniLineChart = <T extends MiniLineChartData>({
   data,
   categoryKey,
   theme = "ocean",
   variant = "natural",
-  opacity = 0.5,
+  strokeWidth = 2,
   icons = {},
   isAnimationActive = true,
-}: MiniAreaChartProps<T>) => {
+}: MiniLineChartProps<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
 
   const palette = getPalette(theme);
   const colors = getDistributedColors(palette, dataKeys.length);
-  const { layout } = useLayoutContext();
+  //   const { layout } = useLayoutContext();
 
   // Create Config
   const chartConfig: ChartConfig = dataKeys.reduce(
@@ -47,31 +46,41 @@ export const MiniAreaChart = <T extends MiniAreaChartData>({
 
   return (
     <ChartContainer config={chartConfig}>
-      <RechartsAreaChart accessibilityLayer data={data}>
+      <RechartsLineChart
+        accessibilityLayer
+        data={data}
+        margin={{
+          top: 12,
+          left: 12,
+          right: 12,
+        }}
+      >
+        {/* {grid && cartesianGrid()} */}
         <XAxis
           dataKey={categoryKey as string}
+          tickLine={false}
+          axisLine={false}
           textAnchor="middle"
           interval="preserveStartEnd"
           hide={true}
         />
-
         {dataKeys.map((key) => {
           const transformedKey = keyTransform(key);
           const color = `var(--color-${transformedKey})`;
           return (
-            <Area
+            <Line
               key={key}
               dataKey={key}
               type={variant}
               stroke={color}
               fill={color}
-              fillOpacity={opacity}
-              stackId="a"
+              strokeWidth={strokeWidth}
+              dot={false}
               isAnimationActive={isAnimationActive}
             />
           );
         })}
-      </RechartsAreaChart>
+      </RechartsLineChart>
     </ChartContainer>
   );
 };
