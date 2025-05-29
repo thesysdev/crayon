@@ -1,9 +1,7 @@
 import React from "react";
 import { Line, LineChart as RechartsLineChart, XAxis } from "recharts";
-import { ChartConfig, ChartContainer, keyTransform } from "../../Charts";
-import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
-
-export type MiniLineChartData = Array<Record<string, string | number>>;
+import { ChartContainer, keyTransform } from "../../Charts";
+import { MiniLineChartData, createChartConfig } from "../utils/LineChartUtils";
 
 export interface MiniLineChartProps<T extends MiniLineChartData> {
   data: T;
@@ -24,25 +22,7 @@ export const MiniLineChart = <T extends MiniLineChartData>({
   icons = {},
   isAnimationActive = true,
 }: MiniLineChartProps<T>) => {
-  // excluding the categoryKey
-  const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
-
-  const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, dataKeys.length);
-  //   const { layout } = useLayoutContext();
-
-  // Create Config
-  const chartConfig: ChartConfig = dataKeys.reduce(
-    (config, key, index) => ({
-      ...config,
-      [key]: {
-        label: key,
-        icon: icons[key],
-        color: colors[index],
-      },
-    }),
-    {},
-  );
+  const chartConfig = createChartConfig({ data, categoryKey: categoryKey as string, theme, icons });
 
   return (
     <ChartContainer config={chartConfig}>
@@ -64,7 +44,7 @@ export const MiniLineChart = <T extends MiniLineChartData>({
           interval="preserveStartEnd"
           hide={true}
         />
-        {dataKeys.map((key) => {
+        {Object.keys(chartConfig).map((key) => {
           const transformedKey = keyTransform(key);
           const color = `var(--color-${transformedKey})`;
           return (

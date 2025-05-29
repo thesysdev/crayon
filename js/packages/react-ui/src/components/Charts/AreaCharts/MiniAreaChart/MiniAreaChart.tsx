@@ -1,10 +1,8 @@
 import React from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis } from "recharts";
 import { useLayoutContext } from "../../../../context/LayoutContext";
-import { ChartConfig, ChartContainer, keyTransform } from "../../Charts";
-import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
-
-export type MiniAreaChartData = Array<Record<string, string | number>>;
+import { ChartContainer, keyTransform } from "../../Charts";
+import { MiniAreaChartData, createChartConfig } from "../utils/AreaChartUtils";
 
 export interface MiniAreaChartProps<T extends MiniAreaChartData> {
   data: T;
@@ -25,25 +23,8 @@ export const MiniAreaChart = <T extends MiniAreaChartData>({
   icons = {},
   isAnimationActive = true,
 }: MiniAreaChartProps<T>) => {
-  // excluding the categoryKey
-  const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
-
-  const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, dataKeys.length);
   const { layout } = useLayoutContext();
-
-  // Create Config
-  const chartConfig: ChartConfig = dataKeys.reduce(
-    (config, key, index) => ({
-      ...config,
-      [key]: {
-        label: key,
-        icon: icons[key],
-        color: colors[index],
-      },
-    }),
-    {},
-  );
+  const chartConfig = createChartConfig({ data, categoryKey: categoryKey as string, theme, icons });
 
   return (
     <ChartContainer config={chartConfig}>
@@ -55,7 +36,7 @@ export const MiniAreaChart = <T extends MiniAreaChartData>({
           hide={true}
         />
 
-        {dataKeys.map((key) => {
+        {Object.keys(chartConfig).map((key) => {
           const transformedKey = keyTransform(key);
           const color = `var(--color-${transformedKey})`;
           return (

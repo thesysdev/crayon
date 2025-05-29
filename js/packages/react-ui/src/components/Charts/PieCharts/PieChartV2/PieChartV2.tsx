@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
 import { useLayoutContext } from "../../../../context/LayoutContext";
 import {
-  ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
@@ -13,14 +12,16 @@ import {
 } from "../../Charts";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 import {
+  PieChartData,
   calculateChartDimensions,
-  calculatePercentage,
+  createChartConfig,
   getHoverStyles,
   layoutMap,
+  transformDataWithPercentages,
   useChartHover,
 } from "../utils/PieChartUtils";
 
-export type PieChartV2Data = Array<Record<string, string | number>>;
+export type PieChartV2Data = PieChartData;
 
 export interface PieChartV2Props<T extends PieChartV2Data> {
   data: T;
@@ -60,10 +61,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     const resizeObserver = new ResizeObserver(
       debounce((entries: any) => {
         const { width } = entries[0].contentRect;
-
-        // Use the dynamic resize function to calculate radii
         const { outerRadius, innerRadius } = calculateChartDimensions(width, variant, label);
-
         setCalculatedOuterRadius(outerRadius);
         setCalculatedInnerRadius(innerRadius);
       }, 100),
@@ -73,31 +71,12 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     return () => resizeObserver.disconnect();
   }, [variant, label]);
 
-  // Calculate total for percentage calculations
-  const total = data.reduce((sum, item) => sum + Number(item[dataKey]), 0);
-
-  // Transform data with percentages
-  const transformedData = data.map((item) => ({
-    ...item,
-    percentage: calculatePercentage(Number(item[dataKey as string]), total),
-    originalValue: item[dataKey as string],
-  }));
+  const transformedData = transformDataWithPercentages(data, dataKey);
+  const chartConfig = createChartConfig(data, categoryKey, theme);
 
   // Get color palette and distribute colors
   const palette = getPalette(theme);
   const colors = getDistributedColors(palette, data.length);
-
-  // Create chart configuration
-  const chartConfig = data.reduce<ChartConfig>(
-    (config, item, index) => ({
-      ...config,
-      [String(item[categoryKey])]: {
-        label: String(item[categoryKey as string]),
-        color: colors[index],
-      },
-    }),
-    {},
-  );
 
   //Custom label renderer
   // const renderCustomLabel = ({ payload, cx, cy, x, y, textAnchor, dominantBaseline }: any) => {

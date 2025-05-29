@@ -3,17 +3,18 @@ import { debounce } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
 import { useLayoutContext } from "../../../../context/LayoutContext";
-import { ChartConfig, ChartContainer } from "../../Charts";
-import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
+import { ChartContainer } from "../../Charts";
 import {
-  calculatePercentage,
+  PieChartData,
   calculateTwoLevelChartDimensions,
+  createChartConfig,
   getHoverStyles,
   layoutMap,
+  transformDataWithPercentages,
   useChartHover,
 } from "../utils/PieChartUtils";
 
-export type TwoLevelPieChartData = Array<Record<string, string | number>>;
+export type TwoLevelPieChartData = PieChartData;
 
 export interface TwoLevelPieChartProps<T extends TwoLevelPieChartData> {
   data: T;
@@ -51,8 +52,6 @@ export const TwoLevelPieChart = <T extends TwoLevelPieChartData>({
     const resizeObserver = new ResizeObserver(
       debounce((entries: any) => {
         const { width } = entries[0].contentRect;
-
-        // Use the two-level chart dimension calculation function
         const { outerRadius, middleRadius, innerRadius } = calculateTwoLevelChartDimensions(
           width,
           label,
@@ -68,31 +67,8 @@ export const TwoLevelPieChart = <T extends TwoLevelPieChartData>({
     return () => resizeObserver.disconnect();
   }, [label]);
 
-  // Calculate total for percentage calculations
-  const total = data.reduce((sum, item) => sum + Number(item[dataKey]), 0);
-
-  // Transform data with percentages
-  const transformedData = data.map((item) => ({
-    ...item,
-    percentage: calculatePercentage(Number(item[dataKey as string]), total),
-    originalValue: item[dataKey as string],
-  }));
-
-  // Get color palette and distribute colors
-  const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, data.length);
-
-  // Create chart configuration
-  const chartConfig = data.reduce<ChartConfig>(
-    (config, item, index) => ({
-      ...config,
-      [String(item[categoryKey])]: {
-        label: String(item[categoryKey as string]),
-        color: colors[index],
-      },
-    }),
-    {},
-  );
+  const transformedData = transformDataWithPercentages(data, dataKey);
+  const chartConfig = createChartConfig(data, categoryKey, theme);
 
   return (
     <ChartContainer
@@ -113,14 +89,12 @@ export const TwoLevelPieChart = <T extends TwoLevelPieChartData>({
           paddingAngle={0.5}
           startAngle={appearance === "semiCircular" ? 0 : 0}
           endAngle={appearance === "semiCircular" ? 180 : 360}
-          // Add hover event handlers to inner ring
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           {transformedData.map((entry, index) => {
             const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
             const hoverStyles = getHoverStyles(index, activeIndex);
-            // Apply neutral color for inner ring
             return <Cell key={`inner-cell-${index}`} fill={"lightgray"} {...hoverStyles} />;
           })}
         </Pie>
@@ -136,7 +110,6 @@ export const TwoLevelPieChart = <T extends TwoLevelPieChartData>({
           paddingAngle={0.5}
           startAngle={appearance === "semiCircular" ? 0 : 0}
           endAngle={appearance === "semiCircular" ? 180 : 360}
-          // Add hover event handlers to outer ring
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -145,13 +118,7 @@ export const TwoLevelPieChart = <T extends TwoLevelPieChartData>({
             const config = chartConfig[categoryValue];
             const hoverStyles = getHoverStyles(index, activeIndex);
 
-            return (
-              <Cell
-                key={`outer-cell-${index}`}
-                fill={config?.color || colors[index]}
-                {...hoverStyles}
-              />
-            );
+            return <Cell key={`outer-cell-${index}`} fill={config?.color} {...hoverStyles} />;
           })}
         </Pie>
       </RechartsPieChart>

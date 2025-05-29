@@ -1,9 +1,9 @@
 import React from "react";
 import { Radar, RadarChart as RechartsRadarChart } from "recharts";
-import { ChartConfig, ChartContainer, keyTransform } from "../../Charts";
-import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
+import { ChartContainer, keyTransform } from "../../Charts";
+import { RadarChartData, createChartConfig, getRadarChartMargin } from "../utils/RaderChartUtils";
 
-export type MiniRadarChartData = Array<Record<string, string | number>>;
+export type MiniRadarChartData = RadarChartData;
 
 export interface MiniRadarChartProps<T extends MiniRadarChartData> {
   data: T;
@@ -26,29 +26,17 @@ export const MiniRadarChart = <T extends MiniRadarChartData>({
   icons = {},
   isAnimationActive = true,
 }: MiniRadarChartProps<T>) => {
-  // excluding the categoryKey
-  const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
-
-  const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, dataKeys.length);
-
-  // Create Config
-  const chartConfig: ChartConfig = dataKeys.reduce(
-    (config, key, index) => ({
-      ...config,
-      [key]: {
-        label: key,
-        icon: icons[key],
-        color: colors[index],
-      },
-    }),
-    {},
-  );
+  const chartConfig = createChartConfig({
+    data,
+    categoryKey: categoryKey as string,
+    theme,
+    icons,
+  });
 
   return (
     <ChartContainer config={chartConfig}>
-      <RechartsRadarChart data={data} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-        {dataKeys.map((key) => {
+      <RechartsRadarChart data={data} margin={getRadarChartMargin()}>
+        {Object.keys(chartConfig).map((key) => {
           const transformedKey = keyTransform(key);
           const color = `var(--color-${transformedKey})`;
           if (variant === "line") {

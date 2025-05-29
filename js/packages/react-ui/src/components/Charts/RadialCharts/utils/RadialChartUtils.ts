@@ -2,6 +2,17 @@
  * Utility functions for radial charts
  */
 import { useState } from "react";
+import { ChartConfig } from "../../Charts";
+import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
+
+export type RadialChartData = Array<Record<string, string | number>>;
+
+export interface RadialChartConfig {
+  data: RadialChartData;
+  categoryKey: string;
+  dataKey: string;
+  theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
+}
 
 // Helper function to calculate percentage
 export const calculatePercentage = (value: number, total: number): number => {
@@ -87,4 +98,43 @@ export const formatRadialLabel = (
 // Helper function to calculate font size based on data length
 export const getRadialFontSize = (dataLength: number): number => {
   return dataLength <= 5 ? 12 : 7;
+};
+
+// Transform data with percentages and colors
+export const transformRadialData = <T extends RadialChartData>(
+  data: T,
+  dataKey: keyof T[number],
+  theme: string = "ocean",
+) => {
+  const total = data.reduce((sum, item) => sum + Number(item[dataKey]), 0);
+  const palette = getPalette(theme);
+  const colors = getDistributedColors(palette, data.length);
+
+  return data.map((item, index) => ({
+    ...item,
+    percentage: calculatePercentage(Number(item[dataKey as string]), total),
+    originalValue: item[dataKey as string],
+    fill: colors[index],
+  }));
+};
+
+// Create chart configuration
+export const createRadialChartConfig = <T extends RadialChartData>(
+  data: T,
+  categoryKey: keyof T[number],
+  theme: string = "ocean",
+) => {
+  const palette = getPalette(theme);
+  const colors = getDistributedColors(palette, data.length);
+
+  return data.reduce<ChartConfig>(
+    (config, item, index) => ({
+      ...config,
+      [String(item[categoryKey])]: {
+        label: String(item[categoryKey as string]),
+        color: colors[index],
+      },
+    }),
+    {},
+  );
 };

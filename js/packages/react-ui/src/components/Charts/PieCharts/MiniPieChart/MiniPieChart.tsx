@@ -3,11 +3,16 @@ import { debounce } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
 import { useLayoutContext } from "../../../../context/LayoutContext";
-import { ChartConfig, ChartContainer } from "../../Charts";
-import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
-import { calculateChartDimensions, calculatePercentage, layoutMap } from "../utils/PieChartUtils";
+import { ChartContainer } from "../../Charts";
+import {
+  PieChartData,
+  calculateChartDimensions,
+  createChartConfig,
+  layoutMap,
+  transformDataWithPercentages,
+} from "../utils/PieChartUtils";
 
-export type MiniPieChartData = Array<Record<string, string | number>>;
+export type MiniPieChartData = PieChartData;
 
 export interface MiniPieChartProps<T extends MiniPieChartData> {
   data: T;
@@ -43,10 +48,7 @@ export const MiniPieChart = <T extends MiniPieChartData>({
     const resizeObserver = new ResizeObserver(
       debounce((entries: any) => {
         const { width } = entries[0].contentRect;
-
-        // Use the dynamic resize function to calculate radii
         const { outerRadius, innerRadius } = calculateChartDimensions(width, variant, label);
-
         setCalculatedOuterRadius(outerRadius);
         setCalculatedInnerRadius(innerRadius);
       }, 100),
@@ -56,31 +58,8 @@ export const MiniPieChart = <T extends MiniPieChartData>({
     return () => resizeObserver.disconnect();
   }, [variant, label]);
 
-  // Calculate total for percentage calculations
-  const total = data.reduce((sum, item) => sum + Number(item[dataKey]), 0);
-
-  // Transform data with percentages
-  const transformedData = data.map((item) => ({
-    ...item,
-    percentage: calculatePercentage(Number(item[dataKey as string]), total),
-    originalValue: item[dataKey as string],
-  }));
-
-  // Get color palette and distribute colors
-  const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, data.length);
-
-  // Create chart configuration
-  const chartConfig = data.reduce<ChartConfig>(
-    (config, item, index) => ({
-      ...config,
-      [String(item[categoryKey])]: {
-        label: String(item[categoryKey as string]),
-        color: colors[index],
-      },
-    }),
-    {},
-  );
+  const transformedData = transformDataWithPercentages(data, dataKey);
+  const chartConfig = createChartConfig(data, categoryKey, theme);
 
   return (
     <ChartContainer

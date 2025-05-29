@@ -2,6 +2,10 @@
  * Utility functions for pie charts
  */
 import { useState } from "react";
+import { ChartConfig } from "../../Charts";
+import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
+
+export type PieChartData = Array<Record<string, string | number>>;
 
 // Helper function to calculate percentage
 export const calculatePercentage = (value: number, total: number): number => {
@@ -95,4 +99,38 @@ export const getHoverStyles = (index: number, activeIndex: number | null) => {
     stroke: activeIndex === index ? "#fff" : "none",
     strokeWidth: activeIndex === index ? 2 : 0,
   };
+};
+
+// Transform data with percentages
+export const transformDataWithPercentages = <T extends PieChartData>(
+  data: T,
+  dataKey: keyof T[number],
+) => {
+  const total = data.reduce((sum, item) => sum + Number(item[dataKey]), 0);
+  return data.map((item) => ({
+    ...item,
+    percentage: calculatePercentage(Number(item[dataKey as string]), total),
+    originalValue: item[dataKey as string],
+  }));
+};
+
+// Create chart configuration
+export const createChartConfig = <T extends PieChartData>(
+  data: T,
+  categoryKey: keyof T[number],
+  theme: string = "ocean",
+) => {
+  const palette = getPalette(theme);
+  const colors = getDistributedColors(palette, data.length);
+
+  return data.reduce<ChartConfig>(
+    (config, item, index) => ({
+      ...config,
+      [String(item[categoryKey])]: {
+        label: String(item[categoryKey as string]),
+        color: colors[index],
+      },
+    }),
+    {},
+  );
 };

@@ -3,17 +3,18 @@ import { debounce } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { Cell, RadialBar, RadialBarChart } from "recharts";
 import { useLayoutContext } from "../../../../context/LayoutContext";
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../../Charts";
-import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../../Charts";
 import {
-  calculatePercentage,
+  RadialChartData,
   calculateRadialChartDimensions,
+  createRadialChartConfig,
   getHoverStyles,
   layoutMap,
+  transformRadialData,
   useChartHover,
 } from "../utils/RadialChartUtils";
 
-export type MiniRadialChartData = Array<Record<string, string | number>>;
+export type MiniRadialChartData = RadialChartData;
 
 export interface MiniRadialChartProps<T extends MiniRadialChartData> {
   data: T;
@@ -62,32 +63,11 @@ export const MiniRadialChart = <T extends MiniRadialChartData>({
     return () => resizeObserver.disconnect();
   }, [layout, label, variant]);
 
-  // Calculate total for percentage calculations
-  const total = data.reduce((sum, item) => sum + Number(item[dataKey]), 0);
-
-  // Get color palette and distribute colors
-  const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, data.length);
-
-  // Transform data with percentages
-  const transformedData = data.map((item, index) => ({
-    ...item,
-    percentage: calculatePercentage(Number(item[dataKey as string]), total),
-    originalValue: item[dataKey as string],
-    fill: colors[index],
-  }));
+  // Transform data with percentages and colors
+  const transformedData = transformRadialData(data, dataKey, theme);
 
   // Create chart configuration
-  const chartConfig = data.reduce<ChartConfig>(
-    (config, item, index) => ({
-      ...config,
-      [String(item[categoryKey])]: {
-        label: String(item[categoryKey as string]),
-        color: colors[index],
-      },
-    }),
-    {},
-  );
+  const chartConfig = createRadialChartConfig(data, categoryKey, theme);
 
   return (
     <ChartContainer
