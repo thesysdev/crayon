@@ -93,7 +93,7 @@ export const TwoLevelPieChart = <T extends TwoLevelPieChartData>({
           onMouseLeave={handleMouseLeave}
         >
           {transformedData.map((entry, index) => {
-            const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
+            // const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
             const hoverStyles = getHoverStyles(index, activeIndex);
             return <Cell key={`inner-cell-${index}`} fill={"lightgray"} {...hoverStyles} />;
           })}

@@ -24,10 +24,17 @@ export type ChartConfig = {
     icon?: React.ComponentType;
   } & (
     | { color?: string; secondaryColor?: string; theme?: never }
-    | { color?: never; theme: Record<keyof typeof THEMES, string | { 
-        color: string;
-        secondaryColor?: string;
-      }> }
+    | {
+        color?: never;
+        theme: Record<
+          keyof typeof THEMES,
+          | string
+          | {
+              color: string;
+              secondaryColor?: string;
+            }
+        >;
+      }
   );
 };
 
@@ -79,17 +86,21 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
       .map(([key, itemConfig]) => {
         const transformedKey = keyTransform(key);
         const themeValue = itemConfig.theme?.[theme as keyof typeof itemConfig.theme];
-        const color = typeof themeValue === 'string' 
-          ? themeValue 
-          : themeValue?.color || itemConfig.color;
-        const secondaryColor = typeof themeValue === 'object' 
-          ? themeValue?.secondaryColor 
-          : ('secondaryColor' in itemConfig ? itemConfig.secondaryColor : undefined);
-        
+        const color =
+          typeof themeValue === "string" ? themeValue : themeValue?.color || itemConfig.color;
+        const secondaryColor =
+          typeof themeValue === "object"
+            ? themeValue?.secondaryColor
+            : "secondaryColor" in itemConfig
+              ? itemConfig.secondaryColor
+              : undefined;
+
         return [
           color ? `  --color-${transformedKey}: ${color};` : null,
-          secondaryColor ? `  --color-${transformedKey}-secondary: ${secondaryColor};` : null
-        ].filter(Boolean).join("\n");
+          secondaryColor ? `  --color-${transformedKey}-secondary: ${secondaryColor};` : null,
+        ]
+          .filter(Boolean)
+          .join("\n");
       })
       .filter(Boolean)
       .join("\n")}

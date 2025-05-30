@@ -23,7 +23,7 @@ export interface MiniRadialChartProps<T extends MiniRadialChartData> {
   theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
   variant?: "semicircle" | "circular";
   format?: "percentage" | "number";
-  legend?: boolean;
+  // legend?: boolean;
   label?: boolean;
   grid?: boolean;
   isAnimationActive?: boolean;
@@ -36,7 +36,7 @@ export const MiniRadialChart = <T extends MiniRadialChartData>({
   theme = "ocean",
   variant = "semicircle",
   format = "number",
-  legend = true,
+  // legend = true,
   label = true,
   grid = true,
   isAnimationActive = true,

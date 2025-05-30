@@ -71,15 +71,15 @@ export const MiniBarChart = <T extends MiniBarChartData>({
   const width = getWidthOfData(data, categoryKey as string, variant);
 
   // Helper function to calculate total
-  const calculateTotal = <T extends MiniBarChartData>(
-    data: T,
-    categoryKey: keyof T[number],
-  ): number => {
-    const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
-    return data.reduce((sum, item) => {
-      return sum + dataKeys.reduce((keySum, key) => keySum + Number(item[key] || 0), 0);
-    }, 0);
-  };
+  // const calculateTotal = <T extends MiniBarChartData>(
+  //   data: T,
+  //   categoryKey: keyof T[number],
+  // ): number => {
+  //   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
+  //   return data.reduce((sum, item) => {
+  //     return sum + dataKeys.reduce((keySum, key) => keySum + Number(item[key] || 0), 0);
+  //   }, 0);
+  // };
 
   return (
     // <div style={{ display: "flex", flexDirection: "row", gap: 18 }}>

@@ -1,6 +1,5 @@
 import React from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis } from "recharts";
-import { useLayoutContext } from "../../../../context/LayoutContext";
 import { ChartContainer, keyTransform } from "../../Charts";
 import { MiniAreaChartData, createChartConfig } from "../utils/AreaChartUtils";
 
@@ -23,7 +22,6 @@ export const MiniAreaChart = <T extends MiniAreaChartData>({
   icons = {},
   isAnimationActive = true,
 }: MiniAreaChartProps<T>) => {
-  const { layout } = useLayoutContext();
   const chartConfig = createChartConfig({ data, categoryKey: categoryKey as string, theme, icons });
 
   return (

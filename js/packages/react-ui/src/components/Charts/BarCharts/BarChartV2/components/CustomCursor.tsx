@@ -16,7 +16,6 @@ export const CustomCursor: React.FC<CustomCursorProps> = ({
   width = 0,
   height = 0,
   payload,
-  ...props
 }) => {
   // You can access the data at the cursor position through payload
   const hasData = payload && payload.length > 0;

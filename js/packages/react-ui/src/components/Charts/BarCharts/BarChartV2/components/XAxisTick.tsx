@@ -23,16 +23,16 @@ interface XAxisTickProps {
 }
 
 const XAxisTick: React.FC<XAxisTickProps> = (props) => {
-  const { 
-    x, 
-    y, 
-    payload, 
-    textAnchor = "middle", 
-    verticalAnchor = "start", 
-    fill = "#666", 
-    tickFormatter, 
-    className, 
-    orientation = "bottom" 
+  const {
+    x,
+    y,
+    payload,
+    textAnchor = "middle",
+    verticalAnchor = "start",
+    fill = "#666",
+    tickFormatter,
+    className,
+    orientation = "bottom",
   } = props;
 
   const displayValue = tickFormatter ? tickFormatter(payload?.value) : String(payload?.value || "");
@@ -43,7 +43,7 @@ const XAxisTick: React.FC<XAxisTickProps> = (props) => {
     const offsetMap = {
       start: isBottom ? 6 : -4,
       middle: isBottom ? 6 : -8,
-      end: isBottom ? -8 : -16
+      end: isBottom ? -8 : -16,
     };
     return offsetMap[verticalAnchor] || 0;
   };
