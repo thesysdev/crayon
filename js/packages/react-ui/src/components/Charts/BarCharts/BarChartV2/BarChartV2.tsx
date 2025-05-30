@@ -1,6 +1,8 @@
 import clsx from "clsx";
-import React, { useEffect, useRef, useState } from "react";
+import { ChevronFirst, ChevronLast } from "lucide-react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
+import { IconButton } from "../../../IconButton";
 import {
   ChartConfig,
   ChartContainer,
@@ -15,8 +17,10 @@ import {
   getPadding,
   getRadiusArray,
   getWidthOfData,
+  getXAxisTickFormatter,
   getYAxisTickFormatter,
 } from "../utils/BarChartUtils";
+import { SimpleCursor } from "./components/CustomCursor";
 import { DefaultLegend, LegendItem } from "./components/DefaultLegend";
 import { LineInBarShape } from "./components/LineInBarShape";
 import { XAxisTick } from "./components/XAxisTick";
@@ -77,21 +81,11 @@ export const BarChartV2 = <T extends BarChartData>({
         label: key,
         icon: icons[key],
         color: colors[index],
+        secondaryColor: colors[dataKeys.length - index - 1],
       },
     }),
     {},
   );
-
-  const getTickFormatter = () => {
-    const maxLength = 3;
-
-    return (value: string) => {
-      if (value.length > maxLength) {
-        return `${value.slice(0, maxLength)}`;
-      }
-      return value;
-    };
-  };
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
@@ -128,6 +122,10 @@ export const BarChartV2 = <T extends BarChartData>({
   // Calculate chart height based on aspect ratio
   const chartHeight = containerWidth ? containerWidth * (9 / 16) : 400;
 
+  const id = useId();
+
+  const chartSyncID = `bar-chart-sync-${id}`;
+
   return (
     <div ref={chartContainerRef} className={clsx("crayon-bar-chart-container", className)}>
       <div className="crayon-bar-chart-container-inner">
@@ -145,7 +143,7 @@ export const BarChartV2 = <T extends BarChartData>({
                 left: 0,
                 right: 0,
               }}
-              syncId="barChartSync"
+              syncId={chartSyncID}
             >
               <YAxis
                 width={40}
@@ -189,7 +187,7 @@ export const BarChartV2 = <T extends BarChartData>({
               onClick={onBarsClick}
               // barGap={2}
               // barCategoryGap={'20%'}
-              syncId="barChartSync"
+              syncId={chartSyncID}
             >
               {grid && cartesianGrid()}
               <XAxis
@@ -197,7 +195,7 @@ export const BarChartV2 = <T extends BarChartData>({
                 tickLine={false}
                 axisLine={false}
                 textAnchor="middle"
-                tickFormatter={getTickFormatter()}
+                tickFormatter={getXAxisTickFormatter()}
                 interval="preserveStartEnd"
                 tick={<XAxisTick />}
                 orientation="bottom"
@@ -205,10 +203,11 @@ export const BarChartV2 = <T extends BarChartData>({
                 padding={padding}
               />
               {/* Y-axis is rendered in the separate synchronized chart */}
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartTooltip cursor={<SimpleCursor />} content={<ChartTooltipContent />} />
               {dataKeys.map((key, index) => {
                 const transformedKey = keyTransform(key);
                 const color = `var(--color-${transformedKey})`;
+                // const secondaryColor = `var(--color-${transformedKey}-secondary)`;
                 const isFirstInStack = index === 0;
                 const isLastInStack = index === dataKeys.length - 1;
 
@@ -238,6 +237,16 @@ export const BarChartV2 = <T extends BarChartData>({
             </RechartsBarChart>
           </ChartContainer>
         </div>
+      </div>
+      <div className="crayon-bar-chart-scroll-container">
+        <IconButton
+          className="crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--left"
+          icon={<ChevronFirst size={16} />}
+        />
+        <IconButton
+          className="crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--right"
+          icon={<ChevronLast size={16} />}
+        />
       </div>
       {legend && (
         <DefaultLegend items={legendItems} yAxisLabel={yAxisLabel} xAxisLabel={xAxisLabel} />

@@ -36,8 +36,8 @@ const getPadding = (
   if (paddingValue < 0) {
     // If chart content is wider than container, no padding
     return {
-      left: 0,
-      right: 0,
+      left: 2,
+      right: 2,
     };
   } else {
     return {
@@ -97,4 +97,15 @@ const getYAxisTickFormatter = () => {
   };
 };
 
-export { getPadding, getRadiusArray, getWidthOfData, getYAxisTickFormatter };
+const getXAxisTickFormatter = () => {
+  const maxLength = 3;
+
+  return (value: string) => {
+    if (value.length > maxLength) {
+      return `${value.slice(0, maxLength)}`;
+    }
+    return value;
+  };
+};
+
+export { getPadding, getRadiusArray, getWidthOfData, getXAxisTickFormatter, getYAxisTickFormatter };

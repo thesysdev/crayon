@@ -173,7 +173,7 @@ export const BarChartV2Story: Story = {
     legend: true,
   },
   render: (args: BarChartPropsV2<typeof barChartData>) => (
-    <Card style={{ width: "500px" }}>
+    <Card style={{ width: "700px" }}>
       <BarChartV2 {...args} />
     </Card>
   ),
