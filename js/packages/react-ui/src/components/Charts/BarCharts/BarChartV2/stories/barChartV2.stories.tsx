@@ -4,18 +4,18 @@ import { Card } from "../../../../Card";
 import { BarChartPropsV2, BarChartV2 } from "../BarChartV2";
 
 const barChartData = [
-  { month: "January", desktop: 45, mobile: 90 },
-  { month: "February", desktop: 280, mobile: 180 },
-  { month: "March", desktop: 220, mobile: 140 },
-  { month: "April", desktop: 180, mobile: 160 },
-  { month: "May", desktop: 250, mobile: 120 },
-  { month: "June", desktop: 300, mobile: 180 },
-  { month: "July", desktop: 350, mobile: 200 },
-  { month: "August", desktop: 400, mobile: 220 },
-  { month: "September", desktop: 450, mobile: 240 },
-  { month: "October", desktop: 500, mobile: 260 },
-  { month: "November", desktop: 550, mobile: 280 },
-  { month: "December", desktop: 600, mobile: 300 },
+  { month: "January", desktop: 150, mobile: 90, tablet: 120, laptop: 180 },
+  { month: "February", desktop: 280, mobile: 180, tablet: 140, laptop: 160 },
+  { month: "March", desktop: 220, mobile: 140, tablet: 160, laptop: 180 },
+  { month: "April", desktop: 180, mobile: 160, tablet: 180, laptop: 200 },
+  { month: "May", desktop: 250, mobile: 120, tablet: 140, laptop: 160 },
+  { month: "June", desktop: 300, mobile: 180, tablet: 160, laptop: 180 },
+  { month: "July", desktop: 350, mobile: 220, tablet: 180, laptop: 200 },
+  { month: "August", desktop: 400, mobile: 240, tablet: 200, laptop: 220 },
+  { month: "September", desktop: 450, mobile: 260, tablet: 220, laptop: 240 },
+  { month: "October", desktop: 500, mobile: 280, tablet: 240, laptop: 260 },
+  { month: "November", desktop: 550, mobile: 300, tablet: 260, laptop: 280 },
+  { month: "December", desktop: 600, mobile: 320, tablet: 280, laptop: 300 },
 ];
 
 const icons = {
@@ -30,8 +30,6 @@ const meta: Meta<BarChartPropsV2<typeof barChartData>> = {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "```tsx\nimport { BarChartV2 } from '@crayon-ui/react-ui/Charts/BarChartV2';\n```",
         component:
           "```tsx\nimport { BarChartV2 } from '@crayon-ui/react-ui/Charts/BarChartV2';\n```",
       },
@@ -107,25 +105,7 @@ const meta: Meta<BarChartPropsV2<typeof barChartData>> = {
         category: "Display",
       },
     },
-    label: {
-      description: "Whether to display data point labels above each point on the chart",
-      control: "boolean",
-      table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "true" },
-        category: "Display",
-      },
-    },
-    // legend: {
-    //   description:
-    //     "Whether to display the chart legend showing the data series names and their corresponding colors/icons",
-    //   control: "boolean",
-    //   table: {
-    //     type: { summary: "boolean" },
-    //     defaultValue: { summary: "true" },
-    //     category: "Display",
-    //   },
-    // },
+
     isAnimationActive: {
       description: "Whether to animate the chart",
       control: "boolean",
@@ -162,6 +142,15 @@ const meta: Meta<BarChartPropsV2<typeof barChartData>> = {
         category: "Data",
       },
     },
+    legend: {
+      description: "Whether to display the chart legend",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+        category: "Display",
+      },
+    },
   },
 } satisfies Meta<typeof BarChartV2>;
 
@@ -177,9 +166,11 @@ export const BarChartV2Story: Story = {
     variant: "grouped",
     radius: 2,
     grid: true,
-    label: true,
     isAnimationActive: true,
-    showYAxis: false,
+    showYAxis: true,
+    xAxisLabel: "Time Period",
+    yAxisLabel: "Number of Users",
+    legend: true,
   },
   render: (args: BarChartPropsV2<typeof barChartData>) => (
     <Card style={{ width: "500px" }}>
@@ -278,8 +269,6 @@ export const BarChartV2WithYAxis: Story = {
   args: {
     ...BarChartV2Story.args,
     showYAxis: true,
-    xAxisLabel: "Time Period",
-    yAxisLabel: "Number of Users",
   },
   render: (args: BarChartPropsV2<typeof barChartData>) => (
     <Card style={{ width: "500px" }}>
@@ -356,50 +345,6 @@ const barChartData = [
     radius={4}
     theme="emerald"
     variant="stacked"
-    isAnimationActive
-  />
-</Card>
-`,
-      },
-    },
-  },
-};
-
-export const BarChartV2NoLabels: Story = {
-  name: "Bar Chart V2 without Labels",
-  args: {
-    ...BarChartV2Story.args,
-    label: false,
-    theme: "sunset",
-  },
-  render: (args) => (
-    <Card style={{ width: "500px" }}>
-      <BarChartV2 {...args} />
-    </Card>
-  ),
-  parameters: {
-    docs: {
-      source: {
-        code: `
-const barChartData = [
-  { month: "January", desktop: 150, mobile: 90 },
-  { month: "February", desktop: 280, mobile: 180 },
-  { month: "March", desktop: 220, mobile: 140 },
-  { month: "April", desktop: 180, mobile: 160 },
-  { month: "May", desktop: 250, mobile: 120 },
-  { month: "June", desktop: 300, mobile: 180 },
-];
-
-<Card style={{ width: "500px" }}>
-  <BarChartV2
-    categoryKey="month"
-    data={barChartData}
-    grid
-    label={false}
-    legend
-    radius={4}
-    theme="sunset"
-    variant="grouped"
     isAnimationActive
   />
 </Card>

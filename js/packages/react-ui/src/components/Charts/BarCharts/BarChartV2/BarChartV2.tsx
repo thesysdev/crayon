@@ -1,5 +1,6 @@
+import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
-import { Bar, LabelList, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
+import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
@@ -9,7 +10,16 @@ import {
 } from "../../Charts";
 import { cartesianGrid } from "../../cartesianGrid";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
-import { getPadding, getRadiusArray, getWidthOfData } from "../utils/BarChartUtils";
+import {
+  BAR_WIDTH,
+  getPadding,
+  getRadiusArray,
+  getWidthOfData,
+  getYAxisTickFormatter,
+} from "../utils/BarChartUtils";
+import { DefaultLegend, LegendItem } from "./components/DefaultLegend";
+import { LineInBarShape } from "./components/LineInBarShape";
+import { YAxisTick } from "./components/YAxisTick";
 
 export type BarChartData = Array<Record<string, string | number>>;
 
@@ -21,7 +31,6 @@ export interface BarChartPropsV2<T extends BarChartData> {
   theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
   variant?: Variant;
   grid?: boolean;
-  label?: boolean;
   radius?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
@@ -29,6 +38,10 @@ export interface BarChartPropsV2<T extends BarChartData> {
   xAxisLabel?: React.ReactNode;
   yAxisLabel?: React.ReactNode;
   onBarsClick?: (data: any) => void;
+  barInternalLineColor?: string;
+  barInternalLineWidth?: number;
+  legend?: boolean;
+  className?: string;
 }
 
 export const BarChartV2 = <T extends BarChartData>({
@@ -37,7 +50,6 @@ export const BarChartV2 = <T extends BarChartData>({
   theme = "ocean",
   variant = "grouped",
   grid = true,
-  label = true,
   icons = {},
   radius = 2,
   isAnimationActive = true,
@@ -45,6 +57,10 @@ export const BarChartV2 = <T extends BarChartData>({
   xAxisLabel,
   yAxisLabel,
   onBarsClick,
+  barInternalLineColor = "rgba(255, 255, 255, 0.5)", // Default internal line color
+  barInternalLineWidth = 1, // Default internal line width
+  legend = false,
+  className,
 }: BarChartPropsV2<T>) => {
   // excluding the categoryKey
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
@@ -98,110 +114,131 @@ export const BarChartV2 = <T extends BarChartData>({
   }, []);
 
   const padding = getPadding(data, categoryKey as string, containerWidth, variant);
-  const width = getWidthOfData(data, categoryKey as string, variant);
+  const dataWidth = getWidthOfData(data, categoryKey as string, variant);
+
+  // Create legend items for custom legend
+  const legendItems: LegendItem[] = dataKeys.map((key, index) => ({
+    key,
+    label: key,
+    color: colors[index] || "#000000", // Fallback color if undefined
+    icon: icons[key] as React.ComponentType | undefined,
+  }));
+
+  // Calculate chart height based on aspect ratio
+  const chartHeight = containerWidth ? containerWidth * (9 / 16) : 400;
 
   return (
-    <div style={{ width: "100%", overflowX: "auto" }}>
-      <ChartContainer
-        config={chartConfig}
-        ref={chartContainerRef}
-        style={{ width, minWidth: "100%", aspectRatio: "16/9" }}
-        rechartsProps={{
-          aspect: 16 / 9,
-        }}
-      >
-        <RechartsBarChart
-          accessibilityLayer
-          data={data}
-          margin={{
-            top: label ? 30 : 20,
-            bottom: xAxisLabel ? 20 : 0,
-          }}
-          onClick={onBarsClick}
-        >
-          {grid && cartesianGrid()}
-          <XAxis
-            dataKey={categoryKey as string}
-            tickLine={false}
-            axisLine={false}
-            textAnchor="middle"
-            tickFormatter={getTickFormatter()}
-            interval="preserveStartEnd"
-            // label can take all attribute of the label from recharts
-            label={{
-              value: xAxisLabel,
-              position: "insideBottom",
-              offset: -10,
-              className: "crayon-chart-xAxis-label",
-            }}
-            // gives the padding on the 2 sides see the function for reference
-            padding={padding}
-          />
-          {showYAxis && (
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              label={{
-                value: yAxisLabel,
-                position: "insideLeft",
-                angle: -90,
-                className: "crayon-chart-yAxis-label",
+    <div ref={chartContainerRef} className={clsx("crayon-bar-chart-container", className)}>
+      <div className="crayon-bar-chart-container-inner">
+        {showYAxis && (
+          <div className="crayon-bar-chart-y-axis-container">
+            {/* Y-axis only chart - synchronized with main chart */}
+            <RechartsBarChart
+              key="y-axis-chart"
+              width={50}
+              height={chartHeight}
+              data={data}
+              margin={{
+                top: 20,
+                bottom: 32,
+                left: 0,
+                right: 0,
               }}
-            />
-          )}
-          <ChartTooltip content={<ChartTooltipContent />} />
-          {dataKeys.map((key, index) => {
-            const transformedKey = keyTransform(key);
-            const color = `var(--color-${transformedKey})`;
-            const isFirstInStack = index === 0;
-            const isLastInStack = index === dataKeys.length - 1;
-
-            if (label) {
-              return (
-                <Bar
-                  key={key}
-                  dataKey={key}
-                  fill={color}
-                  radius={getRadiusArray(
-                    variant,
-                    radius,
-                    variant === "stacked" ? isFirstInStack : undefined,
-                    variant === "stacked" ? isLastInStack : undefined,
-                  )}
-                  stackId={variant === "stacked" ? "a" : undefined}
-                  isAnimationActive={isAnimationActive}
-                  maxBarSize={8}
-                >
-                  {label && (
-                    <LabelList
-                      position="top"
-                      offset={12}
-                      className="crayon-chart-label-list"
-                      fontSize={12}
-                    />
-                  )}
-                </Bar>
-              );
-            }
-            return (
-              <Bar
-                key={key}
-                dataKey={key}
-                fill={color}
-                radius={getRadiusArray(
-                  variant,
-                  radius,
-                  variant === "stacked" ? isFirstInStack : undefined,
-                  variant === "stacked" ? isLastInStack : undefined,
-                )}
-                stackId={variant === "stacked" ? "a" : undefined}
-                isAnimationActive={isAnimationActive}
-                maxBarSize={8}
+              syncId="barChartSync"
+            >
+              <YAxis
+                width={50}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={getYAxisTickFormatter()}
+                tick={<YAxisTick />}
               />
-            );
-          })}
-        </RechartsBarChart>
-      </ChartContainer>
+              {/* Invisible bars to maintain scale synchronization */}
+              {dataKeys.map((key) => {
+                return (
+                  <Bar
+                    key={`yaxis-${key}`}
+                    dataKey={key}
+                    fill="transparent"
+                    isAnimationActive={false}
+                    maxBarSize={0}
+                  />
+                );
+              })}
+            </RechartsBarChart>
+          </div>
+        )}
+        <div className="crayon-bar-chart-main-container">
+          <ChartContainer
+            config={chartConfig}
+            style={{ width: dataWidth, minWidth: "100%", height: chartHeight }}
+            rechartsProps={{
+              width: "100%",
+              height: chartHeight,
+            }}
+          >
+            <RechartsBarChart
+              accessibilityLayer
+              key="bar-chart"
+              data={data}
+              margin={{
+                top: 20,
+                bottom: 0,
+              }}
+              onClick={onBarsClick}
+              // barGap={2}
+              // barCategoryGap={'20%'}
+              syncId="barChartSync"
+            >
+              {grid && cartesianGrid()}
+              <XAxis
+                dataKey={categoryKey as string}
+                tickLine={false}
+                axisLine={false}
+                textAnchor="middle"
+                tickFormatter={getTickFormatter()}
+                interval="preserveStartEnd"
+                // gives the padding on the 2 sides see the function for reference
+                padding={padding}
+              />
+              {/* Y-axis is rendered in the separate synchronized chart */}
+              <ChartTooltip content={<ChartTooltipContent />} />
+              {dataKeys.map((key, index) => {
+                const transformedKey = keyTransform(key);
+                const color = `var(--color-${transformedKey})`;
+                const isFirstInStack = index === 0;
+                const isLastInStack = index === dataKeys.length - 1;
+
+                return (
+                  <Bar
+                    key={`main-${key}`}
+                    dataKey={key}
+                    fill={color}
+                    radius={getRadiusArray(
+                      variant,
+                      radius,
+                      variant === "stacked" ? isFirstInStack : undefined,
+                      variant === "stacked" ? isLastInStack : undefined,
+                    )}
+                    stackId={variant === "stacked" ? "a" : undefined}
+                    isAnimationActive={isAnimationActive}
+                    maxBarSize={BAR_WIDTH}
+                    shape={
+                      <LineInBarShape
+                        internalLineColor={barInternalLineColor}
+                        internalLineWidth={barInternalLineWidth}
+                      />
+                    }
+                  />
+                );
+              })}
+            </RechartsBarChart>
+          </ChartContainer>
+        </div>
+      </div>
+      {legend && (
+        <DefaultLegend items={legendItems} yAxisLabel={yAxisLabel} xAxisLabel={xAxisLabel} />
+      )}
     </div>
   );
 };
