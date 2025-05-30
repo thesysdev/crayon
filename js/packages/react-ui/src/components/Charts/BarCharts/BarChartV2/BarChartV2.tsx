@@ -19,6 +19,7 @@ import {
 } from "../utils/BarChartUtils";
 import { DefaultLegend, LegendItem } from "./components/DefaultLegend";
 import { LineInBarShape } from "./components/LineInBarShape";
+import { XAxisTick } from "./components/XAxisTick";
 import { YAxisTick } from "./components/YAxisTick";
 
 export type BarChartData = Array<Record<string, string | number>>;
@@ -135,7 +136,7 @@ export const BarChartV2 = <T extends BarChartData>({
             {/* Y-axis only chart - synchronized with main chart */}
             <RechartsBarChart
               key="y-axis-chart"
-              width={50}
+              width={40}
               height={chartHeight}
               data={data}
               margin={{
@@ -147,7 +148,7 @@ export const BarChartV2 = <T extends BarChartData>({
               syncId="barChartSync"
             >
               <YAxis
-                width={50}
+                width={40}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={getYAxisTickFormatter()}
@@ -198,6 +199,8 @@ export const BarChartV2 = <T extends BarChartData>({
                 textAnchor="middle"
                 tickFormatter={getTickFormatter()}
                 interval="preserveStartEnd"
+                tick={<XAxisTick />}
+                orientation="bottom"
                 // gives the padding on the 2 sides see the function for reference
                 padding={padding}
               />
