@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { ChevronFirst, ChevronLast } from "lucide-react";
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { IconButton } from "../../../IconButton";
 import {
@@ -16,6 +16,7 @@ import {
   BAR_WIDTH,
   getPadding,
   getRadiusArray,
+  getScrollAmount,
   getWidthOfData,
   getXAxisTickFormatter,
   getYAxisTickFormatter,
@@ -49,7 +50,7 @@ export interface BarChartPropsV2<T extends BarChartData> {
   className?: string;
 }
 
-export const BarChartV2 = <T extends BarChartData>({
+const BarChartV2Component = <T extends BarChartData>({
   data,
   categoryKey,
   theme = "ocean",
@@ -67,28 +68,78 @@ export const BarChartV2 = <T extends BarChartData>({
   legend = false,
   className,
 }: BarChartPropsV2<T>) => {
-  // excluding the categoryKey
-  const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
+  const dataKeys = useMemo(() => {
+    return Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
+  }, [data, categoryKey]);
 
-  const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, dataKeys.length);
+  const colors = useMemo(() => {
+    const palette = getPalette(theme);
+    return getDistributedColors(palette, dataKeys.length);
+  }, [theme, dataKeys.length]);
 
-  // Create Config
-  const chartConfig: ChartConfig = dataKeys.reduce(
-    (config, key, index) => ({
-      ...config,
-      [key]: {
-        label: key,
-        icon: icons[key],
-        color: colors[index],
-        secondaryColor: colors[dataKeys.length - index - 1],
-      },
-    }),
-    {},
-  );
+  const chartConfig: ChartConfig = useMemo(() => {
+    return dataKeys.reduce(
+      (config, key, index) => ({
+        ...config,
+        [key]: {
+          label: key,
+          icon: icons[key],
+          color: colors[index],
+          secondaryColor: colors[dataKeys.length - index - 1],
+        },
+      }),
+      {},
+    );
+  }, [dataKeys, icons, colors]);
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
+  const mainContainerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const padding = useMemo(() => {
+    return getPadding(data, categoryKey as string, containerWidth, variant);
+  }, [data, categoryKey, containerWidth, variant]);
+
+  const dataWidth = useMemo(() => {
+    return getWidthOfData(data, categoryKey as string, variant);
+  }, [data, categoryKey, variant]);
+
+  const scrollAmount = useMemo(() => {
+    return getScrollAmount(data, categoryKey as string, variant);
+  }, [data, categoryKey, variant]);
+
+  const chartHeight = useMemo(() => {
+    return containerWidth ? containerWidth * (9 / 16) : 400;
+  }, [containerWidth]);
+
+  // Check scroll boundaries
+  const updateScrollState = useCallback(() => {
+    if (mainContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = mainContainerRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1); // -1 for floating point precision
+    }
+  }, []);
+
+  const scrollLeft = useCallback(() => {
+    if (mainContainerRef.current) {
+      mainContainerRef.current.scrollTo({
+        left: mainContainerRef.current.scrollLeft - scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  }, [scrollAmount]);
+
+  const scrollRight = useCallback(() => {
+    if (mainContainerRef.current) {
+      mainContainerRef.current.scrollTo({
+        left: mainContainerRef.current.scrollLeft + scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  }, [scrollAmount]);
 
   useEffect(() => {
     if (!chartContainerRef.current) {
@@ -108,23 +159,39 @@ export const BarChartV2 = <T extends BarChartData>({
     };
   }, []);
 
-  const padding = getPadding(data, categoryKey as string, containerWidth, variant);
-  const dataWidth = getWidthOfData(data, categoryKey as string, variant);
+  // Update scroll state when container width or data width changes
+  useEffect(() => {
+    updateScrollState();
+  }, [containerWidth, dataWidth, updateScrollState]);
 
-  // Create legend items for custom legend
-  const legendItems: LegendItem[] = dataKeys.map((key, index) => ({
-    key,
-    label: key,
-    color: colors[index] || "#000000", // Fallback color if undefined
-    icon: icons[key] as React.ComponentType | undefined,
-  }));
+  // Add scroll event listener to update button states
+  useEffect(() => {
+    const mainContainer = mainContainerRef.current;
+    if (!mainContainer) return;
 
-  // Calculate chart height based on aspect ratio
-  const chartHeight = containerWidth ? containerWidth * (9 / 16) : 400;
+    const handleScroll = () => {
+      updateScrollState();
+    };
+
+    mainContainer.addEventListener("scroll", handleScroll);
+    return () => {
+      mainContainer.removeEventListener("scroll", handleScroll);
+    };
+  }, [updateScrollState]);
+
+  // Memoize legend items creation
+  const legendItems: LegendItem[] = useMemo(() => {
+    return dataKeys.map((key, index) => ({
+      key,
+      label: key,
+      color: colors[index] || "#000000", // Fallback color if undefined
+      icon: icons[key] as React.ComponentType | undefined,
+    }));
+  }, [dataKeys, colors, icons]);
 
   const id = useId();
 
-  const chartSyncID = `bar-chart-sync-${id}`;
+  const chartSyncID = useMemo(() => `bar-chart-sync-${id}`, [id]);
 
   return (
     <div ref={chartContainerRef} className={clsx("crayon-bar-chart-container", className)}>
@@ -167,7 +234,7 @@ export const BarChartV2 = <T extends BarChartData>({
             </RechartsBarChart>
           </div>
         )}
-        <div className="crayon-bar-chart-main-container">
+        <div className="crayon-bar-chart-main-container" ref={mainContainerRef}>
           <ChartContainer
             config={chartConfig}
             style={{ width: dataWidth, minWidth: "100%", height: chartHeight }}
@@ -185,8 +252,8 @@ export const BarChartV2 = <T extends BarChartData>({
                 bottom: 0,
               }}
               onClick={onBarsClick}
-              // barGap={2}
-              // barCategoryGap={'20%'}
+              barGap={5}
+              barCategoryGap={"20%"}
               syncId={chartSyncID}
             >
               {grid && cartesianGrid()}
@@ -225,6 +292,7 @@ export const BarChartV2 = <T extends BarChartData>({
                     stackId={variant === "stacked" ? "a" : undefined}
                     isAnimationActive={isAnimationActive}
                     maxBarSize={BAR_WIDTH}
+                    barSize={BAR_WIDTH}
                     shape={
                       <LineInBarShape
                         internalLineColor={barInternalLineColor}
@@ -238,19 +306,33 @@ export const BarChartV2 = <T extends BarChartData>({
           </ChartContainer>
         </div>
       </div>
-      <div className="crayon-bar-chart-scroll-container">
-        <IconButton
-          className="crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--left"
-          icon={<ChevronFirst size={16} />}
-        />
-        <IconButton
-          className="crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--right"
-          icon={<ChevronLast size={16} />}
-        />
-      </div>
+      {/* Scroll buttons */}
+      {dataWidth > containerWidth && (
+        <div className="crayon-bar-chart-scroll-container">
+          <IconButton
+            className="crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--left"
+            icon={<ChevronFirst />}
+            variant="secondary"
+            onClick={scrollLeft}
+            size="extra-small"
+            disabled={!canScrollLeft}
+          />
+          <IconButton
+            className="crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--right"
+            icon={<ChevronLast />}
+            variant="secondary"
+            size="extra-small"
+            onClick={scrollRight}
+            disabled={!canScrollRight}
+          />
+        </div>
+      )}
       {legend && (
         <DefaultLegend items={legendItems} yAxisLabel={yAxisLabel} xAxisLabel={xAxisLabel} />
       )}
     </div>
   );
 };
+
+// Add React.memo for performance optimization
+export const BarChartV2 = React.memo(BarChartV2Component) as typeof BarChartV2Component;

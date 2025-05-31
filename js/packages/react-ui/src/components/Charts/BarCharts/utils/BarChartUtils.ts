@@ -1,7 +1,7 @@
 import { Variant } from "../BarChartV2";
 
 export const BAR_WIDTH = 12;
-export const ELEMENT_SPACING = 15; // Spacing per bar in grouped, or per stack in stacked
+export const ELEMENT_SPACING = 17; // Spacing per bar in grouped, or per stack in stacked
 
 const getWidthOfData = (
   data: Array<Record<string, string | number>>,
@@ -20,7 +20,11 @@ const getWidthOfData = (
     numberOfElements = seriesCountsPerCategory.reduce((acc, curr) => acc + curr, 0);
   }
 
-  const width = numberOfElements * (BAR_WIDTH + ELEMENT_SPACING);
+  let width = numberOfElements * (BAR_WIDTH + ELEMENT_SPACING);
+  if (data.length === 1) {
+    const minSingleDataWidth = 200; // Minimum width for single data points
+    width = Math.max(width, minSingleDataWidth);
+  }
   return width;
 };
 
@@ -108,4 +112,34 @@ const getXAxisTickFormatter = () => {
   };
 };
 
-export { getPadding, getRadiusArray, getWidthOfData, getXAxisTickFormatter, getYAxisTickFormatter };
+const getScrollAmount = (
+  data: Array<Record<string, string | number>>,
+  categoryKey: string,
+  variant: Variant,
+) => {
+  if (data.length === 0) return 200; // Fallback
+
+  // Get the number of data keys (excluding categoryKey)
+  const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
+
+  if (variant === "stacked") {
+    // For stacked: each category is one stack
+    // Example: month "January" = 1 stack = BAR_WIDTH + ELEMENT_SPACING
+    return BAR_WIDTH + ELEMENT_SPACING;
+  } else {
+    // For grouped: each category contains multiple bars
+    // Example: month "January" with desktop+mobile+tablet = 3 bars
+    // Width = 3 * (BAR_WIDTH + ELEMENT_SPACING)
+    const seriesPerCategory = dataKeys.length;
+    return seriesPerCategory * (BAR_WIDTH + ELEMENT_SPACING);
+  }
+};
+
+export {
+  getPadding,
+  getRadiusArray,
+  getScrollAmount,
+  getWidthOfData,
+  getXAxisTickFormatter,
+  getYAxisTickFormatter,
+};

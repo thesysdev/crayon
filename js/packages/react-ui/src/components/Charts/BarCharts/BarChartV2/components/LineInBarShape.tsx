@@ -64,7 +64,7 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = (props) => {
 
       {/* The internal vertical line */}
       {width > 0 &&
-        height > 0 && ( // Only render line if bar has dimensions
+        height > 5 && ( // Only render line if bar has sufficient height
           <line
             x1={x + width / 2}
             y1={y + 4} // Starts at the top of the bar
