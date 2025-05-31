@@ -17,7 +17,7 @@ const meta: Meta<CalloutProps> = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["neutral", "info", "warning", "success"],
+      options: ["neutral", "info", "warning", "success", "danger"],
       description: "The visual style variant of the callout",
       table: {
         category: "Appearance",
