@@ -4,6 +4,7 @@ import { ButtonHTMLAttributes, forwardRef, ReactNode } from "react";
 type IconButtonVariant = "primary" | "secondary" | "tertiary";
 type IconButtonSize = "extra-small" | "small" | "medium" | "large";
 type IconButtonShape = "square" | "circle";
+type IconButtonAppearance = "normal" | "destructive";
 
 export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
@@ -11,12 +12,19 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
   size?: IconButtonSize;
   shape?: IconButtonShape;
   className?: string;
+  appearance?: IconButtonAppearance;
 }
 
-const iconButtonVariants = {
+const normalIconButtonVariants = {
   primary: "crayon-icon-button-primary",
   secondary: "crayon-icon-button-secondary",
   tertiary: "crayon-icon-button-tertiary",
+} as const;
+
+const destructiveIconButtonVariants = {
+  primary: "crayon-icon-button-destructive-primary",
+  secondary: "crayon-icon-button-destructive-secondary",
+  tertiary: "crayon-icon-button-destructive-tertiary",
 } as const;
 
 const iconButtonSizes = {
@@ -38,8 +46,12 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>((props,
     variant = "primary",
     size = "medium",
     shape = "square",
+    appearance = "normal",
     ...rest
   } = props;
+
+  const iconButtonVariants =
+    appearance === "normal" ? normalIconButtonVariants : destructiveIconButtonVariants;
 
   return (
     <button
