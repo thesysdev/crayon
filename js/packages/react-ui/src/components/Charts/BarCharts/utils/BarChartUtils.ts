@@ -2,10 +2,13 @@ import { ChartConfig } from "../../Charts";
 import { Variant } from "../BarChartV2";
 
 export const BAR_WIDTH = 12;
-export const ELEMENT_SPACING_GROUPED = 16; // Spacing per bar in grouped charts
-export const ELEMENT_SPACING_STACKED = 26; // Spacing per stack in stacked charts
+
+// Internal constants - not exported as they're only used within this file
+const ELEMENT_SPACING_GROUPED = 16; // Spacing per bar in grouped charts
+const ELEMENT_SPACING_STACKED = 26; // Spacing per stack in stacked charts
 
 /**
+ * INTERNAL HELPER FUNCTION
  * Get the appropriate element spacing based on chart variant
  * @param variant - The chart variant
  * @returns The spacing value for the given variant
@@ -121,6 +124,7 @@ const getRadiusArray = (
 /**
  * This function returns the formatter for the Y-axis tick values.
  * @returns The formatter for the Y-axis tick values.
+ * internally used by the YAxis component reCharts
  */
 const getYAxisTickFormatter = () => {
   return (value: any) => {
@@ -144,26 +148,80 @@ const getYAxisTickFormatter = () => {
   };
 };
 
-// return the max length of the x-axis tick values
-const getXAxisTickFormatter = () => {
-  const maxLength = 3;
-
+/**
+ * INTERNAL HELPER FUNCTION
+ * This function returns the formatter for the X-axis tick values with intelligent truncation.
+ * @param groupWidth - The width available for each group/category (optional)
+ * @param variant - The chart variant (affects truncation logic)
+ * @returns The formatter for the X-axis tick values.
+ * internally used by the XAxis component reCharts
+ */
+const getXAxisTickFormatter = (groupWidth?: number, variant: Variant = "grouped") => {
+  const CHAR_WIDTH = 7; // Average character width in pixels for most fonts
+  const ELLIPSIS_WIDTH = CHAR_WIDTH * 3; // "..." takes about 3 character widths
+  const PADDING = 8; // Safety padding for better visual spacing
+  // closure is happening here.
   return (value: string) => {
-    if (value.length > maxLength) {
-      return `${value.slice(0, maxLength)}`;
+    // If no groupWidth provided, fall back to simple logic
+    if (!groupWidth) {
+      if (variant === "stacked") {
+        return value.slice(0, 3);
+      } else {
+        return value.length > 3 ? `${value.slice(0, 3)}...` : value;
+      }
     }
-    return value;
+
+    const availableWidth = Math.max(0, groupWidth - PADDING);
+    const maxCharsWithoutEllipsis = Math.floor(availableWidth / CHAR_WIDTH);
+    const maxCharsWithEllipsis = Math.floor((availableWidth - ELLIPSIS_WIDTH) / CHAR_WIDTH);
+
+    // For stacked variant: simple truncation, no ellipsis needed
+    if (variant === "stacked") {
+      const maxChars = Math.max(1, Math.min(3, maxCharsWithoutEllipsis));
+      return value.slice(0, maxChars);
+    }
+
+    // For grouped variant: intelligent ellipsis handling
+    if (value.length <= maxCharsWithoutEllipsis) {
+      // Full text fits comfortably
+      return value;
+    } else if (maxCharsWithEllipsis >= 3) {
+      // We can fit at least 3 characters + ellipsis
+      return `${value.slice(0, maxCharsWithEllipsis)}...`;
+    } else {
+      // Very limited space - just show 3 chars without ellipsis
+      // (ellipsis would take more space than it's worth)
+      return value.slice(0, Math.max(1, Math.min(3, maxCharsWithoutEllipsis)));
+    }
   };
 };
 
 /**
+ * Helper function to get the optimal X-axis tick formatter with calculated group width
+ * @param data - The chart data
+ * @param categoryKey - The category key
+ * @param variant - The chart variant
+ * @returns The optimized formatter function
+ */
+const getOptimalXAxisTickFormatter = (
+  data: Array<Record<string, string | number>>,
+  categoryKey: string,
+  variant: Variant,
+) => {
+  // Calculate the available width per group
+  const groupWidth = getWidthOfGroup(data, categoryKey, variant);
+  return getXAxisTickFormatter(groupWidth, variant);
+};
+
+/**
+ * INTERNAL HELPER FUNCTION
  * This function returns the scroll amount for the chart, used for the scroll amount of the chart.
+ * This can also be used to calculate the width of each group/category.
  * @param data - The data to be displayed in the chart.
  * @param categoryKey - The key of the category to be displayed in the chart.
  * @param variant - The variant of the chart.
  */
-
-const getScrollAmount = (
+const getWidthOfGroup = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
   variant: Variant,
@@ -215,17 +273,23 @@ const getSnapPositions = (
   if (data.length === 0) return [0];
 
   const positions = [0]; // Start position
-  const scrollAmountValue = getScrollAmount(data, categoryKey, variant);
+  const groupWidthValue = getWidthOfGroup(data, categoryKey, variant);
 
   // Calculate all valid snap positions based on groups
   for (let i = 1; i < data.length; i++) {
-    positions.push(i * scrollAmountValue);
+    positions.push(i * groupWidthValue);
   }
 
   return positions;
 };
 
-// Find the nearest snap position based on current scroll and direction
+/**
+ * This function returns the nearest snap position for the chart, used for the nearest snap position of the chart.
+ * @param snapPositions - The snap positions for the chart.
+ * @param currentScroll - The current scroll of the chart.
+ * @param direction - The direction of the scroll.
+ * @returns The nearest snap position for the chart.
+ */
 const findNearestSnapPosition = (
   snapPositions: number[],
   currentScroll: number,
@@ -251,7 +315,13 @@ const findNearestSnapPosition = (
   }
 };
 
-// Create chart configuration object
+/**
+ * This function returns the chart configuration object, used for the chart configuration object of the chart.
+ * @param dataKeys - The data keys for the chart.
+ * @param icons - The icons for the chart.
+ * @param colors - The colors for the chart.
+ * @returns The chart configuration object for the chart.
+ */
 const getChartConfig = (
   dataKeys: string[],
   icons: Partial<Record<string, React.ComponentType>>,
@@ -271,7 +341,13 @@ const getChartConfig = (
   );
 };
 
-// Create legend items array
+/**
+ * This function returns the legend items for the chart, used for the legend items of the chart.
+ * @param dataKeys - The data keys for the chart.
+ * @param colors - The colors for the chart.
+ * @param icons - The icons for the chart.
+ * @returns The legend items for the chart.
+ */
 export interface LegendItem {
   key: string;
   label: string;
@@ -292,23 +368,28 @@ const getLegendItems = (
   }));
 };
 
-// Calculate chart height based on container width
+/**
+ * This function returns the chart height for the chart, used for the chart height of the chart.
+ * @param containerWidth - The width of the container of the chart.
+ * @returns The chart height for the chart.
+ * 16:9 aspect ratio
+ * to change the aspect ratio, change the 9/16 to the desired aspect ratio
+ */
 const getChartHeight = (containerWidth: number): number => {
   return containerWidth ? containerWidth * (9 / 16) : 400;
 };
 
+// Export only the functions and types that are used externally
 export {
   findNearestSnapPosition,
   getChartConfig,
   getChartHeight,
   getDataKeys,
-  getElementSpacing,
   getLegendItems,
+  getOptimalXAxisTickFormatter,
   getPadding,
   getRadiusArray,
-  getScrollAmount,
   getSnapPositions,
   getWidthOfData,
-  getXAxisTickFormatter,
   getYAxisTickFormatter,
 };

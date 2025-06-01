@@ -19,11 +19,11 @@ import {
   getChartHeight,
   getDataKeys,
   getLegendItems,
+  getOptimalXAxisTickFormatter,
   getPadding,
   getRadiusArray,
   getSnapPositions,
   getWidthOfData,
-  getXAxisTickFormatter,
   getYAxisTickFormatter,
   type LegendItem,
 } from "../utils/BarChartUtils";
@@ -202,6 +202,11 @@ const BarChartV2Component = <T extends BarChartData>({
 
   const chartSyncID = useMemo(() => `bar-chart-sync-${id}`, [id]);
 
+  // Get the optimal X-axis tick formatter based on available space
+  const xAxisTickFormatter = useMemo(() => {
+    return getOptimalXAxisTickFormatter(data, categoryKey as string, variant);
+  }, [data, categoryKey, variant]);
+
   return (
     <div className={clsx("crayon-bar-chart-container", className)}>
       <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
@@ -271,7 +276,7 @@ const BarChartV2Component = <T extends BarChartData>({
                 tickLine={false}
                 axisLine={false}
                 textAnchor="middle"
-                tickFormatter={getXAxisTickFormatter()}
+                tickFormatter={xAxisTickFormatter}
                 interval={0}
                 tick={<XAxisTick />}
                 orientation="bottom"
