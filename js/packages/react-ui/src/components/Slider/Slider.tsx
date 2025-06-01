@@ -77,9 +77,9 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
 
     const renderDots = () => {
       if (variant === "discrete" && step) {
-        const numSteps = Math.floor((max - min) / step) - 1;
-        return Array.from({ length: numSteps }, (_, index) => {
-          const value = min + step * (index + 1);
+        const numSteps = Math.floor((max - min) / step);
+        return Array.from({ length: numSteps + 1 }, (_, index) => {
+          const value = min + step * index;
           const position = ((value - min) / (max - min)) * 100;
           return <div key={value} className="slider-dots-dot" style={{ left: `${position}%` }} />;
         });
@@ -88,30 +88,32 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
     };
 
     return (
-      <SliderPrimitive.Root
-        ref={ref}
-        className={clsx("slider-root", { "slider--disabled": disabled }, className)}
-        {...props}
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onValueChange={(value) => {
-          setInternalValue(value);
-          onValueChange?.(value);
-        }}
-        minStepsBetweenThumbs={1}
-        disabled={disabled}
-        key={variant}
-        defaultValue={defaultValue}
-        style={style}
-      >
-        <SliderPrimitive.Track className="slider-track">
-          <SliderPrimitive.Range className="slider-range" />
-          {variant === "discrete" && renderDots()}
-        </SliderPrimitive.Track>
-        {thumbs}
-      </SliderPrimitive.Root>
+      <div className="slider-container">
+        <SliderPrimitive.Root
+          ref={ref}
+          className={clsx("slider-root", { "slider--disabled": disabled }, className)}
+          {...props}
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onValueChange={(value) => {
+            setInternalValue(value);
+            onValueChange?.(value);
+          }}
+          minStepsBetweenThumbs={1}
+          disabled={disabled}
+          key={variant}
+          defaultValue={defaultValue}
+          style={style}
+        >
+          <SliderPrimitive.Track className="slider-track">
+            <SliderPrimitive.Range className="slider-range" />
+            {variant === "discrete" && renderDots()}
+          </SliderPrimitive.Track>
+          {thumbs}
+        </SliderPrimitive.Root>
+      </div>
     );
   },
 );
