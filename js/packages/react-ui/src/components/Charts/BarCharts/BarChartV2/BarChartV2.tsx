@@ -14,15 +14,21 @@ import { cartesianGrid } from "../../cartesianGrid";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 import {
   BAR_WIDTH,
+  findNearestSnapPosition,
+  getChartConfig,
+  getChartHeight,
+  getDataKeys,
+  getLegendItems,
   getPadding,
   getRadiusArray,
-  getScrollAmount,
+  getSnapPositions,
   getWidthOfData,
   getXAxisTickFormatter,
   getYAxisTickFormatter,
+  type LegendItem,
 } from "../utils/BarChartUtils";
 import { SimpleCursor } from "./components/CustomCursor";
-import { DefaultLegend, LegendItem } from "./components/DefaultLegend";
+import { DefaultLegend } from "./components/DefaultLegend";
 import { LineInBarShape } from "./components/LineInBarShape";
 import { XAxisTick } from "./components/XAxisTick";
 import { YAxisTick } from "./components/YAxisTick";
@@ -50,6 +56,10 @@ export interface BarChartPropsV2<T extends BarChartData> {
   className?: string;
 }
 
+const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
+const BAR_GAP = 10; // Gap between bars
+const BAR_CATEGORY_GAP = "20%"; // Gap between categories
+
 const BarChartV2Component = <T extends BarChartData>({
   data,
   categoryKey,
@@ -69,7 +79,7 @@ const BarChartV2Component = <T extends BarChartData>({
   className,
 }: BarChartPropsV2<T>) => {
   const dataKeys = useMemo(() => {
-    return Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
+    return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
   const colors = useMemo(() => {
@@ -78,18 +88,7 @@ const BarChartV2Component = <T extends BarChartData>({
   }, [theme, dataKeys.length]);
 
   const chartConfig: ChartConfig = useMemo(() => {
-    return dataKeys.reduce(
-      (config, key, index) => ({
-        ...config,
-        [key]: {
-          label: key,
-          icon: icons[key],
-          color: colors[index],
-          secondaryColor: colors[dataKeys.length - index - 1],
-        },
-      }),
-      {},
-    );
+    return getChartConfig(dataKeys, icons, colors);
   }, [dataKeys, icons, colors]);
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -98,20 +97,27 @@ const BarChartV2Component = <T extends BarChartData>({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
+  // need this to calculate the padding for the chart container, because the y-axis is rendered in a separate chart
+  const effectiveContainerWidth = useMemo(() => {
+    const yAxisWidth = showYAxis ? Y_AXIS_WIDTH : 0;
+    return Math.max(0, containerWidth - yAxisWidth);
+  }, [containerWidth, showYAxis]);
+
   const padding = useMemo(() => {
-    return getPadding(data, categoryKey as string, containerWidth, variant);
-  }, [data, categoryKey, containerWidth, variant]);
+    return getPadding(data, categoryKey as string, effectiveContainerWidth, variant);
+  }, [data, categoryKey, effectiveContainerWidth, variant]);
 
   const dataWidth = useMemo(() => {
     return getWidthOfData(data, categoryKey as string, variant);
   }, [data, categoryKey, variant]);
 
-  const scrollAmount = useMemo(() => {
-    return getScrollAmount(data, categoryKey as string, variant);
+  // Calculate snap positions for proper group alignment
+  const snapPositions = useMemo(() => {
+    return getSnapPositions(data, categoryKey as string, variant);
   }, [data, categoryKey, variant]);
 
   const chartHeight = useMemo(() => {
-    return containerWidth ? containerWidth * (9 / 16) : 400;
+    return getChartHeight(containerWidth);
   }, [containerWidth]);
 
   // Check scroll boundaries
@@ -125,21 +131,29 @@ const BarChartV2Component = <T extends BarChartData>({
 
   const scrollLeft = useCallback(() => {
     if (mainContainerRef.current) {
+      const currentScroll = mainContainerRef.current.scrollLeft;
+      const targetIndex = findNearestSnapPosition(snapPositions, currentScroll, "left");
+      const targetPosition = snapPositions[targetIndex] ?? 0;
+
       mainContainerRef.current.scrollTo({
-        left: mainContainerRef.current.scrollLeft - scrollAmount,
+        left: targetPosition,
         behavior: "smooth",
       });
     }
-  }, [scrollAmount]);
+  }, [snapPositions]);
 
   const scrollRight = useCallback(() => {
     if (mainContainerRef.current) {
+      const currentScroll = mainContainerRef.current.scrollLeft;
+      const targetIndex = findNearestSnapPosition(snapPositions, currentScroll, "right");
+      const targetPosition = snapPositions[targetIndex] ?? 0;
+
       mainContainerRef.current.scrollTo({
-        left: mainContainerRef.current.scrollLeft + scrollAmount,
+        left: targetPosition,
         behavior: "smooth",
       });
     }
-  }, [scrollAmount]);
+  }, [snapPositions]);
 
   useEffect(() => {
     if (!chartContainerRef.current) {
@@ -181,12 +195,7 @@ const BarChartV2Component = <T extends BarChartData>({
 
   // Memoize legend items creation
   const legendItems: LegendItem[] = useMemo(() => {
-    return dataKeys.map((key, index) => ({
-      key,
-      label: key,
-      color: colors[index] || "#000000", // Fallback color if undefined
-      icon: icons[key] as React.ComponentType | undefined,
-    }));
+    return getLegendItems(dataKeys, colors, icons);
   }, [dataKeys, colors, icons]);
 
   const id = useId();
@@ -194,14 +203,14 @@ const BarChartV2Component = <T extends BarChartData>({
   const chartSyncID = useMemo(() => `bar-chart-sync-${id}`, [id]);
 
   return (
-    <div ref={chartContainerRef} className={clsx("crayon-bar-chart-container", className)}>
-      <div className="crayon-bar-chart-container-inner">
+    <div className={clsx("crayon-bar-chart-container", className)}>
+      <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
         {showYAxis && (
           <div className="crayon-bar-chart-y-axis-container">
             {/* Y-axis only chart - synchronized with main chart */}
             <RechartsBarChart
               key="y-axis-chart"
-              width={40}
+              width={Y_AXIS_WIDTH}
               height={chartHeight}
               data={data}
               margin={{
@@ -213,7 +222,7 @@ const BarChartV2Component = <T extends BarChartData>({
               syncId={chartSyncID}
             >
               <YAxis
-                width={40}
+                width={Y_AXIS_WIDTH}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={getYAxisTickFormatter()}
@@ -252,8 +261,8 @@ const BarChartV2Component = <T extends BarChartData>({
                 bottom: 0,
               }}
               onClick={onBarsClick}
-              barGap={5}
-              barCategoryGap={"20%"}
+              barGap={BAR_GAP}
+              barCategoryGap={BAR_CATEGORY_GAP}
               syncId={chartSyncID}
             >
               {grid && cartesianGrid()}
@@ -263,7 +272,7 @@ const BarChartV2Component = <T extends BarChartData>({
                 axisLine={false}
                 textAnchor="middle"
                 tickFormatter={getXAxisTickFormatter()}
-                interval="preserveStartEnd"
+                interval={0}
                 tick={<XAxisTick />}
                 orientation="bottom"
                 // gives the padding on the 2 sides see the function for reference

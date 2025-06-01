@@ -1,14 +1,39 @@
+import { ChartConfig } from "../../Charts";
 import { Variant } from "../BarChartV2";
 
 export const BAR_WIDTH = 12;
-export const ELEMENT_SPACING = 17; // Spacing per bar in grouped, or per stack in stacked
+export const ELEMENT_SPACING_GROUPED = 16; // Spacing per bar in grouped charts
+export const ELEMENT_SPACING_STACKED = 26; // Spacing per stack in stacked charts
 
+/**
+ * Get the appropriate element spacing based on chart variant
+ * @param variant - The chart variant
+ * @returns The spacing value for the given variant
+ */
+const getElementSpacing = (variant: Variant): number => {
+  switch (variant) {
+    case "stacked":
+      return ELEMENT_SPACING_STACKED;
+    case "grouped":
+    default:
+      return ELEMENT_SPACING_GROUPED;
+  }
+};
+
+/**
+ * This function returns the width of the data in the chart, used for padding calculation, scroll amount calculation, and
+ * for the width of the chart container.
+ * @param data - The data to be displayed in the chart.
+ * @param categoryKey - The key of the category to be displayed in the chart.
+ * @param variant - The variant of the chart.
+ */
 const getWidthOfData = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
   variant: Variant,
 ) => {
   let numberOfElements: number;
+  const elementSpacing = getElementSpacing(variant);
 
   if (variant === "stacked") {
     numberOfElements = data.length; // Number of stacks = number of categories
@@ -20,7 +45,7 @@ const getWidthOfData = (
     numberOfElements = seriesCountsPerCategory.reduce((acc, curr) => acc + curr, 0);
   }
 
-  let width = numberOfElements * (BAR_WIDTH + ELEMENT_SPACING);
+  let width = numberOfElements * (BAR_WIDTH + elementSpacing);
   if (data.length === 1) {
     const minSingleDataWidth = 200; // Minimum width for single data points
     width = Math.max(width, minSingleDataWidth);
@@ -28,6 +53,13 @@ const getWidthOfData = (
   return width;
 };
 
+/**
+ * This function returns the padding for the chart, used for the padding of the chart container.
+ * @param data - The data to be displayed in the chart.
+ * @param categoryKey - The key of the category to be displayed in the chart.
+ * @param containerWidth - The width of the container of the chart.
+ * @param variant - The variant of the chart.
+ */
 const getPadding = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
@@ -51,6 +83,13 @@ const getPadding = (
   }
 };
 
+/**
+ * This function returns the radius for the chart, used for the radius of the LineInBarShape.tsx.
+ * @param variant - The variant of the chart.
+ * @param radius - The radius of the chart.
+ * @param isFirst - Whether the first item in the stack.
+ * @param isLast - Whether the last item in the stack.
+ */
 const getRadiusArray = (
   variant: Variant,
   radius: number,
@@ -79,6 +118,10 @@ const getRadiusArray = (
   return [radius, radius, radius, radius];
 };
 
+/**
+ * This function returns the formatter for the Y-axis tick values.
+ * @returns The formatter for the Y-axis tick values.
+ */
 const getYAxisTickFormatter = () => {
   return (value: any) => {
     // Format the Y-axis tick values with abbreviations
@@ -101,6 +144,7 @@ const getYAxisTickFormatter = () => {
   };
 };
 
+// return the max length of the x-axis tick values
 const getXAxisTickFormatter = () => {
   const maxLength = 3;
 
@@ -112,6 +156,13 @@ const getXAxisTickFormatter = () => {
   };
 };
 
+/**
+ * This function returns the scroll amount for the chart, used for the scroll amount of the chart.
+ * @param data - The data to be displayed in the chart.
+ * @param categoryKey - The key of the category to be displayed in the chart.
+ * @param variant - The variant of the chart.
+ */
+
 const getScrollAmount = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
@@ -121,24 +172,142 @@ const getScrollAmount = (
 
   // Get the number of data keys (excluding categoryKey)
   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
+  const elementSpacing = getElementSpacing(variant);
 
   if (variant === "stacked") {
     // For stacked: each category is one stack
-    // Example: month "January" = 1 stack = BAR_WIDTH + ELEMENT_SPACING
-    return BAR_WIDTH + ELEMENT_SPACING;
+    // Example: month "January" = 1 stack = BAR_WIDTH + ELEMENT_SPACING_STACKED (26)
+    return BAR_WIDTH + elementSpacing;
   } else {
     // For grouped: each category contains multiple bars
     // Example: month "January" with desktop+mobile+tablet = 3 bars
-    // Width = 3 * (BAR_WIDTH + ELEMENT_SPACING)
+    // Width = 3 * (BAR_WIDTH + ELEMENT_SPACING_GROUPED (17))
     const seriesPerCategory = dataKeys.length;
-    return seriesPerCategory * (BAR_WIDTH + ELEMENT_SPACING);
+    return seriesPerCategory * (BAR_WIDTH + elementSpacing);
   }
 };
 
+/**
+ * This function returns the data keys for the chart, used for the data keys of the chart.
+ * @param data - The data to be displayed in the chart.
+ * @param categoryKey - The key of the category to be displayed in the chart.
+ * @returns The data keys for the chart.
+ */
+const getDataKeys = (
+  data: Array<Record<string, string | number>>,
+  categoryKey: string,
+): string[] => {
+  return Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
+};
+
+/**
+ * This function returns the snap positions for the chart, used for the snap positions of the chart.
+ * @param data - The data to be displayed in the chart.
+ * @param categoryKey - The key of the category to be displayed in the chart.
+ * @param variant - The variant of the chart.
+ * @returns The snap positions for the chart.
+ */
+const getSnapPositions = (
+  data: Array<Record<string, string | number>>,
+  categoryKey: string,
+  variant: Variant,
+): number[] => {
+  if (data.length === 0) return [0];
+
+  const positions = [0]; // Start position
+  const scrollAmountValue = getScrollAmount(data, categoryKey, variant);
+
+  // Calculate all valid snap positions based on groups
+  for (let i = 1; i < data.length; i++) {
+    positions.push(i * scrollAmountValue);
+  }
+
+  return positions;
+};
+
+// Find the nearest snap position based on current scroll and direction
+const findNearestSnapPosition = (
+  snapPositions: number[],
+  currentScroll: number,
+  direction: "left" | "right",
+): number => {
+  // Find current position index
+  let currentIndex = 0;
+  for (let i = 0; i < snapPositions.length; i++) {
+    const snapPosition = snapPositions[i];
+    if (snapPosition !== undefined && currentScroll >= snapPosition) {
+      currentIndex = i;
+    } else {
+      break;
+    }
+  }
+
+  if (direction === "left") {
+    // Go to previous snap position
+    return Math.max(0, currentIndex - 1);
+  } else {
+    // Go to next snap position
+    return Math.min(snapPositions.length - 1, currentIndex + 1);
+  }
+};
+
+// Create chart configuration object
+const getChartConfig = (
+  dataKeys: string[],
+  icons: Partial<Record<string, React.ComponentType>>,
+  colors: string[],
+): ChartConfig => {
+  return dataKeys.reduce(
+    (config, key, index) => ({
+      ...config,
+      [key]: {
+        label: key,
+        icon: icons[key],
+        color: colors[index],
+        secondaryColor: colors[dataKeys.length - index - 1],
+      },
+    }),
+    {},
+  );
+};
+
+// Create legend items array
+export interface LegendItem {
+  key: string;
+  label: string;
+  color: string;
+  icon?: React.ComponentType;
+}
+
+const getLegendItems = (
+  dataKeys: string[],
+  colors: string[],
+  icons: Partial<Record<string, React.ComponentType>>,
+): LegendItem[] => {
+  return dataKeys.map((key, index) => ({
+    key,
+    label: key,
+    color: colors[index] || "#000000", // Fallback color if undefined
+    icon: icons[key] as React.ComponentType | undefined,
+  }));
+};
+
+// Calculate chart height based on container width
+const getChartHeight = (containerWidth: number): number => {
+  return containerWidth ? containerWidth * (9 / 16) : 400;
+};
+
 export {
+  findNearestSnapPosition,
+  getChartConfig,
+  getChartHeight,
+  getDataKeys,
+  getElementSpacing,
+  getLegendItems,
   getPadding,
   getRadiusArray,
   getScrollAmount,
+  getSnapPositions,
   getWidthOfData,
   getXAxisTickFormatter,
   getYAxisTickFormatter,

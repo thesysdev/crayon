@@ -1,12 +1,6 @@
 import clsx from "clsx";
 import React from "react";
-
-interface LegendItem {
-  key: string;
-  label: string;
-  color: string;
-  icon?: React.ComponentType;
-}
+import { type LegendItem } from "../../utils/BarChartUtils";
 
 interface DefaultLegendProps {
   items: LegendItem[];
@@ -58,4 +52,4 @@ const DefaultLegend: React.FC<DefaultLegendProps> = ({
 };
 
 export { DefaultLegend };
-export type { DefaultLegendProps, LegendItem };
+export type { DefaultLegendProps };
