@@ -11,6 +11,10 @@ interface BarWithInternalLineProps {
   radius?: number | number[];
   internalLineColor?: string;
   internalLineWidth?: number;
+  isHovered?: boolean;
+  hoveredCategory?: string | number | null;
+  categoryKey?: string;
+  payload?: any;
   // Recharts also passes other props like payload, value, etc.
   // we can add them here if our shape component needs them.
   // console.log("props", props);
@@ -29,6 +33,10 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = (props) => {
     strokeWidth,
     internalLineColor: iLineColor, // Use prop or fallback
     internalLineWidth: iLineWidth,
+    isHovered,
+    hoveredCategory,
+    categoryKey,
+    payload,
   } = props;
 
   // Ensure rTL and rTR are always numbers, defaulting to 0.
@@ -42,6 +50,13 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = (props) => {
   } else {
     rTL = 0;
     rTR = 0;
+  }
+
+  // Calculate opacity based on hover state
+  let opacity = 1;
+  if (isHovered && hoveredCategory !== null && payload && categoryKey) {
+    const currentCategoryValue = payload[categoryKey];
+    opacity = currentCategoryValue === hoveredCategory ? 1 : 0.7;
   }
 
   // Path data for a rectangle with potentially rounded top corners
@@ -60,7 +75,7 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = (props) => {
   return (
     <g>
       {/* The main bar shape (using <path> for rounded corners) */}
-      <path d={path} fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
+      <path d={path} fill={fill} stroke={stroke} strokeWidth={strokeWidth} opacity={opacity} />
 
       {/* The internal vertical line */}
       {width > 0 &&
@@ -73,6 +88,7 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = (props) => {
             stroke={iLineColor}
             strokeWidth={iLineWidth}
             strokeLinecap="round"
+            opacity={opacity}
           />
         )}
     </g>

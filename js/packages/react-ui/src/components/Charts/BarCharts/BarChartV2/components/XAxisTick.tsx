@@ -37,23 +37,12 @@ const XAxisTick: React.FC<XAxisTickProps> = (props) => {
 
   const displayValue = tickFormatter ? tickFormatter(payload?.value) : String(payload?.value || "");
 
-  // Calculate text offset based on orientation and vertical anchor
-  const getTextOffset = () => {
-    const isBottom = orientation === "bottom";
-    const offsetMap = {
-      start: isBottom ? 6 : -4,
-      middle: isBottom ? 6 : -8,
-      end: isBottom ? -8 : -16,
-    };
-    return offsetMap[verticalAnchor] || 0;
-  };
-
   return (
     <g transform={`translate(${x},${y})`} className={className}>
       <text
         x={0}
         y={0}
-        dy={getTextOffset()}
+        dy={10}
         textAnchor={textAnchor}
         fill={fill}
         className="crayon-chart-x-axis-tick"

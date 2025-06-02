@@ -5,8 +5,8 @@ export const cartesianGrid = () => (
     vertical={false}
     fillOpacity={1}
     strokeOpacity={1}
-    strokeWidth={2}
-    strokeDasharray="6"
+    strokeWidth={1}
+    strokeDasharray="0"
     strokeLinecap="round"
     strokeLinejoin="round"
     stroke="currentColor"

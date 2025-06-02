@@ -67,7 +67,7 @@ const BarChartV2Component = <T extends BarChartData>({
   variant = "grouped",
   grid = true,
   icons = {},
-  radius = 2,
+  radius = 4,
   isAnimationActive = true,
   showYAxis = false,
   xAxisLabel,

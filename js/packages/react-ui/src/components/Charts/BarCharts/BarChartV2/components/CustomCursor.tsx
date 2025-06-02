@@ -125,56 +125,32 @@ export const CustomCursor: React.FC<CustomCursorProps> = ({
   );
 };
 
-// Alternative simpler cursor component with rounded top, square bottom
+// Alternative simpler cursor component with square corners
 export const SimpleCursor: React.FC<CustomCursorProps> = (props) => {
   const { x = 0, y = 0, width = 0, height = 0 } = props;
 
-  // Define the radius for the top corners
-  const topRadius = 8;
-
-  // Create a path for rounded top, square bottom
-  // M = Move to, L = Line to, Q = Quadratic curve, Z = Close path
-
+  // Create a simple rectangular path
   const pathData = `
-    M ${x + topRadius} ${y} 
-    L ${x + width - topRadius} ${y}
-    Q ${x + width} ${y} ${x + width} ${y + topRadius}
+    M ${x} ${y} 
+    L ${x + width} ${y}
     L ${x + width} ${y + height}
     L ${x} ${y + height}
-    L ${x} ${y + topRadius}
-    Q ${x} ${y} ${x + topRadius} ${y}
     Z
   `;
 
   /* SVG Path Command Documentation:
    *
-   * M ${x + topRadius} ${y}
-   * - M = "Move to" - Sets the starting point without drawing
-   * - Moves to a point on the top edge, offset by the radius from the left corner
+   * M ${x} ${y}
+   * - M = "Move to" - Sets the starting point at top-left corner
    *
-   * L ${x + width - topRadius} ${y}
-   * - L = "Line to" - Draws a straight line from current position
-   * - Draws the top horizontal line, stopping before the top-right corner radius
-   *
-   * Q ${x + width} ${y} ${x + width} ${y + topRadius}
-   * - Q = "Quadratic curve to" - Draws a curved line using control point
-   * - Control point: (x + width, y) - the actual top-right corner
-   * - End point: (x + width, y + topRadius) - down the right edge by radius amount
-   * - Creates the rounded top-right corner
+   * L ${x + width} ${y}
+   * - L = "Line to" - Draws the top horizontal line to top-right corner
    *
    * L ${x + width} ${y + height}
    * - L = "Line to" - Draws straight line down the right edge to bottom-right corner
    *
    * L ${x} ${y + height}
-   * - L = "Line to" - Draws straight line across the bottom edge (square corner)
-   *
-   * L ${x} ${y + topRadius}
-   * - L = "Line to" - Draws straight line up the left edge to where the curve starts
-   *
-   * Q ${x} ${y} ${x + topRadius} ${y}
-   * - Q = "Quadratic curve to" - Creates the rounded top-left corner
-   * - Control point: (x, y) - the actual top-left corner
-   * - End point: (x + topRadius, y) - back to our starting position
+   * - L = "Line to" - Draws straight line across the bottom edge to bottom-left corner
    *
    * Z = "Close path" - Draws a line back to the starting point and closes the shape
    */

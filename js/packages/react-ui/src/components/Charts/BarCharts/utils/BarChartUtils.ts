@@ -379,7 +379,6 @@ const getChartHeight = (containerWidth: number): number => {
   return containerWidth ? containerWidth * (9 / 16) : 400;
 };
 
-// Export only the functions and types that are used externally
 export {
   findNearestSnapPosition,
   getChartConfig,

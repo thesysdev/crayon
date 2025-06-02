@@ -247,7 +247,7 @@ export const BarChartV2Story: Story = {
     categoryKey: "month",
     theme: "ocean",
     variant: "grouped",
-    radius: 2,
+    radius: 4,
     grid: true,
     isAnimationActive: true,
     showYAxis: true,
