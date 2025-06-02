@@ -125,5 +125,3 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
     );
   },
 );
-
-export default Slider;
