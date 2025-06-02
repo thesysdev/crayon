@@ -1,6 +1,6 @@
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import clsx from "clsx";
-import { forwardRef, useMemo, useState } from "react";
+import { forwardRef, ReactNode, useMemo, useState } from "react";
 
 export interface SliderProps extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
   variant: "continuous" | "discrete" | "range";
@@ -11,6 +11,8 @@ export interface SliderProps extends React.ComponentPropsWithoutRef<typeof Slide
   defaultValue?: number[];
   className?: string;
   style?: React.CSSProperties;
+  leftContent?: ReactNode;
+  rightContent?: ReactNode;
 }
 
 export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>, SliderProps>(
@@ -26,6 +28,8 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
       defaultValue,
       className,
       style,
+      leftContent,
+      rightContent,
       ...props
     },
     ref,
@@ -88,31 +92,35 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
     };
 
     return (
-      <div className="slider-container">
-        <SliderPrimitive.Root
-          ref={ref}
-          className={clsx("slider-root", { "slider--disabled": disabled }, className)}
-          {...props}
-          min={min}
-          max={max}
-          step={step}
-          value={value}
-          onValueChange={(value) => {
-            setInternalValue(value);
-            onValueChange?.(value);
-          }}
-          minStepsBetweenThumbs={1}
-          disabled={disabled}
-          key={variant}
-          defaultValue={defaultValue}
-          style={style}
-        >
-          <SliderPrimitive.Track className="slider-track">
-            <SliderPrimitive.Range className="slider-range" />
-            {variant === "discrete" && renderDots()}
-          </SliderPrimitive.Track>
-          {thumbs}
-        </SliderPrimitive.Root>
+      <div className="slider-wrapper">
+        {leftContent && <div className="slider-left-content">{leftContent}</div>}
+        <div className="slider-container">
+          <SliderPrimitive.Root
+            ref={ref}
+            className={clsx("slider-root", { "slider--disabled": disabled }, className)}
+            {...props}
+            min={min}
+            max={max}
+            step={step}
+            value={value}
+            onValueChange={(value) => {
+              setInternalValue(value);
+              onValueChange?.(value);
+            }}
+            minStepsBetweenThumbs={1}
+            disabled={disabled}
+            key={variant}
+            defaultValue={defaultValue}
+            style={style}
+          >
+            <SliderPrimitive.Track className="slider-track">
+              <SliderPrimitive.Range className="slider-range" />
+              {variant === "discrete" && renderDots()}
+            </SliderPrimitive.Track>
+            {thumbs}
+          </SliderPrimitive.Root>
+        </div>
+        {rightContent && <div className="slider-right-content">{rightContent}</div>}
       </div>
     );
   },
