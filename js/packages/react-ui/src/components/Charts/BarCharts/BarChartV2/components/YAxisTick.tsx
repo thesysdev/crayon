@@ -23,7 +23,7 @@ interface YAxisTickProps {
 }
 
 const YAxisTick: React.FC<YAxisTickProps> = (props) => {
-  const { x, y, payload, textAnchor, verticalAnchor, fill, tickFormatter, className } = props;
+  const { x, y, payload, textAnchor, verticalAnchor, tickFormatter, className } = props;
 
   // Use the provided tickFormatter or fallback to displaying raw value
   const displayValue = tickFormatter ? tickFormatter(payload?.value) : String(payload?.value || "");
@@ -35,7 +35,6 @@ const YAxisTick: React.FC<YAxisTickProps> = (props) => {
         y={0}
         dy={verticalAnchor === "middle" ? 4 : 0} // Adjust based on vertical anchor
         textAnchor={textAnchor || "end"}
-        fill={fill || "#666"}
         className="crayon-chart-y-axis-tick"
       >
         {displayValue}

@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import React, { FunctionComponent, useMemo } from "react";
 
 interface BarWithInternalLineProps {
   x?: number;
@@ -15,13 +15,22 @@ interface BarWithInternalLineProps {
   hoveredCategory?: string | number | null;
   categoryKey?: string;
   payload?: any;
+  // New props for stacked bar gaps
+  variant?: "grouped" | "stacked";
+  stackGap?: number;
+  isFirstInStack?: boolean;
+
   // Recharts also passes other props like payload, value, etc.
   // we can add them here if our shape component needs them.
   // console.log("props", props);
   [key: string]: any; // Allow other props from Recharts
 }
 
-const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = (props) => {
+const DEFAULT_STACK_GAP = 1;
+const MIN_LINE_HEIGHT = 5;
+const LINE_PADDING = 6;
+
+const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = React.memo((props) => {
   const {
     x = 0, // Default to 0 to avoid NaN issues if undefined
     y = 0,
@@ -37,62 +46,132 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = (props) => {
     hoveredCategory,
     categoryKey,
     payload,
+    variant = "grouped",
+    stackGap = DEFAULT_STACK_GAP, // Default 1px gap
+    isFirstInStack = false,
   } = props;
 
-  // Ensure rTL and rTR are always numbers, defaulting to 0.
-  let rTL: number, rTR: number;
-  if (Array.isArray(r)) {
-    rTL = r[0] || 0;
-    rTR = r[1] || 0;
-  } else if (typeof r === "number") {
-    rTL = r;
-    rTR = r;
-  } else {
-    rTL = 0;
-    rTR = 0;
-  }
+  // Memoized radius calculations - Ensure rTL and rTR are always numbers, defaulting to 0.
+  // This calculation is memoized to avoid recalculating on every render when radius prop hasn't changed
+  const { rTL, rTR } = useMemo(() => {
+    if (Array.isArray(r)) {
+      return { rTL: r[0] || 0, rTR: r[1] || 0 };
+    } else if (typeof r === "number") {
+      return { rTL: r, rTR: r };
+    }
+    return { rTL: 0, rTR: 0 };
+  }, [r]);
 
-  // Calculate opacity based on hover state
-  let opacity = 1;
-  if (isHovered && hoveredCategory !== null && payload && categoryKey) {
+  // Memoized opacity calculation for hover effects
+  // Calculate the opacity value for the bar based on hover state
+  // When a category is hovered:
+  // - Bars in the hovered category maintain full opacity (1)
+  // - All other bars are dimmed to 60% opacity (0.6)
+  // This creates a visual hierarchy highlighting the hovered category
+  //
+  // @default 1 - Full opacity when no hover state is active
+  // @requires isHovered - Boolean indicating if any category is being hovered
+  // @requires hoveredCategory - The category value currently being hovered (string|number|null)
+  // @requires payload - The data payload for this bar containing category information
+  // @requires categoryKey - The key used to access the category value in the payload
+  const opacity = useMemo(() => {
+    if (!isHovered || hoveredCategory === null || !payload || !categoryKey) {
+      return 1;
+    }
     const currentCategoryValue = payload[categoryKey];
-    opacity = currentCategoryValue === hoveredCategory ? 1 : 0.7;
-  }
+    return currentCategoryValue === hoveredCategory ? 1 : 0.6;
+  }, [isHovered, hoveredCategory, payload, categoryKey]);
 
-  // Path data for a rectangle with potentially rounded top corners
+  // Memoized adjusted dimensions for stacked bar gaps
+  // Adjust dimensions for stacked bar gaps
+  // This creates visual separation between bars in a stack by reducing height only
+  // We don't adjust Y position to avoid double gaps and positioning issues
+  // Only reduce height at the top of each bar except the last one (bottom-most in stack)
+  // This creates a gap between this bar and the bar above it
+  const { adjustedY, adjustedHeight } = useMemo(() => {
+    if (variant === "stacked" && stackGap > 0 && !isFirstInStack) {
+      return {
+        adjustedY: y,
+        adjustedHeight: height - stackGap,
+      };
+    }
+    return {
+      adjustedY: y,
+      adjustedHeight: height,
+    };
+  }, [variant, stackGap, isFirstInStack, y, height]);
+
+  // Memoized SVG path calculation for optimized rendering
+  // Path data for a rectangle with potentially rounded top corners and stack gaps
   // M = move to, L = line to, A = arc, Z = close path
   // Handle cases where rTL or rTR might be 0 (sharp corners)
-  const path = `
-      M ${x},${y + rTL}
-      ${rTL > 0 ? `A ${rTL},${rTL} 0 0 1 ${x + rTL},${y}` : `L ${x},${y}`}
-      L ${x + width - rTR},${y}
-      ${rTR > 0 ? `A ${rTR},${rTR} 0 0 1 ${x + width},${y + rTR}` : `L ${x + width},${y}`}
-      L ${x + width},${y + height}
-      L ${x},${y + height}
+  // This SVG path string creates a rectangle with optional rounded top corners
+  // The path is constructed using SVG path commands:
+  // M = Move to starting point
+  // L = Draw line to point
+  // A = Draw arc (rx,ry rotation large-arc-flag sweep-flag x,y)
+  // Z = Close path back to start
+  //
+  // The path construction:
+  // 1. Starts at bottom left corner (x, adjustedY+rTL)
+  // 2. If rTL > 0, draws arc for top left corner, else draws straight line
+  // 3. Draws line across top to right side
+  // 4. If rTR > 0, draws arc for top right corner, else draws straight line
+  // 5. Draws straight line down right side
+  // 6. Draws straight line across bottom
+  // 7. Closes path back to start
+  const path = useMemo(() => {
+    return `
+      M ${x},${adjustedY + rTL}
+      ${rTL > 0 ? `A ${rTL},${rTL} 0 0 1 ${x + rTL},${adjustedY}` : `L ${x},${adjustedY}`}
+      L ${x + width - rTR},${adjustedY}
+      ${rTR > 0 ? `A ${rTR},${rTR} 0 0 1 ${x + width},${adjustedY + rTR}` : `L ${x + width},${adjustedY}`}
+      L ${x + width},${adjustedY + adjustedHeight}
+      L ${x},${adjustedY + adjustedHeight}
       Z
     `;
+  }, [x, adjustedY, adjustedHeight, width, rTL, rTR]);
+
+  // Memoized line coordinates calculation for the internal vertical line
+  // Only calculate coordinates if bar has sufficient width and height
+  // The internal line is centered horizontally and padded vertically for better visual appearance
+  const lineCoords = useMemo(() => {
+    if (width <= 0 || adjustedHeight <= MIN_LINE_HEIGHT) {
+      return null;
+    }
+
+    const centerX = x + width / 2;
+    return {
+      x1: centerX,
+      y1: adjustedY + LINE_PADDING, // Starts below the top edge of the adjusted bar
+      x2: centerX,
+      y2: adjustedY + adjustedHeight - LINE_PADDING, // Ends above the bottom edge of the adjusted bar
+    };
+  }, [x, width, adjustedY, adjustedHeight]);
 
   return (
     <g>
-      {/* The main bar shape (using <path> for rounded corners) */}
+      {/* The main bar shape (using <path> for rounded corners and stack gaps) */}
       <path d={path} fill={fill} stroke={stroke} strokeWidth={strokeWidth} opacity={opacity} />
 
-      {/* The internal vertical line */}
-      {width > 0 &&
-        height > 5 && ( // Only render line if bar has sufficient height
-          <line
-            x1={x + width / 2}
-            y1={y + 4} // Starts at the top of the bar
-            x2={x + width / 2}
-            y2={y + height - 4} // Ends at the bottom of the bar
-            stroke={iLineColor}
-            strokeWidth={iLineWidth}
-            strokeLinecap="round"
-            opacity={opacity}
-          />
-        )}
+      {/* The internal vertical line - adjusted for stack gaps */}
+      {lineCoords && (
+        <line
+          x1={lineCoords.x1}
+          y1={lineCoords.y1}
+          x2={lineCoords.x2}
+          y2={lineCoords.y2}
+          stroke={iLineColor}
+          strokeWidth={iLineWidth}
+          strokeLinecap="round"
+          opacity={opacity}
+        />
+      )}
     </g>
   );
-};
+});
+
+// Add display name for better debugging
+LineInBarShape.displayName = "LineInBarShape";
 
 export { LineInBarShape };

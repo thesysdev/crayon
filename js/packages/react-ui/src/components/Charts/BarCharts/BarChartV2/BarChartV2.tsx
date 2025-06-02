@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ChevronFirst, ChevronLast } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { IconButton } from "../../../IconButton";
@@ -96,6 +96,7 @@ const BarChartV2Component = <T extends BarChartData>({
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [hoveredCategory, setHoveredCategory] = useState<string | number | null>(null);
 
   // need this to calculate the padding for the chart container, because the y-axis is rendered in a separate chart
   const effectiveContainerWidth = useMemo(() => {
@@ -207,6 +208,17 @@ const BarChartV2Component = <T extends BarChartData>({
     return getOptimalXAxisTickFormatter(data, categoryKey as string, variant);
   }, [data, categoryKey, variant]);
 
+  // Handle mouse events for group hovering
+  const handleChartMouseMove = useCallback((state: any) => {
+    if (state && state.activeLabel !== undefined) {
+      setHoveredCategory(state.activeLabel);
+    }
+  }, []);
+
+  const handleChartMouseLeave = useCallback(() => {
+    setHoveredCategory(null);
+  }, []);
+
   return (
     <div className={clsx("crayon-bar-chart-container", className)}>
       <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
@@ -266,6 +278,8 @@ const BarChartV2Component = <T extends BarChartData>({
                 bottom: 0,
               }}
               onClick={onBarsClick}
+              onMouseMove={handleChartMouseMove}
+              onMouseLeave={handleChartMouseLeave}
               barGap={BAR_GAP}
               barCategoryGap={BAR_CATEGORY_GAP}
               syncId={chartSyncID}
@@ -311,6 +325,11 @@ const BarChartV2Component = <T extends BarChartData>({
                       <LineInBarShape
                         internalLineColor={barInternalLineColor}
                         internalLineWidth={barInternalLineWidth}
+                        isHovered={hoveredCategory !== null}
+                        hoveredCategory={hoveredCategory}
+                        categoryKey={categoryKey as string}
+                        variant={variant}
+                        isFirstInStack={variant === "stacked" ? isFirstInStack : false}
                       />
                     }
                   />
@@ -325,7 +344,7 @@ const BarChartV2Component = <T extends BarChartData>({
         <div className="crayon-bar-chart-scroll-container">
           <IconButton
             className="crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--left"
-            icon={<ChevronFirst />}
+            icon={<ChevronLeft />}
             variant="secondary"
             onClick={scrollLeft}
             size="extra-small"
@@ -333,7 +352,7 @@ const BarChartV2Component = <T extends BarChartData>({
           />
           <IconButton
             className="crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--right"
-            icon={<ChevronLast />}
+            icon={<ChevronRight />}
             variant="secondary"
             size="extra-small"
             onClick={scrollRight}

@@ -75,8 +75,8 @@ const getPadding = (
   if (paddingValue < 0) {
     // If chart content is wider than container, no padding
     return {
-      left: 2,
-      right: 2,
+      left: 1,
+      right: 1,
     };
   } else {
     return {
