@@ -18,7 +18,11 @@ const SimpleCursorComponent: React.FC<CustomCursorProps> = ({
 }) => {
   // Memoize path calculation to avoid recreating on every render
   const pathData = useMemo(() => {
-    return `M ${x} ${y} L ${x + width} ${y} L ${x + width} ${y + height} L ${x} ${y + height} Z`;
+    return `M ${x} ${y} 
+            L ${x + width} ${y} 
+            L ${x + width} ${y + height} 
+            L ${x} ${y + height} 
+            Z`;
   }, [x, y, width, height]);
 
   /* SVG Path Command Documentation:

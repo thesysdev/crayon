@@ -28,11 +28,9 @@ const XAxisTick: React.FC<XAxisTickProps> = (props) => {
     y,
     payload,
     textAnchor = "middle",
-    verticalAnchor = "start",
     fill = "#666",
     tickFormatter,
     className,
-    orientation = "bottom",
   } = props;
 
   const displayValue = tickFormatter ? tickFormatter(payload?.value) : String(payload?.value || "");
