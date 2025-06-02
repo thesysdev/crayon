@@ -12,6 +12,16 @@ const pieChartData = [
   { month: "July", value: 5890 },
 ];
 
+const gradientColors = [
+  { start: "#FF6B6B", end: "#FF8E8E" },
+  { start: "#4ECDC4", end: "#6ED7D0" },
+  { start: "#45B7D1", end: "#6BC5DB" },
+  { start: "#96CEB4", end: "#B4DCC9" },
+  { start: "#FFEEAD", end: "#FFF4C4" },
+  { start: "#D4A5A5", end: "#E5BDBD" },
+  { start: "#9B59B6", end: "#B07CC7" },
+];
+
 const meta: Meta<PieChartV2Props<typeof pieChartData>> = {
   title: "Components/Charts/PieCharts/PieChartV2",
   component: PieChartV2,
@@ -217,6 +227,60 @@ export const PercentageFormat: Story = {
     ...Default.args,
     format: "percentage",
     theme: "spectrum",
+  },
+  render: (args) => (
+    <Card style={{ width: "700px" }}>
+      <PieChartV2 {...args} />
+    </Card>
+  ),
+};
+
+export const GradientColors: Story = {
+  name: "Gradient Colors",
+  args: {
+    ...Default.args,
+    theme: "vivid",
+    variant: "donut",
+    cornerRadius: 5,
+    paddingAngle: 1,
+    format: "percentage",
+    useGradients: true,
+    gradientColors: [
+      { start: "#FF6B6B", end: "#FF8E8E" },
+      { start: "#4ECDC4", end: "#6ED7D0" },
+      { start: "#45B7D1", end: "#6BC5DB" },
+      { start: "#96CEB4", end: "#B4DCC9" },
+      { start: "#FFEEAD", end: "#FFF4C4" },
+      { start: "#D4A5A5", end: "#E5BDBD" },
+      { start: "#9B59B6", end: "#B07CC7" },
+    ],
+  },
+  render: (args) => (
+    <Card style={{ width: "700px" }}>
+      <PieChartV2 {...args} />
+    </Card>
+  ),
+};
+
+export const SingleColorGradients: Story = {
+  name: "Single Color Gradients",
+  args: {
+    ...Default.args,
+    theme: "vivid",
+    variant: "donut",
+    cornerRadius: 5,
+    paddingAngle: 1,
+    format: "percentage",
+    useGradients: true,
+    gradientColors: [
+      { start: "#FF6B6B" }, // Only start color provided
+      { end: "#4ECDC4" }, // Only end color provided
+      { start: "#45B7D1" }, // Only start color provided
+      { end: "#96CEB4" }, // Only end color provided
+      { start: "#FFEEAD" }, // Only start color provided
+      { end: "#D4A5A5" }, // Only end color provided
+      { start: "#9B59B6" }, // Only start color provided
+    ],
   },
   render: (args) => (
     <Card style={{ width: "700px" }}>

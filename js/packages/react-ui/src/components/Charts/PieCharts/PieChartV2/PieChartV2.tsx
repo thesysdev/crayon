@@ -12,6 +12,7 @@ import {
 } from "../../Charts";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 import {
+  createGradientDefinitions,
   renderActiveShape,
   renderCustomLabel,
   renderCustomLabelLine,
@@ -31,6 +32,11 @@ import {
 
 export type PieChartV2Data = PieChartData;
 
+interface GradientColor {
+  start?: string;
+  end?: string;
+}
+
 export interface PieChartV2Props<T extends PieChartV2Data> {
   data: T;
   categoryKey: keyof T[number];
@@ -44,6 +50,8 @@ export interface PieChartV2Props<T extends PieChartV2Data> {
   appearance?: "circular" | "semiCircular";
   cornerRadius?: number;
   paddingAngle?: number;
+  useGradients?: boolean;
+  gradientColors?: GradientColor[];
   onMouseEnter?: (data: any, index: number) => void;
   onMouseLeave?: () => void;
   onClick?: (data: any, index: number) => void;
@@ -62,6 +70,8 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   appearance = "circular",
   cornerRadius = 0,
   paddingAngle = 0,
+  useGradients = false,
+  gradientColors,
   onMouseEnter,
   onMouseLeave,
   onClick,
@@ -89,6 +99,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     return () => resizeObserver.disconnect();
   }, [variant, label]);
 
+  // Transform data and create configurations
   const transformedData = transformDataWithPercentages(data, dataKey);
   const chartConfig = createChartConfig(data, categoryKey, theme);
   const animationConfig = createAnimationConfig({ isAnimationActive });
@@ -99,6 +110,11 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   const palette = getPalette(theme);
   const colors = getDistributedColors(palette, data.length);
 
+  // Create gradient definitions if gradients are enabled
+  const gradientDefinitions = useGradients ? (
+    <defs>{createGradientDefinitions(transformedData, colors, gradientColors)}</defs>
+  ) : null;
+
   return (
     <ChartContainer
       ref={containerRef}
@@ -108,6 +124,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
       <RechartsPieChart>
         <ChartTooltip content={<ChartTooltipContent showPercentage={format === "percentage"} />} />
         {legend && <ChartLegend content={<ChartLegendContent nameKey={String(categoryKey)} />} />}
+        {gradientDefinitions}
         <Pie
           data={transformedData}
           dataKey={format === "percentage" ? "percentage" : String(dataKey)}
@@ -125,7 +142,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
                   )
               : false
           }
-          activeShape={renderActiveShape}
+          activeShape={(props: any) => renderActiveShape(props as any)}
           activeIndex={activeIndex ?? undefined}
           {...animationConfig}
           {...eventHandlers}
@@ -139,10 +156,9 @@ export const PieChartV2 = <T extends PieChartV2Data>({
             const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
             const config = chartConfig[categoryValue];
             const hoverStyles = getHoverStyles(index, activeIndex);
+            const fill = useGradients ? `url(#gradient-${index})` : config?.color || colors[index];
 
-            return (
-              <Cell key={`cell-${index}`} fill={config?.color || colors[index]} {...hoverStyles} />
-            );
+            return <Cell key={`cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
           })}
         </Pie>
       </RechartsPieChart>

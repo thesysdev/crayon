@@ -325,10 +325,3 @@ export const createSectorStyle = (cornerRadius: number = 0, paddingAngle: number
     paddingAngle,
   };
 };
-
-// Add export for render functions from components
-export {
-  renderActiveShape,
-  renderCustomLabel,
-  renderCustomLabelLine,
-} from "../components/PieChartRenderers";
