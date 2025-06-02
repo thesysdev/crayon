@@ -19,12 +19,12 @@ const meta: Meta<PieChartV2Props<typeof pieChartData>> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { PieChart } from '@crayon-ui/react-ui/Charts/PieChart';\n```",
+        component:
+          "```tsx\nimport { PieChartV2 } from '@crayon-ui/react-ui/Charts/PieChartV2';\n```",
       },
     },
   },
   tags: ["!dev", "autodocs"],
-
   argTypes: {
     data: {
       description:
@@ -121,14 +121,32 @@ const meta: Meta<PieChartV2Props<typeof pieChartData>> = {
         category: "Display",
       },
     },
+    cornerRadius: {
+      description: "The radius of the corners of each pie slice",
+      control: { type: "number", min: 0, max: 20 },
+      table: {
+        type: { summary: "number" },
+        defaultValue: { summary: "0" },
+        category: "Appearance",
+      },
+    },
+    paddingAngle: {
+      description: "The angle between each pie slice",
+      control: { type: "number", min: 0, max: 10 },
+      table: {
+        type: { summary: "number" },
+        defaultValue: { summary: "0" },
+        category: "Appearance",
+      },
+    },
   },
 } satisfies Meta<typeof PieChartV2>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const PieChartStory: Story = {
-  name: "Pie Chart",
+export const Default: Story = {
+  name: "Default Pie Chart",
   args: {
     data: pieChartData,
     categoryKey: "month",
@@ -136,48 +154,73 @@ export const PieChartStory: Story = {
     theme: "ocean",
     variant: "pie",
     format: "number",
-    legend: false,
-    label: false,
+    legend: true,
+    label: true,
     isAnimationActive: true,
+    appearance: "circular",
+    cornerRadius: 0,
+    paddingAngle: 0,
   },
   render: (args) => (
     <Card style={{ width: "700px" }}>
       <PieChartV2 {...args} />
     </Card>
   ),
-  parameters: {
-    docs: {
-      source: {
-        code: `
-        const pieChartData = [
-  { month: "January", value: 400 },
-  { month: "February", value: 300 },
-  { month: "March", value: 300 },
-  { month: "April", value: 400 },
-  { month: "May", value: 300 },
-  { month: "June", value: 300 },
-  { month: "July", value: 300 },
-];
+};
 
-<Card
-  style={{
-    width: '500px'
-  }}
->
-  <PieChart
-    categoryKey="month"
-    data={pieChartData}
-    dataKey="value"
-    format="percentage"
-    label
-    legend
-    theme="ocean"
-    variant="donut"
-    isAnimationActive
-  />
-</Card>
-        `,
-      },
-    },
+export const DonutChart: Story = {
+  name: "Donut Chart",
+  args: {
+    ...Default.args,
+    variant: "donut",
+    theme: "orchid",
   },
+  render: (args) => (
+    <Card style={{ width: "700px" }}>
+      <PieChartV2 {...args} />
+    </Card>
+  ),
+};
+
+export const SemiCircular: Story = {
+  name: "Semi-Circular Chart",
+  args: {
+    ...Default.args,
+    appearance: "semiCircular",
+    theme: "emerald",
+  },
+  render: (args) => (
+    <Card style={{ width: "700px" }}>
+      <PieChartV2 {...args} />
+    </Card>
+  ),
+};
+
+export const WithCornerRadius: Story = {
+  name: "Chart with Corner Radius",
+  args: {
+    ...Default.args,
+    cornerRadius: 10,
+    paddingAngle: 2,
+    theme: "sunset",
+  },
+  render: (args) => (
+    <Card style={{ width: "700px" }}>
+      <PieChartV2 {...args} />
+    </Card>
+  ),
+};
+
+export const PercentageFormat: Story = {
+  name: "Percentage Format",
+  args: {
+    ...Default.args,
+    format: "percentage",
+    theme: "spectrum",
+  },
+  render: (args) => (
+    <Card style={{ width: "700px" }}>
+      <PieChartV2 {...args} />
+    </Card>
+  ),
 };

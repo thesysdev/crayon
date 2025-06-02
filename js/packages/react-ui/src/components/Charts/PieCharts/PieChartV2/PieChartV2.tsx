@@ -12,9 +12,17 @@ import {
 } from "../../Charts";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 import {
+  renderActiveShape,
+  renderCustomLabel,
+  renderCustomLabelLine,
+} from "../components/PieChartRenderers";
+import {
   PieChartData,
   calculateChartDimensions,
+  createAnimationConfig,
   createChartConfig,
+  createEventHandlers,
+  createSectorStyle,
   getHoverStyles,
   layoutMap,
   transformDataWithPercentages,
@@ -34,6 +42,11 @@ export interface PieChartV2Props<T extends PieChartV2Data> {
   label?: boolean;
   isAnimationActive?: boolean;
   appearance?: "circular" | "semiCircular";
+  cornerRadius?: number;
+  paddingAngle?: number;
+  onMouseEnter?: (data: any, index: number) => void;
+  onMouseLeave?: () => void;
+  onClick?: (data: any, index: number) => void;
 }
 
 export const PieChartV2 = <T extends PieChartV2Data>({
@@ -47,6 +60,11 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   label = true,
   isAnimationActive = true,
   appearance = "circular",
+  cornerRadius = 0,
+  paddingAngle = 0,
+  onMouseEnter,
+  onMouseLeave,
+  onClick,
 }: PieChartV2Props<T>) => {
   const { layout } = useLayoutContext();
   const [calculatedOuterRadius, setCalculatedOuterRadius] = useState(120);
@@ -73,35 +91,13 @@ export const PieChartV2 = <T extends PieChartV2Data>({
 
   const transformedData = transformDataWithPercentages(data, dataKey);
   const chartConfig = createChartConfig(data, categoryKey, theme);
+  const animationConfig = createAnimationConfig({ isAnimationActive });
+  const eventHandlers = createEventHandlers(onMouseEnter, onMouseLeave, onClick);
+  const sectorStyle = createSectorStyle(cornerRadius, paddingAngle);
 
   // Get color palette and distribute colors
   const palette = getPalette(theme);
   const colors = getDistributedColors(palette, data.length);
-
-  //Custom label renderer
-  // const renderCustomLabel = ({ payload, cx, cy, x, y, textAnchor, dominantBaseline }: any) => {
-  //   if (payload.percentage <= 10) return null;
-  //   const displayValue = format === "percentage" ? payload.percentage : payload[dataKey];
-  //   const formattedValue =
-  //     String(displayValue).length > 7 ? `${String(displayValue).slice(0, 7)}...` : displayValue;
-
-  //   return (
-  //     <g>
-  //       <text
-  //         cx={cx}
-  //         cy={cy}
-  //         x={x}
-  //         y={y}
-  //         textAnchor={textAnchor}
-  //         dominantBaseline={dominantBaseline}
-  //         className="crayon-pie-chart-label"
-  //       >
-  //         {formattedValue}
-  //         {format === "percentage" ? "%" : ""}
-  //       </text>
-  //     </g>
-  //   );
-  // };
 
   return (
     <ChartContainer
@@ -116,11 +112,24 @@ export const PieChartV2 = <T extends PieChartV2Data>({
           data={transformedData}
           dataKey={format === "percentage" ? "percentage" : String(dataKey)}
           nameKey={String(categoryKey)}
-          labelLine={false}
+          labelLine={label && activeIndex === null ? (renderCustomLabelLine as any) : false}
           outerRadius={calculatedOuterRadius}
           innerRadius={calculatedInnerRadius}
-          label={false}
-          isAnimationActive={isAnimationActive}
+          label={
+            activeIndex === null
+              ? (props) =>
+                  renderCustomLabel(
+                    { ...props, labelDistance: 1 },
+                    format === "percentage" ? "percentage" : String(dataKey),
+                    format,
+                  )
+              : false
+          }
+          activeShape={renderActiveShape}
+          activeIndex={activeIndex ?? undefined}
+          {...animationConfig}
+          {...eventHandlers}
+          {...sectorStyle}
           startAngle={appearance === "semiCircular" ? 0 : 0}
           endAngle={appearance === "semiCircular" ? 180 : 360}
           onMouseEnter={handleMouseEnter}
