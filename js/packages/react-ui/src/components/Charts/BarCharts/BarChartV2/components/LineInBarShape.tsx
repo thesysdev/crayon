@@ -27,7 +27,7 @@ interface BarWithInternalLineProps {
 }
 
 const DEFAULT_STACK_GAP = 1;
-const MIN_LINE_HEIGHT = 5;
+const MIN_LINE_HEIGHT = 8;
 const LINE_PADDING = 6;
 
 const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = React.memo((props) => {

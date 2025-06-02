@@ -234,6 +234,26 @@ const meta: Meta<BarChartPropsV2<typeof barChartData>> = {
         category: "Display",
       },
     },
+    height: {
+      description:
+        "Fixed height for the chart in pixels. When provided, overrides the default responsive height calculation.",
+      control: "number",
+      table: {
+        type: { summary: "number" },
+        defaultValue: { summary: "undefined" },
+        category: "Layout",
+      },
+    },
+    width: {
+      description:
+        "Fixed width for the chart container in pixels. When provided, disables responsive width behavior.",
+      control: "number",
+      table: {
+        type: { summary: "number" },
+        defaultValue: { summary: "undefined" },
+        category: "Layout",
+      },
+    },
   },
 } satisfies Meta<typeof BarChartV2>;
 
@@ -251,9 +271,11 @@ export const BarChartV2Story: Story = {
     grid: true,
     isAnimationActive: true,
     showYAxis: true,
-    xAxisLabel: "Time Period",
-    yAxisLabel: "Number of Users",
+    // xAxisLabel: "Time Period",
+    // yAxisLabel: "Number of Users",
     legend: true,
+    // width: 600,
+    // height: 300,
   },
   render: (args: any) => {
     const [selectedDataType, setSelectedDataType] =

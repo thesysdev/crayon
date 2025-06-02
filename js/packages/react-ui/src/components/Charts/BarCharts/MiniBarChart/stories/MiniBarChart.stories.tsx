@@ -28,7 +28,7 @@ const meta: Meta<MiniBarChartProps<typeof barChartData>> = {
       },
     },
   },
-  tags: ["!dev", "autodocs"],
+  tags: ["dev", "autodocs"],
   argTypes: {
     data: {
       description:
@@ -87,15 +87,6 @@ const meta: Meta<MiniBarChartProps<typeof barChartData>> = {
         category: "Display",
       },
     },
-    label: {
-      description: "Label text that appears next to the total value sum calculation",
-      control: "text",
-      table: {
-        type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
-        category: "Display",
-      },
-    },
   },
 } satisfies Meta<typeof MiniBarChart>;
 
@@ -105,7 +96,6 @@ type Story = StoryObj<typeof meta>;
 export const BarChartV3Story: Story = {
   name: "Bar Chart V3",
   args: {
-    label: "Total sales",
     data: barChartData,
     categoryKey: "month",
     theme: "ocean",

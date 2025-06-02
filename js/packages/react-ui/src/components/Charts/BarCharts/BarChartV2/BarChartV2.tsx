@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { IconButton } from "../../../IconButton";
+import { useTheme } from "../../../ThemeProvider";
 import {
   ChartConfig,
   ChartContainer,
@@ -50,15 +51,17 @@ export interface BarChartPropsV2<T extends BarChartData> {
   xAxisLabel?: React.ReactNode;
   yAxisLabel?: React.ReactNode;
   onBarsClick?: (data: any) => void;
-  barInternalLineColor?: string;
-  barInternalLineWidth?: number;
   legend?: boolean;
   className?: string;
+  height?: number;
+  width?: number;
 }
 
 const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
 const BAR_GAP = 10; // Gap between bars
 const BAR_CATEGORY_GAP = "20%"; // Gap between categories
+const BAR_INTERNAL_LINE_WIDTH = 1;
+const BAR_RADIUS = 4;
 
 const BarChartV2Component = <T extends BarChartData>({
   data,
@@ -67,16 +70,16 @@ const BarChartV2Component = <T extends BarChartData>({
   variant = "grouped",
   grid = true,
   icons = {},
-  radius = 4,
+  radius = BAR_RADIUS,
   isAnimationActive = true,
   showYAxis = false,
   xAxisLabel,
   yAxisLabel,
   onBarsClick,
-  barInternalLineColor = "rgba(255, 255, 255, 0.5)", // Default internal line color
-  barInternalLineWidth = 1, // Default internal line width
   legend = false,
   className,
+  height,
+  width,
 }: BarChartPropsV2<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -98,11 +101,16 @@ const BarChartV2Component = <T extends BarChartData>({
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | number | null>(null);
 
+  // Use provided width or observed width
+  const effectiveWidth = useMemo(() => {
+    return width ?? containerWidth;
+  }, [width, containerWidth]);
+
   // need this to calculate the padding for the chart container, because the y-axis is rendered in a separate chart
   const effectiveContainerWidth = useMemo(() => {
     const yAxisWidth = showYAxis ? Y_AXIS_WIDTH : 0;
-    return Math.max(0, containerWidth - yAxisWidth);
-  }, [containerWidth, showYAxis]);
+    return Math.max(0, effectiveWidth - yAxisWidth);
+  }, [effectiveWidth, showYAxis]);
 
   const padding = useMemo(() => {
     return getPadding(data, categoryKey as string, effectiveContainerWidth, variant);
@@ -117,9 +125,13 @@ const BarChartV2Component = <T extends BarChartData>({
     return getSnapPositions(data, categoryKey as string, variant);
   }, [data, categoryKey, variant]);
 
+  // Use provided height or calculated height based on container width
+  // if height is provided, it will be used to set the height of the chart
+  // if height is not provided, it will be calculated based on the container width (effectiveWidth)
+  // height will be 16:9 ratio of the width
   const chartHeight = useMemo(() => {
-    return getChartHeight(containerWidth);
-  }, [containerWidth]);
+    return height ?? getChartHeight(effectiveWidth);
+  }, [height, effectiveWidth]);
 
   // Check scroll boundaries
   const updateScrollState = useCallback(() => {
@@ -157,11 +169,13 @@ const BarChartV2Component = <T extends BarChartData>({
   }, [snapPositions]);
 
   useEffect(() => {
-    if (!chartContainerRef.current) {
+    // Only set up ResizeObserver if width is not provided
+    if (width || !chartContainerRef.current) {
       return () => {};
     }
 
     const resizeObserver = new ResizeObserver((entries) => {
+      // there is only one entry in the entries array because we are observing the chart container
       for (const entry of entries) {
         setContainerWidth(entry.contentRect.width);
       }
@@ -172,12 +186,12 @@ const BarChartV2Component = <T extends BarChartData>({
     return () => {
       resizeObserver.disconnect();
     };
-  }, []);
+  }, [width]);
 
   // Update scroll state when container width or data width changes
   useEffect(() => {
     updateScrollState();
-  }, [containerWidth, dataWidth, updateScrollState]);
+  }, [effectiveWidth, dataWidth, updateScrollState]);
 
   // Add scroll event listener to update button states
   useEffect(() => {
@@ -219,8 +233,22 @@ const BarChartV2Component = <T extends BarChartData>({
     setHoveredCategory(null);
   }, []);
 
+  const { mode } = useTheme();
+
+  const barInternalLineColor = useMemo(() => {
+    if (mode === "light") {
+      return "rgba(255, 255, 255, 0.3)";
+    }
+    return "rgba(0, 0, 0, 0.3)";
+  }, [mode]);
+
   return (
-    <div className={clsx("crayon-bar-chart-container", className)}>
+    <div
+      className={clsx("crayon-bar-chart-container", className)}
+      style={{
+        width: width ? `${width}px` : undefined,
+      }}
+    >
       <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
         {showYAxis && (
           <div className="crayon-bar-chart-y-axis-container">
@@ -252,6 +280,7 @@ const BarChartV2Component = <T extends BarChartData>({
                     key={`yaxis-${key}`}
                     dataKey={key}
                     fill="transparent"
+                    stackId={variant === "stacked" ? "a" : undefined}
                     isAnimationActive={false}
                     maxBarSize={0}
                   />
@@ -324,7 +353,7 @@ const BarChartV2Component = <T extends BarChartData>({
                     shape={
                       <LineInBarShape
                         internalLineColor={barInternalLineColor}
-                        internalLineWidth={barInternalLineWidth}
+                        internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
                         isHovered={hoveredCategory !== null}
                         hoveredCategory={hoveredCategory}
                         categoryKey={categoryKey as string}
@@ -339,8 +368,8 @@ const BarChartV2Component = <T extends BarChartData>({
           </ChartContainer>
         </div>
       </div>
-      {/* Scroll buttons */}
-      {dataWidth > containerWidth && (
+      {/* if the data width is greater than the effective width, then show the scroll buttons */}
+      {dataWidth > effectiveWidth && (
         <div className="crayon-bar-chart-scroll-container">
           <IconButton
             className="crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--left"
@@ -367,5 +396,5 @@ const BarChartV2Component = <T extends BarChartData>({
   );
 };
 
-// Add React.memo for performance optimization
+// Added React.memo for performance optimization to avoid unnecessary re-renders
 export const BarChartV2 = React.memo(BarChartV2Component) as typeof BarChartV2Component;

@@ -23,15 +23,7 @@ interface XAxisTickProps {
 }
 
 const XAxisTick: React.FC<XAxisTickProps> = (props) => {
-  const {
-    x,
-    y,
-    payload,
-    textAnchor = "middle",
-    fill = "#666",
-    tickFormatter,
-    className,
-  } = props;
+  const { x, y, payload, textAnchor = "middle", fill = "#666", tickFormatter, className } = props;
 
   const displayValue = tickFormatter ? tickFormatter(payload?.value) : String(payload?.value || "");
 
