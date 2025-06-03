@@ -77,6 +77,8 @@ type Story = StoryObj<typeof ListItem>;
 
 export const ListItemStory: Story = {
   args: {
+    image:
+      "https://images.unsplash.com/photo-1738168246881-40f35f8aba0a?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyNnx8fGVufDB8fHx8fA%3D%3D",
     title: "List Item Title",
     subtitle: "Subtitle text goes here",
     decorativeIcon: <Mail size={16} />,

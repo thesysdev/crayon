@@ -23,6 +23,7 @@ export * from "./components/Input";
 export * from "./components/Label";
 export * from "./components/ListBlock";
 export * from "./components/ListItem";
+export * from "./components/ListWithIcon";
 export * from "./components/MarkDownRenderer";
 export * from "./components/MessageLoading";
 export * from "./components/RadioGroup";
