@@ -12,7 +12,8 @@ import {
   keyTransform,
 } from "../../Charts";
 import { cartesianGrid } from "../../cartesianGrid";
-import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
+import { getDistributedColors, getPalette, type PaletteName } from "../../utils/PalletUtils";
+import { BarChartData, Variant } from "../types";
 import {
   BAR_WIDTH,
   findNearestSnapPosition,
@@ -34,14 +35,10 @@ import { LineInBarShape } from "./components/LineInBarShape";
 import { XAxisTick } from "./components/XAxisTick";
 import { YAxisTick } from "./components/YAxisTick";
 
-export type BarChartData = Array<Record<string, string | number>>;
-
-export type Variant = "grouped" | "stacked";
-
 export interface BarChartPropsV2<T extends BarChartData> {
   data: T;
   categoryKey: keyof T[number];
-  theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
+  theme?: PaletteName;
   variant?: Variant;
   grid?: boolean;
   radius?: number;
@@ -91,7 +88,7 @@ const BarChartV2Component = <T extends BarChartData>({
   }, [theme, dataKeys.length]);
 
   const chartConfig: ChartConfig = useMemo(() => {
-    return getChartConfig(dataKeys, icons, colors);
+    return getChartConfig(dataKeys, colors, icons);
   }, [dataKeys, icons, colors]);
 
   const chartContainerRef = useRef<HTMLDivElement>(null);

@@ -1,5 +1,5 @@
 import { ChartConfig } from "../../Charts";
-import { Variant } from "../BarChartV2";
+import { Variant } from "../types";
 
 export const BAR_WIDTH = 12;
 
@@ -318,21 +318,21 @@ const findNearestSnapPosition = (
 /**
  * This function returns the chart configuration object, used for the chart configuration object of the chart.
  * @param dataKeys - The data keys for the chart.
- * @param icons - The icons for the chart.
  * @param colors - The colors for the chart.
+ * @param icons - The icons for the chart (optional).
  * @returns The chart configuration object for the chart.
  */
 const getChartConfig = (
   dataKeys: string[],
-  icons: Partial<Record<string, React.ComponentType>>,
   colors: string[],
+  icons?: Partial<Record<string, React.ComponentType>>,
 ): ChartConfig => {
   return dataKeys.reduce(
     (config, key, index) => ({
       ...config,
       [key]: {
         label: key,
-        icon: icons[key],
+        icon: icons?.[key],
         color: colors[index],
         secondaryColor: colors[dataKeys.length - index - 1],
       },

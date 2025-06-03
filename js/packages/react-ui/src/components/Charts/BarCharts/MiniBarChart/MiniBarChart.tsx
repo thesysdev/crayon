@@ -1,94 +1,63 @@
-import { useEffect, useRef, useState } from "react";
+import { useMemo } from "react";
 import { Bar, BarChart, XAxis } from "recharts";
+import { useTheme } from "../../../ThemeProvider";
 import { ChartConfig, ChartContainer, keyTransform } from "../../Charts";
-import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
-import { getPadding, getWidthOfData } from "../utils/BarChartUtils";
+import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
+import { LineInBarShape } from "../BarChartV2/components/LineInBarShape";
+import { type BarChartData } from "../types";
+import { getChartConfig, getDataKeys } from "../utils/BarChartUtils";
 
-export type MiniBarChartData = Array<Record<string, string | number>>;
-
-export type Variant = "grouped" | "stacked";
-
-export interface MiniBarChartProps<T extends MiniBarChartData> {
+export interface MiniBarChartProps<T extends BarChartData> {
   data: T;
   categoryKey: keyof T[number];
-  theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
-  variant?: Variant;
+  theme?: PaletteName;
+
   radius?: number;
   isAnimationActive?: boolean;
   onBarsClick?: (data: any) => void;
+  size?: number | string;
 }
 
-export const MiniBarChart = <T extends MiniBarChartData>({
+export const MiniBarChart = <T extends BarChartData>({
   data,
   categoryKey,
   theme = "ocean",
-  variant = "grouped",
-  radius = 4,
+  radius = 1,
   isAnimationActive = true,
   onBarsClick,
+  size = 160,
 }: MiniBarChartProps<T>) => {
   // excluding the categoryKey
-  const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
+  const dataKeys = useMemo(() => {
+    return getDataKeys(data, categoryKey as string);
+  }, [data, categoryKey]);
 
-  const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, dataKeys.length);
+  const colors = useMemo(() => {
+    const palette = getPalette(theme);
+    return getDistributedColors(palette, dataKeys.length);
+  }, [theme, dataKeys.length]);
 
-  // Create Config
-  const chartConfig: ChartConfig = dataKeys.reduce(
-    (config, key, index) => ({
-      ...config,
-      [key]: {
-        label: key,
-        color: colors[index],
-      },
-    }),
-    {},
-  );
+  const chartConfig: ChartConfig = useMemo(() => {
+    return getChartConfig(dataKeys, colors);
+  }, [dataKeys, colors]);
 
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
+  const { mode } = useTheme();
 
-  useEffect(() => {
-    if (!chartContainerRef.current) {
-      return () => {};
+  const barInternalLineColor = useMemo(() => {
+    if (mode === "light") {
+      return "rgba(255, 255, 255, 0.3)";
     }
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
-      }
-    });
-
-    resizeObserver.observe(chartContainerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
-  const padding = getPadding(data, categoryKey as string, containerWidth, variant);
-  const width = getWidthOfData(data, categoryKey as string, variant);
-
-  // Helper function to calculate total
-  // const calculateTotal = <T extends MiniBarChartData>(
-  //   data: T,
-  //   categoryKey: keyof T[number],
-  // ): number => {
-  //   const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
-  //   return data.reduce((sum, item) => {
-  //     return sum + dataKeys.reduce((keySum, key) => keySum + Number(item[key] || 0), 0);
-  //   }, 0);
-  // };
+    return "rgba(0, 0, 0, 0.3)";
+  }, [mode]);
 
   return (
     <ChartContainer
       config={chartConfig}
-      ref={chartContainerRef}
-      style={{ width, minWidth: "100%" }}
+      style={{ width: size, height: size }}
       onClick={onBarsClick}
     >
       <BarChart accessibilityLayer data={data}>
-        <XAxis padding={padding} hide={true} />
+        <XAxis hide={true} />
         {dataKeys.map((key) => {
           const transformedKey = keyTransform(key);
           const color = `var(--color-${transformedKey})`;
@@ -97,10 +66,13 @@ export const MiniBarChart = <T extends MiniBarChartData>({
               key={key}
               dataKey={key}
               fill={color}
-              radius={radius}
-              stackId={variant === "stacked" ? "a" : undefined}
+              radius={[radius, radius, 0, 0]}
               isAnimationActive={isAnimationActive}
               maxBarSize={8}
+              barSize={8}
+              shape={
+                <LineInBarShape internalLineWidth={1} internalLineColor={barInternalLineColor} />
+              }
             />
           );
         })}

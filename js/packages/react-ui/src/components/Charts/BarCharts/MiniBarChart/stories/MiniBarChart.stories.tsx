@@ -1,19 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Monitor, TabletSmartphone } from "lucide-react";
+import { Monitor } from "lucide-react";
 import { Card } from "../../../../Card";
 import { MiniBarChart, MiniBarChartProps } from "../MiniBarChart";
 
 const barChartData = [
-  { month: "January", desktop: 1500000 },
-  { month: "February", desktop: 2800000 },
-  { month: "March", desktop: 2200000 },
-  { month: "April", desktop: 1800000 },
-  { month: "May", desktop: 2500000 },
+  { month: "January", desktop: 2347891 },
+  { month: "February", desktop: 1893456 },
+  { month: "March", desktop: 3456789 },
+  { month: "April", desktop: 2987654 },
+  { month: "May", desktop: 1765432 },
+  { month: "June", desktop: 4321098 },
+  { month: "July", desktop: 3789012 },
+  { month: "August", desktop: 2654321 },
+  { month: "September", desktop: 4123567 },
+  { month: "October", desktop: 3234567 },
+  { month: "November", desktop: 2876543 },
+  { month: "December", desktop: 3987654 },
 ];
 
 const icons = {
   desktop: Monitor,
-  mobile: TabletSmartphone,
 } as const;
 
 const meta: Meta<MiniBarChartProps<typeof barChartData>> = {
@@ -59,22 +65,12 @@ const meta: Meta<MiniBarChartProps<typeof barChartData>> = {
         category: "Appearance",
       },
     },
-    variant: {
-      description:
-        "The style of the bar chart. 'grouped' shows bars side by side, while 'stacked' shows bars stacked on top of each other.",
-      control: "radio",
-      options: ["grouped", "stacked"],
-      table: {
-        defaultValue: { summary: "grouped" },
-        category: "Appearance",
-      },
-    },
     radius: {
       description: "The radius of the rounded corners of the bars",
       control: "number",
       table: {
         type: { summary: "number" },
-        defaultValue: { summary: "4" },
+        defaultValue: { summary: "2" },
         category: "Appearance",
       },
     },
@@ -99,8 +95,7 @@ export const BarChartV3Story: Story = {
     data: barChartData,
     categoryKey: "month",
     theme: "ocean",
-    variant: "grouped",
-    radius: 4,
+    radius: 2,
     isAnimationActive: true,
   },
   render: (args: MiniBarChartProps<typeof barChartData>) => (
