@@ -3,26 +3,36 @@ import { Monitor } from "lucide-react";
 import { Card } from "../../../../Card";
 import { MiniBarChart, MiniBarChartProps } from "../MiniBarChart";
 
-const barChartData = [
-  { month: "January", desktop: 2347891 },
-  { month: "February", desktop: 1893456 },
-  { month: "March", desktop: 3456789 },
-  { month: "April", desktop: 2987654 },
-  { month: "May", desktop: 1765432 },
-  { month: "June", desktop: 4321098 },
-  { month: "July", desktop: 3789012 },
-  { month: "August", desktop: 2654321 },
-  { month: "September", desktop: 4123567 },
-  { month: "October", desktop: 3234567 },
-  { month: "November", desktop: 2876543 },
-  { month: "December", desktop: 3987654 },
+// Simple array of numbers for 1D bar chart
+const simpleBarChartData = [
+  1, 1893456, 3456789, 2987654, 1765432, 4321098, 3789012, 2654321, 4123567, 3234567, 2876543,
+  3987654, 2347891, 1893456, 3456789, 2987654, 1765432, 4321098, 3789012, 2654321, 4123567, 3234567,
+  2876543, 3987654, 2347891, 1893456, 3456789, 2987654, 1765432, 4321098, 3789012, 2654321, 4123567,
+  3234567, 2876543, 3987654, 2347891, 1893456, 3456789, 2987654, 1765432, 4321098, 3789012, 2654321,
+  4123567, 3234567, 2876543, 100000,
+];
+
+// Array of objects with value and label
+const labeledBarChartData = [
+  { value: 2347891, label: "January" },
+  { value: 1893456, label: "February" },
+  { value: 3456789, label: "March" },
+  { value: 2987654, label: "April" },
+  { value: 1765432, label: "May" },
+  { value: 4321098, label: "June" },
+  { value: 3789012, label: "July" },
+  { value: 2654321, label: "August" },
+  { value: 4123567, label: "September" },
+  { value: 3234567, label: "October" },
+  { value: 2876543, label: "November" },
+  { value: 3987654, label: "December" },
 ];
 
 const icons = {
   desktop: Monitor,
 } as const;
 
-const meta: Meta<MiniBarChartProps<typeof barChartData>> = {
+const meta: Meta<MiniBarChartProps> = {
   title: "Components/Charts/BarCharts/MiniBarChart",
   component: MiniBarChart,
   parameters: {
@@ -38,20 +48,11 @@ const meta: Meta<MiniBarChartProps<typeof barChartData>> = {
   argTypes: {
     data: {
       description:
-        "An array of data objects where each object represents a data point. Each object should have a category field (e.g., month) and one or more numeric values for the bars to be plotted.",
+        "An array of numbers or an array of objects with value and optional label. Each entry represents a single bar in the chart.",
       control: false,
       table: {
-        type: { summary: "Array<Record<string, string | number>>" },
+        type: { summary: "Array<number> | Array<{ value: number; label?: string }>" },
         defaultValue: { summary: "[]" },
-        category: "Data",
-      },
-    },
-    categoryKey: {
-      description:
-        "The key from your data object to be used as the x-axis categories (e.g., 'month', 'year', 'date')",
-      control: false,
-      table: {
-        type: { summary: "keyof T[number]" },
         category: "Data",
       },
     },
@@ -70,7 +71,7 @@ const meta: Meta<MiniBarChartProps<typeof barChartData>> = {
       control: "number",
       table: {
         type: { summary: "number" },
-        defaultValue: { summary: "2" },
+        defaultValue: { summary: "1" },
         category: "Appearance",
       },
     },
@@ -83,23 +84,35 @@ const meta: Meta<MiniBarChartProps<typeof barChartData>> = {
         category: "Display",
       },
     },
+    size: {
+      description: "The width and height of the chart",
+      control: "number",
+      table: {
+        type: { summary: "number | string" },
+        defaultValue: { summary: "160" },
+        category: "Appearance",
+      },
+    },
   },
 } satisfies Meta<typeof MiniBarChart>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BarChartV3Story: Story = {
-  name: "Bar Chart V3",
+export const SimpleNumberArray: Story = {
+  name: "Simple Number Array",
   args: {
-    data: barChartData,
-    categoryKey: "month",
+    data: simpleBarChartData,
     theme: "ocean",
     radius: 2,
     isAnimationActive: true,
+    size: "100%",
   },
-  render: (args: MiniBarChartProps<typeof barChartData>) => (
-    <Card style={{ width: "440px" }}>
+  render: (args: MiniBarChartProps) => (
+    <Card style={{ width: "280px", padding: "20px" }}>
+      <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>
+        Monthly Sales Data
+      </h3>
       <MiniBarChart {...args} />
     </Card>
   ),
@@ -107,31 +120,96 @@ export const BarChartV3Story: Story = {
     docs: {
       source: {
         code: `
-const barChartData = [
-  { month: "January", desktop: 1500000 },
-  { month: "February", desktop: 2800000 },
-  { month: "March", desktop: 2200000 },
-  { month: "April", desktop: 1800000 },
-  { month: "May", desktop: 2500000 },
-];
+const salesData = [2347891, 1893456, 3456789, 2987654, 1765432, 4321098];
         
-<Card
-  style={{
-    width: '500px'
-  }}
->
-  <BarChartV3
-    categoryKey="month"
-    data={barChartData}
-    radius={4}
-    theme="ocean"
-    variant="grouped"
-    isAnimationActive
-    label="Total sales"
-  />
-</Card>
+<MiniBarChart 
+  data={salesData}
+  theme="ocean"
+  radius={2}
+  isAnimationActive={true}
+  size={200}
+/>
 `,
       },
     },
   },
+};
+
+export const LabeledData: Story = {
+  name: "Labeled Data",
+  args: {
+    data: labeledBarChartData,
+    theme: "emerald",
+    radius: 1,
+    isAnimationActive: true,
+    size: 200,
+  },
+  render: (args: MiniBarChartProps) => (
+    <Card style={{ width: "280px", padding: "20px" }}>
+      <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Monthly Revenue</h3>
+      <MiniBarChart {...args} />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code: `
+const revenueData = [
+  { value: 2347891, label: "January" },
+  { value: 1893456, label: "February" },
+  { value: 3456789, label: "March" },
+  // ...
+];
+        
+<MiniBarChart 
+  data={revenueData}
+  theme="emerald"
+  radius={1}
+  isAnimationActive={true}
+  size={200}
+/>
+`,
+      },
+    },
+  },
+};
+
+export const SmallSize: Story = {
+  name: "Small Size",
+  args: {
+    data: [10, 20, 15, 30, 25, 35, 18],
+    theme: "sunset",
+    radius: 1,
+    isAnimationActive: true,
+    size: 120,
+  },
+  render: (args: MiniBarChartProps) => (
+    <Card style={{ width: "200px", padding: "16px" }}>
+      <h4 style={{ marginBottom: "12px", fontSize: "14px", fontWeight: "600" }}>Weekly Stats</h4>
+      <MiniBarChart {...args} />
+    </Card>
+  ),
+};
+
+export const DifferentThemes: Story = {
+  name: "Different Themes",
+  render: () => (
+    <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+      {(["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"] as const).map((theme) => (
+        <Card key={theme} style={{ width: "200px", padding: "16px" }}>
+          <h4
+            style={{
+              marginBottom: "12px",
+              fontSize: "14px",
+              fontWeight: "600",
+              textTransform: "capitalize",
+            }}
+          >
+            {theme} Theme
+          </h4>
+          <MiniBarChart data={[15, 25, 20, 35, 30, 18, 22]} theme={theme} radius={2} size={160} />
+        </Card>
+      ))}
+    </div>
+  ),
 };
