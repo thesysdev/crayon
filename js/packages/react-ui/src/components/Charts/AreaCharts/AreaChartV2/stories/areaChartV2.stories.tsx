@@ -29,7 +29,7 @@ const meta: Meta<AreaChartV2Props<typeof areaChartData>> = {
       },
     },
   },
-  tags: ["!dev", "autodocs"],
+  tags: ["dev", "autodocs"],
   argTypes: {
     data: {
       description:
@@ -206,105 +206,6 @@ const areaChartData = [
     isAnimationActive
   />
 </Card>`,
-      },
-    },
-  },
-};
-
-export const AreaChartV2StoryWithIcons: Story = {
-  name: "Area Chart V2 with Icons",
-  args: {
-    ...AreaChartV2Story.args,
-    icons: icons,
-  },
-  render: (args) => (
-    <Card style={{ width: "500px" }}>
-      <AreaChartV2 {...args} />
-    </Card>
-  ),
-  parameters: {
-    docs: {
-      source: {
-        code: `
-  import { Monitor, TabletSmartphone } from "lucide-react";
-  
-  const areaChartData = [
-    { month: "January", desktop: 150, mobile: 90 },
-    { month: "February", desktop: 280, mobile: 180 },
-    { month: "March", desktop: 220, mobile: 140 },
-    { month: "April", desktop: 180, mobile: 160 },
-    { month: "May", desktop: 250, mobile: 120 },
-    { month: "June", desktop: 300, mobile: 180 },
-  ];
-  
-  const icons = {
-    desktop: Monitor,
-    mobile: TabletSmartphone,
-  };
-  
-  <Card style={{ width: "500px" }}>
-    <AreaChartV2
-      data={areaChartData}
-      categoryKey="month"
-      theme="ocean"
-      variant="linear"
-      opacity={0.5}
-      grid={true}
-      legend={true}
-      label={true}
-      icons={icons}
-      isAnimationActive
-    />
-  </Card>`,
-      },
-    },
-  },
-};
-
-export const AreaChartV2StoryWithYAxis: Story = {
-  name: "Area Chart V2 with Y-Axis and Axis Labels",
-  args: {
-    ...AreaChartV2Story.args,
-    showYAxis: true,
-    xAxisLabel: "Time Period",
-    yAxisLabel: "Number of Users",
-  },
-  render: (args) => (
-    <Card style={{ width: "500px" }}>
-      <AreaChartV2 {...args} />
-    </Card>
-  ),
-  parameters: {
-    docs: {
-      source: {
-        code: `
-  import { Monitor, TabletSmartphone } from "lucide-react";
-  
-  const areaChartData = [
-    { month: "January", desktop: 150, mobile: 90 },
-    { month: "February", desktop: 280, mobile: 180 },
-    { month: "March", desktop: 220, mobile: 140 },
-    { month: "April", desktop: 180, mobile: 160 },
-    { month: "May", desktop: 250, mobile: 120 },
-    { month: "June", desktop: 300, mobile: 180 },
-  ];
-  
-  <Card style={{ width: "500px" }}>
-    <AreaChartV2
-      data={areaChartData}
-      categoryKey="month"
-      theme="ocean"
-      variant="linear"
-      opacity={0.5}
-      grid={true}
-      legend={true}
-      label={true}
-      isAnimationActive
-      showYAxis
-      xAxisLabel="Time Period"
-      yAxisLabel="Number of Users"
-    />
-  </Card>`,
       },
     },
   },

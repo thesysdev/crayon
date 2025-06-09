@@ -1,5 +1,5 @@
-import React from "react";
-import { Area, LabelList, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
+import React, { useMemo } from "react";
+import { Area, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
 import { useLayoutContext } from "../../../../context/LayoutContext";
 import {
   ChartConfig,
@@ -9,14 +9,15 @@ import {
   keyTransform,
 } from "../../Charts";
 import { cartesianGrid } from "../../cartesianGrid";
-import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
+import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
+import { getChartConfig, getDataKeys } from "../../utils/dataUtils";
 
 export type AreaChartV2Data = Array<Record<string, string | number>>;
 
 export interface AreaChartV2Props<T extends AreaChartV2Data> {
   data: T;
   categoryKey: keyof T[number];
-  theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
+  theme?: PaletteName;
   variant?: "linear" | "natural" | "step";
   grid?: boolean;
   label?: boolean;
@@ -44,69 +45,20 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
   xAxisLabel,
   yAxisLabel,
 }: AreaChartV2Props<T>) => {
-  // excluding the categoryKey
-  const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
+  const dataKeys = useMemo(() => {
+    return getDataKeys(data, categoryKey as string);
+  }, [data, categoryKey]);
 
-  const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, dataKeys.length);
+  const colors = useMemo(() => {
+    const palette = getPalette(theme);
+    return getDistributedColors(palette, dataKeys.length);
+  }, [theme, dataKeys.length]);
+
   const { layout } = useLayoutContext();
 
-  // Create Config
-  const chartConfig: ChartConfig = dataKeys.reduce(
-    (config, key, index) => ({
-      ...config,
-      [key]: {
-        label: key,
-        icon: icons[key],
-        color: colors[index],
-      },
-    }),
-    {},
-  );
-
-  const getTickFormatter = (data: T) => {
-    const dataLength = data.length;
-    const maxLengthMap = {
-      mobile: {
-        default: 5,
-        10: 4,
-        11: 4,
-      },
-      tray: {
-        default: 5,
-        8: 4,
-        9: 4,
-        10: 4,
-        11: 4,
-      },
-      copilot: {
-        default: 5,
-        8: 4,
-        9: 4,
-        10: 4,
-        11: 4,
-      },
-      fullscreen: {
-        default: 5,
-        11: 4,
-      },
-    };
-
-    const layoutConfig =
-      maxLengthMap[layout as keyof typeof maxLengthMap] || maxLengthMap.fullscreen;
-
-    const maxLength =
-      dataLength >= 11
-        ? 4
-        : layoutConfig[dataLength as keyof typeof layoutConfig] || layoutConfig.default;
-
-    return (value: string) => {
-      if (value.length > maxLength) {
-        return `${value.slice(0, maxLength)}...`;
-      }
-      return value;
-    };
-  };
+  const chartConfig: ChartConfig = useMemo(() => {
+    return getChartConfig(dataKeys, colors, icons);
+  }, [dataKeys, icons, colors]);
 
   const getAxisAngle = (data: T) => {
     const angleConfig = {
@@ -172,9 +124,9 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
           tickLine={false}
           tickMargin={getTickMargin(data)}
           axisLine={false}
-          angle={getAxisAngle(data)}
+          // angle={getAxisAngle(data)}
           textAnchor="middle"
-          tickFormatter={getTickFormatter(data)}
+          // tickFormatter={getTickFormatter(data)}
           interval="preserveStartEnd"
           label={
             xAxisLabel
@@ -223,16 +175,7 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
                 r: 6,
               }}
               isAnimationActive={isAnimationActive}
-            >
-              {label && (
-                <LabelList
-                  position="top"
-                  offset={12}
-                  className="crayon-chart-label-list"
-                  fontSize={12}
-                />
-              )}
-            </Area>
+            />
           );
         })}
       </RechartsAreaChart>

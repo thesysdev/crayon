@@ -15,13 +15,12 @@ import { cartesianGrid } from "../../cartesianGrid";
 import { DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
 import { type LegendItem } from "../../types";
 import { getDistributedColors, getPalette, type PaletteName } from "../../utils/PalletUtils";
+import { getChartConfig, getDataKeys } from "../../utils/dataUtils";
 import { BarChartData, Variant } from "../types";
 import {
   BAR_WIDTH,
   findNearestSnapPosition,
-  getChartConfig,
   getChartHeight,
-  getDataKeys,
   getLegendItems,
   getOptimalXAxisTickFormatter,
   getPadding,
