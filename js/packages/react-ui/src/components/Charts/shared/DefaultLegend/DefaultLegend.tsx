@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import React from "react";
-import { type LegendItem } from "../../utils/BarChartUtils";
+import { type LegendItem } from "../../types";
 
 interface DefaultLegendProps {
   items: LegendItem[];

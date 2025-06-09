@@ -3,18 +3,11 @@ import { debounce } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
 import { useLayoutContext } from "../../../../context/LayoutContext";
-import {
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "../../Charts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../../Charts";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 import {
   createGradientDefinitions,
   renderActiveShape,
-  renderCustomLabel,
   renderCustomLabelLine,
 } from "../components/PieChartRenderers";
 import {
@@ -120,10 +113,13 @@ export const PieChartV2 = <T extends PieChartV2Data>({
       ref={containerRef}
       config={chartConfig}
       className={clsx("crayon-pie-chart-container", layoutMap[layout])}
+      rechartsProps={{
+        aspect: 1,
+      }}
     >
       <RechartsPieChart>
         <ChartTooltip content={<ChartTooltipContent showPercentage={format === "percentage"} />} />
-        {legend && <ChartLegend content={<ChartLegendContent nameKey={String(categoryKey)} />} />}
+
         {gradientDefinitions}
         <Pie
           data={transformedData}
@@ -132,16 +128,16 @@ export const PieChartV2 = <T extends PieChartV2Data>({
           labelLine={label && activeIndex === null ? (renderCustomLabelLine as any) : false}
           outerRadius={calculatedOuterRadius}
           innerRadius={calculatedInnerRadius}
-          label={
-            activeIndex === null
-              ? (props) =>
-                  renderCustomLabel(
-                    { ...props, labelDistance: 1 },
-                    format === "percentage" ? "percentage" : String(dataKey),
-                    format,
-                  )
-              : false
-          }
+          // label={
+          //   activeIndex === null
+          //     ? (props) =>
+          //         renderCustomLabel(
+          //           { ...props, labelDistance: 1 },
+          //           format === "percentage" ? "percentage" : String(dataKey),
+          //           format,
+          //         )
+          //     : false
+          // }
           activeShape={(props: any) => renderActiveShape(props as any)}
           activeIndex={activeIndex ?? undefined}
           {...animationConfig}

@@ -1,4 +1,5 @@
 import { ChartConfig } from "../../Charts";
+import { LegendItem } from "../../types";
 import { Variant } from "../types";
 
 export const BAR_WIDTH = 12;
@@ -348,12 +349,6 @@ const getChartConfig = (
  * @param icons - The icons for the chart.
  * @returns The legend items for the chart.
  */
-export interface LegendItem {
-  key: string;
-  label: string;
-  color: string;
-  icon?: React.ComponentType;
-}
 
 const getLegendItems = (
   dataKeys: string[],

@@ -12,6 +12,8 @@ import {
   keyTransform,
 } from "../../Charts";
 import { cartesianGrid } from "../../cartesianGrid";
+import { DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
+import { type LegendItem } from "../../types";
 import { getDistributedColors, getPalette, type PaletteName } from "../../utils/PalletUtils";
 import { BarChartData, Variant } from "../types";
 import {
@@ -27,13 +29,9 @@ import {
   getSnapPositions,
   getWidthOfData,
   getYAxisTickFormatter,
-  type LegendItem,
 } from "../utils/BarChartUtils";
 import { SimpleCursor } from "./components/CustomCursor";
-import { DefaultLegend } from "./components/DefaultLegend";
 import { LineInBarShape } from "./components/LineInBarShape";
-import { XAxisTick } from "./components/XAxisTick";
-import { YAxisTick } from "./components/YAxisTick";
 
 export interface BarChartPropsV2<T extends BarChartData> {
   data: T;
