@@ -4,12 +4,18 @@ import { Card } from "../../../../Card";
 import { AreaChartV2, AreaChartV2Props } from "../AreaChartV2";
 
 const areaChartData = [
-  { month: "January", desktop: 150, mobile: 90, tablet: 100 },
-  { month: "February", desktop: 280, mobile: 180, tablet: 120 },
-  { month: "March", desktop: 220, mobile: 140, tablet: 140 },
-  { month: "April", desktop: 180, mobile: 160, tablet: 160 },
-  { month: "May", desktop: 250, mobile: 120, tablet: 180 },
-  { month: "June", desktop: 300, mobile: 180, tablet: 200 },
+  { month: "January", desktop: 150, mobile: 90 },
+  { month: "February", desktop: 280, mobile: 180 },
+  { month: "March", desktop: 220, mobile: 140 },
+  { month: "April", desktop: 180, mobile: 160 },
+  { month: "May", desktop: 250, mobile: 120 },
+  { month: "June", desktop: 300, mobile: 180 },
+  { month: "July", desktop: 350, mobile: 220 },
+  { month: "August", desktop: 400, mobile: 240 },
+  { month: "September", desktop: 450, mobile: 260 },
+  { month: "October", desktop: 500, mobile: 280 },
+  { month: "November", desktop: 550, mobile: 300 },
+  { month: "December", desktop: 600, mobile: 320 },
 ];
 
 const icons = {
@@ -158,7 +164,7 @@ export const AreaChartV2Story: Story = {
     data: areaChartData,
     categoryKey: "month",
     theme: "ocean",
-    variant: "linear",
+    variant: "natural",
     opacity: 0.5,
     grid: true,
     legend: true,
@@ -166,7 +172,7 @@ export const AreaChartV2Story: Story = {
     showYAxis: true,
   },
   render: (args) => (
-    <Card style={{ width: "700px" }}>
+    <Card style={{ width: "500px" }}>
       <AreaChartV2 {...args} />
     </Card>
   ),

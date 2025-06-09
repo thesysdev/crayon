@@ -1,4 +1,3 @@
-import { LegendItem } from "../../types";
 import { BarChartVariant } from "../types";
 
 export const BAR_WIDTH = 12;
@@ -119,33 +118,6 @@ const getRadiusArray = (
   }
   // Default or other variants
   return [radius, radius, radius, radius];
-};
-
-/**
- * This function returns the formatter for the Y-axis tick values.
- * @returns The formatter for the Y-axis tick values.
- * internally used by the YAxis component reCharts
- */
-const getYAxisTickFormatter = () => {
-  return (value: any) => {
-    // Format the Y-axis tick values with abbreviations
-    if (typeof value === "number") {
-      const absValue = Math.abs(value);
-
-      if (absValue >= 1e12) {
-        return (value / 1e12).toFixed(absValue >= 10e12 ? 0 : 1) + "T";
-      } else if (absValue >= 1e9) {
-        return (value / 1e9).toFixed(absValue >= 10e9 ? 0 : 1) + "B";
-      } else if (absValue >= 1e6) {
-        return (value / 1e6).toFixed(absValue >= 10e6 ? 0 : 1) + "M";
-      } else if (absValue >= 1e3) {
-        return (value / 1e3).toFixed(absValue >= 10e3 ? 0 : 1) + "K";
-      } else {
-        return value.toString();
-      }
-    }
-    return String(value);
-  };
 };
 
 /**
@@ -303,27 +275,6 @@ const findNearestSnapPosition = (
 };
 
 /**
- * This function returns the legend items for the chart, used for the legend items of the chart.
- * @param dataKeys - The data keys for the chart.
- * @param colors - The colors for the chart.
- * @param icons - The icons for the chart.
- * @returns The legend items for the chart.
- */
-
-const getLegendItems = (
-  dataKeys: string[],
-  colors: string[],
-  icons: Partial<Record<string, React.ComponentType>>,
-): LegendItem[] => {
-  return dataKeys.map((key, index) => ({
-    key,
-    label: key,
-    color: colors[index] || "#000000", // Fallback color if undefined
-    icon: icons[key] as React.ComponentType | undefined,
-  }));
-};
-
-/**
  * This function returns the chart height for the chart, used for the chart height of the chart.
  * @param containerWidth - The width of the container of the chart.
  * @returns The chart height for the chart.
@@ -337,11 +288,9 @@ const getChartHeight = (containerWidth: number): number => {
 export {
   findNearestSnapPosition,
   getChartHeight,
-  getLegendItems,
   getOptimalXAxisTickFormatter,
   getPadding,
   getRadiusArray,
   getSnapPositions,
   getWidthOfData,
-  getYAxisTickFormatter,
 };

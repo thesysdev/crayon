@@ -15,19 +15,17 @@ import { cartesianGrid } from "../../cartesianGrid";
 import { DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
 import { type LegendItem } from "../../types";
 import { getDistributedColors, getPalette, type PaletteName } from "../../utils/PalletUtils";
-import { getChartConfig, getDataKeys } from "../../utils/dataUtils";
+import { getChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
+import { getYAxisTickFormatter } from "../../utils/styleUtils";
 import { BarChartData, BarChartVariant } from "../types";
 import {
   BAR_WIDTH,
   findNearestSnapPosition,
-  getChartHeight,
-  getLegendItems,
   getOptimalXAxisTickFormatter,
   getPadding,
   getRadiusArray,
   getSnapPositions,
   getWidthOfData,
-  getYAxisTickFormatter,
 } from "../utils/BarChartUtils";
 import { SimpleCursor } from "./components/CustomCursor";
 import { LineInBarShape } from "./components/LineInBarShape";
@@ -119,13 +117,17 @@ const BarChartV2Component = <T extends BarChartData>({
     return getSnapPositions(data, categoryKey as string, variant);
   }, [data, categoryKey, variant]);
 
+  // self note:
   // Use provided height or calculated height based on container width
   // if height is provided, it will be used to set the height of the chart
   // if height is not provided, it will be calculated based on the container width (effectiveWidth)
-  // height will be 16:9 ratio of the width
+  // getChartHeight(effectiveWidth) this function is not used here, request of the designer, we will use fix height
+  // 296 is the height of the chart by default, given by designer
+  // we want to chart to scale with width but height will be fixed
+
   const chartHeight = useMemo(() => {
-    return height ?? getChartHeight(effectiveWidth);
-  }, [height, effectiveWidth]);
+    return height ?? 296;
+  }, [height]);
 
   // Check scroll boundaries
   const updateScrollState = useCallback(() => {
@@ -248,7 +250,7 @@ const BarChartV2Component = <T extends BarChartData>({
           <div className="crayon-bar-chart-y-axis-container">
             {/* Y-axis only chart - synchronized with main chart */}
             <RechartsBarChart
-              key="y-axis-chart"
+              key={`y-axis-chart-${id}`}
               width={Y_AXIS_WIDTH}
               height={chartHeight}
               data={data}
@@ -294,7 +296,7 @@ const BarChartV2Component = <T extends BarChartData>({
           >
             <RechartsBarChart
               accessibilityLayer
-              key="bar-chart"
+              key={`bar-chart-${id}`}
               data={data}
               margin={{
                 top: 20,
