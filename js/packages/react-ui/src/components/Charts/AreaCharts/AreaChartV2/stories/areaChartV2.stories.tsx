@@ -4,12 +4,12 @@ import { Card } from "../../../../Card";
 import { AreaChartV2, AreaChartV2Props } from "../AreaChartV2";
 
 const areaChartData = [
-  { month: "January", desktop: 150, mobile: 90 },
-  { month: "February", desktop: 280, mobile: 180 },
-  { month: "March", desktop: 220, mobile: 140 },
-  { month: "April", desktop: 180, mobile: 160 },
-  { month: "May", desktop: 250, mobile: 120 },
-  { month: "June", desktop: 300, mobile: 180 },
+  { month: "January", desktop: 150, mobile: 90, tablet: 100 },
+  { month: "February", desktop: 280, mobile: 180, tablet: 120 },
+  { month: "March", desktop: 220, mobile: 140, tablet: 140 },
+  { month: "April", desktop: 180, mobile: 160, tablet: 160 },
+  { month: "May", desktop: 250, mobile: 120, tablet: 180 },
+  { month: "June", desktop: 300, mobile: 180, tablet: 200 },
 ];
 
 const icons = {
@@ -100,15 +100,6 @@ const meta: Meta<AreaChartV2Props<typeof areaChartData>> = {
         category: "Display",
       },
     },
-    label: {
-      description: "Whether to display data point labels above each point on the chart",
-      control: "boolean",
-      table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "true" },
-        category: "Display",
-      },
-    },
     legend: {
       description:
         "Whether to display the chart legend showing the data series names and their corresponding colors/icons",
@@ -171,9 +162,8 @@ export const AreaChartV2Story: Story = {
     opacity: 0.5,
     grid: true,
     legend: true,
-    label: true,
     isAnimationActive: true,
-    showYAxis: false,
+    showYAxis: true,
   },
   render: (args) => (
     <Card style={{ width: "700px" }}>

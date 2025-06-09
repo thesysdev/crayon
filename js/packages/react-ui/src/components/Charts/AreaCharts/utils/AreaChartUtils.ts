@@ -1,7 +1,6 @@
 import { ChartConfig } from "../../Charts";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
-
-export type MiniAreaChartData = Array<Record<string, string | number>>;
+import { MiniAreaChartData } from "../types";
 
 export interface MiniAreaChartConfig {
   data: MiniAreaChartData;

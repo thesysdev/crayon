@@ -16,7 +16,7 @@ import { DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
 import { type LegendItem } from "../../types";
 import { getDistributedColors, getPalette, type PaletteName } from "../../utils/PalletUtils";
 import { getChartConfig, getDataKeys } from "../../utils/dataUtils";
-import { BarChartData, Variant } from "../types";
+import { BarChartData, BarChartVariant } from "../types";
 import {
   BAR_WIDTH,
   findNearestSnapPosition,
@@ -36,7 +36,7 @@ export interface BarChartPropsV2<T extends BarChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: PaletteName;
-  variant?: Variant;
+  variant?: BarChartVariant;
   grid?: boolean;
   radius?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
@@ -254,7 +254,7 @@ const BarChartV2Component = <T extends BarChartData>({
               data={data}
               margin={{
                 top: 20,
-                bottom: 32,
+                bottom: 32, // this is required for to give space for x-axis
                 left: 0,
                 right: 0,
               }}

@@ -1,5 +1,5 @@
 import { LegendItem } from "../../types";
-import { Variant } from "../types";
+import { BarChartVariant } from "../types";
 
 export const BAR_WIDTH = 12;
 
@@ -13,7 +13,7 @@ const ELEMENT_SPACING_STACKED = 26; // Spacing per stack in stacked charts
  * @param variant - The chart variant
  * @returns The spacing value for the given variant
  */
-const getElementSpacing = (variant: Variant): number => {
+const getElementSpacing = (variant: BarChartVariant): number => {
   switch (variant) {
     case "stacked":
       return ELEMENT_SPACING_STACKED;
@@ -33,7 +33,7 @@ const getElementSpacing = (variant: Variant): number => {
 const getWidthOfData = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
-  variant: Variant,
+  variant: BarChartVariant,
 ) => {
   let numberOfElements: number;
   const elementSpacing = getElementSpacing(variant);
@@ -67,7 +67,7 @@ const getPadding = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
   containerWidth: number,
-  variant: Variant,
+  variant: BarChartVariant,
 ) => {
   const chartWidth = getWidthOfData(data, categoryKey, variant);
   const paddingValue = containerWidth - chartWidth;
@@ -94,7 +94,7 @@ const getPadding = (
  * @param isLast - Whether the last item in the stack.
  */
 const getRadiusArray = (
-  variant: Variant,
+  variant: BarChartVariant,
   radius: number,
   isFirst?: boolean,
   isLast?: boolean,
@@ -156,7 +156,7 @@ const getYAxisTickFormatter = () => {
  * @returns The formatter for the X-axis tick values.
  * internally used by the XAxis component reCharts
  */
-const getXAxisTickFormatter = (groupWidth?: number, variant: Variant = "grouped") => {
+const getXAxisTickFormatter = (groupWidth?: number, variant: BarChartVariant = "grouped") => {
   const CHAR_WIDTH = 7; // Average character width in pixels for most fonts
   const ELLIPSIS_WIDTH = CHAR_WIDTH * 3; // "..." takes about 3 character widths
   const PADDING = 8; // Safety padding for better visual spacing
@@ -206,7 +206,7 @@ const getXAxisTickFormatter = (groupWidth?: number, variant: Variant = "grouped"
 const getOptimalXAxisTickFormatter = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
-  variant: Variant,
+  variant: BarChartVariant,
 ) => {
   // Calculate the available width per group
   const groupWidth = getWidthOfGroup(data, categoryKey, variant);
@@ -224,7 +224,7 @@ const getOptimalXAxisTickFormatter = (
 const getWidthOfGroup = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
-  variant: Variant,
+  variant: BarChartVariant,
 ) => {
   if (data.length === 0) return 200; // Fallback
 
@@ -255,7 +255,7 @@ const getWidthOfGroup = (
 const getSnapPositions = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
-  variant: Variant,
+  variant: BarChartVariant,
 ): number[] => {
   if (data.length === 0) return [0];
 

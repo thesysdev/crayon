@@ -1,7 +1,8 @@
 import React from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis } from "recharts";
 import { ChartContainer, keyTransform } from "../../Charts";
-import { MiniAreaChartData, createChartConfig } from "../utils/AreaChartUtils";
+import { MiniAreaChartData } from "../types";
+import { createChartConfig } from "../utils/AreaChartUtils";
 
 export interface MiniAreaChartProps<T extends MiniAreaChartData> {
   data: T;
