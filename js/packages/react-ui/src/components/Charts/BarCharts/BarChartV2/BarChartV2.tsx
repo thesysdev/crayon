@@ -83,7 +83,7 @@ const BarChartV2Component = <T extends BarChartData>({
   }, [theme, dataKeys.length]);
 
   const chartConfig: ChartConfig = useMemo(() => {
-    return getChartConfig(dataKeys, colors, icons);
+    return getChartConfig(dataKeys, colors, undefined, icons);
   }, [dataKeys, icons, colors]);
 
   const chartContainerRef = useRef<HTMLDivElement>(null);

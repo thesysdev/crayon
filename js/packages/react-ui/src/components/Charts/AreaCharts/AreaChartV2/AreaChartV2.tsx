@@ -17,7 +17,13 @@ import { getDistributedColors, getPalette, PaletteName } from "../../utils/Palle
 import { getChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
 import { getYAxisTickFormatter } from "../../utils/styleUtils";
 import { AreaChartV2Data, AreaChartVariant } from "../types";
-import { findNearestSnapPosition, getSnapPositions, getWidthOfData } from "../utils/AreaChartUtils";
+import {
+  findNearestSnapPosition,
+  getOptimalXAxisTickFormatter,
+  getSnapPositions,
+  getWidthOfData,
+  getXAxisTickPositionData,
+} from "../utils/AreaChartUtils";
 
 export interface AreaChartV2Props<T extends AreaChartV2Data> {
   data: T;
@@ -68,7 +74,7 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
   }, [theme, dataKeys.length]);
 
   const chartConfig: ChartConfig = useMemo(() => {
-    return getChartConfig(dataKeys, colors, icons);
+    return getChartConfig(dataKeys, colors, undefined, icons);
   }, [dataKeys, icons, colors]);
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -99,6 +105,16 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
   const chartHeight = useMemo(() => {
     return height ?? 296;
   }, [height]);
+
+  // Calculate optimal tick formatter for collision detection and truncation
+  const xAxisTickFormatter = useMemo(() => {
+    return getOptimalXAxisTickFormatter(data, effectiveContainerWidth);
+  }, [data, effectiveContainerWidth]);
+
+  // Calculate position data for X-axis tick offset handling
+  const xAxisPositionData = useMemo(() => {
+    return getXAxisTickPositionData(data, categoryKey as string);
+  }, [data, categoryKey]);
 
   // Check scroll boundaries
   const updateScrollState = useCallback(() => {
@@ -258,7 +274,14 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
                 axisLine={false}
                 textAnchor="middle"
                 interval={0}
-                tick={<XAxisTick />}
+                tickFormatter={xAxisTickFormatter}
+                tick={
+                  <XAxisTick
+                    getPositionOffset={xAxisPositionData.getPositionOffset}
+                    isFirstTick={xAxisPositionData.isFirstTick}
+                    isLastTick={xAxisPositionData.isLastTick}
+                  />
+                }
                 orientation="bottom"
                 padding={{
                   left: 20,
@@ -293,7 +316,12 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
       {dataWidth > effectiveWidth && (
         <div className="crayon-area-chart-scroll-container">
           <IconButton
-            className="crayon-area-chart-scroll-button crayon-area-chart-scroll-button--left"
+            className={clsx(
+              "crayon-area-chart-scroll-button crayon-area-chart-scroll-button--left",
+              {
+                "crayon-area-chart-scroll-button--disabled": !canScrollLeft,
+              },
+            )}
             icon={<ChevronLeft />}
             variant="secondary"
             onClick={scrollLeft}
@@ -301,7 +329,12 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
             disabled={!canScrollLeft}
           />
           <IconButton
-            className="crayon-area-chart-scroll-button crayon-area-chart-scroll-button--right"
+            className={clsx(
+              "crayon-area-chart-scroll-button crayon-area-chart-scroll-button--right",
+              {
+                "crayon-area-chart-scroll-button--disabled": !canScrollRight,
+              },
+            )}
             icon={<ChevronRight />}
             variant="secondary"
             size="extra-small"

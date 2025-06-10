@@ -1,5 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Monitor, TabletSmartphone, Calendar, Globe, Smartphone, Laptop, Tv, Watch } from "lucide-react";
+import {
+  Calendar,
+  Globe,
+  Laptop,
+  Monitor,
+  Smartphone,
+  TabletSmartphone,
+  Tv,
+  Watch,
+} from "lucide-react";
 import { useState } from "react";
 import { Card } from "../../../../Card";
 import { AreaChartV2, AreaChartV2Props } from "../AreaChartV2";
@@ -22,14 +31,54 @@ const dataVariations = {
   ],
   // 🏷️ BIG LABELS - Testing collision detection and truncation
   bigLabels: [
-    { category: "Very Long Category Name That Should Be Truncated", sales: 150, revenue: 90, profit: 120 },
-    { category: "Another Extremely Long Label That Causes Collisions", sales: 280, revenue: 180, profit: 140 },
-    { category: "Super Duper Long Category Name That Tests Truncation", sales: 220, revenue: 140, profit: 160 },
-    { category: "Incredibly Long Text That Should Trigger Collision Detection", sales: 180, revenue: 160, profit: 180 },
-    { category: "Maximum Length Category Name That Tests All Edge Cases", sales: 250, revenue: 120, profit: 140 },
-    { category: "Extra Long Business Category Name With Many Words", sales: 300, revenue: 180, profit: 160 },
-    { category: "Comprehensive Long Label For Testing Horizontal Offset", sales: 350, revenue: 220, profit: 180 },
-    { category: "Extended Category Name That Pushes Truncation Limits", sales: 400, revenue: 240, profit: 200 },
+    {
+      category: "Very Long Category Name That Should Be Truncated",
+      sales: 150,
+      revenue: 90,
+      profit: 120,
+    },
+    {
+      category: "Another Extremely Long Label That Causes Collisions",
+      sales: 280,
+      revenue: 180,
+      profit: 140,
+    },
+    {
+      category: "Super Duper Long Category Name That Tests Truncation",
+      sales: 220,
+      revenue: 140,
+      profit: 160,
+    },
+    {
+      category: "Incredibly Long Text That Should Trigger Collision Detection",
+      sales: 180,
+      revenue: 160,
+      profit: 180,
+    },
+    {
+      category: "Maximum Length Category Name That Tests All Edge Cases",
+      sales: 250,
+      revenue: 120,
+      profit: 140,
+    },
+    {
+      category: "Extra Long Business Category Name With Many Words",
+      sales: 300,
+      revenue: 180,
+      profit: 160,
+    },
+    {
+      category: "Comprehensive Long Label For Testing Horizontal Offset",
+      sales: 350,
+      revenue: 220,
+      profit: 180,
+    },
+    {
+      category: "Extended Category Name That Pushes Truncation Limits",
+      sales: 400,
+      revenue: 240,
+      profit: 200,
+    },
   ],
   // 📅 DENSE TIMELINE - Many items with medium-length labels
   denseTimeline: [
@@ -53,13 +102,48 @@ const dataVariations = {
   // 🏢 COMPANY NAMES - Real-world long business names
   companyNames: [
     { company: "Apple Inc.", revenue: 394328000000, profit: 99803000000, marketCap: 3500000000000 },
-    { company: "Microsoft Corporation", revenue: 211915000000, profit: 83383000000, marketCap: 2800000000000 },
-    { company: "Alphabet Inc. (Google)", revenue: 307394000000, profit: 76033000000, marketCap: 2100000000000 },
-    { company: "Amazon.com Inc.", revenue: 574785000000, profit: 33364000000, marketCap: 1600000000000 },
-    { company: "Tesla Motors Inc.", revenue: 96773000000, profit: 15000000000, marketCap: 800000000000 },
-    { company: "Meta Platforms Inc.", revenue: 134902000000, profit: 39370000000, marketCap: 900000000000 },
-    { company: "NVIDIA Corporation", revenue: 60922000000, profit: 29760000000, marketCap: 1800000000000 },
-    { company: "Berkshire Hathaway Inc.", revenue: 364482000000, profit: 96223000000, marketCap: 780000000000 },
+    {
+      company: "Microsoft Corporation",
+      revenue: 211915000000,
+      profit: 83383000000,
+      marketCap: 2800000000000,
+    },
+    {
+      company: "Alphabet Inc. (Google)",
+      revenue: 307394000000,
+      profit: 76033000000,
+      marketCap: 2100000000000,
+    },
+    {
+      company: "Amazon.com Inc.",
+      revenue: 574785000000,
+      profit: 33364000000,
+      marketCap: 1600000000000,
+    },
+    {
+      company: "Tesla Motors Inc.",
+      revenue: 96773000000,
+      profit: 15000000000,
+      marketCap: 800000000000,
+    },
+    {
+      company: "Meta Platforms Inc.",
+      revenue: 134902000000,
+      profit: 39370000000,
+      marketCap: 900000000000,
+    },
+    {
+      company: "NVIDIA Corporation",
+      revenue: 60922000000,
+      profit: 29760000000,
+      marketCap: 1800000000000,
+    },
+    {
+      company: "Berkshire Hathaway Inc.",
+      revenue: 364482000000,
+      profit: 96223000000,
+      marketCap: 780000000000,
+    },
   ],
   // 🌍 COUNTRY NAMES - Geographic labels with varying lengths
   countryData: [
@@ -95,8 +179,14 @@ const dataVariations = {
   ],
   // 🎯 EDGE CASES - Extreme scenarios
   edgeCases: [
-    { name: "SinglePointDataSetForTestingEdgeCasesInCollisionDetectionAndLabelTruncationFunctionality", value: 500 },
-    { name: "SecondExtremelyLongDataPointNameThatShouldDefinitelyTriggerTruncationMechanisms", value: 600 },
+    {
+      name: "SinglePointDataSetForTestingEdgeCasesInCollisionDetectionAndLabelTruncationFunctionality",
+      value: 500,
+    },
+    {
+      name: "SecondExtremelyLongDataPointNameThatShouldDefinitelyTriggerTruncationMechanisms",
+      value: 600,
+    },
   ],
   // 📱 MINIMAL - Small dataset for baseline testing
   minimal: [
@@ -109,7 +199,7 @@ const dataVariations = {
 // Category key mappings for different datasets
 const categoryKeys = {
   default: "month",
-  bigLabels: "category", 
+  bigLabels: "category",
   denseTimeline: "period",
   companyNames: "company",
   countryData: "country",
@@ -419,10 +509,19 @@ export const AreaChartV2Story: Story = {
               📱 Minimal (3 items)
             </button>
           </div>
-          <div style={{ marginTop: "12px", fontSize: "12px", color: "#666", fontFamily: "monospace" }}>
-            <div><strong>Current Dataset:</strong> {selectedDataType}</div>
-            <div><strong>Items:</strong> {currentData.length} | <strong>Category Key:</strong> {currentCategoryKey}</div>
-            <div><strong>Features:</strong> Auto-truncation, Collision Detection, Horizontal Offset</div>
+          <div
+            style={{ marginTop: "12px", fontSize: "12px", color: "#666", fontFamily: "monospace" }}
+          >
+            <div>
+              <strong>Current Dataset:</strong> {selectedDataType}
+            </div>
+            <div>
+              <strong>Items:</strong> {currentData.length} | <strong>Category Key:</strong>{" "}
+              {currentCategoryKey}
+            </div>
+            <div>
+              <strong>Features:</strong> Auto-truncation, Collision Detection, Horizontal Offset
+            </div>
           </div>
         </div>
         <Card style={{ width: "600px" }}>
@@ -653,19 +752,25 @@ export const ResponsiveWidthStory: Story = {
   render: (args) => (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div>
-        <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>Small Container (300px)</h4>
+        <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>
+          Small Container (300px)
+        </h4>
         <Card style={{ width: "300px" }}>
           <AreaChartV2 {...args} />
         </Card>
       </div>
       <div>
-        <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>Medium Container (500px)</h4>
+        <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>
+          Medium Container (500px)
+        </h4>
         <Card style={{ width: "500px" }}>
           <AreaChartV2 {...args} />
         </Card>
       </div>
       <div>
-        <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>Large Container (800px)</h4>
+        <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>
+          Large Container (800px)
+        </h4>
         <Card style={{ width: "800px" }}>
           <AreaChartV2 {...args} />
         </Card>

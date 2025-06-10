@@ -24,6 +24,7 @@ export const getDataKeys = (
 export const getChartConfig = (
   dataKeys: string[],
   colors: string[],
+  secondaryColors?: string[],
   icons?: Partial<Record<string, React.ComponentType>>,
 ): ChartConfig => {
   return dataKeys.reduce(
@@ -33,7 +34,7 @@ export const getChartConfig = (
         label: key,
         icon: icons?.[key],
         color: colors[index],
-        secondaryColor: colors[dataKeys.length - index - 1],
+        secondaryColor: secondaryColors?.[index] || colors[dataKeys.length - index - 1],
       },
     }),
     {},
