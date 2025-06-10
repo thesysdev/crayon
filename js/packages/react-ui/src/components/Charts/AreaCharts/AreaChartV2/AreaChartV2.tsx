@@ -90,7 +90,7 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
 
   const effectiveContainerWidth = useMemo(() => {
     const yAxisWidth = showYAxis ? Y_AXIS_WIDTH : 0;
-    return Math.max(0, effectiveWidth - yAxisWidth);
+    return Math.max(0, effectiveWidth - yAxisWidth - 40); // -40 because we are giving 20px padding in xAxis on each side
   }, [effectiveWidth, showYAxis]);
 
   const dataWidth = useMemo(() => {
