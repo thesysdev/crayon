@@ -359,7 +359,7 @@ export const AreaChartV2Story: Story = {
             background: "#f8f9fa",
             borderRadius: "8px",
             border: "1px solid #e9ecef",
-            width: "800px",
+            width: "600px",
           }}
         >
           <strong>🏷️ Label Collision Test Suite:</strong>
@@ -425,7 +425,7 @@ export const AreaChartV2Story: Story = {
             <div><strong>Features:</strong> Auto-truncation, Collision Detection, Horizontal Offset</div>
           </div>
         </div>
-        <Card style={{ width: "800px" }}>
+        <Card style={{ width: "600px" }}>
           <AreaChartV2 {...args} data={currentData} categoryKey={currentCategoryKey} />
         </Card>
       </div>
