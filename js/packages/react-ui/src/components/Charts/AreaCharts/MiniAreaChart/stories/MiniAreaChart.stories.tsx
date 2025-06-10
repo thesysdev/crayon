@@ -1,23 +1,32 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Monitor, TabletSmartphone } from "lucide-react";
 import { Card } from "../../../../Card";
 import { MiniAreaChart, MiniAreaChartProps } from "../MiniAreaChart";
 
-const areaChartData = [
-  { month: "January", desktop: 150, mobile: 90 },
-  { month: "February", desktop: 280, mobile: 180 },
-  { month: "March", desktop: 220, mobile: 140 },
-  { month: "April", desktop: 180, mobile: 160 },
-  { month: "May", desktop: 250, mobile: 120 },
-  { month: "June", desktop: 300, mobile: 180 },
+// Simple array of numbers for 1D area chart
+const simpleAreaChartData = [
+  12, 45, 78, 32, 67, 89, 23, 56, 91, 34, 76, 28, 85, 42, 19, 63, 87, 31, 74, 58, 92, 26, 49, 83,
+  37, 50,
 ];
 
-const icons = {
-  desktop: Monitor,
-  mobile: TabletSmartphone,
-} as const;
+// Array of objects with value and label
+const labeledAreaChartData = [
+  { value: 150, label: "January" },
+  { value: 280, label: "February" },
+  { value: 220, label: "March" },
+  { value: 180, label: "April" },
+  { value: 250, label: "May" },
+  { value: 300, label: "June" },
+  { value: 320, label: "July" },
+  { value: 280, label: "August" },
+  { value: 310, label: "September" },
+  { value: 290, label: "October" },
+  { value: 340, label: "November" },
+  { value: 360, label: "December" },
+  // { value: 360, label: "December" },
+  // { value: 360, label: "December" },
+];
 
-const meta: Meta<MiniAreaChartProps<typeof areaChartData>> = {
+const meta: Meta<typeof MiniAreaChart> = {
   title: "Components/Charts/AreaCharts/MiniAreaChart",
   component: MiniAreaChart,
   parameters: {
@@ -25,49 +34,29 @@ const meta: Meta<MiniAreaChartProps<typeof areaChartData>> = {
     docs: {
       description: {
         component:
-          "```tsx\nimport { MiniAreaChart } from '@crayon-ui/react-ui/Charts/AreaCharts/MiniAreaChart';\n```",
+          "```tsx\nimport { MiniAreaChart } from '@crayon-ui/react-ui/Charts/AreaCharts/MiniAreaChart';\n```\n\nA responsive mini area chart component that accepts 1D data (numbers or objects with value/label) with automatic data filtering for space-constrained containers.",
       },
     },
   },
-  tags: ["!dev", "autodocs"],
+  tags: ["dev", "autodocs"],
   argTypes: {
     data: {
       description:
-        "An array of data objects where each object represents a data point. Each object should have a category field (e.g., month) and one or more numeric values for the areas to be plotted.",
+        "An array of numbers or an array of objects with value and optional label. Each entry represents a single point in the area chart.",
       control: false,
       table: {
-        type: { summary: "Array<Record<string, string | number>>" },
+        type: { summary: "Array<number> | Array<{ value: number; label?: string }>" },
         defaultValue: { summary: "[]" },
-        category: "Data",
-      },
-    },
-    categoryKey: {
-      description:
-        "The key from your data object to be used as the x-axis categories (e.g., 'month', 'year', 'date')",
-      control: false,
-      table: {
-        type: { summary: "string" },
-        defaultValue: { summary: "string" },
         category: "Data",
       },
     },
     theme: {
       description:
-        "The color palette theme for the chart. Each theme provides a different set of colors for the areas.",
+        "The color palette theme for the chart. Each theme provides a different color for the area.",
       control: "select",
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
-        category: "Appearance",
-      },
-    },
-    icons: {
-      description:
-        "An object that maps data keys to icon components. These icons will appear in the legend next to their corresponding data series.",
-      control: false,
-      table: {
-        type: { summary: "Record<string, React.ComponentType>" },
-        defaultValue: { summary: "{}" },
         category: "Appearance",
       },
     },
@@ -83,44 +72,16 @@ const meta: Meta<MiniAreaChartProps<typeof areaChartData>> = {
     },
     opacity: {
       description:
-        "The opacity of the filled area beneath each line (0 = fully transparent, 1 = fully opaque)",
-      control: false,
+        "The opacity of the filled area beneath the line (0 = fully transparent, 1 = fully opaque)",
+      control: "number",
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "0.5" },
         category: "Appearance",
       },
     },
-    // grid: {
-    //   description: "Whether to display the background grid lines in the chart",
-    //   control: "boolean",
-    //   table: {
-    //     type: { summary: "boolean" },
-    //     defaultValue: { summary: "true" },
-    //     category: "Display",
-    //   },
-    // },
-    // label: {
-    //   description: "Whether to display data point labels above each point on the chart",
-    //   control: "boolean",
-    //   table: {
-    //     type: { summary: "boolean" },
-    //     defaultValue: { summary: "true" },
-    //     category: "Display",
-    //   },
-    // },
-    // legend: {
-    //   description:
-    //     "Whether to display the chart legend showing the data series names and their corresponding colors/icons",
-    //   control: "boolean",
-    //   table: {
-    //     type: { summary: "boolean" },
-    //     defaultValue: { summary: "true" },
-    //     category: "Display",
-    //   },
-    // },
     isAnimationActive: {
-      description: "Whether to animate the chart",
+      description: "Whether to animate the chart when it first renders",
       control: "boolean",
       table: {
         type: { summary: "boolean" },
@@ -128,51 +89,42 @@ const meta: Meta<MiniAreaChartProps<typeof areaChartData>> = {
         category: "Display",
       },
     },
-    // showYAxis: {
-    //   description: "Whether to display the y-axis",
-    //   control: "boolean",
-    //   table: {
-    //     type: { summary: "boolean" },
-    //     defaultValue: { summary: "false" },
-    //     category: "Display",
-    //   },
-    // },
-    // xAxisLabel: {
-    //   description: "The label for the x-axis",
-    //   control: false,
-    //   table: {
-    //     type: { summary: "string" },
-    //     defaultValue: { summary: "string" },
-    //     category: "Data",
-    //   },
-    // },
-    // yAxisLabel: {
-    //   description: "The label for the y-axis",
-    //   control: false,
-    //   table: {
-    //     type: { summary: "string" },
-    //     defaultValue: { summary: "string" },
-    //     category: "Data",
-    //   },
-    // },
+    size: {
+      description: "The width and height of the chart",
+      control: "text",
+      table: {
+        type: { summary: "number | string" },
+        defaultValue: { summary: "100%" },
+        category: "Appearance",
+      },
+    },
+    areaColor: {
+      description: "Custom color for the area fill and stroke",
+      control: "color",
+      table: {
+        type: { summary: "string" },
+        category: "Appearance",
+      },
+    },
   },
 } satisfies Meta<typeof MiniAreaChart>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const MiniAreaChartStory: Story = {
-  name: "Mini Area Chart",
+export const SimpleNumberArray: Story = {
+  name: "Simple Number Array",
   args: {
-    data: areaChartData,
-    categoryKey: "month",
+    data: simpleAreaChartData,
     theme: "ocean",
     variant: "natural",
     opacity: 0.5,
     isAnimationActive: true,
+    size: "100%",
   },
-  render: (args) => (
-    <Card style={{ width: "500px" }}>
+  render: (args: MiniAreaChartProps) => (
+    <Card style={{ width: "280px", padding: "20px" }}>
+      <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Daily Activity</h3>
       <MiniAreaChart {...args} />
     </Card>
   ),
@@ -180,38 +132,35 @@ export const MiniAreaChartStory: Story = {
     docs: {
       source: {
         code: `
-const areaChartData = [
-  { month: "January", desktop: 150, mobile: 90 },
-  { month: "February", desktop: 280, mobile: 180 },
-  { month: "March", desktop: 220, mobile: 140 },
-  { month: "April", desktop: 180, mobile: 160 },
-  { month: "May", desktop: 250, mobile: 120 },
-  { month: "June", desktop: 300, mobile: 180 },
-];
+const activityData = [12, 45, 78, 32, 67, 89, 23, 56, 91, 34];
 
-<Card style={{ width: "500px" }}>
-  <MiniAreaChart
-    data={areaChartData}
-    categoryKey="month"
-    theme="ocean"
-    variant="natural"
-    opacity={0.5}
-    isAnimationActive
-  />
-</Card>`,
+<MiniAreaChart 
+  data={activityData}
+  theme="ocean"
+  variant="natural"
+  opacity={0.5}
+  isAnimationActive={true}
+  size="100%"
+/>
+`,
       },
     },
   },
 };
 
-export const MiniAreaChartStoryWithIcons: Story = {
-  name: "Mini Area Chart with Icons",
+export const LabeledData: Story = {
+  name: "Labeled Data",
   args: {
-    ...MiniAreaChartStory.args,
-    icons: icons,
+    data: labeledAreaChartData,
+    theme: "emerald",
+    variant: "natural",
+    opacity: 0.6,
+    isAnimationActive: true,
+    size: "100%",
   },
-  render: (args) => (
-    <Card style={{ width: "500px" }}>
+  render: (args: MiniAreaChartProps) => (
+    <Card style={{ width: "320px", padding: "20px" }}>
+      <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Monthly Revenue</h3>
       <MiniAreaChart {...args} />
     </Card>
   ),
@@ -219,34 +168,154 @@ export const MiniAreaChartStoryWithIcons: Story = {
     docs: {
       source: {
         code: `
-  import { Monitor, TabletSmartphone } from "lucide-react";
-  
-  const areaChartData = [
-    { month: "January", desktop: 150, mobile: 90 },
-    { month: "February", desktop: 280, mobile: 180 },
-    { month: "March", desktop: 220, mobile: 140 },
-    { month: "April", desktop: 180, mobile: 160 },
-    { month: "May", desktop: 250, mobile: 120 },
-    { month: "June", desktop: 300, mobile: 180 },
-  ];
-  
-  const icons = {
-    desktop: Monitor,
-    mobile: TabletSmartphone,
-  };
-  
-  <Card style={{ width: "500px" }}>
-    <MiniAreaChart
-      data={areaChartData}
-      categoryKey="month"
-      theme="ocean"
-      variant="natural"
-      opacity={0.5}
-      icons={icons}
-      isAnimationActive
-    />
-  </Card>`,
+const revenueData = [
+  { value: 150, label: "January" },
+  { value: 280, label: "February" },
+  { value: 220, label: "March" },
+  // ...
+];
+
+<MiniAreaChart 
+  data={revenueData}
+  theme="emerald"
+  variant="natural"
+  opacity={0.6}
+  size="100%"
+/>
+`,
       },
     },
   },
+};
+
+export const ResponsiveData: Story = {
+  name: "Responsive Data Filtering",
+  args: {
+    data: simpleAreaChartData,
+    theme: "orchid",
+    variant: "natural",
+    opacity: 0.4,
+    isAnimationActive: true,
+    size: "100%",
+  },
+  render: (args) => (
+    <div style={{ display: "flex", gap: "20px", flexDirection: "column" }}>
+      <Card style={{ width: "200px", padding: "16px" }}>
+        <h4 style={{ marginBottom: "12px", fontSize: "14px", fontWeight: "600" }}>Small (200px)</h4>
+        <MiniAreaChart {...args} />
+      </Card>
+      <Card style={{ width: "400px", padding: "16px" }}>
+        <h4 style={{ marginBottom: "12px", fontSize: "14px", fontWeight: "600" }}>
+          Medium (400px)
+        </h4>
+        <MiniAreaChart {...args} />
+      </Card>
+      <Card style={{ width: "600px", padding: "16px" }}>
+        <h4 style={{ marginBottom: "12px", fontSize: "14px", fontWeight: "600" }}>Large (600px)</h4>
+        <MiniAreaChart {...args} />
+      </Card>
+    </div>
+  ),
+};
+
+export const DifferentSizes: Story = {
+  name: "Different Sizes",
+  render: () => (
+    <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+      <Card style={{ width: "120px", padding: "12px" }}>
+        <h4 style={{ marginBottom: "8px", fontSize: "12px", fontWeight: "600" }}>Small</h4>
+        <MiniAreaChart data={[15, 25, 20, 35, 30, 18, 22]} theme="sunset" size={80} />
+      </Card>
+      <Card style={{ width: "200px", padding: "16px" }}>
+        <h4 style={{ marginBottom: "12px", fontSize: "14px", fontWeight: "600" }}>Medium</h4>
+        <MiniAreaChart data={simpleAreaChartData.slice(0, 10)} theme="spectrum" size={160} />
+      </Card>
+      <Card style={{ width: "280px", padding: "20px" }}>
+        <h4 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Large</h4>
+        <MiniAreaChart data={simpleAreaChartData} theme="vivid" size={240} />
+      </Card>
+    </div>
+  ),
+};
+
+export const DifferentThemes: Story = {
+  name: "Different Themes",
+  render: () => (
+    <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+      {(["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"] as const).map((theme) => (
+        <Card key={theme} style={{ width: "200px", padding: "16px" }}>
+          <h4
+            style={{
+              marginBottom: "12px",
+              fontSize: "14px",
+              fontWeight: "600",
+              textTransform: "capitalize",
+            }}
+          >
+            {theme} Theme
+          </h4>
+          <MiniAreaChart
+            data={[15, 25, 20, 35, 30, 18, 22, 28, 33, 19]}
+            theme={theme}
+            variant="natural"
+            size={160}
+          />
+        </Card>
+      ))}
+    </div>
+  ),
+};
+
+export const DifferentVariants: Story = {
+  name: "Different Variants",
+  render: () => (
+    <div style={{ display: "flex", gap: "20px" }}>
+      {(["linear", "natural", "step"] as const).map((variant) => (
+        <Card key={variant} style={{ width: "220px", padding: "16px" }}>
+          <h4
+            style={{
+              marginBottom: "12px",
+              fontSize: "14px",
+              fontWeight: "600",
+              textTransform: "capitalize",
+            }}
+          >
+            {variant} Variant
+          </h4>
+          <MiniAreaChart
+            data={[15, 35, 25, 45, 30, 50, 28, 42, 38, 29]}
+            theme="spectrum"
+            variant={variant}
+            size={180}
+          />
+        </Card>
+      ))}
+    </div>
+  ),
+};
+
+export const CustomColor: Story = {
+  name: "Custom Color",
+  args: {
+    data: [20, 45, 28, 80, 99, 43, 67, 23, 89, 56],
+    theme: "ocean",
+    variant: "natural",
+    opacity: 0.7,
+    areaColor: "#ff6b6b",
+    size: 200,
+  },
+  render: (args) => (
+    <Card
+      style={{
+        width: "280px",
+        padding: "20px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Custom Red Area</h3>
+      <MiniAreaChart {...args} />
+    </Card>
+  ),
 };
