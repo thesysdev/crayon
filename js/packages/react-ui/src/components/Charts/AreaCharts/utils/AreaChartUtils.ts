@@ -52,17 +52,13 @@ const getWidthOfGroup = (data: AreaChartData) => {
  * @returns The formatter for the X-axis tick values.
  * Internally used by the XAxis component in Recharts
  */
-const getXAxisTickFormatter = (
-  groupWidth?: number,
-  containerWidth?: number,
-  dataLength?: number,
-) => {
+const getXAxisTickFormatter = (groupWidth?: number, containerWidth?: number) => {
   const CHAR_WIDTH = 7; // Average character width in pixels for most fonts
   const ELLIPSIS_WIDTH = CHAR_WIDTH * 3; // "..." takes about 3 character widths
   const PADDING = 2; // Safety padding for better visual spacing
 
   // closure is happening here.
-  return (value: string, index?: number) => {
+  return (value: string) => {
     // Convert to string in case we get numbers
     const stringValue = String(value);
 
@@ -115,7 +111,7 @@ const getXAxisTickFormatter = (
 const getOptimalXAxisTickFormatter = (data: AreaChartData, containerWidth?: number) => {
   // Calculate the available width per group
   const groupWidth = getWidthOfGroup(data);
-  return getXAxisTickFormatter(groupWidth, containerWidth, data.length);
+  return getXAxisTickFormatter(groupWidth, containerWidth);
 };
 
 /**
