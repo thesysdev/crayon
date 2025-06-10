@@ -1,3 +1,4 @@
+import { AreaChartData } from "../../AreaChart/AreaChart";
 import { ChartConfig } from "../../Charts";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 import { MiniAreaChartData } from "../types";
@@ -9,7 +10,7 @@ const ELEMENT_SPACING = 70;
  * for the width of the chart container.
  * @param data - The data to be displayed in the chart.
  */
-const getWidthOfData = (data: Array<Record<string, string | number>>) => {
+const getWidthOfData = (data: AreaChartData) => {
   // For area charts, we calculate based on the number of data points (always stacked)
   const numberOfElements = data.length; // Number of data points
 
@@ -35,7 +36,7 @@ const getWidthOfData = (data: Array<Record<string, string | number>>) => {
  * @param data - The data to be displayed in the chart.
  * @param categoryKey - The key of the category to be displayed in the chart.
  */
-const getWidthOfGroup = (data: Array<Record<string, string | number>>) => {
+const getWidthOfGroup = (data: AreaChartData) => {
   if (data.length === 0) return 200; // Fallback
 
   // For area charts, each category/data point has the same spacing
@@ -111,10 +112,7 @@ const getXAxisTickFormatter = (
  * @param containerWidth - The container width for responsive calculations
  * @returns The optimized formatter function
  */
-const getOptimalXAxisTickFormatter = (
-  data: Array<Record<string, string | number>>,
-  containerWidth?: number,
-) => {
+const getOptimalXAxisTickFormatter = (data: AreaChartData, containerWidth?: number) => {
   // Calculate the available width per group
   const groupWidth = getWidthOfGroup(data);
   return getXAxisTickFormatter(groupWidth, containerWidth, data.length);
@@ -126,10 +124,7 @@ const getOptimalXAxisTickFormatter = (
  * @param categoryKey - The category key for the chart
  * @returns Object containing position data for the tick renderer
  */
-const getXAxisTickPositionData = (
-  data: Array<Record<string, string | number>>,
-  categoryKey: string,
-) => {
+const getXAxisTickPositionData = (data: AreaChartData, categoryKey: string) => {
   return {
     dataLength: data.length,
     categoryValues: data.map((item) => String(item[categoryKey])),
@@ -162,7 +157,7 @@ const getXAxisTickPositionData = (
  * @param categoryKey - The key of the category to be displayed in the chart.
  * @returns The snap positions for the chart.
  */
-const getSnapPositions = (data: Array<Record<string, string | number>>): number[] => {
+const getSnapPositions = (data: AreaChartData): number[] => {
   if (data.length === 0) return [0];
 
   const positions = [0]; // Start position

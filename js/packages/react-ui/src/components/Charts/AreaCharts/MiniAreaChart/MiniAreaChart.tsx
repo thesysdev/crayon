@@ -1,14 +1,10 @@
 import clsx from "clsx";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis } from "recharts";
 import { ChartConfig, ChartContainer } from "../../Charts";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
 import { MiniAreaChartData } from "../types";
-import {
-  getPadding,
-  getRecentDataThatFits,
-  transformDataForChart,
-} from "./utils/miniAreaChartUtils";
+import { getRecentDataThatFits, transformDataForChart } from "./utils/miniAreaChartUtils";
 
 export interface MiniAreaChartProps {
   data: MiniAreaChartData;
@@ -20,6 +16,7 @@ export interface MiniAreaChartProps {
   size?: number | string;
   className?: string;
   areaColor?: string;
+  useGradient?: boolean;
 }
 
 export const MiniAreaChart = ({
@@ -32,6 +29,7 @@ export const MiniAreaChart = ({
   size = "100%",
   className,
   areaColor,
+  useGradient = true,
 }: MiniAreaChartProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
@@ -79,9 +77,10 @@ export const MiniAreaChart = ({
     };
   }, [colors, areaColor]);
 
-  const padding = useMemo(() => {
-    return getPadding(filteredData, containerWidth);
-  }, [filteredData, containerWidth]);
+  const id = useId();
+
+  // Generate unique gradient ID to avoid conflicts when multiple charts are on the same page
+  const gradientId = useMemo(() => `miniAreaGradient-${id}`, [id]);
 
   return (
     <ChartContainer
@@ -101,14 +100,23 @@ export const MiniAreaChart = ({
           top: 10,
         }}
       >
-        <XAxis dataKey="label" hide={true} padding={padding} />
+        {useGradient && (
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+        )}
+
+        <XAxis dataKey="label" hide={true} />
 
         <Area
           dataKey="value"
           type={variant}
           stroke="var(--color-value)"
-          fill="var(--color-value)"
-          fillOpacity={opacity}
+          fill={useGradient ? `url(#${gradientId})` : "var(--color-value)"}
+          fillOpacity={useGradient ? 1 : opacity}
           isAnimationActive={isAnimationActive}
           strokeWidth={1.5}
         />

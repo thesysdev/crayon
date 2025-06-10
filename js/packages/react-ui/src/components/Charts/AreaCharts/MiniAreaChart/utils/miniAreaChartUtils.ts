@@ -26,40 +26,40 @@ const transformDataForChart = (data: MiniAreaChartData): ChartData => {
   });
 };
 
-/**
- * Calculates the total width of the data.
- *
- * @param data - The mini area chart data array
- * @returns The total width needed in pixels to display all data items
- */
-const getWidthOfData = (data: MiniAreaChartData) => {
-  return data.length * MINI_ELEMENT_SPACING;
-};
+// /**
+//  * Calculates the total width of the data.
+//  *
+//  * @param data - The mini area chart data array
+//  * @returns The total width needed in pixels to display all data items
+//  */
+// const getWidthOfData = (data: MiniAreaChartData) => {
+//   return data.length * MINI_ELEMENT_SPACING;
+// };
 
-/**
- * Calculates the left and right padding for the chart container based on available space.
- * If the chart data exceeds the container width, no padding is applied.
- *
- * @param data - The mini area chart data array
- * @param containerWidth - The total width of the container in pixels
- * @returns An object with left and right padding values in pixels
- */
-const getPadding = (data: MiniAreaChartData, containerWidth: number) => {
-  const availableWidth = containerWidth - CONTAINER_HORIZONTAL_PADDING;
-  const chartWidth = getWidthOfData(data);
-  const paddingValue = availableWidth - chartWidth;
+// /**
+//  * Calculates the left and right padding for the chart container based on available space.
+//  * If the chart data exceeds the container width, no padding is applied.
+//  *
+//  * @param data - The mini area chart data array
+//  * @param containerWidth - The total width of the container in pixels
+//  * @returns An object with left and right padding values in pixels
+//  */
+// const getPadding = (data: MiniAreaChartData, containerWidth: number) => {
+//   const availableWidth = containerWidth - CONTAINER_HORIZONTAL_PADDING;
+//   const chartWidth = getWidthOfData(data);
+//   const paddingValue = availableWidth - chartWidth;
 
-  if (paddingValue < 0) {
-    return {
-      left: 0,
-      right: 0,
-    };
-  }
-  return {
-    left: paddingValue,
-    right: 0,
-  };
-};
+//   if (paddingValue < 0) {
+//     return {
+//       left: 0,
+//       right: 0,
+//     };
+//   }
+//   return {
+//     left: paddingValue,
+//     right: 0,
+//   };
+// };
 
 /**
  * Filters the data to include only the most recent items that can fit within the container width.
@@ -92,4 +92,4 @@ const getRecentDataThatFits = (
   return data.slice(-maxItems);
 };
 
-export { getPadding, getRecentDataThatFits, transformDataForChart };
+export { getRecentDataThatFits, transformDataForChart };
