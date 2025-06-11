@@ -13,17 +13,17 @@ import {
 import { cartesianGrid } from "../../cartesianGrid";
 import { ActiveDot, DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
 import { LegendItem } from "../../types";
+import {
+  findNearestSnapPosition,
+  getLineChartWidthOfData,
+  getOptimalXAxisTickFormatter,
+  getSnapPositions,
+  getXAxisTickPositionData,
+} from "../../utils/BarAndLineUtils/AreaAndLineUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
 import { getChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
 import { getYAxisTickFormatter } from "../../utils/styleUtils";
 import { LineChartV2Data, LineChartVariant } from "../types";
-import {
-  findNearestSnapPosition,
-  getOptimalXAxisTickFormatter,
-  getSnapPositions,
-  getWidthOfData,
-  getXAxisTickPositionData,
-} from "../utils/LineChartUtils";
 
 export interface LineChartV2Props<T extends LineChartV2Data> {
   data: T;
@@ -94,7 +94,7 @@ export const LineChartV2 = <T extends LineChartV2Data>({
   }, [effectiveWidth, showYAxis]);
 
   const dataWidth = useMemo(() => {
-    return getWidthOfData(data, effectiveContainerWidth);
+    return getLineChartWidthOfData(data, effectiveContainerWidth);
   }, [data, effectiveContainerWidth]);
 
   // Calculate snap positions for proper scrolling alignment

@@ -2,9 +2,12 @@ import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Line, LineChart as RechartsLineChart, XAxis } from "recharts";
 import { ChartConfig, ChartContainer } from "../../Charts";
+import {
+  getRecentDataThatFits,
+  transformDataForChart,
+} from "../../utils/BarAndLineUtils/MiniAreaAndLineUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
 import { MiniLineChartData } from "../types";
-import { getRecentLineDataThatFits, transformDataForLineChart } from "./utils/miniLineChartUtils";
 
 export interface MiniLineChartProps {
   data: MiniLineChartData;
@@ -52,12 +55,12 @@ export const MiniLineChart = ({
 
   // Get the most recent data that fits in the container
   const filteredData = useMemo(() => {
-    return getRecentLineDataThatFits(data, containerWidth);
+    return getRecentDataThatFits(data, containerWidth);
   }, [data, containerWidth]);
 
   // Transform the filtered data to a consistent format for recharts
   const chartData = useMemo(() => {
-    return transformDataForLineChart(filteredData);
+    return transformDataForChart(filteredData);
   }, [filteredData]);
 
   const colors = useMemo(() => {

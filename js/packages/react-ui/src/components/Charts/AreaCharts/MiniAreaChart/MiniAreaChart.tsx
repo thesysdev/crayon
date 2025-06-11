@@ -2,9 +2,12 @@ import clsx from "clsx";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis } from "recharts";
 import { ChartConfig, ChartContainer } from "../../Charts";
+import {
+  getRecentDataThatFits,
+  transformDataForChart,
+} from "../../utils/BarAndLineUtils/MiniAreaAndLineUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
 import { MiniAreaChartData } from "../types";
-import { getRecentDataThatFits, transformDataForChart } from "./utils/miniAreaChartUtils";
 
 export interface MiniAreaChartProps {
   data: MiniAreaChartData;
