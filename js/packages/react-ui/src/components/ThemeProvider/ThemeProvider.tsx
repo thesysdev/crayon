@@ -31,26 +31,26 @@ export const useTheme = () => {
 
 const lightTheme: ColorTheme = {
   // Background colors
-  backgroundFills: "rgb(245, 245, 245)",
-  brandElFills: "rgb(0, 0, 0)",
-  brandElHoverFills: "rgba(0, 0, 0, 0.8)",
-  containerFills: "rgb(255, 255, 255)",
-  overlayFills: "rgba(0, 0, 0, 0.4)",
-  sunkFills: "rgba(0, 0, 0, 0.04)",
-  containerHoverFills: "rgba(0, 0, 0, 0.04)",
-  dangerFills: "rgba(217, 45, 32, 0.08)",
+  backgroundFills: "rgba(250, 250, 250, 1)",
+  brandElFills: "rgba(127, 86, 217, 1)",
+  brandElHoverFills: "rgba(127, 86, 217, 0.8)",
+  containerFills: "rgba(253, 253, 253, 1)",
+  overlayFills: "rgba(0, 0, 0, 0.40)",
+  sunkFills: "rgba(0, 0, 0, 0.06)",
+  containerHoverFills: "rgba(255, 255, 255, 0.04)",
+  dangerFills: "rgba(203, 63, 73, 0.10)",
   successFills: "rgba(7, 148, 85, 0.08)",
-  infoFills: "rgba(56, 148, 255, 0.08)",
-  elevatedFills: "rgba(255, 255, 255, 0.3)",
+  infoFills: "rgba(56, 148, 255, 0.10)",
   alertFills: "rgba(255, 199, 0, 0.10)",
   invertedFills: "rgba(21, 21, 21, 1)",
+  elevatedFills: "rgba(255, 255, 249, 0.60)",
   sunkBgFills: "rgba(0, 0, 0, 0.04)",
 
   // Border colors
-  strokeDefault: "rgba(0, 0, 0, 0.06)",
-  strokeInteractiveEl: "rgba(0, 0, 0, 0.12)",
+  strokeDefault: "rgba(0, 0, 0, 0.04)",
+  strokeInteractiveEl: "rgba(0, 0, 0, 0.08)",
   strokeInteractiveElHover: "rgba(0, 0, 0, 0.4)",
-  strokeInteractiveElSelected: "rgb(0, 0, 0)",
+  strokeInteractiveElSelected: "rgba(21, 21, 21, 1)",
   strokeEmphasis: "rgba(21, 21, 21, 1)",
   strokeAccent: "rgba(255, 255, 255, 0.08)",
   strokeAccentEmphasis: "rgba(255, 255, 255, 0.30)",
@@ -70,7 +70,7 @@ const lightTheme: ColorTheme = {
   secondaryText: "rgba(0, 0, 0, 0.4)",
   disabledText: "rgba(0, 0, 0, 0.2)",
   dangerText: "rgba(217, 45, 32, 1)",
-  successText: "rgba(7, 148, 85, 1)",
+  successText: "rgba(13, 160, 94, 0.10)",
   linkText: "rgba(0, 0, 0, 1)",
   infoText: "rgba(56, 148, 255, 1)",
   tertiaryText: "rgba(165, 165, 165, 1)",
@@ -97,8 +97,8 @@ const lightTheme: ColorTheme = {
   interactiveDisabled: "rgba(0, 0, 0, 0.02)",
   interactiveAccent: "rgba(24, 130, 255, 1)",
   interactiveAccentHover: "rgba(70, 160, 247, 1)",
-  interactiveAccentPressed: "rgba(166, 206, 255, 1)",
-  interactiveAccentDisabled: "rgba(32, 107, 213, 1)",
+  interactiveAccentPressed: "rgba(32, 107, 213, 1)",
+  interactiveAccentDisabled: "rgba(166, 206, 255, 1)",
   interactiveDestructive: "rgba(188, 46, 55, 0.02)",
   interactiveDestructiveHover: "rgba(188, 46, 55, 0.08)",
   interactiveDestructivePressed: "rgba(188, 46, 55, 0.02)",
@@ -111,26 +111,26 @@ const lightTheme: ColorTheme = {
 
 const darkTheme: ColorTheme = {
   // Background colors
-  backgroundFills: "rgb(28, 28, 28)",
-  brandElFills: "rgb(255, 255, 255)",
-  brandElHoverFills: "rgba(255, 255, 255, 0.8)",
-  containerFills: "rgb(43, 43, 43)",
+  backgroundFills: "rgba(21, 21, 21, 1)",
+  brandElFills: "rgba(127, 86, 217, 1)",
+  brandElHoverFills: "rgba(127, 86, 217, 0.8)",
+  containerFills: "rgba(28, 28, 28, 1)",
   overlayFills: "rgba(0, 0, 0, 0.4)",
-  sunkFills: "rgba(0, 0, 0, 0.2)",
+  sunkFills: "rgba(255, 255, 255, 0.08)",
   containerHoverFills: "rgba(255, 255, 255, 0.1)",
-  dangerFills: "rgba(217, 45, 32, 0.1)",
-  successFills: "rgba(7, 148, 85, 0.1)",
-  infoFills: "rgba(56, 148, 255, 0.1)",
-  elevatedFills: "rgba(255, 255, 255, 0.1)",
+  dangerFills: "rgba(203, 63, 73, 0.20)",
+  successFills: "rgba(13, 160, 94, 0.20)",
+  infoFills: "rgba(56, 148, 255, 0.20)",
   alertFills: "rgba(255, 199, 0, 0.20)",
+  elevatedFills: "rgba(255, 255, 255, 0.06)",
   invertedFills: "rgba(253, 253, 253, 1)",
   sunkBgFills: "rgba(0, 0, 0, 0.12)",
 
   // Border colors
-  strokeDefault: "rgba(255, 255, 255, 0.06)",
-  strokeInteractiveEl: "rgba(255, 255, 255, 0.12)",
+  strokeDefault: "rgba(255, 255, 255, 0.04)",
+  strokeInteractiveEl: "rgba(255, 255, 255, 0.8)",
   strokeInteractiveElHover: "rgba(255, 255, 255, 0.4)",
-  strokeInteractiveElSelected: "rgba(255, 255, 255, 1)",
+  strokeInteractiveElSelected: "rgba(253, 253, 253, 1)",
   strokeEmphasis: "rgba(253, 253, 253, 1)",
   strokeAccent: "rgba(0, 0, 0, 0.08)",
   strokeAccentEmphasis: "rgba(0, 0, 0, 0.30)",
@@ -144,7 +144,7 @@ const darkTheme: ColorTheme = {
   strokeDangerEmphasis: "rgba(203, 63, 73, 0.08)",
 
   // Text colors
-  brandText: "rgba(0, 0, 0, 1)",
+  brandText: "rgba(255, 255, 255, 1)",
   brandSecondaryText: "rgba(255, 255, 255, 0.4)",
   primaryText: "rgba(255, 255, 255, 1)",
   secondaryText: "rgba(255, 255, 255, 0.6)",
@@ -221,89 +221,89 @@ const layoutTheme: LayoutTheme = {
 
 const typographyTheme: TypographyTheme = {
   // Typography
-  fontPrimary: '400 14px/20px "Inter"',
+  fontPrimary: '400 16px/20px "Inter"',
   fontPrimaryLetterSpacing: "0px",
 
   // Display & Headings
   // Large
-  fontHeadingLarge: '600 28px/36px "Inter"',
+  fontHeadingLarge: '600 28px/32.2px "Inter"',
   fontHeadingLargeLetterSpacing: "0px",
   // Medium
-  fontHeadingMedium: '600 24px/32px "Inter"',
+  fontHeadingMedium: '600 24px/27.6px "Inter"',
   fontHeadingMediumLetterSpacing: "0px",
   // Small
-  fontHeadingSmall: '600 18px/24px "Inter"',
+  fontHeadingSmall: '500 18px/22.5px "Inter"',
   fontHeadingSmallLetterSpacing: "0px",
 
   // Title Variants
   // Default
-  fontTitle: '500 14px/20px "Inter"',
+  fontTitle: '500 16px/20px "Inter"',
   fontTitleLetterSpacing: "0px",
   // Medium
-  fontTitleMedium: '500 16px/24px "Inter"',
+  fontTitleMedium: '500 16px/20px "Inter"',
   fontTitleMediumLetterSpacing: "0px",
   // Small
-  fontTitleSmall: '500 14px/20px "Inter"',
+  fontTitleSmall: '500 16px/20px "Inter"',
   fontTitleSmallLetterSpacing: "0px",
 
   // Body Text
   // Regular
-  fontBody: '400 14px/18px "Inter"',
+  fontBody: '400 16px/24px "Inter"',
   fontBodyLetterSpacing: "0px",
 
-  fontBodyMedium: '400 16px/24px "Inter"',
+  fontBodyMedium: '400 16px/20px "Inter"',
   fontBodyMediumLetterSpacing: "0px",
 
-  fontBodySmall: '400 14px/20px "Inter"',
+  fontBodySmall: '400 14px/21px "Inter"',
   fontBodySmallLetterSpacing: "0px",
   // Heavy
-  fontBodyHeavy: '600 16px/24px "Inter"',
+  fontBodyHeavy: '500 16px/24px "Inter"',
   fontBodyHeavyLetterSpacing: "0px",
 
-  fontBodySmallHeavy: '600 14px/20px "Inter"',
+  fontBodySmallHeavy: '600 16px/20px "Inter"',
   fontBodySmallHeavyLetterSpacing: "0px",
 
   // Large
-  fontBodyLarge: '400 18px/27px "Inter"',
+  fontBodyLarge: '500 18px/27px "Inter"',
   fontBodyLargeLetterSpacing: "0px",
 
   fontBodyLargeHeavy: '500 18px/27px "Inter"',
   fontBodyLargeHeavyLetterSpacing: "0px",
 
   // Special
-  fontBodyLink: '500 14px/18px "Inter"',
+  fontBodyLink: '400 16px/19.2px "Inter"',
   fontBodyLinkLetterSpacing: "0px",
 
   // Label System
   // Large
-  fontLabelLarge: '400 12px/16px "Inter"',
+  fontLabelLarge: '400 16px/19.2px "Inter"',
   fontLabelLargeLetterSpacing: "0px",
 
-  fontLabelLargeHeavy: '500 12px/16px "Inter"',
+  fontLabelLargeHeavy: '500 16px/19.2px "Inter"',
   fontLabelLargeHeavyLetterSpacing: "0px",
   // Regular
-  fontLabel: '400 12px/16px "Inter"',
+  fontLabel: '400 14px/16.8px "Inter"',
   fontLabelLetterSpacing: "0px",
 
-  fontLabelHeavy: '500 12px/16px "Inter"',
+  fontLabelHeavy: '500 14px/16.8px "Inter"',
   fontLabelHeavyLetterSpacing: "0px",
   // Medium
-  fontLabelMedium: '400 10px/16px "Inter"',
+  fontLabelMedium: '400 16px/20px "Inter"',
   fontLabelMediumLetterSpacing: "0px",
 
-  fontLabelMediumHeavy: '600 10px/16px "Inter"',
+  fontLabelMediumHeavy: '600 16px/20px "Inter"',
   fontLabelMediumHeavyLetterSpacing: "0px",
   // Small
-  fontLabelSmall: '400 10px/16px "Inter"',
+  fontLabelSmall: '400 12px/14.4px "Inter"',
   fontLabelSmallLetterSpacing: "0px",
 
-  fontLabelSmallHeavy: '500 10px/16px "Inter"',
+  fontLabelSmallHeavy: '500 12px/14.4px "Inter"',
   fontLabelSmallHeavyLetterSpacing: "0px",
   // Extra Small
-  fontLabelExtraSmall: '400 8px/12px "Inter"',
+  fontLabelExtraSmall: '400 10px/12px "Inter"',
   fontLabelExtraSmallLetterSpacing: "0px",
 
-  fontLabelExtraSmallHeavy: '500 8px/12px "Inter"',
+  fontLabelExtraSmallHeavy: '500 10px/12px "Inter"',
   fontLabelExtraSmallHeavyLetterSpacing: "0px",
 } as const;
 
@@ -348,11 +348,42 @@ export const ThemeProvider = ({
           --crayon-success-fills: ${theme.successFills};
           --crayon-info-fills: ${theme.infoFills};
           --crayon-elevated-fills: ${theme.elevatedFills};
+          --crayon-alert-fills: ${theme.alertFills};
+          --crayon-inverted-fills: ${theme.invertedFills};
+          --crayon-sunk-bg-fills: ${theme.sunkBgFills};
+
+          --crayon-interactive-default: ${theme.interactiveDefault};
+          --crayon-interactive-hover: ${theme.interactiveHover};
+          --crayon-interactive-pressed: ${theme.interactivePressed};
+          --crayon-interactive-disabled: ${theme.interactiveDisabled};
+          --crayon-interactive-accent: ${theme.interactiveAccent};
+          --crayon-interactive-accent-hover: ${theme.interactiveAccentHover};
+          --crayon-interactive-accent-pressed: ${theme.interactiveAccentPressed};
+          --crayon-interactive-accent-disabled: ${theme.interactiveAccentDisabled};
+          --crayon-interactive-destructive: ${theme.interactiveDestructive};
+          --crayon-interactive-destructive-hover: ${theme.interactiveDestructiveHover};
+          --crayon-interactive-destructive-pressed: ${theme.interactiveDestructivePressed};
+          --crayon-interactive-destructive-disabled: ${theme.interactiveDestructiveDisabled};
+          --crayon-interactive-destructive-accent: ${theme.interactiveDestructiveAccent};
+          --crayon-interactive-destructive-accent-hover: ${theme.interactiveDestructiveAccentHover};
+          --crayon-interactive-destructive-accent-pressed: ${theme.interactiveDestructiveAccentPressed};
+          --crayon-interactive-destructive-accent-disabled: ${theme.interactiveDestructiveAccentDisabled};
 
           --crayon-stroke-default: ${theme.strokeDefault};
           --crayon-stroke-interactive-el: ${theme.strokeInteractiveEl};
           --crayon-stroke-interactive-el-hover: ${theme.strokeInteractiveElHover};
           --crayon-stroke-interactive-el-selected: ${theme.strokeInteractiveElSelected};
+          --crayon-stroke-emphasis: ${theme.strokeEmphasis};
+          --crayon-stroke-accent: ${theme.strokeAccent};
+          --crayon-stroke-accent-emphasis: ${theme.strokeAccentEmphasis};
+          --crayon-stroke-info: ${theme.strokeInfo};
+          --crayon-stroke-info-emphasis: ${theme.strokeInfoEmphasis};
+          --crayon-stroke-alert: ${theme.strokeAlert};
+          --crayon-stroke-alert-emphasis: ${theme.strokeAlertEmphasis};
+          --crayon-stroke-success: ${theme.strokeSuccess};
+          --crayon-stroke-success-emphasis: ${theme.strokeSuccessEmphasis};
+          --crayon-stroke-danger: ${theme.strokeDanger};
+          --crayon-stroke-danger-emphasis: ${theme.strokeDangerEmphasis};
 
           --crayon-brand-text: ${theme.brandText};
           --crayon-brand-secondary-text: ${theme.brandSecondaryText};
@@ -363,6 +394,22 @@ export const ThemeProvider = ({
           --crayon-success-text: ${theme.successText};
           --crayon-link-text: ${theme.linkText};
           --crayon-info-text: ${theme.infoText};
+          --crayon-tertiary-text: ${theme.tertiaryText};
+          --crayon-accent-primary-text: ${theme.accentPrimaryText};
+          --crayon-accent-secondary-text: ${theme.accentSecondaryText};
+          --crayon-accent-tertiary-text: ${theme.accentTertiaryText};
+          --crayon-success-primary-text: ${theme.successPrimaryText};
+          --crayon-success-inverted-text: ${theme.successInvertedText};
+          --crayon-alert-primary-text: ${theme.alertPrimaryText};
+          --crayon-alert-inverted-text: ${theme.alertInvertedText};
+          --crayon-danger-primary-text: ${theme.dangerPrimaryText};
+          --crayon-danger-secondary-text: ${theme.dangerSecondaryText};
+          --crayon-danger-tertiary-text: ${theme.dangerTertiaryText};
+          --crayon-danger-inverted-primary-text: ${theme.dangerInvertedPrimaryText};
+          --crayon-danger-inverted-secondary-text: ${theme.dangerInvertedSecondaryText};
+          --crayon-danger-inverted-tertiary-text: ${theme.dangerInvertedTertiaryText};
+          --crayon-info-primary-text: ${theme.infoPrimaryText};
+          --crayon-info-inverted-text: ${theme.infoInvertedText};
 
           --crayon-spacing-0: ${theme.spacing0};
           --crayon-spacing-3xs: ${theme.spacing3xs};
@@ -433,6 +480,10 @@ export const ThemeProvider = ({
           --crayon-font-heading-medium-letter-spacing: ${theme.fontHeadingMediumLetterSpacing};
           --crayon-font-heading-small: ${theme.fontHeadingSmall};
           --crayon-font-heading-small-letter-spacing: ${theme.fontHeadingSmallLetterSpacing};
+          --crayon-font-body-large-heavy: ${theme.fontBodyLargeHeavy};
+          --crayon-font-body-large-heavy-letter-spacing: ${theme.fontBodyLargeHeavyLetterSpacing};
+          --crayon-font-body-large: ${theme.fontBodyLarge};
+          --crayon-font-body-large-letter-spacing: ${theme.fontBodyLargeLetterSpacing};
 
           --crayon-shadow-s: ${theme.shadowS};
           --crayon-shadow-m: ${theme.shadowM};
