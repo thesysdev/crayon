@@ -11,7 +11,7 @@ import {
   keyTransform,
 } from "../../Charts";
 import { cartesianGrid } from "../../cartesianGrid";
-import { DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
+import { ActiveDot, DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
 import { LegendItem } from "../../types";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
 import { getChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
@@ -24,7 +24,6 @@ import {
   getWidthOfData,
   getXAxisTickPositionData,
 } from "../utils/AreaChartUtils";
-import { ActiveDot } from "./components/ActiveDot";
 
 export interface AreaChartV2Props<T extends AreaChartV2Data> {
   data: T;
@@ -33,7 +32,6 @@ export interface AreaChartV2Props<T extends AreaChartV2Data> {
   variant?: AreaChartVariant;
   grid?: boolean;
   legend?: boolean;
-  opacity?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
   showYAxis?: boolean;
@@ -59,7 +57,6 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
   xAxisLabel,
   yAxisLabel,
   legend = true,
-  opacity = 0.5,
   className,
   height,
   width,
