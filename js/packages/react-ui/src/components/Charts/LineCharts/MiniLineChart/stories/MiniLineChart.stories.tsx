@@ -1,73 +1,60 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Monitor, TabletSmartphone } from "lucide-react";
 import { Card } from "../../../../Card";
-import { MiniLineChart } from "../MiniLineChart";
+import { MiniLineChart, MiniLineChartProps } from "../MiniLineChart";
 
-const lineChartData = [
-  { month: "January", desktop: 150, mobile: 90 },
-  { month: "February", desktop: 280, mobile: 180 },
-  { month: "March", desktop: 220, mobile: 140 },
-  { month: "April", desktop: 180, mobile: 160 },
-  { month: "May", desktop: 250, mobile: 120 },
-  { month: "June", desktop: 300, mobile: 180 },
+// Simple array of numbers for 1D line chart
+const simpleLineChartData = [
+  12, 45, 78, 32, 67, 89, 23, 56, 91, 34, 76, 28, 85, 42, 19, 63, 87, 31, 74, 58, 92, 26, 49, 83,
+  37, 50, 1,
 ];
 
-const icons = {
-  desktop: Monitor,
-  mobile: TabletSmartphone,
-} as const;
+// Array of objects with value and label
+const labeledLineChartData = [
+  { value: 150, label: "January" },
+  { value: 280, label: "February" },
+  { value: 220, label: "March" },
+  { value: 180, label: "April" },
+  { value: 250, label: "May" },
+  { value: 300, label: "June" },
+  { value: 320, label: "July" },
+  { value: 280, label: "August" },
+  { value: 310, label: "September" },
+  { value: 290, label: "October" },
+  { value: 340, label: "November" },
+  { value: 360, label: "December" },
+];
 
-const meta = {
+const meta: Meta<typeof MiniLineChart> = {
   title: "Components/Charts/LineCharts/MiniLineChart",
   component: MiniLineChart,
   parameters: {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { LineChart } from '@crayon-ui/react-ui/Charts/LineChart';\n```",
+        component:
+          "```tsx\nimport { MiniLineChart } from '@crayon-ui/react-ui/Charts/LineCharts/MiniLineChart';\n```\n\nA responsive mini line chart component that accepts 1D data (numbers or objects with value/label) with automatic data filtering for space-constrained containers. Features smooth line interpolation and customizable styling.",
       },
     },
   },
-  tags: ["!dev", "autodocs"],
-
+  tags: ["dev", "autodocs"],
   argTypes: {
     data: {
       description:
-        "An array of data objects where each object represents a data point. Each object should have a category field (e.g., month) and one or more numeric values for the areas to be plotted.",
-      control: { type: "object" },
-      table: {
-        type: { summary: "Array<Record<string, string | number>>" },
-        defaultValue: { summary: "[]" },
-        category: "Data",
-      },
-    },
-    categoryKey: {
-      description:
-        "The key from your data object to be used as the x-axis categories (e.g., 'month', 'year', 'date')",
+        "An array of numbers or an array of objects with value and optional label. Each entry represents a single point in the line chart.",
       control: false,
       table: {
-        type: { summary: "string" },
-        defaultValue: { summary: "string" },
+        type: { summary: "Array<number> | Array<{ value: number; label?: string }>" },
+        defaultValue: { summary: "[]" },
         category: "Data",
       },
     },
     theme: {
       description:
-        "The color palette theme for the chart. Each theme provides a different set of colors for the areas.",
+        "The color palette theme for the chart. Each theme provides a different color for the line.",
       control: "select",
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
-        category: "Appearance",
-      },
-    },
-    icons: {
-      description:
-        "An object that maps data keys to icon components. These icons will appear in the legend next to their corresponding data series.",
-      control: false,
-      table: {
-        type: { summary: "Record<string, React.ComponentType>" },
-        defaultValue: { summary: "{}" },
         category: "Appearance",
       },
     },
@@ -83,7 +70,7 @@ const meta = {
     },
     strokeWidth: {
       description: "The width of the line stroke",
-      control: false,
+      control: "number",
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "2" },
@@ -91,12 +78,29 @@ const meta = {
       },
     },
     isAnimationActive: {
-      description: "Whether to animate the chart",
+      description: "Whether to animate the chart when it first renders",
       control: "boolean",
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
         category: "Display",
+      },
+    },
+    size: {
+      description: "The width and height of the chart",
+      control: "text",
+      table: {
+        type: { summary: "number | string" },
+        defaultValue: { summary: "100%" },
+        category: "Appearance",
+      },
+    },
+    lineColor: {
+      description: "Custom color for the line stroke",
+      control: "color",
+      table: {
+        type: { summary: "string" },
+        category: "Appearance",
       },
     },
   },
@@ -105,18 +109,19 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const LineChartStory: Story = {
-  name: "Line Chart",
+export const SimpleNumberArray: Story = {
+  name: "Simple Number Array",
   args: {
-    data: lineChartData,
-    categoryKey: "month",
+    data: simpleLineChartData,
     theme: "ocean",
     variant: "natural",
     strokeWidth: 2,
     isAnimationActive: true,
+    size: "100%",
   },
-  render: (args) => (
-    <Card style={{ width: "500px" }}>
+  render: (args: MiniLineChartProps) => (
+    <Card style={{ width: "280px", padding: "20px" }}>
+      <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Daily Activity</h3>
       <MiniLineChart {...args} />
     </Card>
   ),
@@ -124,45 +129,35 @@ export const LineChartStory: Story = {
     docs: {
       source: {
         code: `
-const lineChartData = [
-  { month: "January", desktop: 150, mobile: 90 },
-  { month: "February", desktop: 280, mobile: 180 },
-  { month: "March", desktop: 220, mobile: 140 },
-  { month: "April", desktop: 180, mobile: 160 },
-  { month: "May", desktop: 250, mobile: 120 },
-  { month: "June", desktop: 300, mobile: 180 },
-];
-<Card
-  style={{
-    width: '500px'
-  }}
->
-  <MiniLineChart
-    categoryKey="month"
-    data={lineChartData}
-    grid
-    label
-    legend
-    strokeWidth={2}
-    theme="ocean"
-    variant="natural"
-    isAnimationActive
-  />
-</Card>
+const activityData = [12, 45, 78, 32, 67, 89, 23, 56, 91, 34];
+
+<MiniLineChart 
+  data={activityData}
+  theme="ocean"
+  variant="natural"
+  strokeWidth={2}
+  isAnimationActive={true}
+  size="100%"
+/>
 `,
       },
     },
   },
 };
 
-export const LineChartStoryWithIcons: Story = {
-  name: "Line Chart with Icons",
+export const LabeledData: Story = {
+  name: "Labeled Data",
   args: {
-    ...LineChartStory.args,
-    icons: icons,
+    data: labeledLineChartData,
+    theme: "emerald",
+    variant: "natural",
+    strokeWidth: 2,
+    isAnimationActive: true,
+    size: "100%",
   },
-  render: (args) => (
-    <Card style={{ width: "500px" }}>
+  render: (args: MiniLineChartProps) => (
+    <Card style={{ width: "320px", padding: "20px" }}>
+      <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Monthly Revenue</h3>
       <MiniLineChart {...args} />
     </Card>
   ),
@@ -170,41 +165,21 @@ export const LineChartStoryWithIcons: Story = {
     docs: {
       source: {
         code: `
-        import { Monitor, TabletSmartphone } from "lucide-react";
-
-  const lineChartData = [
-  { month: "January", desktop: 150, mobile: 90 },
-  { month: "February", desktop: 280, mobile: 180 },
-  { month: "March", desktop: 220, mobile: 140 },
-  { month: "April", desktop: 180, mobile: 160 },
-  { month: "May", desktop: 250, mobile: 120 },
-  { month: "June", desktop: 300, mobile: 180 },
+const revenueData = [
+  { value: 150, label: "January" },
+  { value: 280, label: "February" },
+  { value: 220, label: "March" },
+  // ...
 ];
 
-const icons = {
-  desktop: Monitor,
-  mobile: TabletSmartphone,
-};
-
-<Card
-  style={{
-    width: '500px'
-  }}
->
-  <MiniLineChart
-    categoryKey="month"
-    data={lineChartData}
-    grid
-    label
-    legend
-    strokeWidth={2}
-    theme="ocean"
-    variant="natural"
-    icons={icons}
-    isAnimationActive
-  />
-</Card>
-        `,
+<MiniLineChart 
+  data={revenueData}
+  theme="emerald"
+  variant="natural"
+  strokeWidth={2}
+  size="100%"
+/>
+`,
       },
     },
   },
