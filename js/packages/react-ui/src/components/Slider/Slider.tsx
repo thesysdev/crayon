@@ -114,7 +114,13 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
             style={style}
           >
             <SliderPrimitive.Track className="slider-track">
-              <SliderPrimitive.Range className="slider-range" />
+              <SliderPrimitive.Range
+                className={clsx("slider-range", {
+                  "slider-range--at-min":
+                    (variant === "continuous" || variant === "discrete") &&
+                    valueToShow?.[0] === min,
+                })}
+              />
               {variant === "discrete" && renderDots()}
             </SliderPrimitive.Track>
             {thumbs}

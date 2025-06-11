@@ -3,43 +3,47 @@ import clsx from "clsx";
 import { ChevronDownIcon } from "lucide-react";
 import React, { forwardRef } from "react";
 
-export type AccordionProps =
+type AccordionVariant = "clear" | "card" | "sunk";
+
+export type AccordionProps = (
   | AccordionPrimitive.AccordionSingleProps
-  | AccordionPrimitive.AccordionMultipleProps;
+  | AccordionPrimitive.AccordionMultipleProps
+) & {
+  variant?: AccordionVariant;
+};
+
+const variantMap: Record<AccordionVariant, string> = {
+  clear: "crayon-accordion-clear",
+  card: "crayon-accordion-card",
+  sunk: "crayon-accordion-sunk",
+};
 
 export const Accordion = forwardRef<
   React.ComponentRef<typeof AccordionPrimitive.Root>,
   AccordionProps
->(({ className, style, ...props }, ref) => (
+>(({ className, style, variant = "clear", ...props }, ref) => (
   <AccordionPrimitive.Root
     ref={ref}
-    className={clsx("crayon-accordion", className)}
+    className={clsx("crayon-accordion", variantMap[variant], className)}
     style={style}
     {...props}
   />
 ));
 
-type AccordionItemVariant = "card" | "sunk";
 export interface AccordionItemProps
   extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> {
   className?: string;
   style?: React.CSSProperties;
   value: string;
-  variant?: AccordionItemVariant;
 }
-
-const variantMap: Record<AccordionItemVariant, string> = {
-  card: "crayon-accordion-item-card",
-  sunk: "crayon-accordion-item-sunk",
-};
 
 export const AccordionItem = forwardRef<
   React.ComponentRef<typeof AccordionPrimitive.Item>,
   AccordionItemProps
->(({ className, style, value, variant = "card", ...props }, ref) => (
+>(({ className, style, value, ...props }, ref) => (
   <AccordionPrimitive.Item
     ref={ref}
-    className={clsx("crayon-accordion-item", variantMap[variant], className)}
+    className={clsx("crayon-accordion-item", className)}
     style={style}
     value={value}
     {...props}
