@@ -24,6 +24,7 @@ import {
   getWidthOfData,
   getXAxisTickPositionData,
 } from "../utils/AreaChartUtils";
+import { ActiveDot } from "./components/ActiveDot";
 
 export interface AreaChartV2Props<T extends AreaChartV2Data> {
   data: T;
@@ -199,6 +200,8 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
 
   const chartSyncID = useMemo(() => `area-chart-sync-${id}`, [id]);
 
+  const gradientId = useMemo(() => `area-chart-gradient-${id}`, [id]);
+
   return (
     <div
       className={clsx("crayon-area-chart-container", className)}
@@ -293,19 +296,26 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
                 const transformedKey = keyTransform(key);
                 const color = `var(--color-${transformedKey})`;
                 return (
-                  <Area
-                    key={`main-${key}`}
-                    dataKey={key}
-                    type={variant}
-                    stroke={color}
-                    fill={color}
-                    fillOpacity={opacity}
-                    stackId="a"
-                    activeDot={{
-                      r: 5,
-                    }}
-                    isAnimationActive={isAnimationActive}
-                  />
+                  <>
+                    <defs>
+                      <linearGradient id={`${gradientId}-${key}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={color} stopOpacity={0.6} />
+                        <stop offset="95%" stopColor={color} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <Area
+                      key={`main-${key}`}
+                      dataKey={key}
+                      type={variant}
+                      stroke={color}
+                      fill={`url(#${gradientId}-${key})`}
+                      fillOpacity={1}
+                      stackId="a"
+                      activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
+                      dot={false}
+                      isAnimationActive={isAnimationActive}
+                    />
+                  </>
                 );
               })}
             </RechartsAreaChart>
