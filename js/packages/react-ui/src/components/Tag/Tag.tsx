@@ -35,8 +35,8 @@ export const Tag = forwardRef<HTMLDivElement, TagProps>((props, ref) => {
       style={styles}
       {...rest}
     >
-      {props.icon && <span className="crayon-tag-icon">{props.icon}</span>}
-      <span className="crayon-tag-text">{props.text}</span>
+      {icon && <span className="crayon-tag-icon">{icon}</span>}
+      <span className="crayon-tag-text">{text}</span>
     </div>
   );
 });
