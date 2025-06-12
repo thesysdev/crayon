@@ -11,19 +11,6 @@ import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 
 export type PieChartData = Array<Record<string, string | number>>;
 
-export interface CustomLabelProps {
-  payload: {
-    percentage: number;
-    [key: string]: any;
-  };
-  cx: number;
-  cy: number;
-  x: number;
-  y: number;
-  textAnchor: string;
-  dominantBaseline: string;
-}
-
 export interface ChartDimensions {
   outerRadius: number;
   innerRadius: number;
@@ -43,33 +30,6 @@ export interface ChartHoverHook {
   activeIndex: number | null;
   handleMouseEnter: (event: any, index: number) => void;
   handleMouseLeave: () => void;
-}
-
-export interface LabelLineProps {
-  points: [Point, Point]; // Exactly two points required
-  payload: any;
-  value: number;
-  textAnchor: string;
-  dominantBaseline: string;
-}
-
-interface Point {
-  x: number;
-  y: number;
-}
-
-export interface ActiveShapeProps {
-  cx: number;
-  cy: number;
-  innerRadius: number;
-  outerRadius: number;
-  startAngle: number;
-  endAngle: number;
-  fill: string;
-  payload: any;
-  percent: number;
-  value: number;
-  midAngle: number;
 }
 
 export interface AnimationConfig {
@@ -104,21 +64,11 @@ export const calculatePercentage = (value: number, total: number): number => {
  * Calculates dimensions for standard pie/donut charts
  * @param width - The container width
  * @param variant - The chart variant ('pie' or 'donut')
- * @param label - Whether the chart has labels
  * @returns Object containing outer and inner radius values
  */
-export const calculateChartDimensions = (
-  width: number,
-  variant: string,
-  label: boolean,
-): ChartDimensions => {
+export const calculateChartDimensions = (width: number, variant: string): ChartDimensions => {
   const baseRadiusPercentage = 0.4; // 40% of container width
-
   let outerRadius = Math.round(width * baseRadiusPercentage);
-
-  if (label) {
-    outerRadius = Math.round(outerRadius * 0.9);
-  }
 
   // Set minimum and maximum bounds for radius
   outerRadius = Math.max(50, Math.min(outerRadius, width / 2 - 10)); // Ensure radius isn't too small or too large
@@ -135,20 +85,11 @@ export const calculateChartDimensions = (
 /**
  * Calculates dimensions for two-level pie charts
  * @param width - The container width
- * @param label - Whether the chart has labels
  * @returns Object containing outer, middle, and inner radius values
  */
-export const calculateTwoLevelChartDimensions = (
-  width: number,
-  label: boolean,
-): TwoLevelChartDimensions => {
+export const calculateTwoLevelChartDimensions = (width: number): TwoLevelChartDimensions => {
   const baseRadiusPercentage = 0.4; // 40% of container width
-
   let outerRadius = Math.round(width * baseRadiusPercentage);
-
-  if (label) {
-    outerRadius = Math.round(outerRadius * 0.9);
-  }
 
   // Set minimum and maximum bounds for radius
   outerRadius = Math.max(50, Math.min(outerRadius, width / 2 - 10));
@@ -165,16 +106,6 @@ export const calculateTwoLevelChartDimensions = (
 // ==========================================
 // Layout and Styling Utilities
 // ==========================================
-
-/**
- * Map of layout types to their corresponding CSS classes
- */
-export const layoutMap: Record<string, string> = {
-  mobile: "crayon-pie-chart-container-mobile",
-  fullscreen: "crayon-pie-chart-container-fullscreen",
-  tray: "crayon-pie-chart-container-tray",
-  copilot: "crayon-pie-chart-container-copilot",
-};
 
 /**
  * Generates hover style properties for chart cells

@@ -113,15 +113,6 @@ const meta: Meta<PieChartV2Props<typeof pieChartData>> = {
         category: "Display",
       },
     },
-    label: {
-      description: "Whether to display the data point labels above each point on the chart",
-      control: "boolean",
-      table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "true" },
-        category: "Display",
-      },
-    },
     isAnimationActive: {
       description: "Whether to animate the chart",
       control: "boolean",
@@ -165,14 +156,13 @@ export const Default: Story = {
     variant: "pie",
     format: "number",
     legend: true,
-    label: true,
     isAnimationActive: true,
     appearance: "circular",
     cornerRadius: 0,
     paddingAngle: 0,
   },
   render: (args) => (
-    <Card style={{ width: "700px" }}>
+    <Card style={{ width: "500px", height: "300px" }}>
       <PieChartV2 {...args} />
     </Card>
   ),
