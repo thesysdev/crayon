@@ -7,47 +7,26 @@ import { LineChartV2Data } from "../../LineCharts/types";
 const ELEMENT_SPACING = 70;
 
 // Common type for chart data - both AreaChart and LineChart data structures
-export type ChartData = AreaChartV2Data | LineChartV2Data;
+type ChartData = AreaChartV2Data | LineChartV2Data;
 
 /**
- * AREA CHART SPECIFIC FUNCTION
+ * AREA CHART AND LINE CHART SPECIFIC FUNCTION
  * This function returns the width of the data in the area chart, used for padding calculation, scroll amount calculation, and
  * for the width of the chart container.
  * @param data - The data to be displayed in the chart.
  */
-export const getAreaChartWidthOfData = (data: AreaChartV2Data) => {
+export const getWidthOfData = (data: ChartData, containerWidth: number) => {
   // For area charts, we calculate based on the number of data points (always stacked)
   const numberOfElements = data.length; // Number of data points
 
-  let width = numberOfElements * ELEMENT_SPACING; // here we are defining the spacing between the data points,
+  let width = numberOfElements * ELEMENT_SPACING - ELEMENT_SPACING; // here we are defining the spacing between the data points,
   // as the data point has no width, we are just calculating the spacing between the data points
   // if 3 data points, then 2 spaces between them, so 2*70 = 140
+  // so the subtraction is to remove the last spacing as number of data points is 1 more than the number of spaces
 
-  if (data.length === 1) {
-    const minSingleDataWidth = 200; // Minimum width for single data points
-    // self note:
-    // if the data point is only one, then we need to set the width to the minimum width
-
-    width = Math.max(width, minSingleDataWidth);
-  }
-
-  return width;
-};
-
-/**
- * LINE CHART SPECIFIC FUNCTION
- * This function returns the width of the data in the line chart, used for padding calculation, scroll amount calculation, and
- * for the width of the chart container.
- * @param data - The data to be displayed in the chart.
- * @param containerWidth - The container width to determine if scrolling is needed.
- */
-export const getLineChartWidthOfData = (data: LineChartV2Data, containerWidth: number) => {
-  // For line charts, we calculate based on the number of data points
-  const numberOfElements = data.length; // Number of data points
-
-  let width = numberOfElements * ELEMENT_SPACING; // here we are defining the spacing between the data points,
-  // as the data point has no width, we are just calculating the spacing between the data points
-  // if 3 data points, then 2 spaces between them, so 2*70 = 140
+  // if the container width is greater than the width of the data, then we return the container width
+  // because the we need the chart minimum width to be the container width
+  // this decision is made because area chart an bar chart are span from the left to the right of the container
 
   if (containerWidth >= width) {
     return containerWidth;
@@ -72,11 +51,12 @@ export const getLineChartWidthOfData = (data: LineChartV2Data, containerWidth: n
  * @param containerWidth - The total container width for responsive calculations (optional)
  * @returns The formatter for the X-axis tick values.
  * Internally used by the XAxis component in Recharts
+ * this function can be improved for coalition detection and better truncation
  */
 export const getXAxisTickFormatter = (groupWidth?: number, containerWidth?: number) => {
   const CHAR_WIDTH = 7; // Average character width in pixels for most fonts
   const ELLIPSIS_WIDTH = CHAR_WIDTH * 3; // "..." takes about 3 character widths
-  const PADDING = 2; // Safety padding for better visual spacing
+  const PADDING = 5; // Safety padding for better visual spacing
 
   // closure is happening here.
   return (value: string) => {

@@ -15,9 +15,9 @@ import { ActiveDot, DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
 import { LegendItem } from "../../types";
 import {
   findNearestSnapPosition,
-  getAreaChartWidthOfData,
   getOptimalXAxisTickFormatter,
   getSnapPositions,
+  getWidthOfData,
   getXAxisTickPositionData,
 } from "../../utils/BarAndLineUtils/AreaAndLineUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
@@ -92,8 +92,8 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
   }, [effectiveWidth, showYAxis]);
 
   const dataWidth = useMemo(() => {
-    return getAreaChartWidthOfData(data);
-  }, [data]);
+    return getWidthOfData(data, effectiveContainerWidth);
+  }, [data, effectiveContainerWidth]);
 
   // Calculate snap positions for proper scrolling alignment
   const snapPositions = useMemo(() => {
