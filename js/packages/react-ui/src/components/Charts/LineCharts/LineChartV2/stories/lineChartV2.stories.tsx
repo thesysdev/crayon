@@ -281,30 +281,6 @@ const meta: Meta<LineChartV2Props<typeof lineChartData>> = {
         category: "Appearance",
       },
     },
-    strokeDasharray: {
-      description: "Dash pattern for lines",
-      control: "text",
-      table: {
-        defaultValue: { summary: "undefined" },
-        category: "Appearance",
-      },
-    },
-    dot: {
-      description: "Show dots on data points",
-      control: "boolean",
-      table: {
-        defaultValue: { summary: "false" },
-        category: "Appearance",
-      },
-    },
-    activeDot: {
-      description: "Show active dots on hover",
-      control: "boolean",
-      table: {
-        defaultValue: { summary: "true" },
-        category: "Appearance",
-      },
-    },
     grid: {
       description: "Display background grid",
       control: "boolean",
@@ -347,8 +323,6 @@ export const LineChartV2Story: Story = {
     isAnimationActive: true,
     showYAxis: true,
     strokeWidth: 2,
-    dot: false,
-    activeDot: true,
   },
   render: (args: any) => {
     const [selectedDataType, setSelectedDataType] =
@@ -522,13 +496,13 @@ export const StrokeCustomizationStory: Story = {
       <div>
         <h4>Dashed Lines</h4>
         <Card style={{ width: "500px" }}>
-          <LineChartV2 {...args} strokeWidth={2} strokeDasharray="5,5" />
+          <LineChartV2 {...args} strokeWidth={2} />
         </Card>
       </div>
       <div>
         <h4>With Dots</h4>
         <Card style={{ width: "500px" }}>
-          <LineChartV2 {...args} strokeWidth={2} dot={true} />
+          <LineChartV2 {...args} strokeWidth={2} />
         </Card>
       </div>
     </div>

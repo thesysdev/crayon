@@ -341,7 +341,12 @@ export const LineChartV2 = <T extends LineChartV2Data>({
         </div>
       )}
       {legend && (
-        <DefaultLegend items={legendItems} yAxisLabel={yAxisLabel} xAxisLabel={xAxisLabel} />
+        <DefaultLegend
+          items={legendItems}
+          yAxisLabel={yAxisLabel}
+          xAxisLabel={xAxisLabel}
+          containerWidth={effectiveWidth}
+        />
       )}
     </div>
   );

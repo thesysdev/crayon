@@ -351,7 +351,12 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
         </div>
       )}
       {legend && (
-        <DefaultLegend items={legendItems} yAxisLabel={yAxisLabel} xAxisLabel={xAxisLabel} />
+        <DefaultLegend
+          items={legendItems}
+          yAxisLabel={yAxisLabel}
+          xAxisLabel={xAxisLabel}
+          containerWidth={effectiveWidth}
+        />
       )}
     </div>
   );

@@ -386,7 +386,12 @@ const BarChartV2Component = <T extends BarChartData>({
         </div>
       )}
       {legend && (
-        <DefaultLegend items={legendItems} yAxisLabel={yAxisLabel} xAxisLabel={xAxisLabel} />
+        <DefaultLegend
+          items={legendItems}
+          yAxisLabel={yAxisLabel}
+          xAxisLabel={xAxisLabel}
+          containerWidth={effectiveWidth}
+        />
       )}
     </div>
   );

@@ -1,12 +1,16 @@
 import clsx from "clsx";
-import React from "react";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button } from "../../../Button/Button";
 import { type LegendItem } from "../../types";
+import { calculateVisibleItems, getToggleButtonText } from "./utils/defaultLegendUtils";
 
 interface DefaultLegendProps {
   items: LegendItem[];
   className?: string;
   yAxisLabel?: React.ReactNode;
   xAxisLabel?: React.ReactNode;
+  containerWidth?: number;
 }
 
 const DefaultLegend: React.FC<DefaultLegendProps> = ({
@@ -14,9 +18,37 @@ const DefaultLegend: React.FC<DefaultLegendProps> = ({
   className,
   yAxisLabel,
   xAxisLabel,
+  containerWidth,
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Only memoize expensive calculations
+  const { visibleItems, hasMoreItems } = useMemo(() => {
+    return calculateVisibleItems(items, containerWidth);
+  }, [items, containerWidth]);
+
+  const displayItems = useMemo(() => {
+    return isExpanded ? items : visibleItems;
+  }, [isExpanded, items, visibleItems]);
+
+  // Reset expanded state when items change
+  useEffect(() => {
+    setIsExpanded(false);
+  }, [items]);
+
+  const handleToggleExpanded = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const showToggleButton = hasMoreItems;
+
+  const toggleButtonText = useMemo(() => {
+    return getToggleButtonText(isExpanded, items.length, visibleItems.length);
+  }, [isExpanded, items.length, visibleItems.length]);
+
   return (
     <div className="crayon-chart-legend-container crayon-chart-legend--bottom">
+      {/* this is x and y axis labels container*/}
       {(xAxisLabel || yAxisLabel) && (
         <div className="crayon-chart-legend-axis-label-container">
           {xAxisLabel && (
@@ -31,9 +63,14 @@ const DefaultLegend: React.FC<DefaultLegendProps> = ({
           )}
         </div>
       )}
-
-      <div className={clsx("crayon-chart-legend", className)}>
-        {items.map((item) => (
+      {/* this is the legend items container*/}
+      <div
+        className={clsx("crayon-chart-legend", className, {
+          "crayon-chart-legend--expanded": isExpanded,
+          "crayon-chart-legend--collapsed": !isExpanded && showToggleButton,
+        })}
+      >
+        {displayItems.map((item) => (
           <div key={item.key} className="crayon-chart-legend-item">
             {item.icon ? (
               <item.icon />
@@ -46,6 +83,24 @@ const DefaultLegend: React.FC<DefaultLegendProps> = ({
             <span className="crayon-chart-legend-item-label">{item.label}</span>
           </div>
         ))}
+
+        {showToggleButton && (
+          <Button
+            variant="tertiary"
+            size="small"
+            className="crayon-chart-legend-toggle-button"
+            onClick={handleToggleExpanded}
+            iconRight={
+              isExpanded ? (
+                <ChevronUpIcon className="crayon-chart-legend-toggle-button-icon" />
+              ) : (
+                <ChevronDownIcon className="crayon-chart-legend-toggle-button-icon" />
+              )
+            }
+          >
+            {toggleButtonText}
+          </Button>
+        )}
       </div>
     </div>
   );
