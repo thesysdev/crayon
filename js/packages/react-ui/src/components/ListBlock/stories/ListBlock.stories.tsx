@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ChevronRight, Mail, User } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { ListItem } from "../../ListItem";
 import { ListBlock } from "../ListBlock";
 
@@ -59,21 +59,18 @@ export const ListBlockWithItems: Story = {
     <ListBlock>
       <ListItem
         image="https://images.unsplash.com/photo-1747171232839-a5fea879ca59?q=80&w=3840&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        decorativeIcon={<User size={16} />}
         title="John Doe"
         subtitle="Software Engineer"
         actionIcon={<ChevronRight size={16} />}
       />
       <ListItem
         image="https://images.unsplash.com/photo-1747171232839-a5fea879ca59?q=80&w=3840&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        decorativeIcon={<Mail size={16} />}
         title="Jane Smith"
         subtitle="Product Designer"
         actionIcon={<ChevronRight size={16} />}
       />
       <ListItem
         image="https://images.unsplash.com/photo-1747171232839-a5fea879ca59?q=80&w=3840&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        decorativeIcon={<Mail size={16} />}
         title="Ankit Das"
         subtitle="Software Developer"
         actionIcon={<ChevronRight size={16} />}
