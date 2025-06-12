@@ -5,7 +5,6 @@ import { Image } from "../Image";
 export interface ListItemProps {
   className?: string;
   style?: CSSProperties;
-  decorativeIcon?: ReactNode;
   title?: ReactNode;
   subtitle?: ReactNode;
   actionIcon?: ReactNode;
@@ -14,8 +13,7 @@ export interface ListItemProps {
 }
 
 const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>((props, ref) => {
-  const { className, style, decorativeIcon, title, subtitle, actionIcon, image, onClick, ...rest } =
-    props;
+  const { className, style, title, subtitle, actionIcon, image, onClick, ...rest } = props;
   return (
     <div
       ref={ref}
@@ -28,7 +26,6 @@ const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>((props, ref) =>
         <Image src={image} alt="List item image" aspectRatio="1:1" scale="fill" />
       </div>
       <div className="crayon-list-item-content">
-        {decorativeIcon && decorativeIcon}
         {title && <div className="crayon-list-item-title">{title}</div>}
         {subtitle && <div className="crayon-list-item-subtitle">{subtitle}</div>}
       </div>
