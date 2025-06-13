@@ -76,7 +76,9 @@ const StackedLegend = ({ items, onItemHover, activeKey }: StackedLegendProps) =>
             </div>
             <div className="crayon-stacked-legend__item-label-text">{item.label}</div>
           </div>
-          <div>{formatPercentage(item.value, total)}</div>
+          <div className="crayon-stacked-legend__item-value">
+            {formatPercentage(item.value, total)}
+          </div>
         </div>
       ))}
     </div>
