@@ -1,5 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "../../../../Card";
+import { DefaultLegend } from "../../../shared/DefaultLegend/DefaultLegend";
+import StackedLegend from "../../../shared/StackedLegend/StackedLegend";
+import { LegendItem } from "../../../types";
+import { getDistributedColors, getPalette } from "../../../utils/PalletUtils";
 import { PieChartV2, PieChartV2Props } from "../PieChartV2";
 
 const pieChartData = [
@@ -161,11 +166,128 @@ export const Default: Story = {
     cornerRadius: 0,
     paddingAngle: 0,
   },
-  render: (args) => (
-    <Card style={{ width: "500px", height: "300px" }}>
-      <PieChartV2 {...args} />
-    </Card>
-  ),
+  render: (args) => {
+    const ResizableExample = () => {
+      const containerRef = useRef<HTMLDivElement>(null);
+      const [containerWidth, setContainerWidth] = useState<number>(500);
+
+      // Create legend items from the chart data
+      const legendItems: LegendItem[] = useMemo(() => {
+        const palette = getPalette(args.theme || "ocean");
+        const colors = getDistributedColors(palette, args.data.length);
+
+        return args.data.map((item, index) => ({
+          key: String(item[args.categoryKey]),
+          label: String(item[args.categoryKey]),
+          color: colors[index] || "#000000", // Fallback color if undefined
+        }));
+      }, [args.data, args.categoryKey, args.theme]);
+
+      useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const resizeObserver = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            // Subtract padding from the observed width
+            const paddingX = 40; // 20px padding on each side
+            const observedWidth = Math.max(200, entry.contentRect.width - paddingX);
+            setContainerWidth(observedWidth);
+          }
+        });
+
+        resizeObserver.observe(container);
+
+        return () => {
+          resizeObserver.disconnect();
+        };
+      }, []);
+
+      return (
+        <Card
+          ref={containerRef}
+          style={{
+            width: "100%",
+            padding: "20px",
+            resize: "horizontal",
+            overflow: "auto",
+            border: "1px dashed #ccc",
+            minWidth: "250px",
+          }}
+        >
+          <Card style={{ width: "100%", height: "300px" }}>
+            <PieChartV2 {...args} />
+          </Card>
+          <DefaultLegend items={legendItems} containerWidth={containerWidth} />
+        </Card>
+      );
+    };
+
+    return <ResizableExample />;
+  },
+};
+
+export const Interactive: Story = {
+  name: "Interactive with Resize",
+  args: {
+    ...Default.args,
+    theme: "vivid",
+    variant: "donut",
+    cornerRadius: 5,
+    paddingAngle: 1,
+    format: "percentage",
+  },
+  render: (args) => {
+    const ResizableExample = () => {
+      const containerRef = useRef<HTMLDivElement>(null);
+      const [containerWidth, setContainerWidth] = useState<number>(500);
+
+      useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const resizeObserver = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            // Subtract padding from the observed width
+            const paddingX = 40; // 20px padding on each side
+            const observedWidth = Math.max(200, entry.contentRect.width - paddingX);
+            setContainerWidth(observedWidth);
+          }
+        });
+
+        resizeObserver.observe(container);
+
+        return () => {
+          resizeObserver.disconnect();
+        };
+      }, []);
+
+      return (
+        <div
+          ref={containerRef}
+          style={{
+            width: "100%",
+            padding: "20px",
+            resize: "horizontal",
+            overflow: "auto",
+            border: "1px dashed #ccc",
+            minWidth: "250px",
+          }}
+        >
+          <p style={{ marginBottom: "16px", fontSize: "14px", color: "#666" }}>
+            This example demonstrates how the chart and legend adapt to container width.
+            <strong>Drag the bottom-right corner</strong> to resize the container and see how the
+            components adapt in real-time. Current width: <strong>{containerWidth}px</strong>
+          </p>
+          <Card style={{ width: "100%", height: "300px" }}>
+            <PieChartV2 {...args} />
+          </Card>
+        </div>
+      );
+    };
+
+    return <ResizableExample />;
+  },
 };
 
 export const DonutChart: Story = {
@@ -277,4 +399,108 @@ export const SingleColorGradients: Story = {
       <PieChartV2 {...args} />
     </Card>
   ),
+};
+
+export const WithStackedLegend: Story = {
+  name: "With Stacked Legend",
+  args: {
+    ...Default.args,
+    theme: "vivid",
+    variant: "pie",
+    cornerRadius: 5,
+    paddingAngle: 1,
+    format: "percentage",
+  },
+  render: (args) => {
+    const ResizableExample = () => {
+      const containerRef = useRef<HTMLDivElement>(null);
+      const [containerWidth, setContainerWidth] = useState<number>(500);
+      const [containerHeight, setContainerHeight] = useState<number>(400);
+
+      // Create legend items from the chart data
+      const legendItems = useMemo(() => {
+        const palette = getPalette(args.theme || "vivid");
+        const colors = getDistributedColors(palette, args.data.length);
+
+        return args.data.map((item, index) => ({
+          key: String(item[args.categoryKey]),
+          label: String(item[args.categoryKey]),
+          value: Number(item[args.dataKey]),
+          color: colors[index] || "#000000",
+        }));
+      }, [args.data, args.categoryKey, args.dataKey, args.theme]);
+
+      useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const resizeObserver = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            const paddingX = 40;
+            const paddingY = 40;
+            const observedWidth = Math.max(200, entry.contentRect.width - paddingX);
+            const observedHeight = Math.max(200, entry.contentRect.height - paddingY);
+            setContainerWidth(observedWidth);
+            setContainerHeight(observedHeight);
+          }
+        });
+
+        resizeObserver.observe(container);
+
+        return () => {
+          resizeObserver.disconnect();
+        };
+      }, []);
+
+      return (
+        <Card
+          ref={containerRef}
+          style={{
+            width: "100%",
+            height: "100%",
+            padding: "20px",
+            resize: "both",
+            overflow: "auto",
+            border: "1px dashed #ccc",
+            minWidth: "250px",
+            minHeight: "250px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              gap: "20px",
+              flexDirection: "row",
+              height: "100%",
+              width: "100%",
+            }}
+          >
+            <Card
+              style={{
+                flex: "1",
+                height: "100%",
+                minHeight: "200px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <PieChartV2 {...args} />
+            </Card>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <StackedLegend items={legendItems} />
+            </div>
+          </div>
+        </Card>
+      );
+    };
+
+    return <ResizableExample />;
+  },
 };
