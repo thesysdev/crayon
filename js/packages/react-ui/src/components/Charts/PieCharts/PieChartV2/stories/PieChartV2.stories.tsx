@@ -8,13 +8,18 @@ import { getDistributedColors, getPalette } from "../../../utils/PalletUtils";
 import { PieChartV2, PieChartV2Props } from "../PieChartV2";
 
 const pieChartData = [
-  { month: "January", value: 4250 },
-  { month: "February", value: 3820 },
-  { month: "March", value: 4680 },
-  { month: "April", value: 4120 },
-  { month: "May", value: 5340 },
-  { month: "June", value: 6250 },
-  { month: "July", value: 5890 },
+  { month: "January", value: 10 },
+  { month: "February", value: 20 },
+  { month: "March", value: 30 },
+  { month: "April", value: 40 },
+  { month: "May", value: 50 },
+  { month: "June", value: 60 },
+  { month: "July", value: 70 },
+  { month: "August", value: 80 },
+  { month: "September", value: 90 },
+  { month: "October", value: 100 },
+  { month: "November", value: 110 },
+  { month: "December", value: 120 },
 ];
 
 const gradientColors = [
