@@ -12,3 +12,7 @@ This package supports both React 17 and React 18+. When using React 17, the pack
 - `startTransition`: Defers updates using setTimeout
 
 The polyfills are automatically used when React 18 features are not available, ensuring compatibility across React versions.
+
+### Zustand Compatibility
+
+For React 17 compatibility, this package uses Zustand v4.5.5 which supports both React 17 and React 18. Zustand v5+ requires React 18 as the minimum version.

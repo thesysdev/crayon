@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { useShallow } from "zustand/shallow";
+import { useShallow } from "zustand/react/shallow";
 import { Message } from "../types";
 
 /**

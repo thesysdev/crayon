@@ -1,5 +1,5 @@
 import { useStore } from "zustand";
-import { useShallow } from "zustand/shallow";
+import { useShallow } from "zustand/react/shallow";
 import { useChatContext } from "../internal/ChatContext";
 import { ThreadManager } from "../types";
 
