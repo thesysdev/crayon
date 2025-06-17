@@ -1,7 +1,8 @@
 import clsx from "clsx";
 import { uniqueId } from "lodash-es";
-import { ComponentProps, createContext, forwardRef, useContext, useId, useMemo } from "react";
+import { ComponentProps, createContext, forwardRef, useContext, useMemo } from "react";
 import * as RechartsPrimitive from "recharts";
+import { useId } from "../../polyfills";
 
 /**
  * @module Charts
