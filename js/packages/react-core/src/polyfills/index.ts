@@ -1,0 +1,57 @@
+// Export polyfills for React 17 compatibility
+export { useId } from "./react-17";
+
+// Re-export specific items from React (avoiding export * due to TypeScript issues)
+export {
+  Children,
+  Component,
+  Fragment,
+  PureComponent,
+  StrictMode,
+  Suspense,
+  cloneElement,
+  createContext,
+  createElement,
+  forwardRef,
+  isValidElement,
+  lazy,
+  memo,
+  startTransition,
+  useCallback,
+  useContext,
+  useDebugValue,
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
+
+// Export types
+export type {
+  CSSProperties,
+  ChangeEvent,
+  ComponentProps,
+  ComponentType,
+  Consumer,
+  Context,
+  FC,
+  FocusEvent,
+  FormEvent,
+  ForwardedRef,
+  FunctionComponent,
+  HTMLProps,
+  JSX,
+  KeyboardEvent,
+  MouseEvent,
+  MutableRefObject,
+  PropsWithChildren,
+  Provider,
+  ReactElement,
+  ReactNode,
+  Ref,
+  RefObject,
+  SyntheticEvent,
+} from "react";
