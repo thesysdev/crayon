@@ -91,7 +91,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   const chartConfig = createChartConfig(data, categoryKey, theme);
   const animationConfig = createAnimationConfig({ isAnimationActive });
   const eventHandlers = createEventHandlers(onMouseEnter, onMouseLeave, onClick);
-  const sectorStyle = createSectorStyle(cornerRadius, paddingAngle);
+  const sectorStyle = createSectorStyle(cornerRadius, variant === "donut" ? 0.5 : paddingAngle);
 
   // Get color palette and distribute colors
   const palette = getPalette(theme);
