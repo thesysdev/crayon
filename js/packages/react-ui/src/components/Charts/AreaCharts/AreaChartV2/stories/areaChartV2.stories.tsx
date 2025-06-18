@@ -603,6 +603,15 @@ const meta: Meta<AreaChartV2Props<typeof areaChartData>> = {
         category: "Events",
       },
     },
+    useFloatingTooltip: {
+      description: "Whether to use the floating tooltip that follows the mouse cursor. Uses Floating UI for intelligent positioning and collision detection.",
+      control: "boolean",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+        category: "Tooltip",
+      },
+    },
   },
 } satisfies Meta<typeof AreaChartV2>;
 
@@ -622,6 +631,7 @@ export const AreaChartV2Story: Story = {
     showYAxis: true,
     xAxisLabel: "Time Period",
     yAxisLabel: "Values",
+    useFloatingTooltip: true,
     // width: 600,
     // height: 300,
   },
@@ -1019,6 +1029,80 @@ export const ResponsiveWidthStory: Story = {
       description: {
         story:
           "Tests how the collision detection and truncation system adapts to different container widths. Smaller containers should show more aggressive truncation.",
+      },
+    },
+  },
+};
+
+export const FloatingTooltipStory: Story = {
+  name: "🎯 Floating Tooltip (Mouse Following)",
+  args: {
+    data: areaChartData,
+    categoryKey: "month",
+    theme: "ocean",
+    variant: "natural",
+    grid: true,
+    legend: true,
+    isAnimationActive: true,
+    showYAxis: true,
+    useFloatingTooltip: true,
+    xAxisLabel: "Time Period",
+    yAxisLabel: "Values",
+  },
+  render: (args) => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div style={{ padding: "12px", background: "#f8f9fa", borderRadius: "8px", border: "1px solid #e9ecef" }}>
+        <strong>🎯 Floating Tooltip Demo:</strong>
+        <p style={{ margin: "8px 0 0 0", fontSize: "14px", color: "#666" }}>
+          Move your mouse over the chart to see the floating tooltip that follows your cursor. 
+          This tooltip uses Floating UI for intelligent positioning and collision detection.
+        </p>
+      </div>
+      <Card style={{ width: "600px" }}>
+        <AreaChartV2 {...args} />
+      </Card>
+      <div style={{ display: "flex", gap: "20px" }}>
+        <Card style={{ width: "290px" }}>
+          <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>Default Tooltip</h4>
+          <AreaChartV2 {...args} useFloatingTooltip={false} />
+        </Card>
+        <Card style={{ width: "290px" }}>
+          <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>Floating Tooltip</h4>
+          <AreaChartV2 {...args} useFloatingTooltip={true} />
+        </Card>
+      </div>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**🎯 Floating Tooltip Demo:** This story demonstrates the new floating tooltip functionality that follows your mouse cursor. The tooltip uses Floating UI for intelligent positioning, collision detection, and smooth animations.\n\n**Key Features:**\n- ✨ **Mouse Following** - Tooltip follows your cursor in real-time\n- 🚀 **Floating UI** - Uses `@floating-ui/react-dom` for superior positioning\n- 🎯 **Smart Positioning** - Automatically adjusts position to stay on screen\n- 🔄 **Collision Detection** - Prevents tooltip from going off-screen\n- 🎨 **Custom Styling** - Fully customizable appearance\n\n**Comparison:**\n- **Default Tooltip**: Standard Recharts tooltip with fixed positioning\n- **Floating Tooltip**: Advanced tooltip that follows mouse with Floating UI positioning",
+      },
+      source: {
+        code: `
+const areaChartData = [
+  { month: "January", desktop: 150, mobile: 90 },
+  { month: "February", desktop: 280, mobile: 180 },
+  { month: "March", desktop: 220, mobile: 140 },
+  // ... more data
+];
+
+<Card style={{ width: "600px" }}>
+  <AreaChartV2
+    data={areaChartData}
+    categoryKey="month"
+    theme="ocean"
+    variant="natural"
+    useFloatingTooltip={true} // Enable floating tooltip
+    grid={true}
+    legend={true}
+    isAnimationActive={true}
+    showYAxis={true}
+    xAxisLabel="Time Period"
+    yAxisLabel="Values"
+  />
+</Card>`,
       },
     },
   },

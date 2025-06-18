@@ -10,6 +10,7 @@ import {
   ChartTooltipContent,
   keyTransform,
 } from "../../Charts";
+import { FloatingUIPortal, CustomTooltipContent } from "../../shared/PortalTooltip";
 import { cartesianGrid } from "../../cartesianGrid";
 import { ActiveDot, DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
 import { LegendItem } from "../../types";
@@ -41,6 +42,7 @@ export interface AreaChartV2Props<T extends AreaChartV2Data> {
   height?: number;
   width?: number;
   onAreaClick?: (payload: any) => void;
+  useFloatingTooltip?: boolean;
 }
 
 const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
@@ -61,6 +63,7 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
   height,
   width,
   onAreaClick,
+  useFloatingTooltip = true,
 }: AreaChartV2Props<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -288,7 +291,13 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
                   right: 20,
                 }}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
+
+              {useFloatingTooltip ? (
+                <ChartTooltip content={<CustomTooltipContent />} />
+              ) : (
+                <ChartTooltip content={<ChartTooltipContent />} />
+              )}
+
               {dataKeys.map((key) => {
                 const transformedKey = keyTransform(key);
                 const color = `var(--color-${transformedKey})`;

@@ -184,6 +184,7 @@ const ChartTooltipContent = forwardRef<
       nameKey,
       labelKey,
       showPercentage = false,
+      coordinate,
     },
     ref,
   ) => {
@@ -390,4 +391,6 @@ export {
   ChartStyle,
   ChartTooltip,
   ChartTooltipContent,
+  getPayloadConfigFromPayload,
+  useChart,
 };
