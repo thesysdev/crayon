@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "../../../../Card";
 import { DefaultLegend } from "../../../shared/DefaultLegend/DefaultLegend";
-import StackedLegend from "../../../shared/StackedLegend/StackedLegend";
+import { StackedLegend } from "../../../shared/StackedLegend/StackedLegend";
 import { LegendItem } from "../../../types";
 import { getDistributedColors, getPalette } from "../../../utils/PalletUtils";
 import { PieChartV2, PieChartV2Props } from "../PieChartV2";

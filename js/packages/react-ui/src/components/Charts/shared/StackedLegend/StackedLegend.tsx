@@ -20,7 +20,7 @@ const formatPercentage = (value: number, total: number): string => {
 
 const MAX_VISIBLE_ITEMS = 10;
 
-const StackedLegend = ({ items, onItemHover, activeKey }: StackedLegendProps) => {
+export const StackedLegend = ({ items, onItemHover, activeKey }: StackedLegendProps) => {
   const handleMouseEnter = (key: string) => {
     onItemHover?.(key);
   };
@@ -84,5 +84,3 @@ const StackedLegend = ({ items, onItemHover, activeKey }: StackedLegendProps) =>
     </div>
   );
 };
-
-export default StackedLegend;
