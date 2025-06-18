@@ -8,7 +8,6 @@ import {
   PieChartData,
   calculateChartDimensions,
   createChartConfig,
-  layoutMap,
   transformDataWithPercentages,
 } from "../utils/PieChartUtils";
 
@@ -48,7 +47,7 @@ export const MiniPieChart = <T extends MiniPieChartData>({
     const resizeObserver = new ResizeObserver(
       debounce((entries: any) => {
         const { width } = entries[0].contentRect;
-        const { outerRadius, innerRadius } = calculateChartDimensions(width, variant, label);
+        const { outerRadius, innerRadius } = calculateChartDimensions(width, variant);
         setCalculatedOuterRadius(outerRadius);
         setCalculatedInnerRadius(innerRadius);
       }, 100),
@@ -56,7 +55,7 @@ export const MiniPieChart = <T extends MiniPieChartData>({
 
     resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
-  }, [variant, label]);
+  }, [variant]);
 
   const transformedData = transformDataWithPercentages(data, dataKey);
   const chartConfig = createChartConfig(data, categoryKey, theme);
@@ -65,7 +64,7 @@ export const MiniPieChart = <T extends MiniPieChartData>({
     <ChartContainer
       ref={containerRef}
       config={chartConfig}
-      className={clsx("crayon-pie-chart-container", layoutMap[layout])}
+      className="crayon-pie-chart-container"
     >
       <RechartsPieChart>
         <Pie
