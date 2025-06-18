@@ -6,6 +6,7 @@ import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 import { createGradientDefinitions } from "../components/PieChartRenderers";
 import {
   PieChartData,
+  calculateTwoLevelChartDimensions,
   createAnimationConfig,
   createChartConfig,
   createEventHandlers,
@@ -96,10 +97,17 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   const palette = getPalette(theme);
   const colors = getDistributedColors(palette, data.length);
 
-  // Create gradient definitions if gradients are enabled
-  const gradientDefinitions = useGradients ? (
-    <defs>{createGradientDefinitions(transformedData, colors, gradientColors)}</defs>
-  ) : null;
+  // Calculate dimensions based on variant
+  const dimensions = useMemo(() => {
+    if (variant === "donut") {
+      return calculateTwoLevelChartDimensions(chartSize);
+    }
+    return {
+      outerRadius: "90%",
+      innerRadius: 0,
+      middleRadius: 0,
+    };
+  }, [variant, chartSize]);
 
   useEffect(() => {
     // Only set up ResizeObserver if dimensions are not provided
@@ -122,6 +130,99 @@ export const PieChartV2 = <T extends PieChartV2Data>({
       resizeObserver.disconnect();
     };
   }, [width, height]);
+
+  const renderPieCharts = () => {
+    if (variant === "donut") {
+      return (
+        <>
+          {/* Inner Pie */}
+          <Pie
+            data={transformedData}
+            dataKey={format === "percentage" ? "percentage" : String(dataKey)}
+            nameKey={String(categoryKey)}
+            labelLine={false}
+            innerRadius={dimensions.innerRadius}
+            outerRadius={dimensions.middleRadius}
+            label={false}
+            {...animationConfig}
+            {...eventHandlers}
+            {...sectorStyle}
+            startAngle={appearance === "semiCircular" ? 0 : 0}
+            endAngle={appearance === "semiCircular" ? 180 : 360}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {transformedData.map((entry, index) => {
+              const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
+              const config = chartConfig[categoryValue];
+              const hoverStyles = getHoverStyles(index, activeIndex);
+              const fill = useGradients ? `url(#gradient-${index})` : "lightgray";
+
+              return (
+                <Cell key={`inner-cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />
+              );
+            })}
+          </Pie>
+
+          {/* Outer Pie */}
+          <Pie
+            data={transformedData}
+            dataKey={format === "percentage" ? "percentage" : String(dataKey)}
+            nameKey={String(categoryKey)}
+            labelLine={false}
+            innerRadius={dimensions.middleRadius}
+            outerRadius={dimensions.outerRadius}
+            label={false}
+            {...animationConfig}
+            {...eventHandlers}
+            {...sectorStyle}
+            startAngle={appearance === "semiCircular" ? 0 : 0}
+            endAngle={appearance === "semiCircular" ? 180 : 360}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {transformedData.map((entry, index) => {
+              const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
+              const config = chartConfig[categoryValue];
+              const hoverStyles = getHoverStyles(index, activeIndex);
+              const fill = useGradients ? `url(#gradient-${index})` : config?.color;
+
+              return (
+                <Cell key={`outer-cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />
+              );
+            })}
+          </Pie>
+        </>
+      );
+    }
+
+    return (
+      <Pie
+        data={transformedData}
+        dataKey={format === "percentage" ? "percentage" : String(dataKey)}
+        nameKey={String(categoryKey)}
+        outerRadius={dimensions.outerRadius}
+        innerRadius={dimensions.innerRadius}
+        activeIndex={activeIndex ?? undefined}
+        {...animationConfig}
+        {...eventHandlers}
+        {...sectorStyle}
+        startAngle={appearance === "semiCircular" ? 0 : 0}
+        endAngle={appearance === "semiCircular" ? 180 : 360}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {transformedData.map((entry, index) => {
+          const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
+          const config = chartConfig[categoryValue];
+          const hoverStyles = getHoverStyles(index, activeIndex);
+          const fill = useGradients ? `url(#gradient-${index})` : config?.color || colors[index];
+
+          return <Cell key={`cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
+        })}
+      </Pie>
+    );
+  };
 
   return (
     <div
@@ -164,33 +265,19 @@ export const PieChartV2 = <T extends PieChartV2Data>({
                 content={<ChartTooltipContent showPercentage={format === "percentage"} />}
               />
 
-              {gradientDefinitions}
-              <Pie
-                data={transformedData}
-                dataKey={format === "percentage" ? "percentage" : String(dataKey)}
-                nameKey={String(categoryKey)}
-                outerRadius="90%"
-                innerRadius={variant === "donut" ? "60%" : 0}
-                activeIndex={activeIndex ?? undefined}
-                {...animationConfig}
-                {...eventHandlers}
-                {...sectorStyle}
-                startAngle={appearance === "semiCircular" ? 0 : 0}
-                endAngle={appearance === "semiCircular" ? 180 : 360}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-              >
-                {transformedData.map((entry, index) => {
-                  const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
-                  const config = chartConfig[categoryValue];
-                  const hoverStyles = getHoverStyles(index, activeIndex);
-                  const fill = useGradients
-                    ? `url(#gradient-${index})`
-                    : config?.color || colors[index];
+              {useGradients && (
+                <defs>
+                  {createGradientDefinitions(
+                    transformedData,
+                    Object.values(chartConfig)
+                      .map((config) => config.color)
+                      .filter((color): color is string => color !== undefined),
+                    gradientColors,
+                  )}
+                </defs>
+              )}
 
-                  return <Cell key={`cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
-                })}
-              </Pie>
+              {renderPieCharts()}
             </RechartsPieChart>
           </ChartContainer>
         </div>

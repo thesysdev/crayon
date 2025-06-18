@@ -95,7 +95,7 @@ const meta: Meta<PieChartV2Props<typeof pieChartData>> = {
     },
     variant: {
       description:
-        "The style of the pie chart. 'pie' shows a pie chart, while 'donut' shows a donut chart.",
+        "The style of the pie chart. 'pie' shows a pie chart, 'donut' shows a donut chart, and 'twoLevel' shows a two-level pie chart.",
       control: "radio",
       options: ["pie", "donut"],
       table: {
@@ -295,11 +295,16 @@ export const Interactive: Story = {
 };
 
 export const DonutChart: Story = {
-  name: "Donut Chart",
+  name: "Donut Chart (Two Level)",
   args: {
     ...Default.args,
     variant: "donut",
     theme: "orchid",
+    useGradients: true,
+    gradientColors,
+    cornerRadius: 5,
+    paddingAngle: 1,
+    format: "percentage",
   },
   render: (args) => (
     <Card style={{ width: "700px" }}>
