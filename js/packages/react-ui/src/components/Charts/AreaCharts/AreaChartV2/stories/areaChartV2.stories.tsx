@@ -604,7 +604,8 @@ const meta: Meta<AreaChartV2Props<typeof areaChartData>> = {
       },
     },
     useFloatingTooltip: {
-      description: "Whether to use the floating tooltip that follows the mouse cursor. Uses Floating UI for intelligent positioning and collision detection.",
+      description:
+        "Whether to use the floating tooltip that follows the mouse cursor. Uses Floating UI for intelligent positioning and collision detection.",
       control: "boolean",
       table: {
         type: { summary: "boolean" },
@@ -1051,11 +1052,18 @@ export const FloatingTooltipStory: Story = {
   },
   render: (args) => (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div style={{ padding: "12px", background: "#f8f9fa", borderRadius: "8px", border: "1px solid #e9ecef" }}>
+      <div
+        style={{
+          padding: "12px",
+          background: "#f8f9fa",
+          borderRadius: "8px",
+          border: "1px solid #e9ecef",
+        }}
+      >
         <strong>🎯 Floating Tooltip Demo:</strong>
         <p style={{ margin: "8px 0 0 0", fontSize: "14px", color: "#666" }}>
-          Move your mouse over the chart to see the floating tooltip that follows your cursor. 
-          This tooltip uses Floating UI for intelligent positioning and collision detection.
+          Move your mouse over the chart to see the floating tooltip that follows your cursor. This
+          tooltip uses Floating UI for intelligent positioning and collision detection.
         </p>
       </div>
       <Card style={{ width: "600px" }}>
@@ -1063,11 +1071,15 @@ export const FloatingTooltipStory: Story = {
       </Card>
       <div style={{ display: "flex", gap: "20px" }}>
         <Card style={{ width: "290px" }}>
-          <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>Default Tooltip</h4>
+          <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
+            Default Tooltip
+          </h4>
           <AreaChartV2 {...args} useFloatingTooltip={false} />
         </Card>
         <Card style={{ width: "290px" }}>
-          <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>Floating Tooltip</h4>
+          <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
+            Floating Tooltip
+          </h4>
           <AreaChartV2 {...args} useFloatingTooltip={true} />
         </Card>
       </div>

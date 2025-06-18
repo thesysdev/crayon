@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-import { computePosition, flip, offset, shift } from "@floating-ui/react-dom";
 import type { Placement } from "@floating-ui/react-dom";
+import { computePosition, flip, offset, shift } from "@floating-ui/react-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface VirtualElement {
   getBoundingClientRect(): DOMRect;
@@ -53,11 +53,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
     const updatePosition = async () => {
       const { x, y } = await computePosition(virtualElementRef.current!, tooltipRef.current!, {
         placement,
-        middleware: [
-          offset(offsetDistance),
-          flip(),
-          shift({ padding: 8 }),
-        ],
+        middleware: [offset(offsetDistance), flip(), shift({ padding: 8 })],
       });
 
       setPosition({ x, y });
@@ -97,6 +93,6 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
     >
       {children}
     </div>,
-    document.body
+    document.body,
   );
-}; 
+};

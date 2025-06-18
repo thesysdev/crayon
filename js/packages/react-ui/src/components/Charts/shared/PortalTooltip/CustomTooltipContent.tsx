@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { forwardRef, useMemo } from "react";
 import * as RechartsPrimitive from "recharts";
-import { useChart, ChartConfig } from "../../../Charts/Charts";
+import { ChartConfig, useChart } from "../../../Charts/Charts";
 import { FloatingUIPortal } from "./FloatingUIPortal";
 
 /**
@@ -175,12 +175,8 @@ export const CustomTooltipContent = forwardRef<
       </div>
     );
 
-    return (
-      <FloatingUIPortal active={active || false}>
-        {tooltipContent}
-      </FloatingUIPortal>
-    );
+    return <FloatingUIPortal active={active || false}>{tooltipContent}</FloatingUIPortal>;
   },
 );
 
-CustomTooltipContent.displayName = "CustomTooltipContent"; 
+CustomTooltipContent.displayName = "CustomTooltipContent";

@@ -10,9 +10,9 @@ import {
   ChartTooltipContent,
   keyTransform,
 } from "../../Charts";
-import { FloatingUIPortal, CustomTooltipContent } from "../../shared/PortalTooltip";
 import { cartesianGrid } from "../../cartesianGrid";
 import { ActiveDot, DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
+import { CustomTooltipContent } from "../../shared/PortalTooltip";
 import { LegendItem } from "../../types";
 import {
   findNearestSnapPosition,

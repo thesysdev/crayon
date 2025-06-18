@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import { debounce } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
@@ -61,11 +60,7 @@ export const MiniPieChart = <T extends MiniPieChartData>({
   const chartConfig = createChartConfig(data, categoryKey, theme);
 
   return (
-    <ChartContainer
-      ref={containerRef}
-      config={chartConfig}
-      className="crayon-pie-chart-container"
-    >
+    <ChartContainer ref={containerRef} config={chartConfig} className="crayon-pie-chart-container">
       <RechartsPieChart>
         <Pie
           data={transformedData}

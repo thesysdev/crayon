@@ -1,5 +1,5 @@
-import React from 'react';
-import { AreaChartV2 } from '../../AreaCharts/AreaChartV2';
+import React from "react";
+import { AreaChartV2 } from "../../AreaCharts/AreaChartV2";
 
 // Example data for the chart
 const sampleData = [
@@ -16,12 +16,12 @@ const sampleData = [
  */
 export const FloatingTooltipExample: React.FC = () => {
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: "20px" }}>
       <h2>Floating Tooltip Example</h2>
-      
-      <div style={{ marginBottom: '20px' }}>
+
+      <div style={{ marginBottom: "20px" }}>
         <h3>With Floating Tooltip (follows mouse)</h3>
-        <div style={{ width: '600px', height: '400px' }}>
+        <div style={{ width: "600px", height: "400px" }}>
           <AreaChartV2
             data={sampleData}
             categoryKey="month"
@@ -36,9 +36,9 @@ export const FloatingTooltipExample: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: "20px" }}>
         <h3>Standard Tooltip (fixed position)</h3>
-        <div style={{ width: '600px', height: '400px' }}>
+        <div style={{ width: "600px", height: "400px" }}>
           <AreaChartV2
             data={sampleData}
             categoryKey="month"
@@ -56,4 +56,4 @@ export const FloatingTooltipExample: React.FC = () => {
   );
 };
 
-export default FloatingTooltipExample; 
+export default FloatingTooltipExample;
