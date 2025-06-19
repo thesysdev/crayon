@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { forwardRef, useMemo } from "react";
 import * as RechartsPrimitive from "recharts";
-import { getPayloadConfigFromPayload, useChart, ChartStyle } from "../../../Charts/Charts";
+import { ChartStyle, getPayloadConfigFromPayload, useChart } from "../../../Charts/Charts";
 import { FloatingUIPortal } from "./FloatingUIPortal";
 
 /**
@@ -20,7 +20,6 @@ export const CustomTooltipContent = forwardRef<
       showPercentage?: boolean;
     }
 >((props, ref) => {
-
   const {
     active,
     payload,

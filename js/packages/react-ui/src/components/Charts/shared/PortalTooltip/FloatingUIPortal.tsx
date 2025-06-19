@@ -88,11 +88,8 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
       className={clsx("crayon-portal-tooltip", className)}
       data-chart={chartId}
       style={{
-        position: "absolute",
         left: position.x,
         top: position.y,
-        zIndex: 1000,
-        pointerEvents: "none",
       }}
     >
       {children}
