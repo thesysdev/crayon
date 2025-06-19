@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { forwardRef, useMemo } from "react";
 import * as RechartsPrimitive from "recharts";
-import { getPayloadConfigFromPayload, useChart } from "../../../Charts/Charts";
+import { getPayloadConfigFromPayload, useChart, ChartStyle } from "../../../Charts/Charts";
 import { FloatingUIPortal } from "./FloatingUIPortal";
 
 /**
@@ -20,7 +20,7 @@ export const CustomTooltipContent = forwardRef<
       showPercentage?: boolean;
     }
 >((props, ref) => {
-  console.log("CustomTooltipContent", props);
+
   const {
     active,
     payload,
@@ -37,7 +37,7 @@ export const CustomTooltipContent = forwardRef<
     labelKey,
     showPercentage = false,
   } = props;
-  const { config } = useChart();
+  const { config, id } = useChart();
 
   const tooltipLabel = useMemo(() => {
     if (hideLabel || !payload?.length) {
@@ -143,7 +143,12 @@ export const CustomTooltipContent = forwardRef<
     </div>
   );
 
-  return <FloatingUIPortal active={active || false}>{tooltipContent}</FloatingUIPortal>;
+  return (
+    <FloatingUIPortal active={active || false} chartId={id}>
+      <ChartStyle id={id} config={config} />
+      {tooltipContent}
+    </FloatingUIPortal>
+  );
 });
 
 CustomTooltipContent.displayName = "CustomTooltipContent";

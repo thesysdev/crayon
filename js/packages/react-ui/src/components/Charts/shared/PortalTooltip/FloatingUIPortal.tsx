@@ -1,5 +1,6 @@
 import type { Placement } from "@floating-ui/react-dom";
 import { computePosition, flip, offset, shift } from "@floating-ui/react-dom";
+import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -13,6 +14,7 @@ interface FloatingUIPortalProps {
   placement?: Placement;
   offsetDistance?: number;
   className?: string;
+  chartId?: string;
 }
 
 export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
@@ -21,6 +23,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   placement = "right-start",
   offsetDistance = 8,
   className = "",
+  chartId,
 }) => {
   const mousePositionRef = useRef({ x: 0, y: 0 });
   const virtualElementRef = useRef<VirtualElement | null>(null);
@@ -82,7 +85,8 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   return createPortal(
     <div
       ref={tooltipRef}
-      className={`crayon-portal-tooltip ${className}`}
+      className={clsx("crayon-portal-tooltip", className)}
+      data-chart={chartId}
       style={{
         position: "absolute",
         left: position.x,

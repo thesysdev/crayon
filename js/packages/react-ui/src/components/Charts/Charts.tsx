@@ -43,6 +43,7 @@ export type ChartConfig = {
  */
 type ChartContextProps = {
   config: ChartConfig;
+  id: string;
 };
 
 const ChartContext = createContext<ChartContextProps | null>(null);
@@ -128,10 +129,10 @@ const ChartContainer = forwardRef<
   }
 >(({ id, className, children, config, rechartsProps, ...props }, ref) => {
   const uniqueId = useId();
-  const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
+  const chartId = `crayon-chart-${id || uniqueId.replace(/:/g, "")}`;
 
   return (
-    <ChartContext.Provider value={{ config }}>
+    <ChartContext.Provider value={{ config, id: chartId }}>
       <div
         data-chart={chartId}
         ref={ref}
@@ -296,6 +297,9 @@ const ChartTooltipContent = forwardRef<
   },
 );
 ChartTooltipContent.displayName = "ChartTooltip";
+
+// this is not used any more, in the new chart, we are using the default legend which is rendered outside the charts container,
+// older charts are still using this legend.
 
 /**
  * Re-exported Legend component from Recharts
