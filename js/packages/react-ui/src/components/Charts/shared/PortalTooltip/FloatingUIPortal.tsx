@@ -31,6 +31,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   const virtualElementRef = useRef<VirtualElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isPositioned, setIsPositioned] = useState(false);
 
   // Function to get the portal target element
   const getPortalTarget = (): HTMLElement => {
@@ -65,12 +66,17 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
     if (!active || !virtualElementRef.current || !tooltipRef.current) return;
 
     const updatePosition = async () => {
+      // https://floating-ui.com/docs/computePosition
       const { x, y } = await computePosition(virtualElementRef.current!, tooltipRef.current!, {
         placement,
         middleware: [offset(offsetDistance), flip(), shift({ padding: 8 })],
       });
 
       setPosition({ x, y });
+      // this is to avoid the tooltip from flickering when the mouse is moving fast and the tooltip is not positioned yet initially
+      setTimeout(() => {
+        setIsPositioned(true);
+      }, 20);
     };
 
     const handleMouseMove = (event: MouseEvent) => {
@@ -88,6 +94,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
+      setIsPositioned(false);
     };
   }, [active, placement, offsetDistance]);
 
@@ -101,6 +108,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
       style={{
         left: position.x,
         top: position.y,
+        opacity: isPositioned ? 1 : 0,
       }}
     >
       {children}
