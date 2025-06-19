@@ -185,7 +185,6 @@ const ChartTooltipContent = forwardRef<
       nameKey,
       labelKey,
       showPercentage = false,
-      coordinate,
     },
     ref,
   ) => {

@@ -20,7 +20,6 @@ export interface MiniPieChartProps<T extends MiniPieChartData> {
   variant?: "pie" | "donut";
   format?: "percentage" | "number";
   legend?: boolean;
-  label?: boolean;
   isAnimationActive?: boolean;
 }
 
@@ -31,7 +30,6 @@ export const MiniPieChart = <T extends MiniPieChartData>({
   theme = "ocean",
   variant = "pie",
   format = "number",
-  label = true,
   isAnimationActive = true,
 }: MiniPieChartProps<T>) => {
   const { layout } = useLayoutContext();

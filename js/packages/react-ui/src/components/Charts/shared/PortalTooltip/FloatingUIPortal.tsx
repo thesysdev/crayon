@@ -1,7 +1,7 @@
 import type { Placement } from "@floating-ui/react-dom";
-import { autoPlacement, computePosition, flip, offset, shift } from "@floating-ui/react-dom";
+import { computePosition, flip, offset, shift } from "@floating-ui/react-dom";
 import clsx from "clsx";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface VirtualElement {
@@ -34,13 +34,14 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   const [isPositioned, setIsPositioned] = useState(false);
 
   // Function to get the portal target element
-  const getPortalTarget = (): HTMLElement => {
+
+  const getPortalTarget = useCallback((): HTMLElement => {
     if (!portalContainer || !portalContainer.current) {
       return document.body;
     }
 
     return portalContainer.current;
-  };
+  }, [portalContainer]);
 
   useEffect(() => {
     // Create virtual element that tracks mouse position
