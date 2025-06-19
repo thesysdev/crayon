@@ -1,7 +1,7 @@
 import type { Placement } from "@floating-ui/react-dom";
 import { computePosition, flip, offset, shift } from "@floating-ui/react-dom";
 import clsx from "clsx";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface VirtualElement {
@@ -28,25 +28,15 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   portalContainer,
 }) => {
   const mousePositionRef = useRef({ x: 0, y: 0 });
-  const virtualElementRef = useRef<VirtualElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
 
-  // Function to get the portal target element
-
-  const getPortalTarget = useCallback((): HTMLElement => {
-    if (!portalContainer || !portalContainer.current) {
-      return document.body;
-    }
-
-    return portalContainer.current;
-  }, [portalContainer]);
-
-  useEffect(() => {
-    // Create virtual element that tracks mouse position
-    // this element element is basically tracks the mouse position always shadows the mouse cursor.
-    const virtualElement: VirtualElement = {
+  // Memoize the virtual element to avoid recreating it on every render
+  // this virtual element basically shares the same position as the mouse position
+  // and it is used to position the tooltip
+  const virtualElement = useMemo<VirtualElement>(
+    () => ({
       getBoundingClientRect(): DOMRect {
         return {
           width: 0,
@@ -59,48 +49,63 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
           bottom: mousePositionRef.current.y,
         } as DOMRect;
       },
-    };
-    // it as 0 width and height because it is not a real element, it is just a virtual element that tracks the mouse position.
+    }),
+    [],
+  );
 
-    virtualElementRef.current = virtualElement;
-  }, []);
+  // Function to get the portal target element
+  // also memoize it to avoid recreating it on every render
+  const getPortalTarget = useCallback((): HTMLElement => {
+    if (!portalContainer || !portalContainer.current) {
+      return document.body;
+    }
+    return portalContainer.current;
+  }, [portalContainer]);
 
-  useEffect(() => {
-    if (!active || !virtualElementRef.current || !tooltipRef.current) return;
+  // Memoize the updatePosition function to avoid recreating it
+  const updatePosition = useCallback(async () => {
+    if (!virtualElement || !tooltipRef.current) return;
 
-    const updatePosition = async () => {
-      // https://floating-ui.com/docs/computePosition
-      // not a synchronous function, it returns a promise. so we need to await it.
-      const { x, y } = await computePosition(virtualElementRef.current!, tooltipRef.current!, {
-        placement,
-        middleware: [offset(offsetDistance), flip(), shift({ padding: 8 })],
-      });
+    // https://floating-ui.com/docs/computePosition
+    // not a synchronous function, it returns a promise. so we need to await it.
+    const { x, y } = await computePosition(virtualElement, tooltipRef.current, {
+      placement,
+      middleware: [offset(offsetDistance), flip(), shift({ padding: 8 })],
+    });
 
-      setPosition({ x, y });
-      // this is to avoid the tooltip from flickering when the mouse is moving fast and the tooltip is not positioned yet initially
-      setTimeout(() => {
-        setIsPositioned(true);
-      }, 20);
-    };
+    setPosition({ x, y });
+    // this is to avoid the tooltip from flickering when the mouse is moving fast and the tooltip is not positioned yet initially
+    setTimeout(() => {
+      setIsPositioned(true);
+    }, 20);
+  }, [virtualElement, placement, offsetDistance]);
 
-    const handleMouseMove = (event: MouseEvent) => {
+  // Memoize the mouse move handler
+  const handleMouseMove = useCallback(
+    (event: MouseEvent) => {
       mousePositionRef.current = {
         x: event.clientX,
         y: event.clientY,
       };
       updatePosition();
-    };
+    },
+    [updatePosition],
+  );
 
-    if (active) {
-      document.addEventListener("mousemove", handleMouseMove);
-      updatePosition();
+  useEffect(() => {
+    if (!active) {
+      setIsPositioned(false);
+      return;
     }
+
+    document.addEventListener("mousemove", handleMouseMove);
+    updatePosition();
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       setIsPositioned(false);
     };
-  }, [active, placement, offsetDistance]);
+  }, [active, handleMouseMove, updatePosition]);
 
   if (!active) return null;
 

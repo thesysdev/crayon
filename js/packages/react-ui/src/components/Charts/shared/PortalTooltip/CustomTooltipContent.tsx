@@ -4,7 +4,6 @@ import * as RechartsPrimitive from "recharts";
 import { ChartStyle, getPayloadConfigFromPayload, useChart } from "../../../Charts/Charts";
 import { FloatingUIPortal } from "./FloatingUIPortal";
 
-
 const DEFAULT_INDICATOR = "dot" as const;
 
 /**
