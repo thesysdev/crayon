@@ -42,7 +42,7 @@ export interface AreaChartV2Props<T extends AreaChartV2Data> {
   height?: number;
   width?: number;
   onAreaClick?: (payload: any) => void;
-  useFloatingTooltip?: boolean;
+  floatingTooltip?: boolean;
 }
 
 const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
@@ -63,7 +63,7 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
   height,
   width,
   onAreaClick,
-  useFloatingTooltip = true,
+  floatingTooltip = true,
 }: AreaChartV2Props<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -292,7 +292,7 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
                 }}
               />
 
-              {useFloatingTooltip ? (
+              {floatingTooltip ? (
                 <ChartTooltip content={<CustomTooltipContent />} offset={15} />
               ) : (
                 <ChartTooltip content={<ChartTooltipContent />} />

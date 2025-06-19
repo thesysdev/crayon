@@ -603,13 +603,13 @@ const meta: Meta<AreaChartV2Props<typeof areaChartData>> = {
         category: "Events",
       },
     },
-    useFloatingTooltip: {
+    floatingTooltip: {
       description:
         "Whether to use the floating tooltip that follows the mouse cursor. Uses Floating UI for intelligent positioning and collision detection.",
       control: "boolean",
       table: {
         type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
+        defaultValue: { summary: "true" },
         category: "Tooltip",
       },
     },
@@ -632,7 +632,7 @@ export const AreaChartV2Story: Story = {
     showYAxis: true,
     xAxisLabel: "Time Period",
     yAxisLabel: "Values",
-    useFloatingTooltip: true,
+    floatingTooltip: true,
     // width: 600,
     // height: 300,
   },
@@ -1046,7 +1046,7 @@ export const FloatingTooltipStory: Story = {
     legend: true,
     isAnimationActive: true,
     showYAxis: true,
-    useFloatingTooltip: true,
+    floatingTooltip: true,
     xAxisLabel: "Time Period",
     yAxisLabel: "Values",
   },
@@ -1074,13 +1074,13 @@ export const FloatingTooltipStory: Story = {
           <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
             Default Tooltip
           </h4>
-          <AreaChartV2 {...args} useFloatingTooltip={false} />
+          <AreaChartV2 {...args} floatingTooltip={false} />
         </Card>
         <Card style={{ width: "290px" }}>
           <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
             Floating Tooltip
           </h4>
-          <AreaChartV2 {...args} useFloatingTooltip={true} />
+          <AreaChartV2 {...args} floatingTooltip={true} />
         </Card>
       </div>
     </div>
