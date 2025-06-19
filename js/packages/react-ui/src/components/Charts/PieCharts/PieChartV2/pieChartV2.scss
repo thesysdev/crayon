@@ -1,10 +1,52 @@
 @use "../../../../cssUtils" as cssUtils;
 
+.crayon-pie-chart-container-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  gap: 20px;
+
+  // Default legend variant - always column layout (chart on top, legend at bottom)
+  &--default-legend {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  // Stacked legend variant - responsive layout (side-by-side on desktop, stacked on mobile)
+  &--stacked-legend {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    min-height: 0;
+  }
+
+  &--stacked-legend-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+}
+
 .crayon-pie-chart-container {
   width: 100%;
   height: 100%;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+
+  // When in row layout with stacked legend, ensure proper sizing
+  &--with-stacked-legend {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 .crayon-pie-chart-container-inner {
@@ -17,4 +59,59 @@
 
 .crayon-pie-chart {
   position: relative;
+
+  // Add smooth transitions for hover effects
+  .recharts-pie-sector {
+    transition: all 0.2s ease-in-out;
+  }
+}
+
+.crayon-pie-chart-legend-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-width: 0;
+  overflow: hidden;
+
+  // Ensure the legend takes available space in row layout
+  .crayon-stacked-legend {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+.crayon-pie-chart-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // Stacked legend variant - responsive positioning
+  &:not(.crayon-pie-chart-legend--bottom) {
+    // Mobile layout
+    @media (max-width: 599px) {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    // Desktop layout
+    @media (min-width: 600px) {
+      width: 100%;
+    }
+  }
+
+  // Stacked legend variant styling
+  .crayon-stacked-legend {
+    width: 100%;
+
+    // Mobile layout for stacked legend
+    @media (max-width: 599px) {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    // Desktop layout for stacked legend
+    @media (min-width: 600px) {
+      width: 100%;
+    }
+  }
 }
