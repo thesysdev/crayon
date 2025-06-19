@@ -15,6 +15,7 @@ interface FloatingUIPortalProps {
   offsetDistance?: number;
   className?: string;
   chartId?: string;
+  portalContainer?: React.RefObject<HTMLElement | null>;
 }
 
 export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
@@ -24,11 +25,21 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   offsetDistance = 8,
   className = "",
   chartId,
+  portalContainer,
 }) => {
   const mousePositionRef = useRef({ x: 0, y: 0 });
   const virtualElementRef = useRef<VirtualElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  // Function to get the portal target element
+  const getPortalTarget = (): HTMLElement => {
+    if (!portalContainer || !portalContainer.current) {
+      return document.body;
+    }
+
+    return portalContainer.current;
+  };
 
   useEffect(() => {
     // Create virtual element that tracks mouse position
@@ -94,6 +105,6 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
     >
       {children}
     </div>,
-    document.body,
+    getPortalTarget(),
   );
 };

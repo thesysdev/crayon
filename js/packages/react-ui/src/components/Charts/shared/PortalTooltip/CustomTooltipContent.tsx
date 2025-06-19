@@ -18,6 +18,7 @@ export const CustomTooltipContent = forwardRef<
       nameKey?: string;
       labelKey?: string;
       showPercentage?: boolean;
+      portalContainer?: React.RefObject<HTMLElement | null>;
     }
 >((props, ref) => {
   const {
@@ -35,6 +36,7 @@ export const CustomTooltipContent = forwardRef<
     nameKey,
     labelKey,
     showPercentage = false,
+    portalContainer,
   } = props;
   const { config, id } = useChart();
 
@@ -143,7 +145,7 @@ export const CustomTooltipContent = forwardRef<
   );
 
   return (
-    <FloatingUIPortal active={active || false} chartId={id}>
+    <FloatingUIPortal active={active || false} chartId={id} portalContainer={portalContainer}>
       <ChartStyle id={id} config={config} />
       {tooltipContent}
     </FloatingUIPortal>

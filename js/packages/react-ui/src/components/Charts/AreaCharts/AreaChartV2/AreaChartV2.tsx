@@ -80,6 +80,7 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
+  const rootContainerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -208,6 +209,7 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
       style={{
         width: width ? `${width}px` : undefined,
       }}
+      ref={rootContainerRef}
     >
       <div className="crayon-area-chart-container-inner" ref={chartContainerRef}>
         {showYAxis && (
@@ -293,7 +295,9 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
               />
 
               {useFloatingTooltip ? (
-                <ChartTooltip content={<CustomTooltipContent />} />
+                <ChartTooltip
+                  content={<CustomTooltipContent portalContainer={rootContainerRef} />}
+                />
               ) : (
                 <ChartTooltip content={<ChartTooltipContent />} />
               )}
