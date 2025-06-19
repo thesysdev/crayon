@@ -254,6 +254,7 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
         <div className="crayon-area-chart-main-container" ref={mainContainerRef}>
           <ChartContainer
             config={chartConfig}
+            
             style={{ width: dataWidth, minWidth: "100%", height: chartHeight }}
             rechartsProps={{
               width: "100%",
