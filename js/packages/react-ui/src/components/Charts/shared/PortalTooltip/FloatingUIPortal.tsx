@@ -72,7 +72,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
       // not a synchronous function, it returns a promise. so we need to await it.
       const { x, y } = await computePosition(virtualElementRef.current!, tooltipRef.current!, {
         placement,
-        middleware: [offset(offsetDistance), flip(), shift({ padding: 8 }), autoPlacement()],
+        middleware: [offset(offsetDistance), flip(), shift({ padding: 8 })],
       });
 
       setPosition({ x, y });
