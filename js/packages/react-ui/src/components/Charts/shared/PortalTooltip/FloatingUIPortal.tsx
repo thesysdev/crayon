@@ -1,5 +1,5 @@
 import type { Placement } from "@floating-ui/react-dom";
-import { computePosition, flip, offset, shift } from "@floating-ui/react-dom";
+import { autoPlacement, computePosition, flip, offset, shift } from "@floating-ui/react-dom";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -22,7 +22,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   active,
   children,
   placement = "right-start",
-  offsetDistance = 8,
+  offsetDistance = 10,
   className = "",
   chartId,
   portalContainer,
@@ -44,6 +44,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
 
   useEffect(() => {
     // Create virtual element that tracks mouse position
+    // this element element is basically tracks the mouse position always shadows the mouse cursor.
     const virtualElement: VirtualElement = {
       getBoundingClientRect(): DOMRect {
         return {
@@ -58,6 +59,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
         } as DOMRect;
       },
     };
+    // it as 0 width and height because it is not a real element, it is just a virtual element that tracks the mouse position.
 
     virtualElementRef.current = virtualElement;
   }, []);
@@ -67,9 +69,10 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
 
     const updatePosition = async () => {
       // https://floating-ui.com/docs/computePosition
+      // not a synchronous function, it returns a promise. so we need to await it.
       const { x, y } = await computePosition(virtualElementRef.current!, tooltipRef.current!, {
         placement,
-        middleware: [offset(offsetDistance), flip(), shift({ padding: 8 })],
+        middleware: [offset(offsetDistance), flip(), shift({ padding: 8 }), autoPlacement()],
       });
 
       setPosition({ x, y });

@@ -782,7 +782,7 @@ export const BigLabelsStory: Story = {
     showYAxis: true,
   },
   render: (args) => (
-    <Card style={{ width: "600px" }}>
+    <Card style={{ width: "700px" }}>
       <AreaChartV2 {...args} />
     </Card>
   ),

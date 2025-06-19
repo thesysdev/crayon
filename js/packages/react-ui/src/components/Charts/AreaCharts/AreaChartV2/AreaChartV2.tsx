@@ -293,7 +293,7 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
               />
 
               {useFloatingTooltip ? (
-                <ChartTooltip content={<CustomTooltipContent />} />
+                <ChartTooltip content={<CustomTooltipContent />} offset={15} />
               ) : (
                 <ChartTooltip content={<ChartTooltipContent />} />
               )}
@@ -302,7 +302,7 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
                 const transformedKey = keyTransform(key);
                 const color = `var(--color-${transformedKey})`;
                 return (
-                  <>
+                  <React.Fragment key={`crayon-area-chart-${key}-${id}-fragment`}>
                     <defs>
                       <linearGradient id={`${gradientId}-${key}`} x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor={color} stopOpacity={0.6} />
@@ -321,7 +321,7 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
                       dot={false}
                       isAnimationActive={isAnimationActive}
                     />
-                  </>
+                  </React.Fragment>
                 );
               })}
             </RechartsAreaChart>
