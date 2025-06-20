@@ -174,7 +174,7 @@ export const AreaChartStory: Story = {
     isAnimationActive: true,
     showYAxis: false,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <AreaChart {...args} />
     </Card>
@@ -218,7 +218,7 @@ export const AreaChartStoryWithIcons: Story = {
     ...AreaChartStory.args,
     icons: icons,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <AreaChart {...args} />
     </Card>
@@ -228,7 +228,7 @@ export const AreaChartStoryWithIcons: Story = {
       source: {
         code: `
   import { Monitor, TabletSmartphone } from "lucide-react";
-  
+
   const areaChartData = [
     { month: "January", desktop: 150, mobile: 90 },
     { month: "February", desktop: 280, mobile: 180 },
@@ -237,12 +237,12 @@ export const AreaChartStoryWithIcons: Story = {
     { month: "May", desktop: 250, mobile: 120 },
     { month: "June", desktop: 300, mobile: 180 },
   ];
-  
+
   const icons = {
     desktop: Monitor,
     mobile: TabletSmartphone,
   };
-  
+
   <Card style={{ width: "500px" }}>
     <AreaChart
       data={areaChartData}
@@ -270,7 +270,7 @@ export const AreaChartStoryWithYAxis: Story = {
     xAxisLabel: "Time Period",
     yAxisLabel: "Number of Users",
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <AreaChart {...args} />
     </Card>
@@ -280,7 +280,7 @@ export const AreaChartStoryWithYAxis: Story = {
       source: {
         code: `
   import { Monitor, TabletSmartphone } from "lucide-react";
-  
+
   const areaChartData = [
     { month: "January", desktop: 150, mobile: 90 },
     { month: "February", desktop: 280, mobile: 180 },
@@ -289,7 +289,7 @@ export const AreaChartStoryWithYAxis: Story = {
     { month: "May", desktop: 250, mobile: 120 },
     { month: "June", desktop: 300, mobile: 180 },
   ];
-  
+
   <Card style={{ width: "500px" }}>
     <AreaChart
       data={areaChartData}

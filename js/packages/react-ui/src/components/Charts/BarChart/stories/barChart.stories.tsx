@@ -173,7 +173,7 @@ export const BarChartStory: Story = {
     isAnimationActive: true,
     showYAxis: false,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <BarChart {...args} />
     </Card>
@@ -190,7 +190,7 @@ const barChartData = [
   { month: "May", desktop: 250, mobile: 120 },
   { month: "June", desktop: 300, mobile: 180 },
 ];
-        
+
 <Card
   style={{
     width: '500px'
@@ -220,7 +220,7 @@ export const BarChartStoryWithIcons: Story = {
     ...BarChartStory.args,
     icons: icons,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <BarChart {...args} />
     </Card>
@@ -239,12 +239,12 @@ export const BarChartStoryWithIcons: Story = {
       { month: "May", desktop: 250, mobile: 120 },
       { month: "June", desktop: 300, mobile: 180 },
     ];
-    
+
     const icons = {
       desktop: Monitor,
       mobile: TabletSmartphone,
     };
-            
+
     <Card style={{ width: "500px" }}>
       <BarChart
         categoryKey="month"
@@ -273,7 +273,7 @@ export const BarChartStoryWithYAxis: Story = {
     xAxisLabel: "Time Period",
     yAxisLabel: "Number of Users",
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <BarChart {...args} />
     </Card>

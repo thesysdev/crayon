@@ -141,7 +141,7 @@ export const RadialChartStory: Story = {
     grid: true,
     isAnimationActive: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <RadialChart {...args} />
     </Card>

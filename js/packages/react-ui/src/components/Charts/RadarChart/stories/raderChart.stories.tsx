@@ -146,7 +146,7 @@ export const RadarChartStory: Story = {
     grid: true,
     isAnimationActive: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <RadarChart {...args} />
     </Card>
@@ -193,7 +193,7 @@ export const RadarChartStoryWithIcons: Story = {
     ...RadarChartStory.args,
     icons: icons,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <RadarChart {...args} />
     </Card>
