@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo } from "react";
 import { create } from "zustand";
-import { useShallow } from "zustand/shallow";
+import { useShallow } from "zustand/react/shallow";
 
 interface ShellState {
   isSidebarOpen: boolean;

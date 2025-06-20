@@ -130,8 +130,10 @@ export const PieChartStory: Story = {
     label: true,
     isAnimationActive: true,
   },
-  render: (args) => (
-    <Card style={{ width: "300px" }}>
+
+  render: (args: any) => (
+    <Card style={{ width: "500px" }}>
+
       <PieChart {...args} />
     </Card>
   ),
