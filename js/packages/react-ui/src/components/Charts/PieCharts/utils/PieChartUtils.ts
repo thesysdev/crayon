@@ -49,7 +49,7 @@ export interface AnimationConfig {
  * @param total - The total value to calculate percentage against
  * @returns The calculated percentage rounded to 2 decimal places
  */
-export const calculatePercentage = (value: number, total: number): number => {
+const calculatePercentage = (value: number, total: number): number => {
   if (total === 0) {
     return 0;
   }
@@ -66,7 +66,7 @@ export const calculatePercentage = (value: number, total: number): number => {
  * @param variant - The chart variant ('pie' or 'donut')
  * @returns Object containing outer and inner radius values
  */
-export const calculateChartDimensions = (width: number, variant: string): ChartDimensions => {
+const calculateChartDimensions = (width: number, variant: string): ChartDimensions => {
   const baseRadiusPercentage = 0.4; // 40% of container width
   let outerRadius = Math.round(width * baseRadiusPercentage);
 
@@ -87,7 +87,7 @@ export const calculateChartDimensions = (width: number, variant: string): ChartD
  * @param width - The container width
  * @returns Object containing outer, middle, and inner radius values
  */
-export const calculateTwoLevelChartDimensions = (width: number): TwoLevelChartDimensions => {
+const calculateTwoLevelChartDimensions = (width: number): TwoLevelChartDimensions => {
   const baseRadiusPercentage = 0.4; // 40% of container width
   let outerRadius = Math.round(width * baseRadiusPercentage);
 
@@ -113,7 +113,7 @@ export const calculateTwoLevelChartDimensions = (width: number): TwoLevelChartDi
  * @param activeIndex - The index of the currently hovered cell
  * @returns Object containing hover style properties
  */
-export const getHoverStyles = (index: number, activeIndex: number | null): HoverStyles => {
+const getHoverStyles = (index: number, activeIndex: number | null): HoverStyles => {
   return {
     opacity: activeIndex === null || activeIndex === index ? 1 : 0.6,
     stroke: activeIndex === index ? "#fff" : "none",
@@ -131,7 +131,7 @@ export const getHoverStyles = (index: number, activeIndex: number | null): Hover
  * @param dataKey - The key to use for value calculations
  * @returns Transformed data with added percentage and original value
  */
-export const transformDataWithPercentages = <T extends PieChartData>(
+const transformDataWithPercentages = <T extends PieChartData>(
   data: T,
   dataKey: keyof T[number],
 ) => {
@@ -150,7 +150,7 @@ export const transformDataWithPercentages = <T extends PieChartData>(
  * @param theme - The color theme to use
  * @returns Chart configuration object
  */
-export const createChartConfig = <T extends PieChartData>(
+const createChartConfig = <T extends PieChartData>(
   data: T,
   categoryKey: keyof T[number],
   theme: string = "ocean",
@@ -179,7 +179,7 @@ export const createChartConfig = <T extends PieChartData>(
  * Custom hook for managing chart hover effects
  * @returns Object containing hover state and handlers
  */
-export const useChartHover = (): ChartHoverHook => {
+const useChartHover = (): ChartHoverHook => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const handleMouseEnter = (_: any, index: number) => {
@@ -206,7 +206,7 @@ export const useChartHover = (): ChartHoverHook => {
  * @param config - Animation configuration options
  * @returns Animation configuration object
  */
-export const createAnimationConfig = (config: Partial<AnimationConfig> = {}): AnimationConfig => {
+const createAnimationConfig = (config: Partial<AnimationConfig> = {}): AnimationConfig => {
   return {
     isAnimationActive: config.isAnimationActive ?? true,
     animationBegin: config.animationBegin ?? 0,
@@ -226,7 +226,7 @@ export const createAnimationConfig = (config: Partial<AnimationConfig> = {}): An
  * @param onClick - Click handler
  * @returns Object containing event handlers
  */
-export const createEventHandlers = (
+const createEventHandlers = (
   onMouseEnter?: (data: any, index: number) => void,
   onMouseLeave?: () => void,
   onClick?: (data: any, index: number) => void,
@@ -250,9 +250,26 @@ export const createEventHandlers = (
  * @param paddingAngle - Padding angle between sectors
  * @returns Sector style configuration
  */
-export const createSectorStyle = (cornerRadius: number = 0, paddingAngle: number = 0) => {
+const createSectorStyle = (cornerRadius: number = 0, paddingAngle: number = 0) => {
   return {
     cornerRadius,
     paddingAngle,
   };
+};
+
+// ==========================================
+// Export all utility functions
+// ==========================================
+
+export {
+  calculatePercentage,
+  calculateChartDimensions,
+  calculateTwoLevelChartDimensions,
+  getHoverStyles,
+  transformDataWithPercentages,
+  createChartConfig,
+  useChartHover,
+  createAnimationConfig,
+  createEventHandlers,
+  createSectorStyle,
 };
