@@ -47,7 +47,7 @@ export interface AreaChartV2Props<T extends AreaChartV2Data> {
 
 const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
 
-export const AreaChartV2 = <T extends AreaChartV2Data>({
+const AreaChartV2Component = <T extends AreaChartV2Data>({
   data,
   categoryKey,
   theme = "ocean",
@@ -370,3 +370,6 @@ export const AreaChartV2 = <T extends AreaChartV2Data>({
     </div>
   );
 };
+
+// Added React.memo for performance optimization to avoid unnecessary re-renders
+export const AreaChartV2 = React.memo(AreaChartV2Component) as typeof AreaChartV2Component;
