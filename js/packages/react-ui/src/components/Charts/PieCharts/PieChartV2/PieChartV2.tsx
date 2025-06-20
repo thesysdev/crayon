@@ -435,17 +435,17 @@ export const PieChartV2 = <T extends PieChartV2Data>({
 
     if (legendVariant === "stacked") {
       return (
-        <StackedLegend
-          items={legendItems}
-          onItemHover={handleLegendHover}
-          activeKey={hoveredLegendKey}
-          onLegendItemHover={handleLegendItemHover}
-          containerWidth={layoutConfig.isRow ? undefined : wrapperWidth}
-        />
+        <div className="crayon-pie-chart-legend-container" style={legendContainerStyle}>
+          <StackedLegend
+            items={legendItems}
+            onItemHover={handleLegendHover}
+            activeKey={hoveredLegendKey}
+            onLegendItemHover={handleLegendItemHover}
+            containerWidth={layoutConfig.isRow ? undefined : wrapperWidth}
+          />
+        </div>
       );
     }
-
-    // Default legend variant - render directly like AreaChartV2
     return <DefaultLegend items={defaultLegendItems} containerWidth={containerWidth} />;
   }, [
     legend,
@@ -458,6 +458,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     wrapperWidth,
     defaultLegendItems,
     containerWidth,
+    legendContainerStyle,
   ]);
 
   // Memoize className calculations
@@ -507,12 +508,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
           </div>
         </div>
       </div>
-      {legend && legendVariant === "stacked" && (
-        <div className="crayon-pie-chart-legend-container" style={legendContainerStyle}>
-          {renderLegend()}
-        </div>
-      )}
-      {legend && legendVariant === "default" && renderLegend()}
+      {renderLegend()}
     </div>
   );
 };
