@@ -45,11 +45,6 @@ export const CustomTooltipContent = memo(
 
     const { config, id } = useChart();
 
-    // Early return for inactive or empty payload
-    if (!active || !payload?.length) {
-      return null;
-    }
-
     const tooltipLabel = useMemo(() => {
       if (hideLabel || !payload?.length) {
         return null;
@@ -77,12 +72,15 @@ export const CustomTooltipContent = memo(
     }, [label, labelFormatter, payload, hideLabel, labelClassName, config, labelKey]);
 
     const nestLabel = useMemo(
-      () => payload.length === 1 && indicator !== DEFAULT_INDICATOR,
-      [payload.length, indicator],
+      () => payload?.length === 1 && indicator !== DEFAULT_INDICATOR,
+      [payload?.length, indicator],
     );
 
-    // Memoize payload items rendering for better performance
     const payloadItems = useMemo(() => {
+      if (!payload?.length) {
+        return [];
+      }
+
       return payload.map((item, index) => {
         const key = `${nameKey ?? item.name ?? item.dataKey ?? "value"}`;
         const itemConfig = getPayloadConfigFromPayload(config, item, key);
@@ -159,6 +157,11 @@ export const CustomTooltipContent = memo(
       tooltipLabel,
       showPercentage,
     ]);
+
+    // Early return for inactive or empty payload - moved after all hooks
+    if (!active || !payload?.length) {
+      return null;
+    }
 
     const tooltipContent = (
       <div ref={ref} className={clsx("crayon-chart-tooltip", className)}>

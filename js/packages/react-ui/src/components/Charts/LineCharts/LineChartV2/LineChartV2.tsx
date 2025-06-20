@@ -11,7 +11,7 @@ import {
   keyTransform,
 } from "../../Charts";
 import { cartesianGrid } from "../../cartesianGrid";
-import { ActiveDot, DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
+import { ActiveDot, CustomTooltipContent, DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
 import { LegendItem } from "../../types";
 import {
   findNearestSnapPosition,
@@ -37,6 +37,7 @@ export interface LineChartV2Props<T extends LineChartV2Data> {
   showYAxis?: boolean;
   xAxisLabel?: React.ReactNode;
   yAxisLabel?: React.ReactNode;
+  floatingTooltip?: boolean;
   className?: string;
   height?: number;
   width?: number;
@@ -59,6 +60,7 @@ export const LineChartV2 = <T extends LineChartV2Data>({
   yAxisLabel,
   legend = true,
   className,
+  floatingTooltip = true,
   height,
   width,
   strokeWidth = 2,
@@ -288,7 +290,11 @@ export const LineChartV2 = <T extends LineChartV2Data>({
                   right: 20,
                 }}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              {floatingTooltip ? (
+                <ChartTooltip content={<CustomTooltipContent />} offset={15} />
+              ) : (
+                <ChartTooltip content={<ChartTooltipContent />} />
+              )}
               {dataKeys.map((key) => {
                 const transformedKey = keyTransform(key);
                 const color = `var(--color-${transformedKey})`;
