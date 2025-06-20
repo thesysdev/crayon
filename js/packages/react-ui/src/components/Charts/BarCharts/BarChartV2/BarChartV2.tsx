@@ -12,7 +12,7 @@ import {
   keyTransform,
 } from "../../Charts";
 import { cartesianGrid } from "../../cartesianGrid";
-import { DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
+import { CustomTooltipContent, DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
 import { type LegendItem } from "../../types";
 import { getDistributedColors, getPalette, type PaletteName } from "../../utils/PalletUtils";
 import { getChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
@@ -44,6 +44,7 @@ export interface BarChartPropsV2<T extends BarChartData> {
   yAxisLabel?: React.ReactNode;
   onBarsClick?: (data: any) => void;
   legend?: boolean;
+  floatingTooltip?: boolean;
   className?: string;
   height?: number;
   width?: number;
@@ -69,6 +70,7 @@ const BarChartV2Component = <T extends BarChartData>({
   yAxisLabel,
   onBarsClick,
   legend = false,
+  floatingTooltip = true,
   className,
   height,
   width,
@@ -323,7 +325,15 @@ const BarChartV2Component = <T extends BarChartData>({
                 padding={padding}
               />
               {/* Y-axis is rendered in the separate synchronized chart */}
-              <ChartTooltip cursor={<SimpleCursor />} content={<ChartTooltipContent />} />
+              {floatingTooltip ? (
+                <ChartTooltip
+                  cursor={<SimpleCursor />}
+                  content={<CustomTooltipContent />}
+                  offset={15}
+                />
+              ) : (
+                <ChartTooltip cursor={<SimpleCursor />} content={<ChartTooltipContent />} />
+              )}
               {dataKeys.map((key, index) => {
                 const transformedKey = keyTransform(key);
                 const color = `var(--color-${transformedKey})`;
