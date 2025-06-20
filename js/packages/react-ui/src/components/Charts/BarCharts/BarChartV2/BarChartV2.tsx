@@ -17,7 +17,7 @@ import { type LegendItem } from "../../types";
 import { getDistributedColors, getPalette, type PaletteName } from "../../utils/PalletUtils";
 import { getChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
 import { getYAxisTickFormatter } from "../../utils/styleUtils";
-import { BarChartData, BarChartVariant } from "../types";
+import { BarChartV2Data, BarChartVariant } from "../types";
 import {
   BAR_WIDTH,
   findNearestSnapPosition,
@@ -30,7 +30,7 @@ import {
 import { SimpleCursor } from "./components/CustomCursor";
 import { LineInBarShape } from "./components/LineInBarShape";
 
-export interface BarChartPropsV2<T extends BarChartData> {
+export interface BarChartPropsV2<T extends BarChartV2Data> {
   data: T;
   categoryKey: keyof T[number];
   theme?: PaletteName;
@@ -56,7 +56,7 @@ const BAR_CATEGORY_GAP = "20%"; // Gap between categories
 const BAR_INTERNAL_LINE_WIDTH = 1;
 const BAR_RADIUS = 4;
 
-const BarChartV2Component = <T extends BarChartData>({
+const BarChartV2Component = <T extends BarChartV2Data>({
   data,
   categoryKey,
   theme = "ocean",
