@@ -143,7 +143,7 @@ export const ControlledSingle: Story = {
     return (
       <div>
         <DatePicker
-          mode={args['mode']}
+          mode={args["mode"]}
           selectedSingleDate={selectedDate}
           setSelectedSingleDate={setSelectedDate}
         />
