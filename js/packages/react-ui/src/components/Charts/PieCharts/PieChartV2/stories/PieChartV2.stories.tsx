@@ -231,7 +231,7 @@ export const PieChartV2Demo: Story = {
     width: undefined,
   },
   render: (args) => (
-    <Card style={{ width: "500px", height: "240px", padding: "20px" }}>
+    <Card style={{ width: "400px", height: "100%", padding: "20px" }}>
       <PieChartV2 {...args} />
     </Card>
   ),
