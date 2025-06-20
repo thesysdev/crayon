@@ -10,11 +10,35 @@ const pieChartData = [
   { month: "May", value: 1680 },
   { month: "June", value: 2100 },
   { month: "July", value: 1950 },
-  { month: "Augustajdfoabldlskdbiwbdfjkbkbfjkadbfkadofisodhoisdjg", value: 1820 },
+  { month: "August", value: 1820 },
   { month: "September", value: 1650 },
   { month: "October", value: 1480 },
   { month: "November", value: 1350 },
   { month: "December", value: 1200 },
+];
+
+// Extended data for carousel demo
+const extendedPieChartData = [
+  { month: "January", value: 1250 },
+  { month: "February", value: 980 },
+  { month: "March", value: 1450 },
+  { month: "April", value: 1320 },
+  { month: "May", value: 1680 },
+  { month: "June", value: 2100 },
+  { month: "July", value: 1950 },
+  { month: "August", value: 1820 },
+  { month: "September", value: 1650 },
+  { month: "October", value: 1480 },
+  { month: "November", value: 1350 },
+  { month: "December", value: 1200 },
+  { month: "Q1 Bonus", value: 850 },
+  { month: "Q2 Bonus", value: 920 },
+  { month: "Q3 Bonus", value: 780 },
+  { month: "Q4 Bonus", value: 1100 },
+  { month: "Holiday Pay", value: 650 },
+  { month: "Overtime", value: 420 },
+  { month: "Commission", value: 890 },
+  { month: "Incentives", value: 720 },
 ];
 
 const gradientColors = [
@@ -207,8 +231,43 @@ export const PieChartV2Demo: Story = {
     width: undefined,
   },
   render: (args) => (
-    <Card style={{ width: "250px", height: "100%", padding: "20px" }}>
+    <Card style={{ width: "500px", height: "240px", padding: "20px" }}>
       <PieChartV2 {...args} />
     </Card>
   ),
+};
+
+export const PieChartV2WithCarousel: Story = {
+  name: "PieChartV2 with Up/Down Carousel",
+  args: {
+    data: extendedPieChartData,
+    categoryKey: "month",
+    dataKey: "value",
+    theme: "ocean",
+    variant: "pie",
+    format: "number",
+    legend: true,
+    legendVariant: "stacked",
+    isAnimationActive: true,
+    appearance: "circular",
+    cornerRadius: 0,
+    paddingAngle: 0,
+    useGradients: false,
+    gradientColors,
+    height: undefined,
+    width: undefined,
+  },
+  render: (args) => (
+    <Card style={{ width: "600px", height: "300px", padding: "20px" }}>
+      <PieChartV2 {...args} />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "This example demonstrates the up/down carousel functionality when there are many legend items. The legend has navigation buttons that appear when content overflows, allowing users to scroll through all items.",
+      },
+    },
+  },
 };
