@@ -209,7 +209,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   const handleChartMouseEnter = useCallback(
     (data: any, index: number) => {
       handleMouseEnter(data, index);
-      // Only set legend hover for stacked legend variant
+      // Set legend hover for stacked legend variant
       if (legend && legendVariant === "stacked") {
         const categoryValue = String(data[categoryKey]);
         setHoveredLegendKey(categoryValue);
@@ -220,7 +220,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
 
   const handleChartMouseLeave = useCallback(() => {
     handleMouseLeave();
-    // Only clear legend hover for stacked legend variant
+    // Clear legend hover for stacked legend variant
     if (legend && legendVariant === "stacked") {
       setHoveredLegendKey(null);
     }
@@ -296,18 +296,17 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     labelLine: false,
     label: false,
     ...animationConfig,
-    ...(legendVariant === "stacked" ? eventHandlers : {}),
+    ...eventHandlers,
     ...sectorStyle,
     startAngle,
     endAngle,
-    onMouseEnter: legendVariant === "stacked" ? handleChartMouseEnter : undefined,
-    onMouseLeave: legendVariant === "stacked" ? handleChartMouseLeave : undefined,
+    onMouseEnter: handleChartMouseEnter,
+    onMouseLeave: handleChartMouseLeave,
   }), [
     transformedData,
     formatKey,
     categoryKeyString,
     animationConfig,
-    legendVariant,
     eventHandlers,
     sectorStyle,
     startAngle,
@@ -368,7 +367,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
             innerRadius={dimensions.innerRadius}
             outerRadius={dimensions.middleRadius}
           >
-            {transformedData.map((_, index) => {
+            {transformedData.map((entry, index) => {
               const hoverStyles = getHoverStyles(index, activeIndex);
               const fill = useGradients
                 ? `url(#gradient-${index})`
@@ -406,12 +405,12 @@ export const PieChartV2 = <T extends PieChartV2Data>({
         {...commonPieProps}
         outerRadius={dimensions.outerRadius}
         innerRadius={dimensions.innerRadius}
-        activeIndex={legendVariant === "stacked" ? (activeIndex ?? undefined) : undefined}
+        activeIndex={activeIndex ?? undefined}
       >
         {transformedData.map((entry, index) => {
           const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
           const config = chartConfig[categoryValue];
-          const hoverStyles = legendVariant === "stacked" ? getHoverStyles(index, activeIndex) : {};
+          const hoverStyles = getHoverStyles(index, activeIndex);
           const fill = useGradients ? `url(#gradient-${index})` : config?.color || colors[index];
 
           return <Cell key={`cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
@@ -427,7 +426,6 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     chartConfig,
     activeIndex,
     useGradients,
-    legendVariant,
     colors,
   ]);
 
