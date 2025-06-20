@@ -83,7 +83,10 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   // Memoize string conversions to avoid repeated calls
   const categoryKeyString = useMemo(() => String(categoryKey), [categoryKey]);
   const dataKeyString = useMemo(() => String(dataKey), [dataKey]);
-  const formatKey = useMemo(() => format === "percentage" ? "percentage" : dataKeyString, [format, dataKeyString]);
+  const formatKey = useMemo(
+    () => (format === "percentage" ? "percentage" : dataKeyString),
+    [format, dataKeyString],
+  );
 
   // Use provided dimensions or observed dimensions
   const effectiveWidth = useMemo(() => {
@@ -101,46 +104,43 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   }, [effectiveWidth, effectiveHeight]);
 
   // Memoize expensive data transformations and configurations
-  const transformedData = useMemo(() => 
-    transformDataWithPercentages(data, dataKey), 
-    [data, dataKey]
+  const transformedData = useMemo(
+    () => transformDataWithPercentages(data, dataKey),
+    [data, dataKey],
   );
 
-  const chartConfig = useMemo(() => 
-    createChartConfig(data, categoryKey, theme), 
-    [data, categoryKey, theme]
+  const chartConfig = useMemo(
+    () => createChartConfig(data, categoryKey, theme),
+    [data, categoryKey, theme],
   );
 
-  const animationConfig = useMemo(() => 
-    createAnimationConfig({ isAnimationActive }), 
-    [isAnimationActive]
+  const animationConfig = useMemo(
+    () => createAnimationConfig({ isAnimationActive }),
+    [isAnimationActive],
   );
 
-  const eventHandlers = useMemo(() => 
-    createEventHandlers(onMouseEnter, onMouseLeave, onClick), 
-    [onMouseEnter, onMouseLeave, onClick]
+  const eventHandlers = useMemo(
+    () => createEventHandlers(onMouseEnter, onMouseLeave, onClick),
+    [onMouseEnter, onMouseLeave, onClick],
   );
 
-  const sectorStyle = useMemo(() => 
-    createSectorStyle(cornerRadius, variant === "donut" ? 0.5 : paddingAngle), 
-    [cornerRadius, variant, paddingAngle]
+  const sectorStyle = useMemo(
+    () => createSectorStyle(cornerRadius, variant === "donut" ? 0.5 : paddingAngle),
+    [cornerRadius, variant, paddingAngle],
   );
 
   // Get color palette and distribute colors
   const palette = useMemo(() => getPalette(theme), [theme]);
-  const colors = useMemo(() => 
-    getDistributedColors(palette, data.length), 
-    [palette, data.length]
-  );
+  const colors = useMemo(() => getDistributedColors(palette, data.length), [palette, data.length]);
 
   // Memoize gradient definitions
   const gradientDefinitions = useMemo(() => {
     if (!useGradients) return null;
-    
+
     const chartColors = Object.values(chartConfig)
       .map((config) => config.color)
       .filter((color): color is string => color !== undefined);
-    
+
     return createGradientDefinitions(transformedData, chartColors, gradientColors);
   }, [useGradients, chartConfig, transformedData, gradientColors]);
 
@@ -164,9 +164,9 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   }, [data, categoryKey, colors]);
 
   // Memoize sorted data for legend hover handling
-  const sortedData = useMemo(() => 
-    [...data].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])), 
-    [data, dataKey]
+  const sortedData = useMemo(
+    () => [...data].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
+    [data, dataKey],
   );
 
   // Handle legend hover
@@ -255,65 +255,83 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   }, [legend, legendVariant, wrapperWidth, containerWidth]);
 
   // Memoize style objects to prevent unnecessary re-renders
-  const containerStyle = useMemo(() => ({
-    width: width ? `${width}px` : "100%",
-    height: height ? `${height}px` : "100%",
-    flex: legend && legendVariant === "stacked" && layoutConfig.isRow ? "1" : "none",
-  }), [width, height, legend, legendVariant, layoutConfig.isRow]);
+  const containerStyle = useMemo(
+    () => ({
+      width: width ? `${width}px` : "100%",
+      height: height ? `${height}px` : "100%",
+      flex: legend && legendVariant === "stacked" && layoutConfig.isRow ? "1" : "none",
+    }),
+    [width, height, legend, legendVariant, layoutConfig.isRow],
+  );
 
-  const innerContainerStyle = useMemo(() => ({
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }), []);
+  const innerContainerStyle = useMemo(
+    () => ({
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }),
+    [],
+  );
 
-  const chartSizeStyle = useMemo(() => ({
-    width: chartSize,
-    height: chartSize,
-  }), [chartSize]);
+  const chartSizeStyle = useMemo(
+    () => ({
+      width: chartSize,
+      height: chartSize,
+    }),
+    [chartSize],
+  );
 
-  const legendContainerStyle = useMemo(() => ({
-    flex: layoutConfig.isRow ? "1" : "none",
-    width: layoutConfig.isRow ? "auto" : "100%",
-  }), [layoutConfig.isRow]);
+  const legendContainerStyle = useMemo(
+    () => ({
+      flex: layoutConfig.isRow ? "1" : "none",
+      width: layoutConfig.isRow ? "auto" : "100%",
+    }),
+    [layoutConfig.isRow],
+  );
 
-  const rechartsProps = useMemo(() => ({
-    width: chartSize,
-    height: chartSize,
-  }), [chartSize]);
+  const rechartsProps = useMemo(
+    () => ({
+      width: chartSize,
+      height: chartSize,
+    }),
+    [chartSize],
+  );
 
   // Memoize angle calculations
-  const startAngle = useMemo(() => appearance === "semiCircular" ? 0 : 0, [appearance]);
-  const endAngle = useMemo(() => appearance === "semiCircular" ? 180 : 360, [appearance]);
+  const startAngle = useMemo(() => (appearance === "semiCircular" ? 0 : 0), [appearance]);
+  const endAngle = useMemo(() => (appearance === "semiCircular" ? 180 : 360), [appearance]);
 
   // Memoize common pie props
-  const commonPieProps = useMemo(() => ({
-    data: transformedData,
-    dataKey: formatKey,
-    nameKey: categoryKeyString,
-    labelLine: false,
-    label: false,
-    ...animationConfig,
-    ...eventHandlers,
-    ...sectorStyle,
-    startAngle,
-    endAngle,
-    onMouseEnter: handleChartMouseEnter,
-    onMouseLeave: handleChartMouseLeave,
-  }), [
-    transformedData,
-    formatKey,
-    categoryKeyString,
-    animationConfig,
-    eventHandlers,
-    sectorStyle,
-    startAngle,
-    endAngle,
-    handleChartMouseEnter,
-    handleChartMouseLeave,
-  ]);
+  const commonPieProps = useMemo(
+    () => ({
+      data: transformedData,
+      dataKey: formatKey,
+      nameKey: categoryKeyString,
+      labelLine: false,
+      label: false,
+      ...animationConfig,
+      ...eventHandlers,
+      ...sectorStyle,
+      startAngle,
+      endAngle,
+      onMouseEnter: handleChartMouseEnter,
+      onMouseLeave: handleChartMouseLeave,
+    }),
+    [
+      transformedData,
+      formatKey,
+      categoryKeyString,
+      animationConfig,
+      eventHandlers,
+      sectorStyle,
+      startAngle,
+      endAngle,
+      handleChartMouseEnter,
+      handleChartMouseLeave,
+    ],
+  );
 
   useEffect(() => {
     // Set up ResizeObserver for wrapper to get overall container width
@@ -462,29 +480,35 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   ]);
 
   // Memoize className calculations
-  const wrapperClassName = useMemo(() => 
-    clsx("crayon-pie-chart-container-wrapper", className, {
-      "crayon-pie-chart-container-wrapper--stacked-legend":
-        legend && legendVariant === "stacked" && layoutConfig.isRow,
-      "crayon-pie-chart-container-wrapper--stacked-legend-column":
-        legend && legendVariant === "stacked" && !layoutConfig.isRow,
-      "crayon-pie-chart-container-wrapper--default-legend": legend && legendVariant === "default",
-    }), 
-    [className, legend, legendVariant, layoutConfig.isRow]
+  const wrapperClassName = useMemo(
+    () =>
+      clsx("crayon-pie-chart-container-wrapper", className, {
+        "crayon-pie-chart-container-wrapper--stacked-legend":
+          legend && legendVariant === "stacked" && layoutConfig.isRow,
+        "crayon-pie-chart-container-wrapper--stacked-legend-column":
+          legend && legendVariant === "stacked" && !layoutConfig.isRow,
+        "crayon-pie-chart-container-wrapper--default-legend": legend && legendVariant === "default",
+      }),
+    [className, legend, legendVariant, layoutConfig.isRow],
   );
 
-  const containerClassName = useMemo(() => 
-    clsx("crayon-pie-chart-container", {
-      "crayon-pie-chart-container--with-stacked-legend":
-        legend && legendVariant === "stacked" && layoutConfig.isRow,
-    }), 
-    [legend, legendVariant, layoutConfig.isRow]
+  const containerClassName = useMemo(
+    () =>
+      clsx("crayon-pie-chart-container", {
+        "crayon-pie-chart-container--with-stacked-legend":
+          legend && legendVariant === "stacked" && layoutConfig.isRow,
+      }),
+    [legend, legendVariant, layoutConfig.isRow],
   );
 
   return (
     <div ref={wrapperRef} className={wrapperClassName}>
       <div className={containerClassName} style={containerStyle}>
-        <div className="crayon-pie-chart-container-inner" ref={chartContainerRef} style={innerContainerStyle}>
+        <div
+          className="crayon-pie-chart-container-inner"
+          ref={chartContainerRef}
+          style={innerContainerStyle}
+        >
           <div style={chartSizeStyle}>
             <ChartContainer
               config={chartConfig}
@@ -496,11 +520,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
                   content={<ChartTooltipContent showPercentage={format === "percentage"} />}
                 />
 
-                {gradientDefinitions && (
-                  <defs>
-                    {gradientDefinitions}
-                  </defs>
-                )}
+                {gradientDefinitions && <defs>{gradientDefinitions}</defs>}
 
                 {renderPieCharts()}
               </RechartsPieChart>
