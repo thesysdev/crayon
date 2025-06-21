@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "../../../../Card";
-import { MiniLineChart, MiniLineChartProps } from "../MiniLineChart";
+import { MiniLineChart } from "../MiniLineChart";
 
 // Simple array of numbers for 1D line chart
 const simpleLineChartData = [

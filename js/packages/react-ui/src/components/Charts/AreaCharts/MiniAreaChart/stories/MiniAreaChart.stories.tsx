@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "../../../../Card";
-import { MiniAreaChart, MiniAreaChartProps } from "../MiniAreaChart";
+import { MiniAreaChart } from "../MiniAreaChart";
 
 // Simple array of numbers for 1D area chart
 const simpleAreaChartData = [

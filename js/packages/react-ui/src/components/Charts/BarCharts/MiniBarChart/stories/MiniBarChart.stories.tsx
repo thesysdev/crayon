@@ -183,7 +183,7 @@ export const SmallSize: Story = {
     isAnimationActive: true,
     size: 120,
   },
-    render: (args: any) => (
+  render: (args: any) => (
     <Card style={{ width: "200px", padding: "16px" }}>
       <h4 style={{ marginBottom: "12px", fontSize: "14px", fontWeight: "600" }}>Weekly Stats</h4>
       <MiniBarChart {...args} />
