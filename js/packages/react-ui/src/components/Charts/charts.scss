@@ -1,5 +1,22 @@
 @use "../../cssUtils" as cssUtils;
 
+// bar chart css
+@forward "./BarCharts/index.scss";
+
+// area chart css
+@forward "./AreaCharts/index.scss";
+
+// line chart css
+@forward "./LineCharts/index.scss";
+
+// shared components css
+@forward "./shared/XAxisTick/xAxisTick.scss";
+@forward "./shared/DefaultLegend/defaultLegend.scss";
+@forward "./shared/YAxisTick/yAxisTick.scss";
+
+// portal tooltip css
+@forward "./shared/PortalTooltip/portalTooltip.scss";
+
 .crayon-chart {
   // Container styles
   &-container {
@@ -43,7 +60,9 @@
       outline: none;
     }
   }
-
+  // the tooltip style will might need to be moved to it dedicated file.
+  // we have 2 types of tooltips, one is the default tooltip and the other is the portal tooltip.
+  // both are using this style.
   // Tooltip styles
   &-tooltip {
     display: grid;
@@ -67,6 +86,9 @@
       @include cssUtils.typography(label, heavy);
     }
 
+    // this is the content of the tooltip, where the items of the of each data point is rendered,
+    // todo: remove commented style once the review is done.
+
     &-content {
       display: grid;
       align-items: start;
@@ -75,8 +97,8 @@
       padding: cssUtils.$spacing-xs;
       color: cssUtils.$primary-text;
       @include cssUtils.typography(label, default);
-      border-radius: cssUtils.$rounded-s;
-      border: 1px solid cssUtils.$stroke-default;
+      // border-radius: cssUtils.$rounded-s;
+      // border: 1px solid cssUtils.$stroke-default;
       background-color: cssUtils.$bg-container;
       box-shadow: cssUtils.$shadow-s;
       text-transform: capitalize;
@@ -97,9 +119,10 @@
           color: cssUtils.$primary-text;
         }
       }
-      & &-indicator {
+      // this portion is responsible for styling the colored box or other indicators like line, dashed, etc.
+      &-indicator {
         flex-shrink: 0;
-        border-radius: cssUtils.$rounded-3xs;
+        border-radius: cssUtils.$rounded-2xs;
 
         &--dot {
           height: 10px;
@@ -110,7 +133,6 @@
 
         &--line {
           width: 4px;
-          height: 100%;
           background-color: var(--color-bg);
           border-color: var(--color-border);
         }
@@ -160,52 +182,50 @@
     }
   }
 
+  // this is getting used in DefaultLegend.tsx
+  // now moved to defaultLegend.scss file once review is done remove it
   // Legend styles
-  &-legend {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    text-transform: capitalize;
-    flex-wrap: wrap;
+  // &-legend {
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  //   gap: 16px;
+  //   text-transform: capitalize;
+  //   flex-wrap: wrap;
 
-    &--top {
-      padding-bottom: cssUtils.$spacing-s;
-    }
+  //   &--bottom {
+  //     padding-top: cssUtils.$spacing-m;
+  //   }
 
-    &--bottom {
-      padding-top: cssUtils.$spacing-m;
-    }
+  //   &-item {
+  //     display: flex;
+  //     align-items: center;
+  //     gap: cssUtils.$spacing-xs;
 
-    &-item {
-      display: flex;
-      align-items: center;
-      gap: cssUtils.$spacing-xs;
+  //     svg {
+  //       height: 12px;
+  //       width: 12px;
+  //       color: cssUtils.$primary-text;
+  //     }
 
-      svg {
-        height: 12px;
-        width: 12px;
-        color: cssUtils.$primary-text;
-      }
+  //     &-indicator {
+  //       height: 8px;
+  //       width: 8px;
+  //       flex-shrink: 0;
+  //       border-radius: cssUtils.$rounded-3xs;
+  //       background-color: var(--color-bg);
+  //     }
 
-      &-indicator {
-        height: 8px;
-        width: 8px;
-        flex-shrink: 0;
-        border-radius: cssUtils.$rounded-3xs;
-        background-color: var(--color-bg);
-      }
-
-      &-label {
-        @include cssUtils.typography(label, heavy);
-        max-width: 64px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        color: cssUtils.$primary-text;
-      }
-    }
-  }
+  //     &-label {
+  //       @include cssUtils.typography(label, heavy);
+  //       max-width: 64px;
+  //       overflow: hidden;
+  //       text-overflow: ellipsis;
+  //       white-space: nowrap;
+  //       color: cssUtils.$primary-text;
+  //     }
+  //   }
+  // }
 }
 
 .crayon-chart-cartesian-grid {
@@ -221,11 +241,13 @@
 }
 
 //Pie Chart styles
+// @subham either remove this or move this to it dedicated file.
 
 .crayon-pie-chart {
   &-container {
     margin-left: auto;
     margin-right: auto;
+    aspect-ratio: 1/1;
 
     &-fullscreen {
       min-height: 400px;

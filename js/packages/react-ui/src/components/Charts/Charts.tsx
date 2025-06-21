@@ -24,8 +24,18 @@ export type ChartConfig = {
     label?: React.ReactNode;
     icon?: React.ComponentType;
   } & (
-    | { color?: string; theme?: never }
-    | { color?: never; theme: Record<keyof typeof THEMES, string> }
+    | { color?: string; secondaryColor?: string; theme?: never }
+    | {
+        color?: never;
+        theme: Record<
+          keyof typeof THEMES,
+          | string
+          | {
+              color: string;
+              secondaryColor?: string;
+            }
+        >;
+      }
   );
 };
 
@@ -34,6 +44,7 @@ export type ChartConfig = {
  */
 type ChartContextProps = {
   config: ChartConfig;
+  id: string;
 };
 
 const ChartContext = createContext<ChartContextProps | null>(null);
@@ -76,9 +87,22 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     ${colorConfig
       .map(([key, itemConfig]) => {
         const transformedKey = keyTransform(key);
+        const themeValue = itemConfig.theme?.[theme as keyof typeof itemConfig.theme];
         const color =
-          itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
-        return color ? `  --color-${transformedKey}: ${color};` : null;
+          typeof themeValue === "string" ? themeValue : themeValue?.color || itemConfig.color;
+        const secondaryColor =
+          typeof themeValue === "object"
+            ? themeValue?.secondaryColor
+            : "secondaryColor" in itemConfig
+              ? itemConfig.secondaryColor
+              : undefined;
+
+        return [
+          color ? `  --color-${transformedKey}: ${color};` : null,
+          secondaryColor ? `  --color-${transformedKey}-secondary: ${secondaryColor};` : null,
+        ]
+          .filter(Boolean)
+          .join("\n");
       })
       .filter(Boolean)
       .join("\n")}
@@ -99,13 +123,17 @@ const ChartContainer = forwardRef<
   ComponentProps<"div"> & {
     config: ChartConfig;
     children: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>["children"];
+    rechartsProps?: Omit<
+      React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>,
+      "children"
+    >;
   }
->(({ id, className, children, config, ...props }, ref) => {
+>(({ id, className, children, config, rechartsProps, ...props }, ref) => {
   const uniqueId = useId();
-  const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
+  const chartId = `crayon-chart-${id || uniqueId.replace(/:/g, "")}`;
 
   return (
-    <ChartContext.Provider value={{ config }}>
+    <ChartContext.Provider value={{ config, id: chartId }}>
       <div
         data-chart={chartId}
         ref={ref}
@@ -113,7 +141,9 @@ const ChartContainer = forwardRef<
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>{children}</RechartsPrimitive.ResponsiveContainer>
+        <RechartsPrimitive.ResponsiveContainer {...rechartsProps}>
+          {children}
+        </RechartsPrimitive.ResponsiveContainer>
       </div>
     </ChartContext.Provider>
   );
@@ -268,6 +298,9 @@ const ChartTooltipContent = forwardRef<
 );
 ChartTooltipContent.displayName = "ChartTooltip";
 
+// this is not used any more, in the new chart, we are using the default legend which is rendered outside the charts container,
+// older charts are still using this legend.
+
 /**
  * Re-exported Legend component from Recharts
  */
@@ -362,4 +395,6 @@ export {
   ChartStyle,
   ChartTooltip,
   ChartTooltipContent,
+  getPayloadConfigFromPayload,
+  useChart,
 };
