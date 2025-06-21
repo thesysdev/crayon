@@ -73,6 +73,7 @@ export const adjustColorBrightness = (hex: string, percent: number): string => {
     return "#" + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
   } catch (error) {
     console.warn("Invalid color format:", hex);
+    console.warn(error);
     return hex;
   }
 };

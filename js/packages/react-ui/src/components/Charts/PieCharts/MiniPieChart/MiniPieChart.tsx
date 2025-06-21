@@ -1,7 +1,6 @@
 import { debounce } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
-import { useLayoutContext } from "../../../../context/LayoutContext";
 import { ChartContainer } from "../../Charts";
 import {
   PieChartData,
@@ -32,7 +31,6 @@ export const MiniPieChart = <T extends MiniPieChartData>({
   format = "number",
   isAnimationActive = true,
 }: MiniPieChartProps<T>) => {
-  const { layout } = useLayoutContext();
   const [calculatedOuterRadius, setCalculatedOuterRadius] = useState(120);
   const [calculatedInnerRadius, setCalculatedInnerRadius] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
