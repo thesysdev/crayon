@@ -93,15 +93,6 @@ const meta: Meta<MiniPieChartProps<typeof pieChartData>> = {
         category: "Display",
       },
     },
-    label: {
-      description: "Whether to display the data point labels above each point on the chart",
-      control: "boolean",
-      table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "true" },
-        category: "Display",
-      },
-    },
     isAnimationActive: {
       description: "Whether to animate the chart",
       control: "boolean",
@@ -130,7 +121,7 @@ export const PieChartStory: Story = {
     label: true,
     isAnimationActive: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <MiniPieChart {...args} />
     </Card>

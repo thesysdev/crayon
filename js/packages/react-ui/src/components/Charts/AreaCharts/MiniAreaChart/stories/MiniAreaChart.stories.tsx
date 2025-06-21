@@ -133,7 +133,7 @@ export const SimpleNumberArray: Story = {
     isAnimationActive: true,
     size: "100%",
   },
-  render: (args: MiniAreaChartProps) => (
+  render: (args: any) => (
     <Card style={{ width: "280px", padding: "20px" }}>
       <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Daily Activity</h3>
       <MiniAreaChart {...args} />
@@ -170,7 +170,7 @@ export const LabeledData: Story = {
     isAnimationActive: true,
     size: "100%",
   },
-  render: (args: MiniAreaChartProps) => (
+  render: (args: any) => (
     <Card style={{ width: "320px", padding: "20px" }}>
       <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Monthly Revenue</h3>
       <MiniAreaChart {...args} />
@@ -211,7 +211,7 @@ export const WithoutGradient: Story = {
     isAnimationActive: true,
     size: "100%",
   },
-  render: (args: MiniAreaChartProps) => (
+  render: (args: any) => (
     <Card style={{ width: "280px", padding: "20px" }}>
       <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Solid Fill Area</h3>
       <MiniAreaChart {...args} />
@@ -277,7 +277,7 @@ export const ResponsiveData: Story = {
     isAnimationActive: true,
     size: "100%",
   },
-  render: (args) => (
+  render: (args: any) => (
     <div style={{ display: "flex", gap: "20px", flexDirection: "column" }}>
       <Card style={{ width: "200px", padding: "16px" }}>
         <h4 style={{ marginBottom: "12px", fontSize: "14px", fontWeight: "600" }}>Small (200px)</h4>
@@ -386,7 +386,7 @@ export const CustomColor: Story = {
     useGradient: true,
     size: 200,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card
       style={{
         width: "280px",

@@ -430,7 +430,7 @@ const categoryKeys = {
 };
 
 // 🔥 ACTIVE DATA - For backward compatibility
-const lineChartData = dataVariations.default;
+const lineChartV2Data = dataVariations.default;
 
 const icons = {
   desktop: Monitor,
@@ -445,7 +445,7 @@ const icons = {
   sessions: TabletSmartphone,
 } as const;
 
-const meta: Meta<LineChartV2Props<typeof lineChartData>> = {
+const meta: Meta<LineChartV2Props<typeof lineChartV2Data>> = {
   title: "Components/Charts/LineCharts/LineChartV2",
   component: LineChartV2,
   parameters: {
@@ -534,7 +534,7 @@ type Story = StoryObj<typeof meta>;
 export const LineChartV2Story: Story = {
   name: "🎛️ Data Switcher - Line Chart V2",
   args: {
-    data: lineChartData,
+    data: lineChartV2Data,
     categoryKey: "month",
     theme: "ocean",
     variant: "natural",
@@ -667,7 +667,7 @@ export const BigLabelsStory: Story = {
     showYAxis: true,
     strokeWidth: 3,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "600px" }}>
       <LineChartV2 {...args} />
     </Card>
@@ -687,7 +687,7 @@ export const DenseTimelineStory: Story = {
     showYAxis: true,
     strokeWidth: 2,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <LineChartV2 {...args} />
     </Card>
@@ -713,7 +713,7 @@ export const StrokeCustomizationStory: Story = {
     legend: true,
     showYAxis: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div>
         <h4>Thick Lines (strokeWidth: 4)</h4>
@@ -749,7 +749,7 @@ export const VariantComparisonStory: Story = {
     showYAxis: true,
     strokeWidth: 3,
   },
-  render: (args) => (
+  render: (args: any) => (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div>
         <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>Linear Variant</h4>
@@ -796,7 +796,7 @@ export const ExpandCollapseMarketingStory: Story = {
     showYAxis: true,
     strokeWidth: 2,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "600px" }}>
       <LineChartV2 {...args} />
     </Card>
@@ -824,7 +824,7 @@ export const ResponsiveWidthStory: Story = {
     showYAxis: true,
     strokeWidth: 2,
   },
-  render: (args) => (
+  render: (args: any) => (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div>
         <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>

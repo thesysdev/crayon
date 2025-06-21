@@ -108,7 +108,7 @@ export const SimpleNumberArray: Story = {
     isAnimationActive: true,
     size: "100%",
   },
-  render: (args: MiniBarChartProps) => (
+  render: (args: any) => (
     <Card style={{ width: "280px", padding: "20px" }}>
       <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>
         Monthly Sales Data
@@ -144,7 +144,7 @@ export const LabeledData: Story = {
     isAnimationActive: true,
     size: 200,
   },
-  render: (args: MiniBarChartProps) => (
+  render: (args: any) => (
     <Card style={{ width: "280px", padding: "20px" }}>
       <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Monthly Revenue</h3>
       <MiniBarChart {...args} />
@@ -183,7 +183,7 @@ export const SmallSize: Story = {
     isAnimationActive: true,
     size: 120,
   },
-  render: (args: MiniBarChartProps) => (
+    render: (args: any) => (
     <Card style={{ width: "200px", padding: "16px" }}>
       <h4 style={{ marginBottom: "12px", fontSize: "14px", fontWeight: "600" }}>Weekly Stats</h4>
       <MiniBarChart {...args} />

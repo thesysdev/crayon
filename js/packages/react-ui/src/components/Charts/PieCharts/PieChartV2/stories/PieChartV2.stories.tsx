@@ -230,7 +230,7 @@ export const PieChartV2Demo: Story = {
     height: undefined,
     width: undefined,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "400px", height: "100%", padding: "20px" }}>
       <PieChartV2 {...args} />
     </Card>
@@ -257,7 +257,7 @@ export const PieChartV2WithCarousel: Story = {
     height: undefined,
     width: undefined,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "600px", height: "300px", padding: "20px" }}>
       <PieChartV2 {...args} />
     </Card>

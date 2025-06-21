@@ -127,7 +127,7 @@ export const Interactive: Story = {
     xAxisLabel: "Monthly Data",
     yAxisLabel: "Performance Metrics",
   },
-  render: (args) => {
+  render: (args: any) => {
     const DynamicLegendExample = () => {
       const containerRef = useRef<HTMLDivElement>(null);
       const [containerWidth, setContainerWidth] = useState<number>(500);
@@ -185,7 +185,7 @@ export const ExpandCollapseDemo: Story = {
     xAxisLabel: "Marketing Channels",
     yAxisLabel: "Performance Metrics",
   },
-  render: (args) => (
+  render: (args: any) => (
     <div style={{ width: "100%", padding: "20px" }}>
       <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>
         🔄 Expand/Collapse Functionality Demo
@@ -228,7 +228,7 @@ export const ResponsiveExpandCollapse: Story = {
     xAxisLabel: "Marketing Channels",
     yAxisLabel: "Performance Metrics",
   },
-  render: (args) => (
+  render: (args: any) => (
     <div style={{ width: "100%", padding: "20px" }}>
       <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>
         📐 Responsive Expand/Collapse Behavior
@@ -326,7 +326,7 @@ export const DefaultBehavior: Story = {
     xAxisLabel: "Monthly Data",
     yAxisLabel: "Performance Metrics",
   },
-  render: (args) => (
+  render: (args: any) => (
     <div style={{ width: "100%", padding: "20px" }}>
       <p style={{ marginBottom: "16px", fontSize: "14px", color: "#666" }}>
         This demonstrates the default behavior when no containerWidth is provided. All legend items

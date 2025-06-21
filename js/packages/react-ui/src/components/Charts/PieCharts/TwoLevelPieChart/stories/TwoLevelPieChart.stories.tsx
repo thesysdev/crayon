@@ -166,7 +166,7 @@ export const Default: Story = {
     paddingAngle: 0.5,
     useGradients: false,
   },
-  render: (args) => {
+  render: (args: any) => {
     const ResizableExample = () => {
       const containerRef = useRef<HTMLDivElement>(null);
       const [containerWidth, setContainerWidth] = useState<number>(500);
@@ -176,7 +176,7 @@ export const Default: Story = {
         const palette = getPalette(args.theme || "ocean");
         const colors = getDistributedColors(palette, args.data.length);
 
-        return args.data.map((item, index) => ({
+        return args.data.map((item: any, index: any) => ({
           key: String(item[args.categoryKey]),
           label: String(item[args.categoryKey]),
           color: colors[index] || "#000000",
@@ -235,7 +235,7 @@ export const Interactive: Story = {
     paddingAngle: 1,
     format: "percentage",
   },
-  render: (args) => {
+  render: (args: any) => {
     const ResizableExample = () => {
       const containerRef = useRef<HTMLDivElement>(null);
       const [containerWidth, setContainerWidth] = useState<number>(500);
@@ -294,7 +294,7 @@ export const SemiCircular: Story = {
     appearance: "semiCircular",
     theme: "emerald",
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "700px" }}>
       <TwoLevelPieChart {...args} />
     </Card>
@@ -309,7 +309,7 @@ export const WithCornerRadius: Story = {
     paddingAngle: 2,
     theme: "sunset",
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "700px" }}>
       <TwoLevelPieChart {...args} />
     </Card>
@@ -323,7 +323,7 @@ export const PercentageFormat: Story = {
     format: "percentage",
     theme: "spectrum",
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "700px" }}>
       <TwoLevelPieChart {...args} />
     </Card>
@@ -341,7 +341,7 @@ export const GradientColors: Story = {
     useGradients: true,
     gradientColors,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "700px" }}>
       <TwoLevelPieChart {...args} />
     </Card>
@@ -357,7 +357,7 @@ export const WithStackedLegend: Story = {
     paddingAngle: 1,
     format: "percentage",
   },
-  render: (args) => {
+  render: (args: any) => {
     const ResizableExample = () => {
       const containerRef = useRef<HTMLDivElement>(null);
       const [containerWidth, setContainerWidth] = useState<number>(500);
@@ -368,7 +368,7 @@ export const WithStackedLegend: Story = {
         const palette = getPalette(args.theme || "vivid");
         const colors = getDistributedColors(palette, args.data.length);
 
-        return args.data.map((item, index) => ({
+        return args.data.map((item: any, index: any) => ({
           key: String(item[args.categoryKey]),
           label: String(item[args.categoryKey]),
           value: Number(item[args.dataKey]),

@@ -119,7 +119,7 @@ export const SimpleNumberArray: Story = {
     isAnimationActive: true,
     size: "100%",
   },
-  render: (args: MiniLineChartProps) => (
+  render: (args: any) => (
     <Card style={{ width: "280px", padding: "20px" }}>
       <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Daily Activity</h3>
       <MiniLineChart {...args} />
@@ -155,7 +155,7 @@ export const LabeledData: Story = {
     isAnimationActive: true,
     size: "100%",
   },
-  render: (args: MiniLineChartProps) => (
+  render: (args: any) => (
     <Card style={{ width: "320px", padding: "20px" }}>
       <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Monthly Revenue</h3>
       <MiniLineChart {...args} />

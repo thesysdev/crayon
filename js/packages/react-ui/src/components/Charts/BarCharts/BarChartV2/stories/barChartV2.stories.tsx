@@ -782,7 +782,7 @@ export const SmallDataStory: Story = {
     showYAxis: true,
     legend: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "400px" }}>
       <BarChartV2 {...args} />
     </Card>
@@ -802,7 +802,7 @@ export const LargeDataStory: Story = {
     showYAxis: true,
     legend: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "400px" }}>
       <BarChartV2 {...args} />
     </Card>
@@ -822,7 +822,7 @@ export const WeeklyDataStory: Story = {
     showYAxis: true,
     legend: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "400px" }}>
       <BarChartV2 {...args} />
     </Card>
@@ -842,7 +842,7 @@ export const BigNumbersStory: Story = {
     showYAxis: true,
     legend: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <BarChartV2 {...args} />
     </Card>
@@ -862,7 +862,7 @@ export const EdgeCaseStory: Story = {
     showYAxis: true,
     legend: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "400px" }}>
       <BarChartV2 {...args} />
     </Card>
@@ -882,7 +882,7 @@ export const NumberRangesStory: Story = {
     showYAxis: true,
     legend: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "400px" }}>
       <BarChartV2 {...args} />
     </Card>
@@ -902,7 +902,7 @@ export const ExpandCollapseMarketingStory: Story = {
     showYAxis: true,
     legend: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "600px" }}>
       <BarChartV2 {...args} />
     </Card>

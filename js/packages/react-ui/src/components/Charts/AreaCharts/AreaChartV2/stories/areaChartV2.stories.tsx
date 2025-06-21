@@ -781,7 +781,7 @@ export const BigLabelsStory: Story = {
     isAnimationActive: true,
     showYAxis: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "700px" }}>
       <AreaChartV2 {...args} />
     </Card>
@@ -808,7 +808,7 @@ export const DenseTimelineStory: Story = {
     isAnimationActive: true,
     showYAxis: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <AreaChartV2 {...args} />
     </Card>
@@ -835,7 +835,7 @@ export const CompanyNamesStory: Story = {
     isAnimationActive: true,
     showYAxis: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "700px" }}>
       <AreaChartV2 {...args} />
     </Card>
@@ -862,7 +862,7 @@ export const CountryDataStory: Story = {
     isAnimationActive: true,
     showYAxis: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "600px" }}>
       <AreaChartV2 {...args} />
     </Card>
@@ -889,7 +889,7 @@ export const MixedLengthsStory: Story = {
     isAnimationActive: true,
     showYAxis: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <AreaChartV2 {...args} />
     </Card>
@@ -916,7 +916,7 @@ export const EdgeCasesStory: Story = {
     isAnimationActive: true,
     showYAxis: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "400px" }}>
       <AreaChartV2 {...args} />
     </Card>
@@ -943,7 +943,7 @@ export const MinimalDataStory: Story = {
     isAnimationActive: true,
     showYAxis: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "400px" }}>
       <AreaChartV2 {...args} />
     </Card>
@@ -970,7 +970,7 @@ export const ExpandCollapseMarketingStory: Story = {
     isAnimationActive: true,
     showYAxis: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "600px" }}>
       <AreaChartV2 {...args} />
     </Card>
@@ -997,7 +997,7 @@ export const ResponsiveWidthStory: Story = {
     isAnimationActive: true,
     showYAxis: true,
   },
-  render: (args) => (
+  render: (args: any) => (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div>
         <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>
@@ -1050,7 +1050,7 @@ export const FloatingTooltipStory: Story = {
     xAxisLabel: "Time Period",
     yAxisLabel: "Values",
   },
-  render: (args) => (
+  render: (args: any) => (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div
         style={{
