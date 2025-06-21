@@ -9,7 +9,7 @@ interface AccordionStoryProps {
   type: "single" | "multiple";
   collapsible?: boolean;
   defaultValue?: string;
-  variant?: "card" | "sunk";
+  variant?: "clear" | "card" | "sunk";
   showIcons?: boolean;
 }
 
@@ -61,7 +61,7 @@ const meta: Meta<AccordionStoryProps> = {
     },
     variant: {
       control: "radio",
-      options: ["card", "sunk"],
+      options: ["clear", "card", "sunk"],
       description: "The visual style variant of the accordion",
       defaultValue: "card",
       table: {
@@ -170,7 +170,7 @@ export const SingleAccordion: Story = {
   args: {
     type: "single",
     collapsible: true,
-    variant: "card",
+    variant: "clear",
     showIcons: true,
   },
   parameters: {
@@ -181,9 +181,9 @@ export const SingleAccordion: Story = {
     },
   },
   render: (args) => (
-    <Accordion type={args.type} collapsible={args.collapsible}>
+    <Accordion type={args.type} collapsible={args.collapsible} variant={args.variant}>
       {cityItems.map((item) => (
-        <AccordionItem key={item.value} value={item.value} variant={args.variant}>
+        <AccordionItem key={item.value} value={item.value}>
           <AccordionTrigger text={item.title} />
           <AccordionContent>
             <CardHeader title={item.subtitle} subtitle={item.description} />
@@ -209,9 +209,9 @@ export const MultipleAccordion: Story = {
     },
   },
   render: (args) => (
-    <Accordion type="multiple">
+    <Accordion type="multiple" variant={args.variant}>
       {landscapeItems.map((item) => (
-        <AccordionItem key={item.value} value={item.value} variant={args.variant}>
+        <AccordionItem key={item.value} value={item.value}>
           <AccordionTrigger text={item.title} />
           <AccordionContent>
             <CardHeader title={item.subtitle} subtitle={item.description} />
@@ -238,9 +238,9 @@ export const WithIconsAccordion: Story = {
     },
   },
   render: (args) => (
-    <Accordion type={args.type} collapsible={args.collapsible}>
+    <Accordion type={args.type} collapsible={args.collapsible} variant={args.variant}>
       {animalItems.map((item) => (
-        <AccordionItem key={item.value} value={item.value} variant={args.variant}>
+        <AccordionItem key={item.value} value={item.value}>
           <AccordionTrigger text={item.title} icon={item.icon} />
           <AccordionContent>
             <CardHeader

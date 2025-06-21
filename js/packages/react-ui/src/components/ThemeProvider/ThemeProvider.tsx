@@ -31,23 +31,37 @@ export const useTheme = () => {
 
 const lightTheme: ColorTheme = {
   // Background colors
-  backgroundFills: "rgb(245, 245, 245)",
-  brandElFills: "rgb(0, 0, 0)",
-  brandElHoverFills: "rgba(0, 0, 0, 0.8)",
-  containerFills: "rgb(255, 255, 255)",
-  overlayFills: "rgba(0, 0, 0, 0.4)",
-  sunkFills: "rgba(0, 0, 0, 0.04)",
-  containerHoverFills: "rgba(0, 0, 0, 0.04)",
-  dangerFills: "rgba(217, 45, 32, 0.08)",
+  backgroundFills: "rgba(250, 250, 250, 1)",
+  brandElFills: "rgba(127, 86, 217, 1)",
+  brandElHoverFills: "rgba(127, 86, 217, 0.8)",
+  containerFills: "rgba(253, 253, 253, 1)",
+  overlayFills: "rgba(0, 0, 0, 0.40)",
+  sunkFills: "rgba(0, 0, 0, 0.06)",
+  containerHoverFills: "rgba(255, 255, 255, 0.04)",
+  dangerFills: "rgba(203, 63, 73, 0.10)",
   successFills: "rgba(7, 148, 85, 0.08)",
-  infoFills: "rgba(56, 148, 255, 0.08)",
-  elevatedFills: "rgba(255, 255, 255, 0.3)",
+  infoFills: "rgba(56, 148, 255, 0.10)",
+  alertFills: "rgba(255, 199, 0, 0.10)",
+  invertedFills: "rgba(21, 21, 21, 1)",
+  elevatedFills: "rgba(255, 255, 249, 0.60)",
+  sunkBgFills: "rgba(0, 0, 0, 0.04)",
 
   // Border colors
-  strokeDefault: "rgba(0, 0, 0, 0.06)",
-  strokeInteractiveEl: "rgba(0, 0, 0, 0.12)",
+  strokeDefault: "rgba(0, 0, 0, 0.04)",
+  strokeInteractiveEl: "rgba(0, 0, 0, 0.08)",
   strokeInteractiveElHover: "rgba(0, 0, 0, 0.4)",
-  strokeInteractiveElSelected: "rgb(0, 0, 0)",
+  strokeInteractiveElSelected: "rgba(21, 21, 21, 1)",
+  strokeEmphasis: "rgba(21, 21, 21, 1)",
+  strokeAccent: "rgba(255, 255, 255, 0.08)",
+  strokeAccentEmphasis: "rgba(255, 255, 255, 0.30)",
+  strokeInfo: "rgba(56, 148, 255, 0.08)",
+  strokeInfoEmphasis: "rgba(24, 130, 255, 1)",
+  strokeAlert: "rgba(255, 199, 0, 0.08)",
+  strokeAlertEmphasis: "rgba(255, 199, 0, 1)",
+  strokeSuccess: "rgba(7, 148, 85, 0.08)",
+  strokeSuccessEmphasis: "rgba(7, 148, 85, 1)",
+  strokeDanger: "rgba(188, 46, 55, 0.08)",
+  strokeDangerEmphasis: "rgba(188, 46, 55, 1)",
 
   // Text colors
   brandText: "rgba(255, 255, 255, 1)",
@@ -56,33 +70,81 @@ const lightTheme: ColorTheme = {
   secondaryText: "rgba(0, 0, 0, 0.4)",
   disabledText: "rgba(0, 0, 0, 0.2)",
   dangerText: "rgba(217, 45, 32, 1)",
-  successText: "rgba(7, 148, 85, 1)",
+  successText: "rgba(13, 160, 94, 0.10)",
   linkText: "rgba(0, 0, 0, 1)",
   infoText: "rgba(56, 148, 255, 1)",
+  tertiaryText: "rgba(165, 165, 165, 1)",
+  accentPrimaryText: "rgba(245, 251, 255, 1)",
+  accentSecondaryText: "rgba(130, 193, 255, 1)",
+  accentTertiaryText: "rgba(70, 160, 247, 1)",
+  successPrimaryText: "rgba(8, 93, 58, 1)",
+  successInvertedText: "rgba(220, 250, 230, 1)",
+  alertPrimaryText: "rgba(221, 159, 0, 1)",
+  alertInvertedText: "rgba(255, 246, 205, 1)",
+  dangerPrimaryText: "rgba(167, 39, 47, 1)",
+  dangerSecondaryText: "rgba(107, 63, 73, 1)",
+  dangerTertiaryText: "rgba(235, 167, 171, 1)",
+  dangerInvertedPrimaryText: "rgba(252, 243, 244, 1)",
+  dangerInvertedSecondaryText: "rgba(234, 209, 212, 1)",
+  dangerInvertedTertiaryText: "rgba(235, 167, 171, 1)",
+  infoPrimaryText: "rgba(13, 75, 148, 1)",
+  infoInvertedText: "rgba(219, 236, 255, 1)",
+
+  // Interactive colors
+  interactiveDefault: "rgba(255, 255, 255, 0.02)",
+  interactiveHover: "rgba(0, 0, 0, 0.06)",
+  interactivePressed: "rgba(0, 0, 0, 0.04)",
+  interactiveDisabled: "rgba(0, 0, 0, 0.02)",
+  interactiveAccent: "rgba(24, 130, 255, 1)",
+  interactiveAccentHover: "rgba(70, 160, 247, 1)",
+  interactiveAccentPressed: "rgba(32, 107, 213, 1)",
+  interactiveAccentDisabled: "rgba(166, 206, 255, 1)",
+  interactiveDestructive: "rgba(188, 46, 55, 0.02)",
+  interactiveDestructiveHover: "rgba(188, 46, 55, 0.08)",
+  interactiveDestructivePressed: "rgba(203, 63, 73, 0.1)",
+  interactiveDestructiveDisabled: "rgba(203, 63, 73, 0.02)",
+  interactiveDestructiveAccent: "rgba(188, 46, 55, 1)",
+  interactiveDestructiveAccentHover: "rgba(203, 63, 73, 1)",
+  interactiveDestructiveAccentPressed: "rgba(167, 39, 47, 1)",
+  interactiveDestructiveAccentDisabled: "rgba(235, 167, 171, 1)",
 } as const;
 
 const darkTheme: ColorTheme = {
   // Background colors
-  backgroundFills: "rgb(28, 28, 28)",
-  brandElFills: "rgb(255, 255, 255)",
-  brandElHoverFills: "rgba(255, 255, 255, 0.8)",
-  containerFills: "rgb(43, 43, 43)",
+  backgroundFills: "rgba(21, 21, 21, 1)",
+  brandElFills: "rgba(127, 86, 217, 1)",
+  brandElHoverFills: "rgba(127, 86, 217, 0.8)",
+  containerFills: "rgba(28, 28, 28, 1)",
   overlayFills: "rgba(0, 0, 0, 0.4)",
-  sunkFills: "rgba(0, 0, 0, 0.2)",
+  sunkFills: "rgba(255, 255, 255, 0.08)",
   containerHoverFills: "rgba(255, 255, 255, 0.1)",
-  dangerFills: "rgba(217, 45, 32, 0.1)",
-  successFills: "rgba(7, 148, 85, 0.1)",
-  infoFills: "rgba(56, 148, 255, 0.1)",
-  elevatedFills: "rgba(255, 255, 255, 0.1)",
+  dangerFills: "rgba(203, 63, 73, 0.20)",
+  successFills: "rgba(13, 160, 94, 0.20)",
+  infoFills: "rgba(56, 148, 255, 0.20)",
+  alertFills: "rgba(255, 199, 0, 0.20)",
+  elevatedFills: "rgba(255, 255, 255, 0.06)",
+  invertedFills: "rgba(253, 253, 253, 1)",
+  sunkBgFills: "rgba(0, 0, 0, 0.12)",
 
   // Border colors
-  strokeDefault: "rgba(255, 255, 255, 0.06)",
-  strokeInteractiveEl: "rgba(255, 255, 255, 0.12)",
+  strokeDefault: "rgba(255, 255, 255, 0.04)",
+  strokeInteractiveEl: "rgba(255, 255, 255, 0.8)",
   strokeInteractiveElHover: "rgba(255, 255, 255, 0.4)",
-  strokeInteractiveElSelected: "rgba(255, 255, 255, 1)",
+  strokeInteractiveElSelected: "rgba(253, 253, 253, 1)",
+  strokeEmphasis: "rgba(253, 253, 253, 1)",
+  strokeAccent: "rgba(0, 0, 0, 0.08)",
+  strokeAccentEmphasis: "rgba(0, 0, 0, 0.30)",
+  strokeInfo: "rgba(56, 148, 255, 0.08)",
+  strokeInfoEmphasis: "rgba(56, 148, 255, 0.08)",
+  strokeAlert: "rgba(255, 199, 0, 0.08)",
+  strokeAlertEmphasis: "rgba(255, 199, 0, 0.08)",
+  strokeSuccess: "rgba(13, 160, 94, 0.08)",
+  strokeSuccessEmphasis: "rgba(13, 160, 94, 0.08)",
+  strokeDanger: "rgba(203, 63, 73, 0.08)",
+  strokeDangerEmphasis: "rgba(203, 63, 73, 0.08)",
 
   // Text colors
-  brandText: "rgba(0, 0, 0, 1)",
+  brandText: "rgba(255, 255, 255, 1)",
   brandSecondaryText: "rgba(255, 255, 255, 0.4)",
   primaryText: "rgba(255, 255, 255, 1)",
   secondaryText: "rgba(255, 255, 255, 0.6)",
@@ -91,6 +153,40 @@ const darkTheme: ColorTheme = {
   successText: "rgba(117, 224, 167, 1)",
   linkText: "rgba(255, 255, 255, 1)",
   infoText: "rgba(125, 179, 247, 1)",
+  tertiaryText: "rgba(68, 68, 68, 1)",
+  accentPrimaryText: "rgba(21, 21, 21, 1)",
+  accentSecondaryText: "rgba(118, 118, 118, 1)",
+  accentTertiaryText: "rgba(165, 165, 165, 1)",
+  successPrimaryText: "rgba(23, 178, 106, 1)",
+  successInvertedText: "rgba(2, 79, 48, 1)",
+  alertPrimaryText: "rgba(243, 207, 80, 1)",
+  alertInvertedText: "rgba(187, 122, 0, 1)",
+  dangerPrimaryText: " rgba(203, 63, 73, 1)",
+  dangerSecondaryText: "rgba(167, 39, 47, 1)",
+  dangerTertiaryText: "rgba(130, 26, 32, 1)",
+  dangerInvertedPrimaryText: "rgba(143, 21, 13, 1)",
+  dangerInvertedSecondaryText: "rgba(217, 45, 32, 1)",
+  dangerInvertedTertiaryText: "rgba(249, 112, 102, 1)",
+  infoPrimaryText: "rgba(70, 160, 247, 1)",
+  infoInvertedText: "rgba(70, 160, 247, 1)",
+
+  // Interactive colors
+  interactiveDefault: "rgba(0, 0, 0, 0.02)",
+  interactiveHover: "rgba(255, 255, 255, 0.06)",
+  interactivePressed: "rgba(255, 255, 255, 0.04)",
+  interactiveDisabled: "rgba(255, 255, 255, 0.02)",
+  interactiveAccent: "rgba(253, 253, 253, 1)",
+  interactiveAccentHover: "rgba(241, 241, 241, 1)",
+  interactiveAccentPressed: "rgba(250, 250, 250, 1)",
+  interactiveAccentDisabled: "rgba(43, 43, 43, 1)",
+  interactiveDestructive: "rgba(188, 46, 55, 0.20)",
+  interactiveDestructiveHover: "rgba(188, 46, 55, 0.30)",
+  interactiveDestructivePressed: "rgba(203, 63, 73, 0.3)",
+  interactiveDestructiveDisabled: "rgba(203, 63, 73, 0.2)",
+  interactiveDestructiveAccent: "rgba(255, 255, 255, 1)",
+  interactiveDestructiveAccentHover: "rgba(255, 255, 255, 1)",
+  interactiveDestructiveAccentPressed: "rgba(255, 255, 255, 1)",
+  interactiveDestructiveAccentDisabled: "rgba(255, 255, 255, 1)",
 } as const;
 
 // Shared theme properties that don't change between light/dark modes
@@ -125,81 +221,89 @@ const layoutTheme: LayoutTheme = {
 
 const typographyTheme: TypographyTheme = {
   // Typography
-  fontPrimary: '400 14px/20px "Inter"',
+  fontPrimary: '400 16px/20px "Inter"',
   fontPrimaryLetterSpacing: "0px",
 
   // Display & Headings
   // Large
-  fontHeadingLarge: '600 28px/36px "Inter"',
+  fontHeadingLarge: '600 28px/32.2px "Inter"',
   fontHeadingLargeLetterSpacing: "0px",
   // Medium
-  fontHeadingMedium: '600 24px/32px "Inter"',
+  fontHeadingMedium: '600 24px/27.6px "Inter"',
   fontHeadingMediumLetterSpacing: "0px",
   // Small
-  fontHeadingSmall: '600 18px/24px "Inter"',
+  fontHeadingSmall: '500 18px/22.5px "Inter"',
   fontHeadingSmallLetterSpacing: "0px",
 
   // Title Variants
   // Default
-  fontTitle: '500 14px/20px "Inter"',
+  fontTitle: '500 16px/20px "Inter"',
   fontTitleLetterSpacing: "0px",
   // Medium
-  fontTitleMedium: '500 16px/24px "Inter"',
+  fontTitleMedium: '500 16px/20px "Inter"',
   fontTitleMediumLetterSpacing: "0px",
   // Small
-  fontTitleSmall: '500 14px/20px "Inter"',
+  fontTitleSmall: '500 16px/20px "Inter"',
   fontTitleSmallLetterSpacing: "0px",
 
   // Body Text
   // Regular
-  fontBody: '400 14px/18px "Inter"',
+  fontBody: '400 16px/24px "Inter"',
   fontBodyLetterSpacing: "0px",
 
-  fontBodyMedium: '400 16px/24px "Inter"',
+  fontBodyMedium: '400 16px/20px "Inter"',
   fontBodyMediumLetterSpacing: "0px",
 
-  fontBodySmall: '400 14px/20px "Inter"',
+  fontBodySmall: '400 14px/21px "Inter"',
   fontBodySmallLetterSpacing: "0px",
   // Heavy
-  fontBodyHeavy: '600 16px/24px "Inter"',
+  fontBodyHeavy: '500 16px/24px "Inter"',
   fontBodyHeavyLetterSpacing: "0px",
 
-  fontBodySmallHeavy: '600 14px/20px "Inter"',
+  fontBodySmallHeavy: '600 16px/20px "Inter"',
   fontBodySmallHeavyLetterSpacing: "0px",
+
+  // Large
+  fontBodyLarge: '500 18px/27px "Inter"',
+  fontBodyLargeLetterSpacing: "0px",
+
+  fontBodyLargeHeavy: '500 18px/27px "Inter"',
+  fontBodyLargeHeavyLetterSpacing: "0px",
+
   // Special
-  fontBodyLink: '500 14px/18px "Inter"',
+  fontBodyLink: '400 16px/19.2px "Inter"',
   fontBodyLinkLetterSpacing: "0px",
 
   // Label System
   // Large
-  fontLabelLarge: '400 12px/16px "Inter"',
+  fontLabelLarge: '400 16px/19.2px "Inter"',
   fontLabelLargeLetterSpacing: "0px",
 
-  fontLabelLargeHeavy: '500 12px/16px "Inter"',
+  fontLabelLargeHeavy: '500 16px/19.2px "Inter"',
   fontLabelLargeHeavyLetterSpacing: "0px",
   // Regular
-  fontLabel: '400 12px/16px "Inter"',
+  fontLabel: '400 14px/16.8px "Inter"',
   fontLabelLetterSpacing: "0px",
 
-  fontLabelHeavy: '500 12px/16px "Inter"',
+  fontLabelHeavy: '500 14px/16.8px "Inter"',
   fontLabelHeavyLetterSpacing: "0px",
   // Medium
-  fontLabelMedium: '400 10px/16px "Inter"',
+  fontLabelMedium: '400 16px/20px "Inter"',
   fontLabelMediumLetterSpacing: "0px",
 
-  fontLabelMediumHeavy: '600 10px/16px "Inter"',
+  fontLabelMediumHeavy: '600 16px/20px "Inter"',
   fontLabelMediumHeavyLetterSpacing: "0px",
   // Small
-  fontLabelSmall: '400 10px/16px "Inter"',
+  fontLabelSmall: '400 12px/14.4px "Inter"',
   fontLabelSmallLetterSpacing: "0px",
 
-  fontLabelSmallHeavy: '500 10px/16px "Inter"',
+  fontLabelSmallHeavy: '500 12px/14.4px "Inter"',
   fontLabelSmallHeavyLetterSpacing: "0px",
   // Extra Small
-  fontLabelExtraSmall: '400 8px/12px "Inter"',
+  fontLabelExtraSmall: '400 10px/12px "Inter"',
   fontLabelExtraSmallLetterSpacing: "0px",
 
-  fontLabelExtraSmallHeavy: '500 8px/12px "Inter"',
+  fontLabelExtraSmallHeavy: '500 10px/12px "Inter"',
   fontLabelExtraSmallHeavyLetterSpacing: "0px",
 } as const;
 
@@ -244,11 +348,42 @@ export const ThemeProvider = ({
           --crayon-success-fills: ${theme.successFills};
           --crayon-info-fills: ${theme.infoFills};
           --crayon-elevated-fills: ${theme.elevatedFills};
+          --crayon-alert-fills: ${theme.alertFills};
+          --crayon-inverted-fills: ${theme.invertedFills};
+          --crayon-sunk-bg-fills: ${theme.sunkBgFills};
+
+          --crayon-interactive-default: ${theme.interactiveDefault};
+          --crayon-interactive-hover: ${theme.interactiveHover};
+          --crayon-interactive-pressed: ${theme.interactivePressed};
+          --crayon-interactive-disabled: ${theme.interactiveDisabled};
+          --crayon-interactive-accent: ${theme.interactiveAccent};
+          --crayon-interactive-accent-hover: ${theme.interactiveAccentHover};
+          --crayon-interactive-accent-pressed: ${theme.interactiveAccentPressed};
+          --crayon-interactive-accent-disabled: ${theme.interactiveAccentDisabled};
+          --crayon-interactive-destructive: ${theme.interactiveDestructive};
+          --crayon-interactive-destructive-hover: ${theme.interactiveDestructiveHover};
+          --crayon-interactive-destructive-pressed: ${theme.interactiveDestructivePressed};
+          --crayon-interactive-destructive-disabled: ${theme.interactiveDestructiveDisabled};
+          --crayon-interactive-destructive-accent: ${theme.interactiveDestructiveAccent};
+          --crayon-interactive-destructive-accent-hover: ${theme.interactiveDestructiveAccentHover};
+          --crayon-interactive-destructive-accent-pressed: ${theme.interactiveDestructiveAccentPressed};
+          --crayon-interactive-destructive-accent-disabled: ${theme.interactiveDestructiveAccentDisabled};
 
           --crayon-stroke-default: ${theme.strokeDefault};
           --crayon-stroke-interactive-el: ${theme.strokeInteractiveEl};
           --crayon-stroke-interactive-el-hover: ${theme.strokeInteractiveElHover};
           --crayon-stroke-interactive-el-selected: ${theme.strokeInteractiveElSelected};
+          --crayon-stroke-emphasis: ${theme.strokeEmphasis};
+          --crayon-stroke-accent: ${theme.strokeAccent};
+          --crayon-stroke-accent-emphasis: ${theme.strokeAccentEmphasis};
+          --crayon-stroke-info: ${theme.strokeInfo};
+          --crayon-stroke-info-emphasis: ${theme.strokeInfoEmphasis};
+          --crayon-stroke-alert: ${theme.strokeAlert};
+          --crayon-stroke-alert-emphasis: ${theme.strokeAlertEmphasis};
+          --crayon-stroke-success: ${theme.strokeSuccess};
+          --crayon-stroke-success-emphasis: ${theme.strokeSuccessEmphasis};
+          --crayon-stroke-danger: ${theme.strokeDanger};
+          --crayon-stroke-danger-emphasis: ${theme.strokeDangerEmphasis};
 
           --crayon-brand-text: ${theme.brandText};
           --crayon-brand-secondary-text: ${theme.brandSecondaryText};
@@ -259,6 +394,22 @@ export const ThemeProvider = ({
           --crayon-success-text: ${theme.successText};
           --crayon-link-text: ${theme.linkText};
           --crayon-info-text: ${theme.infoText};
+          --crayon-tertiary-text: ${theme.tertiaryText};
+          --crayon-accent-primary-text: ${theme.accentPrimaryText};
+          --crayon-accent-secondary-text: ${theme.accentSecondaryText};
+          --crayon-accent-tertiary-text: ${theme.accentTertiaryText};
+          --crayon-success-primary-text: ${theme.successPrimaryText};
+          --crayon-success-inverted-text: ${theme.successInvertedText};
+          --crayon-alert-primary-text: ${theme.alertPrimaryText};
+          --crayon-alert-inverted-text: ${theme.alertInvertedText};
+          --crayon-danger-primary-text: ${theme.dangerPrimaryText};
+          --crayon-danger-secondary-text: ${theme.dangerSecondaryText};
+          --crayon-danger-tertiary-text: ${theme.dangerTertiaryText};
+          --crayon-danger-inverted-primary-text: ${theme.dangerInvertedPrimaryText};
+          --crayon-danger-inverted-secondary-text: ${theme.dangerInvertedSecondaryText};
+          --crayon-danger-inverted-tertiary-text: ${theme.dangerInvertedTertiaryText};
+          --crayon-info-primary-text: ${theme.infoPrimaryText};
+          --crayon-info-inverted-text: ${theme.infoInvertedText};
 
           --crayon-spacing-0: ${theme.spacing0};
           --crayon-spacing-3xs: ${theme.spacing3xs};
@@ -329,6 +480,10 @@ export const ThemeProvider = ({
           --crayon-font-heading-medium-letter-spacing: ${theme.fontHeadingMediumLetterSpacing};
           --crayon-font-heading-small: ${theme.fontHeadingSmall};
           --crayon-font-heading-small-letter-spacing: ${theme.fontHeadingSmallLetterSpacing};
+          --crayon-font-body-large-heavy: ${theme.fontBodyLargeHeavy};
+          --crayon-font-body-large-heavy-letter-spacing: ${theme.fontBodyLargeHeavyLetterSpacing};
+          --crayon-font-body-large: ${theme.fontBodyLarge};
+          --crayon-font-body-large-letter-spacing: ${theme.fontBodyLargeLetterSpacing};
 
           --crayon-shadow-s: ${theme.shadowS};
           --crayon-shadow-m: ${theme.shadowM};

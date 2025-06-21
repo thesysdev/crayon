@@ -15,11 +15,25 @@ export interface ColorTheme {
   successFills?: string;
   infoFills?: string;
   elevatedFills?: string;
+  alertFills?: string;
+  sunkBgFills?: string;
+  invertedFills?: string;
   // Border colors
   strokeDefault?: string;
   strokeInteractiveEl?: string;
   strokeInteractiveElHover?: string;
   strokeInteractiveElSelected?: string;
+  strokeEmphasis?: string;
+  strokeAccent?: string;
+  strokeAccentEmphasis?: string;
+  strokeInfo?: string;
+  strokeInfoEmphasis?: string;
+  strokeAlert?: string;
+  strokeAlertEmphasis?: string;
+  strokeSuccess?: string;
+  strokeSuccessEmphasis?: string;
+  strokeDanger?: string;
+  strokeDangerEmphasis?: string;
 
   // Text colors
   brandText?: string;
@@ -31,6 +45,40 @@ export interface ColorTheme {
   successText?: string;
   linkText?: string;
   infoText?: string;
+  tertiaryText?: string;
+  accentPrimaryText?: string;
+  accentSecondaryText?: string;
+  accentTertiaryText?: string;
+  successPrimaryText?: string;
+  successInvertedText?: string;
+  alertPrimaryText?: string;
+  alertInvertedText?: string;
+  dangerPrimaryText?: string;
+  dangerSecondaryText?: string;
+  dangerTertiaryText?: string;
+  dangerInvertedPrimaryText?: string;
+  dangerInvertedSecondaryText?: string;
+  dangerInvertedTertiaryText?: string;
+  infoPrimaryText?: string;
+  infoInvertedText?: string;
+
+  // Interactive colors
+  interactiveDefault?: string;
+  interactiveHover?: string;
+  interactivePressed?: string;
+  interactiveDisabled?: string;
+  interactiveAccent?: string;
+  interactiveAccentHover?: string;
+  interactiveAccentPressed?: string;
+  interactiveAccentDisabled?: string;
+  interactiveDestructive?: string;
+  interactiveDestructiveHover?: string;
+  interactiveDestructivePressed?: string;
+  interactiveDestructiveDisabled?: string;
+  interactiveDestructiveAccent?: string;
+  interactiveDestructiveAccentHover?: string;
+  interactiveDestructiveAccentPressed?: string;
+  interactiveDestructiveAccentDisabled?: string;
 
   // chat colors
   chatContainerBg?: string;
@@ -97,6 +145,10 @@ export interface TypographyTheme {
   fontBodySmallHeavyLetterSpacing?: string;
   fontBodySmall?: string;
   fontBodySmallLetterSpacing?: string;
+  fontBodyLargeHeavy?: string;
+  fontBodyLargeHeavyLetterSpacing?: string;
+  fontBodyLarge?: string;
+  fontBodyLargeLetterSpacing?: string;
 
   // Label System
   fontLabel?: string;

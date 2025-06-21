@@ -3,18 +3,26 @@ import { forwardRef, ReactNode } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "tertiary";
 type ButtonSize = "small" | "medium" | "large";
+type ButtonAppearance = "normal" | "destructive";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   iconLeft?: ReactNode;
   iconRight?: ReactNode;
+  appearance?: ButtonAppearance;
 }
 
-const variantMap: Record<ButtonVariant, string> = {
+const normalVariantMap: Record<ButtonVariant, string> = {
   primary: "crayon-button-base-primary",
   secondary: "crayon-button-base-secondary",
   tertiary: "crayon-button-base-tertiary",
+};
+
+const destructiveVariantMap: Record<ButtonVariant, string> = {
+  primary: "crayon-button-base-destructive-primary",
+  secondary: "crayon-button-base-destructive-secondary",
+  tertiary: "crayon-button-base-destructive-tertiary",
 };
 
 const sizeMap: Record<ButtonSize, string> = {
@@ -25,9 +33,19 @@ const sizeMap: Record<ButtonSize, string> = {
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { children, variant = "primary", size = "medium", iconLeft, iconRight, className, ...props },
+    {
+      children,
+      variant = "primary",
+      size = "medium",
+      iconLeft,
+      iconRight,
+      className,
+      appearance = "normal",
+      ...props
+    },
     ref,
   ) => {
+    const variantMap = appearance === "destructive" ? destructiveVariantMap : normalVariantMap;
     return (
       <button
         ref={ref}

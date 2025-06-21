@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Volume1Icon, Volume2Icon } from "lucide-react";
 import { Slider, SliderProps } from "../Slider";
 
 const meta: Meta<SliderProps> = {
@@ -107,6 +108,22 @@ const meta: Meta<SliderProps> = {
         type: { summary: "React.CSSProperties" },
       },
     },
+    leftContent: {
+      control: "text",
+      description: "Content to display on the left side of the slider",
+      table: {
+        category: "Appearance",
+        type: { summary: "React.ReactNode" },
+      },
+    },
+    rightContent: {
+      control: "text",
+      description: "Content to display on the right side of the slider",
+      table: {
+        category: "Appearance",
+        type: { summary: "React.ReactNode" },
+      },
+    },
   },
 
   decorators: [
@@ -169,6 +186,26 @@ export const Range: Story = {
     docs: {
       description: {
         story: "A range slider allows selection of a value range using two handles.",
+      },
+    },
+  },
+};
+
+export const WithLeftAndRightContent: Story = {
+  args: {
+    variant: "continuous",
+    min: 0,
+    max: 100,
+    step: 1,
+    defaultValue: [25],
+    disabled: false,
+    leftContent: <Volume1Icon />,
+    rightContent: <Volume2Icon />,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "A slider with left and right content",
       },
     },
   },
