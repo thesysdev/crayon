@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "../../../Card";
-import { ProgressBar, ProgressBarProps } from "../ProgressBar";
+import { ProgressBar, ProgressBarProps } from "../ProgressBarChart";
 
 // Sample data variations - simplified to numbers only
 const progressData = {
@@ -14,7 +14,7 @@ const progressData = {
 };
 
 const meta: Meta<ProgressBarProps> = {
-  title: "Components/Charts/ProgressBar",
+  title: "Components/Charts/ProgressBarChart",
   component: ProgressBar,
   parameters: {
     layout: "centered",
