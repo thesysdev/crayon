@@ -8,9 +8,6 @@ const progressData = {
   multiple: [25, 30, 20], // Individual segments: 25, 30, 20
   segmented: [40, 25, 20, 15], // Four segments with different sizes
   manySegments: [15, 12, 18, 10, 8, 14, 11, 12], // Eight segments
-  lowProgress: [15],
-  highProgress: [95],
-  completed: [100],
 };
 
 const meta: Meta<ProgressBarProps> = {
@@ -70,7 +67,16 @@ export const Default: Story = {
     animated: true,
   },
   render: (args: any) => (
-    <Card style={{ width: "320px", padding: "20px" }}>
+    <Card
+      style={{
+        width: "320px",
+        padding: "20px",
+        resize: "horizontal",
+        overflow: "auto",
+        minWidth: "200px",
+        maxWidth: "100%",
+      }}
+    >
       <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>
         Task Completion (3 Segments)
       </h3>
@@ -96,23 +102,6 @@ export const FourSegments: Story = {
   ),
 };
 
-export const ThreeSegments: Story = {
-  name: "Three Segments",
-  args: {
-    data: progressData.multiple,
-    theme: "emerald",
-    animated: true,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "320px", padding: "20px" }}>
-      <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>
-        Simple Progress Distribution
-      </h3>
-      <ProgressBar {...args} />
-    </Card>
-  ),
-};
-
 export const ManySegments: Story = {
   name: "Many Segments (8 Colors)",
   args: {
@@ -125,69 +114,6 @@ export const ManySegments: Story = {
       <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>
         Multi-Segment Progress
       </h3>
-      <ProgressBar {...args} />
-      <div style={{ marginTop: "12px", fontSize: "12px", color: "#666" }}>
-        Hover over segments to see values
-      </div>
-    </Card>
-  ),
-};
-
-export const SmallProgress: Story = {
-  name: "Small Progress",
-  args: {
-    data: progressData.lowProgress,
-    theme: "sunset",
-    animated: true,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "320px", padding: "20px" }}>
-      <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Getting Started</h3>
-      <ProgressBar {...args} />
-    </Card>
-  ),
-};
-
-export const HighProgress: Story = {
-  name: "High Progress",
-  args: {
-    data: progressData.highProgress,
-    theme: "vivid",
-    animated: true,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "320px", padding: "20px" }}>
-      <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Nearly Complete</h3>
-      <ProgressBar {...args} />
-    </Card>
-  ),
-};
-
-export const Completed: Story = {
-  name: "Completed",
-  args: {
-    data: progressData.completed,
-    theme: "emerald",
-    animated: true,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "320px", padding: "20px" }}>
-      <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Task Complete!</h3>
-      <ProgressBar {...args} />
-    </Card>
-  ),
-};
-
-export const NoAnimation: Story = {
-  name: "No Animation",
-  args: {
-    data: [45],
-    theme: "spectrum",
-    animated: false,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "320px", padding: "20px" }}>
-      <h3 style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>Static Progress</h3>
       <ProgressBar {...args} />
     </Card>
   ),

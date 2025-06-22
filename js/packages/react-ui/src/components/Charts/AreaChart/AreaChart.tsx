@@ -10,7 +10,7 @@ import {
   ChartTooltipContent,
   keyTransform,
 } from "../Charts";
-import { cartesianGrid } from "../cartesianGrid";
+import { cartesianGrid } from "../shared";
 import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
 export type AreaChartData = Array<Record<string, string | number>>;

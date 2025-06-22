@@ -10,8 +10,14 @@ import {
   ChartTooltipContent,
   keyTransform,
 } from "../../Charts";
-import { cartesianGrid } from "../../cartesianGrid";
-import { ActiveDot, CustomTooltipContent, DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
+import {
+  ActiveDot,
+  cartesianGrid,
+  CustomTooltipContent,
+  DefaultLegend,
+  XAxisTick,
+  YAxisTick,
+} from "../../shared";
 import { LegendItem } from "../../types";
 import {
   findNearestSnapPosition,

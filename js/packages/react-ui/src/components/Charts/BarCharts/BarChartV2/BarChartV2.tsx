@@ -11,8 +11,13 @@ import {
   ChartTooltipContent,
   keyTransform,
 } from "../../Charts";
-import { cartesianGrid } from "../../cartesianGrid";
-import { CustomTooltipContent, DefaultLegend, XAxisTick, YAxisTick } from "../../shared";
+import {
+  cartesianGrid,
+  CustomTooltipContent,
+  DefaultLegend,
+  XAxisTick,
+  YAxisTick,
+} from "../../shared";
 import { type LegendItem } from "../../types";
 import { getDistributedColors, getPalette, type PaletteName } from "../../utils/PalletUtils";
 import { getChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
