@@ -302,26 +302,31 @@ const AreaChartV2Component = <T extends AreaChartV2Data>({
                 const transformedKey = keyTransform(key);
                 const color = `var(--color-${transformedKey})`;
                 return (
-                  <React.Fragment key={`crayon-area-chart-${key}-${id}-fragment`}>
-                    <defs>
-                      <linearGradient id={`${gradientId}-${key}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={color} stopOpacity={0.6} />
-                        <stop offset="95%" stopColor={color} stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <Area
-                      key={`main-${key}`}
-                      dataKey={key}
-                      type={variant}
-                      stroke={color}
-                      fill={`url(#${gradientId}-${key})`}
-                      fillOpacity={1}
-                      stackId="a"
-                      activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
-                      dot={false}
-                      isAnimationActive={isAnimationActive}
-                    />
-                  </React.Fragment>
+                  <defs key={`gradient-${key}`}>
+                    <linearGradient id={`${gradientId}-${key}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={color} stopOpacity={0.6} />
+                      <stop offset="95%" stopColor={color} stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                );
+              })}
+
+              {dataKeys.map((key) => {
+                const transformedKey = keyTransform(key);
+                const color = `var(--color-${transformedKey})`;
+                return (
+                  <Area
+                    key={`main-${key}`}
+                    dataKey={key}
+                    type={variant}
+                    stroke={color}
+                    fill={`url(#${gradientId}-${key})`}
+                    fillOpacity={1}
+                    stackId="a"
+                    activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
+                    dot={false}
+                    isAnimationActive={isAnimationActive}
+                  />
                 );
               })}
             </RechartsAreaChart>
