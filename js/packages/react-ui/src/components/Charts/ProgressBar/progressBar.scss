@@ -1,0 +1,55 @@
+@use "../../../cssUtils.scss" as cssUtils;
+
+.crayon-progress-bar-container {
+  width: 100%;
+  font-family: inherit;
+}
+
+.crayon-progress-bar-track {
+  width: 100%;
+  height: 24px;
+  background-color: cssUtils.$bg-fill;
+  border-radius: cssUtils.$rounded-s;
+  overflow: hidden;
+  position: relative;
+  box-shadow: cssUtils.$shadow-s;
+  display: flex;
+}
+
+.crayon-progress-bar-segment {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-width: 2px;
+  box-shadow: cssUtils.$shadow-s;
+
+  /* Add subtle border between segments */
+  &:not(:last-child) {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  &--first {
+    border-radius: cssUtils.$rounded-s 0 0 cssUtils.$rounded-s;
+  }
+
+  &--last {
+    border-radius: 0 cssUtils.$rounded-s cssUtils.$rounded-s 0;
+  }
+
+  &--single {
+    border-radius: cssUtils.$rounded-s;
+  }
+}
+
+.crayon-progress-bar-animated {
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] {
+  .crayon-progress-bar-segment:not(:last-child) {
+    border-right-color: rgba(0, 0, 0, 0.2);
+  }
+}

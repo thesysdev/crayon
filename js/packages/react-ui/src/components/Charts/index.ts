@@ -9,3 +9,4 @@ export * from "./RadialChart";
 export * from "./AreaCharts";
 export * from "./BarCharts";
 export * from "./LineCharts";
+export * from "./ProgressBar";
