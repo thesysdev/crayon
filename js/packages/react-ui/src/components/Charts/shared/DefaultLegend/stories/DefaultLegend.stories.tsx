@@ -9,7 +9,7 @@ const meta: Meta<typeof DefaultLegend> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["!dev", "autodocs"],
+  tags: ["!dev", "!autodocs"],
   argTypes: {
     containerWidth: {
       control: { type: "range", min: 200, max: 800, step: 50 },
