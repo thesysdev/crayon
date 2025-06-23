@@ -45,20 +45,19 @@ export interface ColorTheme {
   successText?: string;
   linkText?: string;
   infoText?: string;
-  tertiaryText?: string;
   accentPrimaryText?: string;
   accentSecondaryText?: string;
-  accentTertiaryText?: string;
+  accentDisabledText?: string;
   successPrimaryText?: string;
   successInvertedText?: string;
   alertPrimaryText?: string;
   alertInvertedText?: string;
   dangerPrimaryText?: string;
   dangerSecondaryText?: string;
-  dangerTertiaryText?: string;
+  dangerDisabledText?: string;
   dangerInvertedPrimaryText?: string;
   dangerInvertedSecondaryText?: string;
-  dangerInvertedTertiaryText?: string;
+  dangerInvertedDisabledText?: string;
   infoPrimaryText?: string;
   infoInvertedText?: string;
 
