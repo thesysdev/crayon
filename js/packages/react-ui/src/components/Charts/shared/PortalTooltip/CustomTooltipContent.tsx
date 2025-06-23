@@ -3,6 +3,7 @@ import { forwardRef, memo, useMemo } from "react";
 import * as RechartsPrimitive from "recharts";
 import { ChartStyle, getPayloadConfigFromPayload, useChart } from "../../../Charts/Charts";
 import { FloatingUIPortal } from "./FloatingUIPortal";
+import { tooltipNumberFormatter } from "./utils";
 
 const DEFAULT_INDICATOR = "dot" as const;
 
@@ -56,6 +57,8 @@ export const CustomTooltipContent = memo(
       const value =
         !labelKey && typeof label === "string" ? config[label]?.label || label : itemConfig?.label;
 
+      // this is active when we pass a labelFormatter prop to the recharts tooltip
+      // normally we would not need this, but it's useful for customizing the label
       if (labelFormatter) {
         return (
           <div className={clsx("crayon-chart-tooltip-label-heavy", labelClassName)}>
@@ -79,6 +82,82 @@ export const CustomTooltipContent = memo(
     const payloadItems = useMemo(() => {
       if (!payload?.length) {
         return [];
+      }
+
+      if (payload.length <= 2) {
+        return payload.map((item, index) => {
+          const key = `${nameKey ?? item.name ?? item.dataKey ?? "value"}`;
+          const itemConfig = getPayloadConfigFromPayload(config, item, key);
+          const indicatorColor = (color ?? item.payload?.fill) || item.color;
+
+          return (
+            <div
+              key={`${item.dataKey}-${index}`}
+              className={clsx(
+                "crayon-chart-tooltip-content-item",
+                // indicator === DEFAULT_INDICATOR && "crayon-chart-tooltip-content-item--dot",
+              )}
+            >
+              {formatter && item?.value !== undefined && item.name ? (
+                formatter(item.value, item.name, item, index, item.payload)
+              ) : (
+                <>
+                  {itemConfig?.icon ? (
+                    <itemConfig.icon />
+                  ) : (
+                    // this is the color indicator
+                    !hideIndicator && (
+                      <div
+                        className={clsx(
+                          "crayon-chart-tooltip-content-indicator",
+                          `crayon-chart-tooltip-content-indicator--${indicator}`,
+                          "crayon-chart-tooltip-content-indicator--two-items",
+                        )}
+                        style={
+                          {
+                            "--color-bg": indicatorColor,
+                            "--color-border": indicatorColor,
+                          } as React.CSSProperties
+                        }
+                      />
+                    )
+                  )}
+
+                  <div
+                    className={clsx(
+                      "crayon-chart-tooltip-content-value-wrapper",
+                      "crayon-chart-tooltip-content-value-wrapper--vertical",
+                      nestLabel
+                        ? "crayon-chart-tooltip-content-value-wrapper--nested"
+                        : "crayon-chart-tooltip-content-value-wrapper--standard",
+                    )}
+                  >
+                    <div className="crayon-chart-tooltip-content-label">
+                      {nestLabel && tooltipLabel}
+                      <span>{itemConfig?.label || item.name}</span>
+                    </div>
+
+                    {/* this is the value the number or the string */}
+                    {item.value !== undefined && (
+                      <span
+                        className={clsx(
+                          "crayon-chart-tooltip-content-value",
+                          showPercentage && "percentage",
+                        )}
+                      >
+                        {typeof item.value === "number"
+                          ? tooltipNumberFormatter(item.value)
+                          : item.value}
+                        {showPercentage ? "%" : ""}
+                      </span>
+                    )}
+                  </div>
+                </>
+              )}
+              <div className="crayon-chart-tooltip-content-item-separator" />
+            </div>
+          );
+        });
       }
 
       return payload.map((item, index) => {
@@ -135,7 +214,9 @@ export const CustomTooltipContent = memo(
                         showPercentage && "percentage",
                       )}
                     >
-                      {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
+                      {typeof item.value === "number"
+                        ? tooltipNumberFormatter(item.value)
+                        : item.value}
                       {showPercentage ? "%" : ""}
                     </span>
                   )}
@@ -166,6 +247,7 @@ export const CustomTooltipContent = memo(
     const tooltipContent = (
       <div ref={ref} className={clsx("crayon-chart-tooltip", className)}>
         {!nestLabel && tooltipLabel}
+        <div className="crayon-chart-tooltip-content-item-separator" />
         <div className="crayon-chart-tooltip-content">{payloadItems}</div>
       </div>
     );
