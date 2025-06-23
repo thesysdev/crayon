@@ -35,15 +35,15 @@ const lightTheme: ColorTheme = {
   brandElFills: "rgba(127, 86, 217, 1)",
   brandElHoverFills: "rgba(127, 86, 217, 0.8)",
   containerFills: "rgba(253, 253, 253, 1)",
-  overlayFills: "rgba(0, 0, 0, 0.40)",
+  overlayFills: "rgba(0, 0, 0, 0.4)",
   sunkFills: "rgba(0, 0, 0, 0.06)",
   containerHoverFills: "rgba(255, 255, 255, 0.04)",
-  dangerFills: "rgba(203, 63, 73, 0.10)",
-  successFills: "rgba(7, 148, 85, 0.08)",
-  infoFills: "rgba(56, 148, 255, 0.10)",
-  alertFills: "rgba(255, 199, 0, 0.10)",
+  dangerFills: "rgba(203, 63, 73, 0.1)",
+  successFills: "rgba(13, 160, 94, 0.1)",
+  infoFills: "rgba(56, 148, 255, 0.1)",
+  alertFills: "rgba(255, 199, 0, 0.1)",
   invertedFills: "rgba(21, 21, 21, 1)",
-  elevatedFills: "rgba(255, 255, 249, 0.60)",
+  elevatedFills: "rgba(255, 255, 255, 0.6)",
   sunkBgFills: "rgba(0, 0, 0, 0.04)",
 
   // Border colors
@@ -51,17 +51,17 @@ const lightTheme: ColorTheme = {
   strokeInteractiveEl: "rgba(0, 0, 0, 0.08)",
   strokeInteractiveElHover: "rgba(0, 0, 0, 0.4)",
   strokeInteractiveElSelected: "rgba(21, 21, 21, 1)",
-  strokeEmphasis: "rgba(21, 21, 21, 1)",
+  strokeEmphasis: "rgba(0, 0, 0, 0.2)",
   strokeAccent: "rgba(255, 255, 255, 0.08)",
-  strokeAccentEmphasis: "rgba(255, 255, 255, 0.30)",
+  strokeAccentEmphasis: "rgba(255, 255, 255, 0.3)",
   strokeInfo: "rgba(56, 148, 255, 0.08)",
   strokeInfoEmphasis: "rgba(24, 130, 255, 1)",
   strokeAlert: "rgba(255, 199, 0, 0.08)",
   strokeAlertEmphasis: "rgba(255, 199, 0, 1)",
-  strokeSuccess: "rgba(7, 148, 85, 0.08)",
-  strokeSuccessEmphasis: "rgba(7, 148, 85, 1)",
-  strokeDanger: "rgba(188, 46, 55, 0.08)",
-  strokeDangerEmphasis: "rgba(188, 46, 55, 1)",
+  strokeSuccess: "rgba(13, 160, 94, 0.08)",
+  strokeSuccessEmphasis: "rgba(13, 160, 94, 1)",
+  strokeDanger: "rgba(203, 63, 73, 0.08)",
+  strokeDangerEmphasis: "rgba(200, 44, 55, 1)",
 
   // Text colors
   brandText: "rgba(255, 255, 255, 1)",
@@ -73,21 +73,20 @@ const lightTheme: ColorTheme = {
   successText: "rgba(13, 160, 94, 0.10)",
   linkText: "rgba(0, 0, 0, 1)",
   infoText: "rgba(56, 148, 255, 1)",
-  tertiaryText: "rgba(165, 165, 165, 1)",
-  accentPrimaryText: "rgba(245, 251, 255, 1)",
-  accentSecondaryText: "rgba(130, 193, 255, 1)",
-  accentTertiaryText: "rgba(70, 160, 247, 1)",
+  accentPrimaryText: "rgba(255, 255, 255, 1)",
+  accentSecondaryText: "rgba(255, 255, 255, 0.4)",
+  accentDisabledText: "rgba(255, 255, 255, 0.2)",
   successPrimaryText: "rgba(8, 93, 58, 1)",
   successInvertedText: "rgba(220, 250, 230, 1)",
   alertPrimaryText: "rgba(221, 159, 0, 1)",
   alertInvertedText: "rgba(255, 246, 205, 1)",
   dangerPrimaryText: "rgba(167, 39, 47, 1)",
-  dangerSecondaryText: "rgba(107, 63, 73, 1)",
-  dangerTertiaryText: "rgba(235, 167, 171, 1)",
-  dangerInvertedPrimaryText: "rgba(252, 243, 244, 1)",
-  dangerInvertedSecondaryText: "rgba(234, 209, 212, 1)",
-  dangerInvertedTertiaryText: "rgba(235, 167, 171, 1)",
-  infoPrimaryText: "rgba(13, 75, 148, 1)",
+  dangerSecondaryText: "rgba(203, 63, 73, 1)",
+  dangerDisabledText: "rgba(235, 167, 171, 1)",
+  dangerInvertedPrimaryText: "rgba(255, 255, 255, 1)",
+  dangerInvertedSecondaryText: "rgba(255, 255, 255, 0.4)",
+  dangerInvertedDisabledText: "rgba(255, 255, 255, 0.2)",
+  infoPrimaryText: "rgba(21, 93, 177, 1)",
   infoInvertedText: "rgba(219, 236, 255, 1)",
 
   // Interactive colors
@@ -98,15 +97,15 @@ const lightTheme: ColorTheme = {
   interactiveAccent: "rgba(24, 130, 255, 1)",
   interactiveAccentHover: "rgba(70, 160, 247, 1)",
   interactiveAccentPressed: "rgba(32, 107, 213, 1)",
-  interactiveAccentDisabled: "rgba(166, 206, 255, 1)",
-  interactiveDestructive: "rgba(188, 46, 55, 0.02)",
-  interactiveDestructiveHover: "rgba(188, 46, 55, 0.08)",
+  interactiveAccentDisabled: "rgba(56, 148, 255, 0.4)",
+  interactiveDestructive: "rgba(203, 63, 73, 0.02)",
+  interactiveDestructiveHover: "rgba(203, 63, 73, 0.08)",
   interactiveDestructivePressed: "rgba(203, 63, 73, 0.1)",
   interactiveDestructiveDisabled: "rgba(203, 63, 73, 0.02)",
-  interactiveDestructiveAccent: "rgba(188, 46, 55, 1)",
+  interactiveDestructiveAccent: "rgba(200, 44, 55, 1)",
   interactiveDestructiveAccentHover: "rgba(203, 63, 73, 1)",
   interactiveDestructiveAccentPressed: "rgba(167, 39, 47, 1)",
-  interactiveDestructiveAccentDisabled: "rgba(235, 167, 171, 1)",
+  interactiveDestructiveAccentDisabled: "rgba(203, 63, 73, 0.4)",
 } as const;
 
 const darkTheme: ColorTheme = {
@@ -118,75 +117,74 @@ const darkTheme: ColorTheme = {
   overlayFills: "rgba(0, 0, 0, 0.4)",
   sunkFills: "rgba(255, 255, 255, 0.08)",
   containerHoverFills: "rgba(255, 255, 255, 0.1)",
-  dangerFills: "rgba(203, 63, 73, 0.20)",
-  successFills: "rgba(13, 160, 94, 0.20)",
-  infoFills: "rgba(56, 148, 255, 0.20)",
-  alertFills: "rgba(255, 199, 0, 0.20)",
+  dangerFills: "rgba(203, 63, 73, 0.2)",
+  successFills: "rgba(13, 160, 94, 0.2)",
+  infoFills: "rgba(56, 148, 255, 0.2)",
+  alertFills: "rgba(255, 199, 0, 0.2)",
   elevatedFills: "rgba(255, 255, 255, 0.06)",
   invertedFills: "rgba(253, 253, 253, 1)",
-  sunkBgFills: "rgba(0, 0, 0, 0.12)",
+  sunkBgFills: "rgba(0, 0, 0, 0.16)",
 
   // Border colors
   strokeDefault: "rgba(255, 255, 255, 0.04)",
-  strokeInteractiveEl: "rgba(255, 255, 255, 0.8)",
+  strokeInteractiveEl: "rgba(255, 255, 255, 0.1)",
   strokeInteractiveElHover: "rgba(255, 255, 255, 0.4)",
   strokeInteractiveElSelected: "rgba(253, 253, 253, 1)",
-  strokeEmphasis: "rgba(253, 253, 253, 1)",
+  strokeEmphasis: "rgba(255, 255, 255, 0.2)",
   strokeAccent: "rgba(0, 0, 0, 0.08)",
-  strokeAccentEmphasis: "rgba(0, 0, 0, 0.30)",
-  strokeInfo: "rgba(56, 148, 255, 0.08)",
-  strokeInfoEmphasis: "rgba(56, 148, 255, 0.08)",
-  strokeAlert: "rgba(255, 199, 0, 0.08)",
-  strokeAlertEmphasis: "rgba(255, 199, 0, 0.08)",
-  strokeSuccess: "rgba(13, 160, 94, 0.08)",
-  strokeSuccessEmphasis: "rgba(13, 160, 94, 0.08)",
-  strokeDanger: "rgba(203, 63, 73, 0.08)",
-  strokeDangerEmphasis: "rgba(203, 63, 73, 0.08)",
+  strokeAccentEmphasis: "rgba(0, 0, 0, 0.3)",
+  strokeInfo: "rgba(56, 148, 255, 0.2)",
+  strokeInfoEmphasis: "rgba(24, 130, 255, 1)",
+  strokeAlert: "rgba(255, 199, 0, 0.2)",
+  strokeAlertEmphasis: "rgba(255, 199, 0, 1)",
+  strokeSuccess: "rgba(13, 160, 94, 0.2)",
+  strokeSuccessEmphasis: "rgba(13, 160, 94, 1)",
+  strokeDanger: "rgba(203, 63, 73, 0.2)",
+  strokeDangerEmphasis: "rgba(200, 44, 55, 1)",
 
   // Text colors
   brandText: "rgba(255, 255, 255, 1)",
   brandSecondaryText: "rgba(255, 255, 255, 0.4)",
   primaryText: "rgba(255, 255, 255, 1)",
-  secondaryText: "rgba(255, 255, 255, 0.6)",
+  secondaryText: "rgba(255, 255, 255, 0.4)",
   disabledText: "rgba(255, 255, 255, 0.2)",
   dangerText: "rgba(253, 162, 155, 1)",
   successText: "rgba(117, 224, 167, 1)",
   linkText: "rgba(255, 255, 255, 1)",
   infoText: "rgba(125, 179, 247, 1)",
-  tertiaryText: "rgba(68, 68, 68, 1)",
-  accentPrimaryText: "rgba(21, 21, 21, 1)",
-  accentSecondaryText: "rgba(118, 118, 118, 1)",
-  accentTertiaryText: "rgba(165, 165, 165, 1)",
+  accentPrimaryText: "rgba(255, 255, 255, 1)",
+  accentSecondaryText: "rgba(255, 255, 255, 0.4)",
+  accentDisabledText: "rgba(255, 255, 255, 0.2)",
   successPrimaryText: "rgba(23, 178, 106, 1)",
   successInvertedText: "rgba(2, 79, 48, 1)",
   alertPrimaryText: "rgba(243, 207, 80, 1)",
   alertInvertedText: "rgba(187, 122, 0, 1)",
   dangerPrimaryText: " rgba(203, 63, 73, 1)",
   dangerSecondaryText: "rgba(167, 39, 47, 1)",
-  dangerTertiaryText: "rgba(130, 26, 32, 1)",
-  dangerInvertedPrimaryText: "rgba(143, 21, 13, 1)",
-  dangerInvertedSecondaryText: "rgba(217, 45, 32, 1)",
-  dangerInvertedTertiaryText: "rgba(249, 112, 102, 1)",
+  dangerDisabledText: "rgba(130, 26, 32, 1)",
+  dangerInvertedPrimaryText: "rgba(255, 255, 255, 1)",
+  dangerInvertedSecondaryText: "rgba(255, 255, 255, 0.4)",
+  dangerInvertedDisabledText: "rgba(255, 255, 255, 0.2)",
   infoPrimaryText: "rgba(70, 160, 247, 1)",
-  infoInvertedText: "rgba(70, 160, 247, 1)",
+  infoInvertedText: "rgba(13, 75, 148, 1)",
 
   // Interactive colors
   interactiveDefault: "rgba(0, 0, 0, 0.02)",
   interactiveHover: "rgba(255, 255, 255, 0.06)",
   interactivePressed: "rgba(255, 255, 255, 0.04)",
   interactiveDisabled: "rgba(255, 255, 255, 0.02)",
-  interactiveAccent: "rgba(253, 253, 253, 1)",
-  interactiveAccentHover: "rgba(241, 241, 241, 1)",
-  interactiveAccentPressed: "rgba(250, 250, 250, 1)",
-  interactiveAccentDisabled: "rgba(43, 43, 43, 1)",
-  interactiveDestructive: "rgba(188, 46, 55, 0.20)",
-  interactiveDestructiveHover: "rgba(188, 46, 55, 0.30)",
+  interactiveAccent: "rgba(24, 130, 255, 1)",
+  interactiveAccentHover: "rgba(70, 160, 247, 1)",
+  interactiveAccentPressed: "rgba(32, 107, 213, 1)",
+  interactiveAccentDisabled: "rgba(56, 148, 255, 0.4)",
+  interactiveDestructive: "rgba(203, 63, 73, 0.2)",
+  interactiveDestructiveHover: "rgba(203, 63, 73, 0.3)",
   interactiveDestructivePressed: "rgba(203, 63, 73, 0.3)",
   interactiveDestructiveDisabled: "rgba(203, 63, 73, 0.2)",
-  interactiveDestructiveAccent: "rgba(255, 255, 255, 1)",
-  interactiveDestructiveAccentHover: "rgba(255, 255, 255, 1)",
-  interactiveDestructiveAccentPressed: "rgba(255, 255, 255, 1)",
-  interactiveDestructiveAccentDisabled: "rgba(255, 255, 255, 1)",
+  interactiveDestructiveAccent: "rgba(200, 44, 55, 1)",
+  interactiveDestructiveAccentHover: "rgba(210, 65, 75, 1)",
+  interactiveDestructiveAccentPressed: "rgba(167, 39, 47, 1)",
+  interactiveDestructiveAccentDisabled: "rgba(203, 63, 73, 0.4)",
 } as const;
 
 // Shared theme properties that don't change between light/dark modes
@@ -338,12 +336,12 @@ export const ThemeProvider = ({
       <style>{`
         body {
           --crayon-background-fills: ${theme.backgroundFills};
-          --crayon-brand-el-fills: ${theme.brandElFills};
-          --crayon-brand-el-hover-fills: ${theme.brandElHoverFills};
+          --crayon-brand-el-fills: ${theme.interactiveAccent || theme.brandElFills};
+          --crayon-brand-el-hover-fills: ${theme.interactiveAccentHover || theme.brandElHoverFills};
           --crayon-container-fills: ${theme.containerFills};
           --crayon-overlay-fills: ${theme.overlayFills};
           --crayon-sunk-fills: ${theme.sunkFills};
-          --crayon-container-hover-fills: ${theme.containerHoverFills};
+          --crayon-container-hover-fills: ${theme.sunkFills || theme.containerHoverFills};
           --crayon-danger-fills: ${theme.dangerFills};
           --crayon-success-fills: ${theme.successFills};
           --crayon-info-fills: ${theme.infoFills};
@@ -371,7 +369,7 @@ export const ThemeProvider = ({
 
           --crayon-stroke-default: ${theme.strokeDefault};
           --crayon-stroke-interactive-el: ${theme.strokeInteractiveEl};
-          --crayon-stroke-interactive-el-hover: ${theme.strokeInteractiveElHover};
+          --crayon-stroke-interactive-el-hover: ${theme.strokeEmphasis || theme.strokeInteractiveElHover};
           --crayon-stroke-interactive-el-selected: ${theme.strokeInteractiveElSelected};
           --crayon-stroke-emphasis: ${theme.strokeEmphasis};
           --crayon-stroke-accent: ${theme.strokeAccent};
@@ -385,29 +383,28 @@ export const ThemeProvider = ({
           --crayon-stroke-danger: ${theme.strokeDanger};
           --crayon-stroke-danger-emphasis: ${theme.strokeDangerEmphasis};
 
-          --crayon-brand-text: ${theme.brandText};
-          --crayon-brand-secondary-text: ${theme.brandSecondaryText};
+          --crayon-brand-text: ${theme.accentPrimaryText || theme.brandText};
+          --crayon-brand-secondary-text: ${theme.accentSecondaryText || theme.brandSecondaryText};
           --crayon-primary-text: ${theme.primaryText};
           --crayon-secondary-text: ${theme.secondaryText};
           --crayon-disabled-text: ${theme.disabledText};
-          --crayon-danger-text: ${theme.dangerText};
-          --crayon-success-text: ${theme.successText};
+          --crayon-danger-text: ${theme.dangerPrimaryText || theme.dangerText};
+          --crayon-success-text: ${theme.successPrimaryText || theme.successText};
           --crayon-link-text: ${theme.linkText};
-          --crayon-info-text: ${theme.infoText};
-          --crayon-tertiary-text: ${theme.tertiaryText};
+          --crayon-info-text: ${theme.infoPrimaryText || theme.infoText};
           --crayon-accent-primary-text: ${theme.accentPrimaryText};
           --crayon-accent-secondary-text: ${theme.accentSecondaryText};
-          --crayon-accent-tertiary-text: ${theme.accentTertiaryText};
+          --crayon-accent-disabled-text: ${theme.accentDisabledText};
           --crayon-success-primary-text: ${theme.successPrimaryText};
           --crayon-success-inverted-text: ${theme.successInvertedText};
           --crayon-alert-primary-text: ${theme.alertPrimaryText};
           --crayon-alert-inverted-text: ${theme.alertInvertedText};
           --crayon-danger-primary-text: ${theme.dangerPrimaryText};
           --crayon-danger-secondary-text: ${theme.dangerSecondaryText};
-          --crayon-danger-tertiary-text: ${theme.dangerTertiaryText};
+          --crayon-danger-disabled-text: ${theme.dangerDisabledText};
           --crayon-danger-inverted-primary-text: ${theme.dangerInvertedPrimaryText};
           --crayon-danger-inverted-secondary-text: ${theme.dangerInvertedSecondaryText};
-          --crayon-danger-inverted-tertiary-text: ${theme.dangerInvertedTertiaryText};
+          --crayon-danger-inverted-disabled-text: ${theme.dangerInvertedDisabledText};
           --crayon-info-primary-text: ${theme.infoPrimaryText};
           --crayon-info-inverted-text: ${theme.infoInvertedText};
 
