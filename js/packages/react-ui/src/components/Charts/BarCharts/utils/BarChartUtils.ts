@@ -257,8 +257,8 @@ const findNearestSnapPosition = (
   // Find current position index
   let currentIndex = 0;
   for (let i = 0; i < snapPositions.length; i++) {
-    const snapPosition = snapPositions[i];
-    if (snapPosition !== undefined && currentScroll >= snapPosition) {
+    const snapPosition = snapPositions[i]!;
+    if (currentScroll >= snapPosition) {
       currentIndex = i;
     } else {
       break;
