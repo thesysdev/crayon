@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Cell, LabelList, PolarGrid, RadialBar, RadialBarChart } from "recharts";
+import { Cell, PolarGrid, RadialBar, RadialBarChart } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../../Charts";
 import { DefaultLegend } from "../../shared/DefaultLegend/DefaultLegend";
 import { StackedLegend } from "../../shared/StackedLegend/StackedLegend";
@@ -13,8 +13,6 @@ import {
   createRadialAnimationConfig,
   createRadialChartConfig,
   createRadialEventHandlers,
-  formatRadialLabel,
-  getRadialFontSize,
   getRadialHoverStyles,
   transformRadialDataWithPercentages,
   useRadialChartHover,
@@ -37,7 +35,6 @@ export interface RadialChartV2Props<T extends RadialChartV2Data> {
   format?: "percentage" | "number";
   legend?: boolean;
   legendVariant?: "default" | "stacked";
-  label?: boolean;
   grid?: boolean;
   isAnimationActive?: boolean;
   cornerRadius?: number;
@@ -56,12 +53,11 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
   categoryKey,
   dataKey,
   theme = "ocean",
-  variant = "semicircle",
+  variant = "circular",
   format = "number",
   legend = true,
   legendVariant = "stacked",
-  label = true,
-  grid = true,
+  grid = false,
   isAnimationActive = true,
   cornerRadius = 10,
   useGradients = false,
@@ -106,8 +102,8 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
 
   // Calculate chart dimensions
   const dimensions = useMemo(() => {
-    return calculateRadialChartDimensions(chartSize, variant, label);
-  }, [chartSize, variant, label]);
+    return calculateRadialChartDimensions(chartSize, variant);
+  }, [chartSize, variant]);
 
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(
@@ -399,8 +395,6 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
                 endAngle={endAngle}
                 innerRadius={dimensions.innerRadius}
                 outerRadius={dimensions.outerRadius}
-                onMouseEnter={handleChartMouseEnter}
-                onMouseLeave={handleChartMouseLeave}
               >
                 {grid && <PolarGrid gridType="circle" />}
                 <ChartTooltip
@@ -420,7 +414,10 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
                   background={!grid}
                   cornerRadius={cornerRadius}
                   {...animationConfig}
-                  {...eventHandlers}
+                  activeIndex={activeIndex ?? undefined}
+                  onMouseEnter={handleChartMouseEnter}
+                  onMouseLeave={handleChartMouseLeave}
+                  onClick={eventHandlers.onClick}
                 >
                   {transformedData.map((entry, index) => {
                     const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
@@ -434,17 +431,6 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
                       <Cell key={`cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />
                     );
                   })}
-                  {label && (
-                    <LabelList
-                      dataKey={dataKeyString}
-                      position="insideStart"
-                      offset={12}
-                      fill="currentColor"
-                      className="capitalize mix-blend-luminosity"
-                      fontSize={getRadialFontSize(data.length)}
-                      formatter={(value: string | number) => formatRadialLabel(value, format)}
-                    />
-                  )}
                 </RadialBar>
               </RadialBarChart>
             </ChartContainer>

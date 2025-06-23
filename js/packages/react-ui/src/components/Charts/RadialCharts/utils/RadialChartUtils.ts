@@ -60,21 +60,14 @@ export const calculatePercentage = (value: number, total: number): number => {
  * Calculates dimensions for radial charts based on container size
  * @param width - The container width
  * @param variant - The chart variant ('semicircle' or 'circular')
- * @param hasLabel - Whether the chart has labels
  * @returns Object containing outer and inner radius values
  */
 export const calculateRadialChartDimensions = (
   width: number,
   variant: "semicircle" | "circular",
-  hasLabel: boolean = false,
 ): RadialChartDimensions => {
   const baseRadiusPercentage = 0.4; // 40% of container width
   let outerRadius = Math.round(width * baseRadiusPercentage);
-
-  // Adjust for label presence
-  if (hasLabel) {
-    outerRadius = Math.round(outerRadius * 0.9);
-  }
 
   // Set minimum and maximum bounds for radius
   outerRadius = Math.max(50, Math.min(outerRadius, width / 2 - 10));
@@ -231,37 +224,6 @@ export const createRadialEventHandlers = (
     onMouseLeave: onMouseLeave ? () => onMouseLeave() : undefined,
     onClick: onClick ? (data: any, index: number) => onClick(data, index) : undefined,
   };
-};
-
-// ==========================================
-// Label Formatting Utilities
-// ==========================================
-
-/**
- * Helper function to format label values
- * @param value - The value to format
- * @param format - The format type ('percentage' or 'number')
- * @returns Formatted string
- */
-export const formatRadialLabel = (
-  value: string | number,
-  format: "percentage" | "number",
-): string => {
-  if (format === "percentage") {
-    return `${value}%`;
-  }
-  // For number format, just truncate if too long
-  const stringValue = String(value);
-  return stringValue.length > 8 ? `${stringValue.slice(0, 8)}...` : stringValue;
-};
-
-/**
- * Helper function to calculate font size based on data length
- * @param dataLength - The number of data items
- * @returns Font size number
- */
-export const getRadialFontSize = (dataLength: number): number => {
-  return dataLength <= 5 ? 12 : 7;
 };
 
 // ==========================================
