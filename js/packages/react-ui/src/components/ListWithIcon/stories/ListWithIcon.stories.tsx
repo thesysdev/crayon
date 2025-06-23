@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Mail, Search, User } from "lucide-react";
 import { ListWithIcon } from "../ListWIthIcon";
 
 interface ListWithIconStoryProps {
@@ -21,14 +22,14 @@ const meta: Meta<ListWithIconStoryProps> = {
   },
   decorators: [
     (Story) => (
-      <div style={{ width: "300px", padding: "16px", backgroundColor: "white" }}>
+      <div style={{ width: "300px" }}>
         <Story />
       </div>
     ),
   ],
   argTypes: {
     icon: {
-      control: "text",
+      control: false,
       description: "The label text to display",
       table: {
         type: { summary: "ReactNode" },
@@ -59,7 +60,7 @@ type Story = StoryObj<ListWithIconStoryProps>;
 
 export const Basic: Story = {
   args: {
-    icon: "🔍",
+    icon: <Search size={16} />,
     title: "Search",
     subtitle: "Find items in the system",
   },
@@ -67,7 +68,7 @@ export const Basic: Story = {
 
 export const WithUserLabel: Story = {
   args: {
-    icon: "👤",
+    icon: <User size={16} />,
     title: "User Profile",
     subtitle: "View and edit your profile",
   },
@@ -75,7 +76,7 @@ export const WithUserLabel: Story = {
 
 export const WithMailLabel: Story = {
   args: {
-    icon: "✉️",
+    icon: <Mail size={16} />,
     title: "Email Settings",
     subtitle: "Configure your email preferences",
   },
