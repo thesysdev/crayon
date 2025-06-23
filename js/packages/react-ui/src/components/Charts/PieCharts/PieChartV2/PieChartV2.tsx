@@ -377,45 +377,38 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   // Memoize the renderPieCharts function
   const renderPieCharts = useCallback(() => {
     if (variant === "donut") {
-      return (
-        <>
-          {/* Inner Pie */}
-          <Pie
-            {...commonPieProps}
-            innerRadius={dimensions.innerRadius}
-            outerRadius={dimensions.middleRadius}
-          >
-            {transformedData.map((entry, index) => {
-              const hoverStyles = getHoverStyles(index, activeIndex);
-              const fill = useGradients
-                ? `url(#gradient-${index})`
-                : `var(--crayon-container-hover-fills)`;
+      return [
+        // Inner Pie
+        <Pie
+          {...commonPieProps}
+          innerRadius={dimensions.innerRadius}
+          outerRadius={dimensions.middleRadius}
+        >
+          {transformedData.map((entry, index) => {
+            const hoverStyles = getHoverStyles(index, activeIndex);
+            const fill = useGradients
+              ? `url(#gradient-${index})`
+              : `var(--crayon-container-hover-fills)`;
 
-              return (
-                <Cell key={`inner-cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />
-              );
-            })}
-          </Pie>
+            return <Cell key={`inner-cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
+          })}
+        </Pie>,
+        // Outer Pie
+        <Pie
+          {...commonPieProps}
+          innerRadius={dimensions.middleRadius}
+          outerRadius={dimensions.outerRadius}
+        >
+          {transformedData.map((entry, index) => {
+            const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
+            const config = chartConfig[categoryValue];
+            const hoverStyles = getHoverStyles(index, activeIndex);
+            const fill = useGradients ? `url(#gradient-${index})` : config?.color;
 
-          {/* Outer Pie */}
-          <Pie
-            {...commonPieProps}
-            innerRadius={dimensions.middleRadius}
-            outerRadius={dimensions.outerRadius}
-          >
-            {transformedData.map((entry, index) => {
-              const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
-              const config = chartConfig[categoryValue];
-              const hoverStyles = getHoverStyles(index, activeIndex);
-              const fill = useGradients ? `url(#gradient-${index})` : config?.color;
-
-              return (
-                <Cell key={`outer-cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />
-              );
-            })}
-          </Pie>
-        </>
-      );
+            return <Cell key={`outer-cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
+          })}
+        </Pie>,
+      ];
     }
 
     return (
