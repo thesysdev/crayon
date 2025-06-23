@@ -31,7 +31,7 @@ const CheckBoxItem = forwardRef<HTMLButtonElement, CheckBoxItemProps>((props, re
         required={required}
       >
         <Checkbox.Indicator className="crayon-checkbox-item-indicator">
-          <Check size={11} />
+          <Check size={12} className="crayon-checkbox-item-indicator-svg" />
         </Checkbox.Indicator>
       </Checkbox.Root>
       {label && (

@@ -3,7 +3,7 @@ import { cloneElement, CSSProperties, forwardRef, ReactElement, ReactNode } from
 import { ButtonProps } from "../Button";
 import { IconButtonProps } from "../IconButton";
 
-export interface CardHeaderProps {
+export interface CardHeaderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
   icon?: ReactNode;
   title?: ReactNode;
   subtitle?: ReactNode;
