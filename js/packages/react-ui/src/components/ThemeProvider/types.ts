@@ -144,11 +144,10 @@ export interface TypographyTheme {
   fontBodySmallHeavyLetterSpacing?: string;
   fontBodySmall?: string;
   fontBodySmallLetterSpacing?: string;
-  fontBodyLargeHeavy?: string;
-  fontBodyLargeHeavyLetterSpacing?: string;
   fontBodyLarge?: string;
   fontBodyLargeLetterSpacing?: string;
-
+  fontBodyLargeHeavy?: string;
+  fontBodyLargeHeavyLetterSpacing?: string;
   // Label System
   fontLabel?: string;
   fontLabelLetterSpacing?: string;
