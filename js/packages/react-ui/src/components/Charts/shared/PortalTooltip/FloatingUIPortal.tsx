@@ -27,7 +27,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   chartId,
   portalContainer,
 }) => {
-  const mousePositionRef = useRef({ x: 0, y: 0 });
+  const mousePositionRef = useRef({ x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER });
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
@@ -64,7 +64,14 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
 
   // Memoize the updatePosition function to avoid recreating it
   const updatePosition = useCallback(async () => {
-    if (!virtualElement || !tooltipRef.current) return;
+    if (
+      !virtualElement ||
+      !tooltipRef.current ||
+      virtualElement.getBoundingClientRect().x === Number.MAX_SAFE_INTEGER ||
+      virtualElement.getBoundingClientRect().y === Number.MAX_SAFE_INTEGER
+    ) {
+      return;
+    }
 
     // https://floating-ui.com/docs/computePosition
     // not a synchronous function, it returns a promise. so we need to await it.
@@ -72,6 +79,10 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
       placement,
       middleware: [offset(offsetDistance), flip(), shift({ padding: 8 })],
     });
+
+    if (x === 0 && y === 0) {
+      return;
+    }
 
     setPosition({ x, y });
     // this is to avoid the tooltip from flickering when the mouse is moving fast and the tooltip is not positioned yet initially
