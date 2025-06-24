@@ -5,11 +5,20 @@ export type ThemeMode = "light" | "dark";
 export interface ColorTheme {
   // Background colors
   backgroundFills?: string;
+  /**
+   * @deprecated -- use interactiveAccent instead
+   */
   brandElFills?: string;
+  /**
+   * @deprecated -- use interactiveAccentHover instead
+   */
   brandElHoverFills?: string;
   containerFills?: string;
   overlayFills?: string;
   sunkFills?: string;
+  /**
+   * @deprecated -- use sunkFills instead
+   */
   containerHoverFills?: string;
   dangerFills?: string;
   successFills?: string;
@@ -21,6 +30,9 @@ export interface ColorTheme {
   // Border colors
   strokeDefault?: string;
   strokeInteractiveEl?: string;
+  /**
+   * @deprecated -- use strokeEmphasis instead
+   */
   strokeInteractiveElHover?: string;
   strokeInteractiveElSelected?: string;
   strokeEmphasis?: string;
@@ -36,14 +48,29 @@ export interface ColorTheme {
   strokeDangerEmphasis?: string;
 
   // Text colors
+  /**
+   * @deprecated -- use accentPrimaryText instead
+   */
   brandText?: string;
+  /**
+   * @deprecated -- use accentSecondaryText instead
+   */
   brandSecondaryText?: string;
   primaryText?: string;
   secondaryText?: string;
   disabledText?: string;
+  /**
+   * @deprecated -- use dangerPrimaryText instead
+   */
   dangerText?: string;
+  /**
+   * @deprecated -- use successPrimaryText instead
+   */
   successText?: string;
   linkText?: string;
+  /**
+   * @deprecated -- use infoPrimaryText instead
+   */
   infoText?: string;
   accentPrimaryText?: string;
   accentSecondaryText?: string;
@@ -120,14 +147,26 @@ export interface LayoutTheme {
 // Typography-related theme properties
 export interface TypographyTheme {
   // Primary Font
+  /**
+   * @deprecated -- use fontBody instead
+   */
   fontPrimary?: string;
   fontPrimaryLetterSpacing?: string;
 
-  // Title Variants
+  // Title Variant
+  /**
+   * @deprecated -- use fontBodyHeavy instead
+   */
   fontTitle?: string;
   fontTitleLetterSpacing?: string;
+  /**
+   * @deprecated -- use fontBodyLargeHeavy instead
+   */
   fontTitleMedium?: string;
   fontTitleMediumLetterSpacing?: string;
+  /**
+   * @deprecated -- use fontBodySmallHeavy instead
+   */
   fontTitleSmall?: string;
   fontTitleSmallLetterSpacing?: string;
 
@@ -138,7 +177,13 @@ export interface TypographyTheme {
   fontBodyLinkLetterSpacing?: string;
   fontBodyHeavy?: string;
   fontBodyHeavyLetterSpacing?: string;
+  /**
+   * @deprecated -- use fontBody instead
+   */
   fontBodyMedium?: string;
+  /**
+   * @deprecated -- use fontBodyLetterSpacing instead
+   */
   fontBodyMediumLetterSpacing?: string;
   fontBodySmallHeavy?: string;
   fontBodySmallHeavyLetterSpacing?: string;
@@ -165,9 +210,21 @@ export interface TypographyTheme {
   fontLabelLargeHeavyLetterSpacing?: string;
   fontLabelLarge?: string;
   fontLabelLargeLetterSpacing?: string;
+  /**
+   * @deprecated -- use fontLabelHeavy instead
+   */
   fontLabelMediumHeavy?: string;
+  /**
+   * @deprecated -- use fontLabelHeavyLetterSpacing instead
+   */
   fontLabelMediumHeavyLetterSpacing?: string;
+  /**
+   * @deprecated -- use fontLabel instead
+   */
   fontLabelMedium?: string;
+  /**
+   * @deprecated -- use fontLabelMediumLetterSpacing instead
+   */
   fontLabelMediumLetterSpacing?: string;
 
   // Headings
@@ -177,6 +234,12 @@ export interface TypographyTheme {
   fontHeadingMediumLetterSpacing?: string;
   fontHeadingSmall?: string;
   fontHeadingSmallLetterSpacing?: string;
+
+  // 2Extra Small
+  fontLabel2ExtraSmall?: string;
+  fontLabel2ExtraSmallLetterSpacing?: string;
+  fontLabel2ExtraSmallHeavy?: string;
+  fontLabel2ExtraSmallHeavyLetterSpacing?: string;
 }
 
 // Effect-related theme properties

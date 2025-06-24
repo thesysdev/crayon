@@ -31,26 +31,22 @@ export const useTheme = () => {
 
 const lightTheme: ColorTheme = {
   // Background colors
-  backgroundFills: "rgba(250, 250, 250, 1)",
-  brandElFills: "rgba(127, 86, 217, 1)",
-  brandElHoverFills: "rgba(127, 86, 217, 0.8)",
-  containerFills: "rgba(253, 253, 253, 1)",
+  backgroundFills: "rgba(245, 245, 245, 1)",
+  containerFills: "rgba(253, 253, 253)",
   overlayFills: "rgba(0, 0, 0, 0.4)",
   sunkFills: "rgba(0, 0, 0, 0.06)",
-  containerHoverFills: "rgba(255, 255, 255, 0.04)",
-  dangerFills: "rgba(203, 63, 73, 0.1)",
-  successFills: "rgba(13, 160, 94, 0.1)",
-  infoFills: "rgba(56, 148, 255, 0.1)",
+  dangerFills: "rgba(217, 45, 32, 0.08)",
+  successFills: "rgba(7, 148, 85, 0.08)",
+  infoFills: "rgba(56, 148, 255, 0.08)",
   alertFills: "rgba(255, 199, 0, 0.1)",
   invertedFills: "rgba(21, 21, 21, 1)",
-  elevatedFills: "rgba(255, 255, 255, 0.6)",
+  elevatedFills: "rgba(255, 255, 255, 0.03)",
   sunkBgFills: "rgba(0, 0, 0, 0.04)",
 
   // Border colors
-  strokeDefault: "rgba(0, 0, 0, 0.04)",
-  strokeInteractiveEl: "rgba(0, 0, 0, 0.08)",
-  strokeInteractiveElHover: "rgba(0, 0, 0, 0.4)",
-  strokeInteractiveElSelected: "rgba(21, 21, 21, 1)",
+  strokeDefault: "rgba(0, 0, 0, 0.06)",
+  strokeInteractiveEl: "rgba(0, 0, 0, 0.12)",
+  strokeInteractiveElSelected: "rgba(0,0,0)",
   strokeEmphasis: "rgba(0, 0, 0, 0.2)",
   strokeAccent: "rgba(255, 255, 255, 0.08)",
   strokeAccentEmphasis: "rgba(255, 255, 255, 0.3)",
@@ -64,15 +60,10 @@ const lightTheme: ColorTheme = {
   strokeDangerEmphasis: "rgba(200, 44, 55, 1)",
 
   // Text colors
-  brandText: "rgba(255, 255, 255, 1)",
-  brandSecondaryText: "rgba(255, 255, 255, 0.4)",
   primaryText: "rgba(0, 0, 0, 1)",
   secondaryText: "rgba(0, 0, 0, 0.4)",
   disabledText: "rgba(0, 0, 0, 0.2)",
-  dangerText: "rgba(217, 45, 32, 1)",
-  successText: "rgba(13, 160, 94, 0.10)",
   linkText: "rgba(0, 0, 0, 1)",
-  infoText: "rgba(56, 148, 255, 1)",
   accentPrimaryText: "rgba(255, 255, 255, 1)",
   accentSecondaryText: "rgba(255, 255, 255, 0.4)",
   accentDisabledText: "rgba(255, 255, 255, 0.2)",
@@ -110,26 +101,22 @@ const lightTheme: ColorTheme = {
 
 const darkTheme: ColorTheme = {
   // Background colors
-  backgroundFills: "rgba(21, 21, 21, 1)",
-  brandElFills: "rgba(127, 86, 217, 1)",
-  brandElHoverFills: "rgba(127, 86, 217, 0.8)",
-  containerFills: "rgba(28, 28, 28, 1)",
+  backgroundFills: "rgba(28,28,28)",
+  containerFills: "rgba(43,43,43)",
   overlayFills: "rgba(0, 0, 0, 0.4)",
-  sunkFills: "rgba(255, 255, 255, 0.08)",
-  containerHoverFills: "rgba(255, 255, 255, 0.1)",
-  dangerFills: "rgba(203, 63, 73, 0.2)",
-  successFills: "rgba(13, 160, 94, 0.2)",
-  infoFills: "rgba(56, 148, 255, 0.2)",
+  sunkFills: "rgba(0,0,0,0.2)",
+  dangerFills: "rgba(217,45,32,0.1)",
+  successFills: "rgba(7,148, 85, 0.1)",
+  infoFills: "rgba(56, 148, 255, 0.1)",
   alertFills: "rgba(255, 199, 0, 0.2)",
-  elevatedFills: "rgba(255, 255, 255, 0.06)",
+  elevatedFills: "rgba(255, 255, 255, 0.1)",
   invertedFills: "rgba(253, 253, 253, 1)",
   sunkBgFills: "rgba(0, 0, 0, 0.16)",
 
   // Border colors
-  strokeDefault: "rgba(255, 255, 255, 0.04)",
-  strokeInteractiveEl: "rgba(255, 255, 255, 0.1)",
-  strokeInteractiveElHover: "rgba(255, 255, 255, 0.4)",
-  strokeInteractiveElSelected: "rgba(253, 253, 253, 1)",
+  strokeDefault: "rgba(255, 255, 255, 0.06)",
+  strokeInteractiveEl: "rgba(255, 255, 255, 0.12)",
+  strokeInteractiveElSelected: "rgba(255, 255, 255, 1)",
   strokeEmphasis: "rgba(255, 255, 255, 0.2)",
   strokeAccent: "rgba(0, 0, 0, 0.08)",
   strokeAccentEmphasis: "rgba(0, 0, 0, 0.3)",
@@ -143,15 +130,10 @@ const darkTheme: ColorTheme = {
   strokeDangerEmphasis: "rgba(200, 44, 55, 1)",
 
   // Text colors
-  brandText: "rgba(255, 255, 255, 1)",
-  brandSecondaryText: "rgba(255, 255, 255, 0.4)",
   primaryText: "rgba(255, 255, 255, 1)",
-  secondaryText: "rgba(255, 255, 255, 0.4)",
+  secondaryText: "rgba(255, 255, 255, 0.6)",
   disabledText: "rgba(255, 255, 255, 0.2)",
-  dangerText: "rgba(253, 162, 155, 1)",
-  successText: "rgba(117, 224, 167, 1)",
   linkText: "rgba(255, 255, 255, 1)",
-  infoText: "rgba(125, 179, 247, 1)",
   accentPrimaryText: "rgba(255, 255, 255, 1)",
   accentSecondaryText: "rgba(255, 255, 255, 0.4)",
   accentDisabledText: "rgba(255, 255, 255, 0.2)",
@@ -177,10 +159,10 @@ const darkTheme: ColorTheme = {
   interactiveAccentHover: "rgba(70, 160, 247, 1)",
   interactiveAccentPressed: "rgba(32, 107, 213, 1)",
   interactiveAccentDisabled: "rgba(56, 148, 255, 0.4)",
-  interactiveDestructive: "rgba(203, 63, 73, 0.2)",
-  interactiveDestructiveHover: "rgba(203, 63, 73, 0.3)",
-  interactiveDestructivePressed: "rgba(203, 63, 73, 0.3)",
-  interactiveDestructiveDisabled: "rgba(203, 63, 73, 0.2)",
+  interactiveDestructive: "rgba(203, 63, 73, 0.04)",
+  interactiveDestructiveHover: "rgba(203, 63, 73, 0.1)",
+  interactiveDestructivePressed: "rgba(203, 63, 73, 0.2)",
+  interactiveDestructiveDisabled: "rgba(203, 63, 73, 0.04)",
   interactiveDestructiveAccent: "rgba(200, 44, 55, 1)",
   interactiveDestructiveAccentHover: "rgba(210, 65, 75, 1)",
   interactiveDestructiveAccentPressed: "rgba(167, 39, 47, 1)",
@@ -219,8 +201,8 @@ const layoutTheme: LayoutTheme = {
 
 const typographyTheme: TypographyTheme = {
   // Typography
-  fontPrimary: '400 16px/20px "Inter"',
-  fontPrimaryLetterSpacing: "0px",
+  // fontPrimary: '400 16px/20px "Inter"',
+  // fontPrimaryLetterSpacing: "0px",
 
   // Display & Headings
   // Large
@@ -235,22 +217,22 @@ const typographyTheme: TypographyTheme = {
 
   // Title Variants
   // Default
-  fontTitle: '500 16px/20px "Inter"',
-  fontTitleLetterSpacing: "0px",
+  // fontTitle: '500 16px/20px "Inter"',
+  // fontTitleLetterSpacing: "0px",
   // Medium
-  fontTitleMedium: '500 16px/20px "Inter"',
-  fontTitleMediumLetterSpacing: "0px",
+  // fontTitleMedium: '500 16px/20px "Inter"',
+  // fontTitleMediumLetterSpacing: "0px",
   // Small
-  fontTitleSmall: '500 16px/20px "Inter"',
-  fontTitleSmallLetterSpacing: "0px",
+  // fontTitleSmall: '500 16px/20px "Inter"',
+  // fontTitleSmallLetterSpacing: "0px",
 
   // Body Text
   // Regular
   fontBody: '400 16px/1.5 "Inter"',
   fontBodyLetterSpacing: "0px",
 
-  fontBodyMedium: '400 16px/20px "Inter"',
-  fontBodyMediumLetterSpacing: "0px",
+  // fontBodyMedium: '400 16px/20px "Inter"',
+  // fontBodyMediumLetterSpacing: "0px",
 
   fontBodySmall: '400 14px/1.5 "Inter"',
   fontBodySmallLetterSpacing: "0px",
@@ -286,11 +268,11 @@ const typographyTheme: TypographyTheme = {
   fontLabelHeavy: '500 16px/1.2 "Inter"',
   fontLabelHeavyLetterSpacing: "0px",
   // Medium
-  fontLabelMedium: '400 16px/20px "Inter"',
-  fontLabelMediumLetterSpacing: "0px",
+  // fontLabelMedium: '400 16px/20px "Inter"',
+  // fontLabelMediumLetterSpacing: "0px",
 
-  fontLabelMediumHeavy: '600 16px/20px "Inter"',
-  fontLabelMediumHeavyLetterSpacing: "0px",
+  // fontLabelMediumHeavy: '600 16px/20px "Inter"',
+  // fontLabelMediumHeavyLetterSpacing: "0px",
   // Small
   fontLabelSmall: '400 14/1.2 "Inter"',
   fontLabelSmallLetterSpacing: "0px",
@@ -303,6 +285,13 @@ const typographyTheme: TypographyTheme = {
 
   fontLabelExtraSmallHeavy: '500 12px/1.2 "Inter"',
   fontLabelExtraSmallHeavyLetterSpacing: "0px",
+
+  // 2Extra Small
+  fontLabel2ExtraSmall: '400 10px/1.2 "Inter"',
+  fontLabel2ExtraSmallLetterSpacing: "0px",
+
+  fontLabel2ExtraSmallHeavy: '500 10px/1.2 "Inter"',
+  fontLabel2ExtraSmallHeavyLetterSpacing: "0px",
 } as const;
 
 const effectTheme: EffectTheme = {
@@ -336,12 +325,12 @@ export const ThemeProvider = ({
       <style>{`
         body {
           --crayon-background-fills: ${theme.backgroundFills};
-          --crayon-brand-el-fills: ${theme.interactiveAccent || theme.brandElFills};
-          --crayon-brand-el-hover-fills: ${theme.interactiveAccentHover || theme.brandElHoverFills};
+          --crayon-brand-el-fills: ${theme.brandElFills};
+          --crayon-brand-el-hover-fills: ${theme.brandElHoverFills};
           --crayon-container-fills: ${theme.containerFills};
           --crayon-overlay-fills: ${theme.overlayFills};
           --crayon-sunk-fills: ${theme.sunkFills};
-          --crayon-container-hover-fills: ${theme.sunkFills || theme.containerHoverFills};
+          --crayon-container-hover-fills: ${theme.containerHoverFills};
           --crayon-danger-fills: ${theme.dangerFills};
           --crayon-success-fills: ${theme.successFills};
           --crayon-info-fills: ${theme.infoFills};
@@ -354,9 +343,10 @@ export const ThemeProvider = ({
           --crayon-interactive-hover: ${theme.interactiveHover};
           --crayon-interactive-pressed: ${theme.interactivePressed};
           --crayon-interactive-disabled: ${theme.interactiveDisabled};
-          --crayon-interactive-accent: ${theme.interactiveAccent};
-          --crayon-interactive-accent-hover: ${theme.interactiveAccentHover};
-          --crayon-interactive-accent-pressed: ${theme.interactiveAccentPressed};
+          --crayon-interactive-accent: ${theme.brandElFills || theme.interactiveAccent};
+          --crayon-interactive-accent-hover: ${theme.brandElHoverFills || theme.interactiveAccentHover};
+          --crayon-interactive-accent-pressed: ${theme.brandElHoverFills || theme.interactiveAccentPressed};
+          // todo: make this backward compatible by using brandElFills with some opacity
           --crayon-interactive-accent-disabled: ${theme.interactiveAccentDisabled};
           --crayon-interactive-destructive: ${theme.interactiveDestructive};
           --crayon-interactive-destructive-hover: ${theme.interactiveDestructiveHover};
@@ -369,9 +359,9 @@ export const ThemeProvider = ({
 
           --crayon-stroke-default: ${theme.strokeDefault};
           --crayon-stroke-interactive-el: ${theme.strokeInteractiveEl};
-          --crayon-stroke-interactive-el-hover: ${theme.strokeEmphasis || theme.strokeInteractiveElHover};
+          --crayon-stroke-interactive-el-hover: ${theme.strokeInteractiveElHover};
           --crayon-stroke-interactive-el-selected: ${theme.strokeInteractiveElSelected};
-          --crayon-stroke-emphasis: ${theme.strokeEmphasis};
+          --crayon-stroke-emphasis: ${theme.strokeInteractiveElHover || theme.strokeEmphasis};
           --crayon-stroke-accent: ${theme.strokeAccent};
           --crayon-stroke-accent-emphasis: ${theme.strokeAccentEmphasis};
           --crayon-stroke-info: ${theme.strokeInfo};
@@ -383,29 +373,29 @@ export const ThemeProvider = ({
           --crayon-stroke-danger: ${theme.strokeDanger};
           --crayon-stroke-danger-emphasis: ${theme.strokeDangerEmphasis};
 
-          --crayon-brand-text: ${theme.accentPrimaryText || theme.brandText};
-          --crayon-brand-secondary-text: ${theme.accentSecondaryText || theme.brandSecondaryText};
+          --crayon-brand-text: ${theme.brandText};
+          --crayon-brand-secondary-text: ${theme.brandSecondaryText};
           --crayon-primary-text: ${theme.primaryText};
           --crayon-secondary-text: ${theme.secondaryText};
           --crayon-disabled-text: ${theme.disabledText};
-          --crayon-danger-text: ${theme.dangerPrimaryText || theme.dangerText};
-          --crayon-success-text: ${theme.successPrimaryText || theme.successText};
+          --crayon-danger-text: ${theme.dangerText};
+          --crayon-success-text: ${theme.successText};
           --crayon-link-text: ${theme.linkText};
-          --crayon-info-text: ${theme.infoPrimaryText || theme.infoText};
-          --crayon-accent-primary-text: ${theme.accentPrimaryText};
-          --crayon-accent-secondary-text: ${theme.accentSecondaryText};
+          --crayon-info-text: ${theme.infoText};
+          --crayon-accent-primary-text: ${theme.brandText || theme.accentPrimaryText};
+          --crayon-accent-secondary-text: ${theme.brandSecondaryText || theme.accentSecondaryText};
           --crayon-accent-disabled-text: ${theme.accentDisabledText};
-          --crayon-success-primary-text: ${theme.successPrimaryText};
+          --crayon-success-primary-text: ${theme.successText || theme.successPrimaryText};
           --crayon-success-inverted-text: ${theme.successInvertedText};
           --crayon-alert-primary-text: ${theme.alertPrimaryText};
           --crayon-alert-inverted-text: ${theme.alertInvertedText};
-          --crayon-danger-primary-text: ${theme.dangerPrimaryText};
+          --crayon-danger-primary-text: ${theme.dangerText || theme.dangerPrimaryText};
           --crayon-danger-secondary-text: ${theme.dangerSecondaryText};
           --crayon-danger-disabled-text: ${theme.dangerDisabledText};
           --crayon-danger-inverted-primary-text: ${theme.dangerInvertedPrimaryText};
           --crayon-danger-inverted-secondary-text: ${theme.dangerInvertedSecondaryText};
           --crayon-danger-inverted-disabled-text: ${theme.dangerInvertedDisabledText};
-          --crayon-info-primary-text: ${theme.infoPrimaryText};
+          --crayon-info-primary-text: ${theme.infoText || theme.infoPrimaryText};
           --crayon-info-inverted-text: ${theme.infoInvertedText};
 
           --crayon-spacing-0: ${theme.spacing0};
@@ -431,22 +421,22 @@ export const ThemeProvider = ({
           --crayon-rounded-3xl: ${theme.rounded3xl};
           --crayon-rounded-full: ${theme.roundedFull};
 
-          --crayon-font-primary: ${theme.fontBody || theme.fontPrimary};
+          --crayon-font-primary: ${theme.fontPrimary || theme.fontBody};
           --crayon-font-primary-letter-spacing: ${theme.fontPrimaryLetterSpacing};
-          --crayon-font-title: ${theme.fontBodyHeavy || theme.fontTitle};
-          --crayon-font-title-letter-spacing: ${theme.fontTitleLetterSpacing};
-          --crayon-font-title-medium: ${theme.fontBodyLargeHeavy || theme.fontTitleMedium};
-          --crayon-font-title-medium-letter-spacing: ${theme.fontTitleMediumLetterSpacing};
-          --crayon-font-title-small: ${theme.fontBodySmallHeavy || theme.fontTitleSmall};
-          --crayon-font-title-small-letter-spacing: ${theme.fontTitleSmallLetterSpacing};
+          --crayon-font-title: ${theme.fontTitle || theme.fontBodyHeavy};
+          --crayon-font-title-letter-spacing: ${theme.fontTitleLetterSpacing || theme.fontBodyHeavyLetterSpacing};
+          --crayon-font-title-medium: ${theme.fontTitleMedium || theme.fontBodyLargeHeavy};
+          --crayon-font-title-medium-letter-spacing: ${theme.fontTitleMediumLetterSpacing || theme.fontBodyLargeHeavyLetterSpacing};
+          --crayon-font-title-small: ${theme.fontTitleSmall || theme.fontBodySmallHeavy};
+          --crayon-font-title-small-letter-spacing: ${theme.fontTitleSmallLetterSpacing || theme.fontBodySmallHeavyLetterSpacing};
           --crayon-font-body: ${theme.fontBody};
           --crayon-font-body-letter-spacing: ${theme.fontBodyLetterSpacing};
           --crayon-font-body-link: ${theme.fontBodyLink};
           --crayon-font-body-link-letter-spacing: ${theme.fontBodyLinkLetterSpacing};
           --crayon-font-body-heavy: ${theme.fontBodyHeavy};
           --crayon-font-body-heavy-letter-spacing: ${theme.fontBodyHeavyLetterSpacing};
-          --crayon-font-body-medium: ${theme.fontBody || theme.fontBodyMedium};
-          --crayon-font-body-medium-letter-spacing: ${theme.fontBodyLetterSpacing || theme.fontBodyMediumLetterSpacing};
+          --crayon-font-body-medium: ${theme.fontBodyMedium || theme.fontBody};
+          --crayon-font-body-medium-letter-spacing: ${theme.fontBodyMediumLetterSpacing || theme.fontBodyLetterSpacing};
           --crayon-font-body-small-heavy: ${theme.fontBodySmallHeavy};
           --crayon-font-body-small-heavy-letter-spacing: ${theme.fontBodySmallHeavyLetterSpacing};
           --crayon-font-body-small: ${theme.fontBodySmall};
@@ -467,10 +457,10 @@ export const ThemeProvider = ({
           --crayon-font-label-large-heavy-letter-spacing: ${theme.fontLabelLargeHeavyLetterSpacing};
           --crayon-font-label-large: ${theme.fontLabelLarge};
           --crayon-font-label-large-letter-spacing: ${theme.fontLabelLargeLetterSpacing};
-          --crayon-font-label-medium-heavy: ${theme.fontLabelHeavy || theme.fontLabelMediumHeavy};
-          --crayon-font-label-medium-heavy-letter-spacing: ${theme.fontLabelHeavyLetterSpacing || theme.fontLabelMediumHeavyLetterSpacing};
-          --crayon-font-label-medium: ${theme.fontLabel || theme.fontLabelMedium};
-          --crayon-font-label-medium-letter-spacing: ${theme.fontLabelLetterSpacing || theme.fontLabelMediumLetterSpacing};
+          --crayon-font-label-medium-heavy: ${theme.fontLabelMediumHeavy || theme.fontLabelHeavy};
+          --crayon-font-label-medium-heavy-letter-spacing: ${theme.fontLabelMediumHeavyLetterSpacing || theme.fontLabelHeavyLetterSpacing};
+          --crayon-font-label-medium: ${theme.fontLabelMedium || theme.fontLabel};
+          --crayon-font-label-medium-letter-spacing: ${theme.fontLabelMediumLetterSpacing || theme.fontLabelLetterSpacing};
           --crayon-font-heading-large: ${theme.fontHeadingLarge};
           --crayon-font-heading-large-letter-spacing: ${theme.fontHeadingLargeLetterSpacing};
           --crayon-font-heading-medium: ${theme.fontHeadingMedium};
@@ -481,6 +471,10 @@ export const ThemeProvider = ({
           --crayon-font-body-large-heavy-letter-spacing: ${theme.fontBodyLargeHeavyLetterSpacing};
           --crayon-font-body-large: ${theme.fontBodyLarge};
           --crayon-font-body-large-letter-spacing: ${theme.fontBodyLargeLetterSpacing};
+          --crayon-font-label-2-extra-small: ${theme.fontLabel2ExtraSmall};
+          --crayon-font-label-2-extra-small-letter-spacing: ${theme.fontLabel2ExtraSmallLetterSpacing};
+          --crayon-font-label-2-extra-small-heavy: ${theme.fontLabel2ExtraSmallHeavy};
+          --crayon-font-label-2-extra-small-heavy-letter-spacing: ${theme.fontLabel2ExtraSmallHeavyLetterSpacing};
 
           --crayon-shadow-s: ${theme.shadowS};
           --crayon-shadow-m: ${theme.shadowM};
@@ -492,8 +486,8 @@ export const ThemeProvider = ({
           --crayon-chat-container-bg: ${theme.chatContainerBg || theme.backgroundFills};
           --crayon-chat-assistant-response-bg: ${theme.chatAssistantResponseBg || theme.containerFills};
           --crayon-chat-assistant-response-text: ${theme.chatAssistantResponseText || theme.primaryText};
-          --crayon-chat-user-response-bg: ${theme.chatUserResponseBg || theme.brandElFills};
-          --crayon-chat-user-response-text: ${theme.chatUserResponseText || theme.brandText};
+          --crayon-chat-user-response-bg: ${theme.chatUserResponseBg || theme.brandElFills || theme.interactiveAccent};
+          --crayon-chat-user-response-text: ${theme.chatUserResponseText || theme.brandText || theme.accentPrimaryText};
         }
       `}</style>
       {children}

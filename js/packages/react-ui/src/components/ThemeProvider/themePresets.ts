@@ -35,12 +35,9 @@ export const themePresets = {
     theme: {
       ...commonTheme({ font: "Inter" }),
       backgroundFills: "rgba(250, 250, 250, 1)",
-      brandElFills: "rgba(127, 86, 217, 1)",
-      brandElHoverFills: "rgba(127, 86, 217, 0.8)",
       containerFills: "rgba(253, 253, 253, 1)",
       overlayFills: "rgba(0, 0, 0, 0.4)",
       sunkFills: "rgba(0, 0, 0, 0.06)",
-      containerHoverFills: "rgba(255, 255, 255, 0.04)",
       dangerFills: "rgba(203, 63, 73, 0.1)",
       successFills: "rgba(13, 160, 94, 0.1)",
       infoFills: "rgba(56, 148, 255, 0.1)",
@@ -52,7 +49,6 @@ export const themePresets = {
       // Border colors
       strokeDefault: "rgba(0, 0, 0, 0.04)",
       strokeInteractiveEl: "rgba(0, 0, 0, 0.08)",
-      strokeInteractiveElHover: "rgba(0, 0, 0, 0.4)",
       strokeInteractiveElSelected: "rgba(21, 21, 21, 1)",
       strokeEmphasis: "rgba(0, 0, 0, 0.2)",
       strokeAccent: "rgba(255, 255, 255, 0.08)",
@@ -67,15 +63,10 @@ export const themePresets = {
       strokeDangerEmphasis: "rgba(200, 44, 55, 1)",
 
       // Text colors
-      brandText: "rgba(255, 255, 255, 1)",
-      brandSecondaryText: "rgba(255, 255, 255, 0.4)",
       primaryText: "rgba(0, 0, 0, 1)",
       secondaryText: "rgba(0, 0, 0, 0.4)",
       disabledText: "rgba(0, 0, 0, 0.2)",
-      dangerText: "rgba(217, 45, 32, 1)",
-      successText: "rgba(13, 160, 94, 0.10)",
       linkText: "rgba(0, 0, 0, 1)",
-      infoText: "rgba(56, 148, 255, 1)",
       accentPrimaryText: "rgba(255, 255, 255, 1)",
       accentSecondaryText: "rgba(255, 255, 255, 0.4)",
       accentDisabledText: "rgba(255, 255, 255, 0.2)",
@@ -142,12 +133,9 @@ export const themePresets = {
     darkTheme: {
       ...commonTheme({ font: "Inter" }),
       backgroundFills: "rgba(21, 21, 21, 1)",
-      brandElFills: "rgba(127, 86, 217, 1)",
-      brandElHoverFills: "rgba(127, 86, 217, 0.8)",
       containerFills: "rgba(28, 28, 28, 1)",
       overlayFills: "rgba(0, 0, 0, 0.4)",
       sunkFills: "rgba(255, 255, 255, 0.08)",
-      containerHoverFills: "rgba(255, 255, 255, 0.1)",
       dangerFills: "rgba(203, 63, 73, 0.2)",
       successFills: "rgba(13, 160, 94, 0.2)",
       infoFills: "rgba(56, 148, 255, 0.2)",
@@ -159,7 +147,6 @@ export const themePresets = {
       // Border colors
       strokeDefault: "rgba(255, 255, 255, 0.04)",
       strokeInteractiveEl: "rgba(255, 255, 255, 0.1)",
-      strokeInteractiveElHover: "rgba(255, 255, 255, 0.4)",
       strokeInteractiveElSelected: "rgba(253, 253, 253, 1)",
       strokeEmphasis: "rgba(255, 255, 255, 0.2)",
       strokeAccent: "rgba(0, 0, 0, 0.08)",
@@ -174,15 +161,10 @@ export const themePresets = {
       strokeDangerEmphasis: "rgba(200, 44, 55, 1)",
 
       // Text colors
-      brandText: "rgba(255, 255, 255, 1)",
-      brandSecondaryText: "rgba(255, 255, 255, 0.4)",
       primaryText: "rgba(255, 255, 255, 1)",
       secondaryText: "rgba(255, 255, 255, 0.4)",
       disabledText: "rgba(255, 255, 255, 0.2)",
-      dangerText: "rgba(253, 162, 155, 1)",
-      successText: "rgba(117, 224, 167, 1)",
       linkText: "rgba(255, 255, 255, 1)",
-      infoText: "rgba(125, 179, 247, 1)",
       accentPrimaryText: "rgba(0,0,0, 1)",
       accentSecondaryText: "rgba(255, 255, 255, 0.4)",
       accentDisabledText: "rgba(0, 0, 0, 0.2)",
