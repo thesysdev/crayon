@@ -1,6 +1,6 @@
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import React, { createContext, ReactNode, useContext } from "react";
 
-interface ChartData {
+export interface SideBarChartData {
   title: string;
   values: {
     value: number;
@@ -10,9 +10,9 @@ interface ChartData {
 }
 
 interface SideBarTooltipContextType {
-  data: ChartData[];
+  data: SideBarChartData;
   isSideBarTooltipOpen: boolean;
-  setData: (data: ChartData[]) => void;
+  setData: (data: SideBarChartData) => void;
   setIsSideBarTooltipOpen: (isOpen: boolean) => void;
 }
 
@@ -22,15 +22,17 @@ interface SideBarTooltipProviderProps {
   children: ReactNode;
   isSideBarTooltipOpen: boolean;
   setIsSideBarTooltipOpen: (isOpen: boolean) => void;
+  data: SideBarChartData;
+  setData: (data: SideBarChartData) => void;
 }
 
 export const SideBarTooltipProvider: React.FC<SideBarTooltipProviderProps> = ({
   children,
   isSideBarTooltipOpen,
   setIsSideBarTooltipOpen,
+  data,
+  setData,
 }) => {
-  const [data, setData] = useState<ChartData[]>([]);
-
   const value: SideBarTooltipContextType = {
     data,
     isSideBarTooltipOpen,
