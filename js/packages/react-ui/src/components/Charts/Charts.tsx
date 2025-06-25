@@ -64,6 +64,7 @@ function useChart() {
 }
 
 export function keyTransform(key: string) {
+
   return (
     key
       // Replace whitespace with hyphens
@@ -79,6 +80,7 @@ export function keyTransform(key: string) {
     // Fallback with unique ID if the key is empty
     `key-${uniqueId()}`
   );
+
 }
 
 /**
