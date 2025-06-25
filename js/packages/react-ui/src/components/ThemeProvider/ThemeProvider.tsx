@@ -87,7 +87,10 @@ const lightTheme: ColorTheme = {
   interactiveDisabled: "rgba(0, 0, 0, 0.02)",
   interactiveAccent: "rgba(127, 86, 217, 1)",
   interactiveAccentHover: "rgba(127, 86, 217, 0.8)",
-  interactiveAccentPressed: "rgba(32, 107, 213, 1)",
+  // not setting this to make it backward compatible
+  // pressed state was not there in the previous version
+  // so we are using the hover state as the pressed state
+  // interactiveAccentPressed: "rgba(32, 107, 213, 1)",
   interactiveAccentDisabled: "rgba(56, 148, 255, 0.4)",
   interactiveDestructive: "rgba(203, 63, 73, 0.02)",
   interactiveDestructiveHover: "rgba(203, 63, 73, 0.08)",
@@ -345,7 +348,7 @@ export const ThemeProvider = ({
           --crayon-interactive-disabled: ${theme.interactiveDisabled};
           --crayon-interactive-accent: ${theme.brandElFills || theme.interactiveAccent};
           --crayon-interactive-accent-hover: ${theme.brandElHoverFills || theme.interactiveAccentHover};
-          --crayon-interactive-accent-pressed: ${theme.brandElHoverFills || theme.interactiveAccentPressed};
+          --crayon-interactive-accent-pressed: ${theme.brandElHoverFills || theme.interactiveAccentPressed || theme.interactiveAccentHover};
           // todo: make this backward compatible by using brandElFills with some opacity
           --crayon-interactive-accent-disabled: ${theme.interactiveAccentDisabled};
           --crayon-interactive-destructive: ${theme.interactiveDestructive};
