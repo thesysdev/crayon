@@ -594,25 +594,6 @@ const meta: Meta<AreaChartV2Props<typeof areaChartData>> = {
         category: "Layout",
       },
     },
-    onAreaClick: {
-      description: "Callback function called when an area is clicked",
-      control: false,
-      table: {
-        type: { summary: "(payload: any) => void" },
-        defaultValue: { summary: "undefined" },
-        category: "Events",
-      },
-    },
-    floatingTooltip: {
-      description:
-        "Whether to use the floating tooltip that follows the mouse cursor. Uses Floating UI for intelligent positioning and collision detection.",
-      control: "boolean",
-      table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "true" },
-        category: "Tooltip",
-      },
-    },
   },
 } satisfies Meta<typeof AreaChartV2>;
 

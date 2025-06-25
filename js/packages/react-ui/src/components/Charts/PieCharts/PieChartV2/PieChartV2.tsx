@@ -78,6 +78,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   const [containerHeight, setContainerHeight] = useState<number>(0);
   const [wrapperWidth, setWrapperWidth] = useState<number>(0);
   const [hoveredLegendKey, setHoveredLegendKey] = useState<string | null>(null);
+  const [isLegendExpanded, setIsLegendExpanded] = useState(false);
   const { activeIndex, handleMouseEnter, handleMouseLeave } = useChartHover();
 
   // Memoize string conversions to avoid repeated calls
@@ -457,7 +458,14 @@ export const PieChartV2 = <T extends PieChartV2Data>({
         </div>
       );
     }
-    return <DefaultLegend items={defaultLegendItems} containerWidth={containerWidth} />;
+    return (
+      <DefaultLegend
+        items={defaultLegendItems}
+        containerWidth={containerWidth}
+        isExpanded={isLegendExpanded}
+        setIsExpanded={setIsLegendExpanded}
+      />
+    );
   }, [
     legend,
     legendVariant,
