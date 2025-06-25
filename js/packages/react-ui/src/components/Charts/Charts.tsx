@@ -53,7 +53,7 @@ function useChart() {
 }
 
 export function keyTransform(key: string) {
-  return key.replaceAll(/\s/g, "-");
+  return key.replaceAll(/\s/g, "-").replaceAll("%", "__per__");
 }
 
 /**
