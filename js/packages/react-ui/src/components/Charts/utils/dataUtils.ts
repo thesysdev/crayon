@@ -57,7 +57,24 @@ export const getLegendItems = (
   return dataKeys.map((key, index) => ({
     key,
     label: key,
-    color: colors[index] || "#000000", // Fallback color if undefined
+    color: colors[index] ?? "#000000", // Fallback color if undefined
     icon: icons[key] as React.ComponentType | undefined,
   }));
+};
+
+/**
+ * This function returns the color value for a specific data key based on its position in the dataKeys array.
+ * Use this instead of payload.fill to ensure consistent color mapping.
+ * @param dataKey - The data key to get the color for.
+ * @param dataKeys - The array of all data keys in the chart.
+ * @param colors - The array of colors corresponding to the data keys.
+ * @returns The color value for the specified data key.
+ */
+export const getColorForDataKey = (
+  dataKey: string,
+  dataKeys: string[],
+  colors: string[],
+): string => {
+  const index = dataKeys.indexOf(dataKey);
+  return colors[index] ?? "#000000"; // Fallback color if dataKey not found or color undefined
 };
