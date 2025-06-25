@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, User } from "lucide-react";
 import { ListItem } from "../ListItem";
 
 const meta: Meta<typeof ListItem> = {
@@ -26,6 +26,14 @@ const meta: Meta<typeof ListItem> = {
     subtitle: {
       control: "text",
       description: "The secondary text of the list item",
+      table: {
+        category: "Content",
+        type: { summary: "ReactNode" },
+      },
+    },
+    decorativeIcon: {
+      control: false,
+      description: "The decorative icon or image to display on the left side of the list item",
       table: {
         category: "Content",
         type: { summary: "ReactNode" },
@@ -69,8 +77,7 @@ type Story = StoryObj<typeof ListItem>;
 
 export const ListItemStory: Story = {
   args: {
-    image:
-      "https://images.unsplash.com/photo-1738168246881-40f35f8aba0a?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyNnx8fGVufDB8fHx8fA%3D%3D",
+    decorativeIcon: <User size={16} />,
     title: "List Item Title",
     subtitle: "Subtitle text goes here",
     actionIcon: <ChevronRight size={16} />,

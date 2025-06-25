@@ -3,14 +3,14 @@ import { forwardRef, ReactNode } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "tertiary";
 type ButtonSize = "small" | "medium" | "large";
-type ButtonAppearance = "normal" | "destructive";
+type ButtonType = "normal" | "destructive";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   iconLeft?: ReactNode;
   iconRight?: ReactNode;
-  appearance?: ButtonAppearance;
+  buttonType?: ButtonType;
 }
 
 const normalVariantMap: Record<ButtonVariant, string> = {
@@ -40,12 +40,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       iconLeft,
       iconRight,
       className,
-      appearance = "normal",
+      buttonType = "normal",
       ...props
     },
     ref,
   ) => {
-    const variantMap = appearance === "destructive" ? destructiveVariantMap : normalVariantMap;
+    const variantMap = buttonType === "destructive" ? destructiveVariantMap : normalVariantMap;
     return (
       <button
         ref={ref}

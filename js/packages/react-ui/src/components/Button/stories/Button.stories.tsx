@@ -11,14 +11,14 @@ export const Primary: Story = {
     variant: "primary",
     size: "medium",
     disabled: false,
-    appearance: "normal",
+    buttonType: "normal",
   },
   render: (args) => (
     <Button
       variant={args.variant}
       size={args.size}
       disabled={args.disabled}
-      appearance={args.appearance}
+      buttonType={args.buttonType}
     >
       {args.children}
     </Button>
@@ -29,7 +29,7 @@ export const Secondary: Story = {
   args: {
     children: "Secondary",
     variant: "secondary",
-    appearance: "normal",
+    buttonType: "normal",
   },
 };
 
@@ -38,7 +38,7 @@ export const Tertiary: Story = {
   args: {
     children: "Tertiary",
     variant: "tertiary",
-    appearance: "normal",
+    buttonType: "normal",
   },
 };
 
@@ -125,7 +125,7 @@ const meta: Meta<typeof Button> = {
         category: "Icons",
       },
     },
-    appearance: {
+    buttonType: {
       control: "radio",
       options: ["normal", "destructive"],
       table: {
