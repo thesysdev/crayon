@@ -64,7 +64,19 @@ function useChart() {
 }
 
 export function keyTransform(key: string) {
-  return key.replaceAll(/\s/g, "-");
+  return key
+    // Replace whitespace with hyphens
+    .replaceAll(/\s+/g, "-")
+    // Replace any character that's not alphanumeric, hyphen, or underscore with hyphen
+    .replaceAll(/[^a-zA-Z0-9_-]/g, "-")
+    // Remove multiple consecutive hyphens
+    .replaceAll(/-+/g, "-")
+    // Remove leading/trailing hyphens
+    .replace(/^-+|-+$/g, "")
+    // Ensure it doesn't start with a number (prepend 'key-' if it does)
+    .replace(/^(\d)/, "key-$1")
+    // Fallback with unique ID if the key is empty
+    || `key-${uniqueId()}`;
 }
 
 /**
