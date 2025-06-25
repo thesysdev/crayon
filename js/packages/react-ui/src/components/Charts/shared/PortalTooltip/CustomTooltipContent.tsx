@@ -1,7 +1,8 @@
 import clsx from "clsx";
-import { forwardRef, memo, useMemo } from "react";
+import { forwardRef, memo, useLayoutEffect, useMemo, useState } from "react";
 import * as RechartsPrimitive from "recharts";
 import { ChartStyle, getPayloadConfigFromPayload, useChart } from "../../../Charts/Charts";
+import { useSideBarTooltip } from "../../context/SideBarTooltipContext";
 import { FloatingUIPortal } from "./FloatingUIPortal";
 import { tooltipNumberFormatter } from "./utils";
 
@@ -45,6 +46,17 @@ export const CustomTooltipContent = memo(
     } = props;
 
     const { config, id } = useChart();
+    const { isSideBarTooltipOpen } = useSideBarTooltip();
+    const [isGreaterThanTen, setIsGreaterThanTen] = useState<boolean>(
+      !!(payload?.length && payload.length > 10),
+    );
+    useLayoutEffect(() => {
+      if (payload?.length && payload.length > 10) {
+        setIsGreaterThanTen(true);
+      } else {
+        setIsGreaterThanTen(false);
+      }
+    }, [payload]);
 
     const tooltipLabel = useMemo(() => {
       if (hideLabel || !payload?.length) {
@@ -84,83 +96,7 @@ export const CustomTooltipContent = memo(
         return [];
       }
 
-      if (payload.length <= 2) {
-        return payload.map((item, index) => {
-          const key = `${nameKey ?? item.name ?? item.dataKey ?? "value"}`;
-          const itemConfig = getPayloadConfigFromPayload(config, item, key);
-          const indicatorColor = (color ?? item.payload?.fill) || item.color;
-
-          return (
-            <div
-              key={`${item.dataKey}-${index}`}
-              className={clsx(
-                "crayon-chart-tooltip-content-item",
-                // indicator === DEFAULT_INDICATOR && "crayon-chart-tooltip-content-item--dot",
-              )}
-            >
-              {formatter && item?.value !== undefined && item.name ? (
-                formatter(item.value, item.name, item, index, item.payload)
-              ) : (
-                <>
-                  {itemConfig?.icon ? (
-                    <itemConfig.icon />
-                  ) : (
-                    // this is the color indicator
-                    !hideIndicator && (
-                      <div
-                        className={clsx(
-                          "crayon-chart-tooltip-content-indicator",
-                          `crayon-chart-tooltip-content-indicator--${indicator}`,
-                          "crayon-chart-tooltip-content-indicator--two-items",
-                        )}
-                        style={
-                          {
-                            "--color-bg": indicatorColor,
-                            "--color-border": indicatorColor,
-                          } as React.CSSProperties
-                        }
-                      />
-                    )
-                  )}
-
-                  <div
-                    className={clsx(
-                      "crayon-chart-tooltip-content-value-wrapper",
-                      "crayon-chart-tooltip-content-value-wrapper--vertical",
-                      nestLabel
-                        ? "crayon-chart-tooltip-content-value-wrapper--nested"
-                        : "crayon-chart-tooltip-content-value-wrapper--standard",
-                    )}
-                  >
-                    <div className="crayon-chart-tooltip-content-label">
-                      {nestLabel && tooltipLabel}
-                      <span>{itemConfig?.label || item.name}</span>
-                    </div>
-
-                    {/* this is the value the number or the string */}
-                    {item.value !== undefined && (
-                      <span
-                        className={clsx(
-                          "crayon-chart-tooltip-content-value",
-                          showPercentage && "percentage",
-                        )}
-                      >
-                        {typeof item.value === "number"
-                          ? tooltipNumberFormatter(item.value)
-                          : item.value}
-                        {showPercentage ? "%" : ""}
-                      </span>
-                    )}
-                  </div>
-                </>
-              )}
-              <div className="crayon-chart-tooltip-content-item-separator" />
-            </div>
-          );
-        });
-      }
-
-      return payload.map((item, index) => {
+      const renderPayloadItem = (item: any, index: number, isTwoItemsLayout: boolean) => {
         const key = `${nameKey ?? item.name ?? item.dataKey ?? "value"}`;
         const itemConfig = getPayloadConfigFromPayload(config, item, key);
         const indicatorColor = (color ?? item.payload?.fill) || item.color;
@@ -170,7 +106,7 @@ export const CustomTooltipContent = memo(
             key={`${item.dataKey}-${index}`}
             className={clsx(
               "crayon-chart-tooltip-content-item",
-              indicator === DEFAULT_INDICATOR && "crayon-chart-tooltip-content-item--dot",
+              !isTwoItemsLayout && indicator === DEFAULT_INDICATOR && "crayon-chart-tooltip-content-item--dot",
             )}
           >
             {formatter && item?.value !== undefined && item.name ? (
@@ -185,6 +121,7 @@ export const CustomTooltipContent = memo(
                       className={clsx(
                         "crayon-chart-tooltip-content-indicator",
                         `crayon-chart-tooltip-content-indicator--${indicator}`,
+                        isTwoItemsLayout && "crayon-chart-tooltip-content-indicator--two-items",
                       )}
                       style={
                         {
@@ -195,9 +132,11 @@ export const CustomTooltipContent = memo(
                     />
                   )
                 )}
+
                 <div
                   className={clsx(
                     "crayon-chart-tooltip-content-value-wrapper",
+                    isTwoItemsLayout && "crayon-chart-tooltip-content-value-wrapper--vertical",
                     nestLabel
                       ? "crayon-chart-tooltip-content-value-wrapper--nested"
                       : "crayon-chart-tooltip-content-value-wrapper--standard",
@@ -207,6 +146,7 @@ export const CustomTooltipContent = memo(
                     {nestLabel && tooltipLabel}
                     <span>{itemConfig?.label || item.name}</span>
                   </div>
+
                   {item.value !== undefined && (
                     <span
                       className={clsx(
@@ -223,9 +163,19 @@ export const CustomTooltipContent = memo(
                 </div>
               </>
             )}
+            <div className="crayon-chart-tooltip-content-item-separator" />
           </div>
         );
-      });
+      };
+
+      // Handle two items layout
+      if (payload.length <= 2) {
+        return payload.map((item, index) => renderPayloadItem(item, index, true));
+      }
+
+      // Handle regular layout with potential truncation
+      const morphPayload = isGreaterThanTen ? payload.slice(0, 10) : payload;
+      return morphPayload.map((item, index) => renderPayloadItem(item, index, false));
     }, [
       payload,
       nameKey,
@@ -237,10 +187,11 @@ export const CustomTooltipContent = memo(
       nestLabel,
       tooltipLabel,
       showPercentage,
+      isGreaterThanTen,
     ]);
 
     // Early return for inactive or empty payload - moved after all hooks
-    if (!active || !payload?.length) {
+    if (!active || !payload?.length || isSideBarTooltipOpen) {
       return null;
     }
 
@@ -249,6 +200,10 @@ export const CustomTooltipContent = memo(
         {!nestLabel && tooltipLabel}
         <div className="crayon-chart-tooltip-content-item-separator" />
         <div className="crayon-chart-tooltip-content">{payloadItems}</div>
+        {isGreaterThanTen && <div className="crayon-chart-tooltip-content-item-separator" />}
+        {isGreaterThanTen && (
+          <div className="crayon-chart-tooltip-content-view-more">Click to view all</div>
+        )}
       </div>
     );
 

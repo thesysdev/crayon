@@ -85,10 +85,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
     }
 
     setPosition({ x, y });
-    // this is to avoid the tooltip from flickering when the mouse is moving fast and the tooltip is not positioned yet initially
-    setTimeout(() => {
-      setIsPositioned(true);
-    }, 20);
+    setIsPositioned(true);
   }, [virtualElement, placement, offsetDistance]);
 
   // Memoize the mouse move handler

@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 
+// discard this is this is not used, talk with the designer first
 interface CustomCursorProps {
   x?: number;
   y?: number;
@@ -50,4 +51,4 @@ const SimpleCursorComponent: React.FC<CustomCursorProps> = ({
 };
 
 // Memoize component to prevent re-renders when props haven't changed
-export const SimpleCursor = React.memo(SimpleCursorComponent);
+export const SimpleCursor = SimpleCursorComponent;

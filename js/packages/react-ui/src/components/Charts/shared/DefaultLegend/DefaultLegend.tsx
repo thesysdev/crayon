@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, memo } from "react";
 import { Button } from "../../../Button/Button";
 import { type LegendItem } from "../../types";
 import { calculateVisibleItems, getToggleButtonText } from "./utils/defaultLegendUtils";
@@ -11,16 +11,20 @@ interface DefaultLegendProps {
   yAxisLabel?: React.ReactNode;
   xAxisLabel?: React.ReactNode;
   containerWidth?: number;
+  isExpanded: boolean;
+  setIsExpanded: (isExpanded: boolean) => void;
 }
 
-const DefaultLegend: React.FC<DefaultLegendProps> = ({
+const DefaultLegend: React.FC<DefaultLegendProps> = memo(({
   items,
   className,
   yAxisLabel,
   xAxisLabel,
   containerWidth,
+  isExpanded,
+  setIsExpanded,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+
 
   // Only memoize expensive calculations
   const { visibleItems, hasMoreItems } = useMemo(() => {
@@ -31,10 +35,7 @@ const DefaultLegend: React.FC<DefaultLegendProps> = ({
     return isExpanded ? items : visibleItems;
   }, [isExpanded, items, visibleItems]);
 
-  // Reset expanded state when items change
-  useEffect(() => {
-    setIsExpanded(false);
-  }, [items]);
+  
 
   const handleToggleExpanded = () => {
     setIsExpanded(!isExpanded);
@@ -104,7 +105,7 @@ const DefaultLegend: React.FC<DefaultLegendProps> = ({
       </div>
     </div>
   );
-};
+});
 
 export { DefaultLegend };
 export type { DefaultLegendProps };
