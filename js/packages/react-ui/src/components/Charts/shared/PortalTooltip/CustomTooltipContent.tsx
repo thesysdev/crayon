@@ -106,7 +106,9 @@ export const CustomTooltipContent = memo(
             key={`${item.dataKey}-${index}`}
             className={clsx(
               "crayon-chart-tooltip-content-item",
-              !isTwoItemsLayout && indicator === DEFAULT_INDICATOR && "crayon-chart-tooltip-content-item--dot",
+              !isTwoItemsLayout &&
+                indicator === DEFAULT_INDICATOR &&
+                "crayon-chart-tooltip-content-item--dot",
             )}
           >
             {formatter && item?.value !== undefined && item.name ? (

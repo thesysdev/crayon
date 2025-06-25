@@ -219,7 +219,7 @@ const AreaChartV2Component = <T extends AreaChartV2Data>({
 
   const chartSyncID = useMemo(() => `area-chart-sync-${id}`, [id]);
 
-  const gradientId = useMemo(() => `area-chart-gradient-${id}`, [id]);
+  const gradientID = useMemo(() => `area-chart-gradient-${id}`, [id]);
 
   const onAreaClick = useCallback(
     (data: AreaClickData) => {
@@ -341,7 +341,7 @@ const AreaChartV2Component = <T extends AreaChartV2Data>({
                   const color = `var(--color-${transformedKey})`;
                   return (
                     <defs key={`gradient-${key}`}>
-                      <linearGradient id={`${gradientId}-${key}`} x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient id={`${gradientID}-${key}`} x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor={color} stopOpacity={0.6} />
                         <stop offset="95%" stopColor={color} stopOpacity={0} />
                       </linearGradient>
@@ -358,7 +358,7 @@ const AreaChartV2Component = <T extends AreaChartV2Data>({
                       dataKey={key}
                       type={variant}
                       stroke={color}
-                      fill={`url(#${gradientId}-${key})`}
+                      fill={`url(#${gradientID}-${key})`}
                       fillOpacity={1}
                       stackId="a"
                       activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}

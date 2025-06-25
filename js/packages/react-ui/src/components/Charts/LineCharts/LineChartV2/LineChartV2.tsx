@@ -1,20 +1,17 @@
 import clsx from "clsx";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Line, LineChart as RechartsLineChart, XAxis, YAxis } from "recharts";
+import { useId } from "../../../../polyfills";
 import { IconButton } from "../../../IconButton";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  keyTransform,
-} from "../../Charts";
+import { ChartConfig, ChartContainer, ChartTooltip, keyTransform } from "../../Charts";
+import { SideBarChartData, SideBarTooltipProvider } from "../../context/SideBarTooltipContext";
 import {
   ActiveDot,
   cartesianGrid,
   CustomTooltipContent,
   DefaultLegend,
+  SideBarTooltip,
   XAxisTick,
   YAxisTick,
 } from "../../shared";
@@ -27,9 +24,17 @@ import {
   getXAxisTickPositionData,
 } from "../../utils/BarAndLineUtils/AreaAndLineUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
-import { getChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
+import {
+  getChartConfig,
+  getColorForDataKey,
+  getDataKeys,
+  getLegendItems,
+} from "../../utils/dataUtils";
 import { getYAxisTickFormatter } from "../../utils/styleUtils";
 import { LineChartV2Data, LineChartVariant } from "../types";
+
+type LineChartOnClick = React.ComponentProps<typeof RechartsLineChart>["onClick"];
+type LineClickData = Parameters<NonNullable<LineChartOnClick>>[0];
 
 export interface LineChartV2Props<T extends LineChartV2Data> {
   data: T;
@@ -43,12 +48,10 @@ export interface LineChartV2Props<T extends LineChartV2Data> {
   showYAxis?: boolean;
   xAxisLabel?: React.ReactNode;
   yAxisLabel?: React.ReactNode;
-  floatingTooltip?: boolean;
   className?: string;
   height?: number;
   width?: number;
   strokeWidth?: number;
-  onLineClick?: (payload: any) => void;
 }
 
 const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
@@ -66,11 +69,9 @@ export const LineChartV2 = <T extends LineChartV2Data>({
   yAxisLabel,
   legend = true,
   className,
-  floatingTooltip = true,
   height,
   width,
   strokeWidth = 2,
-  onLineClick,
 }: LineChartV2Props<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -90,6 +91,12 @@ export const LineChartV2 = <T extends LineChartV2Data>({
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [isSideBarTooltipOpen, setIsSideBarTooltipOpen] = useState(false);
+  const [isLegendExpanded, setIsLegendExpanded] = useState(false);
+  const [sideBarTooltipData, setSideBarTooltipData] = useState<SideBarChartData>({
+    title: "",
+    values: [],
+  });
 
   // Use provided width or observed width
   const effectiveWidth = useMemo(() => {
@@ -184,6 +191,11 @@ export const LineChartV2 = <T extends LineChartV2Data>({
     updateScrollState();
   }, [effectiveWidth, dataWidth, updateScrollState]);
 
+  useEffect(() => {
+    setIsSideBarTooltipOpen(false);
+    setIsLegendExpanded(false);
+  }, [dataKeys]);
+
   // Add scroll event listener to update button states
   useEffect(() => {
     const mainContainer = mainContainerRef.current;
@@ -207,159 +219,186 @@ export const LineChartV2 = <T extends LineChartV2Data>({
 
   const chartSyncID = useMemo(() => `line-chart-sync-${id}`, [id]);
 
+  const onLineClick = useCallback(
+    (data: LineClickData) => {
+      if (data?.activePayload?.length && data.activePayload.length > 10) {
+        setIsSideBarTooltipOpen(true);
+        setSideBarTooltipData({
+          title: data.activeLabel as string,
+          values: data.activePayload.map((payload) => ({
+            value: payload.value as number,
+            label: payload.name || payload.dataKey,
+            color: getColorForDataKey(payload.dataKey, dataKeys, colors),
+          })),
+        });
+      }
+    },
+    [dataKeys, colors],
+  );
+
   return (
-    <div
-      className={clsx("crayon-line-chart-container", className)}
-      style={{
-        width: width ? `${width}px` : undefined,
-      }}
+    <SideBarTooltipProvider
+      isSideBarTooltipOpen={isSideBarTooltipOpen}
+      setIsSideBarTooltipOpen={setIsSideBarTooltipOpen}
+      data={sideBarTooltipData}
+      setData={setSideBarTooltipData}
     >
-      <div className="crayon-line-chart-container-inner" ref={chartContainerRef}>
-        {showYAxis && (
-          <div className="crayon-line-chart-y-axis-container">
-            {/* Y-axis only chart - synchronized with main chart */}
-            <RechartsLineChart
-              key={`y-axis-chart-${id}`}
-              width={Y_AXIS_WIDTH}
-              height={chartHeight}
-              data={data}
-              margin={{
-                top: 20,
-                bottom: 32, // this is required for to give space for x-axis
-                left: 0,
-                right: 0,
-              }}
-              syncId={chartSyncID}
-              onClick={onLineClick}
-            >
-              <YAxis
+      <div
+        className={clsx("crayon-line-chart-container", className)}
+        style={{
+          width: width ? `${width}px` : undefined,
+        }}
+      >
+        <div className="crayon-line-chart-container-inner" ref={chartContainerRef}>
+          {showYAxis && (
+            <div className="crayon-line-chart-y-axis-container">
+              {/* Y-axis only chart - synchronized with main chart */}
+              <RechartsLineChart
+                key={`y-axis-chart-${id}`}
                 width={Y_AXIS_WIDTH}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={getYAxisTickFormatter()}
-                tick={<YAxisTick />}
-              />
-              {/* Invisible lines to maintain scale synchronization */}
-              {dataKeys.map((key) => {
-                return (
-                  <Line
-                    key={`y-axis-${key}`}
-                    dataKey={key}
-                    type={variant}
-                    stroke="transparent"
-                    strokeWidth={0}
-                    dot={false}
-                    activeDot={false}
-                  />
-                );
-              })}
-            </RechartsLineChart>
+                height={chartHeight}
+                data={data}
+                margin={{
+                  top: 20,
+                  bottom: 32, // this is required for to give space for x-axis
+                  left: 0,
+                  right: 0,
+                }}
+                syncId={chartSyncID}
+                onClick={onLineClick}
+              >
+                <YAxis
+                  width={Y_AXIS_WIDTH}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={getYAxisTickFormatter()}
+                  tick={<YAxisTick />}
+                />
+                {/* Invisible lines to maintain scale synchronization */}
+                {dataKeys.map((key) => {
+                  return (
+                    <Line
+                      key={`y-axis-${key}`}
+                      dataKey={key}
+                      type={variant}
+                      stroke="transparent"
+                      strokeWidth={0}
+                      dot={false}
+                      activeDot={false}
+                    />
+                  );
+                })}
+              </RechartsLineChart>
+            </div>
+          )}
+          <div className="crayon-line-chart-main-container" ref={mainContainerRef}>
+            <ChartContainer
+              config={chartConfig}
+              style={{ width: dataWidth, minWidth: "100%", height: chartHeight }}
+              rechartsProps={{
+                width: "100%",
+                height: chartHeight,
+              }}
+            >
+              <RechartsLineChart
+                accessibilityLayer
+                key={`line-chart-${id}`}
+                data={data}
+                margin={{
+                  top: 20,
+                  bottom: 0,
+                }}
+                syncId={chartSyncID}
+                onClick={onLineClick}
+              >
+                {grid && cartesianGrid()}
+                <XAxis
+                  dataKey={categoryKey as string}
+                  tickLine={false}
+                  axisLine={false}
+                  textAnchor="middle"
+                  interval={0}
+                  tickFormatter={xAxisTickFormatter}
+                  tick={
+                    <XAxisTick
+                      getPositionOffset={xAxisPositionData.getPositionOffset}
+                      isFirstTick={xAxisPositionData.isFirstTick}
+                      isLastTick={xAxisPositionData.isLastTick}
+                    />
+                  }
+                  orientation="bottom"
+                  padding={{
+                    left: 20,
+                    right: 20,
+                  }}
+                />
+
+                <ChartTooltip content={<CustomTooltipContent />} offset={15} />
+
+                {dataKeys.map((key) => {
+                  const transformedKey = keyTransform(key);
+                  const color = `var(--color-${transformedKey})`;
+                  return (
+                    <Line
+                      key={`main-${key}`}
+                      dataKey={key}
+                      type={variant}
+                      stroke={color}
+                      strokeWidth={strokeWidth}
+                      dot={false}
+                      activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
+                      isAnimationActive={isAnimationActive}
+                    />
+                  );
+                })}
+              </RechartsLineChart>
+            </ChartContainer>
+          </div>
+          {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
+        </div>
+        {/* if the data width is greater than the effective width, then show the scroll buttons */}
+        {dataWidth > effectiveWidth && (
+          <div className="crayon-line-chart-scroll-container">
+            <IconButton
+              className={clsx(
+                "crayon-line-chart-scroll-button crayon-line-chart-scroll-button--left",
+                {
+                  "crayon-line-chart-scroll-button--disabled": !canScrollLeft,
+                },
+              )}
+              icon={<ChevronLeft />}
+              variant="secondary"
+              onClick={scrollLeft}
+              size="extra-small"
+              disabled={!canScrollLeft}
+            />
+            <IconButton
+              className={clsx(
+                "crayon-line-chart-scroll-button crayon-line-chart-scroll-button--right",
+                {
+                  "crayon-line-chart-scroll-button--disabled": !canScrollRight,
+                  "crayon-line-chart-scroll-button--SideBarTooltip": isSideBarTooltipOpen,
+                },
+              )}
+              icon={<ChevronRight />}
+              variant="secondary"
+              size="extra-small"
+              onClick={scrollRight}
+              disabled={!canScrollRight}
+            />
           </div>
         )}
-        <div className="crayon-line-chart-main-container" ref={mainContainerRef}>
-          <ChartContainer
-            config={chartConfig}
-            style={{ width: dataWidth, minWidth: "100%", height: chartHeight }}
-            rechartsProps={{
-              width: "100%",
-              height: chartHeight,
-            }}
-          >
-            <RechartsLineChart
-              accessibilityLayer
-              key={`line-chart-${id}`}
-              data={data}
-              margin={{
-                top: 20,
-                bottom: 0,
-              }}
-              syncId={chartSyncID}
-            >
-              {grid && cartesianGrid()}
-              <XAxis
-                dataKey={categoryKey as string}
-                tickLine={false}
-                axisLine={false}
-                textAnchor="middle"
-                interval={0}
-                tickFormatter={xAxisTickFormatter}
-                tick={
-                  <XAxisTick
-                    getPositionOffset={xAxisPositionData.getPositionOffset}
-                    isFirstTick={xAxisPositionData.isFirstTick}
-                    isLastTick={xAxisPositionData.isLastTick}
-                  />
-                }
-                orientation="bottom"
-                padding={{
-                  left: 20,
-                  right: 20,
-                }}
-              />
-              {floatingTooltip ? (
-                <ChartTooltip content={<CustomTooltipContent />} offset={15} />
-              ) : (
-                <ChartTooltip content={<ChartTooltipContent />} />
-              )}
-              {dataKeys.map((key) => {
-                const transformedKey = keyTransform(key);
-                const color = `var(--color-${transformedKey})`;
-                return (
-                  <Line
-                    key={`main-${key}`}
-                    dataKey={key}
-                    type={variant}
-                    stroke={color}
-                    strokeWidth={strokeWidth}
-                    dot={false}
-                    activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
-                    isAnimationActive={isAnimationActive}
-                  />
-                );
-              })}
-            </RechartsLineChart>
-          </ChartContainer>
-        </div>
+        {legend && (
+          <DefaultLegend
+            items={legendItems}
+            yAxisLabel={yAxisLabel}
+            xAxisLabel={xAxisLabel}
+            containerWidth={effectiveWidth}
+            isExpanded={isLegendExpanded}
+            setIsExpanded={setIsLegendExpanded}
+          />
+        )}
       </div>
-      {/* if the data width is greater than the effective width, then show the scroll buttons */}
-      {dataWidth > effectiveWidth && (
-        <div className="crayon-line-chart-scroll-container">
-          <IconButton
-            className={clsx(
-              "crayon-line-chart-scroll-button crayon-line-chart-scroll-button--left",
-              {
-                "crayon-line-chart-scroll-button--disabled": !canScrollLeft,
-              },
-            )}
-            icon={<ChevronLeft />}
-            variant="secondary"
-            onClick={scrollLeft}
-            size="extra-small"
-            disabled={!canScrollLeft}
-          />
-          <IconButton
-            className={clsx(
-              "crayon-line-chart-scroll-button crayon-line-chart-scroll-button--right",
-              {
-                "crayon-line-chart-scroll-button--disabled": !canScrollRight,
-              },
-            )}
-            icon={<ChevronRight />}
-            variant="secondary"
-            size="extra-small"
-            onClick={scrollRight}
-            disabled={!canScrollRight}
-          />
-        </div>
-      )}
-      {legend && (
-        <DefaultLegend
-          items={legendItems}
-          yAxisLabel={yAxisLabel}
-          xAxisLabel={xAxisLabel}
-          containerWidth={effectiveWidth}
-        />
-      )}
-    </div>
+    </SideBarTooltipProvider>
   );
 };

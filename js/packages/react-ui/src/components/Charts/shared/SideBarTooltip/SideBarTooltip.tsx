@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from "react";
 import { X } from "lucide-react";
+import React, { useCallback, useMemo } from "react";
 import { IconButton } from "../../../IconButton";
 import { useSideBarTooltip } from "../../context/SideBarTooltipContext";
 import { tooltipNumberFormatter } from "../PortalTooltip/utils";
