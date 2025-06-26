@@ -280,10 +280,10 @@ const typographyTheme: TypographyTheme = {
   // fontLabelMediumHeavy: '600 16px/20px "Inter"',
   // fontLabelMediumHeavyLetterSpacing: "0px",
   // Small
-  fontLabelSmall: '400 14/1.2 "Inter"',
+  fontLabelSmall: '400 14px/1.2 "Inter"',
   fontLabelSmallLetterSpacing: "0px",
 
-  fontLabelSmallHeavy: '500 14x/1.2 "Inter"',
+  fontLabelSmallHeavy: '500 14px/1.2 "Inter"',
   fontLabelSmallHeavyLetterSpacing: "0px",
   // Extra Small
   fontLabelExtraSmall: '400 12px/1.2 "Inter"',

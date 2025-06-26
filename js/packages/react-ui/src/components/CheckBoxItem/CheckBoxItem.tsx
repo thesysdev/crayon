@@ -1,6 +1,5 @@
 import * as Checkbox from "@radix-ui/react-checkbox";
 import clsx from "clsx";
-import { Check } from "lucide-react";
 import { CSSProperties, forwardRef, ReactNode, useId } from "react";
 
 export interface CheckBoxItemProps {
@@ -31,7 +30,21 @@ const CheckBoxItem = forwardRef<HTMLButtonElement, CheckBoxItemProps>((props, re
         required={required}
       >
         <Checkbox.Indicator className="crayon-checkbox-item-indicator">
-          <Check size={12} className="crayon-checkbox-item-indicator-svg" />
+          <svg
+            width="10"
+            height="8"
+            viewBox="0 0 10 8"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9 1L3.5 6.5L1 4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
         </Checkbox.Indicator>
       </Checkbox.Root>
       {label && (
