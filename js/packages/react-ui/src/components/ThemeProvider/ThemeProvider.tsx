@@ -217,9 +217,9 @@ const typographyTheme: TypographyTheme = {
   // Small
   fontHeadingSmall: '600 18px/1.25 "Inter"',
   fontHeadingSmallLetterSpacing: "-0.25px",
-    // Extra Small
-    fontHeadingExtraSmall: '600 16px/1.25 "Inter"',
-    fontHeadingExtraSmallLetterSpacing: "0px",
+  // Extra Small
+  fontHeadingExtraSmall: '600 16px/1.25 "Inter"',
+  fontHeadingExtraSmallLetterSpacing: "0px",
 
   // Title Variants
   // Default
@@ -352,7 +352,6 @@ export const ThemeProvider = ({
           --crayon-interactive-accent: ${theme.brandElFills || theme.interactiveAccent};
           --crayon-interactive-accent-hover: ${theme.brandElHoverFills || theme.interactiveAccentHover};
           --crayon-interactive-accent-pressed: ${theme.brandElHoverFills || theme.interactiveAccentPressed || theme.interactiveAccentHover};
-          // todo: make this backward compatible by using brandElFills with some opacity
           --crayon-interactive-accent-disabled: ${theme.interactiveAccentDisabled};
           --crayon-interactive-destructive: ${theme.interactiveDestructive};
           --crayon-interactive-destructive-hover: ${theme.interactiveDestructiveHover};
@@ -473,6 +472,8 @@ export const ThemeProvider = ({
           --crayon-font-heading-medium-letter-spacing: ${theme.fontHeadingMediumLetterSpacing};
           --crayon-font-heading-small: ${theme.fontHeadingSmall};
           --crayon-font-heading-small-letter-spacing: ${theme.fontHeadingSmallLetterSpacing};
+          --crayon-font-heading-extra-small: ${theme.fontHeadingExtraSmall};
+          --crayon-font-heading-extra-small-letter-spacing: ${theme.fontHeadingExtraSmallLetterSpacing};
           --crayon-font-body-large-heavy: ${theme.fontBodyLargeHeavy};
           --crayon-font-body-large-heavy-letter-spacing: ${theme.fontBodyLargeHeavyLetterSpacing};
           --crayon-font-body-large: ${theme.fontBodyLarge};

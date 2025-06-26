@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { BusFront, PlaneTakeoff, Ship } from "lucide-react";
+import { Card } from "../../Card/Card";
 import { CardHeader } from "../../CardHeader";
 import { IconButton } from "../../IconButton";
 import { Image } from "../../Image";
@@ -73,49 +74,60 @@ export const Default: Story = {
     defaultValue: "tab1",
   },
   render: (args) => (
-    <Tabs {...args}>
-      <TabsList>
-        <TabsTrigger value="tab1" text="Paris" />
-        <TabsTrigger value="tab2" text="Tokyo" />
-        <TabsTrigger value="tab3" text="New York" />
-      </TabsList>
-      <TabsContent value="tab1">
-        <CardHeader
-          title="Paris, France"
-          subtitle="The City of Light"
-          actions={[<IconButton variant="tertiary" size="small" icon={<PlaneTakeoff />} />]}
-        />
-        <Image
-          src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34"
-          alt="Eiffel Tower in Paris"
-          scale="fill"
-        />
-      </TabsContent>
-      <TabsContent value="tab2">
-        <CardHeader
-          title="Tokyo, Japan"
-          subtitle="Where Tradition Meets Future"
-          actions={[<IconButton variant="tertiary" size="small" icon={<Ship />} />]}
-        />
-        <Image
-          src="https://images.unsplash.com/photo-1536098561742-ca998e48cbcc"
-          alt="Tokyo cityscape with Mount Fuji"
-          scale="fill"
-        />
-      </TabsContent>
-      <TabsContent value="tab3">
-        <CardHeader
-          title="New York City, USA"
-          subtitle="The City That Never Sleeps"
-          actions={[<IconButton variant="tertiary" size="small" icon={<BusFront />} />]}
-        />
-        <Image
-          src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9"
-          alt="New York City skyline"
-          scale="fill"
-        />
-      </TabsContent>
-    </Tabs>
+    <Card>
+      <Tabs {...args}>
+        <TabsList>
+          <TabsTrigger value="tab1" text="Paris" />
+          <TabsTrigger value="tab2" text="Tokyo" />
+          <TabsTrigger value="tab3" text="New York" />
+          <TabsTrigger value="tab1" text="Paris" />
+          <TabsTrigger value="tab2" text="Tokyo" />
+          <TabsTrigger value="tab3" text="New York" />
+          <TabsTrigger value="tab1" text="Paris" />
+          <TabsTrigger value="tab2" text="Tokyo" />
+          <TabsTrigger value="tab3" text="New York" />
+          <TabsTrigger value="tab1" text="Paris" />
+          <TabsTrigger value="tab2" text="Tokyo" />
+          <TabsTrigger value="tab3" text="New York" />
+        </TabsList>
+        <TabsContent value="tab1">
+          <CardHeader
+            title="Paris, France"
+            subtitle="The City of Light"
+            actions={[<IconButton variant="tertiary" size="small" icon={<PlaneTakeoff />} />]}
+          />
+          <Image
+            src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34"
+            alt="Eiffel Tower in Paris"
+            scale="fill"
+          />
+        </TabsContent>
+        <TabsContent value="tab2">
+          <CardHeader
+            title="Tokyo, Japan"
+            subtitle="Where Tradition Meets Future"
+            actions={[<IconButton variant="tertiary" size="small" icon={<Ship />} />]}
+          />
+          <Image
+            src="https://images.unsplash.com/photo-1536098561742-ca998e48cbcc"
+            alt="Tokyo cityscape with Mount Fuji"
+            scale="fill"
+          />
+        </TabsContent>
+        <TabsContent value="tab3">
+          <CardHeader
+            title="New York City, USA"
+            subtitle="The City That Never Sleeps"
+            actions={[<IconButton variant="tertiary" size="small" icon={<BusFront />} />]}
+          />
+          <Image
+            src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9"
+            alt="New York City skyline"
+            scale="fill"
+          />
+        </TabsContent>
+      </Tabs>
+    </Card>
   ),
 };
 
