@@ -52,11 +52,11 @@ type Story = StoryObj<typeof TagBlock>;
 export const Default: Story = {
   render: (args) => (
     <TagBlock {...args}>
-      <Tag variant="info" icon={<Info size={16} />} text="Info" />
-      <Tag variant="success" icon={<Star size={16} />} text="Star" />
-      <Tag variant="warning" icon={<Heart size={16} />} text="Heart" />
-      <Tag variant="danger" icon={<User size={16} />} text="User" />
-      <Tag variant="neutral" icon={<User size={16} />} text="User" />
+      <Tag variant="info" icon={<Info size={16} />} size="md" text="Info" />
+      <Tag variant="success" icon={<Star size={16} />} size="md" text="Star" />
+      <Tag variant="warning" icon={<Heart size={16} />} size="lg" text="Heart" />
+      <Tag variant="danger" icon={<User size={16} />} size="lg" text="User" />
+      <Tag variant="neutral" icon={<User size={16} />} size="lg" text="User" />
     </TagBlock>
   ),
 };
