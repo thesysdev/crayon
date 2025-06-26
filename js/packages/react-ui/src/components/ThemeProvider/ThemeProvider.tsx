@@ -210,13 +210,16 @@ const typographyTheme: TypographyTheme = {
   // Display & Headings
   // Large
   fontHeadingLarge: '600 28px/1.15 "Inter"',
-  fontHeadingLargeLetterSpacing: "0px",
+  fontHeadingLargeLetterSpacing: "-0.75px",
   // Medium
   fontHeadingMedium: '600 24px/1.15 "Inter"',
-  fontHeadingMediumLetterSpacing: "0px",
+  fontHeadingMediumLetterSpacing: "-0.75px",
   // Small
   fontHeadingSmall: '600 18px/1.25 "Inter"',
-  fontHeadingSmallLetterSpacing: "0px",
+  fontHeadingSmallLetterSpacing: "-0.25px",
+    // Extra Small
+    fontHeadingExtraSmall: '600 16px/1.25 "Inter"',
+    fontHeadingExtraSmallLetterSpacing: "0px",
 
   // Title Variants
   // Default

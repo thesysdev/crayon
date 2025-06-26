@@ -234,6 +234,8 @@ export interface TypographyTheme {
   fontHeadingMediumLetterSpacing?: string;
   fontHeadingSmall?: string;
   fontHeadingSmallLetterSpacing?: string;
+  fontHeadingExtraSmall?: string;
+  fontHeadingExtraSmallLetterSpacing?: string;
 
   // 2Extra Small
   fontLabel2ExtraSmall?: string;
