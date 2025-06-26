@@ -50,6 +50,8 @@ export const CustomTooltipContent = memo(
     const [isGreaterThanTen, setIsGreaterThanTen] = useState<boolean>(
       !!(payload?.length && payload.length > 10),
     );
+    const [remainingItems, setRemainingItems] = useState<number>(0);
+
     useLayoutEffect(() => {
       if (payload?.length && payload.length > 10) {
         setIsGreaterThanTen(true);
@@ -176,7 +178,8 @@ export const CustomTooltipContent = memo(
       }
 
       // Handle regular layout with potential truncation
-      const morphPayload = isGreaterThanTen ? payload.slice(0, 10) : payload;
+      const morphPayload = isGreaterThanTen ? payload.slice(0, 5) : payload;
+      setRemainingItems(payload.length - morphPayload.length);
       return morphPayload.map((item, index) => renderPayloadItem(item, index, false));
     }, [
       payload,
@@ -204,7 +207,9 @@ export const CustomTooltipContent = memo(
         <div className="crayon-chart-tooltip-content">{payloadItems}</div>
         {isGreaterThanTen && <div className="crayon-chart-tooltip-content-item-separator" />}
         {isGreaterThanTen && (
-          <div className="crayon-chart-tooltip-content-view-more">Click to view all</div>
+          <div className="crayon-chart-tooltip-content-view-more">
+            Click to view all {remainingItems}
+          </div>
         )}
       </div>
     );
