@@ -1,13 +1,8 @@
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart as RechartsRadarChart } from "recharts";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  keyTransform,
-} from "../../Charts";
-import { ActiveDot, DefaultLegend } from "../../shared";
+import { ChartConfig, ChartContainer, ChartTooltip, keyTransform } from "../../Charts";
+import { SideBarTooltipProvider } from "../../context/SideBarTooltipContext";
+import { ActiveDot, CustomTooltipContent, DefaultLegend } from "../../shared";
 import { LegendItem } from "../../types";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 import { getChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
@@ -63,6 +58,7 @@ export const RadarChartV2 = <T extends RadarChartV2Data>({
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
   const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
   const chartContainerRef = useRef<HTMLDivElement>(null);
+  const portalContainerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     // Only set up ResizeObserver if width is not provided
@@ -134,46 +130,60 @@ export const RadarChartV2 = <T extends RadarChartV2Data>({
   );
 
   return (
-    <div className="crayon-radar-chart-v2-container">
-      <div className="crayon-radar-chart-v2-container-inner" ref={chartContainerRef}>
-        <ChartContainer
-          config={chartConfig}
-          style={{
-            width: chartSize,
-            height: chartSize,
-            aspectRatio: 1,
-            overflow: "visible",
-          }}
-          rechartsProps={{
-            aspect: 1,
-          }}
-        >
-          <RechartsRadarChart
-            data={data}
-            margin={{
-              left: 10,
-              right: 10,
-              top: 10,
-              bottom: 10,
+    <SideBarTooltipProvider
+      isSideBarTooltipOpen={false}
+      setIsSideBarTooltipOpen={() => {}}
+      data={undefined}
+      setData={() => {}}
+    >
+      <div
+        className="crayon-radar-chart-v2-container"
+        ref={portalContainerRef}
+        style={{ position: "relative" }}
+      >
+        <div className="crayon-radar-chart-v2-container-inner" ref={chartContainerRef}>
+          <ChartContainer
+            config={chartConfig}
+            style={{
+              width: chartSize,
+              height: chartSize,
+              aspectRatio: 1,
+              overflow: "visible",
+            }}
+            rechartsProps={{
+              aspect: 1,
             }}
           >
-            {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
-            <PolarAngleAxis dataKey={categoryKey as string} tick={<AxisLabel />} />
+            <RechartsRadarChart
+              data={data}
+              margin={{
+                left: 10,
+                right: 10,
+                top: 10,
+                bottom: 10,
+              }}
+            >
+              {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
+              <PolarAngleAxis
+                dataKey={categoryKey as string}
+                tick={<AxisLabel portalContainerRef={portalContainerRef} />}
+              />
 
-            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
-            {renderRadars(dataKeys, variant, strokeWidth, areaOpacity, isAnimationActive)}
-          </RechartsRadarChart>
-        </ChartContainer>
+              <ChartTooltip cursor={false} content={<CustomTooltipContent />} />
+              {renderRadars(dataKeys, variant, strokeWidth, areaOpacity, isAnimationActive)}
+            </RechartsRadarChart>
+          </ChartContainer>
+        </div>
+        {legend && (
+          <DefaultLegend
+            items={legendItems}
+            containerWidth={containerDimensions.width}
+            isExpanded={isLegendExpanded}
+            setIsExpanded={setIsLegendExpanded}
+            style={{ paddingTop: 0 }}
+          />
+        )}
       </div>
-      {legend && (
-        <DefaultLegend
-          items={legendItems}
-          containerWidth={containerDimensions.width}
-          isExpanded={isLegendExpanded}
-          setIsExpanded={setIsLegendExpanded}
-          style={{ paddingTop: 0 }}
-        />
-      )}
-    </div>
+    </SideBarTooltipProvider>
   );
 };

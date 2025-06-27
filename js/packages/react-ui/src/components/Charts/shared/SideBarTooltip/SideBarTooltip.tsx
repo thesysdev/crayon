@@ -16,6 +16,8 @@ const capitalizeString = (str: string): string => {
 const SideBarTooltip = React.memo(({ height }: SideBarTooltipProps) => {
   const { setIsSideBarTooltipOpen, data } = useSideBarTooltip();
 
+  if (!data) return null;
+
   const handleClose = useCallback(() => {
     setIsSideBarTooltipOpen(false);
   }, [setIsSideBarTooltipOpen]);

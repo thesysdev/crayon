@@ -10,7 +10,7 @@ export interface SideBarChartData {
 }
 
 interface SideBarTooltipContextType {
-  data: SideBarChartData;
+  data: SideBarChartData | undefined;
   isSideBarTooltipOpen: boolean;
   setData: (data: SideBarChartData) => void;
   setIsSideBarTooltipOpen: (isOpen: boolean) => void;
@@ -22,7 +22,7 @@ interface SideBarTooltipProviderProps {
   children: ReactNode;
   isSideBarTooltipOpen: boolean;
   setIsSideBarTooltipOpen: (isOpen: boolean) => void;
-  data: SideBarChartData;
+  data: SideBarChartData | undefined;
   setData: (data: SideBarChartData) => void;
 }
 
