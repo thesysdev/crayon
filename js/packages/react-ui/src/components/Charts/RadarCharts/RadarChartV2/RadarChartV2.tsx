@@ -166,7 +166,12 @@ export const RadarChartV2 = <T extends RadarChartV2Data>({
               {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
               <PolarAngleAxis
                 dataKey={categoryKey as string}
-                tick={<AxisLabel portalContainerRef={portalContainerRef} />}
+                tick={
+                  <AxisLabel
+                    portalContainerRef={portalContainerRef}
+                    isLegendExpanded={isLegendExpanded}
+                  />
+                }
               />
 
               <ChartTooltip cursor={false} content={<CustomTooltipContent />} />

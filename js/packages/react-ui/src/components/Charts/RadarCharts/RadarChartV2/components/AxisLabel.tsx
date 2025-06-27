@@ -12,11 +12,12 @@ interface AxisLabelProps {
   };
   className?: string;
   portalContainerRef?: React.RefObject<HTMLDivElement | null>;
+  isLegendExpanded?: boolean;
   [key: string]: any; // To allow other props from recharts
 }
 
 export const AxisLabel: React.FC<AxisLabelProps> = (props) => {
-  const { x, y, payload, textAnchor, portalContainerRef, className } = props;
+  const { x, y, payload, textAnchor, portalContainerRef, className, isLegendExpanded } = props;
   const anchorRef = useRef<SVGGElement>(null);
 
   // Memoize the truncated text calculation
@@ -95,7 +96,6 @@ export const AxisLabel: React.FC<AxisLabelProps> = (props) => {
 
     updatePosition();
 
-    // Observe the container for resizes
     const resizeObserver = new ResizeObserver(updatePosition);
     resizeObserver.observe(container);
 
@@ -106,7 +106,16 @@ export const AxisLabel: React.FC<AxisLabelProps> = (props) => {
         container.removeChild(labelEl);
       }
     };
-  }, [x, y, textAnchor, truncatedText, portalContainerRef, className, payload?.value]);
+  }, [
+    x,
+    y,
+    textAnchor,
+    truncatedText,
+    portalContainerRef,
+    className,
+    payload?.value,
+    isLegendExpanded,
+  ]);
 
   return <g ref={anchorRef} transform={`translate(${x || 0}, ${y || 0})`} />;
 };
