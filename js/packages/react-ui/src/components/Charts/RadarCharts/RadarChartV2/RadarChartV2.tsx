@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart as RechartsRadarChart } from "recharts";
 import {
   ChartConfig,
@@ -7,10 +7,11 @@ import {
   ChartTooltipContent,
   keyTransform,
 } from "../../Charts";
-import { DefaultLegend } from "../../shared";
+import { ActiveDot, DefaultLegend } from "../../shared";
 import { LegendItem } from "../../types";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 import { getChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
+import { AxisLabel } from "./components/AxisLabel";
 
 export type RadarChartV2Data = Array<Record<string, string | number>>;
 
@@ -61,12 +62,11 @@ export const RadarChartV2 = <T extends RadarChartV2Data>({
 
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
   const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
-  const rootRef = useRef<HTMLDivElement>(null);
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     // Only set up ResizeObserver if width is not provided
-    if (size || !rootRef.current) {
+    if (size || !chartContainerRef.current) {
       return () => {};
     }
 
@@ -80,72 +80,91 @@ export const RadarChartV2 = <T extends RadarChartV2Data>({
       }
     });
 
-    resizeObserver.observe(rootRef.current);
+    resizeObserver.observe(chartContainerRef.current);
 
     return () => {
       resizeObserver.disconnect();
     };
   }, []);
 
-  useEffect(() => {
-    console.log("containerDimensions", containerDimensions);
-  }, [containerDimensions]);
+  const chartSize = useMemo(
+    () => Math.min(containerDimensions.width, containerDimensions.height),
+    [containerDimensions],
+  );
+
+  const renderRadars = useCallback(
+    (
+      dataKeys: string[],
+      variant: "line" | "area",
+      strokeWidth: number,
+      areaOpacity: number,
+      isAnimationActive: boolean,
+    ) => {
+      return dataKeys.map((key) => {
+        const transformedKey = keyTransform(key);
+        const color = `var(--color-${transformedKey})`;
+        if (variant === "line") {
+          return (
+            <Radar
+              key={key}
+              dataKey={key}
+              fill={color}
+              fillOpacity={0}
+              stroke={color}
+              strokeWidth={strokeWidth}
+              isAnimationActive={isAnimationActive}
+              activeDot={<ActiveDot />}
+            />
+          );
+        } else {
+          return (
+            <Radar
+              key={key}
+              dataKey={key}
+              fill={color}
+              fillOpacity={areaOpacity}
+              isAnimationActive={isAnimationActive}
+              activeDot={<ActiveDot />}
+            />
+          );
+        }
+      });
+    },
+    [],
+  );
 
   return (
-    <div className="crayon-radar-chart-v2-container" ref={rootRef}>
-      <ChartContainer
-        config={chartConfig}
-        style={{
-          width: Math.min(containerDimensions.width, containerDimensions.height),
-          height: Math.min(containerDimensions.width, containerDimensions.height),
-          //   width: "100%",
-          //   height: "100%",
-          aspectRatio: 1,
-          overflow: "visible",
-        }}
-        rechartsProps={{
-          aspect: 1,
-        }}
-      >
-        <RechartsRadarChart
-          data={data}
-          margin={{ top: 10, right: 40, bottom: 10, left: 20 }}
-          height={200}
-          width={200}
+    <div className="crayon-radar-chart-v2-container">
+      <div className="crayon-radar-chart-v2-container-inner" ref={chartContainerRef}>
+        <ChartContainer
+          config={chartConfig}
+          style={{
+            width: chartSize,
+            height: chartSize,
+            aspectRatio: 1,
+            overflow: "visible",
+          }}
+          rechartsProps={{
+            aspect: 1,
+          }}
         >
-          {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
-          <PolarAngleAxis dataKey={categoryKey as string} />
+          <RechartsRadarChart
+            data={data}
+            margin={{
+              left: 10,
+              right: 10,
+              top: 10,
+              bottom: 10,
+            }}
+          >
+            {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
+            <PolarAngleAxis dataKey={categoryKey as string} tick={<AxisLabel />} />
 
-          <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
-          {dataKeys.map((key) => {
-            const transformedKey = keyTransform(key);
-            const color = `var(--color-${transformedKey})`;
-            if (variant === "line") {
-              return (
-                <Radar
-                  key={key}
-                  dataKey={key}
-                  fill={color}
-                  fillOpacity={0}
-                  stroke={color}
-                  strokeWidth={strokeWidth}
-                  isAnimationActive={isAnimationActive}
-                />
-              );
-            } else {
-              return (
-                <Radar
-                  key={key}
-                  dataKey={key}
-                  fill={color}
-                  fillOpacity={areaOpacity}
-                  isAnimationActive={isAnimationActive}
-                />
-              );
-            }
-          })}
-        </RechartsRadarChart>
-      </ChartContainer>
+            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+            {renderRadars(dataKeys, variant, strokeWidth, areaOpacity, isAnimationActive)}
+          </RechartsRadarChart>
+        </ChartContainer>
+      </div>
       {legend && (
         <DefaultLegend
           items={legendItems}

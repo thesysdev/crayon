@@ -18,7 +18,19 @@ interface DefaultLegendProps {
 
 const DefaultLegend = memo(
   React.forwardRef<HTMLDivElement, DefaultLegendProps>(
-    ({ items, className, yAxisLabel, xAxisLabel, containerWidth, isExpanded, setIsExpanded, style }, ref) => {
+    (
+      {
+        items,
+        className,
+        yAxisLabel,
+        xAxisLabel,
+        containerWidth,
+        isExpanded,
+        setIsExpanded,
+        style,
+      },
+      ref,
+    ) => {
       // Only memoize expensive calculations
       const { visibleItems, hasMoreItems } = useMemo(() => {
         return calculateVisibleItems(items, containerWidth);
@@ -100,8 +112,8 @@ const DefaultLegend = memo(
           </div>
         </div>
       );
-    }
-  )
+    },
+  ),
 );
 
 DefaultLegend.displayName = "DefaultLegend";

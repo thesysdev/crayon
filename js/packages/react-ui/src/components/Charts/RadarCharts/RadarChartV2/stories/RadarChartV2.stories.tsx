@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Shield, Target, TrendingUp, Users, Zap, Star } from "lucide-react";
+import { Shield, Star, Target, TrendingUp, Users, Zap } from "lucide-react";
 import { useState } from "react";
 import { Card } from "../../../../Card";
 import { RadarChartV2, RadarChartV2Props } from "../RadarChartV2";
@@ -305,14 +305,16 @@ export const RadarChartV2Story: Story = {
             {currentData.length} | <strong>Category:</strong> {currentCategoryKey}
           </div>
         </div>
-        <Card style={{ 
-          width: "600px", 
-          height: "500px",
-          resize: "both",
-          overflow: "hidden",
-          minWidth: "300px",
-          minHeight: "250px"
-        }}>
+        <Card
+          style={{
+            width: "600px",
+            height: "300px",
+            resize: "both",
+            overflow: "hidden",
+            minWidth: "300px",
+            minHeight: "300px",
+          }}
+        >
           <RadarChartV2 {...args} data={currentData} categoryKey={currentCategoryKey} />
         </Card>
       </div>
@@ -591,4 +593,4 @@ export const CustomizationStory: Story = {
       },
     },
   },
-}; 
+};
