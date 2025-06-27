@@ -75,7 +75,7 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
   );
 });
 
-XAxisTick.displayName = 'XAxisTick';
+XAxisTick.displayName = "XAxisTick";
 
 export { XAxisTick };
 export type { XAxisTickProps };

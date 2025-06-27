@@ -22,14 +22,14 @@ export const AxisLabel: React.FC<AxisLabelProps> = (props) => {
 
   /**
    * Memoizes the calculation of truncated text for axis labels
-   * 
+   *
    * This hook handles text truncation based on available space in the chart container:
    * 1. Returns empty string or original value if payload/container is missing
    * 2. Calculates container width and available space based on text anchor position
    * 3. Truncates text to fit within available width using specified font size
-   * 
+   *
    * @returns {string} Truncated text that fits within available space
-   * 
+   *
    * Dependencies:
    * - payload?.value: The text content to truncate
    * - x: X-coordinate of the label

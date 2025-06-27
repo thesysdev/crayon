@@ -43,15 +43,15 @@ const truncateText = (text: string, maxWidth: number, fontSize = 10): string => 
 
 /**
  * Calculates the available width for a text label based on its position and anchor point
- * 
+ *
  * This function determines how much horizontal space is available for a text label
  * by checking its position relative to the container bounds. The calculation varies
  * based on the text anchor position:
- * 
+ *
  * - For "start" anchored text: Available space is from labelX to container right edge
  * - For "end" anchored text: Available space is from container left edge to labelX
  * - For "middle" anchored text: Takes minimum of left/right space and doubles it
- * 
+ *
  * @param labelX - X coordinate of the label position
  * @param containerWidth - Total width of the container
  * @param textAnchor - How text is anchored ("start", "end", or "middle")
@@ -80,4 +80,4 @@ const calculateAvailableWidth = (
   }
 };
 
-export { truncateText, calculateAvailableWidth };
+export { calculateAvailableWidth, truncateText };

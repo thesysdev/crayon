@@ -31,7 +31,7 @@ const RadarChartV2Component = <T extends RadarChartV2Data>({
   grid = true,
   legend = true,
   strokeWidth = 2,
-  areaOpacity = 0.5,
+  areaOpacity = 0.2,
   icons = {},
   isAnimationActive = true,
   size,
@@ -117,6 +117,8 @@ const RadarChartV2Component = <T extends RadarChartV2Data>({
               key={key}
               dataKey={key}
               fill={color}
+              stroke={color}
+              strokeWidth={strokeWidth}
               fillOpacity={areaOpacity}
               isAnimationActive={isAnimationActive}
               activeDot={<ActiveDot />}
