@@ -20,18 +20,36 @@ export const AxisLabel: React.FC<AxisLabelProps> = (props) => {
   const { x, y, payload, textAnchor, portalContainerRef, className, isLegendExpanded } = props;
   const anchorRef = useRef<SVGGElement>(null);
 
-  // Memoize the truncated text calculation
+  /**
+   * Memoizes the calculation of truncated text for axis labels
+   * 
+   * This hook handles text truncation based on available space in the chart container:
+   * 1. Returns empty string or original value if payload/container is missing
+   * 2. Calculates container width and available space based on text anchor position
+   * 3. Truncates text to fit within available width using specified font size
+   * 
+   * @returns {string} Truncated text that fits within available space
+   * 
+   * Dependencies:
+   * - payload?.value: The text content to truncate
+   * - x: X-coordinate of the label
+   * - textAnchor: Text anchor position ('start', 'middle', 'end')
+   * - portalContainerRef: Reference to container element
+   */
   const truncatedText = useMemo(() => {
     if (!payload?.value || !portalContainerRef?.current) {
       return payload?.value || "";
     }
 
     const container = portalContainerRef.current;
+    // Get the width of the container
     const containerWidth = container.getBoundingClientRect().width;
+    // Get the padding of the container
     const padding = 0;
+    // Get the font size of the text
     const fontSize = 10;
 
-    // Calculate available width based on text anchor and position
+    // Calculate available width based on text anchor and position, and padding
     const availableWidth = calculateAvailableWidth(
       x || 0,
       containerWidth,
@@ -85,10 +103,10 @@ export const AxisLabel: React.FC<AxisLabelProps> = (props) => {
       const availableWidth = calculateAvailableWidth(
         left,
         containerWidth,
-        textAnchor || "middle",
-        10,
+        textAnchor ?? "middle",
+        0,
       );
-      const newTruncatedText = truncateText(payload?.value || "", availableWidth, 12);
+      const newTruncatedText = truncateText(payload?.value ?? "", availableWidth, 10);
       if (labelEl.textContent !== newTruncatedText) {
         labelEl.textContent = newTruncatedText;
       }
