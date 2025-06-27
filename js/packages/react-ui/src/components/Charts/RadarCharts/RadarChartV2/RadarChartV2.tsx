@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart as RechartsRadarChart } from "recharts";
 import { ChartConfig, ChartContainer, ChartTooltip, keyTransform } from "../../Charts";
 import { SideBarTooltipProvider } from "../../context/SideBarTooltipContext";
@@ -7,8 +7,7 @@ import { LegendItem } from "../../types";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 import { getChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
 import { AxisLabel } from "./components/AxisLabel";
-
-export type RadarChartV2Data = Array<Record<string, string | number>>;
+import { RadarChartV2Data } from "./types";
 
 export interface RadarChartV2Props<T extends RadarChartV2Data> {
   data: T;
@@ -24,7 +23,7 @@ export interface RadarChartV2Props<T extends RadarChartV2Data> {
   size?: number;
 }
 
-export const RadarChartV2 = <T extends RadarChartV2Data>({
+const RadarChartV2Component = <T extends RadarChartV2Data>({
   data,
   categoryKey,
   theme = "ocean",
@@ -193,3 +192,7 @@ export const RadarChartV2 = <T extends RadarChartV2Data>({
     </SideBarTooltipProvider>
   );
 };
+
+export const RadarChartV2 = memo(RadarChartV2Component);
+
+RadarChartV2.displayName = "RadarChartV2";
