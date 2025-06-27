@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { debounce } from "lodash-es";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { Cell, LabelList, PolarGrid, RadialBar, RadialBarChart } from "recharts";
 import { useLayoutContext } from "../../../context/LayoutContext";
 import {
@@ -41,154 +41,159 @@ const calculatePercentage = (value: number, total: number): number => {
   return Number(((value / total) * 100).toFixed(2));
 };
 
-export const RadialChart = <T extends RadialChartData>({
-  data,
-  categoryKey,
-  dataKey,
-  theme = "ocean",
-  variant = "semicircle",
-  format = "number",
-  legend = true,
-  label = true,
-  grid = true,
-  isAnimationActive = true,
-}: RadialChartProps<T>) => {
-  const { layout } = useLayoutContext();
-  const [calculatedOuterRadius, setCalculatedOuterRadius] = useState(110);
-  const [calculatedInnerRadius, setCalculatedInnerRadius] = useState(30);
-  const containerRef = useRef<HTMLDivElement>(null);
+export const RadialChart = forwardRef<HTMLDivElement, RadialChartProps<RadialChartData>>(
+  (
+    {
+      data,
+      categoryKey,
+      dataKey,
+      theme = "ocean",
+      variant = "semicircle",
+      format = "number",
+      legend = true,
+      label = true,
+      grid = true,
+      isAnimationActive = true,
+    },
+    ref,
+  ) => {
+    const { layout } = useLayoutContext();
+    const [calculatedOuterRadius, setCalculatedOuterRadius] = useState(110);
+    const [calculatedInnerRadius, setCalculatedInnerRadius] = useState(30);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!containerRef.current) return;
+    useEffect(() => {
+      if (!containerRef.current) return;
 
-    const resizeObserver = new ResizeObserver(
-      debounce((entries: any) => {
-        const { width } = entries[0].contentRect;
+      const resizeObserver = new ResizeObserver(
+        debounce((entries: any) => {
+          const { width } = entries[0].contentRect;
 
-        // Calculate outer radius
-        let newOuterRadius = 110; // default
-        if (layout === "mobile") {
-          newOuterRadius = label ? (width > 300 ? 110 : 90) : width > 300 ? 95 : 80;
-        } else if (layout === "fullscreen") {
-          newOuterRadius = 160;
-        } else if (layout === "tray" || layout === "copilot") {
-          newOuterRadius = 130;
-        } else {
-          newOuterRadius = 100;
-        }
+          // Calculate outer radius
+          let newOuterRadius = 110; // default
+          if (layout === "mobile") {
+            newOuterRadius = label ? (width > 300 ? 110 : 90) : width > 300 ? 95 : 80;
+          } else if (layout === "fullscreen") {
+            newOuterRadius = 160;
+          } else if (layout === "tray" || layout === "copilot") {
+            newOuterRadius = 130;
+          } else {
+            newOuterRadius = 100;
+          }
 
-        // Calculate inner radius
-        let newInnerRadius = 30; // default
-        if (layout === "mobile") {
-          newInnerRadius = 30;
-        } else if (layout === "fullscreen") {
-          newInnerRadius = 50;
-        } else {
-          newInnerRadius = 30;
-        }
+          // Calculate inner radius
+          let newInnerRadius = 30; // default
+          if (layout === "mobile") {
+            newInnerRadius = 30;
+          } else if (layout === "fullscreen") {
+            newInnerRadius = 50;
+          } else {
+            newInnerRadius = 30;
+          }
 
-        setCalculatedOuterRadius(newOuterRadius);
-        setCalculatedInnerRadius(newInnerRadius);
-      }, 100),
+          setCalculatedOuterRadius(newOuterRadius);
+          setCalculatedInnerRadius(newInnerRadius);
+        }, 100),
+      );
+
+      resizeObserver.observe(containerRef.current);
+      return () => resizeObserver.disconnect();
+    }, [layout, label]);
+
+    // Calculate total for percentage calculations
+    const total = data.reduce((sum, item) => sum + Number(item[dataKey]), 0);
+
+    // Get color palette and distribute colors
+    const palette = getPalette(theme);
+    const colors = getDistributedColors(palette, data.length);
+
+    // Transform data with percentages
+    const transformedData = data.map((item, index) => ({
+      ...item,
+      percentage: calculatePercentage(Number(item[dataKey as string]), total),
+      originalValue: item[dataKey as string],
+      fill: colors[index],
+    }));
+
+    // Create chart configuration
+    const chartConfig = data.reduce<ChartConfig>(
+      (config, item, index) => ({
+        ...config,
+        [String(item[categoryKey])]: {
+          label: String(item[categoryKey as string]),
+          color: colors[index],
+        },
+      }),
+      {},
     );
 
-    resizeObserver.observe(containerRef.current);
-    return () => resizeObserver.disconnect();
-  }, [layout, label]);
+    const getFontSize = (dataLength: number) => {
+      return dataLength <= 5 ? 12 : 7;
+    };
 
-  // Calculate total for percentage calculations
-  const total = data.reduce((sum, item) => sum + Number(item[dataKey]), 0);
+    const formatLabel = (value: string | number) => {
+      if (format === "percentage") {
+        const item = transformedData.find((d) => String(d.originalValue) === String(value));
+        return item ? `${item.percentage}%` : value;
+      }
+      // For number format, just truncate if too long
+      const stringValue = String(value);
+      return stringValue.length > 8 ? `${stringValue.slice(0, 8)}...` : stringValue;
+    };
 
-  // Get color palette and distribute colors
-  const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, data.length);
-
-  // Transform data with percentages
-  const transformedData = data.map((item, index) => ({
-    ...item,
-    percentage: calculatePercentage(Number(item[dataKey as string]), total),
-    originalValue: item[dataKey as string],
-    fill: colors[index],
-  }));
-
-  // Create chart configuration
-  const chartConfig = data.reduce<ChartConfig>(
-    (config, item, index) => ({
-      ...config,
-      [String(item[categoryKey])]: {
-        label: String(item[categoryKey as string]),
-        color: colors[index],
-      },
-    }),
-    {},
-  );
-
-  const getFontSize = (dataLength: number) => {
-    return dataLength <= 5 ? 12 : 7;
-  };
-
-  const formatLabel = (value: string | number) => {
-    if (format === "percentage") {
-      const item = transformedData.find((d) => String(d.originalValue) === String(value));
-      return item ? `${item.percentage}%` : value;
-    }
-    // For number format, just truncate if too long
-    const stringValue = String(value);
-    return stringValue.length > 8 ? `${stringValue.slice(0, 8)}...` : stringValue;
-  };
-
-  return (
-    <ChartContainer
-      ref={containerRef}
-      config={chartConfig}
-      className={clsx("crayon-radial-chart-container", layoutMap[layout], "aspect-square")}
-    >
-      <RadialBarChart
-        data={transformedData}
-        startAngle={variant === "circular" ? -90 : 0}
-        endAngle={variant === "circular" ? 270 : 180}
-        innerRadius={calculatedInnerRadius}
-        outerRadius={calculatedOuterRadius}
+    return (
+      <ChartContainer
+        ref={ref}
+        config={chartConfig}
+        className={clsx("crayon-radial-chart-container", layoutMap[layout], "aspect-square")}
       >
-        {grid && <PolarGrid gridType="circle" />}
-        <ChartTooltip
-          cursor={false}
-          content={
-            <ChartTooltipContent
-              showPercentage={format === "percentage"}
-              nameKey={String(categoryKey)}
-            />
-          }
-        />
-        {legend && (
-          <ChartLegend
+        <RadialBarChart
+          data={transformedData}
+          startAngle={variant === "circular" ? -90 : 0}
+          endAngle={variant === "circular" ? 270 : 180}
+          innerRadius={calculatedInnerRadius}
+          outerRadius={calculatedOuterRadius}
+        >
+          {grid && <PolarGrid gridType="circle" />}
+          <ChartTooltip
+            cursor={false}
             content={
-              <ChartLegendContent nameKey={String(categoryKey)} className="flex-wrap gap-2" />
+              <ChartTooltipContent
+                showPercentage={format === "percentage"}
+                nameKey={String(categoryKey)}
+              />
             }
           />
-        )}
-        <RadialBar
-          dataKey={format === "percentage" ? "percentage" : String(dataKey)}
-          background={!grid}
-          cornerRadius={10}
-          isAnimationActive={isAnimationActive}
-        >
-          {Object.entries(chartConfig).map(([key, config]) => (
-            <Cell key={key} fill={config.color} />
-          ))}
-          {label && (
-            <LabelList
-              dataKey={String(dataKey)}
-              position="insideStart"
-              offset={12}
-              fill="currentColor"
-              className="capitalize mix-blend-luminosity"
-              fontSize={getFontSize(data.length)}
-              formatter={formatLabel}
+          {legend && (
+            <ChartLegend
+              content={
+                <ChartLegendContent nameKey={String(categoryKey)} className="flex-wrap gap-2" />
+              }
             />
           )}
-        </RadialBar>
-      </RadialBarChart>
-    </ChartContainer>
-  );
-};
+          <RadialBar
+            dataKey={format === "percentage" ? "percentage" : String(dataKey)}
+            background={!grid}
+            cornerRadius={10}
+            isAnimationActive={isAnimationActive}
+          >
+            {Object.entries(chartConfig).map(([key, config]) => (
+              <Cell key={key} fill={config.color} />
+            ))}
+            {label && (
+              <LabelList
+                dataKey={String(dataKey)}
+                position="insideStart"
+                offset={12}
+                fill="currentColor"
+                className="capitalize mix-blend-luminosity"
+                fontSize={getFontSize(data.length)}
+                formatter={formatLabel}
+              />
+            )}
+          </RadialBar>
+        </RadialBarChart>
+      </ChartContainer>
+    );
+  },
+);

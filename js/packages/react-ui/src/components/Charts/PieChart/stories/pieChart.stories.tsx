@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "../../../Card";
-import { PieChart, PieChartProps } from "../PieChart";
+import { PieChart } from "../PieChart";
 
 const pieChartData = [
   { month: "January", value: 4250 },
@@ -12,7 +12,7 @@ const pieChartData = [
   { month: "July", value: 5890 },
 ];
 
-const meta: Meta<PieChartProps<typeof pieChartData>> = {
+const meta: Meta<typeof PieChart> = {
   title: "Components/Charts/PieChart",
   component: PieChart,
   parameters: {

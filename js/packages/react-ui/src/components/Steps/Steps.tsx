@@ -1,20 +1,23 @@
-import React, { createContext, useContext } from "react";
+import clsx from "clsx";
+import React, { createContext, forwardRef, useContext } from "react";
 
 export interface StepsItemProps {
   title: React.ReactNode;
   details: React.ReactNode;
   number?: number;
+  className?: string;
 }
 
 export interface StepsProps {
   children: React.ReactNode;
+  className?: string;
 }
 
 const StepNumberContext = createContext<number>(0);
 
-export const Steps: React.FC<StepsProps> = ({ children }) => {
+export const Steps = forwardRef<HTMLDivElement, StepsProps>(({ children, className }, ref) => {
   return (
-    <div className={`crayon-steps-container`}>
+    <div className={clsx("crayon-steps-container", className)} ref={ref}>
       <div className="crayon-steps">
         {React.Children.map(children, (child, index) => (
           <StepNumberContext.Provider value={index + 1}>{child}</StepNumberContext.Provider>
@@ -22,7 +25,7 @@ export const Steps: React.FC<StepsProps> = ({ children }) => {
       </div>
     </div>
   );
-};
+});
 
 export const StepsItem: React.FC<StepsItemProps> = ({ title, details, number }) => {
   const stepNumber = useContext(StepNumberContext);
