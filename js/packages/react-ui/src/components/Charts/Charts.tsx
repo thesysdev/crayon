@@ -1,7 +1,8 @@
 import clsx from "clsx";
 import { uniqueId } from "lodash-es";
-import { ComponentProps, createContext, forwardRef, useContext, useId, useMemo } from "react";
+import { ComponentProps, createContext, forwardRef, useContext, useMemo } from "react";
 import * as RechartsPrimitive from "recharts";
+import { useId } from "../../polyfills";
 
 /**
  * @module Charts
@@ -52,7 +53,7 @@ function useChart() {
 }
 
 export function keyTransform(key: string) {
-  return key.replaceAll(/\s/g, "-");
+  return key.replaceAll(/\s/g, "-").replaceAll("%", "__per__");
 }
 
 /**

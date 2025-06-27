@@ -174,7 +174,7 @@ export const LineChartStory: Story = {
     isAnimationActive: true,
     showYAxis: false,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <LineChart {...args} />
     </Card>
@@ -220,7 +220,7 @@ export const LineChartStoryWithIcons: Story = {
     ...LineChartStory.args,
     icons: icons,
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <LineChart {...args} />
     </Card>
@@ -277,7 +277,7 @@ export const LineChartStoryWithYAxis: Story = {
     xAxisLabel: "Time Period",
     yAxisLabel: "Number of Users",
   },
-  render: (args) => (
+  render: (args: any) => (
     <Card style={{ width: "500px" }}>
       <LineChart {...args} />
     </Card>

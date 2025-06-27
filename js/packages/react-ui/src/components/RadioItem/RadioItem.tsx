@@ -1,6 +1,7 @@
 import * as Radio from "@radix-ui/react-radio-group";
 import clsx from "clsx";
-import { CSSProperties, forwardRef, ReactNode, useId } from "react";
+import { CSSProperties, forwardRef, ReactNode } from "react";
+import { useId } from "../../polyfills";
 
 export interface RadioItemProps {
   label?: ReactNode;
