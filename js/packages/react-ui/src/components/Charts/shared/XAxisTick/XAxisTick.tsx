@@ -1,3 +1,4 @@
+import React from "react";
 interface XAxisTickProps {
   x?: number;
   y?: number;
@@ -26,7 +27,7 @@ interface XAxisTickProps {
   isLastTick?: (value: string) => boolean;
 }
 
-const XAxisTick: React.FC<XAxisTickProps> = (props) => {
+const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => {
   const {
     x,
     y,
@@ -59,7 +60,7 @@ const XAxisTick: React.FC<XAxisTickProps> = (props) => {
   }
 
   return (
-    <g transform={`translate(${x},${y})`} className={className}>
+    <g ref={ref} transform={`translate(${x},${y})`} className={className}>
       <text
         x={xOffset}
         y={0}
@@ -72,7 +73,9 @@ const XAxisTick: React.FC<XAxisTickProps> = (props) => {
       </text>
     </g>
   );
-};
+});
+
+XAxisTick.displayName = 'XAxisTick';
 
 export { XAxisTick };
 export type { XAxisTickProps };

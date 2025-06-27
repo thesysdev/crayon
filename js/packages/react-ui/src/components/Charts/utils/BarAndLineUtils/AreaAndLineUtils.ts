@@ -54,52 +54,76 @@ export const getWidthOfData = (data: ChartData, containerWidth: number) => {
  * this function can be improved for coalition detection and better truncation
  */
 export const getXAxisTickFormatter = (groupWidth?: number, containerWidth?: number) => {
-  const CHAR_WIDTH = 7; // Average character width in pixels for most fonts
-  const ELLIPSIS_WIDTH = CHAR_WIDTH * 3; // "..." takes about 3 character widths
-  const PADDING = 5; // Safety padding for better visual spacing
+  const PADDING = 10; // More generous padding for visual clarity
 
-  // closure is happening here.
+  // Setup canvas context once per formatter creation for efficiency.
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (context) {
+    // Should match the chart's actual font for accuracy
+    context.font = "12px Inter";
+  }
+
   return (value: string) => {
-    // Convert to string in case we get numbers
+    // If canvas isn't supported, or for some reason context is null, return original value.
+    if (!context) return String(value);
+
     const stringValue = String(value);
 
-    // If no groupWidth provided, fall back to simple responsive logic
-    if (!groupWidth) {
-      // Use container width for responsive truncation
-      if (containerWidth) {
-        // Responsive logic based on container width
-        if (containerWidth < 400) {
-          // Small containers: very aggressive truncation
-          return stringValue.length > 4 ? `${stringValue.slice(0, 4)}...` : stringValue;
-        } else if (containerWidth < 600) {
-          // Medium containers: moderate truncation
-          return stringValue.length > 8 ? `${stringValue.slice(0, 8)}...` : stringValue;
-        } else {
-          // Large containers: less aggressive truncation
-          return stringValue.length > 12 ? `${stringValue.slice(0, 12)}...` : stringValue;
-        }
-      }
-
-      // Default fallback when no width info available
-      return stringValue.length > 6 ? `${stringValue.slice(0, 6)}...` : stringValue;
-    }
-
-    const availableWidth = Math.max(0, groupWidth - PADDING);
-    const maxCharsWithoutEllipsis = Math.floor(availableWidth / CHAR_WIDTH);
-    const maxCharsWithEllipsis = Math.floor((availableWidth - ELLIPSIS_WIDTH) / CHAR_WIDTH);
-
-    // Intelligent ellipsis handling
-    if (stringValue.length <= maxCharsWithoutEllipsis) {
-      // Full text fits comfortably
-      return stringValue;
-    } else if (maxCharsWithEllipsis >= 3) {
-      // We can fit at least 3 characters + ellipsis
-      return `${stringValue.slice(0, maxCharsWithEllipsis)}...`;
+    // Determine the maximum available width for the tick. Prioritize groupWidth.
+    let availableWidth = 0;
+    if (groupWidth) {
+      availableWidth = Math.max(0, groupWidth - PADDING);
+    } else if (containerWidth) {
+      // Fallback responsive logic if no groupWidth is available.
+      // We assume a certain number of ticks could be visible.
+      // This is less accurate but better than nothing.
+      const assumedMaxTicks = containerWidth / 100; // e.g., assume ticks are ~100px apart
+      availableWidth = Math.max(0, containerWidth / assumedMaxTicks - PADDING);
     } else {
-      // Very limited space - just show what we can without ellipsis
-      // (ellipsis would take more space than it's worth)
-      return stringValue.slice(0, Math.max(1, Math.min(6, maxCharsWithoutEllipsis)));
+      // No width info at all, perform a simple character slice as a last resort.
+      return stringValue.length > 10 ? `${stringValue.slice(0, 10)}...` : stringValue;
     }
+
+    // If the original text already fits, return it.
+    if (context.measureText(stringValue).width <= availableWidth) {
+      return stringValue;
+    }
+
+    // If it doesn't fit, perform a binary search to find the best truncation point.
+    let low = 0;
+    let high = stringValue.length;
+    let result = "";
+
+    // binary search to find the best truncation point.
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      // Don't append "..." if mid is 0, just return an empty string or first char.
+      if (mid === 0) {
+        low = mid + 1;
+        continue;
+      }
+      const truncated = stringValue.substring(0, mid) + "...";
+      const measuredWidth = context.measureText(truncated).width;
+
+      if (measuredWidth <= availableWidth) {
+        result = truncated;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    // A final check: if result is empty (very tight space), it might be better
+    // to show the first character instead of nothing.
+    if (result === "") {
+      const firstChar = stringValue.substring(0, 1);
+      if (context.measureText(firstChar).width <= availableWidth) {
+        return firstChar;
+      }
+    }
+
+    return result;
   };
 };
 
