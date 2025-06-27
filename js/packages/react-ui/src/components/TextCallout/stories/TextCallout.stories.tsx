@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { CalloutV2, CalloutV2Props } from "../CalloutV2";
+import { TextCallout, TextCalloutProps } from "../TextCallout";
 
-const meta: Meta<CalloutV2Props> = {
-  title: "Components/CalloutV2",
-  component: CalloutV2,
+const meta: Meta<TextCalloutProps> = {
+  title: "Components/TextCallout",
+  component: TextCallout,
   parameters: {
     layout: "centered",
     docs: {
@@ -43,7 +43,7 @@ const meta: Meta<CalloutV2Props> = {
       },
     },
   },
-} satisfies Meta<typeof CalloutV2>;
+} satisfies Meta<typeof TextCallout>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
