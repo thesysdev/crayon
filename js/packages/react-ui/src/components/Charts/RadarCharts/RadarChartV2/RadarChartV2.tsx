@@ -148,7 +148,8 @@ export const RadarChartV2 = <T extends RadarChartV2Data>({
               width: chartSize,
               height: chartSize,
               aspectRatio: 1,
-              overflow: "visible",
+              minWidth: 100,
+              minHeight: 100,
             }}
             rechartsProps={{
               aspect: 1,
