@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 import { Card } from "../../../../Card";
 import { PieChartV2, PieChartV2Props } from "../PieChartV2";
 
@@ -258,7 +259,7 @@ export const PieChartV2WithCarousel: Story = {
     width: undefined,
   },
   render: (args: any) => (
-    <Card style={{ width: "600px", height: "300px", padding: "20px" }}>
+    <Card style={{ width: "700px", height: "300px", padding: "20px" }}>
       <PieChartV2 {...args} />
     </Card>
   ),
@@ -267,6 +268,170 @@ export const PieChartV2WithCarousel: Story = {
       description: {
         story:
           "This example demonstrates the up/down carousel functionality when there are many legend items. The legend has navigation buttons that appear when content overflows, allowing users to scroll through all items.",
+      },
+    },
+  },
+};
+
+export const ResizableAndResponsive: Story = {
+  name: "Resizable and Responsive",
+  args: {
+    data: pieChartData,
+    categoryKey: "month",
+    dataKey: "value",
+    theme: "spectrum",
+    variant: "donut",
+    format: "number",
+    legend: true,
+    legendVariant: "stacked",
+    isAnimationActive: false,
+    appearance: "circular",
+    cornerRadius: 8,
+    paddingAngle: 2,
+    useGradients: false,
+  },
+  render: (args: any) => {
+    const [dimensions, setDimensions] = useState({ width: 700, height: 400 });
+
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, handle: string) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startWidth = dimensions.width;
+      const startHeight = dimensions.height;
+
+      const doDrag = (e: MouseEvent) => {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+
+        if (handle.includes("e")) newWidth = startWidth + dx;
+        if (handle.includes("w")) newWidth = startWidth - dx;
+        if (handle.includes("s")) newHeight = startHeight + dy;
+        if (handle.includes("n")) newHeight = startHeight - dy;
+
+        setDimensions({
+          width: Math.max(300, newWidth),
+          height: Math.max(300, newHeight),
+        });
+      };
+
+      const stopDrag = () => {
+        document.removeEventListener("mousemove", doDrag);
+        document.removeEventListener("mouseup", stopDrag);
+      };
+
+      document.addEventListener("mousemove", doDrag);
+      document.addEventListener("mouseup", stopDrag);
+    };
+
+    const handleStyle: React.CSSProperties = {
+      position: "absolute",
+      background: "#3b82f6",
+      opacity: 0.5,
+      zIndex: 10,
+    };
+
+    return (
+      <Card
+        style={{
+          position: "relative",
+          width: `${dimensions.width}px`,
+          height: `${dimensions.height}px`,
+          border: "1px dashed #9ca3af",
+          padding: "20px",
+          boxSizing: "border-box",
+          overflow: "hidden",
+        }}
+      >
+        <PieChartV2 {...args} />
+
+        {/* Resizer handles */}
+        <div
+          style={{ ...handleStyle, top: -5, left: 0, right: 0, height: 10, cursor: "ns-resize" }}
+          onMouseDown={(e) => handleMouseDown(e, "n")}
+        />
+        <div
+          style={{ ...handleStyle, bottom: -5, left: 0, right: 0, height: 10, cursor: "ns-resize" }}
+          onMouseDown={(e) => handleMouseDown(e, "s")}
+        />
+        <div
+          style={{ ...handleStyle, top: 0, bottom: 0, left: -5, width: 10, cursor: "ew-resize" }}
+          onMouseDown={(e) => handleMouseDown(e, "w")}
+        />
+        <div
+          style={{ ...handleStyle, top: 0, bottom: 0, right: -5, width: 10, cursor: "ew-resize" }}
+          onMouseDown={(e) => handleMouseDown(e, "e")}
+        />
+        <div
+          style={{
+            ...handleStyle,
+            top: -5,
+            left: -5,
+            width: 16,
+            height: 16,
+            cursor: "nwse-resize",
+          }}
+          onMouseDown={(e) => handleMouseDown(e, "nw")}
+        />
+        <div
+          style={{
+            ...handleStyle,
+            top: -5,
+            right: -5,
+            width: 16,
+            height: 16,
+            cursor: "nesw-resize",
+          }}
+          onMouseDown={(e) => handleMouseDown(e, "ne")}
+        />
+        <div
+          style={{
+            ...handleStyle,
+            bottom: -5,
+            left: -5,
+            width: 16,
+            height: 16,
+            cursor: "nesw-resize",
+          }}
+          onMouseDown={(e) => handleMouseDown(e, "sw")}
+        />
+        <div
+          style={{
+            ...handleStyle,
+            bottom: -5,
+            right: -5,
+            width: 16,
+            height: 16,
+            cursor: "nwse-resize",
+          }}
+          onMouseDown={(e) => handleMouseDown(e, "se")}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: 5,
+            right: 5,
+            background: "rgba(0,0,0,0.5)",
+            color: "white",
+            padding: "2px 5px",
+            borderRadius: 3,
+            fontSize: 12,
+            fontFamily: "monospace",
+          }}
+        >
+          {dimensions.width}px × {dimensions.height}px
+        </div>
+      </Card>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "This story demonstrates the responsive and resizable behavior of the PieChartV2. Drag the edges or corners of the dashed container to resize it and see how the chart and its legend adapt perfectly to the new dimensions.",
       },
     },
   },

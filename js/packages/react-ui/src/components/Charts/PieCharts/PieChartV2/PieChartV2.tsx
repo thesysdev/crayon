@@ -50,6 +50,8 @@ export interface PieChartV2Props<T extends PieChartV2Data> {
   width?: number;
 }
 
+const STACKED_LEGEND_BREAKPOINT = 600; // px
+
 export const PieChartV2 = <T extends PieChartV2Data>({
   data,
   categoryKey,
@@ -72,14 +74,15 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   height,
   width,
 }: PieChartV2Props<T>) => {
-  const chartContainerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-  const [containerHeight, setContainerHeight] = useState<number>(0);
-  const [wrapperWidth, setWrapperWidth] = useState<number>(0);
+  const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
   const [hoveredLegendKey, setHoveredLegendKey] = useState<string | null>(null);
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
   const { activeIndex, handleMouseEnter, handleMouseLeave } = useChartHover();
+
+  // Determine layout mode based on container width
+  const isRowLayout =
+    legend && legendVariant === "stacked" && wrapperRect.width >= STACKED_LEGEND_BREAKPOINT;
 
   // Memoize string conversions to avoid repeated calls
   const categoryKeyString = useMemo(() => String(categoryKey), [categoryKey]);
@@ -89,20 +92,23 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     [format, dataKeyString],
   );
 
-  // Use provided dimensions or observed dimensions
-  const effectiveWidth = useMemo(() => {
-    return width ?? containerWidth;
-  }, [width, containerWidth]);
+  // Use provided dimensions or observed dimensions from the wrapper
+  const effectiveWidth = width ?? wrapperRect.width;
+  const effectiveHeight = height ?? wrapperRect.height;
 
-  const effectiveHeight = useMemo(() => {
-    return height ?? containerHeight;
-  }, [height, containerHeight]);
-
-  // Calculate chart dimensions based on the smaller dimension
+  // Calculate chart dimensions based on the smaller dimension of the container
   const chartSize = useMemo(() => {
+    if (isRowLayout) {
+      const chartContainerWidth = (effectiveWidth - 20) / 2; // Subtract gap
+      const size = Math.min(chartContainerWidth, effectiveHeight);
+      return Math.max(150, size);
+    }
     const size = Math.min(effectiveWidth, effectiveHeight);
-    return Math.max(200, Math.min(size, 800)); // Min 200px, max 800px
-  }, [effectiveWidth, effectiveHeight]);
+    return Math.max(150, size);
+  }, [effectiveWidth, effectiveHeight, isRowLayout]);
+
+  const chartSizeStyle = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
+  const rechartsProps = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
 
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(
@@ -130,69 +136,45 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     [cornerRadius, variant, paddingAngle],
   );
 
-  // Get color palette and distribute colors
   const palette = useMemo(() => getPalette(theme), [theme]);
   const colors = useMemo(() => getDistributedColors(palette, data.length), [palette, data.length]);
 
-  // Memoize gradient definitions
   const gradientDefinitions = useMemo(() => {
     if (!useGradients) return null;
-
     const chartColors = Object.values(chartConfig)
       .map((config) => config.color)
       .filter((color): color is string => color !== undefined);
-
     return createGradientDefinitions(transformedData, chartColors, gradientColors);
   }, [useGradients, chartConfig, transformedData, gradientColors]);
 
-  // Create legend items for both variants
-  const legendItems = useMemo(() => {
-    return data.map((item, index) => ({
-      key: String(item[categoryKey]),
-      label: String(item[categoryKey]),
-      value: Number(item[dataKey]),
-      color: colors[index] || "#000000",
-    }));
-  }, [data, categoryKey, dataKey, colors]);
+  const legendItems = useMemo(
+    () =>
+      data.map((item, index) => ({
+        key: String(item[categoryKey]),
+        label: String(item[categoryKey]),
+        value: Number(item[dataKey]),
+        color: colors[index] || "#000000",
+      })),
+    [data, categoryKey, dataKey, colors],
+  );
 
-  // Create DefaultLegend items
   const defaultLegendItems = useMemo((): LegendItem[] => {
-    return data.map((item, index) => ({
-      key: String(item[categoryKey]),
-      label: String(item[categoryKey]),
-      color: colors[index] || "#000000",
-    }));
-  }, [data, categoryKey, colors]);
+    return legendItems.map(({ key, label, color }) => ({ key, label, color }));
+  }, [legendItems]);
 
-  // Memoize sorted data for legend hover handling
   const sortedData = useMemo(
     () => [...data].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
     [data, dataKey],
   );
 
-  // Handle legend hover
-  const handleLegendHover = useCallback(
-    (key: string | null) => {
-      // Only handle legend hover for stacked legend variant
-      if (legendVariant !== "stacked") return;
-      setHoveredLegendKey(key);
-    },
-    [legendVariant],
-  );
-
-  // Handle legend item hover to highlight pie slice
   const handleLegendItemHover = useCallback(
     (index: number | null) => {
-      // Only handle legend hover for stacked legend variant
       if (legendVariant !== "stacked") return;
-
       if (index !== null) {
-        // Find the corresponding data item and set it as active
         const item = sortedData[index];
         if (item) {
           const categoryValue = String(item[categoryKey]);
           setHoveredLegendKey(categoryValue);
-          // Find the index in the original data array
           const originalIndex = data.findIndex((d) => String(d[categoryKey]) === categoryValue);
           if (originalIndex !== -1) {
             handleMouseEnter(data[originalIndex], originalIndex);
@@ -206,105 +188,35 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     [sortedData, categoryKey, data, handleMouseEnter, handleMouseLeave, legendVariant],
   );
 
-  // Enhanced chart hover handlers
   const handleChartMouseEnter = useCallback(
-    (data: any, index: number) => {
-      handleMouseEnter(data, index);
-      // Set legend hover for stacked legend variant
+    (entry: any, index: number) => {
+      handleMouseEnter(entry, index);
       if (legend && legendVariant === "stacked") {
-        const categoryValue = String(data[categoryKey]);
-        setHoveredLegendKey(categoryValue);
+        setHoveredLegendKey(String(entry[categoryKey]));
       }
+      eventHandlers.onMouseEnter?.(entry, index);
     },
-    [handleMouseEnter, categoryKey, legend, legendVariant],
+    [handleMouseEnter, categoryKey, legend, legendVariant, eventHandlers.onMouseEnter],
   );
 
   const handleChartMouseLeave = useCallback(() => {
     handleMouseLeave();
-    // Clear legend hover for stacked legend variant
     if (legend && legendVariant === "stacked") {
       setHoveredLegendKey(null);
     }
-  }, [handleMouseLeave, legend, legendVariant]);
+    eventHandlers.onMouseLeave?.();
+  }, [handleMouseLeave, legend, legendVariant, eventHandlers.onMouseLeave]);
 
-  // Calculate dimensions based on variant
   const dimensions = useMemo(() => {
     if (variant === "donut") {
       return calculateTwoLevelChartDimensions(chartSize);
     }
-    return {
-      outerRadius: "90%",
-      innerRadius: 0,
-      middleRadius: 0,
-    };
+    return { outerRadius: "90%", innerRadius: 0, middleRadius: 0 };
   }, [variant, chartSize]);
 
-  // Determine layout based on wrapper width and legend variant
-  const layoutConfig = useMemo(() => {
-    if (!legend || legendVariant !== "stacked") {
-      return { isRow: false, isMobile: false };
-    }
+  const startAngle = useMemo(() => (appearance === "semiCircular" ? 180 : 0), [appearance]);
+  const endAngle = useMemo(() => (appearance === "semiCircular" ? 0 : 360), [appearance]);
 
-    // Use wrapper width for responsive decisions
-    const availableWidth = wrapperWidth || containerWidth;
-    const isMobileLayout = availableWidth <= 400;
-
-    return {
-      isRow: !isMobileLayout && availableWidth > 400,
-      isMobile: isMobileLayout,
-    };
-  }, [legend, legendVariant, wrapperWidth, containerWidth]);
-
-  // Memoize style objects to prevent unnecessary re-renders
-  const containerStyle = useMemo(
-    () => ({
-      width: width ? `${width}px` : "100%",
-      height: height ? `${height}px` : "100%",
-      flex: legend && legendVariant === "stacked" && layoutConfig.isRow ? "1" : "none",
-    }),
-    [width, height, legend, legendVariant, layoutConfig.isRow],
-  );
-
-  const innerContainerStyle = useMemo(
-    () => ({
-      width: "100%",
-      height: "100%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    }),
-    [],
-  );
-
-  const chartSizeStyle = useMemo(
-    () => ({
-      width: chartSize,
-      height: chartSize,
-    }),
-    [chartSize],
-  );
-
-  const legendContainerStyle = useMemo(
-    () => ({
-      flex: layoutConfig.isRow ? "1" : "none",
-      width: layoutConfig.isRow ? "auto" : "100%",
-    }),
-    [layoutConfig.isRow],
-  );
-
-  const rechartsProps = useMemo(
-    () => ({
-      width: chartSize,
-      height: chartSize,
-    }),
-    [chartSize],
-  );
-
-  // Memoize angle calculations
-  const startAngle = useMemo(() => (appearance === "semiCircular" ? 0 : 0), [appearance]);
-  const endAngle = useMemo(() => (appearance === "semiCircular" ? 180 : 360), [appearance]);
-
-  // Memoize common pie props
   const commonPieProps = useMemo(
     () => ({
       data: transformedData,
@@ -335,67 +247,44 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   );
 
   useEffect(() => {
-    // Set up ResizeObserver for wrapper to get overall container width
-    if (!wrapperRef.current) {
-      return () => {};
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    if (!width || !height) {
+      const observer = new ResizeObserver((entries) => {
+        const entry = entries[0];
+        if (entry) {
+          setWrapperRect({
+            width: entry.contentRect.width,
+            height: entry.contentRect.height,
+          });
+        }
+      });
+      observer.observe(wrapper);
+      return () => observer.disconnect();
+    } else {
+      setWrapperRect({ width, height });
     }
-
-    const wrapperResizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setWrapperWidth(entry.contentRect.width);
-      }
-    });
-
-    wrapperResizeObserver.observe(wrapperRef.current);
-
-    return () => {
-      wrapperResizeObserver.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    // Only set up ResizeObserver for chart container if dimensions are not provided
-    if ((width && height) || !chartContainerRef.current) {
-      return () => {};
-    }
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const newWidth = entry.contentRect.width;
-        const newHeight = entry.contentRect.height;
-        setContainerWidth(newWidth);
-        setContainerHeight(newHeight);
-      }
-    });
-
-    resizeObserver.observe(chartContainerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
   }, [width, height]);
 
-  // Memoize the renderPieCharts function
   const renderPieCharts = useCallback(() => {
     if (variant === "donut") {
       return [
-        // Inner Pie
         <Pie
+          key="inner-pie"
           {...commonPieProps}
           innerRadius={dimensions.innerRadius}
           outerRadius={dimensions.middleRadius}
         >
-          {transformedData.map((entry, index) => {
+          {transformedData.map((_entry, index) => {
             const hoverStyles = getHoverStyles(index, activeIndex);
             const fill = useGradients
               ? `url(#gradient-${index})`
               : `var(--crayon-container-hover-fills)`;
-
             return <Cell key={`inner-cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
           })}
         </Pie>,
-        // Outer Pie
         <Pie
+          key="outer-pie"
           {...commonPieProps}
           innerRadius={dimensions.middleRadius}
           outerRadius={dimensions.outerRadius}
@@ -405,13 +294,11 @@ export const PieChartV2 = <T extends PieChartV2Data>({
             const config = chartConfig[categoryValue];
             const hoverStyles = getHoverStyles(index, activeIndex);
             const fill = useGradients ? `url(#gradient-${index})` : config?.color;
-
             return <Cell key={`outer-cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
           })}
         </Pie>,
       ];
     }
-
     return (
       <Pie
         {...commonPieProps}
@@ -424,7 +311,6 @@ export const PieChartV2 = <T extends PieChartV2Data>({
           const config = chartConfig[categoryValue];
           const hoverStyles = getHoverStyles(index, activeIndex);
           const fill = useGradients ? `url(#gradient-${index})` : config?.color || colors[index];
-
           return <Cell key={`cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
         })}
       </Pie>
@@ -441,19 +327,17 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     colors,
   ]);
 
-  // Memoize the renderLegend function
   const renderLegend = useCallback(() => {
     if (!legend) return null;
-
     if (legendVariant === "stacked") {
       return (
-        <div className="crayon-pie-chart-legend-container" style={legendContainerStyle}>
+        <div className="crayon-pie-chart-legend-container">
           <StackedLegend
             items={legendItems}
-            onItemHover={handleLegendHover}
+            onItemHover={setHoveredLegendKey}
             activeKey={hoveredLegendKey}
             onLegendItemHover={handleLegendItemHover}
-            containerWidth={layoutConfig.isRow ? undefined : wrapperWidth}
+            containerWidth={isRowLayout ? undefined : wrapperRect.width}
           />
         </div>
       );
@@ -461,7 +345,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     return (
       <DefaultLegend
         items={defaultLegendItems}
-        containerWidth={containerWidth}
+        containerWidth={wrapperRect.width}
         isExpanded={isLegendExpanded}
         setIsExpanded={setIsLegendExpanded}
       />
@@ -470,46 +354,29 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     legend,
     legendVariant,
     legendItems,
-    handleLegendHover,
     hoveredLegendKey,
     handleLegendItemHover,
-    layoutConfig.isRow,
-    wrapperWidth,
+    wrapperRect.width,
+    isRowLayout,
     defaultLegendItems,
-    containerWidth,
-    legendContainerStyle,
+    isLegendExpanded,
   ]);
 
-  // Memoize className calculations
   const wrapperClassName = useMemo(
     () =>
       clsx("crayon-pie-chart-container-wrapper", className, {
-        "crayon-pie-chart-container-wrapper--stacked-legend":
-          legend && legendVariant === "stacked" && layoutConfig.isRow,
-        "crayon-pie-chart-container-wrapper--stacked-legend-column":
-          legend && legendVariant === "stacked" && !layoutConfig.isRow,
-        "crayon-pie-chart-container-wrapper--default-legend": legend && legendVariant === "default",
+        "layout-row": isRowLayout,
+        "layout-column": !isRowLayout,
+        "legend-default": legend && legendVariant === "default",
+        "legend-stacked": legend && legendVariant === "stacked",
       }),
-    [className, legend, legendVariant, layoutConfig.isRow],
-  );
-
-  const containerClassName = useMemo(
-    () =>
-      clsx("crayon-pie-chart-container", {
-        "crayon-pie-chart-container--with-stacked-legend":
-          legend && legendVariant === "stacked" && layoutConfig.isRow,
-      }),
-    [legend, legendVariant, layoutConfig.isRow],
+    [className, legend, legendVariant, isRowLayout],
   );
 
   return (
-    <div ref={wrapperRef} className={wrapperClassName}>
-      <div className={containerClassName} style={containerStyle}>
-        <div
-          className="crayon-pie-chart-container-inner"
-          ref={chartContainerRef}
-          style={innerContainerStyle}
-        >
+    <div ref={wrapperRef} className={wrapperClassName} style={{ width, height }}>
+      <div className="crayon-pie-chart-container">
+        <div className="crayon-pie-chart-container-inner">
           <div style={chartSizeStyle}>
             <ChartContainer
               config={chartConfig}
@@ -520,9 +387,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
                 <ChartTooltip
                   content={<ChartTooltipContent showPercentage={format === "percentage"} />}
                 />
-
                 {gradientDefinitions && <defs>{gradientDefinitions}</defs>}
-
                 {renderPieCharts()}
               </RechartsPieChart>
             </ChartContainer>
