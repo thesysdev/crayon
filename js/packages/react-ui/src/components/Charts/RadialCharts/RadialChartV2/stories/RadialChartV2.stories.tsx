@@ -221,7 +221,7 @@ export const RadialChartV2Demo: Story = {
     width: undefined,
   },
   render: (args: any) => (
-    <Card style={{ width: "800px", height: "100%", padding: "20px" }}>
+    <Card style={{ width: "400px", height: "fit-content", padding: "20px" }}>
       <RadialChartV2 {...args} />
     </Card>
   ),

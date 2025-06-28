@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { IconButton } from "../../../IconButton";
 import "./stackedLegend.scss";
 
@@ -50,16 +50,16 @@ export const StackedLegend = ({
   };
 
   // Check if scrolling is needed
-  useEffect(() => {
+  useLayoutEffect(() => {
     const checkScroll = () => {
-      if (listRef.current && containerRef.current) {
+      if (listRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = listRef.current;
         setShowUpButton(scrollTop > 0);
         setShowDownButton(scrollTop < scrollHeight - clientHeight - 1); // -1 for rounding errors
       }
     };
 
-    // Initial check
+    // Initial check is now synchronous after DOM mutation
     checkScroll();
 
     // Add event listener for scroll
@@ -76,8 +76,8 @@ export const StackedLegend = ({
         resizeObserver.disconnect();
       };
     }
-    return () => {};
-  }, []);
+    return;
+  }, [items]); // Add items as dependency to recheck when items change
 
   // Scroll functions
   const scrollUp = () => {
