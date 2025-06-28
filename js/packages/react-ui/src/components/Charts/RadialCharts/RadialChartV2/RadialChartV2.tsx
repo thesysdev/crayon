@@ -250,7 +250,9 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
     // If fixed dimensions are provided, just set them once.
     else {
       setWrapperRect({ width, height });
+      return;
     }
+    
   }, [width, height]);
 
   const renderLegend = useCallback(() => {
