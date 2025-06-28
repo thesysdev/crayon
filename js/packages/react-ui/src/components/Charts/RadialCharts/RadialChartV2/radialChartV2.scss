@@ -1,139 +1,90 @@
 @use "../../../../cssUtils" as cssUtils;
 
+// Main wrapper for the entire chart component
 .crayon-radial-chart-container-wrapper {
+  display: flex;
   width: 100%;
   height: 100%;
   position: relative;
-  overflow: hidden;
-  display: flex;
   gap: 20px;
 
-  // Default legend variant - always column layout (chart on top, legend at bottom)
-  &--default-legend {
+  // Default legend is always a column layout
+  &.legend-default {
     flex-direction: column;
     align-items: center;
-    gap: 20px;
   }
 
-  // Stacked legend variant - responsive layout (side-by-side on desktop, stacked on mobile)
-  &--stacked-legend {
-    display: flex;
+  // Stacked legend uses a column layout by default (mobile-first)
+  &.legend-stacked.layout-column {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  // Switches to a row layout on wider containers
+  &.legend-stacked.layout-row {
     flex-direction: row;
-    align-items: center;
-    gap: 20px;
-    min-height: 0;
-  }
-
-  &--stacked-legend-column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
+    align-items: center; // Vertically center chart and legend
   }
 }
 
+// Container for the chart itself
 .crayon-radial-chart-container {
   width: 100%;
   height: 100%;
-  position: relative;
-  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 0;
+  position: relative;
 
-  // When in row layout with stacked legend, ensure proper sizing
-  &--with-stacked-legend {
+  // When in a row layout, the chart container should be flexible
+  .layout-row & {
     flex: 1;
-    min-width: 0;
+    min-width: 0; // Prevent flexbox overflow issues
   }
 }
 
-.crayon-radial-chart-container-inner {
-  width: 100%;
-  height: 100%;
+// Recharts chart styles
+.crayon-radial-chart {
   display: flex;
   align-items: center;
   justify-content: center;
-}
 
-.crayon-radial-chart {
-  position: relative;
-
-  // Add smooth transitions for hover effects
   .recharts-radial-bar-sector {
     transition: all 0.2s ease-in-out;
   }
 
-  // Improve grid appearance
   .recharts-polar-grid {
     opacity: 0.3;
   }
 
-  // Ensure proper hover states for radial bars
-  .recharts-radial-bar {
-    .recharts-radial-bar-sector {
-      transition:
-        opacity 0.2s ease-in-out,
-        stroke 0.2s ease-in-out,
-        stroke-width 0.2s ease-in-out;
-    }
-  }
-
-  // Label positioning and styling
   .recharts-label {
     font-weight: 500;
     fill: var(--crayon-text-primary);
   }
 }
 
+// Container for the legend component
 .crayon-radial-chart-legend-container {
-  height: 100%;
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  min-width: 0;
-  overflow: hidden;
-
-  // Ensure the legend takes available space in row layout
-  .crayon-stacked-legend {
-    width: 100%;
-    min-width: 0;
-  }
-}
-
-.crayon-radial-chart-legend {
-  display: flex;
-  align-items: center;
   justify-content: center;
 
-  // Stacked legend variant - responsive positioning
-  &:not(.crayon-radial-chart-legend--bottom) {
-    // Mobile layout
-    @media (max-width: 599px) {
-      width: 100%;
-      margin-top: 20px;
-    }
-
-    // Desktop layout
-    @media (min-width: 600px) {
-      width: 100%;
-    }
+  // Default legend is centered at the bottom
+  .legend-default & {
+    width: 100%;
+    align-items: center;
   }
 
-  // Stacked legend variant styling
-  .crayon-stacked-legend {
+  // Stacked legend in column layout
+  .layout-column.legend-stacked & {
     width: 100%;
+    align-items: flex-start;
+  }
 
-    // Mobile layout for stacked legend
-    @media (max-width: 599px) {
-      width: 100%;
-      margin-top: 20px;
-    }
-
-    // Desktop layout for stacked legend
-    @media (min-width: 600px) {
-      width: 100%;
-    }
+  // Stacked legend in row layout
+  .layout-row.legend-stacked & {
+    flex: 1;
+    min-width: 0; // Prevent flexbox overflow
+    height: 100%;
+    align-items: center; // Vertically center legend content
   }
 }
