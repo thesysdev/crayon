@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { Card } from "../../../../Card";
-import { RadialChartProps, RadialChartV2 } from "../RadialChart";
+import { RadialChartProps, RadialChart } from "../RadialChart";
 
 const radialChartData = [
   { month: "January", value: 1250 },
@@ -54,7 +54,7 @@ const gradientColors = [
 
 const meta: Meta<RadialChartProps<typeof radialChartData>> = {
   title: "Components/Charts/RadialCharts/RadialChartV2",
-  component: RadialChartV2,
+  component: RadialChart,
   parameters: {
     layout: "centered",
     docs: {
@@ -196,7 +196,7 @@ const meta: Meta<RadialChartProps<typeof radialChartData>> = {
       },
     },
   },
-} satisfies Meta<typeof RadialChartV2>;
+} satisfies Meta<typeof RadialChart>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -222,7 +222,7 @@ export const RadialChartV2Demo: Story = {
   },
   render: (args: any) => (
     <Card style={{ width: "800px", height: "100%", padding: "20px" }}>
-      <RadialChartV2 {...args} />
+      <RadialChart {...args} />
     </Card>
   ),
 };
@@ -248,7 +248,7 @@ export const RadialChartV2Circular: Story = {
   },
   render: (args: any) => (
     <Card style={{ width: "400px", height: "100%", padding: "20px" }}>
-      <RadialChartV2 {...args} />
+      <RadialChart {...args} />
     </Card>
   ),
   parameters: {
@@ -282,7 +282,7 @@ export const RadialChartV2WithGradients: Story = {
   },
   render: (args: any) => (
     <Card style={{ width: "400px", height: "100%", padding: "20px" }}>
-      <RadialChartV2 {...args} />
+      <RadialChart {...args} />
     </Card>
   ),
   parameters: {
@@ -316,7 +316,7 @@ export const RadialChartV2WithCarousel: Story = {
   },
   render: (args: any) => (
     <Card style={{ width: "600px", height: "100%", padding: "20px" }}>
-      <RadialChartV2 {...args} />
+      <RadialChart {...args} />
     </Card>
   ),
   parameters: {
@@ -350,7 +350,7 @@ export const RadialChartV2Minimal: Story = {
   },
   render: (args: any) => (
     <Card style={{ width: "300px", height: "100%", padding: "20px" }}>
-      <RadialChartV2 {...args} />
+      <RadialChart {...args} />
     </Card>
   ),
   parameters: {
@@ -440,7 +440,7 @@ export const ResizableAndResponsive: Story = {
           overflow: "hidden",
         }}
       >
-        <RadialChartV2 {...args} />
+        <RadialChart {...args} />
 
         {/* Resizer handles */}
         <div

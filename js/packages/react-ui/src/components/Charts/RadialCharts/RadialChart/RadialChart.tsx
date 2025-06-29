@@ -48,7 +48,7 @@ export interface RadialChartProps<T extends RadialChartData> {
 
 const STACKED_LEGEND_BREAKPOINT = 600; // px
 
-export const RadialChartV2 = <T extends RadialChartData>({
+export const RadialChart = <T extends RadialChartData>({
   data,
   categoryKey,
   dataKey,
