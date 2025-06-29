@@ -22,7 +22,7 @@ import {
   getSnapPositions,
   getWidthOfData,
   getXAxisTickPositionData,
-} from "../../utils/BarAndLineUtils/AreaAndLineUtils";
+} from "../../utils/AreaAndLine/AreaAndLineUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
 import {
   getChartConfig,

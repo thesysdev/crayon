@@ -22,7 +22,7 @@ import {
   getSnapPositions,
   getWidthOfData,
   getXAxisTickPositionData,
-} from "../../utils/BarAndLineUtils/AreaAndLineUtils";
+} from "../../utils/AreaAndLine/AreaAndLineUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
 import {
   getChartConfig,
@@ -180,6 +180,7 @@ const AreaChartV2Component = <T extends AreaChartV2Data>({
     });
 
     resizeObserver.observe(chartContainerRef.current);
+    setContainerWidth(chartContainerRef.current.getBoundingClientRect().width);
 
     return () => {
       resizeObserver.disconnect();

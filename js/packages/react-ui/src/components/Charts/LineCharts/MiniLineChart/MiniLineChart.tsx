@@ -5,7 +5,7 @@ import { ChartConfig, ChartContainer } from "../../Charts";
 import {
   getRecentDataThatFits,
   transformDataForChart,
-} from "../../utils/BarAndLineUtils/MiniAreaAndLineUtils";
+} from "../../utils/AreaAndLine/MiniAreaAndLineUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
 import { MiniLineChartData } from "../types";
 
