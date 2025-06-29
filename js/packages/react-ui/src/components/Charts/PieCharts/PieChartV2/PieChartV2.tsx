@@ -51,7 +51,7 @@ export interface PieChartV2Props<T extends PieChartV2Data> {
   width?: number;
 }
 
-const STACKED_LEGEND_BREAKPOINT = 600; // px
+const STACKED_LEGEND_BREAKPOINT = 600;
 
 export const PieChartV2 = <T extends PieChartV2Data>({
   data,
