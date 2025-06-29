@@ -1,7 +1,8 @@
-import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart as RechartsRadarChart } from "recharts";
-import { ChartConfig, ChartContainer, ChartTooltip, keyTransform } from "../../Charts";
+import { ChartConfig, ChartContainer, ChartTooltip } from "../../Charts";
 import { SideBarTooltipProvider } from "../../context/SideBarTooltipContext";
+import { useTransformedKeys } from "../../hooks/useTransformKey";
 import { ActiveDot, CustomTooltipContent, DefaultLegend } from "../../shared";
 import { LegendItem } from "../../types";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
@@ -40,6 +41,8 @@ const RadarChartV2Component = <T extends RadarChartV2Data>({
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
+  const transformedKeys = useTransformedKeys(dataKeys);
+
   const colors = useMemo(() => {
     const palette = getPalette(theme);
     return getDistributedColors(palette, dataKeys.length);
@@ -47,8 +50,8 @@ const RadarChartV2Component = <T extends RadarChartV2Data>({
 
   // Create Config
   const chartConfig: ChartConfig = useMemo(() => {
-    return getChartConfig(dataKeys, colors, undefined, icons);
-  }, [dataKeys, icons, colors]);
+    return getChartConfig(dataKeys, colors, transformedKeys, undefined, icons);
+  }, [dataKeys, icons, colors, transformedKeys]);
 
   const legendItems: LegendItem[] = useMemo(() => {
     return getLegendItems(dataKeys, colors, icons);
@@ -87,48 +90,39 @@ const RadarChartV2Component = <T extends RadarChartV2Data>({
     [containerDimensions],
   );
 
-  const renderRadars = useCallback(
-    (
-      dataKeys: string[],
-      variant: "line" | "area",
-      strokeWidth: number,
-      areaOpacity: number,
-      isAnimationActive: boolean,
-    ) => {
-      return dataKeys.map((key) => {
-        const transformedKey = keyTransform(key);
-        const color = `var(--color-${transformedKey})`;
-        if (variant === "line") {
-          return (
-            <Radar
-              key={key}
-              dataKey={key}
-              fill={color}
-              fillOpacity={0}
-              stroke={color}
-              strokeWidth={strokeWidth}
-              isAnimationActive={isAnimationActive}
-              activeDot={<ActiveDot />}
-            />
-          );
-        } else {
-          return (
-            <Radar
-              key={key}
-              dataKey={key}
-              fill={color}
-              stroke={color}
-              strokeWidth={strokeWidth}
-              fillOpacity={areaOpacity}
-              isAnimationActive={isAnimationActive}
-              activeDot={<ActiveDot />}
-            />
-          );
-        }
-      });
-    },
-    [],
-  );
+  const radars = useMemo(() => {
+    return dataKeys.map((key) => {
+      const transformedKey = transformedKeys[key];
+      const color = `var(--color-${transformedKey})`;
+      if (variant === "line") {
+        return (
+          <Radar
+            key={key}
+            dataKey={key}
+            fill={color}
+            fillOpacity={0}
+            stroke={color}
+            strokeWidth={strokeWidth}
+            isAnimationActive={isAnimationActive}
+            activeDot={<ActiveDot />}
+          />
+        );
+      } else {
+        return (
+          <Radar
+            key={key}
+            dataKey={key}
+            fill={color}
+            stroke={color}
+            strokeWidth={strokeWidth}
+            fillOpacity={areaOpacity}
+            isAnimationActive={isAnimationActive}
+            activeDot={<ActiveDot />}
+          />
+        );
+      }
+    });
+  }, [dataKeys, transformedKeys, variant, strokeWidth, areaOpacity, isAnimationActive]);
 
   return (
     <SideBarTooltipProvider
@@ -177,7 +171,7 @@ const RadarChartV2Component = <T extends RadarChartV2Data>({
               />
 
               <ChartTooltip cursor={false} content={<CustomTooltipContent />} />
-              {renderRadars(dataKeys, variant, strokeWidth, areaOpacity, isAnimationActive)}
+              {radars}
             </RechartsRadarChart>
           </ChartContainer>
         </div>

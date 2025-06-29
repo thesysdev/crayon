@@ -18,12 +18,15 @@ export const getDataKeys = (
  * This function returns the chart configuration object, used for the chart configuration object of the chart.
  * @param dataKeys - The data keys for the chart.
  * @param colors - The colors for the chart.
+ * @param transformedKeys - The transformed keys for the chart.
+ * @param secondaryColors - The secondary colors for the chart (optional).
  * @param icons - The icons for the chart (optional).
  * @returns The chart configuration object for the chart.
  */
 export const getChartConfig = (
   dataKeys: string[],
   colors: string[],
+  transformedKeys: Record<string, string>,
   secondaryColors?: string[],
   icons?: Partial<Record<string, React.ComponentType>>,
 ): ChartConfig => {
@@ -35,6 +38,7 @@ export const getChartConfig = (
         icon: icons?.[key],
         color: colors[index],
         secondaryColor: secondaryColors?.[index] || colors[dataKeys.length - index - 1],
+        transformed: transformedKeys[key],
       },
     }),
     {},

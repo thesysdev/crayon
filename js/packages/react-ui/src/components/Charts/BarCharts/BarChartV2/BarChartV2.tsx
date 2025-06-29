@@ -5,8 +5,9 @@ import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../../polyfills";
 import { IconButton } from "../../../IconButton";
 import { useTheme } from "../../../ThemeProvider";
-import { ChartConfig, ChartContainer, ChartTooltip, keyTransform } from "../../Charts";
+import { ChartConfig, ChartContainer, ChartTooltip } from "../../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../../context/SideBarTooltipContext";
+import { useTransformedKeys } from "../../hooks";
 import {
   cartesianGrid,
   CustomTooltipContent,
@@ -85,14 +86,16 @@ const BarChartV2Component = <T extends BarChartV2Data>({
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
+  const transformedKeys = useTransformedKeys(dataKeys);
+
   const colors = useMemo(() => {
     const palette = getPalette(theme);
     return getDistributedColors(palette, dataKeys.length);
   }, [theme, dataKeys.length]);
 
   const chartConfig: ChartConfig = useMemo(() => {
-    return getChartConfig(dataKeys, colors, undefined, icons);
-  }, [dataKeys, icons, colors]);
+    return getChartConfig(dataKeys, colors, transformedKeys, undefined, icons);
+  }, [dataKeys, icons, colors, transformedKeys]);
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
@@ -379,7 +382,7 @@ const BarChartV2Component = <T extends BarChartV2Data>({
                 />
 
                 {dataKeys.map((key, index) => {
-                  const transformedKey = keyTransform(key);
+                  const transformedKey = transformedKeys[key];
                   const color = `var(--color-${transformedKey})`;
                   const isFirstInStack = index === 0;
                   const isLastInStack = index === dataKeys.length - 1;

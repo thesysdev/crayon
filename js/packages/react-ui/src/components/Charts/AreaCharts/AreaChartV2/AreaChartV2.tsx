@@ -4,8 +4,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Area, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../../polyfills";
 import { IconButton } from "../../../IconButton";
-import { ChartConfig, ChartContainer, ChartTooltip, keyTransform } from "../../Charts";
+import { ChartConfig, ChartContainer, ChartTooltip } from "../../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../../context/SideBarTooltipContext";
+import { useTransformedKeys } from "../../hooks";
 import {
   ActiveDot,
   cartesianGrid,
@@ -77,14 +78,16 @@ const AreaChartV2Component = <T extends AreaChartV2Data>({
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
+  const transformedKeys = useTransformedKeys(dataKeys);
+
   const colors = useMemo(() => {
     const palette = getPalette(theme);
     return getDistributedColors(palette, dataKeys.length);
   }, [theme, dataKeys.length]);
 
   const chartConfig: ChartConfig = useMemo(() => {
-    return getChartConfig(dataKeys, colors, undefined, icons);
-  }, [dataKeys, icons, colors]);
+    return getChartConfig(dataKeys, colors, transformedKeys, undefined, icons);
+  }, [dataKeys, icons, colors, transformedKeys]);
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
@@ -338,7 +341,7 @@ const AreaChartV2Component = <T extends AreaChartV2Data>({
                 <ChartTooltip content={<CustomTooltipContent />} offset={15} />
 
                 {dataKeys.map((key) => {
-                  const transformedKey = keyTransform(key);
+                  const transformedKey = transformedKeys[key];
                   const color = `var(--color-${transformedKey})`;
                   return (
                     <defs key={`gradient-${key}`}>
@@ -351,7 +354,7 @@ const AreaChartV2Component = <T extends AreaChartV2Data>({
                 })}
 
                 {dataKeys.map((key) => {
-                  const transformedKey = keyTransform(key);
+                  const transformedKey = transformedKeys[key];
                   const color = `var(--color-${transformedKey})`;
                   return (
                     <Area
