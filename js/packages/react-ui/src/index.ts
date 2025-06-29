@@ -38,6 +38,7 @@ export * from "./components/Tabs";
 export * from "./components/Tag";
 export * from "./components/TagBlock";
 export * from "./components/TextArea";
+export * from "./components/TextCallout";
 export * from "./components/TextContent";
 export { Theme, ThemeProvider, themePresets } from "./components/ThemeProvider";
 

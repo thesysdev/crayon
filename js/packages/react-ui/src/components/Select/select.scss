@@ -2,7 +2,7 @@
 
 .crayon-select-trigger {
   box-sizing: border-box;
-  background-color: cssUtils.$bg-container;
+  background-color: cssUtils.$bg-sunk;
   color: cssUtils.$primary-text;
   @include cssUtils.typography(label, default);
   border: 1px solid cssUtils.$stroke-default;
@@ -12,37 +12,40 @@
   justify-content: space-between;
 
   &:hover {
-    background: cssUtils.$bg-container-hover;
+    background: cssUtils.$bg-sunk;
     border-color: cssUtils.$stroke-interactive-el;
     color: cssUtils.$secondary-text;
+    &:not([data-placeholder]) {
+      color: cssUtils.$primary-text;
+    }
   }
 
   &:disabled {
     background-color: cssUtils.$bg-sunk;
     color: cssUtils.$disabled-text;
-    border-color: cssUtils.$disabled-text;
+    border-color: cssUtils.$stroke-default;
     cursor: not-allowed;
   }
 
   &[data-state="open"] {
     border-color: cssUtils.$stroke-interactive-el;
-    background-color: cssUtils.$bg-fill;
+    background-color: cssUtils.$bg-sunk;
   }
   &[data-placeholder] {
-    color: cssUtils.$disabled-text;
+    color: cssUtils.$secondary-text;
   }
 
   &-sm {
     padding: cssUtils.$spacing-2xs cssUtils.$spacing-s;
-    border-radius: cssUtils.$rounded-xs;
+    border-radius: cssUtils.$rounded-s;
   }
   &-md {
     padding: cssUtils.$spacing-xs cssUtils.$spacing-s;
-    border-radius: cssUtils.$rounded-xs;
+    border-radius: cssUtils.$rounded-m;
   }
   &-lg {
     padding: cssUtils.$spacing-s;
-    border-radius: cssUtils.$rounded-xs;
+    border-radius: cssUtils.$rounded-m;
   }
   &-icon {
     height: 16px;
@@ -57,7 +60,7 @@
   max-height: 380px;
   min-width: var(--radix-select-trigger-width);
   overflow: hidden;
-  border-radius: cssUtils.$rounded-m;
+  border-radius: cssUtils.$rounded-l;
   background-color: cssUtils.$bg-container;
   border: 1px solid cssUtils.$stroke-default;
   box-shadow: cssUtils.$shadow-m;
@@ -75,8 +78,9 @@
 
 .crayon-select-label {
   box-sizing: border-box;
-  padding: cssUtils.$spacing-xs cssUtils.$spacing-s;
+  padding: cssUtils.$spacing-xs cssUtils.$spacing-2xs;
   @include cssUtils.typography(primary, default);
+  color: cssUtils.$disabled-text;
 }
 
 .crayon-select-item {
@@ -88,11 +92,16 @@
   align-items: center;
   justify-content: space-between;
   border-radius: cssUtils.$rounded-s;
-  padding-top: 6px;
-  padding-bottom: 6px;
+  padding-top: cssUtils.$spacing-2xs;
+  padding-bottom: cssUtils.$spacing-2xs;
+  margin-bottom: cssUtils.$spacing-2xs;
   @include cssUtils.typography(primary, default);
   color: cssUtils.$primary-text;
   outline: 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 
   // Variants based on showTick
   &--with-tick {
@@ -115,11 +124,14 @@
     color: cssUtils.$primary-text;
   }
 
+  &:not([data-state="checked"]):hover {
+    background-color: cssUtils.$bg-sunk;
+    color: cssUtils.$primary-text;
+  }
+
   &:focus {
     background-color: cssUtils.$bg-sunk;
     color: cssUtils.$primary-text;
-    outline: 1px solid cssUtils.$stroke-interactive-el;
-    outline-offset: -1px;
   }
 
   &[data-state="checked"] {
@@ -145,7 +157,7 @@
   &-text {
     flex: 1;
     @include cssUtils.typography(primary, default);
-    color: cssUtils.$disabled-text;
+    color: cssUtils.$secondary-text;
   }
 
   &-value {

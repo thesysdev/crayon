@@ -69,6 +69,14 @@ const meta: Meta<typeof IconButton> = {
         type: { summary: "string" },
       },
     },
+    appearance: {
+      control: "radio",
+      options: ["normal", "destructive"],
+      description: "The appearance of the button",
+      table: {
+        category: "Appearance",
+      },
+    },
   },
   tags: ["!dev", "autodocs"],
 };
@@ -84,6 +92,7 @@ export const PrimaryButton: Story = {
     variant: "primary",
     shape: "square",
     size: "medium",
+    appearance: "normal",
   },
   render: (args) => <IconButton {...args} />,
 };

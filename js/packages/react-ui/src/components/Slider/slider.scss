@@ -1,6 +1,38 @@
 @use "../../cssUtils" as cssUtils;
 
 .slider {
+  &-wrapper {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$spacing-s;
+    width: 100%;
+  }
+
+  &-left-content,
+  &-right-content {
+    display: flex;
+    align-items: center;
+    min-width: fit-content;
+    color: cssUtils.$primary-text;
+    @include cssUtils.typography(label, small);
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &-container {
+    padding: 0 8px;
+    background-color: cssUtils.$bg-sunk;
+    height: 16px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: cssUtils.$rounded-s;
+  }
+
   &-root {
     position: relative;
     display: flex;
@@ -15,27 +47,31 @@
 
   &-track {
     position: relative;
-    height: 6px;
+    height: 16px;
     flex-grow: 1;
     border-radius: cssUtils.$rounded-full;
-    background-color: cssUtils.$bg-sunk;
   }
 
   &-range {
     position: absolute;
     height: 100%;
-    border-radius: cssUtils.$rounded-full;
-    background-color: cssUtils.$bg-brand-el;
+    border-radius: cssUtils.$rounded-s;
+    background-color: cssUtils.$interactive-accent;
+    margin-left: -8px;
+    margin-right: -8px;
+
+    &--at-min {
+      background-color: transparent;
+    }
   }
 
   &-thumb {
     outline: none;
-
     &-handle {
       display: block;
-      width: 16px;
-      height: 16px;
-      border-radius: cssUtils.$rounded-3xs;
+      width: 12px;
+      height: 12px;
+      border-radius: cssUtils.$rounded-xs;
       outline: 1px solid cssUtils.$stroke-default;
       background-color: cssUtils.$bg-container;
       overflow: hidden;
@@ -51,14 +87,14 @@
         transition: background-color 0.2s;
 
         &:hover {
-          background-color: cssUtils.$bg-container-hover;
+          background-color: cssUtils.$bg-sunk;
         }
 
         &-dot {
           width: 4px;
           height: 4px;
           border-radius: cssUtils.$rounded-full;
-          background-color: cssUtils.$bg-brand-el;
+          background-color: cssUtils.$interactive-accent;
         }
       }
     }
@@ -66,7 +102,7 @@
     &-value {
       @include cssUtils.typography(label, small);
       position: absolute;
-      top: -30px;
+      top: -35px;
       left: 50%;
       border-radius: cssUtils.$rounded-2xs;
       transform: translateX(-50%);
@@ -88,12 +124,12 @@
   &-dots {
     &-dot {
       position: absolute;
-      top: 1px;
+      top: 50%;
+      transform: translateY(-50%);
       width: 4px;
       height: 4px;
       border-radius: cssUtils.$rounded-full;
       background-color: cssUtils.$bg-container;
-      transform: translateX(-50%);
     }
   }
 

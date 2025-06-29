@@ -13,6 +13,7 @@ import {
   Trophy,
   UtensilsCrossed,
 } from "lucide-react";
+import { Card } from "../../Card";
 import { CardHeader } from "../../CardHeader";
 import { IconButton } from "../../IconButton";
 import { Image } from "../../Image";
@@ -196,22 +197,24 @@ export const Default: Story = {
     }));
 
     return (
-      <Carousel itemsToScroll={itemsToScroll} noSnap={noSnap} showButtons={showButtons}>
-        <CarouselContent>
-          {repeatedItems.map((item) => (
-            <CarouselItem key={item.id}>
-              <CardHeader
-                title={item.title}
-                subtitle={item.subtitle}
-                actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
-              />
-              <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious icon={<ChevronLeft />} />
-        <CarouselNext icon={<ChevronRight />} />
-      </Carousel>
+      <Card style={{ width: "700px" }}>
+        <Carousel itemsToScroll={itemsToScroll} noSnap={noSnap} showButtons={showButtons}>
+          <CarouselContent>
+            {repeatedItems.map((item) => (
+              <CarouselItem key={item.id}>
+                <CardHeader
+                  title={item.title}
+                  subtitle={item.subtitle}
+                  actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
+                />
+                <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious icon={<ChevronLeft />} />
+          <CarouselNext icon={<ChevronRight />} />
+        </Carousel>
+      </Card>
     );
   },
 };

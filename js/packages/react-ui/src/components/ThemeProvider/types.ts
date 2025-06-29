@@ -5,32 +5,106 @@ export type ThemeMode = "light" | "dark";
 export interface ColorTheme {
   // Background colors
   backgroundFills?: string;
+  /**
+   * @deprecated -- use interactiveAccent instead
+   */
   brandElFills?: string;
+  /**
+   * @deprecated -- use interactiveAccentHover instead
+   */
   brandElHoverFills?: string;
   containerFills?: string;
   overlayFills?: string;
   sunkFills?: string;
+  /**
+   * @deprecated -- use sunkFills instead
+   */
   containerHoverFills?: string;
   dangerFills?: string;
   successFills?: string;
   infoFills?: string;
   elevatedFills?: string;
+  alertFills?: string;
+  sunkBgFills?: string;
+  invertedFills?: string;
   // Border colors
   strokeDefault?: string;
   strokeInteractiveEl?: string;
+  /**
+   * @deprecated -- use strokeEmphasis instead
+   */
   strokeInteractiveElHover?: string;
   strokeInteractiveElSelected?: string;
+  strokeEmphasis?: string;
+  strokeAccent?: string;
+  strokeAccentEmphasis?: string;
+  strokeInfo?: string;
+  strokeInfoEmphasis?: string;
+  strokeAlert?: string;
+  strokeAlertEmphasis?: string;
+  strokeSuccess?: string;
+  strokeSuccessEmphasis?: string;
+  strokeDanger?: string;
+  strokeDangerEmphasis?: string;
 
   // Text colors
+  /**
+   * @deprecated -- use accentPrimaryText instead
+   */
   brandText?: string;
+  /**
+   * @deprecated -- use accentSecondaryText instead
+   */
   brandSecondaryText?: string;
   primaryText?: string;
   secondaryText?: string;
   disabledText?: string;
+  /**
+   * @deprecated -- use dangerPrimaryText instead
+   */
   dangerText?: string;
+  /**
+   * @deprecated -- use successPrimaryText instead
+   */
   successText?: string;
   linkText?: string;
+  /**
+   * @deprecated -- use infoPrimaryText instead
+   */
   infoText?: string;
+  accentPrimaryText?: string;
+  accentSecondaryText?: string;
+  accentDisabledText?: string;
+  successPrimaryText?: string;
+  successInvertedText?: string;
+  alertPrimaryText?: string;
+  alertInvertedText?: string;
+  dangerPrimaryText?: string;
+  dangerSecondaryText?: string;
+  dangerDisabledText?: string;
+  dangerInvertedPrimaryText?: string;
+  dangerInvertedSecondaryText?: string;
+  dangerInvertedDisabledText?: string;
+  infoPrimaryText?: string;
+  infoInvertedText?: string;
+
+  // Interactive colors
+  interactiveDefault?: string;
+  interactiveHover?: string;
+  interactivePressed?: string;
+  interactiveDisabled?: string;
+  interactiveAccent?: string;
+  interactiveAccentHover?: string;
+  interactiveAccentPressed?: string;
+  interactiveAccentDisabled?: string;
+  interactiveDestructive?: string;
+  interactiveDestructiveHover?: string;
+  interactiveDestructivePressed?: string;
+  interactiveDestructiveDisabled?: string;
+  interactiveDestructiveAccent?: string;
+  interactiveDestructiveAccentHover?: string;
+  interactiveDestructiveAccentPressed?: string;
+  interactiveDestructiveAccentDisabled?: string;
 
   // chat colors
   chatContainerBg?: string;
@@ -73,14 +147,26 @@ export interface LayoutTheme {
 // Typography-related theme properties
 export interface TypographyTheme {
   // Primary Font
+  /**
+   * @deprecated -- use fontBody instead
+   */
   fontPrimary?: string;
   fontPrimaryLetterSpacing?: string;
 
-  // Title Variants
+  // Title Variant
+  /**
+   * @deprecated -- use fontBodyHeavy instead
+   */
   fontTitle?: string;
   fontTitleLetterSpacing?: string;
+  /**
+   * @deprecated -- use fontBodyLargeHeavy instead
+   */
   fontTitleMedium?: string;
   fontTitleMediumLetterSpacing?: string;
+  /**
+   * @deprecated -- use fontBodySmallHeavy instead
+   */
   fontTitleSmall?: string;
   fontTitleSmallLetterSpacing?: string;
 
@@ -91,13 +177,22 @@ export interface TypographyTheme {
   fontBodyLinkLetterSpacing?: string;
   fontBodyHeavy?: string;
   fontBodyHeavyLetterSpacing?: string;
+  /**
+   * @deprecated -- use fontBody instead
+   */
   fontBodyMedium?: string;
+  /**
+   * @deprecated -- use fontBodyLetterSpacing instead
+   */
   fontBodyMediumLetterSpacing?: string;
   fontBodySmallHeavy?: string;
   fontBodySmallHeavyLetterSpacing?: string;
   fontBodySmall?: string;
   fontBodySmallLetterSpacing?: string;
-
+  fontBodyLarge?: string;
+  fontBodyLargeLetterSpacing?: string;
+  fontBodyLargeHeavy?: string;
+  fontBodyLargeHeavyLetterSpacing?: string;
   // Label System
   fontLabel?: string;
   fontLabelLetterSpacing?: string;
@@ -115,9 +210,21 @@ export interface TypographyTheme {
   fontLabelLargeHeavyLetterSpacing?: string;
   fontLabelLarge?: string;
   fontLabelLargeLetterSpacing?: string;
+  /**
+   * @deprecated -- use fontLabelHeavy instead
+   */
   fontLabelMediumHeavy?: string;
+  /**
+   * @deprecated -- use fontLabelHeavyLetterSpacing instead
+   */
   fontLabelMediumHeavyLetterSpacing?: string;
+  /**
+   * @deprecated -- use fontLabel instead
+   */
   fontLabelMedium?: string;
+  /**
+   * @deprecated -- use fontLabelMediumLetterSpacing instead
+   */
   fontLabelMediumLetterSpacing?: string;
 
   // Headings
@@ -127,6 +234,14 @@ export interface TypographyTheme {
   fontHeadingMediumLetterSpacing?: string;
   fontHeadingSmall?: string;
   fontHeadingSmallLetterSpacing?: string;
+  fontHeadingExtraSmall?: string;
+  fontHeadingExtraSmallLetterSpacing?: string;
+
+  // 2Extra Small
+  fontLabel2ExtraSmall?: string;
+  fontLabel2ExtraSmallLetterSpacing?: string;
+  fontLabel2ExtraSmallHeavy?: string;
+  fontLabel2ExtraSmallHeavyLetterSpacing?: string;
 }
 
 // Effect-related theme properties

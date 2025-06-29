@@ -91,7 +91,7 @@ export const MonthsDropdown = (
       key={key}
       aria-label={ariaLabel}
     >
-      <SelectTrigger className={className}>
+      <SelectTrigger className={clsx("crayon-calendar-select-trigger", className)}>
         <SelectValue placeholder={"Select a month"} />
       </SelectTrigger>
       <SelectContent
@@ -180,7 +180,7 @@ export const YearsDropdown = (
       key={key}
       aria-label={ariaLabel}
     >
-      <SelectTrigger className={className}>
+      <SelectTrigger className={clsx("crayon-calendar-select-trigger", className)}>
         <SelectValue placeholder={"Select a month"} />
       </SelectTrigger>
       <SelectContent

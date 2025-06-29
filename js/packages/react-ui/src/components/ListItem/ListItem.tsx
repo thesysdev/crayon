@@ -4,10 +4,10 @@ import React, { CSSProperties, ReactNode } from "react";
 export interface ListItemProps {
   className?: string;
   style?: CSSProperties;
-  decorativeIcon?: ReactNode;
   title?: ReactNode;
   subtitle?: ReactNode;
   actionIcon?: ReactNode;
+  decorativeIcon?: ReactNode;
   onClick?: () => void;
 }
 

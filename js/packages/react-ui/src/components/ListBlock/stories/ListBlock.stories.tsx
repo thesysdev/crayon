@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ChevronRight, Mail, User } from "lucide-react";
+import { ChevronRight, User } from "lucide-react";
 import { ListItem } from "../../ListItem";
 import { ListBlock } from "../ListBlock";
 
@@ -64,13 +64,13 @@ export const ListBlockWithItems: Story = {
         actionIcon={<ChevronRight size={16} />}
       />
       <ListItem
-        decorativeIcon={<Mail size={16} />}
+        decorativeIcon={<User size={16} />}
         title="Jane Smith"
         subtitle="Product Designer"
         actionIcon={<ChevronRight size={16} />}
       />
       <ListItem
-        decorativeIcon={<Mail size={16} />}
+        decorativeIcon={<User size={16} />}
         title="Ankit Das"
         subtitle="Software Developer"
         actionIcon={<ChevronRight size={16} />}

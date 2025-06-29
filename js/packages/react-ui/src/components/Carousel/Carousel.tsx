@@ -86,7 +86,6 @@ export const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<H
 
     return (
       <div ref={scrollDivRef} className={clsx("crayon-carousel-content", className)} {...props}>
-        <div />
         {content}
       </div>
     );
@@ -137,7 +136,7 @@ export const CarouselPrevious = forwardRef<
     <div className={clsx("crayon-carousel-button crayon-carousel-button-left", className)}>
       <IconButton
         ref={ref}
-        shape="circle"
+        shape="square"
         variant="secondary"
         size="small"
         onClick={() => scroll("left")}
@@ -182,7 +181,7 @@ export const CarouselNext = forwardRef<HTMLButtonElement, React.ComponentProps<t
       <div className={clsx("crayon-carousel-button crayon-carousel-button-right", className)}>
         <IconButton
           ref={ref}
-          shape="circle"
+          shape="square"
           variant="secondary"
           size="small"
           onClick={() => scroll("right")}

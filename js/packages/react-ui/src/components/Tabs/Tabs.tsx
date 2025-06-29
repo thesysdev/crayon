@@ -88,14 +88,16 @@ export const TabsList = forwardRef<React.ComponentRef<typeof TabsPrimitive.List>
     return (
       <div className="crayon-tabs-list-container">
         {showLeftButton && (
-          <IconButton
-            className="crayon-tabs-scroll-button crayon-tabs-scroll-left"
-            onClick={scrollLeft}
-            aria-label="Scroll tabs left"
-            icon={<ChevronLeft />}
-            variant="secondary"
-            size="small"
-          />
+          <div className="crayon-tabs-scroll-button-container-left">
+            <IconButton
+              className="crayon-tabs-scroll-button crayon-tabs-scroll-left"
+              onClick={scrollLeft}
+              aria-label="Scroll tabs left"
+              icon={<ChevronLeft />}
+              variant="secondary"
+              size="small"
+            />
+          </div>
         )}
 
         <TabsPrimitive.List
@@ -115,14 +117,16 @@ export const TabsList = forwardRef<React.ComponentRef<typeof TabsPrimitive.List>
         />
 
         {showRightButton && (
-          <IconButton
-            className="crayon-tabs-scroll-button crayon-tabs-scroll-right"
-            onClick={scrollRight}
-            aria-label="Scroll tabs right"
-            icon={<ChevronRight />}
-            variant="secondary"
-            size="small"
-          />
+          <div className="crayon-tabs-scroll-button-container-right">
+            <IconButton
+              className="crayon-tabs-scroll-button crayon-tabs-scroll-right"
+              onClick={scrollRight}
+              aria-label="Scroll tabs right"
+              icon={<ChevronRight />}
+              variant="secondary"
+              size="small"
+            />
+          </div>
         )}
       </div>
     );

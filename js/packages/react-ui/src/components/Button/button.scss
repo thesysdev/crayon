@@ -3,13 +3,12 @@
 .crayon-button-base {
   box-sizing: border-box;
   @include cssUtils.typography(body, default);
-  padding: cssUtils.$spacing-m;
   border-radius: cssUtils.$rounded-m;
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
-  gap: cssUtils.$spacing-2xs;
+  gap: cssUtils.$spacing-xs;
   align-items: center;
   & svg {
     height: 1em;
@@ -18,53 +17,118 @@
 
   // Primary variant
   &-primary {
-    background-color: cssUtils.$bg-brand-el;
-    color: cssUtils.$brand-text;
-    &:hover {
-      background-color: cssUtils.$bg-brand-el-hover;
+    background-color: cssUtils.$interactive-accent;
+    color: cssUtils.$accent-primary-text;
+    border-color: cssUtils.$stroke-accent;
+    &:not(:disabled):hover {
+      background-color: cssUtils.$interactive-accent-hover;
     }
     &:disabled {
-      opacity: 0.5;
+      background-color: var(--crayon-interactive-accent-disabled);
       cursor: not-allowed;
+    }
+    &:not(:disabled):active {
+      background-color: cssUtils.$interactive-accent-pressed;
     }
   }
   // Secondary variant
   &-secondary {
-    background-color: cssUtils.$bg-container;
+    background-color: cssUtils.$interactive-default;
     color: cssUtils.$primary-text;
-    border-color: cssUtils.$stroke-default;
-    &:hover {
-      background-color: cssUtils.$bg-container-hover;
+    border-color: cssUtils.$stroke-interactive-el;
+    &:not(:disabled):hover {
+      background-color: cssUtils.$interactive-hover;
     }
     &:disabled {
+      background-color: cssUtils.$interactive-default;
       color: cssUtils.$disabled-text;
-      border-color: cssUtils.$stroke-default;
       cursor: not-allowed;
+    }
+    &:not(:disabled):active {
+      background-color: cssUtils.$interactive-hover;
     }
   }
   // Tertiary variant
   &-tertiary {
-    background-color: transparent;
+    background-color: cssUtils.$interactive-default;
     color: cssUtils.$primary-text;
-    &:hover {
-      background-color: cssUtils.$bg-container-hover;
+    &:not(:disabled):hover {
+      background-color: cssUtils.$interactive-hover;
     }
     &:disabled {
+      background-color: cssUtils.$interactive-disabled;
+      border-color: cssUtils.$stroke-default;
       color: cssUtils.$disabled-text;
       cursor: not-allowed;
+    }
+    &:not(:disabled):active {
+      background-color: cssUtils.$interactive-hover;
+      border-color: cssUtils.$stroke-interactive-el;
+    }
+  }
+
+  // Destructive variant
+  // Primary variant
+  &-destructive-primary {
+    background-color: cssUtils.$interactive-destructive-accent;
+    color: cssUtils.$danger-inverted-primary-text;
+    border-color: cssUtils.$stroke-accent;
+    &:not(:disabled):hover {
+      background-color: cssUtils.$interactive-destructive-accent-hover;
+    }
+    &:disabled {
+      background-color: cssUtils.$interactive-destructive-accent-disabled;
+      cursor: not-allowed;
+    }
+    &:not(:disabled):active {
+      background-color: cssUtils.$interactive-destructive-accent-pressed;
+    }
+  }
+  // Secondary variant
+  &-destructive-secondary {
+    background-color: cssUtils.$interactive-destructive;
+    color: cssUtils.$danger-primary-text;
+    border-color: cssUtils.$stroke-danger;
+    &:not(:disabled):hover {
+      background-color: cssUtils.$interactive-destructive-hover;
+    }
+    &:disabled {
+      background-color: cssUtils.$interactive-destructive-disabled;
+      color: cssUtils.$danger-disabled-text;
+      cursor: not-allowed;
+    }
+    &:not(:disabled):active {
+      background-color: cssUtils.$interactive-destructive-hover;
+    }
+  }
+  // Tertiary variant
+  &-destructive-tertiary {
+    color: cssUtils.$danger-primary-text;
+    &:not(:disabled):hover {
+      background-color: cssUtils.$interactive-destructive-hover;
+    }
+    &:disabled {
+      color: cssUtils.$danger-disabled-text;
+      cursor: not-allowed;
+    }
+    &:not(:disabled):active {
+      background-color: cssUtils.$interactive-destructive-hover;
+      border-color: cssUtils.$stroke-danger;
     }
   }
 
   // Sizes
   &-small {
-    padding: cssUtils.$spacing-2xs cssUtils.$spacing-xs;
+    border-radius: cssUtils.$rounded-s;
+    padding: calc(cssUtils.$spacing-2xs - 1.5px) cssUtils.$spacing-s;
+    @include cssUtils.typography(body, small);
   }
 
   &-medium {
-    padding: cssUtils.$spacing-xs cssUtils.$spacing-m;
+    padding: calc(cssUtils.$spacing-xs - 1px) cssUtils.$spacing-m;
   }
 
   &-large {
-    padding: cssUtils.$spacing-s cssUtils.$spacing-m;
+    padding: calc(cssUtils.$spacing-s - 1px) cssUtils.$spacing-m;
   }
 }

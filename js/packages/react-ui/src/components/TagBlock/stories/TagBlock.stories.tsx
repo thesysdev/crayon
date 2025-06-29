@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Heart, Star, User } from "lucide-react";
+import { Heart, Info, Star, User } from "lucide-react";
 import { Tag } from "../../Tag";
 import { TagBlock } from "../TagBlock";
 
@@ -52,9 +52,11 @@ type Story = StoryObj<typeof TagBlock>;
 export const Default: Story = {
   render: (args) => (
     <TagBlock {...args}>
-      <Tag icon={<User size={16} />} text="User" />
-      <Tag icon={<Star size={16} />} text="Star" />
-      <Tag icon={<Heart size={16} />} text="Heart" />
+      <Tag variant="info" icon={<Info size={16} />} size="md" text="Info" />
+      <Tag variant="success" icon={<Star size={16} />} size="md" text="Star" />
+      <Tag variant="warning" icon={<Heart size={16} />} size="lg" text="Heart" />
+      <Tag variant="danger" icon={<User size={16} />} size="lg" text="User" />
+      <Tag variant="neutral" icon={<User size={16} />} size="lg" text="User" />
     </TagBlock>
   ),
 };
