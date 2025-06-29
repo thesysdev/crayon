@@ -1,23 +1,23 @@
 import clsx from "clsx";
 import { useMemo } from "react";
-import { ProgressBarData } from ".";
+import { SegmentedBarData } from ".";
 import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
 
-export interface ProgressBarProps {
-  data: ProgressBarData;
+export interface SegmentedBarProps {
+  data: SegmentedBarData;
   theme?: PaletteName;
   className?: string;
   style?: React.CSSProperties;
   animated?: boolean;
 }
 
-export const ProgressBar = ({
+export const SegmentedBar = ({
   data,
   theme = "ocean",
   className,
   style,
   animated = true,
-}: ProgressBarProps) => {
+}: SegmentedBarProps) => {
   // Calculate percentages
   const segments = useMemo(() => {
     if (!data || data.length === 0) {
@@ -41,13 +41,13 @@ export const ProgressBar = ({
 
   // Segmented progress bar
   return (
-    <div className={clsx("crayon-progress-bar-chart", className)} style={style}>
+    <div className={clsx("crayon-segmented-bar-chart", className)} style={style}>
       {segments.map((segment, index) => {
         return (
           <div
             key={`segment-${index}`}
-            className={clsx("crayon-progress-bar-chart-segment", {
-              "crayon-progress-bar-chart-animated": animated,
+            className={clsx("crayon-segmented-bar-chart-segment", {
+              "crayon-segmented-bar-chart-animated": animated,
             })}
             style={{
               width: `${segment.percentage}%`,
