@@ -232,7 +232,7 @@ export const PieChartV2Demo: Story = {
     width: undefined,
   },
   render: (args: any) => (
-    <Card style={{ width: "500px", height: "500px", padding: "20px" }}>
+    <Card style={{ width: "400px", height: "auto", padding: "20px" }}>
       <PieChartV2 {...args} />
     </Card>
   ),
@@ -259,7 +259,7 @@ export const PieChartV2WithCarousel: Story = {
     width: undefined,
   },
   render: (args: any) => (
-    <Card style={{ width: "700px", height: "300px", padding: "20px" }}>
+    <Card style={{ width: "700px", height: "auto", padding: "20px" }}>
       <PieChartV2 {...args} />
     </Card>
   ),
@@ -291,7 +291,10 @@ export const ResizableAndResponsive: Story = {
     useGradients: false,
   },
   render: (args: any) => {
-    const [dimensions, setDimensions] = useState({ width: 700, height: 400 });
+    const [dimensions, setDimensions] = useState<{ width: number; height: number | string }>({
+      width: 700,
+      height: "auto",
+    });
 
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, handle: string) => {
       e.preventDefault();
@@ -299,7 +302,7 @@ export const ResizableAndResponsive: Story = {
       const startX = e.clientX;
       const startY = e.clientY;
       const startWidth = dimensions.width;
-      const startHeight = dimensions.height;
+      const startHeight = (e.currentTarget.parentElement as HTMLElement).offsetHeight;
 
       const doDrag = (e: MouseEvent) => {
         const dx = e.clientX - startX;
@@ -314,7 +317,7 @@ export const ResizableAndResponsive: Story = {
 
         setDimensions({
           width: Math.max(300, newWidth),
-          height: Math.max(300, newHeight),
+          height: "auto",
         });
       };
 
@@ -339,7 +342,7 @@ export const ResizableAndResponsive: Story = {
         style={{
           position: "relative",
           width: `${dimensions.width}px`,
-          height: `${dimensions.height}px`,
+          height: typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height,
           border: "1px dashed #9ca3af",
           padding: "20px",
           boxSizing: "border-box",
@@ -422,7 +425,7 @@ export const ResizableAndResponsive: Story = {
             fontFamily: "monospace",
           }}
         >
-          {dimensions.width}px × {dimensions.height}px
+          {dimensions.width}px × {typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height}
         </div>
       </Card>
     );
