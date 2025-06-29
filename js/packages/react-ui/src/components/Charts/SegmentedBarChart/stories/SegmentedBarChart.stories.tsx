@@ -96,7 +96,6 @@ type Story = StoryObj<typeof meta>;
 
 const sampleData = {
   default: [25, 30, 20],
-  single: [60],
   many: [10, 8, 12, 5, 15, 7, 13, 10],
   full: [25, 25, 25, 25],
 };
@@ -119,9 +118,6 @@ export const DefaultConfiguration: Story = {
         </p>
       </div>
       <SegmentedBar {...args} />
-      <div style={{ marginTop: "16px", textAlign: "right", fontSize: "14px", fontWeight: 500 }}>
-        Total Value: {sampleData.default.reduce((a, b) => a + b, 0)}
-      </div>
     </Card>
   ),
   parameters: {
@@ -164,39 +160,6 @@ export const ThemeShowcase: Story = {
       description: {
         story:
           "The Segmented Bar supports six different color themes. This allows it to fit seamlessly into various application designs and visual identities.",
-      },
-    },
-  },
-};
-
-export const SingleSegment: Story = {
-  name: "🎯 Single Segment",
-  args: {
-    data: sampleData.single,
-    theme: "emerald",
-    animated: true,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "400px", padding: "24px" }}>
-      <div style={{ marginBottom: "16px" }}>
-        <h3 style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: "600" }}>
-          Market Share
-        </h3>
-        <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
-          A simple bar representing a single value out of a whole.
-        </p>
-      </div>
-      <SegmentedBar {...args} />
-      <div style={{ marginTop: "16px", textAlign: "right", fontSize: "14px", fontWeight: 500 }}>
-        {sampleData.single[0]}% of Total
-      </div>
-    </Card>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "When a single value is provided, the bar shows one segment. This is ideal for showing a simple percentage or proportion, like market share.",
       },
     },
   },
