@@ -342,7 +342,8 @@ export const ResizableAndResponsive: Story = {
         style={{
           position: "relative",
           width: `${dimensions.width}px`,
-          height: typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height,
+          height:
+            typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height,
           border: "1px dashed #9ca3af",
           padding: "20px",
           boxSizing: "border-box",
@@ -425,7 +426,8 @@ export const ResizableAndResponsive: Story = {
             fontFamily: "monospace",
           }}
         >
-          {dimensions.width}px × {typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height}
+          {dimensions.width}px ×{" "}
+          {typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height}
         </div>
       </Card>
     );

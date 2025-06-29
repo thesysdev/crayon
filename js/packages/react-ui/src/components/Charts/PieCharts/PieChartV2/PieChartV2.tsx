@@ -19,7 +19,6 @@ import {
   transformDataWithPercentages,
   useChartHover,
 } from "../utils/PieChartUtils";
-import "./pieChartV2.scss";
 
 export type PieChartV2Data = PieChartData;
 

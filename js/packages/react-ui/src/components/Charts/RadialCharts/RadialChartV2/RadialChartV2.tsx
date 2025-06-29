@@ -18,7 +18,6 @@ import {
   transformRadialDataWithPercentages,
   useRadialChartHover,
 } from "../utils/RadialChartUtils";
-import "./radialChartV2.scss";
 
 export type RadialChartV2Data = RadialChartData;
 
