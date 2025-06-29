@@ -261,21 +261,23 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
-    if (!width || !height) {
-      const observer = new ResizeObserver((entries) => {
-        const entry = entries[0];
-        if (entry) {
-          setWrapperRect({
-            width: entry.contentRect.width,
-            height: entry.contentRect.height,
-          });
-        }
-      });
-      observer.observe(wrapper);
-      return () => observer.disconnect();
-    } else {
+
+    if (width && height) {
       setWrapperRect({ width, height });
+      return;
     }
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        setWrapperRect({
+          width: entry.contentRect.width,
+          height: entry.contentRect.height,
+        });
+      }
+    });
+    observer.observe(wrapper);
+    return () => observer.disconnect();
   }, [width, height]);
 
   const renderPieCharts = useCallback(() => {
