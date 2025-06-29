@@ -91,106 +91,198 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "```tsx\nimport { RadarChart } from '@crayon-ui/react-ui/Charts/RadarChart';\n```",
+        component: `
+## Installation and Basic Usage
+
+\`\`\`tsx
+import { RadarChart } from '@crayon-ui/react-ui/Charts/RadarChart';
+
+// Basic implementation
+<RadarChart
+  data={yourData}
+  categoryKey="category"
+  theme="ocean"
+  variant="line"
+/>
+\`\`\`
+
+## Data Structure Requirements
+
+Your data should be an array of objects where each object contains:
+- A **category field** (string): Used for the radar's axes (e.g., 'skill', 'metric').
+- One or more **value fields** (number): Each numeric key represents a data series to be plotted.
+
+\`\`\`tsx
+const exampleData = [
+  { skill: "JavaScript", team_a: 90, team_b: 75 },
+  { skill: "React", team_a: 85, team_b: 95 },
+  { skill: "Node.js", team_a: 80, team_b: 70 },
+];
+\`\`\`
+
+## Key Features
+
+- **Multiple Data Series**: Compare several datasets on the same chart.
+- **Two Visual Variants**: Choose between 'line' and 'area' styles.
+- **Customizable Appearance**: Control colors, stroke width, and area opacity.
+- **Interactive Legend**: Toggle visibility of data series.
+- **Icon Support**: Add custom icons to legend items for better visual identification.
+- **Animation**: Smooth animations for loading and data transitions.
+`,
       },
     },
   },
-  tags: ["dev", "autodocs"],
+  tags: ["!dev", "autodocs"],
   argTypes: {
     data: {
-      description:
-        "An array of data objects where each object represents a data point. Each object should have a category field and one or more numeric values for the radar dimensions.",
+      description: `
+**Required.** An array of data objects. Each object represents a point on the radar axes and should contain:
+- A category identifier (string).
+- One or more numeric values, where each key represents a data series.
+
+**Best Practices:**
+- Use 3-8 axes (categories) for optimal readability.
+- Keep data series count low (2-4) to avoid clutter.
+`,
       control: false,
       table: {
         type: { summary: "Array<Record<string, string | number>>" },
         defaultValue: { summary: "[]" },
-        category: "Data",
+        category: "📊 Data Configuration",
       },
     },
     categoryKey: {
-      description:
-        "The key from your data object to be used as the radar axis labels (e.g., 'skill', 'metric', 'dimension')",
+      description: `
+**Required.** The key in your data objects that corresponds to the radar axis labels.
+
+**Examples:**
+- "skill" for a skills assessment chart.
+- "metric" for a performance comparison chart.
+`,
       control: false,
       table: {
         type: { summary: "string" },
-        defaultValue: { summary: "string" },
-        category: "Data",
+        category: "📊 Data Configuration",
       },
     },
     theme: {
-      description:
-        "The color palette theme for the chart. Each theme provides a different set of colors for the radar areas/lines.",
+      description: `
+**Color Theme Selection.** Choose from professionally designed color palettes:
+
+- **ocean**: Cool blues and teals (professional, corporate)
+- **orchid**: Purple and pink tones (creative, modern)
+- **emerald**: Green variations (nature, growth, finance)
+- **sunset**: Warm oranges and reds (energy, attention-grabbing)
+- **spectrum**: Full color range (diverse, comprehensive)
+- **vivid**: High-contrast colors (accessibility, clarity)
+`,
       control: "select",
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     variant: {
-      description:
-        "The style of the radar chart. 'line' shows only outlines, while 'area' shows filled areas.",
+      description: `
+**Chart Style Variant:**
+
+- **line**: Displays only the outlines of the data series. Best for comparing multiple series without obstruction.
+- **area**: Fills the area covered by each data series. Good for showing the magnitude of values.
+`,
       control: "radio",
       options: ["line", "area"],
       table: {
         defaultValue: { summary: "line" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     grid: {
-      description: "Whether to display the background grid lines in the radar chart",
+      description: `
+**Grid Visibility.** Toggles the display of the background polar grid.
+
+**When to use:**
+- To help estimate values along the axes.
+- For a more technical, data-driven look.
+`,
       control: "boolean",
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
-        category: "Display",
+        category: "📱 Display Options",
       },
     },
     legend: {
-      description: "Whether to display the chart legend",
+      description: `
+**Legend Visibility.** Controls whether the legend is displayed.
+
+**When to disable:**
+- When charting a single data series.
+- For minimal, clean dashboard widgets.
+`,
       control: "boolean",
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
-        category: "Display",
+        category: "📱 Display Options",
       },
     },
     strokeWidth: {
-      description: "The width of the radar lines",
-      control: "number",
+      description: `
+**Line Thickness.** Sets the width of the radar lines for the 'line' variant and the border for the 'area' variant.
+`,
+      control: { type: "number", min: 1, max: 10 },
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "2" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     areaOpacity: {
-      description: "The opacity of the filled areas when variant is 'area'",
+      description: `
+**Area Fill Opacity.** Controls the transparency of the filled areas when \`variant\` is 'area'.
+
+**Tip:** Use lower opacity (e.g., 0.2-0.5) when displaying multiple overlapping area series.
+`,
       control: { type: "range", min: 0, max: 1, step: 0.1 },
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "0.5" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     icons: {
-      description:
-        "An object that maps data keys to icon components. These icons will appear in the legend next to their corresponding data series.",
+      description: `
+An object mapping data keys to React components to display as icons in the legend.
+
+**Example:**
+\`\`\`jsx
+import { Shield, Target } from 'lucide-react';
+
+const icons = {
+  team_a: Shield,
+  team_b: Target,
+};
+\`\`\`
+`,
       control: false,
       table: {
         type: { summary: "Record<string, React.ComponentType>" },
         defaultValue: { summary: "{}" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     isAnimationActive: {
-      description: "Whether to animate the chart",
+      description: `
+**Animation Control.** Enables or disables chart animations on load and update.
+
+**Performance note:** Disable for highly complex charts or in performance-critical applications.
+`,
       control: "boolean",
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
-        category: "Display",
+        category: "🎬 Animation & Interaction",
       },
     },
   },
@@ -199,11 +291,164 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Controls: Story = {
-  name: "🎛️ Controls",
+export const DefaultConfiguration: Story = {
+  name: "📊 Default Configuration",
   args: {
-    data: radarChartData,
+    data: dataVariations.performance,
+    categoryKey: "metric",
+    theme: "ocean",
+    variant: "line",
+    grid: true,
+    legend: true,
+    strokeWidth: 2,
+    isAnimationActive: true,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "700px", height: "500px", padding: "24px" }}>
+      <div style={{ marginBottom: "16px" }}>
+        <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
+          Team Performance Analysis
+        </h3>
+        <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
+          Comparing key performance indicators across three teams.
+        </p>
+      </div>
+      <RadarChart {...args} />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `
+This is the recommended starting configuration for most use cases. The chart displays multiple data series in a clear, professional manner.
+
+**Configuration Details:**
+- **Data**: Team performance metrics.
+- **Variant**: 'line' for clear comparison between series.
+- **Colors**: 'ocean' theme (blues and teals).
+- **Legend**: Enabled to identify data series.
+- **Animations**: Enabled for smooth interactions.
+        `,
+      },
+    },
+  },
+};
+
+export const SkillsAssessment: Story = {
+  name: "📚 Skills Assessment",
+  args: {
+    data: dataVariations.default,
     categoryKey: "skill",
+    theme: "orchid",
+    variant: "area",
+    grid: true,
+    legend: true,
+    strokeWidth: 2,
+    areaOpacity: 0.4,
+    isAnimationActive: true,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "600px", height: "450px", padding: "24px" }}>
+      <div style={{ marginBottom: "16px" }}>
+        <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
+          Developer Skill Levels
+        </h3>
+        <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
+          Visualizing proficiency across different programming skills for various experience levels.
+        </p>
+      </div>
+      <RadarChart {...args} />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "This example uses the 'area' variant to represent different skill levels. The transparency allows for easy comparison of overlapping areas, providing a clear view of strengths and weaknesses across different roles.",
+      },
+    },
+  },
+};
+
+export const TeamPerformance: Story = {
+  name: "🏆 Team Performance with Icons",
+  args: {
+    data: dataVariations.performance,
+    categoryKey: "metric",
+    theme: "emerald",
+    variant: "line",
+    grid: true,
+    legend: true,
+    strokeWidth: 3,
+    isAnimationActive: true,
+    icons: {
+      team_a: Shield,
+      team_b: Target,
+      team_c: Star,
+    },
+  },
+  render: (args: any) => (
+    <Card style={{ width: "600px", height: "450px", padding: "24px" }}>
+      <div style={{ marginBottom: "16px" }}>
+        <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
+          Team Performance Comparison
+        </h3>
+        <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
+          Utilizing custom icons to distinguish teams in the legend for improved clarity.
+        </p>
+      </div>
+      <RadarChart {...args} />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "This chart demonstrates how to enhance the legend with custom icons. It's an effective way to visually associate data series with specific entities, like teams or products. The thicker stroke width also improves line visibility.",
+      },
+    },
+  },
+};
+
+export const BusinessMetrics: Story = {
+  name: "📈 Quarterly Business Metrics",
+  args: {
+    data: dataVariations.businessMetrics,
+    categoryKey: "department",
+    theme: "sunset",
+    variant: "area",
+    grid: true,
+    legend: true,
+    strokeWidth: 2,
+    areaOpacity: 0.4,
+    isAnimationActive: true,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "700px", height: "500px", padding: "24px" }}>
+      <div style={{ marginBottom: "16px" }}>
+        <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
+          Quarterly Performance Review
+        </h3>
+        <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
+          Tracking key business metrics across departments over four quarters.
+        </p>
+      </div>
+      <RadarChart {...args} />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A comprehensive view of business performance, this example showcases how the 'area' variant can effectively display multiple overlapping datasets to reveal trends and patterns over time.",
+      },
+    },
+  },
+};
+
+export const InteractivePlayground: Story = {
+  name: "🧪 Interactive Playground",
+  args: {
     theme: "ocean",
     variant: "line",
     grid: true,
@@ -219,7 +464,7 @@ export const Controls: Story = {
     const currentData = dataVariations[selectedDataType];
     const currentCategoryKey = categoryKeys[selectedDataType];
 
-    const buttonStyle = {
+    const buttonStyle: React.CSSProperties = {
       margin: "2px",
       padding: "6px 12px",
       fontSize: "12px",
@@ -228,91 +473,47 @@ export const Controls: Story = {
       cursor: "pointer",
       background: "#fff",
       fontFamily: "monospace",
+      transition: "all 0.2s",
     };
 
-    const activeButtonStyle = {
+    const activeButtonStyle: React.CSSProperties = {
       ...buttonStyle,
-      background: "#007acc",
+      background: "#3b82f6",
       color: "white",
-      border: "1px solid #007acc",
+      border: "1px solid #3b82f6",
+      fontWeight: 600,
     };
 
     return (
-      <div>
-        <div
-          style={{
-            marginBottom: "16px",
-            padding: "12px",
-            background: "#f8f9fa",
-            borderRadius: "8px",
-            border: "1px solid #e9ecef",
-            width: "600px",
-          }}
-        >
-          <strong>🕸️ Radar Chart Test Suite:</strong>
-          <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", gap: "4px" }}>
-            <button
-              onClick={() => setSelectedDataType("default")}
-              style={selectedDataType === "default" ? activeButtonStyle : buttonStyle}
-            >
-              📚 Skills (6 categories)
-            </button>
-            <button
-              onClick={() => setSelectedDataType("performance")}
-              style={selectedDataType === "performance" ? activeButtonStyle : buttonStyle}
-            >
-              🏆 Team Performance
-            </button>
-            <button
-              onClick={() => setSelectedDataType("businessMetrics")}
-              style={selectedDataType === "businessMetrics" ? activeButtonStyle : buttonStyle}
-            >
-              📈 Business Metrics
-            </button>
-            <button
-              onClick={() => setSelectedDataType("gameStats")}
-              style={selectedDataType === "gameStats" ? activeButtonStyle : buttonStyle}
-            >
-              🎮 Game Stats
-            </button>
-            <button
-              onClick={() => setSelectedDataType("productFeatures")}
-              style={selectedDataType === "productFeatures" ? activeButtonStyle : buttonStyle}
-            >
-              🛠️ Product Features
-            </button>
-            <button
-              onClick={() => setSelectedDataType("minimal")}
-              style={selectedDataType === "minimal" ? activeButtonStyle : buttonStyle}
-            >
-              📱 Minimal (3 items)
-            </button>
-            <button
-              onClick={() => setSelectedDataType("singleMetric")}
-              style={selectedDataType === "singleMetric" ? activeButtonStyle : buttonStyle}
-            >
-              🎯 Single Metric
-            </button>
-            <button
-              onClick={() => setSelectedDataType("manyDimensions")}
-              style={selectedDataType === "manyDimensions" ? activeButtonStyle : buttonStyle}
-            >
-              🌐 Many Dimensions (8 axes)
-            </button>
+      <div style={{ width: "700px" }}>
+        <Card style={{ padding: "20px", marginBottom: "20px" }}>
+          <h3 style={{ margin: "0 0 12px 0", fontSize: "16px", fontWeight: "600" }}>
+            🕸️ Radar Chart Test Suite
+          </h3>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+            {(Object.keys(dataVariations) as Array<keyof typeof dataVariations>).map((key) => (
+              <button
+                key={key}
+                onClick={() => setSelectedDataType(key)}
+                style={selectedDataType === key ? activeButtonStyle : buttonStyle}
+              >
+                {key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}
+              </button>
+            ))}
           </div>
-          <div style={{ marginTop: "8px", fontSize: "12px", color: "#666" }}>
-            <strong>Current:</strong> {selectedDataType} | <strong>Items:</strong>{" "}
-            {currentData.length} | <strong>Category:</strong> {currentCategoryKey}
+          <div style={{ marginTop: "12px", fontSize: "12px", color: "#666" }}>
+            <strong>Current Dataset:</strong> {selectedDataType} | <strong>Axes:</strong>{" "}
+            {currentData.length} | <strong>Category Key:</strong> {currentCategoryKey}
           </div>
-        </div>
+        </Card>
         <Card
           style={{
-            width: "600px",
-            height: "fit-content",
+            height: "500px",
+            padding: "24px",
             resize: "both",
             overflow: "hidden",
-            minWidth: "300px",
-            minHeight: "300px",
+            minWidth: "400px",
+            minHeight: "400px",
           }}
         >
           <RadarChart {...args} data={currentData} categoryKey={currentCategoryKey} />
@@ -323,162 +524,51 @@ export const Controls: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Use the buttons above the chart to quickly switch between different data variations. Active button is highlighted in blue. Each dataset tests different aspects of the radar chart functionality.",
-      },
-    },
-  },
-};
-
-export const Skills: Story = {
-  name: "📚 Skills Assessment",
-  args: {
-    data: dataVariations.default as any,
-    categoryKey: "skill" as any,
-    theme: "ocean",
-    variant: "area",
-    grid: true,
-    legend: true,
-    strokeWidth: 2,
-    areaOpacity: 0.3,
-    isAnimationActive: true,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "500px", height: "400px" }}>
-      <RadarChart {...args} />
-    </Card>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "A skills assessment radar chart showing different proficiency levels across various programming skills. Uses area variant with transparency to show overlapping competencies.",
-      },
-    },
-  },
-};
-
-export const TeamPerformance: Story = {
-  name: "🏆 Team Performance Comparison",
-  args: {
-    data: dataVariations.performance as any,
-    categoryKey: "metric" as any,
-    theme: "emerald",
-    variant: "line",
-    grid: true,
-    legend: true,
-    strokeWidth: 3,
-    areaOpacity: 0.5,
-    isAnimationActive: true,
-    icons: {
-      team_a: Shield,
-      team_b: Target,
-      team_c: Star,
-    },
-  },
-  render: (args: any) => (
-    <Card style={{ width: "500px", height: "400px" }}>
-      <RadarChart {...args} />
-    </Card>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Compare team performance across multiple metrics. Features custom icons in the legend and thicker stroke width for better visibility.",
-      },
-    },
-  },
-};
-
-export const BusinessMetrics: Story = {
-  name: "📈 Quarterly Business Metrics",
-  args: {
-    data: dataVariations.businessMetrics as any,
-    categoryKey: "department" as any,
-    theme: "sunset",
-    variant: "area",
-    grid: true,
-    legend: true,
-    strokeWidth: 2,
-    areaOpacity: 0.4,
-    isAnimationActive: true,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "500px", height: "400px" }}>
-      <RadarChart {...args} />
-    </Card>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Track quarterly performance across different departments. Shows how area charts can effectively display multiple overlapping datasets.",
-      },
-    },
-  },
-};
-
-export const VariantComparison: Story = {
-  name: "🎨 Line vs Area Variants",
-  args: {
-    data: dataVariations.gameStats as any,
-    categoryKey: "attribute" as any,
-    theme: "vivid",
-    variant: "line",
-    grid: true,
-    legend: true,
-    strokeWidth: 2,
-    areaOpacity: 0.5,
-    isAnimationActive: true,
-  },
-  render: (args: any) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div>
-        <h4>Line Variant</h4>
-        <Card style={{ width: "400px", height: "fit-content" }}>
-          <RadarChart {...args} variant="line" />
-        </Card>
-      </div>
-      <div>
-        <h4>Area Variant</h4>
-        <Card style={{ width: "400px", height: "fit-content" }}>
-          <RadarChart {...args} variant="area" />
-        </Card>
-      </div>
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Compare the two available variants: line (outline only) and area (filled). The area variant is useful for showing magnitude, while line variant is better for precise value comparison.",
+        story: `
+Use the buttons to switch between different datasets and explore how the RadarChart adapts.
+You can also use the Storybook controls to change theme, variant, and other properties in real-time.
+This playground is designed for testing various configurations and edge cases.
+`,
       },
     },
   },
 };
 
 export const ThemeShowcase: Story = {
-  name: "🌈 Theme Showcase",
+  name: "🎨 Theme Showcase",
   args: {
-    data: dataVariations.minimal as any,
-    categoryKey: "category" as any,
-    theme: "ocean",
+    data: dataVariations.productFeatures,
+    categoryKey: "feature",
     variant: "area",
     grid: true,
     legend: true,
     strokeWidth: 2,
     areaOpacity: 0.6,
-    isAnimationActive: true,
+    isAnimationActive: false,
   },
   render: (args: any) => (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px" }}>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: "24px",
+        width: "900px",
+      }}
+    >
       {(["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"] as const).map((theme) => (
         <div key={theme}>
-          <h4 style={{ textAlign: "center", marginBottom: "8px", textTransform: "capitalize" }}>
+          <h4
+            style={{
+              textAlign: "center",
+              marginBottom: "12px",
+              textTransform: "capitalize",
+              fontSize: "14px",
+              fontWeight: 600,
+            }}
+          >
             {theme}
           </h4>
-          <Card style={{ width: "250px", height: "fit-content" }}>
+          <Card style={{ height: "fit-content", padding: "12px" }}>
             <RadarChart {...args} theme={theme} />
           </Card>
         </div>
@@ -489,107 +579,7 @@ export const ThemeShowcase: Story = {
     docs: {
       description: {
         story:
-          "Showcase all available color themes. Each theme provides a carefully curated color palette optimized for data visualization.",
-      },
-    },
-  },
-};
-
-export const SingleMetric: Story = {
-  name: "🎯 Single Metric",
-  args: {
-    data: dataVariations.singleMetric as any,
-    categoryKey: "dimension" as any,
-    theme: "orchid",
-    variant: "area",
-    grid: true,
-    legend: false,
-    strokeWidth: 3,
-    areaOpacity: 0.7,
-    isAnimationActive: true,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "400px", height: "300px" }}>
-      <RadarChart {...args} />
-    </Card>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Single metric radar chart without legend. Useful for displaying one dataset across multiple dimensions with emphasis on the overall shape.",
-      },
-    },
-  },
-};
-
-export const ManyDimensions: Story = {
-  name: "🌐 Many Dimensions",
-  args: {
-    data: dataVariations.manyDimensions as any,
-    categoryKey: "aspect" as any,
-    theme: "spectrum",
-    variant: "line",
-    grid: true,
-    legend: true,
-    strokeWidth: 2,
-    areaOpacity: 0.3,
-    isAnimationActive: true,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "600px", height: "500px" }}>
-      <RadarChart {...args} />
-    </Card>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Radar chart with many dimensions (8 axes) to test how the component handles complex datasets. Line variant works best for many overlapping series.",
-      },
-    },
-  },
-};
-
-export const Customization: Story = {
-  name: "🎛️ Customization Options",
-  args: {
-    data: dataVariations.productFeatures as any,
-    categoryKey: "feature" as any,
-    theme: "emerald",
-    variant: "area",
-    grid: true,
-    legend: true,
-    strokeWidth: 2,
-    areaOpacity: 0.5,
-    isAnimationActive: true,
-    icons: {
-      current: TrendingUp,
-      competitor_a: Users,
-      competitor_b: Zap,
-    },
-  },
-  render: (args: any) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div>
-        <h4>With Icons & Animation</h4>
-        <Card style={{ width: "500px", height: "350px" }}>
-          <RadarChart {...args} />
-        </Card>
-      </div>
-      <div>
-        <h4>No Grid, No Animation, Thick Lines</h4>
-        <Card style={{ width: "500px", height: "350px" }}>
-          <RadarChart {...args} grid={false} isAnimationActive={false} strokeWidth={4} />
-        </Card>
-      </div>
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Demonstrate various customization options including icons, grid toggle, animation control, and stroke width adjustment.",
+          "This story showcases all available color themes. Each theme provides a professionally curated palette suitable for different branding and data contexts. Animations are disabled for quicker comparison.",
       },
     },
   },

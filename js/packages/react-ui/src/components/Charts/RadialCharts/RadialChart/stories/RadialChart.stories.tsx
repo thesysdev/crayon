@@ -87,7 +87,7 @@ const customGradientPalette = [
  */
 
 const meta: Meta<RadialChartProps<typeof monthlyRevenueData>> = {
-  title: "Components/Charts/RadialCharts/RadialChart",
+  title: "Components/Charts/RadialChart",
   component: RadialChart,
   parameters: {
     layout: "centered",
