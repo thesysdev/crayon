@@ -85,14 +85,14 @@ const categoryKeys = {
 const radarChartData = dataVariations.default;
 
 const meta: Meta<RadarChartProps<typeof radarChartData>> = {
-  title: "Components/Charts/RadarCharts/RadarChartV2",
+  title: "Components/Charts/RadarChart",
   component: RadarChart,
   parameters: {
     layout: "centered",
     docs: {
       description: {
         component:
-          "```tsx\nimport { RadarChartV2 } from '@crayon-ui/react-ui/Charts/RadarChartV2';\n```",
+          "```tsx\nimport { RadarChart } from '@crayon-ui/react-ui/Charts/RadarChart';\n```",
       },
     },
   },
@@ -199,8 +199,8 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const RadarChartV2Story: Story = {
-  name: "🎛️ Data Switcher - Radar Chart V2",
+export const Controls: Story = {
+  name: "🎛️ Controls",
   args: {
     data: radarChartData,
     categoryKey: "skill",
@@ -308,7 +308,7 @@ export const RadarChartV2Story: Story = {
         <Card
           style={{
             width: "600px",
-            height: "300px",
+            height: "fit-content",
             resize: "both",
             overflow: "hidden",
             minWidth: "300px",
@@ -330,7 +330,7 @@ export const RadarChartV2Story: Story = {
   },
 };
 
-export const SkillsStory: Story = {
+export const Skills: Story = {
   name: "📚 Skills Assessment",
   args: {
     data: dataVariations.default as any,
@@ -358,7 +358,7 @@ export const SkillsStory: Story = {
   },
 };
 
-export const TeamPerformanceStory: Story = {
+export const TeamPerformance: Story = {
   name: "🏆 Team Performance Comparison",
   args: {
     data: dataVariations.performance as any,
@@ -391,7 +391,7 @@ export const TeamPerformanceStory: Story = {
   },
 };
 
-export const BusinessMetricsStory: Story = {
+export const BusinessMetrics: Story = {
   name: "📈 Quarterly Business Metrics",
   args: {
     data: dataVariations.businessMetrics as any,
@@ -419,7 +419,7 @@ export const BusinessMetricsStory: Story = {
   },
 };
 
-export const VariantComparisonStory: Story = {
+export const VariantComparison: Story = {
   name: "🎨 Line vs Area Variants",
   args: {
     data: dataVariations.gameStats as any,
@@ -436,13 +436,13 @@ export const VariantComparisonStory: Story = {
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div>
         <h4>Line Variant</h4>
-        <Card style={{ width: "400px", height: "300px" }}>
+        <Card style={{ width: "400px", height: "fit-content" }}>
           <RadarChart {...args} variant="line" />
         </Card>
       </div>
       <div>
         <h4>Area Variant</h4>
-        <Card style={{ width: "400px", height: "300px" }}>
+        <Card style={{ width: "400px", height: "fit-content" }}>
           <RadarChart {...args} variant="area" />
         </Card>
       </div>
@@ -458,7 +458,7 @@ export const VariantComparisonStory: Story = {
   },
 };
 
-export const ThemeShowcaseStory: Story = {
+export const ThemeShowcase: Story = {
   name: "🌈 Theme Showcase",
   args: {
     data: dataVariations.minimal as any,
@@ -478,7 +478,7 @@ export const ThemeShowcaseStory: Story = {
           <h4 style={{ textAlign: "center", marginBottom: "8px", textTransform: "capitalize" }}>
             {theme}
           </h4>
-          <Card style={{ width: "250px", height: "200px" }}>
+          <Card style={{ width: "250px", height: "fit-content" }}>
             <RadarChart {...args} theme={theme} />
           </Card>
         </div>
@@ -495,7 +495,7 @@ export const ThemeShowcaseStory: Story = {
   },
 };
 
-export const SingleMetricStory: Story = {
+export const SingleMetric: Story = {
   name: "🎯 Single Metric",
   args: {
     data: dataVariations.singleMetric as any,
@@ -523,7 +523,7 @@ export const SingleMetricStory: Story = {
   },
 };
 
-export const ManyDimensionsStory: Story = {
+export const ManyDimensions: Story = {
   name: "🌐 Many Dimensions",
   args: {
     data: dataVariations.manyDimensions as any,
@@ -551,7 +551,7 @@ export const ManyDimensionsStory: Story = {
   },
 };
 
-export const CustomizationStory: Story = {
+export const Customization: Story = {
   name: "🎛️ Customization Options",
   args: {
     data: dataVariations.productFeatures as any,
