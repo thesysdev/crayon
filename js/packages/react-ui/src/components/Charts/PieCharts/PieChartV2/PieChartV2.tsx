@@ -287,12 +287,20 @@ export const PieChartV2 = <T extends PieChartV2Data>({
           innerRadius={dimensions.innerRadius}
           outerRadius={dimensions.middleRadius}
         >
-          {transformedData.map((_entry, index) => {
+          {transformedData.map((entry, index) => {
+            const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
+            const config = chartConfig[categoryValue];
             const hoverStyles = getHoverStyles(index, activeIndex);
-            const fill = useGradients
-              ? `url(#gradient-${index})`
-              : `var(--crayon-container-hover-fills)`;
-            return <Cell key={`inner-cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
+            const fill = config?.color || colors[index];
+            return (
+              <Cell
+                key={`inner-cell-${index}`}
+                fill={fill}
+                {...hoverStyles}
+                stroke="none"
+                className="crayon-pie-chart__inner-cell"
+              />
+            );
           })}
         </Pie>,
         <Pie
@@ -305,7 +313,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
             const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
             const config = chartConfig[categoryValue];
             const hoverStyles = getHoverStyles(index, activeIndex);
-            const fill = useGradients ? `url(#gradient-${index})` : config?.color;
+            const fill = useGradients ? `url(#gradient-${index})` : config?.color || colors[index];
             return <Cell key={`outer-cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
           })}
         </Pie>,
