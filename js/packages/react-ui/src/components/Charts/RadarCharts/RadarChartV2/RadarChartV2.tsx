@@ -171,6 +171,7 @@ const RadarChartV2Component = <T extends RadarChartV2Data>({
               />
 
               <ChartTooltip cursor={false} content={<CustomTooltipContent />} />
+              {/* rendering the radars here */}
               {radars}
             </RechartsRadarChart>
           </ChartContainer>

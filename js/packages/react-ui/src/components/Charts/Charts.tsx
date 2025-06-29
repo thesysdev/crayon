@@ -103,7 +103,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
       .map(([key, itemConfig]) => {
         // TODO: remove this after successful migration
         // keyTransform fn can be removed after successful migration
-        const transformedKey = itemConfig.transformed || keyTransform(key);
+        const transformedKey = itemConfig.transformed ?? keyTransform(key);
         const themeValue = itemConfig.theme?.[theme as keyof typeof itemConfig.theme];
         const color =
           typeof themeValue === "string" ? themeValue : themeValue?.color || itemConfig.color;

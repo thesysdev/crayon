@@ -288,6 +288,7 @@ export const LineChartV2 = <T extends LineChartV2Data>({
                       strokeWidth={0}
                       dot={false}
                       activeDot={false}
+                      isAnimationActive={isAnimationActive}
                     />
                   );
                 })}
