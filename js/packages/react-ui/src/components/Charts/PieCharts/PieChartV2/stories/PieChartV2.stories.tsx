@@ -232,7 +232,7 @@ export const PieChartV2Demo: Story = {
     width: undefined,
   },
   render: (args: any) => (
-    <Card style={{ width: "400px", height: "auto", padding: "20px" }}>
+    <Card style={{ width: "500px", height: "auto", padding: "20px" }}>
       <PieChartV2 {...args} />
     </Card>
   ),

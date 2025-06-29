@@ -51,7 +51,7 @@ export interface PieChartV2Props<T extends PieChartV2Data> {
   width?: number;
 }
 
-const STACKED_LEGEND_BREAKPOINT = 600;
+const STACKED_LEGEND_BREAKPOINT = 600; // px
 
 export const PieChartV2 = <T extends PieChartV2Data>({
   data,
@@ -76,14 +76,10 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   width,
 }: PieChartV2Props<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const chartContainerRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
-  const [chartContainerRect, setChartContainerRect] = useState({ width: 0, height: 0 });
   const [hoveredLegendKey, setHoveredLegendKey] = useState<string | null>(null);
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
   const { activeIndex, handleMouseEnter, handleMouseLeave } = useChartHover();
-
-  const isDefaultLegendLayout = legend && legendVariant === "default";
 
   // Determine layout mode based on container width
   const isRowLayout =
@@ -114,20 +110,9 @@ export const PieChartV2 = <T extends PieChartV2Data>({
       const size = Math.min(chartContainerWidth, effectiveHeight);
       return Math.max(150, size);
     }
-    if (isDefaultLegendLayout) {
-      const size = Math.min(chartContainerRect.width, chartContainerRect.height);
-      return Math.max(150, size);
-    }
     const size = Math.min(effectiveWidth, effectiveHeight);
     return Math.max(150, size);
-  }, [
-    effectiveWidth,
-    effectiveHeight,
-    isRowLayout,
-    isDefaultLegendLayout,
-    chartContainerRect.width,
-    chartContainerRect.height,
-  ]);
+  }, [effectiveWidth, effectiveHeight, isRowLayout]);
 
   const chartSizeStyle = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
   const rechartsProps = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
@@ -293,22 +278,6 @@ export const PieChartV2 = <T extends PieChartV2Data>({
     }
   }, [width, height]);
 
-  useEffect(() => {
-    const container = chartContainerRef.current;
-    if (!container) return;
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (entry) {
-        setChartContainerRect({
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
-        });
-      }
-    });
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, []);
-
   const renderPieCharts = useCallback(() => {
     if (variant === "donut") {
       return [
@@ -426,7 +395,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
 
   return (
     <div ref={wrapperRef} className={wrapperClassName} style={{ width, height }}>
-      <div ref={chartContainerRef} className="crayon-pie-chart-container">
+      <div className="crayon-pie-chart-container">
         <div className="crayon-pie-chart-container-inner">
           <div style={chartSizeStyle}>
             <ChartContainer

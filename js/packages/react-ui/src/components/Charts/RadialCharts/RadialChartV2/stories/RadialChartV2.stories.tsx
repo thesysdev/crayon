@@ -315,7 +315,7 @@ export const RadialChartV2WithCarousel: Story = {
     width: undefined,
   },
   render: (args: any) => (
-    <Card style={{ width: "600px", height: "300px", padding: "20px" }}>
+    <Card style={{ width: "600px", height: "100%", padding: "20px" }}>
       <RadialChartV2 {...args} />
     </Card>
   ),
@@ -349,7 +349,7 @@ export const RadialChartV2Minimal: Story = {
     width: undefined,
   },
   render: (args: any) => (
-    <Card style={{ width: "300px", height: "200px", padding: "20px" }}>
+    <Card style={{ width: "300px", height: "100%", padding: "20px" }}>
       <RadialChartV2 {...args} />
     </Card>
   ),
@@ -370,17 +370,21 @@ export const ResizableAndResponsive: Story = {
     categoryKey: "month",
     dataKey: "value",
     theme: "spectrum",
-    variant: "circular",
+    variant: "donut",
     format: "number",
     legend: true,
     legendVariant: "stacked",
-    grid: false,
     isAnimationActive: false,
+    appearance: "circular",
     cornerRadius: 8,
+    paddingAngle: 2,
     useGradients: false,
   },
   render: (args: any) => {
-    const [dimensions, setDimensions] = useState({ width: 700, height: 400 });
+    const [dimensions, setDimensions] = useState<{ width: number; height: number | string }>({
+      width: 700,
+      height: "auto",
+    });
 
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, handle: string) => {
       e.preventDefault();
@@ -388,7 +392,7 @@ export const ResizableAndResponsive: Story = {
       const startX = e.clientX;
       const startY = e.clientY;
       const startWidth = dimensions.width;
-      const startHeight = dimensions.height;
+      const startHeight = (e.currentTarget.parentElement as HTMLElement).offsetHeight;
 
       const doDrag = (e: MouseEvent) => {
         const dx = e.clientX - startX;
@@ -403,7 +407,7 @@ export const ResizableAndResponsive: Story = {
 
         setDimensions({
           width: Math.max(300, newWidth),
-          height: Math.max(300, newHeight),
+          height: "auto",
         });
       };
 
@@ -428,11 +432,11 @@ export const ResizableAndResponsive: Story = {
         style={{
           position: "relative",
           width: `${dimensions.width}px`,
-          height: `${dimensions.height}px`,
+          height: typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height,
           border: "1px dashed #9ca3af",
           padding: "20px",
           boxSizing: "border-box",
-          overflow: "hidden", // Important for containing the chart properly
+          overflow: "hidden",
         }}
       >
         <RadialChartV2 {...args} />
@@ -511,7 +515,7 @@ export const ResizableAndResponsive: Story = {
             fontFamily: "monospace",
           }}
         >
-          {dimensions.width}px × {dimensions.height}px
+          {dimensions.width}px × {typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height}
         </div>
       </Card>
     );
@@ -520,7 +524,7 @@ export const ResizableAndResponsive: Story = {
     docs: {
       description: {
         story:
-          "This story demonstrates the responsive and resizable behavior of the RadialChartV2. Drag the edges or corners of the dashed container to resize it and see how the chart and its legend adapt perfectly to the new dimensions.",
+          "This story demonstrates the responsive and resizable behavior of the PieChartV2. Drag the edges or corners of the dashed container to resize it and see how the chart and its legend adapt perfectly to the new dimensions.",
       },
     },
   },
