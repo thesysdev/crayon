@@ -6,6 +6,8 @@
   flex-direction: column;
   align-items: center;
   height: 100%;
+  max-height: fit-content; // Ensure container has a maximum height for scrolling
+  min-height: 200px;
 }
 
 .crayon-stacked-legend-scroll-button {
@@ -15,14 +17,27 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 100;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
 
   &.crayon-stacked-legend-scroll-up {
     top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   &.crayon-stacked-legend-scroll-down {
     bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 
@@ -37,10 +52,15 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-behavior: smooth;
+  flex: 1; // Allow it to grow and shrink within the container
+  padding: 20px 0; // Add padding for scroll buttons
 
   &::-webkit-scrollbar {
     display: none;
   }
+
+  // Add smooth scrolling on touch devices
+  -webkit-overflow-scrolling: touch;
 
   &__item {
     width: 100%;
