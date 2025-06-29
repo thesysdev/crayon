@@ -1,7 +1,6 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { IconButton } from "../../../IconButton";
-import "./stackedLegend.scss";
 
 interface LegendItem {
   key: string;
