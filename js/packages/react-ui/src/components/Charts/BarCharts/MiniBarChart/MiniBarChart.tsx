@@ -4,7 +4,7 @@ import { Bar, BarChart, XAxis } from "recharts";
 import { useTheme } from "../../../ThemeProvider";
 import { ChartConfig, ChartContainer } from "../../Charts";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
-import { LineInBarShape } from "../BarChartV2/components/LineInBarShape";
+import { LineInBarShape } from "../BarChart/components/LineInBarShape";
 import { type MiniBarChartData } from "../types";
 import {
   getPadding,

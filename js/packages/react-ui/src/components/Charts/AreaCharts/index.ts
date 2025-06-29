@@ -1,3 +1,3 @@
-export * from "./AreaChartV2";
+export * from "./AreaChart";
 export * from "./MiniAreaChart";
 export * from "./types";

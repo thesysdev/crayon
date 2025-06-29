@@ -1,13 +1,13 @@
 // Common utility functions for Area and Line charts
 // These functions are chart-type agnostic and can be shared between AreaChartV2 and LineChartV2
 
-import { AreaChartV2Data } from "../../AreaCharts/types";
-import { LineChartV2Data } from "../../LineCharts/types";
+import { AreaChartData } from "../../AreaCharts/types";
+import { LineChartData } from "../../LineCharts/types";
 
 const ELEMENT_SPACING = 70;
 
 // Common type for chart data - both AreaChart and LineChart data structures
-type ChartData = AreaChartV2Data | LineChartV2Data;
+type ChartData = AreaChartData | LineChartData;
 
 /**
  * AREA CHART AND LINE CHART SPECIFIC FUNCTION

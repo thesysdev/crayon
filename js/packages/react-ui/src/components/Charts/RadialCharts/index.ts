@@ -1,1 +1,2 @@
-export * from "./RadialChartV2";
+export * from "./RadialChart";
+export * from "./types";

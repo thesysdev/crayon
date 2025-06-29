@@ -1,1 +1,2 @@
-export * from "./PieChartV2";
+export * from "./PieChart";
+export * from "./types";

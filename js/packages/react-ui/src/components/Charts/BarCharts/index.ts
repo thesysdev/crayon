@@ -1,3 +1,3 @@
-export * from "./BarChartV2";
+export * from "./BarChart";
 export * from "./MiniBarChart";
 export * from "./types";
