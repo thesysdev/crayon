@@ -2,12 +2,13 @@ import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../../Charts.js";
+import { useTransformedKeys } from "../../hooks";
 import { DefaultLegend } from "../../shared/DefaultLegend/DefaultLegend.js";
 import { StackedLegend } from "../../shared/StackedLegend/StackedLegend.js";
 import { LegendItem } from "../../types/Legend.js";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils.js";
-import { createGradientDefinitions } from "./components/PieChartRenderers.js";
 import { PieChartData } from "../types/index.js";
+import { createGradientDefinitions } from "./components/PieChartRenderers.js";
 import {
   calculateTwoLevelChartDimensions,
   createAnimationConfig,
@@ -88,6 +89,12 @@ export const PieChart = <T extends PieChartData>({
     [data, categoryKey, dataKey],
   );
 
+  const categories = useMemo(
+    () => processedData.map((item) => String(item[categoryKey])),
+    [processedData, categoryKey],
+  );
+  const transformedKeys = useTransformedKeys(categories);
+
   // Memoize string conversions to avoid repeated calls
   const categoryKeyString = useMemo(() => String(categoryKey), [categoryKey]);
   const dataKeyString = useMemo(() => String(dataKey), [dataKey]);
@@ -121,8 +128,8 @@ export const PieChart = <T extends PieChartData>({
   );
 
   const chartConfig = useMemo(
-    () => createChartConfig(processedData, categoryKey, theme),
-    [processedData, categoryKey, theme],
+    () => createChartConfig(processedData, categoryKey, theme, transformedKeys),
+    [processedData, categoryKey, theme, transformedKeys],
   );
 
   const animationConfig = useMemo(
@@ -288,7 +295,8 @@ export const PieChart = <T extends PieChartData>({
         >
           {transformedData.map((entry, index: number) => {
             const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
-            const config = chartConfig[categoryValue];
+            const transformedKey = transformedKeys[categoryValue] ?? categoryValue;
+            const config = chartConfig[transformedKey];
             const hoverStyles = getHoverStyles(index, activeIndex);
             const fill = config?.color || colors[index];
             return (
@@ -310,7 +318,8 @@ export const PieChart = <T extends PieChartData>({
         >
           {transformedData.map((entry, index: number) => {
             const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
-            const config = chartConfig[categoryValue];
+            const transformedKey = transformedKeys[categoryValue] ?? categoryValue;
+            const config = chartConfig[transformedKey];
             const hoverStyles = getHoverStyles(index, activeIndex);
             const fill = useGradients ? `url(#gradient-${index})` : config?.color || colors[index];
             return <Cell key={`outer-cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
@@ -327,7 +336,8 @@ export const PieChart = <T extends PieChartData>({
       >
         {transformedData.map((entry, index: number) => {
           const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
-          const config = chartConfig[categoryValue];
+          const transformedKey = transformedKeys[categoryValue] ?? categoryValue;
+          const config = chartConfig[transformedKey];
           const hoverStyles = getHoverStyles(index, activeIndex);
           const fill = useGradients ? `url(#gradient-${index})` : config?.color || colors[index];
           return <Cell key={`cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
@@ -344,6 +354,7 @@ export const PieChart = <T extends PieChartData>({
     activeIndex,
     useGradients,
     colors,
+    transformedKeys,
   ]);
 
   const renderLegend = useCallback(() => {

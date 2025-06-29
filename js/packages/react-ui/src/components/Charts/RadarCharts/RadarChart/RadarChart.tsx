@@ -6,7 +6,7 @@ import { useTransformedKeys } from "../../hooks/useTransformKey";
 import { ActiveDot, CustomTooltipContent, DefaultLegend } from "../../shared";
 import { LegendItem } from "../../types";
 import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
-import { getChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
+import { get2dChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
 import { AxisLabel } from "./components/AxisLabel";
 import { RadarChartData } from "./types";
 
@@ -50,7 +50,7 @@ const RadarChartComponent = <T extends RadarChartData>({
 
   // Create Config
   const chartConfig: ChartConfig = useMemo(() => {
-    return getChartConfig(dataKeys, colors, transformedKeys, undefined, icons);
+    return get2dChartConfig(dataKeys, colors, transformedKeys, undefined, icons);
   }, [dataKeys, icons, colors, transformedKeys]);
 
   const legendItems: LegendItem[] = useMemo(() => {

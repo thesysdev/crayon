@@ -19,7 +19,7 @@ import {
 import { type LegendItem } from "../../types";
 import { getDistributedColors, getPalette, type PaletteName } from "../../utils/PalletUtils";
 import {
-  getChartConfig,
+  get2dChartConfig,
   getColorForDataKey,
   getDataKeys,
   getLegendItems,
@@ -94,7 +94,7 @@ const BarChartComponent = <T extends BarChartData>({
   }, [theme, dataKeys.length]);
 
   const chartConfig: ChartConfig = useMemo(() => {
-    return getChartConfig(dataKeys, colors, transformedKeys, undefined, icons);
+    return get2dChartConfig(dataKeys, colors, transformedKeys, undefined, icons);
   }, [dataKeys, icons, colors, transformedKeys]);
 
   const chartContainerRef = useRef<HTMLDivElement>(null);

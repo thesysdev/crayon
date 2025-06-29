@@ -23,7 +23,7 @@ export const getDataKeys = (
  * @param icons - The icons for the chart (optional).
  * @returns The chart configuration object for the chart.
  */
-export const getChartConfig = (
+export const get2dChartConfig = (
   dataKeys: string[],
   colors: string[],
   transformedKeys: Record<string, string>,

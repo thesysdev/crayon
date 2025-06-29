@@ -100,10 +100,8 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
             ([theme, prefix]) => `
     ${prefix} [data-chart=${id}] {
     ${colorConfig
-      .map(([key, itemConfig]) => {
-        // TODO: remove this after successful migration
-        // keyTransform fn can be removed after successful migration
-        const transformedKey = itemConfig.transformed ?? keyTransform(key);
+      .map(([_, itemConfig]) => {
+        const transformedKey = itemConfig.transformed;
         const themeValue = itemConfig.theme?.[theme as keyof typeof itemConfig.theme];
         const color =
           typeof themeValue === "string" ? themeValue : themeValue?.color || itemConfig.color;
