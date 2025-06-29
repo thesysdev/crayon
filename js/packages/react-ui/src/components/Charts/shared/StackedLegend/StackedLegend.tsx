@@ -23,7 +23,6 @@ const formatPercentage = (value: number, total: number): string => {
   return `${percentage.toFixed(1)}%`;
 };
 
-const MAX_VISIBLE_ITEMS = 10;
 const ITEM_HEIGHT = 36; // Height of each legend item
 const ITEM_GAP = 2; // Gap between items
 
@@ -100,27 +99,6 @@ export const StackedLegend = ({
   // Sort items by value in descending order (higher to lower)
   const sortedItems = [...items].sort((a, b) => b.value - a.value);
 
-  // Process items to handle more than MAX_VISIBLE_ITEMS
-  const processedItems = (() => {
-    if (sortedItems.length <= MAX_VISIBLE_ITEMS) {
-      return sortedItems;
-    }
-
-    const visibleItems = sortedItems.slice(0, MAX_VISIBLE_ITEMS - 1);
-    const remainingItems = sortedItems.slice(MAX_VISIBLE_ITEMS - 1);
-    const remainingTotal = remainingItems.reduce((sum, item) => sum + item.value, 0);
-
-    return [
-      ...visibleItems,
-      {
-        key: "others",
-        label: "Others",
-        value: remainingTotal,
-        color: "var(--crayon-container-hover-fills)",
-      },
-    ];
-  })();
-
   return (
     <div
       ref={containerRef}
@@ -141,7 +119,7 @@ export const StackedLegend = ({
       )}
 
       <div ref={listRef} className="crayon-stacked-legend">
-        {processedItems.map((item, index) => (
+        {sortedItems.map((item, index) => (
           <div
             key={item.key}
             className={`crayon-stacked-legend__item ${

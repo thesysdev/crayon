@@ -15,6 +15,7 @@ import {
   createEventHandlers,
   createSectorStyle,
   getHoverStyles,
+  groupSmallSlices,
   transformDataWithPercentages,
   useChartHover,
 } from "../utils/PieChartUtils";
@@ -84,6 +85,12 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   const isRowLayout =
     legend && legendVariant === "stacked" && wrapperRect.width >= STACKED_LEGEND_BREAKPOINT;
 
+  // Group small slices into "Others" if necessary
+  const processedData = useMemo(
+    () => groupSmallSlices(data, categoryKey, dataKey),
+    [data, categoryKey, dataKey],
+  );
+
   // Memoize string conversions to avoid repeated calls
   const categoryKeyString = useMemo(() => String(categoryKey), [categoryKey]);
   const dataKeyString = useMemo(() => String(dataKey), [dataKey]);
@@ -112,13 +119,13 @@ export const PieChartV2 = <T extends PieChartV2Data>({
 
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(
-    () => transformDataWithPercentages(data, dataKey),
-    [data, dataKey],
+    () => transformDataWithPercentages(processedData, dataKey),
+    [processedData, dataKey],
   );
 
   const chartConfig = useMemo(
-    () => createChartConfig(data, categoryKey, theme),
-    [data, categoryKey, theme],
+    () => createChartConfig(processedData, categoryKey, theme),
+    [processedData, categoryKey, theme],
   );
 
   const animationConfig = useMemo(
@@ -137,7 +144,10 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   );
 
   const palette = useMemo(() => getPalette(theme), [theme]);
-  const colors = useMemo(() => getDistributedColors(palette, data.length), [palette, data.length]);
+  const colors = useMemo(
+    () => getDistributedColors(palette, processedData.length),
+    [palette, processedData.length],
+  );
 
   const gradientDefinitions = useMemo(() => {
     if (!useGradients) return null;
@@ -149,13 +159,13 @@ export const PieChartV2 = <T extends PieChartV2Data>({
 
   const legendItems = useMemo(
     () =>
-      data.map((item, index) => ({
+      processedData.map((item, index) => ({
         key: String(item[categoryKey]),
         label: String(item[categoryKey]),
         value: Number(item[dataKey]),
         color: colors[index] || "#000000",
       })),
-    [data, categoryKey, dataKey, colors],
+    [processedData, categoryKey, dataKey, colors],
   );
 
   const defaultLegendItems = useMemo((): LegendItem[] => {
@@ -163,8 +173,8 @@ export const PieChartV2 = <T extends PieChartV2Data>({
   }, [legendItems]);
 
   const sortedData = useMemo(
-    () => [...data].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
-    [data, dataKey],
+    () => [...processedData].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
+    [processedData, dataKey],
   );
 
   const handleLegendItemHover = useCallback(
@@ -175,9 +185,11 @@ export const PieChartV2 = <T extends PieChartV2Data>({
         if (item) {
           const categoryValue = String(item[categoryKey]);
           setHoveredLegendKey(categoryValue);
-          const originalIndex = data.findIndex((d) => String(d[categoryKey]) === categoryValue);
-          if (originalIndex !== -1) {
-            handleMouseEnter(data[originalIndex], originalIndex);
+          const processedIndex = processedData.findIndex(
+            (d) => String(d[categoryKey]) === categoryValue,
+          );
+          if (processedIndex !== -1) {
+            handleMouseEnter(processedData[processedIndex], processedIndex);
           }
         }
       } else {
@@ -185,7 +197,7 @@ export const PieChartV2 = <T extends PieChartV2Data>({
         handleMouseLeave();
       }
     },
-    [sortedData, categoryKey, data, handleMouseEnter, handleMouseLeave, legendVariant],
+    [sortedData, categoryKey, processedData, handleMouseEnter, handleMouseLeave, legendVariant],
   );
 
   const handleChartMouseEnter = useCallback(

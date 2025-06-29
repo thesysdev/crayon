@@ -125,6 +125,48 @@ const getHoverStyles = (index: number, activeIndex: number | null): HoverStyles 
 // Data Transformation Utilities
 // ==========================================
 
+const MAX_PIE_SLICES = 10;
+
+const groupSmallSlices = <T extends PieChartData>(
+  data: T,
+  categoryKey: keyof T[number],
+  dataKey: keyof T[number],
+  threshold: number = MAX_PIE_SLICES,
+): T => {
+  if (data.length <= threshold) {
+    return data;
+  }
+
+  const sortedData = [...data].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey]));
+
+  const topItems = sortedData.slice(0, threshold - 1);
+  const otherItems = sortedData.slice(threshold - 1);
+
+  const othersValue = otherItems.reduce((sum, item) => sum + Number(item[dataKey]), 0);
+
+  const othersItem: T[number] = {
+    ...data[0], // Copy structure from first item
+    [categoryKey]: "Others",
+    [dataKey]: othersValue,
+  };
+
+  // Ensure other properties are initialized to avoid undefined issues.
+  for (const key in othersItem) {
+    if (key !== categoryKey && key !== dataKey) {
+      // @ts-expect-error - we are trying to clear other properties
+      othersItem[key] = undefined;
+    }
+  }
+
+  // Then restore the main keys
+  // @ts-expect-error - we are trying to build the object
+  othersItem[categoryKey] = "Others";
+  // @ts-expect-error - we are trying to build the object
+  othersItem[dataKey] = othersValue;
+
+  return [...topItems, othersItem] as T;
+};
+
 /**
  * Transforms data by adding percentage calculations
  * @param data - The input data array
@@ -270,6 +312,7 @@ export {
   createEventHandlers,
   createSectorStyle,
   getHoverStyles,
+  groupSmallSlices,
   transformDataWithPercentages,
   useChartHover,
 };
