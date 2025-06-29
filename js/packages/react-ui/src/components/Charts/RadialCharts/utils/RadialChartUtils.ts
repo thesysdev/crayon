@@ -103,6 +103,56 @@ export const getRadialHoverStyles = (
 // Data Transformation Utilities
 // ==========================================
 
+export const MAX_RADIAL_SLICES = 10;
+
+/**
+ * Groups small slices into an "Others" category if the number of data points exceeds a threshold.
+ * @param data The input data array.
+ * @param categoryKey The key for the category labels.
+ * @param dataKey The key for the data values.
+ * @param threshold The maximum number of slices before grouping.
+ * @returns A new data array with smaller slices grouped into "Others".
+ */
+export const groupSmallSlices = <T extends RadialChartData>(
+  data: T,
+  categoryKey: keyof T[number],
+  dataKey: keyof T[number],
+  threshold: number = MAX_RADIAL_SLICES,
+): T => {
+  if (data.length <= threshold) {
+    return data;
+  }
+
+  const sortedData = [...data].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey]));
+
+  const topItems = sortedData.slice(0, threshold - 1);
+  const otherItems = sortedData.slice(threshold - 1);
+
+  const othersValue = otherItems.reduce((sum, item) => sum + Number(item[dataKey]), 0);
+
+  const othersItem: T[number] = {
+    ...data[0], // Copy structure from first item
+    [categoryKey]: "Others",
+    [dataKey]: othersValue,
+  };
+
+  // Ensure other properties are initialized to avoid undefined issues.
+  for (const key in othersItem) {
+    if (key !== categoryKey && key !== dataKey) {
+      // @ts-expect-error - we are trying to clear other properties
+      othersItem[key] = undefined;
+    }
+  }
+
+  // Then restore the main keys
+  // @ts-expect-error - we are trying to build the object
+  othersItem[categoryKey] = "Others";
+  // @ts-expect-error - we are trying to build the object
+  othersItem[dataKey] = othersValue;
+
+  return [...topItems, othersItem] as T;
+};
+
 /**
  * Transforms data by adding percentage calculations and colors
  * @param data - The input data array

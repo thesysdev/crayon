@@ -14,6 +14,7 @@ import {
   createRadialChartConfig,
   createRadialEventHandlers,
   getRadialHoverStyles,
+  groupSmallSlices,
   transformRadialDataWithPercentages,
   useRadialChartHover,
 } from "../utils/RadialChartUtils";
@@ -81,6 +82,12 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
   const isRowLayout =
     legend && legendVariant === "stacked" && wrapperRect.width >= STACKED_LEGEND_BREAKPOINT;
 
+  // Group small slices into "Others" if necessary
+  const processedData = useMemo(
+    () => groupSmallSlices(data, categoryKey, dataKey),
+    [data, categoryKey, dataKey],
+  );
+
   // Memoize string conversions to avoid repeated calls
   const categoryKeyString = useMemo(() => String(categoryKey), [categoryKey]);
   const dataKeyString = useMemo(() => String(dataKey), [dataKey]);
@@ -132,13 +139,13 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
 
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(
-    () => transformRadialDataWithPercentages(data, dataKey, theme),
-    [data, dataKey, theme],
+    () => transformRadialDataWithPercentages(processedData, dataKey, theme),
+    [processedData, dataKey, theme],
   );
 
   const chartConfig = useMemo(
-    () => createRadialChartConfig(data, categoryKey, theme),
-    [data, categoryKey, theme],
+    () => createRadialChartConfig(processedData, categoryKey, theme),
+    [processedData, categoryKey, theme],
   );
 
   const animationConfig = useMemo(
@@ -153,7 +160,10 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
 
   // Get color palette and distribute colors
   const palette = useMemo(() => getPalette(theme), [theme]);
-  const colors = useMemo(() => getDistributedColors(palette, data.length), [palette, data.length]);
+  const colors = useMemo(
+    () => getDistributedColors(palette, processedData.length),
+    [palette, processedData.length],
+  );
 
   // Memoize gradient definitions
   const gradientDefinitions = useMemo(() => {
@@ -167,13 +177,13 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
   // Create legend items for both variants
   const legendItems = useMemo(
     () =>
-      data.map((item, index) => ({
+      processedData.map((item, index) => ({
         key: String(item[categoryKey]),
         label: String(item[categoryKey]),
         value: Number(item[dataKey]),
         color: colors[index] || "#000000",
       })),
-    [data, categoryKey, dataKey, colors],
+    [processedData, categoryKey, dataKey, colors],
   );
 
   const defaultLegendItems = useMemo((): LegendItem[] => {
@@ -182,8 +192,8 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
 
   // Memoize sorted data for legend hover handling
   const sortedData = useMemo(
-    () => [...data].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
-    [data, dataKey],
+    () => [...processedData].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
+    [processedData, dataKey],
   );
 
   // Handle legend item hover to highlight radial bar
@@ -195,9 +205,11 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
         if (item) {
           const categoryValue = String(item[categoryKey]);
           setHoveredLegendKey(categoryValue);
-          const originalIndex = data.findIndex((d) => String(d[categoryKey]) === categoryValue);
+          const originalIndex = processedData.findIndex(
+            (d) => String(d[categoryKey]) === categoryValue,
+          );
           if (originalIndex !== -1) {
-            handleMouseEnter(data[originalIndex], originalIndex);
+            handleMouseEnter(processedData[originalIndex], originalIndex);
           }
         }
       } else {
@@ -205,7 +217,7 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
         handleMouseLeave();
       }
     },
-    [sortedData, categoryKey, data, handleMouseEnter, handleMouseLeave, legendVariant],
+    [sortedData, categoryKey, processedData, handleMouseEnter, handleMouseLeave, legendVariant],
   );
 
   // Enhanced chart hover handlers
@@ -252,7 +264,6 @@ export const RadialChartV2 = <T extends RadialChartV2Data>({
       setWrapperRect({ width, height });
       return;
     }
-    
   }, [width, height]);
 
   const renderLegend = useCallback(() => {
