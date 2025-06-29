@@ -129,42 +129,102 @@ const getRadiusArray = (
  * internally used by the XAxis component reCharts
  */
 const getXAxisTickFormatter = (groupWidth?: number, variant: BarChartVariant = "grouped") => {
-  const CHAR_WIDTH = 7; // Average character width in pixels for most fonts
-  const ELLIPSIS_WIDTH = CHAR_WIDTH * 3; // "..." takes about 3 character widths
   const PADDING = 8; // Safety padding for better visual spacing
-  // closure is happening here.
+
+  // Setup canvas context for accurate text measurement.
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (context) {
+    // This font should match the actual chart's font for pixel-perfect results.
+    context.font = "12px Inter";
+  }
+
   return (value: string) => {
-    // If no groupWidth provided, fall back to simple logic
-    if (!groupWidth) {
+    const stringValue = String(value);
+
+    // Fallback for SSR, or if canvas/groupWidth is not available.
+    if (!context || !groupWidth) {
       if (variant === "stacked") {
-        return value.slice(0, 3);
+        return stringValue.slice(0, 3);
       } else {
-        return value.length > 3 ? `${value.slice(0, 3)}...` : value;
+        return stringValue.length > 3 ? `${stringValue.slice(0, 3)}...` : stringValue;
       }
     }
 
     const availableWidth = Math.max(0, groupWidth - PADDING);
-    const maxCharsWithoutEllipsis = Math.floor(availableWidth / CHAR_WIDTH);
-    const maxCharsWithEllipsis = Math.floor((availableWidth - ELLIPSIS_WIDTH) / CHAR_WIDTH);
 
-    // For stacked variant: simple truncation, no ellipsis needed
+    // For stacked variant: simple truncation, no ellipsis needed.
+    // Truncates based on available width, but respects a max of 3 characters from original logic.
     if (variant === "stacked") {
-      const maxChars = Math.max(1, Math.min(3, maxCharsWithoutEllipsis));
-      return value.slice(0, maxChars);
+      let low = 0;
+      let high = stringValue.length;
+      let result = "";
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        if (mid === 0) {
+          low = mid + 1;
+          continue;
+        }
+        const truncated = stringValue.substring(0, mid);
+        if (context.measureText(truncated).width <= availableWidth) {
+          result = truncated;
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
+      }
+      // Apply the 3-char max limit from the original implementation
+      return result.slice(0, 3);
     }
 
-    // For grouped variant: intelligent ellipsis handling
-    if (value.length <= maxCharsWithoutEllipsis) {
-      // Full text fits comfortably
-      return value;
-    } else if (maxCharsWithEllipsis >= 3) {
-      // We can fit at least 3 characters + ellipsis
-      return `${value.slice(0, maxCharsWithEllipsis)}...`;
-    } else {
-      // Very limited space - just show 3 chars without ellipsis
-      // (ellipsis would take more space than it's worth)
-      return value.slice(0, Math.max(1, Math.min(3, maxCharsWithoutEllipsis)));
+    // For grouped variant: intelligent ellipsis handling.
+    if (context.measureText(stringValue).width <= availableWidth) {
+      return stringValue; // Full text fits.
     }
+
+    // If text overflows, find the best truncation point with ellipsis.
+    let low = 0;
+    let high = stringValue.length;
+    let result = "";
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      if (mid === 0) {
+        low = mid + 1;
+        continue;
+      }
+      const truncated = stringValue.substring(0, mid) + "...";
+      if (context.measureText(truncated).width <= availableWidth) {
+        result = truncated;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    // If even with ellipsis nothing fits (very tight space),
+    // find max chars that fit without ellipsis.
+    if (result === "") {
+      low = 0;
+      high = stringValue.length;
+      let rawTruncated = "";
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        if (mid === 0) {
+          low = mid + 1;
+          continue;
+        }
+        const truncated = stringValue.substring(0, mid);
+        if (context.measureText(truncated).width <= availableWidth) {
+          rawTruncated = truncated;
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
+      }
+      return rawTruncated;
+    }
+
+    return result;
   };
 };
 
