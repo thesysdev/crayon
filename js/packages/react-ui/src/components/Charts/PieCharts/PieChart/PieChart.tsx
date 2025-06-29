@@ -6,13 +6,13 @@ import { useTransformedKeys } from "../../hooks";
 import { DefaultLegend } from "../../shared/DefaultLegend/DefaultLegend.js";
 import { StackedLegend } from "../../shared/StackedLegend/StackedLegend.js";
 import { LegendItem } from "../../types/Legend.js";
+import { getCategoricalChartConfig } from "../../utils/dataUtils.js";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils.js";
 import { PieChartData } from "../types/index.js";
 import { createGradientDefinitions } from "./components/PieChartRenderers.js";
 import {
   calculateTwoLevelChartDimensions,
   createAnimationConfig,
-  createChartConfig,
   createEventHandlers,
   createSectorStyle,
   getHoverStyles,
@@ -128,7 +128,7 @@ export const PieChart = <T extends PieChartData>({
   );
 
   const chartConfig = useMemo(
-    () => createChartConfig(processedData, categoryKey, theme, transformedKeys),
+    () => getCategoricalChartConfig(processedData, categoryKey, theme, transformedKeys),
     [processedData, categoryKey, theme, transformedKeys],
   );
 

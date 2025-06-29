@@ -2,8 +2,6 @@
  * Utility functions for pie charts
  */
 import { useState } from "react";
-import { ChartConfig } from "../../../Charts";
-import { getDistributedColors, getPalette } from "../../../utils/PalletUtils";
 import { PieChartData } from "../../types";
 
 export interface ChartDimensions {
@@ -180,37 +178,6 @@ const transformDataWithPercentages = <T extends PieChartData>(
   }));
 };
 
-/**
- * Creates chart configuration with colors and labels
- * @param data - The input data array
- * @param categoryKey - The key to use for category labels
- * @param theme - The color theme to use
- * @param transformedKeys - The map of transformed keys
- * @returns Chart configuration object
- */
-const createChartConfig = <T extends PieChartData>(
-  data: T,
-  categoryKey: keyof T[number],
-  theme: string = "ocean",
-  transformedKeys: Record<string, string>,
-): ChartConfig => {
-  const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, data.length);
-
-  return data.reduce<ChartConfig>((config, item, index) => {
-    const originalKey = String(item[categoryKey]);
-    const transformedKey = transformedKeys[originalKey] ?? originalKey;
-    return {
-      ...config,
-      [transformedKey]: {
-        label: String(item[categoryKey as string]),
-        color: colors[index],
-        secondaryColor: colors[data.length - index - 1], // Add secondary color for gradient effect
-      },
-    };
-  }, {});
-};
-
 // ==========================================
 // Hover Effect Utilities
 // ==========================================
@@ -306,7 +273,6 @@ export {
   calculatePercentage,
   calculateTwoLevelChartDimensions,
   createAnimationConfig,
-  createChartConfig,
   createEventHandlers,
   createSectorStyle,
   getHoverStyles,

@@ -2,16 +2,17 @@ import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Cell, PolarGrid, RadialBar, RadialBarChart } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../../Charts";
+import { useTransformedKeys } from "../../hooks";
 import { DefaultLegend } from "../../shared/DefaultLegend/DefaultLegend";
 import { StackedLegend } from "../../shared/StackedLegend/StackedLegend";
 import { LegendItem } from "../../types/Legend";
+import { getCategoricalChartConfig } from "../../utils/dataUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
 import { RadialChartData } from "../types";
 import { createRadialGradientDefinitions } from "./components/RadialChartRenderers";
 import {
   calculateRadialChartDimensions,
   createRadialAnimationConfig,
-  createRadialChartConfig,
   createRadialEventHandlers,
   getRadialHoverStyles,
   groupSmallSlices,
@@ -85,6 +86,12 @@ export const RadialChart = <T extends RadialChartData>({
     [data, categoryKey, dataKey],
   );
 
+  const categories = useMemo(
+    () => processedData.map((item) => String(item[categoryKey])),
+    [processedData, categoryKey],
+  );
+  const transformedKeys = useTransformedKeys(categories);
+
   // Memoize string conversions to avoid repeated calls
   const categoryKeyString = useMemo(() => String(categoryKey), [categoryKey]);
   const dataKeyString = useMemo(() => String(dataKey), [dataKey]);
@@ -141,8 +148,8 @@ export const RadialChart = <T extends RadialChartData>({
   );
 
   const chartConfig = useMemo(
-    () => createRadialChartConfig(processedData, categoryKey, theme),
-    [processedData, categoryKey, theme],
+    () => getCategoricalChartConfig(processedData, categoryKey, theme, transformedKeys),
+    [processedData, categoryKey, theme, transformedKeys],
   );
 
   const animationConfig = useMemo(

@@ -2,7 +2,6 @@
  * Utility functions for radial charts
  */
 import { useState } from "react";
-import { ChartConfig } from "../../../Charts";
 import { getDistributedColors, getPalette } from "../../../utils/PalletUtils";
 import { RadialChartData } from "../../types";
 
@@ -172,34 +171,6 @@ export const transformRadialDataWithPercentages = <T extends RadialChartData>(
     originalValue: item[dataKey as string],
     fill: colors[index],
   }));
-};
-
-/**
- * Creates chart configuration with colors and labels
- * @param data - The input data array
- * @param categoryKey - The key to use for category labels
- * @param theme - The color theme to use
- * @returns Chart configuration object
- */
-export const createRadialChartConfig = <T extends RadialChartData>(
-  data: T,
-  categoryKey: keyof T[number],
-  theme: string = "ocean",
-): ChartConfig => {
-  const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, data.length);
-
-  return data.reduce<ChartConfig>(
-    (config, item, index) => ({
-      ...config,
-      [String(item[categoryKey])]: {
-        label: String(item[categoryKey as string]),
-        color: colors[index],
-        secondaryColor: colors[data.length - index - 1], // Add secondary color for gradient effect
-      },
-    }),
-    {},
-  );
 };
 
 // ==========================================

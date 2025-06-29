@@ -1,5 +1,8 @@
 import { ChartConfig } from "../Charts";
+import { PieChartData } from "../PieCharts";
+import { RadialChartData } from "../RadialCharts";
 import { LegendItem } from "../types";
+import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
 /**
  * This function returns the data keys for the chart, used for the data keys of the chart.
@@ -43,6 +46,31 @@ export const get2dChartConfig = (
     }),
     {},
   );
+};
+
+type CategoricalChartData = RadialChartData | PieChartData;
+
+export const getCategoricalChartConfig = <T extends CategoricalChartData>(
+  data: T,
+  categoryKey: keyof T[number],
+  theme: string = "ocean",
+  transformedKeys: Record<string, string>,
+): ChartConfig => {
+  const palette = getPalette(theme);
+  const colors = getDistributedColors(palette, data.length);
+
+  return data.reduce<ChartConfig>((config, item, index) => {
+    const originalKey = String(item[categoryKey]);
+    const transformedKey = `key-${transformedKeys[originalKey] ?? originalKey}`;
+    return {
+      ...config,
+      [transformedKey]: {
+        label: String(item[categoryKey as string]),
+        color: colors[index],
+        secondaryColor: colors[data.length - index - 1], // Add secondary color for gradient effect
+      },
+    };
+  }, {});
 };
 
 /**
