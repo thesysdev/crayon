@@ -134,7 +134,7 @@ export const StackedLegend = ({
                 aria-label="Scroll legend up"
                 icon={<ChevronUp />}
                 variant="secondary"
-                size="small"
+                size="extra-small"
                 disabled={!showUpButton}
               />
               <IconButton
@@ -143,7 +143,7 @@ export const StackedLegend = ({
                 aria-label="Scroll legend down"
                 icon={<ChevronDown />}
                 variant="secondary"
-                size="small"
+                size="extra-small"
                 disabled={!showDownButton}
               />
             </>
