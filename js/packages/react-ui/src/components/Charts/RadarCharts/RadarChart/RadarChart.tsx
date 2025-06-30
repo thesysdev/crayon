@@ -83,9 +83,9 @@ const RadarChartComponent = <T extends RadarChartData>({
   const chartSize = useMemo(() => {
     const effectiveWidth = wrapperRect.width;
     const effectiveHeight = wrapperRect.height;
-    let chartsz = Math.min(effectiveWidth, effectiveHeight);
-    chartsz = Math.min(chartsz, MAX_CHART_SIZE);
-    return Math.max(MIN_CHART_SIZE, chartsz);
+    let charts = Math.min(effectiveWidth, effectiveHeight);
+    charts = Math.min(charts, MAX_CHART_SIZE);
+    return Math.max(MIN_CHART_SIZE, charts);
   }, [wrapperRect]);
 
   const chartSizeStyle = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
@@ -158,13 +158,7 @@ const RadarChartComponent = <T extends RadarChartData>({
                     bottom: 10,
                   }}
                 >
-                  {grid && (
-                    <PolarGrid
-                      className="crayon-chart-polar-grid"
-                      stroke="currentColor"
-                      gridType="polygon"
-                    />
-                  )}
+                  {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
                   <PolarAngleAxis
                     dataKey={categoryKey as string}
                     tick={
