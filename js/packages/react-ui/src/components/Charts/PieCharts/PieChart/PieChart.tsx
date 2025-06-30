@@ -397,7 +397,7 @@ const PieChartComponent = <T extends PieChartData>({
   );
 
   return (
-    <div ref={wrapperRef} className={wrapperClassName} style={{ width: "100%", height: "100%" }}>
+    <div ref={wrapperRef} className={wrapperClassName}>
       <div className="crayon-pie-chart-container">
         <div className="crayon-pie-chart-container-inner">
           <div style={chartSizeStyle}>

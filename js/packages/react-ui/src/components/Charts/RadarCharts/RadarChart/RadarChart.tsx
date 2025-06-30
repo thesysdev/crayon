@@ -140,11 +140,7 @@ const RadarChartComponent = <T extends RadarChartData>({
       data={undefined}
       setData={() => {}}
     >
-      <div
-        ref={wrapperRef}
-        className={wrapperClassName}
-        style={{ width: "100%", height: "100%", position: "relative" }}
-      >
+      <div ref={wrapperRef} className={wrapperClassName}>
         <div className="crayon-radar-chart-container">
           <div className="crayon-radar-chart-container-inner">
             <div style={chartSizeStyle}>
@@ -162,7 +158,13 @@ const RadarChartComponent = <T extends RadarChartData>({
                     bottom: 10,
                   }}
                 >
-                  {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
+                  {grid && (
+                    <PolarGrid
+                      className="crayon-chart-polar-grid"
+                      stroke="currentColor"
+                      gridType="polygon"
+                    />
+                  )}
                   <PolarAngleAxis
                     dataKey={categoryKey as string}
                     tick={

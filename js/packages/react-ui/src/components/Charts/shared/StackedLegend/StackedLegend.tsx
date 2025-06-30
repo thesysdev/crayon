@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "../../../Button";
 import { IconButton } from "../../../IconButton";
 
 interface LegendItem {
@@ -25,6 +26,7 @@ const formatPercentage = (value: number, total: number): string => {
 
 const ITEM_HEIGHT = 36; // Height of each legend item
 const ITEM_GAP = 2; // Gap between items
+const LEGEND_ITEM_LIMIT = 6;
 
 export const StackedLegend = ({
   items,
@@ -37,6 +39,10 @@ export const StackedLegend = ({
   const listRef = useRef<HTMLDivElement>(null);
   const [showUpButton, setShowUpButton] = useState(false);
   const [showDownButton, setShowDownButton] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
+  const isShowMoreLayout = containerWidth !== undefined && items.length > LEGEND_ITEM_LIMIT;
 
   const handleMouseEnter = (key: string, index: number) => {
     onItemHover?.(key);
@@ -53,10 +59,18 @@ export const StackedLegend = ({
     const checkScroll = () => {
       if (listRef.current && containerRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+        const overflowing = scrollHeight > clientHeight;
+        setIsOverflowing(overflowing);
         setShowUpButton(scrollTop > 0);
         setShowDownButton(scrollTop < scrollHeight - clientHeight - 1); // -1 for rounding errors
       }
     };
+
+    if (isShowMoreLayout) {
+      setShowUpButton(false);
+      setShowDownButton(false);
+      return;
+    }
 
     // Initial check
     checkScroll();
@@ -76,7 +90,7 @@ export const StackedLegend = ({
       };
     }
     return () => {};
-  }, []);
+  }, [isShowMoreLayout]);
 
   // Scroll functions
   const scrollUp = () => {
@@ -99,6 +113,8 @@ export const StackedLegend = ({
   // Sort items by value in descending order (higher to lower)
   const sortedItems = [...items].sort((a, b) => b.value - a.value);
 
+  const itemsToDisplay = isShowMoreLayout && !showAll ? sortedItems.slice(0, 6) : sortedItems;
+
   return (
     <div
       ref={containerRef}
@@ -110,30 +126,32 @@ export const StackedLegend = ({
       <div className="crayon-stacked-legend-header">
         <div className="crayon-stacked-legend-header-title">{items.length} values</div>
         <div className="crayon-stacked-legend-header-buttons">
-          {showUpButton && (
-            <IconButton
-              className="crayon-stacked-legend-scroll-button crayon-stacked-legend-scroll-up"
-              onClick={scrollUp}
-              aria-label="Scroll legend up"
-              icon={<ChevronUp />}
-              variant="secondary"
-              size="small"
-            />
-          )}
-          {showDownButton && (
-            <IconButton
-              className="crayon-stacked-legend-scroll-button crayon-stacked-legend-scroll-down"
-              onClick={scrollDown}
-              aria-label="Scroll legend down"
-              icon={<ChevronDown />}
-              variant="secondary"
-              size="small"
-            />
+          {!isShowMoreLayout && isOverflowing && (
+            <>
+              <IconButton
+                className="crayon-stacked-legend-scroll-button crayon-stacked-legend-scroll-up"
+                onClick={scrollUp}
+                aria-label="Scroll legend up"
+                icon={<ChevronUp />}
+                variant="secondary"
+                size="small"
+                disabled={!showUpButton}
+              />
+              <IconButton
+                className="crayon-stacked-legend-scroll-button crayon-stacked-legend-scroll-down"
+                onClick={scrollDown}
+                aria-label="Scroll legend down"
+                icon={<ChevronDown />}
+                variant="secondary"
+                size="small"
+                disabled={!showDownButton}
+              />
+            </>
           )}
         </div>
       </div>
       <div ref={listRef} className="crayon-stacked-legend">
-        {sortedItems.map((item, index) => (
+        {itemsToDisplay.map((item, index) => (
           <div
             key={item.key}
             className={`crayon-stacked-legend__item ${
@@ -157,6 +175,26 @@ export const StackedLegend = ({
           </div>
         ))}
       </div>
+      {isShowMoreLayout && !showAll && (
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={() => setShowAll(true)}
+          className="crayon-stacked-legend-show-more-button"
+        >
+          Show more
+        </Button>
+      )}
+      {isShowMoreLayout && showAll && (
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={() => setShowAll(false)}
+          className="crayon-stacked-legend-show-less-button"
+        >
+          Show less
+        </Button>
+      )}
     </div>
   );
 };

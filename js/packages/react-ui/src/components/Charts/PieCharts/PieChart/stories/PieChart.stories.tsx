@@ -10,6 +10,8 @@ const monthlySalesData = [
   { month: "April", value: 1320 },
   { month: "May", value: 1680 },
   { month: "June", value: 2100 },
+  { month: "April", value: 1320 },
+  { month: "May", value: 1680 },
 ];
 
 const comprehensiveData = [

@@ -308,7 +308,7 @@ export const RadialChart = <T extends RadialChartData>({
   const endAngle = variant === "semicircle" ? 0 : 360;
 
   return (
-    <div ref={wrapperRef} className={wrapperClassName} style={{ width: "100%", height: "100%" }}>
+    <div ref={wrapperRef} className={wrapperClassName}>
       <div className="crayon-radial-chart-container">
         <div className="crayon-radial-chart-container-inner">
           <div style={chartSizeStyle}>
