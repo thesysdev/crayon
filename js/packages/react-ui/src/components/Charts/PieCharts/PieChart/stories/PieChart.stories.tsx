@@ -155,7 +155,8 @@ const salesData = [
       },
     },
     theme: {
-      description: "The color palette for the chart. Provides a set of aesthetically pleasing colors.",
+      description:
+        "The color palette for the chart. Provides a set of aesthetically pleasing colors.",
       control: "select",
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
@@ -182,7 +183,8 @@ const salesData = [
       },
     },
     format: {
-      description: "The format for displaying data values, either as raw numbers or as percentages.",
+      description:
+        "The format for displaying data values, either as raw numbers or as percentages.",
       control: "radio",
       options: ["percentage", "number"],
       table: {
@@ -245,7 +247,8 @@ const salesData = [
       },
     },
     height: {
-      description: "Sets a fixed height for the chart container. Undefined by default for responsive height.",
+      description:
+        "Sets a fixed height for the chart container. Undefined by default for responsive height.",
       control: { type: "number", min: 200, max: 800 },
       table: {
         type: { summary: "number" },
@@ -253,7 +256,8 @@ const salesData = [
       },
     },
     width: {
-      description: "Sets a fixed width for the chart container. Undefined by default for responsive width.",
+      description:
+        "Sets a fixed width for the chart container. Undefined by default for responsive width.",
       control: { type: "number", min: 200, max: 800 },
       table: {
         type: { summary: "number" },
@@ -300,7 +304,9 @@ export const DefaultConfiguration: Story = {
   },
   render: (args: any) => (
     <Card style={{ width: "650px", height: "auto", padding: "24px" }}>
-      <h3 style={{ marginBottom: "20px", fontSize: "18px", fontWeight: 600 }}>Monthly Sales Performance</h3>
+      <h3 style={{ marginBottom: "20px", fontSize: "18px", fontWeight: 600 }}>
+        Monthly Sales Performance
+      </h3>
       <PieChart {...args} />
     </Card>
   ),
@@ -330,22 +336,30 @@ export const LayoutAndVariantOptions: Story = {
     paddingAngle: 2,
   },
   render: (args: any) => (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', width: '800px' }}>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", width: "800px" }}>
       <div>
-        <h4 style={{ textAlign: 'center', marginBottom: '16px' }}>Pie - Circular</h4>
-        <Card style={{ padding: '20px' }}><PieChart {...args} variant="pie" appearance="circular" height={300} /></Card>
+        <h4 style={{ textAlign: "center", marginBottom: "16px" }}>Pie - Circular</h4>
+        <Card style={{ padding: "20px" }}>
+          <PieChart {...args} variant="pie" appearance="circular" height={300} />
+        </Card>
       </div>
       <div>
-        <h4 style={{ textAlign: 'center', marginBottom: '16px' }}>Donut - Circular</h4>
-        <Card style={{ padding: '20px' }}><PieChart {...args} variant="donut" appearance="circular" height={300} /></Card>
+        <h4 style={{ textAlign: "center", marginBottom: "16px" }}>Donut - Circular</h4>
+        <Card style={{ padding: "20px" }}>
+          <PieChart {...args} variant="donut" appearance="circular" height={300} />
+        </Card>
       </div>
       <div>
-        <h4 style={{ textAlign: 'center', marginBottom: '16px' }}>Pie - Semicircle</h4>
-        <Card style={{ padding: '20px' }}><PieChart {...args} variant="pie" appearance="semiCircular" height={200} /></Card>
+        <h4 style={{ textAlign: "center", marginBottom: "16px" }}>Pie - Semicircle</h4>
+        <Card style={{ padding: "20px" }}>
+          <PieChart {...args} variant="pie" appearance="semiCircular" height={200} />
+        </Card>
       </div>
       <div>
-        <h4 style={{ textAlign: 'center', marginBottom: '16px' }}>Donut - Semicircle</h4>
-        <Card style={{ padding: '20px' }}><PieChart {...args} variant="donut" appearance="semiCircular" height={200} /></Card>
+        <h4 style={{ textAlign: "center", marginBottom: "16px" }}>Donut - Semicircle</h4>
+        <Card style={{ padding: "20px" }}>
+          <PieChart {...args} variant="donut" appearance="semiCircular" height={200} />
+        </Card>
       </div>
     </div>
   ),
@@ -377,7 +391,9 @@ export const LargeDatasetWithCarousel: Story = {
   },
   render: (args: any) => (
     <Card style={{ width: "750px", height: "auto", padding: "24px" }}>
-       <h3 style={{ marginBottom: "20px", fontSize: "18px", fontWeight: 600 }}>Comprehensive Sales Breakdown</h3>
+      <h3 style={{ marginBottom: "20px", fontSize: "18px", fontWeight: 600 }}>
+        Comprehensive Sales Breakdown
+      </h3>
       <PieChart {...args} />
     </Card>
   ),
@@ -449,11 +465,11 @@ export const ResponsiveBehaviorDemo: Story = {
             width: 16,
             height: 16,
             cursor: "nwse-resize",
-            background: 'rgba(0,0,0,0.1)'
+            background: "rgba(0,0,0,0.1)",
           }}
           onMouseDown={handleMouseDown}
         />
-        <div style={{ position: 'absolute', bottom: 5, right: 20, fontSize: 12, color: '#666' }}>
+        <div style={{ position: "absolute", bottom: 5, right: 20, fontSize: 12, color: "#666" }}>
           {dimensions.width}px × {dimensions.height}px
         </div>
       </Card>

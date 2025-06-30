@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Shield, Star, Target, TrendingUp, Users, Zap } from "lucide-react";
+import { Shield, Star, Target } from "lucide-react";
 import { useState } from "react";
 import { Card } from "../../../../Card";
 import { RadarChart, RadarChartProps } from "../RadarChart";
