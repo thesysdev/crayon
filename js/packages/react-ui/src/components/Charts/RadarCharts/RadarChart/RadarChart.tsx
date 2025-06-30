@@ -1,4 +1,5 @@
-import React, { memo, useLayoutEffect, useMemo, useRef, useState } from "react";
+import clsx from "clsx";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart as RechartsRadarChart } from "recharts";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../../Charts";
 import { SideBarTooltipProvider } from "../../context/SideBarTooltipContext";
@@ -9,6 +10,9 @@ import { getDistributedColors, getPalette } from "../../utils/PalletUtils";
 import { get2dChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
 import { AxisLabel } from "./components/AxisLabel";
 import { RadarChartData } from "./types";
+
+const MIN_CHART_SIZE = 150;
+const MAX_CHART_SIZE = 296;
 
 export interface RadarChartProps<T extends RadarChartData> {
   data: T;
@@ -21,7 +25,6 @@ export interface RadarChartProps<T extends RadarChartData> {
   areaOpacity?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
-  size?: number;
 }
 
 const RadarChartComponent = <T extends RadarChartData>({
@@ -34,8 +37,7 @@ const RadarChartComponent = <T extends RadarChartData>({
   strokeWidth = 2,
   areaOpacity = 0.2,
   icons = {},
-  isAnimationActive = true,
-  size,
+  isAnimationActive = false,
 }: RadarChartProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -58,37 +60,36 @@ const RadarChartComponent = <T extends RadarChartData>({
   }, [dataKeys, colors, icons]);
 
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
-  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const portalContainerRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
 
-  useLayoutEffect(() => {
-    // Only set up ResizeObserver if width is not provided
-    if (size || !chartContainerRef.current) {
-      return () => {};
-    }
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      // there is only one entry in the entries array because we are observing the chart container
-      for (const entry of entries) {
-        setContainerDimensions({
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        setWrapperRect({
           width: entry.contentRect.width,
           height: entry.contentRect.height,
         });
       }
     });
-
-    resizeObserver.observe(chartContainerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
+    observer.observe(wrapper);
+    return () => observer.disconnect();
   }, []);
 
-  const chartSize = useMemo(
-    () => Math.min(containerDimensions.width, containerDimensions.height),
-    [containerDimensions],
-  );
+  const chartSize = useMemo(() => {
+    const effectiveWidth = wrapperRect.width;
+    const effectiveHeight = wrapperRect.height;
+    let chartsz = Math.min(effectiveWidth, effectiveHeight);
+    chartsz = Math.min(chartsz, MAX_CHART_SIZE);
+    return Math.max(MIN_CHART_SIZE, chartsz);
+  }, [wrapperRect]);
+
+  const chartSizeStyle = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
+  const rechartsProps = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
 
   const radars = useMemo(() => {
     return dataKeys.map((key) => {
@@ -124,6 +125,14 @@ const RadarChartComponent = <T extends RadarChartData>({
     });
   }, [dataKeys, transformedKeys, variant, strokeWidth, areaOpacity, isAnimationActive]);
 
+  const wrapperClassName = useMemo(
+    () =>
+      clsx("crayon-radar-chart-container-wrapper", {
+        "layout-column": true,
+      }),
+    [],
+  );
+
   return (
     <SideBarTooltipProvider
       isSideBarTooltipOpen={false}
@@ -132,54 +141,50 @@ const RadarChartComponent = <T extends RadarChartData>({
       setData={() => {}}
     >
       <div
-        className="crayon-radar-chart-v2-container"
-        ref={portalContainerRef}
-        style={{ position: "relative" }}
+        ref={wrapperRef}
+        className={wrapperClassName}
+        style={{ width: "100%", height: "100%", position: "relative" }}
       >
-        <div className="crayon-radar-chart-v2-container-inner" ref={chartContainerRef}>
-          <ChartContainer
-            config={chartConfig}
-            style={{
-              width: chartSize,
-              height: chartSize,
-              aspectRatio: 1,
-              minWidth: 100,
-              minHeight: 100,
-            }}
-            rechartsProps={{
-              aspect: 1,
-            }}
-          >
-            <RechartsRadarChart
-              data={data}
-              margin={{
-                left: 10,
-                right: 10,
-                top: 10,
-                bottom: 10,
-              }}
-            >
-              {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
-              <PolarAngleAxis
-                dataKey={categoryKey as string}
-                tick={
-                  <AxisLabel
-                    portalContainerRef={portalContainerRef}
-                    isLegendExpanded={isLegendExpanded}
+        <div className="crayon-radar-chart-container">
+          <div className="crayon-radar-chart-container-inner">
+            <div style={chartSizeStyle}>
+              <ChartContainer
+                config={chartConfig}
+                className="crayon-radar-chart"
+                rechartsProps={rechartsProps}
+              >
+                <RechartsRadarChart
+                  data={data}
+                  margin={{
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10,
+                  }}
+                >
+                  {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
+                  <PolarAngleAxis
+                    dataKey={categoryKey as string}
+                    tick={
+                      <AxisLabel
+                        portalContainerRef={wrapperRef}
+                        isLegendExpanded={isLegendExpanded}
+                      />
+                    }
                   />
-                }
-              />
 
-              <ChartTooltip cursor={false} content={<CustomTooltipContent />} />
-              {/* rendering the radars here */}
-              {radars}
-            </RechartsRadarChart>
-          </ChartContainer>
+                  <ChartTooltip cursor={false} content={<CustomTooltipContent />} />
+                  {/* rendering the radars here */}
+                  {radars}
+                </RechartsRadarChart>
+              </ChartContainer>
+            </div>
+          </div>
         </div>
         {legend && (
           <DefaultLegend
             items={legendItems}
-            containerWidth={containerDimensions.width}
+            containerWidth={wrapperRect.width}
             isExpanded={isLegendExpanded}
             setIsExpanded={setIsLegendExpanded}
             style={{ paddingTop: 0 }}

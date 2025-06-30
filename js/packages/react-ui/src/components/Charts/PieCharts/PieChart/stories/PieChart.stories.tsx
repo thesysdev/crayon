@@ -246,24 +246,6 @@ const salesData = [
         category: "🎨 Visual Styling",
       },
     },
-    height: {
-      description:
-        "Sets a fixed height for the chart container. Undefined by default for responsive height.",
-      control: { type: "number", min: 200, max: 800 },
-      table: {
-        type: { summary: "number" },
-        category: "📐 Layout Control",
-      },
-    },
-    width: {
-      description:
-        "Sets a fixed width for the chart container. Undefined by default for responsive width.",
-      control: { type: "number", min: 200, max: 800 },
-      table: {
-        type: { summary: "number" },
-        category: "📐 Layout Control",
-      },
-    },
   },
 } satisfies Meta<typeof PieChart>;
 
@@ -295,12 +277,10 @@ export const DefaultConfiguration: Story = {
     legendVariant: "stacked",
     isAnimationActive: true,
     appearance: "circular",
-    cornerRadius: 4,
-    paddingAngle: 2,
+    cornerRadius: 0,
+    paddingAngle: 0,
     useGradients: false,
     gradientColors: gradientPalette,
-    height: 400,
-    width: 600,
   },
   render: (args: any) => (
     <Card style={{ width: "650px", height: "auto", padding: "24px" }}>
@@ -332,33 +312,33 @@ export const LayoutAndVariantOptions: Story = {
     legend: true,
     legendVariant: "stacked",
     isAnimationActive: false,
-    cornerRadius: 4,
-    paddingAngle: 2,
+    cornerRadius: 0,
+    paddingAngle: 0,
   },
   render: (args: any) => (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", width: "800px" }}>
       <div>
         <h4 style={{ textAlign: "center", marginBottom: "16px" }}>Pie - Circular</h4>
         <Card style={{ padding: "20px" }}>
-          <PieChart {...args} variant="pie" appearance="circular" height={300} />
+          <PieChart {...args} variant="pie" appearance="circular" />
         </Card>
       </div>
       <div>
         <h4 style={{ textAlign: "center", marginBottom: "16px" }}>Donut - Circular</h4>
         <Card style={{ padding: "20px" }}>
-          <PieChart {...args} variant="donut" appearance="circular" height={300} />
+          <PieChart {...args} variant="donut" appearance="circular" />
         </Card>
       </div>
       <div>
         <h4 style={{ textAlign: "center", marginBottom: "16px" }}>Pie - Semicircle</h4>
         <Card style={{ padding: "20px" }}>
-          <PieChart {...args} variant="pie" appearance="semiCircular" height={200} />
+          <PieChart {...args} variant="pie" appearance="semiCircular" />
         </Card>
       </div>
       <div>
         <h4 style={{ textAlign: "center", marginBottom: "16px" }}>Donut - Semicircle</h4>
         <Card style={{ padding: "20px" }}>
-          <PieChart {...args} variant="donut" appearance="semiCircular" height={200} />
+          <PieChart {...args} variant="donut" appearance="semiCircular" />
         </Card>
       </div>
     </div>
@@ -386,56 +366,60 @@ export const LargeDatasetWithCarousel: Story = {
     legendVariant: "stacked",
     cornerRadius: 4,
     paddingAngle: 1,
-    height: 500,
-    width: 700,
   },
   render: (args: any) => (
-    <Card style={{ width: "750px", height: "auto", padding: "24px" }}>
-      <h3 style={{ marginBottom: "20px", fontSize: "18px", fontWeight: 600 }}>
-        Comprehensive Sales Breakdown
-      </h3>
+    <Card style={{ width: "700px", padding: "24px" }}>
       <PieChart {...args} />
     </Card>
   ),
 };
 
-/**
- * ## Responsive Behavior Demo
- *
- * This story demonstrates the responsive nature of the PieChart. Drag the
- * handles on the container to resize it and observe how the chart and its
- * legend adapt to the new dimensions.
- */
-export const ResponsiveBehaviorDemo: Story = {
+export const ResponsiveDemo: Story = {
   name: "📱 Responsive Behavior Demo",
   args: {
-    data: monthlySalesData,
-    categoryKey: "month",
-    dataKey: "value",
-    theme: "sunset",
-    variant: "donut",
+    data: comprehensiveData,
+    categoryKey: "category",
+    dataKey: "sales",
+    theme: "spectrum",
+    variant: "circular",
+    format: "number",
     legend: true,
     legendVariant: "stacked",
     isAnimationActive: false,
     cornerRadius: 8,
-    paddingAngle: 2,
+    useGradients: false,
   },
   render: (args: any) => {
-    const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
+    const [dimensions, setDimensions] = useState<{ width: number; height: number | string }>({
+      width: 700,
+      height: "auto",
+    });
 
-    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, handle: string) => {
       e.preventDefault();
+      e.stopPropagation();
       const startX = e.clientX;
       const startY = e.clientY;
       const startWidth = dimensions.width;
-      const startHeight = dimensions.height;
+      const startHeight = (e.currentTarget.parentElement as HTMLElement).offsetHeight;
 
       const doDrag = (e: MouseEvent) => {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+
+        if (handle.includes("e")) newWidth = startWidth + dx;
+        if (handle.includes("w")) newWidth = startWidth - dx;
+        if (handle.includes("s")) newHeight = startHeight + dy;
+        if (handle.includes("n")) newHeight = startHeight - dy;
+
         setDimensions({
-          width: Math.max(300, startWidth + e.clientX - startX),
-          height: Math.max(250, startHeight + e.clientY - startY),
+          width: Math.max(300, newWidth),
+          height: "auto",
         });
       };
+
       const stopDrag = () => {
         document.removeEventListener("mousemove", doDrag);
         document.removeEventListener("mouseup", stopDrag);
@@ -445,34 +429,183 @@ export const ResponsiveBehaviorDemo: Story = {
       document.addEventListener("mouseup", stopDrag);
     };
 
+    const handleStyle: React.CSSProperties = {
+      position: "absolute",
+      background: "#3b82f6",
+      opacity: 0.6,
+      zIndex: 10,
+      transition: "opacity 0.2s ease",
+    };
+
     return (
-      <Card
-        style={{
-          position: "relative",
-          width: `${dimensions.width}px`,
-          height: `${dimensions.height}px`,
-          border: "2px dashed #9ca3af",
-          padding: "20px",
-          overflow: "hidden",
-        }}
-      >
-        <PieChart {...args} />
+      <div style={{ padding: "20px" }}>
+        <div style={{ marginBottom: "20px" }}>
+          <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
+            Responsive Behavior Demonstration
+          </h3>
+          <p style={{ margin: "0 0 12px 0", color: "#666", fontSize: "14px" }}>
+            Drag the edges or corners of the container below to see how the chart adapts
+          </p>
+          <div
+            style={{
+              padding: "12px",
+              backgroundColor: "#e3f2fd",
+              borderRadius: "6px",
+              fontSize: "12px",
+              color: "#1565c0",
+            }}
+          >
+            <strong>🎯 Try This:</strong> Resize the container to see automatic legend layout
+            changes, chart proportion adjustments, and responsive breakpoint behaviors.
+          </div>
+        </div>
+
+        <Card
+          style={{
+            position: "relative",
+            width: `${dimensions.width}px`,
+            height:
+              typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height,
+            border: "2px dashed #9ca3af",
+            padding: "20px",
+            boxSizing: "border-box",
+            overflow: "hidden",
+            cursor: "default",
+          }}
+        >
+          <PieChart {...args} />
+
+          {/* Resize Handles */}
+          <div
+            style={{ ...handleStyle, top: -2, left: 0, right: 0, height: 12, cursor: "ns-resize" }}
+            onMouseDown={(e) => handleMouseDown(e, "n")}
+          />
+          <div
+            style={{
+              ...handleStyle,
+              bottom: -2,
+              left: 0,
+              right: 0,
+              height: 12,
+              cursor: "ns-resize",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "s")}
+          />
+          <div
+            style={{ ...handleStyle, top: 0, bottom: 0, left: -2, width: 12, cursor: "ew-resize" }}
+            onMouseDown={(e) => handleMouseDown(e, "w")}
+          />
+          <div
+            style={{ ...handleStyle, top: 0, bottom: 0, right: -2, width: 12, cursor: "ew-resize" }}
+            onMouseDown={(e) => handleMouseDown(e, "e")}
+          />
+
+          {/* Corner Handles */}
+          <div
+            style={{
+              ...handleStyle,
+              top: -2,
+              left: -2,
+              width: 20,
+              height: 20,
+              cursor: "nwse-resize",
+              borderRadius: "2px",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "nw")}
+          />
+          <div
+            style={{
+              ...handleStyle,
+              top: -2,
+              right: -2,
+              width: 20,
+              height: 20,
+              cursor: "nesw-resize",
+              borderRadius: "2px",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "ne")}
+          />
+          <div
+            style={{
+              ...handleStyle,
+              bottom: -2,
+              right: -2,
+              width: 20,
+              height: 20,
+              cursor: "nwse-resize",
+              borderRadius: "2px",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "se")}
+          />
+
+          {/* Dimension Display */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 8,
+              right: 8,
+              background: "rgba(0,0,0,0.8)",
+              color: "white",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              fontSize: "11px",
+              fontFamily: "monospace",
+              fontWeight: "500",
+            }}
+          >
+            {dimensions.width}px ×{" "}
+            {typeof dimensions.height === "number" ? `${dimensions.height}px` : "auto"}
+          </div>
+        </Card>
+
         <div
           style={{
-            position: "absolute",
-            bottom: 0,
-            right: 0,
-            width: 16,
-            height: 16,
-            cursor: "nwse-resize",
-            background: "rgba(0,0,0,0.1)",
+            marginTop: "16px",
+            padding: "12px",
+            backgroundColor: "#f8f9fa",
+            borderRadius: "6px",
+            fontSize: "12px",
+            color: "#666",
           }}
-          onMouseDown={handleMouseDown}
-        />
-        <div style={{ position: "absolute", bottom: 5, right: 20, fontSize: 12, color: "#666" }}>
-          {dimensions.width}px × {dimensions.height}px
+        >
+          <strong>📊 Responsive Features Demonstrated:</strong>
+          <ul style={{ margin: "8px 0 0 0", paddingLeft: "16px" }}>
+            <li>Automatic chart scaling and proportion maintenance</li>
+            <li>Legend layout adaptation (stacked ↔ horizontal)</li>
+            <li>Text size and spacing adjustments</li>
+            <li>Optimal space utilization at any container size</li>
+          </ul>
         </div>
-      </Card>
+      </div>
     );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: `
+**Responsive Design Philosophy:**
+
+**Automatic Adaptation:**
+- Chart dimensions automatically adjust to container size
+- Legend layout switches between horizontal and stacked based on available space
+- Text and spacing scale appropriately for readability
+
+**Breakpoint Behavior:**
+- **Large Containers (>600px)**: Side-by-side chart and legend layout
+- **Medium Containers (400-600px)**: Stacked layout with optimized proportions  
+- **Small Containers (<400px)**: Compact layout with essential elements only
+
+**Performance Optimizations:**
+- Efficient re-rendering during resize operations
+- Debounced resize calculations to prevent performance issues
+- Optimized SVG scaling for crisp display at any size
+
+**Implementation Notes:**
+- Uses ResizeObserver API for precise container size detection
+- Maintains aspect ratios while maximizing space utilization
+- Supports both fixed and flexible container sizing strategies
+        `,
+      },
+    },
   },
 };

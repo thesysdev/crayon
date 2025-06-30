@@ -30,7 +30,7 @@ export const MiniBarChart = ({
   data,
   theme = "ocean",
   radius = 1,
-  isAnimationActive = true,
+  isAnimationActive = false,
   onBarsClick,
   size = "100%",
   className,

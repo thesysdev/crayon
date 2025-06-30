@@ -9,13 +9,16 @@ import { LegendItem } from "../../types/Legend";
 import { getCategoricalChartConfig } from "../../utils/dataUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils";
 import { RadialChartData } from "../types";
-import { createRadialGradientDefinitions } from "./components/RadialChartRenderers";
+import {
+  createRadialGradientDefinitions,
+  MAX_CHART_SIZE,
+  MIN_CHART_SIZE,
+} from "./components/RadialChartRenderers";
 import {
   calculateRadialChartDimensions,
   createRadialAnimationConfig,
   createRadialEventHandlers,
   getRadialHoverStyles,
-  groupSmallSlices,
   transformRadialDataWithPercentages,
   useRadialChartHover,
 } from "./utils/RadialChartUtils";
@@ -43,11 +46,9 @@ export interface RadialChartProps<T extends RadialChartData> {
   onMouseLeave?: () => void;
   onClick?: (data: any, index: number) => void;
   className?: string;
-  height?: number;
-  width?: number;
 }
 
-const STACKED_LEGEND_BREAKPOINT = 600; // px
+const STACKED_LEGEND_BREAKPOINT = 400;
 
 export const RadialChart = <T extends RadialChartData>({
   data,
@@ -59,16 +60,14 @@ export const RadialChart = <T extends RadialChartData>({
   legend = true,
   legendVariant = "stacked",
   grid = false,
-  isAnimationActive = true,
-  cornerRadius = 10,
+  isAnimationActive = false,
+  cornerRadius = 0,
   useGradients = false,
   gradientColors,
   onMouseEnter,
   onMouseLeave,
   onClick,
   className,
-  height,
-  width,
 }: RadialChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -80,11 +79,8 @@ export const RadialChart = <T extends RadialChartData>({
   const isRowLayout =
     legend && legendVariant === "stacked" && wrapperRect.width >= STACKED_LEGEND_BREAKPOINT;
 
-  // Group small slices into "Others" if necessary
-  const processedData = useMemo(
-    () => groupSmallSlices(data, categoryKey, dataKey),
-    [data, categoryKey, dataKey],
-  );
+  // The data that is processed and rendered in the chart
+  const processedData = useMemo(() => data, [data]);
 
   const categories = useMemo(
     () => processedData.map((item) => String(item[categoryKey])),
@@ -101,22 +97,24 @@ export const RadialChart = <T extends RadialChartData>({
   );
 
   // Use provided dimensions or observed dimensions from the wrapper
-  const effectiveWidth = width ?? wrapperRect.width;
-  const effectiveHeight = height ?? wrapperRect.height;
+  const effectiveWidth = wrapperRect.width;
+  const effectiveHeight = wrapperRect.height;
 
   // Calculate chart dimensions based on the smaller dimension of the container
   const chartSize = useMemo(() => {
+    let size;
     // When in a row layout, the chart and legend are side-by-side.
     if (isRowLayout) {
       // The chart container takes up roughly half the width. We subtract the gap between items.
       const chartContainerWidth = (effectiveWidth - 20) / 2;
       // The size of the chart is the smaller of its container's width or the total available height.
-      const size = Math.min(chartContainerWidth, effectiveHeight);
-      return Math.max(150, size);
+      size = Math.min(chartContainerWidth, effectiveHeight);
+    } else {
+      // In a column layout, the chart's size is constrained by the smaller of the total container's width or height.
+      size = Math.min(effectiveWidth, effectiveHeight);
     }
-    // In a column layout, the chart's size is constrained by the smaller of the total container's width or height.
-    const size = Math.min(effectiveWidth, effectiveHeight);
-    return Math.max(150, size);
+    size = Math.min(size, MAX_CHART_SIZE);
+    return Math.max(MIN_CHART_SIZE, size);
   }, [effectiveWidth, effectiveHeight, isRowLayout]);
 
   const chartSizeStyle = useMemo(
@@ -250,25 +248,18 @@ export const RadialChart = <T extends RadialChartData>({
     if (!wrapper) return;
 
     // Use ResizeObserver if component is in responsive mode (no fixed width/height)
-    if (!width || !height) {
-      const observer = new ResizeObserver((entries) => {
-        const entry = entries[0];
-        if (entry) {
-          setWrapperRect({
-            width: entry.contentRect.width,
-            height: entry.contentRect.height,
-          });
-        }
-      });
-      observer.observe(wrapper);
-      return () => observer.disconnect();
-    }
-    // If fixed dimensions are provided, just set them once.
-    else {
-      setWrapperRect({ width, height });
-      return;
-    }
-  }, [width, height]);
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        setWrapperRect({
+          width: entry.contentRect.width,
+          height: entry.contentRect.height,
+        });
+      }
+    });
+    observer.observe(wrapper);
+    return () => observer.disconnect();
+  }, []);
 
   const renderLegend = useCallback(() => {
     if (!legend) return null;
@@ -317,7 +308,7 @@ export const RadialChart = <T extends RadialChartData>({
   const endAngle = variant === "semicircle" ? 0 : 360;
 
   return (
-    <div ref={wrapperRef} className={wrapperClassName} style={{ width, height }}>
+    <div ref={wrapperRef} className={wrapperClassName} style={{ width: "100%", height: "100%" }}>
       <div className="crayon-radial-chart-container">
         <div className="crayon-radial-chart-container-inner">
           <div style={chartSizeStyle}>

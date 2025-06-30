@@ -1,3 +1,6 @@
+export const MIN_CHART_SIZE = 150;
+export const MAX_CHART_SIZE = 500;
+
 /**
  * Creates gradient definitions for pie chart segments
  * @param data - The chart data array
