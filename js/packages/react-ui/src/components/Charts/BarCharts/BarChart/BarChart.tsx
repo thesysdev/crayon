@@ -374,7 +374,7 @@ const BarChartComponent = <T extends BarChartData>({
                   cursor={{
                     fill: "var(--crayon-sunk-fills)",
                     stroke: "var(--crayon-stroke-default)",
-                    opacity: 0.4,
+                    opacity: 0.5,
                     strokeWidth: 1,
                   }}
                   content={<CustomTooltipContent />}

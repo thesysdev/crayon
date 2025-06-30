@@ -668,7 +668,7 @@ export const BarChartV2Story: Story = {
     // yAxisLabel: "Number of Users",
     legend: true,
     // width: 600,
-    // height: 300,
+    // height: 500,
   },
   render: (args: any) => {
     const [selectedDataType, setSelectedDataType] =

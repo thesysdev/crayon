@@ -28,7 +28,8 @@ interface BarWithInternalLineProps {
 const DEFAULT_STACK_GAP = 1;
 const MIN_LINE_HEIGHT = 8;
 const LINE_PADDING = 6;
-const MIN_BAR_HEIGHT = 2;
+const MIN_GROUP_BAR_HEIGHT = 2;
+const MIN_STACKED_BAR_HEIGHT = 4;
 
 const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = React.memo((props) => {
   const {
@@ -55,7 +56,11 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = React.memo((
   const { rTL, rTR } = useMemo(() => {
     // For grouped bars, if the height is too small, we should not apply corner radius
     // as it can lead to weird shapes. MIN_LINE_HEIGHT is a reasonable threshold.
-    if (variant === "grouped" && height < MIN_BAR_HEIGHT) {
+    if (variant === "grouped" && height < MIN_GROUP_BAR_HEIGHT) {
+      return { rTL: 0, rTR: 0 };
+    }
+
+    if (variant === "stacked" && height < MIN_STACKED_BAR_HEIGHT) {
       return { rTL: 0, rTR: 0 };
     }
 
@@ -101,8 +106,12 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = React.memo((
 
     // Enforce a minimum height for visibility, but only if the original height is non-zero.
     // This prevents bars with a value of 0 from being rendered.
-    if (height > 0) {
-      finalHeight = Math.max(finalHeight, MIN_BAR_HEIGHT);
+    if (height > 0 && variant === "grouped") {
+      finalHeight = Math.max(finalHeight, MIN_GROUP_BAR_HEIGHT);
+    }
+
+    if (height > 0 && variant === "stacked") {
+      finalHeight = Math.max(finalHeight, MIN_STACKED_BAR_HEIGHT - stackGap);
     }
 
     // We need to adjust the y position to keep the bar bottom-aligned
