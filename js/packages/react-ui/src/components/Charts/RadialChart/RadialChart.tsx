@@ -134,10 +134,7 @@ export const RadialChart = <T extends RadialChartData>({
   );
 
   // Calculate chart radii
-  const dimensions = useMemo(
-    () => calculateRadialChartDimensions(chartSize, variant),
-    [chartSize, variant],
-  );
+  const dimensions = useMemo(() => calculateRadialChartDimensions(chartSize), [chartSize]);
 
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(

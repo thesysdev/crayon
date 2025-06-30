@@ -58,10 +58,7 @@ export const calculatePercentage = (value: number, total: number): number => {
  * @param variant - The chart variant ('semicircle' or 'circular')
  * @returns Object containing outer and inner radius values
  */
-export const calculateRadialChartDimensions = (
-  width: number,
-  variant: "semicircle" | "circular",
-): RadialChartDimensions => {
+export const calculateRadialChartDimensions = (width: number): RadialChartDimensions => {
   const baseRadiusPercentage = 0.4; // 40% of container width
   let outerRadius = Math.round(width * baseRadiusPercentage);
 

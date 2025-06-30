@@ -12,12 +12,12 @@ interface AxisLabelProps {
   };
   className?: string;
   portalContainerRef?: React.RefObject<HTMLDivElement | null>;
-  isLegendExpanded?: boolean;
+
   [key: string]: any; // To allow other props from recharts
 }
 
 export const AxisLabel: React.FC<AxisLabelProps> = (props) => {
-  const { x, y, payload, textAnchor, portalContainerRef, className, isLegendExpanded } = props;
+  const { x, y, payload, textAnchor, portalContainerRef, className } = props;
   const anchorRef = useRef<SVGGElement>(null);
 
   /**
