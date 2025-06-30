@@ -29,6 +29,7 @@ interface BarWithInternalLineProps {
 const DEFAULT_STACK_GAP = 1;
 const MIN_LINE_HEIGHT = 8;
 const LINE_PADDING = 6;
+const MIN_BAR_HEIGHT = 2;
 
 const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = React.memo((props) => {
   const {
@@ -54,13 +55,19 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = React.memo((
   // Memoized radius calculations - Ensure rTL and rTR are always numbers, defaulting to 0.
   // This calculation is memoized to avoid recalculating on every render when radius prop hasn't changed
   const { rTL, rTR } = useMemo(() => {
+    // For grouped bars, if the height is too small, we should not apply corner radius
+    // as it can lead to weird shapes. MIN_LINE_HEIGHT is a reasonable threshold.
+    if (variant === "grouped" && height < MIN_BAR_HEIGHT) {
+      return { rTL: 0, rTR: 0 };
+    }
+
     if (Array.isArray(r)) {
       return { rTL: r[0] || 0, rTR: r[1] || 0 };
     } else if (typeof r === "number") {
       return { rTL: r, rTR: r };
     }
     return { rTL: 0, rTR: 0 };
-  }, [r]);
+  }, [r, variant, height]);
 
   // Memoized opacity calculation for hover effects
   // Calculate the opacity value for the bar based on hover state
@@ -89,15 +96,24 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = React.memo((
   // Only reduce height at the top of each bar except the last one (bottom-most in stack)
   // This creates a gap between this bar and the bar above it
   const { adjustedY, adjustedHeight } = useMemo(() => {
+    let finalHeight = height;
     if (variant === "stacked" && stackGap > 0 && !isFirstInStack) {
-      return {
-        adjustedY: y,
-        adjustedHeight: height - stackGap,
-      };
+      finalHeight = height - stackGap;
     }
+
+    // Enforce a minimum height for visibility, but only if the original height is non-zero.
+    // This prevents bars with a value of 0 from being rendered.
+    if (height > 0) {
+      finalHeight = Math.max(finalHeight, MIN_BAR_HEIGHT);
+    }
+
+    // We need to adjust the y position to keep the bar bottom-aligned
+    // when we enforce a minimum height.
+    const finalY = y + height - finalHeight;
+
     return {
-      adjustedY: y,
-      adjustedHeight: height,
+      adjustedY: finalY,
+      adjustedHeight: finalHeight,
     };
   }, [variant, stackGap, isFirstInStack, y, height]);
 
