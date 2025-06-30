@@ -465,6 +465,16 @@ const dataVariations = {
       videoViews: 15000,
     },
   ],
+  singleGroup: [
+    { month: "January", sales: 150 },
+    { month: "February", sales: 280 },
+    { month: "March", sales: 220 },
+    { month: "April", sales: 180 },
+    { month: "May", sales: 250 },
+    { month: "June", sales: 300 },
+    { month: "July", sales: 350 },
+    { month: "August", sales: 400 },
+  ],
 };
 
 // Category key mappings for different datasets
@@ -478,6 +488,7 @@ const categoryKeys = {
   weekly: "week",
   bigNumbers: "company",
   expandCollapseMarketing: "channel",
+  singleGroup: "month",
 };
 
 // 🔥 ACTIVE DATA - For backward compatibility
@@ -738,6 +749,12 @@ export const BarChartV2Story: Story = {
               style={selectedDataType === "numbers" ? activeButtonStyle : buttonStyle}
             >
               🔢 Number Ranges
+            </button>
+            <button
+              onClick={() => setSelectedDataType("singleGroup")}
+              style={selectedDataType === "singleGroup" ? activeButtonStyle : buttonStyle}
+            >
+              🏢 Single Group
             </button>
             <button
               onClick={() => setSelectedDataType("expandCollapseMarketing")}

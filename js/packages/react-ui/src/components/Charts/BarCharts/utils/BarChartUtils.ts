@@ -1,10 +1,12 @@
+import { getDataKeys } from "../../utils/dataUtils";
 import { BarChartVariant } from "../types";
 
-export const BAR_WIDTH = 12;
+export const BAR_WIDTH = 16;
 
 // Internal constants - not exported as they're only used within this file
-const ELEMENT_SPACING_GROUPED = 16; // Spacing per bar in grouped charts
-const ELEMENT_SPACING_STACKED = 26; // Spacing per stack in stacked charts
+const ELEMENT_SPACING_GROUPED = 56; // Spacing per bar in grouped charts
+
+const ELEMENT_SPACING_STACKED = 56; // Spacing per stack in stacked charts
 
 /**
  * INTERNAL HELPER FUNCTION
@@ -34,23 +36,15 @@ const getWidthOfData = (
   categoryKey: string,
   variant: BarChartVariant,
 ) => {
-  let numberOfElements: number;
-  const elementSpacing = getElementSpacing(variant);
-
-  if (variant === "stacked") {
-    numberOfElements = data.length; // Number of stacks = number of categories
-  } else {
-    // Default to "grouped" behavior
-    const seriesCountsPerCategory = data.map((ob) => {
-      return Object.keys(ob).filter((key) => key !== categoryKey).length;
-    });
-    numberOfElements = seriesCountsPerCategory.reduce((acc, curr) => acc + curr, 0);
+  if (data.length === 0) {
+    return 0;
   }
 
-  let width = numberOfElements * (BAR_WIDTH + elementSpacing);
+  const width = data.length * getWidthOfGroup(data, categoryKey, variant);
+
   if (data.length === 1) {
     const minSingleDataWidth = 200; // Minimum width for single data points
-    width = Math.max(width, minSingleDataWidth);
+    return Math.max(width, minSingleDataWidth);
   }
   return width;
 };
@@ -129,13 +123,12 @@ const getRadiusArray = (
  * internally used by the XAxis component reCharts
  */
 const getXAxisTickFormatter = (groupWidth?: number, variant: BarChartVariant = "grouped") => {
-  const PADDING = 8; // Safety padding for better visual spacing
+  const PADDING = 0; // Safety padding for better visual spacing
 
   // Setup canvas context for accurate text measurement.
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
   if (context) {
-    // This font should match the actual chart's font for pixel-perfect results.
     context.font = "12px Inter";
   }
 
@@ -153,31 +146,6 @@ const getXAxisTickFormatter = (groupWidth?: number, variant: BarChartVariant = "
 
     const availableWidth = Math.max(0, groupWidth - PADDING);
 
-    // For stacked variant: simple truncation, no ellipsis needed.
-    // Truncates based on available width, but respects a max of 3 characters from original logic.
-    if (variant === "stacked") {
-      let low = 0;
-      let high = stringValue.length;
-      let result = "";
-      while (low <= high) {
-        const mid = Math.floor((low + high) / 2);
-        if (mid === 0) {
-          low = mid + 1;
-          continue;
-        }
-        const truncated = stringValue.substring(0, mid);
-        if (context.measureText(truncated).width <= availableWidth) {
-          result = truncated;
-          low = mid + 1;
-        } else {
-          high = mid - 1;
-        }
-      }
-      // Apply the 3-char max limit from the original implementation
-      return result.slice(0, 3);
-    }
-
-    // For grouped variant: intelligent ellipsis handling.
     if (context.measureText(stringValue).width <= availableWidth) {
       return stringValue; // Full text fits.
     }
@@ -199,29 +167,6 @@ const getXAxisTickFormatter = (groupWidth?: number, variant: BarChartVariant = "
       } else {
         high = mid - 1;
       }
-    }
-
-    // If even with ellipsis nothing fits (very tight space),
-    // find max chars that fit without ellipsis.
-    if (result === "") {
-      low = 0;
-      high = stringValue.length;
-      let rawTruncated = "";
-      while (low <= high) {
-        const mid = Math.floor((low + high) / 2);
-        if (mid === 0) {
-          low = mid + 1;
-          continue;
-        }
-        const truncated = stringValue.substring(0, mid);
-        if (context.measureText(truncated).width <= availableWidth) {
-          rawTruncated = truncated;
-          low = mid + 1;
-        } else {
-          high = mid - 1;
-        }
-      }
-      return rawTruncated;
     }
 
     return result;
@@ -261,19 +206,19 @@ const getWidthOfGroup = (
   if (data.length === 0) return 200; // Fallback
 
   // Get the number of data keys (excluding categoryKey)
-  const dataKeys = Object.keys(data[0] || {}).filter((key) => key !== categoryKey);
+  const dataKeys = getDataKeys(data, categoryKey);
   const elementSpacing = getElementSpacing(variant);
 
   if (variant === "stacked") {
     // For stacked: each category is one stack
-    // Example: month "January" = 1 stack = BAR_WIDTH + ELEMENT_SPACING_STACKED (26)
+    // Example: month "January" = 1 stack = BAR_WIDTH + ELEMENT_SPACING_STACKED (60)
     return BAR_WIDTH + elementSpacing;
   } else {
     // For grouped: each category contains multiple bars
     // Example: month "January" with desktop+mobile+tablet = 3 bars
-    // Width = 3 * (BAR_WIDTH + ELEMENT_SPACING_GROUPED (17))
+    // Width = 3 * (BAR_WIDTH + gap between bars) - gap between bars for the last bar + elementSpacing
     const seriesPerCategory = dataKeys.length;
-    return seriesPerCategory * (BAR_WIDTH + elementSpacing);
+    return seriesPerCategory * (BAR_WIDTH + 8) - 8 + elementSpacing;
   }
 };
 
