@@ -3,6 +3,7 @@ import { uniqueId } from "lodash-es";
 import { ComponentProps, createContext, forwardRef, useContext, useMemo } from "react";
 import * as RechartsPrimitive from "recharts";
 import { useId } from "../../polyfills";
+import { useTheme } from "../ThemeProvider";
 
 /**
  * @module Charts
@@ -146,6 +147,7 @@ const ChartContainer = forwardRef<
 >(({ id, className, children, config, rechartsProps, ...props }, ref) => {
   const uniqueId = useId();
   const chartId = `crayon-chart-${id || uniqueId.replace(/:/g, "")}`;
+  const { theme } = useTheme();
 
   return (
     <ChartContext.Provider value={{ config, id: chartId }}>
@@ -153,6 +155,11 @@ const ChartContainer = forwardRef<
         data-chart={chartId}
         ref={ref}
         className={clsx("crayon-chart-container", className)}
+        style={{
+          // @ts-expect-error
+          "--crayon-container-fills": theme.containerFills,
+          "--crayon-primary-text": theme.primaryText,
+        }}
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
