@@ -6,6 +6,8 @@ export type ColorPalette = {
   colors: string[];
 };
 
+export type PaletteName = "ocean" | "orchid" | "emerald" | "spectrum" | "sunset" | "vivid";
+
 type PaletteMap = Record<string, ColorPalette>;
 
 const colorPalettes: PaletteMap = {

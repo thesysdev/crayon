@@ -1,2 +1,2 @@
-const dependencies = ["Charts"];
+const dependencies = ["Charts", "IconButton"];
 export default dependencies;
