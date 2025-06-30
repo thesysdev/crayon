@@ -333,7 +333,7 @@ const AreaChartComponent = <T extends AreaChartData>({
                   }
                   orientation="bottom"
                   padding={{
-                    left: 20,
+                    left: 25,
                     right: 20,
                   }}
                 />
