@@ -123,7 +123,7 @@ const getRadiusArray = (
  * internally used by the XAxis component reCharts
  */
 const getXAxisTickFormatter = (groupWidth?: number, variant: BarChartVariant = "grouped") => {
-  const PADDING = 0; // Safety padding for better visual spacing
+  const PADDING = 2; // Safety padding for better visual spacing
 
   // Setup canvas context for accurate text measurement.
   const canvas = document.createElement("canvas");
