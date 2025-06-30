@@ -61,7 +61,7 @@ export const RadialChart = <T extends RadialChartData>({
   legendVariant = "stacked",
   grid = false,
   isAnimationActive = false,
-  cornerRadius = 0,
+  cornerRadius = 10,
   useGradients = false,
   gradientColors,
   onMouseEnter,
