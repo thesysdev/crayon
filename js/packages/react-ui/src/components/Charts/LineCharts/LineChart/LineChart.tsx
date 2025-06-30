@@ -332,7 +332,7 @@ export const LineChart = <T extends LineChartData>({
                   }
                   orientation="bottom"
                   padding={{
-                    left: 20,
+                    left: 25,
                     right: 20,
                   }}
                 />
