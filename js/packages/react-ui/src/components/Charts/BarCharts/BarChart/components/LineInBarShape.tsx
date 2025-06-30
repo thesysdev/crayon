@@ -89,7 +89,7 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = React.memo((
       return 1;
     }
     const currentCategoryValue = payload[categoryKey];
-    return currentCategoryValue === hoveredCategory ? 1 : 0.6;
+    return currentCategoryValue === hoveredCategory ? 1 : 0.4;
   }, [isHovered, hoveredCategory, payload, categoryKey]);
 
   // Memoized adjusted dimensions for stacked bar gaps

@@ -374,7 +374,7 @@ const BarChartComponent = <T extends BarChartData>({
                   cursor={{
                     fill: "var(--crayon-sunk-fills)",
                     stroke: "var(--crayon-stroke-default)",
-                    opacity: 0.5,
+                    opacity: 1,
                     strokeWidth: 1,
                   }}
                   content={<CustomTooltipContent />}
@@ -436,6 +436,7 @@ const BarChartComponent = <T extends BarChartData>({
               size="extra-small"
               disabled={!canScrollLeft}
             />
+
             <IconButton
               className={clsx(
                 "crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--right",

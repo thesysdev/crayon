@@ -69,6 +69,7 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
         fill={fill}
         className="crayon-chart-x-axis-tick"
       >
+        <title>{value}</title>
         {displayValue}
       </text>
     </g>
