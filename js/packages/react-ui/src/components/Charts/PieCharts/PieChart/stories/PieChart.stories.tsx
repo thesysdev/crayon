@@ -3,46 +3,32 @@ import { useState } from "react";
 import { Card } from "../../../../Card";
 import { PieChart, PieChartProps } from "../PieChart";
 
-const pieChartData = [
+const monthlySalesData = [
   { month: "January", value: 1250 },
   { month: "February", value: 980 },
   { month: "March", value: 1450 },
   { month: "April", value: 1320 },
   { month: "May", value: 1680 },
   { month: "June", value: 2100 },
-  { month: "July", value: 1950 },
-  { month: "August", value: 1820 },
-  { month: "September", value: 1650 },
-  { month: "October", value: 1480 },
-  { month: "November", value: 1350 },
-  { month: "December", value: 1200 },
 ];
 
-// Extended data for carousel demo
-const extendedPieChartData = [
-  { month: "January", value: 1250 },
-  { month: "February", value: 980 },
-  { month: "March", value: 1450 },
-  { month: "April", value: 1320 },
-  { month: "May", value: 1680 },
-  { month: "June", value: 2100 },
-  { month: "July", value: 1950 },
-  { month: "August", value: 1820 },
-  { month: "September", value: 1650 },
-  { month: "October", value: 1480 },
-  { month: "November", value: 1350 },
-  { month: "December", value: 1200 },
-  { month: "Q1 Bonus", value: 850 },
-  { month: "Q2 Bonus", value: 920 },
-  { month: "Q3 Bonus", value: 780 },
-  { month: "Q4 Bonus", value: 1100 },
-  { month: "Holiday Pay", value: 650 },
-  { month: "Overtime", value: 420 },
-  { month: "Commission", value: 890 },
-  { month: "Incentives", value: 720 },
+const comprehensiveData = [
+  { category: "Electronics", sales: 12500 },
+  { category: "Apparel", sales: 9800 },
+  { category: "Groceries", sales: 14500 },
+  { category: "Home Goods", sales: 13200 },
+  { category: "Books", sales: 8800 },
+  { category: "Toys", sales: 7600 },
+  { category: "Automotive", sales: 6500 },
+  { category: "Health", sales: 11200 },
+  { category: "Beauty", sales: 9300 },
+  { category: "Sports", sales: 8100 },
+  { category: "Outdoors", sales: 7200 },
+  { category: "Music", sales: 4500 },
+  { category: "Software", sales: 10500 },
 ];
 
-const gradientColors = [
+const gradientPalette = [
   { start: "#FF6B6B", end: "#FF8E8E" },
   { start: "#4ECDC4", end: "#6ED7D0" },
   { start: "#45B7D1", end: "#6BC5DB" },
@@ -52,157 +38,226 @@ const gradientColors = [
   { start: "#9B59B6", end: "#B07CC7" },
 ];
 
-const meta: Meta<PieChartProps<typeof pieChartData>> = {
-  title: "Components/Charts/PieCharts/PieChartV2",
+/**
+ * # PieChart Component Documentation
+ *
+ * The PieChart component is a versatile and intuitive tool for visualizing
+ * part-to-whole relationships in a dataset. It's highly effective for:
+ *
+ * - **Proportional Analysis**: Showing how individual segments contribute to a total
+ * - **Category Comparison**: Comparing the relative size of different categories
+ * - **Dashboard KPIs**: Displaying key metrics like market share or budget allocation
+ *
+ * ## Key Features
+ *
+ * ### Chart Types
+ * - **Pie**: Classic circular chart for proportional representation
+ * - **Donut**: Pie chart with a center cutout, useful for displaying a central metric or for a modern look
+ *
+ * ### Layout Variants
+ * - **Circular**: Full 360-degree display for a complete data overview
+ * - **Semicircle**: Half-circle (180-degree) layout, ideal for compact dashboard widgets
+ *
+ * ### Data Formatting
+ * - **Percentage Mode**: Automatically calculates and displays segment values as percentages
+ * - **Number Mode**: Shows raw data values with appropriate formatting
+ *
+ * ### Interactive & Responsive
+ * - **Interactive Legend**: Adapts to container size with carousel navigation for large datasets
+ * - **Hover Tooltips**: Provides detailed information on hover for better user engagement
+ * - **Responsive Design**: Fluidly adjusts to the size of its container
+ *
+ * ### Customization
+ * - **Theming**: Six pre-built color palettes to match your application's design
+ * - **Styling Options**: Control corner radius, padding between slices, and more
+ * - **Gradient Fills**: Apply beautiful gradients for an enhanced visual appeal
+ */
+
+const meta: Meta<PieChartProps<typeof monthlySalesData>> = {
+  title: "Components/Charts/PieChart",
   component: PieChart,
   parameters: {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "```tsx\nimport { PieChartV2 } from '@crayon-ui/react-ui/Charts/PieChartV2';\n```",
+        component: `
+## Installation and Basic Usage
+
+\`\`\`tsx
+import { PieChart } from '@crayon-ui/react-ui/Charts/PieChart';
+
+// Basic implementation
+<PieChart
+  data={yourData}
+  categoryKey="category"
+  dataKey="value"
+  theme="ocean"
+/>
+\`\`\`
+
+## Data Structure Requirements
+
+Your data should be an array of objects where each object contains:
+- A **category field** (string): Used for labels and legend items
+- A **value field** (number): Used to determine slice sizes
+
+\`\`\`tsx
+const salesData = [
+  { category: "Electronics", value: 4500 },
+  { category: "Apparel", value: 3200 },
+  { category: "Groceries", value: 6800 }
+];
+\`\`\`
+
+## Performance Considerations
+- **Data Size**: Best for 3-12 data points for readability.
+- **Responsiveness**: Fully responsive and adapts to its container.
+- **Animation**: Can be disabled for performance with very large or complex charts.
+        `,
       },
     },
   },
   tags: ["!dev", "autodocs"],
   argTypes: {
     data: {
-      description:
-        "An array of data objects where each object represents a data point. Each object should have a category field (e.g., month) and one or more numeric values for the areas to be plotted.",
+      description: `
+**Required.** An array of data objects representing your dataset. Each object should contain:
+- A category identifier (string)
+- A numeric value
+
+**Best Practices:**
+- Use 3-12 data points for optimal readability.
+- Ensure consistent data structure across all objects.
+`,
       control: false,
       table: {
         type: { summary: "Array<Record<string, string | number>>" },
         defaultValue: { summary: "[]" },
-        category: "Data",
+        category: "📊 Data Configuration",
       },
     },
     categoryKey: {
       description:
-        "The key from your data object to be used as the segment labels (e.g., 'month', 'category', 'name')",
+        "**Required.** The key in your data object that represents the category label (e.g., 'month', 'department').",
       control: false,
       table: {
         type: { summary: "string" },
-        category: "Data",
+        category: "📊 Data Configuration",
       },
     },
     dataKey: {
       description:
-        "The key from your data object to be used as the values that determine the slice sizes (e.g., 'value', 'count', 'amount')",
+        "**Required.** The key in your data object that contains the numeric value for each slice (e.g., 'value', 'sales').",
       control: false,
       table: {
         type: { summary: "string" },
-        category: "Data",
+        category: "📊 Data Configuration",
       },
     },
     theme: {
-      description:
-        "The color palette theme for the chart. Each theme provides a different set of colors for the areas.",
+      description: "The color palette for the chart. Provides a set of aesthetically pleasing colors.",
       control: "select",
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     appearance: {
-      description:
-        "The appearance of the chart. 'circular' shows a full circle, while 'semiCircular' shows a half circle.",
+      description: "The overall shape of the chart: a full circle or a semicircle.",
       control: "radio",
       options: ["circular", "semiCircular"],
       table: {
         defaultValue: { summary: "circular" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     variant: {
-      description:
-        "The style of the pie chart. 'pie' shows a pie chart, 'donut' shows a donut chart.",
+      description: "The style of the chart: a standard pie or a donut with a cutout center.",
       control: "radio",
       options: ["pie", "donut"],
       table: {
         defaultValue: { summary: "pie" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     format: {
-      description:
-        "The format of the data. 'percentage' shows the data as a percentage, while 'number' shows the data as a number.",
+      description: "The format for displaying data values, either as raw numbers or as percentages.",
       control: "radio",
       options: ["percentage", "number"],
       table: {
         defaultValue: { summary: "number" },
-        category: "Display",
+        category: "📱 Display Options",
       },
     },
     legend: {
-      description: "Whether to display the legend",
+      description: "Controls the visibility of the chart's legend.",
       control: "boolean",
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
-        category: "Display",
+        category: "📱 Display Options",
       },
     },
     legendVariant: {
-      description:
-        "The type of legend to display. 'default' shows a horizontal legend at bottom, 'stacked' shows a vertical stacked legend with responsive layout.",
+      description: "The layout of the legend: a horizontal list or a responsive vertical stack.",
       control: "radio",
       options: ["default", "stacked"],
       table: {
         defaultValue: { summary: "default" },
-        category: "Display",
+        category: "📱 Display Options",
       },
     },
     isAnimationActive: {
-      description: "Whether to animate the chart",
+      description: "Enables or disables the initial loading animation.",
       control: "boolean",
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
-        category: "Display",
+        category: "🎬 Animation & Interaction",
       },
     },
     cornerRadius: {
-      description: "The radius of the corners of each pie slice",
+      description: "The radius for rounding the corners of each pie slice.",
       control: { type: "number", min: 0, max: 20 },
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "0" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     paddingAngle: {
-      description: "The angle between each pie slice",
+      description: "The spacing angle between each pie slice.",
       control: { type: "number", min: 0, max: 10 },
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "0" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     useGradients: {
-      description: "Whether to use gradient colors for the pie slices",
+      description: "Applies gradient fills to the pie slices instead of solid colors.",
       control: "boolean",
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "false" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     height: {
-      description: "Fixed height of the chart container",
+      description: "Sets a fixed height for the chart container. Undefined by default for responsive height.",
       control: { type: "number", min: 200, max: 800 },
       table: {
         type: { summary: "number" },
-        category: "Layout",
+        category: "📐 Layout Control",
       },
     },
     width: {
-      description: "Fixed width of the chart container",
+      description: "Sets a fixed width for the chart container. Undefined by default for responsive width.",
       control: { type: "number", min: 200, max: 800 },
       table: {
         type: { summary: "number" },
-        category: "Layout",
+        category: "📐 Layout Control",
       },
     },
   },
@@ -211,10 +266,22 @@ const meta: Meta<PieChartProps<typeof pieChartData>> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const PieChartV2Demo: Story = {
-  name: "PieChartV2",
+/**
+ * ## Default Configuration
+ *
+ * This example showcases the PieChart with its standard settings, making it an
+ * ideal starting point for most data visualization needs.
+ *
+ * **Key Features Shown:**
+ * - Standard circular pie layout
+ * - Professional 'ocean' color theme
+ * - Responsive stacked legend for clarity
+ * - Smooth animations on load
+ */
+export const DefaultConfiguration: Story = {
+  name: "📊 Default Configuration",
   args: {
-    data: pieChartData,
+    data: monthlySalesData,
     categoryKey: "month",
     dataKey: "value",
     theme: "ocean",
@@ -224,103 +291,135 @@ export const PieChartV2Demo: Story = {
     legendVariant: "stacked",
     isAnimationActive: true,
     appearance: "circular",
-    cornerRadius: 0,
-    paddingAngle: 0,
+    cornerRadius: 4,
+    paddingAngle: 2,
     useGradients: false,
-    gradientColors,
-    height: undefined,
-    width: undefined,
+    gradientColors: gradientPalette,
+    height: 400,
+    width: 600,
   },
   render: (args: any) => (
-    <Card style={{ width: "500px", height: "auto", padding: "20px" }}>
+    <Card style={{ width: "650px", height: "auto", padding: "24px" }}>
+      <h3 style={{ marginBottom: "20px", fontSize: "18px", fontWeight: 600 }}>Monthly Sales Performance</h3>
       <PieChart {...args} />
     </Card>
   ),
 };
 
-export const PieChartV2WithCarousel: Story = {
-  name: "PieChartV2 with Up/Down Carousel",
+/**
+ * ## Layout and Variant Options
+ *
+ * This story demonstrates the different layout (`appearance`) and style (`variant`)
+ * options available in the PieChart component.
+ *
+ * **Options Shown:**
+ * - **Pie vs. Donut**: See the difference between a full pie and one with a center cutout.
+ * - **Circular vs. Semicircle**: Compare the full 360° layout with the space-saving 180° version.
+ */
+export const LayoutAndVariantOptions: Story = {
+  name: "🎨 Layout & Variant Options",
   args: {
-    data: extendedPieChartData,
+    data: monthlySalesData.slice(0, 4),
     categoryKey: "month",
     dataKey: "value",
-    theme: "ocean",
-    variant: "pie",
-    format: "number",
-    legend: true,
-    legendVariant: "stacked",
-    isAnimationActive: true,
-    appearance: "circular",
-    cornerRadius: 0,
-    paddingAngle: 0,
-    useGradients: false,
-    gradientColors,
-    height: undefined,
-    width: undefined,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "700px", height: "auto", padding: "20px" }}>
-      <PieChart {...args} />
-    </Card>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "This example demonstrates the up/down carousel functionality when there are many legend items. The legend has navigation buttons that appear when content overflows, allowing users to scroll through all items.",
-      },
-    },
-  },
-};
-
-export const ResizableAndResponsive: Story = {
-  name: "Resizable and Responsive",
-  args: {
-    data: pieChartData,
-    categoryKey: "month",
-    dataKey: "value",
-    theme: "spectrum",
-    variant: "donut",
-    format: "number",
+    theme: "emerald",
     legend: true,
     legendVariant: "stacked",
     isAnimationActive: false,
-    appearance: "circular",
+    cornerRadius: 4,
+    paddingAngle: 2,
+  },
+  render: (args: any) => (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', width: '800px' }}>
+      <div>
+        <h4 style={{ textAlign: 'center', marginBottom: '16px' }}>Pie - Circular</h4>
+        <Card style={{ padding: '20px' }}><PieChart {...args} variant="pie" appearance="circular" height={300} /></Card>
+      </div>
+      <div>
+        <h4 style={{ textAlign: 'center', marginBottom: '16px' }}>Donut - Circular</h4>
+        <Card style={{ padding: '20px' }}><PieChart {...args} variant="donut" appearance="circular" height={300} /></Card>
+      </div>
+      <div>
+        <h4 style={{ textAlign: 'center', marginBottom: '16px' }}>Pie - Semicircle</h4>
+        <Card style={{ padding: '20px' }}><PieChart {...args} variant="pie" appearance="semiCircular" height={200} /></Card>
+      </div>
+      <div>
+        <h4 style={{ textAlign: 'center', marginBottom: '16px' }}>Donut - Semicircle</h4>
+        <Card style={{ padding: '20px' }}><PieChart {...args} variant="donut" appearance="semiCircular" height={200} /></Card>
+      </div>
+    </div>
+  ),
+};
+
+/**
+ * ## Large Dataset with Carousel
+ *
+ * The PieChart's legend intelligently handles a large number of items by
+ * enabling a scrollable carousel with up/down navigation.
+ *
+ * **Feature Highlight:**
+ * - The legend's carousel appears automatically when items overflow the available space, ensuring all data points remain accessible without cluttering the UI.
+ */
+export const LargeDatasetWithCarousel: Story = {
+  name: "📈 Large Dataset with Carousel",
+  args: {
+    data: comprehensiveData,
+    categoryKey: "category",
+    dataKey: "sales",
+    theme: "spectrum",
+    variant: "donut",
+    legend: true,
+    legendVariant: "stacked",
+    cornerRadius: 4,
+    paddingAngle: 1,
+    height: 500,
+    width: 700,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "750px", height: "auto", padding: "24px" }}>
+       <h3 style={{ marginBottom: "20px", fontSize: "18px", fontWeight: 600 }}>Comprehensive Sales Breakdown</h3>
+      <PieChart {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## Responsive Behavior Demo
+ *
+ * This story demonstrates the responsive nature of the PieChart. Drag the
+ * handles on the container to resize it and observe how the chart and its
+ * legend adapt to the new dimensions.
+ */
+export const ResponsiveBehaviorDemo: Story = {
+  name: "📱 Responsive Behavior Demo",
+  args: {
+    data: monthlySalesData,
+    categoryKey: "month",
+    dataKey: "value",
+    theme: "sunset",
+    variant: "donut",
+    legend: true,
+    legendVariant: "stacked",
+    isAnimationActive: false,
     cornerRadius: 8,
     paddingAngle: 2,
-    useGradients: false,
   },
   render: (args: any) => {
-    const [dimensions, setDimensions] = useState<{ width: number; height: number | string }>({
-      width: 700,
-      height: "auto",
-    });
+    const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
 
-    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, handle: string) => {
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
       e.preventDefault();
-      e.stopPropagation();
       const startX = e.clientX;
       const startY = e.clientY;
       const startWidth = dimensions.width;
-      const startHeight = (e.currentTarget.parentElement as HTMLElement).offsetHeight;
+      const startHeight = dimensions.height;
 
       const doDrag = (e: MouseEvent) => {
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        let newWidth = startWidth;
-        let newHeight = startHeight;
-
-        if (handle.includes("e")) newWidth = startWidth + dx;
-        if (handle.includes("w")) newWidth = startWidth - dx;
-        if (handle.includes("s")) newHeight = startHeight + dy;
-        if (handle.includes("n")) newHeight = startHeight - dy;
-
         setDimensions({
-          width: Math.max(300, newWidth),
-          height: "auto",
+          width: Math.max(300, startWidth + e.clientX - startX),
+          height: Math.max(250, startHeight + e.clientY - startY),
         });
       };
-
       const stopDrag = () => {
         document.removeEventListener("mousemove", doDrag);
         document.removeEventListener("mouseup", stopDrag);
@@ -330,114 +429,34 @@ export const ResizableAndResponsive: Story = {
       document.addEventListener("mouseup", stopDrag);
     };
 
-    const handleStyle: React.CSSProperties = {
-      position: "absolute",
-      background: "#3b82f6",
-      opacity: 0.5,
-      zIndex: 10,
-    };
-
     return (
       <Card
         style={{
           position: "relative",
           width: `${dimensions.width}px`,
-          height:
-            typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height,
-          border: "1px dashed #9ca3af",
+          height: `${dimensions.height}px`,
+          border: "2px dashed #9ca3af",
           padding: "20px",
-          boxSizing: "border-box",
           overflow: "hidden",
         }}
       >
         <PieChart {...args} />
-
-        {/* Resizer handles */}
-        <div
-          style={{ ...handleStyle, top: -5, left: 0, right: 0, height: 10, cursor: "ns-resize" }}
-          onMouseDown={(e) => handleMouseDown(e, "n")}
-        />
-        <div
-          style={{ ...handleStyle, bottom: -5, left: 0, right: 0, height: 10, cursor: "ns-resize" }}
-          onMouseDown={(e) => handleMouseDown(e, "s")}
-        />
-        <div
-          style={{ ...handleStyle, top: 0, bottom: 0, left: -5, width: 10, cursor: "ew-resize" }}
-          onMouseDown={(e) => handleMouseDown(e, "w")}
-        />
-        <div
-          style={{ ...handleStyle, top: 0, bottom: 0, right: -5, width: 10, cursor: "ew-resize" }}
-          onMouseDown={(e) => handleMouseDown(e, "e")}
-        />
-        <div
-          style={{
-            ...handleStyle,
-            top: -5,
-            left: -5,
-            width: 16,
-            height: 16,
-            cursor: "nwse-resize",
-          }}
-          onMouseDown={(e) => handleMouseDown(e, "nw")}
-        />
-        <div
-          style={{
-            ...handleStyle,
-            top: -5,
-            right: -5,
-            width: 16,
-            height: 16,
-            cursor: "nesw-resize",
-          }}
-          onMouseDown={(e) => handleMouseDown(e, "ne")}
-        />
-        <div
-          style={{
-            ...handleStyle,
-            bottom: -5,
-            left: -5,
-            width: 16,
-            height: 16,
-            cursor: "nesw-resize",
-          }}
-          onMouseDown={(e) => handleMouseDown(e, "sw")}
-        />
-        <div
-          style={{
-            ...handleStyle,
-            bottom: -5,
-            right: -5,
-            width: 16,
-            height: 16,
-            cursor: "nwse-resize",
-          }}
-          onMouseDown={(e) => handleMouseDown(e, "se")}
-        />
         <div
           style={{
             position: "absolute",
-            bottom: 5,
-            right: 5,
-            background: "rgba(0,0,0,0.5)",
-            color: "white",
-            padding: "2px 5px",
-            borderRadius: 3,
-            fontSize: 12,
-            fontFamily: "monospace",
+            bottom: 0,
+            right: 0,
+            width: 16,
+            height: 16,
+            cursor: "nwse-resize",
+            background: 'rgba(0,0,0,0.1)'
           }}
-        >
-          {dimensions.width}px ×{" "}
-          {typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height}
+          onMouseDown={handleMouseDown}
+        />
+        <div style={{ position: 'absolute', bottom: 5, right: 20, fontSize: 12, color: '#666' }}>
+          {dimensions.width}px × {dimensions.height}px
         </div>
       </Card>
     );
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "This story demonstrates the responsive and resizable behavior of the PieChartV2. Drag the edges or corners of the dashed container to resize it and see how the chart and its legend adapt perfectly to the new dimensions.",
-      },
-    },
   },
 };
