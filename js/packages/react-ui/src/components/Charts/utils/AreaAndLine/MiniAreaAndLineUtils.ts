@@ -1,8 +1,8 @@
 // Common utility functions for Mini Area and Line charts
 // These functions are shared between MiniAreaChart and MiniLineChart components
 
-import { MiniAreaChartData } from "../../AreaCharts/types";
-import { MiniLineChartData } from "../../LineCharts/types";
+import { MiniAreaChartData } from "../../MiniAreaChart/types";
+import { MiniLineChartData } from "../../MiniLineChart/types";
 
 // Element spacing constant for both chart types
 export const MINI_ELEMENT_SPACING: number = 20;

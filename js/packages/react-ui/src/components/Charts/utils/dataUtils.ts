@@ -1,6 +1,6 @@
 import { ChartConfig } from "../Charts";
-import { PieChartData } from "../PieCharts";
-import { RadialChartData } from "../RadialCharts";
+import { PieChartData } from "../PieChart";
+import { RadialChartData } from "../RadialChart";
 import { LegendItem } from "../types";
 import { getDistributedColors, getPalette } from "../utils/PalletUtils";
 
