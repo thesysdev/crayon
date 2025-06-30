@@ -36,7 +36,7 @@ const meta: Meta<typeof MiniLineChart> = {
       },
     },
   },
-  tags: ["dev", "autodocs"],
+  tags: ["!dev", "!autodocs"],
   argTypes: {
     data: {
       description:

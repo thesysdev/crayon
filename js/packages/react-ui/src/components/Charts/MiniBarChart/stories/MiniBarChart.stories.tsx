@@ -44,7 +44,7 @@ const meta: Meta<MiniBarChartProps> = {
       },
     },
   },
-  tags: ["dev", "autodocs"],
+  tags: ["!dev", "!autodocs"],
   argTypes: {
     data: {
       description:

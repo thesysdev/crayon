@@ -499,152 +499,204 @@ const icons = {
   mobile: TabletSmartphone,
 } as const;
 
+/**
+ * # BarChart Component Documentation
+ *
+ * The BarChart is a versatile component for comparing values across different categories.
+ * It's highly effective for:
+ *
+ * - **Category Comparison**: Easily compare metrics like sales, users, or revenue across different groups.
+ * - **Ranking**: Show the highest and lowest performing items in a dataset.
+ * - **Data Over Time**: Visualize changes across discrete time intervals (e.g., monthly sales).
+ *
+ * ## Key Features
+ *
+ * ### Layout Variants
+ * - **Grouped**: Compare sub-categories side-by-side within a primary category.
+ * - **Stacked**: Show how sub-categories contribute to a total value for each primary category.
+ *
+ * ### Interactive & Responsive
+ * - **Horizontal Scrolling**: Automatically enables scrolling when the number of bars exceeds the container width.
+ * - **Interactive Legend**: Toggle data series on and off. Handles overflow with a "Show More" button.
+ * - **Hover Tooltips**: Provides detailed data on hover for better user engagement.
+ * - **Responsive Design**: Adjusts gracefully to the size of its container.
+ *
+ * ### Customization
+ * - **Theming**: Six built-in color palettes.
+ * - **Bar Styling**: Customize the corner radius of the bars.
+ * - **Axis and Grid Control**: Toggle visibility of axes and grid lines.
+ */
 const meta: Meta<BarChartProps<typeof barChartData>> = {
-  title: "Components/Charts/BarCharts/BarChartV2",
+  title: "Components/Charts/BarChart",
   component: BarChart,
   parameters: {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "```tsx\nimport { BarChartV2 } from '@crayon-ui/react-ui/Charts/BarChartV2';\n```",
+        component: `
+## Installation and Basic Usage
+
+\`\`\`tsx
+import { BarChart } from '@crayon-ui/react-ui/Charts/BarChart';
+
+const monthlyData = [
+  { month: "January", desktop: 150, mobile: 90 },
+  { month: "February", desktop: 280, mobile: 180 },
+  { month: "March", desktop: 220, mobile: 140 },
+];
+
+// Basic implementation
+<BarChart
+  data={monthlyData}
+  categoryKey="month"
+  theme="ocean"
+/>
+\`\`\`
+
+## Data Structure Requirements
+
+Your data should be an array of objects. Each object must contain:
+- A **category field** (string or number): Used for the X-axis labels (e.g., months, quarters).
+- One or more **data series fields** (number): These are the values that will be plotted as bars. The key of the field is used as the series name in the legend and tooltip.
+
+\`\`\`tsx
+const salesData = [
+  { region: "North", sales: 5400, marketing: 1200 },
+  { region: "South", sales: 8200, marketing: 1500 },
+  { region: "East", sales: 7100, marketing: 1300 },
+];
+\`\`\`
+
+## Performance Considerations
+- **Data Volume**: The chart uses virtualization for the X-axis, but performance can still be impacted by an extremely large number of data points (e.g., 1000+).
+- **Responsiveness**: The chart adapts to its container, but ensure that bar widths and gaps are readable on very small screens.
+- **Animation**: Can be disabled via \`isAnimationActive={false}\` for better performance with large datasets.
+`,
       },
     },
   },
-  tags: ["dev", "autodocs"],
+  tags: ["!dev", "autodocs"],
   argTypes: {
     data: {
-      description:
-        "An array of data objects where each object represents a data point. Each object should have a category field (e.g., month) and one or more numeric values for the areas to be plotted.",
+      description: `
+**Required.** An array of data objects representing your dataset. Each object should contain:
+- A category identifier (string/number) for the X-axis.
+- One or more numeric values for the Y-axis bars.
+`,
       control: false,
       table: {
         type: { summary: "Array<Record<string, string | number>>" },
-        defaultValue: { summary: "[]" },
-        category: "Data",
+        category: "📊 Data Configuration",
       },
     },
     categoryKey: {
       description:
-        "The key from your data object to be used as the x-axis categories (e.g., 'month', 'year', 'date')",
+        "**Required.** The key in your data object that represents the category for the X-axis (e.g., 'month', 'department').",
       control: false,
       table: {
         type: { summary: "string" },
-        defaultValue: { summary: "string" },
-        category: "Data",
+        category: "📊 Data Configuration",
       },
     },
     theme: {
-      description:
-        "The color palette theme for the chart. Each theme provides a different set of colors for the areas.",
+      description: "Specifies the color palette for the chart's bars, tooltips, and legend.",
       control: "select",
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
-        category: "Appearance",
-      },
-    },
-    icons: {
-      description:
-        "An object that maps data keys to icon components. These icons will appear in the legend next to their corresponding data series.",
-      control: false,
-      table: {
-        type: { summary: "Record<string, React.ComponentType>" },
-        defaultValue: { summary: "{}" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     variant: {
       description:
-        "The style of the bar chart. 'grouped' shows bars side by side, while 'stacked' shows bars stacked on top of each other.",
+        "Defines how multiple data series are displayed: `grouped` (side-by-side) or `stacked` (on top of each other).",
       control: "radio",
       options: ["grouped", "stacked"],
       table: {
         defaultValue: { summary: "grouped" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     radius: {
-      description: "The radius of the rounded corners of the bars",
-      control: "number",
+      description: "Sets the corner radius for the top of each bar, creating a rounded look.",
+      control: { type: "number", min: 0, max: 20 },
       table: {
         type: { summary: "number" },
         defaultValue: { summary: "4" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
+      },
+    },
+    icons: {
+      description:
+        "An object mapping data series keys to React components to be used as icons in the legend.",
+      control: false,
+      table: {
+        type: { summary: "Record<string, React.ReactNode>" },
+        category: "🎨 Visual Styling",
       },
     },
     grid: {
-      description: "Whether to display the background grid lines in the chart",
+      description: "Toggles the visibility of the background grid lines.",
       control: "boolean",
       table: {
-        type: { summary: "boolean" },
         defaultValue: { summary: "true" },
-        category: "Display",
-      },
-    },
-
-    isAnimationActive: {
-      description: "Whether to animate the chart",
-      control: "boolean",
-      table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "true" },
-        category: "Display",
-      },
-    },
-    showYAxis: {
-      description: "Whether to display the y-axis",
-      control: "boolean",
-      table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
-        category: "Display",
-      },
-    },
-    xAxisLabel: {
-      description: "The label for the x-axis",
-      control: "text",
-      table: {
-        type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
-        category: "Data",
-      },
-    },
-    yAxisLabel: {
-      description: "The label for the y-axis",
-      control: "text",
-      table: {
-        type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
-        category: "Data",
+        category: "📱 Display Options",
       },
     },
     legend: {
-      description: "Whether to display the chart legend",
+      description: "Toggles the visibility of the chart legend.",
       control: "boolean",
       table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
-        category: "Display",
+        defaultValue: { summary: "true" },
+        category: "📱 Display Options",
+      },
+    },
+    showYAxis: {
+      description: "Toggles the visibility of the Y-axis line and labels.",
+      control: "boolean",
+      table: {
+        defaultValue: { summary: "true" },
+        category: "📱 Display Options",
+      },
+    },
+    xAxisLabel: {
+      description: "A label to display below the X-axis.",
+      control: "text",
+      table: {
+        type: { summary: "React.ReactNode" },
+        category: "📱 Display Options",
+      },
+    },
+    yAxisLabel: {
+      description: "A label to display beside the Y-axis.",
+      control: "text",
+      table: {
+        type: { summary: "React.ReactNode" },
+        category: "📱 Display Options",
+      },
+    },
+    isAnimationActive: {
+      description: "Enables or disables the initial loading animation for the bars.",
+      control: "boolean",
+      table: {
+        defaultValue: { summary: "true" },
+        category: "🎬 Animation & Interaction",
       },
     },
     height: {
-      description:
-        "Fixed height for the chart in pixels. When provided, overrides the default responsive height calculation.",
+      description: "Sets a fixed height for the chart container in pixels.",
       control: "number",
       table: {
         type: { summary: "number" },
-        defaultValue: { summary: "undefined" },
-        category: "Layout",
+        category: "Layout & Sizing",
       },
     },
     width: {
-      description:
-        "Fixed width for the chart container in pixels. When provided, disables responsive width behavior.",
+      description: "Sets a fixed width for the chart container in pixels.",
       control: "number",
       table: {
         type: { summary: "number" },
-        defaultValue: { summary: "undefined" },
-        category: "Layout",
+        category: "Layout & Sizing",
       },
     },
   },
@@ -653,8 +705,20 @@ const meta: Meta<BarChartProps<typeof barChartData>> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BarChartV2Story: Story = {
-  name: "🎛️ Data Switcher - Bar Chart V2",
+/**
+ * ## Comprehensive Data Explorer
+ *
+ * This story serves as a comprehensive test suite for the BarChart component.
+ * Use the buttons to switch between various datasets designed to test edge cases in:
+ *
+ * - **Data Volume**: Scenarios with few, many, or a single data point.
+ * - **Data Formatting**: Handling of large numbers and different value ranges.
+ * - **Legend Overflow**: A dataset with many series to test legend expand/collapse functionality.
+ *
+ * It's an excellent tool for developers to see how the chart behaves under different conditions.
+ */
+export const DataExplorer: Story = {
+  name: "🎛️ Comprehensive Data Explorer",
   args: {
     data: barChartData,
     categoryKey: "month",
@@ -664,10 +728,6 @@ export const BarChartV2Story: Story = {
     grid: true,
     isAnimationActive: true,
     showYAxis: true,
-    // xAxisLabel: "Time Period",
-    // yAxisLabel: "Number of Users",
-    legend: true,
-    // width: 600,
     // height: 500,
   },
   render: (args: any) => {
@@ -786,6 +846,12 @@ export const BarChartV2Story: Story = {
   },
 };
 
+/**
+ * ## Small Dataset (No Scroll)
+ *
+ * This story demonstrates the BarChart's appearance with a small dataset.
+ * When the number of bars fits within the container width, horizontal scrolling is disabled.
+ */
 export const SmallDataStory: Story = {
   name: "📱 Small Data (No Scroll)",
   args: {
@@ -806,6 +872,12 @@ export const SmallDataStory: Story = {
   ),
 };
 
+/**
+ * ## Large Dataset (With Scrolling)
+ *
+ * This story showcases the chart's horizontal scrolling capability.
+ * When the total width of the bars exceeds the container's width, users can scroll to view all data points.
+ */
 export const LargeDataStory: Story = {
   name: "🌐 Large Data (Scrolling)",
   args: {
@@ -826,6 +898,12 @@ export const LargeDataStory: Story = {
   ),
 };
 
+/**
+ * ## Weekly Data (Many Categories)
+ *
+ * Similar to the large dataset, this story tests the chart with a high number of categories,
+ * which should trigger horizontal scrolling.
+ */
 export const WeeklyDataStory: Story = {
   name: "📈 Weekly Data (Many Categories)",
   args: {
@@ -846,6 +924,13 @@ export const WeeklyDataStory: Story = {
   ),
 };
 
+/**
+ * ## Big Numbers
+ *
+ * This story tests the chart's ability to handle and format very large numbers,
+ * such as billions and trillions, on the Y-axis. The axis labels should be formatted
+ * with appropriate suffixes (e.g., "B" for billion, "T" for trillion).
+ */
 export const BigNumbersStory: Story = {
   name: "💰 Big Numbers (Billions/Trillions)",
   args: {
@@ -866,6 +951,12 @@ export const BigNumbersStory: Story = {
   ),
 };
 
+/**
+ * ## Edge Case (Single Data Point)
+ *
+ * This story demonstrates how the chart renders with only a single data point.
+ * It's a useful test to ensure that the layout and axes behave correctly in minimal-data scenarios.
+ */
 export const EdgeCaseStory: Story = {
   name: "🎯 Edge Case (Single Data Point)",
   args: {
@@ -886,6 +977,12 @@ export const EdgeCaseStory: Story = {
   ),
 };
 
+/**
+ * ## Number Ranges (Scale Testing)
+ *
+ * This story tests the Y-axis scaling with data points of vastly different magnitudes.
+ * The chart should automatically adjust its scale to accommodate all values appropriately.
+ */
 export const NumberRangesStory: Story = {
   name: "🔢 Number Ranges (Scale Testing)",
   args: {
@@ -906,8 +1003,15 @@ export const NumberRangesStory: Story = {
   ),
 };
 
+/**
+ * ## Legend Expand/Collapse
+ *
+ * Tests the legend's expand/collapse functionality with a large number of data series.
+ * The legend should automatically show a "Show More" button when items overflow,
+ * allowing users to toggle between a collapsed and expanded view.
+ */
 export const ExpandCollapseMarketingStory: Story = {
-  name: "🔄 Marketing Channels (Legend Expand/Collapse)",
+  name: "🔄 Legend Expand/Collapse",
   args: {
     data: dataVariations.expandCollapseMarketing as any,
     categoryKey: "channel" as any,
@@ -931,5 +1035,201 @@ export const ExpandCollapseMarketingStory: Story = {
           "Tests the legend expand/collapse functionality with 12 marketing channels that have long descriptive names. The legend should automatically show a 'Show More' button when items overflow the container width, allowing users to toggle between collapsed and expanded states.",
       },
     },
+  },
+};
+
+/**
+ * ## Responsive Behavior Demo
+ *
+ * This story demonstrates the responsive capabilities of the BarChart. Drag the handles
+ * on the container to resize it and observe how the chart adapts.
+ *
+ * **Responsive Features:**
+ * - **Bar Sizing**: Bar widths and gaps adjust to the container size.
+ * - **Layout Adaptation**: Chart elements are repositioned to fit the available space.
+ * - **Legend Behavior**: The legend may wrap or show expand/collapse buttons as needed.
+ */
+export const ResponsiveBehaviorDemo: Story = {
+  name: "📱 Responsive Behavior Demo",
+  args: {
+    data: dataVariations.default as any,
+    categoryKey: "month" as any,
+    theme: "sunset",
+    variant: "grouped",
+    grid: true,
+    legend: true,
+    isAnimationActive: false,
+    showYAxis: true,
+  },
+  render: (args: any) => {
+    const [dimensions, setDimensions] = useState<{ width: number; height: number | string }>({
+      width: 700,
+      height: "auto",
+    });
+
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, handle: string) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startWidth = dimensions.width;
+      const startHeight = (e.currentTarget.parentElement as HTMLElement).offsetHeight;
+
+      const doDrag = (e: MouseEvent) => {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+
+        if (handle.includes("e")) newWidth = startWidth + dx;
+        if (handle.includes("w")) newWidth = startWidth - dx;
+        if (handle.includes("s")) newHeight = startHeight + dy;
+        if (handle.includes("n")) newHeight = startHeight - dy;
+
+        setDimensions({
+          width: Math.max(300, newWidth),
+          height: "auto",
+        });
+      };
+
+      const stopDrag = () => {
+        document.removeEventListener("mousemove", doDrag);
+        document.removeEventListener("mouseup", stopDrag);
+      };
+
+      document.addEventListener("mousemove", doDrag);
+      document.addEventListener("mouseup", stopDrag);
+    };
+
+    const handleStyle: React.CSSProperties = {
+      position: "absolute",
+      background: "#3b82f6",
+      opacity: 0.6,
+      zIndex: 10,
+      transition: "opacity 0.2s ease",
+    };
+
+    return (
+      <div style={{ padding: "20px" }}>
+        <div style={{ marginBottom: "20px" }}>
+          <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
+            Responsive Behavior Demonstration
+          </h3>
+          <p style={{ margin: "0 0 12px 0", color: "#666", fontSize: "14px" }}>
+            Drag the edges or corners of the container below to see how the chart adapts
+          </p>
+          <div
+            style={{
+              padding: "12px",
+              backgroundColor: "#e3f2fd",
+              borderRadius: "6px",
+              fontSize: "12px",
+              color: "#1565c0",
+            }}
+          >
+            <strong>🎯 Try This:</strong> Resize the container to see how the bar widths and layout
+            adjustments.
+          </div>
+        </div>
+
+        <Card
+          style={{
+            position: "relative",
+            width: `${dimensions.width}px`,
+            height:
+              typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height,
+            border: "2px dashed #9ca3af",
+            padding: "20px",
+            boxSizing: "border-box",
+            overflow: "hidden",
+            cursor: "default",
+          }}
+        >
+          <BarChart {...args} />
+
+          {/* Resize Handles */}
+          <div
+            style={{ ...handleStyle, top: -2, left: 0, right: 0, height: 12, cursor: "ns-resize" }}
+            onMouseDown={(e) => handleMouseDown(e, "n")}
+          />
+          <div
+            style={{
+              ...handleStyle,
+              bottom: -2,
+              left: 0,
+              right: 0,
+              height: 12,
+              cursor: "ns-resize",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "s")}
+          />
+          <div
+            style={{ ...handleStyle, top: 0, bottom: 0, left: -2, width: 12, cursor: "ew-resize" }}
+            onMouseDown={(e) => handleMouseDown(e, "w")}
+          />
+          <div
+            style={{ ...handleStyle, top: 0, bottom: 0, right: -2, width: 12, cursor: "ew-resize" }}
+            onMouseDown={(e) => handleMouseDown(e, "e")}
+          />
+
+          {/* Corner Handles */}
+          <div
+            style={{
+              ...handleStyle,
+              top: -2,
+              left: -2,
+              width: 20,
+              height: 20,
+              cursor: "nwse-resize",
+              borderRadius: "2px",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "nw")}
+          />
+          <div
+            style={{
+              ...handleStyle,
+              top: -2,
+              right: -2,
+              width: 20,
+              height: 20,
+              cursor: "nesw-resize",
+              borderRadius: "2px",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "ne")}
+          />
+          <div
+            style={{
+              ...handleStyle,
+              bottom: -2,
+              right: -2,
+              width: 20,
+              height: 20,
+              cursor: "nwse-resize",
+              borderRadius: "2px",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "se")}
+          />
+
+          {/* Dimension Display */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 8,
+              right: 8,
+              background: "rgba(0,0,0,0.8)",
+              color: "white",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              fontSize: "11px",
+              fontFamily: "monospace",
+              fontWeight: "500",
+            }}
+          >
+            {dimensions.width}px ×{" "}
+            {typeof dimensions.height === "number" ? `${dimensions.height}px` : "auto"}
+          </div>
+        </Card>
+      </div>
+    );
   },
 };

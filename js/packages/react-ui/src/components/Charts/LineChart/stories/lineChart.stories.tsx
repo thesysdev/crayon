@@ -445,84 +445,214 @@ const icons = {
   sessions: TabletSmartphone,
 } as const;
 
+/**
+ * # LineChart Component Documentation
+ *
+ * The LineChart component is a powerful and flexible tool for visualizing trends over time or comparing continuous data.
+ * It's ideal for:
+ *
+ * - **Time-Series Analysis**: Tracking metrics over days, months, or years.
+ * - **Comparative Analysis**: Comparing the performance of multiple data series.
+ * - **Trend Identification**: Spotting upward or downward trends, and patterns in datasets.
+ *
+ * ## Key Features
+ *
+ * ### Advanced Label Handling
+ * - **Collision Detection**: Automatically detects and prevents overlapping X-axis labels.
+ * - **Intelligent Truncation**: Truncates long labels with an ellipsis (...) to keep the chart clean.
+ * - **Horizontal Offset**: Ensures truncated labels remain horizontally centered for readability.
+ *
+ * ### Interactive & Responsive
+ * - **Interactive Legend**: Allows toggling data series visibility and adapts with a "Show More" feature for many items.
+ * - **Hover Tooltips**: Provides detailed data points on hover for enhanced user interaction.
+ * - **Responsive Design**: Fluidly adjusts to any container size, from small widgets to large dashboards.
+ *
+ * ### Customization
+ * - **Theming**: Six pre-built color palettes to fit your application's design.
+ * - **Line Styles**: Supports `linear`, `natural` (smooth), and `step` variants.
+ * - **Styling Options**: Control stroke width, grid visibility, and more.
+ */
 const meta: Meta<LineChartProps<typeof lineChartV2Data>> = {
-  title: "Components/Charts/LineCharts/LineChartV2",
+  title: "Components/Charts/LineChart",
   component: LineChart,
   parameters: {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "LineChartV2 features advanced collision detection and label truncation with horizontal offset capabilities. The component automatically handles overlapping X-axis labels by intelligently truncating them with ellipsis while maintaining horizontal positioning.",
+        component: `
+## Installation and Basic Usage
+
+\`\`\`tsx
+import { LineChart } from '@crayon-ui/react-ui/Charts/LineChart';
+
+const timeSeriesData = [
+  { month: "January", desktop: 150, mobile: 90 },
+  { month: "February", desktop: 280, mobile: 180 },
+  { month: "March", desktop: 220, mobile: 140 },
+];
+
+// Basic implementation
+<LineChart
+  data={timeSeriesData}
+  categoryKey="month"
+  theme="ocean"
+/>
+\`\`\`
+
+## Data Structure Requirements
+
+Your data should be an array of objects. Each object must contain:
+- A **category field** (string or number): This will be used for the X-axis labels (e.g., dates, names, etc.).
+- One or more **data series fields** (number): These are the values that will be plotted on the Y-axis. The key of the field will be used as the series name in the legend and tooltip.
+
+\`\`\`tsx
+const salesData = [
+  { date: "2023-01-01", productA: 4000, productB: 2400 },
+  { date: "2023-02-01", productA: 3000, productB: 1398 },
+  { date: "2023-03-01", productA: 2000, productB: 9800 },
+];
+\`\`\`
+
+## Performance Considerations
+- **Data Density**: While the chart can handle many data points, performance may degrade with thousands of points, especially with animations enabled.
+- **Responsiveness**: The chart is fully responsive, but consider the visual clarity of labels on very small screens.
+- **Animation**: Can be disabled via \`isAnimationActive={false}\` for performance-critical applications.
+`,
       },
     },
   },
-  tags: ["dev", "autodocs"],
+  tags: ["!dev", "autodocs"],
   argTypes: {
     data: {
-      description: "An array of data objects for the line chart",
+      description: `
+**Required.** An array of data objects for the line chart. Each object should contain:
+- A category identifier (string/number) for the X-axis.
+- One or more numeric values for the Y-axis.
+
+**Best Practices:**
+- Ensure consistent data structure across all objects.
+- For time-series data, ensure items are sorted chronologically.
+`,
       control: false,
       table: {
         type: { summary: "Array<Record<string, string | number>>" },
-        category: "Data",
+        category: "📊 Data Configuration",
       },
     },
     categoryKey: {
-      description: "The key for x-axis categories",
+      description:
+        "**Required.** The key in your data object that represents the category for the X-axis (e.g., 'date', 'month').",
       control: false,
       table: {
         type: { summary: "string" },
-        category: "Data",
+        category: "📊 Data Configuration",
       },
     },
     theme: {
-      description: "Color theme for the chart",
+      description: "Specifies the color palette for the chart's lines, tooltips, and legend.",
       control: "select",
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     variant: {
-      description: "Line interpolation method",
+      description: "Determines the line interpolation method, affecting the shape of the lines.",
       control: "radio",
       options: ["linear", "natural", "step"],
       table: {
         defaultValue: { summary: "natural" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     strokeWidth: {
-      description: "Width of the line strokes",
-      control: "number",
+      description: "Controls the thickness of the lines in pixels.",
+      control: { type: "number", min: 1, max: 10, step: 1 },
       table: {
         defaultValue: { summary: "2" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     grid: {
-      description: "Display background grid",
+      description: "Toggles the visibility of the background grid lines.",
       control: "boolean",
       table: {
         defaultValue: { summary: "true" },
-        category: "Display",
+        category: "📱 Display Options",
       },
     },
     legend: {
-      description: "Display chart legend",
+      description: "Toggles the visibility of the chart legend.",
       control: "boolean",
       table: {
         defaultValue: { summary: "true" },
-        category: "Display",
+        category: "📱 Display Options",
       },
     },
     showYAxis: {
-      description: "Display y-axis",
+      description: "Toggles the visibility of the Y-axis line and labels.",
       control: "boolean",
       table: {
-        defaultValue: { summary: "false" },
-        category: "Display",
+        defaultValue: { summary: "true" },
+        category: "📱 Display Options",
+      },
+    },
+    isAnimationActive: {
+      description: "Enables or disables the initial loading animation for the lines.",
+      control: "boolean",
+      table: {
+        defaultValue: { summary: "true" },
+        category: "🎬 Animation & Interaction",
+      },
+    },
+    icons: {
+      description:
+        "An object mapping data series keys to React components to be used as icons in the legend.",
+      control: false,
+      table: {
+        type: { summary: "Record<string, React.ReactNode>" },
+        category: "🎨 Visual Styling",
+      },
+    },
+    xAxisLabel: {
+      description: "A label to display below the X-axis.",
+      control: "text",
+      table: {
+        type: { summary: "React.ReactNode" },
+        category: "📱 Display Options",
+      },
+    },
+    yAxisLabel: {
+      description: "A label to display beside the Y-axis.",
+      control: "text",
+      table: {
+        type: { summary: "React.ReactNode" },
+        category: "📱 Display Options",
+      },
+    },
+    className: {
+      description: "Custom CSS class to apply to the chart's container.",
+      control: "text",
+      table: {
+        type: { summary: "string" },
+        category: "Layout & Sizing",
+      },
+    },
+    height: {
+      description: "Sets the height of the chart container.",
+      control: "number",
+      table: {
+        type: { summary: "number" },
+        category: "Layout & Sizing",
+      },
+    },
+    width: {
+      description: "Sets the width of the chart container.",
+      control: "number",
+      table: {
+        type: { summary: "number" },
+        category: "Layout & Sizing",
       },
     },
   },
@@ -531,8 +661,20 @@ const meta: Meta<LineChartProps<typeof lineChartV2Data>> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const LineChartV2Story: Story = {
-  name: "🎛️ Data Switcher - Line Chart V2",
+/**
+ * ## Comprehensive Data Explorer
+ *
+ * This story serves as a comprehensive test suite for the LineChart component.
+ * Use the buttons to switch between various datasets designed to test edge cases in:
+ *
+ * - **Label Collision**: Datasets with long, dense, or overlapping labels.
+ * - **Data Density**: Scenarios with few or many data points.
+ * - **Legend Overflow**: A dataset with many series to test legend expand/collapse functionality.
+ *
+ * It's an excellent tool for developers to see how the chart behaves under different conditions.
+ */
+export const DataExplorer: Story = {
+  name: "🎛️ Comprehensive Data Explorer",
   args: {
     data: lineChartV2Data,
     categoryKey: "month",
@@ -655,6 +797,13 @@ export const LineChartV2Story: Story = {
   },
 };
 
+/**
+ * ## Big Labels
+ *
+ * This story demonstrates the chart's ability to handle very long category labels.
+ * The chart's intelligent truncation and collision detection should be visible here.
+ * X-axis labels that are too long to fit will be gracefully truncated with an ellipsis.
+ */
 export const BigLabelsStory: Story = {
   name: "🏷️ Big Labels",
   args: {
@@ -674,6 +823,13 @@ export const BigLabelsStory: Story = {
   ),
 };
 
+/**
+ * ## Dense Timeline
+ *
+ * Tests how the chart handles many data points with medium-length period labels.
+ * The chart should enable horizontal scrolling and apply intelligent label truncation.
+ * This scenario is common in financial or analytical dashboards where many time periods are displayed.
+ */
 export const DenseTimelineStory: Story = {
   name: "📅 Dense Timeline (Many Periods)",
   args: {
@@ -702,6 +858,12 @@ export const DenseTimelineStory: Story = {
   },
 };
 
+/**
+ * ## Stroke and Style Customization
+ *
+ * This story showcases how to customize the appearance of the lines.
+ * You can adjust properties like `strokeWidth` to create different visual effects.
+ */
 export const StrokeCustomizationStory: Story = {
   name: "🎨 Stroke Customization",
   args: {
@@ -716,27 +878,29 @@ export const StrokeCustomizationStory: Story = {
   render: (args: any) => (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div>
+        <h4>Default Lines (strokeWidth: 2)</h4>
+        <Card style={{ width: "500px" }}>
+          <LineChart {...args} strokeWidth={2} />
+        </Card>
+      </div>
+      <div>
         <h4>Thick Lines (strokeWidth: 4)</h4>
         <Card style={{ width: "500px" }}>
           <LineChart {...args} strokeWidth={4} />
-        </Card>
-      </div>
-      <div>
-        <h4>Dashed Lines</h4>
-        <Card style={{ width: "500px" }}>
-          <LineChart {...args} strokeWidth={2} />
-        </Card>
-      </div>
-      <div>
-        <h4>With Dots</h4>
-        <Card style={{ width: "500px" }}>
-          <LineChart {...args} strokeWidth={2} />
         </Card>
       </div>
     </div>
   ),
 };
 
+/**
+ * ## Line Variants
+ *
+ * Compares the three available line variants:
+ * - **Linear**: Straight lines connecting data points.
+ * - **Natural**: Smooth curves for a softer, organic look.
+ * - **Step**: Stepped lines, useful for showing discrete changes.
+ */
 export const VariantComparisonStory: Story = {
   name: "📐 Line Variants",
   args: {
@@ -783,8 +947,15 @@ export const VariantComparisonStory: Story = {
   },
 };
 
+/**
+ * ## Legend Expand/Collapse
+ *
+ * Tests the legend's expand/collapse functionality with a large number of data series.
+ * The legend should automatically show a "Show More" button when items overflow,
+ * allowing users to toggle between a collapsed and expanded view.
+ */
 export const ExpandCollapseMarketingStory: Story = {
-  name: "🔄 Marketing Channels (Legend Expand/Collapse)",
+  name: "🔄 Legend Expand/Collapse",
   args: {
     data: dataVariations.expandCollapseMarketing as any,
     categoryKey: "channel" as any,
@@ -811,8 +982,19 @@ export const ExpandCollapseMarketingStory: Story = {
   },
 };
 
-export const ResponsiveWidthStory: Story = {
-  name: "📐 Responsive Width Test",
+/**
+ * ## Responsive Behavior Demo
+ *
+ * This story demonstrates the responsive capabilities of the LineChart. Drag the handles
+ * on the container to resize it and observe how the chart adapts.
+ *
+ * **Responsive Features:**
+ * - **Label Truncation**: More aggressive truncation on smaller container widths.
+ * - **Layout Adaptation**: Chart elements adjust to fit the available space.
+ * - **Legend Behavior**: The legend may wrap or show expand/collapse buttons as needed.
+ */
+export const ResponsiveBehaviorDemo: Story = {
+  name: "📱 Responsive Behavior Demo",
   args: {
     data: dataVariations.bigLabels as any,
     categoryKey: "category" as any,
@@ -820,44 +1002,179 @@ export const ResponsiveWidthStory: Story = {
     variant: "natural",
     grid: true,
     legend: true,
-    isAnimationActive: true,
+    isAnimationActive: false,
     showYAxis: true,
     strokeWidth: 2,
   },
-  render: (args: any) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div>
-        <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>
-          Small Container (300px)
-        </h4>
-        <Card style={{ width: "300px" }}>
+  render: (args: any) => {
+    const [dimensions, setDimensions] = useState<{ width: number; height: number | string }>({
+      width: 700,
+      height: "auto",
+    });
+
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, handle: string) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startWidth = dimensions.width;
+      const startHeight = (e.currentTarget.parentElement as HTMLElement).offsetHeight;
+
+      const doDrag = (e: MouseEvent) => {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+
+        if (handle.includes("e")) newWidth = startWidth + dx;
+        if (handle.includes("w")) newWidth = startWidth - dx;
+        if (handle.includes("s")) newHeight = startHeight + dy;
+        if (handle.includes("n")) newHeight = startHeight - dy;
+
+        setDimensions({
+          width: Math.max(300, newWidth),
+          height: "auto",
+        });
+      };
+
+      const stopDrag = () => {
+        document.removeEventListener("mousemove", doDrag);
+        document.removeEventListener("mouseup", stopDrag);
+      };
+
+      document.addEventListener("mousemove", doDrag);
+      document.addEventListener("mouseup", stopDrag);
+    };
+
+    const handleStyle: React.CSSProperties = {
+      position: "absolute",
+      background: "#3b82f6",
+      opacity: 0.6,
+      zIndex: 10,
+      transition: "opacity 0.2s ease",
+    };
+
+    return (
+      <div style={{ padding: "20px" }}>
+        <div style={{ marginBottom: "20px" }}>
+          <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
+            Responsive Behavior Demonstration
+          </h3>
+          <p style={{ margin: "0 0 12px 0", color: "#666", fontSize: "14px" }}>
+            Drag the edges or corners of the container below to see how the chart adapts
+          </p>
+          <div
+            style={{
+              padding: "12px",
+              backgroundColor: "#e3f2fd",
+              borderRadius: "6px",
+              fontSize: "12px",
+              color: "#1565c0",
+            }}
+          >
+            <strong>🎯 Try This:</strong> Resize the container to see automatic label truncation and
+            layout adjustments.
+          </div>
+        </div>
+
+        <Card
+          style={{
+            position: "relative",
+            width: `${dimensions.width}px`,
+            height:
+              typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height,
+            border: "2px dashed #9ca3af",
+            padding: "20px",
+            boxSizing: "border-box",
+            overflow: "hidden",
+            cursor: "default",
+          }}
+        >
           <LineChart {...args} />
+
+          {/* Resize Handles */}
+          <div
+            style={{ ...handleStyle, top: -2, left: 0, right: 0, height: 12, cursor: "ns-resize" }}
+            onMouseDown={(e) => handleMouseDown(e, "n")}
+          />
+          <div
+            style={{
+              ...handleStyle,
+              bottom: -2,
+              left: 0,
+              right: 0,
+              height: 12,
+              cursor: "ns-resize",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "s")}
+          />
+          <div
+            style={{ ...handleStyle, top: 0, bottom: 0, left: -2, width: 12, cursor: "ew-resize" }}
+            onMouseDown={(e) => handleMouseDown(e, "w")}
+          />
+          <div
+            style={{ ...handleStyle, top: 0, bottom: 0, right: -2, width: 12, cursor: "ew-resize" }}
+            onMouseDown={(e) => handleMouseDown(e, "e")}
+          />
+
+          {/* Corner Handles */}
+          <div
+            style={{
+              ...handleStyle,
+              top: -2,
+              left: -2,
+              width: 20,
+              height: 20,
+              cursor: "nwse-resize",
+              borderRadius: "2px",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "nw")}
+          />
+          <div
+            style={{
+              ...handleStyle,
+              top: -2,
+              right: -2,
+              width: 20,
+              height: 20,
+              cursor: "nesw-resize",
+              borderRadius: "2px",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "ne")}
+          />
+          <div
+            style={{
+              ...handleStyle,
+              bottom: -2,
+              right: -2,
+              width: 20,
+              height: 20,
+              cursor: "nwse-resize",
+              borderRadius: "2px",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "se")}
+          />
+
+          {/* Dimension Display */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 8,
+              right: 8,
+              background: "rgba(0,0,0,0.8)",
+              color: "white",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              fontSize: "11px",
+              fontFamily: "monospace",
+              fontWeight: "500",
+            }}
+          >
+            {dimensions.width}px ×{" "}
+            {typeof dimensions.height === "number" ? `${dimensions.height}px` : "auto"}
+          </div>
         </Card>
       </div>
-      <div>
-        <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>
-          Medium Container (500px)
-        </h4>
-        <Card style={{ width: "500px" }}>
-          <LineChart {...args} />
-        </Card>
-      </div>
-      <div>
-        <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>
-          Large Container (800px)
-        </h4>
-        <Card style={{ width: "800px" }}>
-          <LineChart {...args} />
-        </Card>
-      </div>
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Tests how the collision detection and truncation system adapts to different container widths. Smaller containers should show more aggressive truncation.",
-      },
-    },
+    );
   },
 };

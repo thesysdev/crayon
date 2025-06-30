@@ -445,153 +445,202 @@ const icons = {
   sessions: TabletSmartphone,
 } as const;
 
+/**
+ * # AreaChart Component Documentation
+ *
+ * The AreaChart is excellent for visualizing quantitative data and showing the volume of a metric over a progression.
+ * It's ideal for:
+ *
+ * - **Time-Series Analysis**: Showing how a value or volume changes over time.
+ * - **Showing Volume**: Emphasizing the magnitude of a value.
+ * - **Comparing Trends**: Stacking areas to show how different series contribute to a total.
+ *
+ * ## Key Features
+ *
+ * ### Advanced Label Handling
+ * - **Collision Detection**: Prevents X-axis labels from overlapping.
+ * - **Intelligent Truncation**: Automatically shortens long labels with an ellipsis (...).
+ * - **Horizontal Offset**: Ensures labels are correctly positioned for maximum readability.
+ *
+ * ### Interactive & Responsive
+ * - **Interactive Legend**: Toggle data series visibility. It gracefully handles overflow with a "Show More" feature.
+ * - **Hover Tooltips**: Choose between a standard tooltip or a floating one that follows the cursor.
+ * - **Responsive Design**: Adapts fluidly to its container's size.
+ *
+ * ### Customization
+ * - **Theming**: Comes with six pre-built color palettes.
+ * - **Area Styles**: Supports `linear`, `natural` (smooth), and `step` interpolation.
+ * - **Styling Options**: Control grid visibility, axes, and more.
+ */
 const meta: Meta<AreaChartProps<typeof areaChartData>> = {
-  title: "Components/Charts/AreaCharts/AreaChartV2",
+  title: "Components/Charts/AreaChart",
   component: AreaChart,
   parameters: {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "```tsx\nimport { AreaChartV2 } from '@crayon-ui/react-ui/Charts/AreaChartV2';\n```\n\nAreaChartV2 features advanced collision detection and label truncation with horizontal offset capabilities. The component automatically handles overlapping X-axis labels by intelligently truncating them with ellipsis while maintaining horizontal positioning (no angle rotation by default).",
+        component: `
+## Installation and Basic Usage
+
+\`\`\`tsx
+import { AreaChart } from '@crayon-ui/react-ui/Charts/AreaChart';
+
+const trafficData = [
+  { date: "2023-01-01", visits: 2200 },
+  { date: "2023-01-02", visits: 2500 },
+  { date: "2023-01-03", visits: 2300 },
+];
+
+// Basic implementation
+<AreaChart
+  data={trafficData}
+  categoryKey="date"
+  theme="ocean"
+/>
+\`\`\`
+
+## Data Structure Requirements
+
+Your data should be an array of objects. Each object must contain:
+- A **category field** (string or number): This will be used for the X-axis labels (e.g., dates, names, etc.).
+- One or more **data series fields** (number): These are the values that will be plotted on the Y-axis. The key of the field will be used as the series name in the legend and tooltip.
+
+\`\`\`tsx
+const salesData = [
+  { month: "January", desktop: 150, mobile: 90 },
+  { month: "February", desktop: 280, mobile: 180 },
+  { month: "March", desktop: 220, mobile: 140 },
+];
+\`\`\`
+
+## Performance Considerations
+- **Data Density**: For very large datasets, consider disabling animations to maintain smooth performance.
+- **Responsiveness**: The chart is fully responsive, but test label visibility on very small screens.
+- **Animation**: Controlled via \`isAnimationActive={false}\`.
+`,
       },
     },
   },
-  tags: ["dev", "autodocs"],
+  tags: ["!dev", "autodocs"],
   argTypes: {
     data: {
-      description:
-        "An array of data objects where each object represents a data point. Each object should have a category field (e.g., month) and one or more numeric values for the areas to be plotted.",
+      description: `
+**Required.** An array of data objects for the area chart. Each object should contain:
+- A category identifier (string/number) for the X-axis.
+- One or more numeric values for the Y-axis.
+`,
       control: false,
       table: {
         type: { summary: "Array<Record<string, string | number>>" },
-        defaultValue: { summary: "[]" },
-        category: "Data",
+        category: "📊 Data Configuration",
       },
     },
     categoryKey: {
       description:
-        "The key from your data object to be used as the x-axis categories (e.g., 'month', 'year', 'date')",
+        "**Required.** The key in your data object that represents the category for the X-axis.",
       control: false,
       table: {
         type: { summary: "string" },
-        defaultValue: { summary: "string" },
-        category: "Data",
+        category: "📊 Data Configuration",
       },
     },
     theme: {
-      description:
-        "The color palette theme for the chart. Each theme provides a different set of colors for the areas.",
+      description: "Specifies the color palette for the chart's areas, tooltips, and legend.",
       control: "select",
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
-        category: "Appearance",
-      },
-    },
-    icons: {
-      description:
-        "An object that maps data keys to icon components. These icons will appear in the legend next to their corresponding data series.",
-      control: false,
-      table: {
-        type: { summary: "Record<string, React.ComponentType>" },
-        defaultValue: { summary: "{}" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
     variant: {
-      description:
-        "The interpolation method used to create the area curves. 'linear' creates straight lines between points, 'natural' creates smooth curves, and 'step' creates a stepped area.",
+      description: "Determines the area interpolation method, affecting the shape of the curves.",
       control: "radio",
       options: ["linear", "natural", "step"],
       table: {
         defaultValue: { summary: "natural" },
-        category: "Appearance",
+        category: "🎨 Visual Styling",
       },
     },
-
+    icons: {
+      description:
+        "An object mapping data series keys to React components to be used as icons in the legend.",
+      control: false,
+      table: {
+        type: { summary: "Record<string, React.ReactNode>" },
+        category: "🎨 Visual Styling",
+      },
+    },
     grid: {
-      description: "Whether to display the background grid lines in the chart",
+      description: "Toggles the visibility of the background grid lines.",
       control: "boolean",
       table: {
-        type: { summary: "boolean" },
         defaultValue: { summary: "true" },
-        category: "Display",
+        category: "📱 Display Options",
       },
     },
     legend: {
-      description:
-        "Whether to display the chart legend showing the data series names and their corresponding colors/icons",
+      description: "Toggles the visibility of the chart legend.",
       control: "boolean",
       table: {
-        type: { summary: "boolean" },
         defaultValue: { summary: "true" },
-        category: "Display",
-      },
-    },
-    isAnimationActive: {
-      description: "Whether to animate the chart",
-      control: "boolean",
-      table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "true" },
-        category: "Display",
+        category: "📱 Display Options",
       },
     },
     showYAxis: {
-      description: "Whether to display the y-axis",
+      description: "Toggles the visibility of the Y-axis line and labels.",
       control: "boolean",
       table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
-        category: "Display",
+        defaultValue: { summary: "true" },
+        category: "📱 Display Options",
       },
     },
     xAxisLabel: {
-      description: "The label for the x-axis",
+      description: "A label to display below the X-axis.",
       control: "text",
       table: {
-        type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
-        category: "Data",
+        type: { summary: "React.ReactNode" },
+        category: "📱 Display Options",
       },
     },
     yAxisLabel: {
-      description: "The label for the y-axis",
+      description: "A label to display beside the Y-axis.",
       control: "text",
       table: {
-        type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
-        category: "Data",
+        type: { summary: "React.ReactNode" },
+        category: "📱 Display Options",
+      },
+    },
+    isAnimationActive: {
+      description: "Enables or disables the initial loading animation for the areas.",
+      control: "boolean",
+      table: {
+        defaultValue: { summary: "true" },
+        category: "🎬 Animation & Interaction",
       },
     },
     height: {
-      description:
-        "Fixed height for the chart in pixels. When provided, overrides the default responsive height calculation.",
+      description: "Sets a fixed height for the chart container in pixels.",
       control: "number",
       table: {
         type: { summary: "number" },
-        defaultValue: { summary: "undefined" },
-        category: "Layout",
+        category: "Layout & Sizing",
       },
     },
     width: {
-      description:
-        "Fixed width for the chart container in pixels. When provided, disables responsive width behavior.",
+      description: "Sets a fixed width for the chart container in pixels.",
       control: "number",
       table: {
         type: { summary: "number" },
-        defaultValue: { summary: "undefined" },
-        category: "Layout",
+        category: "Layout & Sizing",
       },
     },
     className: {
-      description: "Additional CSS class name for the chart container",
+      description: "Custom CSS class to apply to the chart's container.",
       control: "text",
       table: {
         type: { summary: "string" },
-        defaultValue: { summary: "undefined" },
-        category: "Layout",
+        category: "Layout & Sizing",
       },
     },
   },
@@ -600,8 +649,20 @@ const meta: Meta<AreaChartProps<typeof areaChartData>> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const AreaChartV2Story: Story = {
-  name: "🎛️ Data Switcher - Area Chart V2 (Big Labels Focus)",
+/**
+ * ## Comprehensive Data Explorer
+ *
+ * This story serves as a comprehensive test suite for the AreaChart component.
+ * Use the buttons to switch between various datasets designed to test edge cases in:
+ *
+ * - **Label Collision**: Datasets with long, dense, or overlapping labels.
+ * - **Data Density**: Scenarios with few or many data points.
+ * - **Legend Overflow**: A dataset with many series to test legend expand/collapse functionality.
+ *
+ * It's an excellent tool for developers to see how the chart behaves under different conditions.
+ */
+export const DataExplorer: Story = {
+  name: "🎛️ Comprehensive Data Explorer",
   args: {
     data: areaChartData,
     categoryKey: "month",
@@ -613,8 +674,6 @@ export const AreaChartV2Story: Story = {
     showYAxis: true,
     xAxisLabel: "Time Period",
     yAxisLabel: "Values",
-    floatingTooltip: true,
-    // width: 600,
     // height: 300,
   },
   render: (args: any) => {
@@ -750,6 +809,13 @@ export const AreaChartV2Story: Story = {
   },
 };
 
+/**
+ * ## Big Labels
+ *
+ * This story demonstrates the chart's ability to handle very long category labels.
+ * The chart's intelligent truncation and collision detection should be visible here.
+ * X-axis labels that are too long to fit will be gracefully truncated with an ellipsis.
+ */
 export const BigLabelsStory: Story = {
   name: "🏷️ Big Labels (Collision Detection)",
   args: {
@@ -777,6 +843,13 @@ export const BigLabelsStory: Story = {
   },
 };
 
+/**
+ * ## Dense Timeline
+ *
+ * Tests how the chart handles many data points with medium-length period labels.
+ * The chart should enable horizontal scrolling and apply intelligent label truncation.
+ * This scenario is common in financial or analytical dashboards where many time periods are displayed.
+ */
 export const DenseTimelineStory: Story = {
   name: "📅 Dense Timeline (Many Periods)",
   args: {
@@ -804,6 +877,12 @@ export const DenseTimelineStory: Story = {
   },
 };
 
+/**
+ * ## Company Names
+ *
+ * This story tests the chart with real-world company names that have varying lengths.
+ * It demonstrates how the chart handles business data with naturally occurring long labels.
+ */
 export const CompanyNamesStory: Story = {
   name: "🏢 Company Names (Real-world Labels)",
   args: {
@@ -831,6 +910,12 @@ export const CompanyNamesStory: Story = {
   },
 };
 
+/**
+ * ## Country Names
+ *
+ * This story tests the chart with official country names, which are often long.
+ * It shows how geographic data is handled by the label collision detection system.
+ */
 export const CountryDataStory: Story = {
   name: "🌍 Country Names (Geographic Labels)",
   args: {
@@ -858,6 +943,12 @@ export const CountryDataStory: Story = {
   },
 };
 
+/**
+ * ## Mixed Lengths
+ *
+ * This story tests the chart's ability to handle a mix of very short and very long labels
+ * within the same dataset, demonstrating its adaptive truncation behavior.
+ */
 export const MixedLengthsStory: Story = {
   name: "🔤 Mixed Lengths (Varied Label Sizes)",
   args: {
@@ -885,6 +976,12 @@ export const MixedLengthsStory: Story = {
   },
 };
 
+/**
+ * ## Edge Cases
+ *
+ * This story pushes the collision detection and truncation system to its limits
+ * with exceptionally long labels and minimal data points.
+ */
 export const EdgeCasesStory: Story = {
   name: "🎯 Edge Cases (Extreme Scenarios)",
   args: {
@@ -912,6 +1009,12 @@ export const EdgeCasesStory: Story = {
   },
 };
 
+/**
+ * ## Minimal Data
+ *
+ * A baseline test with a small dataset and standard-length labels. This serves as a control
+ * case to compare against the more complex label scenarios.
+ */
 export const MinimalDataStory: Story = {
   name: "📱 Minimal Data (Baseline)",
   args: {
@@ -939,8 +1042,15 @@ export const MinimalDataStory: Story = {
   },
 };
 
+/**
+ * ## Legend Expand/Collapse
+ *
+ * Tests the legend's expand/collapse functionality with a large number of data series.
+ * The legend should automatically show a "Show More" button when items overflow,
+ * allowing users to toggle between a collapsed and expanded view.
+ */
 export const ExpandCollapseMarketingStory: Story = {
-  name: "🔄 Marketing Channels (Legend Expand/Collapse)",
+  name: "🔄 Legend Expand/Collapse",
   args: {
     data: dataVariations.expandCollapseMarketing as any,
     categoryKey: "channel" as any,
@@ -966,8 +1076,19 @@ export const ExpandCollapseMarketingStory: Story = {
   },
 };
 
-export const ResponsiveWidthStory: Story = {
-  name: "📐 Responsive Width Test",
+/**
+ * ## Responsive Behavior Demo
+ *
+ * This story demonstrates the responsive capabilities of the AreaChart. Drag the handles
+ * on the container to resize it and observe how the chart adapts.
+ *
+ * **Responsive Features:**
+ * - **Label Truncation**: More aggressive truncation on smaller container widths.
+ * - **Layout Adaptation**: Chart elements adjust to fit the available space.
+ * - **Legend Behavior**: The legend may wrap or show expand/collapse buttons as needed.
+ */
+export const ResponsiveBehaviorDemo: Story = {
+  name: "📱 Responsive Behavior Demo",
   args: {
     data: dataVariations.bigLabels as any,
     categoryKey: "category" as any,
@@ -975,128 +1096,178 @@ export const ResponsiveWidthStory: Story = {
     variant: "natural",
     grid: true,
     legend: true,
-    isAnimationActive: true,
+    isAnimationActive: false,
     showYAxis: true,
   },
-  render: (args: any) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div>
-        <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>
-          Small Container (300px)
-        </h4>
-        <Card style={{ width: "300px" }}>
-          <AreaChart {...args} />
-        </Card>
-      </div>
-      <div>
-        <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>
-          Medium Container (500px)
-        </h4>
-        <Card style={{ width: "500px" }}>
-          <AreaChart {...args} />
-        </Card>
-      </div>
-      <div>
-        <h4 style={{ margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>
-          Large Container (800px)
-        </h4>
-        <Card style={{ width: "800px" }}>
-          <AreaChart {...args} />
-        </Card>
-      </div>
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Tests how the collision detection and truncation system adapts to different container widths. Smaller containers should show more aggressive truncation.",
-      },
-    },
-  },
-};
+  render: (args: any) => {
+    const [dimensions, setDimensions] = useState<{ width: number; height: number | string }>({
+      width: 700,
+      height: "auto",
+    });
 
-export const FloatingTooltipStory: Story = {
-  name: "🎯 Floating Tooltip (Mouse Following)",
-  args: {
-    data: areaChartData,
-    categoryKey: "month",
-    theme: "ocean",
-    variant: "natural",
-    grid: true,
-    legend: true,
-    isAnimationActive: true,
-    showYAxis: true,
-    floatingTooltip: true,
-    xAxisLabel: "Time Period",
-    yAxisLabel: "Values",
-  },
-  render: (args: any) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div
-        style={{
-          padding: "12px",
-          background: "#f8f9fa",
-          borderRadius: "8px",
-          border: "1px solid #e9ecef",
-        }}
-      >
-        <strong>🎯 Floating Tooltip Demo:</strong>
-        <p style={{ margin: "8px 0 0 0", fontSize: "14px", color: "#666" }}>
-          Move your mouse over the chart to see the floating tooltip that follows your cursor. This
-          tooltip uses Floating UI for intelligent positioning and collision detection.
-        </p>
-      </div>
-      <Card style={{ width: "600px" }}>
-        <AreaChart {...args} />
-      </Card>
-      <div style={{ display: "flex", gap: "20px" }}>
-        <Card style={{ width: "290px" }}>
-          <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-            Default Tooltip
-          </h4>
-          <AreaChart {...args} floatingTooltip={false} />
-        </Card>
-        <Card style={{ width: "290px" }}>
-          <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-            Floating Tooltip
-          </h4>
-          <AreaChart {...args} floatingTooltip={true} />
-        </Card>
-      </div>
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "**🎯 Floating Tooltip Demo:** This story demonstrates the new floating tooltip functionality that follows your mouse cursor. The tooltip uses Floating UI for intelligent positioning, collision detection, and smooth animations.\n\n**Key Features:**\n- ✨ **Mouse Following** - Tooltip follows your cursor in real-time\n- 🚀 **Floating UI** - Uses `@floating-ui/react-dom` for superior positioning\n- 🎯 **Smart Positioning** - Automatically adjusts position to stay on screen\n- 🔄 **Collision Detection** - Prevents tooltip from going off-screen\n- 🎨 **Custom Styling** - Fully customizable appearance\n\n**Comparison:**\n- **Default Tooltip**: Standard Recharts tooltip with fixed positioning\n- **Floating Tooltip**: Advanced tooltip that follows mouse with Floating UI positioning",
-      },
-      source: {
-        code: `
-const areaChartData = [
-  { month: "January", desktop: 150, mobile: 90 },
-  { month: "February", desktop: 280, mobile: 180 },
-  { month: "March", desktop: 220, mobile: 140 },
-  // ... more data
-];
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, handle: string) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startWidth = dimensions.width;
+      const startHeight = (e.currentTarget.parentElement as HTMLElement).offsetHeight;
 
-<Card style={{ width: "600px" }}>
-  <AreaChartV2
-    data={areaChartData}
-    categoryKey="month"
-    theme="ocean"
-    variant="natural"
-    useFloatingTooltip={true} // Enable floating tooltip
-    grid={true}
-    legend={true}
-    isAnimationActive={true}
-    showYAxis={true}
-    xAxisLabel="Time Period"
-    yAxisLabel="Values"
-  />
-</Card>`,
-      },
-    },
+      const doDrag = (e: MouseEvent) => {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+
+        if (handle.includes("e")) newWidth = startWidth + dx;
+        if (handle.includes("w")) newWidth = startWidth - dx;
+        if (handle.includes("s")) newHeight = startHeight + dy;
+        if (handle.includes("n")) newHeight = startHeight - dy;
+
+        setDimensions({
+          width: Math.max(300, newWidth),
+          height: "auto",
+        });
+      };
+
+      const stopDrag = () => {
+        document.removeEventListener("mousemove", doDrag);
+        document.removeEventListener("mouseup", stopDrag);
+      };
+
+      document.addEventListener("mousemove", doDrag);
+      document.addEventListener("mouseup", stopDrag);
+    };
+
+    const handleStyle: React.CSSProperties = {
+      position: "absolute",
+      background: "#3b82f6",
+      opacity: 0.6,
+      zIndex: 10,
+      transition: "opacity 0.2s ease",
+    };
+
+    return (
+      <div style={{ padding: "20px" }}>
+        <div style={{ marginBottom: "20px" }}>
+          <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
+            Responsive Behavior Demonstration
+          </h3>
+          <p style={{ margin: "0 0 12px 0", color: "#666", fontSize: "14px" }}>
+            Drag the edges or corners of the container below to see how the chart adapts
+          </p>
+          <div
+            style={{
+              padding: "12px",
+              backgroundColor: "#e3f2fd",
+              borderRadius: "6px",
+              fontSize: "12px",
+              color: "#1565c0",
+            }}
+          >
+            <strong>🎯 Try This:</strong> Resize the container to see automatic label truncation and
+            layout adjustments.
+          </div>
+        </div>
+
+        <Card
+          style={{
+            position: "relative",
+            width: `${dimensions.width}px`,
+            height:
+              typeof dimensions.height === "number" ? `${dimensions.height}px` : dimensions.height,
+            border: "2px dashed #9ca3af",
+            padding: "20px",
+            boxSizing: "border-box",
+            overflow: "hidden",
+            cursor: "default",
+          }}
+        >
+          <AreaChart {...args} />
+
+          {/* Resize Handles */}
+          <div
+            style={{ ...handleStyle, top: -2, left: 0, right: 0, height: 12, cursor: "ns-resize" }}
+            onMouseDown={(e) => handleMouseDown(e, "n")}
+          />
+          <div
+            style={{
+              ...handleStyle,
+              bottom: -2,
+              left: 0,
+              right: 0,
+              height: 12,
+              cursor: "ns-resize",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "s")}
+          />
+          <div
+            style={{ ...handleStyle, top: 0, bottom: 0, left: -2, width: 12, cursor: "ew-resize" }}
+            onMouseDown={(e) => handleMouseDown(e, "w")}
+          />
+          <div
+            style={{ ...handleStyle, top: 0, bottom: 0, right: -2, width: 12, cursor: "ew-resize" }}
+            onMouseDown={(e) => handleMouseDown(e, "e")}
+          />
+
+          {/* Corner Handles */}
+          <div
+            style={{
+              ...handleStyle,
+              top: -2,
+              left: -2,
+              width: 20,
+              height: 20,
+              cursor: "nwse-resize",
+              borderRadius: "2px",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "nw")}
+          />
+          <div
+            style={{
+              ...handleStyle,
+              top: -2,
+              right: -2,
+              width: 20,
+              height: 20,
+              cursor: "nesw-resize",
+              borderRadius: "2px",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "ne")}
+          />
+          <div
+            style={{
+              ...handleStyle,
+              bottom: -2,
+              right: -2,
+              width: 20,
+              height: 20,
+              cursor: "nwse-resize",
+              borderRadius: "2px",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, "se")}
+          />
+
+          {/* Dimension Display */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 8,
+              right: 8,
+              background: "rgba(0,0,0,0.8)",
+              color: "white",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              fontSize: "11px",
+              fontFamily: "monospace",
+              fontWeight: "500",
+            }}
+          >
+            {dimensions.width}px ×{" "}
+            {typeof dimensions.height === "number" ? `${dimensions.height}px` : "auto"}
+          </div>
+        </Card>
+      </div>
+    );
   },
 };

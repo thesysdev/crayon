@@ -43,7 +43,7 @@ const data = [25, 30, 20];
       },
     },
   },
-  tags: ["!dev", "autodocs"],
+  tags: ["!dev", "!autodocs"],
   argTypes: {
     data: {
       description: `
