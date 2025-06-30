@@ -44,6 +44,7 @@ const SideBarTooltip = React.memo(({ height }: SideBarTooltipProps) => {
           icon={<X />}
           size="extra-small"
           onClick={handleClose}
+          variant="secondary"
           className="crayon-chart-side-bar-tooltip-close-button"
         />
       </div>
