@@ -124,16 +124,7 @@ export const AxisLabel: React.FC<AxisLabelProps> = (props) => {
         container.removeChild(labelEl);
       }
     };
-  }, [
-    x,
-    y,
-    textAnchor,
-    truncatedText,
-    portalContainerRef,
-    className,
-    payload?.value,
-    isLegendExpanded,
-  ]);
+  }, [x, y, textAnchor, truncatedText, portalContainerRef, className, payload?.value]);
 
   return <g ref={anchorRef} transform={`translate(${x || 0}, ${y || 0})`} />;
 };

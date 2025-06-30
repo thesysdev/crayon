@@ -320,36 +320,6 @@ const exampleData = [
         category: "🎨 Visual Styling",
       },
     },
-    height: {
-      description: `
-**Fixed Height.** Override automatic height calculation.
-
-**Usage:**
-- Leave undefined for responsive behavior (recommended)
-- Set specific value for dashboard widgets
-- Minimum recommended: 200px
-      `,
-      control: { type: "number", min: 200, max: 800 },
-      table: {
-        type: { summary: "number | undefined" },
-        category: "📐 Layout Control",
-      },
-    },
-    width: {
-      description: `
-**Fixed Width.** Override automatic width calculation.
-
-**Usage:**
-- Leave undefined for responsive behavior (recommended)  
-- Set specific value for dashboard widgets
-- Minimum recommended: 200px
-      `,
-      control: { type: "number", min: 200, max: 800 },
-      table: {
-        type: { summary: "number | undefined" },
-        category: "📐 Layout Control",
-      },
-    },
   },
 } satisfies Meta<typeof RadialChart>;
 
@@ -385,11 +355,9 @@ export const DefaultConfiguration: Story = {
     cornerRadius: 10,
     useGradients: false,
     gradientColors: customGradientPalette,
-    height: undefined,
-    width: undefined,
   },
   render: (args: any) => (
-    <Card style={{ width: "700px", height: "500px", padding: "24px" }}>
+    <Card style={{ width: "700px", height: "auto", padding: "24px" }}>
       <div style={{ marginBottom: "16px" }}>
         <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
           Monthly Revenue Analysis
@@ -443,7 +411,7 @@ export const ThemeShowcase: Story = {
     useGradients: false,
   },
   render: (args: any) => (
-    <Card style={{ width: "600px", padding: "24px" }}>
+    <Card style={{ width: "600px", height: "auto", padding: "24px" }}>
       <div style={{ marginBottom: "20px" }}>
         <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
           Financial Growth Metrics
@@ -559,7 +527,7 @@ export const LargeDatasetDemo: Story = {
     useGradients: false,
   },
   render: (args: any) => (
-    <Card style={{ width: "700px", height: "600px", padding: "24px" }}>
+    <Card style={{ width: "700px", height: "auto", padding: "24px" }}>
       <div style={{ marginBottom: "20px" }}>
         <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
           Comprehensive Compensation Analysis
@@ -568,7 +536,9 @@ export const LargeDatasetDemo: Story = {
           Complete breakdown of 15 compensation categories with carousel navigation
         </p>
       </div>
-      <RadialChart {...args} />
+      <Card style={{ width: "auto", height: "300px", padding: "24px" }}>
+        <RadialChart {...args} />
+      </Card>
       <div
         style={{
           marginTop: "16px",
@@ -640,7 +610,7 @@ export const MinimalWidget: Story = {
     useGradients: false,
   },
   render: (args: any) => (
-    <Card style={{ width: "280px", height: "280px", padding: "16px" }}>
+    <Card style={{ width: "280px", height: "auto", padding: "16px" }}>
       <div style={{ marginBottom: "12px" }}>
         <h4 style={{ margin: "0 0 4px 0", fontSize: "14px", fontWeight: "600" }}>Q1 Performance</h4>
         <p style={{ margin: 0, color: "#666", fontSize: "12px" }}>Top 4 metrics</p>
@@ -704,7 +674,7 @@ export const ResponsiveDemo: Story = {
   },
   render: (args: any) => {
     const [dimensions, setDimensions] = useState<{ width: number; height: number | string }>({
-      width: 600,
+      width: 650,
       height: "auto",
     });
 

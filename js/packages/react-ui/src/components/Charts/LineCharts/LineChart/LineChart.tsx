@@ -64,7 +64,7 @@ export const LineChart = <T extends LineChartData>({
   variant = "natural",
   grid = true,
   icons = {},
-  isAnimationActive = true,
+  isAnimationActive = false,
   showYAxis = false,
   xAxisLabel,
   yAxisLabel,

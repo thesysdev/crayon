@@ -15,6 +15,7 @@ interface StackedLegendProps {
   activeKey?: string | null;
   onLegendItemHover?: (index: number | null) => void;
   containerWidth?: number;
+  title?: string;
 }
 
 const formatPercentage = (value: number, total: number): string => {
@@ -106,17 +107,31 @@ export const StackedLegend = ({
         width: containerWidth ? `${containerWidth}px` : "100%",
       }}
     >
-      {showUpButton && (
-        <IconButton
-          className="crayon-stacked-legend-scroll-button crayon-stacked-legend-scroll-up"
-          onClick={scrollUp}
-          aria-label="Scroll legend up"
-          icon={<ChevronUp />}
-          variant="secondary"
-          size="small"
-        />
-      )}
-
+      <div className="crayon-stacked-legend-header">
+        <div className="crayon-stacked-legend-header-title">{items.length} values</div>
+        <div className="crayon-stacked-legend-header-buttons">
+          {showUpButton && (
+            <IconButton
+              className="crayon-stacked-legend-scroll-button crayon-stacked-legend-scroll-up"
+              onClick={scrollUp}
+              aria-label="Scroll legend up"
+              icon={<ChevronUp />}
+              variant="secondary"
+              size="small"
+            />
+          )}
+          {showDownButton && (
+            <IconButton
+              className="crayon-stacked-legend-scroll-button crayon-stacked-legend-scroll-down"
+              onClick={scrollDown}
+              aria-label="Scroll legend down"
+              icon={<ChevronDown />}
+              variant="secondary"
+              size="small"
+            />
+          )}
+        </div>
+      </div>
       <div ref={listRef} className="crayon-stacked-legend">
         {sortedItems.map((item, index) => (
           <div
@@ -142,17 +157,6 @@ export const StackedLegend = ({
           </div>
         ))}
       </div>
-
-      {showDownButton && (
-        <IconButton
-          className="crayon-stacked-legend-scroll-button crayon-stacked-legend-scroll-down"
-          onClick={scrollDown}
-          aria-label="Scroll legend down"
-          icon={<ChevronDown />}
-          variant="secondary"
-          size="small"
-        />
-      )}
     </div>
   );
 };

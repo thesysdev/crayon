@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../../Charts.js";
 import { useTransformedKeys } from "../../hooks";
@@ -9,14 +9,17 @@ import { LegendItem } from "../../types/Legend.js";
 import { getCategoricalChartConfig } from "../../utils/dataUtils.js";
 import { getDistributedColors, getPalette, PaletteName } from "../../utils/PalletUtils.js";
 import { PieChartData } from "../types/index.js";
-import { createGradientDefinitions } from "./components/PieChartRenderers.js";
+import {
+  createGradientDefinitions,
+  MAX_CHART_SIZE,
+  MIN_CHART_SIZE,
+} from "./components/PieChartRenderers.js";
 import {
   calculateTwoLevelChartDimensions,
   createAnimationConfig,
   createEventHandlers,
   createSectorStyle,
   getHoverStyles,
-  groupSmallSlices,
   transformDataWithPercentages,
   useChartHover,
 } from "./utils/PieChartUtils.js";
@@ -45,13 +48,11 @@ export interface PieChartProps<T extends PieChartData> {
   onMouseLeave?: () => void;
   onClick?: (data: any, index: number) => void;
   className?: string;
-  height?: number;
-  width?: number;
 }
 
-const STACKED_LEGEND_BREAKPOINT = 600; // px
+const STACKED_LEGEND_BREAKPOINT = 400;
 
-export const PieChart = <T extends PieChartData>({
+const PieChartComponent = <T extends PieChartData>({
   data,
   categoryKey,
   dataKey,
@@ -70,8 +71,6 @@ export const PieChart = <T extends PieChartData>({
   onMouseLeave,
   onClick,
   className,
-  height,
-  width,
 }: PieChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -83,11 +82,8 @@ export const PieChart = <T extends PieChartData>({
   const isRowLayout =
     legend && legendVariant === "stacked" && wrapperRect.width >= STACKED_LEGEND_BREAKPOINT;
 
-  // Group small slices into "Others" if necessary
-  const processedData = useMemo(
-    () => groupSmallSlices(data, categoryKey, dataKey),
-    [data, categoryKey, dataKey],
-  );
+  // The data that is processed and rendered in the chart
+  const processedData = useMemo(() => data, [data]);
 
   const categories = useMemo(
     () => processedData.map((item) => String(item[categoryKey])),
@@ -104,18 +100,20 @@ export const PieChart = <T extends PieChartData>({
   );
 
   // Use provided dimensions or observed dimensions from the wrapper
-  const effectiveWidth = width ?? wrapperRect.width;
-  const effectiveHeight = height ?? wrapperRect.height;
+  const effectiveWidth = wrapperRect.width;
+  const effectiveHeight = wrapperRect.height;
 
   // Calculate chart dimensions based on the smaller dimension of the container
   const chartSize = useMemo(() => {
+    let size;
     if (isRowLayout) {
       const chartContainerWidth = (effectiveWidth - 20) / 2; // Subtract gap
-      const size = Math.min(chartContainerWidth, effectiveHeight);
-      return Math.max(150, size);
+      size = Math.min(chartContainerWidth, effectiveHeight);
+    } else {
+      size = Math.min(effectiveWidth, effectiveHeight);
     }
-    const size = Math.min(effectiveWidth, effectiveHeight);
-    return Math.max(150, size);
+    size = Math.min(size, MAX_CHART_SIZE);
+    return Math.max(MIN_CHART_SIZE, size);
   }, [effectiveWidth, effectiveHeight, isRowLayout]);
 
   const chartSizeStyle = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
@@ -266,11 +264,6 @@ export const PieChart = <T extends PieChartData>({
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
-    if (width && height) {
-      setWrapperRect({ width, height });
-      return;
-    }
-
     const observer = new ResizeObserver((entries) => {
       const entry = entries[0];
       if (entry) {
@@ -282,7 +275,7 @@ export const PieChart = <T extends PieChartData>({
     });
     observer.observe(wrapper);
     return () => observer.disconnect();
-  }, [width, height]);
+  }, []);
 
   const renderPieCharts = useCallback(() => {
     if (variant === "donut") {
@@ -404,7 +397,7 @@ export const PieChart = <T extends PieChartData>({
   );
 
   return (
-    <div ref={wrapperRef} className={wrapperClassName} style={{ width, height }}>
+    <div ref={wrapperRef} className={wrapperClassName} style={{ width: "100%", height: "100%" }}>
       <div className="crayon-pie-chart-container">
         <div className="crayon-pie-chart-container-inner">
           <div style={chartSizeStyle}>
@@ -428,3 +421,7 @@ export const PieChart = <T extends PieChartData>({
     </div>
   );
 };
+
+export const PieChart = memo(PieChartComponent);
+
+PieChart.displayName = "PieChart";

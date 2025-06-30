@@ -65,7 +65,7 @@ const AreaChartComponent = <T extends AreaChartData>({
   variant = "natural",
   grid = true,
   icons = {},
-  isAnimationActive = true,
+  isAnimationActive = false,
   showYAxis = false,
   xAxisLabel,
   yAxisLabel,

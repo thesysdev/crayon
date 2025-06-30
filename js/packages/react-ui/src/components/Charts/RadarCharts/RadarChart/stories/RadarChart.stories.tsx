@@ -304,7 +304,7 @@ export const DefaultConfiguration: Story = {
     isAnimationActive: true,
   },
   render: (args: any) => (
-    <Card style={{ width: "700px", height: "500px", padding: "24px" }}>
+    <Card style={{ width: "500px", height: "auto", padding: "24px" }}>
       <div style={{ marginBottom: "16px" }}>
         <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
           Team Performance Analysis
@@ -348,7 +348,7 @@ export const SkillsAssessment: Story = {
     isAnimationActive: true,
   },
   render: (args: any) => (
-    <Card style={{ width: "600px", height: "450px", padding: "24px" }}>
+    <Card style={{ width: "500px", height: "auto", padding: "24px" }}>
       <div style={{ marginBottom: "16px" }}>
         <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
           Developer Skill Levels
@@ -388,7 +388,7 @@ export const TeamPerformance: Story = {
     },
   },
   render: (args: any) => (
-    <Card style={{ width: "600px", height: "450px", padding: "24px" }}>
+    <Card style={{ width: "500px", height: "auto", padding: "24px" }}>
       <div style={{ marginBottom: "16px" }}>
         <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
           Team Performance Comparison
@@ -424,7 +424,7 @@ export const BusinessMetrics: Story = {
     isAnimationActive: true,
   },
   render: (args: any) => (
-    <Card style={{ width: "700px", height: "500px", padding: "24px" }}>
+    <Card style={{ width: "500px", height: "auto", padding: "24px" }}>
       <div style={{ marginBottom: "16px" }}>
         <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
           Quarterly Performance Review

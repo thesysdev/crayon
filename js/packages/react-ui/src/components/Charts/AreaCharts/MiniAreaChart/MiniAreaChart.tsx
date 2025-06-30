@@ -27,7 +27,7 @@ export const MiniAreaChart = ({
   theme = "ocean",
   variant = "natural",
   opacity = 0.5,
-  isAnimationActive = true,
+  isAnimationActive = false,
   onAreaClick,
   size = "100%",
   className,
