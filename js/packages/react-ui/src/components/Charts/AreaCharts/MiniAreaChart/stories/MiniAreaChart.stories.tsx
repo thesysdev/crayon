@@ -38,7 +38,7 @@ const meta: Meta<typeof MiniAreaChart> = {
       },
     },
   },
-  tags: ["dev", "autodocs"],
+  tags: ["!dev", "!autodocs"],
   argTypes: {
     data: {
       description:
