@@ -410,7 +410,6 @@ const BarChartComponent = <T extends BarChartData>({
                           hoveredCategory={hoveredCategory}
                           categoryKey={categoryKey as string}
                           variant={variant}
-                          isFirstInStack={variant === "stacked" ? isFirstInStack : false}
                         />
                       }
                     />

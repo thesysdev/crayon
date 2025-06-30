@@ -18,7 +18,6 @@ interface BarWithInternalLineProps {
   // New props for stacked bar gaps
   variant?: "grouped" | "stacked";
   stackGap?: number;
-  isFirstInStack?: boolean;
 
   // Recharts also passes other props like payload, value, etc.
   // we can add them here if our shape component needs them.
@@ -49,7 +48,6 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = React.memo((
     payload,
     variant = "grouped",
     stackGap = DEFAULT_STACK_GAP, // Default 1px gap
-    isFirstInStack = false,
   } = props;
 
   // Memoized radius calculations - Ensure rTL and rTR are always numbers, defaulting to 0.
@@ -97,7 +95,7 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = React.memo((
   // This creates a gap between this bar and the bar above it
   const { adjustedY, adjustedHeight } = useMemo(() => {
     let finalHeight = height;
-    if (variant === "stacked" && stackGap > 0 && !isFirstInStack) {
+    if (variant === "stacked" && stackGap > 0) {
       finalHeight = height - stackGap;
     }
 
@@ -115,7 +113,7 @@ const LineInBarShape: FunctionComponent<BarWithInternalLineProps> = React.memo((
       adjustedY: finalY,
       adjustedHeight: finalHeight,
     };
-  }, [variant, stackGap, isFirstInStack, y, height]);
+  }, [variant, stackGap, y, height]);
 
   // Memoized SVG path calculation for optimized rendering
   // Path data for a rectangle with potentially rounded top corners and stack gaps
