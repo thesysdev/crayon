@@ -344,8 +344,14 @@ const AreaChartComponent = <T extends AreaChartData>({
                   const transformedKey = transformedKeys[key];
                   const color = `var(--color-${transformedKey})`;
                   return (
-                    <defs key={`gradient-${key}`}>
-                      <linearGradient id={`${gradientID}-${key}`} x1="0" y1="0" x2="0" y2="1">
+                    <defs key={`gradient-${transformedKey}`}>
+                      <linearGradient
+                        id={`${gradientID}-${transformedKey}`}
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
                         <stop offset="5%" stopColor={color} stopOpacity={0.6} />
                         <stop offset="95%" stopColor={color} stopOpacity={0} />
                       </linearGradient>
@@ -362,7 +368,7 @@ const AreaChartComponent = <T extends AreaChartData>({
                       dataKey={key}
                       type={variant}
                       stroke={color}
-                      fill={`url(#${gradientID}-${key})`}
+                      fill={`url(#${gradientID}-${transformedKey})`}
                       fillOpacity={1}
                       stackId="a"
                       activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
