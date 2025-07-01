@@ -4,7 +4,7 @@ import { useRef } from "react";
 let globalIdCounter = 0;
 
 export function useId(): string {
-  const idRef = useRef<string>(null);
+  const idRef = useRef<string>("");
   if (!idRef.current) {
     idRef.current = `uid-${++globalIdCounter}`;
   }
