@@ -1,9 +1,7 @@
 import clsx from "clsx";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
-import { IconButton } from "../../IconButton";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
@@ -16,6 +14,7 @@ import {
   XAxisTick,
   YAxisTick,
 } from "../shared";
+import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/ScrollButtonsHorizontal";
 import { type LegendItem } from "../types";
 import { getDistributedColors, getPalette, type PaletteName } from "../utils/PalletUtils";
 import {
@@ -421,38 +420,15 @@ const BarChartComponent = <T extends BarChartData>({
           {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
         </div>
         {/* if the data width is greater than the effective width, then show the scroll buttons */}
-        {dataWidth > effectiveWidth && (
-          <div className="crayon-bar-chart-scroll-container">
-            <IconButton
-              className={clsx(
-                "crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--left",
-                {
-                  "crayon-bar-chart-scroll-button--disabled": !canScrollLeft,
-                },
-              )}
-              icon={<ChevronLeft />}
-              variant="secondary"
-              onClick={scrollLeft}
-              size="extra-small"
-              disabled={!canScrollLeft}
-            />
-
-            <IconButton
-              className={clsx(
-                "crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--right",
-                {
-                  "crayon-bar-chart-scroll-button--disabled": !canScrollRight,
-                  "crayon-bar-chart-scroll-button--SideBarTooltip": isSideBarTooltipOpen,
-                },
-              )}
-              icon={<ChevronRight />}
-              variant="secondary"
-              size="extra-small"
-              onClick={scrollRight}
-              disabled={!canScrollRight}
-            />
-          </div>
-        )}
+        <ScrollButtonsHorizontal
+          dataWidth={dataWidth}
+          effectiveWidth={effectiveWidth}
+          canScrollLeft={canScrollLeft}
+          canScrollRight={canScrollRight}
+          isSideBarTooltipOpen={isSideBarTooltipOpen}
+          onScrollLeft={scrollLeft}
+          onScrollRight={scrollRight}
+        />
         {legend && (
           <DefaultLegend
             items={legendItems}
