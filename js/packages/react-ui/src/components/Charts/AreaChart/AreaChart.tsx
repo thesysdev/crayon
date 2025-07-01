@@ -220,8 +220,6 @@ const AreaChartComponent = <T extends AreaChartData>({
 
   const id = useId();
 
-  const chartSyncID = useMemo(() => `area-chart-sync-${id}`, [id]);
-
   const gradientID = useMemo(() => `area-chart-gradient-${id}`, [id]);
 
   const onAreaClick = useCallback(
@@ -241,6 +239,51 @@ const AreaChartComponent = <T extends AreaChartData>({
     [dataKeys, colors],
   );
 
+  const yAxisChart = useMemo(() => {
+    if (!showYAxis) {
+      return null;
+    }
+    return (
+      <div className="crayon-area-chart-y-axis-container">
+        {/* Y-axis only chart - synchronized with main chart */}
+        <RechartsAreaChart
+          key={`y-axis-chart-${id}`}
+          width={Y_AXIS_WIDTH}
+          height={chartHeight}
+          data={data}
+          margin={{
+            top: 20,
+            bottom: 32, // this is required for to give space for x-axis
+            left: 0,
+            right: 0,
+          }}
+        >
+          <YAxis
+            width={Y_AXIS_WIDTH}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={getYAxisTickFormatter()}
+            tick={<YAxisTick />}
+          />
+          {/* Invisible area to maintain scale synchronization */}
+          {dataKeys.map((key) => {
+            return (
+              <Area
+                key={`y-axis-${key}`}
+                dataKey={key}
+                type={variant}
+                stroke="none"
+                fill="transparent"
+                fillOpacity={0}
+                stackId="a"
+              />
+            );
+          })}
+        </RechartsAreaChart>
+      </div>
+    );
+  }, [showYAxis, chartHeight, data, dataKeys, variant, id]);
+
   return (
     <SideBarTooltipProvider
       isSideBarTooltipOpen={isSideBarTooltipOpen}
@@ -255,46 +298,8 @@ const AreaChartComponent = <T extends AreaChartData>({
         }}
       >
         <div className="crayon-area-chart-container-inner" ref={chartContainerRef}>
-          {showYAxis && (
-            <div className="crayon-area-chart-y-axis-container">
-              {/* Y-axis only chart - synchronized with main chart */}
-              <RechartsAreaChart
-                key={`y-axis-chart-${id}`}
-                width={Y_AXIS_WIDTH}
-                height={chartHeight}
-                data={data}
-                margin={{
-                  top: 20,
-                  bottom: 32, // this is required for to give space for x-axis
-                  left: 0,
-                  right: 0,
-                }}
-                syncId={chartSyncID}
-              >
-                <YAxis
-                  width={Y_AXIS_WIDTH}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={getYAxisTickFormatter()}
-                  tick={<YAxisTick />}
-                />
-                {/* Invisible area to maintain scale synchronization */}
-                {dataKeys.map((key) => {
-                  return (
-                    <Area
-                      key={`y-axis-${key}`}
-                      dataKey={key}
-                      type={variant}
-                      stroke="none"
-                      fill="transparent"
-                      fillOpacity={0}
-                      stackId="a"
-                    />
-                  );
-                })}
-              </RechartsAreaChart>
-            </div>
-          )}
+          {/* Y-axis of the chart */}
+          {yAxisChart}
           <div className="crayon-area-chart-main-container" ref={mainContainerRef}>
             <ChartContainer
               config={chartConfig}
@@ -312,7 +317,6 @@ const AreaChartComponent = <T extends AreaChartData>({
                   top: 20,
                   bottom: 0,
                 }}
-                syncId={chartSyncID}
                 onClick={onAreaClick}
               >
                 {grid && cartesianGrid()}

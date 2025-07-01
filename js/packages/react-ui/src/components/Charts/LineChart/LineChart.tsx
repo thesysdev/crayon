@@ -219,8 +219,6 @@ export const LineChart = <T extends LineChartData>({
 
   const id = useId();
 
-  const chartSyncID = useMemo(() => `line-chart-sync-${id}`, [id]);
-
   const onLineClick = useCallback(
     (data: LineClickData) => {
       if (data?.activePayload?.length && data.activePayload.length > 10) {
@@ -238,6 +236,53 @@ export const LineChart = <T extends LineChartData>({
     [dataKeys, colors],
   );
 
+  const yAxisChart = useMemo(() => {
+    if (!showYAxis) {
+      return null;
+    }
+    return (
+      <div className="crayon-line-chart-y-axis-container">
+        {/* Y-axis only chart - synchronized with main chart */}
+        <RechartsLineChart
+          key={`y-axis-chart-${id}`}
+          width={Y_AXIS_WIDTH}
+          height={chartHeight}
+          data={data}
+          margin={{
+            top: 20,
+            bottom: 32, // this is required for to give space for x-axis
+            left: 0,
+            right: 0,
+          }}
+          onClick={onLineClick}
+        >
+          <YAxis
+            width={Y_AXIS_WIDTH}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={getYAxisTickFormatter()}
+            tick={<YAxisTick />}
+          />
+          {/* Invisible lines to maintain scale synchronization */}
+          {dataKeys.map((key) => {
+            return (
+              <Line
+                key={`y-axis-${key}`}
+                dataKey={key}
+                type={variant}
+                stroke="transparent"
+                strokeWidth={0}
+                dot={false}
+                activeDot={false}
+                isAnimationActive={isAnimationActive}
+              />
+            );
+          })}
+        </RechartsLineChart>
+      </div>
+    );
+  }, [showYAxis, id, chartHeight, data, onLineClick, dataKeys, variant, isAnimationActive]);
+
   return (
     <SideBarTooltipProvider
       isSideBarTooltipOpen={isSideBarTooltipOpen}
@@ -252,48 +297,8 @@ export const LineChart = <T extends LineChartData>({
         }}
       >
         <div className="crayon-line-chart-container-inner" ref={chartContainerRef}>
-          {showYAxis && (
-            <div className="crayon-line-chart-y-axis-container">
-              {/* Y-axis only chart - synchronized with main chart */}
-              <RechartsLineChart
-                key={`y-axis-chart-${id}`}
-                width={Y_AXIS_WIDTH}
-                height={chartHeight}
-                data={data}
-                margin={{
-                  top: 20,
-                  bottom: 32, // this is required for to give space for x-axis
-                  left: 0,
-                  right: 0,
-                }}
-                syncId={chartSyncID}
-                onClick={onLineClick}
-              >
-                <YAxis
-                  width={Y_AXIS_WIDTH}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={getYAxisTickFormatter()}
-                  tick={<YAxisTick />}
-                />
-                {/* Invisible lines to maintain scale synchronization */}
-                {dataKeys.map((key) => {
-                  return (
-                    <Line
-                      key={`y-axis-${key}`}
-                      dataKey={key}
-                      type={variant}
-                      stroke="transparent"
-                      strokeWidth={0}
-                      dot={false}
-                      activeDot={false}
-                      isAnimationActive={isAnimationActive}
-                    />
-                  );
-                })}
-              </RechartsLineChart>
-            </div>
-          )}
+          {/* Y-axis of the chart */}
+          {yAxisChart}
           <div className="crayon-line-chart-main-container" ref={mainContainerRef}>
             <ChartContainer
               config={chartConfig}
@@ -311,7 +316,6 @@ export const LineChart = <T extends LineChartData>({
                   top: 20,
                   bottom: 0,
                 }}
-                syncId={chartSyncID}
                 onClick={onLineClick}
               >
                 {grid && cartesianGrid()}
@@ -319,6 +323,7 @@ export const LineChart = <T extends LineChartData>({
                   dataKey={categoryKey as string}
                   tickLine={false}
                   axisLine={false}
+                  // height={100}
                   textAnchor="middle"
                   interval={0}
                   tickFormatter={xAxisTickFormatter}
@@ -332,7 +337,7 @@ export const LineChart = <T extends LineChartData>({
                   orientation="bottom"
                   padding={{
                     left: 25,
-                    right: 20,
+                    right: 25,
                   }}
                 />
 

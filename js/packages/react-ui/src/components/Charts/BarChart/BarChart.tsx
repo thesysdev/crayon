@@ -232,12 +232,54 @@ const BarChartComponent = <T extends BarChartData>({
 
   const id = useId();
 
-  const chartSyncID = useMemo(() => `bar-chart-sync-${id}`, [id]);
-
   // Get the optimal X-axis tick formatter based on available space
   const xAxisTickFormatter = useMemo(() => {
     return getOptimalXAxisTickFormatter(data, categoryKey as string, variant);
   }, [data, categoryKey, variant]);
+
+  const yAxisChart = useMemo(() => {
+    if (!showYAxis) {
+      return null;
+    }
+    return (
+      <div className="crayon-bar-chart-y-axis-container">
+        {/* Y-axis only chart - synchronized with main chart */}
+        <RechartsBarChart
+          key={`y-axis-bar-chart-${id}`}
+          width={Y_AXIS_WIDTH}
+          height={chartHeight}
+          data={data}
+          margin={{
+            top: 20,
+            bottom: 32, // this is required for to give space for x-axis
+            left: 0,
+            right: 0,
+          }}
+        >
+          <YAxis
+            width={Y_AXIS_WIDTH}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={getYAxisTickFormatter()}
+            tick={<YAxisTick />}
+          />
+          {/* Invisible bars to maintain scale synchronization */}
+          {dataKeys.map((key) => {
+            return (
+              <Bar
+                key={`yaxis-bar-chart-${key}`}
+                dataKey={key}
+                fill="transparent"
+                stackId={variant === "stacked" ? "a" : undefined}
+                isAnimationActive={false}
+                maxBarSize={0}
+              />
+            );
+          })}
+        </RechartsBarChart>
+      </div>
+    );
+  }, [showYAxis, chartHeight, data, dataKeys, variant, id]);
 
   // Handle mouse events for group hovering
   const handleChartMouseMove = useCallback((state: any) => {
@@ -290,45 +332,8 @@ const BarChartComponent = <T extends BarChartData>({
         }}
       >
         <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
-          {showYAxis && (
-            <div className="crayon-bar-chart-y-axis-container">
-              {/* Y-axis only chart - synchronized with main chart */}
-              <RechartsBarChart
-                key={`y-axis-bar-chart-${id}`}
-                width={Y_AXIS_WIDTH}
-                height={chartHeight}
-                data={data}
-                margin={{
-                  top: 20,
-                  bottom: 32, // this is required for to give space for x-axis
-                  left: 0,
-                  right: 0,
-                }}
-                syncId={chartSyncID}
-              >
-                <YAxis
-                  width={Y_AXIS_WIDTH}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={getYAxisTickFormatter()}
-                  tick={<YAxisTick />}
-                />
-                {/* Invisible bars to maintain scale synchronization */}
-                {dataKeys.map((key) => {
-                  return (
-                    <Bar
-                      key={`yaxis-bar-chart-${key}`}
-                      dataKey={key}
-                      fill="transparent"
-                      stackId={variant === "stacked" ? "a" : undefined}
-                      isAnimationActive={false}
-                      maxBarSize={0}
-                    />
-                  );
-                })}
-              </RechartsBarChart>
-            </div>
-          )}
+          {/* Y-axis of the chart */}
+          {yAxisChart}
           <div className="crayon-bar-chart-main-container" ref={mainContainerRef}>
             <ChartContainer
               config={chartConfig}
@@ -351,7 +356,6 @@ const BarChartComponent = <T extends BarChartData>({
                 onMouseLeave={handleChartMouseLeave}
                 barGap={BAR_GAP}
                 barCategoryGap={BAR_CATEGORY_GAP}
-                syncId={chartSyncID}
               >
                 {grid && cartesianGrid()}
                 <XAxis
