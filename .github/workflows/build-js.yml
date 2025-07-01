@@ -13,6 +13,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        react-version: ['default', '17', '18']
     defaults:
       run:
         working-directory: js
@@ -31,6 +34,10 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Install React ${{ matrix.react-version }}
+        if: matrix.react-version != 'default'
+        run: pnpm add -D react@^${{ matrix.react-version }}.0.0 react-dom@^${{ matrix.react-version }}.0.0 @types/react@^${{ matrix.react-version }}.0.0 @types/react-dom@^${{ matrix.react-version }}.0.0
 
       - name: Build affected projects
         run: pnpm -r build
