@@ -32,12 +32,32 @@ jobs:
           cache: pnpm
           cache-dependency-path: '**/pnpm-lock.yaml'
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install React ${{ matrix.react-version }}
+      - name: Setup React ${{ matrix.react-version }} overrides
         if: matrix.react-version != 'default'
-        run: pnpm add -w -D react@^${{ matrix.react-version }}.0.0 react-dom@^${{ matrix.react-version }}.0.0 @types/react@^${{ matrix.react-version }}.0.0 @types/react-dom@^${{ matrix.react-version }}.0.0
+        run: |
+          echo "Setting up pnpm overrides for React ${{ matrix.react-version }}"
+          pnpm config set auto-install-peers true
+          # Create temporary package.json with overrides
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.pnpm = pkg.pnpm || {};
+            pkg.pnpm.overrides = pkg.pnpm.overrides || {};
+            pkg.pnpm.overrides['react'] = '^${{ matrix.react-version }}.0.0';
+            pkg.pnpm.overrides['react-dom'] = '^${{ matrix.react-version }}.0.0';
+            pkg.pnpm.overrides['@types/react'] = '^${{ matrix.react-version }}.0.0';
+            pkg.pnpm.overrides['@types/react-dom'] = '^${{ matrix.react-version }}.0.0';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Verify React version
+        if: matrix.react-version != 'default'
+        run: |
+          echo "Verifying React version in node_modules:"
+          node -e "console.log('React version:', require('react/package.json').version)"
 
       - name: Build affected projects
         run: pnpm -r build
