@@ -129,7 +129,21 @@ const getXAxisTickFormatter = (groupWidth?: number, variant: BarChartVariant = "
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
   if (context) {
-    context.font = "12px Inter";
+    // Should match the chart's actual font for accuracy.
+    // The font is defined in `xAxisTick.scss` via a mixin, which uses the
+    // CSS variable `--crayon-font-label-extra-small`.
+    // in future we have to target the actual element instead of the body
+    let font = "12px Inter"; // Default fallback.
+    if (typeof window !== "undefined") {
+      const value = window
+        .getComputedStyle(document.body)
+        .getPropertyValue("--crayon-font-label-extra-small");
+      // trim is important, it can come with whitespace.
+      if (value) {
+        font = value.trim();
+      }
+    }
+    context.font = font;
   }
 
   return (value: string) => {
