@@ -107,8 +107,13 @@ const PieChartComponent = <T extends PieChartData>({
   const chartSize = useMemo(() => {
     let size;
     if (isRowLayout) {
-      const chartContainerWidth = (effectiveWidth - 20) / 2; // Subtract gap
-      size = Math.min(chartContainerWidth, effectiveHeight);
+      const chartContainerWidth = (effectiveWidth - 20) / 2;
+      if (appearance === "semiCircular") {
+        const chartContainerHeight = (effectiveHeight - 20) / 2;
+        size = Math.min(chartContainerWidth, chartContainerHeight);
+      } else {
+        size = Math.min(chartContainerWidth, effectiveHeight);
+      }
     } else {
       size = Math.min(effectiveWidth, effectiveHeight);
     }
@@ -245,6 +250,7 @@ const PieChartComponent = <T extends PieChartData>({
       endAngle,
       onMouseEnter: handleChartMouseEnter,
       onMouseLeave: handleChartMouseLeave,
+      cy: appearance === "semiCircular" ? "100%" : "50%",
     }),
     [
       transformedData,
@@ -257,6 +263,7 @@ const PieChartComponent = <T extends PieChartData>({
       endAngle,
       handleChartMouseEnter,
       handleChartMouseLeave,
+      appearance,
     ],
   );
 

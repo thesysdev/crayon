@@ -536,9 +536,7 @@ export const LargeDatasetDemo: Story = {
           Complete breakdown of 15 compensation categories with carousel navigation
         </p>
       </div>
-      <Card style={{ width: "auto", height: "300px", padding: "24px" }}>
-        <RadialChart {...args} />
-      </Card>
+      <RadialChart {...args} />
       <div
         style={{
           marginTop: "16px",
