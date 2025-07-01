@@ -1,9 +1,7 @@
 import clsx from "clsx";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Line, LineChart as RechartsLineChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
-import { IconButton } from "../../IconButton";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import { useTransformedKeys } from "../hooks";
@@ -12,6 +10,7 @@ import {
   cartesianGrid,
   CustomTooltipContent,
   DefaultLegend,
+  ScrollButtonsHorizontal,
   SideBarTooltip,
   XAxisTick,
   YAxisTick,
@@ -361,37 +360,15 @@ export const LineChart = <T extends LineChartData>({
           {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
         </div>
         {/* if the data width is greater than the effective width, then show the scroll buttons */}
-        {dataWidth > effectiveWidth && (
-          <div className="crayon-line-chart-scroll-container">
-            <IconButton
-              className={clsx(
-                "crayon-line-chart-scroll-button crayon-line-chart-scroll-button--left",
-                {
-                  "crayon-line-chart-scroll-button--disabled": !canScrollLeft,
-                },
-              )}
-              icon={<ChevronLeft />}
-              variant="secondary"
-              onClick={scrollLeft}
-              size="extra-small"
-              disabled={!canScrollLeft}
-            />
-            <IconButton
-              className={clsx(
-                "crayon-line-chart-scroll-button crayon-line-chart-scroll-button--right",
-                {
-                  "crayon-line-chart-scroll-button--disabled": !canScrollRight,
-                  "crayon-line-chart-scroll-button--SideBarTooltip": isSideBarTooltipOpen,
-                },
-              )}
-              icon={<ChevronRight />}
-              variant="secondary"
-              size="extra-small"
-              onClick={scrollRight}
-              disabled={!canScrollRight}
-            />
-          </div>
-        )}
+        <ScrollButtonsHorizontal
+          dataWidth={dataWidth}
+          effectiveWidth={effectiveWidth}
+          canScrollLeft={canScrollLeft}
+          canScrollRight={canScrollRight}
+          isSideBarTooltipOpen={isSideBarTooltipOpen}
+          onScrollLeft={scrollLeft}
+          onScrollRight={scrollRight}
+        />
         {legend && (
           <DefaultLegend
             items={legendItems}

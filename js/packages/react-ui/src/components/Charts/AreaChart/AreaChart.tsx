@@ -1,9 +1,7 @@
 import clsx from "clsx";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
-import { IconButton } from "../../IconButton";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import { useTransformedKeys } from "../hooks";
@@ -12,6 +10,7 @@ import {
   cartesianGrid,
   CustomTooltipContent,
   DefaultLegend,
+  ScrollButtonsHorizontal,
   SideBarTooltip,
   XAxisTick,
   YAxisTick,
@@ -334,7 +333,7 @@ const AreaChartComponent = <T extends AreaChartData>({
                   orientation="bottom"
                   padding={{
                     left: 25,
-                    right: 20,
+                    right: 25,
                   }}
                 />
 
@@ -383,37 +382,15 @@ const AreaChartComponent = <T extends AreaChartData>({
           {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
         </div>
         {/* if the data width is greater than the effective width, then show the scroll buttons */}
-        {dataWidth > effectiveWidth && (
-          <div className="crayon-area-chart-scroll-container">
-            <IconButton
-              className={clsx(
-                "crayon-area-chart-scroll-button crayon-area-chart-scroll-button--left",
-                {
-                  "crayon-area-chart-scroll-button--disabled": !canScrollLeft,
-                },
-              )}
-              icon={<ChevronLeft />}
-              variant="secondary"
-              onClick={scrollLeft}
-              size="extra-small"
-              disabled={!canScrollLeft}
-            />
-            <IconButton
-              className={clsx(
-                "crayon-area-chart-scroll-button crayon-area-chart-scroll-button--right",
-                {
-                  "crayon-area-chart-scroll-button--disabled": !canScrollRight,
-                  "crayon-area-chart-scroll-button--SideBarTooltip": isSideBarTooltipOpen,
-                },
-              )}
-              icon={<ChevronRight />}
-              variant="secondary"
-              size="extra-small"
-              onClick={scrollRight}
-              disabled={!canScrollRight}
-            />
-          </div>
-        )}
+        <ScrollButtonsHorizontal
+          dataWidth={dataWidth}
+          effectiveWidth={effectiveWidth}
+          canScrollLeft={canScrollLeft}
+          canScrollRight={canScrollRight}
+          isSideBarTooltipOpen={isSideBarTooltipOpen}
+          onScrollLeft={scrollLeft}
+          onScrollRight={scrollRight}
+        />
         {legend && (
           <DefaultLegend
             items={legendItems}
