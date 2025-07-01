@@ -4,7 +4,7 @@
 import { AreaChartData } from "../../AreaChart/types";
 import { LineChartData } from "../../LineChart/types";
 
-const ELEMENT_SPACING = 70;
+const ELEMENT_SPACING = 72;
 
 // Common type for chart data - both AreaChart and LineChart data structures
 type ChartData = AreaChartData | LineChartData;
@@ -16,28 +16,24 @@ type ChartData = AreaChartData | LineChartData;
  * @param data - The data to be displayed in the chart.
  */
 export const getWidthOfData = (data: ChartData, containerWidth: number) => {
-  // For area charts, we calculate based on the number of data points (always stacked)
-  const numberOfElements = data.length; // Number of data points
-
-  let width = numberOfElements * ELEMENT_SPACING - ELEMENT_SPACING; // here we are defining the spacing between the data points,
-  // as the data point has no width, we are just calculating the spacing between the data points
-  // if 3 data points, then 2 spaces between them, so 2*70 = 140
-  // so the subtraction is to remove the last spacing as number of data points is 1 more than the number of spaces
+  if (data.length === 0) {
+    return containerWidth;
+  }
+  // For area charts, we calculate based on the number of data points.
+  // We use getWidthOfGroup to ensure consistency
+  const width = data.length * getWidthOfGroup(data);
 
   // if the container width is greater than the width of the data, then we return the container width
   // because the we need the chart minimum width to be the container width
   // this decision is made because area chart an bar chart are span from the left to the right of the container
-
   if (containerWidth >= width) {
     return containerWidth;
   }
 
   if (data.length === 1) {
     const minSingleDataWidth = 200; // Minimum width for single data points
-    // self note:
     // if the data point is only one, then we need to set the width to the minimum width
-
-    width = Math.max(width, minSingleDataWidth);
+    return Math.max(width, minSingleDataWidth);
   }
 
   return width;
