@@ -1,6 +1,7 @@
 import * as Checkbox from "@radix-ui/react-checkbox";
 import clsx from "clsx";
-import { CSSProperties, forwardRef, ReactNode, useId } from "react";
+import { CSSProperties, forwardRef, ReactNode } from "react";
+import { useId } from "../../polyfills";
 
 export interface CheckBoxItemProps {
   label?: ReactNode;

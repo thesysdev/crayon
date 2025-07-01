@@ -1,6 +1,7 @@
 import clsx from "clsx";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis } from "recharts";
+import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer } from "../Charts";
 import {
   getRecentDataThatFits,
