@@ -72,13 +72,10 @@ const PieChartComponent = <T extends PieChartData>({
   const isRowLayout =
     legend && legendVariant === "stacked" && wrapperRect.width >= STACKED_LEGEND_BREAKPOINT;
 
-  // The data that is processed and rendered in the chart
-  const processedData = useMemo(() => data, [data]);
-
   // Sort data by value (highest to lowest) for pie chart rendering
   const sortedProcessedData = useMemo(
-    () => [...processedData].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
-    [processedData, dataKey],
+    () => [...data].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
+    [data, dataKey],
   );
 
   const categories = useMemo(
