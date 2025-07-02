@@ -22,7 +22,7 @@ export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {
     return {
-      theme: lightTheme,
+      theme: themes.light,
       mode: "light",
     };
   }
