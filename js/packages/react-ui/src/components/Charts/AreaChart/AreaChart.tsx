@@ -4,7 +4,7 @@ import { Area, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useTransformedKeys } from "../hooks";
+import { useMaxLabelHeight, useTransformedKeys } from "../hooks";
 import {
   ActiveDot,
   cartesianGrid,
@@ -15,13 +15,12 @@ import {
   XAxisTick,
   YAxisTick,
 } from "../shared";
-import { LegendItem } from "../types";
+import { LegendItem, XAxisTickVariant } from "../types";
 import {
   findNearestSnapPosition,
   getOptimalXAxisTickFormatter,
   getSnapPositions,
   getWidthOfData,
-  getXAxisTickPositionData,
 } from "../utils/AreaAndLine/AreaAndLineUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
 import {
@@ -31,7 +30,7 @@ import {
   getLegendItems,
 } from "../utils/dataUtils";
 import { getYAxisTickFormatter } from "../utils/styleUtils";
-import { AreaChartData, AreaChartVariant, XAxisTickVariant } from "./types";
+import { AreaChartData, AreaChartVariant } from "./types";
 
 // this a technic to get the type of the onClick event of the bar chart
 // we need to do this because the onClick event type is not exported by recharts
@@ -78,6 +77,8 @@ const AreaChartComponent = <T extends AreaChartData>({
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
+
+  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -129,11 +130,6 @@ const AreaChartComponent = <T extends AreaChartData>({
   const xAxisTickFormatter = useMemo(() => {
     return getOptimalXAxisTickFormatter(data, effectiveContainerWidth);
   }, [data, effectiveContainerWidth]);
-
-  // Calculate position data for X-axis tick offset handling
-  const xAxisPositionData = useMemo(() => {
-    return getXAxisTickPositionData(data, categoryKey as string);
-  }, [data, categoryKey]);
 
   // Check scroll boundaries
   const updateScrollState = useCallback(() => {
@@ -255,7 +251,7 @@ const AreaChartComponent = <T extends AreaChartData>({
           data={data}
           margin={{
             top: 20,
-            bottom: 32, // this is required for to give space for x-axis
+            bottom: maxLabelHeight, // this is required for to give space for x-axis
             left: 0,
             right: 0,
           }}
@@ -284,7 +280,7 @@ const AreaChartComponent = <T extends AreaChartData>({
         </RechartsAreaChart>
       </div>
     );
-  }, [showYAxis, chartHeight, data, dataKeys, variant, id]);
+  }, [showYAxis, chartHeight, data, dataKeys, variant, id, maxLabelHeight]);
 
   return (
     <SideBarTooltipProvider
@@ -329,15 +325,8 @@ const AreaChartComponent = <T extends AreaChartData>({
                   textAnchor="middle"
                   interval={0}
                   tickFormatter={xAxisTickFormatter}
-                  height={60}
-                  tick={
-                    <XAxisTick
-                      getPositionOffset={xAxisPositionData.getPositionOffset}
-                      isFirstTick={xAxisPositionData.isFirstTick}
-                      isLastTick={xAxisPositionData.isLastTick}
-                      variant={tickVariant}
-                    />
-                  }
+                  height={maxLabelHeight}
+                  tick={<XAxisTick variant={tickVariant} />}
                   orientation="bottom"
                   padding={{
                     left: 36,

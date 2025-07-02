@@ -1,13 +1,20 @@
 import { useMemo } from "react";
 
-import { useTheme } from "../../ThemeProvider/ThemeProvider";
+import { useTheme } from "../../ThemeProvider";
+import { XAxisTickVariant } from "../types";
 
-export const useMaxLabelHeight = (data: any[], categoryKey: string) => {
+const DEFAULT_HEIGHT = 30;
+
+export const useMaxLabelHeight = (
+  data: any[],
+  categoryKey: string,
+  tickVariant: XAxisTickVariant,
+) => {
   const { theme: userTheme } = useTheme();
 
   const maxLabelHeight = useMemo(() => {
     if (typeof window === "undefined" || !data || data.length === 0) {
-      return 0;
+      return DEFAULT_HEIGHT;
     }
 
     const largestLabel = data.reduce((max, item) => {
@@ -24,7 +31,8 @@ export const useMaxLabelHeight = (data: any[], categoryKey: string) => {
       document.createElement("div"),
     ];
 
-    div1.className = "crayon-chart-x-axis-tick-multi-line-container";
+    div1.style.font = userTheme.fontLabelExtraSmall ?? "";
+    div1.style.letterSpacing = userTheme.fontLabelExtraSmallLetterSpacing ?? "";
 
     div2.innerText = largestLabel;
     div3.innerText = "a";
@@ -41,15 +49,16 @@ export const useMaxLabelHeight = (data: any[], categoryKey: string) => {
       div2.getBoundingClientRect().height,
       div3.getBoundingClientRect().height * 3,
     );
-
     div1.remove();
-    return largestLabelHeight;
-  }, [
-    data,
-    categoryKey,
-    userTheme.fontLabelExtraSmall,
-    userTheme.fontLabelExtraSmallLetterSpacing,
-  ]);
 
-  return maxLabelHeight + 13;
+    return largestLabelHeight;
+  }, [data, categoryKey, tickVariant]);
+
+  if (tickVariant === "multi") {
+    return Math.max(maxLabelHeight + 13, DEFAULT_HEIGHT);
+  } else if (tickVariant === "angle") {
+    return Math.max(maxLabelHeight + 13, DEFAULT_HEIGHT);
+  } else {
+    return DEFAULT_HEIGHT;
+  }
 };

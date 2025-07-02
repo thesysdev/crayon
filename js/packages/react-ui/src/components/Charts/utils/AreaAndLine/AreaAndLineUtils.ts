@@ -200,41 +200,6 @@ export const getOptimalXAxisTickFormatter = (data: ChartData, containerWidth?: n
 
 /**
  * SHARED UTILITY FUNCTION
- * Helper function to get position information for X-axis ticks with offset handling.
- * This is generic and works for both AreaChart and LineChart data.
- * @param data - The chart data
- * @param categoryKey - The category key for the chart
- * @returns Object containing position data for the tick renderer
- */
-export const getXAxisTickPositionData = (data: ChartData, categoryKey: string) => {
-  return {
-    dataLength: data.length,
-    categoryValues: data.map((item) => String(item[categoryKey])),
-    getPositionOffset: (value: string): number => {
-      const index = data.findIndex((item) => String(item[categoryKey]) === value);
-      if (index === 0) {
-        // First label: offset to the right by 5px
-        return 5;
-      } else if (index === data.length - 1) {
-        // Last label: offset to the left by 5px
-        return -5;
-      }
-      // Middle labels: no offset
-      return 0;
-    },
-    isFirstTick: (value: string): boolean => {
-      const index = data.findIndex((item) => String(item[categoryKey]) === value);
-      return index === 0;
-    },
-    isLastTick: (value: string): boolean => {
-      const index = data.findIndex((item) => String(item[categoryKey]) === value);
-      return index === data.length - 1;
-    },
-  };
-};
-
-/**
- * SHARED UTILITY FUNCTION
  * This function returns the snap positions for both chart types, used for smooth scrolling.
  * @param data - The data to be displayed in the chart.
  * @returns The snap positions for the chart.

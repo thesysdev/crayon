@@ -4,7 +4,7 @@ import { Line, LineChart as RechartsLineChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useTransformedKeys } from "../hooks";
+import { useMaxLabelHeight, useTransformedKeys } from "../hooks";
 import {
   ActiveDot,
   cartesianGrid,
@@ -15,13 +15,12 @@ import {
   XAxisTick,
   YAxisTick,
 } from "../shared";
-import { LegendItem } from "../types";
+import { LegendItem, XAxisTickVariant } from "../types";
 import {
   findNearestSnapPosition,
   getOptimalXAxisTickFormatter,
   getSnapPositions,
   getWidthOfData,
-  getXAxisTickPositionData,
 } from "../utils/AreaAndLine/AreaAndLineUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
 import {
@@ -41,6 +40,7 @@ export interface LineChartProps<T extends LineChartData> {
   categoryKey: keyof T[number];
   theme?: PaletteName;
   variant?: LineChartVariant;
+  tickVariant?: XAxisTickVariant;
   grid?: boolean;
   legend?: boolean;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
@@ -61,6 +61,7 @@ export const LineChart = <T extends LineChartData>({
   categoryKey,
   theme = "ocean",
   variant = "natural",
+  tickVariant = "default",
   grid = true,
   icons = {},
   isAnimationActive = false,
@@ -76,6 +77,8 @@ export const LineChart = <T extends LineChartData>({
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
+
+  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -127,11 +130,6 @@ export const LineChart = <T extends LineChartData>({
   const xAxisTickFormatter = useMemo(() => {
     return getOptimalXAxisTickFormatter(data, effectiveContainerWidth);
   }, [data, effectiveContainerWidth]);
-
-  // Calculate position data for X-axis tick offset handling
-  const xAxisPositionData = useMemo(() => {
-    return getXAxisTickPositionData(data, categoryKey as string);
-  }, [data, categoryKey]);
 
   // Check scroll boundaries
   const updateScrollState = useCallback(() => {
@@ -250,7 +248,7 @@ export const LineChart = <T extends LineChartData>({
           data={data}
           margin={{
             top: 20,
-            bottom: 32, // this is required for to give space for x-axis
+            bottom: maxLabelHeight, // this is required for to give space for x-axis
             left: 0,
             right: 0,
           }}
@@ -281,7 +279,17 @@ export const LineChart = <T extends LineChartData>({
         </RechartsLineChart>
       </div>
     );
-  }, [showYAxis, id, chartHeight, data, onLineClick, dataKeys, variant, isAnimationActive]);
+  }, [
+    showYAxis,
+    id,
+    chartHeight,
+    data,
+    onLineClick,
+    dataKeys,
+    variant,
+    isAnimationActive,
+    maxLabelHeight,
+  ]);
 
   return (
     <SideBarTooltipProvider
@@ -323,21 +331,15 @@ export const LineChart = <T extends LineChartData>({
                   dataKey={categoryKey as string}
                   tickLine={false}
                   axisLine={false}
-                  // height={100}
+                  height={maxLabelHeight}
                   textAnchor="middle"
                   interval={0}
                   tickFormatter={xAxisTickFormatter}
-                  tick={
-                    <XAxisTick
-                      getPositionOffset={xAxisPositionData.getPositionOffset}
-                      isFirstTick={xAxisPositionData.isFirstTick}
-                      isLastTick={xAxisPositionData.isLastTick}
-                    />
-                  }
+                  tick={<XAxisTick variant={tickVariant} />}
                   orientation="bottom"
                   padding={{
-                    left: 25,
-                    right: 25,
+                    left: 36,
+                    right: 36,
                   }}
                 />
 
