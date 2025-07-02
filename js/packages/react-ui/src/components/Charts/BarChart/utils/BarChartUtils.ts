@@ -1,4 +1,5 @@
 import { getDataKeys } from "../../utils/dataUtils";
+import { getCanvasContext } from "../../utils/styleUtils";
 import { BarChartVariant } from "../types";
 
 export const BAR_WIDTH = 16;
@@ -68,8 +69,8 @@ const getPadding = (
   if (paddingValue < 0) {
     // If chart content is wider than container, no padding
     return {
-      left: 1,
-      right: 1,
+      left: 10,
+      right: 10,
     };
   } else {
     return {
@@ -124,27 +125,7 @@ const getRadiusArray = (
  */
 const getXAxisTickFormatter = (groupWidth?: number, variant: BarChartVariant = "grouped") => {
   const PADDING = 2; // Safety padding for better visual spacing
-
-  // Setup canvas context for accurate text measurement.
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (context) {
-    // Should match the chart's actual font for accuracy.
-    // The font is defined in `xAxisTick.scss` via a mixin, which uses the
-    // CSS variable `--crayon-font-label-extra-small`.
-    // in future we have to target the actual element instead of the body
-    let font = "12px Inter"; // Default fallback.
-    if (typeof window !== "undefined") {
-      const value = window
-        .getComputedStyle(document.body)
-        .getPropertyValue("--crayon-font-label-extra-small");
-      // trim is important, it can come with whitespace.
-      if (value) {
-        font = value.trim();
-      }
-    }
-    context.font = font;
-  }
+  const context = getCanvasContext();
 
   return (value: string) => {
     const stringValue = String(value);
@@ -205,7 +186,6 @@ const getOptimalXAxisTickFormatter = (
 };
 
 /**
- * INTERNAL HELPER FUNCTION
  * This function returns the scroll amount for the chart, used for the scroll amount of the chart.
  * This can also be used to calculate the width of each group/category.
  * @param data - The data to be displayed in the chart.
@@ -312,4 +292,5 @@ export {
   getRadiusArray,
   getSnapPositions,
   getWidthOfData,
+  getWidthOfGroup,
 };

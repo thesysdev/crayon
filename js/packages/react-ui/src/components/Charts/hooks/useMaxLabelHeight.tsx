@@ -39,6 +39,7 @@ export const useMaxLabelHeight = (
     div3.innerText = "a";
     div1.append(div2, div3);
 
+    div1.style.width = `${widthOfGroup}px`;
     div1.style.maxWidth = `${widthOfGroup}px`;
     div1.style.wordBreak = "break-word";
     div1.style.position = "absolute";
