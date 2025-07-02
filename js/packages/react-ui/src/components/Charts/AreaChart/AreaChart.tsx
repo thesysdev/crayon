@@ -123,8 +123,8 @@ const AreaChartComponent = <T extends AreaChartData>({
   }, [data]);
 
   const chartHeight = useMemo(() => {
-    return height ?? 296;
-  }, [height]);
+    return height ?? 296 + maxLabelHeight;
+  }, [height, maxLabelHeight]);
 
   // Calculate optimal tick formatter for collision detection and truncation
   const xAxisTickFormatter = useMemo(() => {

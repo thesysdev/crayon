@@ -23,10 +23,11 @@ interface XAxisTickProps {
   index?: number;
   visibleTicksCount?: number;
   variant?: XAxisTickVariant;
+  widthOfGroup?: number;
 }
 
 const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => {
-  const { x, y, payload, tickFormatter, className, variant = "default" } = props;
+  const { x, y, payload, tickFormatter, className, variant = "default", widthOfGroup = 70 } = props;
 
   const value = String(payload?.value || "");
   const foreignObjectRef = useRef<SVGForeignObjectElement>(null);
@@ -51,7 +52,7 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
           x={x - 36}
           y={y}
           transform="translate(0, 0)"
-          width={70}
+          width={widthOfGroup}
           height={20} // Initial height, will be updated by useLayoutEffect
           className="crayon-chart-x-axis-tick-foreign"
         >

@@ -3,6 +3,7 @@
 
 import { AreaChartData } from "../../AreaChart/types";
 import { LineChartData } from "../../LineChart/types";
+import { getCanvasContext } from "../styleUtils";
 
 const ELEMENT_SPACING = 72;
 
@@ -51,27 +52,7 @@ export const getWidthOfData = (data: ChartData, containerWidth: number) => {
  */
 export const getXAxisTickFormatter = (groupWidth?: number, containerWidth?: number) => {
   const PADDING = 10; // More generous padding for visual clarity
-
-  // Setup canvas context once per formatter creation for efficiency.
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (context) {
-    // Should match the chart's actual font for accuracy.
-    // The font is defined in `xAxisTick.scss` via a mixin, which uses the
-    // CSS variable `--crayon-font-label-extra-small`.
-    // in future we have to target the actual element instead of the body
-    let font = "12px Inter"; // Default fallback.
-    if (typeof window !== "undefined") {
-      const value = window
-        .getComputedStyle(document.body)
-        .getPropertyValue("--crayon-font-label-extra-small");
-      // trim is important, it can come with whitespace.
-      if (value) {
-        font = value.trim();
-      }
-    }
-    context.font = font;
-  }
+  const context = getCanvasContext();
 
   return (value: string) => {
     // If canvas isn't supported, or for some reason context is null, return original value.
