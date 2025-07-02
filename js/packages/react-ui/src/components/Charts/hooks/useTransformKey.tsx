@@ -12,9 +12,3 @@ export const useTransformedKeys = (keys: string[]) => {
     );
   }, [keys]);
 };
-
-//   const transformedKeys = useTransformedKeys(["a", "b", "c"])
-
-//   dataKeys.map((key) => {
-//       return `var(${transformedKeys[key]})`
-//   })
