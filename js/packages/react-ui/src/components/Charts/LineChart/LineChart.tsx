@@ -41,6 +41,7 @@ export interface LineChartProps<T extends LineChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: PaletteName;
+  customPalette?: string[];
   variant?: LineChartVariant;
   grid?: boolean;
   legend?: boolean;
@@ -61,6 +62,7 @@ export const LineChart = <T extends LineChartData>({
   data,
   categoryKey,
   theme = "ocean",
+  customPalette,
   variant = "natural",
   grid = true,
   icons = {},
@@ -81,9 +83,12 @@ export const LineChart = <T extends LineChartData>({
   const transformedKeys = useTransformedKeys(dataKeys);
 
   const colors = useMemo(() => {
-    const palette = getPalette(theme);
+    const palette =
+      customPalette && customPalette.length > 0
+        ? { name: "custom", colors: customPalette }
+        : getPalette(theme);
     return getDistributedColors(palette, dataKeys.length);
-  }, [theme, dataKeys.length]);
+  }, [theme, customPalette, dataKeys.length]);
 
   const chartConfig: ChartConfig = useMemo(() => {
     return get2dChartConfig(dataKeys, colors, transformedKeys, undefined, icons);

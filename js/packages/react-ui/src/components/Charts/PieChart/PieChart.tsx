@@ -8,11 +8,6 @@ import { StackedLegend } from "../shared/StackedLegend/StackedLegend.js";
 import { LegendItem } from "../types/Legend.js";
 import { getCategoricalChartConfig } from "../utils/dataUtils.js";
 import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils.js";
-import {
-  createGradientDefinitions,
-  MAX_CHART_SIZE,
-  MIN_CHART_SIZE,
-} from "./components/PieChartRenderers.js";
 import { PieChartData } from "./types/index.js";
 import {
   calculateTwoLevelChartDimensions,
@@ -24,16 +19,12 @@ import {
   useChartHover,
 } from "./utils/PieChartUtils.js";
 
-interface GradientColor {
-  start?: string;
-  end?: string;
-}
-
 export interface PieChartProps<T extends PieChartData> {
   data: T;
   categoryKey: keyof T[number];
   dataKey: keyof T[number];
   theme?: PaletteName;
+  customPalette?: string[];
   variant?: "pie" | "donut";
   format?: "percentage" | "number";
   legend?: boolean;
@@ -42,8 +33,6 @@ export interface PieChartProps<T extends PieChartData> {
   appearance?: "circular" | "semiCircular";
   cornerRadius?: number;
   paddingAngle?: number;
-  useGradients?: boolean;
-  gradientColors?: GradientColor[];
   onMouseEnter?: (data: any, index: number) => void;
   onMouseLeave?: () => void;
   onClick?: (data: any, index: number) => void;
@@ -51,12 +40,15 @@ export interface PieChartProps<T extends PieChartData> {
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
+const MIN_CHART_SIZE = 150;
+const MAX_CHART_SIZE = 500;
 
 const PieChartComponent = <T extends PieChartData>({
   data,
   categoryKey,
   dataKey,
   theme = "ocean",
+  customPalette,
   variant = "pie",
   format = "number",
   legend = true,
@@ -65,8 +57,6 @@ const PieChartComponent = <T extends PieChartData>({
   appearance = "circular",
   cornerRadius = 0,
   paddingAngle = 0,
-  useGradients = false,
-  gradientColors,
   onMouseEnter,
   onMouseLeave,
   onClick,
@@ -85,9 +75,15 @@ const PieChartComponent = <T extends PieChartData>({
   // The data that is processed and rendered in the chart
   const processedData = useMemo(() => data, [data]);
 
+  // Sort data by value (highest to lowest) for pie chart rendering
+  const sortedProcessedData = useMemo(
+    () => [...processedData].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
+    [processedData, dataKey],
+  );
+
   const categories = useMemo(
-    () => processedData.map((item) => String(item[categoryKey])),
-    [processedData, categoryKey],
+    () => sortedProcessedData.map((item) => String(item[categoryKey])),
+    [sortedProcessedData, categoryKey],
   );
   const transformedKeys = useTransformedKeys(categories);
 
@@ -121,13 +117,13 @@ const PieChartComponent = <T extends PieChartData>({
 
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(
-    () => transformDataWithPercentages(processedData, dataKey),
-    [processedData, dataKey],
+    () => transformDataWithPercentages(sortedProcessedData as T, dataKey),
+    [sortedProcessedData, dataKey],
   );
 
   const chartConfig = useMemo(
-    () => getCategoricalChartConfig(processedData, categoryKey, theme, transformedKeys),
-    [processedData, categoryKey, theme, transformedKeys],
+    () => getCategoricalChartConfig(sortedProcessedData as T, categoryKey, theme, transformedKeys),
+    [sortedProcessedData, categoryKey, theme, transformedKeys],
   );
 
   const animationConfig = useMemo(
@@ -145,53 +141,46 @@ const PieChartComponent = <T extends PieChartData>({
     [cornerRadius, variant, paddingAngle],
   );
 
-  const palette = useMemo(() => getPalette(theme), [theme]);
-  const colors = useMemo(
-    () => getDistributedColors(palette, processedData.length),
-    [palette, processedData.length],
-  );
+  const palette = useMemo(() => {
+    if (customPalette && customPalette.length > 0) {
+      return { name: "custom", colors: customPalette };
+    }
+    return getPalette(theme);
+  }, [theme, customPalette]);
 
-  const gradientDefinitions = useMemo(() => {
-    if (!useGradients) return null;
-    const chartColors = Object.values(chartConfig)
-      .map((config) => config.color)
-      .filter((color): color is string => color !== undefined);
-    return createGradientDefinitions(transformedData, chartColors, gradientColors);
-  }, [useGradients, chartConfig, transformedData, gradientColors]);
+  const colors = useMemo(
+    () => getDistributedColors(palette, sortedProcessedData.length),
+    [palette, sortedProcessedData.length],
+  );
 
   const legendItems = useMemo(
     () =>
-      processedData.map((item, index) => ({
+      sortedProcessedData.map((item, index) => ({
         key: String(item[categoryKey]),
         label: String(item[categoryKey]),
         value: Number(item[dataKey]),
         color: colors[index] || "#000000",
       })),
-    [processedData, categoryKey, dataKey, colors],
+    [sortedProcessedData, categoryKey, dataKey, colors],
   );
 
   const defaultLegendItems = useMemo((): LegendItem[] => {
     return legendItems.map(({ key, label, color }) => ({ key, label, color }));
   }, [legendItems]);
 
-  const sortedData = useMemo(
-    () => [...processedData].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
-    [processedData, dataKey],
-  );
-
   const handleLegendItemHover = useCallback(
     (index: number | null) => {
       if (legendVariant !== "stacked") return;
       if (index !== null) {
-        const item = sortedData[index];
+        const item = sortedProcessedData[index];
         if (item) {
           const categoryValue = String(item[categoryKey]);
           setHoveredLegendKey(categoryValue);
-          const processedIndex = processedData.findIndex(
-            (d) => String(d[categoryKey]) === categoryValue,
+          const transformedIndex = transformedData.findIndex(
+            (d) => String((d as any)[categoryKey]) === categoryValue,
           );
-          if (processedIndex !== -1) {
-            handleMouseEnter(processedData[processedIndex], processedIndex);
+          if (transformedIndex !== -1) {
+            handleMouseEnter(transformedData[transformedIndex], transformedIndex);
           }
         }
       } else {
@@ -199,7 +188,14 @@ const PieChartComponent = <T extends PieChartData>({
         handleMouseLeave();
       }
     },
-    [sortedData, categoryKey, processedData, handleMouseEnter, handleMouseLeave, legendVariant],
+    [
+      sortedProcessedData,
+      categoryKey,
+      transformedData,
+      handleMouseEnter,
+      handleMouseLeave,
+      legendVariant,
+    ],
   );
 
   const handleChartMouseEnter = useCallback(
@@ -314,7 +310,7 @@ const PieChartComponent = <T extends PieChartData>({
             const transformedKey = transformedKeys[categoryValue] ?? categoryValue;
             const config = chartConfig[transformedKey];
             const hoverStyles = getHoverStyles(index, activeIndex);
-            const fill = useGradients ? `url(#gradient-${index})` : config?.color || colors[index];
+            const fill = config?.color || colors[index];
             return <Cell key={`outer-cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
           })}
         </Pie>,
@@ -332,7 +328,7 @@ const PieChartComponent = <T extends PieChartData>({
           const transformedKey = transformedKeys[categoryValue] ?? categoryValue;
           const config = chartConfig[transformedKey];
           const hoverStyles = getHoverStyles(index, activeIndex);
-          const fill = useGradients ? `url(#gradient-${index})` : config?.color || colors[index];
+          const fill = config?.color || colors[index];
           return <Cell key={`cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />;
         })}
       </Pie>
@@ -345,7 +341,6 @@ const PieChartComponent = <T extends PieChartData>({
     categoryKey,
     chartConfig,
     activeIndex,
-    useGradients,
     colors,
     transformedKeys,
   ]);
@@ -410,7 +405,6 @@ const PieChartComponent = <T extends PieChartData>({
                 <ChartTooltip
                   content={<ChartTooltipContent showPercentage={format === "percentage"} />}
                 />
-                {gradientDefinitions && <defs>{gradientDefinitions}</defs>}
                 {renderPieCharts()}
               </RechartsPieChart>
             </ChartContainer>

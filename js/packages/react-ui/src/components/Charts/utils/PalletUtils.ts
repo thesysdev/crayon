@@ -138,22 +138,32 @@ export const getDistributedColors = (palette: ColorPalette, dataLength: number):
   const midIndex = Math.floor(colors.length / 2);
 
   if (dataLength === 1) {
-    // For single item, return the middle color
     return [colors[midIndex]!];
   }
 
   if (dataLength === 2) {
-    // For two items, return colors equally spaced around the middle
     return [colors[midIndex - 1]!, colors[midIndex + 1]!];
   }
 
-  // For 3 or more items, distribute colors evenly around the middle
   const result: string[] = [];
   const offset = Math.floor((dataLength - 1) / 2);
 
   for (let i = 0; i < dataLength; i++) {
     const index = midIndex + (i - offset);
-    result.push(colors[index] ?? colors[midIndex]!); // Fallback to middle color if index out of bounds
+
+    // Handle out of bounds by cycling through colors
+    let actualIndex: number;
+    if (index < 0) {
+      // Wrap around from the end
+      actualIndex = colors.length + (index % colors.length);
+    } else if (index >= colors.length) {
+      // Wrap around from the beginning
+      actualIndex = index % colors.length;
+    } else {
+      actualIndex = index;
+    }
+
+    result.push(colors[actualIndex]!);
   }
 
   return result;

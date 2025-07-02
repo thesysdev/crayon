@@ -8,11 +8,6 @@ import { StackedLegend } from "../shared/StackedLegend/StackedLegend";
 import { LegendItem } from "../types/Legend";
 import { getCategoricalChartConfig } from "../utils/dataUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
-import {
-  createRadialGradientDefinitions,
-  MAX_CHART_SIZE,
-  MIN_CHART_SIZE,
-} from "./components/RadialChartRenderers";
 import { RadialChartData } from "./types";
 import {
   calculateRadialChartDimensions,
@@ -23,16 +18,12 @@ import {
   useRadialChartHover,
 } from "./utils/RadialChartUtils";
 
-interface GradientColor {
-  start?: string;
-  end?: string;
-}
-
 export interface RadialChartProps<T extends RadialChartData> {
   data: T;
   categoryKey: keyof T[number];
   dataKey: keyof T[number];
   theme?: PaletteName;
+  customPalette?: string[];
   variant?: "semicircle" | "circular";
   format?: "percentage" | "number";
   legend?: boolean;
@@ -40,8 +31,6 @@ export interface RadialChartProps<T extends RadialChartData> {
   grid?: boolean;
   isAnimationActive?: boolean;
   cornerRadius?: number;
-  useGradients?: boolean;
-  gradientColors?: GradientColor[];
   onMouseEnter?: (data: any, index: number) => void;
   onMouseLeave?: () => void;
   onClick?: (data: any, index: number) => void;
@@ -49,12 +38,15 @@ export interface RadialChartProps<T extends RadialChartData> {
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
+const MIN_CHART_SIZE = 150;
+const MAX_CHART_SIZE = 500;
 
 export const RadialChart = <T extends RadialChartData>({
   data,
   categoryKey,
   dataKey,
   theme = "ocean",
+  customPalette,
   variant = "circular",
   format = "number",
   legend = true,
@@ -62,8 +54,6 @@ export const RadialChart = <T extends RadialChartData>({
   grid = false,
   isAnimationActive = false,
   cornerRadius = 10,
-  useGradients = false,
-  gradientColors,
   onMouseEnter,
   onMouseLeave,
   onClick,
@@ -82,9 +72,15 @@ export const RadialChart = <T extends RadialChartData>({
   // The data that is processed and rendered in the chart
   const processedData = useMemo(() => data, [data]);
 
+  // Sort data by value (highest to lowest) for radial chart rendering
+  const sortedProcessedData = useMemo(
+    () => [...processedData].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
+    [processedData, dataKey],
+  );
+
   const categories = useMemo(
-    () => processedData.map((item) => String(item[categoryKey])),
-    [processedData, categoryKey],
+    () => sortedProcessedData.map((item) => String(item[categoryKey])),
+    [sortedProcessedData, categoryKey],
   );
   const transformedKeys = useTransformedKeys(categories);
 
@@ -138,13 +134,13 @@ export const RadialChart = <T extends RadialChartData>({
 
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(
-    () => transformRadialDataWithPercentages(processedData, dataKey, theme),
-    [processedData, dataKey, theme],
+    () => transformRadialDataWithPercentages(sortedProcessedData as T, dataKey, theme),
+    [sortedProcessedData, dataKey, theme],
   );
 
   const chartConfig = useMemo(
-    () => getCategoricalChartConfig(processedData, categoryKey, theme, transformedKeys),
-    [processedData, categoryKey, theme, transformedKeys],
+    () => getCategoricalChartConfig(sortedProcessedData as T, categoryKey, theme, transformedKeys),
+    [sortedProcessedData, categoryKey, theme, transformedKeys],
   );
 
   const animationConfig = useMemo(
@@ -158,57 +154,48 @@ export const RadialChart = <T extends RadialChartData>({
   );
 
   // Get color palette and distribute colors
-  const palette = useMemo(() => getPalette(theme), [theme]);
+  const palette = useMemo(() => {
+    if (customPalette && customPalette.length > 0) {
+      return { name: "custom", colors: customPalette };
+    }
+    return getPalette(theme);
+  }, [theme, customPalette]);
   const colors = useMemo(
-    () => getDistributedColors(palette, processedData.length),
-    [palette, processedData.length],
+    () => getDistributedColors(palette, sortedProcessedData.length),
+    [palette, sortedProcessedData.length],
   );
-
-  // Memoize gradient definitions
-  const gradientDefinitions = useMemo(() => {
-    if (!useGradients) return null;
-    const chartColors = Object.values(chartConfig)
-      .map((config) => config.color)
-      .filter((color): color is string => color !== undefined);
-    return createRadialGradientDefinitions(transformedData, chartColors, gradientColors);
-  }, [useGradients, chartConfig, transformedData, gradientColors]);
 
   // Create legend items for both variants
   const legendItems = useMemo(
     () =>
-      processedData.map((item, index) => ({
+      sortedProcessedData.map((item, index) => ({
         key: String(item[categoryKey]),
         label: String(item[categoryKey]),
         value: Number(item[dataKey]),
         color: colors[index] || "#000000",
       })),
-    [processedData, categoryKey, dataKey, colors],
+    [sortedProcessedData, categoryKey, dataKey, colors],
   );
 
   const defaultLegendItems = useMemo((): LegendItem[] => {
     return legendItems.map(({ key, label, color }) => ({ key, label, color }));
   }, [legendItems]);
 
-  // Memoize sorted data for legend hover handling
-  const sortedData = useMemo(
-    () => [...processedData].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
-    [processedData, dataKey],
-  );
-
   // Handle legend item hover to highlight radial bar
   const handleLegendItemHover = useCallback(
     (index: number | null) => {
       if (legendVariant !== "stacked") return;
       if (index !== null) {
-        const item = sortedData[index];
+        const item = sortedProcessedData[index];
         if (item) {
           const categoryValue = String(item[categoryKey]);
           setHoveredLegendKey(categoryValue);
-          const originalIndex = processedData.findIndex(
-            (d) => String(d[categoryKey]) === categoryValue,
+          // Find the index in the transformed data (which is also sorted)
+          const transformedIndex = transformedData.findIndex(
+            (d) => String((d as any)[categoryKey]) === categoryValue,
           );
-          if (originalIndex !== -1) {
-            handleMouseEnter(processedData[originalIndex], originalIndex);
+          if (transformedIndex !== -1) {
+            handleMouseEnter(transformedData[transformedIndex], transformedIndex);
           }
         }
       } else {
@@ -216,7 +203,14 @@ export const RadialChart = <T extends RadialChartData>({
         handleMouseLeave();
       }
     },
-    [sortedData, categoryKey, processedData, handleMouseEnter, handleMouseLeave, legendVariant],
+    [
+      sortedProcessedData,
+      categoryKey,
+      transformedData,
+      handleMouseEnter,
+      handleMouseLeave,
+      legendVariant,
+    ],
   );
 
   // Enhanced chart hover handlers
@@ -331,7 +325,6 @@ export const RadialChart = <T extends RadialChartData>({
                     />
                   }
                 />
-                {gradientDefinitions && <defs>{gradientDefinitions}</defs>}
                 <RadialBar
                   dataKey={formatKey}
                   background={!grid}
@@ -346,9 +339,7 @@ export const RadialChart = <T extends RadialChartData>({
                     const categoryValue = String(entry[categoryKey as keyof typeof entry] || "");
                     const config = chartConfig[categoryValue];
                     const hoverStyles = getRadialHoverStyles(index, activeIndex);
-                    const fill = useGradients
-                      ? `url(#radial-gradient-${index})`
-                      : config?.color || colors[index];
+                    const fill = config?.color || colors[index];
                     return (
                       <Cell key={`cell-${index}`} fill={fill} {...hoverStyles} stroke="none" />
                     );

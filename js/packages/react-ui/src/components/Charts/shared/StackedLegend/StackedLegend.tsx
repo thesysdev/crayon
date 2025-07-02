@@ -110,10 +110,8 @@ export const StackedLegend = ({
   // Calculate total for percentage
   const total = items.reduce((sum, item) => sum + item.value, 0);
 
-  // Sort items by value in descending order (higher to lower)
-  const sortedItems = [...items].sort((a, b) => b.value - a.value);
-
-  const itemsToDisplay = isShowMoreLayout && !showAll ? sortedItems.slice(0, 6) : sortedItems;
+  // Items are already sorted by the parent component, so we use them as-is
+  const itemsToDisplay = isShowMoreLayout && !showAll ? items.slice(0, 6) : items;
 
   return (
     <div

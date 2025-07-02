@@ -43,15 +43,19 @@ const comprehensiveFinancialData = [
   { category: "Meal Vouchers", amount: 1200 },
 ];
 
-// Custom gradient definitions for enhanced visual appeal
-const customGradientPalette = [
-  { start: "#FF6B6B", end: "#FF8E8E", name: "Coral Red" },
-  { start: "#4ECDC4", end: "#6ED7D0", name: "Turquoise" },
-  { start: "#45B7D1", end: "#6BC5DB", name: "Sky Blue" },
-  { start: "#96CEB4", end: "#B4DCC9", name: "Mint Green" },
-  { start: "#FFEEAD", end: "#FFF4C4", name: "Light Yellow" },
-  { start: "#D4A5A5", end: "#E5BDBD", name: "Rose" },
-  { start: "#9B59B6", end: "#B07CC7", name: "Purple" },
+// Custom color palette for demonstration
+
+const customColorPalette = [
+  "#0A0E60",
+  "#14197B",
+  "#272DA6",
+  "#383FC9",
+  "#444CE7",
+  "#5F67F4",
+  "#7884FF",
+  "#97A9FF",
+  "#B4C6FF",
+  "#CBD7FF",
 ];
 
 /**
@@ -82,7 +86,7 @@ const customGradientPalette = [
  *
  * ### Customization Options
  * - **Theme System**: Pre-built color palettes (ocean, orchid, emerald, sunset, spectrum, vivid)
- * - **Gradient Support**: Custom gradient definitions for enhanced visual appeal
+
  * - **Layout Flexibility**: Responsive design that adapts to container dimensions
  */
 
@@ -201,6 +205,26 @@ const exampleData = [
         category: "🎨 Visual Styling",
       },
     },
+    customPalette: {
+      description: `
+**Custom Color Palette.** Override the theme colors with your own color array.
+
+**Usage:**
+- Provide an array of hex color strings
+- Colors will be applied in order to chart segments
+- Takes precedence over theme colors when provided
+- Useful for brand-specific color requirements
+
+**Example:**
+\`["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4"]\`
+      `,
+      control: false,
+      table: {
+        type: { summary: "string[]" },
+        defaultValue: { summary: "undefined" },
+        category: "🎨 Visual Styling",
+      },
+    },
     variant: {
       description: `
 **Chart Layout Style:**
@@ -304,22 +328,6 @@ const exampleData = [
         category: "🎨 Visual Styling",
       },
     },
-    useGradients: {
-      description: `
-**Gradient Enhancement.** Applies gradient effects to radial bars.
-
-**Visual impact:**
-- Enhanced depth and dimension
-- Modern, polished appearance
-- Works best with 3-8 data points
-      `,
-      control: "boolean",
-      table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
-        category: "🎨 Visual Styling",
-      },
-    },
   },
 } satisfies Meta<typeof RadialChart>;
 
@@ -353,8 +361,6 @@ export const DefaultConfiguration: Story = {
     grid: false,
     isAnimationActive: true,
     cornerRadius: 10,
-    useGradients: false,
-    gradientColors: customGradientPalette,
   },
   render: (args: any) => (
     <Card style={{ width: "700px", height: "auto", padding: "24px" }}>
@@ -408,7 +414,6 @@ export const ThemeShowcase: Story = {
     grid: false,
     isAnimationActive: true,
     cornerRadius: 10,
-    useGradients: false,
   },
   render: (args: any) => (
     <Card style={{ width: "600px", height: "auto", padding: "24px" }}>
@@ -446,11 +451,10 @@ export const ThemeShowcase: Story = {
 /**
  * ## Advanced Visual Enhancement
  *
- * This example showcases the gradient feature combined with percentage formatting
- * to create visually striking and informative charts.
+ * This example showcases percentage formatting to create visually striking and informative charts.
  */
-export const GradientEnhancement: Story = {
-  name: "✨ Gradient Enhancement",
+export const VisualEnhancement: Story = {
+  name: "✨ Visual Enhancement",
   args: {
     data: monthlyRevenueData.slice(0, 6),
     categoryKey: "month",
@@ -463,8 +467,6 @@ export const GradientEnhancement: Story = {
     grid: false,
     isAnimationActive: true,
     cornerRadius: 15,
-    useGradients: true,
-    gradientColors: customGradientPalette,
   },
   render: (args: any) => (
     <Card style={{ width: "500px", padding: "24px" }}>
@@ -473,7 +475,7 @@ export const GradientEnhancement: Story = {
           Revenue Distribution
         </h3>
         <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
-          Enhanced with gradients and percentage display
+          Enhanced with percentage display
         </p>
       </div>
       <RadialChart {...args} />
@@ -483,21 +485,127 @@ export const GradientEnhancement: Story = {
     docs: {
       description: {
         story: `
-**Gradient Enhancement Features:**
+**Visual Enhancement Features:**
 
-- **Visual Depth**: Creates three-dimensional appearance
+- **Percentage Display**: Shows data as percentages for better comparison
 - **Modern Aesthetic**: Aligns with contemporary design trends  
-- **Brand Flexibility**: Custom gradient definitions for brand alignment
-- **Performance Optimized**: Efficiently rendered using SVG gradients
+- **Theme Integration**: Uses theme colors for consistent visual design
+- **Performance Optimized**: Efficiently rendered for smooth interactions
 
-**When to Use Gradients:**
+**When to Use Percentage Format:**
 - Executive dashboards and presentations
 - Marketing materials and public-facing reports
-- When visual impact is prioritized
-- With 3-8 data points for optimal effect
+- When relative comparisons are important
+- With 3-8 data points for optimal readability
 
-**Technical Note:** Gradients are defined as start/end color pairs and applied
-automatically to maintain visual consistency across the chart.
+**Technical Note:** Percentages are automatically calculated from the data values,
+providing clear relative comparisons across all chart segments.
+        `,
+      },
+    },
+  },
+};
+
+/**
+ * ## Custom Color Palette
+ *
+ * This example demonstrates how to use a custom color palette to override
+ * the default theme colors with brand-specific or custom color schemes.
+ */
+export const CustomPalette: Story = {
+  name: "🎨 Custom Color Palette",
+  args: {
+    data: monthlyRevenueData.slice(0, 8),
+    categoryKey: "month",
+    dataKey: "value",
+    customPalette: customColorPalette,
+    variant: "circular",
+    format: "number",
+    legend: true,
+    legendVariant: "stacked",
+    grid: false,
+    isAnimationActive: true,
+    cornerRadius: 12,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "600px", padding: "24px" }}>
+      <div style={{ marginBottom: "20px" }}>
+        <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
+          Brand-Specific Color Scheme
+        </h3>
+        <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
+          Using custom colors that align with your brand identity
+        </p>
+      </div>
+      <RadialChart {...args} />
+      <div
+        style={{
+          marginTop: "16px",
+          padding: "12px",
+          backgroundColor: "#f8f9fa",
+          borderRadius: "6px",
+          fontSize: "12px",
+          color: "#666",
+        }}
+      >
+        <strong>🎨 Custom Palette:</strong>{" "}
+        {customColorPalette.slice(0, 8).map((color, index) => (
+          <span
+            key={index}
+            style={{
+              display: "inline-block",
+              width: "16px",
+              height: "16px",
+              backgroundColor: color,
+              borderRadius: "3px",
+              marginLeft: "4px",
+              marginRight: "4px",
+              border: "1px solid #ddd",
+              verticalAlign: "middle",
+            }}
+          />
+        ))}
+      </div>
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `
+**Custom Palette Features:**
+
+- **Brand Alignment**: Use your exact brand colors for consistent visual identity
+- **Override Themes**: Takes precedence over theme-based color selection
+- **Flexible Array**: Provide any number of colors - they'll cycle automatically for larger datasets
+- **Hex Color Support**: Standard hex color format (#RRGGBB)
+
+**Implementation Example:**
+\`\`\`tsx
+const brandColors = [
+  "#FF6B6B", // Primary brand color
+  "#4ECDC4", // Secondary brand color
+  "#45B7D1", // Accent color 1
+  "#96CEB4", // Accent color 2
+  // ... more colors as needed
+];
+
+<RadialChart
+  data={data}
+  categoryKey="category"
+  dataKey="value"
+  customPalette={brandColors}
+/>
+\`\`\`
+
+**Best Practices:**
+- Ensure sufficient contrast between adjacent colors
+- Test color accessibility for users with color vision differences
+- Provide at least as many colors as data points for optimal display
+- Consider color psychology and brand associations when selecting colors
+
+**Technical Notes:**
+- Colors are applied in array order to data segments
+- If fewer colors than data points, colors will cycle automatically
         `,
       },
     },
@@ -524,7 +632,6 @@ export const LargeDatasetDemo: Story = {
     grid: false,
     isAnimationActive: true,
     cornerRadius: 8,
-    useGradients: false,
   },
   render: (args: any) => (
     <Card style={{ width: "700px", height: "auto", padding: "24px" }}>
@@ -606,7 +713,6 @@ export const ResponsiveDemo: Story = {
     legendVariant: "stacked",
     isAnimationActive: false,
     cornerRadius: 8,
-    useGradients: false,
   },
   render: (args: any) => {
     const [dimensions, setDimensions] = useState<{ width: number; height: number | string }>({

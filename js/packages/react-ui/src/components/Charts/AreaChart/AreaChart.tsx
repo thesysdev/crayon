@@ -43,6 +43,7 @@ export interface AreaChartProps<T extends AreaChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: PaletteName;
+  customPalette?: string[];
   variant?: AreaChartVariant;
   grid?: boolean;
   legend?: boolean;
@@ -62,6 +63,7 @@ const AreaChartComponent = <T extends AreaChartData>({
   data,
   categoryKey,
   theme = "ocean",
+  customPalette,
   variant = "natural",
   grid = true,
   icons = {},
@@ -81,9 +83,12 @@ const AreaChartComponent = <T extends AreaChartData>({
   const transformedKeys = useTransformedKeys(dataKeys);
 
   const colors = useMemo(() => {
-    const palette = getPalette(theme);
+    const palette =
+      customPalette && customPalette.length > 0
+        ? { name: "custom", colors: customPalette }
+        : getPalette(theme);
     return getDistributedColors(palette, dataKeys.length);
-  }, [theme, dataKeys.length]);
+  }, [theme, customPalette, dataKeys.length]);
 
   const chartConfig: ChartConfig = useMemo(() => {
     return get2dChartConfig(dataKeys, colors, transformedKeys, undefined, icons);

@@ -45,6 +45,7 @@ export interface BarChartProps<T extends BarChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: PaletteName;
+  customPalette?: string[];
   variant?: BarChartVariant;
   grid?: boolean;
   radius?: number;
@@ -69,6 +70,7 @@ const BarChartComponent = <T extends BarChartData>({
   data,
   categoryKey,
   theme = "ocean",
+  customPalette,
   variant = "grouped",
   grid = true,
   icons = {},
@@ -89,9 +91,12 @@ const BarChartComponent = <T extends BarChartData>({
   const transformedKeys = useTransformedKeys(dataKeys);
 
   const colors = useMemo(() => {
-    const palette = getPalette(theme);
+    const palette =
+      customPalette && customPalette.length > 0
+        ? { name: "custom", colors: customPalette }
+        : getPalette(theme);
     return getDistributedColors(palette, dataKeys.length);
-  }, [theme, dataKeys.length]);
+  }, [theme, customPalette, dataKeys.length]);
 
   const chartConfig: ChartConfig = useMemo(() => {
     return get2dChartConfig(dataKeys, colors, transformedKeys, undefined, icons);
