@@ -21,6 +21,7 @@ interface XAxisTickProps {
   tickFormatter?: (value: any) => string;
   index?: number;
   visibleTicksCount?: number;
+  variant?: "default" | "multi" | "angle";
   // Extended props for position-based offset handling
   getPositionOffset?: (value: string) => number;
   isFirstTick?: (value: string) => boolean;
@@ -39,9 +40,77 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
     getPositionOffset,
     isFirstTick,
     isLastTick,
+    variant = "default",
   } = props;
 
   const value = String(payload?.value || "");
+  if (x === undefined || y === undefined) {
+    return null;
+  }
+
+  if (variant === "multi") {
+    // Fresh implementation using foreignObject for natural text wrapping
+    const boxHeight = 60; // Allow space for up to 3 lines
+    // Calculate position offset for first and last labels (optional extension)
+
+    return (
+      <g ref={ref}>
+        <foreignObject
+          x={x - 36}
+          y={y}
+          transform="translate(0, 0)"
+          width={70}
+          height={boxHeight}
+          className="crayon-chart-x-axis-tick-foreign"
+        >
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              boxSizing: "border-box",
+            }}
+          >
+            <span
+              style={{
+                color: fill,
+                textAlign: "center",
+                wordBreak: "break-word",
+                overflow: "hidden",
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                maxWidth: "100%",
+              }}
+              className="crayon-chart-x-axis-tick-multi-line"
+              title={value}
+            >
+              {value}
+            </span>
+          </div>
+        </foreignObject>
+      </g>
+    );
+  }
+
+  if (variant === "angle") {
+    const displayValue = value;
+    return (
+      <g ref={ref} transform={`translate(${x},${y})`} className={className}>
+        <text
+          x={0}
+          y={0}
+          dy={10}
+          textAnchor="end"
+          fill={fill}
+          transform="rotate(-10)"
+          className="crayon-chart-x-axis-tick"
+        >
+          <title>{value}</title>
+          {displayValue}
+        </text>
+      </g>
+    );
+  }
   const displayValue = tickFormatter ? tickFormatter(payload?.value) : value;
 
   // Calculate position offset for first and last labels (optional extension)
@@ -62,7 +131,7 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
   return (
     <g ref={ref} transform={`translate(${x},${y})`} className={className}>
       <text
-        x={xOffset}
+        x={0}
         y={0}
         dy={10}
         textAnchor={adjustedTextAnchor}

@@ -31,7 +31,7 @@ import {
   getLegendItems,
 } from "../utils/dataUtils";
 import { getYAxisTickFormatter } from "../utils/styleUtils";
-import { AreaChartData, AreaChartVariant } from "./types";
+import { AreaChartData, AreaChartVariant, XAxisTickVariant } from "./types";
 
 // this a technic to get the type of the onClick event of the bar chart
 // we need to do this because the onClick event type is not exported by recharts
@@ -43,6 +43,7 @@ export interface AreaChartProps<T extends AreaChartData> {
   categoryKey: keyof T[number];
   theme?: PaletteName;
   variant?: AreaChartVariant;
+  tickVariant?: XAxisTickVariant;
   grid?: boolean;
   legend?: boolean;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
@@ -62,6 +63,7 @@ const AreaChartComponent = <T extends AreaChartData>({
   categoryKey,
   theme = "ocean",
   variant = "natural",
+  tickVariant = "default",
   grid = true,
   icons = {},
   isAnimationActive = false,
@@ -327,17 +329,19 @@ const AreaChartComponent = <T extends AreaChartData>({
                   textAnchor="middle"
                   interval={0}
                   tickFormatter={xAxisTickFormatter}
+                  height={60}
                   tick={
                     <XAxisTick
                       getPositionOffset={xAxisPositionData.getPositionOffset}
                       isFirstTick={xAxisPositionData.isFirstTick}
                       isLastTick={xAxisPositionData.isLastTick}
+                      variant={tickVariant}
                     />
                   }
                   orientation="bottom"
                   padding={{
-                    left: 25,
-                    right: 25,
+                    left: 36,
+                    right: 36,
                   }}
                 />
 
