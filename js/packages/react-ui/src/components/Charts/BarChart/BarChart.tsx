@@ -19,6 +19,7 @@ import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/Scrol
 import { XAxisTickVariant, type LegendItem } from "../types";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 
+import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -38,7 +39,6 @@ import {
   getWidthOfData,
   getWidthOfGroup,
 } from "./utils/BarChartUtils";
-import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 
 // this a technic to get the type of the onClick event of the bar chart
 // we need to do this because the onClick event type is not exported by recharts
