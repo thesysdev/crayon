@@ -6,7 +6,7 @@ import { XAxisTickVariant } from "../types";
 const DEFAULT_HEIGHT = 30;
 
 export const useMaxLabelHeight = (
-  data: any[],
+  data: Record<string, string | number>[],
   categoryKey: string,
   tickVariant: XAxisTickVariant,
   widthOfGroup = 70,
