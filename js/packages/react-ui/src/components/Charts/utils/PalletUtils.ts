@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import invariant from "tiny-invariant";
+import { ChartColorPalette, useTheme } from "../../ThemeProvider";
 
 export type ColorPalette = {
   name: string;
@@ -133,8 +135,7 @@ export const getPaletteMap = (): PaletteMap => {
   return colorPalettes;
 };
 
-export const getDistributedColors = (palette: ColorPalette, dataLength: number): string[] => {
-  const colors = palette.colors;
+export const getDistributedColors = (colors: string[], dataLength: number): string[] => {
   const midIndex = Math.floor(colors.length / 2);
 
   if (dataLength === 1) {
@@ -167,4 +168,26 @@ export const getDistributedColors = (palette: ColorPalette, dataLength: number):
   }
 
   return result;
+};
+
+export const useChartPalette = ({
+  chartThemeName,
+  customPalette,
+  themePaletteName,
+  dataLength,
+}: {
+  chartThemeName: PaletteName;
+  customPalette?: string[];
+  themePaletteName: keyof ChartColorPalette;
+  dataLength: number;
+}) => {
+  const { theme } = useTheme();
+  const paletteFromTheme = theme[themePaletteName] || theme.defaultChartPalette;
+  const paletteFromChartTheme = getPalette(chartThemeName);
+
+  const palette = customPalette || paletteFromTheme || paletteFromChartTheme.colors;
+
+  return useMemo(() => {
+    return getDistributedColors(palette, dataLength);
+  }, [palette, dataLength]);
 };

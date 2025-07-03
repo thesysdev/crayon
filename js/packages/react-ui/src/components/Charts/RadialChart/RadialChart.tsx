@@ -7,7 +7,7 @@ import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend";
 import { LegendItem } from "../types/Legend";
 import { getCategoricalChartConfig } from "../utils/dataUtils";
-import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
+import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 import { RadialChartData } from "./types";
 import {
   calculateRadialChartDimensions,
@@ -151,16 +151,12 @@ export const RadialChart = <T extends RadialChartData>({
   );
 
   // Get color palette and distribute colors
-  const palette = useMemo(() => {
-    if (customPalette && customPalette.length > 0) {
-      return { name: "custom", colors: customPalette };
-    }
-    return getPalette(theme);
-  }, [theme, customPalette]);
-  const colors = useMemo(
-    () => getDistributedColors(palette, sortedProcessedData.length),
-    [palette, sortedProcessedData.length],
-  );
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "radialChartPalette",
+    dataLength: sortedProcessedData.length,
+  });
 
   // Create legend items for both variants
   const legendItems = useMemo(

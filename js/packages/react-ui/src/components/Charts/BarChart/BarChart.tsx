@@ -17,7 +17,7 @@ import {
   YAxisTick,
 } from "../shared";
 import { type LegendItem } from "../types";
-import { getDistributedColors, getPalette, type PaletteName } from "../utils/PalletUtils";
+import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -90,13 +90,12 @@ const BarChartComponent = <T extends BarChartData>({
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
-  const colors = useMemo(() => {
-    const palette =
-      customPalette && customPalette.length > 0
-        ? { name: "custom", colors: customPalette }
-        : getPalette(theme);
-    return getDistributedColors(palette, dataKeys.length);
-  }, [theme, customPalette, dataKeys.length]);
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "barChartPalette",
+    dataLength: dataKeys.length,
+  });
 
   const chartConfig: ChartConfig = useMemo(() => {
     return get2dChartConfig(dataKeys, colors, transformedKeys, undefined, icons);

@@ -28,19 +28,6 @@ const comprehensiveData = [
   { category: "Software", sales: 10500 },
 ];
 
-const customColorPalette = [
-  "#0A0E60",
-  "#14197B",
-  "#272DA6",
-  "#383FC9",
-  "#444CE7",
-  "#5F67F4",
-  "#7884FF",
-  "#97A9FF",
-  "#B4C6FF",
-  "#CBD7FF",
-];
-
 /**
  * # PieChart Component Documentation
  *
@@ -282,7 +269,6 @@ export const DefaultConfiguration: Story = {
     appearance: "circular",
     cornerRadius: 0,
     paddingAngle: 0,
-    customPalette: customColorPalette,
   },
   render: (args: any) => (
     <Card style={{ width: "650px", height: "auto", padding: "24px" }}>
@@ -366,7 +352,6 @@ export const CustomPalette: Story = {
     legendVariant: "stacked",
     cornerRadius: 4,
     paddingAngle: 2,
-    customPalette: customColorPalette,
   },
   render: (args: any) => (
     <Card style={{ width: "650px", height: "auto", padding: "24px" }}>

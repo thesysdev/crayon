@@ -7,7 +7,7 @@ import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend.js";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend.js";
 import { LegendItem } from "../types/Legend.js";
 import { getCategoricalChartConfig } from "../utils/dataUtils.js";
-import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils.js";
+import { PaletteName, useChartPalette } from "../utils/PalletUtils.js";
 import { PieChartData } from "./types/index.js";
 import {
   calculateTwoLevelChartDimensions,
@@ -138,17 +138,12 @@ const PieChartComponent = <T extends PieChartData>({
     [cornerRadius, variant, paddingAngle],
   );
 
-  const palette = useMemo(() => {
-    if (customPalette && customPalette.length > 0) {
-      return { name: "custom", colors: customPalette };
-    }
-    return getPalette(theme);
-  }, [theme, customPalette]);
-
-  const colors = useMemo(
-    () => getDistributedColors(palette, sortedProcessedData.length),
-    [palette, sortedProcessedData.length],
-  );
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "pieChartPalette",
+    dataLength: sortedProcessedData.length,
+  });
 
   const legendItems = useMemo(
     () =>

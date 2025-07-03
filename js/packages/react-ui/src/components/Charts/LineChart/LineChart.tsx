@@ -24,7 +24,7 @@ import {
   getWidthOfData,
   getXAxisTickPositionData,
 } from "../utils/AreaAndLine/AreaAndLineUtils";
-import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
+import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -82,13 +82,12 @@ export const LineChart = <T extends LineChartData>({
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
-  const colors = useMemo(() => {
-    const palette =
-      customPalette && customPalette.length > 0
-        ? { name: "custom", colors: customPalette }
-        : getPalette(theme);
-    return getDistributedColors(palette, dataKeys.length);
-  }, [theme, customPalette, dataKeys.length]);
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "lineChartPalette",
+    dataLength: dataKeys.length,
+  });
 
   const chartConfig: ChartConfig = useMemo(() => {
     return get2dChartConfig(dataKeys, colors, transformedKeys, undefined, icons);

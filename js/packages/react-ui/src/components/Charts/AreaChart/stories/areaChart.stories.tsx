@@ -13,19 +13,6 @@ import { useState } from "react";
 import { Card } from "../../../Card";
 import { AreaChart, AreaChartProps } from "../AreaChart";
 
-const customColorPalette = [
-  "#0A0E60",
-  "#14197B",
-  "#272DA6",
-  "#383FC9",
-  "#444CE7",
-  "#5F67F4",
-  "#7884FF",
-  "#97A9FF",
-  "#B4C6FF",
-  "#CBD7FF",
-];
-
 // 🔥 COMPREHENSIVE DATA VARIATIONS - Designed to test label collision scenarios
 const dataVariations = {
   default: [
@@ -697,7 +684,6 @@ export const DataExplorer: Story = {
     showYAxis: true,
     xAxisLabel: "Time Period",
     yAxisLabel: "Values",
-    customPalette: customColorPalette,
     // height: 300,
   },
   render: (args: any) => {
@@ -1113,7 +1099,6 @@ export const CustomPaletteStory: Story = {
   args: {
     data: dataVariations.default as any,
     categoryKey: "month" as any,
-    customPalette: customColorPalette,
     theme: "ocean", // This will be overridden by customPalette
     variant: "natural",
     grid: true,
