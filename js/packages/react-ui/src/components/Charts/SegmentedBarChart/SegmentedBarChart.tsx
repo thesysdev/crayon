@@ -36,7 +36,7 @@ export const SegmentedBar = ({
   // Get theme colors for each segment
   const colors = useMemo(() => {
     const palette = getPalette(theme);
-    return getDistributedColors(palette, Math.max(segments.length, 1));
+    return getDistributedColors(palette.colors, Math.max(segments.length, 1));
   }, [theme, segments.length]);
 
   // Segmented progress bar

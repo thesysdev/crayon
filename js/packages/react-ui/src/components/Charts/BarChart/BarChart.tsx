@@ -14,9 +14,11 @@ import {
   XAxisTick,
   YAxisTick,
 } from "../shared";
+
 import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/ScrollButtonsHorizontal";
 import { XAxisTickVariant, type LegendItem } from "../types";
-import { getDistributedColors, getPalette, type PaletteName } from "../utils/PalletUtils";
+import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
+
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -45,6 +47,7 @@ export interface BarChartProps<T extends BarChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: PaletteName;
+  customPalette?: string[];
   variant?: BarChartVariant;
   tickVariant?: XAxisTickVariant;
   grid?: boolean;
@@ -70,6 +73,7 @@ const BarChartComponent = <T extends BarChartData>({
   data,
   categoryKey,
   theme = "ocean",
+  customPalette,
   variant = "grouped",
   tickVariant = "multiLine",
   grid = true,
@@ -94,10 +98,12 @@ const BarChartComponent = <T extends BarChartData>({
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
-  const colors = useMemo(() => {
-    const palette = getPalette(theme);
-    return getDistributedColors(palette, dataKeys.length);
-  }, [theme, dataKeys.length]);
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "barChartPalette",
+    dataLength: dataKeys.length,
+  });
 
   const chartConfig: ChartConfig = useMemo(() => {
     return get2dChartConfig(dataKeys, colors, transformedKeys, undefined, icons);

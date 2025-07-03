@@ -2,7 +2,7 @@
 export type ThemeMode = "light" | "dark";
 
 // Color-related theme properties
-export interface ColorTheme {
+export interface ColorTheme extends ChartColorPalette {
   // Background colors
   backgroundFills?: string;
   /**
@@ -114,6 +114,15 @@ export interface ColorTheme {
   chatUserResponseText?: string;
 }
 
+export interface ChartColorPalette {
+  defaultChartPalette?: string[];
+  barChartPalette?: string[];
+  lineChartPalette?: string[];
+  areaChartPalette?: string[];
+  pieChartPalette?: string[];
+  radarChartPalette?: string[];
+  radialChartPalette?: string[];
+}
 // Layout-related theme properties
 export interface LayoutTheme {
   // Spacing

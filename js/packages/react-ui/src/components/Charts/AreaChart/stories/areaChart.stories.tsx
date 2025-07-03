@@ -545,11 +545,21 @@ const salesData = [
       },
     },
     theme: {
-      description: "Specifies the color palette for the chart's areas, tooltips, and legend.",
+      description:
+        "Specifies the color palette for the chart's areas, tooltips, and legend. Ignored when customPalette is provided.",
       control: "select",
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
+        category: "🎨 Visual Styling",
+      },
+    },
+    customPalette: {
+      description:
+        "Custom array of colors to use instead of the theme palette. Overrides the theme prop when provided.",
+      control: "object",
+      table: {
+        type: { summary: "string[]" },
         category: "🎨 Visual Styling",
       },
     },
@@ -1071,6 +1081,87 @@ export const ExpandCollapseMarketingStory: Story = {
       description: {
         story:
           "Tests the legend expand/collapse functionality with 12 marketing channels that have long descriptive names. The legend should automatically show a 'Show More' button when items overflow the container width, allowing users to toggle between collapsed and expanded states.",
+      },
+    },
+  },
+};
+
+/**
+ * ## Custom Palette
+ *
+ * This story demonstrates how to use the customPalette prop to provide your own color scheme
+ * for the chart. This is useful when you need to match your brand colors or create
+ * specific visual themes.
+ */
+
+export const CustomPaletteStory: Story = {
+  name: "🎨 Custom Palette",
+  args: {
+    data: dataVariations.default as any,
+    categoryKey: "month" as any,
+    theme: "ocean", // This will be overridden by customPalette
+    variant: "natural",
+    grid: true,
+    legend: true,
+    isAnimationActive: true,
+    showYAxis: true,
+    xAxisLabel: "Month",
+    yAxisLabel: "Traffic",
+  },
+  render: (args: any) => (
+    <div>
+      <div
+        style={{
+          marginBottom: "16px",
+          padding: "12px",
+          background: "#f8f9fa",
+          borderRadius: "8px",
+          border: "1px solid #e9ecef",
+        }}
+      >
+        <h4 style={{ margin: "0 0 8px 0", color: "#333" }}>🎨 Custom Color Palette</h4>
+        <p style={{ margin: "0 0 12px 0", fontSize: "14px", color: "#666" }}>
+          This chart uses a custom color palette instead of the default theme colors.
+        </p>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          {args.customPalette?.map((color: string, index: number) => (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                padding: "4px 8px",
+                background: "white",
+                borderRadius: "4px",
+                border: "1px solid #ddd",
+                fontSize: "12px",
+              }}
+            >
+              <div
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  borderRadius: "2px",
+                  backgroundColor: color,
+                  border: "1px solid #ccc",
+                }}
+              />
+              <span style={{ fontFamily: "monospace" }}>{color}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <Card style={{ width: "600px" }}>
+        <AreaChart {...args} />
+      </Card>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates how to use the `customPalette` prop to provide your own color scheme for the chart. When `customPalette` is provided, it overrides the `theme` prop and uses your specified colors instead of the predefined theme palettes.\n\n**Key Features:**\n- 🎨 **Custom Colors**: Override default theme colors with your own palette\n- 🔄 **Theme Override**: The `theme` prop is ignored when `customPalette` is provided\n- 📊 **Consistent Distribution**: Colors are distributed evenly across data series\n- 🎯 **Brand Matching**: Perfect for matching your application\'s brand colors\n\n**Usage:**\n```tsx\n<AreaChart\n  data={data}\n  categoryKey="month"\n  customPalette={["#FF6B6B", "#4ECDC4", "#45B7D1"]}\n  // theme prop is ignored when customPalette is provided\n/>\n```',
       },
     },
   },

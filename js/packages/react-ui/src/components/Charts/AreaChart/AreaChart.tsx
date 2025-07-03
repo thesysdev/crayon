@@ -23,7 +23,7 @@ import {
   getWidthOfData,
   getWidthOfGroup,
 } from "../utils/AreaAndLine/AreaAndLineUtils";
-import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
+import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -42,6 +42,7 @@ export interface AreaChartProps<T extends AreaChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: PaletteName;
+  customPalette?: string[];
   variant?: AreaChartVariant;
   tickVariant?: XAxisTickVariant;
   grid?: boolean;
@@ -63,6 +64,7 @@ const AreaChartComponent = <T extends AreaChartData>({
   data,
   categoryKey,
   theme = "ocean",
+  customPalette,
   variant = "natural",
   tickVariant = "multiLine",
   grid = true,
@@ -88,10 +90,12 @@ const AreaChartComponent = <T extends AreaChartData>({
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
-  const colors = useMemo(() => {
-    const palette = getPalette(theme);
-    return getDistributedColors(palette, dataKeys.length);
-  }, [theme, dataKeys.length]);
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "areaChartPalette",
+    dataLength: dataKeys.length,
+  });
 
   const chartConfig: ChartConfig = useMemo(() => {
     return get2dChartConfig(dataKeys, colors, transformedKeys, undefined, icons);

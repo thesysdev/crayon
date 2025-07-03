@@ -110,7 +110,7 @@ export const transformRadialDataWithPercentages = <T extends RadialChartData>(
 ) => {
   const total = data.reduce((sum, item) => sum + Number(item[dataKey]), 0);
   const palette = getPalette(theme);
-  const colors = getDistributedColors(palette, data.length);
+  const colors = getDistributedColors(palette.colors, data.length);
 
   return data.map((item, index) => ({
     ...item,

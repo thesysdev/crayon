@@ -27,6 +27,7 @@ const formatPercentage = (value: number, total: number): string => {
 const ITEM_HEIGHT = 36; // Height of each legend item
 const ITEM_GAP = 2; // Gap between items
 const LEGEND_ITEM_LIMIT = 6;
+const SHOW_MORE_BREAKPOINT = 450;
 
 export const StackedLegend = ({
   items,
@@ -42,7 +43,9 @@ export const StackedLegend = ({
   const [showAll, setShowAll] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
 
-  const isShowMoreLayout = containerWidth !== undefined && items.length > LEGEND_ITEM_LIMIT;
+  const isShowMoreLayout =
+    containerWidth !== undefined &&
+    (containerWidth < SHOW_MORE_BREAKPOINT || items.length > LEGEND_ITEM_LIMIT);
 
   const handleMouseEnter = (key: string, index: number) => {
     onItemHover?.(key);
@@ -62,7 +65,7 @@ export const StackedLegend = ({
         const overflowing = scrollHeight > clientHeight;
         setIsOverflowing(overflowing);
         setShowUpButton(scrollTop > 0);
-        setShowDownButton(scrollTop < scrollHeight - clientHeight - 1); // -1 for rounding errors
+        setShowDownButton(scrollTop < scrollHeight - clientHeight - 1);
       }
     };
 
@@ -110,10 +113,8 @@ export const StackedLegend = ({
   // Calculate total for percentage
   const total = items.reduce((sum, item) => sum + item.value, 0);
 
-  // Sort items by value in descending order (higher to lower)
-  const sortedItems = [...items].sort((a, b) => b.value - a.value);
-
-  const itemsToDisplay = isShowMoreLayout && !showAll ? sortedItems.slice(0, 6) : sortedItems;
+  // Items are already sorted by the parent component, so we use them as-is
+  const itemsToDisplay = isShowMoreLayout && !showAll ? items.slice(0, 6) : items;
 
   return (
     <div
@@ -175,7 +176,7 @@ export const StackedLegend = ({
           </div>
         ))}
       </div>
-      {isShowMoreLayout && !showAll && (
+      {isShowMoreLayout && !showAll && items.length > LEGEND_ITEM_LIMIT && (
         <Button
           variant="secondary"
           size="small"
@@ -185,7 +186,7 @@ export const StackedLegend = ({
           Show more
         </Button>
       )}
-      {isShowMoreLayout && showAll && (
+      {isShowMoreLayout && showAll && items.length > LEGEND_ITEM_LIMIT && (
         <Button
           variant="secondary"
           size="small"

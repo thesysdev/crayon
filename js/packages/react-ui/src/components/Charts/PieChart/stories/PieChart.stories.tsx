@@ -28,16 +28,6 @@ const comprehensiveData = [
   { category: "Software", sales: 10500 },
 ];
 
-const gradientPalette = [
-  { start: "#FF6B6B", end: "#FF8E8E" },
-  { start: "#4ECDC4", end: "#6ED7D0" },
-  { start: "#45B7D1", end: "#6BC5DB" },
-  { start: "#96CEB4", end: "#B4DCC9" },
-  { start: "#FFEEAD", end: "#FFF4C4" },
-  { start: "#D4A5A5", end: "#E5BDBD" },
-  { start: "#9B59B6", end: "#B07CC7" },
-];
-
 /**
  * # PieChart Component Documentation
  *
@@ -70,7 +60,7 @@ const gradientPalette = [
  * ### Customization
  * - **Theming**: Six pre-built color palettes to match your application's design
  * - **Styling Options**: Control corner radius, padding between slices, and more
- * - **Gradient Fills**: Apply beautiful gradients for an enhanced visual appeal
+
  */
 
 const meta: Meta<PieChartProps<typeof monthlySalesData>> = {
@@ -164,6 +154,15 @@ const salesData = [
         category: "🎨 Visual Styling",
       },
     },
+    customPalette: {
+      description:
+        "An array of color strings to use as a custom palette for the chart. This overrides the `theme` prop.",
+      control: "object",
+      table: {
+        type: { summary: "string[]" },
+        category: "🎨 Visual Styling",
+      },
+    },
     appearance: {
       description: "The overall shape of the chart: a full circle or a semicircle.",
       control: "radio",
@@ -237,15 +236,6 @@ const salesData = [
         category: "🎨 Visual Styling",
       },
     },
-    useGradients: {
-      description: "Applies gradient fills to the pie slices instead of solid colors.",
-      control: "boolean",
-      table: {
-        type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
-        category: "🎨 Visual Styling",
-      },
-    },
   },
 } satisfies Meta<typeof PieChart>;
 
@@ -279,8 +269,6 @@ export const DefaultConfiguration: Story = {
     appearance: "circular",
     cornerRadius: 0,
     paddingAngle: 0,
-    useGradients: false,
-    gradientColors: gradientPalette,
   },
   render: (args: any) => (
     <Card style={{ width: "650px", height: "auto", padding: "24px" }}>
@@ -346,6 +334,36 @@ export const LayoutAndVariantOptions: Story = {
 };
 
 /**
+ * ## Custom Palette
+ *
+ * This example demonstrates how to use a custom color palette.
+ *
+ * **Feature Highlight:**
+ * - The `customPalette` prop allows you to define your own array of colors.
+ */
+export const CustomPalette: Story = {
+  name: "🎨 Custom Palette",
+  args: {
+    data: monthlySalesData,
+    categoryKey: "month",
+    dataKey: "value",
+    variant: "donut",
+    legend: true,
+    legendVariant: "stacked",
+    cornerRadius: 4,
+    paddingAngle: 2,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "650px", height: "auto", padding: "24px" }}>
+      <h3 style={{ marginBottom: "20px", fontSize: "18px", fontWeight: 600 }}>
+        Chart with Custom Palette
+      </h3>
+      <PieChart {...args} />
+    </Card>
+  ),
+};
+
+/**
  * ## Large Dataset with Carousel
  *
  * The PieChart's legend intelligently handles a large number of items by
@@ -387,7 +405,6 @@ export const ResponsiveDemo: Story = {
     legendVariant: "stacked",
     isAnimationActive: false,
     cornerRadius: 8,
-    useGradients: false,
   },
   render: (args: any) => {
     const [dimensions, setDimensions] = useState<{ width: number; height: number | string }>({
