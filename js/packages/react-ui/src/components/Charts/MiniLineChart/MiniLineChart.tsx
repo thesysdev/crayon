@@ -65,7 +65,7 @@ export const MiniLineChart = ({
 
   const colors = useMemo(() => {
     const palette = getPalette(theme);
-    return getDistributedColors(palette, 1); // Single color for 1D chart
+    return getDistributedColors(palette.colors, 1); // Single color for 1D chart
   }, [theme]);
 
   const chartConfig: ChartConfig = useMemo(() => {
