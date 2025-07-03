@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import { XAxisTickVariant } from "../../types";
-import { getCanvasContext } from "../../utils/styleUtils";
 interface XAxisTickProps {
   x?: number;
   y?: number;
@@ -42,7 +41,6 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
 
   const foreignObjectRef = useRef<SVGForeignObjectElement>(null);
   const spanRef = useRef<HTMLSpanElement>(null);
-  const context = getCanvasContext();
 
   useEffect(() => {
     if (variant === "multiLine" && spanRef.current && foreignObjectRef.current) {
