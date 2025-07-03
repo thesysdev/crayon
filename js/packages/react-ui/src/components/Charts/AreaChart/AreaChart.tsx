@@ -57,6 +57,7 @@ export interface AreaChartProps<T extends AreaChartData> {
 }
 
 const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
+const X_AXIS_PADDING = 36;
 
 const AreaChartComponent = <T extends AreaChartData>({
   data,
@@ -340,8 +341,8 @@ const AreaChartComponent = <T extends AreaChartData>({
                   }
                   orientation="bottom"
                   padding={{
-                    left: 36,
-                    right: 36,
+                    left: X_AXIS_PADDING,
+                    right: X_AXIS_PADDING,
                   }}
                 />
 

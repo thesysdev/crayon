@@ -56,6 +56,7 @@ export interface LineChartProps<T extends LineChartData> {
 }
 
 const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
+const X_AXIS_PADDING = 36;
 
 export const LineChart = <T extends LineChartData>({
   data,
@@ -349,8 +350,8 @@ export const LineChart = <T extends LineChartData>({
                   }
                   orientation="bottom"
                   padding={{
-                    left: 36,
-                    right: 36,
+                    left: X_AXIS_PADDING,
+                    right: X_AXIS_PADDING,
                   }}
                 />
 
