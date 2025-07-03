@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Line, LineChart as RechartsLineChart, XAxis, YAxis } from "recharts";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { useId } from "../../../polyfills";
 import { IconButton } from "../../IconButton";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
@@ -240,6 +241,7 @@ export const LineChart = <T extends LineChartData>({
   );
 
   return (
+    <Tooltip.Provider delayDuration={300}>
     <SideBarTooltipProvider
       isSideBarTooltipOpen={isSideBarTooltipOpen}
       setIsSideBarTooltipOpen={setIsSideBarTooltipOpen}
@@ -404,5 +406,6 @@ export const LineChart = <T extends LineChartData>({
         )}
       </div>
     </SideBarTooltipProvider>
+    </Tooltip.Provider>
   );
 };

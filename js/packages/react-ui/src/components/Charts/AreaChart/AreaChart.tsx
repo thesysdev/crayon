@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { useId } from "../../../polyfills";
 import { IconButton } from "../../IconButton";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
@@ -243,6 +244,7 @@ const AreaChartComponent = <T extends AreaChartData>({
   );
 
   return (
+    <Tooltip.Provider delayDuration={300}>
     <SideBarTooltipProvider
       isSideBarTooltipOpen={isSideBarTooltipOpen}
       setIsSideBarTooltipOpen={setIsSideBarTooltipOpen}
@@ -426,6 +428,7 @@ const AreaChartComponent = <T extends AreaChartData>({
         )}
       </div>
     </SideBarTooltipProvider>
+    </Tooltip.Provider>
   );
 };
 
