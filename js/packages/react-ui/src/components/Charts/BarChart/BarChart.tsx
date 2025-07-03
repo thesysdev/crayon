@@ -327,6 +327,52 @@ const BarChartComponent = <T extends BarChartData>({
     [dataKeys, colors],
   );
 
+  const barElements = useMemo(() => {
+    return dataKeys.map((key, index) => {
+      const transformedKey = transformedKeys[key];
+      const color = `var(--color-${transformedKey})`;
+      const isFirstInStack = index === 0;
+      const isLastInStack = index === dataKeys.length - 1;
+
+      return (
+        <Bar
+          key={`main-${key}`}
+          dataKey={key}
+          fill={color}
+          radius={getRadiusArray(
+            variant,
+            radius,
+            variant === "stacked" ? isFirstInStack : undefined,
+            variant === "stacked" ? isLastInStack : undefined,
+          )}
+          stackId={variant === "stacked" ? "a" : undefined}
+          isAnimationActive={isAnimationActive}
+          maxBarSize={BAR_WIDTH}
+          barSize={BAR_WIDTH}
+          shape={
+            <LineInBarShape
+              internalLineColor={barInternalLineColor}
+              internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
+              isHovered={hoveredCategory !== null}
+              hoveredCategory={hoveredCategory}
+              categoryKey={categoryKey as string}
+              variant={variant}
+            />
+          }
+        />
+      );
+    });
+  }, [
+    dataKeys,
+    transformedKeys,
+    variant,
+    radius,
+    isAnimationActive,
+    barInternalLineColor,
+    hoveredCategory,
+    categoryKey,
+  ]);
+
   return (
     <LabelTooltipProvider>
       <SideBarTooltipProvider
@@ -400,40 +446,7 @@ const BarChartComponent = <T extends BarChartData>({
                     offset={15}
                   />
 
-                  {dataKeys.map((key, index) => {
-                    const transformedKey = transformedKeys[key];
-                    const color = `var(--color-${transformedKey})`;
-                    const isFirstInStack = index === 0;
-                    const isLastInStack = index === dataKeys.length - 1;
-
-                    return (
-                      <Bar
-                        key={`main-${key}`}
-                        dataKey={key}
-                        fill={color}
-                        radius={getRadiusArray(
-                          variant,
-                          radius,
-                          variant === "stacked" ? isFirstInStack : undefined,
-                          variant === "stacked" ? isLastInStack : undefined,
-                        )}
-                        stackId={variant === "stacked" ? "a" : undefined}
-                        isAnimationActive={isAnimationActive}
-                        maxBarSize={BAR_WIDTH}
-                        barSize={BAR_WIDTH}
-                        shape={
-                          <LineInBarShape
-                            internalLineColor={barInternalLineColor}
-                            internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
-                            isHovered={hoveredCategory !== null}
-                            hoveredCategory={hoveredCategory}
-                            categoryKey={categoryKey as string}
-                            variant={variant}
-                          />
-                        }
-                      />
-                    );
-                  })}
+                  {barElements}
                 </RechartsBarChart>
               </ChartContainer>
             </div>
