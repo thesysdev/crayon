@@ -60,8 +60,6 @@ export const useMaxLabelHeight = (
 
   if (tickVariant === "multiLine") {
     return Math.max(maxLabelHeight + 13, DEFAULT_HEIGHT);
-  } else if (tickVariant === "angled") {
-    return Math.max(maxLabelHeight + 13, DEFAULT_HEIGHT);
   } else {
     return DEFAULT_HEIGHT;
   }
