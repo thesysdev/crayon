@@ -373,13 +373,7 @@ const BarChartComponent = <T extends BarChartData>({
                   tickFormatter={xAxisTickFormatter}
                   interval={0}
                   height={maxLabelHeight}
-                  tick={
-                    <XAxisTick
-                      variant={tickVariant}
-                      widthOfGroup={widthOfGroup}
-                      chartVariant="bar"
-                    />
-                  }
+                  tick={<XAxisTick variant={tickVariant} widthOfGroup={widthOfGroup} />}
                   orientation="bottom"
                   // gives the padding on the 2 sides see the function for reference
                   padding={padding}

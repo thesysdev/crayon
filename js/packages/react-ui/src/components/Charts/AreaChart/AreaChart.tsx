@@ -331,13 +331,7 @@ const AreaChartComponent = <T extends AreaChartData>({
                   interval={0}
                   tickFormatter={xAxisTickFormatter}
                   height={maxLabelHeight}
-                  tick={
-                    <XAxisTick
-                      variant={tickVariant}
-                      widthOfGroup={widthOfGroup}
-                      chartVariant="area"
-                    />
-                  }
+                  tick={<XAxisTick variant={tickVariant} widthOfGroup={widthOfGroup} />}
                   orientation="bottom"
                   padding={{
                     left: 36,

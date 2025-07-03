@@ -25,7 +25,6 @@ interface XAxisTickProps {
   visibleTicksCount?: number;
   variant?: XAxisTickVariant;
   widthOfGroup?: number;
-  chartVariant?: "area" | "line" | "bar";
 }
 
 const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => {
@@ -37,7 +36,6 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
     className,
     variant = "multiLine",
     widthOfGroup = 70,
-    chartVariant = "line",
   } = props;
 
   const value = String(payload?.value || "");
