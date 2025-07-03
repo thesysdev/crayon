@@ -101,29 +101,6 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
     );
   }
 
-  if (variant === "angled") {
-    const displayValue = value;
-    // For angled text, check if it's truncated based on dots at the end
-    const isTruncated = displayValue.endsWith("...");
-
-    return (
-      <g ref={ref} transform={`translate(${x},${y})`} className={className}>
-        <LabelTooltip content={value} side="top" disabled={!isTruncated}>
-          <text
-            x={0}
-            y={0}
-            dy={10}
-            textAnchor="end"
-            transform="rotate(-10)"
-            className="crayon-chart-x-axis-tick"
-          >
-            {displayValue}
-          </text>
-        </LabelTooltip>
-      </g>
-    );
-  }
-
   const displayValue = tickFormatter ? tickFormatter(payload?.value) : value;
   // Check if displayValue ends with dots (indicating truncation)
   const isTruncated = displayValue.endsWith("...");
