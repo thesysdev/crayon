@@ -21,6 +21,7 @@ import {
   getOptimalXAxisTickFormatter,
   getSnapPositions,
   getWidthOfData,
+  getWidthOfGroup,
 } from "../utils/AreaAndLine/AreaAndLineUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
 import {
@@ -61,7 +62,7 @@ export const LineChart = <T extends LineChartData>({
   categoryKey,
   theme = "ocean",
   variant = "natural",
-  tickVariant = "default",
+  tickVariant = "multiLine",
   grid = true,
   icons = {},
   isAnimationActive = false,
@@ -78,7 +79,11 @@ export const LineChart = <T extends LineChartData>({
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
-  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant);
+  const widthOfGroup = useMemo(() => {
+    return getWidthOfGroup(data);
+  }, [data]);
+
+  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant, widthOfGroup);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -335,7 +340,13 @@ export const LineChart = <T extends LineChartData>({
                   textAnchor="middle"
                   interval={0}
                   tickFormatter={xAxisTickFormatter}
-                  tick={<XAxisTick variant={tickVariant} />}
+                  tick={
+                    <XAxisTick
+                      variant={tickVariant}
+                      widthOfGroup={widthOfGroup}
+                      chartVariant="line"
+                    />
+                  }
                   orientation="bottom"
                   padding={{
                     left: 36,

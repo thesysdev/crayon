@@ -1,1 +1,1 @@
-export type XAxisTickVariant = "default" | "multi" | "angle";
+export type XAxisTickVariant = "singleLine" | "multiLine" | "angled";

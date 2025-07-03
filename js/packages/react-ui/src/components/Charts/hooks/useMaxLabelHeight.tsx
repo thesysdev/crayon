@@ -54,11 +54,11 @@ export const useMaxLabelHeight = (
     div1.remove();
 
     return largestLabelHeight;
-  }, [data, categoryKey, tickVariant]);
+  }, [data, categoryKey, tickVariant, widthOfGroup]);
 
-  if (tickVariant === "multi") {
+  if (tickVariant === "multiLine") {
     return Math.max(maxLabelHeight + 13, DEFAULT_HEIGHT);
-  } else if (tickVariant === "angle") {
+  } else if (tickVariant === "angled") {
     return Math.max(maxLabelHeight + 13, DEFAULT_HEIGHT);
   } else {
     return DEFAULT_HEIGHT;

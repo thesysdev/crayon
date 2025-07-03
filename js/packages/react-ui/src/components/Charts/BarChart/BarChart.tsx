@@ -5,7 +5,7 @@ import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useTransformedKeys } from "../hooks";
+import { useMaxLabelHeight, useTransformedKeys } from "../hooks";
 import {
   cartesianGrid,
   CustomTooltipContent,
@@ -15,7 +15,7 @@ import {
   YAxisTick,
 } from "../shared";
 import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/ScrollButtonsHorizontal";
-import { type LegendItem } from "../types";
+import { XAxisTickVariant, type LegendItem } from "../types";
 import { getDistributedColors, getPalette, type PaletteName } from "../utils/PalletUtils";
 import {
   get2dChartConfig,
@@ -34,6 +34,7 @@ import {
   getRadiusArray,
   getSnapPositions,
   getWidthOfData,
+  getWidthOfGroup,
 } from "./utils/BarChartUtils";
 
 // this a technic to get the type of the onClick event of the bar chart
@@ -45,6 +46,7 @@ export interface BarChartProps<T extends BarChartData> {
   categoryKey: keyof T[number];
   theme?: PaletteName;
   variant?: BarChartVariant;
+  tickVariant?: XAxisTickVariant;
   grid?: boolean;
   radius?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
@@ -69,6 +71,7 @@ const BarChartComponent = <T extends BarChartData>({
   categoryKey,
   theme = "ocean",
   variant = "grouped",
+  tickVariant = "multiLine",
   grid = true,
   icons = {},
   radius = BAR_RADIUS,
@@ -81,6 +84,10 @@ const BarChartComponent = <T extends BarChartData>({
   height,
   width,
 }: BarChartProps<T>) => {
+  const widthOfGroup = getWidthOfGroup(data, categoryKey as string, variant);
+
+  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant, widthOfGroup);
+
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
@@ -142,8 +149,8 @@ const BarChartComponent = <T extends BarChartData>({
   // we want to chart to scale with width but height will be fixed
 
   const chartHeight = useMemo(() => {
-    return height ?? 296;
-  }, [height]);
+    return height ?? 296 + maxLabelHeight;
+  }, [height, maxLabelHeight]);
 
   // Check scroll boundaries
   const updateScrollState = useCallback(() => {
@@ -251,7 +258,7 @@ const BarChartComponent = <T extends BarChartData>({
           data={data}
           margin={{
             top: 20,
-            bottom: 32, // this is required for to give space for x-axis
+            bottom: maxLabelHeight, // this is required for to give space for x-axis
             left: 0,
             right: 0,
           }}
@@ -279,7 +286,7 @@ const BarChartComponent = <T extends BarChartData>({
         </RechartsBarChart>
       </div>
     );
-  }, [showYAxis, chartHeight, data, dataKeys, variant, id]);
+  }, [showYAxis, chartHeight, data, dataKeys, variant, id, maxLabelHeight]);
 
   // Handle mouse events for group hovering
   const handleChartMouseMove = useCallback((state: any) => {
@@ -362,10 +369,17 @@ const BarChartComponent = <T extends BarChartData>({
                   dataKey={categoryKey as string}
                   tickLine={false}
                   axisLine={false}
-                  textAnchor="middle"
+                  textAnchor={"middle"}
                   tickFormatter={xAxisTickFormatter}
                   interval={0}
-                  tick={<XAxisTick />}
+                  height={maxLabelHeight}
+                  tick={
+                    <XAxisTick
+                      variant={tickVariant}
+                      widthOfGroup={widthOfGroup}
+                      chartVariant="bar"
+                    />
+                  }
                   orientation="bottom"
                   // gives the padding on the 2 sides see the function for reference
                   padding={padding}

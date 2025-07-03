@@ -1,5 +1,6 @@
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { XAxisTickVariant } from "../../types";
+import { getCanvasContext } from "../../utils/styleUtils";
 interface XAxisTickProps {
   x?: number;
   y?: number;
@@ -24,17 +25,29 @@ interface XAxisTickProps {
   visibleTicksCount?: number;
   variant?: XAxisTickVariant;
   widthOfGroup?: number;
+  chartVariant?: "area" | "line" | "bar";
 }
 
 const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => {
-  const { x, y, payload, tickFormatter, className, variant = "default", widthOfGroup = 70 } = props;
+  const {
+    x,
+    y,
+    payload,
+    tickFormatter,
+    className,
+    variant = "multiLine",
+    widthOfGroup = 70,
+    chartVariant = "line",
+  } = props;
 
   const value = String(payload?.value || "");
+
   const foreignObjectRef = useRef<SVGForeignObjectElement>(null);
   const spanRef = useRef<HTMLSpanElement>(null);
+  const context = getCanvasContext();
 
-  useLayoutEffect(() => {
-    if (variant === "multi" && spanRef.current && foreignObjectRef.current) {
+  useEffect(() => {
+    if (variant === "multiLine" && spanRef.current && foreignObjectRef.current) {
       const { clientHeight } = spanRef.current;
       foreignObjectRef.current.setAttribute("height", String(clientHeight));
     }
@@ -44,15 +57,18 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
     return null;
   }
 
-  if (variant === "multi") {
+  if (variant === "multiLine") {
+    // The x position from Recharts is the center of the group
+    // To center the foreignObject, we need to offset by half of widthOfGroup
+    const calX = x - widthOfGroup / 2;
+    const calWidth = widthOfGroup - 4;
+
     return (
-      <g ref={ref}>
+      <g ref={ref} transform={`translate(${calX},${y})`}>
         <foreignObject
           ref={foreignObjectRef}
-          x={x - 36}
-          y={y}
           transform="translate(0, 0)"
-          width={widthOfGroup}
+          width={calWidth}
           height={20} // Initial height, will be updated by useLayoutEffect
           className="crayon-chart-x-axis-tick-foreign"
         >
@@ -80,7 +96,7 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
     );
   }
 
-  if (variant === "angle") {
+  if (variant === "angled") {
     const displayValue = value;
     return (
       <g ref={ref} transform={`translate(${x},${y})`} className={className}>

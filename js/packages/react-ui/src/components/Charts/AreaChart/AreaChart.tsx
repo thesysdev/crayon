@@ -21,6 +21,7 @@ import {
   getOptimalXAxisTickFormatter,
   getSnapPositions,
   getWidthOfData,
+  getWidthOfGroup,
 } from "../utils/AreaAndLine/AreaAndLineUtils";
 import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
 import {
@@ -62,7 +63,7 @@ const AreaChartComponent = <T extends AreaChartData>({
   categoryKey,
   theme = "ocean",
   variant = "natural",
-  tickVariant = "default",
+  tickVariant = "multiLine",
   grid = true,
   icons = {},
   isAnimationActive = false,
@@ -78,7 +79,11 @@ const AreaChartComponent = <T extends AreaChartData>({
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
-  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant);
+  const widthOfGroup = useMemo(() => {
+    return getWidthOfGroup(data);
+  }, [data]);
+
+  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant, widthOfGroup);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -326,7 +331,13 @@ const AreaChartComponent = <T extends AreaChartData>({
                   interval={0}
                   tickFormatter={xAxisTickFormatter}
                   height={maxLabelHeight}
-                  tick={<XAxisTick variant={tickVariant} />}
+                  tick={
+                    <XAxisTick
+                      variant={tickVariant}
+                      widthOfGroup={widthOfGroup}
+                      chartVariant="area"
+                    />
+                  }
                   orientation="bottom"
                   padding={{
                     left: 36,
