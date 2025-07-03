@@ -17,28 +17,28 @@ interface LabelTooltipProps {
   className?: string;
 }
 
-const LabelTooltipProvider = React.forwardRef<HTMLDivElement, LabelTooltipProviderProps>(
-  (props, ref) => {
-    const {
-      children,
-      delayDuration = 300,
-      skipDelayDuration = 300,
-      disableHoverableContent = false,
-    } = props;
+const DEFAULT_DELAY_DURATION = 300;
+const DEFAULT_SKIP_DELAY_DURATION = 300;
+const DEFAULT_DISABLE_HOVERABLE_CONTENT = false;
 
-    return (
-      <Tooltip.Provider
-        delayDuration={delayDuration}
-        skipDelayDuration={skipDelayDuration}
-        disableHoverableContent={disableHoverableContent}
-      >
-        {children}
-      </Tooltip.Provider>
-    );
-  },
-);
+const LabelTooltipProvider: React.FC<LabelTooltipProviderProps> = (props) => {
+  const {
+    children,
+    delayDuration = DEFAULT_DELAY_DURATION,
+    skipDelayDuration = DEFAULT_SKIP_DELAY_DURATION,
+    disableHoverableContent = DEFAULT_DISABLE_HOVERABLE_CONTENT,
+  } = props;
 
-LabelTooltipProvider.displayName = "LabelTooltipProvider";
+  return (
+    <Tooltip.Provider
+      delayDuration={delayDuration}
+      skipDelayDuration={skipDelayDuration}
+      disableHoverableContent={disableHoverableContent}
+    >
+      {children}
+    </Tooltip.Provider>
+  );
+};
 
 const LabelTooltip = React.forwardRef<HTMLDivElement, LabelTooltipProps>((props, ref) => {
   const {
@@ -46,7 +46,7 @@ const LabelTooltip = React.forwardRef<HTMLDivElement, LabelTooltipProps>((props,
     content,
     side = "top",
     sideOffset = 1,
-    delayDuration = 300,
+    delayDuration = DEFAULT_DELAY_DURATION,
     className = "crayon-chart-label-tooltip",
   } = props;
 
