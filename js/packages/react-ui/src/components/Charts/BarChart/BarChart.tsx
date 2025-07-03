@@ -19,7 +19,6 @@ import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/Scrol
 import { XAxisTickVariant, type LegendItem } from "../types";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 
-import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -333,141 +332,139 @@ const BarChartComponent = <T extends BarChartData>({
   );
 
   return (
-    <LabelTooltipProvider>
-      <SideBarTooltipProvider
-        isSideBarTooltipOpen={isSideBarTooltipOpen}
-        setIsSideBarTooltipOpen={setIsSideBarTooltipOpen}
-        data={sideBarTooltipData}
-        setData={setSideBarTooltipData}
+    <SideBarTooltipProvider
+      isSideBarTooltipOpen={isSideBarTooltipOpen}
+      setIsSideBarTooltipOpen={setIsSideBarTooltipOpen}
+      data={sideBarTooltipData}
+      setData={setSideBarTooltipData}
+    >
+      <div
+        className={clsx("crayon-bar-chart-container", className)}
+        style={{
+          width: width ? `${width}px` : undefined,
+        }}
       >
-        <div
-          className={clsx("crayon-bar-chart-container", className)}
-          style={{
-            width: width ? `${width}px` : undefined,
-          }}
-        >
-          <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
-            {/* Y-axis of the chart */}
-            {yAxis}
-            <div className="crayon-bar-chart-main-container" ref={mainContainerRef}>
-              <ChartContainer
-                config={chartConfig}
-                style={{ width: dataWidth, minWidth: "100%", height: chartHeight }}
-                rechartsProps={{
-                  width: "100%",
-                  height: chartHeight,
+        <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
+          {/* Y-axis of the chart */}
+          {yAxis}
+          <div className="crayon-bar-chart-main-container" ref={mainContainerRef}>
+            <ChartContainer
+              config={chartConfig}
+              style={{ width: dataWidth, minWidth: "100%", height: chartHeight }}
+              rechartsProps={{
+                width: "100%",
+                height: chartHeight,
+              }}
+            >
+              <RechartsBarChart
+                accessibilityLayer
+                key={`bar-chart-${id}`}
+                data={data}
+                margin={{
+                  top: 20,
+                  bottom: 0,
                 }}
+                onClick={onBarsClick}
+                onMouseMove={handleChartMouseMove}
+                onMouseLeave={handleChartMouseLeave}
+                barGap={BAR_GAP}
+                barCategoryGap={BAR_CATEGORY_GAP}
               >
-                <RechartsBarChart
-                  accessibilityLayer
-                  key={`bar-chart-${id}`}
-                  data={data}
-                  margin={{
-                    top: 20,
-                    bottom: 0,
+                {grid && cartesianGrid()}
+                <XAxis
+                  dataKey={categoryKey as string}
+                  tickLine={false}
+                  axisLine={false}
+                  textAnchor={"middle"}
+                  tickFormatter={xAxisTickFormatter}
+                  interval={0}
+                  height={maxLabelHeight}
+                  tick={
+                    <XAxisTick
+                      variant={tickVariant}
+                      widthOfGroup={widthOfGroup}
+                      labelHeight={maxLabelHeight}
+                    />
+                  }
+                  orientation="bottom"
+                  // gives the padding on the 2 sides see the function for reference
+                  padding={padding}
+                />
+                {/* Y-axis is rendered in the separate synchronized chart */}
+
+                <ChartTooltip
+                  // cursor={<SimpleCursor />}
+                  cursor={{
+                    fill: "var(--crayon-sunk-fills)",
+                    stroke: "var(--crayon-stroke-default)",
+                    opacity: 1,
+                    strokeWidth: 1,
                   }}
-                  onClick={onBarsClick}
-                  onMouseMove={handleChartMouseMove}
-                  onMouseLeave={handleChartMouseLeave}
-                  barGap={BAR_GAP}
-                  barCategoryGap={BAR_CATEGORY_GAP}
-                >
-                  {grid && cartesianGrid()}
-                  <XAxis
-                    dataKey={categoryKey as string}
-                    tickLine={false}
-                    axisLine={false}
-                    textAnchor={"middle"}
-                    tickFormatter={xAxisTickFormatter}
-                    interval={0}
-                    height={maxLabelHeight}
-                    tick={
-                      <XAxisTick
-                        variant={tickVariant}
-                        widthOfGroup={widthOfGroup}
-                        labelHeight={maxLabelHeight}
-                      />
-                    }
-                    orientation="bottom"
-                    // gives the padding on the 2 sides see the function for reference
-                    padding={padding}
-                  />
-                  {/* Y-axis is rendered in the separate synchronized chart */}
+                  content={<CustomTooltipContent />}
+                  offset={15}
+                />
 
-                  <ChartTooltip
-                    // cursor={<SimpleCursor />}
-                    cursor={{
-                      fill: "var(--crayon-sunk-fills)",
-                      stroke: "var(--crayon-stroke-default)",
-                      opacity: 1,
-                      strokeWidth: 1,
-                    }}
-                    content={<CustomTooltipContent />}
-                    offset={15}
-                  />
+                {dataKeys.map((key, index) => {
+                  const transformedKey = transformedKeys[key];
+                  const color = `var(--color-${transformedKey})`;
+                  const isFirstInStack = index === 0;
+                  const isLastInStack = index === dataKeys.length - 1;
 
-                  {dataKeys.map((key, index) => {
-                    const transformedKey = transformedKeys[key];
-                    const color = `var(--color-${transformedKey})`;
-                    const isFirstInStack = index === 0;
-                    const isLastInStack = index === dataKeys.length - 1;
-
-                    return (
-                      <Bar
-                        key={`main-${key}`}
-                        dataKey={key}
-                        fill={color}
-                        radius={getRadiusArray(
-                          variant,
-                          radius,
-                          variant === "stacked" ? isFirstInStack : undefined,
-                          variant === "stacked" ? isLastInStack : undefined,
-                        )}
-                        stackId={variant === "stacked" ? "a" : undefined}
-                        isAnimationActive={isAnimationActive}
-                        maxBarSize={BAR_WIDTH}
-                        barSize={BAR_WIDTH}
-                        shape={
-                          <LineInBarShape
-                            internalLineColor={barInternalLineColor}
-                            internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
-                            isHovered={hoveredCategory !== null}
-                            hoveredCategory={hoveredCategory}
-                            categoryKey={categoryKey as string}
-                            variant={variant}
-                          />
-                        }
-                      />
-                    );
-                  })}
-                </RechartsBarChart>
-              </ChartContainer>
-            </div>
-            {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
+                  return (
+                    <Bar
+                      key={`main-${key}`}
+                      dataKey={key}
+                      fill={color}
+                      radius={getRadiusArray(
+                        variant,
+                        radius,
+                        variant === "stacked" ? isFirstInStack : undefined,
+                        variant === "stacked" ? isLastInStack : undefined,
+                      )}
+                      stackId={variant === "stacked" ? "a" : undefined}
+                      isAnimationActive={isAnimationActive}
+                      maxBarSize={BAR_WIDTH}
+                      barSize={BAR_WIDTH}
+                      shape={
+                        <LineInBarShape
+                          internalLineColor={barInternalLineColor}
+                          internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
+                          isHovered={hoveredCategory !== null}
+                          hoveredCategory={hoveredCategory}
+                          categoryKey={categoryKey as string}
+                          variant={variant}
+                        />
+                      }
+                    />
+                  );
+                })}
+              </RechartsBarChart>
+            </ChartContainer>
           </div>
-          {/* if the data width is greater than the effective width, then show the scroll buttons */}
-          <ScrollButtonsHorizontal
-            dataWidth={dataWidth}
-            effectiveWidth={effectiveWidth}
-            canScrollLeft={canScrollLeft}
-            canScrollRight={canScrollRight}
-            isSideBarTooltipOpen={isSideBarTooltipOpen}
-            onScrollLeft={scrollLeft}
-            onScrollRight={scrollRight}
-          />
-          {legend && (
-            <DefaultLegend
-              items={legendItems}
-              yAxisLabel={yAxisLabel}
-              xAxisLabel={xAxisLabel}
-              containerWidth={effectiveWidth}
-              isExpanded={isLegendExpanded}
-              setIsExpanded={setIsLegendExpanded}
-            />
-          )}
+          {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
         </div>
-      </SideBarTooltipProvider>
-    </LabelTooltipProvider>
+        {/* if the data width is greater than the effective width, then show the scroll buttons */}
+        <ScrollButtonsHorizontal
+          dataWidth={dataWidth}
+          effectiveWidth={effectiveWidth}
+          canScrollLeft={canScrollLeft}
+          canScrollRight={canScrollRight}
+          isSideBarTooltipOpen={isSideBarTooltipOpen}
+          onScrollLeft={scrollLeft}
+          onScrollRight={scrollRight}
+        />
+        {legend && (
+          <DefaultLegend
+            items={legendItems}
+            yAxisLabel={yAxisLabel}
+            xAxisLabel={xAxisLabel}
+            containerWidth={effectiveWidth}
+            isExpanded={isLegendExpanded}
+            setIsExpanded={setIsLegendExpanded}
+          />
+        )}
+      </div>
+    </SideBarTooltipProvider>
   );
 };
 

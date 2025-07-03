@@ -15,7 +15,6 @@ import {
   XAxisTick,
   YAxisTick,
 } from "../shared";
-import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { LegendItem, XAxisTickVariant } from "../types";
 import {
   findNearestSnapPosition,
@@ -303,109 +302,107 @@ export const LineChart = <T extends LineChartData>({
   ]);
 
   return (
-    <LabelTooltipProvider>
-      <SideBarTooltipProvider
-        isSideBarTooltipOpen={isSideBarTooltipOpen}
-        setIsSideBarTooltipOpen={setIsSideBarTooltipOpen}
-        data={sideBarTooltipData}
-        setData={setSideBarTooltipData}
+    <SideBarTooltipProvider
+      isSideBarTooltipOpen={isSideBarTooltipOpen}
+      setIsSideBarTooltipOpen={setIsSideBarTooltipOpen}
+      data={sideBarTooltipData}
+      setData={setSideBarTooltipData}
+    >
+      <div
+        className={clsx("crayon-line-chart-container", className)}
+        style={{
+          width: width ? `${width}px` : undefined,
+        }}
       >
-        <div
-          className={clsx("crayon-line-chart-container", className)}
-          style={{
-            width: width ? `${width}px` : undefined,
-          }}
-        >
-          <div className="crayon-line-chart-container-inner" ref={chartContainerRef}>
-            {/* Y-axis of the chart */}
-            {yAxis}
-            <div className="crayon-line-chart-main-container" ref={mainContainerRef}>
-              <ChartContainer
-                config={chartConfig}
-                style={{ width: dataWidth, minWidth: "100%", height: chartHeight }}
-                rechartsProps={{
-                  width: "100%",
-                  height: chartHeight,
+        <div className="crayon-line-chart-container-inner" ref={chartContainerRef}>
+          {/* Y-axis of the chart */}
+          {yAxis}
+          <div className="crayon-line-chart-main-container" ref={mainContainerRef}>
+            <ChartContainer
+              config={chartConfig}
+              style={{ width: dataWidth, minWidth: "100%", height: chartHeight }}
+              rechartsProps={{
+                width: "100%",
+                height: chartHeight,
+              }}
+            >
+              <RechartsLineChart
+                accessibilityLayer
+                key={`line-chart-${id}`}
+                data={data}
+                margin={{
+                  top: 20,
+                  bottom: 0,
                 }}
+                onClick={onLineClick}
               >
-                <RechartsLineChart
-                  accessibilityLayer
-                  key={`line-chart-${id}`}
-                  data={data}
-                  margin={{
-                    top: 20,
-                    bottom: 0,
+                {grid && cartesianGrid()}
+                <XAxis
+                  dataKey={categoryKey as string}
+                  tickLine={false}
+                  axisLine={false}
+                  height={maxLabelHeight}
+                  textAnchor="middle"
+                  interval={0}
+                  tickFormatter={xAxisTickFormatter}
+                  tick={
+                    <XAxisTick
+                      variant={tickVariant}
+                      widthOfGroup={widthOfGroup}
+                      labelHeight={maxLabelHeight}
+                    />
+                  }
+                  orientation="bottom"
+                  padding={{
+                    left: X_AXIS_PADDING,
+                    right: X_AXIS_PADDING,
                   }}
-                  onClick={onLineClick}
-                >
-                  {grid && cartesianGrid()}
-                  <XAxis
-                    dataKey={categoryKey as string}
-                    tickLine={false}
-                    axisLine={false}
-                    height={maxLabelHeight}
-                    textAnchor="middle"
-                    interval={0}
-                    tickFormatter={xAxisTickFormatter}
-                    tick={
-                      <XAxisTick
-                        variant={tickVariant}
-                        widthOfGroup={widthOfGroup}
-                        labelHeight={maxLabelHeight}
-                      />
-                    }
-                    orientation="bottom"
-                    padding={{
-                      left: X_AXIS_PADDING,
-                      right: X_AXIS_PADDING,
-                    }}
-                  />
+                />
 
-                  <ChartTooltip content={<CustomTooltipContent />} offset={15} />
+                <ChartTooltip content={<CustomTooltipContent />} offset={15} />
 
-                  {dataKeys.map((key) => {
-                    const transformedKey = transformedKeys[key];
-                    const color = `var(--color-${transformedKey})`;
-                    return (
-                      <Line
-                        key={`main-${key}`}
-                        dataKey={key}
-                        type={variant}
-                        stroke={color}
-                        strokeWidth={strokeWidth}
-                        dot={false}
-                        activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
-                        isAnimationActive={isAnimationActive}
-                      />
-                    );
-                  })}
-                </RechartsLineChart>
-              </ChartContainer>
-            </div>
-            {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
+                {dataKeys.map((key) => {
+                  const transformedKey = transformedKeys[key];
+                  const color = `var(--color-${transformedKey})`;
+                  return (
+                    <Line
+                      key={`main-${key}`}
+                      dataKey={key}
+                      type={variant}
+                      stroke={color}
+                      strokeWidth={strokeWidth}
+                      dot={false}
+                      activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
+                      isAnimationActive={isAnimationActive}
+                    />
+                  );
+                })}
+              </RechartsLineChart>
+            </ChartContainer>
           </div>
-          {/* if the data width is greater than the effective width, then show the scroll buttons */}
-          <ScrollButtonsHorizontal
-            dataWidth={dataWidth}
-            effectiveWidth={effectiveWidth}
-            canScrollLeft={canScrollLeft}
-            canScrollRight={canScrollRight}
-            isSideBarTooltipOpen={isSideBarTooltipOpen}
-            onScrollLeft={scrollLeft}
-            onScrollRight={scrollRight}
-          />
-          {legend && (
-            <DefaultLegend
-              items={legendItems}
-              yAxisLabel={yAxisLabel}
-              xAxisLabel={xAxisLabel}
-              containerWidth={effectiveWidth}
-              isExpanded={isLegendExpanded}
-              setIsExpanded={setIsLegendExpanded}
-            />
-          )}
+          {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
         </div>
-      </SideBarTooltipProvider>
-    </LabelTooltipProvider>
+        {/* if the data width is greater than the effective width, then show the scroll buttons */}
+        <ScrollButtonsHorizontal
+          dataWidth={dataWidth}
+          effectiveWidth={effectiveWidth}
+          canScrollLeft={canScrollLeft}
+          canScrollRight={canScrollRight}
+          isSideBarTooltipOpen={isSideBarTooltipOpen}
+          onScrollLeft={scrollLeft}
+          onScrollRight={scrollRight}
+        />
+        {legend && (
+          <DefaultLegend
+            items={legendItems}
+            yAxisLabel={yAxisLabel}
+            xAxisLabel={xAxisLabel}
+            containerWidth={effectiveWidth}
+            isExpanded={isLegendExpanded}
+            setIsExpanded={setIsLegendExpanded}
+          />
+        )}
+      </div>
+    </SideBarTooltipProvider>
   );
 };

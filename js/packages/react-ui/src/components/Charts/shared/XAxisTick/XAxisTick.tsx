@@ -1,7 +1,5 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { XAxisTickVariant } from "../../types";
-import { LabelTooltip } from "../LabelTooltip/LabelTooltip";
-
 interface XAxisTickProps {
   x?: number;
   y?: number;
@@ -45,17 +43,6 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
 
   const foreignObjectRef = useRef<SVGForeignObjectElement>(null);
   const spanRef = useRef<HTMLSpanElement>(null);
-  const [isMultiLineTruncated, setIsMultiLineTruncated] = useState(false);
-
-  // Check if multiLine text is truncated
-  useLayoutEffect(() => {
-    if (variant === "multiLine" && spanRef.current) {
-      const element = spanRef.current;
-      // Check if the text is clamped by comparing scrollHeight with clientHeight
-      const isTruncated = element.scrollHeight > element.clientHeight;
-      setIsMultiLineTruncated(isTruncated);
-    }
-  }, [value, variant, widthOfGroup]);
 
   if (x === undefined || y === undefined) {
     return null;
@@ -83,35 +70,50 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
               boxSizing: "border-box",
             }}
           >
-            <LabelTooltip content={value} side="top" disabled={!isMultiLineTruncated}>
-              <span
-                ref={spanRef}
-                style={{
-                  textAlign: "center",
-                  wordBreak: "break-word",
-                }}
-                className="crayon-chart-x-axis-tick-multi-line"
-              >
-                {value}
-              </span>
-            </LabelTooltip>
+            <span
+              ref={spanRef}
+              style={{
+                textAlign: "center",
+                wordBreak: "break-word",
+              }}
+              className="crayon-chart-x-axis-tick-multi-line"
+              title={value}
+            >
+              {value}
+            </span>
           </div>
         </foreignObject>
       </g>
     );
   }
 
+  if (variant === "angled") {
+    const displayValue = value;
+    return (
+      <g ref={ref} transform={`translate(${x},${y})`} className={className}>
+        <text
+          x={0}
+          y={0}
+          dy={10}
+          textAnchor="end"
+          transform="rotate(-10)"
+          className="crayon-chart-x-axis-tick"
+        >
+          <title>{value}</title>
+          {displayValue}
+        </text>
+      </g>
+    );
+  }
+
   const displayValue = tickFormatter ? tickFormatter(payload?.value) : value;
-  // Check if displayValue ends with dots (indicating truncation)
-  const isTruncated = displayValue.endsWith("...");
 
   return (
     <g ref={ref} transform={`translate(${x},${y})`} className={className}>
-      <LabelTooltip content={value} side="top" disabled={!isTruncated}>
-        <text x={0} y={0} dy={12} textAnchor={"middle"} className="crayon-chart-x-axis-tick">
-          {displayValue}
-        </text>
-      </LabelTooltip>
+      <text x={0} y={0} dy={12} textAnchor={"middle"} className="crayon-chart-x-axis-tick">
+        <title>{value}</title>
+        {displayValue}
+      </text>
     </g>
   );
 });
