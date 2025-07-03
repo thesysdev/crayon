@@ -240,7 +240,7 @@ export const LineChart = <T extends LineChartData>({
     [dataKeys, colors],
   );
 
-  const yAxisChart = useMemo(() => {
+  const yAxis = useMemo(() => {
     if (!showYAxis) {
       return null;
     }
@@ -312,7 +312,7 @@ export const LineChart = <T extends LineChartData>({
       >
         <div className="crayon-line-chart-container-inner" ref={chartContainerRef}>
           {/* Y-axis of the chart */}
-          {yAxisChart}
+          {yAxis}
           <div className="crayon-line-chart-main-container" ref={mainContainerRef}>
             <ChartContainer
               config={chartConfig}

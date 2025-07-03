@@ -244,7 +244,7 @@ const BarChartComponent = <T extends BarChartData>({
     return getOptimalXAxisTickFormatter(data, categoryKey as string, variant);
   }, [data, categoryKey, variant]);
 
-  const yAxisChart = useMemo(() => {
+  const yAxis = useMemo(() => {
     if (!showYAxis) {
       return null;
     }
@@ -340,7 +340,7 @@ const BarChartComponent = <T extends BarChartData>({
       >
         <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
           {/* Y-axis of the chart */}
-          {yAxisChart}
+          {yAxis}
           <div className="crayon-bar-chart-main-container" ref={mainContainerRef}>
             <ChartContainer
               config={chartConfig}

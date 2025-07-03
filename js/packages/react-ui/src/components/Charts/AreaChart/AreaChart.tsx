@@ -243,7 +243,7 @@ const AreaChartComponent = <T extends AreaChartData>({
     [dataKeys, colors],
   );
 
-  const yAxisChart = useMemo(() => {
+  const yAxis = useMemo(() => {
     if (!showYAxis) {
       return null;
     }
@@ -303,7 +303,7 @@ const AreaChartComponent = <T extends AreaChartData>({
       >
         <div className="crayon-area-chart-container-inner" ref={chartContainerRef}>
           {/* Y-axis of the chart */}
-          {yAxisChart}
+          {yAxis}
           <div className="crayon-area-chart-main-container" ref={mainContainerRef}>
             <ChartContainer
               config={chartConfig}
