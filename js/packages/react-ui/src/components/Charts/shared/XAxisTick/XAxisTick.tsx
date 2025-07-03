@@ -1,5 +1,4 @@
 import React from "react";
-import { LabelTooltip } from "../LabelTooltip/LabelTooltip";
 interface XAxisTickProps {
   x?: number;
   y?: number;
@@ -62,7 +61,6 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
 
   return (
     <g ref={ref} transform={`translate(${x},${y})`} className={className}>
-      <LabelTooltip content={value} side="top" sideOffset={1} delayDuration={300}>
         <text
           x={xOffset}
           y={0}
@@ -74,7 +72,6 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
         >
           {displayValue}
         </text>
-      </LabelTooltip>
     </g>
   );
 });
