@@ -32,7 +32,6 @@ import { BarChartData, BarChartVariant } from "./types";
 import {
   BAR_WIDTH,
   findNearestSnapPosition,
-  getOptimalXAxisTickFormatter,
   getPadding,
   getRadiusArray,
   getSnapPositions,
@@ -247,11 +246,6 @@ const BarChartComponent = <T extends BarChartData>({
 
   const id = useId();
 
-  // Get the optimal X-axis tick formatter based on available space
-  const xAxisTickFormatter = useMemo(() => {
-    return getOptimalXAxisTickFormatter(data, categoryKey as string, variant);
-  }, [data, categoryKey, variant]);
-
   const yAxis = useMemo(() => {
     if (!showYAxis) {
       return null;
@@ -379,7 +373,6 @@ const BarChartComponent = <T extends BarChartData>({
                     tickLine={false}
                     axisLine={false}
                     textAnchor={"middle"}
-                    tickFormatter={xAxisTickFormatter}
                     interval={0}
                     height={maxLabelHeight}
                     tick={

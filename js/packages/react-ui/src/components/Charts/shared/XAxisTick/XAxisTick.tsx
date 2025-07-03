@@ -24,9 +24,9 @@ interface XAxisTickProps {
   tickFormatter?: (value: any) => string;
   index?: number;
   visibleTicksCount?: number;
-  variant?: XAxisTickVariant;
-  widthOfGroup?: number;
-  labelHeight?: number;
+  variant: XAxisTickVariant;
+  widthOfGroup: number;
+  labelHeight: number;
 }
 
 const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => {
@@ -34,26 +34,28 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
     x,
     y,
     payload,
-    tickFormatter,
     className,
     variant = "multiLine",
     widthOfGroup = 70,
     labelHeight = 20,
   } = props;
 
-  const value = String(payload?.value || "");
+  const rawValue = payload?.value;
+  const value = String(rawValue || "");
 
   const foreignObjectRef = useRef<SVGForeignObjectElement>(null);
   const spanRef = useRef<HTMLSpanElement>(null);
-  const [isMultiLineTruncated, setIsMultiLineTruncated] = useState(false);
+  const [isTruncated, setIsTruncated] = useState(false);
 
-  // Check if multiLine text is truncated
+  // Check if text is truncated
   useLayoutEffect(() => {
-    if (variant === "multiLine" && spanRef.current) {
+    if (spanRef.current) {
       const element = spanRef.current;
-      // Check if the text is clamped by comparing scrollHeight with clientHeight
-      const isTruncated = element.scrollHeight > element.clientHeight;
-      setIsMultiLineTruncated(isTruncated);
+      const isCurrentlyTruncated =
+        variant === "multiLine"
+          ? element.scrollHeight > element.clientHeight
+          : element.scrollWidth > element.clientWidth;
+      setIsTruncated(isCurrentlyTruncated);
     }
   }, [value, variant, widthOfGroup]);
 
@@ -61,57 +63,39 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
     return null;
   }
 
-  if (variant === "multiLine") {
-    // The x position from Recharts is the center of the group
-    // To center the foreignObject, we need to offset by half of widthOfGroup
-    const calX = x - widthOfGroup / 2;
-    const calWidth = widthOfGroup - 4;
+  // The x position from Recharts is the center of the group
+  // To center the foreignObject, we need to offset by half of widthOfGroup
+  const calX = x - widthOfGroup / 2;
+  const calWidth = variant === "multiLine" ? widthOfGroup - 4 : widthOfGroup - 10;
 
-    return (
-      <g ref={ref} transform={`translate(${calX},${y})`}>
-        <foreignObject
-          ref={foreignObjectRef}
-          transform="translate(0, 0)"
-          width={calWidth}
-          height={labelHeight} // Initial height, will be updated by useLayoutEffect
-          className="crayon-chart-x-axis-tick-foreign"
-        >
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              boxSizing: "border-box",
-            }}
-          >
-            <LabelTooltip content={value} side="top" disabled={!isMultiLineTruncated}>
-              <span
-                ref={spanRef}
-                style={{
-                  textAlign: "center",
-                  wordBreak: "break-word",
-                }}
-                className="crayon-chart-x-axis-tick-multi-line"
-              >
-                {value}
-              </span>
-            </LabelTooltip>
-          </div>
-        </foreignObject>
-      </g>
-    );
-  }
-
-  const displayValue = tickFormatter ? tickFormatter(payload?.value) : value;
-  // Check if displayValue ends with dots (indicating truncation)
-  const isTruncated = displayValue.endsWith("...");
+  const spanClassName =
+    variant === "multiLine"
+      ? "crayon-chart-x-axis-tick-multi-line"
+      : "crayon-chart-x-axis-tick-single-line";
 
   return (
-    <g ref={ref} transform={`translate(${x},${y})`} className={className}>
-      <LabelTooltip content={value} side="top" disabled={!isTruncated}>
-        <text x={0} y={0} dy={12} textAnchor={"middle"} className="crayon-chart-x-axis-tick">
-          {displayValue}
-        </text>
-      </LabelTooltip>
+    <g ref={ref} transform={`translate(${calX},${y})`} className={className}>
+      <foreignObject
+        ref={foreignObjectRef}
+        transform="translate(0, 0)"
+        width={calWidth}
+        height={labelHeight}
+        className="crayon-chart-x-axis-tick-foreign"
+      >
+        <div className="crayon-chart-x-axis-tick-container">
+          <LabelTooltip content={value} side="top" disabled={!isTruncated}>
+            <span
+              ref={spanRef}
+              style={{
+                textAlign: "center",
+              }}
+              className={spanClassName}
+            >
+              {value}
+            </span>
+          </LabelTooltip>
+        </div>
+      </foreignObject>
     </g>
   );
 });

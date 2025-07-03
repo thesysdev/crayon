@@ -19,7 +19,6 @@ import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { LegendItem, XAxisTickVariant } from "../types";
 import {
   findNearestSnapPosition,
-  getOptimalXAxisTickFormatter,
   getSnapPositions,
   getWidthOfData,
   getWidthOfGroup,
@@ -137,11 +136,6 @@ export const LineChart = <T extends LineChartData>({
   const chartHeight = useMemo(() => {
     return height ?? 296 + maxLabelHeight;
   }, [height, maxLabelHeight]);
-
-  // Calculate optimal tick formatter for collision detection and truncation
-  const xAxisTickFormatter = useMemo(() => {
-    return getOptimalXAxisTickFormatter(data, effectiveContainerWidth);
-  }, [data, effectiveContainerWidth]);
 
   // Check scroll boundaries
   const updateScrollState = useCallback(() => {
@@ -347,7 +341,6 @@ export const LineChart = <T extends LineChartData>({
                     height={maxLabelHeight}
                     textAnchor="middle"
                     interval={0}
-                    tickFormatter={xAxisTickFormatter}
                     tick={
                       <XAxisTick
                         variant={tickVariant}

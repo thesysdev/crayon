@@ -3,7 +3,6 @@
 
 import { AreaChartData } from "../../AreaChart/types";
 import { LineChartData } from "../../LineChart/types";
-import { getCanvasContext } from "../styleUtils";
 
 const ELEMENT_SPACING = 72;
 
@@ -38,83 +37,6 @@ export const getWidthOfData = (data: ChartData, containerWidth: number) => {
   }
 
   return width;
-};
-
-/**
- * SHARED UTILITY FUNCTION
- * This function returns the formatter for the X-axis tick values with intelligent truncation.
- * This is identical for both AreaChart and LineChart components.
- * @param groupWidth - The width available for each group/category (optional)
- * @param containerWidth - The total container width for responsive calculations (optional)
- * @returns The formatter for the X-axis tick values.
- * Internally used by the XAxis component in Recharts
- * this function can be improved for coalition detection and better truncation
- */
-export const getXAxisTickFormatter = (groupWidth?: number, containerWidth?: number) => {
-  const PADDING = 10; // More generous padding for visual clarity
-  const context = getCanvasContext();
-
-  return (value: string) => {
-    // If canvas isn't supported, or for some reason context is null, return original value.
-    if (!context) return String(value);
-
-    const stringValue = String(value);
-
-    // Determine the maximum available width for the tick. Prioritize groupWidth.
-    let availableWidth = 0;
-    if (groupWidth) {
-      availableWidth = Math.max(0, groupWidth - PADDING);
-    } else if (containerWidth) {
-      // Fallback responsive logic if no groupWidth is available.
-      // We assume a certain number of ticks could be visible.
-      // This is less accurate but better than nothing.
-      const assumedMaxTicks = containerWidth / 100; // e.g., assume ticks are ~100px apart
-      availableWidth = Math.max(0, containerWidth / assumedMaxTicks - PADDING);
-    } else {
-      // No width info at all, perform a simple character slice as a last resort.
-      return stringValue.length > 10 ? `${stringValue.slice(0, 10)}...` : stringValue;
-    }
-
-    // If the original text already fits, return it.
-    if (context.measureText(stringValue).width <= availableWidth) {
-      return stringValue;
-    }
-
-    // If it doesn't fit, perform a binary search to find the best truncation point.
-    let low = 0;
-    let high = stringValue.length;
-    let result = "";
-
-    // binary search to find the best truncation point.
-    while (low <= high) {
-      const mid = Math.floor((low + high) / 2);
-      // Don't append "..." if mid is 0, just return an empty string or first char.
-      if (mid === 0) {
-        low = mid + 1;
-        continue;
-      }
-      const truncated = stringValue.substring(0, mid) + "...";
-      const measuredWidth = context.measureText(truncated).width;
-
-      if (measuredWidth <= availableWidth) {
-        result = truncated;
-        low = mid + 1;
-      } else {
-        high = mid - 1;
-      }
-    }
-
-    // A final check: if result is empty (very tight space), it might be better
-    // to show the first character instead of nothing.
-    if (result === "") {
-      const firstChar = stringValue.substring(0, 1);
-      if (context.measureText(firstChar).width <= availableWidth) {
-        return firstChar;
-      }
-    }
-
-    return result;
-  };
 };
 
 /**
@@ -163,20 +85,6 @@ export const getWidthOfGroup = (data: ChartData) => {
 
   // Both chart types use the same spacing
   return ELEMENT_SPACING;
-};
-
-/**
- * SHARED UTILITY FUNCTION
- * Helper function to get the optimal X-axis tick formatter with calculated group width.
- * This is generic and works for both AreaChart and LineChart data.
- * @param data - The chart data
- * @param containerWidth - The container width for responsive calculations
- * @returns The optimized formatter function
- */
-export const getOptimalXAxisTickFormatter = (data: ChartData, containerWidth?: number) => {
-  // Calculate the available width per group
-  const groupWidth = getWidthOfGroup(data);
-  return getXAxisTickFormatter(groupWidth, containerWidth);
 };
 
 /**
