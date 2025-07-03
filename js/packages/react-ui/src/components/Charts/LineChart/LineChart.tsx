@@ -340,7 +340,13 @@ export const LineChart = <T extends LineChartData>({
                   textAnchor="middle"
                   interval={0}
                   tickFormatter={xAxisTickFormatter}
-                  tick={<XAxisTick variant={tickVariant} widthOfGroup={widthOfGroup} />}
+                  tick={
+                    <XAxisTick
+                      variant={tickVariant}
+                      widthOfGroup={widthOfGroup}
+                      labelHeight={maxLabelHeight}
+                    />
+                  }
                   orientation="bottom"
                   padding={{
                     left: 36,

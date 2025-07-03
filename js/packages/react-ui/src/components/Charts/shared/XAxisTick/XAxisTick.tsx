@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { XAxisTickVariant } from "../../types";
 interface XAxisTickProps {
   x?: number;
@@ -24,6 +24,7 @@ interface XAxisTickProps {
   visibleTicksCount?: number;
   variant?: XAxisTickVariant;
   widthOfGroup?: number;
+  labelHeight?: number;
 }
 
 const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => {
@@ -35,19 +36,13 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
     className,
     variant = "multiLine",
     widthOfGroup = 70,
+    labelHeight = 20,
   } = props;
 
   const value = String(payload?.value || "");
 
   const foreignObjectRef = useRef<SVGForeignObjectElement>(null);
   const spanRef = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    if (variant === "multiLine" && spanRef.current && foreignObjectRef.current) {
-      const { clientHeight } = spanRef.current;
-      foreignObjectRef.current.setAttribute("height", String(clientHeight));
-    }
-  }, [value, variant]);
 
   if (x === undefined || y === undefined) {
     return null;
@@ -65,7 +60,7 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
           ref={foreignObjectRef}
           transform="translate(0, 0)"
           width={calWidth}
-          height={20} // Initial height, will be updated by useLayoutEffect
+          height={labelHeight} // Initial height, will be updated by useLayoutEffect
           className="crayon-chart-x-axis-tick-foreign"
         >
           <div

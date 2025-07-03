@@ -34,6 +34,8 @@ export const useMaxLabelHeight = (
 
     div1.style.font = userTheme.fontLabelExtraSmall ?? "";
     div1.style.letterSpacing = userTheme.fontLabelExtraSmallLetterSpacing ?? "";
+    div1.style.opacity = "0";
+    div1.style.pointerEvents = "none";
 
     div2.innerText = largestLabel;
     div3.innerText = "a";
