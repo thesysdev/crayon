@@ -1,8 +1,8 @@
+import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import { useId } from "../../../polyfills";
 import { IconButton } from "../../IconButton";
 import { useTheme } from "../../ThemeProvider";

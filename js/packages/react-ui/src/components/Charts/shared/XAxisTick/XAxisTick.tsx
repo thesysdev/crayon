@@ -77,13 +77,8 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
           </text>
         </Tooltip.Trigger>
         <Tooltip.Portal>
-          <Tooltip.Content
-            className="crayon-chart-x-axis-tick-tooltip"
-            side="top"
-            sideOffset={5}
-          >
+          <Tooltip.Content className="crayon-chart-x-axis-tick-tooltip" side="top" sideOffset={1}>
             {value}
-            <Tooltip.Arrow className="crayon-chart-x-axis-tick-tooltip-arrow" />
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>
