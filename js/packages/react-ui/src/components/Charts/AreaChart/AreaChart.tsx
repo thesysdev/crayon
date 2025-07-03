@@ -60,6 +60,7 @@ export interface AreaChartProps<T extends AreaChartData> {
 
 const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
 const X_AXIS_PADDING = 36;
+const CHART_CONTAINER_BOTTOM_MARGIN = 10;
 
 const AreaChartComponent = <T extends AreaChartData>({
   data,
@@ -262,7 +263,7 @@ const AreaChartComponent = <T extends AreaChartData>({
           data={data}
           margin={{
             top: 20,
-            bottom: maxLabelHeight, // this is required for to give space for x-axis
+            bottom: maxLabelHeight + CHART_CONTAINER_BOTTOM_MARGIN, // this is required for to give space for x-axis
             left: 0,
             right: 0,
           }}
@@ -325,7 +326,7 @@ const AreaChartComponent = <T extends AreaChartData>({
                   data={data}
                   margin={{
                     top: 20,
-                    bottom: 0,
+                    bottom: CHART_CONTAINER_BOTTOM_MARGIN,
                   }}
                   onClick={onAreaClick}
                 >

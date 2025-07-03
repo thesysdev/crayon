@@ -69,6 +69,7 @@ const BAR_GAP = 10; // Gap between bars
 const BAR_CATEGORY_GAP = "20%"; // Gap between categories
 const BAR_INTERNAL_LINE_WIDTH = 1;
 const BAR_RADIUS = 4;
+const CHART_CONTAINER_BOTTOM_MARGIN = 10;
 
 const BarChartComponent = <T extends BarChartData>({
   data,
@@ -265,7 +266,7 @@ const BarChartComponent = <T extends BarChartData>({
           data={data}
           margin={{
             top: 20,
-            bottom: maxLabelHeight, // this is required for to give space for x-axis
+            bottom: maxLabelHeight + CHART_CONTAINER_BOTTOM_MARGIN, // this is required for to give space for x-axis
             left: 0,
             right: 0,
           }}
@@ -364,7 +365,7 @@ const BarChartComponent = <T extends BarChartData>({
                   data={data}
                   margin={{
                     top: 20,
-                    bottom: 0,
+                    bottom: CHART_CONTAINER_BOTTOM_MARGIN,
                   }}
                   onClick={onBarsClick}
                   onMouseMove={handleChartMouseMove}
