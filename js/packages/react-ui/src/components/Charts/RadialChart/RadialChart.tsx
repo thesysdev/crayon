@@ -69,7 +69,6 @@ export const RadialChart = <T extends RadialChartData>({
   const isRowLayout =
     legend && legendVariant === "stacked" && wrapperRect.width >= STACKED_LEGEND_BREAKPOINT;
 
-
   // Sort data by value (highest to lowest) for radial chart rendering
   const sortedProcessedData = useMemo(
     () => [...data].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
