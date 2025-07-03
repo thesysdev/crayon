@@ -15,6 +15,10 @@ interface LabelTooltipProps {
   sideOffset?: number;
   delayDuration?: number;
   className?: string;
+  disabled?: boolean;
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const DEFAULT_DELAY_DURATION = 300;
@@ -48,10 +52,23 @@ const LabelTooltip = React.forwardRef<HTMLDivElement, LabelTooltipProps>((props,
     sideOffset = 1,
     delayDuration = DEFAULT_DELAY_DURATION,
     className = "crayon-chart-label-tooltip",
+    disabled = false,
+    open,
+    defaultOpen,
+    onOpenChange,
   } = props;
 
+  if (disabled) {
+    return children;
+  }
+
   return (
-    <Tooltip.Root delayDuration={delayDuration}>
+    <Tooltip.Root
+      delayDuration={delayDuration}
+      open={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={onOpenChange}
+    >
       <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
       <Tooltip.Portal>
         <Tooltip.Content ref={ref} className={className} side={side} sideOffset={sideOffset}>
