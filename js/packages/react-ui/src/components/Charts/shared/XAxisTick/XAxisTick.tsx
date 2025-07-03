@@ -65,7 +65,10 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
 
   // The x position from Recharts is the center of the group
   // To center the foreignObject, we need to offset by half of widthOfGroup
-  const calX = x - widthOfGroup / 2;
+  // +2 is for the multiLine variant to center the text
+  // +5 is for the singleLine variant to center the text
+  // offset for padding - 4 and -10 respectively
+  const calX = variant === "multiLine" ? x - widthOfGroup / 2 + 2 : x - widthOfGroup / 2 + 5;
   const calWidth = variant === "multiLine" ? widthOfGroup - 4 : widthOfGroup - 10;
 
   const spanClassName =
