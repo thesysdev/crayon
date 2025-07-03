@@ -1,0 +1,82 @@
+@use "../../../cssUtils" as cssUtils;
+
+// Main wrapper for the entire chart component
+.crayon-pie-chart-container-wrapper {
+  display: flex;
+  position: relative;
+  gap: 20px;
+
+  // Default legend is always a column layout
+  &.legend-default {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  // Stacked legend uses a column layout by default (mobile-first)
+  &.legend-stacked.layout-column {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  // Switches to a row layout on wider containers
+  &.legend-stacked.layout-row {
+    flex-direction: row;
+    align-items: center;
+    min-height: 296px;
+
+    .crayon-pie-chart-legend-container {
+      height: 296px;
+    }
+  }
+}
+
+// Container for the chart itself
+.crayon-pie-chart-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  // When in a row layout, the chart container should be flexible
+  .layout-row & {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+// Recharts chart styles
+.crayon-pie-chart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .crayon-pie-chart__inner-cell {
+    fill: cssUtils.$bg-sunk;
+  }
+}
+
+// Container for the legend component
+.crayon-pie-chart-legend-container {
+  display: flex;
+  justify-content: center;
+
+  // Default legend is centered at the bottom
+  .legend-default & {
+    width: 100%;
+    align-items: center;
+  }
+
+  // Stacked legend in column layout
+  .layout-column.legend-stacked & {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  // Stacked legend in row layout
+  .layout-row.legend-stacked & {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    align-items: center;
+  }
+}

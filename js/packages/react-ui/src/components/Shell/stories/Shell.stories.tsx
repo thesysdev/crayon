@@ -14,7 +14,7 @@ import logoUrl from "./thesysdev_logo.jpeg";
 
 export default {
   title: "Shell",
-  tags: ["dev", "!autodocs"],
+  tags: ["!dev", "!autodocs"],
 };
 
 export const Default = {

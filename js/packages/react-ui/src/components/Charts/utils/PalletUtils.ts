@@ -1,10 +1,14 @@
+import { useMemo } from "react";
 import invariant from "tiny-invariant";
+import { ChartColorPalette, useTheme } from "../../ThemeProvider";
 
 export type ColorPalette = {
   name: string;
   // colors are used to display the palette
   colors: string[];
 };
+
+export type PaletteName = "ocean" | "orchid" | "emerald" | "spectrum" | "sunset" | "vivid";
 
 type PaletteMap = Record<string, ColorPalette>;
 
@@ -131,28 +135,59 @@ export const getPaletteMap = (): PaletteMap => {
   return colorPalettes;
 };
 
-export const getDistributedColors = (palette: ColorPalette, dataLength: number): string[] => {
-  const colors = palette.colors;
+export const getDistributedColors = (colors: string[], dataLength: number): string[] => {
   const midIndex = Math.floor(colors.length / 2);
 
   if (dataLength === 1) {
-    // For single item, return the middle color
     return [colors[midIndex]!];
   }
 
   if (dataLength === 2) {
-    // For two items, return colors equally spaced around the middle
     return [colors[midIndex - 1]!, colors[midIndex + 1]!];
   }
 
-  // For 3 or more items, distribute colors evenly around the middle
   const result: string[] = [];
   const offset = Math.floor((dataLength - 1) / 2);
 
   for (let i = 0; i < dataLength; i++) {
     const index = midIndex + (i - offset);
-    result.push(colors[index] ?? colors[midIndex]!); // Fallback to middle color if index out of bounds
+
+    // Handle out of bounds by cycling through colors
+    let actualIndex: number;
+    if (index < 0) {
+      // Wrap around from the end
+      actualIndex = colors.length + (index % colors.length);
+    } else if (index >= colors.length) {
+      // Wrap around from the beginning
+      actualIndex = index % colors.length;
+    } else {
+      actualIndex = index;
+    }
+
+    result.push(colors[actualIndex]!);
   }
 
   return result;
+};
+
+export const useChartPalette = ({
+  chartThemeName,
+  customPalette,
+  themePaletteName,
+  dataLength,
+}: {
+  chartThemeName: PaletteName;
+  customPalette?: string[];
+  themePaletteName: keyof ChartColorPalette;
+  dataLength: number;
+}) => {
+  const { theme } = useTheme();
+  const paletteFromTheme = theme[themePaletteName] || theme.defaultChartPalette;
+  const paletteFromChartTheme = getPalette(chartThemeName);
+
+  const palette = customPalette || paletteFromTheme || paletteFromChartTheme.colors;
+
+  return useMemo(() => {
+    return getDistributedColors(palette, dataLength);
+  }, [palette, dataLength]);
 };

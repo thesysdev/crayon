@@ -19,7 +19,7 @@ import logoUrl from "./thesysdev_logo.jpeg";
 
 export default {
   title: "Copilot Shell",
-  tags: ["dev", "!autodocs"],
+  tags: ["!dev", "!autodocs"],
 };
 
 export const Default = {

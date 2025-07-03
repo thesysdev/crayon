@@ -1,4 +1,39 @@
-@use "../../cssUtils" as cssUtils;
+@use "../../cssUtils.scss" as cssUtils;
+
+// bar chart css
+@forward "./BarChart/barChart.scss";
+@forward "./MiniBarChart/miniBarChart.scss";
+
+// area chart css
+@forward "./AreaChart/areaChart.scss";
+
+// line chart css
+@forward "./LineChart/lineChart.scss";
+
+// radar chart css
+@forward "./RadarChart/radarChart.scss";
+
+// segmented bar chart css
+@forward "./SegmentedBarChart/segmentedBarChart.scss";
+
+// pie chart css
+@forward "./PieChart/pieChart.scss";
+
+// radial chart css
+@forward "./RadialChart/radialChart.scss";
+
+// shared components css
+@forward "./shared/XAxisTick/xAxisTick.scss";
+@forward "./shared/DefaultLegend/defaultLegend.scss";
+@forward "./shared/StackedLegend/stackedLegend.scss";
+@forward "./shared/YAxisTick/yAxisTick.scss";
+@forward "./shared/ScrollButtonsHorizontal/scrollButtonsHorizontal.scss";
+
+// portal tooltip css
+@forward "./shared/PortalTooltip/portalTooltip.scss";
+
+// side bar tooltip css
+@forward "./shared/SideBarTooltip/sideBarTooltip.scss";
 
 .crayon-chart {
   // Container styles
@@ -9,16 +44,7 @@
     font-size: 12px;
     line-height: 16px;
 
-    // Text and fills
-    .recharts-cartesian-axis-tick text {
-      fill: cssUtils.$primary-text;
-    }
-
     .recharts-radial-bar-background-sector {
-      fill: cssUtils.$bg-fill;
-    }
-
-    .recharts-rectangle.recharts-tooltip-cursor {
       fill: cssUtils.$bg-fill;
     }
 
@@ -43,169 +69,6 @@
       outline: none;
     }
   }
-
-  // Tooltip styles
-  &-tooltip {
-    display: grid;
-    align-items: start;
-    min-width: 128px;
-    gap: cssUtils.$spacing-xs;
-    padding: cssUtils.$spacing-xs;
-    color: cssUtils.$primary-text;
-    @include cssUtils.typography(label, default);
-    border-radius: cssUtils.$rounded-s;
-    border: 1px solid cssUtils.$stroke-default;
-    background-color: cssUtils.$bg-container;
-    box-shadow: cssUtils.$shadow-s;
-    text-transform: capitalize;
-
-    &-label {
-      @include cssUtils.typography(label, default);
-    }
-
-    &-label-heavy {
-      @include cssUtils.typography(label, heavy);
-    }
-
-    &-content {
-      display: grid;
-      align-items: start;
-      min-width: 128px;
-      gap: cssUtils.$spacing-xs;
-      padding: cssUtils.$spacing-xs;
-      color: cssUtils.$primary-text;
-      @include cssUtils.typography(label, default);
-      border-radius: cssUtils.$rounded-s;
-      border: 1px solid cssUtils.$stroke-default;
-      background-color: cssUtils.$bg-container;
-      box-shadow: cssUtils.$shadow-s;
-      text-transform: capitalize;
-
-      &-item {
-        display: flex;
-        width: 100%;
-        flex-wrap: wrap;
-        gap: cssUtils.$spacing-xs;
-        align-items: stretch;
-        &--dot {
-          align-items: center;
-        }
-
-        svg {
-          height: 10px;
-          width: 10px;
-          color: cssUtils.$primary-text;
-        }
-      }
-      & &-indicator {
-        flex-shrink: 0;
-        border-radius: cssUtils.$rounded-3xs;
-
-        &--dot {
-          height: 10px;
-          width: 10px;
-          background-color: var(--color-bg);
-          border-color: var(--color-border);
-        }
-
-        &--line {
-          width: 4px;
-          height: 100%;
-          background-color: var(--color-bg);
-          border-color: var(--color-border);
-        }
-
-        &--dashed {
-          width: 0;
-          border: 1.5px dashed var(--color-border);
-          background-color: transparent;
-        }
-
-        &--nested-dashed {
-          margin: cssUtils.$spacing-3xs 0;
-        }
-      }
-
-      &-value-wrapper {
-        display: flex;
-        flex: 1;
-        justify-content: space-between;
-        line-height: 1;
-
-        &--nested {
-          align-items: flex-end;
-        }
-
-        &--standard {
-          align-items: center;
-        }
-      }
-
-      &-label {
-        display: grid;
-        gap: cssUtils.$spacing-xs;
-        color: cssUtils.$primary-text;
-        @include cssUtils.typography(label, default);
-      }
-
-      &-value {
-        font-variant-numeric: tabular-nums;
-        color: cssUtils.$primary-text;
-        @include cssUtils.typography(label, default);
-
-        &--percentage {
-          padding-left: cssUtils.$spacing-s;
-        }
-      }
-    }
-  }
-
-  // Legend styles
-  &-legend {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    text-transform: capitalize;
-    flex-wrap: wrap;
-
-    &--top {
-      padding-bottom: cssUtils.$spacing-s;
-    }
-
-    &--bottom {
-      padding-top: cssUtils.$spacing-m;
-    }
-
-    &-item {
-      display: flex;
-      align-items: center;
-      gap: cssUtils.$spacing-xs;
-
-      svg {
-        height: 12px;
-        width: 12px;
-        color: cssUtils.$primary-text;
-      }
-
-      &-indicator {
-        height: 8px;
-        width: 8px;
-        flex-shrink: 0;
-        border-radius: cssUtils.$rounded-3xs;
-        background-color: var(--color-bg);
-      }
-
-      &-label {
-        @include cssUtils.typography(label, heavy);
-        max-width: 64px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        color: cssUtils.$primary-text;
-      }
-    }
-  }
 }
 
 .crayon-chart-cartesian-grid {
@@ -221,11 +84,13 @@
 }
 
 //Pie Chart styles
+// @subham either remove this or move this to it dedicated file.
 
 .crayon-pie-chart {
   &-container {
     margin-left: auto;
     margin-right: auto;
+    aspect-ratio: 1/1;
 
     &-fullscreen {
       min-height: 400px;
@@ -252,10 +117,4 @@
 .crayon-pie-chart-label {
   fill: cssUtils.$secondary-text;
   padding: 0;
-}
-
-.crayon-chart-axis-label {
-  fill: cssUtils.$primary-text;
-  @include cssUtils.typography(label, default);
-  text-anchor: middle;
 }
