@@ -1,4 +1,3 @@
-import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -244,191 +243,189 @@ const AreaChartComponent = <T extends AreaChartData>({
   );
 
   return (
-    <Tooltip.Provider delayDuration={300}>
-      <SideBarTooltipProvider
-        isSideBarTooltipOpen={isSideBarTooltipOpen}
-        setIsSideBarTooltipOpen={setIsSideBarTooltipOpen}
-        data={sideBarTooltipData}
-        setData={setSideBarTooltipData}
+    <SideBarTooltipProvider
+      isSideBarTooltipOpen={isSideBarTooltipOpen}
+      setIsSideBarTooltipOpen={setIsSideBarTooltipOpen}
+      data={sideBarTooltipData}
+      setData={setSideBarTooltipData}
+    >
+      <div
+        className={clsx("crayon-area-chart-container", className)}
+        style={{
+          width: width ? `${width}px` : undefined,
+        }}
       >
-        <div
-          className={clsx("crayon-area-chart-container", className)}
-          style={{
-            width: width ? `${width}px` : undefined,
-          }}
-        >
-          <div className="crayon-area-chart-container-inner" ref={chartContainerRef}>
-            {showYAxis && (
-              <div className="crayon-area-chart-y-axis-container">
-                {/* Y-axis only chart - synchronized with main chart */}
-                <RechartsAreaChart
-                  key={`y-axis-chart-${id}`}
-                  width={Y_AXIS_WIDTH}
-                  height={chartHeight}
-                  data={data}
-                  margin={{
-                    top: 20,
-                    bottom: 32, // this is required for to give space for x-axis
-                    left: 0,
-                    right: 0,
-                  }}
-                  syncId={chartSyncID}
-                >
-                  <YAxis
-                    width={Y_AXIS_WIDTH}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={getYAxisTickFormatter()}
-                    tick={<YAxisTick />}
-                  />
-                  {/* Invisible area to maintain scale synchronization */}
-                  {dataKeys.map((key) => {
-                    return (
-                      <Area
-                        key={`y-axis-${key}`}
-                        dataKey={key}
-                        type={variant}
-                        stroke="none"
-                        fill="transparent"
-                        fillOpacity={0}
-                        stackId="a"
-                      />
-                    );
-                  })}
-                </RechartsAreaChart>
-              </div>
-            )}
-            <div className="crayon-area-chart-main-container" ref={mainContainerRef}>
-              <ChartContainer
-                config={chartConfig}
-                style={{ width: dataWidth, minWidth: "100%", height: chartHeight }}
-                rechartsProps={{
-                  width: "100%",
-                  height: chartHeight,
+        <div className="crayon-area-chart-container-inner" ref={chartContainerRef}>
+          {showYAxis && (
+            <div className="crayon-area-chart-y-axis-container">
+              {/* Y-axis only chart - synchronized with main chart */}
+              <RechartsAreaChart
+                key={`y-axis-chart-${id}`}
+                width={Y_AXIS_WIDTH}
+                height={chartHeight}
+                data={data}
+                margin={{
+                  top: 20,
+                  bottom: 32, // this is required for to give space for x-axis
+                  left: 0,
+                  right: 0,
                 }}
+                syncId={chartSyncID}
               >
-                <RechartsAreaChart
-                  accessibilityLayer
-                  key={`area-chart-${id}`}
-                  data={data}
-                  margin={{
-                    top: 20,
-                    bottom: 0,
+                <YAxis
+                  width={Y_AXIS_WIDTH}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={getYAxisTickFormatter()}
+                  tick={<YAxisTick />}
+                />
+                {/* Invisible area to maintain scale synchronization */}
+                {dataKeys.map((key) => {
+                  return (
+                    <Area
+                      key={`y-axis-${key}`}
+                      dataKey={key}
+                      type={variant}
+                      stroke="none"
+                      fill="transparent"
+                      fillOpacity={0}
+                      stackId="a"
+                    />
+                  );
+                })}
+              </RechartsAreaChart>
+            </div>
+          )}
+          <div className="crayon-area-chart-main-container" ref={mainContainerRef}>
+            <ChartContainer
+              config={chartConfig}
+              style={{ width: dataWidth, minWidth: "100%", height: chartHeight }}
+              rechartsProps={{
+                width: "100%",
+                height: chartHeight,
+              }}
+            >
+              <RechartsAreaChart
+                accessibilityLayer
+                key={`area-chart-${id}`}
+                data={data}
+                margin={{
+                  top: 20,
+                  bottom: 0,
+                }}
+                syncId={chartSyncID}
+                onClick={onAreaClick}
+              >
+                {grid && cartesianGrid()}
+                <XAxis
+                  dataKey={categoryKey as string}
+                  tickLine={false}
+                  axisLine={false}
+                  textAnchor="middle"
+                  interval={0}
+                  tickFormatter={xAxisTickFormatter}
+                  tick={
+                    <XAxisTick
+                      getPositionOffset={xAxisPositionData.getPositionOffset}
+                      isFirstTick={xAxisPositionData.isFirstTick}
+                      isLastTick={xAxisPositionData.isLastTick}
+                    />
+                  }
+                  orientation="bottom"
+                  padding={{
+                    left: 25,
+                    right: 20,
                   }}
-                  syncId={chartSyncID}
-                  onClick={onAreaClick}
-                >
-                  {grid && cartesianGrid()}
-                  <XAxis
-                    dataKey={categoryKey as string}
-                    tickLine={false}
-                    axisLine={false}
-                    textAnchor="middle"
-                    interval={0}
-                    tickFormatter={xAxisTickFormatter}
-                    tick={
-                      <XAxisTick
-                        getPositionOffset={xAxisPositionData.getPositionOffset}
-                        isFirstTick={xAxisPositionData.isFirstTick}
-                        isLastTick={xAxisPositionData.isLastTick}
-                      />
-                    }
-                    orientation="bottom"
-                    padding={{
-                      left: 25,
-                      right: 20,
-                    }}
-                  />
+                />
 
-                  <ChartTooltip content={<CustomTooltipContent />} offset={15} />
+                <ChartTooltip content={<CustomTooltipContent />} offset={15} />
 
-                  {dataKeys.map((key) => {
-                    const transformedKey = transformedKeys[key];
-                    const color = `var(--color-${transformedKey})`;
-                    return (
-                      <defs key={`gradient-${transformedKey}`}>
-                        <linearGradient
-                          id={`${gradientID}-${transformedKey}`}
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop offset="5%" stopColor={color} stopOpacity={0.6} />
-                          <stop offset="95%" stopColor={color} stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                    );
-                  })}
+                {dataKeys.map((key) => {
+                  const transformedKey = transformedKeys[key];
+                  const color = `var(--color-${transformedKey})`;
+                  return (
+                    <defs key={`gradient-${transformedKey}`}>
+                      <linearGradient
+                        id={`${gradientID}-${transformedKey}`}
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop offset="5%" stopColor={color} stopOpacity={0.6} />
+                        <stop offset="95%" stopColor={color} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                  );
+                })}
 
-                  {dataKeys.map((key) => {
-                    const transformedKey = transformedKeys[key];
-                    const color = `var(--color-${transformedKey})`;
-                    return (
-                      <Area
-                        key={`main-${key}`}
-                        dataKey={key}
-                        type={variant}
-                        stroke={color}
-                        fill={`url(#${gradientID}-${transformedKey})`}
-                        fillOpacity={1}
-                        stackId="a"
-                        activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
-                        dot={false}
-                        isAnimationActive={isAnimationActive}
-                      />
-                    );
-                  })}
-                </RechartsAreaChart>
-              </ChartContainer>
-            </div>
-            {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
+                {dataKeys.map((key) => {
+                  const transformedKey = transformedKeys[key];
+                  const color = `var(--color-${transformedKey})`;
+                  return (
+                    <Area
+                      key={`main-${key}`}
+                      dataKey={key}
+                      type={variant}
+                      stroke={color}
+                      fill={`url(#${gradientID}-${transformedKey})`}
+                      fillOpacity={1}
+                      stackId="a"
+                      activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
+                      dot={false}
+                      isAnimationActive={isAnimationActive}
+                    />
+                  );
+                })}
+              </RechartsAreaChart>
+            </ChartContainer>
           </div>
-          {/* if the data width is greater than the effective width, then show the scroll buttons */}
-          {dataWidth > effectiveWidth && (
-            <div className="crayon-area-chart-scroll-container">
-              <IconButton
-                className={clsx(
-                  "crayon-area-chart-scroll-button crayon-area-chart-scroll-button--left",
-                  {
-                    "crayon-area-chart-scroll-button--disabled": !canScrollLeft,
-                  },
-                )}
-                icon={<ChevronLeft />}
-                variant="secondary"
-                onClick={scrollLeft}
-                size="extra-small"
-                disabled={!canScrollLeft}
-              />
-              <IconButton
-                className={clsx(
-                  "crayon-area-chart-scroll-button crayon-area-chart-scroll-button--right",
-                  {
-                    "crayon-area-chart-scroll-button--disabled": !canScrollRight,
-                    "crayon-area-chart-scroll-button--SideBarTooltip": isSideBarTooltipOpen,
-                  },
-                )}
-                icon={<ChevronRight />}
-                variant="secondary"
-                size="extra-small"
-                onClick={scrollRight}
-                disabled={!canScrollRight}
-              />
-            </div>
-          )}
-          {legend && (
-            <DefaultLegend
-              items={legendItems}
-              yAxisLabel={yAxisLabel}
-              xAxisLabel={xAxisLabel}
-              containerWidth={effectiveWidth}
-              isExpanded={isLegendExpanded}
-              setIsExpanded={setIsLegendExpanded}
-            />
-          )}
+          {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
         </div>
-      </SideBarTooltipProvider>
-    </Tooltip.Provider>
+        {/* if the data width is greater than the effective width, then show the scroll buttons */}
+        {dataWidth > effectiveWidth && (
+          <div className="crayon-area-chart-scroll-container">
+            <IconButton
+              className={clsx(
+                "crayon-area-chart-scroll-button crayon-area-chart-scroll-button--left",
+                {
+                  "crayon-area-chart-scroll-button--disabled": !canScrollLeft,
+                },
+              )}
+              icon={<ChevronLeft />}
+              variant="secondary"
+              onClick={scrollLeft}
+              size="extra-small"
+              disabled={!canScrollLeft}
+            />
+            <IconButton
+              className={clsx(
+                "crayon-area-chart-scroll-button crayon-area-chart-scroll-button--right",
+                {
+                  "crayon-area-chart-scroll-button--disabled": !canScrollRight,
+                  "crayon-area-chart-scroll-button--SideBarTooltip": isSideBarTooltipOpen,
+                },
+              )}
+              icon={<ChevronRight />}
+              variant="secondary"
+              size="extra-small"
+              onClick={scrollRight}
+              disabled={!canScrollRight}
+            />
+          </div>
+        )}
+        {legend && (
+          <DefaultLegend
+            items={legendItems}
+            yAxisLabel={yAxisLabel}
+            xAxisLabel={xAxisLabel}
+            containerWidth={effectiveWidth}
+            isExpanded={isLegendExpanded}
+            setIsExpanded={setIsLegendExpanded}
+          />
+        )}
+      </div>
+    </SideBarTooltipProvider>
   );
 };
 

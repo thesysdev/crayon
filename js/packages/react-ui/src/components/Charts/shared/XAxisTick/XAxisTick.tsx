@@ -1,5 +1,5 @@
-import * as Tooltip from "@radix-ui/react-tooltip";
 import React from "react";
+import { LabelTooltip } from "../LabelTooltip/LabelTooltip";
 interface XAxisTickProps {
   x?: number;
   y?: number;
@@ -62,26 +62,19 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
 
   return (
     <g ref={ref} transform={`translate(${x},${y})`} className={className}>
-      <Tooltip.Root delayDuration={300}>
-        <Tooltip.Trigger asChild>
-          <text
-            x={xOffset}
-            y={0}
-            dy={10}
-            textAnchor={adjustedTextAnchor}
-            fill={fill}
-            className="crayon-chart-x-axis-tick"
-            style={{ cursor: "default" }}
-          >
-            {displayValue}
-          </text>
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content className="crayon-chart-x-axis-tick-tooltip" side="top" sideOffset={1}>
-            {value}
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
+      <LabelTooltip content={value} side="top" sideOffset={1} delayDuration={300}>
+        <text
+          x={xOffset}
+          y={0}
+          dy={10}
+          textAnchor={adjustedTextAnchor}
+          fill={fill}
+          className="crayon-chart-x-axis-tick"
+          style={{ cursor: "default" }}
+        >
+          {displayValue}
+        </text>
+      </LabelTooltip>
     </g>
   );
 });

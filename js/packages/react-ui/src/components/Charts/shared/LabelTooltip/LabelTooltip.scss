@@ -1,0 +1,88 @@
+@use "../../../../cssUtils" as cssUtils;
+
+.crayon-chart-label-tooltip {
+  z-index: 1000;
+  border-radius: cssUtils.$rounded-s;
+  padding: cssUtils.$spacing-xs cssUtils.$spacing-s;
+  background-color: cssUtils.$bg-container;
+  border: 1px solid cssUtils.$stroke-default;
+  box-shadow: cssUtils.$shadow-s;
+  color: cssUtils.$primary-text;
+  @include cssUtils.typography(label, extra-small);
+  max-width: 200px;
+  word-wrap: break-word;
+  animation-duration: 0.15s;
+  animation-timing-function: ease-out;
+  will-change: transform, opacity;
+}
+
+.crayon-chart-label-tooltip[data-state="delayed-open"],
+.crayon-chart-label-tooltip[data-state="instant-open"] {
+  animation-name: tooltipSlideUpAndFade;
+}
+
+.crayon-chart-label-tooltip[data-side="top"] {
+  animation-name: tooltipSlideDownAndFade;
+}
+
+.crayon-chart-label-tooltip[data-side="bottom"] {
+  animation-name: tooltipSlideUpAndFade;
+}
+
+.crayon-chart-label-tooltip[data-side="left"] {
+  animation-name: tooltipSlideRightAndFade;
+}
+
+.crayon-chart-label-tooltip[data-side="right"] {
+  animation-name: tooltipSlideLeftAndFade;
+}
+
+.crayon-chart-label-tooltip-arrow {
+  fill: cssUtils.$bg-container;
+  stroke: cssUtils.$stroke-default;
+  stroke-width: 1px;
+}
+
+@keyframes tooltipSlideUpAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tooltipSlideDownAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tooltipSlideRightAndFade {
+  from {
+    opacity: 0;
+    transform: translateX(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes tooltipSlideLeftAndFade {
+  from {
+    opacity: 0;
+    transform: translateX(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
