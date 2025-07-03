@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef } from "react";
+import { XAxisTickVariant } from "../../types";
 interface XAxisTickProps {
   x?: number;
   y?: number;
@@ -21,10 +22,9 @@ interface XAxisTickProps {
   tickFormatter?: (value: any) => string;
   index?: number;
   visibleTicksCount?: number;
-  // Extended props for position-based offset handling
-  getPositionOffset?: (value: string) => number;
-  isFirstTick?: (value: string) => boolean;
-  isLastTick?: (value: string) => boolean;
+  variant?: XAxisTickVariant;
+  widthOfGroup?: number;
+  labelHeight?: number;
 }
 
 const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => {
@@ -32,46 +32,88 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
     x,
     y,
     payload,
-    textAnchor = "middle",
-    fill = "#666",
     tickFormatter,
     className,
-    getPositionOffset,
-    isFirstTick,
-    isLastTick,
+    variant = "multiLine",
+    widthOfGroup = 70,
+    labelHeight = 20,
   } = props;
 
   const value = String(payload?.value || "");
+
+  const foreignObjectRef = useRef<SVGForeignObjectElement>(null);
+  const spanRef = useRef<HTMLSpanElement>(null);
+
+  if (x === undefined || y === undefined) {
+    return null;
+  }
+
+  if (variant === "multiLine") {
+    // The x position from Recharts is the center of the group
+    // To center the foreignObject, we need to offset by half of widthOfGroup
+    const calX = x - widthOfGroup / 2;
+    const calWidth = widthOfGroup - 4;
+
+    return (
+      <g ref={ref} transform={`translate(${calX},${y})`}>
+        <foreignObject
+          ref={foreignObjectRef}
+          transform="translate(0, 0)"
+          width={calWidth}
+          height={labelHeight} // Initial height, will be updated by useLayoutEffect
+          className="crayon-chart-x-axis-tick-foreign"
+        >
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              boxSizing: "border-box",
+            }}
+          >
+            <span
+              ref={spanRef}
+              style={{
+                textAlign: "center",
+                wordBreak: "break-word",
+              }}
+              className="crayon-chart-x-axis-tick-multi-line"
+              title={value}
+            >
+              {value}
+            </span>
+          </div>
+        </foreignObject>
+      </g>
+    );
+  }
+
+  if (variant === "angled") {
+    const displayValue = value;
+    return (
+      <g ref={ref} transform={`translate(${x},${y})`} className={className}>
+        <text
+          x={0}
+          y={0}
+          dy={10}
+          textAnchor="end"
+          transform="rotate(-10)"
+          className="crayon-chart-x-axis-tick"
+        >
+          <title>{value}</title>
+          {displayValue}
+        </text>
+      </g>
+    );
+  }
+
   const displayValue = tickFormatter ? tickFormatter(payload?.value) : value;
-
-  // Calculate position offset for first and last labels (optional extension)
-  let xOffset = 0;
-  if (getPositionOffset) {
-    xOffset = getPositionOffset(value);
-  }
-
-  // Optional text anchor adjustment for first and last labels
-  // if the text need to get adjusted then we can do so from here
-  let adjustedTextAnchor = textAnchor;
-  if (isFirstTick && isFirstTick(value)) {
-    adjustedTextAnchor = "middle";
-  } else if (isLastTick && isLastTick(value)) {
-    adjustedTextAnchor = "middle";
-  }
 
   return (
     <g ref={ref} transform={`translate(${x},${y})`} className={className}>
-        <text
-          x={xOffset}
-          y={0}
-          dy={10}
-          textAnchor={adjustedTextAnchor}
-          fill={fill}
-          className="crayon-chart-x-axis-tick"
-          style={{ cursor: "default" }}
-        >
-          {displayValue}
-        </text>
+      <text x={0} y={0} dy={12} textAnchor={"middle"} className="crayon-chart-x-axis-tick">
+        <title>{value}</title>
+        {displayValue}
+      </text>
     </g>
   );
 });

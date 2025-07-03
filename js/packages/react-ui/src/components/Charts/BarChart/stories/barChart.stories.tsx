@@ -7,18 +7,90 @@ import { BarChart, BarChartProps } from "../BarChart";
 // 📊 ALL DATA VARIATIONS - For easy switching in stories
 const dataVariations = {
   default: [
-    { month: "January", desktop: 150, mobile: 90, tablet: 120, laptop: 180 },
-    { month: "February", desktop: 280, mobile: 180, tablet: 140, laptop: 160 },
-    { month: "March", desktop: 220, mobile: 140, tablet: 160, laptop: 180 },
-    { month: "April", desktop: 180, mobile: 160, tablet: 180, laptop: 200 },
-    { month: "May", desktop: 250, mobile: 120, tablet: 140, laptop: 160 },
-    { month: "June", desktop: 300, mobile: 180, tablet: 160, laptop: 180 },
-    { month: "July", desktop: 350, mobile: 220, tablet: 180, laptop: 200 },
-    { month: "August", desktop: 400, mobile: 240, tablet: 200, laptop: 220 },
-    { month: "September", desktop: 450, mobile: 260, tablet: 220, laptop: 240 },
-    { month: "October", desktop: 500, mobile: 280, tablet: 240, laptop: 260 },
-    { month: "November", desktop: 550, mobile: 300, tablet: 260, laptop: 280 },
-    { month: "December", desktop: 600, mobile: 320, tablet: 280, laptop: 300 },
+    {
+      month: "January 2024 - First Month of the Year",
+      desktop: 150,
+      mobile: 90,
+      tablet: 120,
+      laptop: 180,
+    },
+    {
+      month: "February 2024 - Second Month of the Year",
+      desktop: 280,
+      mobile: 180,
+      tablet: 140,
+      laptop: 160,
+    },
+    {
+      month: "March 2024 - Third Month of the Year",
+      desktop: 220,
+      mobile: 140,
+      tablet: 160,
+      laptop: 180,
+    },
+    {
+      month: "April 2024 - Fourth Month of the Year",
+      desktop: 180,
+      mobile: 160,
+      tablet: 180,
+      laptop: 200,
+    },
+    {
+      month: "May 2024 - Fifth Month of the Year",
+      desktop: 250,
+      mobile: 120,
+      tablet: 140,
+      laptop: 160,
+    },
+    {
+      month: "June 2024 - Sixth Month of the Year",
+      desktop: 300,
+      mobile: 180,
+      tablet: 160,
+      laptop: 180,
+    },
+    {
+      month: "July 2024 - Seventh Month of the Year",
+      desktop: 350,
+      mobile: 220,
+      tablet: 180,
+      laptop: 200,
+    },
+    {
+      month: "August 2024 - Eighth Month of the Year",
+      desktop: 400,
+      mobile: 240,
+      tablet: 200,
+      laptop: 220,
+    },
+    {
+      month: "September 2024 - Ninth Month of the Year",
+      desktop: 450,
+      mobile: 260,
+      tablet: 220,
+      laptop: 240,
+    },
+    {
+      month: "October 2024 - Tenth Month of the Year",
+      desktop: 500,
+      mobile: 280,
+      tablet: 240,
+      laptop: 260,
+    },
+    {
+      month: "November 2024 - Eleventh Month of the Year",
+      desktop: 550,
+      mobile: 300,
+      tablet: 260,
+      laptop: 280,
+    },
+    {
+      month: "December 2024 - Twelfth Month of the Year",
+      desktop: 600,
+      mobile: 320,
+      tablet: 280,
+      laptop: 300,
+    },
   ],
   small: [
     { month: "Jan", desktop: 150, mobile: 90 },
@@ -466,14 +538,14 @@ const dataVariations = {
     },
   ],
   singleGroup: [
-    { month: "January", sales: 150 },
-    { month: "February", sales: 280 },
-    { month: "March", sales: 220 },
-    { month: "April", sales: 180 },
-    { month: "May", sales: 250 },
-    { month: "June", sales: 300 },
-    { month: "July", sales: 350 },
-    { month: "August", sales: 400 },
+    { month: "January 1st - January 31st, 2024 (Winter Quarter)", sales: 150 },
+    { month: "February 1st - February 28th, 2024 (Winter Quarter)", sales: 280 },
+    { month: "March 1st - March 31st, 2024 (Spring Quarter)", sales: 220 },
+    { month: "April 1st - April 30th, 2024 (Spring Quarter)", sales: 180 },
+    { month: "May 1st - May 31st, 2024 (Spring Quarter)", sales: 250 },
+    { month: "June 1st - June 30th, 2024 (Summer Quarter)", sales: 300 },
+    { month: "July 1st - July 31st, 2024 (Summer Quarter)", sales: 350 },
+    { month: "August 1st - August 31st, 2024 (Summer Quarter)", sales: 400 },
   ],
 };
 
@@ -522,7 +594,7 @@ const icons = {
  * - **Responsive Design**: Adjusts gracefully to the size of its container.
  *
  * ### Customization
- * - **Theming**: Six built-in color palettes.
+ * - **Theming**: Six built-in color palettes, or use custom colors with `customPalette`.
  * - **Bar Styling**: Customize the corner radius of the bars.
  * - **Axis and Grid Control**: Toggle visibility of axes and grid lines.
  */
@@ -550,6 +622,13 @@ const monthlyData = [
   data={monthlyData}
   categoryKey="month"
   theme="ocean"
+/>
+
+// With custom colors
+<BarChart
+  data={monthlyData}
+  categoryKey="month"
+  customPalette={["#FF6B6B", "#4ECDC4", "#45B7D1"]}
 />
 \`\`\`
 
@@ -599,11 +678,21 @@ const salesData = [
       },
     },
     theme: {
-      description: "Specifies the color palette for the chart's bars, tooltips, and legend.",
+      description:
+        "Specifies the color palette for the chart's bars, tooltips, and legend. Ignored when customPalette is provided.",
       control: "select",
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
+        category: "🎨 Visual Styling",
+      },
+    },
+    customPalette: {
+      description:
+        "Custom array of colors to use instead of the theme palette. Overrides the theme prop when provided.",
+      control: "object",
+      table: {
+        type: { summary: "string[]" },
         category: "🎨 Visual Styling",
       },
     },
@@ -1033,6 +1122,99 @@ export const ExpandCollapseMarketingStory: Story = {
       description: {
         story:
           "Tests the legend expand/collapse functionality with 12 marketing channels that have long descriptive names. The legend should automatically show a 'Show More' button when items overflow the container width, allowing users to toggle between collapsed and expanded states.",
+      },
+    },
+  },
+};
+
+/**
+ * ## Custom Palette
+ *
+ * This story demonstrates how to use the customPalette prop to provide your own color scheme
+ * for the chart. This is useful when you need to match your brand colors or create
+ * specific visual themes.
+ */
+export const CustomPaletteStory: Story = {
+  name: "🎨 Custom Palette",
+  args: {
+    data: dataVariations.default as any,
+    categoryKey: "month" as any,
+    customPalette: [
+      "#0A0E60",
+      "#14197B",
+      "#272DA6",
+      "#383FC9",
+      "#444CE7",
+      "#5F67F4",
+      "#7884FF",
+      "#97A9FF",
+      "#B4C6FF",
+      "#CBD7FF",
+    ],
+    theme: "ocean", // This will be overridden by customPalette
+    variant: "grouped",
+    radius: 4,
+    grid: true,
+    legend: true,
+    isAnimationActive: true,
+    showYAxis: true,
+    xAxisLabel: "Month",
+    yAxisLabel: "Traffic",
+  },
+  render: (args: any) => (
+    <div>
+      <div
+        style={{
+          marginBottom: "16px",
+          padding: "12px",
+          background: "#f8f9fa",
+          borderRadius: "8px",
+          border: "1px solid #e9ecef",
+        }}
+      >
+        <h4 style={{ margin: "0 0 8px 0", color: "#333" }}>🎨 Custom Color Palette</h4>
+        <p style={{ margin: "0 0 12px 0", fontSize: "14px", color: "#666" }}>
+          This chart uses a custom color palette instead of the default theme colors.
+        </p>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          {args.customPalette?.map((color: string, index: number) => (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                padding: "4px 8px",
+                background: "white",
+                borderRadius: "4px",
+                border: "1px solid #ddd",
+                fontSize: "12px",
+              }}
+            >
+              <div
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  borderRadius: "2px",
+                  backgroundColor: color,
+                  border: "1px solid #ccc",
+                }}
+              />
+              <span style={{ fontFamily: "monospace" }}>{color}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <Card style={{ width: "600px" }}>
+        <BarChart {...args} />
+      </Card>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates how to use the `customPalette` prop to provide your own color scheme for the chart. When `customPalette` is provided, it overrides the `theme` prop and uses your specified colors instead of the predefined theme palettes.\n\n**Key Features:**\n- 🎨 **Custom Colors**: Override default theme colors with your own palette\n- 🔄 **Theme Override**: The `theme` prop is ignored when `customPalette` is provided\n- 📊 **Consistent Distribution**: Colors are distributed evenly across data series\n- 🎯 **Brand Matching**: Perfect for matching your application\'s brand colors\n\n**Usage:**\n```tsx\n<BarChart\n  data={data}\n  categoryKey="month"\n  customPalette={["#FF6B6B", "#4ECDC4", "#45B7D1"]}\n  // theme prop is ignored when customPalette is provided\n/>\n```',
       },
     },
   },

@@ -1,4 +1,5 @@
 import { getDataKeys } from "../../utils/dataUtils";
+import { getCanvasContext } from "../../utils/styleUtils";
 import { BarChartVariant } from "../types";
 
 export const BAR_WIDTH = 16;
@@ -68,8 +69,8 @@ const getPadding = (
   if (paddingValue < 0) {
     // If chart content is wider than container, no padding
     return {
-      left: 1,
-      right: 1,
+      left: 10,
+      right: 10,
     };
   } else {
     return {
@@ -124,13 +125,7 @@ const getRadiusArray = (
  */
 const getXAxisTickFormatter = (groupWidth?: number, variant: BarChartVariant = "grouped") => {
   const PADDING = 2; // Safety padding for better visual spacing
-
-  // Setup canvas context for accurate text measurement.
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (context) {
-    context.font = "12px Inter";
-  }
+  const context = getCanvasContext();
 
   return (value: string) => {
     const stringValue = String(value);
@@ -191,7 +186,6 @@ const getOptimalXAxisTickFormatter = (
 };
 
 /**
- * INTERNAL HELPER FUNCTION
  * This function returns the scroll amount for the chart, used for the scroll amount of the chart.
  * This can also be used to calculate the width of each group/category.
  * @param data - The data to be displayed in the chart.
@@ -298,4 +292,5 @@ export {
   getRadiusArray,
   getSnapPositions,
   getWidthOfData,
+  getWidthOfGroup,
 };

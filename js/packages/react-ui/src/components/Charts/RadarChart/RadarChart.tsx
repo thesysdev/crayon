@@ -6,7 +6,7 @@ import { SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import { useTransformedKeys } from "../hooks/useTransformKey";
 import { ActiveDot, CustomTooltipContent, DefaultLegend } from "../shared";
 import { LegendItem } from "../types";
-import { getDistributedColors, getPalette } from "../utils/PalletUtils";
+import { useChartPalette } from "../utils/PalletUtils";
 import { get2dChartConfig, getDataKeys, getLegendItems } from "../utils/dataUtils";
 import { AxisLabel } from "./components/AxisLabel";
 import { RadarChartData } from "./types";
@@ -18,6 +18,7 @@ export interface RadarChartProps<T extends RadarChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: "ocean" | "orchid" | "emerald" | "sunset" | "spectrum" | "vivid";
+  customPalette?: string[];
   variant?: "line" | "area";
   grid?: boolean;
   legend?: boolean;
@@ -31,6 +32,7 @@ const RadarChartComponent = <T extends RadarChartData>({
   data,
   categoryKey,
   theme = "ocean",
+  customPalette,
   variant = "line",
   grid = true,
   legend = true,
@@ -45,10 +47,12 @@ const RadarChartComponent = <T extends RadarChartData>({
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
-  const colors = useMemo(() => {
-    const palette = getPalette(theme);
-    return getDistributedColors(palette, dataKeys.length);
-  }, [theme, dataKeys.length]);
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "radarChartPalette",
+    dataLength: dataKeys.length,
+  });
 
   // Create Config
   const chartConfig: ChartConfig = useMemo(() => {

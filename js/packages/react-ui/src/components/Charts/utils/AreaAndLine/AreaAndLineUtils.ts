@@ -3,8 +3,9 @@
 
 import { AreaChartData } from "../../AreaChart/types";
 import { LineChartData } from "../../LineChart/types";
+import { getCanvasContext } from "../styleUtils";
 
-const ELEMENT_SPACING = 70;
+const ELEMENT_SPACING = 72;
 
 // Common type for chart data - both AreaChart and LineChart data structures
 type ChartData = AreaChartData | LineChartData;
@@ -16,28 +17,24 @@ type ChartData = AreaChartData | LineChartData;
  * @param data - The data to be displayed in the chart.
  */
 export const getWidthOfData = (data: ChartData, containerWidth: number) => {
-  // For area charts, we calculate based on the number of data points (always stacked)
-  const numberOfElements = data.length; // Number of data points
-
-  let width = numberOfElements * ELEMENT_SPACING - ELEMENT_SPACING; // here we are defining the spacing between the data points,
-  // as the data point has no width, we are just calculating the spacing between the data points
-  // if 3 data points, then 2 spaces between them, so 2*70 = 140
-  // so the subtraction is to remove the last spacing as number of data points is 1 more than the number of spaces
+  if (data.length === 0) {
+    return containerWidth;
+  }
+  // For area charts, we calculate based on the number of data points.
+  // We use getWidthOfGroup to ensure consistency
+  const width = data.length * getWidthOfGroup(data);
 
   // if the container width is greater than the width of the data, then we return the container width
   // because the we need the chart minimum width to be the container width
   // this decision is made because area chart an bar chart are span from the left to the right of the container
-
   if (containerWidth >= width) {
     return containerWidth;
   }
 
   if (data.length === 1) {
     const minSingleDataWidth = 200; // Minimum width for single data points
-    // self note:
     // if the data point is only one, then we need to set the width to the minimum width
-
-    width = Math.max(width, minSingleDataWidth);
+    return Math.max(width, minSingleDataWidth);
   }
 
   return width;
@@ -55,14 +52,7 @@ export const getWidthOfData = (data: ChartData, containerWidth: number) => {
  */
 export const getXAxisTickFormatter = (groupWidth?: number, containerWidth?: number) => {
   const PADDING = 10; // More generous padding for visual clarity
-
-  // Setup canvas context once per formatter creation for efficiency.
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (context) {
-    // Should match the chart's actual font for accuracy
-    context.font = "12px Inter";
-  }
+  const context = getCanvasContext();
 
   return (value: string) => {
     // If canvas isn't supported, or for some reason context is null, return original value.
@@ -187,41 +177,6 @@ export const getOptimalXAxisTickFormatter = (data: ChartData, containerWidth?: n
   // Calculate the available width per group
   const groupWidth = getWidthOfGroup(data);
   return getXAxisTickFormatter(groupWidth, containerWidth);
-};
-
-/**
- * SHARED UTILITY FUNCTION
- * Helper function to get position information for X-axis ticks with offset handling.
- * This is generic and works for both AreaChart and LineChart data.
- * @param data - The chart data
- * @param categoryKey - The category key for the chart
- * @returns Object containing position data for the tick renderer
- */
-export const getXAxisTickPositionData = (data: ChartData, categoryKey: string) => {
-  return {
-    dataLength: data.length,
-    categoryValues: data.map((item) => String(item[categoryKey])),
-    getPositionOffset: (value: string): number => {
-      const index = data.findIndex((item) => String(item[categoryKey]) === value);
-      if (index === 0) {
-        // First label: offset to the right by 5px
-        return 5;
-      } else if (index === data.length - 1) {
-        // Last label: offset to the left by 5px
-        return -5;
-      }
-      // Middle labels: no offset
-      return 0;
-    },
-    isFirstTick: (value: string): boolean => {
-      const index = data.findIndex((item) => String(item[categoryKey]) === value);
-      return index === 0;
-    },
-    isLastTick: (value: string): boolean => {
-      const index = data.findIndex((item) => String(item[categoryKey]) === value);
-      return index === data.length - 1;
-    },
-  };
 };
 
 /**

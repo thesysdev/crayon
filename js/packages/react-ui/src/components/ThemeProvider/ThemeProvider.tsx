@@ -1,4 +1,5 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { ColorTheme, EffectTheme, LayoutTheme, Theme, ThemeMode, TypographyTheme } from "./types";
 
 export type ThemeProps = {
@@ -22,7 +23,7 @@ export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {
     return {
-      theme: lightTheme,
+      theme: themes.light,
       mode: "light",
     };
   }
@@ -322,12 +323,16 @@ export const ThemeProvider = ({
   darkTheme: userDarkTheme,
 }: ThemeProps) => {
   const baseTheme = themes[mode];
-  const lightTheme = { ...baseTheme, ...userTheme };
-  const darkTheme = { ...baseTheme, ...(userDarkTheme || userTheme) };
+  const lightTheme = useShallow(() => ({ ...baseTheme, ...userTheme }))(undefined);
+  const darkTheme = useShallow(() => ({ ...baseTheme, ...(userDarkTheme || userTheme) }))(
+    undefined,
+  );
+
   const theme = mode === "light" ? lightTheme : darkTheme;
+  const contextValue = useMemo(() => ({ theme, mode }), [theme, mode]);
 
   return (
-    <ThemeContext.Provider value={{ theme, mode }}>
+    <ThemeContext.Provider value={contextValue}>
       <style>{`
         body {
           --crayon-background-fills: ${theme.backgroundFills};

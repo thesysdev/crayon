@@ -104,6 +104,14 @@ import { RadarChart } from '@crayon-ui/react-ui/Charts/RadarChart';
   theme="ocean"
   variant="line"
 />
+
+// With custom colors
+<RadarChart
+  data={yourData}
+  categoryKey="category"
+  customPalette={["#FF6B6B", "#4ECDC4", "#45B7D1"]}
+  variant="line"
+/>
 \`\`\`
 
 ## Data Structure Requirements
@@ -125,6 +133,7 @@ const exampleData = [
 - **Multiple Data Series**: Compare several datasets on the same chart.
 - **Two Visual Variants**: Choose between 'line' and 'area' styles.
 - **Customizable Appearance**: Control colors, stroke width, and area opacity.
+- **Custom Color Palettes**: Use predefined themes or provide your own custom colors.
 - **Interactive Legend**: Toggle visibility of data series.
 - **Icon Support**: Add custom icons to legend items for better visual identification.
 - **Animation**: Smooth animations for loading and data transitions.
@@ -167,7 +176,7 @@ const exampleData = [
     },
     theme: {
       description: `
-**Color Theme Selection.** Choose from professionally designed color palettes:
+**Color Theme Selection.** Choose from professionally designed color palettes. Ignored when customPalette is provided.
 
 - **ocean**: Cool blues and teals (professional, corporate)
 - **orchid**: Purple and pink tones (creative, modern)
@@ -180,6 +189,15 @@ const exampleData = [
       options: ["ocean", "orchid", "emerald", "sunset", "spectrum", "vivid"],
       table: {
         defaultValue: { summary: "ocean" },
+        category: "🎨 Visual Styling",
+      },
+    },
+    customPalette: {
+      description:
+        "Custom array of colors to use instead of the theme palette. Overrides the theme prop when provided.",
+      control: "object",
+      table: {
+        type: { summary: "string[]" },
         category: "🎨 Visual Styling",
       },
     },
@@ -580,6 +598,104 @@ export const ThemeShowcase: Story = {
       description: {
         story:
           "This story showcases all available color themes. Each theme provides a professionally curated palette suitable for different branding and data contexts. Animations are disabled for quicker comparison.",
+      },
+    },
+  },
+};
+
+/**
+ * ## Custom Palette
+ *
+ * This story demonstrates how to use the customPalette prop to provide your own color scheme
+ * for the chart. This is useful when you need to match your brand colors or create
+ * specific visual themes.
+ */
+export const CustomPaletteStory: Story = {
+  name: "🎨 Custom Palette",
+  args: {
+    data: dataVariations.productFeatures,
+    categoryKey: "metric",
+    customPalette: [
+      "#0A0E60",
+      "#14197B",
+      "#272DA6",
+      "#383FC9",
+      "#444CE7",
+      "#5F67F4",
+      "#7884FF",
+      "#97A9FF",
+      "#B4C6FF",
+      "#CBD7FF",
+    ],
+    theme: "ocean", // This will be overridden by customPalette
+    variant: "area",
+    grid: true,
+    legend: true,
+    strokeWidth: 3,
+    isAnimationActive: true,
+  },
+  render: (args: any) => (
+    <div>
+      <div
+        style={{
+          marginBottom: "16px",
+          padding: "12px",
+          background: "#f8f9fa",
+          borderRadius: "8px",
+          border: "1px solid #e9ecef",
+        }}
+      >
+        <h4 style={{ margin: "0 0 8px 0", color: "#333" }}>🎨 Custom Color Palette</h4>
+        <p style={{ margin: "0 0 12px 0", fontSize: "14px", color: "#666" }}>
+          This radar chart uses a custom color palette instead of the default theme colors.
+        </p>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          {args.customPalette?.map((color: string, index: number) => (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                padding: "4px 8px",
+                background: "white",
+                borderRadius: "4px",
+                border: "1px solid #ddd",
+                fontSize: "12px",
+              }}
+            >
+              <div
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  borderRadius: "2px",
+                  backgroundColor: color,
+                  border: "1px solid #ccc",
+                }}
+              />
+              <span style={{ fontFamily: "monospace" }}>{color}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <Card style={{ width: "500px", height: "auto", padding: "24px" }}>
+        <div style={{ marginBottom: "16px" }}>
+          <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600" }}>
+            Team Performance with Custom Colors
+          </h3>
+          <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
+            Using custom brand colors to match your application's design system.
+          </p>
+        </div>
+        <RadarChart {...args} />
+      </Card>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates how to use the `customPalette` prop to provide your own color scheme for the radar chart. When `customPalette` is provided, it overrides the `theme` prop and uses your specified colors instead of the predefined theme palettes.\n\n**Key Features:**\n- 🎨 **Custom Colors**: Override default theme colors with your own palette\n- 🔄 **Theme Override**: The `theme` prop is ignored when `customPalette` is provided\n- 📊 **Consistent Distribution**: Colors are distributed evenly across data series\n- 🎯 **Brand Matching**: Perfect for matching your application\'s brand colors\n\n**Usage:**\n```tsx\n<RadarChart\n  data={data}\n  categoryKey="metric"\n  customPalette={["#FF6B6B", "#4ECDC4", "#45B7D1"]}\n  // theme prop is ignored when customPalette is provided\n/>\n```',
       },
     },
   },

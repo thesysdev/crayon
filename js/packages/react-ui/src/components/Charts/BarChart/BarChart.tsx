@@ -1,13 +1,11 @@
 import clsx from "clsx";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
-import { IconButton } from "../../IconButton";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useTransformedKeys } from "../hooks";
+import { useMaxLabelHeight, useTransformedKeys } from "../hooks";
 import {
   cartesianGrid,
   CustomTooltipContent,
@@ -16,8 +14,11 @@ import {
   XAxisTick,
   YAxisTick,
 } from "../shared";
-import { type LegendItem } from "../types";
-import { getDistributedColors, getPalette, type PaletteName } from "../utils/PalletUtils";
+
+import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/ScrollButtonsHorizontal";
+import { XAxisTickVariant, type LegendItem } from "../types";
+import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
+
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -35,6 +36,7 @@ import {
   getRadiusArray,
   getSnapPositions,
   getWidthOfData,
+  getWidthOfGroup,
 } from "./utils/BarChartUtils";
 
 // this a technic to get the type of the onClick event of the bar chart
@@ -45,7 +47,9 @@ export interface BarChartProps<T extends BarChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: PaletteName;
+  customPalette?: string[];
   variant?: BarChartVariant;
+  tickVariant?: XAxisTickVariant;
   grid?: boolean;
   radius?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
@@ -69,7 +73,9 @@ const BarChartComponent = <T extends BarChartData>({
   data,
   categoryKey,
   theme = "ocean",
+  customPalette,
   variant = "grouped",
+  tickVariant = "multiLine",
   grid = true,
   icons = {},
   radius = BAR_RADIUS,
@@ -82,16 +88,22 @@ const BarChartComponent = <T extends BarChartData>({
   height,
   width,
 }: BarChartProps<T>) => {
+  const widthOfGroup = getWidthOfGroup(data, categoryKey as string, variant);
+
+  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant, widthOfGroup);
+
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
-  const colors = useMemo(() => {
-    const palette = getPalette(theme);
-    return getDistributedColors(palette, dataKeys.length);
-  }, [theme, dataKeys.length]);
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "barChartPalette",
+    dataLength: dataKeys.length,
+  });
 
   const chartConfig: ChartConfig = useMemo(() => {
     return get2dChartConfig(dataKeys, colors, transformedKeys, undefined, icons);
@@ -143,8 +155,8 @@ const BarChartComponent = <T extends BarChartData>({
   // we want to chart to scale with width but height will be fixed
 
   const chartHeight = useMemo(() => {
-    return height ?? 296;
-  }, [height]);
+    return height ?? 296 + maxLabelHeight;
+  }, [height, maxLabelHeight]);
 
   // Check scroll boundaries
   const updateScrollState = useCallback(() => {
@@ -233,12 +245,54 @@ const BarChartComponent = <T extends BarChartData>({
 
   const id = useId();
 
-  const chartSyncID = useMemo(() => `bar-chart-sync-${id}`, [id]);
-
   // Get the optimal X-axis tick formatter based on available space
   const xAxisTickFormatter = useMemo(() => {
     return getOptimalXAxisTickFormatter(data, categoryKey as string, variant);
   }, [data, categoryKey, variant]);
+
+  const yAxis = useMemo(() => {
+    if (!showYAxis) {
+      return null;
+    }
+    return (
+      <div className="crayon-bar-chart-y-axis-container">
+        {/* Y-axis only chart - synchronized with main chart */}
+        <RechartsBarChart
+          key={`y-axis-bar-chart-${id}`}
+          width={Y_AXIS_WIDTH}
+          height={chartHeight}
+          data={data}
+          margin={{
+            top: 20,
+            bottom: maxLabelHeight, // this is required for to give space for x-axis
+            left: 0,
+            right: 0,
+          }}
+        >
+          <YAxis
+            width={Y_AXIS_WIDTH}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={getYAxisTickFormatter()}
+            tick={<YAxisTick />}
+          />
+          {/* Invisible bars to maintain scale synchronization */}
+          {dataKeys.map((key) => {
+            return (
+              <Bar
+                key={`yaxis-bar-chart-${key}`}
+                dataKey={key}
+                fill="transparent"
+                stackId={variant === "stacked" ? "a" : undefined}
+                isAnimationActive={false}
+                maxBarSize={0}
+              />
+            );
+          })}
+        </RechartsBarChart>
+      </div>
+    );
+  }, [showYAxis, chartHeight, data, dataKeys, variant, id, maxLabelHeight]);
 
   // Handle mouse events for group hovering
   const handleChartMouseMove = useCallback((state: any) => {
@@ -291,45 +345,8 @@ const BarChartComponent = <T extends BarChartData>({
         }}
       >
         <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
-          {showYAxis && (
-            <div className="crayon-bar-chart-y-axis-container">
-              {/* Y-axis only chart - synchronized with main chart */}
-              <RechartsBarChart
-                key={`y-axis-bar-chart-${id}`}
-                width={Y_AXIS_WIDTH}
-                height={chartHeight}
-                data={data}
-                margin={{
-                  top: 20,
-                  bottom: 32, // this is required for to give space for x-axis
-                  left: 0,
-                  right: 0,
-                }}
-                syncId={chartSyncID}
-              >
-                <YAxis
-                  width={Y_AXIS_WIDTH}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={getYAxisTickFormatter()}
-                  tick={<YAxisTick />}
-                />
-                {/* Invisible bars to maintain scale synchronization */}
-                {dataKeys.map((key) => {
-                  return (
-                    <Bar
-                      key={`yaxis-bar-chart-${key}`}
-                      dataKey={key}
-                      fill="transparent"
-                      stackId={variant === "stacked" ? "a" : undefined}
-                      isAnimationActive={false}
-                      maxBarSize={0}
-                    />
-                  );
-                })}
-              </RechartsBarChart>
-            </div>
-          )}
+          {/* Y-axis of the chart */}
+          {yAxis}
           <div className="crayon-bar-chart-main-container" ref={mainContainerRef}>
             <ChartContainer
               config={chartConfig}
@@ -352,17 +369,23 @@ const BarChartComponent = <T extends BarChartData>({
                 onMouseLeave={handleChartMouseLeave}
                 barGap={BAR_GAP}
                 barCategoryGap={BAR_CATEGORY_GAP}
-                syncId={chartSyncID}
               >
                 {grid && cartesianGrid()}
                 <XAxis
                   dataKey={categoryKey as string}
                   tickLine={false}
                   axisLine={false}
-                  textAnchor="middle"
+                  textAnchor={"middle"}
                   tickFormatter={xAxisTickFormatter}
                   interval={0}
-                  tick={<XAxisTick />}
+                  height={maxLabelHeight}
+                  tick={
+                    <XAxisTick
+                      variant={tickVariant}
+                      widthOfGroup={widthOfGroup}
+                      labelHeight={maxLabelHeight}
+                    />
+                  }
                   orientation="bottom"
                   // gives the padding on the 2 sides see the function for reference
                   padding={padding}
@@ -421,38 +444,15 @@ const BarChartComponent = <T extends BarChartData>({
           {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
         </div>
         {/* if the data width is greater than the effective width, then show the scroll buttons */}
-        {dataWidth > effectiveWidth && (
-          <div className="crayon-bar-chart-scroll-container">
-            <IconButton
-              className={clsx(
-                "crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--left",
-                {
-                  "crayon-bar-chart-scroll-button--disabled": !canScrollLeft,
-                },
-              )}
-              icon={<ChevronLeft />}
-              variant="secondary"
-              onClick={scrollLeft}
-              size="extra-small"
-              disabled={!canScrollLeft}
-            />
-
-            <IconButton
-              className={clsx(
-                "crayon-bar-chart-scroll-button crayon-bar-chart-scroll-button--right",
-                {
-                  "crayon-bar-chart-scroll-button--disabled": !canScrollRight,
-                  "crayon-bar-chart-scroll-button--SideBarTooltip": isSideBarTooltipOpen,
-                },
-              )}
-              icon={<ChevronRight />}
-              variant="secondary"
-              size="extra-small"
-              onClick={scrollRight}
-              disabled={!canScrollRight}
-            />
-          </div>
-        )}
+        <ScrollButtonsHorizontal
+          dataWidth={dataWidth}
+          effectiveWidth={effectiveWidth}
+          canScrollLeft={canScrollLeft}
+          canScrollRight={canScrollRight}
+          isSideBarTooltipOpen={isSideBarTooltipOpen}
+          onScrollLeft={scrollLeft}
+          onScrollRight={scrollRight}
+        />
         {legend && (
           <DefaultLegend
             items={legendItems}

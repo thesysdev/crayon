@@ -3,7 +3,7 @@ import { CrayonChat } from "../CrayonChat";
 
 export default {
   title: "Components/CrayonChat",
-  tags: ["dev", "!autodocs"],
+  tags: ["!dev", "!autodocs"],
   argTypes: {
     type: {
       control: "select",

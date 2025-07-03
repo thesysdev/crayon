@@ -1,30 +1,29 @@
 import clsx from "clsx";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
-import { IconButton } from "../../IconButton";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useTransformedKeys } from "../hooks";
+import { useMaxLabelHeight, useTransformedKeys } from "../hooks";
 import {
   ActiveDot,
   cartesianGrid,
   CustomTooltipContent,
   DefaultLegend,
+  ScrollButtonsHorizontal,
   SideBarTooltip,
   XAxisTick,
   YAxisTick,
 } from "../shared";
-import { LegendItem } from "../types";
+import { LegendItem, XAxisTickVariant } from "../types";
 import {
   findNearestSnapPosition,
   getOptimalXAxisTickFormatter,
   getSnapPositions,
   getWidthOfData,
-  getXAxisTickPositionData,
+  getWidthOfGroup,
 } from "../utils/AreaAndLine/AreaAndLineUtils";
-import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
+import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -43,7 +42,9 @@ export interface AreaChartProps<T extends AreaChartData> {
   data: T;
   categoryKey: keyof T[number];
   theme?: PaletteName;
+  customPalette?: string[];
   variant?: AreaChartVariant;
+  tickVariant?: XAxisTickVariant;
   grid?: boolean;
   legend?: boolean;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
@@ -57,12 +58,15 @@ export interface AreaChartProps<T extends AreaChartData> {
 }
 
 const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
+const X_AXIS_PADDING = 36;
 
 const AreaChartComponent = <T extends AreaChartData>({
   data,
   categoryKey,
   theme = "ocean",
+  customPalette,
   variant = "natural",
+  tickVariant = "multiLine",
   grid = true,
   icons = {},
   isAnimationActive = false,
@@ -78,12 +82,20 @@ const AreaChartComponent = <T extends AreaChartData>({
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
+  const widthOfGroup = useMemo(() => {
+    return getWidthOfGroup(data);
+  }, [data]);
+
+  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant, widthOfGroup);
+
   const transformedKeys = useTransformedKeys(dataKeys);
 
-  const colors = useMemo(() => {
-    const palette = getPalette(theme);
-    return getDistributedColors(palette, dataKeys.length);
-  }, [theme, dataKeys.length]);
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "areaChartPalette",
+    dataLength: dataKeys.length,
+  });
 
   const chartConfig: ChartConfig = useMemo(() => {
     return get2dChartConfig(dataKeys, colors, transformedKeys, undefined, icons);
@@ -121,18 +133,13 @@ const AreaChartComponent = <T extends AreaChartData>({
   }, [data]);
 
   const chartHeight = useMemo(() => {
-    return height ?? 296;
-  }, [height]);
+    return height ?? 296 + maxLabelHeight;
+  }, [height, maxLabelHeight]);
 
   // Calculate optimal tick formatter for collision detection and truncation
   const xAxisTickFormatter = useMemo(() => {
     return getOptimalXAxisTickFormatter(data, effectiveContainerWidth);
   }, [data, effectiveContainerWidth]);
-
-  // Calculate position data for X-axis tick offset handling
-  const xAxisPositionData = useMemo(() => {
-    return getXAxisTickPositionData(data, categoryKey as string);
-  }, [data, categoryKey]);
 
   // Check scroll boundaries
   const updateScrollState = useCallback(() => {
@@ -221,8 +228,6 @@ const AreaChartComponent = <T extends AreaChartData>({
 
   const id = useId();
 
-  const chartSyncID = useMemo(() => `area-chart-sync-${id}`, [id]);
-
   const gradientID = useMemo(() => `area-chart-gradient-${id}`, [id]);
 
   const onAreaClick = useCallback(
@@ -242,6 +247,51 @@ const AreaChartComponent = <T extends AreaChartData>({
     [dataKeys, colors],
   );
 
+  const yAxis = useMemo(() => {
+    if (!showYAxis) {
+      return null;
+    }
+    return (
+      <div className="crayon-area-chart-y-axis-container">
+        {/* Y-axis only chart - synchronized with main chart */}
+        <RechartsAreaChart
+          key={`y-axis-chart-${id}`}
+          width={Y_AXIS_WIDTH}
+          height={chartHeight}
+          data={data}
+          margin={{
+            top: 20,
+            bottom: maxLabelHeight, // this is required for to give space for x-axis
+            left: 0,
+            right: 0,
+          }}
+        >
+          <YAxis
+            width={Y_AXIS_WIDTH}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={getYAxisTickFormatter()}
+            tick={<YAxisTick />}
+          />
+          {/* Invisible area to maintain scale synchronization */}
+          {dataKeys.map((key) => {
+            return (
+              <Area
+                key={`y-axis-${key}`}
+                dataKey={key}
+                type={variant}
+                stroke="none"
+                fill="transparent"
+                fillOpacity={0}
+                stackId="a"
+              />
+            );
+          })}
+        </RechartsAreaChart>
+      </div>
+    );
+  }, [showYAxis, chartHeight, data, dataKeys, variant, id, maxLabelHeight]);
+
   return (
     <SideBarTooltipProvider
       isSideBarTooltipOpen={isSideBarTooltipOpen}
@@ -256,46 +306,8 @@ const AreaChartComponent = <T extends AreaChartData>({
         }}
       >
         <div className="crayon-area-chart-container-inner" ref={chartContainerRef}>
-          {showYAxis && (
-            <div className="crayon-area-chart-y-axis-container">
-              {/* Y-axis only chart - synchronized with main chart */}
-              <RechartsAreaChart
-                key={`y-axis-chart-${id}`}
-                width={Y_AXIS_WIDTH}
-                height={chartHeight}
-                data={data}
-                margin={{
-                  top: 20,
-                  bottom: 32, // this is required for to give space for x-axis
-                  left: 0,
-                  right: 0,
-                }}
-                syncId={chartSyncID}
-              >
-                <YAxis
-                  width={Y_AXIS_WIDTH}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={getYAxisTickFormatter()}
-                  tick={<YAxisTick />}
-                />
-                {/* Invisible area to maintain scale synchronization */}
-                {dataKeys.map((key) => {
-                  return (
-                    <Area
-                      key={`y-axis-${key}`}
-                      dataKey={key}
-                      type={variant}
-                      stroke="none"
-                      fill="transparent"
-                      fillOpacity={0}
-                      stackId="a"
-                    />
-                  );
-                })}
-              </RechartsAreaChart>
-            </div>
-          )}
+          {/* Y-axis of the chart */}
+          {yAxis}
           <div className="crayon-area-chart-main-container" ref={mainContainerRef}>
             <ChartContainer
               config={chartConfig}
@@ -313,7 +325,6 @@ const AreaChartComponent = <T extends AreaChartData>({
                   top: 20,
                   bottom: 0,
                 }}
-                syncId={chartSyncID}
                 onClick={onAreaClick}
               >
                 {grid && cartesianGrid()}
@@ -324,17 +335,18 @@ const AreaChartComponent = <T extends AreaChartData>({
                   textAnchor="middle"
                   interval={0}
                   tickFormatter={xAxisTickFormatter}
+                  height={maxLabelHeight}
                   tick={
                     <XAxisTick
-                      getPositionOffset={xAxisPositionData.getPositionOffset}
-                      isFirstTick={xAxisPositionData.isFirstTick}
-                      isLastTick={xAxisPositionData.isLastTick}
+                      variant={tickVariant}
+                      widthOfGroup={widthOfGroup}
+                      labelHeight={maxLabelHeight}
                     />
                   }
                   orientation="bottom"
                   padding={{
-                    left: 25,
-                    right: 20,
+                    left: X_AXIS_PADDING,
+                    right: X_AXIS_PADDING,
                   }}
                 />
 
@@ -383,37 +395,15 @@ const AreaChartComponent = <T extends AreaChartData>({
           {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
         </div>
         {/* if the data width is greater than the effective width, then show the scroll buttons */}
-        {dataWidth > effectiveWidth && (
-          <div className="crayon-area-chart-scroll-container">
-            <IconButton
-              className={clsx(
-                "crayon-area-chart-scroll-button crayon-area-chart-scroll-button--left",
-                {
-                  "crayon-area-chart-scroll-button--disabled": !canScrollLeft,
-                },
-              )}
-              icon={<ChevronLeft />}
-              variant="secondary"
-              onClick={scrollLeft}
-              size="extra-small"
-              disabled={!canScrollLeft}
-            />
-            <IconButton
-              className={clsx(
-                "crayon-area-chart-scroll-button crayon-area-chart-scroll-button--right",
-                {
-                  "crayon-area-chart-scroll-button--disabled": !canScrollRight,
-                  "crayon-area-chart-scroll-button--SideBarTooltip": isSideBarTooltipOpen,
-                },
-              )}
-              icon={<ChevronRight />}
-              variant="secondary"
-              size="extra-small"
-              onClick={scrollRight}
-              disabled={!canScrollRight}
-            />
-          </div>
-        )}
+        <ScrollButtonsHorizontal
+          dataWidth={dataWidth}
+          effectiveWidth={effectiveWidth}
+          canScrollLeft={canScrollLeft}
+          canScrollRight={canScrollRight}
+          isSideBarTooltipOpen={isSideBarTooltipOpen}
+          onScrollLeft={scrollLeft}
+          onScrollRight={scrollRight}
+        />
         {legend && (
           <DefaultLegend
             items={legendItems}
