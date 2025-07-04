@@ -24,9 +24,11 @@ interface XAxisTickProps {
   tickFormatter?: (value: any) => string;
   index?: number;
   visibleTicksCount?: number;
-  variant: XAxisTickVariant;
-  widthOfGroup: number;
-  labelHeight: number;
+  variant?: XAxisTickVariant;
+  widthOfGroup?: number;
+  labelHeight?: number;
+  onMouseEnter?: (tickProps: XAxisTickProps) => void;
+  onMouseLeave?: (tickProps: XAxisTickProps) => void;
 }
 
 const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => {
@@ -38,6 +40,8 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
     variant = "multiLine",
     widthOfGroup = 70,
     labelHeight = 20,
+    onMouseEnter,
+    onMouseLeave,
   } = props;
 
   const rawValue = payload?.value;
@@ -77,22 +81,31 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
       : "crayon-chart-x-axis-tick-single-line";
 
   return (
-    <g ref={ref} transform={`translate(${calX},${y})`} className={className}>
+    <g ref={ref} transform={`translate(${calX},${y})`}>
       <foreignObject
         ref={foreignObjectRef}
         transform="translate(0, 0)"
         width={calWidth}
-        height={labelHeight}
+        height={labelHeight} // Initial height, will be updated by useLayoutEffect
         className="crayon-chart-x-axis-tick-foreign"
       >
-        <div className="crayon-chart-x-axis-tick-container">
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            boxSizing: "border-box",
+          }}
+          onMouseEnter={() => onMouseEnter?.(props)}
+          onMouseLeave={() => onMouseLeave?.(props)}
+        >
           <LabelTooltip content={value} side="top" disabled={!isTruncated}>
             <span
               ref={spanRef}
               style={{
                 textAlign: "center",
+                wordBreak: "break-word",
               }}
-              className={spanClassName}
+              className="crayon-chart-x-axis-tick-multi-line"
             >
               {value}
             </span>
