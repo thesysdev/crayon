@@ -12,6 +12,7 @@ import {
   DefaultLegend,
   SideBarTooltip,
   XAxisTick,
+  XAxisTickProps,
   YAxisTick,
 } from "../shared";
 
@@ -307,6 +308,16 @@ const BarChartComponent = <T extends BarChartData>({
     setHoveredCategory(null);
   }, []);
 
+  const handleXAxisTickMouseEnter = useCallback((tickProps: XAxisTickProps) => {
+    if (typeof tickProps.payload?.value === "string") {
+      setHoveredCategory(tickProps.payload.value);
+    }
+  }, []);
+
+  const handleXAxisTickMouseLeave = useCallback(() => {
+    setHoveredCategory(null);
+  }, []);
+
   const { mode } = useTheme();
 
   const barInternalLineColor = useMemo(() => {
@@ -387,6 +398,8 @@ const BarChartComponent = <T extends BarChartData>({
                         variant={tickVariant}
                         widthOfGroup={widthOfGroup}
                         labelHeight={maxLabelHeight}
+                        onMouseEnter={handleXAxisTickMouseEnter}
+                        onMouseLeave={handleXAxisTickMouseLeave}
                       />
                     }
                     orientation="bottom"

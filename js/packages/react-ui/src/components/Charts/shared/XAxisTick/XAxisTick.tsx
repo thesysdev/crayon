@@ -27,6 +27,8 @@ interface XAxisTickProps {
   variant?: XAxisTickVariant;
   widthOfGroup?: number;
   labelHeight?: number;
+  onMouseEnter?: (tickProps: XAxisTickProps) => void;
+  onMouseLeave?: (tickProps: XAxisTickProps) => void;
 }
 
 const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => {
@@ -39,6 +41,8 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
     variant = "multiLine",
     widthOfGroup = 70,
     labelHeight = 20,
+    onMouseEnter,
+    onMouseLeave,
   } = props;
 
   const value = String(payload?.value || "");
@@ -82,6 +86,8 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
               height: "100%",
               boxSizing: "border-box",
             }}
+            onMouseEnter={() => onMouseEnter?.(props)}
+            onMouseLeave={() => onMouseLeave?.(props)}
           >
             <LabelTooltip content={value} side="top" disabled={!isMultiLineTruncated}>
               <span
@@ -108,7 +114,15 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
   return (
     <g ref={ref} transform={`translate(${x},${y})`} className={className}>
       <LabelTooltip content={value} side="top" disabled={!isTruncated}>
-        <text x={0} y={0} dy={12} textAnchor={"middle"} className="crayon-chart-x-axis-tick">
+        <text
+          x={0}
+          y={0}
+          dy={12}
+          textAnchor={"middle"}
+          className="crayon-chart-x-axis-tick"
+          onMouseEnter={() => onMouseEnter?.(props)}
+          onMouseLeave={() => onMouseLeave?.(props)}
+        >
           {displayValue}
         </text>
       </LabelTooltip>
