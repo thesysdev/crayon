@@ -4,7 +4,7 @@ import { Line, LineChart as RechartsLineChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useMaxLabelHeight, useTransformedKeys } from "../hooks";
+import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
 import {
   ActiveDot,
   cartesianGrid,
@@ -56,7 +56,6 @@ export interface LineChartProps<T extends LineChartData> {
   strokeWidth?: number;
 }
 
-const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
 const X_AXIS_PADDING = 36;
 const CHART_CONTAINER_BOTTOM_MARGIN = 10;
 
@@ -82,6 +81,8 @@ export const LineChart = <T extends LineChartData>({
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
+
+  const yAxisWidth = useYAxisLabelWidth(data, dataKeys, getYAxisTickFormatter());
 
   const widthOfGroup = useMemo(() => {
     return getWidthOfGroup(data);
@@ -120,9 +121,9 @@ export const LineChart = <T extends LineChartData>({
   }, [width, containerWidth]);
 
   const effectiveContainerWidth = useMemo(() => {
-    const yAxisWidth = showYAxis ? Y_AXIS_WIDTH : 0;
-    return Math.max(0, effectiveWidth - yAxisWidth - 40); // -40 because we are giving 20px padding in xAxis on each side
-  }, [effectiveWidth, showYAxis]);
+    const dynamicYAxisWidth = showYAxis ? yAxisWidth : 0;
+    return Math.max(0, effectiveWidth - dynamicYAxisWidth - 40); // -40 because we are giving 20px padding in xAxis on each side
+  }, [effectiveWidth, showYAxis, yAxisWidth]);
 
   const dataWidth = useMemo(() => {
     return getWidthOfData(data, effectiveContainerWidth);
@@ -249,7 +250,7 @@ export const LineChart = <T extends LineChartData>({
         {/* Y-axis only chart - synchronized with main chart */}
         <RechartsLineChart
           key={`y-axis-chart-${id}`}
-          width={Y_AXIS_WIDTH}
+          width={yAxisWidth}
           height={chartHeight}
           data={data}
           margin={{
@@ -261,7 +262,7 @@ export const LineChart = <T extends LineChartData>({
           onClick={onLineClick}
         >
           <YAxis
-            width={Y_AXIS_WIDTH}
+            width={yAxisWidth}
             tickLine={false}
             axisLine={false}
             tickFormatter={getYAxisTickFormatter()}
@@ -295,6 +296,7 @@ export const LineChart = <T extends LineChartData>({
     variant,
     isAnimationActive,
     maxLabelHeight,
+    yAxisWidth,
   ]);
 
   return (

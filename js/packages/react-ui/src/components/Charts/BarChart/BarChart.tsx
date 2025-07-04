@@ -5,7 +5,7 @@ import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useMaxLabelHeight, useTransformedKeys } from "../hooks";
+import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
 import {
   cartesianGrid,
   CustomTooltipContent,
@@ -63,7 +63,6 @@ export interface BarChartProps<T extends BarChartData> {
   width?: number;
 }
 
-const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
 const BAR_GAP = 10; // Gap between bars
 const BAR_CATEGORY_GAP = "20%"; // Gap between categories
 const BAR_INTERNAL_LINE_WIDTH = 1;
@@ -96,6 +95,8 @@ const BarChartComponent = <T extends BarChartData>({
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
+
+  const yAxisWidth = useYAxisLabelWidth(data, dataKeys, getYAxisTickFormatter());
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -130,9 +131,9 @@ const BarChartComponent = <T extends BarChartData>({
 
   // need this to calculate the padding for the chart container, because the y-axis is rendered in a separate chart
   const effectiveContainerWidth = useMemo(() => {
-    const yAxisWidth = showYAxis ? Y_AXIS_WIDTH : 0;
-    return Math.max(0, effectiveWidth - yAxisWidth);
-  }, [effectiveWidth, showYAxis]);
+    const dynamicYAxisWidth = showYAxis ? yAxisWidth : 0;
+    return Math.max(0, effectiveWidth - dynamicYAxisWidth);
+  }, [effectiveWidth, showYAxis, yAxisWidth]);
 
   const padding = useMemo(() => {
     return getPadding(data, categoryKey as string, effectiveContainerWidth, variant);
@@ -255,7 +256,7 @@ const BarChartComponent = <T extends BarChartData>({
         {/* Y-axis only chart - synchronized with main chart */}
         <RechartsBarChart
           key={`y-axis-bar-chart-${id}`}
-          width={Y_AXIS_WIDTH}
+          width={yAxisWidth}
           height={chartHeight}
           data={data}
           margin={{
@@ -266,7 +267,7 @@ const BarChartComponent = <T extends BarChartData>({
           }}
         >
           <YAxis
-            width={Y_AXIS_WIDTH}
+            width={yAxisWidth}
             tickLine={false}
             axisLine={false}
             tickFormatter={getYAxisTickFormatter()}
@@ -288,7 +289,7 @@ const BarChartComponent = <T extends BarChartData>({
         </RechartsBarChart>
       </div>
     );
-  }, [showYAxis, chartHeight, data, dataKeys, variant, id, maxLabelHeight]);
+  }, [showYAxis, chartHeight, data, dataKeys, variant, id, maxLabelHeight, yAxisWidth]);
 
   // Handle mouse events for group hovering
   const handleChartMouseMove = useCallback((state: any) => {
