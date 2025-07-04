@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { XAxisTickVariant } from "../../types";
 import { LabelTooltip } from "../LabelTooltip/LabelTooltip";
@@ -105,7 +106,7 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
                 textAlign: "center",
                 wordBreak: "break-word",
               }}
-              className={spanClassName}
+              className={clsx(spanClassName, className)}
             >
               {value}
             </span>
