@@ -105,7 +105,7 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
                 textAlign: "center",
                 wordBreak: "break-word",
               }}
-              className="crayon-chart-x-axis-tick-multi-line"
+              className={spanClassName}
             >
               {value}
             </span>
