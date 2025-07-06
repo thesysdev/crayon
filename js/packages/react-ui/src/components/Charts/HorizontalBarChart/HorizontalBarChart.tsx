@@ -8,7 +8,6 @@ import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTool
 import { useTransformedKeys } from "../hooks";
 import { CustomTooltipContent, DefaultLegend, SideBarTooltip, YAxisTick } from "../shared";
 
-import { ScrollButtonsVertical } from "../shared/ScrollButtonsVertical/ScrollButtonsVertical";
 import { type LegendItem } from "../types";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 
@@ -342,12 +341,6 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                   key={`horizontal-bar-chart-${id}`}
                   data={data}
                   layout="vertical"
-                  margin={{
-                    top: 20,
-                    bottom: 20,
-                    left: maxCategoryLabelWidth + CHART_CONTAINER_LEFT_MARGIN,
-                    right: 20,
-                  }}
                   onClick={onBarsClick}
                   onMouseMove={handleChartMouseMove}
                   onMouseLeave={handleChartMouseLeave}
@@ -361,7 +354,6 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                     axisLine={false}
                     tickFormatter={getXAxisTickFormatter()}
                     tick={{ fontSize: 12 }}
-                    hide
                   />
                   <YAxis
                     type="category"
@@ -424,11 +416,11 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
               </ChartContainer>
             </div>
             {/* X-axis of the chart */}
-            {xAxis}
+            {/* {xAxis} */}
             {isSideBarTooltipOpen && <SideBarTooltip height={effectiveHeight} />}
           </div>
           {/* if the data height is greater than the effective height, then show the scroll buttons */}
-          <ScrollButtonsVertical
+          {/* <ScrollButtonsVertical
             dataHeight={dataHeight}
             effectiveHeight={effectiveHeight}
             canScrollUp={canScrollUp}
@@ -436,7 +428,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
             isSideBarTooltipOpen={isSideBarTooltipOpen}
             onScrollUp={scrollUp}
             onScrollDown={scrollDown}
-          />
+          /> */}
           {legend && (
             <DefaultLegend
               items={legendItems}
