@@ -3,6 +3,7 @@ export * from "./CartesianGrid/cartesianGrid";
 export * from "./DefaultLegend/DefaultLegend";
 export * from "./PortalTooltip";
 export * from "./ScrollButtonsHorizontal";
+export * from "./ScrollButtonsVertical";
 export * from "./SideBarTooltip";
 export * from "./StackedLegend/StackedLegend";
 export * from "./XAxisTick/XAxisTick";

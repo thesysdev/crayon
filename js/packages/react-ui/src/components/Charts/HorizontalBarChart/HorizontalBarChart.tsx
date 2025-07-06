@@ -7,6 +7,7 @@ import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import { useTransformedKeys } from "../hooks";
 import { CustomTooltipContent, DefaultLegend, SideBarTooltip, YAxisTick } from "../shared";
+import { ScrollButtonsVertical } from "../shared/ScrollButtonsVertical";
 
 import { type LegendItem } from "../types";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
@@ -199,7 +200,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   // Update scroll state when container height or data height changes
   useEffect(() => {
     updateScrollState();
-  }, [effectiveHeight, dataHeight, updateScrollState]);
+  }, [effectiveContainerHeight, dataHeight, updateScrollState]);
 
   useEffect(() => {
     setIsSideBarTooltipOpen(false);
@@ -354,6 +355,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                     axisLine={false}
                     tickFormatter={getXAxisTickFormatter()}
                     tick={{ fontSize: 12 }}
+                    hide
                   />
                   <YAxis
                     type="category"
@@ -365,6 +367,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                     interval={0}
                     // gives the padding on the 2 sides see the function for reference
                     padding={padding}
+                    hide
                   />
 
                   <ChartTooltip
@@ -416,19 +419,19 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
               </ChartContainer>
             </div>
             {/* X-axis of the chart */}
-            {/* {xAxis} */}
+            {xAxis}
             {isSideBarTooltipOpen && <SideBarTooltip height={effectiveHeight} />}
           </div>
           {/* if the data height is greater than the effective height, then show the scroll buttons */}
-          {/* <ScrollButtonsVertical
+          <ScrollButtonsVertical
             dataHeight={dataHeight}
-            effectiveHeight={effectiveHeight}
+            effectiveHeight={effectiveContainerHeight}
             canScrollUp={canScrollUp}
             canScrollDown={canScrollDown}
             isSideBarTooltipOpen={isSideBarTooltipOpen}
             onScrollUp={scrollUp}
             onScrollDown={scrollDown}
-          /> */}
+          />
           {legend && (
             <DefaultLegend
               items={legendItems}
