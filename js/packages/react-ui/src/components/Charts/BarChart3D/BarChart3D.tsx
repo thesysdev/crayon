@@ -1,6 +1,6 @@
 import { Billboard, Box, Line, OrbitControls, Text } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
-import React, { useMemo } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import React, { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 interface Value {
@@ -71,16 +71,182 @@ const ScreenSpaceText = ({
   );
 };
 
+const AnimatedGlowMaterial = ({ 
+  color, 
+  baseOpacity, 
+  glowOpacityRef,
+  ...props 
+}: { 
+  color: string; 
+  baseOpacity: number; 
+  glowOpacityRef: React.MutableRefObject<number>;
+  [key: string]: any;
+}) => {
+  const materialRef = useRef<THREE.MeshBasicMaterial>(null);
+  
+  useFrame(() => {
+    if (materialRef.current) {
+      materialRef.current.opacity = baseOpacity * glowOpacityRef.current;
+    }
+  });
+  
+  return (
+    <meshBasicMaterial 
+      ref={materialRef}
+      color={color} 
+      transparent 
+      opacity={0}
+      {...props}
+    />
+  );
+};
+
+const AnimatedAmbientLight = ({ targetIntensity }: { targetIntensity: number }) => {
+  const lightRef = useRef<THREE.AmbientLight>(null);
+  const currentIntensity = useRef(targetIntensity);
+  
+  useFrame((_, delta) => {
+    if (lightRef.current) {
+      currentIntensity.current += (targetIntensity - currentIntensity.current) * delta * 3;
+      lightRef.current.intensity = currentIntensity.current;
+    }
+  });
+  
+  return <ambientLight ref={lightRef} intensity={targetIntensity} />;
+};
+
+const AnimatedDirectionalLight = ({ targetIntensity, ...props }: { targetIntensity: number; [key: string]: any }) => {
+  const lightRef = useRef<THREE.DirectionalLight>(null);
+  const currentIntensity = useRef(targetIntensity);
+  
+  useFrame((_, delta) => {
+    if (lightRef.current) {
+      currentIntensity.current += (targetIntensity - currentIntensity.current) * delta * 3;
+      lightRef.current.intensity = currentIntensity.current;
+    }
+  });
+  
+  return <directionalLight ref={lightRef} intensity={targetIntensity} {...props} />;
+};
+
+const GlowBar = ({
+  size,
+  color,
+  position,
+  isHovered,
+  onHover,
+}: {
+  size: [number, number, number];
+  color: string;
+  position: [number, number, number];
+  isHovered: boolean;
+  onHover: (hovered: boolean) => void;
+}) => {
+  const materialRef = useRef<THREE.MeshStandardMaterial>(null);
+  const glowOpacityRef = useRef(0);
+  const glowGroupRef = useRef<THREE.Group>(null);
+  
+  useFrame((state, delta) => {
+    // Smooth transition for glow opacity
+    const targetOpacity = isHovered ? 1 : 0;
+    glowOpacityRef.current += (targetOpacity - glowOpacityRef.current) * delta * 5;
+    
+    // Update material emissive intensity
+    if (materialRef.current) {
+      if (isHovered) {
+        // Pulsing effect when hovered
+        materialRef.current.emissiveIntensity = (1.5 + Math.sin(state.clock.elapsedTime * 3) * 0.5) * glowOpacityRef.current;
+      } else {
+        // Fade out smoothly
+        materialRef.current.emissiveIntensity = 2 * glowOpacityRef.current;
+      }
+    }
+    
+    // Update glow group opacity
+    if (glowGroupRef.current) {
+      glowGroupRef.current.traverse((child) => {
+        if (child instanceof THREE.Mesh && child.material) {
+          const material = child.material as THREE.MeshBasicMaterial;
+          if (material.opacity !== undefined) {
+            material.needsUpdate = true;
+          }
+        }
+      });
+    }
+  });
+
+  const handlePointerOver = () => {
+    onHover(true);
+    document.body.style.cursor = "pointer";
+  };
+
+  const handlePointerOut = () => {
+    onHover(false);
+    document.body.style.cursor = "default";
+  };
+
+  return (
+    <group position={position}>
+      {/* Outer glow mesh - larger and transparent */}
+      <group ref={glowGroupRef}>
+        {/* Multiple glow layers for depth */}
+        <Box args={[size[0] * 1.3, size[1] * 1.1, size[2] * 1.3]}>
+          <AnimatedGlowMaterial 
+            color={color} 
+            baseOpacity={0.2} 
+            glowOpacityRef={glowOpacityRef} 
+            side={THREE.BackSide} 
+            depthWrite={false}
+          />
+        </Box>
+        <Box args={[size[0] * 1.6, size[1] * 1.05, size[2] * 1.6]}>
+          <AnimatedGlowMaterial 
+            color={color} 
+            baseOpacity={0.1} 
+            glowOpacityRef={glowOpacityRef} 
+            side={THREE.BackSide}
+            depthWrite={false}
+          />
+        </Box>
+        <Box args={[size[0] * 2, size[1] * 1.02, size[2] * 2]}>
+          <AnimatedGlowMaterial 
+            color={color} 
+            baseOpacity={0.05} 
+            glowOpacityRef={glowOpacityRef} 
+            side={THREE.BackSide}
+            depthWrite={false}
+          />
+        </Box>
+      </group>
+
+      {/* The actual bar */}
+      <Box args={size} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut} castShadow>
+        <meshStandardMaterial
+          color={color}
+          emissive={isHovered ? color : undefined}
+          emissiveIntensity={isHovered ? 2 : 0}
+          toneMapped={false}
+          ref={materialRef}
+        />
+      </Box>
+    </group>
+  );
+};
+
 const BarGroup = ({
   item,
   index,
   labelPosition,
   barAnchor,
+  onHover,
+  isHovered,
 }: {
   item: DataItem;
   index: number;
   labelPosition: THREE.Vector3;
   barAnchor: THREE.Vector3;
+  onHover: (index: number | null) => void;
+  isHovered: boolean;
 }) => {
   const i = index;
   const zPos = -10 + i * 1.5;
@@ -110,7 +276,13 @@ const BarGroup = ({
 
   return (
     <group>
-      <BarMesh size={[1, barHeight, 0.5]} color={color} position={[0, barHeight / 2, zPos]} />
+      <GlowBar
+        size={[1, barHeight, 0.5]}
+        color={color}
+        position={[0, barHeight / 2, zPos]}
+        isHovered={isHovered}
+        onHover={(hovered) => onHover(hovered ? index : null)}
+      />
       <ScreenSpaceText
         position={countryLabelPosition.toArray() as [number, number, number]}
         size={10}
@@ -185,6 +357,8 @@ const AxesHelper = ({ size }: { size: number }) => {
 };
 
 const ChartContents = ({ data }: { data: DataItem[] }) => {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
   const { labelPositions, barAnchors } = useMemo(() => {
     const calculatedLabelPositions: THREE.Vector3[] = [];
     const calculatedBarAnchors: THREE.Vector3[] = [];
@@ -209,11 +383,11 @@ const ChartContents = ({ data }: { data: DataItem[] }) => {
         <AxesHelper size={2} />
       </group>
 
-      <ambientLight intensity={0.7} />
-      <directionalLight
+      <AnimatedAmbientLight targetIntensity={hoveredIndex !== null ? 0.15 : 3} />
+      <AnimatedDirectionalLight 
+        targetIntensity={hoveredIndex !== null ? 0.3 : 4}
         castShadow
         position={[10, 20, 5]}
-        intensity={1.5}
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
         shadow-camera-far={50}
@@ -236,6 +410,8 @@ const ChartContents = ({ data }: { data: DataItem[] }) => {
           index={i}
           labelPosition={labelPositions[i]!}
           barAnchor={barAnchors[i]!}
+          onHover={setHoveredIndex}
+          isHovered={hoveredIndex === i}
         />
       ))}
 
@@ -249,22 +425,6 @@ const ChartContents = ({ data }: { data: DataItem[] }) => {
         maxZoom={100}
       />
     </>
-  );
-};
-
-const BarMesh = ({
-  size,
-  color,
-  position,
-}: {
-  size: [number, number, number];
-  color: THREE.ColorRepresentation;
-  position: [number, number, number];
-}) => {
-  return (
-    <Box castShadow args={size} position={position}>
-      <meshStandardMaterial color={color} />
-    </Box>
   );
 };
 
@@ -286,6 +446,8 @@ export const BarChart3D: React.FC<BarChart3DProps> = ({
           left: -10,
           right: 10,
         }}
+        gl={{ alpha: true, antialias: true }}
+        scene={{ fog: new THREE.Fog(0x000000, 10, 50) }}
       >
         <ChartContents data={data} />
       </Canvas>
