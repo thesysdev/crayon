@@ -421,16 +421,46 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                           isAnimationActive={isAnimationActive}
                           maxBarSize={BAR_HEIGHT}
                           barSize={BAR_HEIGHT}
-                          shape={
-                            <LineHorizontalBarShape
-                              internalLineColor={barInternalLineColor}
-                              internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
-                              isHovered={hoveredCategory !== null}
-                              hoveredCategory={hoveredCategory}
-                              categoryKey={categoryKey as string}
-                              variant={variant}
-                            />
-                          }
+                          shape={(barProps: any) => {
+                            // For the first bar in each group, render the label and offset the bar
+                            const labelWidth = maxCategoryLabelWidth + 16; // 16px padding
+                            let { x, width, y, height } = barProps;
+                            let barX = x;
+                            let barWidth = width;
+                            let label = null;
+                            if (index === 0 && barProps.payload && barProps.payload[categoryKey]) {
+                              label = (
+                                <foreignObject
+                                  x={x}
+                                  y={y - 20}
+                                  width={labelWidth}
+                                  height={height}
+                                  style={{ pointerEvents: "none" }}
+                                  xmlns="http://www.w3.org/1999/xhtml"
+                                >
+                                  <div className="crayon-horizontal-bar-chart-category-label">
+                                    {barProps.payload[categoryKey]}
+                                  </div>
+                                </foreignObject>
+                              );
+                            }
+                            return (
+                              <g>
+                                {label}
+                                <LineHorizontalBarShape
+                                  {...barProps}
+                                  x={barX}
+                                  width={barWidth}
+                                  internalLineColor={barInternalLineColor}
+                                  internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
+                                  isHovered={hoveredCategory !== null}
+                                  hoveredCategory={hoveredCategory}
+                                  categoryKey={categoryKey as string}
+                                  variant={variant}
+                                />
+                              </g>
+                            );
+                          }}
                         />
                       );
                     })}
