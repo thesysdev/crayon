@@ -104,6 +104,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const [containerHeight, setContainerHeight] = useState<number>(0);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
   const [canScrollUp, setCanScrollUp] = useState(false);
   const [canScrollDown, setCanScrollDown] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | number | null>(null);
@@ -138,10 +139,12 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
     return getSnapPositions(data, categoryKey as string, variant);
   }, [data, categoryKey, variant]);
 
-  // Calculate chart width
+  // Calculate chart width for internal calculations (legend, xAxis, etc.)
   const chartWidth = useMemo(() => {
-    return width ?? 600; // Default width
-  }, [width]);
+    if (width) return width;
+    // Use observed container width or default
+    return containerWidth > 0 ? containerWidth : 600;
+  }, [width, containerWidth]);
 
   // Check scroll boundaries
   const updateScrollState = useCallback(() => {
@@ -179,14 +182,19 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   }, [snapPositions]);
 
   useEffect(() => {
-    // Only set up ResizeObserver if height is not provided
-    if (height || !chartContainerRef.current) {
+    // Set up ResizeObserver if height or width is not provided
+    if (!chartContainerRef.current) {
       return () => {};
     }
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        setContainerHeight(entry.contentRect.height);
+        if (!height) {
+          setContainerHeight(entry.contentRect.height);
+        }
+        if (!width) {
+          setContainerWidth(entry.contentRect.width);
+        }
       }
     });
 
@@ -195,12 +203,12 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [height]);
+  }, [height, width]);
 
-  // Update scroll state when container height or data height changes
+  // Update scroll state when container dimensions or data height changes
   useEffect(() => {
     updateScrollState();
-  }, [effectiveContainerHeight, dataHeight, updateScrollState]);
+  }, [effectiveContainerHeight, dataHeight, containerWidth, updateScrollState]);
 
   useEffect(() => {
     setIsSideBarTooltipOpen(false);
@@ -236,44 +244,50 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
     return (
       <div className="crayon-horizontal-bar-chart-x-axis-container">
         {/* X-axis only chart - synchronized with main chart */}
-        <RechartsBarChart
-          key={`x-axis-horizontal-bar-chart-${id}`}
-          width={chartWidth}
-          height={X_AXIS_HEIGHT}
-          data={data}
-          layout="vertical"
-          margin={{
-            top: 0,
-            bottom: 0,
-            left: maxCategoryLabelWidth + CHART_CONTAINER_LEFT_MARGIN,
-            right: 20,
+        <ChartContainer
+          config={chartConfig}
+          style={{ width: "100%", height: X_AXIS_HEIGHT }}
+          rechartsProps={{
+            height: X_AXIS_HEIGHT,
           }}
         >
-          <XAxis
-            type="number"
-            height={X_AXIS_HEIGHT}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={getXAxisTickFormatter()}
-            tick={{ fontSize: 12 }}
-          />
-          {/* Invisible bars to maintain scale synchronization */}
-          {dataKeys.map((key) => {
-            return (
-              <Bar
-                key={`xaxis-horizontal-bar-chart-${key}`}
-                dataKey={key}
-                fill="transparent"
-                stackId={variant === "stacked" ? "a" : undefined}
-                isAnimationActive={false}
-                maxBarSize={0}
-              />
-            );
-          })}
-        </RechartsBarChart>
+          <RechartsBarChart
+            key={`x-axis-horizontal-bar-chart-${id}`}
+            data={data}
+            layout="vertical"
+            margin={{
+              top: 0,
+              bottom: 0,
+              left: 5,
+              right: 2,
+            }}
+          >
+            <XAxis
+              type="number"
+              height={X_AXIS_HEIGHT}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={getXAxisTickFormatter()}
+              tick={{ fontSize: 12 }}
+            />
+            {/* Invisible bars to maintain scale synchronization */}
+            {dataKeys.map((key) => {
+              return (
+                <Bar
+                  key={`xaxis-horizontal-bar-chart-${key}`}
+                  dataKey={key}
+                  fill="transparent"
+                  stackId={variant === "stacked" ? "a" : undefined}
+                  isAnimationActive={false}
+                  maxBarSize={0}
+                />
+              );
+            })}
+          </RechartsBarChart>
+        </ChartContainer>
       </div>
     );
-  }, [showXAxis, chartWidth, data, dataKeys, variant, id, maxCategoryLabelWidth]);
+  }, [showXAxis, chartConfig, data, dataKeys, variant, id, maxCategoryLabelWidth]);
 
   // Handle mouse events for group hovering
   const handleChartMouseMove = useCallback((state: any) => {
@@ -324,120 +338,126 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
           className={clsx("crayon-horizontal-bar-chart-container", className)}
           style={{
             height: height ? `${height}px` : undefined,
-            width: width ? `${width}px` : undefined,
           }}
         >
-          <div className="crayon-horizontal-bar-chart-container-inner" ref={chartContainerRef}>
-            <div className="crayon-horizontal-bar-chart-main-container" ref={mainContainerRef}>
-              <ChartContainer
-                config={chartConfig}
-                style={{ height: dataHeight, minHeight: "100%", width: chartWidth }}
-                rechartsProps={{
-                  width: chartWidth,
-                  height: "100%",
-                }}
-              >
-                <RechartsBarChart
-                  accessibilityLayer
-                  key={`horizontal-bar-chart-${id}`}
-                  data={data}
-                  layout="vertical"
-                  onClick={onBarsClick}
-                  onMouseMove={handleChartMouseMove}
-                  onMouseLeave={handleChartMouseLeave}
-                  barGap={BAR_GAP}
-                  barCategoryGap={BAR_CATEGORY_GAP}
+          <div className="crayon-horizontal-bar-chart-container-inner-wrapper">
+            <div className="crayon-horizontal-bar-chart-container-inner" ref={chartContainerRef}>
+              <div className="crayon-horizontal-bar-chart-main-container" ref={mainContainerRef}>
+                <ChartContainer
+                  config={chartConfig}
+                  style={{ height: dataHeight, minHeight: "100%", width: "100%" }}
+                  rechartsProps={{
+                    height: "100%",
+                  }}
                 >
-                  {grid && <CartesianGrid horizontal={false} />}
-                  <XAxis
-                    type="number"
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={getXAxisTickFormatter()}
-                    tick={{ fontSize: 12 }}
-                    hide
-                  />
-                  <YAxis
-                    type="category"
-                    dataKey={categoryKey as string}
-                    tickLine={false}
-                    axisLine={false}
-                    width={maxCategoryLabelWidth}
-                    tick={<YAxisTick />}
-                    interval={0}
-                    // gives the padding on the 2 sides see the function for reference
-                    padding={padding}
-                    hide
-                  />
-
-                  <ChartTooltip
-                    cursor={{
-                      fill: "var(--crayon-sunk-fills)",
-                      stroke: "var(--crayon-stroke-default)",
-                      opacity: 1,
-                      strokeWidth: 1,
+                  <RechartsBarChart
+                    accessibilityLayer
+                    key={`horizontal-bar-chart-${id}`}
+                    data={data}
+                    layout="vertical"
+                    onClick={onBarsClick}
+                    onMouseMove={handleChartMouseMove}
+                    onMouseLeave={handleChartMouseLeave}
+                    barGap={BAR_GAP}
+                    barCategoryGap={BAR_CATEGORY_GAP}
+                    margin={{
+                      top: 0,
+                      bottom: 0,
+                      left: 2,
+                      right: 2,
                     }}
-                    content={<CustomTooltipContent />}
-                    offset={15}
-                  />
+                  >
+                    {grid && <CartesianGrid horizontal={false} />}
+                    <XAxis
+                      type="number"
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={getXAxisTickFormatter()}
+                      tick={{ fontSize: 12 }}
+                      hide
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey={categoryKey as string}
+                      tickLine={false}
+                      axisLine={false}
+                      width={maxCategoryLabelWidth}
+                      tick={<YAxisTick />}
+                      interval={0}
+                      // gives the padding on the 2 sides see the function for reference
+                      padding={padding}
+                      hide
+                    />
 
-                  {dataKeys.map((key, index) => {
-                    const transformedKey = transformedKeys[key];
-                    const color = `var(--color-${transformedKey})`;
-                    const isFirstInStack = index === 0;
-                    const isLastInStack = index === dataKeys.length - 1;
+                    <ChartTooltip
+                      cursor={{
+                        fill: "var(--crayon-sunk-fills)",
+                        stroke: "var(--crayon-stroke-default)",
+                        opacity: 1,
+                        strokeWidth: 1,
+                      }}
+                      content={<CustomTooltipContent />}
+                      offset={15}
+                    />
 
-                    return (
-                      <Bar
-                        key={`main-${key}`}
-                        dataKey={key}
-                        fill={color}
-                        radius={getRadiusArray(
-                          variant,
-                          radius,
-                          variant === "stacked" ? isFirstInStack : undefined,
-                          variant === "stacked" ? isLastInStack : undefined,
-                        )}
-                        stackId={variant === "stacked" ? "a" : undefined}
-                        isAnimationActive={isAnimationActive}
-                        maxBarSize={BAR_HEIGHT}
-                        barSize={BAR_HEIGHT}
-                        shape={
-                          <LineHorizontalBarShape
-                            internalLineColor={barInternalLineColor}
-                            internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
-                            isHovered={hoveredCategory !== null}
-                            hoveredCategory={hoveredCategory}
-                            categoryKey={categoryKey as string}
-                            variant={variant}
-                          />
-                        }
-                      />
-                    );
-                  })}
-                </RechartsBarChart>
-              </ChartContainer>
+                    {dataKeys.map((key, index) => {
+                      const transformedKey = transformedKeys[key];
+                      const color = `var(--color-${transformedKey})`;
+                      const isFirstInStack = index === 0;
+                      const isLastInStack = index === dataKeys.length - 1;
+
+                      return (
+                        <Bar
+                          key={`main-${key}`}
+                          dataKey={key}
+                          fill={color}
+                          radius={getRadiusArray(
+                            variant,
+                            radius,
+                            variant === "stacked" ? isFirstInStack : undefined,
+                            variant === "stacked" ? isLastInStack : undefined,
+                          )}
+                          stackId={variant === "stacked" ? "a" : undefined}
+                          isAnimationActive={isAnimationActive}
+                          maxBarSize={BAR_HEIGHT}
+                          barSize={BAR_HEIGHT}
+                          shape={
+                            <LineHorizontalBarShape
+                              internalLineColor={barInternalLineColor}
+                              internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
+                              isHovered={hoveredCategory !== null}
+                              hoveredCategory={hoveredCategory}
+                              categoryKey={categoryKey as string}
+                              variant={variant}
+                            />
+                          }
+                        />
+                      );
+                    })}
+                  </RechartsBarChart>
+                </ChartContainer>
+              </div>
+              {/* X-axis of the chart */}
+              {xAxis}
+              {isSideBarTooltipOpen && <SideBarTooltip height={effectiveHeight} />}
             </div>
-            {/* X-axis of the chart */}
-            {xAxis}
-            {isSideBarTooltipOpen && <SideBarTooltip height={effectiveHeight} />}
+            {/* if the data height is greater than the effective height, then show the scroll buttons */}
+            <ScrollButtonsVertical
+              dataHeight={dataHeight}
+              effectiveHeight={effectiveContainerHeight}
+              canScrollUp={canScrollUp}
+              canScrollDown={canScrollDown}
+              isSideBarTooltipOpen={isSideBarTooltipOpen}
+              onScrollUp={scrollUp}
+              onScrollDown={scrollDown}
+            />
           </div>
-          {/* if the data height is greater than the effective height, then show the scroll buttons */}
-          <ScrollButtonsVertical
-            dataHeight={dataHeight}
-            effectiveHeight={effectiveContainerHeight}
-            canScrollUp={canScrollUp}
-            canScrollDown={canScrollDown}
-            isSideBarTooltipOpen={isSideBarTooltipOpen}
-            onScrollUp={scrollUp}
-            onScrollDown={scrollDown}
-          />
           {legend && (
             <DefaultLegend
               items={legendItems}
               yAxisLabel={yAxisLabel}
               xAxisLabel={xAxisLabel}
-              containerWidth={chartWidth}
+              containerWidth={containerWidth}
               isExpanded={isLegendExpanded}
               setIsExpanded={setIsLegendExpanded}
             />
