@@ -27,7 +27,6 @@ import {
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
-import { getYAxisTickFormatter } from "../utils/styleUtils";
 import { LineInBarShape } from "./components/LineInBarShape";
 import { BarChartData, BarChartVariant } from "./types";
 import {
@@ -97,7 +96,7 @@ const BarChartComponent = <T extends BarChartData>({
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
-  const yAxisWidth = useYAxisLabelWidth(data, dataKeys, getYAxisTickFormatter());
+  const yAxisWidth = useYAxisLabelWidth(data, dataKeys);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -267,13 +266,7 @@ const BarChartComponent = <T extends BarChartData>({
             right: 0,
           }}
         >
-          <YAxis
-            width={yAxisWidth}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={getYAxisTickFormatter()}
-            tick={<YAxisTick />}
-          />
+          <YAxis width={yAxisWidth} tickLine={false} axisLine={false} tick={<YAxisTick />} />
           {/* Invisible bars to maintain scale synchronization */}
           {dataKeys.map((key) => {
             return (

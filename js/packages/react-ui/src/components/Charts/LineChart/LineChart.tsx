@@ -30,7 +30,6 @@ import {
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
-import { getYAxisTickFormatter } from "../utils/styleUtils";
 import { LineChartData, LineChartVariant } from "./types";
 
 type LineChartOnClick = React.ComponentProps<typeof RechartsLineChart>["onClick"];
@@ -82,7 +81,7 @@ export const LineChart = <T extends LineChartData>({
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
-  const yAxisWidth = useYAxisLabelWidth(data, dataKeys, getYAxisTickFormatter());
+  const yAxisWidth = useYAxisLabelWidth(data, dataKeys);
 
   const widthOfGroup = useMemo(() => {
     return getWidthOfGroup(data);
@@ -261,13 +260,7 @@ export const LineChart = <T extends LineChartData>({
           }}
           onClick={onLineClick}
         >
-          <YAxis
-            width={yAxisWidth}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={getYAxisTickFormatter()}
-            tick={<YAxisTick />}
-          />
+          <YAxis width={yAxisWidth} tickLine={false} axisLine={false} tick={<YAxisTick />} />
           {/* Invisible lines to maintain scale synchronization */}
           {dataKeys.map((key) => {
             return (

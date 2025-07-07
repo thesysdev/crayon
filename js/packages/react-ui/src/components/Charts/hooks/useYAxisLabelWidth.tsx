@@ -4,7 +4,7 @@ import { useTheme } from "../../ThemeProvider";
 import { AreaChartData } from "../AreaChart";
 import { BarChartData } from "../BarChart";
 import { LineChartData } from "../LineChart";
-import { getCanvasContext } from "../utils";
+import { getCanvasContext, numberTickFormatter } from "../utils";
 
 const DEFAULT_Y_AXIS_WIDTH = 40;
 const MIN_Y_AXIS_WIDTH = 30;
@@ -13,7 +13,6 @@ const MAX_Y_AXIS_WIDTH = 120;
 export const useYAxisLabelWidth = (
   data: AreaChartData | LineChartData | BarChartData,
   dataKeys: string[],
-  tickFormatter?: (value: any) => string,
 ) => {
   const { theme: userTheme } = useTheme();
 
@@ -41,19 +40,18 @@ export const useYAxisLabelWidth = (
       ];
 
       values.forEach((value) => {
-        // Apply tick formatter if provided
-        const displayValue = tickFormatter ? tickFormatter(value) : String(value);
+        const displayValue = numberTickFormatter(value);
         const textWidth = context.measureText(displayValue).width;
         maxWidth = Math.max(maxWidth, textWidth);
       });
     });
 
     // Add padding for better visual appearance
-    const totalWidth = Math.ceil(maxWidth) + 12; // 6px padding on each side
+    const totalWidth = Math.ceil(maxWidth) + 10; // 6px padding on each side
 
     // Clamp the width between MIN and MAX values
     return Math.max(MIN_Y_AXIS_WIDTH, Math.min(MAX_Y_AXIS_WIDTH, totalWidth));
-  }, [data, dataKeys, tickFormatter, userTheme.fontLabelExtraSmall]);
+  }, [data, dataKeys, userTheme.fontLabelExtraSmall]);
 
   return maxLabelWidth;
 };

@@ -1,3 +1,5 @@
+import { numberTickFormatter } from "../../utils";
+
 interface YAxisTickProps {
   x?: number;
   y?: number;
@@ -23,10 +25,12 @@ interface YAxisTickProps {
 }
 
 const YAxisTick: React.FC<YAxisTickProps> = (props) => {
-  const { x, y, payload, textAnchor, verticalAnchor, tickFormatter, className } = props;
+  const { x, y, payload, textAnchor, verticalAnchor, className } = props;
 
-  // Use the provided tickFormatter or fallback to displaying raw value
-  const displayValue = tickFormatter ? tickFormatter(payload?.value) : String(payload?.value || "");
+  const displayValue =
+    typeof payload?.value === "number"
+      ? numberTickFormatter(payload?.value)
+      : String(payload?.value);
 
   return (
     <g transform={`translate(${x},${y})`} className={className}>
