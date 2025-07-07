@@ -122,6 +122,7 @@ export interface ChartColorPalette {
   pieChartPalette?: string[];
   radarChartPalette?: string[];
   radialChartPalette?: string[];
+  horizontalBarChartPalette?: string[];
 }
 // Layout-related theme properties
 export interface LayoutTheme {

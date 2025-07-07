@@ -31,7 +31,7 @@ import {
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
-import { getYAxisTickFormatter } from "../utils/styleUtils";
+import { getNumberTickFormatter } from "../utils/styleUtils";
 import { AreaChartData, AreaChartVariant } from "./types";
 
 // this a technic to get the type of the onClick event of the bar chart
@@ -272,7 +272,7 @@ const AreaChartComponent = <T extends AreaChartData>({
             width={Y_AXIS_WIDTH}
             tickLine={false}
             axisLine={false}
-            tickFormatter={getYAxisTickFormatter()}
+            tickFormatter={getNumberTickFormatter()}
             tick={<YAxisTick />}
           />
           {/* Invisible area to maintain scale synchronization */}

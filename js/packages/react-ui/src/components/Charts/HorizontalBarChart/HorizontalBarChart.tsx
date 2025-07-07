@@ -19,7 +19,7 @@ import {
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
-import { getXAxisTickFormatter } from "../utils/styleUtils";
+import { getNumberTickFormatter } from "../utils/styleUtils";
 import { LineHorizontalBarShape } from "./components/LineHorizontalBarShape";
 import { HorizontalBarChartData, HorizontalBarChartVariant } from "./types";
 import {
@@ -267,7 +267,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
               height={X_AXIS_HEIGHT}
               tickLine={false}
               axisLine={false}
-              tickFormatter={getXAxisTickFormatter()}
+              tickFormatter={getNumberTickFormatter()}
               tick={{ fontSize: 12 }}
             />
             {/* Invisible bars to maintain scale synchronization */}
@@ -368,14 +368,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                     }}
                   >
                     {grid && <CartesianGrid horizontal={false} />}
-                    <XAxis
-                      type="number"
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={getXAxisTickFormatter()}
-                      tick={{ fontSize: 12 }}
-                      hide
-                    />
+                    <XAxis type="number" tickLine={false} axisLine={false} hide />
                     <YAxis
                       type="category"
                       dataKey={categoryKey as string}
@@ -469,7 +462,6 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
               </div>
               {/* X-axis of the chart */}
               {xAxis}
-              {isSideBarTooltipOpen && <SideBarTooltip height={effectiveHeight} />}
             </div>
             {/* if the data height is greater than the effective height, then show the scroll buttons */}
             <ScrollButtonsVertical
@@ -482,6 +474,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
               onScrollDown={scrollDown}
             />
           </div>
+          {isSideBarTooltipOpen && <SideBarTooltip height={effectiveHeight} />}
           {legend && (
             <DefaultLegend
               items={legendItems}

@@ -31,7 +31,7 @@ import {
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
-import { getYAxisTickFormatter } from "../utils/styleUtils";
+import { getNumberTickFormatter } from "../utils/styleUtils";
 import { LineChartData, LineChartVariant } from "./types";
 
 type LineChartOnClick = React.ComponentProps<typeof RechartsLineChart>["onClick"];
@@ -270,7 +270,7 @@ export const LineChart = <T extends LineChartData>({
             width={Y_AXIS_WIDTH}
             tickLine={false}
             axisLine={false}
-            tickFormatter={getYAxisTickFormatter()}
+            tickFormatter={getNumberTickFormatter()}
             tick={<YAxisTick />}
           />
           {/* Invisible lines to maintain scale synchronization */}

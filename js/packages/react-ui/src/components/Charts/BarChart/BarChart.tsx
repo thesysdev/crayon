@@ -27,7 +27,7 @@ import {
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
-import { getYAxisTickFormatter } from "../utils/styleUtils";
+import { getNumberTickFormatter } from "../utils/styleUtils";
 import { LineInBarShape } from "./components/LineInBarShape";
 import { BarChartData, BarChartVariant } from "./types";
 import {
@@ -276,7 +276,7 @@ const BarChartComponent = <T extends BarChartData>({
             width={Y_AXIS_WIDTH}
             tickLine={false}
             axisLine={false}
-            tickFormatter={getYAxisTickFormatter()}
+            tickFormatter={getNumberTickFormatter()}
             tick={<YAxisTick />}
           />
           {/* Invisible bars to maintain scale synchronization */}
