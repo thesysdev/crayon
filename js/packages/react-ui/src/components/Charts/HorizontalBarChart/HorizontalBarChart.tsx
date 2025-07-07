@@ -24,10 +24,10 @@ import { getNumberTickFormatter } from "../utils/styleUtils";
 import { LineHorizontalBarShape } from "./components/LineHorizontalBarShape";
 import { HorizontalBarChartData, HorizontalBarChartVariant } from "./types";
 import {
+  BAR_GAP,
   BAR_HEIGHT,
   findNearestSnapPosition,
   getHeightOfData,
-  getHeightOfGroup,
   getMaxCategoryLabelWidth,
   getPadding,
   getRadiusArray,
@@ -58,7 +58,6 @@ export interface HorizontalBarChartProps<T extends HorizontalBarChartData> {
 }
 
 const X_AXIS_HEIGHT = 40; // Height of X-axis chart when shown
-const BAR_GAP = 10; // Gap between bars
 const BAR_CATEGORY_GAP = "20%"; // Gap between categories
 const BAR_INTERNAL_LINE_WIDTH = 1;
 const BAR_RADIUS = 4;
@@ -109,9 +108,6 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   // Use chart width for label height calculation since labels span full width
   const labelHeight = useHorizontalBarLabelHeight(data, categoryKey as string, chartWidth);
 
-  // Use label height in group calculations
-  const heightOfGroup = getHeightOfGroup(data, categoryKey as string, variant, true, labelHeight);
-
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
@@ -141,23 +137,16 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   }, [effectiveHeight, showXAxis]);
 
   const padding = useMemo(() => {
-    return getPadding(
-      data,
-      categoryKey as string,
-      effectiveContainerHeight,
-      variant,
-      true,
-      labelHeight,
-    );
+    return getPadding(data, categoryKey as string, effectiveContainerHeight, variant, labelHeight);
   }, [data, categoryKey, effectiveContainerHeight, variant, labelHeight]);
 
   const dataHeight = useMemo(() => {
-    return getHeightOfData(data, categoryKey as string, variant, true, labelHeight);
+    return getHeightOfData(data, categoryKey as string, variant, labelHeight);
   }, [data, categoryKey, variant, labelHeight]);
 
   // Calculate snap positions for proper group alignment
   const snapPositions = useMemo(() => {
-    return getSnapPositions(data, categoryKey as string, variant, true, labelHeight);
+    return getSnapPositions(data, categoryKey as string, variant, labelHeight);
   }, [data, categoryKey, variant, labelHeight]);
 
   // Check scroll boundaries
@@ -314,6 +303,12 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
     setHoveredCategory(null);
   }, []);
 
+  // useEffect(() => {
+  //   const heightOfGroup = getHeightOfGroup(data, categoryKey as string, variant, labelHeight);
+  //   console.log("Label Height:", labelHeight);
+  //   console.log("Group Height:", heightOfGroup);
+  // }, [data, categoryKey, variant, labelHeight]);
+
   const { mode } = useTheme();
 
   const barInternalLineColor = useMemo(() => {
@@ -430,16 +425,14 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                           barSize={BAR_HEIGHT}
                           shape={(barProps: any) => {
                             // For the first bar in each group, render the label and offset the bar
-                            let { x, width, y, height } = barProps;
-                            let barX = x;
-                            let barWidth = width;
+                            let { y } = barProps;
                             let label = null;
                             if (index === 0 && barProps.payload && barProps.payload[categoryKey]) {
                               // Calculate label position based on actual label height
                               // Use full chart width for label positioning
                               const labelX = 0; // Start from left edge of chart
                               const labelWidth = chartWidth; // Use full chart width
-                              const labelY = y - labelHeight - 4; // 4px gap between label and bar
+                              const labelY = y - labelHeight / 2; // Position label at the top of the group's allocated space
                               label = (
                                 <foreignObject
                                   x={labelX}
@@ -460,8 +453,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                                 {label}
                                 <LineHorizontalBarShape
                                   {...barProps}
-                                  x={barX}
-                                  width={barWidth}
+                                  y={y + labelHeight / 2} // Shift the bar down to make space for the label
                                   internalLineColor={barInternalLineColor}
                                   internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
                                   isHovered={hoveredCategory !== null}
