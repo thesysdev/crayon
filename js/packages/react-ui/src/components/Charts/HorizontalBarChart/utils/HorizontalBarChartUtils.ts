@@ -59,17 +59,22 @@ export const getMaxCategoryLabelWidth = (
  * @param data - The data to be displayed in the chart.
  * @param categoryKey - The key of the category to be displayed in the chart.
  * @param variant - The variant of the chart.
+ * @param includeLabelHeight - Whether to include label height in calculation (default: false).
+ * @param labelHeight - The height of the category label (required if includeLabelHeight is true).
  */
 const getHeightOfData = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
   variant: HorizontalBarChartVariant,
+  includeLabelHeight: boolean = false,
+  labelHeight: number = 0,
 ) => {
   if (data.length === 0) {
     return 0;
   }
 
-  const height = data.length * getHeightOfGroup(data, categoryKey, variant);
+  const height =
+    data.length * getHeightOfGroup(data, categoryKey, variant, includeLabelHeight, labelHeight);
 
   if (data.length === 1) {
     const minSingleDataHeight = 200; // Minimum height for single data points
@@ -84,14 +89,18 @@ const getHeightOfData = (
  * @param categoryKey - The key of the category to be displayed in the chart.
  * @param containerHeight - The height of the container of the chart.
  * @param variant - The variant of the chart.
+ * @param includeLabelHeight - Whether to include label height in calculation (default: false).
+ * @param labelHeight - The height of the category label (required if includeLabelHeight is true).
  */
 const getPadding = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
   containerHeight: number,
   variant: HorizontalBarChartVariant,
+  includeLabelHeight: boolean = false,
+  labelHeight: number = 0,
 ) => {
-  const chartHeight = getHeightOfData(data, categoryKey, variant);
+  const chartHeight = getHeightOfData(data, categoryKey, variant, includeLabelHeight, labelHeight);
   const paddingValue = containerHeight - chartHeight;
 
   if (paddingValue < 0) {
@@ -216,16 +225,55 @@ const getOptimalYAxisTickFormatter = (
 };
 
 /**
+ * This function returns the height of each group/category including label height.
+ * @param data - The data to be displayed in the chart.
+ * @param categoryKey - The key of the category to be displayed in the chart.
+ * @param variant - The variant of the chart.
+ * @param labelHeight - The height of the category label (optional).
+ * @returns The height of each group including label space.
+ */
+const getHeightOfGroupWithLabel = (
+  data: Array<Record<string, string | number>>,
+  categoryKey: string,
+  variant: HorizontalBarChartVariant,
+  labelHeight: number = 0,
+) => {
+  if (data.length === 0) return 200; // Fallback
+
+  // Get the number of data keys (excluding categoryKey)
+  const dataKeys = getDataKeys(data, categoryKey);
+  const elementSpacing = getElementSpacing(variant);
+  const labelSpacing = Math.max(labelHeight, 0); // Ensure non-negative
+
+  if (variant === "stacked") {
+    // For stacked: each category is one stack
+    return BAR_HEIGHT + elementSpacing + labelSpacing;
+  } else {
+    // For grouped: each category contains multiple bars
+    const seriesPerCategory = dataKeys.length;
+    return seriesPerCategory * (BAR_HEIGHT + 8) - 8 + elementSpacing + labelSpacing;
+  }
+};
+
+/**
  * This function returns the height of each group/category.
  * @param data - The data to be displayed in the chart.
  * @param categoryKey - The key of the category to be displayed in the chart.
  * @param variant - The variant of the chart.
+ * @param includeLabelHeight - Whether to include label height in calculation (default: false).
+ * @param labelHeight - The height of the category label (required if includeLabelHeight is true).
  */
 const getHeightOfGroup = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
   variant: HorizontalBarChartVariant,
+  includeLabelHeight: boolean = false,
+  labelHeight: number = 0,
 ) => {
+  if (includeLabelHeight) {
+    return getHeightOfGroupWithLabel(data, categoryKey, variant, labelHeight);
+  }
+
   if (data.length === 0) return 200; // Fallback
 
   // Get the number of data keys (excluding categoryKey)
@@ -247,17 +295,27 @@ const getHeightOfGroup = (
  * @param data - The data to be displayed in the chart.
  * @param categoryKey - The key of the category to be displayed in the chart.
  * @param variant - The variant of the chart.
+ * @param includeLabelHeight - Whether to include label height in calculation (default: false).
+ * @param labelHeight - The height of the category label (required if includeLabelHeight is true).
  * @returns The snap positions for the chart.
  */
 const getSnapPositions = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
   variant: HorizontalBarChartVariant,
+  includeLabelHeight: boolean = false,
+  labelHeight: number = 0,
 ): number[] => {
   if (data.length === 0) return [0];
 
   const positions = [0]; // Start position
-  const groupHeightValue = getHeightOfGroup(data, categoryKey, variant);
+  const groupHeightValue = getHeightOfGroup(
+    data,
+    categoryKey,
+    variant,
+    includeLabelHeight,
+    labelHeight,
+  );
 
   // Calculate all valid snap positions based on groups
   for (let i = 1; i < data.length; i++) {
@@ -309,11 +367,75 @@ const getChartWidth = (containerHeight: number): number => {
   return containerHeight ? containerHeight * (16 / 9) : 400;
 };
 
+/**
+ * Test function to demonstrate the improved label height calculation
+ * This function can be used to compare old vs new group height calculations
+ * @param data - The chart data
+ * @param categoryKey - The category key
+ * @param variant - The chart variant
+ * @param labelHeight - The calculated label height
+ * @returns Object with old and new group heights for comparison
+ */
+export const compareGroupHeightCalculations = (
+  data: Array<Record<string, string | number>>,
+  categoryKey: string,
+  variant: HorizontalBarChartVariant,
+  labelHeight: number,
+) => {
+  const oldGroupHeight = getHeightOfGroup(data, categoryKey, variant, false);
+  const newGroupHeight = getHeightOfGroup(data, categoryKey, variant, true, labelHeight);
+
+  return {
+    oldGroupHeight,
+    newGroupHeight,
+    difference: newGroupHeight - oldGroupHeight,
+    labelHeight,
+    improvement: `${(((newGroupHeight - oldGroupHeight) / oldGroupHeight) * 100).toFixed(1)}% increase`,
+  };
+};
+
+/**
+ * Debug function to test label height calculations
+ * This function can be used to verify that label height calculations are working correctly
+ * @param data - The chart data
+ * @param categoryKey - The category key
+ * @param variant - The chart variant
+ * @param labelHeight - The calculated label height
+ * @param chartWidth - The chart width
+ * @returns Debug information about the calculations
+ */
+export const debugLabelHeightCalculation = (
+  data: Array<Record<string, string | number>>,
+  categoryKey: string,
+  variant: HorizontalBarChartVariant,
+  labelHeight: number,
+  chartWidth: number,
+) => {
+  const oldGroupHeight = getHeightOfGroup(data, categoryKey, variant, false);
+  const newGroupHeight = getHeightOfGroup(data, categoryKey, variant, true, labelHeight);
+  const oldDataHeight = getHeightOfData(data, categoryKey, variant, false);
+  const newDataHeight = getHeightOfData(data, categoryKey, variant, true, labelHeight);
+
+  return {
+    chartWidth,
+    labelHeight,
+    oldGroupHeight,
+    newGroupHeight,
+    groupHeightDifference: newGroupHeight - oldGroupHeight,
+    oldDataHeight,
+    newDataHeight,
+    dataHeightDifference: newDataHeight - oldDataHeight,
+    improvement: `${(((newGroupHeight - oldGroupHeight) / oldGroupHeight) * 100).toFixed(1)}% increase in group height`,
+    totalImprovement: `${(((newDataHeight - oldDataHeight) / oldDataHeight) * 100).toFixed(1)}% increase in total data height`,
+  };
+};
+
 export {
   findNearestSnapPosition,
   getChartWidth,
   getHeightOfData,
   getHeightOfGroup,
+  getHeightOfGroupWithLabel,
   getOptimalYAxisTickFormatter,
   getPadding,
   getRadiusArray,

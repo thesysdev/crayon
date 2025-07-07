@@ -6,6 +6,7 @@ import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import { useTransformedKeys } from "../hooks";
+import { useHorizontalBarLabelHeight } from "../hooks/useMaxLabelHeight";
 import { CustomTooltipContent, DefaultLegend, SideBarTooltip, YAxisTick } from "../shared";
 import { ScrollButtonsVertical } from "../shared/ScrollButtonsVertical";
 
@@ -81,8 +82,35 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   height,
   width,
 }: HorizontalBarChartProps<T>) => {
-  const heightOfGroup = getHeightOfGroup(data, categoryKey as string, variant);
   const maxCategoryLabelWidth = getMaxCategoryLabelWidth(data, categoryKey as string);
+
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const mainContainerRef = useRef<HTMLDivElement>(null);
+  const [containerHeight, setContainerHeight] = useState<number>(0);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const [canScrollDown, setCanScrollDown] = useState(false);
+  const [hoveredCategory, setHoveredCategory] = useState<string | number | null>(null);
+  const [isLegendExpanded, setIsLegendExpanded] = useState(false);
+  const [isSideBarTooltipOpen, setIsSideBarTooltipOpen] = useState(false);
+  const [sideBarTooltipData, setSideBarTooltipData] = useState<SideBarChartData>({
+    title: "",
+    values: [],
+  });
+
+  // Calculate chart width for internal calculations (legend, xAxis, etc.)
+  const chartWidth = useMemo(() => {
+    if (width) return width;
+    // Use observed container width or default
+    return containerWidth > 0 ? containerWidth : 600;
+  }, [width, containerWidth]);
+
+  // Calculate label height for better group height calculation
+  // Use chart width for label height calculation since labels span full width
+  const labelHeight = useHorizontalBarLabelHeight(data, categoryKey as string, chartWidth);
+
+  // Use label height in group calculations
+  const heightOfGroup = getHeightOfGroup(data, categoryKey as string, variant, true, labelHeight);
 
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -101,20 +129,6 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
     return get2dChartConfig(dataKeys, colors, transformedKeys, undefined, icons);
   }, [dataKeys, icons, colors, transformedKeys]);
 
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const mainContainerRef = useRef<HTMLDivElement>(null);
-  const [containerHeight, setContainerHeight] = useState<number>(0);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-  const [canScrollUp, setCanScrollUp] = useState(false);
-  const [canScrollDown, setCanScrollDown] = useState(false);
-  const [hoveredCategory, setHoveredCategory] = useState<string | number | null>(null);
-  const [isLegendExpanded, setIsLegendExpanded] = useState(false);
-  const [isSideBarTooltipOpen, setIsSideBarTooltipOpen] = useState(false);
-  const [sideBarTooltipData, setSideBarTooltipData] = useState<SideBarChartData>({
-    title: "",
-    values: [],
-  });
-
   // Use provided height or observed height
   const effectiveHeight = useMemo(() => {
     return height ?? containerHeight;
@@ -127,24 +141,24 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   }, [effectiveHeight, showXAxis]);
 
   const padding = useMemo(() => {
-    return getPadding(data, categoryKey as string, effectiveContainerHeight, variant);
-  }, [data, categoryKey, effectiveContainerHeight, variant]);
+    return getPadding(
+      data,
+      categoryKey as string,
+      effectiveContainerHeight,
+      variant,
+      true,
+      labelHeight,
+    );
+  }, [data, categoryKey, effectiveContainerHeight, variant, labelHeight]);
 
   const dataHeight = useMemo(() => {
-    return getHeightOfData(data, categoryKey as string, variant);
-  }, [data, categoryKey, variant]);
+    return getHeightOfData(data, categoryKey as string, variant, true, labelHeight);
+  }, [data, categoryKey, variant, labelHeight]);
 
   // Calculate snap positions for proper group alignment
   const snapPositions = useMemo(() => {
-    return getSnapPositions(data, categoryKey as string, variant);
-  }, [data, categoryKey, variant]);
-
-  // Calculate chart width for internal calculations (legend, xAxis, etc.)
-  const chartWidth = useMemo(() => {
-    if (width) return width;
-    // Use observed container width or default
-    return containerWidth > 0 ? containerWidth : 600;
-  }, [width, containerWidth]);
+    return getSnapPositions(data, categoryKey as string, variant, true, labelHeight);
+  }, [data, categoryKey, variant, labelHeight]);
 
   // Check scroll boundaries
   const updateScrollState = useCallback(() => {
@@ -416,18 +430,22 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                           barSize={BAR_HEIGHT}
                           shape={(barProps: any) => {
                             // For the first bar in each group, render the label and offset the bar
-                            const labelWidth = maxCategoryLabelWidth;
                             let { x, width, y, height } = barProps;
                             let barX = x;
                             let barWidth = width;
                             let label = null;
                             if (index === 0 && barProps.payload && barProps.payload[categoryKey]) {
+                              // Calculate label position based on actual label height
+                              // Use full chart width for label positioning
+                              const labelX = 0; // Start from left edge of chart
+                              const labelWidth = chartWidth; // Use full chart width
+                              const labelY = y - labelHeight - 4; // 4px gap between label and bar
                               label = (
                                 <foreignObject
-                                  x={x}
-                                  y={y - 15}
+                                  x={labelX}
+                                  y={labelY}
                                   width={labelWidth}
-                                  height={height}
+                                  height={labelHeight}
                                   style={{ pointerEvents: "none" }}
                                   xmlns="http://www.w3.org/1999/xhtml"
                                 >
