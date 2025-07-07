@@ -416,7 +416,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                           barSize={BAR_HEIGHT}
                           shape={(barProps: any) => {
                             // For the first bar in each group, render the label and offset the bar
-                            const labelWidth = maxCategoryLabelWidth + 16; // 16px padding
+                            const labelWidth = maxCategoryLabelWidth;
                             let { x, width, y, height } = barProps;
                             let barX = x;
                             let barWidth = width;
@@ -425,7 +425,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                               label = (
                                 <foreignObject
                                   x={x}
-                                  y={y - 20}
+                                  y={y - 15}
                                   width={labelWidth}
                                   height={height}
                                   style={{ pointerEvents: "none" }}
@@ -473,8 +473,8 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
               onScrollUp={scrollUp}
               onScrollDown={scrollDown}
             />
+            {isSideBarTooltipOpen && <SideBarTooltip height={effectiveHeight} />}
           </div>
-          {isSideBarTooltipOpen && <SideBarTooltip height={effectiveHeight} />}
           {legend && (
             <DefaultLegend
               items={legendItems}
