@@ -37,7 +37,7 @@ const DefaultLegend = memo(
       // This is more reliable than useEffect with ref.current in the dependency array,
       // as it correctly triggers a re-render when the node is available.
       // This is a workaround for the fact that the button's width is not available immediately.
-      // and we need the actual button width to calculate the layout of the legend items. 
+      // and we need the actual button width to calculate the layout of the legend items.
       const buttonRef = useCallback(
         (node: HTMLButtonElement | null) => {
           if (node) {
