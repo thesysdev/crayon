@@ -202,20 +202,8 @@ const findNearestSnapPosition = (
   }
 };
 
-/**
- * This function returns the chart height for the chart, used for the chart height of the chart.
- * @param containerWidth - The width of the container of the chart.
- * @returns The chart height for the chart.
- * 16:9 aspect ratio
- * to change the aspect ratio, change the 9/16 to the desired aspect ratio
- */
-const getChartHeight = (containerWidth: number): number => {
-  return containerWidth ? containerWidth * (9 / 16) : 400;
-};
-
 export {
   findNearestSnapPosition,
-  getChartHeight,
   getPadding,
   getRadiusArray,
   getSnapPositions,
