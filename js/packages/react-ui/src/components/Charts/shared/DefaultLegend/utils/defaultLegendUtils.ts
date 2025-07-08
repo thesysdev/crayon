@@ -1,15 +1,31 @@
 import { LegendItem } from "../../../types";
+import { getCanvasContext } from "../../../utils/styleUtils";
 
-// Constants
-export const SHOW_MORE_BUTTON_WIDTH = 65;
-export const CHARACTER_WIDTH = 7;
-export const INDICATOR_WIDTH = 10;
-export const GAP_WIDTH = 12;
+const CHARACTER_WIDTH = 7; // Now only used as a fallback
+const INDICATOR_WIDTH = 10;
+const GAP_WIDTH = 12;
+
+// Memoize canvas context to avoid recreating it on every call
+let canvasContext: CanvasRenderingContext2D | null;
+const getMemoizedCanvasContext = (): CanvasRenderingContext2D | null => {
+  if (canvasContext === undefined) {
+    canvasContext = getCanvasContext();
+  }
+  return canvasContext;
+};
 
 /**
  * Calculate the estimated width of a legend item
  */
 export const calculateItemWidth = (label: string): number => {
+  const context = getMemoizedCanvasContext();
+
+  if (context) {
+    // If canvas is supported, measure text width accurately
+    return context.measureText(label).width + INDICATOR_WIDTH + GAP_WIDTH;
+  }
+
+  // Fallback for SSR or if canvas is not supported
   return label.length * CHARACTER_WIDTH + INDICATOR_WIDTH + GAP_WIDTH;
 };
 
@@ -19,6 +35,7 @@ export const calculateItemWidth = (label: string): number => {
 export const calculateVisibleItems = (
   items: LegendItem[],
   containerWidth?: number,
+  buttonWidth?: number,
 ): {
   visibleItems: LegendItem[];
   hasMoreItems: boolean;
@@ -29,7 +46,7 @@ export const calculateVisibleItems = (
   }
 
   // Reserve space for "show more" button
-  const availableWidth = containerWidth - SHOW_MORE_BUTTON_WIDTH;
+  const availableWidth = containerWidth - (buttonWidth ?? 0);
 
   let currentWidth = 0;
   let visibleCount = 0;
@@ -40,8 +57,9 @@ export const calculateVisibleItems = (
 
     const itemWidth = calculateItemWidth(item.label);
 
-    if (currentWidth + itemWidth <= availableWidth) {
-      currentWidth += itemWidth;
+    // + GAP for the gap between the items
+    if (currentWidth + itemWidth + GAP_WIDTH <= availableWidth) {
+      currentWidth += itemWidth + GAP_WIDTH;
       visibleCount++;
     } else {
       break;
@@ -77,5 +95,5 @@ export const getToggleButtonText = (
   }
 
   const hiddenCount = totalItems - visibleItemsCount;
-  return hiddenCount === 1 ? "1 more" : `${hiddenCount} more`;
+  return `${hiddenCount} more`;
 };

@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import React, { memo, useMemo } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { Button } from "../../../Button/Button";
 import { type LegendItem } from "../../types";
 import { calculateVisibleItems, getToggleButtonText } from "./utils/defaultLegendUtils";
@@ -31,10 +31,27 @@ const DefaultLegend = memo(
       },
       ref,
     ) => {
-      // Only memoize expensive calculations
+      const [buttonWidth, setButtonWidth] = useState(0);
+
+      // We use a callback ref to measure the button's width as soon as it's mounted.
+      // This is more reliable than useEffect with ref.current in the dependency array,
+      // as it correctly triggers a re-render when the node is available.
+      // This is a workaround for the fact that the button's width is not available immediately.
+      // and we need the actual button width to calculate the layout of the legend items. 
+      const buttonRef = useCallback(
+        (node: HTMLButtonElement | null) => {
+          if (node) {
+            if (node.clientWidth !== buttonWidth) {
+              setButtonWidth(node.clientWidth);
+            }
+          }
+        },
+        [buttonWidth],
+      );
+
       const { visibleItems, hasMoreItems } = useMemo(() => {
-        return calculateVisibleItems(items, containerWidth);
-      }, [items, containerWidth]);
+        return calculateVisibleItems(items, containerWidth, buttonWidth);
+      }, [items, containerWidth, buttonWidth]);
 
       const displayItems = useMemo(() => {
         return isExpanded ? items : visibleItems;
@@ -96,6 +113,7 @@ const DefaultLegend = memo(
               <Button
                 variant="tertiary"
                 size="small"
+                ref={buttonRef}
                 className="crayon-chart-legend-toggle-button"
                 onClick={handleToggleExpanded}
                 iconRight={
