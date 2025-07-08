@@ -1,5 +1,4 @@
 import { getDataKeys } from "../../utils/dataUtils";
-import { getCanvasContext } from "../../utils/styleUtils";
 import { BarChartVariant } from "../types";
 
 export const BAR_WIDTH = 16;
@@ -116,76 +115,6 @@ const getRadiusArray = (
 };
 
 /**
- * INTERNAL HELPER FUNCTION
- * This function returns the formatter for the X-axis tick values with intelligent truncation.
- * @param groupWidth - The width available for each group/category (optional)
- * @param variant - The chart variant (affects truncation logic)
- * @returns The formatter for the X-axis tick values.
- * internally used by the XAxis component reCharts
- */
-const getXAxisTickFormatter = (groupWidth?: number, variant: BarChartVariant = "grouped") => {
-  const PADDING = 2; // Safety padding for better visual spacing
-  const context = getCanvasContext();
-
-  return (value: string) => {
-    const stringValue = String(value);
-
-    // Fallback for SSR, or if canvas/groupWidth is not available.
-    if (!context || !groupWidth) {
-      if (variant === "stacked") {
-        return stringValue.slice(0, 3);
-      } else {
-        return stringValue.length > 3 ? `${stringValue.slice(0, 3)}...` : stringValue;
-      }
-    }
-
-    const availableWidth = Math.max(0, groupWidth - PADDING);
-
-    if (context.measureText(stringValue).width <= availableWidth) {
-      return stringValue; // Full text fits.
-    }
-
-    // If text overflows, find the best truncation point with ellipsis.
-    let low = 0;
-    let high = stringValue.length;
-    let result = "";
-    while (low <= high) {
-      const mid = Math.floor((low + high) / 2);
-      if (mid === 0) {
-        low = mid + 1;
-        continue;
-      }
-      const truncated = stringValue.substring(0, mid) + "...";
-      if (context.measureText(truncated).width <= availableWidth) {
-        result = truncated;
-        low = mid + 1;
-      } else {
-        high = mid - 1;
-      }
-    }
-
-    return result;
-  };
-};
-
-/**
- * Helper function to get the optimal X-axis tick formatter with calculated group width
- * @param data - The chart data
- * @param categoryKey - The category key
- * @param variant - The chart variant
- * @returns The optimized formatter function
- */
-const getOptimalXAxisTickFormatter = (
-  data: Array<Record<string, string | number>>,
-  categoryKey: string,
-  variant: BarChartVariant,
-) => {
-  // Calculate the available width per group
-  const groupWidth = getWidthOfGroup(data, categoryKey, variant);
-  return getXAxisTickFormatter(groupWidth, variant);
-};
-
-/**
  * This function returns the scroll amount for the chart, used for the scroll amount of the chart.
  * This can also be used to calculate the width of each group/category.
  * @param data - The data to be displayed in the chart.
@@ -287,7 +216,6 @@ const getChartHeight = (containerWidth: number): number => {
 export {
   findNearestSnapPosition,
   getChartHeight,
-  getOptimalXAxisTickFormatter,
   getPadding,
   getRadiusArray,
   getSnapPositions,

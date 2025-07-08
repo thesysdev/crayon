@@ -4,7 +4,7 @@ import { Area, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useMaxLabelHeight, useTransformedKeys } from "../hooks";
+import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
 import {
   ActiveDot,
   cartesianGrid,
@@ -19,7 +19,6 @@ import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { LegendItem, XAxisTickVariant } from "../types";
 import {
   findNearestSnapPosition,
-  getOptimalXAxisTickFormatter,
   getSnapPositions,
   getWidthOfData,
   getWidthOfGroup,
@@ -31,7 +30,6 @@ import {
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
-import { getNumberTickFormatter } from "../utils/styleUtils";
 import { AreaChartData, AreaChartVariant } from "./types";
 
 // this a technic to get the type of the onClick event of the bar chart
@@ -58,7 +56,6 @@ export interface AreaChartProps<T extends AreaChartData> {
   width?: number;
 }
 
-const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
 const X_AXIS_PADDING = 36;
 const CHART_CONTAINER_BOTTOM_MARGIN = 10;
 
@@ -83,6 +80,8 @@ const AreaChartComponent = <T extends AreaChartData>({
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
+
+  const yAxisWidth = useYAxisLabelWidth(data, dataKeys);
 
   const widthOfGroup = useMemo(() => {
     return getWidthOfGroup(data);
@@ -121,9 +120,9 @@ const AreaChartComponent = <T extends AreaChartData>({
   }, [width, containerWidth]);
 
   const effectiveContainerWidth = useMemo(() => {
-    const yAxisWidth = showYAxis ? Y_AXIS_WIDTH : 0;
-    return Math.max(0, effectiveWidth - yAxisWidth - 40); // -40 because we are giving 20px padding in xAxis on each side
-  }, [effectiveWidth, showYAxis]);
+    const dynamicYAxisWidth = showYAxis ? yAxisWidth : 0;
+    return Math.max(0, effectiveWidth - dynamicYAxisWidth - 40); // -40 because we are giving 20px padding in xAxis on each side
+  }, [effectiveWidth, showYAxis, yAxisWidth]);
 
   const dataWidth = useMemo(() => {
     return getWidthOfData(data, effectiveContainerWidth);
@@ -137,11 +136,6 @@ const AreaChartComponent = <T extends AreaChartData>({
   const chartHeight = useMemo(() => {
     return height ?? 296 + maxLabelHeight;
   }, [height, maxLabelHeight]);
-
-  // Calculate optimal tick formatter for collision detection and truncation
-  const xAxisTickFormatter = useMemo(() => {
-    return getOptimalXAxisTickFormatter(data, effectiveContainerWidth);
-  }, [data, effectiveContainerWidth]);
 
   // Check scroll boundaries
   const updateScrollState = useCallback(() => {
@@ -258,7 +252,7 @@ const AreaChartComponent = <T extends AreaChartData>({
         {/* Y-axis only chart - synchronized with main chart */}
         <RechartsAreaChart
           key={`y-axis-chart-${id}`}
-          width={Y_AXIS_WIDTH}
+          width={yAxisWidth}
           height={chartHeight}
           data={data}
           margin={{
@@ -268,13 +262,7 @@ const AreaChartComponent = <T extends AreaChartData>({
             right: 0,
           }}
         >
-          <YAxis
-            width={Y_AXIS_WIDTH}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={getNumberTickFormatter()}
-            tick={<YAxisTick />}
-          />
+          <YAxis width={yAxisWidth} tickLine={false} axisLine={false} tick={<YAxisTick />} />
           {/* Invisible area to maintain scale synchronization */}
           {dataKeys.map((key) => {
             return (
@@ -292,7 +280,7 @@ const AreaChartComponent = <T extends AreaChartData>({
         </RechartsAreaChart>
       </div>
     );
-  }, [showYAxis, chartHeight, data, dataKeys, variant, id, maxLabelHeight]);
+  }, [showYAxis, chartHeight, data, dataKeys, variant, id, maxLabelHeight, yAxisWidth]);
 
   return (
     <LabelTooltipProvider>
@@ -337,7 +325,6 @@ const AreaChartComponent = <T extends AreaChartData>({
                     axisLine={false}
                     textAnchor="middle"
                     interval={0}
-                    tickFormatter={xAxisTickFormatter}
                     height={maxLabelHeight}
                     tick={
                       <XAxisTick

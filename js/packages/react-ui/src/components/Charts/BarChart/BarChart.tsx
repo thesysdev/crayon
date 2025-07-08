@@ -5,7 +5,7 @@ import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useMaxLabelHeight, useTransformedKeys } from "../hooks";
+import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
 import {
   cartesianGrid,
   CustomTooltipContent,
@@ -27,13 +27,11 @@ import {
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
-import { getNumberTickFormatter } from "../utils/styleUtils";
 import { LineInBarShape } from "./components/LineInBarShape";
 import { BarChartData, BarChartVariant } from "./types";
 import {
   BAR_WIDTH,
   findNearestSnapPosition,
-  getOptimalXAxisTickFormatter,
   getPadding,
   getRadiusArray,
   getSnapPositions,
@@ -65,7 +63,6 @@ export interface BarChartProps<T extends BarChartData> {
   width?: number;
 }
 
-const Y_AXIS_WIDTH = 40; // Width of Y-axis chart when shown
 const BAR_GAP = 10; // Gap between bars
 const BAR_CATEGORY_GAP = "20%"; // Gap between categories
 const BAR_INTERNAL_LINE_WIDTH = 1;
@@ -98,6 +95,8 @@ const BarChartComponent = <T extends BarChartData>({
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
+
+  const yAxisWidth = useYAxisLabelWidth(data, dataKeys);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -132,9 +131,9 @@ const BarChartComponent = <T extends BarChartData>({
 
   // need this to calculate the padding for the chart container, because the y-axis is rendered in a separate chart
   const effectiveContainerWidth = useMemo(() => {
-    const yAxisWidth = showYAxis ? Y_AXIS_WIDTH : 0;
-    return Math.max(0, effectiveWidth - yAxisWidth);
-  }, [effectiveWidth, showYAxis]);
+    const dynamicYAxisWidth = showYAxis ? yAxisWidth : 0;
+    return Math.max(0, effectiveWidth - dynamicYAxisWidth);
+  }, [effectiveWidth, showYAxis, yAxisWidth]);
 
   const padding = useMemo(() => {
     return getPadding(data, categoryKey as string, effectiveContainerWidth, variant);
@@ -248,11 +247,6 @@ const BarChartComponent = <T extends BarChartData>({
 
   const id = useId();
 
-  // Get the optimal X-axis tick formatter based on available space
-  const xAxisTickFormatter = useMemo(() => {
-    return getOptimalXAxisTickFormatter(data, categoryKey as string, variant);
-  }, [data, categoryKey, variant]);
-
   const yAxis = useMemo(() => {
     if (!showYAxis) {
       return null;
@@ -262,7 +256,7 @@ const BarChartComponent = <T extends BarChartData>({
         {/* Y-axis only chart - synchronized with main chart */}
         <RechartsBarChart
           key={`y-axis-bar-chart-${id}`}
-          width={Y_AXIS_WIDTH}
+          width={yAxisWidth}
           height={chartHeight}
           data={data}
           margin={{
@@ -272,13 +266,7 @@ const BarChartComponent = <T extends BarChartData>({
             right: 0,
           }}
         >
-          <YAxis
-            width={Y_AXIS_WIDTH}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={getNumberTickFormatter()}
-            tick={<YAxisTick />}
-          />
+          <YAxis width={yAxisWidth} tickLine={false} axisLine={false} tick={<YAxisTick />} />
           {/* Invisible bars to maintain scale synchronization */}
           {dataKeys.map((key) => {
             return (
@@ -295,7 +283,7 @@ const BarChartComponent = <T extends BarChartData>({
         </RechartsBarChart>
       </div>
     );
-  }, [showYAxis, chartHeight, data, dataKeys, variant, id, maxLabelHeight]);
+  }, [showYAxis, chartHeight, data, dataKeys, variant, id, maxLabelHeight, yAxisWidth]);
 
   // Handle mouse events for group hovering
   const handleChartMouseMove = useCallback((state: any) => {
@@ -344,6 +332,52 @@ const BarChartComponent = <T extends BarChartData>({
     [dataKeys, colors],
   );
 
+  const barElements = useMemo(() => {
+    return dataKeys.map((key, index) => {
+      const transformedKey = transformedKeys[key];
+      const color = `var(--color-${transformedKey})`;
+      const isFirstInStack = index === 0;
+      const isLastInStack = index === dataKeys.length - 1;
+
+      return (
+        <Bar
+          key={`main-${key}`}
+          dataKey={key}
+          fill={color}
+          radius={getRadiusArray(
+            variant,
+            radius,
+            variant === "stacked" ? isFirstInStack : undefined,
+            variant === "stacked" ? isLastInStack : undefined,
+          )}
+          stackId={variant === "stacked" ? "a" : undefined}
+          isAnimationActive={isAnimationActive}
+          maxBarSize={BAR_WIDTH}
+          barSize={BAR_WIDTH}
+          shape={
+            <LineInBarShape
+              internalLineColor={barInternalLineColor}
+              internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
+              isHovered={hoveredCategory !== null}
+              hoveredCategory={hoveredCategory}
+              categoryKey={categoryKey as string}
+              variant={variant}
+            />
+          }
+        />
+      );
+    });
+  }, [
+    dataKeys,
+    transformedKeys,
+    variant,
+    radius,
+    isAnimationActive,
+    barInternalLineColor,
+    hoveredCategory,
+    categoryKey,
+  ]);
+
   return (
     <LabelTooltipProvider>
       <SideBarTooltipProvider
@@ -390,7 +424,6 @@ const BarChartComponent = <T extends BarChartData>({
                     tickLine={false}
                     axisLine={false}
                     textAnchor={"middle"}
-                    tickFormatter={xAxisTickFormatter}
                     interval={0}
                     height={maxLabelHeight}
                     tick={
@@ -420,40 +453,7 @@ const BarChartComponent = <T extends BarChartData>({
                     offset={15}
                   />
 
-                  {dataKeys.map((key, index) => {
-                    const transformedKey = transformedKeys[key];
-                    const color = `var(--color-${transformedKey})`;
-                    const isFirstInStack = index === 0;
-                    const isLastInStack = index === dataKeys.length - 1;
-
-                    return (
-                      <Bar
-                        key={`main-${key}`}
-                        dataKey={key}
-                        fill={color}
-                        radius={getRadiusArray(
-                          variant,
-                          radius,
-                          variant === "stacked" ? isFirstInStack : undefined,
-                          variant === "stacked" ? isLastInStack : undefined,
-                        )}
-                        stackId={variant === "stacked" ? "a" : undefined}
-                        isAnimationActive={isAnimationActive}
-                        maxBarSize={BAR_WIDTH}
-                        barSize={BAR_WIDTH}
-                        shape={
-                          <LineInBarShape
-                            internalLineColor={barInternalLineColor}
-                            internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
-                            isHovered={hoveredCategory !== null}
-                            hoveredCategory={hoveredCategory}
-                            categoryKey={categoryKey as string}
-                            variant={variant}
-                          />
-                        }
-                      />
-                    );
-                  })}
+                  {barElements}
                 </RechartsBarChart>
               </ChartContainer>
             </div>
