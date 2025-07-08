@@ -20,7 +20,7 @@ import {
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
-import { getNumberTickFormatter } from "../utils/styleUtils";
+import { numberTickFormatter } from "../utils/styleUtils";
 import { LineHorizontalBarShape } from "./components/LineHorizontalBarShape";
 import { HorizontalBarChartData, HorizontalBarChartVariant } from "./types";
 import {
@@ -264,7 +264,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
               height={X_AXIS_HEIGHT}
               tickLine={false}
               axisLine={false}
-              tickFormatter={getNumberTickFormatter()}
+              tickFormatter={numberTickFormatter}
               tick={{ fontSize: 12 }}
             />
             {/* Invisible bars to maintain scale synchronization */}
