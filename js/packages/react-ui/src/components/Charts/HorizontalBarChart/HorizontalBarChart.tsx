@@ -61,7 +61,6 @@ const X_AXIS_HEIGHT = 40; // Height of X-axis chart when shown
 const BAR_CATEGORY_GAP = "20%"; // Gap between categories
 const BAR_INTERNAL_LINE_WIDTH = 1;
 const BAR_RADIUS = 4;
-const CHART_CONTAINER_LEFT_MARGIN = 10;
 
 const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   data,
@@ -85,7 +84,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
-  const [containerHeight, setContainerHeight] = useState<number>(0);
+  // const [containerHeight, setContainerHeight] = useState<number>(0);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [canScrollUp, setCanScrollUp] = useState(false);
   const [canScrollDown, setCanScrollDown] = useState(false);
@@ -98,15 +97,13 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   });
 
   // Calculate chart width for internal calculations (legend, xAxis, etc.)
-  const chartWidth = useMemo(() => {
-    if (width) return width;
-    // Use observed container width or default
-    return containerWidth > 0 ? containerWidth : 600;
+  const effectiveWidth = useMemo(() => {
+    return width ?? containerWidth;
   }, [width, containerWidth]);
 
   // Calculate label height for better group height calculation
   // Use chart width for label height calculation since labels span full width
-  const labelHeight = useHorizontalBarLabelHeight(data, categoryKey as string, chartWidth);
+  const labelHeight = useHorizontalBarLabelHeight(data, categoryKey as string, effectiveWidth);
 
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -127,8 +124,8 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
 
   // Use provided height or observed height
   const effectiveHeight = useMemo(() => {
-    return height ?? containerHeight;
-  }, [height, containerHeight]);
+    return height ?? 296 + X_AXIS_HEIGHT;
+  }, [height]);
 
   // Calculate effective container height (excluding X-axis)
   const effectiveContainerHeight = useMemo(() => {
@@ -192,9 +189,6 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        if (!height) {
-          setContainerHeight(entry.contentRect.height);
-        }
         if (!width) {
           setContainerWidth(entry.contentRect.width);
         }
@@ -303,12 +297,6 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
     setHoveredCategory(null);
   }, []);
 
-  // useEffect(() => {
-  //   const heightOfGroup = getHeightOfGroup(data, categoryKey as string, variant, labelHeight);
-  //   console.log("Label Height:", labelHeight);
-  //   console.log("Group Height:", heightOfGroup);
-  // }, [data, categoryKey, variant, labelHeight]);
-
   const { mode } = useTheme();
 
   const barInternalLineColor = useMemo(() => {
@@ -343,13 +331,13 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
         data={sideBarTooltipData}
         setData={setSideBarTooltipData}
       >
-        <div
-          className={clsx("crayon-horizontal-bar-chart-container", className)}
-          style={{
-            height: height ? `${height}px` : undefined,
-          }}
-        >
-          <div className="crayon-horizontal-bar-chart-container-inner-wrapper">
+        <div className={clsx("crayon-horizontal-bar-chart-container", className)}>
+          <div
+            className="crayon-horizontal-bar-chart-container-inner-wrapper"
+            style={{
+              height: height ? `${height}px` : undefined,
+            }}
+          >
             <div className="crayon-horizontal-bar-chart-container-inner" ref={chartContainerRef}>
               <div className="crayon-horizontal-bar-chart-main-container" ref={mainContainerRef}>
                 <ChartContainer
@@ -431,7 +419,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                               // Calculate label position based on actual label height
                               // Use full chart width for label positioning
                               const labelX = 0; // Start from left edge of chart
-                              const labelWidth = chartWidth; // Use full chart width
+                              const labelWidth = effectiveWidth; // Use full chart width
                               const labelY = y - labelHeight / 2; // Position label at the top of the group's allocated space
                               label = (
                                 <foreignObject
@@ -490,7 +478,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
               items={legendItems}
               yAxisLabel={yAxisLabel}
               xAxisLabel={xAxisLabel}
-              containerWidth={containerWidth}
+              containerWidth={effectiveWidth}
               isExpanded={isLegendExpanded}
               setIsExpanded={setIsLegendExpanded}
             />
