@@ -42,6 +42,9 @@ function copyCssFiles() {
 
   const indexCSSContent = fs.readFileSync(path.join(srcDir, "index.css"), "utf8");
   fs.writeFileSync(path.join(distDir, "index.css"), indexCSSContent);
+
+  const cssUtilsSrc = fs.readFileSync(path.join(dirname, "src", "cssUtils.scss"), "utf8");
+  fs.writeFileSync(path.join(distDir, "cssUtils.scss"), cssUtilsSrc);
 }
 
 try {
