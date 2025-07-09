@@ -8,6 +8,7 @@ export type ThemeProps = {
   // merged with lightTheme or darkTheme(if darkTheme is not provided)
   theme?: Theme;
   darkTheme?: Theme;
+  cssSelector?: string;
 };
 
 type ThemeContextType = {
@@ -321,6 +322,7 @@ export const ThemeProvider = ({
   children,
   theme: userTheme = {},
   darkTheme: userDarkTheme,
+  cssSelector = "body",
 }: ThemeProps) => {
   const baseTheme = themes[mode];
   const lightTheme = useShallow(() => ({ ...baseTheme, ...userTheme }))(undefined);
@@ -334,7 +336,7 @@ export const ThemeProvider = ({
   return (
     <ThemeContext.Provider value={contextValue}>
       <style>{`
-        body {
+        ${cssSelector} {
           --crayon-background-fills: ${theme.backgroundFills};
           --crayon-brand-el-fills: ${theme.brandElFills};
           --crayon-brand-el-hover-fills: ${theme.brandElHoverFills};
