@@ -21,7 +21,6 @@ export const getMaxCategoryLabelWidth = (
 
   const context = getCanvasContext();
   if (!context) {
-    // Fallback for SSR or when canvas is not available
     return Math.max(...data.map((item) => String(item[categoryKey] || "").length * 8), 100);
   }
 
