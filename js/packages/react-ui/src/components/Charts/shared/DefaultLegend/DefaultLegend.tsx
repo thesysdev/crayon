@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { Button } from "../../../Button/Button";
 import { type LegendItem } from "../../types";
-import { calculateVisibleItems, getToggleButtonText } from "./utils/defaultLegendUtils";
+import { useDefaultLegend } from "./hooks/useDefaultLegend";
 
 interface DefaultLegendProps {
   items: LegendItem[];
@@ -32,6 +32,12 @@ const DefaultLegend = memo(
       ref,
     ) => {
       const [buttonWidth, setButtonWidth] = useState(0);
+      const { displayItems, hasMoreItems, toggleButtonText } = useDefaultLegend({
+        items,
+        containerWidth,
+        buttonWidth,
+        isExpanded,
+      });
 
       // We use a callback ref to measure the button's width as soon as it's mounted.
       // This is more reliable than useEffect with ref.current in the dependency array,
@@ -49,23 +55,11 @@ const DefaultLegend = memo(
         [buttonWidth],
       );
 
-      const { visibleItems, hasMoreItems } = useMemo(() => {
-        return calculateVisibleItems(items, containerWidth, buttonWidth);
-      }, [items, containerWidth, buttonWidth]);
-
-      const displayItems = useMemo(() => {
-        return isExpanded ? items : visibleItems;
-      }, [isExpanded, items, visibleItems]);
-
       const handleToggleExpanded = () => {
         setIsExpanded(!isExpanded);
       };
 
       const showToggleButton = hasMoreItems;
-
-      const toggleButtonText = useMemo(() => {
-        return getToggleButtonText(isExpanded, items.length, visibleItems.length);
-      }, [isExpanded, items.length, visibleItems.length]);
 
       return (
         <div
