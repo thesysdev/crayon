@@ -50,7 +50,7 @@ const CustomBarShapeComponent = (props: CustomBarShapeProps) => {
   if (index === 0 && payload[categoryKey]) {
     const labelX = 0;
     const labelWidth = effectiveWidth;
-    const labelY = y - labelHeight / 1.5;
+    const labelY = y - labelHeight / 2;
     label = (
       <foreignObject
         x={labelX}

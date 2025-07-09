@@ -347,9 +347,6 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                 <ChartContainer
                   config={chartConfig}
                   style={{ height: dataHeight, minHeight: "100%", width: "100%" }}
-                  rechartsProps={{
-                    height: "100%",
-                  }}
                 >
                   <RechartsBarChart
                     accessibilityLayer
