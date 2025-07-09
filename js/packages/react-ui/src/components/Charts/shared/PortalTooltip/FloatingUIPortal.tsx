@@ -3,6 +3,7 @@ import { computePosition, flip, offset, shift } from "@floating-ui/react-dom";
 import clsx from "clsx";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTheme } from "../../../ThemeProvider";
 
 interface VirtualElement {
   getBoundingClientRect(): DOMRect;
@@ -31,6 +32,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
+  const { theme } = useTheme();
 
   // Memoize the virtual element to avoid recreating it on every render
   // this virtual element basically shares the same position as the mouse position
@@ -122,11 +124,39 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
       ref={tooltipRef}
       className={clsx("crayon-portal-tooltip", className)}
       data-chart={chartId}
-      style={{
-        left: position.x,
-        top: position.y,
-        opacity: isPositioned ? 1 : 0,
-      }}
+      style={
+        {
+          // Position
+          left: position.x,
+          top: position.y,
+          opacity: isPositioned ? 1 : 0,
+
+          // variable overrides as tooltip is rendered in a portal in body
+          // Spacing
+          "--crayon-spacing-3xs": theme.spacing3xs,
+          "--crayon-spacing-xs": theme.spacingXs,
+          "--crayon-spacing-s": theme.spacingS,
+
+          // Typography
+          "--crayon-font-label-extra-small": theme.fontLabelExtraSmall,
+          "--crayon-font-label-extra-small-letter-spacing": theme.fontLabelExtraSmallLetterSpacing,
+          "--crayon-primary-text": theme.primaryText,
+          "--crayon-secondary-text": theme.secondaryText,
+
+          // Borders
+          "--crayon-rounded-2xs": theme.rounded2xs,
+          "--crayon-rounded-s": theme.roundedS,
+
+          // Stroke
+          "--crayon-stroke-default": theme.strokeDefault,
+
+          // Container Fills
+          "--crayon-container-fills": theme.containerFills,
+
+          // Effects
+          "--crayon-shadow-s": theme.shadowS,
+        } as React.CSSProperties
+      }
     >
       {children}
     </div>,
