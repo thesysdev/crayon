@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useMemo } from "react";
 
-interface LineBarShapeProps {
+interface LineInBarShapeProps {
   x?: number;
   y?: number;
   width?: number;
@@ -28,7 +28,7 @@ const MIN_GROUP_BAR_HEIGHT = 2; // For vertical bars
 const MIN_STACKED_BAR_HEIGHT = 4; // For vertical bars
 const MIN_BAR_WIDTH = 2; // For horizontal bars
 
-const LineBarShape: FunctionComponent<LineBarShapeProps> = React.memo((props) => {
+const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props) => {
   const {
     x = 0,
     y = 0,
@@ -182,6 +182,6 @@ const LineBarShape: FunctionComponent<LineBarShapeProps> = React.memo((props) =>
   );
 });
 
-LineBarShape.displayName = "LineBarShape";
+LineInBarShape.displayName = "LineInBarShape";
 
-export { LineBarShape };
+export { LineInBarShape };

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { LineBarShape } from "../../shared";
+import { LineInBarShape } from "../../shared";
 import { type HorizontalBarChartVariant } from "../types";
 
 interface CustomBarShapeProps {
@@ -68,7 +68,7 @@ const CustomBarShapeComponent = (props: CustomBarShapeProps) => {
   return (
     <g>
       {label}
-      <LineBarShape
+      <LineInBarShape
         {...rest}
         payload={payload}
         y={y + labelHeight / 2}

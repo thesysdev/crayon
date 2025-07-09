@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart, XAxis } from "recharts";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer } from "../Charts";
-import { LineBarShape } from "../shared";
+import { LineInBarShape } from "../shared";
 import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
 import { type MiniBarChartData } from "./types";
 import {
@@ -112,7 +112,7 @@ export const MiniBarChart = ({
           maxBarSize={MINI_BAR_WIDTH}
           barSize={MINI_BAR_WIDTH}
           shape={
-            <LineBarShape
+            <LineInBarShape
               internalLineWidth={MINI_BAR_CHART_INNER_LINE_WIDTH}
               internalLineColor={barInternalLineColor}
             />
