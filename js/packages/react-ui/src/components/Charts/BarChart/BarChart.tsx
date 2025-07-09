@@ -18,10 +18,12 @@ import {
 } from "../shared";
 
 import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/ScrollButtonsHorizontal";
-import { XAxisTickVariant, type LegendItem } from "../types";
+import { XAxisTickVariant } from "../types";
+import { type LegendItem } from "../types/Legend";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
+import { findNearestSnapPosition, getRadiusArray } from "../utils/BarCharts/BarChartsUtils";
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -31,9 +33,7 @@ import {
 import { BarChartData, BarChartVariant } from "./types";
 import {
   BAR_WIDTH,
-  findNearestSnapPosition,
   getPadding,
-  getRadiusArray,
   getSnapPositions,
   getWidthOfData,
   getWidthOfGroup,
@@ -347,6 +347,7 @@ const BarChartComponent = <T extends BarChartData>({
           radius={getRadiusArray(
             variant,
             radius,
+            "vertical",
             variant === "stacked" ? isFirstInStack : undefined,
             variant === "stacked" ? isLastInStack : undefined,
           )}

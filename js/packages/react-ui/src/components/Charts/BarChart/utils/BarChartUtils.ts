@@ -80,41 +80,6 @@ const getPadding = (
 };
 
 /**
- * This function returns the radius for the chart, used for the radius of the LineInBarShape.tsx.
- * @param variant - The variant of the chart.
- * @param radius - The radius of the chart.
- * @param isFirst - Whether the first item in the stack.
- * @param isLast - Whether the last item in the stack.
- */
-const getRadiusArray = (
-  variant: BarChartVariant,
-  radius: number,
-  isFirst?: boolean,
-  isLast?: boolean,
-): [number, number, number, number] => {
-  if (variant === "grouped") {
-    return [radius, radius, 0, 0];
-  } else if (variant === "stacked") {
-    if (isFirst && isLast) {
-      // Single item in stack
-      return [radius, radius, radius, radius];
-    }
-    if (isFirst) {
-      // Bottom of the stack
-      return [0, 0, 0, 0];
-    }
-    if (isLast) {
-      // Top of the stack
-      return [radius, radius, 0, 0];
-    }
-    // Middle of the stack
-    return [0, 0, 0, 0];
-  }
-  // Default or other variants
-  return [radius, radius, radius, radius];
-};
-
-/**
  * This function returns the scroll amount for the chart, used for the scroll amount of the chart.
  * This can also be used to calculate the width of each group/category.
  * @param data - The data to be displayed in the chart.
@@ -170,43 +135,4 @@ const getSnapPositions = (
   return positions;
 };
 
-/**
- * This function returns the nearest snap position for the chart, used for the nearest snap position of the chart.
- * @param snapPositions - The snap positions for the chart.
- * @param currentScroll - The current scroll of the chart.
- * @param direction - The direction of the scroll.
- * @returns The nearest snap position for the chart.
- */
-const findNearestSnapPosition = (
-  snapPositions: number[],
-  currentScroll: number,
-  direction: "left" | "right",
-): number => {
-  // Find current position index
-  let currentIndex = 0;
-  for (let i = 0; i < snapPositions.length; i++) {
-    const snapPosition = snapPositions[i]!;
-    if (currentScroll >= snapPosition) {
-      currentIndex = i;
-    } else {
-      break;
-    }
-  }
-
-  if (direction === "left") {
-    // Go to previous snap position
-    return Math.max(0, currentIndex - 1);
-  } else {
-    // Go to next snap position
-    return Math.min(snapPositions.length - 1, currentIndex + 1);
-  }
-};
-
-export {
-  findNearestSnapPosition,
-  getPadding,
-  getRadiusArray,
-  getSnapPositions,
-  getWidthOfData,
-  getWidthOfGroup,
-};
+export { getPadding, getSnapPositions, getWidthOfData, getWidthOfGroup };

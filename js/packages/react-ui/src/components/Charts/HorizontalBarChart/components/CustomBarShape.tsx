@@ -21,7 +21,7 @@ interface CustomBarShapeProps {
   variant: HorizontalBarChartVariant;
 }
 
-const CustomBarShape = (props: CustomBarShapeProps) => {
+const CustomBarShapeComponent = (props: CustomBarShapeProps) => {
   const {
     // recharts props
     y,
@@ -84,4 +84,4 @@ const CustomBarShape = (props: CustomBarShapeProps) => {
   );
 };
 
-export const MemoizedCustomBarShape = React.memo(CustomBarShape);
+export const CustomBarShape = React.memo(CustomBarShapeComponent);

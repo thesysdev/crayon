@@ -16,10 +16,11 @@ import {
 } from "../shared";
 import { ScrollButtonsVertical } from "../shared/ScrollButtonsVertical";
 
-import { type LegendItem } from "../types";
+import { type LegendItem } from "../types/Legend";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
+import { findNearestSnapPosition, getRadiusArray } from "../utils/BarCharts/BarChartsUtils";
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -27,16 +28,14 @@ import {
   getLegendItems,
 } from "../utils/dataUtils";
 import { numberTickFormatter } from "../utils/styleUtils";
-import { MemoizedCustomBarShape } from "./components/CustomBarShape";
+import { CustomBarShape } from "./components/CustomBarShape";
 import { HorizontalBarChartData, HorizontalBarChartVariant } from "./types";
 import {
   BAR_GAP,
   BAR_HEIGHT,
-  findNearestSnapPosition,
   getHeightOfData,
   getMaxCategoryLabelWidth,
   getPadding,
-  getRadiusArray,
   getSnapPositions,
 } from "./utils/HorizontalBarChartUtils";
 
@@ -409,6 +408,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                           radius={getRadiusArray(
                             variant,
                             radius,
+                            "horizontal",
                             variant === "stacked" ? isFirstInStack : undefined,
                             variant === "stacked" ? isLastInStack : undefined,
                           )}
@@ -417,7 +417,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                           maxBarSize={BAR_HEIGHT}
                           barSize={BAR_HEIGHT}
                           shape={
-                            <MemoizedCustomBarShape
+                            <CustomBarShape
                               index={index}
                               categoryKey={categoryKey as string}
                               effectiveWidth={effectiveWidth}

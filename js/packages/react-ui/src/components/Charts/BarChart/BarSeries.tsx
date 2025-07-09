@@ -1,7 +1,8 @@
 import { Bar } from "recharts";
 import { LineBarShape } from "../shared";
+import { getRadiusArray } from "../utils/BarCharts/BarChartsUtils";
 import { BarChartVariant } from "./types";
-import { BAR_WIDTH, getRadiusArray } from "./utils/BarChartUtils";
+import { BAR_WIDTH } from "./utils/BarChartUtils";
 
 const BAR_INTERNAL_LINE_WIDTH = 1;
 
@@ -42,6 +43,7 @@ export const BarSeries = ({
             radius={getRadiusArray(
               variant,
               radius,
+              "vertical",
               variant === "stacked" ? isFirstInStack : undefined,
               variant === "stacked" ? isLastInStack : undefined,
             )}
