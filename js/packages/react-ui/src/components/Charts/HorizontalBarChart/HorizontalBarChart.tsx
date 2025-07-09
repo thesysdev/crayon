@@ -1,13 +1,19 @@
 import clsx from "clsx";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Bar, CartesianGrid, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
+import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import { useTransformedKeys } from "../hooks";
 import { useHorizontalBarLabelHeight } from "../hooks/useMaxLabelHeight";
-import { CustomTooltipContent, DefaultLegend, SideBarTooltip, YAxisTick } from "../shared";
+import {
+  CustomTooltipContent,
+  DefaultLegend,
+  SideBarTooltip,
+  verticalCartesianGrid,
+  YAxisTick,
+} from "../shared";
 import { ScrollButtonsVertical } from "../shared/ScrollButtonsVertical";
 
 import { type LegendItem } from "../types";
@@ -21,7 +27,7 @@ import {
   getLegendItems,
 } from "../utils/dataUtils";
 import { numberTickFormatter } from "../utils/styleUtils";
-import { LineHorizontalBarShape } from "./components/LineHorizontalBarShape";
+import { MemoizedCustomBarShape } from "./components/CustomBarShape";
 import { HorizontalBarChartData, HorizontalBarChartVariant } from "./types";
 import {
   BAR_GAP,
@@ -84,7 +90,6 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
-  // const [containerHeight, setContainerHeight] = useState<number>(0);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [canScrollUp, setCanScrollUp] = useState(false);
   const [canScrollDown, setCanScrollDown] = useState(false);
@@ -335,7 +340,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
           <div
             className="crayon-horizontal-bar-chart-container-inner-wrapper"
             style={{
-              height: height ? `${height}px` : undefined,
+              height: height ? `${height}px` : effectiveHeight,
             }}
           >
             <div className="crayon-horizontal-bar-chart-container-inner" ref={chartContainerRef}>
@@ -364,7 +369,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                       right: 2,
                     }}
                   >
-                    {grid && <CartesianGrid horizontal={false} />}
+                    {grid && verticalCartesianGrid()}
                     <XAxis type="number" tickLine={false} axisLine={false} hide />
                     <YAxis
                       type="category"
@@ -411,47 +416,18 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                           isAnimationActive={isAnimationActive}
                           maxBarSize={BAR_HEIGHT}
                           barSize={BAR_HEIGHT}
-                          shape={(barProps: any) => {
-                            // For the first bar in each group, render the label and offset the bar
-                            let { y } = barProps;
-                            let label = null;
-                            if (index === 0 && barProps.payload && barProps.payload[categoryKey]) {
-                              // Calculate label position based on actual label height
-                              // Use full chart width for label positioning
-                              const labelX = 0; // Start from left edge of chart
-                              const labelWidth = effectiveWidth; // Use full chart width
-                              const labelY = y - labelHeight / 2; // Position label at the top of the group's allocated space
-                              label = (
-                                <foreignObject
-                                  x={labelX}
-                                  y={labelY}
-                                  width={labelWidth}
-                                  height={labelHeight}
-                                  style={{ pointerEvents: "none" }}
-                                  xmlns="http://www.w3.org/1999/xhtml"
-                                >
-                                  <div className="crayon-horizontal-bar-chart-category-label">
-                                    {barProps.payload[categoryKey]}
-                                  </div>
-                                </foreignObject>
-                              );
-                            }
-                            return (
-                              <g>
-                                {label}
-                                <LineHorizontalBarShape
-                                  {...barProps}
-                                  y={y + labelHeight / 2} // Shift the bar down to make space for the label
-                                  internalLineColor={barInternalLineColor}
-                                  internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
-                                  isHovered={hoveredCategory !== null}
-                                  hoveredCategory={hoveredCategory}
-                                  categoryKey={categoryKey as string}
-                                  variant={variant}
-                                />
-                              </g>
-                            );
-                          }}
+                          shape={
+                            <MemoizedCustomBarShape
+                              index={index}
+                              categoryKey={categoryKey as string}
+                              effectiveWidth={effectiveWidth}
+                              labelHeight={labelHeight}
+                              barInternalLineColor={barInternalLineColor}
+                              internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
+                              hoveredCategory={hoveredCategory}
+                              variant={variant}
+                            />
+                          }
                         />
                       );
                     })}

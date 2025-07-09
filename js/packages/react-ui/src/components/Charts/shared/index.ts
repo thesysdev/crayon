@@ -1,6 +1,7 @@
 export * from "./ActiveDot/ActiveDot";
 export * from "./CartesianGrid/cartesianGrid";
 export * from "./DefaultLegend/DefaultLegend";
+export * from "./LineBarShape";
 export * from "./PortalTooltip";
 export * from "./ScrollButtonsHorizontal";
 export * from "./ScrollButtonsVertical";

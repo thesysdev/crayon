@@ -1,5 +1,5 @@
 import { Bar } from "recharts";
-import { LineInBarShape } from "./components/LineInBarShape";
+import { LineBarShape } from "../shared";
 import { BarChartVariant } from "./types";
 import { BAR_WIDTH, getRadiusArray } from "./utils/BarChartUtils";
 
@@ -50,7 +50,7 @@ export const BarSeries = ({
             maxBarSize={BAR_WIDTH}
             barSize={BAR_WIDTH}
             shape={
-              <LineInBarShape
+              <LineBarShape
                 internalLineColor={barInternalLineColor}
                 internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
                 isHovered={hoveredCategory !== null}

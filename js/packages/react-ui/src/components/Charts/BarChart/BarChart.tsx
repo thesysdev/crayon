@@ -10,6 +10,7 @@ import {
   cartesianGrid,
   CustomTooltipContent,
   DefaultLegend,
+  LineBarShape,
   SideBarTooltip,
   XAxisTick,
   XAxisTickProps,
@@ -27,7 +28,6 @@ import {
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
-import { LineInBarShape } from "./components/LineInBarShape";
 import { BarChartData, BarChartVariant } from "./types";
 import {
   BAR_WIDTH,
@@ -355,7 +355,7 @@ const BarChartComponent = <T extends BarChartData>({
           maxBarSize={BAR_WIDTH}
           barSize={BAR_WIDTH}
           shape={
-            <LineInBarShape
+            <LineBarShape
               internalLineColor={barInternalLineColor}
               internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
               isHovered={hoveredCategory !== null}
