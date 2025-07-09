@@ -28,6 +28,7 @@ export * from "./components/MessageLoading";
 export * from "./components/RadioGroup";
 export * from "./components/RadioItem";
 export * from "./components/Select";
+export * from "./components/Separator";
 export * as Shell from "./components/Shell";
 export * from "./components/Slider";
 export * from "./components/Steps";
