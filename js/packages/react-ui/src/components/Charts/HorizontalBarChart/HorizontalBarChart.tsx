@@ -29,12 +29,12 @@ import {
 } from "../utils/dataUtils";
 import { numberTickFormatter } from "../utils/styleUtils";
 import { CustomBarShape } from "./components/CustomBarShape";
+import { useMaxCategoryLabelWidth } from "./hooks/useMaxCategoryLabelWidth";
 import { HorizontalBarChartData, HorizontalBarChartVariant } from "./types";
 import {
   BAR_GAP,
   BAR_HEIGHT,
   getHeightOfData,
-  getMaxCategoryLabelWidth,
   getPadding,
   getSnapPositions,
 } from "./utils/HorizontalBarChartUtils";
@@ -85,7 +85,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   height,
   width,
 }: HorizontalBarChartProps<T>) => {
-  const maxCategoryLabelWidth = getMaxCategoryLabelWidth(data, categoryKey as string);
+  const maxCategoryLabelWidth = useMaxCategoryLabelWidth(data, categoryKey as string);
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
@@ -288,7 +288,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
         </ChartContainer>
       </div>
     );
-  }, [showXAxis, chartConfig, data, dataKeys, variant, id, maxCategoryLabelWidth]);
+  }, [showXAxis, chartConfig, data, dataKeys, variant, id]);
 
   // Handle mouse events for group hovering
   const handleChartMouseMove = useCallback((state: any) => {
@@ -366,6 +366,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                     }}
                   >
                     {grid && verticalCartesianGrid()}
+                    {/* this x axis is not visible but is needed for the chart to work */}
                     <XAxis type="number" tickLine={false} axisLine={false} hide />
                     <YAxis
                       type="category"
