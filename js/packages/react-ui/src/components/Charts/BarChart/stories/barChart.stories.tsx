@@ -924,9 +924,7 @@ export const DataExplorer: Story = {
             </button>
             <button
               onClick={() => setSelectedDataType("positiveNegative")}
-              style={
-                selectedDataType === "positiveNegative" ? activeButtonStyle : buttonStyle
-              }
+              style={selectedDataType === "positiveNegative" ? activeButtonStyle : buttonStyle}
             >
               📈 Positive & Negative
             </button>

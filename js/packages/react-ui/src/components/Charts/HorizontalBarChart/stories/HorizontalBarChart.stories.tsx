@@ -361,6 +361,13 @@ const dataVariations = {
       videoViews: 15000,
     },
   ],
+  mixedPositiveNegative: [
+    { category: "Product A", profit: 100, loss: -50, net: 50 },
+    { category: "Product B", profit: 150, loss: -200, net: -50 },
+    { category: "Product C", profit: 200, loss: -100, net: 100 },
+    { category: "Product D", profit: -80, loss: -120, net: -200 },
+    { category: "Product E", profit: 300, loss: -150, net: 150 },
+  ],
   singleGroup: [
     { region: "North America (USA, Canada, Mexico)", sales: 150000 },
     { region: "Europe (UK, Germany, France, Italy)", sales: 280000 },
@@ -379,6 +386,7 @@ const categoryKeys = {
   edge: "period",
   bigNumbers: "company",
   expandCollapseChannels: "channel",
+  mixedPositiveNegative: "category",
   singleGroup: "region",
 };
 
@@ -722,6 +730,12 @@ export const DataExplorer: Story = {
               🌍 Single Group
             </button>
             <button
+              onClick={() => setSelectedDataType("mixedPositiveNegative")}
+              style={selectedDataType === "mixedPositiveNegative" ? activeButtonStyle : buttonStyle}
+            >
+              📈 Mixed +/-
+            </button>
+            <button
               onClick={() => setSelectedDataType("expandCollapseChannels")}
               style={
                 selectedDataType === "expandCollapseChannels" ? activeButtonStyle : buttonStyle
@@ -847,6 +861,23 @@ export const LargeDataset: Story = {
     data: dataVariations.large,
     categoryKey: "category",
     theme: "emerald",
+    variant: "grouped",
+    height: 400,
+    width: 600,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "600px" }}>
+      <HorizontalBarChart {...args} />
+    </Card>
+  ),
+};
+
+export const MixedPositiveNegative: Story = {
+  name: "📈 Mixed Positive and Negative",
+  args: {
+    data: dataVariations.mixedPositiveNegative,
+    categoryKey: "category",
+    theme: "spectrum",
     variant: "grouped",
     height: 400,
     width: 600,
