@@ -336,14 +336,14 @@ export const ThemeProvider = ({
 
   const theme = mode === "light" ? lightTheme : darkTheme;
   const contextValue = useMemo(
-    () => ({ theme, mode, portalThemeClassName: `.crayon-theme-portal-${id}` }),
+    () => ({ theme, mode, portalThemeClassName: `crayon-theme-portal-${id}` }),
     [theme, mode, id],
   );
 
   return (
     <ThemeContext.Provider value={contextValue}>
       <style>{`
-        ${cssSelector}, ${contextValue.portalThemeClassName} {
+        ${cssSelector}, .${contextValue.portalThemeClassName} {
           --crayon-background-fills: ${theme.backgroundFills};
           --crayon-brand-el-fills: ${theme.brandElFills};
           --crayon-brand-el-hover-fills: ${theme.brandElHoverFills};
