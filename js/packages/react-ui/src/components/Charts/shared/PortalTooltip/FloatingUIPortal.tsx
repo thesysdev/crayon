@@ -124,13 +124,11 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
       ref={tooltipRef}
       className={clsx("crayon-portal-tooltip", portalThemeClassName, className)}
       data-chart={chartId}
-      style={
-        {
-          left: position.x,
-          top: position.y,
-          opacity: isPositioned ? 1 : 0,
-        } as React.CSSProperties
-      }
+      style={{
+        left: position.x,
+        top: position.y,
+        opacity: isPositioned ? 1 : 0,
+      }}
     >
       {children}
     </div>,
