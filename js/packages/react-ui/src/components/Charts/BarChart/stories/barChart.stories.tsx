@@ -547,6 +547,14 @@ const dataVariations = {
     { month: "July 1st - July 31st, 2024 (Summer Quarter)", sales: 350 },
     { month: "August 1st - August 31st, 2024 (Summer Quarter)", sales: 400 },
   ],
+  positiveNegative: [
+    { month: "January", profit: 400, loss: -200, neutral: 0 },
+    { month: "February", profit: 300, loss: -400, neutral: 0 },
+    { month: "March", profit: -100, loss: -150, neutral: 0 },
+    { month: "April", profit: 500, loss: -250, neutral: 0 },
+    { month: "May", profit: -200, loss: -300, neutral: 0 },
+    { month: "June", profit: 100, loss: -50, neutral: 0 },
+  ],
 };
 
 // Category key mappings for different datasets
@@ -561,6 +569,7 @@ const categoryKeys = {
   bigNumbers: "company",
   expandCollapseMarketing: "channel",
   singleGroup: "month",
+  positiveNegative: "month",
 };
 
 // 🔥 ACTIVE DATA - For backward compatibility
@@ -912,6 +921,14 @@ export const DataExplorer: Story = {
               }
             >
               🔄 Marketing Channels
+            </button>
+            <button
+              onClick={() => setSelectedDataType("positiveNegative")}
+              style={
+                selectedDataType === "positiveNegative" ? activeButtonStyle : buttonStyle
+              }
+            >
+              📈 Positive & Negative
             </button>
           </div>
           <div style={{ marginTop: "8px", fontSize: "12px", color: "#666" }}>
