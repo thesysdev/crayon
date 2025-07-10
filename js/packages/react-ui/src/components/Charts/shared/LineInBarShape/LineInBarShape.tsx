@@ -50,25 +50,37 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
   } = props;
 
   const isVertical = orientation === "vertical";
+  const isNegative = isVertical && height < 0;
 
-  const { rTL, rTR, rBR } = useMemo(() => {
+  const h = isNegative ? -height : height;
+  const y_ = isNegative ? y + height : y;
+
+  const { rTL, rTR, rBL, rBR } = useMemo(() => {
     const minHeight = isVertical ? MIN_GROUP_BAR_HEIGHT : MIN_BAR_WIDTH;
     if (
-      (variant === "grouped" && height < minHeight) ||
-      (variant === "stacked" && height < MIN_STACKED_BAR_HEIGHT)
+      (variant === "grouped" && h < minHeight) ||
+      (variant === "stacked" && h < MIN_STACKED_BAR_HEIGHT)
     ) {
-      return { rTL: 0, rTR: 0, rBR: 0 };
+      return { rTL: 0, rTR: 0, rBL: 0, rBR: 0 };
     }
 
     if (Array.isArray(r)) {
-      if (isVertical) return { rTL: r[0] || 0, rTR: r[1] || 0, rBR: 0 };
-      return { rTL: 0, rTR: r[1] || 0, rBR: r[2] || 0 };
+      if (isVertical) {
+        // For negative vertical bars, apply radius to bottom corners only
+        if (isNegative) return { rTL: 0, rTR: 0, rBL: r[3] || 0, rBR: r[2] || 0 };
+        // For positive vertical bars, apply radius to top corners only
+        return { rTL: r[0] || 0, rTR: r[1] || 0, rBL: 0, rBR: 0 };
+      }
+      return { rTL: 0, rTR: r[1] || 0, rBL: 0, rBR: r[2] || 0 };
     } else if (typeof r === "number") {
-      if (isVertical) return { rTL: r, rTR: r, rBR: 0 };
-      return { rTL: 0, rTR: r, rBR: r };
+      if (isVertical) {
+        if (isNegative) return { rTL: 0, rTR: 0, rBL: r, rBR: r };
+        return { rTL: r, rTR: r, rBL: 0, rBR: 0 };
+      }
+      return { rTL: 0, rTR: r, rBL: 0, rBR: r };
     }
-    return { rTL: 0, rTR: 0, rBR: 0 };
-  }, [r, variant, height, isVertical]);
+    return { rTL: 0, rTR: 0, rBL: 0, rBR: 0 };
+  }, [r, variant, h, isVertical, isNegative]);
 
   const opacity = useMemo(() => {
     if (!isHovered || hoveredCategory === null || !payload || !categoryKey) return 1;
@@ -77,18 +89,20 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
 
   const { adjustedX, adjustedY, adjustedWidth, adjustedHeight } = useMemo(() => {
     let finalX = x;
-    let finalY = y;
+    let finalY = y_;
     let finalWidth = width;
-    let finalHeight = height;
+    let finalHeight = h;
 
     if (isVertical) {
-      if (variant === "stacked" && stackGap > 0) finalHeight = height - stackGap;
-      if (height > 0) {
+      if (variant === "stacked" && stackGap > 0) finalHeight = h - stackGap;
+      if (h > 0) {
         const minHeight =
           variant === "grouped" ? MIN_GROUP_BAR_HEIGHT : MIN_STACKED_BAR_HEIGHT - stackGap;
         finalHeight = Math.max(finalHeight, minHeight);
       }
-      finalY = y + height - finalHeight;
+      if (!isNegative) {
+        finalY = y + h - finalHeight;
+      }
     } else {
       // Horizontal
       if (variant === "stacked" && stackGap > 0) finalWidth = width - stackGap;
@@ -105,10 +119,20 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
       adjustedWidth: finalWidth,
       adjustedHeight: finalHeight,
     };
-  }, [variant, stackGap, x, y, width, height, isVertical]);
+  }, [variant, stackGap, x, y, width, h, isVertical, isNegative, y_]);
 
   const path = useMemo(() => {
     if (isVertical) {
+      if (isNegative) {
+        return `
+          M ${x},${adjustedY}
+          L ${x + adjustedWidth},${adjustedY}
+          L ${x + adjustedWidth},${adjustedY + adjustedHeight - rBR}
+          ${rBR > 0 ? `A ${rBR},${rBR} 0 0 1 ${x + adjustedWidth - rBR},${adjustedY + adjustedHeight}` : `L ${x + adjustedWidth},${adjustedY + adjustedHeight}`}
+          L ${x + rBL},${adjustedY + adjustedHeight}
+          ${rBL > 0 ? `A ${rBL},${rBL} 0 0 1 ${x},${adjustedY + adjustedHeight - rBL}` : `L ${x},${adjustedY + adjustedHeight}`}
+          Z`;
+      }
       return `
         M ${x},${adjustedY + rTL}
         ${rTL > 0 ? `A ${rTL},${rTL} 0 0 1 ${x + rTL},${adjustedY}` : `L ${x},${adjustedY}`}
@@ -137,13 +161,15 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
     height,
     rTL,
     rTR,
+    rBL,
     rBR,
     isVertical,
+    isNegative,
   ]);
 
   const lineCoords = useMemo(() => {
     if (isVertical) {
-      if (width <= 0 || adjustedHeight <= MIN_LINE_DIMENSION) return null;
+      if (width <= 0 || adjustedHeight < MIN_LINE_DIMENSION) return null;
       const centerX = x + width / 2;
       return {
         x1: centerX,
@@ -153,7 +179,7 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
       };
     }
     // Horizontal
-    if (adjustedWidth <= MIN_LINE_DIMENSION || height <= 0) return null;
+    if (adjustedWidth < MIN_LINE_DIMENSION || height <= 0) return null;
     const centerY = y + height / 2;
     return {
       x1: adjustedX + LINE_PADDING,

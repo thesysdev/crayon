@@ -344,27 +344,33 @@ const BarChartComponent = <T extends BarChartData>({
           key={`main-${key}`}
           dataKey={key}
           fill={color}
-          radius={getRadiusArray(
-            variant,
-            radius,
-            "vertical",
-            variant === "stacked" ? isFirstInStack : undefined,
-            variant === "stacked" ? isLastInStack : undefined,
-          )}
           stackId={variant === "stacked" ? "a" : undefined}
           isAnimationActive={isAnimationActive}
           maxBarSize={BAR_WIDTH}
           barSize={BAR_WIDTH}
-          shape={
-            <LineInBarShape
-              internalLineColor={barInternalLineColor}
-              internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
-              isHovered={hoveredCategory !== null}
-              hoveredCategory={hoveredCategory}
-              categoryKey={categoryKey as string}
-              variant={variant}
-            />
-          }
+          shape={(props: any) => {
+            const isNegative = props.value < 0;
+            const customRadius = getRadiusArray(
+              variant,
+              radius,
+              "vertical",
+              variant === "stacked" ? isFirstInStack : undefined,
+              variant === "stacked" ? isLastInStack : undefined,
+              isNegative,
+            );
+            return (
+              <LineInBarShape
+                {...props}
+                radius={customRadius}
+                internalLineColor={barInternalLineColor}
+                internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
+                isHovered={hoveredCategory !== null}
+                hoveredCategory={hoveredCategory}
+                categoryKey={categoryKey as string}
+                variant={variant}
+              />
+            );
+          }}
         />
       );
     });

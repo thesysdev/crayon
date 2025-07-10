@@ -6,18 +6,27 @@ export const getRadiusArray = (
   orientation: "vertical" | "horizontal",
   isFirst?: boolean,
   isLast?: boolean,
+  isNegative?: boolean,
 ): [number, number, number, number] => {
   if (variant === "grouped") {
     if (orientation === "vertical") {
-      return [radius, radius, 0, 0]; // top-left, top-right, bottom-right, bottom-left
+      if (isNegative) {
+        return [0, 0, radius, radius]; // bottom-right, bottom-left for negative bars
+      }
+      return [radius, radius, 0, 0]; // top-left, top-right for positive bars
     } else {
-      // horizontal
+      // horizontal - assuming negative goes left, which might need different logic if supported
       return [0, radius, radius, 0];
     }
   } else if (variant === "stacked") {
     if (isFirst && isLast) {
-      // Single item in stack
-      return [radius, radius, radius, radius];
+      if (orientation === "vertical") {
+        if (isNegative) {
+          return [0, 0, radius, radius];
+        }
+        return [radius, radius, 0, 0];
+      }
+      return [0, radius, radius, 0];
     }
     if (orientation === "vertical") {
       if (isFirst) {
@@ -25,6 +34,9 @@ export const getRadiusArray = (
         return [0, 0, 0, 0];
       }
       if (isLast) {
+        if (isNegative) {
+          return [0, 0, radius, radius];
+        }
         // Top of the stack for vertical bar
         return [radius, radius, 0, 0];
       }
