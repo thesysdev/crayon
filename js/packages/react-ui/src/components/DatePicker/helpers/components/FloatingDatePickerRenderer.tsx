@@ -4,6 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { forwardRef, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useMultipleRefs } from "../../../../hooks/useMultipleRefs";
+import { useTheme } from "../../../ThemeProvider";
 import { useDatePicker } from "../context/DatePickerContext";
 import { formatDateRange, formatSingleDate } from "../utils/helperFn";
 import { DatepickerRenderer } from "./DatePickerRenderer";
@@ -42,6 +43,7 @@ const FloatingDateInput = () => {
 const FloatingDatePicker = forwardRef<HTMLDivElement>((_, ref) => {
   const { isOpen } = useDatePicker();
   const menuPositionDivRef = useRef<HTMLDivElement>(null);
+  const { portalThemeClassName } = useTheme();
 
   const {
     refs: { setFloating, setReference },
@@ -62,12 +64,15 @@ const FloatingDatePicker = forwardRef<HTMLDivElement>((_, ref) => {
 
   return (
     <>
-      <div ref={menuPositionDivRefs} className="crayon-date-picker-renderer-floating-reference" />
+      <div
+        ref={menuPositionDivRefs}
+        className={clsx("crayon-date-picker-renderer-floating-reference")}
+      />
       {createPortal(
         <div
           ref={floatingRef}
           style={{ ...floatingStyles, width: "fit-content" }}
-          className="crayon-date-picker-renderer-floating-content"
+          className={clsx("crayon-date-picker-renderer-floating-content", portalThemeClassName)}
         >
           <div className="crayon-date-picker-renderer-floating-menu">
             <DatepickerRenderer />
