@@ -403,29 +403,35 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                           key={`main-${key}`}
                           dataKey={key}
                           fill={color}
-                          radius={getRadiusArray(
-                            variant,
-                            radius,
-                            "horizontal",
-                            variant === "stacked" ? isFirstInStack : undefined,
-                            variant === "stacked" ? isLastInStack : undefined,
-                          )}
                           stackId={variant === "stacked" ? "a" : undefined}
                           isAnimationActive={isAnimationActive}
                           maxBarSize={BAR_HEIGHT}
                           barSize={BAR_HEIGHT}
-                          shape={
-                            <CustomBarShape
-                              index={index}
-                              categoryKey={categoryKey as string}
-                              effectiveWidth={effectiveWidth}
-                              labelHeight={labelHeight}
-                              barInternalLineColor={barInternalLineColor}
-                              internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
-                              hoveredCategory={hoveredCategory}
-                              variant={variant}
-                            />
-                          }
+                          shape={(props: any) => {
+                            const isNegative = props.value < 0;
+                            const customRadius = getRadiusArray(
+                              variant,
+                              radius,
+                              "horizontal",
+                              variant === "stacked" ? isFirstInStack : undefined,
+                              variant === "stacked" ? isLastInStack : undefined,
+                              isNegative,
+                            );
+                            return (
+                              <CustomBarShape
+                                {...props}
+                                radius={customRadius}
+                                index={index}
+                                categoryKey={categoryKey as string}
+                                effectiveWidth={effectiveWidth}
+                                labelHeight={labelHeight}
+                                barInternalLineColor={barInternalLineColor}
+                                internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
+                                hoveredCategory={hoveredCategory}
+                                variant={variant}
+                              />
+                            );
+                          }}
                         />
                       );
                     })}

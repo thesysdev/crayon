@@ -50,37 +50,44 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
   } = props;
 
   const isVertical = orientation === "vertical";
-  const isNegative = isVertical && height < 0;
+  const isNegative = isVertical ? height < 0 : width < 0;
 
-  const h = isNegative ? -height : height;
-  const y_ = isNegative ? y + height : y;
+  const w = isNegative && !isVertical ? -width : width;
+  const h = isNegative && isVertical ? -height : height;
+
+  const x_ = isNegative && !isVertical ? x + width : x;
+  const y_ = isNegative && isVertical ? y + height : y;
 
   const { rTL, rTR, rBL, rBR } = useMemo(() => {
-    const minHeight = isVertical ? MIN_GROUP_BAR_HEIGHT : MIN_BAR_WIDTH;
+    const minDimension = isVertical ? MIN_GROUP_BAR_HEIGHT : MIN_BAR_WIDTH;
+    const dimension = isVertical ? h : w;
+
     if (
-      (variant === "grouped" && h < minHeight) ||
-      (variant === "stacked" && h < MIN_STACKED_BAR_HEIGHT)
+      (variant === "grouped" && dimension < minDimension) ||
+      (variant === "stacked" && dimension < MIN_STACKED_BAR_HEIGHT)
     ) {
       return { rTL: 0, rTR: 0, rBL: 0, rBR: 0 };
     }
 
     if (Array.isArray(r)) {
       if (isVertical) {
-        // For negative vertical bars, apply radius to bottom corners only
         if (isNegative) return { rTL: 0, rTR: 0, rBL: r[3] || 0, rBR: r[2] || 0 };
-        // For positive vertical bars, apply radius to top corners only
         return { rTL: r[0] || 0, rTR: r[1] || 0, rBL: 0, rBR: 0 };
       }
+      // Horizontal
+      if (isNegative) return { rTL: r[0] || 0, rTR: 0, rBL: r[3] || 0, rBR: 0 };
       return { rTL: 0, rTR: r[1] || 0, rBL: 0, rBR: r[2] || 0 };
     } else if (typeof r === "number") {
       if (isVertical) {
         if (isNegative) return { rTL: 0, rTR: 0, rBL: r, rBR: r };
         return { rTL: r, rTR: r, rBL: 0, rBR: 0 };
       }
+      // Horizontal
+      if (isNegative) return { rTL: r, rTR: 0, rBL: r, rBR: 0 };
       return { rTL: 0, rTR: r, rBL: 0, rBR: r };
     }
     return { rTL: 0, rTR: 0, rBL: 0, rBR: 0 };
-  }, [r, variant, h, isVertical, isNegative]);
+  }, [r, variant, h, w, isVertical, isNegative]);
 
   const opacity = useMemo(() => {
     if (!isHovered || hoveredCategory === null || !payload || !categoryKey) return 1;
@@ -88,9 +95,9 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
   }, [isHovered, hoveredCategory, payload, categoryKey]);
 
   const { adjustedX, adjustedY, adjustedWidth, adjustedHeight } = useMemo(() => {
-    let finalX = x;
+    let finalX = x_;
     let finalY = y_;
-    let finalWidth = width;
+    let finalWidth = w;
     let finalHeight = h;
 
     if (isVertical) {
@@ -105,12 +112,11 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
       }
     } else {
       // Horizontal
-      if (variant === "stacked" && stackGap > 0) finalWidth = width - stackGap;
-      if (width > 0) {
+      if (variant === "stacked" && stackGap > 0) finalWidth = w - stackGap;
+      if (w > 0) {
         const minWidth = MIN_BAR_WIDTH;
         finalWidth = Math.max(finalWidth, minWidth);
       }
-      // No adjustment for X as it grows left-to-right
     }
 
     return {
@@ -119,7 +125,7 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
       adjustedWidth: finalWidth,
       adjustedHeight: finalHeight,
     };
-  }, [variant, stackGap, x, y, width, h, isVertical, isNegative, y_]);
+  }, [variant, stackGap, x, y, w, h, isVertical, isNegative, x_, y_]);
 
   const path = useMemo(() => {
     if (isVertical) {
@@ -143,6 +149,16 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
         Z`;
     }
     // Horizontal
+    if (isNegative) {
+      return `
+      M ${adjustedX + rTL},${y}
+      ${rTL > 0 ? `A ${rTL},${rTL} 0 0 0 ${adjustedX},${y + rTL}` : `L ${adjustedX},${y}`}
+      L ${adjustedX},${y + height - rBL}
+      ${rBL > 0 ? `A ${rBL},${rBL} 0 0 0 ${adjustedX + rBL},${y + height}` : `L ${adjustedX},${y + height}`}
+      L ${adjustedX + adjustedWidth},${y + height}
+      L ${adjustedX + adjustedWidth},${y}
+      Z`;
+    }
     return `
       M ${adjustedX},${y}
       L ${adjustedX + adjustedWidth - rTR},${y}
