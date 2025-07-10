@@ -1,37 +1,8 @@
 import { getDataKeys } from "../../utils/dataUtils";
-import { getCanvasContext } from "../../utils/styleUtils";
 import { HorizontalBarChartVariant } from "../types";
 
 export const BAR_HEIGHT = 16;
 export const BAR_GAP = 10;
-
-/**
- * Get the maximum text width for category labels
- * @param data - The data to be displayed in the chart
- * @param categoryKey - The key of the category to be displayed in the chart
- * @returns The maximum width needed for category labels
- */
-export const getMaxCategoryLabelWidth = (
-  data: Array<Record<string, string | number>>,
-  categoryKey: string,
-): number => {
-  if (data.length === 0) {
-    return 100; // Default fallback
-  }
-
-  const context = getCanvasContext();
-  if (!context) {
-    return Math.max(...data.map((item) => String(item[categoryKey] || "").length * 8), 100);
-  }
-
-  return Math.max(
-    ...data.map((item) => {
-      const text = String(item[categoryKey] || "");
-      return context.measureText(text).width;
-    }),
-    100,
-  );
-};
 
 /**
  * This function returns the height of the data in the chart, used for padding calculation, scroll amount calculation, and

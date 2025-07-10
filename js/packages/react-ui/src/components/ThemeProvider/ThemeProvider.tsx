@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { useId } from "../../polyfills";
 import { ColorTheme, EffectTheme, LayoutTheme, Theme, ThemeMode, TypographyTheme } from "./types";
 
 export type ThemeProps = {
@@ -8,11 +9,13 @@ export type ThemeProps = {
   // merged with lightTheme or darkTheme(if darkTheme is not provided)
   theme?: Theme;
   darkTheme?: Theme;
+  cssSelector?: string;
 };
 
 type ThemeContextType = {
   theme: Theme;
   mode: ThemeMode;
+  portalThemeClassName: string;
 };
 
 // Update the context to include both theme and mode
@@ -25,6 +28,7 @@ export const useTheme = () => {
     return {
       theme: themes.light,
       mode: "light",
+      portalThemeClassName: "",
     };
   }
   return context;
@@ -321,7 +325,9 @@ export const ThemeProvider = ({
   children,
   theme: userTheme = {},
   darkTheme: userDarkTheme,
+  cssSelector = "body",
 }: ThemeProps) => {
+  const id = useId();
   const baseTheme = themes[mode];
   const lightTheme = useShallow(() => ({ ...baseTheme, ...userTheme }))(undefined);
   const darkTheme = useShallow(() => ({ ...baseTheme, ...(userDarkTheme || userTheme) }))(
@@ -329,12 +335,15 @@ export const ThemeProvider = ({
   );
 
   const theme = mode === "light" ? lightTheme : darkTheme;
-  const contextValue = useMemo(() => ({ theme, mode }), [theme, mode]);
+  const contextValue = useMemo(
+    () => ({ theme, mode, portalThemeClassName: `crayon-theme-portal-${id}` }),
+    [theme, mode, id],
+  );
 
   return (
     <ThemeContext.Provider value={contextValue}>
       <style>{`
-        body {
+        ${cssSelector}, .${contextValue.portalThemeClassName} {
           --crayon-background-fills: ${theme.backgroundFills};
           --crayon-brand-el-fills: ${theme.brandElFills};
           --crayon-brand-el-hover-fills: ${theme.brandElHoverFills};

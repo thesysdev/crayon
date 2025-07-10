@@ -3,6 +3,7 @@ import { computePosition, flip, offset, shift } from "@floating-ui/react-dom";
 import clsx from "clsx";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTheme } from "../../../ThemeProvider";
 
 interface VirtualElement {
   getBoundingClientRect(): DOMRect;
@@ -31,6 +32,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
+  const { portalThemeClassName } = useTheme();
 
   // Memoize the virtual element to avoid recreating it on every render
   // this virtual element basically shares the same position as the mouse position
@@ -120,7 +122,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   return createPortal(
     <div
       ref={tooltipRef}
-      className={clsx("crayon-portal-tooltip", className)}
+      className={clsx("crayon-portal-tooltip", portalThemeClassName, className)}
       data-chart={chartId}
       style={{
         left: position.x,

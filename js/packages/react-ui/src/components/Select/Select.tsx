@@ -2,6 +2,7 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import clsx from "clsx";
 import { Check, ChevronDown } from "lucide-react";
 import React, { forwardRef } from "react";
+import { useTheme } from "../ThemeProvider";
 
 export const Select = SelectPrimitive.Root;
 
@@ -52,21 +53,25 @@ export interface SelectContentProps
 export const SelectContent = forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Content>,
   SelectContentProps
->(({ className, children, position = "popper", ...props }, ref) => (
-  <SelectPrimitive.Portal>
-    <SelectPrimitive.Content
-      ref={ref}
-      className={clsx("crayon-select-content", className)}
-      position={position}
-      sideOffset={2}
-      {...props}
-    >
-      <SelectPrimitive.Viewport className="crayon-select-viewport" data-position={position}>
-        {children}
-      </SelectPrimitive.Viewport>
-    </SelectPrimitive.Content>
-  </SelectPrimitive.Portal>
-));
+>(({ className, children, position = "popper", ...props }, ref) => {
+  const { portalThemeClassName } = useTheme();
+
+  return (
+    <SelectPrimitive.Portal>
+      <SelectPrimitive.Content
+        ref={ref}
+        className={clsx("crayon-select-content", className, portalThemeClassName)}
+        position={position}
+        sideOffset={2}
+        {...props}
+      >
+        <SelectPrimitive.Viewport className="crayon-select-viewport" data-position={position}>
+          {children}
+        </SelectPrimitive.Viewport>
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  );
+});
 
 export interface SelectLabelProps
   extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label> {

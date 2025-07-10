@@ -11,7 +11,7 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import invariant from "tiny-invariant";
 import { ScrollVariant } from "../../hooks/useScrollToBottom";
 import { ThemeProps, ThemeProvider } from "../ThemeProvider";
@@ -43,6 +43,7 @@ type CrayonChatProps = {
   scrollVariant?: ScrollVariant;
 
   messageLoadingComponent?: () => React.ReactNode;
+  disableThemeProvider?: boolean;
 };
 
 export const CrayonChat = ({
@@ -59,8 +60,10 @@ export const CrayonChat = ({
   type = "standalone",
   theme,
   scrollVariant = "user-message-anchor",
+  disableThemeProvider,
 }: CrayonChatProps) => {
   invariant(processMessage || userThreadManager, "processMessage or threadManager is required");
+  const ThemeProviderComponent = disableThemeProvider ? Fragment : ThemeProvider;
 
   const threadMessages = useRef<{ [threadId: string]: Message[] }>({});
   const defaultThreadListManager = useThreadListManager({
@@ -133,7 +136,7 @@ export const CrayonChat = ({
   }, [threadManager.messages]);
 
   return (
-    <ThemeProvider {...theme}>
+    <ThemeProviderComponent {...theme}>
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         {type === "copilot" ? (
           <ComposedCopilot
@@ -151,6 +154,6 @@ export const CrayonChat = ({
           />
         )}
       </ChatProvider>
-    </ThemeProvider>
+    </ThemeProviderComponent>
   );
 };
