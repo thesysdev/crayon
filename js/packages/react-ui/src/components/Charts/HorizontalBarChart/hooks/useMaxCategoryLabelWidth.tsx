@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 
-import { useCanvasContext } from "../../hooks/useCanvasContext";
+import { useCanvasContextForLabelSize } from "../../hooks/useCanvasContextForLabelSize";
 
 export const useMaxCategoryLabelWidth = (
   data: Array<Record<string, string | number>>,
   categoryKey: string,
 ): number => {
-  const context = useCanvasContext();
+  const context = useCanvasContextForLabelSize();
 
   return useMemo(() => {
     if (data.length === 0) {

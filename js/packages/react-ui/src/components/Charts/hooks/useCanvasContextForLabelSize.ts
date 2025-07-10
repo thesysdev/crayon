@@ -13,7 +13,7 @@ import { useTheme } from "../../ThemeProvider";
  *
  */
 
-export const useCanvasContext = () => {
+export const useCanvasContextForLabelSize = () => {
   const { theme: userTheme } = useTheme();
 
   return useMemo(() => {

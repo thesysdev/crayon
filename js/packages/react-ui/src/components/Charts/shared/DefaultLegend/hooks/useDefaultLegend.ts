@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useCanvasContext } from "../../../hooks/useCanvasContext";
+import { useCanvasContextForLabelSize } from "../../../hooks/useCanvasContextForLabelSize";
 import { LegendItem } from "../../../types";
 
 const CHARACTER_WIDTH = 7; // Fallback width per character
@@ -25,7 +25,7 @@ export const useDefaultLegend = ({
   buttonWidth,
   isExpanded,
 }: UseDefaultLegendProps): UseDefaultLegendResult => {
-  const canvasContext = useCanvasContext();
+  const canvasContext = useCanvasContextForLabelSize();
 
   const calculateItemWidth = useMemo(
     () =>

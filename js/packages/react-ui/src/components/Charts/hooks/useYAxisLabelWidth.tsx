@@ -4,7 +4,7 @@ import { AreaChartData } from "../AreaChart";
 import { BarChartData } from "../BarChart";
 import { LineChartData } from "../LineChart";
 import { numberTickFormatter } from "../utils";
-import { useCanvasContext } from "./useCanvasContext";
+import { useCanvasContextForLabelSize } from "./useCanvasContextForLabelSize";
 
 const DEFAULT_Y_AXIS_WIDTH = 40;
 const MIN_Y_AXIS_WIDTH = 20;
@@ -14,7 +14,7 @@ export const useYAxisLabelWidth = (
   data: AreaChartData | LineChartData | BarChartData,
   dataKeys: string[],
 ) => {
-  const context = useCanvasContext();
+  const context = useCanvasContextForLabelSize();
 
   const maxLabelWidth = useMemo(() => {
     if (typeof window === "undefined" || !data || data.length === 0 || !dataKeys.length) {
