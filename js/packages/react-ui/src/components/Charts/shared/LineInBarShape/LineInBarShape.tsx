@@ -221,6 +221,21 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
       // For vertical bars
       if (isNegative) {
         // Draw downward pointing bar with rounded bottom corners if specified
+        // This path draws a vertical bar with rounded bottom corners for negative values
+        // Here's how each command works:
+        // 1. M ${x},${adjustedY} - Move to top-left corner
+        // 2. L ${x + adjustedWidth},${adjustedY} - Draw line to top-right corner
+        // 3. L ${x + adjustedWidth},${adjustedY + adjustedHeight - rBR} - Draw line down right side, stopping before bottom-right corner
+        // 4. If bottom-right radius (rBR) > 0:
+        //    A ${rBR},${rBR} 0 0 1 ${x + adjustedWidth - rBR},${adjustedY + adjustedHeight}
+        //    Draw arc: radius rBR, no rotation (0), small arc (0), clockwise (1), end at bottom-right rounded corner
+        //    Else: Draw straight line to bottom-right corner
+        // 5. L ${x + rBL},${adjustedY + adjustedHeight} - Draw line left along bottom, stopping before bottom-left corner
+        // 6. If bottom-left radius (rBL) > 0:
+        //    A ${rBL},${rBL} 0 0 1 ${x},${adjustedY + adjustedHeight - rBL}
+        //    Draw arc: radius rBL, no rotation (0), small arc (0), clockwise (1), end at bottom-left rounded corner
+        //    Else: Draw straight line to bottom-left corner
+        // 7. Z - Close path by drawing line back to start
         return `
           M ${x},${adjustedY}
           L ${x + adjustedWidth},${adjustedY}
