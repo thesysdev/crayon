@@ -27,7 +27,7 @@ const labeledAreaChartData = [
 ];
 
 const meta: Meta<typeof MiniAreaChart> = {
-  title: "Components/Charts/AreaCharts/MiniAreaChart",
+  title: "Components/Charts/MiniAreaChart",
   component: MiniAreaChart,
   parameters: {
     layout: "centered",
@@ -38,7 +38,7 @@ const meta: Meta<typeof MiniAreaChart> = {
       },
     },
   },
-  tags: ["!dev", "!autodocs"],
+  tags: ["!autodocs"],
   argTypes: {
     data: {
       description:

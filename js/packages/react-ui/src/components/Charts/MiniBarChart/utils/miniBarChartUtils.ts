@@ -23,7 +23,7 @@ const getWidthOfData = (data: MiniBarChartData) => {
  * @param containerWidth - The total width of the container in pixels
  * @returns An object with left and right padding values in pixels
  */
-const getPadding = (data: MiniBarChartData, containerWidth: number) => {
+export const getPadding = (data: MiniBarChartData, containerWidth: number) => {
   const availableWidth = containerWidth - CONTAINER_HORIZONTAL_PADDING;
   const chartWidth = getWidthOfData(data);
   const paddingValue = availableWidth - chartWidth;
@@ -48,7 +48,7 @@ const getPadding = (data: MiniBarChartData, containerWidth: number) => {
  * @param containerWidth - The total width of the container in pixels
  * @returns A filtered array containing only the most recent data items that fit in the container
  */
-const getRecentDataThatFits = (
+export const getRecentDataThatFits = (
   data: MiniBarChartData,
   containerWidth: number,
 ): MiniBarChartData => {
@@ -84,7 +84,7 @@ type ChartData = Array<{
  * @param data - The mini bar chart data array (can contain numbers or objects with value/label)
  * @returns An array of chart data objects with value and label properties
  */
-const transformDataForChart = (data: MiniBarChartData): ChartData => {
+export const transformDataForChart = (data: MiniBarChartData): ChartData => {
   return data.map((item, index) => {
     if (typeof item === "number") {
       return { value: item, label: `Item ${index + 1}` };
@@ -94,4 +94,4 @@ const transformDataForChart = (data: MiniBarChartData): ChartData => {
   });
 };
 
-export { getPadding, getRecentDataThatFits, transformDataForChart };
+export const DATA_KEY = "value";

@@ -63,3 +63,5 @@ export const getRecentDataThatFits = (
   // Return the most recent items that fit
   return data.slice(-maxItems);
 };
+
+export const DATA_KEY = "value";

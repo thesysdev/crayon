@@ -4,9 +4,11 @@ import { Bar, BarChart, XAxis } from "recharts";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer } from "../Charts";
 import { LineInBarShape } from "../shared";
-import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
+import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
+import { get2dChartConfig } from "../utils/dataUtils";
 import { type MiniBarChartData } from "./types";
 import {
+  DATA_KEY,
   getPadding,
   getRecentDataThatFits,
   MINI_BAR_WIDTH,
@@ -16,6 +18,7 @@ import {
 export interface MiniBarChartProps {
   data: MiniBarChartData;
   theme?: PaletteName;
+  customPalette?: string[];
   radius?: number;
   isAnimationActive?: boolean;
   onBarsClick?: (data: any) => void;
@@ -29,6 +32,7 @@ const MINI_BAR_CHART_INNER_LINE_WIDTH = 1;
 export const MiniBarChart = ({
   data,
   theme = "ocean",
+  customPalette,
   radius = 1,
   isAnimationActive = false,
   onBarsClick,
@@ -68,19 +72,18 @@ export const MiniBarChart = ({
     return transformDataForChart(filteredData);
   }, [filteredData]);
 
-  const colors = useMemo(() => {
-    const palette = getPalette(theme);
-    return getDistributedColors(palette.colors, 1); // Single color for 1D chart
-  }, [theme]);
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette: customPalette || (barColor ? [barColor] : undefined),
+    themePaletteName: "barChartPalette",
+    dataLength: 1,
+  });
+
+  const transformedKeys = useMemo(() => ({ [DATA_KEY]: DATA_KEY }), []);
 
   const chartConfig: ChartConfig = useMemo(() => {
-    return {
-      value: {
-        label: "Value",
-        color: barColor ? barColor : colors[0],
-      },
-    };
-  }, [colors, barColor]);
+    return get2dChartConfig([DATA_KEY], colors, transformedKeys);
+  }, [colors, transformedKeys]);
 
   const { mode } = useTheme();
 
@@ -105,8 +108,8 @@ export const MiniBarChart = ({
       <BarChart accessibilityLayer data={chartData}>
         <XAxis hide={true} padding={getPadding(filteredData, containerWidth)} />
         <Bar
-          dataKey="value"
-          fill="var(--color-value)"
+          dataKey={DATA_KEY}
+          fill={`var(--color-${DATA_KEY})`}
           radius={[radius, radius, 0, 0]}
           isAnimationActive={isAnimationActive}
           maxBarSize={MINI_BAR_WIDTH}
