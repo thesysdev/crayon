@@ -350,14 +350,12 @@ const BarChartComponent = <T extends BarChartData>({
           shape={(props: any) => {
             const { payload, value, dataKey } = props;
 
-            let isNegative;
+            let isNegative: boolean;
             if (Array.isArray(value)) {
               isNegative = value[0] <= 0 && value[1] < 0;
             } else {
               isNegative = value < 0;
             }
-
-            console.log("isNegative", isNegative);
 
             let isFirstInStack: boolean | undefined;
             let isLastInStack: boolean | undefined;
@@ -386,7 +384,6 @@ const BarChartComponent = <T extends BarChartData>({
               isNegative,
             );
 
-            console.log("customRadius", customRadius);
             return (
               <LineInBarShape
                 {...props}
