@@ -259,6 +259,7 @@ const BarChartComponent = <T extends BarChartData>({
           width={yAxisWidth}
           height={chartHeight}
           data={data}
+          stackOffset="sign"
           margin={{
             top: 20,
             bottom: maxLabelHeight + CHART_CONTAINER_BOTTOM_MARGIN, // this is required for to give space for x-axis
@@ -412,6 +413,7 @@ const BarChartComponent = <T extends BarChartData>({
                 }}
               >
                 <RechartsBarChart
+                  stackOffset="sign"
                   accessibilityLayer
                   key={`bar-chart-${id}`}
                   data={data}
