@@ -262,6 +262,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
               left: 5,
               right: 2,
             }}
+            stackOffset="sign"
           >
             <XAxis
               type="number"
@@ -275,7 +276,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
             {dataKeys.map((key) => {
               return (
                 <Bar
-                  key={`xaxis-horizontal-bar-chart-${key}`}
+                  key={`x-axis-horizontal-bar-chart-${key}`}
                   dataKey={key}
                   fill="transparent"
                   stackId={variant === "stacked" ? "a" : undefined}
@@ -364,6 +365,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                       left: 2,
                       right: 2,
                     }}
+                    stackOffset="sign"
                   >
                     {grid && verticalCartesianGrid()}
                     {/* this x axis is not visible but is needed for the chart to work */}
@@ -395,8 +397,6 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                     {dataKeys.map((key, index) => {
                       const transformedKey = transformedKeys[key];
                       const color = `var(--color-${transformedKey})`;
-                      const isFirstInStack = index === 0;
-                      const isLastInStack = index === dataKeys.length - 1;
 
                       return (
                         <Bar
@@ -408,7 +408,35 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                           maxBarSize={BAR_HEIGHT}
                           barSize={BAR_HEIGHT}
                           shape={(props: any) => {
-                            const isNegative = props.value < 0;
+                            const { payload, value, dataKey } = props;
+
+                            let isNegative: boolean;
+                            if (Array.isArray(value)) {
+                              isNegative = value[0] <= 0 && value[1] < 0;
+                            } else {
+                              isNegative = value < 0;
+                            }
+
+                            let isFirstInStack: boolean | undefined;
+                            let isLastInStack: boolean | undefined;
+
+                            if (variant === "stacked") {
+                              const stackedKeys = dataKeys.filter(
+                                (k) => typeof payload[k] === "number",
+                              );
+                              const positiveKeys = stackedKeys.filter((k) => payload[k] >= 0);
+                              const negativeKeys = stackedKeys.filter((k) => payload[k] < 0);
+                              if (isNegative) {
+                                const currentIndex = negativeKeys.indexOf(dataKey);
+                                isFirstInStack = currentIndex === 0;
+                                isLastInStack = currentIndex === negativeKeys.length - 1;
+                              } else {
+                                const currentIndex = positiveKeys.indexOf(dataKey);
+                                isFirstInStack = currentIndex === 0;
+                                isLastInStack = currentIndex === positiveKeys.length - 1;
+                              }
+                            }
+
                             const customRadius = getRadiusArray(
                               variant,
                               radius,
@@ -417,6 +445,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                               variant === "stacked" ? isLastInStack : undefined,
                               isNegative,
                             );
+
                             return (
                               <CustomBarShape
                                 {...props}
