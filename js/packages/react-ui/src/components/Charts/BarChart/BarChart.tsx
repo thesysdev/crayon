@@ -334,11 +334,9 @@ const BarChartComponent = <T extends BarChartData>({
   );
 
   const barElements = useMemo(() => {
-    return dataKeys.map((key, index) => {
+    return dataKeys.map((key) => {
       const transformedKey = transformedKeys[key];
       const color = `var(--color-${transformedKey})`;
-      const isFirstInStack = index === 0;
-      const isLastInStack = index === dataKeys.length - 1;
 
       return (
         <Bar
@@ -350,15 +348,45 @@ const BarChartComponent = <T extends BarChartData>({
           maxBarSize={BAR_WIDTH}
           barSize={BAR_WIDTH}
           shape={(props: any) => {
-            const isNegative = props.value < 0;
+            const { payload, value, dataKey } = props;
+
+            let isNegative;
+            if (Array.isArray(value)) {
+              isNegative = value[0] <= 0 && value[1] < 0;
+            } else {
+              isNegative = value < 0;
+            }
+
+            console.log("isNegative", isNegative);
+
+            let isFirstInStack: boolean | undefined;
+            let isLastInStack: boolean | undefined;
+
+            if (variant === "stacked") {
+              const stackedKeys = dataKeys.filter((k) => typeof payload[k] === "number");
+              const positiveKeys = stackedKeys.filter((k) => payload[k] >= 0);
+              const negativeKeys = stackedKeys.filter((k) => payload[k] < 0);
+              if (isNegative) {
+                const currentIndex = negativeKeys.indexOf(dataKey);
+                isFirstInStack = currentIndex === 0;
+                isLastInStack = currentIndex === negativeKeys.length - 1;
+              } else {
+                const currentIndex = positiveKeys.indexOf(dataKey);
+                isFirstInStack = currentIndex === 0;
+                isLastInStack = currentIndex === positiveKeys.length - 1;
+              }
+            }
+
             const customRadius = getRadiusArray(
               variant,
               radius,
               "vertical",
-              variant === "stacked" ? isFirstInStack : undefined,
-              variant === "stacked" ? isLastInStack : undefined,
+              isFirstInStack,
+              isLastInStack,
               isNegative,
             );
+
+            console.log("customRadius", customRadius);
             return (
               <LineInBarShape
                 {...props}

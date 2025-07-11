@@ -22,37 +22,27 @@ export const getRadiusArray = (
       return [0, radius, radius, 0]; // top-right, bottom-right for positive bars
     }
   } else if (variant === "stacked") {
+    // For single-item stacks, round the end of the bar.
     if (isFirst && isLast) {
       if (orientation === "vertical") {
-        if (isNegative) {
-          return [0, 0, radius, radius];
-        }
-        return [radius, radius, 0, 0];
+        return isNegative ? [0, 0, radius, radius] : [radius, radius, 0, 0];
+      } else {
+        // horizontal
+        return isNegative ? [radius, 0, 0, radius] : [0, radius, radius, 0];
       }
-      // horizontal
-      if (isNegative) {
-        return [radius, 0, 0, radius];
-      }
-      return [0, radius, radius, 0];
     }
+
+    // For multi-item stacks, only round the last bar in the stack.
     if (orientation === "vertical") {
-      if (isFirst) {
-        // Bottom of the stack for vertical bar
-        return [0, 0, 0, 0];
-      }
       if (isLast) {
+        // Top of the stack for vertical bar
         if (isNegative) {
           return [0, 0, radius, radius];
         }
-        // Top of the stack for vertical bar
         return [radius, radius, 0, 0];
       }
     } else {
       // horizontal
-      if (isFirst) {
-        // Left of the stack for horizontal bar
-        return [0, 0, 0, 0];
-      }
       if (isLast) {
         // Right of the stack for horizontal bar
         if (isNegative) {
@@ -61,7 +51,7 @@ export const getRadiusArray = (
         return [0, radius, radius, 0];
       }
     }
-    // Middle of the stack
+    // First and middle bars of the stack have no rounding.
     return [0, 0, 0, 0];
   }
   // Default or other variants

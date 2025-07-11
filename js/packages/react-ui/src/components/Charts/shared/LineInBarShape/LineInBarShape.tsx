@@ -89,14 +89,8 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
 
     // If radius is an array, apply specific radius to each corner
     if (Array.isArray(r)) {
-      if (isVertical) {
-        // For vertical bars, round top corners if positive, bottom if negative
-        if (isNegative) return { rTL: 0, rTR: 0, rBL: r[3] || 0, rBR: r[2] || 0 };
-        return { rTL: r[0] || 0, rTR: r[1] || 0, rBL: 0, rBR: 0 };
-      }
-      // For horizontal bars, round right corners if positive, left if negative
-      if (isNegative) return { rTL: r[0] || 0, rTR: 0, rBL: r[3] || 0, rBR: 0 };
-      return { rTL: 0, rTR: r[1] || 0, rBL: 0, rBR: r[2] || 0 };
+      // The radius array is expected to be in the format [rTL, rTR, rBR, rBL].
+      return { rTL: r[0] || 0, rTR: r[1] || 0, rBR: r[2] || 0, rBL: r[3] || 0 };
     } else if (typeof r === "number") {
       // If radius is a single number, apply it consistently based on orientation
       if (isVertical) {
