@@ -359,11 +359,13 @@ const BarChartComponent = <T extends BarChartData>({
 
             let isFirstInStack: boolean | undefined;
             let isLastInStack: boolean | undefined;
+            let hasNegativeValueInStack: boolean | undefined;
 
             if (variant === "stacked") {
               const stackedKeys = dataKeys.filter((k) => typeof payload[k] === "number");
               const positiveKeys = stackedKeys.filter((k) => payload[k] >= 0);
               const negativeKeys = stackedKeys.filter((k) => payload[k] < 0);
+              hasNegativeValueInStack = negativeKeys.length > 0;
               if (isNegative) {
                 const currentIndex = negativeKeys.indexOf(dataKey);
                 isFirstInStack = currentIndex === 0;
@@ -394,6 +396,7 @@ const BarChartComponent = <T extends BarChartData>({
                 hoveredCategory={hoveredCategory}
                 categoryKey={categoryKey as string}
                 variant={variant}
+                hasNegativeValueInStack={hasNegativeValueInStack}
               />
             );
           }}

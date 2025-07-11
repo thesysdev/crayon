@@ -18,6 +18,7 @@ interface LineInBarShapeProps {
   variant?: "grouped" | "stacked";
   stackGap?: number;
   orientation?: "vertical" | "horizontal";
+  hasNegativeValueInStack?: boolean;
   [key: string]: any; // Allow other props from Recharts
 }
 
@@ -47,6 +48,7 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
     variant = "grouped",
     stackGap = DEFAULT_STACK_GAP,
     orientation = "vertical",
+    hasNegativeValueInStack,
   } = props;
 
   const isVertical = orientation === "vertical";
@@ -153,7 +155,11 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
 
       // For positive values, adjust Y to align from bottom
       if (!isNegative) {
-        finalY = y + h - finalHeight;
+        if (variant === "stacked" && stackGap > 0 && hasNegativeValueInStack) {
+          finalY = y + h - finalHeight - stackGap;
+        } else {
+          finalY = y + h - finalHeight;
+        }
       }
     } else {
       // For horizontal bars:
