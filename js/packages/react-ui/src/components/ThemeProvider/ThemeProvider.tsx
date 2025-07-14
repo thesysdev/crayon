@@ -220,10 +220,10 @@ const typographyTheme: TypographyTheme = {
   fontHeadingMedium: '600 24px/1.15 "Inter"',
   fontHeadingMediumLetterSpacing: "-0.75px",
   // Small
-  fontHeadingSmall: '600 18px/1.25 "Inter"',
+  fontHeadingSmall: '500 18px/1.25 "Inter"',
   fontHeadingSmallLetterSpacing: "-0.25px",
   // Extra Small
-  fontHeadingExtraSmall: '600 16px/1.25 "Inter"',
+  fontHeadingExtraSmall: '500 16px/1.25 "Inter"',
   fontHeadingExtraSmallLetterSpacing: "0px",
 
   // Title Variants

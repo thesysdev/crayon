@@ -33,7 +33,7 @@ const icons = {
 } as const;
 
 const meta: Meta<MiniBarChartProps> = {
-  title: "Components/Charts/BarCharts/MiniBarChart",
+  title: "Components/Charts/MiniBarChart",
   component: MiniBarChart,
   parameters: {
     layout: "centered",
@@ -44,7 +44,7 @@ const meta: Meta<MiniBarChartProps> = {
       },
     },
   },
-  tags: ["!dev", "!autodocs"],
+  tags: ["!autodocs"],
   argTypes: {
     data: {
       description:

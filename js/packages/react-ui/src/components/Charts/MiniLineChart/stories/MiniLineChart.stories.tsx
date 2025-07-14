@@ -25,7 +25,7 @@ const labeledLineChartData = [
 ];
 
 const meta: Meta<typeof MiniLineChart> = {
-  title: "Components/Charts/LineCharts/MiniLineChart",
+  title: "Components/Charts/MiniLineChart",
   component: MiniLineChart,
   parameters: {
     layout: "centered",
@@ -36,7 +36,7 @@ const meta: Meta<typeof MiniLineChart> = {
       },
     },
   },
-  tags: ["!dev", "!autodocs"],
+  tags: ["!autodocs"],
   argTypes: {
     data: {
       description:
