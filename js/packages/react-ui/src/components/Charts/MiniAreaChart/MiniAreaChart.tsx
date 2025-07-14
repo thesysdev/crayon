@@ -93,7 +93,7 @@ export const MiniAreaChart = ({
   return (
     <ChartContainer
       config={chartConfig}
-      style={{ width: size, height: size, aspectRatio: 1 / 1 }}
+      style={{ width: size, height: size, aspectRatio: 1 / 1, minHeight: 116 }}
       rechartsProps={{
         aspect: 1 / 1,
       }}
