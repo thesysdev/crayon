@@ -548,12 +548,12 @@ const dataVariations = {
     { month: "August 1st - August 31st, 2024 (Summer Quarter)", sales: 400 },
   ],
   positiveNegative: [
-    { month: "January", profit: -400, loss: -200, netWorth: 200 },
-    { month: "February", profit: 300, loss: -400, netWorth: -100 },
-    { month: "March", profit: -100, loss: -150, netWorth: -250 },
-    { month: "April", profit: 500, loss: -250, netWorth: 250 },
-    { month: "May", profit: -200, loss: -300, netWorth: -500 },
-    { month: "June", profit: 100, loss: -50, netWorth: 50 },
+    { month: "January", profit: -4000000, loss: -2000000, netWorth: 2000000 },
+    { month: "February", profit: 3000000, loss: -4000000, netWorth: -1000000 },
+    { month: "March", profit: -1000000, loss: -1500000, netWorth: -2500000 },
+    { month: "April", profit: 5000000, loss: -2500000, netWorth: 2500000 },
+    { month: "May", profit: -2000000, loss: -3000000, netWorth: -5000000 },
+    { month: "June", profit: 1000000, loss: -500000, netWorth: 500000 },
   ],
 };
 

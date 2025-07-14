@@ -1,11 +1,14 @@
 const tooltipNumberFormatter = (value: number) => {
-  if (value < 100000) {
-    return value.toLocaleString();
+  const isNegative = value < 0;
+  const absValue = Math.abs(value);
+
+  if (absValue < 100000) {
+    return (isNegative ? "-" : "") + absValue.toLocaleString();
   }
 
   const units = ["", "K", "M", "B", "T"];
   let unitIndex = 0;
-  let scaledValue = value;
+  let scaledValue = absValue;
 
   while (scaledValue >= 1000 && unitIndex < units.length - 1) {
     scaledValue /= 1000;
@@ -15,7 +18,7 @@ const tooltipNumberFormatter = (value: number) => {
   // Format with at most 1 decimal place
   const formattedValue = Math.floor(scaledValue * 10) / 10;
 
-  return `${formattedValue}${units[unitIndex]}`;
+  return (isNegative ? "-" : "") + `${formattedValue}${units[unitIndex]}`;
 };
 
 export { tooltipNumberFormatter };
