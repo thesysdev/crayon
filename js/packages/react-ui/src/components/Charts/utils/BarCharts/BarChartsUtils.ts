@@ -82,3 +82,41 @@ export const findNearestSnapPosition = (
     return Math.min(snapPositions.length - 1, currentIndex + 1);
   }
 };
+
+export interface BarStackInfo {
+  isNegative: boolean;
+  isFirstInStack?: boolean;
+  isLastInStack?: boolean;
+  hasNegativeValueInStack?: boolean;
+}
+
+export function getBarStackInfo(
+  variant: "grouped" | "stacked",
+  value: number | [number, number],
+  dataKey: string,
+  payload: Record<string, unknown>,
+  dataKeys: string[],
+): BarStackInfo {
+  const isNegative = Array.isArray(value) ? value[0] <= 0 && value[1] < 0 : value < 0;
+
+  if (variant !== "stacked") {
+    return { isNegative };
+  }
+
+  const stackedKeys = dataKeys.filter((k) => typeof payload[k] === "number");
+  const positiveKeys = stackedKeys.filter((k) => (payload[k] as number) >= 0);
+  const negativeKeys = stackedKeys.filter((k) => (payload[k] as number) < 0);
+  const hasNegativeValueInStack = negativeKeys.length > 0;
+
+  const keys = isNegative ? negativeKeys : positiveKeys;
+  const currentIndex = keys.indexOf(dataKey);
+  const isFirstInStack = currentIndex === 0;
+  const isLastInStack = currentIndex === keys.length - 1;
+
+  return {
+    isNegative,
+    isFirstInStack,
+    isLastInStack,
+    hasNegativeValueInStack,
+  };
+}

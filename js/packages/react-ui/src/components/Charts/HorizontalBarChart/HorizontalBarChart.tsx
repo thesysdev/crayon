@@ -20,7 +20,11 @@ import { type LegendItem } from "../types/Legend";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
-import { findNearestSnapPosition, getRadiusArray } from "../utils/BarCharts/BarChartsUtils";
+import {
+  findNearestSnapPosition,
+  getBarStackInfo,
+  getRadiusArray,
+} from "../utils/BarCharts/BarChartsUtils";
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -410,39 +414,20 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                           shape={(props: any) => {
                             const { payload, value, dataKey } = props;
 
-                            let isNegative: boolean;
-                            if (Array.isArray(value)) {
-                              isNegative = value[0] <= 0 && value[1] < 0;
-                            } else {
-                              isNegative = value < 0;
-                            }
-
-                            let isFirstInStack: boolean | undefined;
-                            let isLastInStack: boolean | undefined;
-
-                            if (variant === "stacked") {
-                              const stackedKeys = dataKeys.filter(
-                                (k) => typeof payload[k] === "number",
-                              );
-                              const positiveKeys = stackedKeys.filter((k) => payload[k] >= 0);
-                              const negativeKeys = stackedKeys.filter((k) => payload[k] < 0);
-                              if (isNegative) {
-                                const currentIndex = negativeKeys.indexOf(dataKey);
-                                isFirstInStack = currentIndex === 0;
-                                isLastInStack = currentIndex === negativeKeys.length - 1;
-                              } else {
-                                const currentIndex = positiveKeys.indexOf(dataKey);
-                                isFirstInStack = currentIndex === 0;
-                                isLastInStack = currentIndex === positiveKeys.length - 1;
-                              }
-                            }
+                            const { isNegative, isFirstInStack, isLastInStack } = getBarStackInfo(
+                              variant,
+                              value,
+                              dataKey,
+                              payload,
+                              dataKeys,
+                            );
 
                             const customRadius = getRadiusArray(
                               variant,
                               radius,
                               "horizontal",
-                              variant === "stacked" ? isFirstInStack : undefined,
-                              variant === "stacked" ? isLastInStack : undefined,
+                              isFirstInStack,
+                              isLastInStack,
                               isNegative,
                             );
 
