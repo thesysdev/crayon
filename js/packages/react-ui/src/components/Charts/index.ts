@@ -6,3 +6,6 @@ export * from "./PieChart";
 export * from "./RadarChart";
 export * from "./RadialChart";
 export * from "./SegmentedBarChart";
+export * from "./MiniBarChart";
+export * from "./MiniLineChart";
+export * from "./MiniAreaChart";
