@@ -7,15 +7,10 @@ import { useShellStore } from "./store";
 
 interface MobileHeaderProps {
   className?: string;
-  isNewThreadEnabled?: boolean;
   rightChildren?: ReactNode;
 }
 
-export const MobileHeader = ({
-  className,
-  isNewThreadEnabled = true,
-  rightChildren,
-}: MobileHeaderProps) => {
+export const MobileHeader = ({ className, rightChildren }: MobileHeaderProps) => {
   const { switchToNewThread } = useThreadListActions();
   const { logoUrl, agentName, setIsSidebarOpen } = useShellStore((state) => ({
     logoUrl: state.logoUrl,
@@ -37,14 +32,12 @@ export const MobileHeader = ({
       </div>
       <div className="crayon-shell-mobile-header-actions">
         {rightChildren}
-        {isNewThreadEnabled && (
-          <IconButton
-            size="medium"
-            icon={<Plus size="1em" />}
-            onClick={switchToNewThread}
-            variant="secondary"
-          />
-        )}
+        <IconButton
+          size="medium"
+          icon={<Plus size="1em" />}
+          onClick={switchToNewThread}
+          variant="secondary"
+        />
       </div>
     </div>
   );
