@@ -304,7 +304,7 @@ const typographyTheme: TypographyTheme = {
   fontLabel2ExtraSmallHeavy: '500 10px/1.2 "Inter"',
   fontLabel2ExtraSmallHeavyLetterSpacing: "0px",
 
-  // Number Font 
+  // Number Font
   fontNumberLarge: '400 18px/1.2 "Inter"',
   fontNumberLargeLetterSpacing: "0px",
   fontNumberLargeHeavy: '500 18px/1.2 "Inter"',
@@ -325,7 +325,6 @@ const typographyTheme: TypographyTheme = {
   fontNumberTitleLetterSpacing: "0px",
   fontNumberTitleMedium: '600 24px/1.2 "Inter"',
   fontNumberTitleMediumLetterSpacing: "0px",
-
 } as const;
 
 const effectTheme: EffectTheme = {

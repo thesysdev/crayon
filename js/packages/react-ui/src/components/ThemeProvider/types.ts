@@ -253,7 +253,7 @@ export interface TypographyTheme {
   fontLabel2ExtraSmallHeavy?: string;
   fontLabel2ExtraSmallHeavyLetterSpacing?: string;
 
-  // Number Font 
+  // Number Font
   fontNumberLarge?: string;
   fontNumberLargeLetterSpacing?: string;
   fontNumberLargeHeavy?: string;
@@ -274,7 +274,6 @@ export interface TypographyTheme {
   fontNumberTitleLetterSpacing?: string;
   fontNumberTitleMedium?: string;
   fontNumberTitleMediumLetterSpacing?: string;
-  
 }
 
 // Effect-related theme properties
