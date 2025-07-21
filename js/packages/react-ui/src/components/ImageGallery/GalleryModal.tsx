@@ -1,7 +1,9 @@
 import clsx from "clsx";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { IconButton } from "../IconButton";
+import { useTheme } from "../ThemeProvider";
 import { ImageItem } from "./ImageGallery";
 
 export interface GalleryModalProps {
@@ -19,6 +21,8 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
 }) => {
   const [scrollButtons, setScrollButtons] = useState({ showLeft: false, showRight: false });
   const carouselRef = useRef<HTMLDivElement>(null);
+  const modalContentRef = useRef<HTMLDivElement>(null);
+  const { portalThemeClassName } = useTheme();
 
   // Check if scrolling is needed
   const checkScroll = useCallback(() => {
@@ -51,6 +55,34 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
     };
   }, [checkScroll]);
 
+  // Handle modal lifecycle events (scroll lock, close on escape, close on outside click)
+  useEffect(() => {
+    // Disable body scroll
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (modalContentRef.current && !modalContentRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    // Cleanup
+    return () => {
+      document.body.style.overflow = "auto";
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [onClose]);
+
   const scroll = (direction: "left" | "right") => {
     if (carouselRef.current) {
       const container = carouselRef.current;
@@ -77,9 +109,9 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
     [setSelectedImageIndex],
   );
 
-  return (
-    <div className="crayon-gallery__modal">
-      <div className="crayon-gallery__modal-content">
+  return createPortal(
+    <div className={clsx("crayon-gallery__modal", portalThemeClassName)}>
+      <div className="crayon-gallery__modal-content" ref={modalContentRef}>
         <div className="crayon-gallery__modal-header">
           <span className="crayon-gallery__modal-heading">All Photos</span>
           <IconButton size="small" variant="secondary" icon={<X />} onClick={onClose} />
@@ -92,17 +124,24 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
         </div>
         <div className="crayon-gallery__modal-carousel-container">
           {scrollButtons.showLeft && (
-            <IconButton
+            <div
               className={clsx(
-                "crayon-gallery__carousel-button",
-                "crayon-gallery__carousel-button--left",
+                "crayon-gallery__modal-carousel-button-container",
+                "crayon-gallery__modal-carousel-button-container-left",
               )}
-              onClick={() => scroll("left")}
-              aria-label="Scroll images left"
-              icon={<ChevronLeft />}
-              variant="secondary"
-              size="extra-small"
-            />
+            >
+              <IconButton
+                className={clsx(
+                  "crayon-gallery__carousel-button",
+                  "crayon-gallery__carousel-button--left",
+                )}
+                onClick={() => scroll("left")}
+                aria-label="Scroll images left"
+                icon={<ChevronLeft />}
+                variant="secondary"
+                size="extra-small"
+              />
+            </div>
           )}
 
           <div className="crayon-gallery__modal-carousel" ref={carouselRef}>
@@ -121,20 +160,28 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
           </div>
 
           {scrollButtons.showRight && (
-            <IconButton
+            <div
               className={clsx(
-                "crayon-gallery__carousel-button",
-                "crayon-gallery__carousel-button--right",
+                "crayon-gallery__modal-carousel-button-container",
+                "crayon-gallery__modal-carousel-button-container-right",
               )}
-              onClick={() => scroll("right")}
-              aria-label="Scroll images right"
-              icon={<ChevronRight />}
-              variant="secondary"
-              size="extra-small"
-            />
+            >
+              <IconButton
+                className={clsx(
+                  "crayon-gallery__carousel-button",
+                  "crayon-gallery__carousel-button--right",
+                )}
+                onClick={() => scroll("right")}
+                aria-label="Scroll images right"
+                icon={<ChevronRight />}
+                variant="secondary"
+                size="extra-small"
+              />
+            </div>
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
