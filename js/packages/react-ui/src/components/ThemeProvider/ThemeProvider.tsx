@@ -335,7 +335,34 @@ export const ThemeProvider = ({
     undefined,
   );
 
-  const theme = mode === "light" ? lightTheme : darkTheme;
+  const initialTheme = mode === "light" ? lightTheme : darkTheme;
+  const bodyFont = initialTheme.fontBody;
+
+  const fontFamily = useMemo(() => {
+    if (typeof window === "undefined" || !bodyFont) {
+      return;
+    }
+    const span = document.createElement("span");
+    span.style.font = bodyFont;
+    document.body.append(span);
+    const computedFontFamily = getComputedStyle(span).fontFamily;
+    span.remove();
+    return computedFontFamily;
+  }, [bodyFont]);
+
+  const theme = useMemo(() => {
+    if (!fontFamily) {
+      return initialTheme;
+    }
+
+    const newTypography = typographyTheme({ fontFamily });
+
+    return {
+      ...initialTheme,
+      ...newTypography,
+    };
+  }, [initialTheme, fontFamily]);
+
   const contextValue = useMemo(
     () => ({ theme, mode, portalThemeClassName: `crayon-theme-portal-${id}` }),
     [theme, mode, id],
