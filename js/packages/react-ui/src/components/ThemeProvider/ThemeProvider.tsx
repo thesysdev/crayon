@@ -207,125 +207,104 @@ const layoutTheme: LayoutTheme = {
   roundedClickable: "6px",
 } as const;
 
-const typographyTheme: TypographyTheme = {
+const typographyTheme = ({ fontFamily = '"Inter"' }: { fontFamily?: string }): TypographyTheme => ({
   // Typography
-  // fontPrimary: '400 16px/20px "Inter"',
-  // fontPrimaryLetterSpacing: "0px",
 
   // Display & Headings
   // Large
-  fontHeadingLarge: '600 28px/1.15 "Inter"',
+  fontHeadingLarge: `600 28px/1.15 ${fontFamily}`,
   fontHeadingLargeLetterSpacing: "-0.75px",
   // Medium
-  fontHeadingMedium: '600 24px/1.15 "Inter"',
+  fontHeadingMedium: `600 24px/1.15 ${fontFamily}`,
   fontHeadingMediumLetterSpacing: "-0.75px",
   // Small
-  fontHeadingSmall: '500 18px/1.25 "Inter"',
+  fontHeadingSmall: `500 18px/1.25 ${fontFamily}`,
   fontHeadingSmallLetterSpacing: "-0.25px",
   // Extra Small
-  fontHeadingExtraSmall: '500 16px/1.25 "Inter"',
+  fontHeadingExtraSmall: `500 16px/1.25 ${fontFamily}`,
   fontHeadingExtraSmallLetterSpacing: "0px",
-
-  // Title Variants
-  // Default
-  // fontTitle: '500 16px/20px "Inter"',
-  // fontTitleLetterSpacing: "0px",
-  // Medium
-  // fontTitleMedium: '500 16px/20px "Inter"',
-  // fontTitleMediumLetterSpacing: "0px",
-  // Small
-  // fontTitleSmall: '500 16px/20px "Inter"',
-  // fontTitleSmallLetterSpacing: "0px",
 
   // Body Text
   // Regular
-  fontBody: '400 16px/1.5 "Inter"',
+  fontBody: `400 16px/1.5 ${fontFamily}`,
   fontBodyLetterSpacing: "0px",
 
-  // fontBodyMedium: '400 16px/20px "Inter"',
-  // fontBodyMediumLetterSpacing: "0px",
-
-  fontBodySmall: '400 14px/1.5 "Inter"',
+  fontBodySmall: `400 14px/1.5 ${fontFamily}`,
   fontBodySmallLetterSpacing: "0px",
 
   // Heavy
-  fontBodyHeavy: '500 16px/1.5 "Inter"',
+  fontBodyHeavy: `500 16px/1.5 ${fontFamily}`,
   fontBodyHeavyLetterSpacing: "0px",
 
-  fontBodySmallHeavy: '500 14px/1.5 "Inter"',
+  fontBodySmallHeavy: `500 14px/1.5 ${fontFamily}`,
   fontBodySmallHeavyLetterSpacing: "0px",
 
   // Special
-  fontBodyLink: '400 16px/1.5 "Inter"',
+  fontBodyLink: `400 16px/1.5 ${fontFamily}`,
   fontBodyLinkLetterSpacing: "0px",
 
-  fontBodyLarge: '400 18px/1.5 "Inter"',
+  fontBodyLarge: `400 18px/1.5 ${fontFamily}`,
   fontBodyLargeLetterSpacing: "0px",
 
-  fontBodyLargeHeavy: '500 18px/1.5 "Inter"',
+  fontBodyLargeHeavy: `500 18px/1.5 ${fontFamily}`,
   fontBodyLargeHeavyLetterSpacing: "0px",
 
   // Label System
   // Large
-  fontLabelLarge: '400 18px/1.2 "Inter"',
+    fontLabelLarge: `400 18px/1.2 ${fontFamily}`,
   fontLabelLargeLetterSpacing: "0px",
 
-  fontLabelLargeHeavy: '500 18px/1.2 "Inter"',
+  fontLabelLargeHeavy: `500 18px/1.2 ${fontFamily}`,
   fontLabelLargeHeavyLetterSpacing: "0px",
   // Regular
-  fontLabel: '400 16px/1.2 "Inter"',
+  fontLabel: `400 16px/1.2 ${fontFamily}`,
   fontLabelLetterSpacing: "0px",
 
-  fontLabelHeavy: '500 16px/1.2 "Inter"',
+  fontLabelHeavy: `500 16px/1.2 ${fontFamily}`,
   fontLabelHeavyLetterSpacing: "0px",
-  // Medium
-  // fontLabelMedium: '400 16px/20px "Inter"',
-  // fontLabelMediumLetterSpacing: "0px",
 
-  // fontLabelMediumHeavy: '600 16px/20px "Inter"',
-  // fontLabelMediumHeavyLetterSpacing: "0px",
   // Small
-  fontLabelSmall: '400 14px/1.2 "Inter"',
+  fontLabelSmall: `400 14px/1.2 ${fontFamily}`,
   fontLabelSmallLetterSpacing: "0px",
 
-  fontLabelSmallHeavy: '500 14px/1.2 "Inter"',
+  fontLabelSmallHeavy: `500 14px/1.2 ${fontFamily}`,
   fontLabelSmallHeavyLetterSpacing: "0px",
   // Extra Small
-  fontLabelExtraSmall: '400 12px/1.2 "Inter"',
+  fontLabelExtraSmall: `400 12px/1.2 ${fontFamily}`,
   fontLabelExtraSmallLetterSpacing: "0px",
 
-  fontLabelExtraSmallHeavy: '500 12px/1.2 "Inter"',
+  fontLabelExtraSmallHeavy: `500 12px/1.2 ${fontFamily}`,
   fontLabelExtraSmallHeavyLetterSpacing: "0px",
 
   // 2Extra Small
-  fontLabel2ExtraSmall: '400 10px/1.2 "Inter"',
+  fontLabel2ExtraSmall: `400 10px/1.2 ${fontFamily}`,
   fontLabel2ExtraSmallLetterSpacing: "0px",
 
-  fontLabel2ExtraSmallHeavy: '500 10px/1.2 "Inter"',
+  fontLabel2ExtraSmallHeavy: `500 10px/1.2 ${fontFamily}`,
   fontLabel2ExtraSmallHeavyLetterSpacing: "0px",
 
   // Number Font
-  fontNumberLarge: '400 18px/1.2 "Inter"',
+  fontNumberLarge: `400 18px/1.2 ${fontFamily}`,
   fontNumberLargeLetterSpacing: "0px",
-  fontNumberLargeHeavy: '500 18px/1.2 "Inter"',
+  fontNumberLargeHeavy: `500 18px/1.2 ${fontFamily}`,
   fontNumberLargeHeavyLetterSpacing: "0px",
-  fontNumberHeavy: '500 16px/1.2 "Inter"',
+  fontNumberHeavy: `500 16px/1.2 ${fontFamily}`,
   fontNumberHeavyLetterSpacing: "0px",
-  fontNumber: '400 16px/1.2 "Inter"',
+  fontNumber: `400 16px/1.2 ${fontFamily}`,
   fontNumberLetterSpacing: "0px",
-  fontNumberSmall: '400 14px/1.2 "Inter"',
+  fontNumberSmall: `400 14px/1.2 ${fontFamily}`,
   fontNumberSmallLetterSpacing: "0px",
-  fontNumberSmallHeavy: '500 18px/1.2 "Inter"',
+  fontNumberSmallHeavy: `500 18px/1.2 ${fontFamily}`,
   fontNumberSmallHeavyLetterSpacing: "0px",
-  fontNumberExtraSmall: '400 12px/1.2 "Inter"',
+  fontNumberExtraSmall: `400 12px/1.2 ${fontFamily}`,
   fontNumberExtraSmallLetterSpacing: "0px",
-  fontNumberExtraSmallHeavy: '500 12px/1.2 "Inter"',
+  fontNumberExtraSmallHeavy: `500 12px/1.2 ${fontFamily}`,
   fontNumberExtraSmallHeavyLetterSpacing: "0px",
-  fontNumberTitle: '600 28px/1.2 "Inter"',
+  fontNumberTitle: `600 28px/1.2 ${fontFamily}`,
   fontNumberTitleLetterSpacing: "0px",
-  fontNumberTitleMedium: '600 24px/1.2 "Inter"',
+  fontNumberTitleMedium: `600 24px/1.2 ${fontFamily}`,
   fontNumberTitleMediumLetterSpacing: "0px",
-} as const;
+});
 
 const effectTheme: EffectTheme = {
   // Shadows
@@ -338,8 +317,8 @@ const effectTheme: EffectTheme = {
 } as const;
 
 const themes = {
-  light: { ...layoutTheme, ...lightTheme, ...typographyTheme, ...effectTheme },
-  dark: { ...layoutTheme, ...darkTheme, ...typographyTheme, ...effectTheme },
+  light: { ...layoutTheme, ...lightTheme, ...typographyTheme({}), ...effectTheme },
+  dark: { ...layoutTheme, ...darkTheme, ...typographyTheme({}), ...effectTheme },
 } as const;
 
 export const ThemeProvider = ({
