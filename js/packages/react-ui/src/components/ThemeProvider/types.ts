@@ -252,6 +252,28 @@ export interface TypographyTheme {
   fontLabel2ExtraSmallLetterSpacing?: string;
   fontLabel2ExtraSmallHeavy?: string;
   fontLabel2ExtraSmallHeavyLetterSpacing?: string;
+
+  // Number Font
+  fontNumberLarge?: string;
+  fontNumberLargeLetterSpacing?: string;
+  fontNumberLargeHeavy?: string;
+  fontNumberLargeHeavyLetterSpacing?: string;
+  fontNumberHeavy?: string;
+  fontNumberHeavyLetterSpacing?: string;
+  fontNumber?: string;
+  fontNumberLetterSpacing?: string;
+  fontNumberSmall?: string;
+  fontNumberSmallLetterSpacing?: string;
+  fontNumberSmallHeavy?: string;
+  fontNumberSmallHeavyLetterSpacing?: string;
+  fontNumberExtraSmall?: string;
+  fontNumberExtraSmallLetterSpacing?: string;
+  fontNumberExtraSmallHeavy?: string;
+  fontNumberExtraSmallHeavyLetterSpacing?: string;
+  fontNumberTitle?: string;
+  fontNumberTitleLetterSpacing?: string;
+  fontNumberTitleMedium?: string;
+  fontNumberTitleMediumLetterSpacing?: string;
 }
 
 // Effect-related theme properties
