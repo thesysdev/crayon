@@ -282,28 +282,6 @@ const typographyTheme: TypographyTheme = {
 
   fontLabel2ExtraSmallHeavy: '500 10px/1.2 "Inter"',
   fontLabel2ExtraSmallHeavyLetterSpacing: "0px",
-
-  // Number Font
-  fontNumberLarge: '400 18px/1.2 "Inter"',
-  fontNumberLargeLetterSpacing: "0px",
-  fontNumberLargeHeavy: '500 18px/1.2 "Inter"',
-  fontNumberLargeHeavyLetterSpacing: "0px",
-  fontNumberHeavy: '500 16px/1.2 "Inter"',
-  fontNumberHeavyLetterSpacing: "0px",
-  fontNumber: '400 16px/1.2 "Inter"',
-  fontNumberLetterSpacing: "0px",
-  fontNumberSmall: '400 14px/1.2 "Inter"',
-  fontNumberSmallLetterSpacing: "0px",
-  fontNumberSmallHeavy: '500 18px/1.2 "Inter"',
-  fontNumberSmallHeavyLetterSpacing: "0px",
-  fontNumberExtraSmall: '400 12px/1.2 "Inter"',
-  fontNumberExtraSmallLetterSpacing: "0px",
-  fontNumberExtraSmallHeavy: '500 12px/1.2 "Inter"',
-  fontNumberExtraSmallHeavyLetterSpacing: "0px",
-  fontNumberTitle: '600 28px/1.2 "Inter"',
-  fontNumberTitleLetterSpacing: "0px",
-  fontNumberTitleMedium: '600 24px/1.2 "Inter"',
-  fontNumberTitleMediumLetterSpacing: "0px",
 } as const;
 
 const effectTheme: EffectTheme = {
@@ -498,26 +476,26 @@ export const ThemeProvider = ({
           --crayon-font-label-2-extra-small-heavy: ${theme.fontLabel2ExtraSmallHeavy};
           --crayon-font-label-2-extra-small-heavy-letter-spacing: ${theme.fontLabel2ExtraSmallHeavyLetterSpacing};
 
-          --crayon-font-number-large: ${theme.fontNumberLarge || theme.fontBodyLarge};
-          --crayon-font-number-large-letter-spacing: ${theme.fontNumberLargeLetterSpacing || theme.fontBodyLargeLetterSpacing};
-          --crayon-font-number-large-heavy: ${theme.fontNumberLargeHeavy || theme.fontBodyLargeHeavy};
-          --crayon-font-number-large-heavy-letter-spacing: ${theme.fontNumberLargeHeavyLetterSpacing || theme.fontBodyLargeHeavyLetterSpacing};
-          --crayon-font-number-heavy: ${theme.fontNumberHeavy || theme.fontBodyHeavy};
-          --crayon-font-number-heavy-letter-spacing: ${theme.fontNumberHeavyLetterSpacing || theme.fontBodyHeavyLetterSpacing};
-          --crayon-font-number: ${theme.fontNumber || theme.fontBody};
-          --crayon-font-number-letter-spacing: ${theme.fontNumberLetterSpacing || theme.fontBodyLetterSpacing};
-          --crayon-font-number-small: ${theme.fontNumberSmall || theme.fontBodySmall};
-          --crayon-font-number-small-letter-spacing: ${theme.fontNumberSmallLetterSpacing || theme.fontBodySmallLetterSpacing};
-          --crayon-font-number-small-heavy: ${theme.fontNumberSmallHeavy || theme.fontBodySmallHeavy};
-          --crayon-font-number-small-heavy-letter-spacing: ${theme.fontNumberSmallHeavyLetterSpacing || theme.fontBodySmallHeavyLetterSpacing};
-          --crayon-font-number-extra-small: ${theme.fontNumberExtraSmall};
-          --crayon-font-number-extra-small-letter-spacing: ${theme.fontNumberExtraSmallLetterSpacing};
-          --crayon-font-number-extra-small-heavy: ${theme.fontNumberExtraSmallHeavy};
-          --crayon-font-number-extra-small-heavy-letter-spacing: ${theme.fontNumberExtraSmallHeavyLetterSpacing};
-          --crayon-font-number-title: ${theme.fontNumberTitle || theme.fontBodyHeavy};
-          --crayon-font-number-title-letter-spacing: ${theme.fontNumberTitleLetterSpacing || theme.fontBodyHeavyLetterSpacing};
-          --crayon-font-number-title-medium: ${theme.fontNumberTitleMedium || theme.fontBodyLargeHeavy};
-          --crayon-font-number-title-medium-letter-spacing: ${theme.fontNumberTitleMediumLetterSpacing || theme.fontBodyLargeHeavyLetterSpacing};
+          --crayon-font-number-large: ${theme.fontBodyLarge};
+          --crayon-font-number-large-letter-spacing: ${theme.fontBodyLargeLetterSpacing};
+          --crayon-font-number-large-heavy: ${theme.fontBodyLargeHeavy};
+          --crayon-font-number-large-heavy-letter-spacing: ${theme.fontBodyLargeHeavyLetterSpacing};
+          --crayon-font-number-heavy: ${theme.fontBodyHeavy};
+          --crayon-font-number-heavy-letter-spacing: ${theme.fontBodyHeavyLetterSpacing};
+          --crayon-font-number: ${theme.fontBody};
+          --crayon-font-number-letter-spacing: ${theme.fontBodyLetterSpacing};
+          --crayon-font-number-small: ${theme.fontBodySmall};
+          --crayon-font-number-small-letter-spacing: ${theme.fontBodySmallLetterSpacing};
+          --crayon-font-number-small-heavy: ${theme.fontBodySmallHeavy};
+          --crayon-font-number-small-heavy-letter-spacing: ${theme.fontBodySmallHeavyLetterSpacing};
+          --crayon-font-number-extra-small: ${theme.fontLabelExtraSmall};
+          --crayon-font-number-extra-small-letter-spacing: ${theme.fontLabelExtraSmallLetterSpacing};
+          --crayon-font-number-extra-small-heavy: ${theme.fontLabelExtraSmallHeavy};
+          --crayon-font-number-extra-small-heavy-letter-spacing: ${theme.fontLabelExtraSmallHeavyLetterSpacing};
+          --crayon-font-number-title: ${theme.fontHeadingLarge};
+          --crayon-font-number-title-letter-spacing: ${theme.fontHeadingLargeLetterSpacing};
+          --crayon-font-number-title-medium: ${theme.fontHeadingMedium};
+          --crayon-font-number-title-medium-letter-spacing: ${theme.fontHeadingMediumLetterSpacing};
 
           --crayon-shadow-s: ${theme.shadowS};
           --crayon-shadow-m: ${theme.shadowM};
