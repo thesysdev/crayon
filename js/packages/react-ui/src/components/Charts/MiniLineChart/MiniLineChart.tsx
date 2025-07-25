@@ -2,11 +2,7 @@ import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Line, LineChart as RechartsLineChart, XAxis } from "recharts";
 import { ChartConfig, ChartContainer } from "../Charts";
-import {
-  DATA_KEY,
-  getRecentDataThatFits,
-  transformDataForChart,
-} from "../utils/AreaAndLine/MiniAreaAndLineUtils";
+import { DATA_KEY, transformDataForChart } from "../utils/AreaAndLine/MiniAreaAndLineUtils";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 import { get2dChartConfig } from "../utils/dataUtils";
 import { MiniLineChartData } from "./types";
@@ -57,15 +53,10 @@ export const MiniLineChart = ({
     };
   }, []);
 
-  // Get the most recent data that fits in the container
-  const filteredData = useMemo(() => {
-    return getRecentDataThatFits(data, containerWidth);
-  }, [data, containerWidth]);
-
-  // Transform the filtered data to a consistent format for recharts
+  // Transform the data to a consistent format for recharts
   const chartData = useMemo(() => {
-    return transformDataForChart(filteredData);
-  }, [filteredData]);
+    return transformDataForChart(data);
+  }, [data]);
 
   const colors = useChartPalette({
     chartThemeName: theme,
