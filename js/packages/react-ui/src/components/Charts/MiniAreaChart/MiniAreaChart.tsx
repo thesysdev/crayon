@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer } from "../Charts";
@@ -35,28 +35,6 @@ export const MiniAreaChart = ({
   areaColor,
   useGradient = true,
 }: MiniAreaChartProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-
-  useEffect(() => {
-    if (!containerRef.current) {
-      return () => {};
-    }
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      // there is only one entry in the entries array because we are only observing the chart container
-      for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
-      }
-    });
-
-    resizeObserver.observe(containerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
   // Transform the data to a consistent format for recharts
   const chartData = useMemo(() => {
     return transformDataForChart(data);
@@ -95,7 +73,6 @@ export const MiniAreaChart = ({
         aspect: 1 / 1,
       }}
       onClick={onAreaClick}
-      ref={containerRef}
       className={clsx("crayon-charts-mini-area-chart-container", className)}
     >
       <RechartsAreaChart
