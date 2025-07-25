@@ -1,0 +1,159 @@
+@use "../../cssUtils" as cssUtils;
+
+.data-table-container {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$spacing-s;
+
+  .data-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .data-table-title {
+      .data-table-title-text {
+        @include cssUtils.typography(heading, extra-small);
+        color: cssUtils.$primary-text;
+      }
+    }
+
+    .data-table-actions {
+      display: flex;
+      background-color: cssUtils.$bg-sunk;
+      border: 1px solid cssUtils.$stroke-default;
+      border-radius: cssUtils.$rounded-m;
+      padding: cssUtils.$spacing-3xs;
+    }
+  }
+
+  .data-table-content {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    .data-table-table-container {
+      display: block;
+      overflow-x: auto;
+      border: 1px solid cssUtils.$stroke-default;
+      border-radius: cssUtils.$rounded-2xl;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead tr {
+          border-bottom: 1px solid cssUtils.$stroke-default;
+          @include cssUtils.typography(label, small);
+          color: cssUtils.$secondary-text;
+        }
+
+        th,
+        td {
+          padding: cssUtils.$spacing-m;
+          text-align: left;
+          white-space: nowrap;
+        }
+
+        td {
+          @include cssUtils.typography(body, small);
+          color: cssUtils.$primary-text;
+        }
+
+        tbody tr:last-child td {
+          border-bottom: none;
+        }
+
+        tbody tr:nth-child(even) {
+          background-color: cssUtils.$bg-sunk;
+        }
+      }
+    }
+
+    .data-table-layout-container {
+      display: none;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+  }
+
+  &.card-layout {
+    .data-table-table-container {
+      display: none;
+    }
+
+    .data-table-layout-container {
+      display: grid;
+    }
+  }
+}
+
+.data-table-scroll-buttons {
+  width: 100%;
+  position: absolute;
+  top: 4%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 cssUtils.$spacing-s;
+}
+
+.data-table-scroll-button {
+  position: relative;
+  background-color: cssUtils.$bg-container;
+  &:hover {
+    background-color: cssUtils.$bg-container;
+  }
+
+  &--disabled {
+    visibility: hidden;
+    cursor: not-allowed;
+    transition: visibility 0.1s linear;
+  }
+}
+
+.data-card-container {
+  border: 1px solid cssUtils.$stroke-default;
+  border-radius: cssUtils.$rounded-xl;
+  padding: cssUtils.$spacing-m;
+  gap: cssUtils.$spacing-l;
+  display: flex;
+  flex-direction: column;
+
+  .data-card-header {
+    @include cssUtils.typography(label, large-heavy);
+    color: cssUtils.$primary-text;
+  }
+
+  .data-card-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: cssUtils.$spacing-l;
+
+    .data-card-field {
+      display: flex;
+      flex-direction: column;
+      gap: cssUtils.$spacing-xs;
+      @include cssUtils.typography(label, small);
+      color: cssUtils.$primary-text;
+
+      .data-card-label {
+        color: cssUtils.$secondary-text;
+      }
+
+      .data-card-value {
+        font-size: 16px;
+        font-weight: 500;
+      }
+    }
+  }
+}
