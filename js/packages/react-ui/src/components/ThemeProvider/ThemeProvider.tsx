@@ -105,6 +105,7 @@ const lightTheme: ColorTheme = {
   interactiveDestructiveAccentHover: "rgba(203, 63, 73, 1)",
   interactiveDestructiveAccentPressed: "rgba(167, 39, 47, 1)",
   interactiveDestructiveAccentDisabled: "rgba(203, 63, 73, 0.4)",
+  neutralHighlightSubtle: "rgba(0, 0, 0, 0.03)",
 } as const;
 
 const darkTheme: ColorTheme = {
@@ -175,6 +176,8 @@ const darkTheme: ColorTheme = {
   interactiveDestructiveAccentHover: "rgba(210, 65, 75, 1)",
   interactiveDestructiveAccentPressed: "rgba(167, 39, 47, 1)",
   interactiveDestructiveAccentDisabled: "rgba(203, 63, 73, 0.4)",
+  neutralHighlightSubtle: "rgba(255, 255, 255, 0.03)",
+
 } as const;
 
 // Shared theme properties that don't change between light/dark modes
@@ -354,6 +357,7 @@ export const ThemeProvider = ({
           --crayon-interactive-destructive-accent-hover: ${theme.interactiveDestructiveAccentHover};
           --crayon-interactive-destructive-accent-pressed: ${theme.interactiveDestructiveAccentPressed};
           --crayon-interactive-destructive-accent-disabled: ${theme.interactiveDestructiveAccentDisabled};
+          --crayon-neutral-highlight-subtle: ${theme.neutralHighlightSubtle},
 
           --crayon-stroke-default: ${theme.strokeDefault};
           --crayon-stroke-interactive-el: ${theme.strokeInteractiveEl};

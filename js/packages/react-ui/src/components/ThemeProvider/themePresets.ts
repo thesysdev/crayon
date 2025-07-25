@@ -104,6 +104,7 @@ export const themePresets = {
       interactiveDestructiveAccentHover: "rgba(203, 63, 73, 1)",
       interactiveDestructiveAccentPressed: "rgba(167, 39, 47, 1)",
       interactiveDestructiveAccentDisabled: "rgba(203, 63, 73, 0.4)",
+      neutralHighlightSubtle: "rgba(0, 0, 0, 0.03)",
 
       chatContainerBg: "rgba(255, 255, 255, 1)",
       chatAssistantResponseBg: "rgba(255, 255, 255, 1)",
@@ -203,6 +204,7 @@ export const themePresets = {
       interactiveDestructiveAccentHover: "rgba(210, 65, 75, 1)",
       interactiveDestructiveAccentPressed: "rgba(167, 39, 47, 1)",
       interactiveDestructiveAccentDisabled: "rgba(203, 63, 73, 0.4)",
+      neutralHighlightSubtle: "rgba(255, 255, 255, 0.03)",
 
       chatContainerBg: "rgba(43, 43, 43, 1)",
       chatAssistantResponseBg: "rgba(43, 43, 43, 1)",
