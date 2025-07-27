@@ -47,6 +47,7 @@ const lightTheme: ColorTheme = {
   invertedFills: "rgba(21, 21, 21, 1)",
   elevatedFills: "rgba(255, 255, 255, 0.6)",
   sunkBgFills: "rgba(0, 0, 0, 0.04)",
+  highlightSubtle: "rgba(0, 0, 0, 0.03)",
 
   // Border colors
   strokeDefault: "rgba(0, 0, 0, 0.04)",
@@ -120,6 +121,7 @@ const darkTheme: ColorTheme = {
   elevatedFills: "rgba(255, 255, 255, 0.06)",
   invertedFills: "rgba(253, 253, 253, 1)",
   sunkBgFills: "rgba(0, 0, 0, 0.16)",
+  highlightSubtle: "rgba(255, 255, 255, 0.03)",
 
   // Border colors
   strokeDefault: "rgba(255, 255, 255, 0.04)",
@@ -354,6 +356,7 @@ export const ThemeProvider = ({
           --crayon-interactive-destructive-accent-hover: ${theme.interactiveDestructiveAccentHover};
           --crayon-interactive-destructive-accent-pressed: ${theme.interactiveDestructiveAccentPressed};
           --crayon-interactive-destructive-accent-disabled: ${theme.interactiveDestructiveAccentDisabled};
+          --crayon-highlight-subtle: ${theme.highlightSubtle};
 
           --crayon-stroke-default: ${theme.strokeDefault};
           --crayon-stroke-interactive-el: ${theme.strokeInteractiveEl};
