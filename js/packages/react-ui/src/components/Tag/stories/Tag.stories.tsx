@@ -32,11 +32,11 @@ const meta: Meta<typeof Tag> = {
     },
     size: {
       control: "select",
-      options: ["md", "lg"],
+      options: ["sm", "md", "lg"],
       description: "The size of the tag",
       table: {
         category: "Appearance",
-        type: { summary: "md | lg" },
+        type: { summary: "sm | md | lg" },
         defaultValue: { summary: "md" },
       },
     },
