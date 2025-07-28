@@ -46,7 +46,6 @@ export const themePresets = {
       invertedFills: "rgba(21, 21, 21, 1)",
       elevatedFills: "rgba(255, 255, 255, 0.6)",
       sunkBgFills: "rgba(0, 0, 0, 0.04)",
-      highlightSubtle: "rgba(0, 0, 0, 0.03)",
 
       // Border colors
       strokeDefault: "rgba(0, 0, 0, 0.04)",
@@ -149,7 +148,6 @@ export const themePresets = {
       elevatedFills: "rgba(255, 255, 255, 0.06)",
       invertedFills: "rgba(253, 253, 253, 1)",
       sunkBgFills: "rgba(0, 0, 0, 0.16)",
-      highlightSubtle: "rgba(255, 255, 255, 0.03)",
 
       // Border colors
       strokeDefault: "rgba(255, 255, 255, 0.04)",
