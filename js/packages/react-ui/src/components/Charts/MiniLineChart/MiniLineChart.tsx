@@ -1,12 +1,8 @@
 import clsx from "clsx";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { Line, LineChart as RechartsLineChart, XAxis } from "recharts";
 import { ChartConfig, ChartContainer } from "../Charts";
-import {
-  DATA_KEY,
-  getRecentDataThatFits,
-  transformDataForChart,
-} from "../utils/AreaAndLine/MiniAreaAndLineUtils";
+import { DATA_KEY, transformDataForChart } from "../utils/AreaAndLine/MiniAreaAndLineUtils";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 import { get2dChartConfig } from "../utils/dataUtils";
 import { MiniLineChartData } from "./types";
@@ -36,36 +32,10 @@ export const MiniLineChart = ({
   className,
   lineColor,
 }: MiniLineChartProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-
-  useEffect(() => {
-    if (!containerRef.current) {
-      return () => {};
-    }
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
-      }
-    });
-
-    resizeObserver.observe(containerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
-  // Get the most recent data that fits in the container
-  const filteredData = useMemo(() => {
-    return getRecentDataThatFits(data, containerWidth);
-  }, [data, containerWidth]);
-
-  // Transform the filtered data to a consistent format for recharts
+  // Transform the data to a consistent format for recharts
   const chartData = useMemo(() => {
-    return transformDataForChart(filteredData);
-  }, [filteredData]);
+    return transformDataForChart(data);
+  }, [data]);
 
   const colors = useChartPalette({
     chartThemeName: theme,
@@ -94,7 +64,6 @@ export const MiniLineChart = ({
         aspect: 1 / 1,
       }}
       onClick={onLineClick}
-      ref={containerRef}
       className={clsx("crayon-charts-mini-line-chart-container", className)}
     >
       <RechartsLineChart
