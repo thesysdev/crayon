@@ -24,6 +24,7 @@ export const CustomTooltipContent = memo(
         labelKey?: string;
         showPercentage?: boolean;
         portalContainer?: React.RefObject<HTMLElement | null>;
+        parentRef: React.RefObject<HTMLElement | null>;
       }
   >((props, ref) => {
     const {
@@ -220,6 +221,7 @@ export const CustomTooltipContent = memo(
         chartId={id}
         portalContainer={portalContainer}
         offsetDistance={offset}
+        parentRef={props.parentRef}
       >
         <ChartStyle id={id} config={config} />
         {tooltipContent}

@@ -340,7 +340,10 @@ const AreaChartComponent = <T extends AreaChartData>({
                     }}
                   />
 
-                  <ChartTooltip content={<CustomTooltipContent />} offset={15} />
+                  <ChartTooltip
+                    content={<CustomTooltipContent parentRef={chartContainerRef} />}
+                    offset={15}
+                  />
 
                   {dataKeys.map((key) => {
                     const transformedKey = transformedKeys[key];

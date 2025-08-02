@@ -17,6 +17,7 @@ interface FloatingUIPortalProps {
   className?: string;
   chartId?: string;
   portalContainer?: React.RefObject<HTMLElement | null>;
+  parentRef: React.RefObject<HTMLElement | null>;
 }
 
 export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
@@ -27,6 +28,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   className = "",
   chartId,
   portalContainer,
+  parentRef,
 }) => {
   const mousePositionRef = useRef({ x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER });
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -103,16 +105,17 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   );
 
   useEffect(() => {
-    if (!active) {
+    if (!active || !parentRef.current) {
       setIsPositioned(false);
       return;
     }
+    const parentDiv = parentRef.current;
 
-    document.addEventListener("mousemove", handleMouseMove);
+    parentDiv.addEventListener("mousemove", handleMouseMove);
     updatePosition();
 
     return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
+      parentDiv.removeEventListener("mousemove", handleMouseMove);
       setIsPositioned(false);
     };
   }, [active, handleMouseMove, updatePosition]);
