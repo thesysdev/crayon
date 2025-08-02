@@ -1,4 +1,4 @@
-import { flip, hide, offset, useFloating } from "@floating-ui/react-dom";
+import { autoUpdate, flip, hide, offset, useFloating } from "@floating-ui/react-dom";
 import clsx from "clsx";
 import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -22,6 +22,7 @@ export const FloatingUIPortal: React.FC<FloatingUIPortalProps> = ({
   const { refs, floatingStyles, update } = useFloating({
     placement: "right-start",
     middleware: [offset(20), flip(), hide()],
+    whileElementsMounted: autoUpdate,
   });
 
   const { portalThemeClassName } = useTheme();
