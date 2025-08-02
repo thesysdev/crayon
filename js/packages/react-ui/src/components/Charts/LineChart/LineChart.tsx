@@ -350,10 +350,7 @@ export const LineChart = <T extends LineChartData>({
                     }}
                   />
 
-                  <ChartTooltip
-                    content={<CustomTooltipContent parentRef={chartContainerRef} />}
-                    offset={15}
-                  />
+                  <ChartTooltip content={<CustomTooltipContent />} offset={15} />
 
                   {dataKeys.map((key) => {
                     const transformedKey = transformedKeys[key];

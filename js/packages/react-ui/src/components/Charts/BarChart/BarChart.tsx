@@ -466,7 +466,7 @@ const BarChartComponent = <T extends BarChartData>({
                       opacity: 1,
                       strokeWidth: 1,
                     }}
-                    content={<CustomTooltipContent parentRef={chartContainerRef} />}
+                    content={<CustomTooltipContent />}
                     offset={15}
                   />
 
