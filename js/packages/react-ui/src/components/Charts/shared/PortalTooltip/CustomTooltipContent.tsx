@@ -42,7 +42,6 @@ export const CustomTooltipContent = memo(
       labelKey,
       showPercentage = false,
       portalContainer,
-      offset,
     } = props;
 
     const { config, id } = useChart();
@@ -215,12 +214,7 @@ export const CustomTooltipContent = memo(
     );
 
     return (
-      <FloatingUIPortal
-        active={active}
-        chartId={id}
-        portalContainer={portalContainer}
-        offsetDistance={offset}
-      >
+      <FloatingUIPortal chartId={id} portalContainer={portalContainer} position={props.coordinate}>
         <ChartStyle id={id} config={config} />
         {tooltipContent}
       </FloatingUIPortal>
