@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { forwardRef, memo, useLayoutEffect, useMemo, useState } from "react";
+import { forwardRef, memo, useMemo } from "react";
 import * as RechartsPrimitive from "recharts";
 import { ChartStyle, getPayloadConfigFromPayload, useChart } from "../../../Charts/Charts";
 import { useSideBarTooltip } from "../../context/SideBarTooltipContext";
@@ -42,23 +42,12 @@ export const CustomTooltipContent = memo(
       labelKey,
       showPercentage = false,
       portalContainer,
-      offset,
     } = props;
 
     const { config, id } = useChart();
     const { isSideBarTooltipOpen } = useSideBarTooltip();
-    const [isGreaterThanTen, setIsGreaterThanTen] = useState<boolean>(
-      !!(payload?.length && payload.length > 10),
-    );
-    const [remainingItems, setRemainingItems] = useState<number>(0);
-
-    useLayoutEffect(() => {
-      if (payload?.length && payload.length > 10) {
-        setIsGreaterThanTen(true);
-      } else {
-        setIsGreaterThanTen(false);
-      }
-    }, [payload]);
+    const isGreaterThanTen = !!(payload?.length && payload.length > 10);
+    const remainingItems = payload && isGreaterThanTen ? payload.length - 5 : 0;
 
     const tooltipLabel = useMemo(() => {
       if (hideLabel || !payload?.length) {
@@ -179,7 +168,6 @@ export const CustomTooltipContent = memo(
 
       // Handle regular layout with potential truncation
       const morphPayload = isGreaterThanTen ? payload.slice(0, 5) : payload;
-      setRemainingItems(payload.length - morphPayload.length);
       return morphPayload.map((item, index) => renderPayloadItem(item, index, false));
     }, [
       payload,
@@ -192,7 +180,6 @@ export const CustomTooltipContent = memo(
       nestLabel,
       tooltipLabel,
       showPercentage,
-      isGreaterThanTen,
     ]);
 
     // Early return for inactive or empty payload - moved after all hooks
@@ -215,12 +202,7 @@ export const CustomTooltipContent = memo(
     );
 
     return (
-      <FloatingUIPortal
-        active={active}
-        chartId={id}
-        portalContainer={portalContainer}
-        offsetDistance={offset}
-      >
+      <FloatingUIPortal chartId={id} portalContainer={portalContainer} position={props.coordinate}>
         <ChartStyle id={id} config={config} />
         {tooltipContent}
       </FloatingUIPortal>
