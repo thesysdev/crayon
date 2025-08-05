@@ -185,11 +185,12 @@ export const ScatterChart = <T extends ScatterChartData>({
     }
     return (
       <div className="crayon-scatter-chart-y-axis-container">
+        {/* Y-axis only chart - synchronized with main chart */}
         <RechartsScatterChart
           key={`y-axis-chart-${id}`}
           width={yAxisWidth}
           height={chartHeight}
-          data={[]}
+          data={transformedData}
           margin={{
             top: DEFAULT_MARGIN,
             bottom: DEFAULT_MARGIN,
@@ -209,6 +210,14 @@ export const ScatterChart = <T extends ScatterChartData>({
             axisLine={false}
             tick={<YAxisTick />}
           />
+          {/* Invisible scatter to maintain scale synchronization */}
+          <Scatter
+            data={transformedData}
+            fill="transparent"
+            shape={shape}
+            radius={0}
+            isAnimationActive={isAnimationActive}
+          />
         </RechartsScatterChart>
       </div>
     );
@@ -216,12 +225,15 @@ export const ScatterChart = <T extends ScatterChartData>({
     showYAxis,
     id,
     chartHeight,
+    transformedData,
     onScatterClick,
     yAxisDataKey,
     yAxisLabel,
     yAxisUnit,
     yDomain,
     yAxisWidth,
+    shape,
+    isAnimationActive,
   ]);
 
   return (
