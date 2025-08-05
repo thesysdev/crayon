@@ -188,12 +188,12 @@ export const ScatterChart = <T extends ScatterChartData>({
         {/* Y-axis only chart - synchronized with main chart */}
         <RechartsScatterChart
           key={`y-axis-chart-${id}`}
-          width={yAxisWidth}
+          width={yAxisWidth + DEFAULT_MARGIN}
           height={chartHeight}
           data={transformedData}
           margin={{
             top: DEFAULT_MARGIN,
-            bottom: DEFAULT_MARGIN,
+            bottom: DEFAULT_MARGIN * 2 + 10,
             left: 0,
             right: 0,
           }}
@@ -205,7 +205,7 @@ export const ScatterChart = <T extends ScatterChartData>({
             name={yAxisLabel as string}
             unit={yAxisUnit}
             domain={yDomain}
-            width={yAxisWidth}
+            width={yAxisWidth + DEFAULT_MARGIN}
             tickLine={false}
             axisLine={false}
             tick={<YAxisTick />}
@@ -273,9 +273,9 @@ export const ScatterChart = <T extends ScatterChartData>({
                   height={chartHeight}
                   margin={{
                     top: DEFAULT_MARGIN,
-                    right: DEFAULT_MARGIN,
                     bottom: DEFAULT_MARGIN,
                     left: DEFAULT_MARGIN,
+                    right: DEFAULT_MARGIN,
                   }}
                   onClick={onScatterClick}
                 >
