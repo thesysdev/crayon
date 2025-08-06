@@ -1,5 +1,3 @@
-export type ScatterChartData = Array<Record<string, string | number>>;
-
 export interface ScatterPoint {
   x: number;
   y: number;
@@ -7,8 +5,9 @@ export interface ScatterPoint {
   [key: string]: string | number | undefined;
 }
 
-export type ScatterDataset = {
+export interface ScatterDataset {
   name: string;
   data: ScatterPoint[];
-  color?: string;
-};
+}
+
+export type ScatterChartData = ScatterDataset[];

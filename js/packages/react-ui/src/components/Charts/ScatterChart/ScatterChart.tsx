@@ -4,7 +4,6 @@ import { Cell, ScatterChart as RechartsScatterChart, Scatter, XAxis, YAxis } fro
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useYAxisLabelWidth } from "../hooks";
 import {
   CustomTooltipContent,
   DefaultLegend,
@@ -27,8 +26,8 @@ import {
 type ScatterChartOnClick = React.ComponentProps<typeof RechartsScatterChart>["onClick"];
 type ScatterClickData = Parameters<NonNullable<ScatterChartOnClick>>[0];
 
-export interface ScatterChartProps<T extends ScatterChartData> {
-  data: T;
+export interface ScatterChartProps {
+  data: ScatterChartData;
   xAxisDataKey?: string;
   yAxisDataKey?: string;
   theme?: PaletteName;
@@ -46,13 +45,13 @@ export interface ScatterChartProps<T extends ScatterChartData> {
   className?: string;
   height?: number;
   width?: number;
-  shape?: "circle" | "cross" | "diamond" | "square" | "star" | "triangle" | "wye";
+  shape?: "circle" |"square";
 }
 
 const DEFAULT_CHART_HEIGHT = 400;
 const DEFAULT_MARGIN = 20;
 
-export const ScatterChart = <T extends ScatterChartData>({
+export const ScatterChart = ({
   data,
   xAxisDataKey = "x",
   yAxisDataKey = "y",
@@ -72,7 +71,7 @@ export const ScatterChart = <T extends ScatterChartData>({
   height,
   width,
   shape = "circle",
-}: ScatterChartProps<T>) => {
+}: ScatterChartProps) => {
   const datasets = useMemo(() => {
     return getScatterDatasets(data);
   }, [data]);
@@ -85,10 +84,26 @@ export const ScatterChart = <T extends ScatterChartData>({
   });
 
   const transformedData = useMemo(() => {
+    if (!data || !Array.isArray(data)) {
+      return [];
+    }
     return transformScatterData(data, datasets, colors);
   }, [data, datasets, colors]);
 
-  const yAxisWidth = useYAxisLabelWidth(data, datasets);
+  // Calculate Y-axis width based on the longest Y-axis value
+  const yAxisWidth = useMemo(() => {
+    if (!showYAxis || !transformedData.length) return 40;
+    
+    const yValues = transformedData.map(point => Number(point[yAxisDataKey])).filter(val => !isNaN(val));
+    if (!yValues.length) return 40;
+    
+    const maxValue = Math.max(...yValues);
+    const minValue = Math.min(...yValues);
+    const longestValue = maxValue.toString().length > minValue.toString().length ? maxValue : minValue;
+    
+    // Approximate width: 8px per character + padding
+    return Math.max(40, Math.min(200, longestValue.toString().length * 8 + 20));
+  }, [transformedData, yAxisDataKey, showYAxis]);
 
   const chartConfig: ChartConfig = useMemo(() => {
     return get2dChartConfig(
