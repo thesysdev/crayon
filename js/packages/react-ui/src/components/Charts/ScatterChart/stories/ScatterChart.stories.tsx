@@ -29,54 +29,141 @@ const customColorPalette = [
 // Sample scatter chart datasets
 const dataVariations = {
   default: [
-    { x: 100, y: 200, series1: 1, series2: 2 },
-    { x: 120, y: 100, series1: 1, series2: 2 },
-    { x: 170, y: 300, series1: 1, series2: 2 },
-    { x: 140, y: 250, series1: 1, series2: 2 },
-    { x: 150, y: 400, series1: 1, series2: 2 },
-    { x: 110, y: 280, series1: 1, series2: 2 },
-    { x: 200, y: 180, series1: 1, series2: 2 },
-    { x: 180, y: 350, series1: 1, series2: 2 },
-    { x: 160, y: 320, series1: 1, series2: 2 },
-    { x: 190, y: 150, series1: 1, series2: 2 },
+    {
+      name: "A school",
+      data: [
+        { x: 100, y: 200, z: 200 },
+        { x: 120, y: 100, z: 260 },
+        { x: 170, y: 300, z: 400 },
+        { x: 140, y: 250, z: 280 },
+        { x: 150, y: 400, z: 500 },
+        { x: 110, y: 280, z: 200 },
+      ]
+    },
+    {
+      name: "B school", 
+      data: [
+        { x: 200, y: 180, z: 240 },
+        { x: 180, y: 350, z: 220 },
+        { x: 160, y: 320, z: 250 },
+        { x: 190, y: 150, z: 210 },
+      ]
+    }
   ],
   correlation: [
-    { x: 1000, y: 20, revenue: 1200, profit: 200 },
-    { x: 1200, y: 25, revenue: 1400, profit: 280 },
-    { x: 1700, y: 35, revenue: 2100, profit: 420 },
-    { x: 1400, y: 30, revenue: 1800, profit: 350 },
-    { x: 1500, y: 32, revenue: 1950, profit: 380 },
-    { x: 1100, y: 22, revenue: 1300, profit: 240 },
-    { x: 2000, y: 40, revenue: 2500, profit: 500 },
-    { x: 1800, y: 38, revenue: 2200, profit: 450 },
-    { x: 1600, y: 34, revenue: 1850, profit: 390 },
-    { x: 1900, y: 39, revenue: 2350, profit: 470 },
-    { x: 1300, y: 28, revenue: 1600, profit: 320 },
-    { x: 2200, y: 45, revenue: 2800, profit: 580 },
+    {
+      name: "Revenue",
+      data: [
+        { x: 1000, y: 1200 },
+        { x: 1200, y: 1400 },
+        { x: 1700, y: 2100 },
+        { x: 1400, y: 1800 },
+        { x: 1500, y: 1950 },
+        { x: 1100, y: 1300 },
+        { x: 2000, y: 2500 },
+        { x: 1800, y: 2200 },
+        { x: 1600, y: 1850 },
+        { x: 1900, y: 2350 },
+        { x: 1300, y: 1600 },
+        { x: 2200, y: 2800 },
+      ]
+    },
+    {
+      name: "Profit",
+      data: [
+        { x: 1000, y: 200 },
+        { x: 1200, y: 280 },
+        { x: 1700, y: 420 },
+        { x: 1400, y: 350 },
+        { x: 1500, y: 380 },
+        { x: 1100, y: 240 },
+        { x: 2000, y: 500 },
+        { x: 1800, y: 450 },
+        { x: 1600, y: 390 },
+        { x: 1900, y: 470 },
+        { x: 1300, y: 320 },
+        { x: 2200, y: 580 },
+      ]
+    }
   ],
   multipleDatasets: [
-    { x: 1, y: 4, desktop: 1, mobile: 1, tablet: 1 },
-    { x: 2, y: 2, desktop: 1, mobile: 1, tablet: 1 },
-    { x: 3, y: 7, desktop: 1, mobile: 1, tablet: 1 },
-    { x: 4, y: 5, desktop: 1, mobile: 1, tablet: 1 },
-    { x: 5, y: 8, desktop: 1, mobile: 1, tablet: 1 },
-    { x: 6, y: 3, desktop: 1, mobile: 1, tablet: 1 },
-    { x: 7, y: 9, desktop: 1, mobile: 1, tablet: 1 },
-    { x: 8, y: 6, desktop: 1, mobile: 1, tablet: 1 },
-    { x: 9, y: 10, desktop: 1, mobile: 1, tablet: 1 },
-    { x: 10, y: 1, desktop: 1, mobile: 1, tablet: 1 },
+    {
+      name: "Desktop",
+      data: [
+        { x: 1, y: 4 },
+        { x: 2, y: 2 },
+        { x: 3, y: 7 },
+        { x: 4, y: 5 },
+        { x: 5, y: 8 },
+        { x: 6, y: 3 },
+        { x: 7, y: 9 },
+        { x: 8, y: 6 },
+        { x: 9, y: 10 },
+        { x: 10, y: 1 },
+      ]
+    },
+    {
+      name: "Mobile",
+      data: [
+        { x: 1, y: 3 },
+        { x: 2, y: 5 },
+        { x: 3, y: 4 },
+        { x: 4, y: 7 },
+        { x: 5, y: 6 },
+        { x: 6, y: 8 },
+        { x: 7, y: 5 },
+        { x: 8, y: 9 },
+        { x: 9, y: 7 },
+        { x: 10, y: 8 },
+      ]
+    },
+    {
+      name: "Tablet",
+      data: [
+        { x: 1, y: 2 },
+        { x: 2, y: 6 },
+        { x: 3, y: 3 },
+        { x: 4, y: 4 },
+        { x: 5, y: 7 },
+        { x: 6, y: 5 },
+        { x: 7, y: 6 },
+        { x: 8, y: 8 },
+        { x: 9, y: 4 },
+        { x: 10, y: 9 },
+      ]
+    }
   ],
   performance: [
-    { x: 30, y: 1200, performance: 1, efficiency: 1 },
-    { x: 35, y: 1500, performance: 1, efficiency: 1 },
-    { x: 40, y: 1800, performance: 1, efficiency: 1 },
-    { x: 45, y: 2100, performance: 1, efficiency: 1 },
-    { x: 50, y: 2400, performance: 1, efficiency: 1 },
-    { x: 55, y: 2700, performance: 1, efficiency: 1 },
-    { x: 60, y: 3000, performance: 1, efficiency: 1 },
-    { x: 25, y: 900, performance: 1, efficiency: 1 },
-    { x: 65, y: 3300, performance: 1, efficiency: 1 },
-    { x: 70, y: 3600, performance: 1, efficiency: 1 },
+    {
+      name: "Performance",
+      data: [
+        { x: 30, y: 1200 },
+        { x: 35, y: 1500 },
+        { x: 40, y: 1800 },
+        { x: 45, y: 2100 },
+        { x: 50, y: 2400 },
+        { x: 55, y: 2700 },
+        { x: 60, y: 3000 },
+        { x: 25, y: 900 },
+        { x: 65, y: 3300 },
+        { x: 70, y: 3600 },
+      ]
+    },
+    {
+      name: "Efficiency",
+      data: [
+        { x: 30, y: 1100 },
+        { x: 35, y: 1350 },
+        { x: 40, y: 1650 },
+        { x: 45, y: 1950 },
+        { x: 50, y: 2200 },
+        { x: 55, y: 2500 },
+        { x: 60, y: 2850 },
+        { x: 25, y: 800 },
+        { x: 65, y: 3150 },
+        { x: 70, y: 3450 },
+      ]
+    }
   ],
 };
 
@@ -114,7 +201,7 @@ const icons = {
  * - **Shape Options**: Multiple point shapes (circle, diamond, square, etc.).
  * - **Axis Configuration**: Customizable axis labels, units, and domains.
  */
-const meta: Meta<ScatterChartProps<typeof dataVariations.default>> = {
+const meta: Meta<ScatterChartProps> = {
   title: "Components/Charts/ScatterChart",
   component: ScatterChart,
   parameters: {
@@ -222,7 +309,7 @@ const scatterData = [
     shape: {
       description: "The shape of the scatter points.",
       control: "select",
-      options: ["circle", "cross", "diamond", "square", "star", "triangle", "wye"],
+      options: ["circle", "square"],
       table: {
         defaultValue: { summary: "circle" },
         category: "🎨 Visual Styling",
@@ -388,82 +475,6 @@ export const CorrelationAnalysis: Story = {
   ),
 };
 
-/**
- * ## Multiple Datasets
- *
- * Demonstrates how multiple datasets can be displayed on the same scatter chart
- * with different colors for easy comparison.
- */
-export const MultipleDatasets: Story = {
-  name: "🎯 Multiple Datasets",
-  args: {
-    data: dataVariations.multipleDatasets,
-    xAxisDataKey: "x",
-    yAxisDataKey: "y",
-    theme: "spectrum",
-    grid: true,
-    legend: true,
-    isAnimationActive: true,
-    showYAxis: true,
-    showXAxis: true,
-    xAxisLabel: "Time",
-    yAxisLabel: "Performance",
-    shape: "diamond",
-    icons,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "600px" }}>
-      <ScatterChart {...args} />
-    </Card>
-  ),
-};
-
-/**
- * ## Custom Shapes and Colors
- *
- * This story demonstrates different point shapes and custom color palettes.
- * You can customize the appearance to match your design requirements.
- */
-export const CustomAppearance: Story = {
-  name: "🎨 Custom Shapes & Colors",
-  args: {
-    data: dataVariations.performance,
-    xAxisDataKey: "x",
-    yAxisDataKey: "y",
-    customPalette: customColorPalette,
-    grid: true,
-    legend: true,
-    isAnimationActive: true,
-    showYAxis: true,
-    showXAxis: true,
-    xAxisLabel: "Temperature (°C)",
-    yAxisLabel: "Energy Output (kWh)",
-    xAxisUnit: "°C",
-    yAxisUnit: "kWh",
-    shape: "star",
-  },
-  render: (args: any) => (
-    <div>
-      <div
-        style={{
-          marginBottom: "16px",
-          padding: "12px",
-          background: "#f8f9fa",
-          borderRadius: "8px",
-          border: "1px solid #e9ecef",
-        }}
-      >
-        <h4 style={{ margin: "0 0 8px 0", color: "#333" }}>🎨 Custom Stars with Custom Palette</h4>
-        <p style={{ margin: "0 0 12px 0", fontSize: "14px", color: "#666" }}>
-          This chart uses star-shaped points with a custom color palette.
-        </p>
-      </div>
-      <Card style={{ width: "600px" }}>
-        <ScatterChart {...args} />
-      </Card>
-    </div>
-  ),
-};
 
 /**
  * ## Shape Comparison
@@ -485,7 +496,7 @@ export const ShapeComparison: Story = {
     showXAxis: true,
   },
   render: (args: any) => {
-    const shapes = ["circle", "diamond", "square", "star", "triangle", "cross"] as const;
+    const shapes = ["circle", "square"] as const;
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>

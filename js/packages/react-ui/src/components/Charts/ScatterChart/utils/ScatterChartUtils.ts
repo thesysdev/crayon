@@ -1,54 +1,64 @@
-import { ScatterChartData } from "../types";
+import { ScatterChartData, ScatterPoint } from "../types";
 
 /**
- * Extracts unique dataset names from scatter chart data
- * @param data - The scatter chart data
- * @returns Array of unique dataset names
+ * Extracts dataset names from scatter chart data
+ * @param data - The scatter chart data (array of datasets)
+ * @returns Array of dataset names
  */
 export const getScatterDatasets = (data: ScatterChartData): string[] => {
-  if (!data.length) return [];
-
-  // Get all keys except x, y, z coordinates
-  const keys = Object.keys(data[0] || {});
-  return keys.filter((key) => !["x", "y", "z"].includes(key));
+  if (!data || !Array.isArray(data)) {
+    return [];
+  }
+  return data.map(dataset => dataset.name);
 };
 
 /**
  * Transforms scatter chart data for recharts consumption
- * @param data - The scatter chart data
+ * @param data - The scatter chart data (array of datasets)
  * @param datasets - Array of dataset names to include
- * @returns Transformed data grouped by datasets
+ * @param colors - Array of colors for datasets
+ * @returns Flattened array of all points with color and dataset info
  */
 export const transformScatterData = (
   data: ScatterChartData,
   datasets: string[],
   colors: string[],
 ) => {
+  // Guard against undefined or null data
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return [];
+  }
+
   const datasetColors: { [key: string]: string } = {};
   datasets.forEach((ds, i) => {
     datasetColors[ds] = colors[i] ?? "transparent";
   });
 
-  return data.map((point) => {
-    // Find the dataset this point belongs to.
-    // If a point belongs to multiple datasets, we take the last one.
-    const lastDataset = datasets.reduce<string | null>((acc, ds) => {
-      return point[ds] != null ? ds : acc;
-    }, null);
-
-    return {
-      x: Number(point["x"]),
-      y: Number(point["y"]),
-      z: point["z"] ? Number(point["z"]) : undefined,
-      color: lastDataset ? datasetColors[lastDataset] : undefined,
-      ...point,
-    };
+  // Flatten all datasets into a single array with dataset info
+  const transformedPoints: Array<ScatterPoint & { color: string; dataset: string }> = [];
+  
+  data.forEach((dataset) => {
+    // Use only palette colors, ignore any hardcoded colors in datasets
+    const color = datasetColors[dataset.name] || "transparent";
+    
+    dataset.data.forEach((point) => {
+      transformedPoints.push({
+        ...point,
+        x: Number(point.x),
+        y: Number(point.y),
+        z: point.z ? Number(point.z) : undefined,
+        color,
+        dataset: dataset.name,
+      });
+    });
   });
+  
+  return transformedPoints;
 };
 
 /**
  * Calculates the domain for scatter chart axes
- * @param data - The scatter chart data
+ * @param data - The scatter chart data (array of datasets)
  * @param axis - Which axis ('x' or 'y')
  * @returns Domain array [min, max] with padding
  */
@@ -56,9 +66,12 @@ export const calculateScatterDomain = (
   data: ScatterChartData,
   axis: "x" | "y",
 ): [number, number] => {
-  if (!data.length) return [0, 100];
+  if (!data || !Array.isArray(data) || !data.length) return [0, 100];
 
-  const values = data.map((point) => Number(point[axis])).filter((val) => !isNaN(val));
+  // Flatten all data points from all datasets
+  const allPoints = data.flatMap(dataset => dataset.data);
+  
+  const values = allPoints.map((point) => Number(point[axis])).filter((val) => !isNaN(val));
   if (!values.length) return [0, 100];
 
   const min = Math.min(...values);
