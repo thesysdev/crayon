@@ -17,8 +17,8 @@ import { LegendItem } from "../types";
 import { get2dChartConfig, getColorForDataKey, getLegendItems } from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 import { numberTickFormatter } from "../utils/styleUtils";
-import { ScatterChartData, ScatterPoint } from "./types";
 import ScatterDot from "./ScatterDot";
+import { ScatterChartData, ScatterPoint } from "./types";
 import {
   calculateScatterDomain,
   getScatterDatasets,
@@ -94,7 +94,7 @@ export const ScatterChart = ({
     return transformScatterData(data, datasets, colors);
   }, [data, datasets, colors]);
 
-  const yAxisWidth = useYAxisLabelWidth(transformedData, [yAxisDataKey]);
+  const { yAxisWidth, setLabelWidth } = useYAxisLabelWidth(transformedData, [yAxisDataKey]);
 
   const chartConfig: ChartConfig = useMemo(() => {
     return get2dChartConfig(
@@ -187,9 +187,10 @@ export const ScatterChart = ({
 
   const onChartMouseMove = useCallback(
     (state: unknown) => {
-      const s = state as
-        | { isTooltipActive?: boolean; activePayload?: Array<{ payload?: unknown }> }
-        | null;
+      const s = state as {
+        isTooltipActive?: boolean;
+        activePayload?: Array<{ payload?: unknown }>;
+      } | null;
       if (s?.isTooltipActive && Array.isArray(s.activePayload) && s.activePayload.length > 0) {
         const p = s.activePayload[0]?.payload as object | undefined;
         if (p) {
@@ -253,7 +254,7 @@ export const ScatterChart = ({
             width={yAxisWidth}
             tickLine={false}
             axisLine={false}
-            tick={<YAxisTick />}
+            tick={<YAxisTick setLabelWidth={setLabelWidth} />}
             tickFormatter={numberTickFormatter}
           />
           {/* Invisible scatter to maintain scale synchronization */}
@@ -411,13 +412,16 @@ export const ScatterChart = ({
                       domain={yDomain}
                       tickLine={false}
                       axisLine={false}
-                      tick={<YAxisTick />}
+                      tick={<YAxisTick setLabelWidth={setLabelWidth} />}
                       tickFormatter={numberTickFormatter}
                       hide
                     />
                   )}
 
-                  <ChartTooltip content={<CustomTooltipContent />} offset={15} />
+                  <ChartTooltip
+                    content={<CustomTooltipContent parentRef={chartContainerRef} />}
+                    offset={15}
+                  />
 
                   <Scatter
                     key={`scatter-${id}`}
