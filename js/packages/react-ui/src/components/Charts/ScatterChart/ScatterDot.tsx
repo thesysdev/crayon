@@ -55,4 +55,3 @@ const ScatterDot: React.FC<ScatterDotProps> = ({
 };
 
 export default ScatterDot;
-
