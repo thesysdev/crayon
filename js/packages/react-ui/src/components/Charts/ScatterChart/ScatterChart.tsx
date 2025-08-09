@@ -261,13 +261,14 @@ export const ScatterChart = ({
             key={`x-axis-scatter-chart-${id}`}
             data={transformedData}
             margin={{
-              top: 0,
+              top: 10,
               bottom: 0,
-              left: DEFAULT_MARGIN,
+              left: DEFAULT_MARGIN - 2,
               right: 2,
             }}
           >
             <XAxis
+              unit={xAxisUnit}
               type="number"
               height={X_AXIS_HEIGHT}
               tickLine={false}
@@ -312,80 +313,82 @@ export const ScatterChart = ({
             width: width ? `${width}px` : undefined,
           }}
         >
-          <div className="crayon-scatter-chart-container-inner-wrapper" ref={chartContainerRef}>
+          <div className="crayon-scatter-chart-container-inner" ref={chartContainerRef}>
             {/* Y-axis of the chart */}
-            {/* {yAxis} */}
-            <div className="crayon-scatter-chart-container-inner" ref={chartContainerRef}>
-              <div className="crayon-scatter-chart-main-container">
-                <ChartContainer
-                  config={chartConfig}
-                  style={{
-                    width: effectiveContainerWidth,
-                    minWidth: "100%",
-                    height: effectiveContainerHeight,
-                  }}
-                  rechartsProps={{
-                    width: "100%",
-                    height: effectiveContainerHeight,
+            {yAxis}
+            <div className="crayon-scatter-chart-main-container">
+              <ChartContainer
+                config={chartConfig}
+                style={{
+                  width: effectiveContainerWidth,
+                  minWidth: "100%",
+                  height: effectiveContainerHeight,
+                }}
+                rechartsProps={{
+                  width: "100%",
+                  height: effectiveContainerHeight,
+                }}
+              >
+                <RechartsScatterChart
+                  accessibilityLayer
+                  key={`scatter-chart-${id}`}
+                  width={effectiveContainerWidth}
+                  height={effectiveContainerHeight}
+                  onClick={onScatterClick}
+                  margin={{
+                    bottom: 10,
                   }}
                 >
-                  <RechartsScatterChart
-                    accessibilityLayer
-                    key={`scatter-chart-${id}`}
-                    width={effectiveContainerWidth}
-                    height={effectiveContainerHeight}
-                    onClick={onScatterClick}
+                  {grid && gridCartesianGrid({ horizontal: true, vertical: true })}
+
+                  {showXAxis && (
+                    <XAxis
+                      type="number"
+                      height={X_AXIS_HEIGHT}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={numberTickFormatter}
+                      tick={{ fontSize: 12 }}
+                      domain={xDomain}
+                      dataKey={xAxisDataKey}
+                      hide
+                    />
+                  )}
+
+                  {showYAxis && (
+                    <YAxis
+                      type="number"
+                      dataKey={yAxisDataKey}
+                      name={yAxisLabel as string}
+                      unit={yAxisUnit}
+                      domain={yDomain}
+                      tickLine={false}
+                      axisLine={false}
+                      tick={<YAxisTick />}
+                      tickFormatter={numberTickFormatter}
+                      hide
+                    />
+                  )}
+
+                  <ChartTooltip content={<CustomTooltipContent />} offset={15} />
+
+                  <Scatter
+                    key={`scatter-${id}`}
+                    data={transformedData}
+                    shape={shape}
+                    isAnimationActive={isAnimationActive}
                   >
-                    {grid && gridCartesianGrid({ horizontal: true, vertical: true })}
-
-                    {showXAxis && (
-                      <XAxis
-                        type="number"
-                        height={X_AXIS_HEIGHT}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={numberTickFormatter}
-                        tick={{ fontSize: 12 }}
-                        domain={xDomain}
-                        dataKey={xAxisDataKey}
-                      />
-                    )}
-
-                    {showYAxis && (
-                      <YAxis
-                        type="number"
-                        dataKey={yAxisDataKey}
-                        name={yAxisLabel as string}
-                        unit={yAxisUnit}
-                        domain={yDomain}
-                        tickLine={false}
-                        axisLine={false}
-                        tick={<YAxisTick />}
-                        tickFormatter={numberTickFormatter}
-                        // hide
-                      />
-                    )}
-
-                    <ChartTooltip content={<CustomTooltipContent />} offset={15} />
-
-                    <Scatter
-                      key={`scatter-${id}`}
-                      data={transformedData}
-                      shape={shape}
-                      isAnimationActive={isAnimationActive}
-                    >
-                      {transformedData.map((entry, index) => {
-                        return <Cell key={`cell-${index}`} fill={entry["color"] as string} />;
-                      })}
-                    </Scatter>
-                  </RechartsScatterChart>
-                </ChartContainer>
-              </div>
+                    {transformedData.map((entry, index) => {
+                      return <Cell key={`cell-${index}`} fill={entry["color"] as string} />;
+                    })}
+                  </Scatter>
+                </RechartsScatterChart>
+              </ChartContainer>
               {/* X-axis of the chart */}
-              {/* {xAxis} */}
-
-              {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
+              {xAxis}
             </div>
+
+            {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
           </div>
 
           {legend && (
