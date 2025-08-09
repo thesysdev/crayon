@@ -9,7 +9,7 @@ export const getScatterDatasets = (data: ScatterChartData): string[] => {
   if (!data || !Array.isArray(data)) {
     return [];
   }
-  return data.map(dataset => dataset.name);
+  return data.map((dataset) => dataset.name);
 };
 
 /**
@@ -36,11 +36,11 @@ export const transformScatterData = (
 
   // Flatten all datasets into a single array with dataset info
   const transformedPoints: Array<ScatterPoint & { color: string; dataset: string }> = [];
-  
+
   data.forEach((dataset) => {
     // Use only palette colors, ignore any hardcoded colors in datasets
     const color = datasetColors[dataset.name] || "transparent";
-    
+
     dataset.data.forEach((point) => {
       transformedPoints.push({
         ...point,
@@ -52,7 +52,7 @@ export const transformScatterData = (
       });
     });
   });
-  
+
   return transformedPoints;
 };
 
@@ -69,8 +69,8 @@ export const calculateScatterDomain = (
   if (!data || !Array.isArray(data) || !data.length) return [0, 100];
 
   // Flatten all data points from all datasets
-  const allPoints = data.flatMap(dataset => dataset.data);
-  
+  const allPoints = data.flatMap((dataset) => dataset.data);
+
   const values = allPoints.map((point) => Number(point[axis])).filter((val) => !isNaN(val));
   if (!values.length) return [0, 100];
 

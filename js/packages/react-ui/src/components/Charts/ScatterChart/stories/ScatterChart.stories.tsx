@@ -38,17 +38,17 @@ const dataVariations = {
         { x: 140, y: 250, z: 280 },
         { x: 150, y: 400, z: 500 },
         { x: 110, y: 280, z: 200 },
-      ]
+      ],
     },
     {
-      name: "B school", 
+      name: "B school",
       data: [
         { x: 200, y: 180, z: 240 },
         { x: 180, y: 350, z: 220 },
         { x: 160, y: 320, z: 250 },
         { x: 190, y: 150, z: 210 },
-      ]
-    }
+      ],
+    },
   ],
   correlation: [
     {
@@ -66,7 +66,7 @@ const dataVariations = {
         { x: 1900, y: 2350 },
         { x: 1300, y: 1600 },
         { x: 2200, y: 2800 },
-      ]
+      ],
     },
     {
       name: "Profit",
@@ -83,8 +83,8 @@ const dataVariations = {
         { x: 1900, y: 470 },
         { x: 1300, y: 320 },
         { x: 2200, y: 580 },
-      ]
-    }
+      ],
+    },
   ],
   multipleDatasets: [
     {
@@ -100,7 +100,7 @@ const dataVariations = {
         { x: 8, y: 6 },
         { x: 9, y: 10 },
         { x: 10, y: 1 },
-      ]
+      ],
     },
     {
       name: "Mobile",
@@ -115,7 +115,7 @@ const dataVariations = {
         { x: 8, y: 9 },
         { x: 9, y: 7 },
         { x: 10, y: 8 },
-      ]
+      ],
     },
     {
       name: "Tablet",
@@ -130,8 +130,8 @@ const dataVariations = {
         { x: 8, y: 8 },
         { x: 9, y: 4 },
         { x: 10, y: 9 },
-      ]
-    }
+      ],
+    },
   ],
   performance: [
     {
@@ -147,7 +147,7 @@ const dataVariations = {
         { x: 25, y: 900 },
         { x: 65, y: 3300 },
         { x: 70, y: 3600 },
-      ]
+      ],
     },
     {
       name: "Efficiency",
@@ -162,8 +162,8 @@ const dataVariations = {
         { x: 25, y: 800 },
         { x: 65, y: 3150 },
         { x: 70, y: 3450 },
-      ]
-    }
+      ],
+    },
   ],
 };
 
@@ -474,7 +474,6 @@ export const CorrelationAnalysis: Story = {
     </Card>
   ),
 };
-
 
 /**
  * ## Shape Comparison
