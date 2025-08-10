@@ -17,7 +17,7 @@ const numberTickFormatter = (value: number) => {
     } else if (absValue >= 1e3) {
       return (value / 1e3).toFixed(absValue >= 10e3 ? 0 : 1) + "K";
     } else {
-      return value.toString();
+      return value.toFixed(2);
     }
   }
   return String(value);
