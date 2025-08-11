@@ -209,7 +209,7 @@ export const CustomTooltipContent = memo(
       return () => {
         document.body.removeEventListener("touchstart", touchHandler);
       };
-    });
+    }, [parentRef.current]);
 
     // Early return for inactive or empty payload - moved after all hooks
     if (!active || !payload?.length || isSideBarTooltipOpen || forcefullyHideTooltip) {
