@@ -168,7 +168,10 @@ const RadarChartComponent = <T extends RadarChartData>({
                     tick={<AxisLabel portalContainerRef={wrapperRef} />}
                   />
 
-                  <ChartTooltip cursor={false} content={<CustomTooltipContent />} />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<CustomTooltipContent parentRef={wrapperRef} />}
+                  />
                   {/* rendering the radars here */}
                   {radars}
                 </RechartsRadarChart>
