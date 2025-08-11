@@ -46,6 +46,15 @@ const meta = {
         type: { summary: "CSSProperties" },
       },
     },
+    isError: {
+      control: "boolean",
+      description: "Whether the text area is in an error state",
+      table: {
+        category: "Behavior",
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
   },
   tags: ["!dev", "autodocs"],
 } satisfies Meta<typeof TextArea>;
@@ -57,5 +66,13 @@ export const Default: Story = {
   args: {
     placeholder: "Enter your text here",
     rows: 3,
+  },
+};
+
+export const ErrorState: Story = {
+  args: {
+    placeholder: "Enter your text here",
+    rows: 3,
+    isError: true,
   },
 };

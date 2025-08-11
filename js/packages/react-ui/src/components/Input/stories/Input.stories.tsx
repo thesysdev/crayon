@@ -40,6 +40,15 @@ const meta: Meta<typeof Input> = {
         defaultValue: { summary: "false" },
       },
     },
+    isError: {
+      control: "boolean",
+      description: "Whether the input is in an error state",
+      table: {
+        category: "Behavior",
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
     placeholder: {
       control: "text",
       description: "The placeholder text for the input",
@@ -98,6 +107,26 @@ export const Default: Story = {
       disabled={args.disabled}
       value={args.value}
       onChange={args.onChange}
+      isError={args.isError}
+    />
+  ),
+};
+
+export const ErrorState: Story = {
+  args: {
+    size: "medium",
+    placeholder: "Enter text...",
+    disabled: false,
+    isError: true,
+  },
+  render: (args) => (
+    <Input
+      size={args.size}
+      placeholder={args.placeholder}
+      disabled={args.disabled}
+      value={args.value}
+      onChange={args.onChange}
+      isError={args.isError}
     />
   ),
 };
@@ -131,6 +160,49 @@ const ControlledInput = () => {
   const [value, setValue] = useState<string | undefined>();
 
   return <Input size="medium" value={value} onChange={(e) => setValue(e.target.value)} placeholder="Enter text..." />;
+};`,
+      },
+    },
+  },
+};
+
+const ValidatedInput = () => {
+  const [value, setValue] = useState<string>("");
+  const hasError = value.length > 0 && (value.length < 3 || value.length > 10);
+  return (
+    <Input
+      size="medium"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder="Enter 3-10 characters"
+      isError={hasError}
+    />
+  );
+};
+
+export const LengthValidation: Story = {
+  render: () => <ValidatedInput />,
+  parameters: {
+    docs: {
+      description: {
+        story: "Shows error when the value length is 1-2 or greater than 10 characters.",
+      },
+      source: {
+        code: `
+import { useState } from "react";
+
+const ValidatedInput = () => {
+  const [value, setValue] = useState<string>("");
+  const hasError = value.length > 0 && (value.length < 3 || value.length > 10);
+  return (
+    <Input
+      size="medium"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder="Enter 3-10 characters"
+      isError={hasError}
+    />
+  );
 };`,
       },
     },
