@@ -1,3 +1,4 @@
+import { useLayoutEffect } from "react";
 import { numberTickFormatter } from "../../utils";
 
 interface YAxisTickProps {
@@ -22,15 +23,20 @@ interface YAxisTickProps {
   tickFormatter?: (value: any) => string;
   index?: number;
   visibleTicksCount?: number;
+  setLabelWidth: (label: string) => void;
 }
 
 const YAxisTick: React.FC<YAxisTickProps> = (props) => {
-  const { x, y, payload, textAnchor, verticalAnchor, className } = props;
+  const { x, y, payload, textAnchor, verticalAnchor, className, setLabelWidth } = props;
 
   const displayValue =
     typeof payload?.value === "number"
       ? numberTickFormatter(payload?.value)
       : String(payload?.value);
+
+  useLayoutEffect(() => {
+    setLabelWidth(displayValue);
+  }, [displayValue, setLabelWidth]);
 
   return (
     <g transform={`translate(${x},${y})`} className={className}>

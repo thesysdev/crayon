@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import { AreaChartData } from "../AreaChart";
 import { BarChartData } from "../BarChart";
@@ -15,6 +15,7 @@ export const useYAxisLabelWidth = (
   dataKeys: string[],
 ) => {
   const context = useCanvasContextForLabelSize();
+  const [maxLabelWidthRecieved, setMaxLabelWidthRecieved] = useState(0);
 
   const maxLabelWidth = useMemo(() => {
     if (typeof window === "undefined" || !data || data.length === 0 || !dataKeys.length) {
@@ -48,5 +49,19 @@ export const useYAxisLabelWidth = (
     return Math.max(MIN_Y_AXIS_WIDTH, Math.min(MAX_Y_AXIS_WIDTH, totalWidth));
   }, [data, dataKeys, context]);
 
-  return maxLabelWidth;
+  const maxLabelWidthRef = useRef(maxLabelWidth);
+  maxLabelWidthRef.current = Math.max(maxLabelWidthRecieved, maxLabelWidth);
+
+  const setLabelWidth = useCallback(
+    (displayValue: string) => {
+      const textWidth = context.measureText(displayValue).width;
+
+      if (textWidth > maxLabelWidthRef.current) {
+        setMaxLabelWidthRecieved(textWidth);
+      }
+    },
+    [context],
+  );
+
+  return { yAxisWidth: maxLabelWidth, setLabelWidth };
 };
