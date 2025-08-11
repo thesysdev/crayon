@@ -39,7 +39,7 @@ export const useYAxisLabelWidth = (
 
       values.forEach((value) => {
         const displayValue = numberTickFormatter(value);
-        const textWidth = context.measureText(displayValue + "123").width;
+        const textWidth = context.measureText(displayValue + "12").width;
 
         maxWidth = Math.max(maxWidth, textWidth);
       });

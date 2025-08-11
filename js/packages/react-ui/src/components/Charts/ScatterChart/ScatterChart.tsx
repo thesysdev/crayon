@@ -193,15 +193,18 @@ export const ScatterChart = ({
       return null;
     }
     return (
-      <div className="crayon-scatter-chart-y-axis-container">
+      <div
+        className="crayon-scatter-chart-y-axis-container"
+        style={{ height: effectiveContainerHeight }}
+      >
         {/* Y-axis only chart - synchronized with main chart */}
         <RechartsScatterChart
           key={`y-axis-chart-${id}`}
           width={yAxisWidth}
-          height={chartHeight}
+          height={effectiveContainerHeight}
           data={transformedData}
           margin={{
-            bottom: DEFAULT_MARGIN + 30,
+            bottom: DEFAULT_MARGIN - 5,
           }}
           onClick={onScatterClick}
         >
@@ -248,45 +251,51 @@ export const ScatterChart = ({
       return null;
     }
     return (
-      <div className="crayon-scatter-chart-x-axis-container">
-        {/* X-axis only chart - synchronized with main chart */}
-        <ChartContainer
-          config={chartConfig}
-          style={{ width: "100%", height: X_AXIS_HEIGHT }}
-          rechartsProps={{
-            height: X_AXIS_HEIGHT,
-          }}
+      <div className="crayon-scatter-chart-x-axis-container-outer">
+        <div
+          className="crayon-scatter-chart-x-axis-container"
+          style={{ width: effectiveContainerWidth }}
         >
-          <RechartsScatterChart
-            key={`x-axis-scatter-chart-${id}`}
-            data={transformedData}
-            margin={{
-              top: 10,
-              bottom: 0,
-              left: DEFAULT_MARGIN - 2,
-              right: 2,
+          {/* X-axis only chart - synchronized with main chart */}
+          <ChartContainer
+            config={chartConfig}
+            style={{ width: "100%", height: X_AXIS_HEIGHT }}
+            rechartsProps={{
+              height: X_AXIS_HEIGHT,
             }}
           >
-            <XAxis
-              unit={xAxisUnit}
-              type="number"
-              height={X_AXIS_HEIGHT}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={numberTickFormatter}
-              tick={{ fontSize: 12 }}
-              domain={xDomain}
-              dataKey={xAxisDataKey}
-            />
-            {/* Invisible scatter to maintain scale synchronization */}
-            <Scatter
+            <RechartsScatterChart
+              key={`x-axis-scatter-chart-${id}`}
+              width={effectiveContainerWidth}
               data={transformedData}
-              fill="transparent"
-              isAnimationActive={isAnimationActive}
-              shape="circle"
-            />
-          </RechartsScatterChart>
-        </ChartContainer>
+              margin={{
+                top: 10,
+                bottom: 0,
+                left: DEFAULT_MARGIN - 3,
+                right: 2,
+              }}
+            >
+              <XAxis
+                unit={xAxisUnit}
+                type="number"
+                height={X_AXIS_HEIGHT}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={numberTickFormatter}
+                tick={{ fontSize: 12 }}
+                domain={xDomain}
+                dataKey={xAxisDataKey}
+              />
+              {/* Invisible scatter to maintain scale synchronization */}
+              <Scatter
+                data={transformedData}
+                fill="transparent"
+                isAnimationActive={isAnimationActive}
+                shape="circle"
+              />
+            </RechartsScatterChart>
+          </ChartContainer>
+        </div>
       </div>
     );
   }, [
@@ -384,12 +393,12 @@ export const ScatterChart = ({
                   </Scatter>
                 </RechartsScatterChart>
               </ChartContainer>
-              {/* X-axis of the chart */}
-              {xAxis}
             </div>
 
             {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
           </div>
+          {/* X-axis of the chart */}
+          {xAxis}
 
           {legend && (
             <DefaultLegend
