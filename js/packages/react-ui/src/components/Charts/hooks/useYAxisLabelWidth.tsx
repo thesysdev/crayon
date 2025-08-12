@@ -9,6 +9,7 @@ import { useCanvasContextForLabelSize } from "./useCanvasContextForLabelSize";
 const DEFAULT_Y_AXIS_WIDTH = 40;
 const MIN_Y_AXIS_WIDTH = 20;
 const MAX_Y_AXIS_WIDTH = 200;
+const LABEL_PADDING = 10;
 
 export const useYAxisLabelWidth = (
   data: AreaChartData | LineChartData | BarChartData,
@@ -43,7 +44,7 @@ export const useYAxisLabelWidth = (
     });
 
     // Add padding for better visual appearance
-    const totalWidth = Math.ceil(maxWidth) + 10; // 5px padding on each side
+    const totalWidth = Math.ceil(maxWidth) + LABEL_PADDING; // 5px padding on each side
 
     // Clamp the width between MIN and MAX values
     return Math.max(MIN_Y_AXIS_WIDTH, Math.min(MAX_Y_AXIS_WIDTH, totalWidth));
@@ -54,7 +55,7 @@ export const useYAxisLabelWidth = (
 
   const setLabelWidth = useCallback(
     (displayValue: string) => {
-      const textWidth = context.measureText(displayValue).width;
+      const textWidth = context.measureText(displayValue).width + LABEL_PADDING;
 
       if (textWidth > maxLabelWidthRef.current) {
         setMaxLabelWidthRecieved(textWidth);
@@ -63,5 +64,5 @@ export const useYAxisLabelWidth = (
     [context],
   );
 
-  return { yAxisWidth: maxLabelWidth, setLabelWidth };
+  return { yAxisWidth: maxLabelWidthRef.current, setLabelWidth };
 };
