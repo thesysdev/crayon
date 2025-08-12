@@ -100,7 +100,7 @@ const BarChartComponent = <T extends BarChartData>({
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
-  const yAxisWidth = useYAxisLabelWidth(data, dataKeys);
+  const { yAxisWidth, setLabelWidth } = useYAxisLabelWidth(data, dataKeys);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -271,7 +271,12 @@ const BarChartComponent = <T extends BarChartData>({
             right: 0,
           }}
         >
-          <YAxis width={yAxisWidth} tickLine={false} axisLine={false} tick={<YAxisTick />} />
+          <YAxis
+            width={yAxisWidth}
+            tickLine={false}
+            axisLine={false}
+            tick={<YAxisTick setLabelWidth={setLabelWidth} />}
+          />
           {/* Invisible bars to maintain scale synchronization */}
           {dataKeys.map((key) => {
             return (

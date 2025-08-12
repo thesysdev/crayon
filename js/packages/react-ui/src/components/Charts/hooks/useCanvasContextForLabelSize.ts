@@ -17,16 +17,12 @@ export const useCanvasContextForLabelSize = () => {
   const { theme: userTheme } = useTheme();
 
   return useMemo(() => {
-    if (typeof window === "undefined" || typeof document === "undefined") {
-      return null;
-    }
     const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-    if (context) {
-      // Should match the chart's actual font for accuracy.
-      const font = userTheme.fontLabelExtraSmall ?? "400 10px/12px Inter";
-      context.font = font;
-    }
+    const context = canvas.getContext("2d")!;
+
+    // Should match the chart's actual font for accuracy.
+    const font = userTheme.fontLabelExtraSmall ?? "400 10px/12px Inter";
+    context.font = font;
     return context;
   }, [userTheme.fontLabelExtraSmall]);
 };

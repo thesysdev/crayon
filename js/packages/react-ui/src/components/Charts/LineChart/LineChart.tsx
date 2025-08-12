@@ -81,7 +81,7 @@ export const LineChart = <T extends LineChartData>({
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
-  const yAxisWidth = useYAxisLabelWidth(data, dataKeys);
+  const { yAxisWidth, setLabelWidth } = useYAxisLabelWidth(data, dataKeys);
 
   const widthOfGroup = useMemo(() => {
     return getWidthOfGroup(data);
@@ -260,7 +260,12 @@ export const LineChart = <T extends LineChartData>({
           }}
           onClick={onLineClick}
         >
-          <YAxis width={yAxisWidth} tickLine={false} axisLine={false} tick={<YAxisTick />} />
+          <YAxis
+            width={yAxisWidth}
+            tickLine={false}
+            axisLine={false}
+            tick={<YAxisTick setLabelWidth={setLabelWidth} />}
+          />
           {/* Invisible lines to maintain scale synchronization */}
           {dataKeys.map((key) => {
             return (
