@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { forwardRef, memo, useMemo } from "react";
+import { forwardRef, memo, useEffect, useMemo, useState } from "react";
 import * as RechartsPrimitive from "recharts";
 import { ChartStyle, getPayloadConfigFromPayload, useChart } from "../../../Charts/Charts";
 import { useSideBarTooltip } from "../../context/SideBarTooltipContext";
@@ -24,6 +24,7 @@ export const CustomTooltipContent = memo(
         labelKey?: string;
         showPercentage?: boolean;
         portalContainer?: React.RefObject<HTMLElement | null>;
+        parentRef: React.RefObject<HTMLElement | null>;
       }
   >((props, ref) => {
     const {
@@ -42,12 +43,16 @@ export const CustomTooltipContent = memo(
       labelKey,
       showPercentage = false,
       portalContainer,
+      parentRef,
     } = props;
 
     const { config, id } = useChart();
     const { isSideBarTooltipOpen } = useSideBarTooltip();
     const isGreaterThanTen = !!(payload?.length && payload.length > 10);
     const remainingItems = payload && isGreaterThanTen ? payload.length - 5 : 0;
+    // this state is used to forcefully hide the tooltip when the user touches outside of the parent element
+    // this is not handled by recharts
+    const [forcefullyHideTooltip, setForcefullyHideTooltip] = useState(false);
 
     const tooltipLabel = useMemo(() => {
       if (hideLabel || !payload?.length) {
@@ -182,8 +187,32 @@ export const CustomTooltipContent = memo(
       showPercentage,
     ]);
 
+    useEffect(() => {
+      const parent = parentRef.current;
+      if (!parent) {
+        return;
+      }
+
+      const touchHandler = (e: TouchEvent) => {
+        for (let i = 0; i < e.targetTouches.length; i++) {
+          const target = e.targetTouches[i]!.target as HTMLElement;
+          if (!parent.contains(target)) {
+            setForcefullyHideTooltip(true);
+            return;
+          }
+        }
+        setForcefullyHideTooltip(false);
+      };
+
+      document.body.addEventListener("touchstart", touchHandler);
+
+      return () => {
+        document.body.removeEventListener("touchstart", touchHandler);
+      };
+    }, [parentRef.current]);
+
     // Early return for inactive or empty payload - moved after all hooks
-    if (!active || !payload?.length || isSideBarTooltipOpen) {
+    if (!active || !payload?.length || isSideBarTooltipOpen || forcefullyHideTooltip) {
       return null;
     }
 

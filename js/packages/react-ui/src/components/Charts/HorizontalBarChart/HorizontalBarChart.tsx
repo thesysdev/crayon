@@ -396,7 +396,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                         opacity: 1,
                         strokeWidth: 1,
                       }}
-                      content={<CustomTooltipContent />}
+                      content={<CustomTooltipContent parentRef={mainContainerRef} />}
                       offset={15}
                     />
 
