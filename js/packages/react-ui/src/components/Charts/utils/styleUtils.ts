@@ -17,6 +17,10 @@ const numberTickFormatter = (value: number) => {
     } else if (absValue >= 1e3) {
       return (value / 1e3).toFixed(absValue >= 10e3 ? 0 : 1) + "K";
     } else {
+      // For values < 1000, show only 1 decimal place if there's a decimal
+      if (value % 1 !== 0) {
+        return value.toFixed(2);
+      }
       return value.toString();
     }
   }
