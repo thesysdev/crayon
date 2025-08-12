@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import { AreaChartData } from "../AreaChart";
 import { BarChartData } from "../BarChart";
@@ -9,12 +9,14 @@ import { useCanvasContextForLabelSize } from "./useCanvasContextForLabelSize";
 const DEFAULT_Y_AXIS_WIDTH = 40;
 const MIN_Y_AXIS_WIDTH = 20;
 const MAX_Y_AXIS_WIDTH = 200;
+const LABEL_PADDING = 10;
 
 export const useYAxisLabelWidth = (
   data: AreaChartData | LineChartData | BarChartData,
   dataKeys: string[],
 ) => {
   const context = useCanvasContextForLabelSize();
+  const [maxLabelWidthRecieved, setMaxLabelWidthRecieved] = useState(0);
 
   const maxLabelWidth = useMemo(() => {
     if (typeof window === "undefined" || !data || data.length === 0 || !dataKeys.length) {
@@ -42,11 +44,25 @@ export const useYAxisLabelWidth = (
     });
 
     // Add padding for better visual appearance
-    const totalWidth = Math.ceil(maxWidth) + 10; // 5px padding on each side
+    const totalWidth = Math.ceil(maxWidth) + LABEL_PADDING; // 5px padding on each side
 
     // Clamp the width between MIN and MAX values
     return Math.max(MIN_Y_AXIS_WIDTH, Math.min(MAX_Y_AXIS_WIDTH, totalWidth));
   }, [data, dataKeys, context]);
 
-  return maxLabelWidth;
+  const maxLabelWidthRef = useRef(maxLabelWidth);
+  maxLabelWidthRef.current = Math.max(maxLabelWidthRecieved, maxLabelWidth);
+
+  const setLabelWidth = useCallback(
+    (displayValue: string) => {
+      const textWidth = context.measureText(displayValue).width + LABEL_PADDING;
+
+      if (textWidth > maxLabelWidthRef.current) {
+        setMaxLabelWidthRecieved(textWidth);
+      }
+    },
+    [context],
+  );
+
+  return { yAxisWidth: maxLabelWidthRef.current, setLabelWidth };
 };
