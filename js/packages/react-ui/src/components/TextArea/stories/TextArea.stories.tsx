@@ -46,7 +46,7 @@ const meta = {
         type: { summary: "CSSProperties" },
       },
     },
-    isError: {
+    hasError: {
       control: "boolean",
       description: "Whether the text area is in an error state",
       table: {
@@ -73,6 +73,6 @@ export const ErrorState: Story = {
   args: {
     placeholder: "Enter your text here",
     rows: 3,
-    isError: true,
+    hasError: true,
   },
 };

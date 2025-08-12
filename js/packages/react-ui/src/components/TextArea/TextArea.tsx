@@ -7,19 +7,19 @@ export interface TextAreaProps
   className?: string;
   placeholder?: string;
   rows?: number;
-  isError?: boolean;
+  hasError?: boolean;
 }
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>((props, ref) => {
-  const { className, rows = 3, isError, ...rest } = props;
+  const { className, rows = 3, hasError, ...rest } = props;
   const ctx = useFormControlContext();
-  const resolvedIsError = isError ?? ctx?.isError ?? false;
+  const resolvedHasError = hasError ?? ctx?.hasError ?? false;
 
   return (
     <textarea
       ref={ref}
       className={clsx("crayon-textarea", className, {
-        "crayon-textarea-error": resolvedIsError,
+        "crayon-textarea-error": resolvedHasError,
       })}
       {...rest}
       rows={rows}
