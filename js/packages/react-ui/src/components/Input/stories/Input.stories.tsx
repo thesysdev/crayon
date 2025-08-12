@@ -40,7 +40,7 @@ const meta: Meta<typeof Input> = {
         defaultValue: { summary: "false" },
       },
     },
-    isError: {
+    hasError: {
       control: "boolean",
       description: "Whether the input is in an error state",
       table: {
@@ -107,7 +107,7 @@ export const Default: Story = {
       disabled={args.disabled}
       value={args.value}
       onChange={args.onChange}
-      isError={args.isError}
+      hasError={args.hasError}
     />
   ),
 };
@@ -117,7 +117,7 @@ export const ErrorState: Story = {
     size: "medium",
     placeholder: "Enter text...",
     disabled: false,
-    isError: true,
+    hasError: true,
   },
   render: (args) => (
     <Input
@@ -126,7 +126,7 @@ export const ErrorState: Story = {
       disabled={args.disabled}
       value={args.value}
       onChange={args.onChange}
-      isError={args.isError}
+      hasError={args.hasError}
     />
   ),
 };
@@ -175,7 +175,7 @@ const ValidatedInput = () => {
       value={value}
       onChange={(e) => setValue(e.target.value)}
       placeholder="Enter 3-10 characters"
-      isError={hasError}
+      hasError={hasError}
     />
   );
 };

@@ -6,18 +6,18 @@ export interface HintProps extends React.ComponentPropsWithoutRef<"div"> {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
-  isError?: boolean;
+  hasError?: boolean;
 }
 
 const Hint = forwardRef<HTMLDivElement, HintProps>(
-  ({ children, className, style, isError, ...props }, ref) => {
+  ({ children, className, style, hasError, ...props }, ref) => {
     const ctx = useFormControlContext();
-    const resolvedIsError = isError ?? ctx?.isError ?? false;
+    const resolvedHasError = hasError ?? ctx?.hasError ?? false;
     return (
       <div
         ref={ref}
         className={clsx("crayon-hint", className, {
-          "crayon-hint-error": resolvedIsError,
+          "crayon-hint-error": resolvedHasError,
         })}
         style={style}
         {...props}

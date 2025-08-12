@@ -6,7 +6,7 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
   styles?: React.CSSProperties;
   className?: string;
   size?: "small" | "medium" | "large";
-  isError?: boolean;
+  hasError?: boolean;
 }
 
 const sizes = {
@@ -16,15 +16,15 @@ const sizes = {
 } as const;
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, styles, size = "medium", isError, ...props }, ref) => {
+  ({ className, styles, size = "medium", hasError, ...props }, ref) => {
     const ctx = useFormControlContext();
-    const resolvedIsError = isError ?? ctx?.isError ?? false;
+    const resolvedHasError = hasError ?? ctx?.hasError ?? false;
     return (
       <input
         autoComplete="off"
         ref={ref}
         className={clsx("crayon-input", sizes[size], className, {
-          "crayon-input-error": resolvedIsError,
+          "crayon-input-error": resolvedHasError,
         })}
         style={styles}
         {...props}

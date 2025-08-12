@@ -44,7 +44,7 @@ const meta: Meta<typeof FormControl> = {
         type: { summary: "CSSProperties" },
       },
     },
-    isError: {
+    hasError: {
       control: "boolean",
       description: "Toggles error styling for child inputs and hints",
       table: {
@@ -93,7 +93,7 @@ export const LengthValidation: Story = {
 
     return (
       <div style={{ width: 420 }}>
-        <FormControl isError={hasError}>
+        <FormControl hasError={hasError}>
           <Label htmlFor="name-validated">Name</Label>
           <Input
             id="name-validated"

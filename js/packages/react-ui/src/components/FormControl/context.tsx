@@ -1,12 +1,12 @@
 import React, { createContext, useContext } from "react";
 
 export interface FormControlContextValue {
-  isError: boolean;
+  hasError: boolean;
 }
 
-const FormControlContext = createContext<FormControlContextValue | undefined>(undefined);
+const FormControlContext = createContext<FormControlContextValue | null>(null);
 
-export function useFormControlContext(): FormControlContextValue | undefined {
+export function useFormControlContext(): FormControlContextValue | null {
   return useContext(FormControlContext);
 }
 
