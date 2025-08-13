@@ -62,7 +62,9 @@ type Story = StoryObj<typeof FormControl>;
 export const WithLabelAndHint: Story = {
   render: (args) => (
     <FormControl>
-      <Label htmlFor="username">Username</Label>
+      <Label htmlFor="username" required>
+        Username
+      </Label>
       <Input placeholder="Enter username" id="username" />
       <Hint>
         <Info size={14} />
