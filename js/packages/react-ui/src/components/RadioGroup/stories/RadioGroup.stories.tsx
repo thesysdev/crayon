@@ -62,9 +62,9 @@ export const Default: Story = {
   },
   render: (args) => (
     <RadioGroup {...args}>
-      <RadioItem value="option1" label="Option 1" />
-      <RadioItem value="option2" label="Option 2" />
-      <RadioItem value="option3" label="Option 3" />
+      <RadioItem value="option1" label="Option 1" description="Option 1 description" />
+      <RadioItem value="option2" label="Option 2" description="Option 2 description" />
+      <RadioItem value="option3" label="Option 3" description="Option 3 description" />
     </RadioGroup>
   ),
 };
