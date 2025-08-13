@@ -5,6 +5,7 @@ import { useId } from "../../polyfills";
 
 export interface CheckBoxItemProps {
   label?: ReactNode;
+  description?: ReactNode;
   className?: string;
   style?: CSSProperties;
   checked?: boolean;
@@ -17,7 +18,7 @@ export interface CheckBoxItemProps {
 }
 
 const CheckBoxItem = forwardRef<HTMLButtonElement, CheckBoxItemProps>((props, ref) => {
-  const { label, onChange, className, disabled, required, ...rest } = props;
+  const { label, description, onChange, className, disabled, required, ...rest } = props;
   const id = useId();
   return (
     <div className="crayon-checkbox-item-container">
@@ -48,11 +49,14 @@ const CheckBoxItem = forwardRef<HTMLButtonElement, CheckBoxItemProps>((props, re
           </svg>
         </Checkbox.Indicator>
       </Checkbox.Root>
-      {label && (
-        <label htmlFor={id} className="crayon-checkbox-item-label">
-          {label}
-        </label>
-      )}
+      <div className="crayon-checkbox-item-content">
+        {label && (
+          <label htmlFor={id} className="crayon-checkbox-item-label">
+            {label}
+          </label>
+        )}
+        {description && <p className="crayon-checkbox-item-description">{description}</p>}
+      </div>
     </div>
   );
 });
