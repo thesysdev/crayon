@@ -126,7 +126,7 @@ const ChartContainer = forwardRef<
       "children"
     >;
   }
->(({ id, className, children, config, rechartsProps, ...props }, ref) => {
+>(({ id, className, children, config, rechartsProps, style, ...props }, ref) => {
   const uniqueId = useId();
   const chartId = `crayon-chart-${id || uniqueId.replace(/:/g, "")}`;
   const { theme } = useTheme();
@@ -137,11 +137,13 @@ const ChartContainer = forwardRef<
         data-chart={chartId}
         ref={ref}
         className={clsx("crayon-chart-container", className)}
-        style={{
-          // @ts-expect-error
-          "--crayon-container-fills": theme.containerFills,
-          "--crayon-primary-text": theme.primaryText,
-        }}
+        style={
+          {
+            "--crayon-container-fills": theme.containerFills,
+            "--crayon-primary-text": theme.primaryText,
+            ...style,
+          } as React.CSSProperties
+        }
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
