@@ -22,6 +22,8 @@ import { XAxisTickVariant } from "../types";
 import { type LegendItem } from "../types/Legend";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 
+import { Download } from "lucide-react";
+import { Button } from "../../Button";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import {
   findNearestSnapPosition,
@@ -35,6 +37,8 @@ import {
   getLegendItems,
 } from "../utils/dataUtils";
 import { BarChartData, BarChartVariant } from "./types";
+import { useExportBarChart } from "./useExportBarChart";
+import { useExportChart } from "./useExportChart";
 import {
   BAR_WIDTH,
   getPadding,
@@ -65,6 +69,7 @@ export interface BarChartProps<T extends BarChartData> {
   className?: string;
   height?: number;
   width?: number;
+  exportMode?: boolean;
 }
 
 const BAR_GAP = 10; // Gap between bars
@@ -91,10 +96,17 @@ const BarChartComponent = <T extends BarChartData>({
   className,
   height,
   width,
+  exportMode,
 }: BarChartProps<T>) => {
   const widthOfGroup = getWidthOfGroup(data, categoryKey as string, variant);
 
-  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant, widthOfGroup);
+  const maxLabelHeight = useMaxLabelHeight(
+    data,
+    categoryKey as string,
+    tickVariant,
+    widthOfGroup,
+    exportMode,
+  );
 
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -399,6 +411,46 @@ const BarChartComponent = <T extends BarChartData>({
     categoryKey,
   ]);
 
+  const barChartContainerRef = useRef<HTMLDivElement>(null);
+
+  // const { exportChart: autoExportChart } = useExportChart(
+  //   <BarChart
+  //     data={data}
+  //     categoryKey={categoryKey}
+  //     theme={theme}
+  //     customPalette={customPalette}
+  //     variant={variant}
+  //     tickVariant={tickVariant}
+  //     grid={grid}
+  //     radius={BAR_RADIUS}
+  //     isAnimationActive={isAnimationActive}
+  //     showYAxis={showYAxis}
+  //     xAxisLabel={xAxisLabel}
+  //     yAxisLabel={yAxisLabel}
+  //     legend={legend}
+  //     className={className}
+  //     height={height}
+  //     width={width}
+  //     exportMode={true}
+  //   />
+  // );
+
+  const { exportChart } = useExportBarChart(
+    chartContainerRef,
+    mainContainerRef,
+    barChartContainerRef,
+    dataWidth,
+    showYAxis,
+    yAxisWidth,
+    chartHeight,
+  );
+
+  // useEffect(() => {
+  //   if (exportMode) {
+  //     exportChart();
+  //   }
+  // }, [exportMode]);
+
   return (
     <LabelTooltipProvider>
       <SideBarTooltipProvider
@@ -412,6 +464,7 @@ const BarChartComponent = <T extends BarChartData>({
           style={{
             width: width ? `${width}px` : undefined,
           }}
+          ref={barChartContainerRef}
         >
           <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
             {/* Y-axis of the chart */}
@@ -501,6 +554,11 @@ const BarChartComponent = <T extends BarChartData>({
               setIsExpanded={setIsLegendExpanded}
             />
           )}
+          <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
+            <Button variant="secondary" iconLeft={<Download />} onClick={exportChart}>
+              Download
+            </Button>
+          </div>
         </div>
       </SideBarTooltipProvider>
     </LabelTooltipProvider>

@@ -10,6 +10,7 @@ export const useMaxLabelHeight = (
   categoryKey: string,
   tickVariant: XAxisTickVariant,
   widthOfGroup = 70,
+  allowFullHeight?: boolean,
 ) => {
   const { theme: userTheme } = useTheme();
 
@@ -49,10 +50,9 @@ export const useMaxLabelHeight = (
 
     document.body.append(div1);
 
-    const largestLabelHeight = Math.min(
-      div2.getBoundingClientRect().height,
-      div3.getBoundingClientRect().height * 3,
-    );
+    const largestLabelHeight = allowFullHeight
+      ? div2.getBoundingClientRect().height
+      : Math.min(div2.getBoundingClientRect().height, div3.getBoundingClientRect().height * 3);
     div1.remove();
 
     return largestLabelHeight;
