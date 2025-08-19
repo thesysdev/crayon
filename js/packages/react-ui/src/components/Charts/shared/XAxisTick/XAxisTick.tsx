@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import React, { useLayoutEffect, useRef, useState } from "react";
+import { useExportContext } from "../../ExportContext";
 import { XAxisTickVariant } from "../../types";
 import { LabelTooltip } from "../LabelTooltip/LabelTooltip";
 
@@ -33,6 +34,8 @@ interface XAxisTickProps {
 }
 
 const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => {
+  const exportContext = useExportContext();
+
   const {
     x,
     y,
@@ -105,6 +108,7 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
               style={{
                 textAlign: "center",
                 wordBreak: "break-word",
+                overflow: exportContext ? 'unset' : undefined
               }}
               className={clsx(spanClassName, className)}
             >

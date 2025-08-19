@@ -1,10 +1,13 @@
 import clsx from "clsx";
+import { Download } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
+import { Button } from "../../Button";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
+import { ExportContextProvider, useExportContext } from "../ExportContext";
 import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
 import {
   cartesianGrid,
@@ -16,15 +19,10 @@ import {
   XAxisTickProps,
   YAxisTick,
 } from "../shared";
-
+import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/ScrollButtonsHorizontal";
 import { XAxisTickVariant } from "../types";
 import { type LegendItem } from "../types/Legend";
-import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
-
-import { Download } from "lucide-react";
-import { Button } from "../../Button";
-import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import {
   findNearestSnapPosition,
   getBarStackInfo,
@@ -36,9 +34,10 @@ import {
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
+import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
+import { ChartWatermark } from "./ChartWatermark";
 import { BarChartData, BarChartVariant } from "./types";
 import { useExportBarChart } from "./useExportBarChart";
-import { useExportChart } from "./useExportChart";
 import {
   BAR_WIDTH,
   getPadding,
@@ -69,7 +68,7 @@ export interface BarChartProps<T extends BarChartData> {
   className?: string;
   height?: number;
   width?: number;
-  exportMode?: boolean;
+  exportRef?: React.RefObject<HTMLElement | null>;
 }
 
 const BAR_GAP = 10; // Gap between bars
@@ -96,16 +95,17 @@ const BarChartComponent = <T extends BarChartData>({
   className,
   height,
   width,
-  exportMode,
+  exportRef,
 }: BarChartProps<T>) => {
   const widthOfGroup = getWidthOfGroup(data, categoryKey as string, variant);
+  const exportContext = useExportContext();
 
   const maxLabelHeight = useMaxLabelHeight(
     data,
     categoryKey as string,
     tickVariant,
     widthOfGroup,
-    exportMode,
+    !!exportRef,
   );
 
   const dataKeys = useMemo(() => {
@@ -411,45 +411,16 @@ const BarChartComponent = <T extends BarChartData>({
     categoryKey,
   ]);
 
-  const barChartContainerRef = useRef<HTMLDivElement>(null);
+  const exportChartRef = useRef<HTMLDivElement>(null);
 
-  // const { exportChart: autoExportChart } = useExportChart(
-  //   <BarChart
-  //     data={data}
-  //     categoryKey={categoryKey}
-  //     theme={theme}
-  //     customPalette={customPalette}
-  //     variant={variant}
-  //     tickVariant={tickVariant}
-  //     grid={grid}
-  //     radius={BAR_RADIUS}
-  //     isAnimationActive={isAnimationActive}
-  //     showYAxis={showYAxis}
-  //     xAxisLabel={xAxisLabel}
-  //     yAxisLabel={yAxisLabel}
-  //     legend={legend}
-  //     className={className}
-  //     height={height}
-  //     width={width}
-  //     exportMode={true}
-  //   />
-  // );
-
-  const { exportChart } = useExportBarChart(
+  const { exportBarChart } = useExportBarChart(
     chartContainerRef,
-    mainContainerRef,
-    barChartContainerRef,
+    exportChartRef ?? null,
     dataWidth,
     showYAxis,
     yAxisWidth,
     chartHeight,
   );
-
-  // useEffect(() => {
-  //   if (exportMode) {
-  //     exportChart();
-  //   }
-  // }, [exportMode]);
 
   return (
     <LabelTooltipProvider>
@@ -459,12 +430,39 @@ const BarChartComponent = <T extends BarChartData>({
         data={sideBarTooltipData}
         setData={setSideBarTooltipData}
       >
+        {!exportContext && (
+          <ExportContextProvider value={{ format: "image" }}>
+            <BarChart
+              data={data}
+              categoryKey={categoryKey}
+              theme={theme}
+              customPalette={customPalette}
+              variant={variant}
+              tickVariant={tickVariant}
+              grid={grid}
+              radius={BAR_RADIUS}
+              isAnimationActive={false}
+              showYAxis={showYAxis}
+              xAxisLabel={xAxisLabel}
+              yAxisLabel={yAxisLabel}
+              legend={legend}
+              className={className}
+              height={height}
+              width={width}
+              exportRef={exportChartRef}
+            />
+          </ExportContextProvider>
+        )}
+
         <div
           className={clsx("crayon-bar-chart-container", className)}
           style={{
             width: width ? `${width}px` : undefined,
+            opacity: exportContext ? 0 : 1,
+            position: exportContext ? "fixed" : undefined,
+            zIndex: exportContext ? -1 : undefined,
           }}
-          ref={barChartContainerRef}
+          ref={exportRef as React.RefObject<HTMLDivElement>}
         >
           <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
             {/* Y-axis of the chart */}
@@ -555,9 +553,21 @@ const BarChartComponent = <T extends BarChartData>({
             />
           )}
           <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
-            <Button variant="secondary" iconLeft={<Download />} onClick={exportChart}>
+            <Button
+              variant="secondary"
+              iconLeft={<Download />}
+              onClick={() => {
+                if (exportContext) return;
+                exportBarChart();
+              }}
+            >
               Download
             </Button>
+            {exportContext && (
+              <div style={{ display: "flex", alignItems: "center", padding: "0 24px" }}>
+                <ChartWatermark />
+              </div>
+            )}
           </div>
         </div>
       </SideBarTooltipProvider>
