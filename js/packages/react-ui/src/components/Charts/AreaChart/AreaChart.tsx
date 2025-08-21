@@ -81,7 +81,7 @@ const AreaChartComponent = <T extends AreaChartData>({
   className,
   height,
   width,
-  exportRef
+  exportRef,
 }: AreaChartProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);

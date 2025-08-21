@@ -1,12 +1,12 @@
 import { createContext, useContext } from "react";
 
 interface ExportContext {
-  format: 'image'
+  format: "image";
 }
 
-export const ExportContext = createContext<ExportContext | null>(null)
-export const ExportContextProvider = ExportContext.Provider
+export const ExportContext = createContext<ExportContext | null>(null);
+export const ExportContextProvider = ExportContext.Provider;
 
 export const useExportContext = () => {
-  return useContext(ExportContext)
-}
+  return useContext(ExportContext);
+};
