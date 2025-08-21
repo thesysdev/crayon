@@ -1,5 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { useTheme } from "../../../ThemeProvider";
+
 export const ChartWatermark = (props: React.SVGProps<SVGSVGElement>) => {
   const { mode } = useTheme();
 
