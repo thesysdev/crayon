@@ -2,11 +2,15 @@ import clsx from "clsx";
 import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart as RechartsRadarChart } from "recharts";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
+import { ExportContextProvider, useExportContext } from "../ExportContext";
 import { SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import { useTransformedKeys } from "../hooks/useTransformKey";
 import { ActiveDot, CustomTooltipContent, DefaultLegend } from "../shared";
+import { ChartExportFooter } from "../shared/ChartExportFooter";
+import { ExportButton } from "../shared/ExportButton";
 import { LegendItem } from "../types";
 import { useChartPalette } from "../utils/PalletUtils";
+import { useExportChart } from "../utils/chartExportUtils";
 import { get2dChartConfig, getDataKeys, getLegendItems } from "../utils/dataUtils";
 import { AxisLabel } from "./components/AxisLabel";
 import { RadarChartData } from "./types";
@@ -26,6 +30,7 @@ export interface RadarChartProps<T extends RadarChartData> {
   areaOpacity?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
+  exportRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const RadarChartComponent = <T extends RadarChartData>({
@@ -40,6 +45,7 @@ const RadarChartComponent = <T extends RadarChartData>({
   areaOpacity = 0.2,
   icons = {},
   isAnimationActive = false,
+  exportRef,
 }: RadarChartProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -64,8 +70,13 @@ const RadarChartComponent = <T extends RadarChartData>({
   }, [dataKeys, colors, icons]);
 
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
+  const [isChartHovered, setIsChartHovered] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
+  const exportContext = useExportContext();
+
+  const exportChartRef = useRef<HTMLDivElement>(null);
+  const { exportChart } = useExportChart(exportChartRef);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -137,6 +148,60 @@ const RadarChartComponent = <T extends RadarChartData>({
     [],
   );
 
+  const radarChartJsx = (
+    <div
+      ref={wrapperRef}
+      className={wrapperClassName}
+      onMouseEnter={() => setIsChartHovered(true)}
+      onMouseLeave={() => setIsChartHovered(false)}
+    >
+      <div className="crayon-radar-chart-container">
+        <div className="crayon-radar-chart-container-inner">
+          <div style={chartSizeStyle}>
+            <ChartContainer
+              config={chartConfig}
+              className="crayon-radar-chart"
+              rechartsProps={rechartsProps}
+            >
+              <RechartsRadarChart
+                data={data}
+                margin={{
+                  left: 10,
+                  right: 10,
+                  top: 10,
+                  bottom: 10,
+                }}
+              >
+                {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
+                <PolarAngleAxis
+                  dataKey={categoryKey as string}
+                  tick={<AxisLabel portalContainerRef={wrapperRef} />}
+                />
+
+                <ChartTooltip
+                  cursor={false}
+                  content={<CustomTooltipContent parentRef={wrapperRef} />}
+                />
+                {/* rendering the radars here */}
+                {radars}
+              </RechartsRadarChart>
+            </ChartContainer>
+          </div>
+        </div>
+      </div>
+      {legend && (
+        <DefaultLegend
+          items={legendItems}
+          containerWidth={wrapperRect.width}
+          isExpanded={isLegendExpanded}
+          setIsExpanded={setIsLegendExpanded}
+          style={{ paddingTop: 0 }}
+        />
+      )}
+      {isChartHovered && <ExportButton exportChart={exportChart} />}
+    </div>
+  );
+
   return (
     <SideBarTooltipProvider
       isSideBarTooltipOpen={false}
@@ -144,51 +209,36 @@ const RadarChartComponent = <T extends RadarChartData>({
       data={undefined}
       setData={() => {}}
     >
-      <div ref={wrapperRef} className={wrapperClassName}>
-        <div className="crayon-radar-chart-container">
-          <div className="crayon-radar-chart-container-inner">
-            <div style={chartSizeStyle}>
-              <ChartContainer
-                config={chartConfig}
-                className="crayon-radar-chart"
-                rechartsProps={rechartsProps}
-              >
-                <RechartsRadarChart
-                  data={data}
-                  margin={{
-                    left: 10,
-                    right: 10,
-                    top: 10,
-                    bottom: 10,
-                  }}
-                >
-                  {grid && <PolarGrid className="crayon-chart-polar-grid" stroke="currentColor" />}
-                  <PolarAngleAxis
-                    dataKey={categoryKey as string}
-                    tick={<AxisLabel portalContainerRef={wrapperRef} />}
-                  />
-
-                  <ChartTooltip
-                    cursor={false}
-                    content={<CustomTooltipContent parentRef={wrapperRef} />}
-                  />
-                  {/* rendering the radars here */}
-                  {radars}
-                </RechartsRadarChart>
-              </ChartContainer>
-            </div>
-          </div>
-        </div>
-        {legend && (
-          <DefaultLegend
-            items={legendItems}
-            containerWidth={wrapperRect.width}
-            isExpanded={isLegendExpanded}
-            setIsExpanded={setIsLegendExpanded}
-            style={{ paddingTop: 0 }}
+      {!exportContext && (
+        <ExportContextProvider value={{ format: "image" }}>
+          <RadarChart
+            data={data}
+            categoryKey={categoryKey as string}
+            theme={theme}
+            customPalette={customPalette}
+            variant={variant}
+            grid={grid}
+            legend={legend}
+            strokeWidth={strokeWidth}
+            areaOpacity={areaOpacity}
+            icons={icons}
+            isAnimationActive={false}
+            exportRef={exportChartRef}
           />
-        )}
-      </div>
+        </ExportContextProvider>
+      )}
+
+      {!!exportContext ? (
+        <div
+          className="crayon-radar-chart-export-container"
+          ref={exportRef}
+        >
+          {radarChartJsx}
+          {<ChartExportFooter />}
+        </div>
+      ) : (
+        radarChartJsx
+      )}
     </SideBarTooltipProvider>
   );
 };

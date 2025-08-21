@@ -2,6 +2,7 @@ import { useMemo } from "react";
 
 import { useTheme } from "../../ThemeProvider";
 import { XAxisTickVariant } from "../types";
+import { useExportContext } from "../ExportContext";
 
 const DEFAULT_HEIGHT = 30;
 
@@ -10,9 +11,9 @@ export const useMaxLabelHeight = (
   categoryKey: string,
   tickVariant: XAxisTickVariant,
   widthOfGroup = 70,
-  allowFullHeight?: boolean,
 ) => {
   const { theme: userTheme } = useTheme();
+  const allowFullHeight = !!useExportContext()
 
   const maxLabelHeight = useMemo(() => {
     if (typeof window === "undefined" || !data || data.length === 0) {

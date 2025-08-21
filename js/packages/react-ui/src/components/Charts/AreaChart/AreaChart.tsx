@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Area, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
+import { ExportContextProvider, useExportContext } from "../ExportContext";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
 import {
@@ -15,6 +16,8 @@ import {
   XAxisTick,
   YAxisTick,
 } from "../shared";
+import { ChartExportFooter } from "../shared/ChartExportFooter";
+import { ExportButton } from "../shared/ExportButton";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { LegendItem, XAxisTickVariant } from "../types";
 import {
@@ -24,6 +27,7 @@ import {
   getWidthOfGroup,
 } from "../utils/AreaAndLine/AreaAndLineUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
+import { useExportChart } from "../utils/chartExportUtils";
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -54,6 +58,7 @@ export interface AreaChartProps<T extends AreaChartData> {
   className?: string;
   height?: number;
   width?: number;
+  exportRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const X_AXIS_PADDING = 36;
@@ -76,6 +81,7 @@ const AreaChartComponent = <T extends AreaChartData>({
   className,
   height,
   width,
+  exportRef
 }: AreaChartProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -113,6 +119,11 @@ const AreaChartComponent = <T extends AreaChartData>({
     title: "",
     values: [],
   });
+  const [isChartHovered, setIsChartHovered] = useState(false);
+  const exportContext = useExportContext();
+
+  const exportChartRef = useRef<HTMLDivElement>(null);
+  const { exportChart } = useExportChart(exportChartRef, "crayon-area-chart-main-container");
 
   // Use provided width or observed width
   const effectiveWidth = useMemo(() => {
@@ -295,11 +306,43 @@ const AreaChartComponent = <T extends AreaChartData>({
         data={sideBarTooltipData}
         setData={setSideBarTooltipData}
       >
+        {!exportContext && (
+          <ExportContextProvider value={{ format: "image" }}>
+            <AreaChart
+              categoryKey={categoryKey}
+              data={data}
+              theme={theme}
+              customPalette={customPalette}
+              variant={variant}
+              tickVariant={"multiLine"}
+              grid={grid}
+              icons={icons}
+              isAnimationActive={false}
+              showYAxis={showYAxis}
+              xAxisLabel={xAxisLabel}
+              yAxisLabel={yAxisLabel}
+              legend={legend}
+              className={className}
+              height={height}
+              width={width}
+              exportRef={exportChartRef}
+            />
+          </ExportContextProvider>
+        )}
         <div
-          className={clsx("crayon-area-chart-container", className)}
+          className={clsx(
+            "crayon-area-chart-container",
+            {
+              "crayon-chart-export-container": exportContext,
+            },
+            className,
+          )}
           style={{
             width: width ? `${width}px` : undefined,
           }}
+          onMouseEnter={() => setIsChartHovered(true)}
+          onMouseLeave={() => setIsChartHovered(false)}
+          ref={exportRef}
         >
           <div className="crayon-area-chart-container-inner" ref={chartContainerRef}>
             {/* Y-axis of the chart */}
@@ -408,10 +451,12 @@ const AreaChartComponent = <T extends AreaChartData>({
               yAxisLabel={yAxisLabel}
               xAxisLabel={xAxisLabel}
               containerWidth={effectiveWidth}
-              isExpanded={isLegendExpanded}
+              isExpanded={isLegendExpanded || !!exportContext} // legend should always be expanded in export mode
               setIsExpanded={setIsLegendExpanded}
             />
           )}
+          {isChartHovered && <ExportButton exportChart={exportChart} />}
+          {exportContext && <ChartExportFooter />}
         </div>
       </SideBarTooltipProvider>
     </LabelTooltipProvider>

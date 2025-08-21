@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import React, { useLayoutEffect, useMemo, useRef } from "react";
+import { useExportContext } from "../../ExportContext";
 import { calculateAvailableWidth, truncateText } from "../utils";
 
 // This is the props that are passed by recharts to the custom tick component
@@ -19,6 +20,7 @@ interface AxisLabelProps {
 export const AxisLabel: React.FC<AxisLabelProps> = (props) => {
   const { x, y, payload, textAnchor, portalContainerRef, className } = props;
   const anchorRef = useRef<SVGGElement>(null);
+  const exportContext = useExportContext();
 
   /**
    * Memoizes the calculation of truncated text for axis labels
@@ -106,7 +108,9 @@ export const AxisLabel: React.FC<AxisLabelProps> = (props) => {
         textAnchor ?? "middle",
         0,
       );
-      const newTruncatedText = truncateText(payload?.value ?? "", availableWidth, 10);
+      const newTruncatedText = !!exportContext
+        ? (payload?.value ?? "")
+        : truncateText(payload?.value ?? "", availableWidth, 10);
       if (labelEl.textContent !== newTruncatedText) {
         labelEl.textContent = newTruncatedText;
       }

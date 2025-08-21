@@ -4,6 +4,7 @@ import { Line, LineChart as RechartsLineChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
+import { ExportContextProvider, useExportContext } from "../ExportContext";
 import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
 import {
   ActiveDot,
@@ -15,6 +16,8 @@ import {
   XAxisTick,
   YAxisTick,
 } from "../shared";
+import { ChartExportFooter } from "../shared/ChartExportFooter";
+import { ExportButton } from "../shared/ExportButton";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { LegendItem, XAxisTickVariant } from "../types";
 import {
@@ -23,13 +26,14 @@ import {
   getWidthOfData,
   getWidthOfGroup,
 } from "../utils/AreaAndLine/AreaAndLineUtils";
-import { PaletteName, useChartPalette } from "../utils/PalletUtils";
+import { useExportChart } from "../utils/chartExportUtils";
 import {
   get2dChartConfig,
   getColorForDataKey,
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
+import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 import { LineChartData, LineChartVariant } from "./types";
 
 type LineChartOnClick = React.ComponentProps<typeof RechartsLineChart>["onClick"];
@@ -53,12 +57,13 @@ export interface LineChartProps<T extends LineChartData> {
   height?: number;
   width?: number;
   strokeWidth?: number;
+  exportRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const X_AXIS_PADDING = 36;
 const CHART_CONTAINER_BOTTOM_MARGIN = 10;
 
-export const LineChart = <T extends LineChartData>({
+const LineChartComponent = <T extends LineChartData>({
   data,
   categoryKey,
   theme = "ocean",
@@ -76,6 +81,7 @@ export const LineChart = <T extends LineChartData>({
   height,
   width,
   strokeWidth = 2,
+  exportRef,
 }: LineChartProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -113,6 +119,11 @@ export const LineChart = <T extends LineChartData>({
     title: "",
     values: [],
   });
+  const [isChartHovered, setIsChartHovered] = useState(false);
+  const exportContext = useExportContext();
+
+  const exportChartRef = useRef<HTMLDivElement>(null);
+  const { exportChart } = useExportChart(exportChartRef, "crayon-line-chart-main-container");
 
   // Use provided width or observed width
   const effectiveWidth = useMemo(() => {
@@ -305,11 +316,45 @@ export const LineChart = <T extends LineChartData>({
         data={sideBarTooltipData}
         setData={setSideBarTooltipData}
       >
+        {!exportContext && (
+          <ExportContextProvider value={{ format: "image" }}>
+            <LineChart
+              data={data}
+              categoryKey={categoryKey}
+              theme={theme}
+              customPalette={customPalette}
+              variant={variant}
+              tickVariant={"multiLine"}
+              grid={grid}
+              icons={icons}
+              isAnimationActive={false}
+              showYAxis={showYAxis}
+              xAxisLabel={xAxisLabel}
+              yAxisLabel={yAxisLabel}
+              legend={legend}
+              className={className}
+              height={height}
+              width={width}
+              strokeWidth={strokeWidth}
+              exportRef={exportChartRef}
+            />
+          </ExportContextProvider>
+        )}
+
         <div
-          className={clsx("crayon-line-chart-container", className)}
+          className={clsx(
+            "crayon-line-chart-container",
+            {
+              "crayon-chart-export-container": exportContext,
+            },
+            className,
+          )}
           style={{
             width: width ? `${width}px` : undefined,
           }}
+          onMouseEnter={() => setIsChartHovered(true)}
+          onMouseLeave={() => setIsChartHovered(false)}
+          ref={exportRef}
         >
           <div className="crayon-line-chart-container-inner" ref={chartContainerRef}>
             {/* Y-axis of the chart */}
@@ -397,12 +442,17 @@ export const LineChart = <T extends LineChartData>({
               yAxisLabel={yAxisLabel}
               xAxisLabel={xAxisLabel}
               containerWidth={effectiveWidth}
-              isExpanded={isLegendExpanded}
+              isExpanded={isLegendExpanded || !!exportContext} // legend should always be expanded in export mode
               setIsExpanded={setIsLegendExpanded}
             />
           )}
+          {isChartHovered && <ExportButton exportChart={exportChart} />}
+          {exportContext && <ChartExportFooter />}
         </div>
       </SideBarTooltipProvider>
     </LabelTooltipProvider>
   );
 };
+
+// Added React.memo for performance optimization to avoid unnecessary re-renders
+export const LineChart = React.memo(LineChartComponent) as typeof LineChartComponent;

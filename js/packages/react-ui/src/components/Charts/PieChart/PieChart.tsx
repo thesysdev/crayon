@@ -2,10 +2,14 @@ import clsx from "clsx";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../Charts.js";
+import { ExportContextProvider, useExportContext } from "../ExportContext";
 import { useTransformedKeys } from "../hooks/index.js";
+import { ChartExportFooter } from "../shared/ChartExportFooter/index.js";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend.js";
+import { ExportButton } from "../shared/ExportButton/index.js";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend.js";
 import { LegendItem } from "../types/Legend.js";
+import { useExportChart } from "../utils/chartExportUtils.js";
 import { getCategoricalChartConfig } from "../utils/dataUtils.js";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils.js";
 import { PieChartData } from "./types/index.js";
@@ -39,6 +43,7 @@ export interface PieChartProps<T extends PieChartData> {
   className?: string;
   maxChartSize?: number;
   minChartSize?: number;
+  exportRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
@@ -65,12 +70,18 @@ const PieChartComponent = <T extends PieChartData>({
   className,
   maxChartSize = MAX_CHART_SIZE,
   minChartSize = MIN_CHART_SIZE,
+  exportRef,
 }: PieChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
   const [hoveredLegendKey, setHoveredLegendKey] = useState<string | null>(null);
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
+  const [isChartHovered, setIsChartHovered] = useState(false);
   const { activeIndex, handleMouseEnter, handleMouseLeave } = useChartHover();
+  const exportContext = useExportContext();
+
+  const exportChartRef = useRef<HTMLDivElement>(null);
+  const { exportChart } = useExportChart(exportChartRef);
 
   // Determine layout mode based on container width
   const isRowLayout =
@@ -360,7 +371,7 @@ const PieChartComponent = <T extends PieChartData>({
       <DefaultLegend
         items={defaultLegendItems}
         containerWidth={wrapperRect.width}
-        isExpanded={isLegendExpanded}
+        isExpanded={isLegendExpanded || !!exportContext} // legend should always be expanded in export mode
         setIsExpanded={setIsLegendExpanded}
       />
     );
@@ -374,6 +385,7 @@ const PieChartComponent = <T extends PieChartData>({
     isRowLayout,
     defaultLegendItems,
     isLegendExpanded,
+    exportContext,
   ]);
 
   const wrapperClassName = useMemo(
@@ -387,8 +399,13 @@ const PieChartComponent = <T extends PieChartData>({
     [className, legend, legendVariant, isRowLayout],
   );
 
-  return (
-    <div ref={wrapperRef} className={wrapperClassName}>
+  const pieChartJsx = (
+    <div
+      ref={wrapperRef}
+      className={wrapperClassName}
+      onMouseEnter={() => setIsChartHovered(true)}
+      onMouseLeave={() => setIsChartHovered(false)}
+    >
       <div className="crayon-pie-chart-container">
         <div className="crayon-pie-chart-container-inner">
           <div style={chartSizeStyle}>
@@ -406,9 +423,52 @@ const PieChartComponent = <T extends PieChartData>({
             </ChartContainer>
           </div>
         </div>
+        {isChartHovered && <ExportButton exportChart={exportChart} />}
       </div>
       {renderLegend()}
     </div>
+  );
+
+  return (
+    <>
+      {!exportContext && (
+        <ExportContextProvider value={{ format: "image" }}>
+          <PieChart
+            categoryKey={categoryKey as string}
+            dataKey={dataKey as string}
+            data={data}
+            theme={theme}
+            customPalette={customPalette}
+            variant={variant}
+            format={format}
+            legend={legend}
+            legendVariant={"default"}
+            isAnimationActive={false}
+            appearance={appearance}
+            cornerRadius={cornerRadius}
+            paddingAngle={paddingAngle}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onClick={onClick}
+            className={className}
+            maxChartSize={maxChartSize}
+            minChartSize={minChartSize}
+            exportRef={exportChartRef}
+          />
+        </ExportContextProvider>
+      )}
+      {exportContext ? (
+        <div
+          className="crayon-chart-export-container crayon-pie-chart-export-container"
+          ref={exportRef}
+        >
+          {pieChartJsx}
+          {<ChartExportFooter />}
+        </div>
+      ) : (
+        pieChartJsx
+      )}
+    </>
   );
 };
 

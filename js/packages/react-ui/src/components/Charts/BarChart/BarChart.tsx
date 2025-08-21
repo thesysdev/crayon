@@ -1,9 +1,7 @@
 import clsx from "clsx";
-import { Download } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
-import { IconButton } from "../../IconButton";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
@@ -19,7 +17,8 @@ import {
   XAxisTickProps,
   YAxisTick,
 } from "../shared";
-import { ChartWatermark } from "../shared/ChartWatermark";
+import { ChartExportFooter } from "../shared/ChartExportFooter";
+import { ExportButton } from "../shared/ExportButton";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/ScrollButtonsHorizontal";
 import { XAxisTickVariant } from "../types";
@@ -100,13 +99,7 @@ const BarChartComponent = <T extends BarChartData>({
   const widthOfGroup = getWidthOfGroup(data, categoryKey as string, variant);
   const exportContext = useExportContext();
 
-  const maxLabelHeight = useMaxLabelHeight(
-    data,
-    categoryKey as string,
-    tickVariant,
-    widthOfGroup,
-    !!exportRef,
-  );
+  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant, widthOfGroup);
 
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -442,6 +435,7 @@ const BarChartComponent = <T extends BarChartData>({
               height={height}
               width={width}
               exportRef={exportChartRef}
+              icons={icons}
             />
           </ExportContextProvider>
         )}
@@ -450,7 +444,7 @@ const BarChartComponent = <T extends BarChartData>({
           className={clsx(
             "crayon-bar-chart-container",
             {
-              "crayon-bar-chart-export-container": exportContext,
+              "crayon-chart-export-container": exportContext,
             },
             className,
           )}
@@ -549,28 +543,8 @@ const BarChartComponent = <T extends BarChartData>({
               setIsExpanded={setIsLegendExpanded}
             />
           )}
-          {isChartHovered && (
-            <div className="crayon-bar-chart-download-button-container">
-              <IconButton
-                variant="tertiary"
-                icon={<Download />}
-                onClick={(e) => {
-                  if (exportContext) {
-                    e.preventDefault();
-                    return;
-                  }
-                  exportChart();
-                }}
-              />
-            </div>
-          )}
-          <div className="crayon-bar-chart-export-footer-container">
-            {exportContext && (
-              <div className="crayon-bar-chart-export-watermark-container">
-                <ChartWatermark />
-              </div>
-            )}
-          </div>
+          {isChartHovered && <ExportButton exportChart={exportChart} />}
+          {exportContext && <ChartExportFooter />}
         </div>
       </SideBarTooltipProvider>
     </LabelTooltipProvider>

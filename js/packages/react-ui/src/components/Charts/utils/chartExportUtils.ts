@@ -11,7 +11,7 @@ export const useExportChart = (
    * The classname of the container which scrolls. This is used to expand the container before screenshotting to make the entire chart visible
    *
    */
-  scrollableContainerClass?: string
+  scrollableContainerClass?: string,
 ) => {
   const { mode } = useTheme();
 
@@ -30,9 +30,12 @@ export const useExportChart = (
       screenshotableNode.style.top = "0";
       screenshotableNode.style.left = "0";
       screenshotableNode.style.zIndex = "1000";
-      (
-        screenshotableNode.querySelector(`.${scrollableContainerClass}`) as HTMLDivElement
-      ).style.overflow = "visible";
+      const scrollableContainer = screenshotableNode.querySelector(
+        `.${scrollableContainerClass}`,
+      ) as HTMLDivElement | null;
+      if (scrollableContainer) {
+        scrollableContainer.style.overflow = "visible";
+      }
       screenshotableNode.style.opacity = "0";
       // Append to the body to apply styles
       document.body.appendChild(screenshotableNode);
