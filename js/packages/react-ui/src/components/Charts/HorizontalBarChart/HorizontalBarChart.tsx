@@ -5,6 +5,7 @@ import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
+import { ExportContextProvider, useExportContext } from "../ExportContext";
 import { useTransformedKeys } from "../hooks";
 import { useHorizontalBarLabelHeight } from "../hooks/useMaxLabelHeight";
 import {
@@ -14,6 +15,8 @@ import {
   verticalCartesianGrid,
   YAxisTick,
 } from "../shared";
+import { ChartExportFooter } from "../shared/ChartExportFooter";
+import { ExportButton } from "../shared/ExportButton";
 import { ScrollButtonsVertical } from "../shared/ScrollButtonsVertical";
 
 import { type LegendItem } from "../types/Legend";
@@ -25,6 +28,7 @@ import {
   getBarStackInfo,
   getRadiusArray,
 } from "../utils/BarCharts/BarChartsUtils";
+import { useExportChart } from "../utils/chartExportUtils";
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -64,6 +68,7 @@ export interface HorizontalBarChartProps<T extends HorizontalBarChartData> {
   className?: string;
   height?: number;
   width?: number;
+  exportRef?: React.RefObject<HTMLElement | null>;
 }
 
 const X_AXIS_HEIGHT = 40; // Height of X-axis chart when shown
@@ -88,8 +93,10 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   className,
   height,
   width,
+  exportRef,
 }: HorizontalBarChartProps<T>) => {
   const maxCategoryLabelWidth = useMaxCategoryLabelWidth(data, categoryKey as string);
+  const exportContext = useExportContext();
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
@@ -98,11 +105,17 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   const [canScrollDown, setCanScrollDown] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | number | null>(null);
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
+  const [isChartHovered, setIsChartHovered] = useState(false);
   const [isSideBarTooltipOpen, setIsSideBarTooltipOpen] = useState(false);
   const [sideBarTooltipData, setSideBarTooltipData] = useState<SideBarChartData>({
     title: "",
     values: [],
   });
+  const exportChartRef = useRef<HTMLDivElement>(null);
+  const { exportChart } = useExportChart(
+    exportChartRef ?? null,
+    "crayon-horizontal-bar-chart-container-inner-wrapper",
+  );
 
   // Calculate chart width for internal calculations (legend, xAxis, etc.)
   const effectiveWidth = useMemo(() => {
@@ -342,11 +355,50 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
         data={sideBarTooltipData}
         setData={setSideBarTooltipData}
       >
-        <div className={clsx("crayon-horizontal-bar-chart-container", className)}>
+        {!exportContext && (
+          <ExportContextProvider value={{ format: "image" }}>
+            <HorizontalBarChart
+              data={data}
+              categoryKey={categoryKey}
+              theme={theme}
+              customPalette={customPalette}
+              variant={variant}
+              grid={grid}
+              radius={BAR_RADIUS}
+              isAnimationActive={false}
+              showXAxis={showXAxis}
+              xAxisLabel={xAxisLabel}
+              yAxisLabel={yAxisLabel}
+              legend={legend}
+              className={className}
+              height={height}
+              width={width}
+              exportRef={exportChartRef}
+              icons={icons}
+            />
+          </ExportContextProvider>
+        )}
+
+        <div
+          className={clsx(
+            "crayon-horizontal-bar-chart-container",
+            {
+              "crayon-chart-export-container": exportContext,
+            },
+            className,
+          )}
+          style={{
+            width: width ? `${width}px` : undefined,
+          }}
+          onMouseEnter={() => setIsChartHovered(true)}
+          onMouseLeave={() => setIsChartHovered(false)}
+          ref={exportRef as React.RefObject<HTMLDivElement>}
+        >
           <div
             className="crayon-horizontal-bar-chart-container-inner-wrapper"
             style={{
-              height: height ? `${height}px` : effectiveHeight,
+              minHeight: effectiveHeight,
+              height: !!exportContext ? undefined : height ? `${height}px` : effectiveHeight,
             }}
           >
             <div className="crayon-horizontal-bar-chart-container-inner" ref={chartContainerRef}>
@@ -475,9 +527,13 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
               yAxisLabel={yAxisLabel}
               xAxisLabel={xAxisLabel}
               containerWidth={effectiveWidth}
-              isExpanded={isLegendExpanded}
+              isExpanded={isLegendExpanded || !!exportContext} // legend should always be expanded in export mode
               setIsExpanded={setIsLegendExpanded}
             />
+          )}
+          {isChartHovered && <ExportButton exportChart={exportChart} />}
+          {exportContext && (
+            <ChartExportFooter className="crayon-horizontal-bar-chart-export-footer" />
           )}
         </div>
       </SideBarTooltipProvider>

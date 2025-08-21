@@ -230,7 +230,9 @@ const RadarChartComponent = <T extends RadarChartData>({
 
       {!!exportContext ? (
         <div
-          className="crayon-radar-chart-export-container"
+          className={clsx("crayon-radar-chart-export-container", {
+            "crayon-chart-export-container": exportContext,
+          })}
           ref={exportRef}
         >
           {radarChartJsx}
