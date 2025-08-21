@@ -3,7 +3,7 @@ import { Download } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
-import { Button } from "../../Button";
+import { IconButton } from "../../IconButton";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
@@ -28,6 +28,7 @@ import {
   getBarStackInfo,
   getRadiusArray,
 } from "../utils/BarCharts/BarChartsUtils";
+import { useExportChart } from "../utils/chartExportUtils";
 import {
   get2dChartConfig,
   getColorForDataKey,
@@ -37,7 +38,6 @@ import {
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 import { ChartWatermark } from "./ChartWatermark";
 import { BarChartData, BarChartVariant } from "./types";
-import { useExportBarChart } from "./useExportBarChart";
 import {
   BAR_WIDTH,
   getPadding,
@@ -134,11 +134,14 @@ const BarChartComponent = <T extends BarChartData>({
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | number | null>(null);
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
+  const [isChartHovered, setIsChartHovered] = useState(false);
   const [isSideBarTooltipOpen, setIsSideBarTooltipOpen] = useState(false);
   const [sideBarTooltipData, setSideBarTooltipData] = useState<SideBarChartData>({
     title: "",
     values: [],
   });
+  const exportChartRef = useRef<HTMLDivElement>(null);
+  const { exportChart } = useExportChart(exportChartRef ?? null, "crayon-bar-chart-main-container");
 
   // Use provided width or observed width
   const effectiveWidth = useMemo(() => {
@@ -411,17 +414,6 @@ const BarChartComponent = <T extends BarChartData>({
     categoryKey,
   ]);
 
-  const exportChartRef = useRef<HTMLDivElement>(null);
-
-  const { exportBarChart } = useExportBarChart(
-    chartContainerRef,
-    exportChartRef ?? null,
-    dataWidth,
-    showYAxis,
-    yAxisWidth,
-    chartHeight,
-  );
-
   return (
     <LabelTooltipProvider>
       <SideBarTooltipProvider
@@ -438,7 +430,7 @@ const BarChartComponent = <T extends BarChartData>({
               theme={theme}
               customPalette={customPalette}
               variant={variant}
-              tickVariant={tickVariant}
+              tickVariant={"multiLine"}
               grid={grid}
               radius={BAR_RADIUS}
               isAnimationActive={false}
@@ -455,13 +447,18 @@ const BarChartComponent = <T extends BarChartData>({
         )}
 
         <div
-          className={clsx("crayon-bar-chart-container", className)}
+          className={clsx(
+            "crayon-bar-chart-container",
+            {
+              "crayon-bar-chart-export-container": exportContext,
+            },
+            className,
+          )}
           style={{
             width: width ? `${width}px` : undefined,
-            opacity: exportContext ? 0 : 1,
-            position: exportContext ? "fixed" : undefined,
-            zIndex: exportContext ? -1 : undefined,
           }}
+          onMouseEnter={() => setIsChartHovered(true)}
+          onMouseLeave={() => setIsChartHovered(false)}
           ref={exportRef as React.RefObject<HTMLDivElement>}
         >
           <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
@@ -548,23 +545,28 @@ const BarChartComponent = <T extends BarChartData>({
               yAxisLabel={yAxisLabel}
               xAxisLabel={xAxisLabel}
               containerWidth={effectiveWidth}
-              isExpanded={isLegendExpanded}
+              isExpanded={isLegendExpanded || !!exportContext} // legend should always be expanded in export mode
               setIsExpanded={setIsLegendExpanded}
             />
           )}
-          <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
-            <Button
-              variant="secondary"
-              iconLeft={<Download />}
-              onClick={() => {
-                if (exportContext) return;
-                exportBarChart();
-              }}
-            >
-              Download
-            </Button>
+          {isChartHovered && (
+            <div className="crayon-bar-chart-download-button-container">
+              <IconButton
+                variant="tertiary"
+                icon={<Download />}
+                onClick={(e) => {
+                  if (exportContext) {
+                    e.preventDefault();
+                    return;
+                  }
+                  exportChart();
+                }}
+              />
+            </div>
+          )}
+          <div className="crayon-bar-chart-export-footer-container">
             {exportContext && (
-              <div style={{ display: "flex", alignItems: "center", padding: "0 24px" }}>
+              <div className="crayon-bar-chart-export-watermark-container">
                 <ChartWatermark />
               </div>
             )}

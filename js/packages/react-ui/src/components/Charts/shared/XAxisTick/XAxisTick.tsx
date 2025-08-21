@@ -108,9 +108,14 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
               style={{
                 textAlign: "center",
                 wordBreak: "break-word",
-                overflow: exportContext ? 'unset' : undefined
               }}
-              className={clsx(spanClassName, className)}
+              className={clsx(
+                spanClassName,
+                {
+                  "crayon-chart-x-axis-tick-export-mode": exportContext,
+                },
+                className,
+              )}
             >
               {value}
             </span>

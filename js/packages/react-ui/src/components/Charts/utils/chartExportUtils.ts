@@ -1,34 +1,37 @@
 import { toJpeg } from "html-to-image";
-import { useTheme } from "../../ThemeProvider";
+import { useTheme } from "../../ThemeProvider/index.js";
 
-export const useExportBarChart = (
-  chartContainerRef: React.RefObject<HTMLDivElement | null>,
-  barChartContainerRef: React.RefObject<HTMLElement | null> | null,
-  dataWidth: number,
-  showYAxis: boolean,
-  yAxisWidth: number,
-  chartHeight: number,
+export const useExportChart = (
+  /**
+   * The top level container of the chart to screenshot
+   *
+   */
+  exportChartContainerRef: React.RefObject<HTMLElement | null> | null,
+  /**
+   * The classname of the container which scrolls. This is used to expand the container before screenshotting to make the entire chart visible
+   *
+   */
+  scrollableContainerClass?: string
 ) => {
   const { mode } = useTheme();
 
   return {
-    exportBarChart: async () => {
-      if (!barChartContainerRef) return;
-      const { current: chartContainer } = chartContainerRef;
-      const { current: barChartContainer } = barChartContainerRef;
+    exportChart: async () => {
+      if (!exportChartContainerRef) return;
+      const { current: exportChartContainer } = exportChartContainerRef;
 
-      if (!chartContainer || !barChartContainer) {
+      if (!exportChartContainer) {
         return;
       }
 
-      const screenshotableNode = barChartContainer.cloneNode(true) as HTMLDivElement;
+      const screenshotableNode = exportChartContainer.cloneNode(true) as HTMLDivElement;
       // Position the clone off-screen
       screenshotableNode.style.position = "fixed";
       screenshotableNode.style.top = "0";
       screenshotableNode.style.left = "0";
       screenshotableNode.style.zIndex = "1000";
       (
-        screenshotableNode.querySelector(".crayon-bar-chart-main-container") as HTMLDivElement
+        screenshotableNode.querySelector(`.${scrollableContainerClass}`) as HTMLDivElement
       ).style.overflow = "visible";
       screenshotableNode.style.opacity = "0";
       // Append to the body to apply styles
@@ -45,9 +48,10 @@ export const useExportBarChart = (
             }
             return true;
           },
-          width: dataWidth + (showYAxis ? yAxisWidth : 0),
-          height: chartHeight + 100,
-          canvasHeight: chartHeight + 100,
+          width: Number(getComputedStyle(screenshotableNode).width),
+          canvasWidth: Number(getComputedStyle(screenshotableNode).width),
+          height: Number(getComputedStyle(screenshotableNode).height),
+          canvasHeight: Number(getComputedStyle(screenshotableNode).height),
           backgroundColor: mode === "dark" ? "rgba(28,28,28,1)" : "white",
 
           style: {
