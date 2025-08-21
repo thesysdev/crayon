@@ -19,6 +19,7 @@ import {
   XAxisTickProps,
   YAxisTick,
 } from "../shared";
+import { ChartWatermark } from "../shared/ChartWatermark";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/ScrollButtonsHorizontal";
 import { XAxisTickVariant } from "../types";
@@ -36,7 +37,6 @@ import {
   getLegendItems,
 } from "../utils/dataUtils";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
-import { ChartWatermark } from "./ChartWatermark";
 import { BarChartData, BarChartVariant } from "./types";
 import {
   BAR_WIDTH,
