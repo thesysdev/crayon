@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://crayonai.org">Homepage</a> ·
   <a href="https://crayonai.org/docs">Documentation</a> ·
-  <a href="https://thesys.dev">Thesys</a>
+  <a href="https://www.thesys.dev/?utm_source=github&utm_medium=crayon-readme">Thesys</a>
 </p>
 
 <p align="center">
