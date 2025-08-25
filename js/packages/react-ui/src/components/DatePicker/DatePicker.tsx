@@ -10,6 +10,8 @@ export interface DatePickerProps {
   selectedRangeDates?: DateRange;
   setSelectedSingleDate?: (date?: Date) => void;
   setSelectedRangeDates?: (range?: DateRange) => void;
+  isOpen?: boolean;
+  setIsOpen?: (isOpen: boolean) => void;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -23,6 +25,8 @@ const DatePicker = (props: DatePickerProps) => {
     selectedRangeDates,
     setSelectedSingleDate,
     setSelectedRangeDates,
+    isOpen,
+    setIsOpen,
     className,
     style,
   } = props;
@@ -33,6 +37,7 @@ const DatePicker = (props: DatePickerProps) => {
   const [internalSelectedRange, setInternalSelectedRange] = useState<DateRange | undefined>(
     selectedRangeDates,
   );
+  const [internalIsOpen, setInternalIsOpen] = useState(isOpen ?? false);
 
   // this derived setter state is used to make this component more flexible
   // it allows the user to pass in a setter function from the parent component
@@ -69,6 +74,8 @@ const DatePicker = (props: DatePickerProps) => {
       selectedRangeFromParent={selectedRangeDates ?? internalSelectedRange}
       setSelectedDateFromParent={selectedDateHandler}
       setSelectedRangeFromParent={selectedRangeHandler}
+      isOpenFromParent={isOpen ?? internalIsOpen}
+      setIsOpenFromParent={setIsOpen ?? setInternalIsOpen}
     >
       <FloatingDatePickerRenderer className={className} style={style} />
     </DatePickerProvider>
