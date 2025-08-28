@@ -196,7 +196,13 @@ export const Messages = ({
   );
 };
 
-export const Composer = ({ className }: { className?: string }) => {
+export const Composer = ({
+  className,
+  enableFileUpload,
+}: {
+  className?: string;
+  enableFileUpload: boolean;
+}) => {
   const { textContent, setTextContent, uploadedFiles, setUploadedFiles } = useComposerState();
   const { processMessage, onCancel, processFileUpload } = useThreadActions();
   const { isRunning, isLoadingMessages } = useThreadState();
@@ -258,14 +264,16 @@ export const Composer = ({ className }: { className?: string }) => {
           }}
         />
 
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          style={{ display: "none" }}
-        />
+        {enableFileUpload && (
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+        )}
 
-        {(!isRunning || !!handleUpload) && (
+        {(!isRunning || !!handleUpload) && enableFileUpload && (
           <IconButton
             variant="secondary"
             onClick={isRunning ? onCancel : handleUpload}

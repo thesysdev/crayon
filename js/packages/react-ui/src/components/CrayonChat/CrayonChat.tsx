@@ -142,6 +142,7 @@ export const CrayonChat = ({
   });
 
   const threadManager = userThreadManager ?? defaultThreadManager;
+  const enableFileUpload = processFileUpload ? true : false;
 
   useEffect(() => {
     if (threadListManager.selectedThreadId) {
@@ -158,6 +159,7 @@ export const CrayonChat = ({
             agentName={agentName}
             messageLoadingComponent={messageLoadingComponent}
             scrollVariant={scrollVariant}
+            enableFileUpload={enableFileUpload}
           />
         ) : (
           <ComposedStandalone
@@ -165,6 +167,7 @@ export const CrayonChat = ({
             agentName={agentName}
             messageLoadingComponent={messageLoadingComponent}
             scrollVariant={scrollVariant}
+            enableFileUpload={enableFileUpload}
           />
         )}
       </ChatProvider>

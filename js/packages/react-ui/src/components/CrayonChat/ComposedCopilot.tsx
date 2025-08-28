@@ -13,6 +13,7 @@ interface ComposedCopilotProps {
   agentName?: string;
   messageLoadingComponent?: () => React.ReactNode;
   scrollVariant: ScrollVariant;
+  enableFileUpload: boolean;
 }
 
 export const ComposedCopilot = ({
@@ -20,6 +21,7 @@ export const ComposedCopilot = ({
   agentName = "My Agent",
   messageLoadingComponent: MessageLoadingComponent = MessageLoading,
   scrollVariant,
+  enableFileUpload,
 }: ComposedCopilotProps) => {
   return (
     <Container logoUrl={logoUrl} agentName={agentName}>
@@ -28,7 +30,7 @@ export const ComposedCopilot = ({
         <ScrollArea scrollVariant={scrollVariant}>
           <Messages loader={<MessageLoadingComponent />} />
         </ScrollArea>
-        <Composer />
+        <Composer enableFileUpload={enableFileUpload} />
       </ThreadContainer>
     </Container>
   );
