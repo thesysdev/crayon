@@ -17,5 +17,6 @@ export const useThreadActions = (): ThreadActions => {
     setMessages: useStore(threadManager, (store) => store.setMessages),
     onCancel: useStore(threadManager, (store) => store.onCancel),
     deleteMessage: useStore(threadManager, (store) => store.deleteMessage),
+    processFileUpload: useStore(threadManager, (store) => store.processFileUpload),
   };
 };

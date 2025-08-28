@@ -6,7 +6,7 @@ import {
   useThreadState,
 } from "@crayonai/react-core";
 import clsx from "clsx";
-import { ArrowRight, Square } from "lucide-react";
+import { ArrowRight, Plus, Square } from "lucide-react";
 import React, { memo, useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../hooks/useComposerState";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
@@ -197,10 +197,23 @@ export const Messages = ({
 };
 
 export const Composer = ({ className }: { className?: string }) => {
-  const { textContent, setTextContent } = useComposerState();
-  const { processMessage, onCancel } = useThreadActions();
+  const { textContent, setTextContent, uploadedFiles, setUploadedFiles } = useComposerState();
+  const { processMessage, onCancel, processFileUpload } = useThreadActions();
   const { isRunning, isLoadingMessages } = useThreadState();
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      const result = await processFileUpload(files);
+      setUploadedFiles({ files: result });
+    }
+  };
 
   const handleSubmit = () => {
     if (!textContent.trim() || isRunning || isLoadingMessages) {
@@ -211,8 +224,10 @@ export const Composer = ({ className }: { className?: string }) => {
       type: "prompt",
       role: "user",
       message: textContent,
+      files: uploadedFiles?.files ?? [],
     });
 
+    setUploadedFiles({ files: [] });
     setTextContent("");
   };
 
@@ -242,6 +257,22 @@ export const Composer = ({ className }: { className?: string }) => {
             }
           }}
         />
+
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          style={{ display: "none" }}
+        />
+
+        {(!isRunning || !!handleUpload) && (
+          <IconButton
+            variant="secondary"
+            onClick={isRunning ? onCancel : handleUpload}
+            icon={<Plus size="1em" />}
+          />
+        )}
+
         <IconButton
           onClick={isRunning ? onCancel : handleSubmit}
           icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowRight size="1em" />}
