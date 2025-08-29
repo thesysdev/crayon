@@ -39,7 +39,7 @@ const lightTheme: ColorTheme = {
   backgroundFills: "rgba(250,250,250,1)",
   containerFills: "rgba(253, 253, 253)",
   overlayFills: "rgba(0, 0, 0, 0.4)",
-  sunkFills: "rgba(0, 0, 0, 0.06)",
+  sunkFills: "rgba(0, 0, 0, 0.04)",
   dangerFills: "rgba(203,63,73,0.1)",
   successFills: "rgba(13,160,93,0.1)",
   infoFills: "rgba(56, 148, 255, 0.1)",
@@ -50,10 +50,10 @@ const lightTheme: ColorTheme = {
   highlightSubtle: "rgba(0, 0, 0, 0.02)",
 
   // Border colors
-  strokeDefault: "rgba(0, 0, 0, 0.04)",
-  strokeInteractiveEl: "rgba(0, 0, 0, 0.08)",
+  strokeDefault: "rgba(0, 0, 0, 0.06)",
+  strokeInteractiveEl: "rgba(0, 0, 0, 0.1)",
   strokeInteractiveElSelected: "rgba(21,21,21,1)",
-  strokeEmphasis: "rgba(0, 0, 0, 0.2)",
+  strokeEmphasis: "rgba(0, 0, 0, 0.3)",
   strokeAccent: "rgba(255, 255, 255, 0.08)",
   strokeAccentEmphasis: "rgba(255, 255, 255, 0.3)",
   strokeInfo: "rgba(56, 148, 255, 0.08)",
@@ -113,7 +113,7 @@ const darkTheme: ColorTheme = {
   backgroundFills: "rgba(21,21,21,1)",
   containerFills: "rgba(28,28,28,1)",
   overlayFills: "rgba(0, 0, 0, 0.4)",
-  sunkFills: "rgba(255,255,255,0.08)",
+  sunkFills: "rgba(255,255,255,0.06)",
   dangerFills: "rgba(203,63,73,0.2)",
   successFills: "rgba(13,160, 94, 0.2)",
   infoFills: "rgba(56, 148, 255, 0.2)",
@@ -124,10 +124,10 @@ const darkTheme: ColorTheme = {
   highlightSubtle: "rgba(255, 255, 255, 0.03)",
 
   // Border colors
-  strokeDefault: "rgba(255, 255, 255, 0.04)",
-  strokeInteractiveEl: "rgba(255, 255, 255, 0.1)",
+  strokeDefault: "rgba(255, 255, 255, 0.06)",
+  strokeInteractiveEl: "rgba(255, 255, 255, 0.12)",
   strokeInteractiveElSelected: "rgba(253, 253, 253, 1)",
-  strokeEmphasis: "rgba(255, 255, 255, 0.2)",
+  strokeEmphasis: "rgba(255, 255, 255, 0.4)",
   strokeAccent: "rgba(0, 0, 0, 0.08)",
   strokeAccentEmphasis: "rgba(0, 0, 0, 0.3)",
   strokeInfo: "rgba(56, 148, 255, 0.2)",
@@ -215,13 +215,13 @@ const typographyTheme: TypographyTheme = {
   // Display & Headings
   // Large
   fontHeadingLarge: '600 28px/1.15 "Inter"',
-  fontHeadingLargeLetterSpacing: "-0.75px",
+  fontHeadingLargeLetterSpacing: "-0.25px",
   // Medium
   fontHeadingMedium: '600 24px/1.15 "Inter"',
-  fontHeadingMediumLetterSpacing: "-0.75px",
+  fontHeadingMediumLetterSpacing: "-0.25px",
   // Small
   fontHeadingSmall: '500 18px/1.25 "Inter"',
-  fontHeadingSmallLetterSpacing: "-0.25px",
+  fontHeadingSmallLetterSpacing: "-0.1px",
   // Extra Small
   fontHeadingExtraSmall: '500 16px/1.25 "Inter"',
   fontHeadingExtraSmallLetterSpacing: "0px",
