@@ -1,6 +1,7 @@
 import {
   Message,
   MessageProvider,
+  UserMessage,
   useThreadActions,
   useThreadManagerSelector,
   useThreadState,
@@ -111,10 +112,34 @@ export const AssistantMessageContainer = ({
 export const UserMessageContainer = ({
   children,
   className,
+  message,
 }: {
   children?: React.ReactNode;
   className?: string;
+  message?: UserMessage;
 }) => {
+  if (message) {
+    return (
+      <div className={clsx("crayon-shell-thread-message-user", className)}>
+        <div className="crayon-shell-thread-message-user__content-wrapper">
+          {message.files && message.files.length > 0 && (
+            <div className="crayon-shell-thread-message-user__files">
+              {message.files.map((file, index) => (
+                <div key={index} className="crayon-shell-thread-message-user__file">
+                  📎 {file.name}
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="crayon-shell-thread-message-user__content">
+            {message.message && <div>{message.message}</div>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // if no message object is provided, use the children
   return (
     <div className={clsx("crayon-shell-thread-message-user", className)}>
       <div className="crayon-shell-thread-message-user__content">{children}</div>
@@ -158,7 +183,7 @@ export const RenderMessage = memo(
       );
     }
 
-    return <MessageContainer>{message.message}</MessageContainer>;
+    return <MessageContainer message={message}>{message.message}</MessageContainer>;
   },
 );
 
@@ -198,10 +223,10 @@ export const Messages = ({
 
 export const Composer = ({
   className,
-  enableFileUpload,
+  enableFileUpload = false,
 }: {
   className?: string;
-  enableFileUpload: boolean;
+  enableFileUpload?: boolean;
 }) => {
   const { textContent, setTextContent, uploadedFiles, setUploadedFiles } = useComposerState();
   const { processMessage, onCancel, processFileUpload } = useThreadActions();
