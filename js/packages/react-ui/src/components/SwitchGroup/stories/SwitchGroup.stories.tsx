@@ -63,9 +63,9 @@ export const SwitchGroupStory: Story = {
   },
   render: (args) => (
     <SwitchGroup {...args}>
-      <SwitchItem value="option1" label="Option 1" />
-      <SwitchItem value="option2" label="Option 2" />
-      <SwitchItem value="option3" label="Option 3" />
+      <SwitchItem value="option1" label="Option 1" description="Option 1 description" />
+      <SwitchItem value="option2" label="Option 2" description="Option 2 description" />
+      <SwitchItem value="option3" label="Option 3" description="Option 3 description" />
     </SwitchGroup>
   ),
 };

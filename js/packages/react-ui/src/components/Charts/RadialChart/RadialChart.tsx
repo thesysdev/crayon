@@ -35,6 +35,8 @@ export interface RadialChartProps<T extends RadialChartData> {
   onMouseLeave?: () => void;
   onClick?: (data: any, index: number) => void;
   className?: string;
+  maxChartSize?: number;
+  minChartSize?: number;
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
@@ -58,6 +60,8 @@ export const RadialChart = <T extends RadialChartData>({
   onMouseLeave,
   onClick,
   className,
+  maxChartSize = MAX_CHART_SIZE,
+  minChartSize = MIN_CHART_SIZE,
 }: RadialChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -106,8 +110,8 @@ export const RadialChart = <T extends RadialChartData>({
       // In a column layout, the chart's size is constrained by the smaller of the total container's width or height.
       size = Math.min(effectiveWidth, effectiveHeight);
     }
-    size = Math.min(size, MAX_CHART_SIZE);
-    return Math.max(MIN_CHART_SIZE, size);
+    size = Math.min(size, maxChartSize);
+    return Math.max(minChartSize, size);
   }, [effectiveWidth, effectiveHeight, isRowLayout]);
 
   const chartSizeStyle = useMemo(
@@ -120,10 +124,10 @@ export const RadialChart = <T extends RadialChartData>({
 
   const rechartsProps = useMemo(
     () => ({
-      width: chartSize,
-      height: chartSize,
+      width: "100%",
+      height: "100%",
     }),
-    [chartSize],
+    [],
   );
 
   // Calculate chart radii

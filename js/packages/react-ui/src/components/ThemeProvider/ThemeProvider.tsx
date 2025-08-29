@@ -47,7 +47,7 @@ const lightTheme: ColorTheme = {
   invertedFills: "rgba(21, 21, 21, 1)",
   elevatedFills: "rgba(255, 255, 255, 0.6)",
   sunkBgFills: "rgba(0, 0, 0, 0.04)",
-  highlightSubtle: "rgba(0, 0, 0, 0.03)",
+  highlightSubtle: "rgba(0, 0, 0, 0.02)",
 
   // Border colors
   strokeDefault: "rgba(0, 0, 0, 0.04)",

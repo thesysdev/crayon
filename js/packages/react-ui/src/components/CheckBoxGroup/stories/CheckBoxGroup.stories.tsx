@@ -72,9 +72,9 @@ export const ClearVariant: Story = {
   args: {
     variant: "card",
     children: [
-      <CheckBoxItem key="1" label="Option 1" />,
-      <CheckBoxItem key="2" label="Option 2" />,
-      <CheckBoxItem key="3" label="Option 3" />,
+      <CheckBoxItem key="1" label="Option 1" description="This is a description" />,
+      <CheckBoxItem key="2" label="Option 2" description="This is a description" />,
+      <CheckBoxItem key="3" label="Option 3" description="This is a description" />,
     ],
   },
 };

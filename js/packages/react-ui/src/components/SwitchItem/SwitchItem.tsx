@@ -5,6 +5,7 @@ import { useId } from "../../polyfills";
 
 interface SwitchItemProps {
   label?: ReactNode;
+  description?: ReactNode;
   className?: string;
   style?: CSSProperties;
   checked?: boolean;
@@ -17,7 +18,7 @@ interface SwitchItemProps {
 }
 
 const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>((props, ref) => {
-  const { label, onChange, className, disabled, required, ...rest } = props;
+  const { label, description, onChange, className, disabled, required, ...rest } = props;
   const id = useId();
   return (
     <div className="crayon-switch-item-container">
@@ -32,11 +33,14 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>((props, ref) =
       >
         <Switch.Thumb className="crayon-switch-item-thumb" />
       </Switch.Root>
-      {label && (
-        <label htmlFor={id} className="crayon-switch-item-label">
-          {label}
-        </label>
-      )}
+      <div className="crayon-switch-item-content">
+        {label && (
+          <label htmlFor={id} className="crayon-switch-item-label">
+            {label}
+          </label>
+        )}
+        {description && <p className="crayon-switch-item-description">{description}</p>}
+      </div>
     </div>
   );
 });
