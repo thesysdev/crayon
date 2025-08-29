@@ -195,10 +195,10 @@ export const Messages = ({
 
 export const Composer = ({
   className,
-  enableFileUpload,
+  enableFileUpload = false,
 }: {
   className?: string;
-  enableFileUpload: boolean;
+  enableFileUpload?: boolean;
 }) => {
   const { textContent, setTextContent, uploadedFiles, setUploadedFiles } = useComposerState();
   const { processMessage, onCancel, processFileUpload } = useThreadActions();

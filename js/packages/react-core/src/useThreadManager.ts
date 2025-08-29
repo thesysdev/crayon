@@ -26,7 +26,10 @@ export type UseThreadManagerParams = {
   onUpdateMessage?: (props: { message: Message }) => void;
   /** A list of response templates available to the thread. */
   /** A function that defines how files should be uploaded. Useful for integrating a backend API to upload files. */
-  onProcessFileUpload?: (props: { files: File[] }) => Promise<UploadedFile[]>;
+  onProcessFileUpload?: (props: {
+    files: File[];
+    abortController?: AbortController;
+  }) => Promise<UploadedFile[]>;
   responseTemplates: ResponseTemplate[];
 };
 
@@ -58,6 +61,7 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
         abortController: null,
         isRunning: false,
         isLoadingMessages: false,
+        isUploading: false,
         setMessages: (messages: Message[]) => {
           set({ messages });
         },
