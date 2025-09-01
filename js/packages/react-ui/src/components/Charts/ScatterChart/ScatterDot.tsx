@@ -13,7 +13,6 @@ const ScatterDot: React.FC<ScatterDotProps> = ({
   cx,
   cy,
   fill,
-  radius = 5,
   variant = "circle",
   active = false,
 }) => {
@@ -21,15 +20,16 @@ const ScatterDot: React.FC<ScatterDotProps> = ({
     return null;
   }
 
-  const OUTLINE_COLOR = "black";
-  const OUTLINE_WIDTH = 4;
+  const OUTLINE_COLOR = "var(--crayon-sunk-fills)";
+  const OUTLINE_WIDTH = 2;
+  const displayRadius = active ? 5 : 3;
 
   if (variant === "square") {
-    const sideLength = radius * 2;
+    const sideLength = displayRadius * 2;
     return (
       <rect
-        x={cx - radius}
-        y={cy - radius}
+        x={cx - displayRadius}
+        y={cy - displayRadius}
         width={sideLength}
         height={sideLength}
         fill={fill}
@@ -37,6 +37,7 @@ const ScatterDot: React.FC<ScatterDotProps> = ({
         strokeWidth={OUTLINE_WIDTH}
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
+        rx={2}
       />
     );
   }
@@ -45,7 +46,7 @@ const ScatterDot: React.FC<ScatterDotProps> = ({
     <circle
       cx={cx}
       cy={cy}
-      r={radius}
+      r={displayRadius}
       fill={fill}
       stroke={active ? OUTLINE_COLOR : "none"}
       strokeWidth={OUTLINE_WIDTH}
