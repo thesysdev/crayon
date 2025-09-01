@@ -53,7 +53,6 @@ export interface ScatterChartProps {
 const DEFAULT_CHART_HEIGHT = 400;
 const DEFAULT_MARGIN = 20;
 const X_AXIS_HEIGHT = 40;
-const DEFAULT_POINT_RADIUS = 5;
 
 export const ScatterChart = ({
   data,
@@ -108,7 +107,6 @@ export const ScatterChart = ({
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isSideBarTooltipOpen, setIsSideBarTooltipOpen] = useState(false);
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
   const [sideBarTooltipData, setSideBarTooltipData] = useState<SideBarChartData>({
@@ -145,15 +143,12 @@ export const ScatterChart = ({
   }, [data, yAxisDataKey]);
 
   const renderDotShape = useMemo(() => {
-    return (props: unknown) => (
-      <ScatterDot
-        {...(props as object)}
-        radius={DEFAULT_POINT_RADIUS}
-        variant={shape}
-        active={(props as { index?: number }).index === activeIndex}
-      />
-    );
-  }, [shape, activeIndex]);
+    return (props: unknown) => <ScatterDot {...(props as object)} variant={shape} active={false} />;
+  }, [shape]);
+
+  const renderActiveDotShape = useMemo(() => {
+    return (props: unknown) => <ScatterDot {...(props as object)} variant={shape} active />;
+  }, [shape]);
 
   useEffect(() => {
     // Only set up ResizeObserver if width is not provided
@@ -184,29 +179,6 @@ export const ScatterChart = ({
   }, [datasets, colors, icons]);
 
   const id = useId();
-
-  const onChartMouseMove = useCallback(
-    (state: unknown) => {
-      const s = state as {
-        isTooltipActive?: boolean;
-        activePayload?: Array<{ payload?: unknown }>;
-      } | null;
-      if (s?.isTooltipActive && Array.isArray(s.activePayload) && s.activePayload.length > 0) {
-        const p = s.activePayload[0]?.payload as object | undefined;
-        if (p) {
-          const idx = transformedData.indexOf(p as never);
-          setActiveIndex(idx >= 0 ? idx : null);
-          return;
-        }
-      }
-      setActiveIndex(null);
-    },
-    [transformedData],
-  );
-
-  const onChartMouseLeave = useCallback(() => {
-    setActiveIndex(null);
-  }, []);
 
   const onScatterClick = useCallback(
     (data: ScatterClickData) => {
@@ -381,8 +353,6 @@ export const ScatterChart = ({
                   width={effectiveContainerWidth}
                   height={effectiveContainerHeight}
                   onClick={onScatterClick}
-                  onMouseMove={onChartMouseMove}
-                  onMouseLeave={onChartMouseLeave}
                   margin={{
                     bottom: 10,
                   }}
@@ -426,13 +396,11 @@ export const ScatterChart = ({
                   <Scatter
                     key={`scatter-${id}`}
                     data={transformedData}
-                    shape={renderDotShape}
-                    isAnimationActive={isAnimationActive}
-                    onMouseEnter={(o: unknown) => {
-                      const obj = o as { index?: number };
-                      setActiveIndex(typeof obj.index === "number" ? obj.index : null);
+                    shape={(props: unknown) => {
+                      return <ScatterDot {...(props as object)} variant={shape} active={false} />;
                     }}
-                    onMouseLeave={() => setActiveIndex(null)}
+                    isAnimationActive={isAnimationActive}
+                    activeShape={renderActiveDotShape}
                   >
                     {transformedData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry["color"] as string} />
