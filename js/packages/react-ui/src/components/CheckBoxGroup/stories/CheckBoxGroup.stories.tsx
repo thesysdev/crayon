@@ -10,8 +10,7 @@ const meta = {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "```tsx\nimport { CheckBoxGroup, CheckBoxItem } from '@crayonai/react-ui';\n```",
+        component: "```tsx\nimport { CheckBoxGroup, CheckBoxItem } from '@crayonai/react-ui';\n```",
       },
     },
   },
