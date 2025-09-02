@@ -68,3 +68,28 @@ export const Default: Story = {
     </RadioGroup>
   ),
 };
+
+export const WithLongDescription: Story = {
+  args: {
+    variant: "card",
+  },
+  render: (args) => (
+    <RadioGroup {...args}>
+      <RadioItem
+        value="long1"
+        label="First option with a long description"
+        description="This is a long description that elaborates on the choice in great detail so that readers can fully understand the implications of selecting this option. It provides context, examples, and any caveats that might be relevant when making a selection."
+      />
+      <RadioItem
+        value="long2"
+        label="Second option with a long description"
+        description="Another extended description that spans multiple sentences to showcase how the component behaves with verbose content. It should wrap correctly and remain readable without breaking the layout of the radio group."
+      />
+      <RadioItem
+        value="long3"
+        label="Third option with a long description"
+        description="A very long explanation that includes more nuance about the option, possible trade-offs, and guidance for when this might be preferred. This helps validate the design for accessibility and usability with real-world copy lengths."
+      />
+    </RadioGroup>
+  ),
+};

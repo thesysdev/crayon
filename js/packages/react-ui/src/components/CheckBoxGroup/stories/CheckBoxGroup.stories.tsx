@@ -11,7 +11,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "```tsx\nimport { CheckBoxGroup, CheckBoxItem } from '@crayon-ui/react-ui';\n```",
+          "```tsx\nimport { CheckBoxGroup, CheckBoxItem } from '@crayonai/react-ui';\n```",
       },
     },
   },
@@ -75,6 +75,29 @@ export const ClearVariant: Story = {
       <CheckBoxItem key="1" label="Option 1" description="This is a description" />,
       <CheckBoxItem key="2" label="Option 2" description="This is a description" />,
       <CheckBoxItem key="3" label="Option 3" description="This is a description" />,
+    ],
+  },
+};
+
+export const WithLongDescription: Story = {
+  args: {
+    variant: "card",
+    children: [
+      <CheckBoxItem
+        key="long1"
+        label="First option with a long description"
+        description="This is a long description that elaborates on the choice in great detail so that readers can fully understand the implications of selecting this option. It provides context, examples, and any caveats that might be relevant when making a selection."
+      />,
+      <CheckBoxItem
+        key="long2"
+        label="Second option with a long description"
+        description="Another extended description that spans multiple sentences to showcase how the component behaves with verbose content. It should wrap correctly and remain readable without breaking the layout of the checkbox group."
+      />,
+      <CheckBoxItem
+        key="long3"
+        label="Third option with a long description"
+        description="A very long explanation that includes more nuance about the option, possible trade-offs, and guidance for when this might be preferred. This helps validate the design for accessibility and usability with real-world copy lengths."
+      />,
     ],
   },
 };
