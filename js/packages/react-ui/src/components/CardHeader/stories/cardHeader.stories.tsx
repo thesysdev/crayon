@@ -22,16 +22,6 @@ const meta: Meta<typeof CardHeader> = {
     ),
   ],
   argTypes: {
-    variant: {
-      control: "select",
-      options: ["default", "number", "answer"],
-      description: "The visual style variant of the header",
-      table: {
-        category: "Appearance",
-        type: { summary: "CardHeaderVariant" },
-        defaultValue: { summary: "default" },
-      },
-    },
     icon: {
       control: false,
       description: "The icon to display in the header beside the title",
@@ -90,7 +80,6 @@ type Story = StoryObj<typeof CardHeader>;
 // Basic header stories
 export const HeaderStory: Story = {
   args: {
-    variant: "default",
     icon: <ArrowRight />,
     title: "Thesys Crayon",
     subtitle: "Crayon UI is a set of React components.",
@@ -109,7 +98,6 @@ export const HeaderStoryWithMultipleActions: Story = {
     },
   },
   args: {
-    variant: "default",
     icon: <ArrowRight />,
     title: "Thesys Crayon",
     subtitle: "Crayon UI is a set of React components.",
@@ -130,44 +118,8 @@ export const DefaultVariant: Story = {
     },
   },
   args: {
-    variant: "default",
     title: "Default Variant Header",
     subtitle: "This is the default variant with larger body text styling",
-    actions: [<IconButton variant="tertiary" size="small" icon={<Download />} />],
-  },
-  render: (args) => <CardHeader {...args} />,
-};
-
-export const NumberVariant: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story: "The 'number' variant optimized for displaying numbers with larger 24px icon.",
-      },
-    },
-  },
-  args: {
-    variant: "number",
-    title: "1,234",
-    subtitle: "Total items",
-    actions: [<IconButton variant="tertiary" size="small" icon={<Download />} />],
-  },
-  render: (args) => <CardHeader {...args} />,
-};
-
-export const AnswerVariant: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "The 'answer' variant with medium heading and label subtitle, featuring 24px icon. Note: subtitle is hidden for this variant.",
-      },
-    },
-  },
-  args: {
-    variant: "answer",
-    title: "Important Notice",
-    subtitle: "Please read this carefully before proceeding",
     actions: [<IconButton variant="tertiary" size="small" icon={<Download />} />],
   },
   render: (args) => <CardHeader {...args} />,
