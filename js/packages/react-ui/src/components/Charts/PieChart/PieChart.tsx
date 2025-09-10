@@ -39,6 +39,9 @@ export interface PieChartProps<T extends PieChartData> {
   className?: string;
   maxChartSize?: number;
   minChartSize?: number;
+  // Add height and width props
+  height?: number | string;
+  width?: number | string;
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
@@ -65,6 +68,8 @@ const PieChartComponent = <T extends PieChartData>({
   className,
   maxChartSize = MAX_CHART_SIZE,
   minChartSize = MIN_CHART_SIZE,
+  height,
+  width,
 }: PieChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -387,8 +392,33 @@ const PieChartComponent = <T extends PieChartData>({
     [className, legend, legendVariant, isRowLayout],
   );
 
+  const wrapperStyle = useMemo(() => {
+    if (typeof width === "string" && typeof height === "string") {
+      return {
+        width,
+        height,
+      };
+    } else if (typeof width === "string" && typeof height === "number") {
+      return {
+        width,
+        height: `${height}px`,
+      };
+    } else if (typeof width === "number" && typeof height === "string") {
+      return {
+        width: `${width}px`,
+        height,
+      };
+    } else if (typeof width === "number" && typeof height === "number") {
+      return {
+        width: `${width}px`,
+        height: `${height}px`,
+      };
+    }
+    return {};
+  }, [width, height]);
+
   return (
-    <div ref={wrapperRef} className={wrapperClassName}>
+    <div ref={wrapperRef} className={wrapperClassName} style={wrapperStyle}>
       <div className="crayon-pie-chart-container">
         <div className="crayon-pie-chart-container-inner">
           <div style={chartSizeStyle}>
