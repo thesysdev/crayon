@@ -323,8 +323,21 @@ export const RadialChart = <T extends RadialChartData>({
         width: `${width}px`,
         height: `${height}px`,
       };
+    } else if (typeof width === "string" && typeof height === "undefined") {
+      return {
+        width,
+      };
+    } else if (typeof width === "undefined" && typeof height === "string") {
+      return {
+        height,
+      };
+    } else if (typeof width === "undefined" && typeof height === "number") {
+      return {
+        height: `${height}px`,
+      };
+    } else {
+      return {};
     }
-    return {};
   }, [width, height]);
 
   return (

@@ -119,7 +119,16 @@ const PieChartComponent = <T extends PieChartData>({
   }, [effectiveWidth, effectiveHeight, isRowLayout]);
 
   const chartSizeStyle = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
-  const rechartsProps = useMemo(() => ({ width: "100%", height: "100%" }), []);
+  const rechartsProps = useMemo(
+    () => ({
+      width: "100%",
+      height: "100%",
+      minWidth: 1,
+      minHeight: 1,
+      initialDimension: { width: 1, height: 1 },
+    }),
+    [],
+  );
 
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(
@@ -413,8 +422,21 @@ const PieChartComponent = <T extends PieChartData>({
         width: `${width}px`,
         height: `${height}px`,
       };
+    } else if (typeof width === "string" && typeof height === "undefined") {
+      return {
+        width,
+      };
+    } else if (typeof width === "undefined" && typeof height === "string") {
+      return {
+        height,
+      };
+    } else if (typeof width === "undefined" && typeof height === "number") {
+      return {
+        height: `${height}px`,
+      };
+    } else {
+      return {};
     }
-    return {};
   }, [width, height]);
 
   return (
