@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Cell, PolarGrid, RadialBar, RadialBarChart } from "recharts";
+import { Cell, PolarGrid, RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../Charts";
 import { useTransformedKeys } from "../hooks";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
@@ -37,6 +37,8 @@ export interface RadialChartProps<T extends RadialChartData> {
   className?: string;
   maxChartSize?: number;
   minChartSize?: number;
+  height?: number | string;
+  width?: number | string;
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
@@ -62,6 +64,8 @@ export const RadialChart = <T extends RadialChartData>({
   className,
   maxChartSize = MAX_CHART_SIZE,
   minChartSize = MIN_CHART_SIZE,
+  height,
+  width,
 }: RadialChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -122,10 +126,13 @@ export const RadialChart = <T extends RadialChartData>({
     [chartSize],
   );
 
-  const rechartsProps = useMemo(
+  const rechartsProps: Omit<React.ComponentProps<typeof ResponsiveContainer>, "children"> = useMemo(
     () => ({
       width: "100%",
       height: "100%",
+      // aspect: 1 / 1,
+      minWidth: 1,
+      minHeight: 1,
     }),
     [],
   );
@@ -295,8 +302,33 @@ export const RadialChart = <T extends RadialChartData>({
   const startAngle = variant === "semicircle" ? 180 : 0;
   const endAngle = variant === "semicircle" ? 0 : 360;
 
+  const wrapperStyle = useMemo(() => {
+    if (typeof width === "string" && typeof height === "string") {
+      return {
+        width,
+        height,
+      };
+    } else if (typeof width === "string" && typeof height === "number") {
+      return {
+        width,
+        height: `${height}px`,
+      };
+    } else if (typeof width === "number" && typeof height === "string") {
+      return {
+        width: `${width}px`,
+        height,
+      };
+    } else if (typeof width === "number" && typeof height === "number") {
+      return {
+        width: `${width}px`,
+        height: `${height}px`,
+      };
+    }
+    return {};
+  }, [width, height]);
+
   return (
-    <div ref={wrapperRef} className={wrapperClassName}>
+    <div ref={wrapperRef} className={wrapperClassName} style={wrapperStyle}>
       <div className="crayon-radial-chart-container">
         <div className="crayon-radial-chart-container-inner">
           <div style={chartSizeStyle}>
