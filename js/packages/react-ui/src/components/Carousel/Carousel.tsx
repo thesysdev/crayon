@@ -8,6 +8,7 @@ interface CarouselContextType {
   itemsToScroll: number;
   noSnap?: boolean;
   showButtons?: boolean;
+  variant?: "card" | "sunk";
 }
 
 const CarouselContext = createContext<CarouselContextType | null>(null);
@@ -22,10 +23,22 @@ export interface CarouselProps extends React.HTMLAttributes<HTMLDivElement> {
   itemsToScroll?: number;
   noSnap?: boolean;
   showButtons?: boolean;
+  variant?: "card" | "sunk";
 }
 
 export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
-  ({ itemsToScroll = 1, noSnap, showButtons = true, className, children, ...props }, ref) => {
+  (
+    {
+      itemsToScroll = 1,
+      noSnap,
+      showButtons = true,
+      variant = "card",
+      className,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     const scrollDivRef = useRef<HTMLDivElement>(null);
 
     const scroll = (direction: "left" | "right") => {
@@ -64,9 +77,13 @@ export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
 
     return (
       <CarouselContext.Provider
-        value={{ scrollDivRef, scroll, itemsToScroll, noSnap, showButtons }}
+        value={{ scrollDivRef, scroll, itemsToScroll, noSnap, showButtons, variant }}
       >
-        <div className={clsx("crayon-carousel", className)} ref={ref} {...props}>
+        <div
+          className={clsx("crayon-carousel", `crayon-carousel--${variant}`, className)}
+          ref={ref}
+          {...props}
+        >
           {children}
         </div>
       </CarouselContext.Provider>
