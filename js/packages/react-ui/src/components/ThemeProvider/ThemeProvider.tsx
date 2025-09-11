@@ -220,7 +220,7 @@ const typographyTheme: TypographyTheme = {
   fontHeadingMedium: '600 24px/1.15 "Inter"',
   fontHeadingMediumLetterSpacing: "-0.25px",
   // Small
-  fontHeadingSmall: '500 18px/1.25 "Inter"',
+  fontHeadingSmall: '600 18px/1.25 "Inter"',
   fontHeadingSmallLetterSpacing: "-0.1px",
   // Extra Small
   fontHeadingExtraSmall: '500 16px/1.25 "Inter"',
