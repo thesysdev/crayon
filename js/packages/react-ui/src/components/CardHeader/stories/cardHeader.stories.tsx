@@ -22,16 +22,6 @@ const meta: Meta<typeof CardHeader> = {
     ),
   ],
   argTypes: {
-    variant: {
-      control: "select",
-      options: ["default", "number", "answer"],
-      description: "The visual style variant of the header",
-      table: {
-        category: "Appearance",
-        type: { summary: "CardHeaderVariant" },
-        defaultValue: { summary: "default" },
-      },
-    },
     icon: {
       control: false,
       description: "The icon to display in the header beside the title",
@@ -90,7 +80,6 @@ type Story = StoryObj<typeof CardHeader>;
 // Basic header stories
 export const HeaderStory: Story = {
   args: {
-    variant: "default",
     icon: <ArrowRight />,
     title: "Thesys Crayon",
     subtitle: "Crayon UI is a set of React components.",
@@ -109,7 +98,6 @@ export const HeaderStoryWithMultipleActions: Story = {
     },
   },
   args: {
-    variant: "default",
     icon: <ArrowRight />,
     title: "Thesys Crayon",
     subtitle: "Crayon UI is a set of React components.",
