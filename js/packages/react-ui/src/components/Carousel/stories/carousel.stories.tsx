@@ -73,6 +73,16 @@ const meta: Meta<typeof Carousel> = {
         defaultValue: { summary: "true" },
       },
     },
+    variant: {
+      control: "radio",
+      options: ["card", "sunk"],
+      description: "The visual style of the carousel items",
+      table: {
+        category: "Appearance",
+        type: { summary: "'card' | 'sunk'" },
+        defaultValue: { summary: "'card'" },
+      },
+    },
     children: {
       control: false,
       description: "The carousel content and navigation buttons",
@@ -182,6 +192,7 @@ export const Default: Story = {
     itemsToScroll: 1,
     noSnap: false,
     showButtons: true,
+    variant: "card",
   },
   parameters: {
     docs: {
@@ -190,7 +201,7 @@ export const Default: Story = {
       },
     },
   },
-  render: ({ itemsToScroll, noSnap, showButtons }) => {
+  render: ({ itemsToScroll, noSnap, showButtons, variant }) => {
     const repeatedItems = Array.from({ length: items.length }, (_, index) => ({
       ...items[index % items.length],
       id: `item-${index + 1}`,
@@ -198,7 +209,59 @@ export const Default: Story = {
 
     return (
       <Card style={{ width: "700px" }}>
-        <Carousel itemsToScroll={itemsToScroll} noSnap={noSnap} showButtons={showButtons}>
+        <Carousel
+          itemsToScroll={itemsToScroll}
+          noSnap={noSnap}
+          showButtons={showButtons}
+          variant={variant}
+        >
+          <CarouselContent>
+            {repeatedItems.map((item) => (
+              <CarouselItem key={item.id}>
+                <CardHeader
+                  title={item.title}
+                  subtitle={item.subtitle}
+                  actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
+                />
+                <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious icon={<ChevronLeft />} />
+          <CarouselNext icon={<ChevronRight />} />
+        </Carousel>
+      </Card>
+    );
+  },
+};
+
+export const SunkVariant: Story = {
+  args: {
+    ...Default.args,
+    variant: "sunk",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Carousel with the `sunk` variant.",
+      },
+    },
+  },
+  render: (args) => {
+    const { itemsToScroll, noSnap, showButtons, variant } = args;
+    const repeatedItems = Array.from({ length: items.length }, (_, index) => ({
+      ...items[index % items.length],
+      id: `item-${index + 1}`,
+    }));
+
+    return (
+      <Card style={{ width: "700px" }}>
+        <Carousel
+          itemsToScroll={itemsToScroll}
+          noSnap={noSnap}
+          showButtons={showButtons}
+          variant={variant}
+        >
           <CarouselContent>
             {repeatedItems.map((item) => (
               <CarouselItem key={item.id}>

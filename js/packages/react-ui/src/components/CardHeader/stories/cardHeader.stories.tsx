@@ -77,7 +77,7 @@ const meta: Meta<typeof CardHeader> = {
 export default meta;
 type Story = StoryObj<typeof CardHeader>;
 
-// Basic button stories
+// Basic header stories
 export const HeaderStory: Story = {
   args: {
     icon: <ArrowRight />,
@@ -105,6 +105,22 @@ export const HeaderStoryWithMultipleActions: Story = {
       <IconButton variant="tertiary" size="small" icon={<Download />} />,
       <IconButton variant="tertiary" size="small" icon={<Download />} />,
     ],
+  },
+  render: (args) => <CardHeader {...args} />,
+};
+
+export const DefaultVariant: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "The default variant with larger text styling and 18px icon.",
+      },
+    },
+  },
+  args: {
+    title: "Default Variant Header",
+    subtitle: "This is the default variant with larger body text styling",
+    actions: [<IconButton variant="tertiary" size="small" icon={<Download />} />],
   },
   render: (args) => <CardHeader {...args} />,
 };
