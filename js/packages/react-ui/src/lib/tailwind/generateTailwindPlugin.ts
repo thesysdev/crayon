@@ -9,7 +9,7 @@ import prettier from "prettier/standalone";
 import { extractComponentsAndPaths, getComponentsDependencies } from "./utils";
 
 const dirname = path.dirname(new URL(import.meta.url).pathname);
-const UNSTYLED_COMPONENTS = new Set(["ThemeProvider"]);
+const UNSTYLED_COMPONENTS = new Set(["ThemeProvider","AccordionV2"]);
 
 const generateTailwindPlugin = async () => {
   const componentsAndPaths = extractComponentsAndPaths();

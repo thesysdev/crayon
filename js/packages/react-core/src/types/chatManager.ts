@@ -37,6 +37,8 @@ export type ThreadActions = {
   setMessages: (messages: Message[]) => void;
   /** Deletes a message from the thread */
   deleteMessage: (messageId: string) => void;
+  /** Deletes a message from the thread */
+  deleteMessageV2: (messageId: string) => void;
 };
 
 /**

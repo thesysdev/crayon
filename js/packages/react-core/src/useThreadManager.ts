@@ -108,6 +108,10 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
           const messages = store.getState().messages.filter((m) => m.id !== messageId);
           set({ messages });
         },
+        deleteMessageV2: (messageId: string) => {
+          const messages = store.getState().messages.filter((m) => m.id !== messageId);
+          set({ messages });
+        },
         responseTemplates: propsRef.current.responseTemplates.reduce(
           (acc, template) => {
             acc[template.name] = template;
