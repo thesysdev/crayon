@@ -57,53 +57,72 @@
   & h4,
   & h5,
   & h6 {
-    @include cssUtils.typography(title, medium);
-    font-weight: 300;
-    margin-top: 12px;
-    margin-bottom: 8px;
-    + * {
-      margin-top: 0;
+    @include cssUtils.typography(heading, extra-small);
+    color: cssUtils.$primary-text;
+    margin-bottom: 18px;
+    &:has(+ p) {
+      margin-bottom: 8px;
     }
-
     + strong {
-      font-weight: 400;
+      @include cssUtils.typography(heading, extra-small);
     }
   }
   /* Paragraph Styles */
   & p {
-    line-height: 1.4;
-    margin-bottom: 20px;
-    font-weight: 300;
+    color: cssUtils.$primary-text;
+    @include cssUtils.typography(body, default);
+    margin-bottom: 0;
+    &:has(+ p) {
+      margin-bottom: 18px;
+    }
   }
 
   & strong {
     color: cssUtils.$primary-text;
-    font-weight: 600;
+    @include cssUtils.typography(body, heavy);
   }
 
   & li {
-    margin-top: 8px;
     margin-bottom: 8px;
-    padding-left: 6px;
-    font-weight: 300;
+    @include cssUtils.typography(body, default);
+    :last-child {
+      margin-bottom: 0;
+    }
     &::marker {
-      font-weight: 400;
-      color: color-mix(in oklab, cssUtils.$primary-text 65%, transparent);
+      @include cssUtils.typography(body, default);
+      color: cssUtils.$secondary-text;
     }
   }
+  & li ul {
+    margin-top: 8px;
+  }
 
+  & li li {
+    margin-top: 8px;
+  }
+  & li ol {
+    margin-top: 8px;
+  }
   & ol {
     list-style-type: decimal;
     padding-left: 20px;
     margin-bottom: 20px;
-    font-weight: 300;
+    @include cssUtils.typography(body, default);
+    color: cssUtils.$primary-text;
+    :last-child {
+      margin-bottom: 0;
+    }
   }
 
   & ul {
     list-style-type: disc;
     padding-left: 20px;
-    margin-bottom: 20px;
-    font-weight: 300;
+    margin-bottom: 24px;
+    @include cssUtils.typography(body, default);
+    color: cssUtils.$primary-text;
+    :last-child {
+      margin-bottom: 0;
+    }
   }
 
   & .crayon-code-block-syntax-highlighter {
@@ -121,7 +140,6 @@
   }
 
   & hr {
-    color: color-mix(in oklab, cssUtils.$primary-text 30%, transparent);
     margin-top: 48px;
     margin-bottom: 48px;
     + * {
@@ -145,7 +163,7 @@
   }
 
   & blockquote strong {
-    font-weight: 600;
+    @include cssUtils.typography(body, heavy);
   }
 
   & blockquote > *:first-child::before {
