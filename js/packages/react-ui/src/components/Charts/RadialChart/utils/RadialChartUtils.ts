@@ -59,13 +59,10 @@ export const calculatePercentage = (value: number, total: number): number => {
  * @returns Object containing outer and inner radius values
  */
 export const calculateRadialChartDimensions = (width: number): RadialChartDimensions => {
-  const baseRadiusPercentage = 0.4; // 40% of container width
-  let outerRadius = Math.round(width * baseRadiusPercentage);
+  // The outer radius is half the width of the container
+  let outerRadius = Math.round(width / 2);
 
-  // Set minimum and maximum bounds for radius
-  outerRadius = Math.max(50, Math.min(outerRadius, width / 2 - 10));
-
-  // Calculate inner radius - consistent ratio regardless of layout
+  // The inner radius is 30% of the outer radius
   const innerRadius = Math.round(outerRadius * 0.3);
 
   return { outerRadius, innerRadius };

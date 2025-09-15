@@ -107,7 +107,7 @@ export const RadialChart = <T extends RadialChartData>({
     // When in a row layout, the chart and legend are side-by-side.
     if (isRowLayout) {
       // The chart container takes up roughly half the width. We subtract the gap between items.
-      const chartContainerWidth = (effectiveWidth - 20) / 2;
+      const chartContainerWidth = (effectiveWidth) / 2;
       // The size of the chart is the smaller of its container's width or the total available height.
       size = Math.min(chartContainerWidth, effectiveHeight);
     } else {
@@ -130,9 +130,9 @@ export const RadialChart = <T extends RadialChartData>({
     () => ({
       width: "100%",
       height: "100%",
-      // aspect: 1 / 1,
       minWidth: 1,
       minHeight: 1,
+      initialDimension: { width: 1, height: 1 },
     }),
     [],
   );
@@ -341,7 +341,12 @@ export const RadialChart = <T extends RadialChartData>({
   }, [width, height]);
 
   return (
-    <div ref={wrapperRef} className={wrapperClassName} style={wrapperStyle}>
+    <div
+      ref={wrapperRef}
+      className={wrapperClassName}
+      style={wrapperStyle}
+      aria-description="radial-chart-wrapper"
+    >
       <div className="crayon-radial-chart-container">
         <div className="crayon-radial-chart-container-inner">
           <div style={chartSizeStyle}>
