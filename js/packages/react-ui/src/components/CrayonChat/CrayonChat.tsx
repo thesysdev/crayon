@@ -7,6 +7,7 @@ import {
   Thread,
   ThreadListManager,
   ThreadManager,
+  UploadedFile,
   UserMessage,
   useThreadListManager,
   useThreadManager,
@@ -25,6 +26,7 @@ type CrayonChatProps = {
     messages: Message[];
     abortController: AbortController;
   }) => Promise<Response>;
+  processFileUpload?: (params: { files: File[] }) => Promise<UploadedFile[]>;
   onUpdateMessage?: (props: { message: Message }) => void;
   processStreamedMessage?: typeof processStreamedMessage;
   responseTemplates?: ResponseTemplate[];
@@ -52,6 +54,7 @@ const DummyThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const CrayonChat = ({
   processMessage,
+  processFileUpload,
   threadManager: userThreadManager,
   threadListManager: userThreadListManager,
   logoUrl = "https://crayonai.org/img/logo.png",
@@ -98,9 +101,10 @@ export const CrayonChat = ({
       return Promise.resolve(messages);
     },
     onUpdateMessage: onUpdateMessage,
-    onProcessMessage: async ({ message, abortController, threadManager }) => {
+    onProcessMessage: async ({ message, abortController, threadManager, filesUploaded }) => {
       const newMessage: UserMessage = {
         id: crypto.randomUUID(),
+        files: filesUploaded,
         ...message,
       };
       threadManager.appendMessages(newMessage);
@@ -128,10 +132,17 @@ export const CrayonChat = ({
 
       return [];
     },
+    onProcessFileUpload: async ({ files }) => {
+      invariant(processFileUpload, "processFileUpload is required");
+
+      const response = await processFileUpload({ files });
+      return response;
+    },
     responseTemplates: responseTemplates ?? [],
   });
 
   const threadManager = userThreadManager ?? defaultThreadManager;
+  const enableFileUpload = processFileUpload ? true : false;
 
   useEffect(() => {
     if (threadListManager.selectedThreadId) {
@@ -148,6 +159,7 @@ export const CrayonChat = ({
             agentName={agentName}
             messageLoadingComponent={messageLoadingComponent}
             scrollVariant={scrollVariant}
+            enableFileUpload={enableFileUpload}
           />
         ) : (
           <ComposedStandalone
@@ -155,6 +167,7 @@ export const CrayonChat = ({
             agentName={agentName}
             messageLoadingComponent={messageLoadingComponent}
             scrollVariant={scrollVariant}
+            enableFileUpload={enableFileUpload}
           />
         )}
       </ChatProvider>

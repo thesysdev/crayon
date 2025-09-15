@@ -11,6 +11,16 @@ type Common = {
 };
 
 /**
+ * @inline
+ */
+export type UploadedFile = {
+  /** The name of the file */
+  name: string;
+  /** The id of the file */
+  fileId: string;
+};
+
+/**
  * A type that represents a message sent by the user
  *
  * @category Types
@@ -23,6 +33,8 @@ export type UserMessage = Common & {
   message?: string;
   /** Additional data associated with the message */
   context?: JSONValue[];
+  /** The files that are associated with the message */
+  files?: UploadedFile[];
 };
 
 /**
