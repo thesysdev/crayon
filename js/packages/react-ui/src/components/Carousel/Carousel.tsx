@@ -19,74 +19,84 @@ const useCarousel = () => {
   return context;
 };
 
-export interface CarouselProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CarouselProviderProps {
+  children: React.ReactNode;
   itemsToScroll?: number;
   noSnap?: boolean;
   showButtons?: boolean;
   variant?: "card" | "sunk";
 }
 
-export const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
-  (
-    {
-      itemsToScroll = 1,
-      noSnap,
-      showButtons = true,
-      variant = "card",
-      className,
-      children,
-      ...props
-    },
-    ref,
-  ) => {
-    const scrollDivRef = useRef<HTMLDivElement>(null);
+export const CarouselProvider = ({
+  children,
+  itemsToScroll = 1,
+  noSnap,
+  showButtons = true,
+  variant = "card",
+}: CarouselProviderProps) => {
+  const scrollDivRef = useRef<HTMLDivElement>(null);
 
-    const scroll = (direction: "left" | "right") => {
-      if (scrollDivRef.current) {
-        const container = scrollDivRef.current;
-        let children = Array.from(container.children);
+  const scroll = (direction: "left" | "right") => {
+    if (!scrollDivRef.current) {
+      return;
+    }
 
-        const spacingEl = children.splice(0, 1)[0] as HTMLElement;
+    const container = scrollDivRef.current;
+    const items = noSnap
+      ? Array.from(container.children[0]?.children ?? [])
+      : Array.from(container.children);
 
-        if (noSnap) {
-          children = Array.from(children[0]!.children);
-        }
+    if (items.length === 0) {
+      return;
+    }
 
-        const visibleIndex = children.findIndex((child) => {
-          const rect = child.getBoundingClientRect();
-          return rect.left >= container.getBoundingClientRect().left;
-        });
+    const containerRect = container.getBoundingClientRect();
+    const visibleIndex = items.findIndex((child) => {
+      const rect = child.getBoundingClientRect();
+      return rect.left >= containerRect.left;
+    });
 
-        const targetIndex =
-          direction === "left"
-            ? Math.max(0, visibleIndex - itemsToScroll)
-            : Math.min(children.length - 1, visibleIndex + itemsToScroll);
+    let currentIndex = visibleIndex;
+    if (visibleIndex === -1) {
+      // Scrolled to the far right, so the last item is the current one
+      currentIndex = items.length - 1;
+    }
 
-        const targetElement = (
-          targetIndex === 0 ? spacingEl : children[targetIndex]
-        ) as HTMLElement;
+    const targetIndex =
+      direction === "left"
+        ? Math.max(0, currentIndex - itemsToScroll)
+        : Math.min(items.length - 1, currentIndex + itemsToScroll);
 
-        if (targetElement) {
-          container.scrollTo({
-            left: targetElement.offsetLeft,
-            behavior: "smooth",
-          });
-        }
-      }
-    };
+    const targetElement = items[targetIndex] as HTMLElement;
 
+    if (targetElement) {
+      container.scrollTo({
+        left: targetElement.offsetLeft,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  return (
+    <CarouselContext.Provider
+      value={{ scrollDivRef, scroll, itemsToScroll, noSnap, showButtons, variant }}
+    >
+      {children}
+    </CarouselContext.Provider>
+  );
+};
+
+export const Carousel = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, children, ...props }, ref) => {
+    const { variant } = useCarousel();
     return (
-      <CarouselContext.Provider
-        value={{ scrollDivRef, scroll, itemsToScroll, noSnap, showButtons, variant }}
+      <div
+        className={clsx("crayon-carousel", `crayon-carousel--${variant}`, className)}
+        ref={ref}
+        {...props}
       >
-        <div
-          className={clsx("crayon-carousel", `crayon-carousel--${variant}`, className)}
-          ref={ref}
-          {...props}
-        >
-          {children}
-        </div>
-      </CarouselContext.Provider>
+        {children}
+      </div>
     );
   },
 );
@@ -112,6 +122,14 @@ export const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<H
 export const CarouselItem = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => (
     <div ref={ref} className={clsx("crayon-carousel-item", className)} {...props}>
+      {children}
+    </div>
+  ),
+);
+
+export const CarouselWrapper = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, children, ...props }, ref) => (
+    <div ref={ref} className={clsx("crayon-carousel-wrapper", className)} {...props}>
       {children}
     </div>
   ),

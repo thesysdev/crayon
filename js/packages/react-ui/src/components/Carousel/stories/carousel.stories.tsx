@@ -23,24 +23,25 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  CarouselProvider,
 } from "../Carousel";
 import "../carousel.scss";
 
-const meta: Meta<typeof Carousel> = {
+const meta: Meta<typeof CarouselProvider> = {
   title: "Components/Carousel",
-  component: Carousel,
+  component: CarouselProvider,
   parameters: {
     layout: "centered",
     docs: {
       description: {
         component:
-          "```tsx\nimport { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious } from '@crayon-ui/react-ui';\n```",
+          "```tsx\nimport { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselProvider, CarouselWrapper } from '@crayon-ui/react-ui';\n```",
       },
     },
   },
   decorators: [
     (Story) => (
-      <div style={{ width: "100%", maxWidth: "28rem" }}>
+      <div style={{ width: "100%", maxWidth: "48rem" }}>
         <Story />
       </div>
     ),
@@ -91,28 +92,28 @@ const meta: Meta<typeof Carousel> = {
         type: { summary: "ReactNode" },
       },
     },
-    className: {
-      control: false,
-      description: "Additional CSS class name for custom styling",
-      table: {
-        category: "Styling",
-        type: { summary: "string" },
-      },
-    },
-    style: {
-      control: false,
-      description: "Inline CSS styles for custom styling",
-      table: {
-        category: "Styling",
-        type: { summary: "CSSProperties" },
-      },
-    },
+    // className: {
+    //   control: false,
+    //   description: "Additional CSS class name for custom styling",
+    //   table: {
+    //     category: "Styling",
+    //     type: { summary: "string" },
+    //   },
+    // },
+    // style: {
+    //   control: false,
+    //   description: "Inline CSS styles for custom styling",
+    //   table: {
+    //     category: "Styling",
+    //     type: { summary: "CSSProperties" },
+    //   },
+    // },
   },
   tags: ["autodocs", "!dev"],
 };
 
 export default meta;
-type Story = StoryObj<typeof Carousel>;
+type Story = StoryObj<typeof CarouselProvider>;
 
 const items = [
   {
@@ -208,28 +209,30 @@ export const Default: Story = {
     }));
 
     return (
-      <Card style={{ width: "700px" }}>
-        <Carousel
+      <Card style={{ width: "100%" }}>
+        <CarouselProvider
           itemsToScroll={itemsToScroll}
           noSnap={noSnap}
           showButtons={showButtons}
           variant={variant}
         >
-          <CarouselContent>
-            {repeatedItems.map((item) => (
-              <CarouselItem key={item.id}>
-                <CardHeader
-                  title={item.title}
-                  subtitle={item.subtitle}
-                  actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
-                />
-                <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious icon={<ChevronLeft />} />
-          <CarouselNext icon={<ChevronRight />} />
-        </Carousel>
+          <Carousel>
+            <CarouselContent>
+              {repeatedItems.map((item) => (
+                <CarouselItem key={item.id}>
+                  <CardHeader
+                    title={item.title}
+                    subtitle={item.subtitle}
+                    actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
+                  />
+                  <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious icon={<ChevronLeft />} />
+            <CarouselNext icon={<ChevronRight />} />
+          </Carousel>
+        </CarouselProvider>
       </Card>
     );
   },
@@ -255,28 +258,30 @@ export const SunkVariant: Story = {
     }));
 
     return (
-      <Card style={{ width: "700px" }}>
-        <Carousel
+      <Card style={{ width: "100%" }}>
+        <CarouselProvider
           itemsToScroll={itemsToScroll}
           noSnap={noSnap}
           showButtons={showButtons}
           variant={variant}
         >
-          <CarouselContent>
-            {repeatedItems.map((item) => (
-              <CarouselItem key={item.id}>
-                <CardHeader
-                  title={item.title}
-                  subtitle={item.subtitle}
-                  actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
-                />
-                <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious icon={<ChevronLeft />} />
-          <CarouselNext icon={<ChevronRight />} />
-        </Carousel>
+          <Carousel>
+            <CarouselContent>
+              {repeatedItems.map((item) => (
+                <CarouselItem key={item.id}>
+                  <CardHeader
+                    title={item.title}
+                    subtitle={item.subtitle}
+                    actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
+                  />
+                  <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious icon={<ChevronLeft />} />
+            <CarouselNext icon={<ChevronRight />} />
+          </Carousel>
+        </CarouselProvider>
       </Card>
     );
   },
