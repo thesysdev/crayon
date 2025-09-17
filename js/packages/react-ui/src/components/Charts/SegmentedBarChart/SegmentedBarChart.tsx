@@ -2,9 +2,11 @@ import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SegmentedBarData } from ".";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
+import { FloatingUIPortal } from "../shared/PortalTooltip";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend";
 import { LegendItem, StackedLegendItem } from "../types";
 import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
+import { ToolTip } from "./components";
 
 export interface SegmentedBarProps<T extends SegmentedBarData> {
   data: T;
@@ -33,6 +35,7 @@ export const SegmentedBar = <T extends SegmentedBarData>({
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -75,8 +78,7 @@ export const SegmentedBar = <T extends SegmentedBarData>({
     return segments.map((segment, index) => ({
       key: `${segment.category}-${index}`,
       label: segment.category,
-      value: segment.value,
-      color: colors[index % colors.length] || "", // Provide default empty string to satisfy type
+      color: colors[index % colors.length] || "",
     }));
   }, [segments, colors]);
 
@@ -116,7 +118,11 @@ export const SegmentedBar = <T extends SegmentedBarData>({
                 ["--segment-color" as any]: colors[index % colors.length],
               }}
               title={`${segment.category}: ${segment.value}`}
-              onMouseEnter={() => setActiveIndex(index)}
+              onMouseEnter={(e) => {
+                setActiveIndex(index);
+                const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+                setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
+              }}
               onMouseLeave={() => setActiveIndex(null)}
             >
               <div className="crayon-segmented-bar-chart-segment-line" />
@@ -124,6 +130,21 @@ export const SegmentedBar = <T extends SegmentedBarData>({
           );
         })}
       </div>
+      {activeIndex !== null && tooltipPosition && (
+        <FloatingUIPortal
+          portalContainer={wrapperRef}
+          position={tooltipPosition}
+          placement="top"
+          offsetDistance={10}
+        >
+          <ToolTip
+            label={legendItems[activeIndex]?.label ?? ""}
+            color={stackedLegendItems[activeIndex]?.color ?? "#000000"}
+            value={stackedLegendItems[activeIndex]?.value ?? 0}
+            percentage={segments[activeIndex]?.percentage ?? 0}
+          />
+        </FloatingUIPortal>
+      )}
       {legend && legendVariant === "default" && (
         <DefaultLegend
           items={legendItems}
@@ -136,7 +157,21 @@ export const SegmentedBar = <T extends SegmentedBarData>({
         <StackedLegend
           items={stackedLegendItems}
           containerWidth={containerWidth}
-          onLegendItemHover={(hoverIndex) => setActiveIndex(hoverIndex)}
+          onLegendItemHover={(hoverIndex) => {
+            setActiveIndex(hoverIndex);
+            if (hoverIndex !== null) {
+              // Try to position tooltip above the hovered segment
+              const segmentEl = wrapperRef.current?.querySelectorAll(
+                ".crayon-segmented-bar-chart-segment",
+              )?.[hoverIndex] as HTMLDivElement | undefined;
+              if (segmentEl) {
+                const rect = segmentEl.getBoundingClientRect();
+                setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
+              }
+            } else {
+              setTooltipPosition(null);
+            }
+          }}
         />
       )}
     </div>
