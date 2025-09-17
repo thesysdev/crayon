@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SegmentedBarData } from ".";
 import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
+import { StackedLegend } from "../shared/StackedLegend/StackedLegend";
 import { LegendItem } from "../types";
 
 export interface SegmentedBarProps<T extends SegmentedBarData> {
@@ -11,6 +12,7 @@ export interface SegmentedBarProps<T extends SegmentedBarData> {
   dataKey: keyof T[number];
   theme?: PaletteName;
   legend?: boolean;
+  legendVariant?: "default" | "stacked";
   className?: string;
   style?: React.CSSProperties;
   animated?: boolean;
@@ -22,6 +24,7 @@ export const SegmentedBar = <T extends SegmentedBarData>({
   dataKey,
   theme = "ocean",
   legend = false,
+  legendVariant = "default",
   className,
   style,
   animated = true,
@@ -75,6 +78,18 @@ export const SegmentedBar = <T extends SegmentedBarData>({
     }));
   }, [segments, colors]);
 
+  // Create stacked legend items with values
+  const stackedLegendItems = useMemo(
+    () =>
+      segments.map((segment, index) => ({
+        key: `${segment.category}-${index}`,
+        label: segment.category,
+        value: segment.value,
+        color: colors[index % colors.length] || '',
+      })),
+    [segments, colors],
+  );
+
   // Segmented progress bar
   return (
     <div ref={wrapperRef} className={clsx("crayon-segmented-bar-chart-container", className)} style={style}>
@@ -97,13 +112,16 @@ export const SegmentedBar = <T extends SegmentedBarData>({
           );
         })}
       </div>
-      {legend && (
+      {legend && legendVariant === "default" && (
         <DefaultLegend
           items={legendItems}
           isExpanded={isLegendExpanded}
           setIsExpanded={setIsLegendExpanded}
           containerWidth={containerWidth}
         />
+      )}
+      {legend && legendVariant === "stacked" && (
+        <StackedLegend items={stackedLegendItems} containerWidth={containerWidth} />
       )}
     </div>
   );

@@ -145,6 +145,19 @@ The legend displays category names with their corresponding colors.
         category: "📊 Data Configuration",
       },
     },
+    legendVariant: {
+      description: `
+**Legend Variant.** Choose between default (inline) and stacked (vertical) legend.
+Stacked legend appears at the bottom and shows values as percentages.
+`,
+      control: "radio",
+      options: ["default", "stacked"],
+      table: {
+        type: { summary: '"default" | "stacked"' },
+        defaultValue: { summary: "default" },
+        category: "📱 Display Options",
+      },
+    },
   },
 } satisfies Meta<typeof SegmentedBar>;
 
@@ -322,6 +335,7 @@ export const WithLegend: Story = {
     theme: "ocean",
     animated: true,
     legend: true,
+    legendVariant: "default",
   },
   render: (args: any) => (
     <Card style={{ width: "500px", padding: "24px" }}>
@@ -356,6 +370,7 @@ export const LegendWithManyItems: Story = {
     theme: "vivid",
     animated: true,
     legend: true,
+    legendVariant: "default",
   },
   render: (args: any) => (
     <Card style={{ width: "600px", padding: "24px" }}>
@@ -379,4 +394,30 @@ export const LegendWithManyItems: Story = {
       },
     },
   },
+};
+
+export const StackedLegendVariant: Story = {
+  name: "📚 Stacked Legend (Bottom)",
+  args: {
+    data: sampleData.many,
+    categoryKey: "category",
+    dataKey: "value",
+    theme: "ocean",
+    animated: true,
+    legend: true,
+    legendVariant: "stacked",
+  },
+  render: (args: any) => (
+    <Card style={{ width: "650px", padding: "24px" }}>
+      <div style={{ marginBottom: "16px" }}>
+        <h3 style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: "600" }}>
+          Stacked Legend at Bottom
+        </h3>
+        <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
+          Displays a vertical legend beneath the bar with percentage values and overflow handling.
+        </p>
+      </div>
+      <SegmentedBar {...args} />
+    </Card>
+  ),
 };
