@@ -9,6 +9,7 @@ interface CarouselContextType {
   noSnap?: boolean;
   showButtons?: boolean;
   variant?: "card" | "sunk";
+ 
 }
 
 const CarouselContext = createContext<CarouselContextType | null>(null);
@@ -25,6 +26,7 @@ export interface CarouselProviderProps {
   noSnap?: boolean;
   showButtons?: boolean;
   variant?: "card" | "sunk";
+  // buttonBehavior?: "hide" | "disable";
 }
 
 export const CarouselProvider = ({
@@ -33,6 +35,7 @@ export const CarouselProvider = ({
   noSnap,
   showButtons = true,
   variant = "card",
+  // buttonBehavior = "hide",
 }: CarouselProviderProps) => {
   const scrollDivRef = useRef<HTMLDivElement>(null);
 
@@ -79,7 +82,14 @@ export const CarouselProvider = ({
 
   return (
     <CarouselContext.Provider
-      value={{ scrollDivRef, scroll, itemsToScroll, noSnap, showButtons, variant }}
+      value={{
+        scrollDivRef,
+        scroll,
+        itemsToScroll,
+        noSnap,
+        showButtons,
+        variant,
+      }}
     >
       {children}
     </CarouselContext.Provider>
@@ -100,6 +110,7 @@ export const Carousel = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivE
     );
   },
 );
+Carousel.displayName = "Carousel";
 
 export const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, _ref) => {
@@ -118,6 +129,7 @@ export const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<H
     );
   },
 );
+CarouselContent.displayName = "CarouselContent";
 
 export const CarouselItem = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => (
@@ -126,6 +138,7 @@ export const CarouselItem = forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
     </div>
   ),
 );
+CarouselItem.displayName = "CarouselItem";
 
 export const CarouselWrapper = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => (
@@ -134,56 +147,73 @@ export const CarouselWrapper = forwardRef<HTMLDivElement, React.HTMLAttributes<H
     </div>
   ),
 );
+CarouselWrapper.displayName = "CarouselWrapper";
 
-export const CarouselPrevious = forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<typeof IconButton>
->(({ className, style, ...props }, ref) => {
-  const { scrollDivRef, scroll, showButtons } = useCarousel();
-  const [show, setShow] = useState(true);
+export interface CarouselPreviousProps extends React.ComponentProps<typeof IconButton> {
+  buttonBehavior?: "hide" | "disable";
+}
 
-  useEffect(() => {
-    if (!scrollDivRef.current) return;
+export const CarouselPrevious = forwardRef<HTMLButtonElement, CarouselPreviousProps>(
+  ({ className, style, buttonBehavior = "hide", ...props }, ref) => {
+    const { scrollDivRef, scroll, showButtons } = useCarousel();
+    const [show, setShow] = useState(true);
 
-    const container = scrollDivRef.current;
-    const shouldShow = () => container.scrollLeft > 0;
+    useEffect(() => {
+      if (!scrollDivRef.current) return;
 
-    setShow(shouldShow());
+      const container = scrollDivRef.current;
+      const shouldShow = () => container.scrollLeft > 0;
 
-    const handleScroll = () => {
       setShow(shouldShow());
-    };
 
-    const resizeObserver = new ResizeObserver(handleScroll);
-    resizeObserver.observe(container);
+      const handleScroll = () => {
+        setShow(shouldShow());
+      };
 
-    container.addEventListener("scroll", handleScroll);
+      const resizeObserver = new ResizeObserver(handleScroll);
+      resizeObserver.observe(container);
 
-    return () => {
-      container.removeEventListener("scroll", handleScroll);
-      resizeObserver.disconnect();
-    };
-  }, [scrollDivRef]);
+      container.addEventListener("scroll", handleScroll);
 
-  if (!show || !showButtons) return null;
+      return () => {
+        container.removeEventListener("scroll", handleScroll);
+        resizeObserver.disconnect();
+      };
+    }, [scrollDivRef]);
 
-  return (
-    <div className={clsx("crayon-carousel-button crayon-carousel-button-left", className)}>
-      <IconButton
-        ref={ref}
-        shape="square"
-        variant="secondary"
-        size="small"
-        onClick={() => scroll("left")}
-        style={style}
-        {...props}
-      />
-    </div>
-  );
-});
+    if (!showButtons) return null;
 
-export const CarouselNext = forwardRef<HTMLButtonElement, React.ComponentProps<typeof IconButton>>(
-  ({ className, style, ...props }, ref) => {
+    return (
+      <div
+        className={clsx(
+          "crayon-carousel-button crayon-carousel-button-left",
+          { "crayon-carousel-button--hidden": buttonBehavior === "hide" && !show },
+          { "crayon-carousel-button--disabled": buttonBehavior === "disable" && !show },
+          className,
+        )}
+      >
+        <IconButton
+          ref={ref}
+          variant="secondary"
+          shape="square"
+          size="small"
+          onClick={() => scroll("left")}
+          style={style}
+          disabled={buttonBehavior === "disable" && !show}
+          {...props}
+        />
+      </div>
+    );
+  },
+);
+CarouselPrevious.displayName = "CarouselPrevious";
+
+export interface CarouselNextProps extends React.ComponentProps<typeof IconButton> {
+  buttonBehavior?: "hide" | "disable";
+}
+
+export const CarouselNext = forwardRef<HTMLButtonElement, CarouselNextProps>(
+  ({ className, style, buttonBehavior = "hide", ...props }, ref) => {
     const { scrollDivRef, scroll, showButtons } = useCarousel();
     const [show, setShow] = useState(true);
 
@@ -210,20 +240,29 @@ export const CarouselNext = forwardRef<HTMLButtonElement, React.ComponentProps<t
       };
     }, [scrollDivRef]);
 
-    if (!show || !showButtons) return null;
+    if (!showButtons) return null;
 
     return (
-      <div className={clsx("crayon-carousel-button crayon-carousel-button-right", className)}>
+      <div
+        className={clsx(
+          "crayon-carousel-button crayon-carousel-button-right",
+          { "crayon-carousel-button--hidden": buttonBehavior === "hide" && !show },
+          { "crayon-carousel-button--disabled": buttonBehavior === "disable" && !show },
+          className,
+        )}
+      >
         <IconButton
           ref={ref}
-          shape="square"
           variant="secondary"
+          shape="square"
           size="small"
           onClick={() => scroll("right")}
           style={style}
+          disabled={buttonBehavior === "disable" && !show}
           {...props}
         />
       </div>
     );
   },
 );
+CarouselNext.displayName = "CarouselNext";
