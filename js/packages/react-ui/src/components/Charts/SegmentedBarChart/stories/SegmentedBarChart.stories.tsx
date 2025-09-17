@@ -166,25 +166,25 @@ type Story = StoryObj<typeof meta>;
 
 const sampleData = {
   default: [
-    { category: 'A', value: 25 },
-    { category: 'B', value: 30 },
-    { category: 'C', value: 20 }
+    { category: "A", value: 25 },
+    { category: "B", value: 30 },
+    { category: "C", value: 20 },
   ],
   many: [
-    { category: 'Item 1', value: 10 },
-    { category: 'Item 2', value: 8 },
-    { category: 'Item 3', value: 12 },
-    { category: 'Item 4', value: 5 },
-    { category: 'Item 5', value: 15 },
-    { category: 'Item 6', value: 7 },
-    { category: 'Item 7', value: 13 },
-    { category: 'Item 8', value: 10 }
+    { category: "Item 1", value: 10 },
+    { category: "Item 2", value: 8 },
+    { category: "Item 3", value: 12 },
+    { category: "Item 4", value: 5 },
+    { category: "Item 5", value: 15 },
+    { category: "Item 6", value: 7 },
+    { category: "Item 7", value: 13 },
+    { category: "Item 8", value: 10 },
   ],
   full: [
-    { category: 'Q1', value: 25 },
-    { category: 'Q2', value: 25 },
-    { category: 'Q3', value: 25 },
-    { category: 'Q4', value: 25 }
+    { category: "Q1", value: 25 },
+    { category: "Q2", value: 25 },
+    { category: "Q3", value: 25 },
+    { category: "Q4", value: 25 },
   ],
 };
 
@@ -224,10 +224,10 @@ export const ThemeShowcase: Story = {
   name: "🎨 Theme Showcase",
   args: {
     data: [
-      { category: 'Segment 1', value: 15 },
-      { category: 'Segment 2', value: 20 },
-      { category: 'Segment 3', value: 25 },
-      { category: 'Segment 4', value: 15 }
+      { category: "Segment 1", value: 15 },
+      { category: "Segment 2", value: 20 },
+      { category: "Segment 3", value: 25 },
+      { category: "Segment 4", value: 15 },
     ],
     categoryKey: "category",
     dataKey: "value",
@@ -344,8 +344,8 @@ export const WithLegend: Story = {
           Category Breakdown with Legend
         </h3>
         <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
-          Visualizing the breakdown with a legend that shows category names and colors.
-          The legend automatically expands when there are many items.
+          Visualizing the breakdown with a legend that shows category names and colors. The legend
+          automatically expands when there are many items.
         </p>
       </div>
       <SegmentedBar {...args} />
@@ -379,8 +379,8 @@ export const LegendWithManyItems: Story = {
           Resource Distribution with Legend
         </h3>
         <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
-          The component handles many segments gracefully with the legend showing
-          category names and values. The legend automatically manages overflow with expand/collapse functionality.
+          The component handles many segments gracefully with the legend showing category names and
+          values. The legend automatically manages overflow with expand/collapse functionality.
         </p>
       </div>
       <SegmentedBar {...args} />

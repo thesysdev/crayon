@@ -2,16 +2,10 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../../../Button";
 import { IconButton } from "../../../IconButton";
-
-interface LegendItem {
-  key: string;
-  label: string;
-  value: number;
-  color: string;
-}
+import { StackedLegendItem } from "../../types";
 
 interface StackedLegendProps {
-  items: LegendItem[];
+  items: StackedLegendItem[];
   onItemHover?: (key: string | null) => void;
   activeKey?: string | null;
   onLegendItemHover?: (index: number | null) => void;
