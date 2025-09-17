@@ -60,7 +60,7 @@ const calculatePercentage = (value: number, total: number): number => {
  * @returns Object containing outer and inner radius values
  */
 const calculateChartDimensions = (width: number, variant: string): ChartDimensions => {
-  const baseRadiusPercentage = 0.4; // 40% of container width
+  const baseRadiusPercentage = 0.45; // Prefer a larger base to better utilize available width
   let outerRadius = Math.round(width * baseRadiusPercentage);
 
   // Set minimum and maximum bounds for radius
@@ -81,7 +81,7 @@ const calculateChartDimensions = (width: number, variant: string): ChartDimensio
  * @returns Object containing outer, middle, and inner radius values
  */
 const calculateTwoLevelChartDimensions = (width: number): TwoLevelChartDimensions => {
-  const baseRadiusPercentage = 0.4; // 40% of container width
+  const baseRadiusPercentage = 0.45; // Prefer a larger base to better utilize available width
   let outerRadius = Math.round(width * baseRadiusPercentage);
 
   // Set minimum and maximum bounds for radius

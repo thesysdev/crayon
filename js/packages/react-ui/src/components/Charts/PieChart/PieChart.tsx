@@ -107,13 +107,16 @@ const PieChartComponent = <T extends PieChartData>({
 
   // Calculate chart dimensions based on the smaller dimension of the container
   const chartSize = useMemo(() => {
-    let size;
-    if (isRowLayout) {
-      const chartContainerWidth = (effectiveWidth - 20) / 2; // Subtract gap
-      size = Math.min(chartContainerWidth, effectiveHeight);
-    } else {
-      size = Math.min(effectiveWidth, effectiveHeight);
-    }
+    // Compute the available width for the chart. In row layout, chart and legend are side-by-side.
+    // Subtract the 20px gap defined in CSS to avoid over-estimating available width.
+    const containerWidth = isRowLayout ? Math.max(0, (effectiveWidth - 20) / 2) : effectiveWidth;
+
+    // If wrapper height isn't explicitly provided (or is very small), it will be driven by the
+    // chart's own content, creating a feedback loop that pins the size to the minimum.
+    // Prefer width in that case to size the chart sensibly.
+    const heightIsUsable = effectiveHeight >= minChartSize;
+
+    let size = heightIsUsable ? Math.min(containerWidth, effectiveHeight) : containerWidth;
     size = Math.min(size, maxChartSize);
     return Math.max(minChartSize, size);
   }, [effectiveWidth, effectiveHeight, isRowLayout]);

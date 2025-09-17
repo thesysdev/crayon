@@ -103,17 +103,15 @@ export const RadialChart = <T extends RadialChartData>({
 
   // Calculate chart dimensions based on the smaller dimension of the container
   const chartSize = useMemo(() => {
-    let size;
-    // When in a row layout, the chart and legend are side-by-side.
-    if (isRowLayout) {
-      // The chart container takes up roughly half the width. We subtract the gap between items.
-      const chartContainerWidth = (effectiveWidth) / 2;
-      // The size of the chart is the smaller of its container's width or the total available height.
-      size = Math.min(chartContainerWidth, effectiveHeight);
-    } else {
-      // In a column layout, the chart's size is constrained by the smaller of the total container's width or height.
-      size = Math.min(effectiveWidth, effectiveHeight);
-    }
+    // Compute the available width for the chart. In row layout, chart and legend sit side-by-side.
+    // Subtract the 20px gap defined in CSS to avoid over-estimating available width.
+    const containerWidth = isRowLayout ? Math.max(0, (effectiveWidth - 20) / 2) : effectiveWidth;
+
+    // If wrapper height isn't explicitly provided (or is very small), prefer sizing by width to
+    // avoid a feedback loop where height depends on the chart, which then clamps the size.
+    const heightIsUsable = effectiveHeight >= minChartSize;
+
+    let size = heightIsUsable ? Math.min(containerWidth, effectiveHeight) : containerWidth;
     size = Math.min(size, maxChartSize);
     return Math.max(minChartSize, size);
   }, [effectiveWidth, effectiveHeight, isRowLayout]);
