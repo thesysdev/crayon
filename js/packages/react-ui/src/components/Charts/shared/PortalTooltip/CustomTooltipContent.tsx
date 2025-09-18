@@ -232,7 +232,6 @@ export const CustomTooltipContent = memo(
 
     return (
       <FloatingUIPortal chartId={id} portalContainer={portalContainer} position={props.coordinate}>
-      <FloatingUIPortal chartId={id} portalContainer={portalContainer} position={props.coordinate}>
         <ChartStyle id={id} config={config} />
         {tooltipContent}
       </FloatingUIPortal>
