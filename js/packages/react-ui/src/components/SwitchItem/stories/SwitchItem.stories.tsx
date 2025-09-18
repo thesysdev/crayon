@@ -17,6 +17,14 @@ const meta = {
         type: { summary: "string" },
       },
     },
+    description: {
+      control: "text",
+      description: "The description of the switch item",
+      table: {
+        category: "Content",
+        type: { summary: "string" },
+      },
+    },
     disabled: {
       control: "boolean",
       description: "Whether the switch item is disabled",

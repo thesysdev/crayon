@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext } from "react";
 import { DateRange } from "react-day-picker";
 
 interface DatePickerContextType {
@@ -45,6 +45,8 @@ interface DatePickerProviderProps {
 
   setSelectedDateFromParent: (date: Date | undefined) => void;
   setSelectedRangeFromParent: (range: DateRange | undefined) => void;
+  isOpenFromParent: boolean;
+  setIsOpenFromParent: (isOpen: boolean) => void;
 }
 
 export const DatePickerProvider: React.FC<DatePickerProviderProps> = ({
@@ -54,12 +56,12 @@ export const DatePickerProvider: React.FC<DatePickerProviderProps> = ({
   selectedRangeFromParent,
   setSelectedDateFromParent,
   setSelectedRangeFromParent,
+  isOpenFromParent,
+  setIsOpenFromParent,
 
   mode,
   botType,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
     <DatePickerContext.Provider
       value={{
@@ -71,8 +73,8 @@ export const DatePickerProvider: React.FC<DatePickerProviderProps> = ({
 
         mode,
 
-        isOpen,
-        setIsOpen,
+        isOpen: isOpenFromParent,
+        setIsOpen: setIsOpenFromParent,
 
         botType,
       }}

@@ -29,7 +29,7 @@ export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>((props, re
             : actions}
         </div>
       </div>
-      <div className="crayon-header-bottom">{subtitle}</div>
+      {subtitle && <div className="crayon-header-bottom">{subtitle}</div>}
     </div>
   );
 });

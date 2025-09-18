@@ -81,7 +81,7 @@ const AreaChartComponent = <T extends AreaChartData>({
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
-  const yAxisWidth = useYAxisLabelWidth(data, dataKeys);
+  const { yAxisWidth, setLabelWidth } = useYAxisLabelWidth(data, dataKeys);
 
   const widthOfGroup = useMemo(() => {
     return getWidthOfGroup(data);
@@ -262,7 +262,12 @@ const AreaChartComponent = <T extends AreaChartData>({
             right: 0,
           }}
         >
-          <YAxis width={yAxisWidth} tickLine={false} axisLine={false} tick={<YAxisTick />} />
+          <YAxis
+            width={yAxisWidth}
+            tickLine={false}
+            axisLine={false}
+            tick={<YAxisTick setLabelWidth={setLabelWidth} />}
+          />
           {/* Invisible area to maintain scale synchronization */}
           {dataKeys.map((key) => {
             return (
@@ -340,7 +345,10 @@ const AreaChartComponent = <T extends AreaChartData>({
                     }}
                   />
 
-                  <ChartTooltip content={<CustomTooltipContent />} offset={15} />
+                  <ChartTooltip
+                    content={<CustomTooltipContent parentRef={mainContainerRef} />}
+                    offset={15}
+                  />
 
                   {dataKeys.map((key) => {
                     const transformedKey = transformedKeys[key];

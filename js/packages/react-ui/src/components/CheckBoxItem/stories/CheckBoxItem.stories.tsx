@@ -23,6 +23,16 @@ const meta: Meta<typeof CheckBoxItem> = {
         },
       },
     },
+    description: {
+      control: "text",
+      defaultValue: "This is a description",
+      description: "The description of the checkbox",
+      table: {
+        type: {
+          summary: "string",
+        },
+      },
+    },
     checked: {
       control: "boolean",
       description: "State of the checkbox, used for controlled mode",
@@ -115,6 +125,7 @@ type Story = StoryObj<typeof CheckBoxItem>;
 export const Default: Story = {
   args: {
     label: "Default Checkbox",
+    description: "This is a description",
     onChange: (checked) => console.log("Checkbox changed:", checked),
   },
 };

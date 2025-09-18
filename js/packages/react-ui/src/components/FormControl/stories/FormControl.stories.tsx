@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Info } from "lucide-react";
+import { AlertCircle, Info } from "lucide-react";
+import { useState } from "react";
 import { Input } from "../../Input";
 import { Label } from "../../Label";
 import { FormControl } from "../FormControl";
@@ -43,6 +44,15 @@ const meta: Meta<typeof FormControl> = {
         type: { summary: "CSSProperties" },
       },
     },
+    hasError: {
+      control: "boolean",
+      description: "Toggles error styling for child inputs and hints",
+      table: {
+        category: "Behavior",
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
   },
 };
 
@@ -52,7 +62,9 @@ type Story = StoryObj<typeof FormControl>;
 export const WithLabelAndHint: Story = {
   render: (args) => (
     <FormControl>
-      <Label htmlFor="username">Username</Label>
+      <Label htmlFor="username" required>
+        Username
+      </Label>
       <Input placeholder="Enter username" id="username" />
       <Hint>
         <Info size={14} />
@@ -71,4 +83,32 @@ export const WithMultipleChildren: Story = {
       <Hint>This information will be displayed on your public profile</Hint>
     </FormControl>
   ),
+};
+
+export const LengthValidation: Story = {
+  render: () => {
+    const [value, setValue] = useState("");
+    const hasError = value.length > 0 && (value.length > 10 || value.length < 3);
+    const helperText = hasError
+      ? "Name must be between 3 and 10 characters"
+      : "Enter a name between 3 and 10 characters";
+
+    return (
+      <div style={{ width: 420 }}>
+        <FormControl hasError={hasError}>
+          <Label htmlFor="name-validated">Name</Label>
+          <Input
+            id="name-validated"
+            placeholder="Type here"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+          <Hint>
+            {hasError ? <AlertCircle size={14} /> : <Info size={14} />}
+            <span>{helperText}</span>
+          </Hint>
+        </FormControl>
+      </div>
+    );
+  },
 };

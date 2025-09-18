@@ -93,7 +93,7 @@ const RadarChartComponent = <T extends RadarChartData>({
   }, [wrapperRect]);
 
   const chartSizeStyle = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
-  const rechartsProps = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
+  const rechartsProps = useMemo(() => ({ width: "100%", height: "100%" }), [chartSize]);
 
   const radars = useMemo(() => {
     return dataKeys.map((key) => {
@@ -168,7 +168,10 @@ const RadarChartComponent = <T extends RadarChartData>({
                     tick={<AxisLabel portalContainerRef={wrapperRef} />}
                   />
 
-                  <ChartTooltip cursor={false} content={<CustomTooltipContent />} />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<CustomTooltipContent parentRef={wrapperRef} />}
+                  />
                   {/* rendering the radars here */}
                   {radars}
                 </RechartsRadarChart>

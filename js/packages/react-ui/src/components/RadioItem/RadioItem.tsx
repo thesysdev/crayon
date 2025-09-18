@@ -5,6 +5,7 @@ import { useId } from "../../polyfills";
 
 export interface RadioItemProps {
   label?: ReactNode;
+  description?: ReactNode;
   className?: string;
   style?: CSSProperties;
   disabled?: boolean;
@@ -13,7 +14,7 @@ export interface RadioItemProps {
 }
 
 const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>((props, ref) => {
-  const { label, className, style, disabled, required, value } = props;
+  const { label, description, className, style, disabled, required, value } = props;
   const id = useId();
   return (
     <div className="crayon-radio-item-container">
@@ -50,11 +51,14 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>((props, ref) => 
           />
         </svg>
       </Radio.Item>
-      {label && (
-        <label htmlFor={id} className="crayon-radio-item-label">
-          {label}
-        </label>
-      )}
+      <div className="crayon-radio-item-content">
+        {label && (
+          <label htmlFor={id} className="crayon-radio-item-label">
+            {label}
+          </label>
+        )}
+        {description && <p className="crayon-radio-item-description">{description}</p>}
+      </div>
     </div>
   );
 });

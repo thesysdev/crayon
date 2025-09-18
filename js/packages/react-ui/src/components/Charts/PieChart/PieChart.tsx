@@ -37,6 +37,8 @@ export interface PieChartProps<T extends PieChartData> {
   onMouseLeave?: () => void;
   onClick?: (data: any, index: number) => void;
   className?: string;
+  maxChartSize?: number;
+  minChartSize?: number;
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
@@ -61,6 +63,8 @@ const PieChartComponent = <T extends PieChartData>({
   onMouseLeave,
   onClick,
   className,
+  maxChartSize = MAX_CHART_SIZE,
+  minChartSize = MIN_CHART_SIZE,
 }: PieChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -105,12 +109,12 @@ const PieChartComponent = <T extends PieChartData>({
     } else {
       size = Math.min(effectiveWidth, effectiveHeight);
     }
-    size = Math.min(size, MAX_CHART_SIZE);
-    return Math.max(MIN_CHART_SIZE, size);
+    size = Math.min(size, maxChartSize);
+    return Math.max(minChartSize, size);
   }, [effectiveWidth, effectiveHeight, isRowLayout]);
 
   const chartSizeStyle = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
-  const rechartsProps = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
+  const rechartsProps = useMemo(() => ({ width: "100%", height: "100%" }), []);
 
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(

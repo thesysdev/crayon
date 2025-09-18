@@ -332,6 +332,8 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
     [dataKeys, colors],
   );
 
+  const setLabelWidth = useCallback(() => {}, []);
+
   return (
     <LabelTooltipProvider>
       <SideBarTooltipProvider
@@ -380,7 +382,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                       tickLine={false}
                       axisLine={false}
                       width={maxCategoryLabelWidth}
-                      tick={<YAxisTick />}
+                      tick={<YAxisTick setLabelWidth={setLabelWidth} />}
                       interval={0}
                       // gives the padding on the 2 sides see the function for reference
                       padding={padding}
@@ -394,7 +396,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                         opacity: 1,
                         strokeWidth: 1,
                       }}
-                      content={<CustomTooltipContent />}
+                      content={<CustomTooltipContent parentRef={mainContainerRef} />}
                       offset={15}
                     />
 

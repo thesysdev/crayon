@@ -32,6 +32,14 @@ const meta: Meta<typeof RadioItem> = {
         type: { summary: "string" },
       },
     },
+    description: {
+      control: "text",
+      description: "The description of the radio item",
+      table: {
+        category: "Content",
+        type: { summary: "string" },
+      },
+    },
     required: {
       control: "boolean",
       description: "Whether the radio item is required",
@@ -79,6 +87,7 @@ export const Default: Story = {
   args: {
     value: "default",
     label: "Default",
+    description: "Default description",
     required: false,
     disabled: false,
   },
