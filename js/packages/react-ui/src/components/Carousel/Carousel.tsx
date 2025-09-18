@@ -9,7 +9,6 @@ interface CarouselContextType {
   noSnap?: boolean;
   showButtons?: boolean;
   variant?: "card" | "sunk";
- 
 }
 
 const CarouselContext = createContext<CarouselContextType | null>(null);
@@ -26,16 +25,14 @@ export interface CarouselProviderProps {
   noSnap?: boolean;
   showButtons?: boolean;
   variant?: "card" | "sunk";
-  // buttonBehavior?: "hide" | "disable";
 }
 
-export const CarouselProvider = ({
+const CarouselProvider = ({
   children,
   itemsToScroll = 1,
   noSnap,
   showButtons = true,
   variant = "card",
-  // buttonBehavior = "hide",
 }: CarouselProviderProps) => {
   const scrollDivRef = useRef<HTMLDivElement>(null);
 
@@ -96,7 +93,7 @@ export const CarouselProvider = ({
   );
 };
 
-export const Carousel = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+const Carousel = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => {
     const { variant } = useCarousel();
     return (
@@ -112,7 +109,7 @@ export const Carousel = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivE
 );
 Carousel.displayName = "Carousel";
 
-export const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, _ref) => {
     const { scrollDivRef, noSnap } = useCarousel();
 
@@ -131,7 +128,7 @@ export const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<H
 );
 CarouselContent.displayName = "CarouselContent";
 
-export const CarouselItem = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+const CarouselItem = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => (
     <div ref={ref} className={clsx("crayon-carousel-item", className)} {...props}>
       {children}
@@ -140,7 +137,7 @@ export const CarouselItem = forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
 );
 CarouselItem.displayName = "CarouselItem";
 
-export const CarouselWrapper = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+const CarouselWrapper = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => (
     <div ref={ref} className={clsx("crayon-carousel-wrapper", className)} {...props}>
       {children}
@@ -153,7 +150,7 @@ export interface CarouselPreviousProps extends React.ComponentProps<typeof IconB
   buttonBehavior?: "hide" | "disable";
 }
 
-export const CarouselPrevious = forwardRef<HTMLButtonElement, CarouselPreviousProps>(
+const CarouselPrevious = forwardRef<HTMLButtonElement, CarouselPreviousProps>(
   ({ className, style, buttonBehavior = "hide", ...props }, ref) => {
     const { scrollDivRef, scroll, showButtons } = useCarousel();
     const [show, setShow] = useState(true);
@@ -211,8 +208,7 @@ CarouselPrevious.displayName = "CarouselPrevious";
 export interface CarouselNextProps extends React.ComponentProps<typeof IconButton> {
   buttonBehavior?: "hide" | "disable";
 }
-
-export const CarouselNext = forwardRef<HTMLButtonElement, CarouselNextProps>(
+const CarouselNext = forwardRef<HTMLButtonElement, CarouselNextProps>(
   ({ className, style, buttonBehavior = "hide", ...props }, ref) => {
     const { scrollDivRef, scroll, showButtons } = useCarousel();
     const [show, setShow] = useState(true);
@@ -266,3 +262,13 @@ export const CarouselNext = forwardRef<HTMLButtonElement, CarouselNextProps>(
   },
 );
 CarouselNext.displayName = "CarouselNext";
+
+export {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  CarouselProvider,
+  CarouselWrapper,
+};
