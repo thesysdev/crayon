@@ -28,13 +28,21 @@
   justify-content: center;
   min-width: 2px;
   box-shadow: cssUtils.$shadow-s;
-  border-radius: cssUtils.$rounded-xs;
+  // border-radius: cssUtils.$rounded-xs;
   position: relative;
   overflow: hidden;
   transition:
     box-shadow 0.2s ease,
     filter 0.2s ease,
     opacity 0.2s ease;
+
+  &:first-child {
+    border-radius: cssUtils.$rounded-xs 0 0 cssUtils.$rounded-xs;
+  }
+
+  &:last-child {
+    border-radius: 0 cssUtils.$rounded-xs cssUtils.$rounded-xs 0;
+  }
 
   &-line {
     position: absolute;
@@ -46,43 +54,6 @@
     height: 1px;
     z-index: 1;
     min-width: 2px;
-  }
-
-  /* Neon highlight that adapts to light/dark using alpha-only glows based on the segment color */
-  &--highlight {
-    isolation: isolate; /* ensure blend effects don't leak */
-    box-shadow:
-      0 0 0.5px var(--segment-color, currentColor),
-      0 0 6px color-mix(in oklab, var(--segment-color, #00fff0) 70%, transparent),
-      0 0 14px color-mix(in oklab, var(--segment-color, #00fff0) 45%, transparent),
-      0 0 24px color-mix(in oklab, var(--segment-color, #00fff0) 30%, transparent);
-
-    &::before {
-      content: "";
-      position: absolute;
-      inset: -12% -6%;
-      border-radius: inherit;
-      pointer-events: none;
-      background: radial-gradient(
-        60% 100% at 50% 50%,
-        color-mix(in oklab, var(--segment-color, #00fff0) 35%, transparent) 0%,
-        transparent 70%
-      );
-      mix-blend-mode: screen; /* brightens in dark; subtle in light */
-      opacity: 0.9;
-      z-index: 0;
-    }
-
-    &::after {
-      /* thin inner glow ring */
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      pointer-events: none;
-      box-shadow: inset 0 0 10px color-mix(in oklab, var(--segment-color, #00fff0) 55%, transparent);
-      z-index: 1;
-    }
   }
 }
 

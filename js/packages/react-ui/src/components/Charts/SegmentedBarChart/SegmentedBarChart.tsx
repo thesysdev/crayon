@@ -109,15 +109,12 @@ export const SegmentedBar = <T extends SegmentedBarData>({
               key={`segment-${index}`}
               className={clsx("crayon-segmented-bar-chart-segment", {
                 "crayon-segmented-bar-chart-animated": animated,
-                "crayon-segmented-bar-chart-segment--highlight": activeIndex === index,
               })}
               style={{
                 width: `${segment.percentage}%`,
                 backgroundColor: colors[index % colors.length],
                 opacity: isActive ? 1 : 0.5,
-                ["--segment-color" as any]: colors[index % colors.length],
               }}
-              title={`${segment.category}: ${segment.value}`}
               onMouseEnter={(e) => {
                 setActiveIndex(index);
                 const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
