@@ -13,6 +13,7 @@ import {
   Trophy,
   UtensilsCrossed,
 } from "lucide-react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Card } from "../../Card";
 import { CardHeader } from "../../CardHeader";
 import { IconButton } from "../../IconButton";
@@ -23,25 +24,25 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  CarouselProvider,
+  CarouselRef,
 } from "../Carousel";
 import "../carousel.scss";
 
-const meta: Meta<typeof CarouselProvider> = {
+const meta: Meta<typeof Carousel> = {
   title: "Components/Carousel",
-  component: CarouselProvider,
+  component: Carousel,
   parameters: {
     layout: "centered",
     docs: {
       description: {
         component:
-          "```tsx\nimport { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselProvider, CarouselWrapper } from '@crayon-ui/react-ui';\n```",
+          "```tsx\nimport { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious } from '@crayon-ui/react-ui';\n```",
       },
     },
   },
   decorators: [
     (Story) => (
-      <div style={{ width: "100%", maxWidth: "48rem" }}>
+      <div style={{ width: "100%", maxWidth: "28rem" }}>
         <Story />
       </div>
     ),
@@ -92,28 +93,28 @@ const meta: Meta<typeof CarouselProvider> = {
         type: { summary: "ReactNode" },
       },
     },
-    // className: {
-    //   control: false,
-    //   description: "Additional CSS class name for custom styling",
-    //   table: {
-    //     category: "Styling",
-    //     type: { summary: "string" },
-    //   },
-    // },
-    // style: {
-    //   control: false,
-    //   description: "Inline CSS styles for custom styling",
-    //   table: {
-    //     category: "Styling",
-    //     type: { summary: "CSSProperties" },
-    //   },
-    // },
+    className: {
+      control: false,
+      description: "Additional CSS class name for custom styling",
+      table: {
+        category: "Styling",
+        type: { summary: "string" },
+      },
+    },
+    style: {
+      control: false,
+      description: "Inline CSS styles for custom styling",
+      table: {
+        category: "Styling",
+        type: { summary: "CSSProperties" },
+      },
+    },
   },
   tags: ["autodocs", "!dev"],
 };
 
 export default meta;
-type Story = StoryObj<typeof CarouselProvider>;
+type Story = StoryObj<typeof Carousel>;
 
 const items = [
   {
@@ -209,30 +210,28 @@ export const Default: Story = {
     }));
 
     return (
-      <Card style={{ width: "100%" }}>
-        <CarouselProvider
+      <Card style={{ width: "700px" }}>
+        <Carousel
           itemsToScroll={itemsToScroll}
           noSnap={noSnap}
           showButtons={showButtons}
           variant={variant}
         >
-          <Carousel>
-            <CarouselContent>
-              {repeatedItems.map((item) => (
-                <CarouselItem key={item.id}>
-                  <CardHeader
-                    title={item.title}
-                    subtitle={item.subtitle}
-                    actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
-                  />
-                  <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious icon={<ChevronLeft />} />
-            <CarouselNext icon={<ChevronRight />} />
-          </Carousel>
-        </CarouselProvider>
+          <CarouselContent>
+            {repeatedItems.map((item) => (
+              <CarouselItem key={item.id}>
+                <CardHeader
+                  title={item.title}
+                  subtitle={item.subtitle}
+                  actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
+                />
+                <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious icon={<ChevronLeft />} />
+          <CarouselNext icon={<ChevronRight />} />
+        </Carousel>
       </Card>
     );
   },
@@ -258,30 +257,139 @@ export const SunkVariant: Story = {
     }));
 
     return (
-      <Card style={{ width: "100%" }}>
-        <CarouselProvider
+      <Card style={{ width: "700px" }}>
+        <Carousel
           itemsToScroll={itemsToScroll}
           noSnap={noSnap}
           showButtons={showButtons}
           variant={variant}
         >
-          <Carousel>
-            <CarouselContent>
-              {repeatedItems.map((item) => (
-                <CarouselItem key={item.id}>
-                  <CardHeader
-                    title={item.title}
-                    subtitle={item.subtitle}
-                    actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
-                  />
-                  <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious icon={<ChevronLeft />} />
-            <CarouselNext icon={<ChevronRight />} />
-          </Carousel>
-        </CarouselProvider>
+          <CarouselContent>
+            {repeatedItems.map((item) => (
+              <CarouselItem key={item.id}>
+                <CardHeader
+                  title={item.title}
+                  subtitle={item.subtitle}
+                  actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
+                />
+                <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious icon={<ChevronLeft />} />
+          <CarouselNext icon={<ChevronRight />} />
+        </Carousel>
+      </Card>
+    );
+  },
+};
+
+export const WithRef: Story = {
+  args: {
+    ...Default.args,
+    variant: "card",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Carousel with the `sunk` variant.",
+      },
+    },
+  },
+  render: (args) => {
+    const { itemsToScroll, noSnap, variant } = args;
+    const repeatedItems = Array.from({ length: items.length }, (_, index) => ({
+      ...items[index % items.length],
+      id: `item-${index + 1}`,
+    }));
+
+    const ref = useRef<CarouselRef | null>(null);
+    const [canScroll, setCanScroll] = useState({ left: false, right: false });
+    const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(null);
+
+    useLayoutEffect(() => {
+      if (ref.current?.scrollDivRef.current) {
+        setScrollContainer(ref.current.scrollDivRef.current);
+      }
+    });
+
+    useEffect(() => {
+      if (!scrollContainer) {
+        return;
+      }
+      const handleScroll = () => {
+        const canScrollLeft = scrollContainer.scrollLeft > 0;
+        const canScrollRight =
+          Math.ceil(scrollContainer.scrollLeft) + scrollContainer.offsetWidth <
+          scrollContainer.scrollWidth;
+        setCanScroll({ left: canScrollLeft, right: canScrollRight });
+      };
+
+      handleScroll();
+
+      scrollContainer.addEventListener("scroll", handleScroll);
+      const resizeObserver = new ResizeObserver(handleScroll);
+      resizeObserver.observe(scrollContainer);
+      const mutationObserver = new MutationObserver(handleScroll);
+      mutationObserver.observe(scrollContainer, { childList: true, subtree: true });
+
+      return () => {
+        scrollContainer.removeEventListener("scroll", handleScroll);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }, [scrollContainer]);
+
+    return (
+      <Card style={{ width: "700px", display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: "10px",
+            justifyContent: "space-between",
+          }}
+        >
+          <span>Carousel Header</span>
+          <div style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
+            <IconButton
+              variant="tertiary"
+              size="small"
+              onClick={() => ref.current?.scroll("left")}
+              disabled={!canScroll.left}
+              icon={<ChevronLeft />}
+            />
+            <IconButton
+              variant="tertiary"
+              size="small"
+              onClick={() => ref.current?.scroll("right")}
+              disabled={!canScroll.right}
+              icon={<ChevronRight />}
+            />
+          </div>
+        </div>
+        <Carousel
+          ref={ref}
+          itemsToScroll={itemsToScroll}
+          noSnap={noSnap}
+          showButtons={false}
+          variant={variant}
+        >
+          <CarouselContent>
+            {repeatedItems.map((item) => (
+              <CarouselItem key={item.id}>
+                <CardHeader
+                  title={item.title}
+                  subtitle={item.subtitle}
+                  actions={[<IconButton variant="tertiary" size="small" icon={item.icon} />]}
+                />
+                <Image src={item.imageUrl ?? ""} alt={`${item.title} image`} scale="fill" />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious icon={<ChevronLeft />} />
+          <CarouselNext icon={<ChevronRight />} />
+        </Carousel>
       </Card>
     );
   },
