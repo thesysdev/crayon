@@ -18,6 +18,8 @@ interface CarouselContextType {
   noSnap?: boolean;
   showButtons?: boolean;
   variant?: "card" | "sunk";
+  isPrevVisible: boolean;
+  isNextVisible: boolean;
 }
 
 const CarouselContext = createContext<CarouselContextType | null>(null);
@@ -54,6 +56,8 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
     ref,
   ) => {
     const scrollDivRef = useRef<HTMLDivElement>(null);
+    const [isPrevVisible, setIsPrevVisible] = useState(false);
+    const [isNextVisible, setIsNextVisible] = useState(false);
 
     const scroll = useCallback((direction: "left" | "right") => {
       if (!scrollDivRef.current) {
@@ -96,6 +100,34 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
       }
     }, []);
 
+    useEffect(() => {
+      if (!scrollDivRef.current) return;
+
+      const container = scrollDivRef.current;
+      const handleScroll = () => {
+        const canScrollLeft = container.scrollLeft > 0;
+        const canScrollRight =
+          Math.ceil(container.scrollLeft) + container.offsetWidth < container.scrollWidth;
+        setIsPrevVisible(canScrollLeft);
+        setIsNextVisible(canScrollRight);
+      };
+
+      handleScroll();
+
+      const resizeObserver = new ResizeObserver(handleScroll);
+      resizeObserver.observe(container);
+      const mutationObserver = new MutationObserver(handleScroll);
+      mutationObserver.observe(container, { childList: true, subtree: true });
+
+      container.addEventListener("scroll", handleScroll);
+
+      return () => {
+        container.removeEventListener("scroll", handleScroll);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }, [scrollDivRef]);
+
     useImperativeHandle(ref, () => {
       return {
         scroll,
@@ -105,7 +137,16 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
 
     return (
       <CarouselContext.Provider
-        value={{ scrollDivRef, scroll, itemsToScroll, noSnap, showButtons, variant }}
+        value={{
+          scrollDivRef,
+          scroll,
+          itemsToScroll,
+          noSnap,
+          showButtons,
+          variant,
+          isPrevVisible,
+          isNextVisible,
+        }}
       >
         <div
           className={clsx("crayon-carousel", `crayon-carousel--${variant}`, className)}
@@ -120,7 +161,7 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
 
 export const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, _ref) => {
-    const { scrollDivRef, noSnap } = useCarousel();
+    const { scrollDivRef, noSnap, isPrevVisible, isNextVisible } = useCarousel();
 
     const content = noSnap ? (
       <div className="crayon-carousel-content-wrapper">{children}</div>
@@ -129,7 +170,18 @@ export const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<H
     );
 
     return (
-      <div ref={scrollDivRef} className={clsx("crayon-carousel-content", className)} {...props}>
+      <div
+        ref={scrollDivRef}
+        className={clsx(
+          "crayon-carousel-content",
+          {
+            "crayon-carousel-content--mask-left": isPrevVisible,
+            "crayon-carousel-content--mask-right": isNextVisible,
+          },
+          className,
+        )}
+        {...props}
+      >
         {content}
       </div>
     );
@@ -148,33 +200,9 @@ export const CarouselPrevious = forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof IconButton>
 >(({ className, style, ...props }, ref) => {
-  const { scrollDivRef, scroll, showButtons } = useCarousel();
-  const [show, setShow] = useState(true);
+  const { scroll, showButtons, isPrevVisible } = useCarousel();
 
-  useEffect(() => {
-    if (!scrollDivRef.current) return;
-
-    const container = scrollDivRef.current;
-    const shouldShow = () => container.scrollLeft > 0;
-
-    setShow(shouldShow());
-
-    const handleScroll = () => {   
-      setShow(shouldShow());
-    };
-
-    const resizeObserver = new ResizeObserver(handleScroll);
-    resizeObserver.observe(container);
-
-    container.addEventListener("scroll", handleScroll);
-
-    return () => {
-      container.removeEventListener("scroll", handleScroll);
-      resizeObserver.disconnect();
-    };
-  }, [scrollDivRef]);
-
-  if (!show || !showButtons) return null;
+  if (!isPrevVisible || !showButtons) return null;
 
   return (
     <div className={clsx("crayon-carousel-button crayon-carousel-button-left", className)}>
@@ -193,33 +221,9 @@ export const CarouselPrevious = forwardRef<
 
 export const CarouselNext = forwardRef<HTMLButtonElement, React.ComponentProps<typeof IconButton>>(
   ({ className, style, ...props }, ref) => {
-    const { scrollDivRef, scroll, showButtons } = useCarousel();
-    const [show, setShow] = useState(true);
+    const { scroll, showButtons, isNextVisible } = useCarousel();
 
-    useEffect(() => {
-      if (!scrollDivRef.current) return;
-
-      const container = scrollDivRef.current;
-      const shouldShow = () => container.scrollLeft + container.offsetWidth < container.scrollWidth;
-
-      setShow(shouldShow());
-
-      const handleScroll = () => {
-        setShow(shouldShow());
-      };
-
-      const resizeObserver = new ResizeObserver(handleScroll);
-      resizeObserver.observe(container);
-
-      container.addEventListener("scroll", handleScroll);
-
-      return () => {
-        container.removeEventListener("scroll", handleScroll);
-        resizeObserver.disconnect();
-      };
-    }, [scrollDivRef]);
-
-    if (!show || !showButtons) return null;
+    if (!isNextVisible || !showButtons) return null;
 
     return (
       <div className={clsx("crayon-carousel-button crayon-carousel-button-right", className)}>

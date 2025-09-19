@@ -261,8 +261,9 @@ export const SunkVariant: Story = {
         <Carousel
           itemsToScroll={itemsToScroll}
           noSnap={noSnap}
-          showButtons={showButtons}
+          showButtons={false}
           variant={variant}
+
         >
           <CarouselContent>
             {repeatedItems.map((item) => (
