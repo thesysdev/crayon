@@ -25,7 +25,7 @@ export const SegmentedBar = <T extends SegmentedBarData>({
   categoryKey,
   dataKey,
   theme = "ocean",
-  legend = false,
+  legend = true,
   legendVariant = "default",
   className,
   style,
