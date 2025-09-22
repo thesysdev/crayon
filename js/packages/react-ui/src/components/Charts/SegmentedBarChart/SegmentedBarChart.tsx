@@ -136,11 +136,7 @@ export const SegmentedBar = <T extends SegmentedBarData>({
         })}
       </div>
       {activeIndex !== null && tooltipPosition && (
-        <FloatingUIPortal
-          position={tooltipPosition}
-          placement="top"
-          offsetDistance={10}
-        >
+        <FloatingUIPortal position={tooltipPosition} placement="top" offsetDistance={10}>
           <ToolTip
             label={legendItems[activeIndex]?.label ?? ""}
             color={stackedLegendItems[activeIndex]?.color ?? "#000000"}
