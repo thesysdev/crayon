@@ -90,7 +90,8 @@ export const ScatterChart = ({
     );
   }, [datasets, colors]);
 
-  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartWrapperRef = useRef<HTMLDivElement>(null);
+  const xAxisRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [isSideBarTooltipOpen, setIsSideBarTooltipOpen] = useState(false);
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
@@ -105,8 +106,18 @@ export const ScatterChart = ({
   }, [width, containerWidth]);
 
   const chartHeight = useMemo(() => {
-    return height ?? DEFAULT_CHART_HEIGHT;
-  }, [height]);
+    if (!chartWrapperRef.current) {
+      return 0;
+    }
+    const legendHeight = (chartWrapperRef.current.querySelector(".crayon-scatter-chart-legend-container") as HTMLElement)?.offsetHeight ?? 0;
+    const xAxisHeight = (chartWrapperRef.current.querySelector(".crayon-scatter-chart-x-axis-container-outer") as HTMLElement)?.offsetHeight ?? 0;
+    
+    if (height) {
+      return height - legendHeight - xAxisHeight;
+    }
+    
+    return chartWrapperRef.current.offsetHeight - legendHeight - xAxisHeight;
+  }, [containerWidth, height]);
 
   // Calculate domains for x and y axes
   const xDomain = useMemo(() => {
@@ -126,23 +137,26 @@ export const ScatterChart = ({
   }, [shape]);
 
   useEffect(() => {
-    // Only set up ResizeObserver if width is not provided
-    if (width || !chartContainerRef.current) {
-      return () => {};
+    const chartElement = chartWrapperRef.current;
+
+    if (!chartElement) {
+      return;
     }
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
+        if (entry.target === chartElement) {
+          setContainerWidth(entry.contentRect.width);
+        }
       }
     });
 
-    resizeObserver.observe(chartContainerRef.current);
+    resizeObserver.observe(chartElement);
 
     return () => {
       resizeObserver.disconnect();
     };
-  }, [width]);
+  }, []);
 
   useEffect(() => {
     setIsSideBarTooltipOpen(false);
@@ -157,7 +171,7 @@ export const ScatterChart = ({
 
   const xAxis = useMemo(() => {
     return (
-      <div className="crayon-scatter-chart-x-axis-container-outer">
+      <div className="crayon-scatter-chart-x-axis-container-outer" >
         <div
           className="crayon-scatter-chart-x-axis-container"
           style={
@@ -221,6 +235,7 @@ export const ScatterChart = ({
     xAxisDataKey,
     isAnimationActive,
     containerWidth,
+    xAxisLabel,
   ]);
 
   return (
@@ -233,18 +248,27 @@ export const ScatterChart = ({
       <div
         className={clsx("crayon-scatter-chart-container", className)}
         style={{
-          width: width ? `${width}px` : undefined,
+          width: width ? `${width}px` : "100%",
+          height: height ? `${height}px` : "100%",
         }}
+        ref={chartWrapperRef}
       >
-        <div className="crayon-scatter-chart-container-inner" ref={chartContainerRef}>
-          <div className="crayon-scatter-chart-main-container">
+        <div
+          className="crayon-scatter-chart-container-inner"
+        >
+          <div
+            className="crayon-scatter-chart-main-container"
+          >
             <ChartContainer
               config={chartConfig}
               style={{
-                minWidth: "100%",
+                width: "100%",
+                height: "100%",
+                aspectRatio: 0,
               }}
               rechartsProps={{
                 width: "100%",
+                height: "100%",
               }}
             >
               <RechartsScatterChart
@@ -279,7 +303,7 @@ export const ScatterChart = ({
                 />
 
                 <ChartTooltip
-                  content={<CustomTooltipContent parentRef={chartContainerRef} />}
+                  content={<CustomTooltipContent parentRef={chartWrapperRef} />}
                   offset={15}
                 />
 
@@ -301,16 +325,18 @@ export const ScatterChart = ({
           {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
         </div>
         {xAxis}
-        {legend && (
-          <DefaultLegend
-            items={legendItems}
-            yAxisLabel={yAxisLabel}
-            xAxisLabel={xAxisLabel}
-            containerWidth={effectiveWidth}
-            isExpanded={isLegendExpanded}
-            setIsExpanded={setIsLegendExpanded}
-          />
-        )}
+        <div className="crayon-scatter-chart-legend-container">
+          {legend && (
+            <DefaultLegend
+              items={legendItems}
+              yAxisLabel={yAxisLabel}
+              xAxisLabel={xAxisLabel}
+              containerWidth={effectiveWidth}
+              isExpanded={isLegendExpanded}
+              setIsExpanded={setIsLegendExpanded}
+            />
+          )}
+        </div>
       </div>
     </SideBarTooltipProvider>
   );
