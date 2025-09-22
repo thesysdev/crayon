@@ -118,7 +118,15 @@ export const SegmentedBar = <T extends SegmentedBarData>({
               onMouseEnter={(e) => {
                 setActiveIndex(index);
                 const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
-                setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
+                const containerRect = wrapperRef.current?.getBoundingClientRect();
+                if (containerRect) {
+                  // Position relative to container so FloatingUIPortal aligns correctly
+                  const relativeX = rect.left + rect.width / 2 - containerRect.left;
+                  const relativeY = rect.top - containerRect.top;
+                  setTooltipPosition({ x: relativeX, y: relativeY });
+                } else {
+                  setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
+                }
               }}
               onMouseLeave={() => setActiveIndex(null)}
             >
@@ -129,7 +137,6 @@ export const SegmentedBar = <T extends SegmentedBarData>({
       </div>
       {activeIndex !== null && tooltipPosition && (
         <FloatingUIPortal
-          portalContainer={wrapperRef}
           position={tooltipPosition}
           placement="top"
           offsetDistance={10}
@@ -163,7 +170,14 @@ export const SegmentedBar = <T extends SegmentedBarData>({
               )?.[hoverIndex] as HTMLDivElement | undefined;
               if (segmentEl) {
                 const rect = segmentEl.getBoundingClientRect();
-                setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
+                const containerRect = wrapperRef.current?.getBoundingClientRect();
+                if (containerRect) {
+                  const relativeX = rect.left + rect.width / 2 - containerRect.left;
+                  const relativeY = rect.top - containerRect.top;
+                  setTooltipPosition({ x: relativeX, y: relativeY });
+                } else {
+                  setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
+                }
               }
             } else {
               setTooltipPosition(null);
