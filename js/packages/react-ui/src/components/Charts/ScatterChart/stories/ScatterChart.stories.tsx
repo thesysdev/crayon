@@ -331,22 +331,6 @@ const scatterData = [
         category: "📱 Display Options",
       },
     },
-    showYAxis: {
-      description: "Toggles the visibility of the Y-axis.",
-      control: "boolean",
-      table: {
-        defaultValue: { summary: "true" },
-        category: "📱 Display Options",
-      },
-    },
-    showXAxis: {
-      description: "Toggles the visibility of the X-axis.",
-      control: "boolean",
-      table: {
-        defaultValue: { summary: "true" },
-        category: "📱 Display Options",
-      },
-    },
     isAnimationActive: {
       description: "Enables or disables the initial loading animation.",
       control: "boolean",
@@ -368,22 +352,6 @@ const scatterData = [
       control: "text",
       table: {
         type: { summary: "React.ReactNode" },
-        category: "📱 Display Options",
-      },
-    },
-    xAxisUnit: {
-      description: "Unit to display with X-axis values.",
-      control: "text",
-      table: {
-        type: { summary: "string" },
-        category: "📱 Display Options",
-      },
-    },
-    yAxisUnit: {
-      description: "Unit to display with Y-axis values.",
-      control: "text",
-      table: {
-        type: { summary: "string" },
         category: "📱 Display Options",
       },
     },
@@ -460,12 +428,8 @@ export const CorrelationAnalysis: Story = {
     grid: true,
     legend: true,
     isAnimationActive: true,
-    showYAxis: true,
-    showXAxis: true,
     xAxisLabel: "Marketing Spend",
     yAxisLabel: "Sales Revenue",
-    xAxisUnit: "$",
-    yAxisUnit: "$",
     shape: "circle",
   },
   render: (args: any) => (
@@ -491,8 +455,6 @@ export const ShapeComparison: Story = {
     grid: true,
     legend: true,
     isAnimationActive: false,
-    showYAxis: true,
-    showXAxis: true,
   },
   render: (args: any) => {
     const shapes = ["circle", "square"] as const;
@@ -537,8 +499,6 @@ export const DataExplorer: Story = {
     grid: true,
     legend: true,
     isAnimationActive: true,
-    showYAxis: true,
-    showXAxis: true,
     shape: "circle",
   },
   render: (args: any) => {
