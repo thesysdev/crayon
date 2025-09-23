@@ -68,17 +68,17 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
     const isRange = valueToShow && valueToShow.length > 1;
 
     const thumbs = useMemo(() => {
-      const thumbClass = "slider-thumb-handle";
-      const valueIndicatorClass = "slider-thumb-value";
+      const thumbClass = "crayon-slider-thumb-handle";
+      const valueIndicatorClass = "crayon-slider-thumb-value";
 
       if (isRange) {
         return (
           <>
             {valueToShow?.map((v, i) => (
-              <SliderPrimitive.Thumb key={i} className="slider-thumb">
+              <SliderPrimitive.Thumb key={i} className="crayon-slider-thumb">
                 <div className={thumbClass}>
-                  <div className="slider-thumb-handle-inner">
-                    <div className="slider-thumb-handle-inner-dot" />
+                  <div className="crayon-slider-thumb-handle-inner">
+                    <div className="crayon-slider-thumb-handle-inner-dot" />
                   </div>
                   {!disabled && <div className={valueIndicatorClass}>{formatNumber(v)}</div>}
                 </div>
@@ -89,10 +89,10 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
       }
 
       return (
-        <SliderPrimitive.Thumb className="slider-thumb">
+        <SliderPrimitive.Thumb className="crayon-slider-thumb">
           <div className={thumbClass}>
-            <div className="slider-thumb-handle-inner">
-              <div className="slider-thumb-handle-inner-dot" />
+            <div className="crayon-slider-thumb-handle-inner">
+              <div className="crayon-slider-thumb-handle-inner-dot" />
             </div>
             {!disabled && (
               <div className={valueIndicatorClass}>{formatNumber(valueToShow?.[0])}</div>
@@ -108,20 +108,26 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
         return Array.from({ length: numSteps + 1 }, (_, index) => {
           const value = min + step * index;
           const position = ((value - min) / (max - min)) * 100;
-          return <div key={value} className="slider-dots-dot" style={{ left: `${position}%` }} />;
+          return (
+            <div key={value} className="crayon-slider-dots-dot" style={{ left: `${position}%` }} />
+          );
         });
       }
       return null;
     };
 
     return (
-      <div className="slider-wrapper">
-        {leftContent && <div className="slider-left-content">{leftContent}</div>}
-        <div className="slider-container-wrapper">
-          <div className="slider-container">
+      <div className="crayon-slider-wrapper">
+        {leftContent && <div className="crayon-slider-left-content">{leftContent}</div>}
+        <div className="crayon-slider-container-wrapper">
+          <div className="crayon-slider-container">
             <SliderPrimitive.Root
               ref={ref}
-              className={clsx("slider-root", { "slider--disabled": disabled }, className)}
+              className={clsx(
+                "crayon-slider-root",
+                { "crayon-slider--disabled": disabled },
+                className,
+              )}
               {...props}
               min={min}
               max={max}
@@ -138,10 +144,10 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
               key={variant}
               style={style}
             >
-              <SliderPrimitive.Track className="slider-track">
+              <SliderPrimitive.Track className="crayon-slider-track">
                 <SliderPrimitive.Range
-                  className={clsx("slider-range", {
-                    "slider-range--at-min": !isRange && valueToShow?.[0] === min,
+                  className={clsx("crayon-slider-range", {
+                    "crayon-slider-range--at-min": !isRange && valueToShow?.[0] === min,
                   })}
                 />
                 {variant === "discrete" && renderDots()}
@@ -149,12 +155,12 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
               {thumbs}
             </SliderPrimitive.Root>
           </div>
-          <div className="slider-labels">
+          <div className="crayon-slider-labels">
             <span>{formatNumber(min)}</span>
             <span>{formatNumber(max)}</span>
           </div>
         </div>
-        {rightContent && <div className="slider-right-content">{rightContent}</div>}
+        {rightContent && <div className="crayon-slider-right-content">{rightContent}</div>}
       </div>
     );
   },
