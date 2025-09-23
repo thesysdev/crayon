@@ -407,9 +407,7 @@ export const BasicScatter: Story = {
     width: 700,
     height: 400,
   },
-  render: (args: any) => (
-      <ScatterChart {...args} />
-  ),
+  render: (args: any) => <ScatterChart {...args} />,
 };
 
 /**
@@ -433,7 +431,7 @@ export const CorrelationAnalysis: Story = {
     shape: "circle",
   },
   render: (args: any) => (
-    <Card style={{ width: "700px",height:'400px' }}>
+    <Card style={{ width: "700px", height: "400px" }}>
       <ScatterChart {...args} />
     </Card>
   ),
@@ -473,7 +471,7 @@ export const ShapeComparison: Story = {
             >
               {shape} Shape
             </h4>
-            <Card style={{ width: "500px",height:'400px' }}>
+            <Card style={{ width: "500px", height: "400px" }}>
               <ScatterChart {...args} shape={shape} />
             </Card>
           </div>
@@ -565,7 +563,7 @@ export const DataExplorer: Story = {
             </button>
           </div>
         </div>
-        <Card style={{ width: "100%",height:'400px' }}>
+        <Card style={{ width: "100%", height: "400px" }}>
           <ScatterChart {...args} data={currentData} />
         </Card>
       </div>

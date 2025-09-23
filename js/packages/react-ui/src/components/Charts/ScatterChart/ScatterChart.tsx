@@ -109,13 +109,23 @@ export const ScatterChart = ({
     if (!chartWrapperRef.current) {
       return 0;
     }
-    const legendHeight = (chartWrapperRef.current.querySelector(".crayon-scatter-chart-legend-container") as HTMLElement)?.offsetHeight ?? 0;
-    const xAxisHeight = (chartWrapperRef.current.querySelector(".crayon-scatter-chart-x-axis-container-outer") as HTMLElement)?.offsetHeight ?? 0;
-    
+    const legendHeight =
+      (
+        chartWrapperRef.current.querySelector(
+          ".crayon-scatter-chart-legend-container",
+        ) as HTMLElement
+      )?.offsetHeight ?? 0;
+    const xAxisHeight =
+      (
+        chartWrapperRef.current.querySelector(
+          ".crayon-scatter-chart-x-axis-container-outer",
+        ) as HTMLElement
+      )?.offsetHeight ?? 0;
+
     if (height) {
       return height - legendHeight - xAxisHeight;
     }
-    
+
     return chartWrapperRef.current.offsetHeight - legendHeight - xAxisHeight;
   }, [containerWidth, height]);
 
@@ -171,7 +181,7 @@ export const ScatterChart = ({
 
   const xAxis = useMemo(() => {
     return (
-      <div className="crayon-scatter-chart-x-axis-container-outer" >
+      <div className="crayon-scatter-chart-x-axis-container-outer">
         <div
           className="crayon-scatter-chart-x-axis-container"
           style={
@@ -248,16 +258,18 @@ export const ScatterChart = ({
       <div
         className={clsx("crayon-scatter-chart-container", className)}
         style={{
-          width: width ? `${width}px` : "100%",
-          height: height ? `${height}px` : "100%",
+          width: "100%",
+          height: height ? "auto" : "100%",
         }}
         ref={chartWrapperRef}
       >
-        <div
-          className="crayon-scatter-chart-container-inner"
-        >
+        <div className="crayon-scatter-chart-container-inner">
           <div
             className="crayon-scatter-chart-main-container"
+            style={{
+              width: width ? `${width}px` : "100%",
+              height: height ? `${height}px` : "100%",
+            }}
           >
             <ChartContainer
               config={chartConfig}
@@ -303,7 +315,7 @@ export const ScatterChart = ({
                 />
 
                 <ChartTooltip
-                  content={<CustomTooltipContent parentRef={chartWrapperRef} />}
+                  content={<CustomTooltipContent parentRef={chartWrapperRef} hideIndicator />}
                   offset={15}
                 />
 
