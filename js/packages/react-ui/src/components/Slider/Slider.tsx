@@ -55,6 +55,8 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
     },
     ref,
   ) => {
+    const effectiveStep = variant === "continuous" ? 1 : step;
+
     // used to show the correct value on thumb
     const [internalValue, setInternalValue] = useState(
       defaultValue && defaultValue.length > 0 ? defaultValue : [min],
@@ -112,21 +114,6 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
       return null;
     };
 
-    const renderDiscreteLabels = () => {
-      if (variant === "discrete" && step) {
-        const numSteps = Math.floor((max - min) / step);
-        return Array.from({ length: numSteps + 1 }, (_, index) => {
-          const value = min + step * index;
-          return (
-            <div key={value} className="slider-discrete-label">
-              {formatNumber(value)}
-            </div>
-          );
-        });
-      }
-      return null;
-    };
-
     return (
       <div className="slider-wrapper">
         {leftContent && <div className="slider-left-content">{leftContent}</div>}
@@ -138,7 +125,7 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
               {...props}
               min={min}
               max={max}
-              step={step}
+              step={effectiveStep}
               value={valueToShow}
               onValueChange={(val) => {
                 if (!isControlled) {
@@ -162,15 +149,10 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
               {thumbs}
             </SliderPrimitive.Root>
           </div>
-          {variant === "discrete" && (
-            <div className="slider-discrete-labels">{renderDiscreteLabels()}</div>
-          )}
-          {variant === "continuous" && (
-            <div className="slider-labels">
-              <span>{formatNumber(min)}</span>
-              <span>{formatNumber(max)}</span>
-            </div>
-          )}
+          <div className="slider-labels">
+            <span>{formatNumber(min)}</span>
+            <span>{formatNumber(max)}</span>
+          </div>
         </div>
         {rightContent && <div className="slider-right-content">{rightContent}</div>}
       </div>
