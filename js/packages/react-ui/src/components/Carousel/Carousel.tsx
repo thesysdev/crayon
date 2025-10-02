@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -35,6 +36,8 @@ export interface CarouselProps extends React.HTMLAttributes<HTMLDivElement> {
   noSnap?: boolean;
   showButtons?: boolean;
   variant?: "card" | "sunk";
+  onScrollLeftEnabled?: (enabled: boolean) => void;
+  onScrollRightEnabled?: (enabled: boolean) => void;
 }
 
 export interface CarouselRef {
@@ -51,6 +54,8 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
       variant = "card",
       className,
       children,
+      onScrollLeftEnabled,
+      onScrollRightEnabled,
       ...props
     },
     ref,
@@ -128,6 +133,14 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
       };
     }, [scrollDivRef]);
 
+    useEffect(() => {
+      onScrollLeftEnabled?.(isPrevVisible);
+    }, [isPrevVisible, onScrollLeftEnabled]);
+
+    useEffect(() => {
+      onScrollRightEnabled?.(isNextVisible);
+    }, [isNextVisible, onScrollRightEnabled]);
+
     useImperativeHandle(ref, () => {
       return {
         scroll,
@@ -135,19 +148,31 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
       };
     }, []);
 
+    const contextValue = useMemo(
+      () => ({
+        scrollDivRef,
+        scroll,
+        itemsToScroll,
+        noSnap,
+        showButtons,
+        variant,
+        isPrevVisible,
+        isNextVisible,
+      }),
+      [
+        scrollDivRef,
+        scroll,
+        itemsToScroll,
+        noSnap,
+        showButtons,
+        variant,
+        isPrevVisible,
+        isNextVisible,
+      ],
+    );
+
     return (
-      <CarouselContext.Provider
-        value={{
-          scrollDivRef,
-          scroll,
-          itemsToScroll,
-          noSnap,
-          showButtons,
-          variant,
-          isPrevVisible,
-          isNextVisible,
-        }}
-      >
+      <CarouselContext.Provider value={contextValue}>
         <div
           className={clsx("crayon-carousel", `crayon-carousel--${variant}`, className)}
           {...props}
