@@ -91,7 +91,8 @@ export const ScatterChart = ({
   }, [datasets, colors]);
 
   const chartWrapperRef = useRef<HTMLDivElement>(null);
-  const xAxisRef = useRef<HTMLDivElement>(null);
+  const legendContainerRef = useRef<HTMLDivElement>(null);
+  const xAxisContainerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [isSideBarTooltipOpen, setIsSideBarTooltipOpen] = useState(false);
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
@@ -109,18 +110,8 @@ export const ScatterChart = ({
     if (!chartWrapperRef.current) {
       return 0;
     }
-    const legendHeight =
-      (
-        chartWrapperRef.current.querySelector(
-          ".crayon-scatter-chart-legend-container",
-        ) as HTMLElement
-      )?.offsetHeight ?? 0;
-    const xAxisHeight =
-      (
-        chartWrapperRef.current.querySelector(
-          ".crayon-scatter-chart-x-axis-container-outer",
-        ) as HTMLElement
-      )?.offsetHeight ?? 0;
+    const legendHeight = legendContainerRef.current?.offsetHeight ?? 0;
+    const xAxisHeight = xAxisContainerRef.current?.offsetHeight ?? 0;
 
     if (height) {
       return height - legendHeight - xAxisHeight;
@@ -181,7 +172,7 @@ export const ScatterChart = ({
 
   const xAxis = useMemo(() => {
     return (
-      <div className="crayon-scatter-chart-x-axis-container-outer">
+      <div className="crayon-scatter-chart-x-axis-container-outer" ref={xAxisContainerRef}>
         <div
           className="crayon-scatter-chart-x-axis-container"
           style={
@@ -337,7 +328,7 @@ export const ScatterChart = ({
           {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
         </div>
         {xAxis}
-        <div className="crayon-scatter-chart-legend-container">
+        <div className="crayon-scatter-chart-legend-container" ref={legendContainerRef}>
           {legend && (
             <DefaultLegend
               items={legendItems}
