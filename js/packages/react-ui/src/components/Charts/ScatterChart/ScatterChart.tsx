@@ -41,7 +41,7 @@ export interface ScatterChartProps {
   shape?: "circle" | "square";
 }
 
-const DEFAULT_CHART_HEIGHT = 400;
+const DEFAULT_CHART_HEIGHT = 296;
 const DEFAULT_MARGIN = 20;
 const X_AXIS_HEIGHT = 40;
 
@@ -268,7 +268,7 @@ export const ScatterChart = ({
             className="crayon-scatter-chart-main-container"
             style={{
               width: width ? `${width}px` : "100%",
-              height: height ? `${height}px` : "100%",
+              height: height ? `${height}px` : DEFAULT_CHART_HEIGHT,
             }}
           >
             <ChartContainer

@@ -431,7 +431,7 @@ export const CorrelationAnalysis: Story = {
     shape: "circle",
   },
   render: (args: any) => (
-    <Card style={{ width: "700px", height: "400px" }}>
+    <Card style={{ width: "700px" }}>
       <ScatterChart {...args} />
     </Card>
   ),
