@@ -1,0 +1,356 @@
+---
+description: Comprehensive pnpm package manager guidelines for the Crayon monorepo
+globs: package.json,*.json,*.toml
+alwaysApply: true
+---
+
+# Crayon Package Management with pnpm
+
+## Overview
+
+Crayon uses **pnpm** as its package manager instead of npm. pnpm provides better performance, disk efficiency, and strict dependency management. This document covers all pnpm usage patterns for the Crayon monorepo.
+
+## Why pnpm?
+
+### Benefits Over npm
+
+- **Faster installs**: Uses hard links for node_modules
+- **Disk efficient**: Single copy of packages across projects
+- **Strict dependency resolution**: No phantom dependencies
+- **Better workspace support**: Native monorepo management
+- **Security**: Prevents dependency confusion attacks
+
+### Key Differences
+
+- `node_modules` structure is different (flat with symlinks)
+- Stricter dependency isolation
+- Faster cold installs and updates
+
+## Core Commands
+
+### Package Installation
+
+```bash
+# Install all dependencies (equivalent to npm install)
+pnpm install
+
+# Install specific package
+pnpm add <package-name>
+
+# Install dev dependency
+pnpm add -D <package-name>
+
+# Install peer dependency
+pnpm add -P <package-name>
+
+# Remove package
+pnpm remove <package-name>
+```
+
+### Running Scripts
+
+```bash
+# Run script from package.json (equivalent to npm run)
+pnpm run <script-name>
+
+# Run script in specific workspace
+pnpm --filter <package-name> run <script-name>
+
+# Run script in all workspaces
+pnpm --recursive run <script-name>
+```
+
+## Workspace Management
+
+Crayon uses pnpm workspaces for its monorepo structure. Here are the key workspace commands:
+
+### Workspace Structure
+
+```fileStructure
+js/
+├── packages/
+│   ├── react-core/
+│   ├── react-ui/
+│   └── stream/
+└── pnpm-workspace.yaml
+```
+
+### Common Workspace Commands
+
+```bash
+# Install all dependencies across workspaces
+pnpm install
+
+# Run command in specific package
+pnpm --filter react-ui run build
+
+# Run command in all packages
+pnpm --recursive run build
+
+# Add dependency to specific package
+pnpm --filter react-ui add lodash
+
+# Run tests across all packages
+pnpm --recursive run test
+```
+
+## Available Scripts by Package
+
+### React UI Package (`js/packages/react-ui/`)
+
+```bash
+# Development
+pnpm storybook              # Start Storybook dev server
+pnpm watch                  # Watch mode with concurrent builds
+
+# Building
+pnpm build                  # Full build (SCSS + TypeScript + Tailwind)
+pnpm build:tsc              # TypeScript compilation only
+pnpm build:scss             # SCSS compilation only
+pnpm build:plugin           # Tailwind plugin build
+pnpm build:storybook        # Storybook production build
+
+# Code Quality
+pnpm lint:check             # Run ESLint
+pnpm lint:fix               # Fix ESLint issues
+pnpm format:check           # Check Prettier formatting
+pnpm format:fix             # Fix Prettier formatting
+pnpm ci                     # CI pipeline (lint + format check)
+```
+
+### React Core Package (`js/packages/react-core/`)
+
+```bash
+# Building
+pnpm build                  # TypeScript compilation
+pnpm watch                  # Watch mode
+
+# Code Quality
+pnpm lint:check
+pnpm lint:fix
+pnpm format:check
+pnpm format:fix
+```
+
+### Stream Package (`js/packages/stream/`)
+
+```bash
+# Building
+pnpm build                  # TypeScript compilation
+pnpm watch                  # Watch mode
+
+# Code Quality
+pnpm lint:check
+pnpm lint:fix
+pnpm format:check
+pnpm format:fix
+```
+
+### Python Package (`py/`)
+
+```bash
+# Using Poetry (not pnpm)
+poetry install              # Install dependencies
+poetry run <command>        # Run commands with Poetry
+poetry shell               # Activate virtual environment
+```
+
+## Common Development Workflows
+
+### Setting Up Development Environment
+
+```bash
+# Clone and setup the project
+git clone <repository-url>
+cd crayon
+
+# Install all dependencies
+pnpm install
+
+# Start development servers
+pnpm --filter react-ui storybook    # UI development
+```
+
+### Building for Production
+
+```bash
+# Build all packages
+pnpm --recursive run build
+
+# Or build specific packages
+pnpm --filter react-ui run build
+pnpm --filter react-core run build
+```
+
+### Code Quality Checks
+
+```bash
+# Check all packages
+pnpm --recursive run lint:check
+pnpm --recursive run format:check
+
+# Fix issues in all packages
+pnpm --recursive run lint:fix
+pnpm --recursive run format:fix
+```
+
+### Adding New Dependencies
+
+```bash
+# Add to specific package
+pnpm --filter react-ui add <package-name>
+pnpm --filter react-ui add -D <package-name>  # dev dependency
+
+# Add to root (shared tooling)
+pnpm add -D -w <package-name>
+```
+
+## Best Practices
+
+### 1. Always Use pnpm
+
+```bash
+# ✅ Correct
+pnpm install
+pnpm add lodash
+
+# ❌ Incorrect
+npm install
+npm install lodash
+yarn add lodash
+```
+
+### 2. Use Workspace Filters
+
+```bash
+# ✅ Specific package operations
+pnpm --filter react-ui run build
+
+# ✅ All packages
+pnpm --recursive run test
+
+# ❌ Avoid running in wrong context
+cd js/packages/react-ui && pnpm run build  # Less efficient
+```
+
+### 3. Dependency Management
+
+```bash
+# ✅ Add dependencies to correct packages
+pnpm --filter react-ui add react-dom  # Runtime dependency
+pnpm --filter react-ui add -D @types/react  # Dev dependency
+
+# ❌ Don't add to wrong package
+pnpm add react  # Would add to root, not to package
+```
+
+### 4. Script Organization
+
+```bash
+# ✅ Use consistent script names across packages
+"build": "tsc"
+"watch": "tsc --watch"
+"lint:check": "eslint ."
+"lint:fix": "eslint --fix ."
+"format:check": "prettier --check ."
+"format:fix": "prettier --write ."
+```
+
+### 5. Lockfile Management
+
+```bash
+# ✅ Always commit pnpm-lock.yaml changes
+git add pnpm-lock.yaml
+
+# ❌ Don't modify lockfile manually
+# ❌ Don't delete lockfile without reason
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. "ELIFECYCLE" Errors
+
+```bash
+# Clear node_modules and reinstall
+pnpm clean-install
+# or
+rm -rf node_modules pnpm-lock.yaml && pnpm install
+```
+
+#### 2. Workspace Not Found
+
+```bash
+# Check workspace configuration
+cat pnpm-workspace.yaml
+
+# Ensure package has name in package.json
+grep '"name"' packages/*/package.json
+```
+
+#### 3. Dependency Resolution Issues
+
+```bash
+# Clear cache and reinstall
+pnpm store prune
+pnpm install --force
+```
+
+#### 4. Script Not Found
+
+```bash
+# Check available scripts
+pnpm run
+
+# Check package.json scripts section
+cat package.json | jq '.scripts'
+```
+
+### Performance Tips
+
+```bash
+# Use frozen lockfile for CI
+pnpm install --frozen-lockfile
+
+# Skip optional dependencies
+pnpm install --ignore-optional
+
+# Use specific package filters to avoid unnecessary work
+pnpm --filter react-ui run build  # Only build UI package
+```
+
+## Migration from npm/yarn
+
+### npm to pnpm equivalents
+
+| npm                    | pnpm                |
+| ---------------------- | ------------------- |
+| `npm install`          | `pnpm install`      |
+| `npm install <pkg>`    | `pnpm add <pkg>`    |
+| `npm install -D <pkg>` | `pnpm add -D <pkg>` |
+| `npm uninstall <pkg>`  | `pnpm remove <pkg>` |
+| `npm run <script>`     | `pnpm run <script>` |
+| `npm ls`               | `pnpm ls`           |
+| `npm outdated`         | `pnpm outdated`     |
+
+### yarn to pnpm equivalents
+
+| yarn                | pnpm                |
+| ------------------- | ------------------- |
+| `yarn`              | `pnpm install`      |
+| `yarn add <pkg>`    | `pnpm add <pkg>`    |
+| `yarn add -D <pkg>` | `pnpm add -D <pkg>` |
+| `yarn remove <pkg>` | `pnpm remove <pkg>` |
+| `yarn run <script>` | `pnpm run <script>` |
+
+## Questions?
+
+When in doubt:
+
+1. Check this document first
+2. Use `pnpm --help` for command options
+3. Check existing CI/CD scripts for patterns
+4. Ask in #engineering Slack channel
+
+Remember: **Always use pnpm, never npm or yarn** for any package management tasks in this project.
