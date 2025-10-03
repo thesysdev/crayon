@@ -11,3 +11,5 @@ export interface ScatterDataset {
 }
 
 export type ScatterChartData = ScatterDataset[];
+
+const data = [{}];

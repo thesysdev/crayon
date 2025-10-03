@@ -88,11 +88,7 @@ export const calculateScatterDomain = (
  * @param unit - Optional unit to append
  * @returns Formatted string
  */
-export const formatScatterTooltipValue = (
-  dataKey: string,
-  value: number | string,
-  unit?: string,
-): string => {
+export const formatScatterTooltipValue = (value: number | string, unit?: string): string => {
   const formattedValue = typeof value === "number" ? value.toLocaleString() : value;
   return unit ? `${formattedValue} ${unit}` : formattedValue;
 };

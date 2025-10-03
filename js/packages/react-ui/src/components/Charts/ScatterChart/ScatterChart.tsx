@@ -16,7 +16,7 @@ import { LegendItem } from "../types";
 import { get2dChartConfig, getLegendItems } from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 import { numberTickFormatter } from "../utils/styleUtils";
-import ScatterDot from "./ScatterDot";
+import ScatterDot from "./components/ScatterDot";
 import { ScatterChartData, ScatterPoint } from "./types";
 import {
   calculateScatterDomain,
