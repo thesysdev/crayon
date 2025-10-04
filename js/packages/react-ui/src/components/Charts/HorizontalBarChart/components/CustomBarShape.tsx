@@ -58,7 +58,6 @@ const CustomBarShapeComponent = (props: CustomBarShapeProps) => {
         width={labelWidth}
         height={labelHeight}
         style={{ pointerEvents: "none" }}
-        xmlns="http://www.w3.org/1999/xhtml"
       >
         <div className="crayon-horizontal-bar-chart-category-label">{payload[categoryKey]}</div>
       </foreignObject>

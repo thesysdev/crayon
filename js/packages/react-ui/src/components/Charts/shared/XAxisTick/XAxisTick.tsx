@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import React, { useLayoutEffect, useRef, useState } from "react";
+import { useExportContext } from "../../ExportContext";
 import { XAxisTickVariant } from "../../types";
 import { LabelTooltip } from "../LabelTooltip/LabelTooltip";
 
@@ -33,6 +34,8 @@ interface XAxisTickProps {
 }
 
 const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => {
+  const exportContext = useExportContext();
+
   const {
     x,
     y,
@@ -106,7 +109,13 @@ const XAxisTick = React.forwardRef<SVGGElement, XAxisTickProps>((props, ref) => 
                 textAlign: "center",
                 wordBreak: "break-word",
               }}
-              className={clsx(spanClassName, className)}
+              className={clsx(
+                spanClassName,
+                {
+                  "crayon-chart-x-axis-tick-export-mode": exportContext,
+                },
+                className,
+              )}
             >
               {value}
             </span>
