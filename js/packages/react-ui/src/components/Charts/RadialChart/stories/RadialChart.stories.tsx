@@ -137,7 +137,7 @@ const exampleData = [
       },
     },
   },
-  tags: ["!dev", "autodocs"],
+  tags: ["dev", "autodocs"],
   argTypes: {
     data: {
       description: `
@@ -326,6 +326,22 @@ const exampleData = [
         type: { summary: "number" },
         defaultValue: { summary: "10" },
         category: "🎨 Visual Styling",
+      },
+    },
+    height: {
+      description: "The height of the chart.",
+      control: "text",
+      table: {
+        type: { summary: "string | number" },
+        category: "📱 Display Options",
+      },
+    },
+    width: {
+      description: "The width of the chart.",
+      control: "text",
+      table: {
+        type: { summary: "string | number" },
+        category: "📱 Display Options",
       },
     },
   },

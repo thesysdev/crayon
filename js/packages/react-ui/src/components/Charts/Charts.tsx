@@ -141,13 +141,23 @@ const ChartContainer = forwardRef<
           {
             "--crayon-container-fills": theme.containerFills,
             "--crayon-primary-text": theme.primaryText,
+            width: "100%",
+            height: "100%",
             ...style,
           } as React.CSSProperties
         }
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer {...rechartsProps}>
+        <RechartsPrimitive.ResponsiveContainer
+          width={rechartsProps?.width ?? "100%"}
+          height={rechartsProps?.height ?? "100%"}
+          minWidth={rechartsProps?.minWidth ?? 1}
+          minHeight={rechartsProps?.minHeight ?? 1}
+          initialDimension={rechartsProps?.initialDimension ?? { width: 1, height: 1 }}
+          id={rechartsProps?.id ?? chartId}
+          {...rechartsProps}
+        >
           {children}
         </RechartsPrimitive.ResponsiveContainer>
       </div>

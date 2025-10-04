@@ -1,6 +1,12 @@
 import clsx from "clsx";
 import React, { memo, useEffect, useMemo, useRef, useState } from "react";
-import { PolarAngleAxis, PolarGrid, Radar, RadarChart as RechartsRadarChart } from "recharts";
+import {
+  PolarAngleAxis,
+  PolarGrid,
+  Radar,
+  RadarChart as RechartsRadarChart,
+  ResponsiveContainer,
+} from "recharts";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import { useTransformedKeys } from "../hooks/useTransformKey";
@@ -26,6 +32,8 @@ export interface RadarChartProps<T extends RadarChartData> {
   areaOpacity?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
+  height?: number;
+  width?: number;
 }
 
 const RadarChartComponent = <T extends RadarChartData>({
@@ -40,6 +48,8 @@ const RadarChartComponent = <T extends RadarChartData>({
   areaOpacity = 0.2,
   icons = {},
   isAnimationActive = false,
+  height,
+  width,
 }: RadarChartProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -93,7 +103,16 @@ const RadarChartComponent = <T extends RadarChartData>({
   }, [wrapperRect]);
 
   const chartSizeStyle = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
-  const rechartsProps = useMemo(() => ({ width: "100%", height: "100%" }), [chartSize]);
+  const rechartsProps: Omit<React.ComponentProps<typeof ResponsiveContainer>, "children"> = useMemo(
+    () => ({
+      width: "100%",
+      height: "100%",
+      minWidth: 1,
+      minHeight: 1,
+      initialDimension: { width: 1, height: 1 },
+    }),
+    [],
+  );
 
   const radars = useMemo(() => {
     return dataKeys.map((key) => {
@@ -137,6 +156,44 @@ const RadarChartComponent = <T extends RadarChartData>({
     [],
   );
 
+  const wrapperStyle = useMemo(() => {
+    if (typeof width === "string" && typeof height === "string") {
+      return {
+        width,
+        height,
+      };
+    } else if (typeof width === "string" && typeof height === "number") {
+      return {
+        width,
+        height: `${height}px`,
+      };
+    } else if (typeof width === "number" && typeof height === "string") {
+      return {
+        width: `${width}px`,
+        height,
+      };
+    } else if (typeof width === "number" && typeof height === "number") {
+      return {
+        width: `${width}px`,
+        height: `${height}px`,
+      };
+    } else if (typeof width === "string" && typeof height === "undefined") {
+      return {
+        width,
+      };
+    } else if (typeof width === "undefined" && typeof height === "string") {
+      return {
+        height,
+      };
+    } else if (typeof width === "undefined" && typeof height === "number") {
+      return {
+        height: `${height}px`,
+      };
+    } else {
+      return {};
+    }
+  }, [width, height]);
+
   return (
     <SideBarTooltipProvider
       isSideBarTooltipOpen={false}
@@ -144,7 +201,7 @@ const RadarChartComponent = <T extends RadarChartData>({
       data={undefined}
       setData={() => {}}
     >
-      <div ref={wrapperRef} className={wrapperClassName}>
+      <div ref={wrapperRef} className={wrapperClassName} style={wrapperStyle}>
         <div className="crayon-radar-chart-container">
           <div className="crayon-radar-chart-container-inner">
             <div style={chartSizeStyle}>

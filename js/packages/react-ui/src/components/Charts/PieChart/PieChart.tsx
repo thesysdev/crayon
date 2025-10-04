@@ -39,6 +39,9 @@ export interface PieChartProps<T extends PieChartData> {
   className?: string;
   maxChartSize?: number;
   minChartSize?: number;
+  // Add height and width props
+  height?: number | string;
+  width?: number | string;
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
@@ -65,6 +68,8 @@ const PieChartComponent = <T extends PieChartData>({
   className,
   maxChartSize = MAX_CHART_SIZE,
   minChartSize = MIN_CHART_SIZE,
+  height,
+  width,
 }: PieChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -102,19 +107,31 @@ const PieChartComponent = <T extends PieChartData>({
 
   // Calculate chart dimensions based on the smaller dimension of the container
   const chartSize = useMemo(() => {
-    let size;
-    if (isRowLayout) {
-      const chartContainerWidth = (effectiveWidth - 20) / 2; // Subtract gap
-      size = Math.min(chartContainerWidth, effectiveHeight);
-    } else {
-      size = Math.min(effectiveWidth, effectiveHeight);
-    }
+    // Compute the available width for the chart. In row layout, chart and legend are side-by-side.
+    // Subtract the 20px gap defined in CSS to avoid over-estimating available width.
+    const containerWidth = isRowLayout ? Math.max(0, (effectiveWidth - 20) / 2) : effectiveWidth;
+
+    // If wrapper height isn't explicitly provided (or is very small), it will be driven by the
+    // chart's own content, creating a feedback loop that pins the size to the minimum.
+    // Prefer width in that case to size the chart sensibly.
+    const heightIsUsable = effectiveHeight >= minChartSize;
+
+    let size = heightIsUsable ? Math.min(containerWidth, effectiveHeight) : containerWidth;
     size = Math.min(size, maxChartSize);
     return Math.max(minChartSize, size);
   }, [effectiveWidth, effectiveHeight, isRowLayout]);
 
   const chartSizeStyle = useMemo(() => ({ width: chartSize, height: chartSize }), [chartSize]);
-  const rechartsProps = useMemo(() => ({ width: "100%", height: "100%" }), []);
+  const rechartsProps = useMemo(
+    () => ({
+      width: "100%",
+      height: "100%",
+      minWidth: 1,
+      minHeight: 1,
+      initialDimension: { width: 1, height: 1 },
+    }),
+    [],
+  );
 
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(
@@ -387,8 +404,46 @@ const PieChartComponent = <T extends PieChartData>({
     [className, legend, legendVariant, isRowLayout],
   );
 
+  const wrapperStyle = useMemo(() => {
+    if (typeof width === "string" && typeof height === "string") {
+      return {
+        width,
+        height,
+      };
+    } else if (typeof width === "string" && typeof height === "number") {
+      return {
+        width,
+        height: `${height}px`,
+      };
+    } else if (typeof width === "number" && typeof height === "string") {
+      return {
+        width: `${width}px`,
+        height,
+      };
+    } else if (typeof width === "number" && typeof height === "number") {
+      return {
+        width: `${width}px`,
+        height: `${height}px`,
+      };
+    } else if (typeof width === "string" && typeof height === "undefined") {
+      return {
+        width,
+      };
+    } else if (typeof width === "undefined" && typeof height === "string") {
+      return {
+        height,
+      };
+    } else if (typeof width === "undefined" && typeof height === "number") {
+      return {
+        height: `${height}px`,
+      };
+    } else {
+      return {};
+    }
+  }, [width, height]);
+
   return (
-    <div ref={wrapperRef} className={wrapperClassName}>
+    <div ref={wrapperRef} className={wrapperClassName} style={wrapperStyle}>
       <div className="crayon-pie-chart-container">
         <div className="crayon-pie-chart-container-inner">
           <div style={chartSizeStyle}>
