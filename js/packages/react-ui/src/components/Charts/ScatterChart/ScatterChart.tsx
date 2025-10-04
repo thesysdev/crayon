@@ -36,8 +36,8 @@ export interface ScatterChartProps {
   xAxisLabel?: React.ReactNode;
   yAxisLabel?: React.ReactNode;
   className?: string;
-  height?: number;
-  width?: number;
+  height?: number | string;
+  width?: number | string;
   shape?: "circle" | "square";
 }
 
@@ -101,6 +101,12 @@ export const ScatterChart = ({
     values: [],
   });
 
+  const isFixedNumericHeight = useMemo(() => {
+    if (typeof height === "number") return true;
+    if (typeof height === "string" && height.endsWith("px")) return true;
+    return false;
+  }, [height]);
+
   // Use provided width or observed width
   const effectiveWidth = useMemo(() => {
     return width ?? containerWidth;
@@ -113,7 +119,7 @@ export const ScatterChart = ({
     const legendHeight = legendContainerRef.current?.offsetHeight ?? 0;
     const xAxisHeight = xAxisContainerRef.current?.offsetHeight ?? 0;
 
-    if (height) {
+    if (typeof height === "number") {
       return height - legendHeight - xAxisHeight;
     }
 
@@ -250,7 +256,7 @@ export const ScatterChart = ({
         className={clsx("crayon-scatter-chart-container", className)}
         style={{
           width: "100%",
-          height: height ? "auto" : "100%",
+          height: isFixedNumericHeight ? "auto" : height || "100%",
         }}
         ref={chartWrapperRef}
       >
@@ -258,8 +264,8 @@ export const ScatterChart = ({
           <div
             className="crayon-scatter-chart-main-container"
             style={{
-              width: width ? `${width}px` : "100%",
-              height: height ? `${height}px` : DEFAULT_CHART_HEIGHT,
+              width: typeof width === "number" ? `${width}px` : width || "100%",
+              height: typeof height === "number" ? `${height}px` : height || DEFAULT_CHART_HEIGHT,
             }}
           >
             <ChartContainer
@@ -325,7 +331,7 @@ export const ScatterChart = ({
             </ChartContainer>
           </div>
 
-          {isSideBarTooltipOpen && <SideBarTooltip height={chartHeight} />}
+          {isSideBarTooltipOpen && chartHeight > 0 && <SideBarTooltip height={chartHeight} />}
         </div>
         {xAxis}
         <div className="crayon-scatter-chart-legend-container" ref={legendContainerRef}>
@@ -334,7 +340,7 @@ export const ScatterChart = ({
               items={legendItems}
               yAxisLabel={yAxisLabel}
               xAxisLabel={xAxisLabel}
-              containerWidth={effectiveWidth}
+              containerWidth={containerWidth}
               isExpanded={isLegendExpanded}
               setIsExpanded={setIsLegendExpanded}
             />

@@ -811,8 +811,8 @@ export const DataExplorer: Story = {
             </button>
           </div>
         </div>
-        <Card style={{ width: "600px" }}>
-          <ScatterChart {...args} data={currentData} />
+        <Card style={{ width: "600px", height: "600px" }}>
+          <ScatterChart {...args} data={currentData} height="100%" />
         </Card>
       </div>
     );
