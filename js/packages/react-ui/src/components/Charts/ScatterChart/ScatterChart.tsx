@@ -107,11 +107,6 @@ export const ScatterChart = ({
     return false;
   }, [height]);
 
-  // Use provided width or observed width
-  const effectiveWidth = useMemo(() => {
-    return width ?? containerWidth;
-  }, [width, containerWidth]);
-
   const chartHeight = useMemo(() => {
     if (!chartWrapperRef.current) {
       return 0;
@@ -255,7 +250,7 @@ export const ScatterChart = ({
       <div
         className={clsx("crayon-scatter-chart-container", className)}
         style={{
-          width: "100%",
+          width: typeof width === "number" ? `${width}px` : width || "100%",
           height: isFixedNumericHeight ? "auto" : height || "100%",
         }}
         ref={chartWrapperRef}
@@ -264,7 +259,7 @@ export const ScatterChart = ({
           <div
             className="crayon-scatter-chart-main-container"
             style={{
-              width: typeof width === "number" ? `${width}px` : width || "100%",
+              width: "100%",
               height: typeof height === "number" ? `${height}px` : height || DEFAULT_CHART_HEIGHT,
             }}
           >
