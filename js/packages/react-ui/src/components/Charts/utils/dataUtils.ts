@@ -84,13 +84,13 @@ export const getCategoricalChartConfig = <T extends CategoricalChartData>(
 export const getLegendItems = (
   dataKeys: string[],
   colors: string[],
-  icons: Partial<Record<string, React.ComponentType>>,
+  icons?: Partial<Record<string, React.ComponentType>>,
 ): LegendItem[] => {
   return dataKeys.map((key, index) => ({
     key,
     label: key,
     color: colors[index] ?? "#000000", // Fallback color if undefined
-    icon: icons[key] as React.ComponentType | undefined,
+    icon: icons?.[key] as React.ComponentType | undefined,
   }));
 };
 

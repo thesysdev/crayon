@@ -8,4 +8,5 @@ export * from "./MiniLineChart";
 export * from "./PieChart";
 export * from "./RadarChart";
 export * from "./RadialChart";
+export * from "./ScatterChart";
 export * from "./SegmentedBarChart";
