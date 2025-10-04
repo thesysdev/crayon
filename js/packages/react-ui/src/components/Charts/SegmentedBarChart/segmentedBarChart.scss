@@ -1,5 +1,14 @@
 @use "../../../cssUtils.scss" as cssUtils;
 
+.crayon-segmented-bar-chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: cssUtils.$spacing-m;
+  position: relative;
+}
+
 .crayon-segmented-bar-chart {
   width: 100%;
   height: 20px;
@@ -20,7 +29,33 @@
   justify-content: center;
   min-width: 2px;
   box-shadow: cssUtils.$shadow-s;
-  border-radius: cssUtils.$rounded-xs;
+  // border-radius: cssUtils.$rounded-xs;
+  position: relative;
+  overflow: hidden;
+  transition:
+    box-shadow 0.2s ease,
+    filter 0.2s ease,
+    opacity 0.2s ease;
+
+  &:first-child {
+    border-radius: cssUtils.$rounded-xs 0 0 cssUtils.$rounded-xs;
+  }
+
+  &:last-child {
+    border-radius: 0 cssUtils.$rounded-xs cssUtils.$rounded-xs 0;
+  }
+
+  &-line {
+    position: absolute;
+    transform: translateY(-50%);
+    background-color: cssUtils.$stroke-accent-emphasis;
+    top: 50%;
+    left: 5px;
+    width: calc(100% - 10px);
+    height: 1px;
+    z-index: 1;
+    min-width: 2px;
+  }
 }
 
 .crayon-segmented-bar-chart-animated {

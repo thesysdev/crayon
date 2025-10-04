@@ -4,3 +4,10 @@ export interface LegendItem {
   color: string;
   icon?: React.ComponentType;
 }
+
+export interface StackedLegendItem {
+  key: string;
+  label: string;
+  value: number;
+  color: string;
+}

@@ -1,1 +1,1 @@
-export type SegmentedBarData = Array<number>;
+export type SegmentedBarData = Array<Record<string, string | number>>;
