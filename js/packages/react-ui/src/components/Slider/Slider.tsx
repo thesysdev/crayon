@@ -55,8 +55,6 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
     },
     ref,
   ) => {
-    const effectiveStep = variant === "continuous" ? 1 : step;
-
     // used to show the correct value on thumb
     const [internalValue, setInternalValue] = useState(
       defaultValue && defaultValue.length > 0 ? defaultValue : [min],
@@ -131,7 +129,7 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
               {...props}
               min={min}
               max={max}
-              step={effectiveStep}
+              step={step}
               value={valueToShow}
               onValueChange={(val) => {
                 if (!isControlled) {
