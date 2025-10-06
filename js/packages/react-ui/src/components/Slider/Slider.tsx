@@ -103,11 +103,23 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
     const renderDots = () => {
       if (variant === "discrete" && step) {
         const numSteps = Math.floor((max - min) / step);
+        const currentValue = valueToShow?.[0] ?? min;
+
         return Array.from({ length: numSteps + 1 }, (_, index) => {
           const value = min + step * index;
           const position = ((value - min) / (max - min)) * 100;
+          const isActive = isRange
+            ? value >= (valueToShow?.[0] ?? min) && value <= (valueToShow?.[1] ?? max)
+            : value <= currentValue;
+
           return (
-            <div key={value} className="crayon-slider-dots-dot" style={{ left: `${position}%` }} />
+            <div
+              key={value}
+              className={clsx("crayon-slider-dots-dot", {
+                "crayon-slider-dots-dot--active": isActive,
+              })}
+              style={{ left: `${position}%` }}
+            />
           );
         });
       }
