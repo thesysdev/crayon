@@ -64,46 +64,49 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
     const [isPrevVisible, setIsPrevVisible] = useState(false);
     const [isNextVisible, setIsNextVisible] = useState(false);
 
-    const scroll = useCallback((direction: "left" | "right") => {
-      if (!scrollDivRef.current) {
-        return;
-      }
+    const scroll = useCallback(
+      (direction: "left" | "right") => {
+        if (!scrollDivRef.current) {
+          return;
+        }
 
-      const container = scrollDivRef.current;
-      const items = noSnap
-        ? Array.from(container.children[0]?.children ?? [])
-        : Array.from(container.children);
+        const container = scrollDivRef.current;
+        const items = noSnap
+          ? Array.from(container.children[0]?.children ?? [])
+          : Array.from(container.children);
 
-      if (items.length === 0) {
-        return;
-      }
+        if (items.length === 0) {
+          return;
+        }
 
-      const containerRect = container.getBoundingClientRect();
-      const visibleIndex = items.findIndex((child) => {
-        const rect = child.getBoundingClientRect();
-        return rect.left >= containerRect.left;
-      });
-
-      let currentIndex = visibleIndex;
-      if (visibleIndex === -1) {
-        // Scrolled to the far right, so the last item is the current one
-        currentIndex = items.length - 1;
-      }
-
-      const targetIndex =
-        direction === "left"
-          ? Math.max(0, currentIndex - itemsToScroll)
-          : Math.min(items.length - 1, currentIndex + itemsToScroll);
-
-      const targetElement = items[targetIndex] as HTMLElement;
-
-      if (targetElement) {
-        container.scrollTo({
-          left: targetElement.offsetLeft,
-          behavior: "smooth",
+        const containerRect = container.getBoundingClientRect();
+        const visibleIndex = items.findIndex((child) => {
+          const rect = child.getBoundingClientRect();
+          return rect.left >= containerRect.left;
         });
-      }
-    }, []);
+
+        let currentIndex = visibleIndex;
+        if (visibleIndex === -1) {
+          // Scrolled to the far right, so the last item is the current one
+          currentIndex = items.length - 1;
+        }
+
+        const targetIndex =
+          direction === "left"
+            ? Math.max(0, currentIndex - itemsToScroll)
+            : Math.min(items.length - 1, currentIndex + itemsToScroll);
+
+        const targetElement = items[targetIndex] as HTMLElement;
+
+        if (targetElement) {
+          container.scrollTo({
+            left: targetElement.offsetLeft,
+            behavior: "smooth",
+          });
+        }
+      },
+      [noSnap, itemsToScroll],
+    );
 
     useEffect(() => {
       if (!scrollDivRef.current) return;
@@ -131,7 +134,7 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
         resizeObserver.disconnect();
         mutationObserver.disconnect();
       };
-    }, [scrollDivRef]);
+    }, []);
 
     useEffect(() => {
       onScrollLeftEnabled?.(isPrevVisible);
@@ -146,7 +149,7 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
         scroll,
         scrollDivRef,
       };
-    }, []);
+    }, [scroll]);
 
     const contextValue = useMemo(
       () => ({
