@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SegmentedBarData } from ".";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
 import { FloatingUIPortal } from "../shared/PortalTooltip";
@@ -94,6 +94,30 @@ export const SegmentedBar = <T extends SegmentedBarData>({
     [segments, colors],
   );
 
+  // Handle legend item hover with tooltip positioning
+  const handleLegendItemHover = useCallback((hoverIndex: number | null) => {
+    setActiveIndex(hoverIndex);
+    if (hoverIndex !== null) {
+      // Try to position tooltip above the hovered segment
+      const segmentEl = wrapperRef.current?.querySelectorAll(
+        ".crayon-segmented-bar-chart-segment",
+      )?.[hoverIndex] as HTMLDivElement | undefined;
+      if (segmentEl) {
+        const rect = segmentEl.getBoundingClientRect();
+        const containerRect = wrapperRef.current?.getBoundingClientRect();
+        if (containerRect) {
+          const relativeX = rect.left + rect.width / 2 - containerRect.left;
+          const relativeY = rect.top - containerRect.top;
+          setTooltipPosition({ x: relativeX, y: relativeY });
+        } else {
+          setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
+        }
+      }
+    } else {
+      setTooltipPosition(null);
+    }
+  }, []);
+
   // Segmented progress bar
   return (
     <div
@@ -157,28 +181,7 @@ export const SegmentedBar = <T extends SegmentedBarData>({
         <StackedLegend
           items={stackedLegendItems}
           containerWidth={containerWidth}
-          onLegendItemHover={(hoverIndex) => {
-            setActiveIndex(hoverIndex);
-            if (hoverIndex !== null) {
-              // Try to position tooltip above the hovered segment
-              const segmentEl = wrapperRef.current?.querySelectorAll(
-                ".crayon-segmented-bar-chart-segment",
-              )?.[hoverIndex] as HTMLDivElement | undefined;
-              if (segmentEl) {
-                const rect = segmentEl.getBoundingClientRect();
-                const containerRect = wrapperRef.current?.getBoundingClientRect();
-                if (containerRect) {
-                  const relativeX = rect.left + rect.width / 2 - containerRect.left;
-                  const relativeY = rect.top - containerRect.top;
-                  setTooltipPosition({ x: relativeX, y: relativeY });
-                } else {
-                  setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
-                }
-              }
-            } else {
-              setTooltipPosition(null);
-            }
-          }}
+          onLegendItemHover={handleLegendItemHover}
         />
       )}
     </div>

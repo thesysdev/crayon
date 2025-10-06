@@ -3,6 +3,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { AreaChartData } from "../AreaChart";
 import { BarChartData } from "../BarChart";
 import { LineChartData } from "../LineChart";
+import { ScatterPoint } from "../ScatterChart/types";
 import { numberTickFormatter } from "../utils";
 import { useCanvasContextForLabelSize } from "./useCanvasContextForLabelSize";
 
@@ -12,7 +13,7 @@ const MAX_Y_AXIS_WIDTH = 200;
 const LABEL_PADDING = 10;
 
 export const useYAxisLabelWidth = (
-  data: AreaChartData | LineChartData | BarChartData,
+  data: AreaChartData | LineChartData | BarChartData | ScatterPoint[],
   dataKeys: string[],
 ) => {
   const context = useCanvasContextForLabelSize();
@@ -38,7 +39,8 @@ export const useYAxisLabelWidth = (
 
       values.forEach((value) => {
         const displayValue = numberTickFormatter(value);
-        const textWidth = context.measureText(displayValue).width;
+        const textWidth = context.measureText(displayValue + "123").width;
+
         maxWidth = Math.max(maxWidth, textWidth);
       });
     });
