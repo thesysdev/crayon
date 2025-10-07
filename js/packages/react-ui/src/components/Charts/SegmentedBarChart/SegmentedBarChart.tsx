@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SegmentedBarData } from ".";
+import { Separator } from "../../Separator";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
 import { FloatingUIPortal } from "../shared/PortalTooltip";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend";
@@ -170,12 +171,16 @@ export const SegmentedBar = <T extends SegmentedBarData>({
           />
         </FloatingUIPortal>
       )}
+
+      <Separator />
+
       {legend && legendVariant === "default" && (
         <DefaultLegend
           items={legendItems}
           isExpanded={isLegendExpanded}
           setIsExpanded={setIsLegendExpanded}
           containerWidth={containerWidth}
+          style={{ paddingTop: 0 }}
         />
       )}
       {legend && legendVariant === "stacked" && (
