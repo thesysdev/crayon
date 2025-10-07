@@ -31,12 +31,12 @@ export const useDefaultLegend = ({
     () =>
       (item: LegendItem): number => {
         let displayText = item.label;
-        
+
         // If percentage is provided, include it in the width calculation
         if (item.percentage !== undefined) {
           displayText += ` (${item.percentage.toFixed(1)}%)`;
         }
-        
+
         if (canvasContext) {
           // If canvas is supported, measure text width accurately
           return canvasContext.measureText(displayText).width + INDICATOR_WIDTH + GAP_WIDTH;

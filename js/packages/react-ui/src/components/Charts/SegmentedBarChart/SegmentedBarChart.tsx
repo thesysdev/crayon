@@ -124,7 +124,9 @@ export const SegmentedBar = <T extends SegmentedBarData>({
   return (
     <div
       ref={wrapperRef}
-      className={clsx("crayon-segmented-bar-chart-container", className)}
+      className={clsx("crayon-segmented-bar-chart-container", className, {
+        "crayon-segmented-bar-chart-container-gap": legend && legendVariant === "default",
+      })}
       style={style}
     >
       <div className="crayon-segmented-bar-chart">
@@ -172,7 +174,7 @@ export const SegmentedBar = <T extends SegmentedBarData>({
         </FloatingUIPortal>
       )}
 
-      <Separator />
+      {legend && legendVariant === "default" && <Separator />}
 
       {legend && legendVariant === "default" && (
         <DefaultLegend
@@ -188,6 +190,8 @@ export const SegmentedBar = <T extends SegmentedBarData>({
           items={stackedLegendItems}
           containerWidth={containerWidth}
           onLegendItemHover={handleLegendItemHover}
+          separator
+          showTitle={false}
         />
       )}
     </div>
