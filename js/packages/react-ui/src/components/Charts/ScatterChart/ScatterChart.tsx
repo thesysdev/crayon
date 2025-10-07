@@ -132,7 +132,7 @@ export const ScatterChart = ({
 
   const renderDotShape = useMemo(() => {
     return (props: unknown) => {
-      return <ScatterDot {...(props as object)} variant={shape} active={false} />;
+      return <ScatterDot {...(props as object)} variant={shape} />;
     };
   }, [shape]);
 

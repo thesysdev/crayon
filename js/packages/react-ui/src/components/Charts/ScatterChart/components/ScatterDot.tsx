@@ -6,7 +6,6 @@ export interface ScatterDotProps {
   fill?: string;
   radius?: number;
   variant?: "circle" | "square";
-  active?: boolean;
 }
 
 const ScatterDot: React.FC<ScatterDotProps> = ({ cx, cy, fill, variant = "circle" }) => {
