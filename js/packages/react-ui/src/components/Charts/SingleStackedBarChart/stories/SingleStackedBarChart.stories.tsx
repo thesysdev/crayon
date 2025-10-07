@@ -1,24 +1,24 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Card } from "../../../Card";
-import { SegmentedBar, SegmentedBarProps } from "../SegmentedBarChart";
+import { SingleStackedBar, SingleStackedBarProps } from "../SingleStackedBarChart";
 
-const meta: Meta<SegmentedBarProps<any>> = {
-  title: "Components/Charts/SegmentedBar",
-  component: SegmentedBar,
+const meta: Meta<SingleStackedBarProps<any>> = {
+  title: "Components/Charts/SingleStackedBar",
+  component: SingleStackedBar,
   parameters: {
     layout: "centered",
     docs: {
       description: {
         component: `
-// Note: While the component is named 'ProgressBar', it's presented here as a 'SegmentedBar'
+// Note: While the component is named 'ProgressBar', it's presented here as a 'SingleStackedBar'
 // to emphasize its use for showing proportional data, much like a pie chart.
 ## Installation and Basic Usage
 
 \`\`\`tsx
-import { SegmentedBar } from '@crayon-ui/react-ui/Charts/SegmentedBar';
+import { SingleStackedBar } from '@crayon-ui/react-ui/Charts/SingleStackedBar';
 
 // Basic implementation
-<SegmentedBar
+<SingleStackedBar
   data={[
     { category: 'A', value: 25 },
     { category: 'B', value: 30 },
@@ -44,7 +44,7 @@ const data = [
 ];
 
 // Component usage
-<SegmentedBar
+<SingleStackedBar
   data={data}
   categoryKey="category"
   dataKey="value"
@@ -135,7 +135,7 @@ These values determine the proportional width of each segment.
     },
     legend: {
       description: `
-**Legend Display.** Shows or hides the legend below the segmented bar chart.
+**Legend Display.** Shows or hides the legend below the single stacked bar chart.
 The legend displays category names with their corresponding colors.
 `,
       control: "boolean",
@@ -159,7 +159,7 @@ Stacked legend appears at the bottom and shows values as percentages.
       },
     },
   },
-} satisfies Meta<typeof SegmentedBar>;
+} satisfies Meta<typeof SingleStackedBar>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -207,14 +207,14 @@ export const DefaultConfiguration: Story = {
           Visualizing the breakdown of a dataset into its constituent parts.
         </p>
       </div>
-      <SegmentedBar {...args} />
+      <SingleStackedBar {...args} />
     </Card>
   ),
   parameters: {
     docs: {
       description: {
         story:
-          "This is the standard appearance of the Segmented Bar. It shows multiple segments, each with a color from the selected theme, representing the proportional breakdown of a whole.",
+          "This is the standard appearance of the Single Stacked Bar. It shows multiple segments, each with a color from the selected theme, representing the proportional breakdown of a whole.",
       },
     },
   },
@@ -247,7 +247,7 @@ export const ThemeShowcase: Story = {
           >
             {theme}
           </h4>
-          <SegmentedBar {...args} theme={theme} />
+          <SingleStackedBar {...args} theme={theme} />
         </div>
       ))}
     </div>
@@ -256,7 +256,7 @@ export const ThemeShowcase: Story = {
     docs: {
       description: {
         story:
-          "The Segmented Bar supports six different color themes. This allows it to fit seamlessly into various application designs and visual identities.",
+          "The Single Stacked Bar supports six different color themes. This allows it to fit seamlessly into various application designs and visual identities.",
       },
     },
   },
@@ -281,14 +281,14 @@ export const ManySegments: Story = {
           The component gracefully handles numerous small segments.
         </p>
       </div>
-      <SegmentedBar {...args} />
+      <SingleStackedBar {...args} />
     </Card>
   ),
   parameters: {
     docs: {
       description: {
         story:
-          "The Segmented Bar can display many segments. The colors will cycle through the selected theme palette if the number of segments exceeds the number of available colors.",
+          "The Single Stacked Bar can display many segments. The colors will cycle through the selected theme palette if the number of segments exceeds the number of available colors.",
       },
     },
   },
@@ -313,7 +313,7 @@ export const FullComposition: Story = {
           Displaying a bar where segments add up to 100%.
         </p>
       </div>
-      <SegmentedBar {...args} />
+      <SingleStackedBar {...args} />
     </Card>
   ),
   parameters: {
@@ -348,14 +348,14 @@ export const WithLegend: Story = {
           automatically expands when there are many items.
         </p>
       </div>
-      <SegmentedBar {...args} />
+      <SingleStackedBar {...args} />
     </Card>
   ),
   parameters: {
     docs: {
       description: {
         story:
-          "This example demonstrates the SegmentedBar with legend enabled. The legend displays below the chart and shows the category names with their corresponding colors. For larger datasets, the legend will show a 'Show More' button to expand and see all items.",
+          "This example demonstrates the SingleStackedBar with legend enabled. The legend displays below the chart and shows the category names with their corresponding colors. For larger datasets, the legend will show a 'Show More' button to expand and see all items.",
       },
     },
   },
@@ -383,14 +383,14 @@ export const LegendWithManyItems: Story = {
           values. The legend automatically manages overflow with expand/collapse functionality.
         </p>
       </div>
-      <SegmentedBar {...args} />
+      <SingleStackedBar {...args} />
     </Card>
   ),
   parameters: {
     docs: {
       description: {
         story:
-          "This example shows how the SegmentedBar handles many segments with legend enabled. The legend automatically shows a 'Show More' button when items don't fit in the available space, providing a clean way to manage large datasets.",
+          "This example shows how the SingleStackedBar handles many segments with legend enabled. The legend automatically shows a 'Show More' button when items don't fit in the available space, providing a clean way to manage large datasets.",
       },
     },
   },
@@ -417,7 +417,8 @@ export const StackedLegendVariant: Story = {
           Displays a vertical legend beneath the bar with percentage values and overflow handling.
         </p>
       </div>
-      <SegmentedBar {...args} />
+      <SingleStackedBar {...args} />
     </Card>
   ),
 };
+
