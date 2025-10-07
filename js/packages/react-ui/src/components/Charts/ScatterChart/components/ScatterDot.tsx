@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 export interface ScatterDotProps {
   cx?: number;
@@ -9,13 +9,8 @@ export interface ScatterDotProps {
   active?: boolean;
 }
 
-const ScatterDot: React.FC<ScatterDotProps> = ({
-  cx,
-  cy,
-  fill,
-  variant = "circle",
-  active = false,
-}) => {
+const ScatterDot: React.FC<ScatterDotProps> = ({ cx, cy, fill, variant = "circle" }) => {
+  const [active, setActive] = useState(false);
   if (typeof cx !== "number" || typeof cy !== "number") {
     return null;
   }
@@ -38,6 +33,12 @@ const ScatterDot: React.FC<ScatterDotProps> = ({
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
         rx={2}
+        onPointerEnter={(e) => {
+          setActive(true);
+        }}
+        onPointerLeave={(e) => {
+          setActive(false);
+        }}
       />
     );
   }
@@ -51,6 +52,12 @@ const ScatterDot: React.FC<ScatterDotProps> = ({
       stroke={active ? OUTLINE_COLOR : "none"}
       strokeWidth={OUTLINE_WIDTH}
       vectorEffect="non-scaling-stroke"
+      onPointerEnter={(e) => {
+        setActive(true);
+      }}
+      onPointerLeave={(e) => {
+        setActive(false);
+      }}
     />
   );
 };
