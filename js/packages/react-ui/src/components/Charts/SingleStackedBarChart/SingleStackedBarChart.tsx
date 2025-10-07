@@ -1,14 +1,15 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { SegmentedBarData } from ".";
+import { Separator } from "../../Separator";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
 import { FloatingUIPortal } from "../shared/PortalTooltip";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend";
 import { LegendItem, StackedLegendItem } from "../types";
 import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
 import { ToolTip } from "./components";
+import { SingleStackedBarData } from "./types";
 
-export interface SegmentedBarProps<T extends SegmentedBarData> {
+export interface SingleStackedBarProps<T extends SingleStackedBarData> {
   data: T;
   categoryKey: keyof T[number];
   dataKey: keyof T[number];
@@ -20,7 +21,7 @@ export interface SegmentedBarProps<T extends SegmentedBarData> {
   animated?: boolean;
 }
 
-export const SegmentedBar = <T extends SegmentedBarData>({
+export const SingleStackedBar = <T extends SingleStackedBarData>({
   data,
   categoryKey,
   dataKey,
@@ -30,7 +31,7 @@ export const SegmentedBar = <T extends SegmentedBarData>({
   className,
   style,
   animated = true,
-}: SegmentedBarProps<T>) => {
+}: SingleStackedBarProps<T>) => {
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -79,6 +80,7 @@ export const SegmentedBar = <T extends SegmentedBarData>({
       key: `${segment.category}-${index}`,
       label: segment.category,
       color: colors[index % colors.length] || "",
+      percentage: segment.percentage,
     }));
   }, [segments, colors]);
 
@@ -100,7 +102,7 @@ export const SegmentedBar = <T extends SegmentedBarData>({
     if (hoverIndex !== null) {
       // Try to position tooltip above the hovered segment
       const segmentEl = wrapperRef.current?.querySelectorAll(
-        ".crayon-segmented-bar-chart-segment",
+        ".crayon-single-stacked-bar-chart-segment",
       )?.[hoverIndex] as HTMLDivElement | undefined;
       if (segmentEl) {
         const rect = segmentEl.getBoundingClientRect();
@@ -122,17 +124,19 @@ export const SegmentedBar = <T extends SegmentedBarData>({
   return (
     <div
       ref={wrapperRef}
-      className={clsx("crayon-segmented-bar-chart-container", className)}
+      className={clsx("crayon-single-stacked-bar-chart-container", className, {
+        "crayon-single-stacked-bar-chart-container-gap": legend && legendVariant === "default",
+      })}
       style={style}
     >
-      <div className="crayon-segmented-bar-chart">
+      <div className="crayon-single-stacked-bar-chart">
         {segments.map((segment, index) => {
           const isActive = activeIndex === null || activeIndex === index;
           return (
             <div
               key={`segment-${index}`}
-              className={clsx("crayon-segmented-bar-chart-segment", {
-                "crayon-segmented-bar-chart-animated": animated,
+              className={clsx("crayon-single-stacked-bar-chart-segment", {
+                "crayon-single-stacked-bar-chart-animated": animated,
               })}
               style={{
                 width: `${segment.percentage}%`,
@@ -154,7 +158,7 @@ export const SegmentedBar = <T extends SegmentedBarData>({
               }}
               onMouseLeave={() => setActiveIndex(null)}
             >
-              <div className="crayon-segmented-bar-chart-segment-line" />
+              <div className="crayon-single-stacked-bar-chart-segment-line" />
             </div>
           );
         })}
@@ -169,12 +173,16 @@ export const SegmentedBar = <T extends SegmentedBarData>({
           />
         </FloatingUIPortal>
       )}
+
+      {legend && legendVariant === "default" && <Separator />}
+
       {legend && legendVariant === "default" && (
         <DefaultLegend
           items={legendItems}
           isExpanded={isLegendExpanded}
           setIsExpanded={setIsLegendExpanded}
           containerWidth={containerWidth}
+          style={{ paddingTop: 0 }}
         />
       )}
       {legend && legendVariant === "stacked" && (
@@ -182,6 +190,8 @@ export const SegmentedBar = <T extends SegmentedBarData>({
           items={stackedLegendItems}
           containerWidth={containerWidth}
           onLegendItemHover={handleLegendItemHover}
+          separator
+          showTitle={false}
         />
       )}
     </div>

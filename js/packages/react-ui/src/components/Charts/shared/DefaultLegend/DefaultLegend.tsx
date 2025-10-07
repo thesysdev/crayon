@@ -99,7 +99,14 @@ const DefaultLegend = memo(
                     style={{ backgroundColor: item.color }}
                   />
                 )}
-                <span className="crayon-chart-legend-item-label">{item.label}</span>
+                <div className="crayon-chart-legend-item-label-container">
+                  <span className="crayon-chart-legend-item-label">{item.label}</span>
+                  {item.percentage !== undefined && (
+                    <span className="crayon-chart-legend-item-percentage">
+                      {item.percentage.toFixed(1)}%
+                    </span>
+                  )}
+                </div>
               </div>
             ))}
 
