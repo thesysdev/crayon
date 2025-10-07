@@ -53,10 +53,26 @@ export const toOpenAIMessages = (messages: any[]) => {
       continue;
     }
     if (message.role === "user") {
-      openAIMessages.push({
-        role: message.role,
-        content: message.message,
-      });
+      if (message.files && message.files.length > 0) {
+        openAIMessages.push({
+          role: message.role,
+          content: JSON.stringify([
+            ...message.files.map((file: { name: string; fileId: string }) => ({
+              type: "file",
+              file: { filename: file.name, file_id: file.fileId },
+            })),
+            {
+              type: "text",
+              text: message.message,
+            },
+          ]),
+        });
+      } else {
+        openAIMessages.push({
+          role: message.role,
+          content: message.message,
+        });
+      }
     } else if (message.role === "assistant") {
       openAIMessages.push({
         role: message.role,

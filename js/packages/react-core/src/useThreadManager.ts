@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { createStore, useStore } from "zustand";
 import { CreateMessage, Message, ResponseTemplate, ThreadManager } from "./types";
+import { UploadedFile } from "./types/message";
 
 /**
  * Parameters to be passed to the {@link useThreadManager} hook
@@ -19,10 +20,16 @@ export type UseThreadManagerParams = {
     message: CreateMessage;
     threadManager: ThreadManager;
     abortController: AbortController;
+    filesUploaded?: UploadedFile[];
   }) => Promise<Message[]>;
   /** A function that defines how a message should be updated. Useful for integrating a backend API to update a message. */
   onUpdateMessage?: (props: { message: Message }) => void;
   /** A list of response templates available to the thread. */
+  /** A function that defines how files should be uploaded. Useful for integrating a backend API to upload files. */
+  onProcessFileUpload?: (props: {
+    files: File[];
+    abortController?: AbortController;
+  }) => Promise<UploadedFile[]>;
   responseTemplates: ResponseTemplate[];
 };
 
@@ -54,6 +61,7 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
         abortController: null,
         isRunning: false,
         isLoadingMessages: false,
+        isUploading: false,
         setMessages: (messages: Message[]) => {
           set({ messages });
         },
@@ -77,6 +85,7 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
               message,
               threadManager: store.getState(),
               abortController,
+              filesUploaded: message.files,
             });
 
             store.getState().appendMessages(...newMessages);
@@ -107,6 +116,10 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
         deleteMessage: (messageId: string) => {
           const messages = store.getState().messages.filter((m) => m.id !== messageId);
           set({ messages });
+        },
+        processFileUpload: async (files: File[]) => {
+          const response = await propsRef.current.onProcessFileUpload?.({ files });
+          return response ?? [];
         },
         responseTemplates: propsRef.current.responseTemplates.reduce(
           (acc, template) => {
