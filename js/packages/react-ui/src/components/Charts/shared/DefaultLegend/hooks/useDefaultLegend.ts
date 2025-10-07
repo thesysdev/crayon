@@ -29,14 +29,21 @@ export const useDefaultLegend = ({
 
   const calculateItemWidth = useMemo(
     () =>
-      (label: string): number => {
+      (item: LegendItem): number => {
+        let displayText = item.label;
+        
+        // If percentage is provided, include it in the width calculation
+        if (item.percentage !== undefined) {
+          displayText += ` (${item.percentage.toFixed(1)}%)`;
+        }
+        
         if (canvasContext) {
           // If canvas is supported, measure text width accurately
-          return canvasContext.measureText(label).width + INDICATOR_WIDTH + GAP_WIDTH;
+          return canvasContext.measureText(displayText).width + INDICATOR_WIDTH + GAP_WIDTH;
         }
 
         // Fallback for SSR or if canvas is not supported
-        return label.length * CHARACTER_WIDTH + INDICATOR_WIDTH + GAP_WIDTH;
+        return displayText.length * CHARACTER_WIDTH + INDICATOR_WIDTH + GAP_WIDTH;
       },
     [canvasContext],
   );
@@ -54,7 +61,7 @@ export const useDefaultLegend = ({
       const item = items[i];
       if (!item) continue;
 
-      const itemWidth = calculateItemWidth(item.label);
+      const itemWidth = calculateItemWidth(item);
       // Add gap between items except for the first one
       const requiredWidth = visibleCount > 0 ? itemWidth + GAP_WIDTH : itemWidth;
 

@@ -3,6 +3,7 @@ export interface LegendItem {
   label: string;
   color: string;
   icon?: React.ComponentType;
+  percentage?: number;
 }
 
 export interface StackedLegendItem {

@@ -79,6 +79,7 @@ export const SegmentedBar = <T extends SegmentedBarData>({
       key: `${segment.category}-${index}`,
       label: segment.category,
       color: colors[index % colors.length] || "",
+      percentage: segment.percentage,
     }));
   }, [segments, colors]);
 
