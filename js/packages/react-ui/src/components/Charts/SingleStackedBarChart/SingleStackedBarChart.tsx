@@ -34,6 +34,7 @@ export const SingleStackedBar = <T extends SingleStackedBarData>({
 }: SingleStackedBarProps<T>) => {
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [hoveredLegendKey, setHoveredLegendKey] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
@@ -97,28 +98,37 @@ export const SingleStackedBar = <T extends SingleStackedBarData>({
   );
 
   // Handle legend item hover with tooltip positioning
-  const handleLegendItemHover = useCallback((hoverIndex: number | null) => {
-    setActiveIndex(hoverIndex);
-    if (hoverIndex !== null) {
-      // Try to position tooltip above the hovered segment
-      const segmentEl = wrapperRef.current?.querySelectorAll(
-        ".crayon-single-stacked-bar-chart-segment",
-      )?.[hoverIndex] as HTMLDivElement | undefined;
-      if (segmentEl) {
-        const rect = segmentEl.getBoundingClientRect();
-        const containerRect = wrapperRef.current?.getBoundingClientRect();
-        if (containerRect) {
-          const relativeX = rect.left + rect.width / 2 - containerRect.left;
-          const relativeY = rect.top - containerRect.top;
-          setTooltipPosition({ x: relativeX, y: relativeY });
-        } else {
-          setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
+  const handleLegendItemHover = useCallback(
+    (hoverIndex: number | null) => {
+      setActiveIndex(hoverIndex);
+      if (hoverIndex !== null) {
+        const segment = segments[hoverIndex];
+        if (segment) {
+          const legendKey = `${segment.category}-${hoverIndex}`;
+          setHoveredLegendKey(legendKey);
         }
+        // Try to position tooltip above the hovered segment
+        const segmentEl = wrapperRef.current?.querySelectorAll(
+          ".crayon-single-stacked-bar-chart-segment",
+        )?.[hoverIndex] as HTMLDivElement | undefined;
+        if (segmentEl) {
+          const rect = segmentEl.getBoundingClientRect();
+          const containerRect = wrapperRef.current?.getBoundingClientRect();
+          if (containerRect) {
+            const relativeX = rect.left + rect.width / 2 - containerRect.left;
+            const relativeY = rect.top - containerRect.top;
+            setTooltipPosition({ x: relativeX, y: relativeY });
+          } else {
+            setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
+          }
+        }
+      } else {
+        setHoveredLegendKey(null);
+        setTooltipPosition(null);
       }
-    } else {
-      setTooltipPosition(null);
-    }
-  }, []);
+    },
+    [segments],
+  );
 
   // Segmented progress bar
   return (
@@ -145,6 +155,8 @@ export const SingleStackedBar = <T extends SingleStackedBarData>({
               }}
               onMouseEnter={(e) => {
                 setActiveIndex(index);
+                const legendKey = `${segment.category}-${index}`;
+                setHoveredLegendKey(legendKey);
                 const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
                 const containerRect = wrapperRef.current?.getBoundingClientRect();
                 if (containerRect) {
@@ -156,7 +168,10 @@ export const SingleStackedBar = <T extends SingleStackedBarData>({
                   setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
                 }
               }}
-              onMouseLeave={() => setActiveIndex(null)}
+              onMouseLeave={() => {
+                setActiveIndex(null);
+                setHoveredLegendKey(null);
+              }}
             >
               <div className="crayon-single-stacked-bar-chart-segment-line" />
             </div>
@@ -189,9 +204,13 @@ export const SingleStackedBar = <T extends SingleStackedBarData>({
         <StackedLegend
           items={stackedLegendItems}
           containerWidth={containerWidth}
+          onItemHover={setHoveredLegendKey}
+          activeKey={hoveredLegendKey}
           onLegendItemHover={handleLegendItemHover}
           separator
           showTitle={false}
+          layout="showMore"
+          className="crayon-single-stacked-bar-chart-stacked-legend"
         />
       )}
     </div>
