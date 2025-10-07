@@ -32,10 +32,10 @@ const ScatterDot: React.FC<ScatterDotProps> = ({ cx, cy, fill, variant = "circle
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
         rx={2}
-        onPointerEnter={(e) => {
+        onPointerEnter={() => {
           setActive(true);
         }}
-        onPointerLeave={(e) => {
+        onPointerLeave={() => {
           setActive(false);
         }}
       />
@@ -51,10 +51,10 @@ const ScatterDot: React.FC<ScatterDotProps> = ({ cx, cy, fill, variant = "circle
       stroke={active ? OUTLINE_COLOR : "none"}
       strokeWidth={OUTLINE_WIDTH}
       vectorEffect="non-scaling-stroke"
-      onPointerEnter={(e) => {
+      onPointerEnter={() => {
         setActive(true);
       }}
-      onPointerLeave={(e) => {
+      onPointerLeave={() => {
         setActive(false);
       }}
     />
