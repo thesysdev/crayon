@@ -44,6 +44,7 @@ export interface ScatterChartProps {
 const DEFAULT_CHART_HEIGHT = 296;
 const DEFAULT_MARGIN = 20;
 const X_AXIS_HEIGHT = 40;
+const Y_AXIS_OFFSET = 10;
 
 export const ScatterChart = ({
   data,
@@ -179,8 +180,8 @@ export const ScatterChart = ({
           style={
             containerWidth
               ? {
-                  width: containerWidth - yAxisWidth,
-                  marginLeft: yAxisWidth,
+                  width: containerWidth - yAxisWidth - Y_AXIS_OFFSET,
+                  marginLeft: yAxisWidth + Y_AXIS_OFFSET,
                 }
               : {
                   width: "90%",
