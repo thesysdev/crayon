@@ -45,4 +45,3 @@ export const ToolTip: React.FC<ToolTipProps> = ({ label, color, value, percentag
     </div>
   );
 };
-

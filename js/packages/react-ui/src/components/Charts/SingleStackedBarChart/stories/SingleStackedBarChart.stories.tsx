@@ -421,4 +421,3 @@ export const StackedLegendVariant: Story = {
     </Card>
   ),
 };
-

@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { SingleStackedBarData } from "./types";
 import { Separator } from "../../Separator";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
 import { FloatingUIPortal } from "../shared/PortalTooltip";
@@ -8,6 +7,7 @@ import { StackedLegend } from "../shared/StackedLegend/StackedLegend";
 import { LegendItem, StackedLegendItem } from "../types";
 import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
 import { ToolTip } from "./components";
+import { SingleStackedBarData } from "./types";
 
 export interface SingleStackedBarProps<T extends SingleStackedBarData> {
   data: T;
@@ -197,4 +197,3 @@ export const SingleStackedBar = <T extends SingleStackedBarData>({
     </div>
   );
 };
-
