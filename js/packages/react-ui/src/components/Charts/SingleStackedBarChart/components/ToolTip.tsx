@@ -1,4 +1,5 @@
 import React from "react";
+import { numberTickFormatter } from "../../utils";
 
 interface ToolTipProps {
   label: string;
@@ -24,7 +25,9 @@ export const ToolTip: React.FC<ToolTipProps> = ({ label, color, value, percentag
             <div className="crayon-chart-tooltip-content-label">
               <span>Value</span>
             </div>
-            <span className="crayon-chart-tooltip-content-value">{value}</span>
+            <span className="crayon-chart-tooltip-content-value">
+              {typeof value === "number" ? numberTickFormatter(value) : value}
+            </span>
           </div>
         </div>
         <div className="crayon-chart-tooltip-content-item-separator" />

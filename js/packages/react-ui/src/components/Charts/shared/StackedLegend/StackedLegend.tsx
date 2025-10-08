@@ -1,8 +1,12 @@
+import clsx from "clsx";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../../../Button";
 import { IconButton } from "../../../IconButton";
+import { Separator } from "../../../Separator";
 import { StackedLegendItem } from "../../types";
+
+export type StackedLegendLayout = "auto" | "showMore" | "scrollable";
 
 interface StackedLegendProps {
   items: StackedLegendItem[];
@@ -11,6 +15,11 @@ interface StackedLegendProps {
   onLegendItemHover?: (index: number | null) => void;
   containerWidth?: number;
   title?: string;
+  separator?: boolean;
+  showTitle?: boolean;
+  layout?: StackedLegendLayout;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 const formatPercentage = (value: number, total: number): string => {
@@ -29,6 +38,11 @@ export const StackedLegend = ({
   activeKey,
   onLegendItemHover,
   containerWidth,
+  separator = false,
+  showTitle = true,
+  layout = "auto",
+  className,
+  style,
 }: StackedLegendProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -37,9 +51,14 @@ export const StackedLegend = ({
   const [showAll, setShowAll] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
 
+  // Determine the actual layout to use
   const isShowMoreLayout =
-    containerWidth !== undefined &&
-    (containerWidth < SHOW_MORE_BREAKPOINT || items.length > LEGEND_ITEM_LIMIT);
+    layout === "showMore" ||
+    (layout === "auto" &&
+      containerWidth !== undefined &&
+      (containerWidth < SHOW_MORE_BREAKPOINT || items.length > LEGEND_ITEM_LIMIT));
+
+  const isScrollableLayout = layout === "scrollable" || (layout === "auto" && !isShowMoreLayout);
 
   const handleMouseEnter = (key: string, index: number) => {
     onItemHover?.(key);
@@ -113,61 +132,71 @@ export const StackedLegend = ({
   return (
     <div
       ref={containerRef}
-      className="crayon-stacked-legend-container"
+      className={clsx("crayon-stacked-legend-container", className)}
       style={{
         width: containerWidth ? `${containerWidth}px` : "100%",
+        ...style,
       }}
     >
-      <div className="crayon-stacked-legend-header">
-        <div className="crayon-stacked-legend-header-title">{items.length} values</div>
-        <div className="crayon-stacked-legend-header-buttons">
-          {!isShowMoreLayout && isOverflowing && (
-            <>
-              <IconButton
-                className="crayon-stacked-legend-scroll-button crayon-stacked-legend-scroll-up"
-                onClick={scrollUp}
-                aria-label="Scroll legend up"
-                icon={<ChevronUp />}
-                variant="secondary"
-                size="extra-small"
-                disabled={!showUpButton}
-              />
-              <IconButton
-                className="crayon-stacked-legend-scroll-button crayon-stacked-legend-scroll-down"
-                onClick={scrollDown}
-                aria-label="Scroll legend down"
-                icon={<ChevronDown />}
-                variant="secondary"
-                size="extra-small"
-                disabled={!showDownButton}
-              />
-            </>
+      {(showTitle || (isScrollableLayout && isOverflowing)) && (
+        <div className="crayon-stacked-legend-header">
+          {showTitle && (
+            <div className="crayon-stacked-legend-header-title">{items.length} values</div>
           )}
+          <div className="crayon-stacked-legend-header-buttons">
+            {isScrollableLayout && isOverflowing && (
+              <>
+                <IconButton
+                  className="crayon-stacked-legend-scroll-button crayon-stacked-legend-scroll-up"
+                  onClick={scrollUp}
+                  aria-label="Scroll legend up"
+                  icon={<ChevronUp />}
+                  variant="secondary"
+                  size="extra-small"
+                  disabled={!showUpButton}
+                />
+                <IconButton
+                  className="crayon-stacked-legend-scroll-button crayon-stacked-legend-scroll-down"
+                  onClick={scrollDown}
+                  aria-label="Scroll legend down"
+                  icon={<ChevronDown />}
+                  variant="secondary"
+                  size="extra-small"
+                  disabled={!showDownButton}
+                />
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      )}
       <div ref={listRef} className="crayon-stacked-legend">
         {itemsToDisplay.map((item, index) => (
-          <div
-            key={item.key}
-            className={`crayon-stacked-legend__item ${
-              activeKey === item.key ? "crayon-stacked-legend__item--active" : ""
-            }`}
-            onMouseEnter={() => handleMouseEnter(item.key, index)}
-            onMouseLeave={handleMouseLeave}
-          >
-            <div className="crayon-stacked-legend__item-label">
-              <div className="crayon-stacked-legend__item-color-container">
-                <div
-                  className="crayon-stacked-legend__item-color"
-                  style={{ backgroundColor: item.color }}
-                />
+          <>
+            <div
+              key={item.key}
+              className={`crayon-stacked-legend__item ${
+                activeKey === item.key ? "crayon-stacked-legend__item--active" : ""
+              }`}
+              onMouseEnter={() => handleMouseEnter(item.key, index)}
+              onMouseLeave={handleMouseLeave}
+            >
+              <div className="crayon-stacked-legend__item-label">
+                <div className="crayon-stacked-legend__item-color-container">
+                  <div
+                    className="crayon-stacked-legend__item-color"
+                    style={{ backgroundColor: item.color }}
+                  />
+                </div>
+                <div className="crayon-stacked-legend__item-label-text">{item.label}</div>
               </div>
-              <div className="crayon-stacked-legend__item-label-text">{item.label}</div>
+              <div className="crayon-stacked-legend__item-value">
+                {formatPercentage(item.value, total)}
+              </div>
             </div>
-            <div className="crayon-stacked-legend__item-value">
-              {formatPercentage(item.value, total)}
-            </div>
-          </div>
+            {index !== itemsToDisplay.length - 1 && separator && (
+              <Separator className="crayon-stacked-legend-separator" />
+            )}
+          </>
         ))}
       </div>
       {isShowMoreLayout && !showAll && items.length > LEGEND_ITEM_LIMIT && (

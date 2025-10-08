@@ -132,11 +132,9 @@ export const ScatterChart = ({
   }, [data, yAxisDataKey]);
 
   const renderDotShape = useMemo(() => {
-    return (props: unknown) => <ScatterDot {...(props as object)} variant={shape} active={false} />;
-  }, [shape]);
-
-  const renderActiveDotShape = useMemo(() => {
-    return (props: unknown) => <ScatterDot {...(props as object)} variant={shape} active />;
+    return (props: unknown) => {
+      return <ScatterDot {...(props as object)} variant={shape} />;
+    };
   }, [shape]);
 
   useEffect(() => {
@@ -316,7 +314,6 @@ export const ScatterChart = ({
                   key={`scatter-${id}`}
                   data={transformedData}
                   shape={renderDotShape}
-                  activeShape={renderActiveDotShape}
                   isAnimationActive={isAnimationActive}
                 >
                   {transformedData.map((entry, index) => (
