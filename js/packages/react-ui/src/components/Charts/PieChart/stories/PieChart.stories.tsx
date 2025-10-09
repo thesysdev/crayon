@@ -236,6 +236,22 @@ const salesData = [
         category: "🎨 Visual Styling",
       },
     },
+    height: {
+      description: "The height of the chart.",
+      control: "text",
+      table: {
+        type: { summary: "string | number" },
+        category: "📱 Display Options",
+      },
+    },
+    width: {
+      description: "The width of the chart.",
+      control: "text",
+      table: {
+        type: { summary: "string | number" },
+        category: "📱 Display Options",
+      },
+    },
   },
 } satisfies Meta<typeof PieChart>;
 
@@ -271,7 +287,7 @@ export const DefaultConfiguration: Story = {
     paddingAngle: 0,
   },
   render: (args: any) => (
-    <Card style={{ width: "650px", height: "auto", padding: "24px" }}>
+    <Card style={{ width: "650px", height: "fit-content", padding: "24px" }}>
       <h3 style={{ marginBottom: "20px", fontSize: "18px", fontWeight: 600 }}>
         Monthly Sales Performance
       </h3>
