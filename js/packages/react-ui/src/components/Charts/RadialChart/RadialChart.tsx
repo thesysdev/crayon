@@ -1,11 +1,15 @@
 import clsx from "clsx";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Cell, PolarGrid, RadialBar, RadialBarChart } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../Charts";
+import { ExportContextProvider, useExportContext } from "../ExportContext";
 import { useTransformedKeys } from "../hooks";
+import { ChartExportFooter } from "../shared/ChartExportFooter";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
+import { ExportButton } from "../shared/ExportButton";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend";
 import { LegendItem } from "../types/Legend";
+import { useExportChart } from "../utils/chartExportUtils";
 import { getCategoricalChartConfig } from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 import { RadialChartData } from "./types";
@@ -37,13 +41,14 @@ export interface RadialChartProps<T extends RadialChartData> {
   className?: string;
   maxChartSize?: number;
   minChartSize?: number;
+  exportRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
 const MIN_CHART_SIZE = 150;
 const MAX_CHART_SIZE = 500;
 
-export const RadialChart = <T extends RadialChartData>({
+const RadialChartComponent = <T extends RadialChartData>({
   data,
   categoryKey,
   dataKey,
@@ -62,12 +67,18 @@ export const RadialChart = <T extends RadialChartData>({
   className,
   maxChartSize = MAX_CHART_SIZE,
   minChartSize = MIN_CHART_SIZE,
+  exportRef,
 }: RadialChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
   const [hoveredLegendKey, setHoveredLegendKey] = useState<string | null>(null);
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
+  const [isChartHovered, setIsChartHovered] = useState(false);
   const { activeIndex, handleMouseEnter, handleMouseLeave } = useRadialChartHover();
+  const exportContext = useExportContext();
+
+  const exportChartRef = useRef<HTMLDivElement>(null);
+  const { exportChart } = useExportChart(exportChartRef);
 
   // Determine layout mode based on container width
   const isRowLayout =
@@ -268,7 +279,7 @@ export const RadialChart = <T extends RadialChartData>({
       <DefaultLegend
         items={defaultLegendItems}
         containerWidth={wrapperRect.width}
-        isExpanded={isLegendExpanded}
+        isExpanded={isLegendExpanded || !!exportContext}
         setIsExpanded={setIsLegendExpanded}
       />
     );
@@ -282,21 +293,31 @@ export const RadialChart = <T extends RadialChartData>({
     isRowLayout,
     defaultLegendItems,
     isLegendExpanded,
+    exportContext,
   ]);
 
-  const wrapperClassName = clsx("crayon-radial-chart-container-wrapper", className, {
-    "layout-row": isRowLayout,
-    "layout-column": !isRowLayout,
-    "legend-default": legend && legendVariant === "default",
-    "legend-stacked": legend && legendVariant === "stacked",
-  });
+  const wrapperClassName = useMemo(
+    () =>
+      clsx("crayon-radial-chart-container-wrapper", className, {
+        "layout-row": isRowLayout,
+        "layout-column": !isRowLayout,
+        "legend-default": legend && legendVariant === "default",
+        "legend-stacked": legend && legendVariant === "stacked",
+      }),
+    [className, legend, legendVariant, isRowLayout],
+  );
 
   // Correct angles for semicircle (top half)
   const startAngle = variant === "semicircle" ? 180 : 0;
   const endAngle = variant === "semicircle" ? 0 : 360;
 
-  return (
-    <div ref={wrapperRef} className={wrapperClassName}>
+  const radialChartJsx = (
+    <div
+      ref={wrapperRef}
+      className={wrapperClassName}
+      onMouseEnter={() => setIsChartHovered(true)}
+      onMouseLeave={() => setIsChartHovered(false)}
+    >
       <div className="crayon-radial-chart-container">
         <div className="crayon-radial-chart-container-inner">
           <div style={chartSizeStyle}>
@@ -346,8 +367,54 @@ export const RadialChart = <T extends RadialChartData>({
             </ChartContainer>
           </div>
         </div>
+        {isChartHovered && <ExportButton exportChart={exportChart} />}
       </div>
       {renderLegend()}
     </div>
   );
+
+  return (
+    <>
+      {!exportContext && (
+        <ExportContextProvider value={{ format: "image" }}>
+          <RadialChart
+            categoryKey={categoryKey as string}
+            dataKey={dataKey as string}
+            data={data}
+            theme={theme}
+            customPalette={customPalette}
+            variant={variant}
+            format={format}
+            legend={legend}
+            legendVariant={"default"}
+            isAnimationActive={false}
+            grid={grid}
+            cornerRadius={cornerRadius}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onClick={onClick}
+            className={className}
+            maxChartSize={maxChartSize}
+            minChartSize={minChartSize}
+            exportRef={exportChartRef}
+          />
+        </ExportContextProvider>
+      )}
+      {exportContext ? (
+        <div
+          className="crayon-chart-export-container crayon-radial-chart-export-container"
+          ref={exportRef}
+        >
+          {radialChartJsx}
+          {<ChartExportFooter />}
+        </div>
+      ) : (
+        radialChartJsx
+      )}
+    </>
+  );
 };
+
+export const RadialChart = memo(RadialChartComponent);
+
+RadialChart.displayName = "RadialChart";
