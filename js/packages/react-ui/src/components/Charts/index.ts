@@ -1,4 +1,5 @@
 export * from "./AreaChart";
+export * from "./AreaChartCondensed";
 export * from "./BarChart";
 export * from "./HorizontalBarChart";
 export * from "./LineChart";
