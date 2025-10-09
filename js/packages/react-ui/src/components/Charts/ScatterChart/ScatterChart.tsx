@@ -12,6 +12,7 @@ import {
   SideBarTooltip,
   YAxisTick,
 } from "../shared";
+import { NumericXAxisTick } from "../shared/NumericXAxisTick/NumericXAxisTick";
 import { LegendItem } from "../types";
 import { get2dChartConfig, getLegendItems } from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
@@ -213,7 +214,7 @@ export const ScatterChart = ({
               tickLine={false}
               axisLine={false}
               tickFormatter={numberTickFormatter}
-              tick={{ fontSize: 12 }}
+              tick={<NumericXAxisTick />}
               domain={xDomain}
               dataKey={xAxisDataKey}
             />
@@ -337,12 +338,7 @@ export const ScatterChart = ({
                   {grid && gridCartesianGrid({ horizontal: true, vertical: true })}
                   <XAxis
                     type="number"
-                    height={X_AXIS_HEIGHT}
                     name={xAxisLabel as string}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={numberTickFormatter}
-                    tick={{ fontSize: 12 }}
                     domain={xDomain}
                     dataKey={xAxisDataKey}
                     hide
@@ -353,12 +349,7 @@ export const ScatterChart = ({
                     dataKey={yAxisDataKey}
                     name={yAxisLabel as string}
                     domain={yDomain}
-                    tickLine={false}
-                    axisLine={false}
-                    tick={<YAxisTick setLabelWidth={setLabelWidth} />}
-                    tickFormatter={numberTickFormatter}
                     hide
-                    width={0}
                   />
 
                   <ChartTooltip

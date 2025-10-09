@@ -20,6 +20,7 @@ import { type LegendItem } from "../types/Legend";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
+import { NumericXAxisTick } from "../shared/NumericXAxisTick/NumericXAxisTick";
 import {
   findNearestSnapPosition,
   getBarStackInfo,
@@ -274,7 +275,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
               tickLine={false}
               axisLine={false}
               tickFormatter={numberTickFormatter}
-              tick={{ fontSize: 12 }}
+              tick={<NumericXAxisTick />}
             />
             {/* Invisible bars to maintain scale synchronization */}
             {dataKeys.map((key) => {
