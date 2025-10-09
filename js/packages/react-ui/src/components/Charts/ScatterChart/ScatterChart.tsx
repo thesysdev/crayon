@@ -42,7 +42,6 @@ export interface ScatterChartProps {
 }
 
 const DEFAULT_CHART_HEIGHT = 296;
-const DEFAULT_MARGIN = 20;
 const X_AXIS_HEIGHT = 40;
 
 export const ScatterChart = ({
@@ -119,6 +118,17 @@ export const ScatterChart = ({
       return height - legendHeight - xAxisHeight;
     }
 
+    if (typeof height === "string" && height.endsWith("px")) {
+      const numericHeight = parseInt(height, 10);
+      if (!isNaN(numericHeight)) {
+        return numericHeight - legendHeight - xAxisHeight;
+      }
+    }
+
+    if (!height) {
+      return DEFAULT_CHART_HEIGHT;
+    }
+
     return chartWrapperRef.current.offsetHeight - legendHeight - xAxisHeight;
   }, [containerWidth, height]);
 
@@ -178,10 +188,7 @@ export const ScatterChart = ({
 
   const xAxis = useMemo(() => {
     return (
-      <div
-        className="crayon-scatter-chart-x-axis-container"
-        ref={xAxisContainerRef}
-      >
+      <div className="crayon-scatter-chart-x-axis-container" ref={xAxisContainerRef}>
         <ChartContainer
           config={chartConfig}
           style={{ width: "100%", height: X_AXIS_HEIGHT }}
@@ -233,18 +240,15 @@ export const ScatterChart = ({
   ]);
   const yAxis = useMemo(() => {
     return (
-      <div
-        className="crayon-scatter-chart-y-axis-container"
-        style={{ height: chartHeight+20 }}
-      >
+      <div className="crayon-scatter-chart-y-axis-container" style={{ height: chartHeight + 20 }}>
         <RechartsScatterChart
           key={`y-axis-scatter-chart-${id}`}
           width={yAxisWidth}
-          height={chartHeight+10}
+          height={chartHeight + 10}
           data={transformedData}
           margin={{
             top: 15,
-            bottom: 10,
+            bottom: 12,
             left: 0,
             right: 0,
           }}
