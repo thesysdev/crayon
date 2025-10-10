@@ -64,6 +64,16 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
     const [isPrevVisible, setIsPrevVisible] = useState(false);
     const [isNextVisible, setIsNextVisible] = useState(false);
 
+    const updateScrollButtons = useCallback(() => {
+      if (!scrollDivRef.current) return;
+      const { scrollLeft, scrollWidth, clientWidth } = scrollDivRef.current;
+      const canScrollLeft = scrollLeft > 0;
+      // Use a 1px buffer to account for subpixel rendering, which can cause calculation errors.
+      const canScrollRight = scrollLeft < scrollWidth - clientWidth - 1;
+      setIsPrevVisible(canScrollLeft);
+      setIsNextVisible(canScrollRight);
+    }, []);
+
     const scroll = useCallback(
       (direction: "left" | "right") => {
         if (!scrollDivRef.current) {
@@ -80,21 +90,22 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
         }
 
         const containerRect = container.getBoundingClientRect();
-        const visibleIndex = items.findIndex((child) => {
-          const rect = child.getBoundingClientRect();
-          return rect.left >= containerRect.left;
-        });
 
-        let currentIndex = visibleIndex;
-        if (visibleIndex === -1) {
-          // Scrolled to the far right, so the last item is the current one
-          currentIndex = items.length - 1;
-        }
+        let closestIndex = 0;
+        let minDistance = Infinity;
+        items.forEach((child, index) => {
+          const rect = child.getBoundingClientRect();
+          const distance = Math.abs(rect.left - containerRect.left);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestIndex = index;
+          }
+        });
 
         const targetIndex =
           direction === "left"
-            ? Math.max(0, currentIndex - itemsToScroll)
-            : Math.min(items.length - 1, currentIndex + itemsToScroll);
+            ? Math.max(0, closestIndex - itemsToScroll)
+            : Math.min(items.length - 1, closestIndex + itemsToScroll);
 
         const targetElement = items[targetIndex] as HTMLElement;
 
@@ -113,14 +124,10 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(
 
       const container = scrollDivRef.current;
       const handleScroll = () => {
-        const canScrollLeft = container.scrollLeft > 0;
-        const canScrollRight =
-          Math.ceil(container.scrollLeft) + container.offsetWidth < container.scrollWidth;
-        setIsPrevVisible(canScrollLeft);
-        setIsNextVisible(canScrollRight);
+        updateScrollButtons();
       };
 
-      handleScroll();
+      updateScrollButtons();
 
       const resizeObserver = new ResizeObserver(handleScroll);
       resizeObserver.observe(container);
@@ -216,13 +223,15 @@ export const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<H
   },
 );
 
-export const CarouselItem = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, children, ...props }, ref) => (
-    <div ref={ref} className={clsx("crayon-carousel-item", className)} {...props}>
-      {children}
-    </div>
-  ),
-);
+export const CarouselItem = forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & { actions?: React.ReactNode }
+>(({ className, children, actions, ...props }, ref) => (
+  <div ref={ref} className={clsx("crayon-carousel-item", className)} {...props}>
+    <div className="crayon-carousel-item-content">{children}</div>
+    {actions && <div className="crayon-carousel-item-actions">{actions}</div>}
+  </div>
+));
 
 export const CarouselPrevious = forwardRef<
   HTMLButtonElement,
