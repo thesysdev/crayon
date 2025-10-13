@@ -301,9 +301,9 @@ Each story represents a specific test case. Use these to:
       },
     },
     tickVariant: {
-      description: "X-axis tick label style.",
+      description: "X-axis tick label style. Choose between singleLine (horizontal) or angled (-45°).",
       control: "radio",
-      options: ["singleLine", "multiLine"],
+      options: ["singleLine", "angled"],
       table: {
         defaultValue: { summary: "singleLine" },
         category: "🎨 Visual Styling",
@@ -1144,6 +1144,131 @@ export const Stress_MultipleCharts: Story = {
     docs: {
       description: {
         story: "Stress test with 4 charts rendering simultaneously with varying dataset sizes.",
+      },
+    },
+  },
+};
+
+// Test Data for Long Labels
+const longLabelData = [
+  { category: "Q1 2024 January Total Revenue and Expenses", sales: 186, expenses: 80, profit: 106 },
+  { category: "Q1 2024 February Marketing Campaign Results", sales: 305, expenses: 200, profit: 105 },
+  { category: "Q1 2024 March Product Launch Performance", sales: 237, expenses: 120, profit: 117 },
+  { category: "Q2 2024 April Customer Acquisition Metrics", sales: 273, expenses: 190, profit: 83 },
+  { category: "Q2 2024 May Operational Efficiency Report", sales: 209, expenses: 130, profit: 79 },
+  { category: "Q2 2024 June Strategic Initiative Outcomes", sales: 314, expenses: 140, profit: 174 },
+  { category: "Q3 2024 July Market Expansion Analysis", sales: 350, expenses: 180, profit: 170 },
+  { category: "Q3 2024 August Technology Investment Returns", sales: 280, expenses: 160, profit: 120 },
+  { category: "Q3 2024 September Partnership Performance", sales: 320, expenses: 170, profit: 150 },
+  { category: "Q4 2024 October Year-End Projections", sales: 290, expenses: 150, profit: 140 },
+  { category: "Q4 2024 November Holiday Season Preview", sales: 340, expenses: 180, profit: 160 },
+  { category: "Q4 2024 December Annual Summary Report", sales: 420, expenses: 220, profit: 200 },
+];
+
+// Tick Variant Stories
+export const TickVariantSingleLine: Story = {
+  render: () => (
+    <Card style={{ padding: "24px", width: "900px", maxWidth: "900px" }}>
+      <div style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>
+        Single Line Tick Variant
+      </div>
+      <div style={{ marginBottom: "8px", fontSize: "13px", color: "#666" }}>
+        Standard horizontal labels with automatic collision detection
+      </div>
+      <AreaChartCondensed
+        data={longLabelData as any}
+        categoryKey="category"
+        tickVariant="singleLine"
+        theme="ocean"
+        height={200}
+      />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Single line tick variant with standard horizontal labels. Automatically handles collision detection.",
+      },
+    },
+  },
+};
+
+export const TickVariantAngled: Story = {
+  render: () => (
+    <Card style={{ padding: "24px", width: "900px", maxWidth: "900px" }}>
+      <div style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>
+        Angled Tick Variant
+      </div>
+      <div style={{ marginBottom: "8px", fontSize: "13px", color: "#666" }}>
+        -45° rotation perfect for long labels that would overlap horizontally
+      </div>
+      <AreaChartCondensed
+        data={longLabelData as any}
+        categoryKey="category"
+        tickVariant="angled"
+        theme="emerald"
+        height={280}
+      />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Angled tick variant with -45° rotation. Perfect for long labels that would overlap horizontally.",
+      },
+    },
+  },
+};
+
+// Dense Data with Tick Variants
+const denseData = Array.from({ length: 30 }, (_, i) => ({
+  day: `Day ${i + 1}`,
+  revenue: Math.floor(Math.random() * 500) + 100,
+  costs: Math.floor(Math.random() * 300) + 50,
+}));
+
+export const TickVariantComparisonDenseData: Story = {
+  render: () => (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px", maxWidth: "1100px" }}>
+      <Card style={{ padding: "24px" }}>
+        <div style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>
+          Single Line Variant (Dense Data - 30 Points)
+        </div>
+        <div style={{ marginBottom: "8px", fontSize: "13px", color: "#666" }}>
+          Recharts automatically hides overlapping labels
+        </div>
+        <AreaChartCondensed
+          data={denseData as any}
+          categoryKey="day"
+          tickVariant="singleLine"
+          theme="ocean"
+          height={200}
+        />
+      </Card>
+      <Card style={{ padding: "24px" }}>
+        <div style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "600" }}>
+          Angled Variant (Dense Data - 30 Points)
+        </div>
+        <div style={{ marginBottom: "8px", fontSize: "13px", color: "#666" }}>
+          Shows more labels with angled orientation
+        </div>
+        <AreaChartCondensed
+          data={denseData as any}
+          categoryKey="day"
+          tickVariant="angled"
+          theme="emerald"
+          height={280}
+        />
+      </Card>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Comparison of tick variants (singleLine and angled) with dense data (30 data points). Shows how each variant handles label collision with Recharts' built-in collision detection.",
       },
     },
   },

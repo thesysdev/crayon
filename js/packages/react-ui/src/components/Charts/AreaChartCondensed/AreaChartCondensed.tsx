@@ -5,11 +5,16 @@ import { useId } from "../../../polyfills";
 import { AreaChartData, AreaChartVariant } from "../AreaChart/types";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
-import { ActiveDot, cartesianGrid, CustomTooltipContent, XAxisTick, YAxisTick } from "../shared";
+import { useTransformedKeys, useYAxisLabelWidth } from "../hooks";
+import {
+  ActiveDot,
+  cartesianGrid,
+  CondensedXAxisTick,
+  CondensedXAxisTickVariant,
+  CustomTooltipContent,
+  YAxisTick,
+} from "../shared";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
-import { XAxisTickVariant } from "../types";
-import { getWidthOfGroup } from "../utils/AreaAndLine/AreaAndLineUtils";
 import { get2dChartConfig, getDataKeys } from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 
@@ -19,7 +24,7 @@ export interface AreaChartCondensedProps<T extends AreaChartData> {
   theme?: PaletteName;
   customPalette?: string[];
   variant?: AreaChartVariant;
-  tickVariant?: XAxisTickVariant;
+  tickVariant?: CondensedXAxisTickVariant;
   grid?: boolean;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
@@ -53,12 +58,6 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
   }, [data, categoryKey]);
 
   const { yAxisWidth, setLabelWidth } = useYAxisLabelWidth(data, dataKeys);
-
-  const widthOfGroup = useMemo(() => {
-    return getWidthOfGroup(data);
-  }, [data]);
-
-  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant, widthOfGroup);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -130,15 +129,10 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
                 tickLine={false}
                 axisLine={false}
                 textAnchor="middle"
-                interval={0}
-                height={maxLabelHeight}
-                tick={
-                  <XAxisTick
-                    variant={tickVariant}
-                    widthOfGroup={widthOfGroup}
-                    labelHeight={maxLabelHeight}
-                  />
-                }
+                interval="preserveStartEnd"
+                minTickGap={5}
+                height={tickVariant === "angled" ? 80 : 30}
+                tick={<CondensedXAxisTick variant={tickVariant} />}
                 orientation="bottom"
                 padding={{
                   left: X_AXIS_PADDING,
