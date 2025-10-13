@@ -3,39 +3,159 @@ import { Calendar, Globe, Laptop, Monitor, Smartphone, TabletSmartphone } from "
 import { Card } from "../../../Card";
 import { AreaChartCondensed, AreaChartCondensedProps } from "../AreaChartCondensed";
 
-// Sample data variations
-const dataVariations = {
-  default: [
+// Test Data Generators
+const generateLargeDataset = (points: number) => {
+  return Array.from({ length: points }, (_, i) => ({
+    date: `Day ${i + 1}`,
+    value1: Math.floor(Math.random() * 1000) + 100,
+    value2: Math.floor(Math.random() * 800) + 50,
+    value3: Math.floor(Math.random() * 600) + 30,
+  }));
+};
+
+const generateTimeSeriesData = (days: number) => {
+  const startDate = new Date("2024-01-01");
+  return Array.from({ length: days }, (_, i) => {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + i);
+    return {
+      date: date.toISOString().split("T")[0],
+      sales: Math.floor(Math.random() * 5000) + 1000,
+      orders: Math.floor(Math.random() * 200) + 50,
+    };
+  });
+};
+
+// Test Data Variations
+const testData = {
+  // Edge Cases
+  empty: [],
+  singlePoint: [{ month: "Jan", value: 100 }],
+  twoPoints: [
+    { month: "Jan", value: 100 },
+    { month: "Feb", value: 200 },
+  ],
+
+  // Small Datasets
+  threePoints: [
+    { month: "Jan", value: 100 },
+    { month: "Feb", value: 150 },
+    { month: "Mar", value: 120 },
+  ],
+  fivePoints: [
+    { month: "Jan", desktop: 150, mobile: 90 },
+    { month: "Feb", desktop: 280, mobile: 180 },
+    { month: "Mar", desktop: 220, mobile: 140 },
+    { month: "Apr", desktop: 180, mobile: 160 },
+    { month: "May", desktop: 250, mobile: 120 },
+  ],
+
+  // Medium Datasets
+  twelvePoints: [
     { month: "Jan", desktop: 150, mobile: 90, tablet: 120 },
     { month: "Feb", desktop: 280, mobile: 180, tablet: 140 },
     { month: "Mar", desktop: 220, mobile: 140, tablet: 160 },
     { month: "Apr", desktop: 180, mobile: 160, tablet: 180 },
     { month: "May", desktop: 250, mobile: 120, tablet: 140 },
     { month: "Jun", desktop: 300, mobile: 180, tablet: 160 },
+    { month: "Jul", desktop: 320, mobile: 200, tablet: 180 },
+    { month: "Aug", desktop: 290, mobile: 170, tablet: 150 },
+    { month: "Sep", desktop: 310, mobile: 190, tablet: 170 },
+    { month: "Oct", desktop: 280, mobile: 160, tablet: 140 },
+    { month: "Nov", desktop: 350, mobile: 210, tablet: 190 },
+    { month: "Dec", desktop: 400, mobile: 250, tablet: 220 },
   ],
-  sales: [
-    { quarter: "Q1", revenue: 12000, profit: 4000 },
-    { quarter: "Q2", revenue: 15000, profit: 5500 },
-    { quarter: "Q3", revenue: 18000, profit: 7000 },
-    { quarter: "Q4", revenue: 20000, profit: 7000 },
+
+  // Large Datasets
+  large50: generateLargeDataset(50),
+  large100: generateLargeDataset(100),
+  large500: generateLargeDataset(500),
+
+  // Special Value Cases
+  allZeros: [
+    { month: "Jan", value: 0 },
+    { month: "Feb", value: 0 },
+    { month: "Mar", value: 0 },
+    { month: "Apr", value: 0 },
   ],
-  traffic: [
-    { date: "Mon", visits: 2200, conversions: 180 },
-    { date: "Tue", visits: 2500, conversions: 220 },
-    { date: "Wed", visits: 2300, conversions: 190 },
-    { date: "Thu", visits: 2800, conversions: 250 },
-    { date: "Fri", visits: 3200, conversions: 280 },
-    { date: "Sat", visits: 1800, conversions: 120 },
-    { date: "Sun", visits: 1500, conversions: 100 },
+  withZeros: [
+    { month: "Jan", desktop: 100, mobile: 0 },
+    { month: "Feb", desktop: 0, mobile: 50 },
+    { month: "Mar", desktop: 150, mobile: 0 },
+    { month: "Apr", desktop: 0, mobile: 100 },
   ],
-  minimal: [
-    { category: "A", value: 100 },
-    { category: "B", value: 150 },
-    { category: "C", value: 120 },
+  negativeValues: [
+    { month: "Jan", profit: -50, loss: -30 },
+    { month: "Feb", profit: 100, loss: -20 },
+    { month: "Mar", profit: -30, loss: -40 },
+    { month: "Apr", profit: 150, loss: -10 },
+  ],
+  mixedValues: [
+    { month: "Jan", value1: -100, value2: 200 },
+    { month: "Feb", value1: 150, value2: -50 },
+    { month: "Mar", value1: -75, value2: 300 },
+    { month: "Apr", value1: 200, value2: -100 },
+  ],
+
+  // Extreme Values
+  veryLarge: [
+    { month: "Jan", value: 1000000, secondary: 500000 },
+    { month: "Feb", value: 1500000, secondary: 750000 },
+    { month: "Mar", value: 1200000, secondary: 600000 },
+  ],
+  verySmall: [
+    { month: "Jan", value: 0.001, secondary: 0.002 },
+    { month: "Feb", value: 0.003, secondary: 0.0015 },
+    { month: "Mar", value: 0.002, secondary: 0.0025 },
+  ],
+  wideRange: [
+    { month: "Jan", small: 1, large: 1000000 },
+    { month: "Feb", small: 2, large: 1500000 },
+    { month: "Mar", small: 1.5, large: 1200000 },
+  ],
+
+  // Pattern Tests
+  linear: Array.from({ length: 10 }, (_, i) => ({
+    x: `P${i + 1}`,
+    y: i * 10,
+  })),
+  exponential: Array.from({ length: 10 }, (_, i) => ({
+    x: `P${i + 1}`,
+    y: Math.pow(2, i),
+  })),
+  sinusoidal: Array.from({ length: 20 }, (_, i) => ({
+    x: `P${i + 1}`,
+    y: Math.sin(i / 3) * 100 + 150,
+  })),
+  constant: Array.from({ length: 8 }, (_, i) => ({
+    x: `P${i + 1}`,
+    y: 100,
+  })),
+  volatile: Array.from({ length: 15 }, (_, i) => ({
+    x: `P${i + 1}`,
+    spike: i % 3 === 0 ? 500 : 50,
+    normal: 100 + Math.random() * 20,
+  })),
+
+  // Real-world Scenarios
+  dailySales: generateTimeSeriesData(30),
+  quarterlySales: [
+    { quarter: "Q1 2023", revenue: 12000, profit: 4000, costs: 8000 },
+    { quarter: "Q2 2023", revenue: 15000, profit: 5500, costs: 9500 },
+    { quarter: "Q3 2023", revenue: 18000, profit: 7000, costs: 11000 },
+    { quarter: "Q4 2023", revenue: 20000, profit: 7000, costs: 13000 },
+    { quarter: "Q1 2024", revenue: 22000, profit: 8000, costs: 14000 },
+  ],
+  weeklyTraffic: [
+    { day: "Mon", visits: 2200, conversions: 180, bounces: 800 },
+    { day: "Tue", visits: 2500, conversions: 220, bounces: 900 },
+    { day: "Wed", visits: 2300, conversions: 190, bounces: 850 },
+    { day: "Thu", visits: 2800, conversions: 250, bounces: 1000 },
+    { day: "Fri", visits: 3200, conversions: 280, bounces: 1100 },
+    { day: "Sat", visits: 1800, conversions: 120, bounces: 600 },
+    { day: "Sun", visits: 1500, conversions: 100, bounces: 500 },
   ],
 };
-
-const areaChartData = dataVariations.default;
 
 const icons = {
   desktop: Monitor,
@@ -45,31 +165,57 @@ const icons = {
   profit: Smartphone,
   visits: Monitor,
   conversions: Laptop,
+  value: Monitor,
+  value1: Monitor,
+  value2: TabletSmartphone,
+  value3: Calendar,
+  small: Smartphone,
+  large: Globe,
+  sales: Globe,
+  orders: Laptop,
+  bounces: Calendar,
+  costs: Smartphone,
 } as const;
 
 /**
- * # AreaChartCondensed Component Documentation
+ * # AreaChartCondensed Test Suite
  *
- * The AreaChartCondensed is a compact, simplified version of the AreaChart component.
- * It's ideal for:
+ * This file contains comprehensive test cases for the AreaChartCondensed component,
+ * covering edge cases, data variations, and stress testing scenarios.
  *
- * - **Dashboard Widgets**: Small charts that fit in tight spaces.
- * - **Quick Visualizations**: When you need a simple area chart without advanced features.
- * - **Performance**: Lighter weight with fewer DOM elements.
+ * ## Test Categories
  *
- * ## Key Features
+ * ### 1. Edge Cases
+ * - Empty data
+ * - Single data point
+ * - Two data points (minimum for area)
  *
- * ### Simplified Design
- * - **Compact Layout**: No scrolling, legends, or complex interactions.
- * - **Essential Features Only**: Grid, tooltips, and basic customization.
- * - **Fixed Size**: Predictable dimensions for dashboard layouts.
+ * ### 2. Data Size Variations
+ * - Small datasets (3-5 points)
+ * - Medium datasets (10-20 points)
+ * - Large datasets (50-500 points)
  *
- * ### Reuses Core Utilities
- * - **Same Data Format**: Compatible with AreaChart data structure.
- * - **Shared Components**: Uses the same tooltips, ticks, and gradients.
- * - **Theme Support**: All color palettes and custom colors work the same.
+ * ### 3. Value Ranges
+ * - Zero values
+ * - Negative values
+ * - Mixed positive/negative
+ * - Very large numbers (millions)
+ * - Very small decimals
+ * - Wide value ranges
+ *
+ * ### 4. Data Patterns
+ * - Linear progression
+ * - Exponential growth
+ * - Sinusoidal waves
+ * - Constant values
+ * - Volatile/spike patterns
+ *
+ * ### 5. Real-world Scenarios
+ * - Time series data
+ * - Financial data
+ * - Traffic analytics
  */
-const meta: Meta<AreaChartCondensedProps<typeof areaChartData>> = {
+const meta: Meta<AreaChartCondensedProps<any>> = {
   title: "Components/Charts/AreaChartCondensed",
   component: AreaChartCondensed,
   parameters: {
@@ -77,56 +223,40 @@ const meta: Meta<AreaChartCondensedProps<typeof areaChartData>> = {
     docs: {
       description: {
         component: `
-## Installation and Basic Usage
+## Test Suite Overview
+
+This comprehensive test suite validates the AreaChartCondensed component across various scenarios:
+
+### Test Coverage Areas
+
+1. **Edge Cases**: Empty data, single point, minimal data
+2. **Data Size**: Small (3-5), Medium (10-20), Large (50-500+) datasets
+3. **Value Ranges**: Zeros, negatives, extremes (millions to decimals)
+4. **Data Patterns**: Linear, exponential, sinusoidal, constant, volatile
+5. **Real-world**: Time series, financial, analytics data
+
+### How to Use This Test Suite
+
+Each story represents a specific test case. Use these to:
+- Verify component behavior with different data types
+- Check rendering performance with large datasets
+- Validate handling of edge cases
+- Ensure visual consistency across variations
 
 \`\`\`tsx
-import { AreaChartCondensed } from '@crayon-ui/react-ui/Charts/AreaChartCondensed';
-
-const trafficData = [
-  { date: "Mon", visits: 2200 },
-  { date: "Tue", visits: 2500 },
-  { date: "Wed", visits: 2300 },
-];
-
-// Basic implementation
+// Example: Testing with large dataset
 <AreaChartCondensed
-  data={trafficData}
+  data={testData.large100}
   categoryKey="date"
   theme="ocean"
   height={200}
 />
 \`\`\`
-
-## When to Use AreaChartCondensed
-
-Use this component when:
-- You need a compact chart for dashboards or widgets
-- Advanced features like scrolling and legends aren't necessary
-- Performance and simplicity are priorities
-- You have limited vertical space
-
-Use the full AreaChart when:
-- You need horizontal scrolling for many data points
-- Legends and advanced interactions are required
-- You have more space available
-
-## Data Structure
-
-Same as AreaChart - an array of objects with:
-- A **category field** (string or number) for X-axis
-- One or more **numeric fields** for Y-axis values
-
-\`\`\`tsx
-const data = [
-  { month: "January", desktop: 150, mobile: 90 },
-  { month: "February", desktop: 280, mobile: 180 },
-];
-\`\`\`
 `,
       },
     },
   },
-  tags: ["!dev", "autodocs"],
+  tags: ["dev", "autodocs"],
   argTypes: {
     data: {
       description: "Array of data objects for the chart. Same format as AreaChart.",
@@ -234,149 +364,696 @@ const data = [
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+// ============================================================================
+// EDGE CASES - Testing component behavior with minimal/unusual data
+// ============================================================================
+
 /**
- * ## Default
+ * ## TEST: Empty Data
  *
- * The default condensed area chart with standard settings.
- * Perfect for dashboard widgets and compact visualizations.
+ * **Purpose**: Verify component handles empty array gracefully
+ * **Expected**: Should render without errors, show empty state or message
  */
-export const Default: Story = {
+export const EdgeCase_EmptyData: Story = {
   args: {
-    data: areaChartData,
-    categoryKey: "month",
+    data: testData.empty as any,
+    categoryKey: "month" as any,
     theme: "ocean",
-    variant: "natural",
-    grid: true,
-    isAnimationActive: false,
-    showYAxis: true,
     height: 200,
   },
   render: (args: any) => (
     <Card style={{ width: "500px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Empty dataset | <strong>Data points:</strong> 0
+      </div>
       <AreaChartCondensed {...args} />
     </Card>
   ),
 };
 
 /**
- * ## With Icons
+ * ## TEST: Single Data Point
  *
- * Shows how to add icons to the data series. Icons appear in tooltips.
+ * **Purpose**: Verify rendering with only one data point
+ * **Expected**: Should render single point, may not show area
  */
-export const WithIcons: Story = {
+export const EdgeCase_SinglePoint: Story = {
   args: {
-    data: areaChartData,
-    categoryKey: "month",
+    data: testData.singlePoint as any,
+    categoryKey: "month" as any,
+    theme: "ocean",
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "500px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Single point | <strong>Data points:</strong> 1
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Two Data Points
+ *
+ * **Purpose**: Minimum data to show an area (edge case)
+ * **Expected**: Should show basic area between two points
+ */
+export const EdgeCase_TwoPoints: Story = {
+  args: {
+    data: testData.twoPoints as any,
+    categoryKey: "month" as any,
     theme: "emerald",
-    variant: "natural",
-    grid: true,
-    icons,
-    isAnimationActive: false,
-    showYAxis: true,
     height: 200,
   },
   render: (args: any) => (
     <Card style={{ width: "500px", padding: "16px" }}>
-      <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-        Monthly Traffic
-      </h4>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Two points (minimum area) | <strong>Data points:</strong> 2
+      </div>
       <AreaChartCondensed {...args} />
     </Card>
   ),
 };
 
+// ============================================================================
+// DATA SIZE TESTS - Testing performance with different dataset sizes
+// ============================================================================
+
 /**
- * ## Sales Data
+ * ## TEST: Small Dataset (3 points)
  *
- * Example with financial/sales data showing revenue and profit over quarters.
+ * **Purpose**: Verify rendering with minimal but valid data
+ * **Expected**: Clean rendering, good spacing
  */
-export const SalesData: Story = {
+export const DataSize_Small3Points: Story = {
   args: {
-    data: dataVariations.sales as any,
-    categoryKey: "quarter" as any,
-    theme: "sunset",
-    variant: "natural",
-    grid: true,
-    icons,
-    isAnimationActive: false,
-    showYAxis: true,
+    data: testData.threePoints as any,
+    categoryKey: "month" as any,
+    theme: "ocean",
     height: 200,
   },
   render: (args: any) => (
     <Card style={{ width: "400px", padding: "16px" }}>
-      <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-        Quarterly Performance
-      </h4>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Small dataset | <strong>Data points:</strong> 3
+      </div>
       <AreaChartCondensed {...args} />
     </Card>
   ),
 };
 
 /**
- * ## Weekly Traffic
+ * ## TEST: Small Dataset (5 points, multiple series)
  *
- * Shows daily traffic patterns over a week.
+ * **Purpose**: Test small data with multiple data series
+ * **Expected**: All series visible, good color differentiation
  */
-export const WeeklyTraffic: Story = {
+export const DataSize_Small5Points: Story = {
   args: {
-    data: dataVariations.traffic as any,
-    categoryKey: "date" as any,
-    theme: "orchid",
-    variant: "natural",
-    grid: true,
+    data: testData.fivePoints as any,
+    categoryKey: "month" as any,
+    theme: "sunset",
     icons,
-    isAnimationActive: false,
-    showYAxis: true,
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "450px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Small dataset, 2 series | <strong>Data points:</strong> 5
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Medium Dataset (12 points, 3 series)
+ *
+ * **Purpose**: Standard use case with monthly data
+ * **Expected**: Clean rendering, all points visible
+ */
+export const DataSize_Medium12Points: Story = {
+  args: {
+    data: testData.twelvePoints as any,
+    categoryKey: "month" as any,
+    theme: "orchid",
+    icons,
     height: 200,
   },
   render: (args: any) => (
     <Card style={{ width: "600px", padding: "16px" }}>
-      <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-        Weekly Visits & Conversions
-      </h4>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Medium dataset, 3 series | <strong>Data points:</strong> 12
+      </div>
       <AreaChartCondensed {...args} />
     </Card>
   ),
 };
 
 /**
- * ## Custom Palette
+ * ## TEST: Large Dataset (50 points)
  *
- * Demonstrates using a custom color palette instead of predefined themes.
+ * **Purpose**: Test performance with larger dataset
+ * **Expected**: Should handle smoothly, may need scrolling or compression
  */
-export const CustomPalette: Story = {
+export const DataSize_Large50Points: Story = {
   args: {
-    data: areaChartData,
-    categoryKey: "month",
-    customPalette: ["#FF6B6B", "#4ECDC4", "#45B7D1"],
-    variant: "natural",
-    grid: true,
-    isAnimationActive: false,
+    data: testData.large50 as any,
+    categoryKey: "date" as any,
+    theme: "emerald",
+    height: 250,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "700px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Large dataset, 3 series | <strong>Data points:</strong> 50
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Large Dataset (100 points)
+ *
+ * **Purpose**: Stress test rendering performance
+ * **Expected**: Chart should remain responsive
+ */
+export const DataSize_Large100Points: Story = {
+  args: {
+    data: testData.large100 as any,
+    categoryKey: "date" as any,
+    theme: "vivid",
+    height: 250,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "800px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Large dataset, 3 series | <strong>Data points:</strong> 100
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Very Large Dataset (500 points)
+ *
+ * **Purpose**: Maximum stress test for performance
+ * **Expected**: Should handle without crashing, check render time
+ */
+export const DataSize_VeryLarge500Points: Story = {
+  args: {
+    data: testData.large500 as any,
+    categoryKey: "date" as any,
+    theme: "spectrum",
+    height: 300,
     showYAxis: true,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "1000px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>⚠️ Stress Test:</strong> Very large dataset | <strong>Data points:</strong> 500
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+// ============================================================================
+// VALUE RANGE TESTS - Testing different value types and ranges
+// ============================================================================
+
+/**
+ * ## TEST: All Zero Values
+ *
+ * **Purpose**: Verify behavior when all values are zero
+ * **Expected**: Should show flat line at zero
+ */
+export const ValueRange_AllZeros: Story = {
+  args: {
+    data: testData.allZeros as any,
+    categoryKey: "month" as any,
+    theme: "ocean",
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "400px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> All zero values
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Mixed Zeros in Series
+ *
+ * **Purpose**: Test handling of zero values mixed with non-zero
+ * **Expected**: Should handle gaps/zeros gracefully
+ */
+export const ValueRange_WithZeros: Story = {
+  args: {
+    data: testData.withZeros as any,
+    categoryKey: "month" as any,
+    theme: "emerald",
+    icons,
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "450px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Zeros mixed with values
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Negative Values
+ *
+ * **Purpose**: Verify handling of negative numbers
+ * **Expected**: Should display below zero line correctly
+ */
+export const ValueRange_Negative: Story = {
+  args: {
+    data: testData.negativeValues as any,
+    categoryKey: "month" as any,
+    theme: "sunset",
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "450px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Negative values
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Mixed Positive/Negative
+ *
+ * **Purpose**: Test combination of positive and negative values
+ * **Expected**: Should show crossing zero line
+ */
+export const ValueRange_Mixed: Story = {
+  args: {
+    data: testData.mixedValues as any,
+    categoryKey: "month" as any,
+    theme: "orchid",
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "450px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Mixed positive/negative values
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Very Large Numbers (Millions)
+ *
+ * **Purpose**: Test formatting and display of large numbers
+ * **Expected**: Should format with appropriate abbreviations (K, M, B)
+ */
+export const ValueRange_VeryLarge: Story = {
+  args: {
+    data: testData.veryLarge as any,
+    categoryKey: "month" as any,
+    theme: "vivid",
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "450px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Very large numbers (millions)
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Very Small Decimals
+ *
+ * **Purpose**: Test precision handling for small decimal values
+ * **Expected**: Should display appropriate decimal precision
+ */
+export const ValueRange_VerySmall: Story = {
+  args: {
+    data: testData.verySmall as any,
+    categoryKey: "month" as any,
+    theme: "emerald",
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "450px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Very small decimal values
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Wide Value Range
+ *
+ * **Purpose**: Test scaling when series have vastly different magnitudes
+ * **Expected**: Should scale appropriately or show warning
+ */
+export const ValueRange_WideRange: Story = {
+  args: {
+    data: testData.wideRange as any,
+    categoryKey: "month" as any,
+    theme: "spectrum",
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "500px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Wide range (1 to 1,000,000)
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+// ============================================================================
+// PATTERN TESTS - Testing different data patterns and shapes
+// ============================================================================
+
+/**
+ * ## TEST: Linear Progression
+ *
+ * **Purpose**: Verify rendering of linear increasing data
+ * **Expected**: Clean straight line progression
+ */
+export const Pattern_Linear: Story = {
+  args: {
+    data: testData.linear as any,
+    categoryKey: "x" as any,
+    theme: "ocean",
+    variant: "linear",
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "500px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Linear progression pattern
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Exponential Growth
+ *
+ * **Purpose**: Test rendering of exponentially increasing values
+ * **Expected**: Should handle steep curve and wide Y-axis range
+ */
+export const Pattern_Exponential: Story = {
+  args: {
+    data: testData.exponential as any,
+    categoryKey: "x" as any,
+    theme: "emerald",
+    variant: "natural",
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "500px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Exponential growth pattern
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Sinusoidal Wave
+ *
+ * **Purpose**: Test smooth curves with wave pattern
+ * **Expected**: Natural variant should show smooth sine wave
+ */
+export const Pattern_Sinusoidal: Story = {
+  args: {
+    data: testData.sinusoidal as any,
+    categoryKey: "x" as any,
+    theme: "orchid",
+    variant: "natural",
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "600px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Sinusoidal wave pattern
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Constant Values
+ *
+ * **Purpose**: Test behavior with no variation in data
+ * **Expected**: Flat horizontal line
+ */
+export const Pattern_Constant: Story = {
+  args: {
+    data: testData.constant as any,
+    categoryKey: "x" as any,
+    theme: "sunset",
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "450px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Constant value pattern
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Volatile/Spike Pattern
+ *
+ * **Purpose**: Test rendering of data with extreme spikes
+ * **Expected**: Should handle spikes without distortion
+ */
+export const Pattern_Volatile: Story = {
+  args: {
+    data: testData.volatile as any,
+    categoryKey: "x" as any,
+    theme: "vivid",
+    height: 200,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "550px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Volatile pattern with spikes
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+// ============================================================================
+// REAL-WORLD SCENARIO TESTS - Practical use cases
+// ============================================================================
+
+/**
+ * ## TEST: Daily Time Series (30 days)
+ *
+ * **Purpose**: Test typical time-series sales data
+ * **Expected**: Clean rendering of date-based data
+ */
+export const RealWorld_DailySales: Story = {
+  args: {
+    data: testData.dailySales as any,
+    categoryKey: "date" as any,
+    theme: "ocean",
+    icons,
+    height: 220,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "700px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Daily sales time series | <strong>Days:</strong> 30
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Quarterly Financial Data
+ *
+ * **Purpose**: Test financial reporting scenario
+ * **Expected**: Clear visualization of revenue, profit, costs
+ */
+export const RealWorld_QuarterlySales: Story = {
+  args: {
+    data: testData.quarterlySales as any,
+    categoryKey: "quarter" as any,
+    theme: "emerald",
+    icons,
+    height: 220,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "600px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Quarterly financial data | <strong>Quarters:</strong> 5
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Weekly Analytics Traffic
+ *
+ * **Purpose**: Test typical analytics dashboard data
+ * **Expected**: Multiple metrics clearly differentiated
+ */
+export const RealWorld_WeeklyTraffic: Story = {
+  args: {
+    data: testData.weeklyTraffic as any,
+    categoryKey: "day" as any,
+    theme: "sunset",
+    icons,
+    height: 220,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "650px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Weekly traffic analytics | <strong>Metrics:</strong> 3
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+// ============================================================================
+// VARIANT & CONFIGURATION TESTS
+// ============================================================================
+
+/**
+ * ## TEST: Variant Comparison
+ *
+ * **Purpose**: Compare all interpolation variants side-by-side
+ * **Expected**: Visual difference between linear, natural, step
+ */
+export const Config_VariantComparison: Story = {
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <Card style={{ width: "600px", padding: "16px" }}>
+        <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+          <strong>Variant:</strong> Linear
+        </div>
+        <AreaChartCondensed
+          data={testData.twelvePoints as any}
+          categoryKey="month"
+          variant="linear"
+          theme="ocean"
+          height={150}
+        />
+      </Card>
+      <Card style={{ width: "600px", padding: "16px" }}>
+        <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+          <strong>Variant:</strong> Natural (smooth)
+        </div>
+        <AreaChartCondensed
+          data={testData.twelvePoints as any}
+          categoryKey="month"
+          variant="natural"
+          theme="emerald"
+          height={150}
+        />
+      </Card>
+      <Card style={{ width: "600px", padding: "16px" }}>
+        <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+          <strong>Variant:</strong> Step
+        </div>
+        <AreaChartCondensed
+          data={testData.twelvePoints as any}
+          categoryKey="month"
+          variant="step"
+          theme="sunset"
+          height={150}
+        />
+      </Card>
+    </div>
+  ),
+};
+
+/**
+ * ## TEST: Without Y-Axis
+ *
+ * **Purpose**: Test ultra-compact mode without Y-axis
+ * **Expected**: More horizontal space, clean minimal look
+ */
+export const Config_WithoutYAxis: Story = {
+  args: {
+    data: testData.twelvePoints as any,
+    categoryKey: "month" as any,
+    theme: "vivid",
+    showYAxis: false,
+    grid: false,
+    height: 150,
+  },
+  render: (args: any) => (
+    <Card style={{ width: "500px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
+        <strong>Test:</strong> Y-axis hidden, grid off
+      </div>
+      <AreaChartCondensed {...args} />
+    </Card>
+  ),
+};
+
+/**
+ * ## TEST: Custom Color Palette
+ *
+ * **Purpose**: Verify custom palette override functionality
+ * **Expected**: Uses custom colors instead of theme
+ */
+export const Config_CustomPalette: Story = {
+  args: {
+    data: testData.twelvePoints as any,
+    categoryKey: "month" as any,
+    customPalette: ["#FF6B6B", "#4ECDC4", "#45B7D1"],
     height: 200,
   },
   render: (args: any) => (
     <div>
       <div
         style={{
-          marginBottom: "16px",
+          marginBottom: "12px",
           padding: "12px",
           background: "#f8f9fa",
           borderRadius: "8px",
-          width: "500px",
+          width: "550px",
         }}
       >
-        <strong>🎨 Custom Colors:</strong>
+        <strong>Custom Palette:</strong>
         <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
           {args.customPalette?.map((color: string, index: number) => (
             <div
               key={index}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                fontSize: "12px",
-              }}
+              style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px" }}
             >
               <div
                 style={{
@@ -392,176 +1069,73 @@ export const CustomPalette: Story = {
           ))}
         </div>
       </div>
-      <Card style={{ width: "500px", padding: "16px" }}>
+      <Card style={{ width: "550px", padding: "16px" }}>
         <AreaChartCondensed {...args} />
       </Card>
     </div>
   ),
 };
 
-/**
- * ## Different Variants
- *
- * Comparison of different area interpolation variants: linear, natural (smooth), and step.
- */
-export const VariantComparison: Story = {
-  render: () => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      <div>
-        <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-          Linear Variant
-        </h4>
-        <Card style={{ width: "500px", padding: "16px" }}>
-          <AreaChartCondensed
-            data={areaChartData}
-            categoryKey="month"
-            variant="linear"
-            theme="ocean"
-            height={180}
-          />
-        </Card>
-      </div>
-      <div>
-        <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-          Natural Variant (Smooth)
-        </h4>
-        <Card style={{ width: "500px", padding: "16px" }}>
-          <AreaChartCondensed
-            data={areaChartData}
-            categoryKey="month"
-            variant="natural"
-            theme="emerald"
-            height={180}
-          />
-        </Card>
-      </div>
-      <div>
-        <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-          Step Variant
-        </h4>
-        <Card style={{ width: "500px", padding: "16px" }}>
-          <AreaChartCondensed
-            data={areaChartData}
-            categoryKey="month"
-            variant="step"
-            theme="sunset"
-            height={180}
-          />
-        </Card>
-      </div>
-    </div>
-  ),
-};
+// ============================================================================
+// STRESS & PERFORMANCE TESTS
+// ============================================================================
 
 /**
- * ## Without Y-Axis
+ * ## TEST: Multiple Charts Dashboard
  *
- * Shows the chart with Y-axis hidden for an even more compact layout.
+ * **Purpose**: Test rendering multiple charts simultaneously
+ * **Expected**: All charts render smoothly without performance issues
  */
-export const WithoutYAxis: Story = {
-  args: {
-    data: areaChartData,
-    categoryKey: "month",
-    theme: "vivid",
-    variant: "natural",
-    grid: false,
-    showYAxis: false,
-    isAnimationActive: false,
-    height: 150,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "400px", padding: "16px" }}>
-      <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-        Ultra Compact Chart
-      </h4>
-      <AreaChartCondensed {...args} />
-    </Card>
-  ),
-};
-
-/**
- * ## Minimal Data
- *
- * Shows the chart with minimal data points - perfect for simple visualizations.
- */
-export const MinimalData: Story = {
-  args: {
-    data: dataVariations.minimal as any,
-    categoryKey: "category" as any,
-    theme: "spectrum",
-    variant: "natural",
-    grid: true,
-    isAnimationActive: false,
-    showYAxis: true,
-    height: 200,
-  },
-  render: (args: any) => (
-    <Card style={{ width: "300px", padding: "16px" }}>
-      <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-        Simple Metrics
-      </h4>
-      <AreaChartCondensed {...args} />
-    </Card>
-  ),
-};
-
-/**
- * ## Dashboard Grid
- *
- * Example of multiple condensed charts in a dashboard layout.
- */
-export const DashboardGrid: Story = {
+export const Stress_MultipleCharts: Story = {
   render: () => (
     <div
       style={{
         display: "grid",
         gridTemplateColumns: "repeat(2, 1fr)",
         gap: "16px",
-        width: "800px",
+        width: "900px",
       }}
     >
       <Card style={{ padding: "16px" }}>
-        <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-          Traffic
-        </h4>
+        <div style={{ marginBottom: "8px", fontSize: "12px", fontWeight: "600" }}>
+          Small Dataset
+        </div>
         <AreaChartCondensed
-          data={dataVariations.traffic as any}
-          categoryKey="date"
-          theme="ocean"
-          height={150}
-        />
-      </Card>
-      <Card style={{ padding: "16px" }}>
-        <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-          Sales
-        </h4>
-        <AreaChartCondensed
-          data={dataVariations.sales as any}
-          categoryKey="quarter"
-          theme="emerald"
-          height={150}
-        />
-      </Card>
-      <Card style={{ padding: "16px" }}>
-        <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-          Devices
-        </h4>
-        <AreaChartCondensed
-          data={areaChartData}
+          data={testData.fivePoints as any}
           categoryKey="month"
-          theme="sunset"
-          height={150}
+          theme="ocean"
+          height={140}
         />
       </Card>
       <Card style={{ padding: "16px" }}>
-        <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", fontWeight: "600" }}>
-          Performance
-        </h4>
+        <div style={{ marginBottom: "8px", fontSize: "12px", fontWeight: "600" }}>
+          Medium Dataset
+        </div>
         <AreaChartCondensed
-          data={dataVariations.minimal as any}
-          categoryKey="category"
+          data={testData.twelvePoints as any}
+          categoryKey="month"
+          theme="emerald"
+          height={140}
+        />
+      </Card>
+      <Card style={{ padding: "16px" }}>
+        <div style={{ marginBottom: "8px", fontSize: "12px", fontWeight: "600" }}>
+          Large Dataset (50)
+        </div>
+        <AreaChartCondensed
+          data={testData.large50 as any}
+          categoryKey="date"
+          theme="sunset"
+          height={140}
+        />
+      </Card>
+      <Card style={{ padding: "16px" }}>
+        <div style={{ marginBottom: "8px", fontSize: "12px", fontWeight: "600" }}>Time Series</div>
+        <AreaChartCondensed
+          data={testData.dailySales as any}
+          categoryKey="date"
           theme="orchid"
-          height={150}
+          height={140}
         />
       </Card>
     </div>
@@ -569,10 +1143,8 @@ export const DashboardGrid: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Example of using multiple AreaChartCondensed components in a dashboard grid layout. This demonstrates how the condensed charts are perfect for compact, information-dense dashboards.",
+        story: "Stress test with 4 charts rendering simultaneously with varying dataset sizes.",
       },
     },
   },
 };
-

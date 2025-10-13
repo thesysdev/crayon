@@ -1,3 +1,2 @@
-export * from "./AreaChartCondensed";
 export * from "../AreaChart/types";
-
+export * from "./AreaChartCondensed";

@@ -2,24 +2,16 @@ import clsx from "clsx";
 import React, { useMemo, useRef, useState } from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
+import { AreaChartData, AreaChartVariant } from "../AreaChart/types";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useTransformedKeys } from "../hooks";
-import {
-  ActiveDot,
-  cartesianGrid,
-  CustomTooltipContent,
-  XAxisTick,
-  YAxisTick,
-} from "../shared";
+import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
+import { ActiveDot, cartesianGrid, CustomTooltipContent, XAxisTick, YAxisTick } from "../shared";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { XAxisTickVariant } from "../types";
+import { getWidthOfGroup } from "../utils/AreaAndLine/AreaAndLineUtils";
+import { get2dChartConfig, getDataKeys } from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
-import {
-  get2dChartConfig,
-  getDataKeys,
-} from "../utils/dataUtils";
-import { AreaChartData, AreaChartVariant } from "../AreaChart/types";
 
 export interface AreaChartCondensedProps<T extends AreaChartData> {
   data: T;
@@ -38,7 +30,8 @@ export interface AreaChartCondensedProps<T extends AreaChartData> {
 }
 
 const CHART_HEIGHT = 200;
-const X_AXIS_HEIGHT = 30;
+const X_AXIS_PADDING = 36;
+const CHART_CONTAINER_BOTTOM_MARGIN = 10;
 
 const AreaChartCondensedComponent = <T extends AreaChartData>({
   data,
@@ -59,6 +52,14 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
 
+  const { yAxisWidth, setLabelWidth } = useYAxisLabelWidth(data, dataKeys);
+
+  const widthOfGroup = useMemo(() => {
+    return getWidthOfGroup(data);
+  }, [data]);
+
+  const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant, widthOfGroup);
+
   const transformedKeys = useTransformedKeys(dataKeys);
 
   const colors = useChartPalette({
@@ -75,12 +76,15 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
   const id = useId();
   const gradientID = useMemo(() => `area-chart-condensed-gradient-${id}`, [id]);
 
-  const chartMargin = useMemo(() => ({
-    top: 10,
-    right: 10,
-    bottom: 5,
-    left: showYAxis ? 10 : 0,
-  }), [showYAxis]);
+  const chartMargin = useMemo(
+    () => ({
+      top: 10,
+      right: 10,
+      bottom: CHART_CONTAINER_BOTTOM_MARGIN,
+      left: showYAxis ? 10 : 0,
+    }),
+    [showYAxis],
+  );
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [isSideBarTooltipOpen, setIsSideBarTooltipOpen] = useState(false);
@@ -106,92 +110,96 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
           }}
         >
           <ChartContainer
-        config={chartConfig}
-        style={{ width: "100%", height: "100%" }}
-        rechartsProps={{
-          width: "100%",
-          height: "100%",
-        }}
-      >
-        <RechartsAreaChart
-          accessibilityLayer
-          key={`area-chart-condensed-${id}`}
-          data={data}
-          margin={chartMargin}
-        >
-          {grid && cartesianGrid()}
-          
-          <XAxis
-            dataKey={categoryKey as string}
-            tickLine={false}
-            axisLine={false}
-            textAnchor="middle"
-            interval={0}
-            height={X_AXIS_HEIGHT}
-            tick={
-              <XAxisTick
-                variant={tickVariant}
-                widthOfGroup={0}
-                labelHeight={X_AXIS_HEIGHT}
+            config={chartConfig}
+            style={{ width: "100%", height: "100%" }}
+            rechartsProps={{
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <RechartsAreaChart
+              accessibilityLayer
+              key={`area-chart-condensed-${id}`}
+              data={data}
+              margin={chartMargin}
+            >
+              {grid && cartesianGrid()}
+
+              <XAxis
+                dataKey={categoryKey as string}
+                tickLine={false}
+                axisLine={false}
+                textAnchor="middle"
+                interval={0}
+                height={maxLabelHeight}
+                tick={
+                  <XAxisTick
+                    variant={tickVariant}
+                    widthOfGroup={widthOfGroup}
+                    labelHeight={maxLabelHeight}
+                  />
+                }
+                orientation="bottom"
+                padding={{
+                  left: X_AXIS_PADDING,
+                  right: X_AXIS_PADDING,
+                }}
               />
-            }
-            orientation="bottom"
-          />
 
-          {showYAxis && (
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tick={<YAxisTick setLabelWidth={() => {}} />}
-              width={40}
-            />
-          )}
+              {showYAxis && (
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tick={<YAxisTick setLabelWidth={setLabelWidth} />}
+                  width={yAxisWidth}
+                />
+              )}
 
-          <ChartTooltip
-            content={<CustomTooltipContent parentRef={containerRef} />}
-            offset={10}
-          />
-
-          {dataKeys.map((key) => {
-            const transformedKey = transformedKeys[key];
-            const color = `var(--color-${transformedKey})`;
-            return (
-              <defs key={`gradient-${transformedKey}`}>
-                <linearGradient
-                  id={`${gradientID}-${transformedKey}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="5%" stopColor={color} stopOpacity={0.6} />
-                  <stop offset="95%" stopColor={color} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-            );
-          })}
-
-          {dataKeys.map((key) => {
-            const transformedKey = transformedKeys[key];
-            const color = `var(--color-${transformedKey})`;
-            return (
-              <Area
-                key={`area-${key}`}
-                dataKey={key}
-                type={variant}
-                stroke={color}
-                fill={`url(#${gradientID}-${transformedKey})`}
-                fillOpacity={1}
-                stackId="a"
-                activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
-                dot={false}
-                isAnimationActive={isAnimationActive}
-                strokeWidth={2}
+              <ChartTooltip
+                content={<CustomTooltipContent parentRef={containerRef} />}
+                offset={10}
               />
-            );
-          })}
-        </RechartsAreaChart>
-      </ChartContainer>
+
+              {dataKeys.map((key) => {
+                const transformedKey = transformedKeys[key];
+                const color = `var(--color-${transformedKey})`;
+                return (
+                  <defs key={`gradient-${transformedKey}`}>
+                    <linearGradient
+                      id={`${gradientID}-${transformedKey}`}
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor={color} stopOpacity={0.6} />
+                      <stop offset="95%" stopColor={color} stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                );
+              })}
+
+              {dataKeys.map((key) => {
+                const transformedKey = transformedKeys[key];
+                const color = `var(--color-${transformedKey})`;
+                return (
+                  <Area
+                    key={`area-${key}`}
+                    dataKey={key}
+                    type={variant}
+                    stroke={color}
+                    fill={`url(#${gradientID}-${transformedKey})`}
+                    fillOpacity={1}
+                    stackId="a"
+                    activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
+                    dot={false}
+                    isAnimationActive={isAnimationActive}
+                    strokeWidth={2}
+                  />
+                );
+              })}
+            </RechartsAreaChart>
+          </ChartContainer>
         </div>
       </SideBarTooltipProvider>
     </LabelTooltipProvider>
@@ -199,5 +207,6 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
 };
 
 // Added React.memo for performance optimization to avoid unnecessary re-renders
-export const AreaChartCondensed = React.memo(AreaChartCondensedComponent) as typeof AreaChartCondensedComponent;
-
+export const AreaChartCondensed = React.memo(
+  AreaChartCondensedComponent,
+) as typeof AreaChartCondensedComponent;
