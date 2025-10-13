@@ -106,6 +106,7 @@ export interface ColorTheme extends ChartColorPalette {
   interactiveDestructiveAccentPressed?: string;
   interactiveDestructiveAccentDisabled?: string;
   highlightSubtle?: string;
+  highlightStrong?: string;
 
   // chat colors
   chatContainerBg?: string;
