@@ -128,11 +128,12 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
                 dataKey={categoryKey as string}
                 tickLine={false}
                 axisLine={false}
-                textAnchor="middle"
+                textAnchor={tickVariant === "angled" ? "end" : "middle"}
                 interval="preserveStartEnd"
                 minTickGap={5}
                 height={tickVariant === "angled" ? 80 : 30}
-                tick={<CondensedXAxisTick variant={tickVariant} />}
+                tick={<CondensedXAxisTick />}
+                angle={tickVariant === "angled" ? -45 : 0}
                 orientation="bottom"
                 padding={{
                   left: X_AXIS_PADDING,

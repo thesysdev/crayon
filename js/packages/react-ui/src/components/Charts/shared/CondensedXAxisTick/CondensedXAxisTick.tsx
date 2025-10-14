@@ -11,12 +11,13 @@ interface CondensedXAxisTickProps {
   };
   fill?: string;
   className?: string;
-  variant?: CondensedXAxisTickVariant;
+  angle?: number;
+  textAnchor?: string;
 }
 
 const CondensedXAxisTick = React.forwardRef<SVGTextElement, CondensedXAxisTickProps>(
   (props, ref) => {
-    const { x, y, payload, fill, className, variant = "singleLine" } = props;
+    const { x, y, payload, fill, className, angle = 0, textAnchor = "middle" } = props;
 
     const value = String(payload?.value || "");
 
@@ -24,38 +25,19 @@ const CondensedXAxisTick = React.forwardRef<SVGTextElement, CondensedXAxisTickPr
       return null;
     }
 
-    // Angled variant
-    if (variant === "angled") {
-      return (
-        <text
-          ref={ref}
-          x={x}
-          y={y}
-          dy={16}
-          textAnchor="end"
-          fill={fill}
-          transform={`rotate(-45, ${x}, ${y})`}
-          className={clsx(
-            "crayon-chart-condensed-x-axis-tick",
-            "crayon-chart-condensed-x-axis-tick-angled",
-            className,
-          )}
-        >
-          {value}
-        </text>
-      );
-    }
+    // Apply rotation transform if angle is provided
+    const transform = angle !== 0 ? `rotate(${angle}, ${x}, ${y})` : undefined;
 
-    // Single line variant (default)
     return (
       <text
         ref={ref}
+        className={clsx("crayon-chart-condensed-x-axis-tick", className)}
         x={x}
         y={y}
         dy={16}
-        textAnchor="middle"
         fill={fill}
-        className={clsx("crayon-chart-condensed-x-axis-tick", className)}
+        textAnchor={textAnchor}
+        transform={transform}
       >
         {value}
       </text>
