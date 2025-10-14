@@ -226,7 +226,7 @@ export const CarouselContent = forwardRef<HTMLDivElement, React.HTMLAttributes<H
 export const CarouselItem = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => (
     <div ref={ref} className={clsx("crayon-carousel-item", className)} {...props}>
-      <div className="crayon-carousel-item-content">{children}</div>
+      {children}
     </div>
   ),
 );
