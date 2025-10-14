@@ -301,7 +301,8 @@ Each story represents a specific test case. Use these to:
       },
     },
     tickVariant: {
-      description: "X-axis tick label style. Choose between singleLine (horizontal) or angled (-45°).",
+      description:
+        "X-axis tick label style. Choose between singleLine (horizontal) or angled (-45°).",
       control: "radio",
       options: ["singleLine", "angled"],
       table: {
@@ -1152,13 +1153,28 @@ export const Stress_MultipleCharts: Story = {
 // Test Data for Long Labels
 const longLabelData = [
   { category: "Q1 2024 January Total Revenue and Expenses", sales: 186, expenses: 80, profit: 106 },
-  { category: "Q1 2024 February Marketing Campaign Results", sales: 305, expenses: 200, profit: 105 },
+  {
+    category: "Q1 2024 February Marketing Campaign Results",
+    sales: 305,
+    expenses: 200,
+    profit: 105,
+  },
   { category: "Q1 2024 March Product Launch Performance", sales: 237, expenses: 120, profit: 117 },
   { category: "Q2 2024 April Customer Acquisition Metrics", sales: 273, expenses: 190, profit: 83 },
   { category: "Q2 2024 May Operational Efficiency Report", sales: 209, expenses: 130, profit: 79 },
-  { category: "Q2 2024 June Strategic Initiative Outcomes", sales: 314, expenses: 140, profit: 174 },
+  {
+    category: "Q2 2024 June Strategic Initiative Outcomes",
+    sales: 314,
+    expenses: 140,
+    profit: 174,
+  },
   { category: "Q3 2024 July Market Expansion Analysis", sales: 350, expenses: 180, profit: 170 },
-  { category: "Q3 2024 August Technology Investment Returns", sales: 280, expenses: 160, profit: 120 },
+  {
+    category: "Q3 2024 August Technology Investment Returns",
+    sales: 280,
+    expenses: 160,
+    profit: 120,
+  },
   { category: "Q3 2024 September Partnership Performance", sales: 320, expenses: 170, profit: 150 },
   { category: "Q4 2024 October Year-End Projections", sales: 290, expenses: 150, profit: 140 },
   { category: "Q4 2024 November Holiday Season Preview", sales: 340, expenses: 180, profit: 160 },

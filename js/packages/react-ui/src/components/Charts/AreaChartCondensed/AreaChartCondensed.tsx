@@ -4,8 +4,14 @@ import { Area, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { AreaChartData, AreaChartVariant } from "../AreaChart/types";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
+import { X_AXIS_PADDING } from "../constants";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useTransformedKeys, useYAxisLabelWidth } from "../hooks";
+import {
+  useAutoAngleCalculation,
+  useMaxLabelWidth,
+  useTransformedKeys,
+  useYAxisLabelWidth,
+} from "../hooks";
 import {
   ActiveDot,
   cartesianGrid,
@@ -35,7 +41,6 @@ export interface AreaChartCondensedProps<T extends AreaChartData> {
 }
 
 const CHART_HEIGHT = 200;
-const X_AXIS_PADDING = 36;
 const CHART_CONTAINER_BOTTOM_MARGIN = 10;
 
 const AreaChartCondensedComponent = <T extends AreaChartData>({
@@ -58,6 +63,21 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
   }, [data, categoryKey]);
 
   const { yAxisWidth, setLabelWidth } = useYAxisLabelWidth(data, dataKeys);
+
+  const maxLabelWidth = useMaxLabelWidth(data, categoryKey as string);
+
+  const { angle: calculatedAngle, height: xAxisHeight } = useAutoAngleCalculation(
+    maxLabelWidth,
+    yAxisWidth,
+    tickVariant === "angled",
+  );
+
+  const effectiveHeight = useMemo(() => {
+    if (tickVariant === "angled") {
+      return xAxisHeight + height;
+    }
+    return height;
+  }, [height, xAxisHeight]);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -105,7 +125,7 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
           className={clsx("crayon-area-chart-condensed", className)}
           style={{
             width: width ? `${width}px` : "100%",
-            height: `${height}px`,
+            height: `${effectiveHeight}px`,
           }}
         >
           <ChartContainer
@@ -131,9 +151,9 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
                 textAnchor={tickVariant === "angled" ? "end" : "middle"}
                 interval="preserveStartEnd"
                 minTickGap={5}
-                height={tickVariant === "angled" ? 80 : 30}
+                height={xAxisHeight}
                 tick={<CondensedXAxisTick />}
-                angle={tickVariant === "angled" ? -45 : 0}
+                angle={calculatedAngle}
                 orientation="bottom"
                 padding={{
                   left: X_AXIS_PADDING,
@@ -189,7 +209,7 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
                     activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
                     dot={false}
                     isAnimationActive={isAnimationActive}
-                    strokeWidth={2}
+                    // strokeWidth={2}
                   />
                 );
               })}
