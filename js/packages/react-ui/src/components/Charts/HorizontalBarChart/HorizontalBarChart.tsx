@@ -10,6 +10,7 @@ import { useHorizontalBarLabelHeight } from "../hooks/useMaxLabelHeight";
 import {
   CustomTooltipContent,
   DefaultLegend,
+  NumericXAxisTick,
   SideBarTooltip,
   verticalCartesianGrid,
   YAxisTick,
@@ -20,7 +21,6 @@ import { type LegendItem } from "../types/Legend";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
-import { NumericXAxisTick } from "../shared/NumericXAxisTick/NumericXAxisTick";
 import {
   findNearestSnapPosition,
   getBarStackInfo,

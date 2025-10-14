@@ -9,10 +9,10 @@ import {
   CustomTooltipContent,
   DefaultLegend,
   gridCartesianGrid,
+  NumericXAxisTick,
   SideBarTooltip,
   YAxisTick,
 } from "../shared";
-import { NumericXAxisTick } from "../shared/NumericXAxisTick/NumericXAxisTick";
 import { LegendItem } from "../types";
 import { get2dChartConfig, getLegendItems } from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
@@ -331,7 +331,7 @@ export const ScatterChart = ({
                   margin={{
                     top: 10,
                     right: 2,
-                    bottom: 0,
+                    bottom: 2,
                     left: 2,
                   }}
                 >
