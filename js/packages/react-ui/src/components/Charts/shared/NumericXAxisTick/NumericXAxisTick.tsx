@@ -1,6 +1,4 @@
 import { numberTickFormatter } from "../../utils";
-import "./numericXAxisTick.scss";
-
 interface NumericXAxisTickProps {
   x?: number;
   y?: number;
