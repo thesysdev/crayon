@@ -1,7 +1,6 @@
 import { useMemo } from "react";
-import { X_AXIS_PADDING } from "../constants";
+import { DEFAULT_X_AXIS_HEIGHT, MIN_ROTATION_ANGLE, X_AXIS_PADDING } from "../constants";
 
-const MIN_ROTATION_ANGLE = 15; // Minimum angle to apply when labels need rotation
 
 interface AngleCalculationResult {
   angle: number;
@@ -36,7 +35,7 @@ export const useAutoAngleCalculation = (
     if (!enabled) {
       return {
         angle: 0,
-        height: 30,
+        height: DEFAULT_X_AXIS_HEIGHT,
       };
     }
 
@@ -61,7 +60,7 @@ export const useAutoAngleCalculation = (
 
       return {
         angle: -MIN_ROTATION_ANGLE, // Negative for counter-clockwise rotation
-        height: Math.max(height, 30), // Ensure minimum height
+        height: Math.max(height, DEFAULT_X_AXIS_HEIGHT), // Ensure minimum height
       };
     }
 
@@ -86,7 +85,7 @@ export const useAutoAngleCalculation = (
 
     return {
       angle: -finalAngle, // Negative for counter-clockwise rotation
-      height: Math.max(finalHeight + 16, 30), // Ensure minimum height
+      height: Math.max(finalHeight + 16, DEFAULT_X_AXIS_HEIGHT), // Ensure minimum height
     };
   }, [maxLabelWidth, yAxisWidth, enabled, showYAxis]);
 };
