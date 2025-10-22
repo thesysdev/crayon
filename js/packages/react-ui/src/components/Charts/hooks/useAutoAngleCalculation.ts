@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { DEFAULT_X_AXIS_HEIGHT, MIN_ROTATION_ANGLE, X_AXIS_PADDING } from "../constants";
 
-
 interface AngleCalculationResult {
   angle: number;
   height: number;
