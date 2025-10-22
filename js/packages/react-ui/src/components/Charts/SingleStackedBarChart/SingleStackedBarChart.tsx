@@ -5,7 +5,7 @@ import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
 import { FloatingUIPortal } from "../shared/PortalTooltip";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend";
 import { LegendItem, StackedLegendItem } from "../types";
-import { getDistributedColors, getPalette, PaletteName } from "../utils/PalletUtils";
+import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 import { ToolTip } from "./components";
 import { SingleStackedBarData } from "./types";
 
@@ -14,6 +14,7 @@ export interface SingleStackedBarProps<T extends SingleStackedBarData> {
   categoryKey: keyof T[number];
   dataKey: keyof T[number];
   theme?: PaletteName;
+  customPalette?: string[];
   legend?: boolean;
   legendVariant?: "default" | "stacked";
   className?: string;
@@ -26,6 +27,7 @@ export const SingleStackedBar = <T extends SingleStackedBarData>({
   categoryKey,
   dataKey,
   theme = "ocean",
+  customPalette,
   legend = true,
   legendVariant = "default",
   className,
@@ -70,10 +72,12 @@ export const SingleStackedBar = <T extends SingleStackedBarData>({
   }, [data, dataKey, categoryKey]);
 
   // Get theme colors for each segment
-  const colors = useMemo(() => {
-    const palette = getPalette(theme);
-    return getDistributedColors(palette.colors, Math.max(segments.length, 1));
-  }, [theme, segments.length]);
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "barChartPalette",
+    dataLength: Math.max(segments.length, 1),
+  });
 
   // Create legend items
   const legendItems = useMemo((): LegendItem[] => {
