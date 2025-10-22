@@ -1,5 +1,5 @@
 import { numberTickFormatter } from "../../utils";
-interface NumericXAxisTickProps {
+interface SimpleXAxisTickProps {
   x?: number;
   y?: number;
   payload?: {
@@ -7,7 +7,7 @@ interface NumericXAxisTickProps {
   };
 }
 
-export const NumericXAxisTick = ({ x, y, payload }: NumericXAxisTickProps) => {
+export const SimpleXAxisTick = ({ x, y, payload }: SimpleXAxisTickProps) => {
   if (x === undefined || y === undefined || !payload) {
     return null;
   }

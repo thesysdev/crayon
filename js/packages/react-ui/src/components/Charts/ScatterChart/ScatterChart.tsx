@@ -9,8 +9,8 @@ import {
   CustomTooltipContent,
   DefaultLegend,
   gridCartesianGrid,
-  NumericXAxisTick,
   SideBarTooltip,
+  SimpleXAxisTick,
   YAxisTick,
 } from "../shared";
 import { LegendItem } from "../types";
@@ -214,7 +214,7 @@ export const ScatterChart = ({
               tickLine={false}
               axisLine={false}
               tickFormatter={numberTickFormatter}
-              tick={<NumericXAxisTick />}
+              tick={<SimpleXAxisTick />}
               domain={xDomain}
               dataKey={xAxisDataKey}
             />
