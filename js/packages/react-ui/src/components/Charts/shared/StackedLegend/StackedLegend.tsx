@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "../../../Button";
 import { IconButton } from "../../../IconButton";
 import { Separator } from "../../../Separator";
@@ -171,9 +171,8 @@ export const StackedLegend = ({
       )}
       <div ref={listRef} className="crayon-stacked-legend">
         {itemsToDisplay.map((item, index) => (
-          <>
+          <React.Fragment key={item.key}>
             <div
-              key={item.key}
               className={`crayon-stacked-legend__item ${
                 activeKey === item.key ? "crayon-stacked-legend__item--active" : ""
               }`}
@@ -196,7 +195,7 @@ export const StackedLegend = ({
             {index !== itemsToDisplay.length - 1 && separator && (
               <Separator className="crayon-stacked-legend-separator" />
             )}
-          </>
+          </React.Fragment>
         ))}
       </div>
       {isShowMoreLayout && !showAll && items.length > LEGEND_ITEM_LIMIT && (
