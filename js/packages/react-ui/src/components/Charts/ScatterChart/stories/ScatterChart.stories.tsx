@@ -713,8 +713,8 @@ export const ShapeComparison: Story = {
             >
               {shape} Shape
             </h4>
-            <Card style={{ width: "500px" }}>
-              <ScatterChart {...args} shape={shape} />
+            <Card style={{ width: "500px", height: "600px" }}>
+              <ScatterChart {...args} shape={shape} height={"100%"} />
             </Card>
           </div>
         ))}
@@ -812,7 +812,7 @@ export const DataExplorer: Story = {
           </div>
         </div>
         <Card style={{ width: "600px" }}>
-          <ScatterChart {...args} data={currentData} height="600px" />
+          <ScatterChart {...args} data={currentData} height={"600px"} />
         </Card>
       </div>
     );

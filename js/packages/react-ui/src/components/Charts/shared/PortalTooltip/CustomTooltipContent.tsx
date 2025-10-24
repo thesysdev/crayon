@@ -64,6 +64,7 @@ export const CustomTooltipContent = memo(
       const itemConfig = getPayloadConfigFromPayload(config, item, key);
       const value =
         !labelKey && typeof label === "string" ? config[label]?.label || label : itemConfig?.label;
+      const dataset = item?.payload?.dataset;
 
       // this is active when we pass a labelFormatter prop to the recharts tooltip
       // normally we would not need this, but it's useful for customizing the label
@@ -75,11 +76,20 @@ export const CustomTooltipContent = memo(
         );
       }
 
-      if (!value) {
+      if (!value && !dataset) {
         return null;
       }
 
-      return <div className={clsx("crayon-chart-tooltip-label", labelClassName)}>{value}</div>;
+      return (
+        <>
+          {value && (
+            <div className={clsx("crayon-chart-tooltip-label", labelClassName)}>{value}</div>
+          )}
+          {dataset && (
+            <div className={clsx("crayon-chart-tooltip-label", labelClassName)}>{dataset}</div>
+          )}
+        </>
+      );
     }, [label, labelFormatter, payload, hideLabel, labelClassName, config, labelKey]);
 
     const nestLabel = useMemo(
