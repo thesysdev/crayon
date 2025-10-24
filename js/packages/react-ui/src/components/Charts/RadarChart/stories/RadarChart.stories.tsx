@@ -58,14 +58,14 @@ const dataVariations = {
     { dimension: "Center", score: 88 },
   ],
   manyDimensions: [
-    { aspect: "UX Design", mobile: 8, web: 9, desktop: 7, tablet: 8 },
-    { aspect: "Performance", mobile: 9, web: 8, desktop: 9, tablet: 8 },
-    { aspect: "Accessibility", mobile: 7, web: 8, desktop: 9, tablet: 7 },
-    { aspect: "Security", mobile: 8, web: 9, desktop: 8, tablet: 8 },
-    { aspect: "Scalability", mobile: 7, web: 9, desktop: 8, tablet: 7 },
-    { aspect: "Maintenance", mobile: 8, web: 7, desktop: 8, tablet: 8 },
-    { aspect: "Testing", mobile: 9, web: 8, desktop: 7, tablet: 8 },
-    { aspect: "Documentation", mobile: 6, web: 8, desktop: 9, tablet: 7 },
+    { aspect: "UX Design and User Experience", mobile: 8, web: 9, desktop: 7, tablet: 8 },
+    { aspect: "Performance and Optimization", mobile: 9, web: 8, desktop: 9, tablet: 8 },
+    { aspect: "Accessibility and Inclusivity", mobile: 7, web: 8, desktop: 9, tablet: 7 },
+    { aspect: "Security and Compliance", mobile: 8, web: 9, desktop: 8, tablet: 8 },
+    { aspect: "Scalability and Performance", mobile: 7, web: 9, desktop: 8, tablet: 7 },
+    { aspect: "Maintenance and Support", mobile: 8, web: 7, desktop: 8, tablet: 8 },
+    { aspect: "Testing and Quality Assurance", mobile: 9, web: 8, desktop: 7, tablet: 8 },
+    { aspect: "Documentation and Support", mobile: 6, web: 8, desktop: 9, tablet: 7 },
   ],
 };
 
@@ -141,7 +141,7 @@ const exampleData = [
       },
     },
   },
-  tags: ["!dev", "autodocs"],
+  tags: ["dev", "autodocs"],
   argTypes: {
     data: {
       description: `
@@ -301,6 +301,22 @@ const icons = {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
         category: "🎬 Animation & Interaction",
+      },
+    },
+    height: {
+      description: "The height of the chart.",
+      control: "text",
+      table: {
+        type: { summary: "string | number" },
+        category: "📱 Display Options",
+      },
+    },
+    width: {
+      description: "The width of the chart.",
+      control: "text",
+      table: {
+        type: { summary: "string | number" },
+        category: "📱 Display Options",
       },
     },
   },
@@ -490,6 +506,7 @@ export const InteractivePlayground: Story = {
       borderRadius: "4px",
       cursor: "pointer",
       background: "#fff",
+      color: "#333",
       fontFamily: "monospace",
       transition: "all 0.2s",
     };
@@ -526,7 +543,7 @@ export const InteractivePlayground: Story = {
         </Card>
         <Card
           style={{
-            height: "500px",
+            height: "400px",
             padding: "24px",
             resize: "both",
             overflow: "hidden",
