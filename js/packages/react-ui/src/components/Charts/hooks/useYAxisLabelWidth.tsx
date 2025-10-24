@@ -17,7 +17,7 @@ export const useYAxisLabelWidth = (
   dataKeys: string[],
 ) => {
   const context = useCanvasContextForLabelSize();
-  const [maxLabelWidthRecieved, setMaxLabelWidthRecieved] = useState(0);
+  const [maxLabelWidthReceived, setMaxLabelWidthReceived] = useState(0);
 
   const maxLabelWidth = useMemo(() => {
     if (typeof window === "undefined" || !data || data.length === 0 || !dataKeys.length) {
@@ -53,15 +53,12 @@ export const useYAxisLabelWidth = (
   }, [data, dataKeys, context]);
 
   const maxLabelWidthRef = useRef(maxLabelWidth);
-  maxLabelWidthRef.current = Math.max(maxLabelWidthRecieved, maxLabelWidth);
+  maxLabelWidthRef.current = maxLabelWidthReceived || maxLabelWidth;
 
   const setLabelWidth = useCallback(
     (displayValue: string) => {
       const textWidth = context.measureText(displayValue).width + LABEL_PADDING;
-
-      if (textWidth > maxLabelWidthRef.current) {
-        setMaxLabelWidthRecieved(textWidth);
-      }
+      setMaxLabelWidthReceived((currentWidth) => Math.max(currentWidth, textWidth));
     },
     [context],
   );
