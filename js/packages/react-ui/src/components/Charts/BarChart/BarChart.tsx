@@ -5,6 +5,7 @@ import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
+import { ExportContextProvider, useExportContext } from "../ExportContext";
 import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
 import {
   cartesianGrid,
@@ -16,24 +17,25 @@ import {
   XAxisTickProps,
   YAxisTick,
 } from "../shared";
-
+import { ChartExportFooter } from "../shared/ChartExportFooter";
+import { ExportButton } from "../shared/ExportButton";
+import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/ScrollButtonsHorizontal";
 import { XAxisTickVariant } from "../types";
 import { type LegendItem } from "../types/Legend";
-import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
-
-import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import {
   findNearestSnapPosition,
   getBarStackInfo,
   getRadiusArray,
 } from "../utils/BarCharts/BarChartsUtils";
+import { useExportChart } from "../utils/chartExportUtils";
 import {
   get2dChartConfig,
   getColorForDataKey,
   getDataKeys,
   getLegendItems,
 } from "../utils/dataUtils";
+import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 import { BarChartData, BarChartVariant } from "./types";
 import {
   BAR_WIDTH,
@@ -65,6 +67,7 @@ export interface BarChartProps<T extends BarChartData> {
   className?: string;
   height?: number;
   width?: number;
+  exportRef?: React.RefObject<HTMLElement | null>;
 }
 
 const BAR_GAP = 10; // Gap between bars
@@ -91,8 +94,10 @@ const BarChartComponent = <T extends BarChartData>({
   className,
   height,
   width,
+  exportRef,
 }: BarChartProps<T>) => {
   const widthOfGroup = getWidthOfGroup(data, categoryKey as string, variant);
+  const exportContext = useExportContext();
 
   const maxLabelHeight = useMaxLabelHeight(data, categoryKey as string, tickVariant, widthOfGroup);
 
@@ -122,11 +127,14 @@ const BarChartComponent = <T extends BarChartData>({
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | number | null>(null);
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
+  const [isChartHovered, setIsChartHovered] = useState(false);
   const [isSideBarTooltipOpen, setIsSideBarTooltipOpen] = useState(false);
   const [sideBarTooltipData, setSideBarTooltipData] = useState<SideBarChartData>({
     title: "",
     values: [],
   });
+  const exportChartRef = useRef<HTMLDivElement>(null);
+  const { exportChart } = useExportChart(exportChartRef ?? null, "crayon-bar-chart-main-container");
 
   // Use provided width or observed width
   const effectiveWidth = useMemo(() => {
@@ -407,11 +415,45 @@ const BarChartComponent = <T extends BarChartData>({
         data={sideBarTooltipData}
         setData={setSideBarTooltipData}
       >
+        {!exportContext && (
+          <ExportContextProvider value={{ format: "image" }}>
+            <BarChart
+              data={data}
+              categoryKey={categoryKey}
+              theme={theme}
+              customPalette={customPalette}
+              variant={variant}
+              tickVariant={"multiLine"}
+              grid={grid}
+              radius={BAR_RADIUS}
+              isAnimationActive={false}
+              showYAxis={showYAxis}
+              xAxisLabel={xAxisLabel}
+              yAxisLabel={yAxisLabel}
+              legend={legend}
+              className={className}
+              height={height}
+              width={width}
+              exportRef={exportChartRef}
+              icons={icons}
+            />
+          </ExportContextProvider>
+        )}
+
         <div
-          className={clsx("crayon-bar-chart-container", className)}
+          className={clsx(
+            "crayon-bar-chart-container",
+            {
+              "crayon-chart-export-container": exportContext,
+            },
+            className,
+          )}
           style={{
             width: width ? `${width}px` : undefined,
           }}
+          onMouseEnter={() => setIsChartHovered(true)}
+          onMouseLeave={() => setIsChartHovered(false)}
+          ref={exportRef as React.RefObject<HTMLDivElement>}
         >
           <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
             {/* Y-axis of the chart */}
@@ -497,10 +539,12 @@ const BarChartComponent = <T extends BarChartData>({
               yAxisLabel={yAxisLabel}
               xAxisLabel={xAxisLabel}
               containerWidth={effectiveWidth}
-              isExpanded={isLegendExpanded}
+              isExpanded={isLegendExpanded || !!exportContext} // legend should always be expanded in export mode
               setIsExpanded={setIsLegendExpanded}
             />
           )}
+          {isChartHovered && <ExportButton exportChart={exportChart} />}
+          {exportContext && <ChartExportFooter />}
         </div>
       </SideBarTooltipProvider>
     </LabelTooltipProvider>
