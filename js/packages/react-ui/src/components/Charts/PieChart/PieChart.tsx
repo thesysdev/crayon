@@ -405,41 +405,18 @@ const PieChartComponent = <T extends PieChartData>({
   );
 
   const wrapperStyle = useMemo(() => {
-    if (typeof width === "string" && typeof height === "string") {
-      return {
-        width,
-        height,
-      };
-    } else if (typeof width === "string" && typeof height === "number") {
-      return {
-        width,
-        height: `${height}px`,
-      };
-    } else if (typeof width === "number" && typeof height === "string") {
-      return {
-        width: `${width}px`,
-        height,
-      };
-    } else if (typeof width === "number" && typeof height === "number") {
-      return {
-        width: `${width}px`,
-        height: `${height}px`,
-      };
-    } else if (typeof width === "string" && typeof height === "undefined") {
-      return {
-        width,
-      };
-    } else if (typeof width === "undefined" && typeof height === "string") {
-      return {
-        height,
-      };
-    } else if (typeof width === "undefined" && typeof height === "number") {
-      return {
-        height: `${height}px`,
-      };
-    } else {
-      return {};
-    }
+    const formatDimension = (value: number | string | undefined) => {
+      if (typeof value === "number") {
+        return `${value}px`;
+      }
+      return value;
+    };
+    const dimensions = {
+      width: formatDimension(width),
+      height: formatDimension(height),
+    };
+
+    return dimensions;
   }, [width, height]);
 
   return (

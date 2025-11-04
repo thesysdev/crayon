@@ -107,7 +107,7 @@ const salesData = [
       },
     },
   },
-  tags: ["!dev", "autodocs"],
+  tags: ["dev", "autodocs"],
   argTypes: {
     data: {
       description: `
@@ -259,6 +259,39 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
+ * ## Interactive Playground
+ *
+ * This is a minimal story that renders just the PieChart component without any wrapper.
+ * Use the Controls panel to interactively test all available props and see how they
+ * affect the chart's appearance and behavior.
+ *
+ * **Perfect for:**
+ * - Testing different prop combinations
+ * - Exploring chart customization options
+ * - Understanding prop behaviors
+ */
+export const InteractivePlayground: Story = {
+  name: "🎮 Interactive Playground",
+  args: {
+    data: monthlySalesData,
+    categoryKey: "month",
+    dataKey: "value",
+    theme: "ocean",
+    variant: "pie",
+    format: "number",
+    legend: true,
+    legendVariant: "default",
+    isAnimationActive: true,
+    appearance: "circular",
+    cornerRadius: 0,
+    paddingAngle: 0,
+    height: undefined,
+    width: undefined,
+  },
+  render: (args: any) => <PieChart {...args} />,
+};
+
+/**
  * ## Default Configuration
  *
  * This example showcases the PieChart with its standard settings, making it an
@@ -287,7 +320,7 @@ export const DefaultConfiguration: Story = {
     paddingAngle: 0,
   },
   render: (args: any) => (
-    <Card style={{ width: "650px", height: "fit-content", padding: "24px" }}>
+    <Card style={{ width: "400px", height: "fit-content", padding: "24px" }}>
       <h3 style={{ marginBottom: "20px", fontSize: "18px", fontWeight: 600 }}>
         Monthly Sales Performance
       </h3>
