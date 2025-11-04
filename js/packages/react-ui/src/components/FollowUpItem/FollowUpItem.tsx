@@ -12,7 +12,7 @@ const FollowUpItem = forwardRef<HTMLButtonElement, FollowUpItemProps>((props, re
   return (
     <button ref={ref} className={clsx("crayon-follow-up-item", className)} {...rest}>
       {text}
-      {icon}
+      <span className="crayon-follow-up-item-icon">{icon}</span>
     </button>
   );
 });
