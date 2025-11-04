@@ -1,13 +1,22 @@
 import clsx from "clsx";
 import React from "react";
 
-const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
-  ({ className, ...props }, ref) => (
-    <div className="crayon-table-container">
-      <table ref={ref} className={clsx("crayon-table", className)} {...props} />
-    </div>
-  ),
-);
+const Table = React.forwardRef<
+  HTMLTableElement,
+  React.HTMLAttributes<HTMLTableElement> & {
+    containerRef?: React.RefObject<HTMLDivElement>;
+    containerClassName?: string;
+    containerStyle?: React.CSSProperties;
+  }
+>(({ className, containerRef, containerClassName, containerStyle, ...props }, ref) => (
+  <div
+    ref={containerRef}
+    className={clsx("crayon-table-container", containerClassName)}
+    style={containerStyle}
+  >
+    <table ref={ref} className={clsx("crayon-table", className)} {...props} />
+  </div>
+));
 Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<

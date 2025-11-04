@@ -3,6 +3,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { AreaChartData } from "../AreaChart";
 import { BarChartData } from "../BarChart";
 import { LineChartData } from "../LineChart";
+import { ScatterPoint } from "../ScatterChart/types";
 import { numberTickFormatter } from "../utils";
 import { useCanvasContextForLabelSize } from "./useCanvasContextForLabelSize";
 
@@ -12,11 +13,11 @@ const MAX_Y_AXIS_WIDTH = 200;
 const LABEL_PADDING = 10;
 
 export const useYAxisLabelWidth = (
-  data: AreaChartData | LineChartData | BarChartData,
+  data: AreaChartData | LineChartData | BarChartData | ScatterPoint[],
   dataKeys: string[],
 ) => {
   const context = useCanvasContextForLabelSize();
-  const [maxLabelWidthRecieved, setMaxLabelWidthRecieved] = useState(0);
+  const [maxLabelWidthReceived, setMaxLabelWidthReceived] = useState(0);
 
   const maxLabelWidth = useMemo(() => {
     if (typeof window === "undefined" || !data || data.length === 0 || !dataKeys.length) {
@@ -39,6 +40,7 @@ export const useYAxisLabelWidth = (
       values.forEach((value) => {
         const displayValue = numberTickFormatter(value);
         const textWidth = context.measureText(displayValue).width;
+
         maxWidth = Math.max(maxWidth, textWidth);
       });
     });
@@ -51,15 +53,12 @@ export const useYAxisLabelWidth = (
   }, [data, dataKeys, context]);
 
   const maxLabelWidthRef = useRef(maxLabelWidth);
-  maxLabelWidthRef.current = Math.max(maxLabelWidthRecieved, maxLabelWidth);
+  maxLabelWidthRef.current = maxLabelWidthReceived || maxLabelWidth;
 
   const setLabelWidth = useCallback(
     (displayValue: string) => {
       const textWidth = context.measureText(displayValue).width + LABEL_PADDING;
-
-      if (textWidth > maxLabelWidthRef.current) {
-        setMaxLabelWidthRecieved(textWidth);
-      }
+      setMaxLabelWidthReceived((currentWidth) => Math.max(currentWidth, textWidth));
     },
     [context],
   );

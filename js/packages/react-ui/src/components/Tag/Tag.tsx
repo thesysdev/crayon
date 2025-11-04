@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import { CSSProperties, forwardRef, ReactNode } from "react";
 
-type TagSize = "sm" | "md" | "lg";
-type TagVariant = "neutral" | "info" | "success" | "warning" | "danger";
+export type TagSize = "sm" | "md" | "lg";
+export type TagVariant = "neutral" | "info" | "success" | "warning" | "danger";
 
 const sizeMap: Record<TagSize, string> = {
   sm: "crayon-tag-sm",
