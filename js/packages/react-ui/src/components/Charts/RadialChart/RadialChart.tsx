@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Cell, PolarGrid, RadialBar, RadialBarChart } from "recharts";
+import { Cell, PolarGrid, RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../Charts";
 import { useTransformedKeys } from "../hooks";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
@@ -37,6 +37,8 @@ export interface RadialChartProps<T extends RadialChartData> {
   className?: string;
   maxChartSize?: number;
   minChartSize?: number;
+  height?: number | string;
+  width?: number | string;
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
@@ -62,6 +64,8 @@ export const RadialChart = <T extends RadialChartData>({
   className,
   maxChartSize = MAX_CHART_SIZE,
   minChartSize = MIN_CHART_SIZE,
+  height,
+  width,
 }: RadialChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -99,17 +103,15 @@ export const RadialChart = <T extends RadialChartData>({
 
   // Calculate chart dimensions based on the smaller dimension of the container
   const chartSize = useMemo(() => {
-    let size;
-    // When in a row layout, the chart and legend are side-by-side.
-    if (isRowLayout) {
-      // The chart container takes up roughly half the width. We subtract the gap between items.
-      const chartContainerWidth = (effectiveWidth - 20) / 2;
-      // The size of the chart is the smaller of its container's width or the total available height.
-      size = Math.min(chartContainerWidth, effectiveHeight);
-    } else {
-      // In a column layout, the chart's size is constrained by the smaller of the total container's width or height.
-      size = Math.min(effectiveWidth, effectiveHeight);
-    }
+    // Compute the available width for the chart. In row layout, chart and legend sit side-by-side.
+    // Subtract the 20px gap defined in CSS to avoid over-estimating available width.
+    const containerWidth = isRowLayout ? Math.max(0, (effectiveWidth - 20) / 2) : effectiveWidth;
+
+    // If wrapper height isn't explicitly provided (or is very small), prefer sizing by width to
+    // avoid a feedback loop where height depends on the chart, which then clamps the size.
+    const heightIsUsable = effectiveHeight >= minChartSize;
+
+    let size = heightIsUsable ? Math.min(containerWidth, effectiveHeight) : containerWidth;
     size = Math.min(size, maxChartSize);
     return Math.max(minChartSize, size);
   }, [effectiveWidth, effectiveHeight, isRowLayout]);
@@ -122,10 +124,13 @@ export const RadialChart = <T extends RadialChartData>({
     [chartSize],
   );
 
-  const rechartsProps = useMemo(
+  const rechartsProps: Omit<React.ComponentProps<typeof ResponsiveContainer>, "children"> = useMemo(
     () => ({
       width: "100%",
       height: "100%",
+      minWidth: 1,
+      minHeight: 1,
+      initialDimension: { width: 1, height: 1 },
     }),
     [],
   );
@@ -295,8 +300,35 @@ export const RadialChart = <T extends RadialChartData>({
   const startAngle = variant === "semicircle" ? 180 : 0;
   const endAngle = variant === "semicircle" ? 0 : 360;
 
+  const wrapperStyle = useMemo(() => {
+    const formatDimension = (value: number | string | undefined) => {
+      if (typeof value === "number") {
+        return `${value}px`;
+      }
+      return value;
+    };
+    const dimensions = {
+      width: formatDimension(width),
+      height: formatDimension(height),
+    };
+
+    if (dimensions.width === undefined) {
+      delete dimensions.width;
+    }
+
+    if (dimensions.height === undefined) {
+      delete dimensions.height;
+    }
+    return dimensions;
+  }, [width, height]);
+
   return (
-    <div ref={wrapperRef} className={wrapperClassName}>
+    <div
+      ref={wrapperRef}
+      className={wrapperClassName}
+      style={wrapperStyle}
+      aria-description="radial-chart-wrapper"
+    >
       <div className="crayon-radial-chart-container">
         <div className="crayon-radial-chart-container-inner">
           <div style={chartSizeStyle}>

@@ -320,7 +320,10 @@ export const LineChart = <T extends LineChartData>({
                 style={{ width: dataWidth, minWidth: "100%", height: chartHeight }}
                 rechartsProps={{
                   width: "100%",
-                  height: chartHeight,
+                  height: "100%",
+                  minHeight: 1,
+                  minWidth: 1,
+                  initialDimension: { width: 1, height: 1 },
                 }}
               >
                 <RechartsLineChart
