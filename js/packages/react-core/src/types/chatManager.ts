@@ -1,4 +1,4 @@
-import { CreateMessage, Message, UserMessage } from "./message";
+import { CreateMessage, Message, UploadedFile, UserMessage } from "./message";
 import { ResponseTemplate } from "./responseTemplate";
 
 /**
@@ -37,6 +37,8 @@ export type ThreadActions = {
   setMessages: (messages: Message[]) => void;
   /** Deletes a message from the thread */
   deleteMessage: (messageId: string) => void;
+  /** Processes a file upload */
+  processFileUpload: (files: File[]) => Promise<UploadedFile[]>;
 };
 
 /**

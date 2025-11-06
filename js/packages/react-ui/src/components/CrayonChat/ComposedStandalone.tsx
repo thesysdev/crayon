@@ -19,6 +19,7 @@ interface ComposedStandaloneProps {
   agentName?: string;
   messageLoadingComponent?: () => React.ReactNode;
   scrollVariant: ScrollVariant;
+  enableFileUpload: boolean;
 }
 
 export const ComposedStandalone = ({
@@ -26,6 +27,7 @@ export const ComposedStandalone = ({
   agentName = "My Agent",
   messageLoadingComponent: MessageLoadingComponent = MessageLoading,
   scrollVariant,
+  enableFileUpload,
 }: ComposedStandaloneProps) => {
   return (
     <Container logoUrl={logoUrl} agentName={agentName}>
@@ -42,7 +44,7 @@ export const ComposedStandalone = ({
         <ScrollArea scrollVariant={scrollVariant}>
           <Messages loader={<MessageLoadingComponent />} />
         </ScrollArea>
-        <Composer />
+        <Composer enableFileUpload={enableFileUpload} />
       </ThreadContainer>
     </Container>
   );
