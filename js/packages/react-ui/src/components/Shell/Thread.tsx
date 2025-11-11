@@ -7,21 +7,95 @@ import {
 } from "@crayonai/react-core";
 import clsx from "clsx";
 import { ArrowRight, Square } from "lucide-react";
-import React, { memo, useLayoutEffect, useRef } from "react";
+import React, { memo, useEffect, useLayoutEffect, useRef } from "react";
+import { useLayoutContext } from "../../context/LayoutContext";
 import { useComposerState } from "../../hooks/useComposerState";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { IconButton } from "../IconButton";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
+import { ResizableSeparator } from "./ResizableSeparator";
 import { useShellStore } from "./store";
+import { useArtifactResize } from "./useArtifactResize";
 
 export const ThreadContainer = ({
   children,
   className,
+  isArtifactActive = false,
+  renderArtifact = () => null,
 }: {
   children?: React.ReactNode;
   className?: string;
+  isArtifactActive?: boolean;
+  renderArtifact?: () => React.ReactNode;
 }) => {
-  return <div className={clsx("crayon-shell-thread-container", className)}>{children}</div>;
+  const { layout } = useLayoutContext();
+  const isMobile = layout === "mobile";
+
+  const { setIsSidebarOpen, setIsArtifactActive, setArtifactRenderer } = useShellStore((state) => ({
+    setIsSidebarOpen: state.setIsSidebarOpen,
+    setIsArtifactActive: state.setIsArtifactActive,
+    setArtifactRenderer: state.setArtifactRenderer,
+  }));
+
+  // Sync artifact state and renderer with store
+  useEffect(() => {
+    setIsArtifactActive(isArtifactActive);
+    setArtifactRenderer(renderArtifact);
+  }, [isArtifactActive, renderArtifact, setIsArtifactActive, setArtifactRenderer]);
+
+  // Desktop-only: Handle resize logic for artifact panel
+  const {
+    containerRef,
+    chatPanelRef,
+    artifactPanelRef,
+    isDragging,
+    handleResize,
+    handleDragStart,
+    handleDragEnd,
+  } = useArtifactResize({
+    isArtifactActive,
+    isMobile,
+    setIsSidebarOpen,
+  });
+
+  return (
+    <div
+      className={clsx("crayon-shell-thread-container", className, {
+        "crayon-shell-thread-container--artifact-active": isArtifactActive,
+      })}
+    >
+      <div className="crayon-shell-thread-wrapper" ref={containerRef}>
+        {/* Chat panel - always visible */}
+        <div
+          ref={chatPanelRef}
+          className={clsx("crayon-shell-thread-chat-panel", {
+            "crayon-shell-thread-chat-panel--animating": !isDragging,
+          })}
+        >
+          {children}
+        </div>
+
+        {/* Desktop only: Resizable separator and artifact panel */}
+        {!isMobile && isArtifactActive && (
+          <>
+            <ResizableSeparator
+              onResize={handleResize}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+            />
+            <div
+              ref={artifactPanelRef}
+              className={clsx("crayon-shell-thread-artifact-panel", {
+                "crayon-shell-thread-artifact-panel--animating": !isDragging,
+              })}
+            >
+              {renderArtifact?.()}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export const ScrollArea = ({
@@ -42,7 +116,14 @@ export const ScrollArea = ({
   userMessageSelector?: string;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const { layout } = useLayoutContext();
+  const isMobile = layout === "mobile";
+
   const { messages, isRunning, isLoadingMessages } = useThreadState();
+  const { isArtifactActive, artifactRenderer } = useShellStore((store) => ({
+    isArtifactActive: store.isArtifactActive,
+    artifactRenderer: store.artifactRenderer,
+  }));
 
   useScrollToBottom({
     ref,
@@ -54,18 +135,23 @@ export const ScrollArea = ({
   });
 
   return (
-    <div
-      ref={ref}
-      className={clsx(
-        "crayon-shell-thread-scroll-area",
-        {
-          "crayon-shell-thread-scroll-area--user-message-anchor":
-            scrollVariant === "user-message-anchor",
-        },
-        className,
+    <div className="crayon-shell-thread-scroll-container">
+      <div
+        ref={ref}
+        className={clsx(
+          "crayon-shell-thread-scroll-area",
+          {
+            "crayon-shell-thread-scroll-area--user-message-anchor":
+              scrollVariant === "user-message-anchor",
+          },
+          className,
+        )}
+      >
+        {children}
+      </div>
+      {isMobile && isArtifactActive && (
+        <div className="crayon-shell-thread-artifact-panel--mobile">{artifactRenderer()}</div>
       )}
-    >
-      {children}
     </div>
   );
 };

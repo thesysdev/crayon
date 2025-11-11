@@ -13,6 +13,8 @@ interface ComposedCopilotProps {
   agentName?: string;
   messageLoadingComponent?: () => React.ReactNode;
   scrollVariant: ScrollVariant;
+  isArtifactActive?: boolean;
+  renderArtifact?: () => React.ReactNode;
 }
 
 export const ComposedCopilot = ({
@@ -20,10 +22,12 @@ export const ComposedCopilot = ({
   agentName = "My Agent",
   messageLoadingComponent: MessageLoadingComponent = MessageLoading,
   scrollVariant,
+  isArtifactActive,
+  renderArtifact,
 }: ComposedCopilotProps) => {
   return (
     <Container logoUrl={logoUrl} agentName={agentName}>
-      <ThreadContainer>
+      <ThreadContainer isArtifactActive={isArtifactActive} renderArtifact={renderArtifact}>
         <Header />
         <ScrollArea scrollVariant={scrollVariant}>
           <Messages loader={<MessageLoadingComponent />} />

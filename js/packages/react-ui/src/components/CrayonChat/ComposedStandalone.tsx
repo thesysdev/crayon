@@ -19,6 +19,8 @@ interface ComposedStandaloneProps {
   agentName?: string;
   messageLoadingComponent?: () => React.ReactNode;
   scrollVariant: ScrollVariant;
+  isArtifactActive?: boolean;
+  renderArtifact?: () => React.ReactNode;
 }
 
 export const ComposedStandalone = ({
@@ -26,6 +28,8 @@ export const ComposedStandalone = ({
   agentName = "My Agent",
   messageLoadingComponent: MessageLoadingComponent = MessageLoading,
   scrollVariant,
+  isArtifactActive,
+  renderArtifact,
 }: ComposedStandaloneProps) => {
   return (
     <Container logoUrl={logoUrl} agentName={agentName}>
@@ -37,7 +41,7 @@ export const ComposedStandalone = ({
           <ThreadList />
         </SidebarContent>
       </SidebarContainer>
-      <ThreadContainer>
+      <ThreadContainer isArtifactActive={isArtifactActive} renderArtifact={renderArtifact}>
         <MobileHeader />
         <ScrollArea scrollVariant={scrollVariant}>
           <Messages loader={<MessageLoadingComponent />} />

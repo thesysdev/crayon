@@ -1,0 +1,53 @@
+@use "../../cssUtils" as cssUtils;
+
+.crayon-shell-resizable-separator {
+  width: 1px;
+  background-color: cssUtils.$stroke-default;
+  cursor: col-resize;
+  position: relative;
+  flex-shrink: 0;
+  user-select: none;
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Wider invisible hit area for easier grabbing
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -8px;
+    right: -8px;
+    cursor: col-resize;
+  }
+
+  &:hover {
+    background-color: cssUtils.$stroke-emphasis;
+  }
+
+  &:hover &__handle {
+    opacity: 1;
+  }
+
+  &__handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 40px;
+    background-color: cssUtils.$stroke-emphasis;
+    border-radius: cssUtils.$rounded-full;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    pointer-events: none;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

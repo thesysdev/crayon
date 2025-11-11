@@ -1,21 +1,51 @@
 @use "../../cssUtils" as cssUtils;
 
 .crayon-copilot-shell-thread-container {
+  display: flex;
   flex: 1;
   overflow: hidden;
-  display: flex;
   flex-direction: column;
+}
+
+.crayon-copilot-shell-thread-scroll-container {
+  width: 100%;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
 }
 
 .crayon-copilot-shell-thread-scroll-area {
   width: 100%;
-  flex: 1;
+  height: 100%;
   overflow: auto;
   padding: cssUtils.$spacing-l;
   &--user-message-anchor {
     & .crayon-copilot-shell-thread-messages > *:last-child {
       min-height: calc(-200px + 100dvh);
     }
+  }
+}
+
+// Artifact panel (overlay style)
+.crayon-copilot-shell-thread-artifact-panel--mobile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background-color: cssUtils.$bg-container;
+  animation: slideInFromBottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

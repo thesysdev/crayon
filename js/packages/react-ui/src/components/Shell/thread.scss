@@ -1,5 +1,12 @@
 @use "../../cssUtils" as cssUtils;
 
+// =============================================================================
+// Thread Layout Structure
+// =============================================================================
+// The thread container uses a flexbox layout that supports both:
+// 1. Desktop: Resizable side-by-side chat and artifact panels
+// 2. Mobile: Full-width chat with absolute-positioned artifact overlay
+
 .crayon-shell-thread-container {
   flex: 1;
   overflow: hidden;
@@ -7,16 +14,110 @@
   flex-direction: column;
 }
 
+// Wrapper for horizontal layout (chat + separator + artifact)
+.crayon-shell-thread-wrapper {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  height: 100%;
+}
+
+// Chat panel (left side on desktop, full-width when no artifact)
+.crayon-shell-thread-chat-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  min-width: 360px;
+  flex-shrink: 0;
+  position: relative;
+
+  &--animating {
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+// Artifact panel (right side on desktop, fills remaining space)
+.crayon-shell-thread-artifact-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: 100%;
+  flex: 1; // Fills remaining space after chat panel
+  min-width: 0;
+  background-color: cssUtils.$bg-container;
+  animation: slideInFromRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &--animating {
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+// Mobile artifact panel (absolute overlay)
+.crayon-shell-thread-artifact-panel--mobile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  animation: slideInFromBottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// =============================================================================
+// Animations
+// =============================================================================
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// =============================================================================
+// Scroll Area
+// =============================================================================
+
 $center-align-spacing: calc(32px + cssUtils.$spacing-s);
+
+.crayon-shell-thread-scroll-container {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
 
 .crayon-shell-thread-scroll-area {
   width: 100%;
-  flex: 1;
+  height: 100%;
   overflow: auto;
   padding: cssUtils.$spacing-m $center-align-spacing cssUtils.$spacing-xl;
 
   .crayon-shell-container--mobile & {
     padding: cssUtils.$spacing-l;
+  }
+
+  // When artifact is active, reduce padding to maximize space
+  .crayon-shell-thread-container--artifact-active & {
+    padding-left: 0;
+    padding-right: cssUtils.$spacing-m;
   }
 
   &--user-message-anchor {
@@ -25,6 +126,10 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
     }
   }
 }
+
+// =============================================================================
+// Messages
+// =============================================================================
 
 .crayon-shell-thread-messages {
   max-width: 880px;
@@ -50,6 +155,12 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
     padding: 0;
   }
 
+  // When artifact is active, minimize spacing and hide logo
+  .crayon-shell-thread-container--artifact-active & {
+    gap: 0;
+    padding-right: 0;
+  }
+
   &__content {
     display: flex;
     flex-direction: column;
@@ -71,6 +182,14 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
     width: 32px;
     height: 32px;
     border-radius: cssUtils.$rounded-m;
+
+    .crayon-shell-container--mobile & {
+      display: none;
+    }
+
+    .crayon-shell-thread-container--artifact-active & {
+      display: none;
+    }
   }
 }
 
@@ -81,6 +200,11 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
 
   .crayon-shell-container--mobile & {
     padding: 0;
+  }
+
+  .crayon-shell-thread-container--artifact-active & {
+    padding-left: 0;
+    padding-right: 0;
   }
 
   &__content {
@@ -95,6 +219,10 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
   }
 }
 
+// =============================================================================
+// Composer
+// =============================================================================
+
 .crayon-shell-thread-composer {
   max-width: 880px;
   width: 100%;
@@ -105,6 +233,11 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
     margin: 0;
     padding: cssUtils.$spacing-m 14px;
     background-color: cssUtils.$bg-container;
+  }
+
+  .crayon-shell-thread-container--artifact-active & {
+    padding-left: 0;
+    padding-right: cssUtils.$spacing-m;
   }
 
   &__input-wrapper {

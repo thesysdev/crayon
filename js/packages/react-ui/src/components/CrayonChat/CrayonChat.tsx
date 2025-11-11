@@ -44,6 +44,9 @@ type CrayonChatProps = {
 
   messageLoadingComponent?: () => React.ReactNode;
   disableThemeProvider?: boolean;
+
+  isArtifactActive?: boolean;
+  renderArtifact?: () => React.ReactNode;
 };
 
 const DummyThemeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -65,6 +68,8 @@ export const CrayonChat = ({
   theme,
   scrollVariant = "user-message-anchor",
   disableThemeProvider,
+  isArtifactActive,
+  renderArtifact,
 }: CrayonChatProps) => {
   invariant(processMessage || userThreadManager, "processMessage or threadManager is required");
   const ThemeProviderComponent = disableThemeProvider ? DummyThemeProvider : ThemeProvider;
@@ -148,6 +153,8 @@ export const CrayonChat = ({
             agentName={agentName}
             messageLoadingComponent={messageLoadingComponent}
             scrollVariant={scrollVariant}
+            isArtifactActive={isArtifactActive}
+            renderArtifact={renderArtifact}
           />
         ) : (
           <ComposedStandalone
@@ -155,6 +162,8 @@ export const CrayonChat = ({
             agentName={agentName}
             messageLoadingComponent={messageLoadingComponent}
             scrollVariant={scrollVariant}
+            isArtifactActive={isArtifactActive}
+            renderArtifact={renderArtifact}
           />
         )}
       </ChatProvider>

@@ -12,12 +12,12 @@ export const SidebarContainer = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const { isSidebarOpen, setIsSidebarOpen } = useShellStore((state) => ({
+  const { isSidebarOpen, setIsSidebarOpen, isArtifactActive } = useShellStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
     setIsSidebarOpen: state.setIsSidebarOpen,
+    isArtifactActive: state.isArtifactActive,
   }));
   const { layout } = useLayoutContext() || {};
-
   const isMobile = layout === "mobile";
 
   useEffect(() => {
@@ -45,6 +45,7 @@ export const SidebarContainer = ({
           "crayon-shell-sidebar-container",
           {
             "crayon-shell-sidebar-container--collapsed": !isSidebarOpen,
+            "crayon-shell-sidebar-container--artifact-active": isArtifactActive && !isMobile,
           },
           className,
         )}
@@ -91,11 +92,15 @@ export const SidebarContent = ({
     isSidebarOpen: state.isSidebarOpen,
   }));
 
-  if (!isSidebarOpen) {
-    return null;
-  }
-
-  return <div className={clsx("crayon-shell-sidebar-content", className)}>{children}</div>;
+  return (
+    <div
+      className={clsx("crayon-shell-sidebar-content", className, {
+        "crayon-shell-sidebar-content--collapsed": !isSidebarOpen,
+      })}
+    >
+      {children}
+    </div>
+  );
 };
 
 export const SidebarSeparator = () => {
