@@ -7,19 +7,34 @@ import {
 } from "@crayonai/react-core";
 import clsx from "clsx";
 import { ArrowRight, Square } from "lucide-react";
-import React, { memo, useLayoutEffect, useRef } from "react";
+import React, { memo, useEffect, useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../hooks/useComposerState";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { IconButton } from "../IconButton";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
+import { useShellStore } from "../Shell/store";
 
 export const ThreadContainer = ({
   children,
   className,
+  isArtifactActive = false,
+  renderArtifact = () => null,
 }: {
   children?: React.ReactNode;
   className?: string;
+  isArtifactActive?: boolean;
+  renderArtifact?: () => React.ReactNode;
 }) => {
+  const { setIsArtifactActive, setArtifactRenderer } = useShellStore((state) => ({
+    setIsArtifactActive: state.setIsArtifactActive,
+    setArtifactRenderer: state.setArtifactRenderer,
+  }));
+
+  useEffect(() => {
+    setIsArtifactActive(isArtifactActive);
+    setArtifactRenderer(renderArtifact);
+  }, [isArtifactActive, setIsArtifactActive]);
+
   return <div className={clsx("crayon-copilot-shell-thread-container", className)}>{children}</div>;
 };
 
@@ -41,7 +56,12 @@ export const ScrollArea = ({
   userMessageSelector?: string;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+
   const { messages, isRunning, isLoadingMessages } = useThreadState();
+  const { isArtifactActive, artifactRenderer } = useShellStore((store) => ({
+    isArtifactActive: store.isArtifactActive,
+    artifactRenderer: store.artifactRenderer,
+  }));
 
   useScrollToBottom({
     ref,
@@ -53,18 +73,25 @@ export const ScrollArea = ({
   });
 
   return (
-    <div
-      ref={ref}
-      className={clsx(
-        "crayon-copilot-shell-thread-scroll-area",
-        {
-          "crayon-copilot-shell-thread-scroll-area--user-message-anchor":
-            scrollVariant === "user-message-anchor",
-        },
-        className,
+    <div className="crayon-copilot-shell-thread-scroll-container">
+      <div
+        ref={ref}
+        className={clsx(
+          "crayon-copilot-shell-thread-scroll-area",
+          {
+            "crayon-copilot-shell-thread-scroll-area--user-message-anchor":
+              scrollVariant === "user-message-anchor",
+          },
+          className,
+        )}
+      >
+        {children}
+      </div>
+      {isArtifactActive && (
+        <div className="crayon-copilot-shell-thread-artifact-panel--mobile">
+          {artifactRenderer()}
+        </div>
       )}
-    >
-      {children}
     </div>
   );
 };

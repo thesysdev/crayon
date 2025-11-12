@@ -15,6 +15,11 @@ $sidebar-mobile-padding: cssUtils.$spacing-l;
   display: flex;
   flex-direction: column;
   gap: cssUtils.$spacing-m;
+  z-index: 999;
+  transition:
+    width 0.4s ease-in-out,
+    height 0.4s ease-in-out,
+    transform 0.4s ease-in-out;
 
   .crayon-shell-container--mobile & {
     width: $sidebar-mobile-width;
@@ -29,15 +34,21 @@ $sidebar-mobile-padding: cssUtils.$spacing-l;
   }
 
   &--collapsed {
-    width: auto;
+    width: 104px; // Fixed width for collapsed state (logo:36px + button:40px + gaps:12px + padding:16px)
     height: min-content;
-    position: absolute;
+    transform: translateX(0);
+    gap: 0;
 
     .crayon-shell-container--mobile & {
       width: $sidebar-mobile-width;
       height: 100%;
       left: -$sidebar-mobile-width;
+      transform: none; // Reset transform for mobile
     }
+  }
+
+  &--hidden {
+    display: none;
   }
 }
 
@@ -74,6 +85,18 @@ $sidebar-mobile-padding: cssUtils.$spacing-l;
   flex-direction: column;
   gap: cssUtils.$spacing-m;
   overflow: hidden;
+  opacity: 1;
+  transition:
+    opacity 0.2s ease-in-out 0.3s,
+    display 0.4s 0.5s;
+
+  &--collapsed {
+    opacity: 0;
+    display: none;
+    transition:
+      opacity 0.2s ease-in-out,
+      display 0s 0.5s; // Delay display:none until after transitions complete
+  }
 }
 
 .crayon-shell-sidebar-separator {
@@ -96,6 +119,7 @@ $sidebar-mobile-padding: cssUtils.$spacing-l;
   height: 100%;
   background-color: cssUtils.$bg-overlay;
   transition: opacity 0.3s ease-in-out;
+  z-index: 99;
 
   &--collapsed {
     opacity: 0;
