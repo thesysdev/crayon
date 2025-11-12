@@ -45,7 +45,7 @@ export const SidebarContainer = ({
           "crayon-shell-sidebar-container",
           {
             "crayon-shell-sidebar-container--collapsed": !isSidebarOpen,
-            "crayon-shell-sidebar-container--artifact-active": isArtifactActive && !isMobile,
+            "crayon-shell-sidebar-container--hidden": isArtifactActive && !isMobile,
           },
           className,
         )}
