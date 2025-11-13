@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Line, LineChart as RechartsLineChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
+import { X_AXIS_PADDING } from "../constants";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import {
   useAutoAngleCalculation,
@@ -45,7 +46,7 @@ export interface LineChartCondensedProps<T extends LineChartData> {
   strokeWidth?: number;
 }
 
-const CHART_HEIGHT = 200;
+const CHART_HEIGHT = 296;
 const CHART_CONTAINER_BOTTOM_MARGIN = 10;
 
 const LineChartCondensedComponent = <T extends LineChartData>({
@@ -77,9 +78,7 @@ const LineChartCondensedComponent = <T extends LineChartData>({
 
   const { angle: calculatedAngle, height: xAxisHeight } = useAutoAngleCalculation(
     maxLabelWidth,
-    yAxisWidth,
     tickVariant === "angled",
-    showYAxis,
   );
 
   const effectiveHeight = useMemo(() => {
@@ -87,7 +86,7 @@ const LineChartCondensedComponent = <T extends LineChartData>({
       return xAxisHeight + height;
     }
     return height;
-  }, [height, xAxisHeight]);
+  }, [height, xAxisHeight, tickVariant]);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -262,7 +261,10 @@ const LineChartCondensedComponent = <T extends LineChartData>({
                     tick={<CondensedXAxisTick />}
                     angle={calculatedAngle}
                     orientation="bottom"
-                    padding={{}}
+                    padding={{
+                      left: X_AXIS_PADDING,
+                      right: X_AXIS_PADDING,
+                    }}
                   />
                   {/* Y-axis is rendered in the separate synchronized chart */}
 

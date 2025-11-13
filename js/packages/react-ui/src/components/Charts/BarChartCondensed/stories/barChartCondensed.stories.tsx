@@ -1390,7 +1390,6 @@ export const SimpleExample: Story = {
       { label: "C", value: 30 },
     ],
     categoryKey: "label",
-    dataKeys: ["value"],
     height: 180,
     theme: "ocean",
   },

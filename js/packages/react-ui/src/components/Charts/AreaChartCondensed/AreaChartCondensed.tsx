@@ -4,6 +4,7 @@ import { Area, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { AreaChartData, AreaChartVariant } from "../AreaChart/types";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
+import { X_AXIS_PADDING } from "../constants";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import {
   useAutoAngleCalculation,
@@ -44,7 +45,7 @@ export interface AreaChartCondensedProps<T extends AreaChartData> {
   width?: number;
 }
 
-const CHART_HEIGHT = 200;
+const CHART_HEIGHT = 296;
 const CHART_CONTAINER_BOTTOM_MARGIN = 10;
 
 const AreaChartCondensedComponent = <T extends AreaChartData>({
@@ -75,9 +76,7 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
 
   const { angle: calculatedAngle, height: xAxisHeight } = useAutoAngleCalculation(
     maxLabelWidth,
-    yAxisWidth,
     tickVariant === "angled",
-    showYAxis,
   );
 
   const effectiveHeight = useMemo(() => {
@@ -85,7 +84,7 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
       return xAxisHeight + height;
     }
     return height;
-  }, [height, xAxisHeight]);
+  }, [height, xAxisHeight, tickVariant]);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -261,7 +260,10 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
                     tick={<CondensedXAxisTick />}
                     angle={calculatedAngle}
                     orientation="bottom"
-                    padding={{}}
+                    padding={{
+                      left: X_AXIS_PADDING,
+                      right: X_AXIS_PADDING,
+                    }}
                   />
                   {/* Y-axis is rendered in the separate synchronized chart */}
 

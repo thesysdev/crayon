@@ -5,6 +5,7 @@ import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { BarChartData, BarChartVariant } from "../BarChart/types";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
+import { X_AXIS_PADDING } from "../constants";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import {
   useAutoAngleCalculation,
@@ -53,7 +54,7 @@ const BAR_GAP = 10;
 const BAR_CATEGORY_GAP = "20%";
 const BAR_INTERNAL_LINE_WIDTH = 1;
 const BAR_RADIUS = 4;
-const CHART_HEIGHT = 200;
+const CHART_HEIGHT = 296;
 const CHART_CONTAINER_BOTTOM_MARGIN = 10;
 
 const BarChartCondensedComponent = <T extends BarChartData>({
@@ -86,9 +87,7 @@ const BarChartCondensedComponent = <T extends BarChartData>({
 
   const { angle: calculatedAngle, height: xAxisHeight } = useAutoAngleCalculation(
     maxLabelWidth,
-    yAxisWidth,
     tickVariant === "angled",
-    showYAxis,
   );
 
   const effectiveHeight = useMemo(() => {
@@ -131,12 +130,12 @@ const BarChartCondensedComponent = <T extends BarChartData>({
   const calculatedRadius = useMemo(() => {
     let radiusValue: number | string = 0;
     if (useThemeRadius) {
-      radiusValue = userTheme.roundedXs ?? radius ?? BAR_RADIUS;
+      radiusValue = userTheme.rounded2xs ?? radius ?? BAR_RADIUS;
     } else {
       radiusValue = radius ?? BAR_RADIUS;
     }
     return typeof radiusValue === "string" ? parseInt(radiusValue) : radiusValue;
-  }, [userTheme.roundedXs, radius, useThemeRadius]);
+  }, [userTheme.rounded2xs, radius, useThemeRadius]);
 
   const barInternalLineColor = useMemo(() => {
     if (mode === "light") {
@@ -256,6 +255,7 @@ const BarChartCondensedComponent = <T extends BarChartData>({
     yAxisWidth,
     chartMargin,
     xAxisHeight,
+    setLabelWidth,
   ]);
 
   const barElements = useMemo(() => {
@@ -368,7 +368,10 @@ const BarChartCondensedComponent = <T extends BarChartData>({
                     tick={<CondensedXAxisTick />}
                     angle={calculatedAngle}
                     orientation="bottom"
-                    padding={{}}
+                    padding={{
+                      left: X_AXIS_PADDING,
+                      right: X_AXIS_PADDING,
+                    }}
                   />
                   {/* Y-axis is rendered in the separate synchronized chart */}
 
