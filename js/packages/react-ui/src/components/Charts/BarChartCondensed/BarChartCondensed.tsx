@@ -1,11 +1,10 @@
 import clsx from "clsx";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { BarChartData, BarChartVariant } from "../BarChart/types";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
-import { X_AXIS_PADDING } from "../constants";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import {
   useAutoAngleCalculation,
@@ -18,12 +17,14 @@ import {
   CondensedXAxisTick,
   CondensedXAxisTickVariant,
   CustomTooltipContent,
+  DefaultLegend,
   LineInBarShape,
   YAxisTick,
 } from "../shared";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
+import { LegendItem } from "../types";
 import { getBarStackInfo, getRadiusArray } from "../utils/BarCharts/BarChartsUtils";
-import { get2dChartConfig, getDataKeys } from "../utils/dataUtils";
+import { get2dChartConfig, getDataKeys, getLegendItems } from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 
 export interface BarChartCondensedProps<T extends BarChartData> {
@@ -38,6 +39,9 @@ export interface BarChartCondensedProps<T extends BarChartData> {
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
   showYAxis?: boolean;
+  xAxisLabel?: React.ReactNode;
+  yAxisLabel?: React.ReactNode;
+  legend?: boolean;
   className?: string;
   height?: number;
   width?: number;
@@ -64,6 +68,9 @@ const BarChartCondensedComponent = <T extends BarChartData>({
   radius,
   isAnimationActive = false,
   showYAxis = true,
+  xAxisLabel,
+  yAxisLabel,
+  legend = true,
   className,
   height = CHART_HEIGHT,
   width,
@@ -118,7 +125,9 @@ const BarChartCondensedComponent = <T extends BarChartData>({
 
   const { mode, theme: userTheme } = useTheme();
 
-  // if we have the theme provider, we use the theme radius, otherwise we use the radius prop or the default value, if theme provider is present and we don't want to use the theme radius, then pass false to useThemRadius prop
+  // if we have the theme provider, we use the theme radius, otherwise we use the radius prop or the default value,
+  // if theme provider is present and we don't want to use the theme radius,
+  // then pass false to useThemRadius prop
   const calculatedRadius = useMemo(() => {
     let radiusValue: number | string = 0;
     if (useThemeRadius) {
@@ -127,7 +136,7 @@ const BarChartCondensedComponent = <T extends BarChartData>({
       radiusValue = radius ?? BAR_RADIUS;
     }
     return typeof radiusValue === "string" ? parseInt(radiusValue) : radiusValue;
-  }, [userTheme.roundedXs, radius]);
+  }, [userTheme.roundedXs, radius, useThemeRadius]);
 
   const barInternalLineColor = useMemo(() => {
     if (mode === "light") {
@@ -137,12 +146,19 @@ const BarChartCondensedComponent = <T extends BarChartData>({
   }, [mode]);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
   const [isSideBarTooltipOpen, setIsSideBarTooltipOpen] = useState(false);
   const [sideBarTooltipData, setSideBarTooltipData] = useState<SideBarChartData>({
     title: "",
     values: [],
   });
   const [hoveredCategory, setHoveredCategory] = useState<string | number | null>(null);
+  const [isLegendExpanded, setIsLegendExpanded] = useState(false);
+
+  // Use provided width or observed width
+  const effectiveWidth = useMemo(() => {
+    return width ?? containerWidth;
+  }, [width, containerWidth]);
 
   // Handle mouse events for bar hovering
   const handleChartMouseMove = useCallback((state: any) => {
@@ -154,6 +170,93 @@ const BarChartCondensedComponent = <T extends BarChartData>({
   const handleChartMouseLeave = useCallback(() => {
     setHoveredCategory(null);
   }, []);
+
+  // Observe container width for legend
+  useEffect(() => {
+    // Only set up ResizeObserver if width is not provided
+    if (width || !containerRef.current) {
+      return () => {};
+    }
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      // there is only one entry in the entries array because we are observing the chart container
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [width]);
+
+  useEffect(() => {
+    setIsLegendExpanded(false);
+  }, [dataKeys]);
+
+  // Memoize legend items creation
+  const legendItems: LegendItem[] = useMemo(() => {
+    if (!legend) {
+      return [];
+    }
+    return getLegendItems(dataKeys, colors, icons);
+  }, [dataKeys, colors, icons, legend]);
+
+  const yAxis = useMemo(() => {
+    if (!showYAxis) {
+      return null;
+    }
+    return (
+      <div className="crayon-bar-chart-condensed-y-axis-container">
+        {/* Y-axis only chart - synchronized with main chart */}
+        <RechartsBarChart
+          key={`y-axis-bar-chart-condensed-${id}`}
+          width={yAxisWidth}
+          height={effectiveHeight}
+          data={data}
+          stackOffset="sign"
+          margin={{
+            top: chartMargin.top,
+            bottom: xAxisHeight + chartMargin.bottom, // this is required to give space for x-axis
+            left: 0,
+            right: 0,
+          }}
+        >
+          <YAxis
+            width={yAxisWidth}
+            tickLine={false}
+            axisLine={false}
+            tick={<YAxisTick setLabelWidth={setLabelWidth} />}
+          />
+          {/* Invisible bars to maintain scale synchronization */}
+          {dataKeys.map((key) => {
+            return (
+              <Bar
+                key={`yaxis-bar-chart-condensed-${key}`}
+                dataKey={key}
+                fill="transparent"
+                stackId={variant === "stacked" ? "a" : undefined}
+                isAnimationActive={false}
+                maxBarSize={0}
+              />
+            );
+          })}
+        </RechartsBarChart>
+      </div>
+    );
+  }, [
+    showYAxis,
+    effectiveHeight,
+    data,
+    dataKeys,
+    variant,
+    id,
+    yAxisWidth,
+    chartMargin,
+    xAxisHeight,
+  ]);
 
   const barElements = useMemo(() => {
     return dataKeys.map((key) => {
@@ -205,7 +308,7 @@ const BarChartCondensedComponent = <T extends BarChartData>({
     dataKeys,
     transformedKeys,
     variant,
-    radius,
+    calculatedRadius,
     isAnimationActive,
     barInternalLineColor,
     hoveredCategory,
@@ -221,73 +324,81 @@ const BarChartCondensedComponent = <T extends BarChartData>({
         setData={setSideBarTooltipData}
       >
         <div
-          ref={containerRef}
-          className={clsx("crayon-bar-chart-condensed", className)}
+          className={clsx("crayon-bar-chart-condensed-container", className)}
           style={{
-            width: width ? `${width}px` : "100%",
-            height: `${effectiveHeight}px`,
+            width: width ? `${width}px` : undefined,
           }}
         >
-          <ChartContainer
-            config={chartConfig}
-            style={{ width: "100%", height: "100%" }}
-            rechartsProps={{
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <RechartsBarChart
-              accessibilityLayer
-              key={`bar-chart-condensed-${id}`}
-              data={data}
-              margin={chartMargin}
-              barGap={BAR_GAP}
-              barCategoryGap={BAR_CATEGORY_GAP}
-              onMouseMove={handleChartMouseMove}
-              onMouseLeave={handleChartMouseLeave}
-            >
-              {grid && cartesianGrid()}
-
-              <XAxis
-                dataKey={categoryKey as string}
-                tickLine={false}
-                axisLine={false}
-                textAnchor={tickVariant === "angled" ? "end" : "middle"}
-                interval="preserveStartEnd"
-                minTickGap={5}
-                height={xAxisHeight}
-                tick={<CondensedXAxisTick />}
-                angle={calculatedAngle}
-                orientation="bottom"
-                padding={{
-                  left: X_AXIS_PADDING,
-                  right: X_AXIS_PADDING,
+          {yAxisLabel && (
+            <div className="crayon-bar-chart-condensed-y-axis-label">{yAxisLabel}</div>
+          )}
+          <div className="crayon-bar-chart-condensed-container-inner" ref={containerRef}>
+            {/* Y-axis of the chart */}
+            {yAxis}
+            <div className="crayon-bar-chart-condensed">
+              <ChartContainer
+                config={chartConfig}
+                style={{ width: "100%", height: effectiveHeight }}
+                rechartsProps={{
+                  width: "100%",
+                  height: "100%",
                 }}
-              />
+              >
+                <RechartsBarChart
+                  stackOffset="sign"
+                  accessibilityLayer
+                  key={`bar-chart-condensed-${id}`}
+                  data={data}
+                  margin={chartMargin}
+                  barGap={BAR_GAP}
+                  barCategoryGap={BAR_CATEGORY_GAP}
+                  onMouseMove={handleChartMouseMove}
+                  onMouseLeave={handleChartMouseLeave}
+                >
+                  {grid && cartesianGrid()}
 
-              {showYAxis && (
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  tick={<YAxisTick setLabelWidth={setLabelWidth} />}
-                  width={yAxisWidth}
-                />
-              )}
+                  <XAxis
+                    dataKey={categoryKey as string}
+                    tickLine={false}
+                    axisLine={false}
+                    textAnchor={tickVariant === "angled" ? "end" : "middle"}
+                    interval="preserveStartEnd"
+                    minTickGap={5}
+                    height={xAxisHeight}
+                    tick={<CondensedXAxisTick />}
+                    angle={calculatedAngle}
+                    orientation="bottom"
+                    padding={{}}
+                  />
+                  {/* Y-axis is rendered in the separate synchronized chart */}
 
-              <ChartTooltip
-                cursor={{
-                  fill: "var(--crayon-sunk-fills)",
-                  stroke: "var(--crayon-stroke-default)",
-                  opacity: 1,
-                  strokeWidth: 1,
-                }}
-                content={<CustomTooltipContent parentRef={containerRef} />}
-                offset={10}
-              />
+                  <ChartTooltip
+                    cursor={{
+                      fill: "var(--crayon-sunk-fills)",
+                      stroke: "var(--crayon-stroke-default)",
+                      opacity: 1,
+                      strokeWidth: 1,
+                    }}
+                    content={<CustomTooltipContent parentRef={containerRef} />}
+                    offset={10}
+                  />
 
-              {barElements}
-            </RechartsBarChart>
-          </ChartContainer>
+                  {barElements}
+                </RechartsBarChart>
+              </ChartContainer>
+            </div>
+          </div>
+          {xAxisLabel && (
+            <div className="crayon-bar-chart-condensed-x-axis-label">{xAxisLabel}</div>
+          )}
+          {legend && (
+            <DefaultLegend
+              items={legendItems}
+              containerWidth={effectiveWidth}
+              isExpanded={isLegendExpanded}
+              setIsExpanded={setIsLegendExpanded}
+            />
+          )}
         </div>
       </SideBarTooltipProvider>
     </LabelTooltipProvider>

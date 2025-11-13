@@ -1,9 +1,8 @@
 import clsx from "clsx";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Line, LineChart as RechartsLineChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
-import { X_AXIS_PADDING } from "../constants";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import {
   useAutoAngleCalculation,
@@ -18,10 +17,12 @@ import {
   CondensedXAxisTick,
   CondensedXAxisTickVariant,
   CustomTooltipContent,
+  DefaultLegend,
   YAxisTick,
 } from "../shared";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
-import { get2dChartConfig, getDataKeys } from "../utils/dataUtils";
+import { LegendItem } from "../types";
+import { get2dChartConfig, getDataKeys, getLegendItems } from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 
 export interface LineChartCondensedProps<T extends LineChartData> {
@@ -35,6 +36,9 @@ export interface LineChartCondensedProps<T extends LineChartData> {
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
   showYAxis?: boolean;
+  xAxisLabel?: React.ReactNode;
+  yAxisLabel?: React.ReactNode;
+  legend?: boolean;
   className?: string;
   height?: number;
   width?: number;
@@ -55,6 +59,9 @@ const LineChartCondensedComponent = <T extends LineChartData>({
   icons = {},
   isAnimationActive = false,
   showYAxis = true,
+  xAxisLabel,
+  yAxisLabel,
+  legend = true,
   className,
   height = CHART_HEIGHT,
   width,
@@ -108,11 +115,104 @@ const LineChartCondensedComponent = <T extends LineChartData>({
   );
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
   const [isSideBarTooltipOpen, setIsSideBarTooltipOpen] = useState(false);
   const [sideBarTooltipData, setSideBarTooltipData] = useState<SideBarChartData>({
     title: "",
     values: [],
   });
+  const [isLegendExpanded, setIsLegendExpanded] = useState(false);
+
+  // Use provided width or observed width
+  const effectiveWidth = useMemo(() => {
+    return width ?? containerWidth;
+  }, [width, containerWidth]);
+
+  // Observe container width for legend
+  useEffect(() => {
+    // Only set up ResizeObserver if width is not provided
+    if (width || !containerRef.current) {
+      return () => {};
+    }
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      // there is only one entry in the entries array because we are observing the chart container
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [width]);
+
+  useEffect(() => {
+    setIsLegendExpanded(false);
+  }, [dataKeys]);
+
+  // Memoize legend items creation
+  const legendItems: LegendItem[] = useMemo(() => {
+    if (!legend) {
+      return [];
+    }
+    return getLegendItems(dataKeys, colors, icons);
+  }, [dataKeys, colors, icons, legend]);
+
+  const yAxis = useMemo(() => {
+    if (!showYAxis) {
+      return null;
+    }
+    return (
+      <div className="crayon-line-chart-condensed-y-axis-container">
+        {/* Y-axis only chart - synchronized with main chart */}
+        <RechartsLineChart
+          key={`y-axis-line-chart-condensed-${id}`}
+          width={yAxisWidth}
+          height={effectiveHeight}
+          data={data}
+          margin={{
+            top: chartMargin.top,
+            bottom: xAxisHeight + chartMargin.bottom, // this is required to give space for x-axis
+            left: 0,
+            right: 0,
+          }}
+        >
+          <YAxis
+            width={yAxisWidth}
+            tickLine={false}
+            axisLine={false}
+            tick={<YAxisTick setLabelWidth={setLabelWidth} />}
+          />
+          {/* Invisible lines to maintain scale synchronization */}
+          {dataKeys.map((key) => {
+            return (
+              <Line
+                key={`yaxis-line-chart-condensed-${key}`}
+                dataKey={key}
+                stroke="transparent"
+                strokeWidth={0}
+                dot={false}
+                isAnimationActive={false}
+              />
+            );
+          })}
+        </RechartsLineChart>
+      </div>
+    );
+  }, [
+    showYAxis,
+    effectiveHeight,
+    data,
+    dataKeys,
+    id,
+    yAxisWidth,
+    chartMargin,
+    xAxisHeight,
+    setLabelWidth,
+  ]);
 
   return (
     <LabelTooltipProvider>
@@ -123,78 +223,85 @@ const LineChartCondensedComponent = <T extends LineChartData>({
         setData={setSideBarTooltipData}
       >
         <div
-          ref={containerRef}
-          className={clsx("crayon-line-chart-condensed", className)}
+          className={clsx("crayon-line-chart-condensed-container", className)}
           style={{
-            width: width ? `${width}px` : "100%",
-            height: `${effectiveHeight}px`,
+            width: width ? `${width}px` : undefined,
           }}
         >
-          <ChartContainer
-            config={chartConfig}
-            style={{ width: "100%", height: "100%" }}
-            rechartsProps={{
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <RechartsLineChart
-              accessibilityLayer
-              key={`line-chart-condensed-${id}`}
-              data={data}
-              margin={chartMargin}
-            >
-              {grid && cartesianGrid()}
-
-              <XAxis
-                dataKey={categoryKey as string}
-                tickLine={false}
-                axisLine={false}
-                textAnchor={tickVariant === "angled" ? "end" : "middle"}
-                interval="preserveStartEnd"
-                minTickGap={5}
-                height={xAxisHeight}
-                tick={<CondensedXAxisTick />}
-                angle={calculatedAngle}
-                orientation="bottom"
-                padding={{
-                  left: X_AXIS_PADDING,
-                  right: X_AXIS_PADDING,
+          {yAxisLabel && (
+            <div className="crayon-line-chart-condensed-y-axis-label">{yAxisLabel}</div>
+          )}
+          <div className="crayon-line-chart-condensed-container-inner" ref={containerRef}>
+            {/* Y-axis of the chart */}
+            {yAxis}
+            <div className="crayon-line-chart-condensed">
+              <ChartContainer
+                config={chartConfig}
+                style={{ width: "100%", height: effectiveHeight }}
+                rechartsProps={{
+                  width: "100%",
+                  height: "100%",
                 }}
-              />
+              >
+                <RechartsLineChart
+                  accessibilityLayer
+                  key={`line-chart-condensed-${id}`}
+                  data={data}
+                  margin={chartMargin}
+                >
+                  {grid && cartesianGrid()}
 
-              {showYAxis && (
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  tick={<YAxisTick setLabelWidth={setLabelWidth} />}
-                  width={yAxisWidth}
-                />
-              )}
-
-              <ChartTooltip
-                content={<CustomTooltipContent parentRef={containerRef} />}
-                offset={10}
-              />
-
-              {dataKeys.map((key) => {
-                const transformedKey = transformedKeys[key];
-                const color = `var(--color-${transformedKey})`;
-                return (
-                  <Line
-                    key={`line-${key}`}
-                    dataKey={key}
-                    type={variant}
-                    stroke={color}
-                    strokeWidth={strokeWidth}
-                    dot={false}
-                    activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
-                    isAnimationActive={isAnimationActive}
+                  <XAxis
+                    dataKey={categoryKey as string}
+                    tickLine={false}
+                    axisLine={false}
+                    textAnchor={tickVariant === "angled" ? "end" : "middle"}
+                    interval="preserveStartEnd"
+                    minTickGap={5}
+                    height={xAxisHeight}
+                    tick={<CondensedXAxisTick />}
+                    angle={calculatedAngle}
+                    orientation="bottom"
+                    padding={{}}
                   />
-                );
-              })}
-            </RechartsLineChart>
-          </ChartContainer>
+                  {/* Y-axis is rendered in the separate synchronized chart */}
+
+                  <ChartTooltip
+                    content={<CustomTooltipContent parentRef={containerRef} />}
+                    offset={10}
+                  />
+
+                  {dataKeys.map((key) => {
+                    const transformedKey = transformedKeys[key];
+                    const color = `var(--color-${transformedKey})`;
+                    return (
+                      <Line
+                        key={`line-${key}`}
+                        dataKey={key}
+                        type={variant}
+                        stroke={color}
+                        strokeWidth={strokeWidth}
+                        dot={false}
+                        activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
+                        isAnimationActive={isAnimationActive}
+                      />
+                    );
+                  })}
+                </RechartsLineChart>
+              </ChartContainer>
+            </div>
+          </div>
+          {xAxisLabel && (
+            <div className="crayon-line-chart-condensed-x-axis-label">{xAxisLabel}</div>
+          )}
+          {legend && (
+            <DefaultLegend
+              items={legendItems}
+              containerWidth={effectiveWidth}
+              isExpanded={isLegendExpanded}
+              setIsExpanded={setIsLegendExpanded}
+            />
+          )}
         </div>
       </SideBarTooltipProvider>
     </LabelTooltipProvider>

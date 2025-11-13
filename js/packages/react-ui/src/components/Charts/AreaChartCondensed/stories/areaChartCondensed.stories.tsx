@@ -1289,3 +1289,22 @@ export const TickVariantComparisonDenseData: Story = {
     },
   },
 };
+
+export const SimpleExample: Story = {
+  args: {
+    data: [
+      { label: "A", value: 40 },
+      { label: "B", value: 65 },
+      { label: "C", value: 30 },
+    ],
+    categoryKey: "label",
+    dataKeys: ["value"],
+    height: 180,
+    theme: "ocean",
+  },
+  render: (args: any) => (
+    <Card style={{ width: "620px", padding: "16px" }}>
+      <AreaChartCondensed {...args} xAxisLabel="Month" yAxisLabel="Sales" />
+    </Card>
+  ),
+};
