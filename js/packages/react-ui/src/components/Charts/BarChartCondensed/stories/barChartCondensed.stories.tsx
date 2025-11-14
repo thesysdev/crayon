@@ -511,7 +511,7 @@ export const DataSize_Small5PointsStacked: Story = {
       <div style={{ marginBottom: "8px", fontSize: "12px", color: "#666" }}>
         <strong>Test:</strong> Small dataset, 2 series (stacked) | <strong>Data points:</strong> 5
       </div>
-      <BarChartCondensed {...args} />
+      <BarChartCondensed {...args} xAxisLabel="Month" yAxisLabel="Sales" />
     </Card>
   ),
 };
@@ -1377,6 +1377,34 @@ export const TickVariantComparisonDenseData: Story = {
       description: {
         story:
           "Comparison of tick variants (singleLine and angled) with dense data (30 data points). Shows how each variant handles label collision with Recharts' built-in collision detection.",
+      },
+    },
+  },
+};
+
+export const SimpleExample: Story = {
+  args: {
+    data: [
+      { label: "A", value: 40 },
+      { label: "B", value: 65 },
+      { label: "C", value: 30 },
+    ],
+    categoryKey: "label",
+    height: 180,
+    theme: "ocean",
+  },
+  render: (args: any) => (
+    <Card style={{ width: "620px", padding: "16px" }}>
+      <div style={{ marginBottom: "8px", fontSize: "14px", color: "#666" }}>
+        Simple BarChartCondensed Example
+      </div>
+      <BarChartCondensed {...args} xAxisLabel="Month" yAxisLabel="Sales" />
+    </Card>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: "A simple BarChartCondensed rendering with 3 data points and a single series.",
       },
     },
   },

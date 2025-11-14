@@ -108,7 +108,7 @@ const calculateTwoLevelChartDimensions = (width: number): TwoLevelChartDimension
  */
 const getHoverStyles = (index: number, activeIndex: number | null): HoverStyles => {
   return {
-    opacity: activeIndex === null || activeIndex === index ? 1 : 0.6,
+    opacity: activeIndex === null || activeIndex === index ? 1 : 0.5,
     stroke: activeIndex === index ? "#fff" : "none",
     strokeWidth: activeIndex === index ? 2 : 0,
   };
@@ -206,23 +206,6 @@ const createEventHandlers = (
 };
 
 // ==========================================
-// Sector Style Utilities
-// ==========================================
-
-/**
- * Creates sector style configuration
- * @param cornerRadius - Corner radius for sectors
- * @param paddingAngle - Padding angle between sectors
- * @returns Sector style configuration
- */
-const createSectorStyle = (cornerRadius: number = 0, paddingAngle: number = 0) => {
-  return {
-    cornerRadius,
-    paddingAngle,
-  };
-};
-
-// ==========================================
 // Export all utility functions
 // ==========================================
 
@@ -232,7 +215,6 @@ export {
   calculateTwoLevelChartDimensions,
   createAnimationConfig,
   createEventHandlers,
-  createSectorStyle,
   getHoverStyles,
   transformDataWithPercentages,
   useChartHover,

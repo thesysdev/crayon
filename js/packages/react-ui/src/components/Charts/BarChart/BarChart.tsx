@@ -65,6 +65,7 @@ export interface BarChartProps<T extends BarChartData> {
   className?: string;
   height?: number;
   width?: number;
+  useThemeRadius?: boolean;
 }
 
 const BAR_GAP = 10; // Gap between bars
@@ -82,7 +83,7 @@ const BarChartComponent = <T extends BarChartData>({
   tickVariant = "multiLine",
   grid = true,
   icons = {},
-  radius = BAR_RADIUS,
+  radius,
   isAnimationActive = false,
   showYAxis = true,
   xAxisLabel,
@@ -91,6 +92,7 @@ const BarChartComponent = <T extends BarChartData>({
   className,
   height,
   width,
+  useThemeRadius = true,
 }: BarChartProps<T>) => {
   const widthOfGroup = getWidthOfGroup(data, categoryKey as string, variant);
 
@@ -316,7 +318,7 @@ const BarChartComponent = <T extends BarChartData>({
     setHoveredCategory(null);
   }, []);
 
-  const { mode } = useTheme();
+  const { mode, theme: userTheme } = useTheme();
 
   const barInternalLineColor = useMemo(() => {
     if (mode === "light") {
@@ -324,6 +326,19 @@ const BarChartComponent = <T extends BarChartData>({
     }
     return "rgba(0, 0, 0, 0.3)";
   }, [mode]);
+
+  // if we have the theme provider, we use the theme radius, otherwise we use the radius prop or the default value,
+  // if theme provider is present and we don't want to use the theme radius,
+  // then pass false to useThemRadius prop
+  const calculatedRadius = useMemo(() => {
+    let radiusValue: number | string = 0;
+    if (useThemeRadius) {
+      radiusValue = userTheme.rounded2xs ?? radius ?? BAR_RADIUS;
+    } else {
+      radiusValue = radius ?? BAR_RADIUS;
+    }
+    return typeof radiusValue === "string" ? parseInt(radiusValue) : radiusValue;
+  }, [userTheme.rounded2xs, radius, useThemeRadius]);
 
   const onBarsClick = useCallback(
     (data: BarClickData) => {
@@ -364,7 +379,7 @@ const BarChartComponent = <T extends BarChartData>({
 
             const customRadius = getRadiusArray(
               variant,
-              radius,
+              calculatedRadius,
               "vertical",
               isFirstInStack,
               isLastInStack,
@@ -392,7 +407,7 @@ const BarChartComponent = <T extends BarChartData>({
     dataKeys,
     transformedKeys,
     variant,
-    radius,
+    calculatedRadius,
     isAnimationActive,
     barInternalLineColor,
     hoveredCategory,

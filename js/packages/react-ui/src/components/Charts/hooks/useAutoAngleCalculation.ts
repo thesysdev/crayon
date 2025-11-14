@@ -14,20 +14,17 @@ interface AngleCalculationResult {
  *
  * Mathematical approach:
  * - Hypotenuse = maxLabelWidth (the label length)
- * - Base = X_AXIS_PADDING + yAxisWidth (available horizontal space from left edge to first label)
+ * - Base = X_AXIS_PADDING (available horizontal space from left edge to first label)
  * - Height = sqrt(hypotenuse² - base²)
  * - Angle = atan(height / base) converted to degrees
  *
  * @param maxLabelWidth - The maximum width of all labels in pixels
- * @param yAxisWidth - The width of the Y-axis in pixels
  * @param enabled - Whether to calculate the angle (typically based on tickVariant)
  * @returns Object containing the calculated angle (in degrees) and required height
  */
 export const useAutoAngleCalculation = (
   maxLabelWidth: number,
-  yAxisWidth: number,
   enabled: boolean,
-  showYAxis: boolean,
 ): AngleCalculationResult => {
   return useMemo(() => {
     // If not enabled, return default values for horizontal labels
@@ -41,11 +38,7 @@ export const useAutoAngleCalculation = (
     // Calculate the base (horizontal distance from left edge to first label anchor)
     let base = 0;
 
-    if (showYAxis) {
-      base = X_AXIS_PADDING + yAxisWidth;
-    } else {
-      base = X_AXIS_PADDING;
-    }
+    base = X_AXIS_PADDING;
 
     // The hypotenuse is the maximum label width
     const hypotenuse = maxLabelWidth;
@@ -86,5 +79,5 @@ export const useAutoAngleCalculation = (
       angle: -finalAngle, // Negative for counter-clockwise rotation
       height: Math.max(finalHeight + 16, DEFAULT_X_AXIS_HEIGHT), // Ensure minimum height
     };
-  }, [maxLabelWidth, yAxisWidth, enabled, showYAxis]);
+  }, [maxLabelWidth, enabled]);
 };

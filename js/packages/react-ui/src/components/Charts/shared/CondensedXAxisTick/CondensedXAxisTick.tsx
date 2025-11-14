@@ -9,7 +9,6 @@ interface CondensedXAxisTickProps {
   payload?: {
     value: any;
   };
-  fill?: string;
   className?: string;
   angle?: number;
   textAnchor?: string;
@@ -17,7 +16,7 @@ interface CondensedXAxisTickProps {
 
 const CondensedXAxisTick = React.forwardRef<SVGTextElement, CondensedXAxisTickProps>(
   (props, ref) => {
-    const { x, y, payload, fill, className, angle = 0, textAnchor = "middle" } = props;
+    const { x, y, payload, className, angle = 0, textAnchor = "middle" } = props;
 
     const value = String(payload?.value || "");
 
@@ -35,7 +34,6 @@ const CondensedXAxisTick = React.forwardRef<SVGTextElement, CondensedXAxisTickPr
         x={x}
         y={y}
         dy={16}
-        fill={fill}
         textAnchor={textAnchor}
         transform={transform}
       >

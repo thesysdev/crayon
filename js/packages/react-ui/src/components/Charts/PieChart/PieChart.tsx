@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
+import { useTheme } from "../../ThemeProvider/ThemeProvider.js";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../Charts.js";
 import { useTransformedKeys } from "../hooks/index.js";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend.js";
@@ -13,7 +14,6 @@ import {
   calculateTwoLevelChartDimensions,
   createAnimationConfig,
   createEventHandlers,
-  createSectorStyle,
   getHoverStyles,
   transformDataWithPercentages,
   useChartHover,
@@ -42,11 +42,13 @@ export interface PieChartProps<T extends PieChartData> {
   // Add height and width props
   height?: number | string;
   width?: number | string;
+  useThemeRadius?: boolean;
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
 const MIN_CHART_SIZE = 150;
 const MAX_CHART_SIZE = 500;
+const CORNER_RADIUS = 0;
 
 const PieChartComponent = <T extends PieChartData>({
   data,
@@ -60,7 +62,7 @@ const PieChartComponent = <T extends PieChartData>({
   legendVariant = "stacked",
   isAnimationActive = true,
   appearance = "circular",
-  cornerRadius = 0,
+  cornerRadius,
   paddingAngle = 0,
   onMouseEnter,
   onMouseLeave,
@@ -70,12 +72,14 @@ const PieChartComponent = <T extends PieChartData>({
   minChartSize = MIN_CHART_SIZE,
   height,
   width,
+  useThemeRadius = true,
 }: PieChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
   const [hoveredLegendKey, setHoveredLegendKey] = useState<string | null>(null);
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
   const { activeIndex, handleMouseEnter, handleMouseLeave } = useChartHover();
+  const { theme: userTheme } = useTheme();
 
   // Determine layout mode based on container width
   const isRowLayout =
@@ -154,10 +158,23 @@ const PieChartComponent = <T extends PieChartData>({
     [onMouseEnter, onMouseLeave, onClick],
   );
 
-  const sectorStyle = useMemo(
-    () => createSectorStyle(cornerRadius, variant === "donut" ? 0.5 : paddingAngle),
-    [cornerRadius, variant, paddingAngle],
-  );
+  const sectorStyle = useMemo(() => {
+    const cornerRadiusTheme = userTheme.rounded2xs;
+
+    let cornerRadiusValue: number | string = 0;
+
+    if (useThemeRadius) {
+      cornerRadiusValue = cornerRadiusTheme ?? cornerRadius ?? CORNER_RADIUS;
+    } else {
+      cornerRadiusValue = cornerRadius ?? CORNER_RADIUS;
+    }
+
+    return {
+      cornerRadius:
+        typeof cornerRadiusValue === "string" ? parseInt(cornerRadiusValue) : cornerRadiusValue,
+      paddingAngle: variant === "donut" ? 0.5 : paddingAngle,
+    };
+  }, [cornerRadius, variant, paddingAngle, useThemeRadius, userTheme.rounded2xs]);
 
   const colors = useChartPalette({
     chartThemeName: theme,
