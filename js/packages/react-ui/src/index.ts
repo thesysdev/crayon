@@ -42,6 +42,7 @@ export * from "./components/TextArea";
 export * from "./components/TextCallout";
 export * from "./components/TextContent";
 export { Theme, ThemeProvider, themePresets } from "./components/ThemeProvider";
+export * from "./components/ThemeProvider/experimentalThemePresets";
 
 // this is the context providers that are used in the shell
 export * from "./context/LayoutContext";
