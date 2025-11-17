@@ -353,7 +353,13 @@ export const ScatterChart = ({
                   />
 
                   <ChartTooltip
-                    content={<CustomTooltipContent parentRef={chartWrapperRef} hideIndicator />}
+                    content={
+                      <CustomTooltipContent
+                        parentRef={chartWrapperRef}
+                        hideIndicator
+                        labelKey="dataset"
+                      />
+                    }
                     offset={15}
                   />
 
