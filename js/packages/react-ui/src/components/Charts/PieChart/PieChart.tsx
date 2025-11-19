@@ -42,7 +42,6 @@ export interface PieChartProps<T extends PieChartData> {
   // Add height and width props
   height?: number | string;
   width?: number | string;
-  useThemeRadius?: boolean;
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
@@ -72,7 +71,6 @@ const PieChartComponent = <T extends PieChartData>({
   minChartSize = MIN_CHART_SIZE,
   height,
   width,
-  useThemeRadius = true,
 }: PieChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -159,22 +157,23 @@ const PieChartComponent = <T extends PieChartData>({
   );
 
   const sectorStyle = useMemo(() => {
-    const cornerRadiusTheme = userTheme.rounded2xs;
+    let cornerRadiusValue: number = CORNER_RADIUS;
 
-    let cornerRadiusValue: number | string = 0;
-
-    if (useThemeRadius) {
-      cornerRadiusValue = cornerRadiusTheme ?? cornerRadius ?? CORNER_RADIUS;
+    if (typeof cornerRadius === "number") {
+      cornerRadiusValue = cornerRadius;
     } else {
-      cornerRadiusValue = cornerRadius ?? CORNER_RADIUS;
+      const cornerRadiusTheme = userTheme.rounded2xs;
+      if (cornerRadiusTheme) {
+        cornerRadiusValue =
+          typeof cornerRadiusTheme === "string" ? parseInt(cornerRadiusTheme) : cornerRadiusTheme;
+      }
     }
 
     return {
-      cornerRadius:
-        typeof cornerRadiusValue === "string" ? parseInt(cornerRadiusValue) : cornerRadiusValue,
+      cornerRadius: cornerRadiusValue,
       paddingAngle: variant === "donut" ? 0.5 : paddingAngle,
     };
-  }, [cornerRadius, variant, paddingAngle, useThemeRadius, userTheme.rounded2xs]);
+  }, [cornerRadius, variant, paddingAngle, userTheme.rounded2xs]);
 
   const colors = useChartPalette({
     chartThemeName: theme,

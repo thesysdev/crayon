@@ -46,7 +46,6 @@ export interface BarChartCondensedProps<T extends BarChartData> {
   className?: string;
   height?: number;
   width?: number;
-  useThemeRadius?: boolean;
 }
 
 const BAR_WIDTH = 12;
@@ -75,7 +74,6 @@ const BarChartCondensedComponent = <T extends BarChartData>({
   className,
   height = CHART_HEIGHT,
   width,
-  useThemeRadius = true,
 }: BarChartCondensedProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -124,18 +122,20 @@ const BarChartCondensedComponent = <T extends BarChartData>({
 
   const { mode, theme: userTheme } = useTheme();
 
-  // if we have the theme provider, we use the theme radius, otherwise we use the radius prop or the default value,
-  // if theme provider is present and we don't want to use the theme radius,
-  // then pass false to useThemRadius prop
   const calculatedRadius = useMemo(() => {
-    let radiusValue: number | string = 0;
-    if (useThemeRadius) {
-      radiusValue = userTheme.rounded2xs ?? radius ?? BAR_RADIUS;
+    let radiusValue: number = BAR_RADIUS;
+
+    if (typeof radius === "number") {
+      radiusValue = radius;
     } else {
-      radiusValue = radius ?? BAR_RADIUS;
+      const radiusTheme = userTheme.rounded2xs;
+      if (radiusTheme) {
+        radiusValue = typeof radiusTheme === "string" ? parseInt(radiusTheme) : radiusTheme;
+      }
     }
-    return typeof radiusValue === "string" ? parseInt(radiusValue) : radiusValue;
-  }, [userTheme.rounded2xs, radius, useThemeRadius]);
+
+    return radiusValue;
+  }, [userTheme.rounded2xs, radius]);
 
   const barInternalLineColor = useMemo(() => {
     if (mode === "light") {
