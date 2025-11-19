@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
+import { useTheme } from "../../ThemeProvider/ThemeProvider.js";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../Charts.js";
 import { useTransformedKeys } from "../hooks/index.js";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend.js";
@@ -13,7 +14,6 @@ import {
   calculateTwoLevelChartDimensions,
   createAnimationConfig,
   createEventHandlers,
-  createSectorStyle,
   getHoverStyles,
   transformDataWithPercentages,
   useChartHover,
@@ -47,6 +47,7 @@ export interface PieChartProps<T extends PieChartData> {
 const STACKED_LEGEND_BREAKPOINT = 400;
 const MIN_CHART_SIZE = 150;
 const MAX_CHART_SIZE = 500;
+const CORNER_RADIUS = 0;
 
 const PieChartComponent = <T extends PieChartData>({
   data,
@@ -60,7 +61,7 @@ const PieChartComponent = <T extends PieChartData>({
   legendVariant = "stacked",
   isAnimationActive = true,
   appearance = "circular",
-  cornerRadius = 0,
+  cornerRadius,
   paddingAngle = 0,
   onMouseEnter,
   onMouseLeave,
@@ -76,6 +77,7 @@ const PieChartComponent = <T extends PieChartData>({
   const [hoveredLegendKey, setHoveredLegendKey] = useState<string | null>(null);
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
   const { activeIndex, handleMouseEnter, handleMouseLeave } = useChartHover();
+  const { theme: userTheme } = useTheme();
 
   // Determine layout mode based on container width
   const isRowLayout =
@@ -154,10 +156,24 @@ const PieChartComponent = <T extends PieChartData>({
     [onMouseEnter, onMouseLeave, onClick],
   );
 
-  const sectorStyle = useMemo(
-    () => createSectorStyle(cornerRadius, variant === "donut" ? 0.5 : paddingAngle),
-    [cornerRadius, variant, paddingAngle],
-  );
+  const sectorStyle = useMemo(() => {
+    let cornerRadiusValue: number = CORNER_RADIUS;
+
+    if (typeof cornerRadius === "number") {
+      cornerRadiusValue = cornerRadius;
+    } else {
+      const cornerRadiusTheme = userTheme.rounded2xs;
+      if (cornerRadiusTheme) {
+        cornerRadiusValue =
+          typeof cornerRadiusTheme === "string" ? parseInt(cornerRadiusTheme) : cornerRadiusTheme;
+      }
+    }
+
+    return {
+      cornerRadius: cornerRadiusValue,
+      paddingAngle: variant === "donut" ? 0.5 : paddingAngle,
+    };
+  }, [cornerRadius, variant, paddingAngle, userTheme.rounded2xs]);
 
   const colors = useChartPalette({
     chartThemeName: theme,
