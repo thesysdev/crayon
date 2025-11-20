@@ -744,7 +744,8 @@ export const FinancialQuartersGrouped: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Financial reporting scenario with quarterly data. Grouped layout allows comparison of revenue, expenses, and profit across quarters.",
+        story:
+          "Financial reporting scenario with quarterly data. Grouped layout allows comparison of revenue, expenses, and profit across quarters.",
       },
     },
   },
@@ -777,7 +778,8 @@ export const FinancialQuartersStacked: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Same financial data in stacked layout. This view emphasizes the total values and how components contribute to them.",
+        story:
+          "Same financial data in stacked layout. This view emphasizes the total values and how components contribute to them.",
       },
     },
   },
