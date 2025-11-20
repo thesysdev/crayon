@@ -25,6 +25,7 @@ interface AngleCalculationResult {
 export const useAutoAngleCalculation = (
   maxLabelWidth: number,
   enabled: boolean,
+  widthOfData?: number,
 ): AngleCalculationResult => {
   return useMemo(() => {
     // If not enabled, return default values for horizontal labels
@@ -36,9 +37,8 @@ export const useAutoAngleCalculation = (
     }
 
     // Calculate the base (horizontal distance from left edge to first label anchor)
-    let base = 0;
-
-    base = X_AXIS_PADDING;
+    // Use widthOfData if provided (space per data point), otherwise fall back to padding
+    const base = widthOfData ?? X_AXIS_PADDING;
 
     // The hypotenuse is the maximum label width
     const hypotenuse = maxLabelWidth;
@@ -79,5 +79,5 @@ export const useAutoAngleCalculation = (
       angle: -finalAngle, // Negative for counter-clockwise rotation
       height: Math.max(finalHeight + 16, DEFAULT_X_AXIS_HEIGHT), // Ensure minimum height
     };
-  }, [maxLabelWidth, enabled]);
+  }, [maxLabelWidth, enabled, widthOfData]);
 };
