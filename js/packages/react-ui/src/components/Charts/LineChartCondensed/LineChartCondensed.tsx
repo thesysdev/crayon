@@ -80,6 +80,9 @@ const LineChartCondensedComponent = <T extends LineChartData>({
   const [chartContainerWidth, setChartContainerWidth] = useState<number>(0);
 
   const widthOfData = useMemo(() => {
+    if (data.length === 0) {
+      return 0;
+    }
     return chartContainerWidth / data.length;
   }, [chartContainerWidth, data]);
 
