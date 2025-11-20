@@ -44,6 +44,7 @@ export interface LineChartCondensedProps<T extends LineChartData> {
   height?: number;
   width?: number;
   strokeWidth?: number;
+  renderOptions?: () => React.ReactNode;
 }
 
 const CHART_HEIGHT = 296;
@@ -67,6 +68,7 @@ const LineChartCondensedComponent = <T extends LineChartData>({
   height = CHART_HEIGHT,
   width,
   strokeWidth = 2,
+  renderOptions,
 }: LineChartCondensedProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -248,6 +250,9 @@ const LineChartCondensedComponent = <T extends LineChartData>({
             width: width ? `${width}px` : undefined,
           }}
         >
+          {renderOptions && (
+            <div className="crayon-line-chart-condensed-options">{renderOptions()}</div>
+          )}
           {yAxisLabel && (
             <div className="crayon-line-chart-condensed-y-axis-label">{yAxisLabel}</div>
           )}

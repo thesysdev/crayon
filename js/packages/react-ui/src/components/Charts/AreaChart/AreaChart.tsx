@@ -54,6 +54,7 @@ export interface AreaChartProps<T extends AreaChartData> {
   className?: string;
   height?: number;
   width?: number;
+  renderOptions?: () => React.ReactNode;
 }
 
 const X_AXIS_PADDING = 36;
@@ -76,6 +77,7 @@ const AreaChartComponent = <T extends AreaChartData>({
   className,
   height,
   width,
+  renderOptions,
 }: AreaChartProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -301,6 +303,7 @@ const AreaChartComponent = <T extends AreaChartData>({
             width: width ? `${width}px` : undefined,
           }}
         >
+          {renderOptions && <div className="crayon-area-chart-options">{renderOptions()}</div>}
           <div className="crayon-area-chart-container-inner" ref={chartContainerRef}>
             {/* Y-axis of the chart */}
             {yAxis}

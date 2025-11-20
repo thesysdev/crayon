@@ -43,6 +43,7 @@ export interface AreaChartCondensedProps<T extends AreaChartData> {
   className?: string;
   height?: number;
   width?: number;
+  renderOptions?: () => React.ReactNode;
 }
 
 const CHART_HEIGHT = 296;
@@ -65,6 +66,7 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
   className,
   height = CHART_HEIGHT,
   width,
+  renderOptions,
 }: AreaChartCondensedProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -248,6 +250,9 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
             width: width ? `${width}px` : undefined,
           }}
         >
+          {renderOptions && (
+            <div className="crayon-area-chart-condensed-options">{renderOptions()}</div>
+          )}
           {yAxisLabel && (
             <div className="crayon-area-chart-condensed-y-axis-label">{yAxisLabel}</div>
           )}

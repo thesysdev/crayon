@@ -4,6 +4,7 @@ import {
   Globe,
   Laptop,
   Monitor,
+  RefreshCcwIcon,
   Smartphone,
   TabletSmartphone,
   Tv,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Card } from "../../../Card";
+import { IconButton } from "../../../IconButton";
 import { LineChartCondensed, LineChartCondensedProps } from "../LineChartCondensed";
 
 // 🔥 COMPREHENSIVE DATA VARIATIONS - Designed to test various scenarios
@@ -629,6 +631,14 @@ export const DataExplorer: Story = {
             data={currentData}
             categoryKey={currentCategoryKey}
             tickVariant={tickVariant}
+            renderOptions={() => (
+              <IconButton
+                icon={<RefreshCcwIcon />}
+                onClick={() => {
+                  console.log("refresh");
+                }}
+              />
+            )}
           />
         </Card>
       </div>

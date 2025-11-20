@@ -34,6 +34,7 @@ export interface RadarChartProps<T extends RadarChartData> {
   isAnimationActive?: boolean;
   height?: number;
   width?: number;
+  renderOptions?: () => React.ReactNode;
 }
 
 const RadarChartComponent = <T extends RadarChartData>({
@@ -50,6 +51,7 @@ const RadarChartComponent = <T extends RadarChartData>({
   isAnimationActive = false,
   height,
   width,
+  renderOptions,
 }: RadarChartProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -188,6 +190,7 @@ const RadarChartComponent = <T extends RadarChartData>({
     >
       <div ref={wrapperRef} className={wrapperClassName} style={wrapperStyle}>
         <div className="crayon-radar-chart-container">
+          {renderOptions && <div className="crayon-radar-chart-options">{renderOptions()}</div>}
           <div className="crayon-radar-chart-container-inner">
             <div style={chartSizeStyle}>
               <ChartContainer

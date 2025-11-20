@@ -65,6 +65,7 @@ export interface BarChartProps<T extends BarChartData> {
   className?: string;
   height?: number;
   width?: number;
+  renderOptions?: () => React.ReactNode;
 }
 
 const BAR_GAP = 10; // Gap between bars
@@ -91,6 +92,7 @@ const BarChartComponent = <T extends BarChartData>({
   className,
   height,
   width,
+  renderOptions,
 }: BarChartProps<T>) => {
   const widthOfGroup = getWidthOfGroup(data, categoryKey as string, variant);
 
@@ -428,6 +430,7 @@ const BarChartComponent = <T extends BarChartData>({
             width: width ? `${width}px` : undefined,
           }}
         >
+          {renderOptions && <div className="crayon-bar-chart-options">{renderOptions()}</div>}
           <div className="crayon-bar-chart-container-inner" ref={chartContainerRef}>
             {/* Y-axis of the chart */}
             {yAxis}

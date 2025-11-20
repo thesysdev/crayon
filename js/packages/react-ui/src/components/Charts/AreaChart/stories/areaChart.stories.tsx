@@ -4,6 +4,7 @@ import {
   Globe,
   Laptop,
   Monitor,
+  RefreshCcwIcon,
   Smartphone,
   TabletSmartphone,
   Tv,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Card } from "../../../Card";
+import { IconButton } from "../../../IconButton";
 import { AreaChart, AreaChartProps } from "../AreaChart";
 
 // 🔥 COMPREHENSIVE DATA VARIATIONS - Designed to test label collision scenarios
@@ -804,7 +806,19 @@ export const DataExplorer: Story = {
           </div>
         </div>
         <Card style={{ width: "600px" }}>
-          <AreaChart {...args} data={currentData} categoryKey={currentCategoryKey} />
+          <AreaChart
+            {...args}
+            data={currentData}
+            categoryKey={currentCategoryKey}
+            renderOptions={() => (
+              <IconButton
+                icon={<RefreshCcwIcon />}
+                onClick={() => {
+                  console.log("refresh");
+                }}
+              />
+            )}
+          />
         </Card>
       </div>
     );

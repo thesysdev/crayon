@@ -39,6 +39,7 @@ export interface RadialChartProps<T extends RadialChartData> {
   minChartSize?: number;
   height?: number | string;
   width?: number | string;
+  renderOptions?: () => React.ReactNode;
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
@@ -66,6 +67,7 @@ export const RadialChart = <T extends RadialChartData>({
   minChartSize = MIN_CHART_SIZE,
   height,
   width,
+  renderOptions,
 }: RadialChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -330,6 +332,7 @@ export const RadialChart = <T extends RadialChartData>({
       aria-description="radial-chart-wrapper"
     >
       <div className="crayon-radial-chart-container">
+        {renderOptions && <div className="crayon-radial-chart-options">{renderOptions()}</div>}
         <div className="crayon-radial-chart-container-inner">
           <div style={chartSizeStyle}>
             <ChartContainer

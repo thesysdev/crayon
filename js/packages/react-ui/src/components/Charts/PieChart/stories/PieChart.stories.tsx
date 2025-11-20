@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { RefreshCcwIcon } from "lucide-react";
 import { useState } from "react";
 import { Card } from "../../../Card";
+import { IconButton } from "../../../IconButton";
 import { PieChart, PieChartProps } from "../PieChart";
 
 const monthlySalesData = [
@@ -288,7 +290,19 @@ export const InteractivePlayground: Story = {
     height: undefined,
     width: undefined,
   },
-  render: (args: any) => <PieChart {...args} />,
+  render: (args: any) => (
+    <PieChart
+      {...args}
+      renderOptions={() => (
+        <IconButton
+          icon={<RefreshCcwIcon />}
+          onClick={() => {
+            console.log("refresh");
+          }}
+        />
+      )}
+    />
+  ),
 };
 
 /**

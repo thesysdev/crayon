@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Shield, Star, Target } from "lucide-react";
+import { RefreshCcwIcon, Shield, Star, Target } from "lucide-react";
 import { useState } from "react";
 import { Card } from "../../../Card";
+import { IconButton } from "../../../IconButton";
 import { RadarChart, RadarChartProps } from "../RadarChart";
 
 // 📊 COMPREHENSIVE DATA VARIATIONS - Designed to test various radar chart scenarios
@@ -347,7 +348,17 @@ export const DefaultConfiguration: Story = {
           Comparing key performance indicators across three teams.
         </p>
       </div>
-      <RadarChart {...args} />
+      <RadarChart
+        {...args}
+        renderOptions={() => (
+          <IconButton
+            icon={<RefreshCcwIcon />}
+            onClick={() => {
+              console.log("refresh");
+            }}
+          />
+        )}
+      />
     </Card>
   ),
   parameters: {

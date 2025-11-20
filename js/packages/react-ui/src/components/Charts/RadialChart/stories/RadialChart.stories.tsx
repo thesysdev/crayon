@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { RefreshCcwIcon } from "lucide-react";
 import { useState } from "react";
 import { Card } from "../../../Card";
+import { IconButton } from "../../../IconButton";
 import { RadialChart, RadialChartProps } from "../RadialChart";
 
 /**
@@ -388,7 +390,17 @@ export const DefaultConfiguration: Story = {
           Comprehensive view of revenue distribution across 12 months
         </p>
       </div>
-      <RadialChart {...args} />
+      <RadialChart
+        {...args}
+        renderOptions={() => (
+          <IconButton
+            icon={<RefreshCcwIcon />}
+            onClick={() => {
+              console.log("refresh");
+            }}
+          />
+        )}
+      />
     </Card>
   ),
   parameters: {
