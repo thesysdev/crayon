@@ -7,6 +7,7 @@ export * from "./PortalTooltip";
 export * from "./ScrollButtonsHorizontal";
 export * from "./ScrollButtonsVertical";
 export * from "./SideBarTooltip";
+export * from "./SimpleXAxisTick/SimpleXAxisTick";
 export * from "./StackedLegend/StackedLegend";
 export * from "./XAxisTick/XAxisTick";
 export * from "./YAxisTick/YAxisTick";

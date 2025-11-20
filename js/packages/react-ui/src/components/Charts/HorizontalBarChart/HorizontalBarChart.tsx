@@ -11,6 +11,7 @@ import {
   CustomTooltipContent,
   DefaultLegend,
   SideBarTooltip,
+  SimpleXAxisTick,
   verticalCartesianGrid,
   YAxisTick,
 } from "../shared";
@@ -274,7 +275,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
               tickLine={false}
               axisLine={false}
               tickFormatter={numberTickFormatter}
-              tick={{ fontSize: 12 }}
+              tick={<SimpleXAxisTick />}
             />
             {/* Invisible bars to maintain scale synchronization */}
             {dataKeys.map((key) => {
