@@ -4,7 +4,7 @@ import { Area, AreaChart as RechartsAreaChart, XAxis, YAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { AreaChartData, AreaChartVariant } from "../AreaChart/types";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
-import { X_AXIS_PADDING } from "../constants";
+import { DEFAULT_X_AXIS_HEIGHT, X_AXIS_PADDING } from "../constants";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import {
   useAutoAngleCalculation,
@@ -74,16 +74,32 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
 
   const maxLabelWidth = useMaxLabelWidth(data, categoryKey as string);
 
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const [chartContainerWidth, setChartContainerWidth] = useState<number>(0);
+
+  const widthOfData = useMemo(() => {
+    if (data.length === 0) {
+      return 0;
+    }
+    return chartContainerWidth / data.length;
+  }, [chartContainerWidth, data]);
+
   const { angle: calculatedAngle, height: xAxisHeight } = useAutoAngleCalculation(
     maxLabelWidth,
     tickVariant === "angled",
+    // if the max label width is less than 100px, then we use the width of the data to calculate the angle, gives better results for small datasets
+    maxLabelWidth < 100 ? widthOfData : undefined,
   );
+
+  const isAngled = useMemo(() => {
+    return calculatedAngle !== 0;
+  }, [calculatedAngle]);
 
   const effectiveHeight = useMemo(() => {
     if (tickVariant === "angled") {
       return xAxisHeight + height;
     }
-    return height;
+    return height + DEFAULT_X_AXIS_HEIGHT;
   }, [height, xAxisHeight, tickVariant]);
 
   const transformedKeys = useTransformedKeys(dataKeys);
@@ -129,18 +145,24 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
   // Observe container width for legend
   useEffect(() => {
     // Only set up ResizeObserver if width is not provided
-    if (width || !containerRef.current) {
+    if (width || !containerRef.current || !chartContainerRef.current) {
       return () => {};
     }
 
     const resizeObserver = new ResizeObserver((entries) => {
       // there is only one entry in the entries array because we are observing the chart container
       for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
+        if (entry.target === containerRef.current) {
+          setContainerWidth(entry.contentRect.width);
+        }
+        if (entry.target === chartContainerRef.current) {
+          setChartContainerWidth(entry.contentRect.width);
+        }
       }
     });
 
     resizeObserver.observe(containerRef.current);
+    resizeObserver.observe(chartContainerRef.current);
 
     return () => {
       resizeObserver.disconnect();
@@ -232,7 +254,7 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
           <div className="crayon-area-chart-condensed-container-inner" ref={containerRef}>
             {/* Y-axis of the chart */}
             {yAxis}
-            <div className="crayon-area-chart-condensed">
+            <div className="crayon-area-chart-condensed" ref={chartContainerRef}>
               <ChartContainer
                 config={chartConfig}
                 style={{ width: "100%", height: effectiveHeight }}
@@ -253,7 +275,7 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
                     dataKey={categoryKey as string}
                     tickLine={false}
                     axisLine={false}
-                    textAnchor={tickVariant === "angled" ? "end" : "middle"}
+                    textAnchor={isAngled ? "end" : "middle"}
                     interval="preserveStartEnd"
                     minTickGap={5}
                     height={xAxisHeight}
