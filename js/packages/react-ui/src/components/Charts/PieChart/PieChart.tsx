@@ -42,6 +42,7 @@ export interface PieChartProps<T extends PieChartData> {
   // Add height and width props
   height?: number | string;
   width?: number | string;
+  renderOptions?: () => React.ReactNode;
 }
 
 const STACKED_LEGEND_BREAKPOINT = 400;
@@ -71,6 +72,7 @@ const PieChartComponent = <T extends PieChartData>({
   minChartSize = MIN_CHART_SIZE,
   height,
   width,
+  renderOptions,
 }: PieChartProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -438,6 +440,7 @@ const PieChartComponent = <T extends PieChartData>({
   return (
     <div ref={wrapperRef} className={wrapperClassName} style={wrapperStyle}>
       <div className="crayon-pie-chart-container">
+        {renderOptions && <div className="crayon-pie-chart-options">{renderOptions()}</div>}
         <div className="crayon-pie-chart-container-inner">
           <div style={chartSizeStyle}>
             <ChartContainer

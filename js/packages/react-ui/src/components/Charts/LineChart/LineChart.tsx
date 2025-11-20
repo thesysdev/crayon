@@ -53,6 +53,7 @@ export interface LineChartProps<T extends LineChartData> {
   height?: number;
   width?: number;
   strokeWidth?: number;
+  renderOptions?: () => React.ReactNode;
 }
 
 const X_AXIS_PADDING = 36;
@@ -76,6 +77,7 @@ export const LineChart = <T extends LineChartData>({
   height,
   width,
   strokeWidth = 2,
+  renderOptions,
 }: LineChartProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -311,6 +313,7 @@ export const LineChart = <T extends LineChartData>({
             width: width ? `${width}px` : undefined,
           }}
         >
+          {renderOptions && <div className="crayon-line-chart-options">{renderOptions()}</div>}
           <div className="crayon-line-chart-container-inner" ref={chartContainerRef}>
             {/* Y-axis of the chart */}
             {yAxis}

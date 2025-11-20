@@ -65,6 +65,7 @@ export interface HorizontalBarChartProps<T extends HorizontalBarChartData> {
   className?: string;
   height?: number;
   width?: number;
+  renderOptions?: () => React.ReactNode;
 }
 
 const X_AXIS_HEIGHT = 40; // Height of X-axis chart when shown
@@ -89,6 +90,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   className,
   height,
   width,
+  renderOptions,
 }: HorizontalBarChartProps<T>) => {
   const maxCategoryLabelWidth = useMaxCategoryLabelWidth(data, categoryKey as string);
 
@@ -344,6 +346,9 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
         setData={setSideBarTooltipData}
       >
         <div className={clsx("crayon-horizontal-bar-chart-container", className)}>
+          {renderOptions && (
+            <div className="crayon-horizontal-bar-chart-options">{renderOptions()}</div>
+          )}
           <div
             className="crayon-horizontal-bar-chart-container-inner-wrapper"
             style={{

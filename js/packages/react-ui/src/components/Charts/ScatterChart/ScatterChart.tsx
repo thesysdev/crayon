@@ -40,6 +40,7 @@ export interface ScatterChartProps {
   height?: number | string;
   width?: number | string;
   shape?: "circle" | "square";
+  renderOptions?: () => React.ReactNode;
 }
 
 const DEFAULT_CHART_HEIGHT = 296;
@@ -60,6 +61,7 @@ export const ScatterChart = ({
   height,
   width,
   shape = "circle",
+  renderOptions,
 }: ScatterChartProps) => {
   const datasets = useMemo(() => {
     return getScatterDatasets(data);
@@ -301,6 +303,7 @@ export const ScatterChart = ({
         }}
         ref={chartWrapperRef}
       >
+        {renderOptions && <div className="crayon-scatter-chart-options">{renderOptions()}</div>}
         <div className="crayon-scatter-chart-container-inner">
           {yAxis}
           <div

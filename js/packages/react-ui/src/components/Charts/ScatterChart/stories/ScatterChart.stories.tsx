@@ -4,6 +4,7 @@ import {
   Globe,
   Laptop,
   Monitor,
+  RefreshCcwIcon,
   Smartphone,
   TabletSmartphone,
   Tv,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Card } from "../../../Card";
+import { IconButton } from "../../../IconButton";
 import { ScatterChart, ScatterChartProps } from "../ScatterChart";
 
 const customColorPalette = [
@@ -649,7 +651,19 @@ export const BasicScatter: Story = {
     width: 700,
     height: 400,
   },
-  render: (args: any) => <ScatterChart {...args} />,
+  render: (args: any) => (
+    <ScatterChart
+      {...args}
+      renderOptions={() => (
+        <IconButton
+          icon={<RefreshCcwIcon />}
+          onClick={() => {
+            console.log("refresh");
+          }}
+        />
+      )}
+    />
+  ),
 };
 
 /**

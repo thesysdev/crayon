@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Monitor, TabletSmartphone } from "lucide-react";
+import { Monitor, RefreshCcwIcon, TabletSmartphone } from "lucide-react";
 import { useState } from "react";
 import { Card } from "../../../Card";
+import { IconButton } from "../../../IconButton";
 import { BarChart, BarChartProps } from "../BarChart";
 
 // 📊 ALL DATA VARIATIONS - For easy switching in stories
@@ -935,7 +936,12 @@ export const DataExplorer: Story = {
           </div>
         </div>
         <Card style={{ width: "700px" }}>
-          <BarChart {...args} data={currentData} categoryKey={currentCategoryKey} />
+          <BarChart
+            {...args}
+            data={currentData}
+            categoryKey={currentCategoryKey}
+            renderOptions={() => <IconButton icon={<RefreshCcwIcon />} onClick={() => {}} />}
+          />
         </Card>
       </div>
     );

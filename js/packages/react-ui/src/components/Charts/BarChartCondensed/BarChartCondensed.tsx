@@ -46,6 +46,7 @@ export interface BarChartCondensedProps<T extends BarChartData> {
   className?: string;
   height?: number;
   width?: number;
+  renderOptions?: () => React.ReactNode;
 }
 
 const BAR_WIDTH = 12;
@@ -74,6 +75,7 @@ const BarChartCondensedComponent = <T extends BarChartData>({
   className,
   height = CHART_HEIGHT,
   width,
+  renderOptions,
 }: BarChartCondensedProps<T>) => {
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
@@ -350,6 +352,9 @@ const BarChartCondensedComponent = <T extends BarChartData>({
             width: width ? `${width}px` : undefined,
           }}
         >
+          {renderOptions && (
+            <div className="crayon-bar-chart-condensed-options">{renderOptions()}</div>
+          )}
           {yAxisLabel && (
             <div className="crayon-bar-chart-condensed-y-axis-label">{yAxisLabel}</div>
           )}
