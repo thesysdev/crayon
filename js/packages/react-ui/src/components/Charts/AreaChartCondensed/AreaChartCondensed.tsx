@@ -15,10 +15,10 @@ import {
 import {
   ActiveDot,
   cartesianGrid,
-  SVGXAxisTick,
-  SVGXAxisTickVariant,
   CustomTooltipContent,
   DefaultLegend,
+  SVGXAxisTick,
+  SVGXAxisTickVariant,
   YAxisTick,
 } from "../shared";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";

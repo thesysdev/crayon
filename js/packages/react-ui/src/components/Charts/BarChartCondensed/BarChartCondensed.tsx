@@ -15,11 +15,11 @@ import {
 } from "../hooks";
 import {
   cartesianGrid,
-  SVGXAxisTick,
-  SVGXAxisTickVariant,
   CustomTooltipContent,
   DefaultLegend,
   LineInBarShape,
+  SVGXAxisTick,
+  SVGXAxisTickVariant,
   YAxisTick,
 } from "../shared";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
