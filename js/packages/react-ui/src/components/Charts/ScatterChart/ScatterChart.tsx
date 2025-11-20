@@ -10,7 +10,7 @@ import {
   DefaultLegend,
   gridCartesianGrid,
   SideBarTooltip,
-  SimpleXAxisTick,
+  SVGXAxisTick,
   YAxisTick,
 } from "../shared";
 import { LegendItem } from "../types";
@@ -214,7 +214,7 @@ export const ScatterChart = ({
               tickLine={false}
               axisLine={false}
               tickFormatter={numberTickFormatter}
-              tick={<SimpleXAxisTick />}
+              tick={<SVGXAxisTick dy={10} />}
               domain={xDomain}
               dataKey={xAxisDataKey}
             />
@@ -248,7 +248,7 @@ export const ScatterChart = ({
           height={chartHeight + 10}
           data={transformedData}
           margin={{
-            top: 15,
+            top: 10,
             bottom: 12,
             left: 0,
             right: 0,

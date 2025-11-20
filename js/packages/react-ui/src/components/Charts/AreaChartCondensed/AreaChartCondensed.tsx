@@ -15,8 +15,8 @@ import {
 import {
   ActiveDot,
   cartesianGrid,
-  CondensedXAxisTick,
-  CondensedXAxisTickVariant,
+  SVGXAxisTick,
+  SVGXAxisTickVariant,
   CustomTooltipContent,
   DefaultLegend,
   YAxisTick,
@@ -32,7 +32,7 @@ export interface AreaChartCondensedProps<T extends AreaChartData> {
   theme?: PaletteName;
   customPalette?: string[];
   variant?: AreaChartVariant;
-  tickVariant?: CondensedXAxisTickVariant;
+  tickVariant?: SVGXAxisTickVariant;
   grid?: boolean;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
@@ -257,7 +257,7 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
                     interval="preserveStartEnd"
                     minTickGap={5}
                     height={xAxisHeight}
-                    tick={<CondensedXAxisTick />}
+                    tick={<SVGXAxisTick />}
                     angle={calculatedAngle}
                     orientation="bottom"
                     padding={{

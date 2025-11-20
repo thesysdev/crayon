@@ -15,8 +15,8 @@ import {
 } from "../hooks";
 import {
   cartesianGrid,
-  CondensedXAxisTick,
-  CondensedXAxisTickVariant,
+  SVGXAxisTick,
+  SVGXAxisTickVariant,
   CustomTooltipContent,
   DefaultLegend,
   LineInBarShape,
@@ -34,7 +34,7 @@ export interface BarChartCondensedProps<T extends BarChartData> {
   theme?: PaletteName;
   customPalette?: string[];
   variant?: BarChartVariant;
-  tickVariant?: CondensedXAxisTickVariant;
+  tickVariant?: SVGXAxisTickVariant;
   grid?: boolean;
   radius?: number;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
@@ -365,7 +365,7 @@ const BarChartCondensedComponent = <T extends BarChartData>({
                     interval="preserveStartEnd"
                     minTickGap={5}
                     height={xAxisHeight}
-                    tick={<CondensedXAxisTick />}
+                    tick={<SVGXAxisTick />}
                     angle={calculatedAngle}
                     orientation="bottom"
                     padding={{
