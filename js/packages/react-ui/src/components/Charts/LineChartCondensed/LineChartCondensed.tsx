@@ -15,10 +15,10 @@ import { LineChartData, LineChartVariant } from "../LineChart/types";
 import {
   ActiveDot,
   cartesianGrid,
-  CondensedXAxisTick,
-  CondensedXAxisTickVariant,
   CustomTooltipContent,
   DefaultLegend,
+  SVGXAxisTick,
+  SVGXAxisTickVariant,
   YAxisTick,
 } from "../shared";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
@@ -32,7 +32,7 @@ export interface LineChartCondensedProps<T extends LineChartData> {
   theme?: PaletteName;
   customPalette?: string[];
   variant?: LineChartVariant;
-  tickVariant?: CondensedXAxisTickVariant;
+  tickVariant?: SVGXAxisTickVariant;
   grid?: boolean;
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   isAnimationActive?: boolean;
@@ -258,7 +258,7 @@ const LineChartCondensedComponent = <T extends LineChartData>({
                     interval="preserveStartEnd"
                     minTickGap={5}
                     height={xAxisHeight}
-                    tick={<CondensedXAxisTick />}
+                    tick={<SVGXAxisTick />}
                     angle={calculatedAngle}
                     orientation="bottom"
                     padding={{
