@@ -97,17 +97,19 @@ export const FloatingDatePickerRenderer = ({
   useEffect(() => {
     if (!isOpen) return;
 
-    const handleClick = (e: MouseEvent) => {
+    const handleInteraction = (e: MouseEvent | TouchEvent) => {
       if (menuRef.current?.contains(e.target as Node)) {
         return;
       }
       setIsOpen(false);
     };
 
-    document.body.addEventListener("click", handleClick);
+    document.body.addEventListener("mousedown", handleInteraction);
+    document.body.addEventListener("touchstart", handleInteraction);
 
     return () => {
-      document.body.removeEventListener("click", handleClick);
+      document.body.removeEventListener("mousedown", handleInteraction);
+      document.body.removeEventListener("touchstart", handleInteraction);
     };
   }, [isOpen, setIsOpen]);
 
