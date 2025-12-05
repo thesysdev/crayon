@@ -1,13 +1,9 @@
 import clsx from "clsx";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis } from "recharts";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer } from "../Charts";
-import {
-  DATA_KEY,
-  getRecentDataThatFits,
-  transformDataForChart,
-} from "../utils/AreaAndLine/MiniAreaAndLineUtils";
+import { DATA_KEY, transformDataForChart } from "../utils/AreaAndLine/MiniAreaAndLineUtils";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 import { get2dChartConfig } from "../utils/dataUtils";
 import { MiniAreaChartData } from "./types";
@@ -39,37 +35,10 @@ export const MiniAreaChart = ({
   areaColor,
   useGradient = true,
 }: MiniAreaChartProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-
-  useEffect(() => {
-    if (!containerRef.current) {
-      return () => {};
-    }
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      // there is only one entry in the entries array because we are only observing the chart container
-      for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
-      }
-    });
-
-    resizeObserver.observe(containerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
-  // Get the most recent data that fits in the container
-  const filteredData = useMemo(() => {
-    return getRecentDataThatFits(data, containerWidth);
-  }, [data, containerWidth]);
-
-  // Transform the filtered data to a consistent format for recharts
+  // Transform the data to a consistent format for recharts
   const chartData = useMemo(() => {
-    return transformDataForChart(filteredData);
-  }, [filteredData]);
+    return transformDataForChart(data);
+  }, [data]);
 
   const colors = useChartPalette({
     chartThemeName: theme,
@@ -104,7 +73,6 @@ export const MiniAreaChart = ({
         aspect: 1 / 1,
       }}
       onClick={onAreaClick}
-      ref={containerRef}
       className={clsx("crayon-charts-mini-area-chart-container", className)}
     >
       <RechartsAreaChart
