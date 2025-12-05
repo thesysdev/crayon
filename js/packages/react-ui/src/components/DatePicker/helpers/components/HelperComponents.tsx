@@ -14,6 +14,7 @@ import { ClassNames, CustomComponents, DropdownOption } from "react-day-picker";
 import "react-day-picker/style.css";
 import { IconButton } from "../../../IconButton";
 import { Select, SelectItem, SelectTrigger, SelectValue } from "../../../Select";
+import { useTheme } from "../../../ThemeProvider";
 import { getMonthName, getMonthNumber } from "../utils/helperFn";
 
 export const PreviousMonthButton = (
@@ -57,23 +58,26 @@ const SelectContent = forwardRef<
     container?: HTMLDivElement | null;
     viewportClassName?: string;
   }
->(({ className, children, position = "popper", viewportClassName, container, ...props }, ref) => (
-  <SelectPrimitive.Portal container={container || document.body}>
-    <SelectPrimitive.Content
-      ref={ref}
-      className={clsx("crayon-select-content", className)}
-      position={position}
-      {...props}
-    >
-      <SelectPrimitive.Viewport
-        className={clsx("crayon-select-viewport", viewportClassName)}
-        data-position={position}
+>(({ className, children, position = "popper", viewportClassName, container, ...props }, ref) => {
+  const { portalThemeClassName } = useTheme();
+  return (
+    <SelectPrimitive.Portal container={container || document.body}>
+      <SelectPrimitive.Content
+        ref={ref}
+        className={clsx("crayon-select-content", portalThemeClassName, className)}
+        position={position}
+        {...props}
       >
-        {children}
-      </SelectPrimitive.Viewport>
-    </SelectPrimitive.Content>
-  </SelectPrimitive.Portal>
-));
+        <SelectPrimitive.Viewport
+          className={clsx("crayon-select-viewport", viewportClassName)}
+          data-position={position}
+        >
+          {children}
+        </SelectPrimitive.Viewport>
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  );
+});
 
 export const MonthsDropdown = (
   props: {
