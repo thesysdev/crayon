@@ -23,6 +23,7 @@ import {
   getWidthOfData,
   getWidthOfGroup,
 } from "../utils/AreaAndLine/AreaAndLineUtils";
+import { getLineType } from "../utils/AreaAndLine/common";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 import {
   get2dChartConfig,
@@ -63,7 +64,7 @@ export const LineChart = <T extends LineChartData>({
   categoryKey,
   theme = "ocean",
   customPalette,
-  variant = "natural",
+  variant: lineChartVariant = "natural",
   tickVariant = "multiLine",
   grid = true,
   icons = {},
@@ -80,6 +81,8 @@ export const LineChart = <T extends LineChartData>({
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
+
+  const variant = getLineType(lineChartVariant);
 
   const { yAxisWidth, setLabelWidth } = useYAxisLabelWidth(data, dataKeys);
 

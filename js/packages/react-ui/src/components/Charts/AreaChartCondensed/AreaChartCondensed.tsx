@@ -23,6 +23,7 @@ import {
 } from "../shared";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { LegendItem } from "../types";
+import { getLineType } from "../utils/AreaAndLine/common";
 import { get2dChartConfig, getDataKeys, getLegendItems } from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 
@@ -53,7 +54,7 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
   categoryKey,
   theme = "ocean",
   customPalette,
-  variant = "natural",
+  variant: areaChartVariant = "natural",
   tickVariant = "singleLine",
   grid = true,
   icons = {},
@@ -69,6 +70,8 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
+
+  const variant = getLineType(areaChartVariant);
 
   const { yAxisWidth, setLabelWidth } = useYAxisLabelWidth(data, dataKeys);
 

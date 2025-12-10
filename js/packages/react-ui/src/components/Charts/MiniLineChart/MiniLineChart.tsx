@@ -2,11 +2,13 @@ import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Line, LineChart as RechartsLineChart, XAxis } from "recharts";
 import { ChartConfig, ChartContainer } from "../Charts";
+import { LineChartVariant } from "../LineChart/types";
 import {
   DATA_KEY,
   getRecentDataThatFits,
   transformDataForChart,
 } from "../utils/AreaAndLine/MiniAreaAndLineUtils";
+import { getLineType } from "../utils/AreaAndLine/common";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 import { get2dChartConfig } from "../utils/dataUtils";
 import { MiniLineChartData } from "./types";
@@ -15,7 +17,7 @@ export interface MiniLineChartProps {
   data: MiniLineChartData;
   theme?: PaletteName;
   customPalette?: string[];
-  variant?: "linear" | "natural" | "step";
+  variant?: LineChartVariant;
   strokeWidth?: number;
   isAnimationActive?: boolean;
   onLineClick?: (data: any) => void;
@@ -28,7 +30,7 @@ export const MiniLineChart = ({
   data,
   theme = "ocean",
   customPalette,
-  variant = "natural",
+  variant: lineChartVariant = "natural",
   strokeWidth = 2,
   isAnimationActive = true,
   onLineClick,
@@ -38,6 +40,8 @@ export const MiniLineChart = ({
 }: MiniLineChartProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
+
+  const variant = getLineType(lineChartVariant);
 
   useEffect(() => {
     if (!containerRef.current) {
