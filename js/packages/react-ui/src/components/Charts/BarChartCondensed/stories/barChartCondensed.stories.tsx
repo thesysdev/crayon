@@ -1060,6 +1060,90 @@ export const TickVariantComparison: Story = {
 };
 
 /**
+ * ## Super Condensed Bar Chart
+ *
+ * This story demonstrates the chart with many data points in a very narrow container,
+ * creating extremely thin bars. This tests the minimum bar width logic and the
+ * automatic removal of rounded corners for bars thinner than 7px.
+ */
+export const SuperCondensedStory: Story = {
+  name: "🔬 Super Condensed (Many Bars)",
+  args: {
+    data: [
+      { month: "Jan '23", desktop: 150, mobile: 90, tablet: 60 },
+      { month: "Feb '23", desktop: 280, mobile: 180, tablet: 100 },
+      { month: "Mar '23", desktop: 220, mobile: 140, tablet: 80 },
+      { month: "Apr '23", desktop: 180, mobile: 160, tablet: 90 },
+      { month: "May '23", desktop: 250, mobile: 120, tablet: 70 },
+      { month: "Jun '23", desktop: 300, mobile: 180, tablet: 110 },
+      { month: "Jul '23", desktop: 350, mobile: 220, tablet: 130 },
+      { month: "Aug '23", desktop: 400, mobile: 240, tablet: 150 },
+      { month: "Sep '23", desktop: 450, mobile: 260, tablet: 170 },
+      { month: "Oct '23", desktop: 500, mobile: 280, tablet: 190 },
+      { month: "Nov '23", desktop: 550, mobile: 300, tablet: 210 },
+      { month: "Dec '23", desktop: 600, mobile: 320, tablet: 230 },
+      { month: "Jan '24", desktop: 620, mobile: 340, tablet: 250 },
+      { month: "Feb '24", desktop: 640, mobile: 360, tablet: 270 },
+      { month: "Mar '24", desktop: 680, mobile: 380, tablet: 290 },
+      { month: "Apr '24", desktop: 700, mobile: 400, tablet: 310 },
+      { month: "May '24", desktop: 720, mobile: 420, tablet: 330 },
+      { month: "Jun '24", desktop: 750, mobile: 440, tablet: 350 },
+      { month: "Jul '24", desktop: 780, mobile: 460, tablet: 370 },
+      { month: "Aug '24", desktop: 800, mobile: 480, tablet: 390 },
+      { month: "Sep '24", desktop: 820, mobile: 500, tablet: 410 },
+      { month: "Oct '24", desktop: 850, mobile: 520, tablet: 430 },
+      { month: "Nov '24", desktop: 880, mobile: 540, tablet: 450 },
+      { month: "Dec '24", desktop: 900, mobile: 560, tablet: 470 },
+    ] as any,
+    categoryKey: "month" as any,
+    theme: "ocean",
+    variant: "grouped",
+    tickVariant: "angled",
+    radius: 4,
+    grid: true,
+    isAnimationActive: false,
+    showYAxis: true,
+    height: 180,
+  },
+  render: (args: any) => (
+    <div>
+      <div
+        style={{
+          marginBottom: "16px",
+          padding: "12px",
+          background: "#f8f9fa",
+          borderRadius: "8px",
+          border: "1px solid #e9ecef",
+          width: "320px",
+        }}
+      >
+        <h4 style={{ margin: "0 0 8px 0", color: "#333" }}>🔬 Ultra Condensed View</h4>
+        <p style={{ margin: "0 0 12px 0", fontSize: "14px", color: "#666" }}>
+          24 months × 3 series = 72 bars in 320px width. Each bar is ~4px wide or less!
+        </p>
+        <ul style={{ margin: "0", paddingLeft: "20px", fontSize: "12px", color: "#666" }}>
+          <li>Bars {"<"} 7px wide = no rounded corners</li>
+          <li>Minimum bar width: 2px enforced</li>
+          <li>Angled labels prevent overlap</li>
+          <li>Internal lines hidden on thin bars</li>
+        </ul>
+      </div>
+      <Card style={{ width: "320px" }}>
+        <BarChartCondensed {...args} />
+      </Card>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**Extreme density test** with 24 data points × 3 series (72 total bars) in a 320px container, making each bar approximately 4px wide or less. This demonstrates:\n\n- **Automatic corner removal**: Bars thinner than 7px automatically become square (no rounded corners)\n- **Minimum width enforcement**: Bars maintain a minimum width of 2px for visibility\n- **Grouped bar handling**: Multiple series create even thinner individual bars\n- **Label handling**: Angled labels prevent overlap in ultra-dense scenarios\n- **Internal line hiding**: The internal line is hidden when bars are too thin to display it properly\n\nThis represents an extreme edge case useful for:\n- Compact dashboard widgets\n- Sidebar sparkline-style analytics\n- Mobile-optimized views\n- High-density data visualization in limited space",
+      },
+    },
+  },
+};
+
+/**
  * ## Responsive Behavior Demo
  *
  * This story demonstrates the responsive capabilities of the BarChartCondensed.
