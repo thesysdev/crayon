@@ -93,12 +93,14 @@ export const FloatingDatePickerRenderer = ({
 }) => {
   const { isOpen, setIsOpen } = useDatePicker();
   const menuRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
 
     const handleInteraction = (e: MouseEvent | TouchEvent) => {
-      if (menuRef.current?.contains(e.target as Node)) {
+      const targetNode = e.target as Node;
+      if (menuRef.current?.contains(targetNode) || containerRef.current?.contains(targetNode)) {
         return;
       }
       setIsOpen(false);
@@ -115,6 +117,7 @@ export const FloatingDatePickerRenderer = ({
 
   return (
     <div
+      ref={containerRef}
       className={clsx("crayon-date-picker-renderer-floating-container", className)}
       style={style}
     >

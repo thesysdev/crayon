@@ -2,12 +2,14 @@ import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Area, AreaChart as RechartsAreaChart, XAxis } from "recharts";
 import { useId } from "../../../polyfills";
+import { AreaChartVariant } from "../AreaChart/types";
 import { ChartConfig, ChartContainer } from "../Charts";
 import {
   DATA_KEY,
   getRecentDataThatFits,
   transformDataForChart,
 } from "../utils/AreaAndLine/MiniAreaAndLineUtils";
+import { getLineType } from "../utils/AreaAndLine/common";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
 import { get2dChartConfig } from "../utils/dataUtils";
 import { MiniAreaChartData } from "./types";
@@ -16,7 +18,7 @@ export interface MiniAreaChartProps {
   data: MiniAreaChartData;
   theme?: PaletteName;
   customPalette?: string[];
-  variant?: "linear" | "natural" | "step";
+  variant?: AreaChartVariant;
   opacity?: number;
   isAnimationActive?: boolean;
   onAreaClick?: (data: any) => void;
@@ -30,7 +32,7 @@ export const MiniAreaChart = ({
   data,
   theme = "ocean",
   customPalette,
-  variant = "natural",
+  variant: areaChartVariant = "natural",
   opacity = 0.5,
   isAnimationActive = false,
   onAreaClick,
@@ -41,6 +43,8 @@ export const MiniAreaChart = ({
 }: MiniAreaChartProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
+
+  const variant = getLineType(areaChartVariant);
 
   useEffect(() => {
     if (!containerRef.current) {

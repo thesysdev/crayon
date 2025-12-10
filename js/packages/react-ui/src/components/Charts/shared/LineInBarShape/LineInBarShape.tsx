@@ -89,6 +89,13 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
       return { rTL: 0, rTR: 0, rBL: 0, rBR: 0 };
     }
 
+    // Check bar thickness and remove rounded corners if too thin
+    // For vertical bars: check width, for horizontal bars: check height
+    const barThickness = isVertical ? w : h;
+    if (barThickness < 7) {
+      return { rTL: 0, rTR: 0, rBL: 0, rBR: 0 };
+    }
+
     // If radius is an array, apply specific radius to each corner
     if (Array.isArray(r)) {
       // The radius array is expected to be in the format [rTL, rTR, rBR, rBL].

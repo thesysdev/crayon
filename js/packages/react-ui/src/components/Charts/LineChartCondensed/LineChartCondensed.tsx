@@ -23,6 +23,7 @@ import {
 } from "../shared";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { LegendItem } from "../types";
+import { getLineType } from "../utils/AreaAndLine/common";
 import { get2dChartConfig, getDataKeys, getLegendItems } from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 
@@ -54,7 +55,7 @@ const LineChartCondensedComponent = <T extends LineChartData>({
   categoryKey,
   theme = "ocean",
   customPalette,
-  variant = "natural",
+  variant: lineChartVariant = "natural",
   tickVariant = "singleLine",
   grid = true,
   icons = {},
@@ -71,6 +72,8 @@ const LineChartCondensedComponent = <T extends LineChartData>({
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
+
+  const variant = getLineType(lineChartVariant);
 
   const { yAxisWidth, setLabelWidth } = useYAxisLabelWidth(data, dataKeys);
 

@@ -232,8 +232,8 @@ export const YearsDropdown = (
           "crayon-date-picker-select-viewport",
           botType === "mobile" && "crayon-date-picker-select-viewport-mobile",
         )}
-        sideOffset={12}
-        alignOffset={-75}
+        sideOffset={0}
+        alignOffset={-135}
         style={{
           minHeight: `${containerHeight - 45}px`,
           maxHeight: `${containerHeight - 45}px`,
