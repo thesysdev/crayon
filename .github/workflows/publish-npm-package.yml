@@ -1,13 +1,14 @@
 name: Publish NPM packages
 
 permissions:
-  id-token: write
-  
+  id-token: write # Required for OIDC
+  contents: read # Recommended security best practice
+
 on:
   workflow_dispatch:
     inputs:
       package:
-        description: 'Package to publish (react-ui, react-core, or stream)'
+        description: "Package to publish (react-ui, react-core, or stream)"
         required: true
         type: choice
         options:
@@ -30,10 +31,14 @@ jobs:
           version: 9.15.4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
-          registry-url: 'https://registry.npmjs.org'
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
           cache: pnpm
-          cache-dependency-path: '**/pnpm-lock.yaml'
+          cache-dependency-path: "**/pnpm-lock.yaml"
+
+      # CRITICAL: npm 11.5.1+ required for trusted publishing
+      - name: Install npm 11.6.4
+        run: npm install -g npm@11.6.4
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -43,4 +48,5 @@ jobs:
 
       - name: Publish package
         working-directory: ./js/packages/${{ inputs.package }}
-        run: pnpm publish --access public --provenance
+        run: pnpm publish --access public
+        # Note: provenance is automatically generated with trusted publishing
