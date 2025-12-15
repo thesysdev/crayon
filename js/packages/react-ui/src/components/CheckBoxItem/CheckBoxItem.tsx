@@ -23,13 +23,13 @@ const CheckBoxItem = forwardRef<HTMLButtonElement, CheckBoxItemProps>((props, re
   return (
     <label htmlFor={id} className="crayon-checkbox-item-container">
       <Checkbox.Root
+        {...rest}
         ref={ref}
         onCheckedChange={onChange}
         id={id}
         className={clsx("crayon-checkbox-item-root", className)}
         disabled={disabled}
         required={required}
-        {...rest}
       >
         <Checkbox.Indicator className="crayon-checkbox-item-indicator">
           <svg
