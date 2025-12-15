@@ -21,15 +21,15 @@ const CheckBoxItem = forwardRef<HTMLButtonElement, CheckBoxItemProps>((props, re
   const { label, description, onChange, className, disabled, required, ...rest } = props;
   const id = useId();
   return (
-    <div className="crayon-checkbox-item-container">
+    <label htmlFor={id} className="crayon-checkbox-item-container">
       <Checkbox.Root
         ref={ref}
         onCheckedChange={onChange}
-        {...rest}
         id={id}
         className={clsx("crayon-checkbox-item-root", className)}
         disabled={disabled}
         required={required}
+        {...rest}
       >
         <Checkbox.Indicator className="crayon-checkbox-item-indicator">
           <svg
@@ -57,7 +57,7 @@ const CheckBoxItem = forwardRef<HTMLButtonElement, CheckBoxItemProps>((props, re
         )}
         {description && <p className="crayon-checkbox-item-description">{description}</p>}
       </div>
-    </div>
+    </label>
   );
 });
 

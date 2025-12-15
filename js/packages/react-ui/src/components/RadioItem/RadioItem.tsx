@@ -17,15 +17,15 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>((props, ref) => 
   const { label, description, className, style, disabled, required, value } = props;
   const id = useId();
   return (
-    <div className="crayon-radio-item-container">
+    <label htmlFor={id} className="crayon-radio-item-container">
       <Radio.Item
         ref={ref}
+        id={id}
         className={clsx("crayon-radio-item-root", className)}
         value={value}
         disabled={disabled}
         required={required}
         style={style}
-        id={id}
       >
         <svg
           width={16}
@@ -59,7 +59,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>((props, ref) => 
         )}
         {description && <p className="crayon-radio-item-description">{description}</p>}
       </div>
-    </div>
+    </label>
   );
 });
 
