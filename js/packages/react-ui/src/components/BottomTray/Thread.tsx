@@ -33,7 +33,7 @@ export const ThreadContainer = ({
   useEffect(() => {
     setIsArtifactActive(isArtifactActive);
     setArtifactRenderer(renderArtifact);
-  }, [isArtifactActive, setIsArtifactActive]);
+  }, [isArtifactActive, renderArtifact, setIsArtifactActive, setArtifactRenderer]);
 
   return <div className={clsx("crayon-bottom-tray-thread-container", className)}>{children}</div>;
 };

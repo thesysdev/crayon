@@ -1,4 +1,4 @@
 export * from "./ComposedBottomTray";
 export * from "./ComposedCopilot";
 export * from "./ComposedStandalone";
-export { CrayonChat } from "./CrayonChat";
+export { CrayonChat, type CrayonChatType } from "./CrayonChat";
