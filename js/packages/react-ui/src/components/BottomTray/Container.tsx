@@ -9,8 +9,6 @@ interface ContainerProps {
   className?: string;
   /** Control the open state of the tray */
   isOpen?: boolean;
-  /** Callback when open state changes */
-  onOpenChange?: (isOpen: boolean) => void;
 }
 
 export const Container = ({
