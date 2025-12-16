@@ -7,7 +7,7 @@ export { useThreadListState } from "./hooks/useThreadListState";
 export { useThreadManagerSelector } from "./hooks/useThreadManagerSelector";
 export { useThreadState } from "./hooks/useThreadState";
 export { processStreamedMessage } from "./stream/processStreamedMessage";
-export { UseThreadListManagerParams, useThreadListManager } from "./useThreadListManager";
-export { UseThreadManagerParams, useThreadManager } from "./useThreadManager";
+export { type UseThreadListManagerParams, useThreadListManager } from "./useThreadListManager";
+export { type UseThreadManagerParams, useThreadManager } from "./useThreadManager";
 
 export * from "./types";

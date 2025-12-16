@@ -1,23 +1,29 @@
-import { Message, useThreadListManager, useThreadManager } from "@crayonai/react-core";
-import { CrayonChat } from "../CrayonChat";
+import {
+  ChatProvider,
+  Message,
+  useThreadListManager,
+  useThreadManager,
+} from "@crayonai/react-core";
+import {
+  Composer,
+  Container,
+  Header,
+  MessageLoading,
+  Messages,
+  ScrollArea,
+  ThreadContainer,
+} from "../../BottomTray";
+// @ts-ignore
+import styles from "./style.module.scss";
+import logoUrl from "./thesysdev_logo.jpeg";
 
 export default {
-  title: "Components/CrayonChat",
+  title: "Components/BottomTray",
   tags: ["dev", "!autodocs"],
-  argTypes: {
-    type: {
-      control: "select",
-      options: ["standalone", "copilot"],
-    },
-  },
 };
 
-export const Default = {
-  args: {
-    type: "standalone",
-  },
-  render: (args: any) => {
-    const threadListManager = useThreadListManager({
+const BottomTrayStory = () => {
+  const threadListManager = useThreadListManager({
       createThread: async () => {
         return {
           threadId: crypto.randomUUID(),
@@ -69,7 +75,7 @@ export const Default = {
             id: crypto.randomUUID(),
             role: "assistant",
             type: "response",
-            message: [{ type: "text", text: "Hello" }],
+            message: [{ type: "text", text: "Hello! How can I help you today?" }],
           },
         ];
       },
@@ -84,7 +90,7 @@ export const Default = {
             id: crypto.randomUUID(),
             role: "assistant",
             type: "response",
-            message: [{ type: "text", text: "sadfasdf" }],
+            message: [{ type: "text", text: "This is a response from the bottom tray assistant!" }],
           },
         ];
       },
@@ -92,11 +98,27 @@ export const Default = {
     });
 
     return (
-      <CrayonChat
-        threadListManager={threadListManager}
-        threadManager={threadManager}
-        type={args.type}
-      />
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <h1>Bottom Tray Example</h1>
+          <p>The chat interface appears as a bottom tray in the lower right corner.</p>
+        </div>
+        <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
+          <Container logoUrl={logoUrl} agentName="Crayon Assistant">
+            <ThreadContainer>
+              <Header />
+              <ScrollArea>
+                <Messages loader={<MessageLoading />} />
+              </ScrollArea>
+              <Composer />
+            </ThreadContainer>
+          </Container>
+        </ChatProvider>
+      </div>
     );
-  },
 };
+
+export const Default = {
+  render: () => <BottomTrayStory />,
+};
+
