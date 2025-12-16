@@ -88,9 +88,7 @@ export const ScrollArea = ({
         {children}
       </div>
       {isArtifactActive && (
-        <div className="crayon-bottom-tray-thread-artifact-panel--mobile">
-          {artifactRenderer()}
-        </div>
+        <div className="crayon-bottom-tray-thread-artifact-panel--mobile">{artifactRenderer()}</div>
       )}
     </div>
   );
@@ -157,10 +155,7 @@ export const RenderMessage = memo(
               const TextRenderer = responseTemplates["text"]?.Component || DefaultTextRenderer;
 
               return (
-                <TextRenderer
-                  key={i}
-                  className="crayon-bottom-tray-thread-message-assistant__text"
-                >
+                <TextRenderer key={i} className="crayon-bottom-tray-thread-message-assistant__text">
                   {stringOrTemplate.text}
                 </TextRenderer>
               );
@@ -274,4 +269,3 @@ export const Composer = ({ className }: { className?: string }) => {
     </div>
   );
 };
-

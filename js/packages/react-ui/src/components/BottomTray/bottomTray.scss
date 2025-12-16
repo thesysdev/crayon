@@ -11,6 +11,9 @@
   width: 530px;
   overflow: hidden;
   flex-direction: column;
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease;
 
   border: 1px solid cssUtils.$stroke-default;
   border-radius: cssUtils.$rounded-l cssUtils.$rounded-l 0 0;
@@ -21,5 +24,75 @@
   & * {
     box-sizing: border-box;
   }
+
+  // Open state
+  &--open {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  // Closed state
+  &--closed {
+    transform: translateY(calc(100% + cssUtils.$spacing-l));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  // Mobile fullscreen
+  @media (max-width: 768px) {
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 100dvw;
+    height: 100dvh;
+    border-radius: 0;
+    border: none;
+
+    &--closed {
+      transform: translateY(100dvh);
+    }
+  }
 }
 
+// Trigger button component (composable)
+.crayon-bottom-tray-trigger {
+  position: fixed;
+  bottom: cssUtils.$spacing-l;
+  right: cssUtils.$spacing-l;
+  display: flex;
+  align-items: center;
+  gap: cssUtils.$spacing-s;
+  padding: cssUtils.$spacing-s cssUtils.$spacing-l;
+  border: 1px solid cssUtils.$stroke-default;
+  border-radius: cssUtils.$rounded-full;
+  background: cssUtils.$interactive-accent;
+  color: cssUtils.$accent-primary-text;
+  box-shadow: cssUtils.$shadow-xl;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 1000;
+
+  @include cssUtils.typography(label, default);
+
+  &:hover {
+    background: cssUtils.$interactive-accent-hover;
+    box-shadow: cssUtils.$shadow-2xl;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &__text {
+    font-weight: 600;
+  }
+
+  // Mobile
+  @media (max-width: 768px) {
+    bottom: cssUtils.$spacing-m;
+    right: cssUtils.$spacing-m;
+    padding: cssUtils.$spacing-m cssUtils.$spacing-l;
+  }
+}

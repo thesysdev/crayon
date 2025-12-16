@@ -7,15 +7,35 @@ interface ContainerProps {
   logoUrl: string;
   agentName: string;
   className?: string;
+  /** Control the open state of the tray */
+  isOpen?: boolean;
+  /** Callback when open state changes */
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
-export const Container = ({ children, logoUrl, agentName, className }: ContainerProps) => {
+export const Container = ({
+  children,
+  logoUrl,
+  agentName,
+  className,
+  isOpen = false,
+}: ContainerProps) => {
   return (
     <ShellStoreProvider logoUrl={logoUrl} agentName={agentName}>
       <LayoutContextProvider layout="tray">
-        <div className={clsx("crayon-bottom-tray-container", className)}>{children}</div>
+        <div
+          className={clsx(
+            "crayon-bottom-tray-container",
+            {
+              "crayon-bottom-tray-container--open": isOpen,
+              "crayon-bottom-tray-container--closed": !isOpen,
+            },
+            className,
+          )}
+        >
+          {children}
+        </div>
       </LayoutContextProvider>
     </ShellStoreProvider>
   );
 };
-
