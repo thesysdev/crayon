@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
 import { usePrintContext } from "../../../context/PrintContext.js";
 import { useTheme } from "../../ThemeProvider/ThemeProvider.js";
@@ -289,6 +289,16 @@ const PieChartComponent = <T extends PieChartData>({
     ],
   );
 
+  // Read initial dimensions synchronously before first paint to avoid size jump
+  useLayoutEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const rect = wrapper.getBoundingClientRect();
+    setWrapperRect({ width: rect.width, height: rect.height });
+  }, []);
+
+  // Use ResizeObserver for subsequent size changes
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
