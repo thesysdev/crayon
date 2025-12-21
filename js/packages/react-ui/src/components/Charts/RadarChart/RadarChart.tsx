@@ -7,6 +7,7 @@ import {
   RadarChart as RechartsRadarChart,
   ResponsiveContainer,
 } from "recharts";
+import { usePrintContext } from "../../../context/PrintContext";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import { useTransformedKeys } from "../hooks/useTransformKey";
@@ -51,6 +52,9 @@ const RadarChartComponent = <T extends RadarChartData>({
   height,
   width,
 }: RadarChartProps<T>) => {
+  const printContext = usePrintContext();
+  isAnimationActive = printContext ? false : isAnimationActive;
+
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);

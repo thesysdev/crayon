@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
+import { usePrintContext } from "../../../context/PrintContext";
 import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { BarChartData, BarChartVariant } from "../BarChart/types";
@@ -75,6 +76,9 @@ const BarChartCondensedComponent = <T extends BarChartData>({
   height = CHART_HEIGHT,
   width,
 }: BarChartCondensedProps<T>) => {
+  const printContext = usePrintContext();
+  isAnimationActive = printContext ? false : isAnimationActive;
+
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);

@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Line, LineChart as RechartsLineChart, XAxis } from "recharts";
+import { usePrintContext } from "../../../context/PrintContext";
 import { ChartConfig, ChartContainer } from "../Charts";
 import { LineChartVariant } from "../LineChart/types";
 import {
@@ -38,6 +39,9 @@ export const MiniLineChart = ({
   className,
   lineColor,
 }: MiniLineChartProps) => {
+  const printContext = usePrintContext();
+  isAnimationActive = printContext ? false : isAnimationActive;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
 
