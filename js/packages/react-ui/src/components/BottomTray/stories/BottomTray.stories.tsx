@@ -222,7 +222,11 @@ const CustomTriggerStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) 
 
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         {/* Custom trigger - always visible, toggles tray (hidden on mobile when open) */}
-        <Trigger onClick={() => setIsOpen(!isOpen)} isOpen={isOpen} className={styles.customTrigger}>
+        <Trigger
+          onClick={() => setIsOpen(!isOpen)}
+          isOpen={isOpen}
+          className={styles.customTrigger}
+        >
           💬 Need Help?
         </Trigger>
 
