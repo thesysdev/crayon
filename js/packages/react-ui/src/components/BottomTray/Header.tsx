@@ -4,6 +4,7 @@ import { SquarePen, X } from "lucide-react";
 import { ReactNode } from "react";
 import { IconButton } from "../IconButton";
 import { useShellStore } from "../Shell/store";
+import { ThreadListContainer } from "./ThreadListContainer";
 
 export const BottomTrayNewChatButton = () => {
   const { switchToNewThread } = useThreadListActions();
@@ -28,7 +29,9 @@ interface HeaderProps {
   /** Hide the minimize button */
   hideMinimizeButton?: boolean;
   /** Custom new chat button */
-  newChatButton?: ReactNode;
+  hideNewChatButton?: boolean;
+  /** Hide the thread list container */
+  hideThreadListContainer?: boolean;
 }
 
 export const Header = ({
@@ -36,7 +39,8 @@ export const Header = ({
   rightChildren,
   onMinimize,
   hideMinimizeButton = false,
-  newChatButton = <BottomTrayNewChatButton />,
+  hideNewChatButton = false,
+  hideThreadListContainer = false,
 }: HeaderProps) => {
   const { logoUrl, agentName } = useShellStore((state) => ({
     logoUrl: state.logoUrl,
@@ -51,7 +55,8 @@ export const Header = ({
       </div>
       <div className="crayon-bottom-tray-header-actions">
         {rightChildren}
-        {newChatButton}
+        {!hideThreadListContainer && <ThreadListContainer />}
+        {!hideNewChatButton && <BottomTrayNewChatButton />}
         {!hideMinimizeButton && onMinimize && (
           <IconButton
             icon={<X size="1em" />}
