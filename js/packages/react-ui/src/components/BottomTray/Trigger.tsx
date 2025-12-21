@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { MessageSquare } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { ReactNode } from "react";
 
 interface TriggerProps {
@@ -11,6 +11,8 @@ interface TriggerProps {
   className?: string;
   /** Aria label for accessibility */
   "aria-label"?: string;
+  /** Whether the tray is currently open (used for mobile styling) */
+  isOpen?: boolean;
 }
 
 export const Trigger = ({
@@ -18,19 +20,19 @@ export const Trigger = ({
   children,
   className,
   "aria-label": ariaLabel = "Open chat",
+  isOpen = false,
 }: TriggerProps) => {
   return (
     <button
-      className={clsx("crayon-bottom-tray-trigger", className)}
+      className={clsx(
+        "crayon-bottom-tray-trigger",
+        { "crayon-bottom-tray-trigger--open": isOpen },
+        className,
+      )}
       onClick={onClick}
       aria-label={ariaLabel}
     >
-      {children || (
-        <>
-          <MessageSquare size={20} />
-          <span className="crayon-bottom-tray-trigger__text">Chat</span>
-        </>
-      )}
+      {children || <ChevronDown size={24} />}
     </button>
   );
 };

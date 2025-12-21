@@ -125,8 +125,8 @@ const BottomTrayStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) => 
       </div>
 
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
-        {/* Trigger is separate - can be placed anywhere */}
-        {!isOpen && <Trigger onClick={() => setIsOpen(true)} />}
+        {/* Trigger is always visible - toggles the tray (hidden on mobile when open) */}
+        <Trigger onClick={() => setIsOpen(!isOpen)} isOpen={isOpen} />
 
         {/* Container is controlled externally */}
         <Container logoUrl={logoUrl} agentName="Crayon Assistant" isOpen={isOpen}>
@@ -221,12 +221,10 @@ const CustomTriggerStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) 
       </div>
 
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
-        {/* Custom trigger with your own styling */}
-        {!isOpen && (
-          <Trigger onClick={() => setIsOpen(true)} className={styles.customTrigger}>
-            💬 Need Help?
-          </Trigger>
-        )}
+        {/* Custom trigger - always visible, toggles tray (hidden on mobile when open) */}
+        <Trigger onClick={() => setIsOpen(!isOpen)} isOpen={isOpen} className={styles.customTrigger}>
+          💬 Need Help?
+        </Trigger>
 
         <Container logoUrl={logoUrl} agentName="Support" isOpen={isOpen}>
           <ThreadContainer>

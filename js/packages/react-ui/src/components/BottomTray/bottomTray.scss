@@ -5,11 +5,12 @@
 .crayon-bottom-tray-container {
   display: flex;
   position: fixed;
-  bottom: 0;
+  // Leave space for the 56px trigger + spacing (16px bottom + 56px height + 12px gap = 84px)
+  bottom: 84px;
   right: cssUtils.$spacing-l;
-  height: 90%;
+  height: calc(90% - 84px);
   max-height: 768px;
-  width: 450px;
+  width: 448px;
   overflow: hidden;
   flex-direction: column;
   transition:
@@ -17,7 +18,8 @@
     opacity 0.3s ease;
 
   border: 1px solid cssUtils.$stroke-default;
-  border-radius: cssUtils.$rounded-l cssUtils.$rounded-l 0 0;
+  border-radius: cssUtils.$rounded-2xl cssUtils.$rounded-2xl cssUtils.$rounded-3xl
+    cssUtils.$rounded-3xl;
   box-shadow: cssUtils.$shadow-2xl;
 
   background: cssUtils.$chat-container-bg;
@@ -47,6 +49,8 @@
     bottom: 0;
     width: 100dvw;
     height: 100dvh;
+    max-height: none;
+    max-width: none;
     border-radius: 0;
     border: none;
 
@@ -63,16 +67,17 @@
   right: cssUtils.$spacing-l;
   display: flex;
   align-items: center;
-  gap: cssUtils.$spacing-s;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
   border-radius: cssUtils.$rounded-full;
-  background: cssUtils.$interactive-accent;
+  background: cssUtils.$bg-inverted;
   color: cssUtils.$accent-primary-text;
   box-shadow: cssUtils.$shadow-xl;
   cursor: pointer;
   transition: all 0.2s ease;
   z-index: 1000;
-
-  @include cssUtils.typography(label, default);
+  overflow: hidden;
 
   &:hover {
     background: cssUtils.$interactive-accent-hover;
@@ -84,14 +89,14 @@
     transform: translateY(0);
   }
 
-  &__text {
-    font-weight: 600;
-  }
-
   // Mobile
   @media (max-width: 768px) {
     bottom: cssUtils.$spacing-m;
     right: cssUtils.$spacing-m;
-    padding: cssUtils.$spacing-m cssUtils.$spacing-l;
+
+    // Hide trigger on mobile when tray is open (tray goes fullscreen)
+    &--open {
+      display: none;
+    }
   }
 }

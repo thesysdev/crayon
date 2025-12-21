@@ -51,13 +51,10 @@ export const ComposedBottomTray = ({
 
   return (
     <>
-      {/* Show trigger when tray is closed */}
-      {!isOpen && (
-        <Trigger onClick={() => handleOpenChange(true)}>
-          <span style={{ fontSize: "20px" }}>💬</span>
-          <span className="crayon-bottom-tray-trigger__text">{agentName}</span>
-        </Trigger>
-      )}
+      {/* Trigger is always visible - toggles the tray (hidden on mobile when open) */}
+      <Trigger onClick={() => handleOpenChange(!isOpen)} isOpen={isOpen}>
+        <img src={logoUrl} alt="Logo" className="crayon-bottom-tray-trigger-logo" />
+      </Trigger>
 
       {/* Controlled container */}
       <Container logoUrl={logoUrl} agentName={agentName} isOpen={isOpen}>
