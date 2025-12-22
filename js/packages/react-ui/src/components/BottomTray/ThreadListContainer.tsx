@@ -6,13 +6,11 @@ import { useEffect } from "react";
 import { IconButton } from "../IconButton";
 
 const ThreadItem = ({
-  id,
   title,
   isSelected,
   onSelect,
   onDelete,
 }: {
-  id: string;
   title: string;
   isSelected: boolean;
   onSelect: () => void;
@@ -87,7 +85,6 @@ export const ThreadListContainer = () => {
             {threads.map((thread) => (
               <ThreadItem
                 key={thread.threadId}
-                id={thread.threadId}
                 title={thread.title}
                 isSelected={selectedThreadId === thread.threadId}
                 onSelect={() => selectThread(thread.threadId)}
