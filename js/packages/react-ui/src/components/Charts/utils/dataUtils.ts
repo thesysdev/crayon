@@ -65,8 +65,8 @@ export const getCategoricalChartConfig = <T extends CategoricalChartData>(
       ...config,
       [transformedKey]: {
         label: String(item[categoryKey as string]),
-        color: colors[index], // Use the passed-in colors
-        secondaryColor: colors[data.length - index - 1],
+        color: colors[index],
+        secondaryColor: colors[data.length - index - 1], // Add secondary color for gradient effect
       },
     };
   }, {});

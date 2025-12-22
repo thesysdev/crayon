@@ -114,7 +114,7 @@ export const transformRadialDataWithPercentages = <T extends RadialChartData>(
     ...item,
     percentage: calculatePercentage(Number(item[dataKey as string]), total),
     originalValue: item[dataKey as string],
-    fill: colors[index], // Now uses the correct custom colors
+    fill: colors[index],
   }));
 };
 
