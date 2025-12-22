@@ -49,15 +49,12 @@ export const get2dChartConfig = (
 
 type CategoricalChartData = RadialChartData | PieChartData;
 
-// utils/dataUtils.ts
-
 export const getCategoricalChartConfig = <T extends CategoricalChartData>(
   data: T,
   categoryKey: keyof T[number],
   colors: string[], // Change this from 'theme: string' to 'colors: string[]'
   transformedKeys: Record<string, string>,
 ): ChartConfig => {
-  // Remove the palette/distributed colors logic from here
   return data.reduce<ChartConfig>((config, item, index) => {
     const originalKey = String(item[categoryKey]);
     const transformedKey = `key-${transformedKeys[originalKey] ?? originalKey}`;
