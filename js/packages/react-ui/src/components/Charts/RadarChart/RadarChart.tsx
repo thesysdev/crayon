@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -81,7 +81,7 @@ const RadarChartComponent = <T extends RadarChartData>({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
@@ -94,6 +94,11 @@ const RadarChartComponent = <T extends RadarChartData>({
         });
       }
     });
+
+    // Read initial dimensions synchronously before first paint to avoid size jump
+    const rect = wrapper.getBoundingClientRect();
+    setWrapperRect({ width: rect.width, height: rect.height });
+
     observer.observe(wrapper);
     return () => observer.disconnect();
   }, []);
@@ -186,9 +191,9 @@ const RadarChartComponent = <T extends RadarChartData>({
   return (
     <SideBarTooltipProvider
       isSideBarTooltipOpen={false}
-      setIsSideBarTooltipOpen={() => {}}
+      setIsSideBarTooltipOpen={() => { }}
       data={undefined}
-      setData={() => {}}
+      setData={() => { }}
     >
       <div ref={wrapperRef} className={wrapperClassName} style={wrapperStyle}>
         <div className="crayon-radar-chart-container">

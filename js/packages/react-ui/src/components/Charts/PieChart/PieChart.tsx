@@ -289,17 +289,8 @@ const PieChartComponent = <T extends PieChartData>({
     ],
   );
 
-  // Read initial dimensions synchronously before first paint to avoid size jump
-  useLayoutEffect(() => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
-
-    const rect = wrapper.getBoundingClientRect();
-    setWrapperRect({ width: rect.width, height: rect.height });
-  }, []);
-
   // Use ResizeObserver for subsequent size changes
-  useEffect(() => {
+  useLayoutEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
@@ -313,6 +304,10 @@ const PieChartComponent = <T extends PieChartData>({
       }
     });
     observer.observe(wrapper);
+
+    // Read initial dimensions synchronously before first paint to avoid size jump
+    const rect = wrapper.getBoundingClientRect();
+    setWrapperRect({ width: rect.width, height: rect.height });
     return () => observer.disconnect();
   }, []);
 
