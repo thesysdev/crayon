@@ -5,10 +5,12 @@ export interface ActiveDotProps {
   cy?: number;
   payload?: any;
   value?: any;
+  fill?: string;
+  stroke?: string;
 }
 
 export const ActiveDot: React.FC<ActiveDotProps> = (props) => {
-  const { cx, cy } = props;
+  const { cx, cy, fill, stroke } = props;
   const ref = useRef<SVGGElement>(null);
 
   useLayoutEffect(() => {
@@ -28,9 +30,9 @@ export const ActiveDot: React.FC<ActiveDotProps> = (props) => {
       circle2.setAttribute("cx", String(cx));
       circle2.setAttribute("cy", String(cy));
       circle2.setAttribute("r", "2");
-      circle2.setAttribute("fill", "var(--crayon-inverted-fills)");
-      circle2.setAttribute("stroke", "var(--crayon-inverted-fills)");
-      circle2.setAttribute("stroke-width", "0.5");
+      circle2.setAttribute("fill", fill || "var(--color-bg)");
+      circle2.setAttribute("stroke", stroke || "transparent");
+      circle2.setAttribute("stroke-width", "0");
 
       dotGroup.appendChild(circle1);
       dotGroup.appendChild(circle2);
