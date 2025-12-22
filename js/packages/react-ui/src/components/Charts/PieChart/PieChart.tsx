@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
 import { usePrintContext } from "../../../context/PrintContext.js";
 import { useTheme } from "../../ThemeProvider/ThemeProvider.js";

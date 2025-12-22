@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -191,9 +191,9 @@ const RadarChartComponent = <T extends RadarChartData>({
   return (
     <SideBarTooltipProvider
       isSideBarTooltipOpen={false}
-      setIsSideBarTooltipOpen={() => { }}
+      setIsSideBarTooltipOpen={() => {}}
       data={undefined}
-      setData={() => { }}
+      setData={() => {}}
     >
       <div ref={wrapperRef} className={wrapperClassName} style={wrapperStyle}>
         <div className="crayon-radar-chart-container">
