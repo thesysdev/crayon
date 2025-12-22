@@ -87,6 +87,12 @@ export const ScrollArea = ({
       >
         {children}
       </div>
+      <div
+        className="crayon-bottom-tray-thread-scroll-gradient"
+        // style={{
+        //   background: "linear-gradient(to top, var(--crayon-background-fills) 0%, transparent)",
+        // }}
+      />
       {isArtifactActive && (
         <div className="crayon-bottom-tray-thread-artifact-panel--mobile">{artifactRenderer()}</div>
       )}
