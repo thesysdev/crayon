@@ -19,12 +19,6 @@ import { ComposedBottomTray } from "./ComposedBottomTray";
 import { ComposedCopilot } from "./ComposedCopilot";
 import { ComposedStandalone } from "./ComposedStandalone";
 
-export enum CrayonChatType {
-  COPILOT = "copilot",
-  STANDALONE = "standalone",
-  BOTTOM_TRAY = "bottom-tray",
-}
-
 type BaseCrayonChatProps = {
   // options used when threadManager not provided
   processMessage?: (params: {
@@ -56,7 +50,7 @@ type BaseCrayonChatProps = {
 };
 
 type BottomTrayProps = {
-  type: CrayonChatType.BOTTOM_TRAY;
+  type: "bottom-tray";
   /** Control the open state of the bottom tray */
   isOpen?: boolean;
   /** Callback when bottom tray open state changes */
@@ -66,7 +60,7 @@ type BottomTrayProps = {
 };
 
 type OtherTypeProps = {
-  type?: CrayonChatType.COPILOT | CrayonChatType.STANDALONE;
+  type?: "copilot" | "standalone";
 };
 
 type CrayonChatProps = BaseCrayonChatProps & (BottomTrayProps | OtherTypeProps);
@@ -87,7 +81,7 @@ export const CrayonChat = (props: CrayonChatProps) => {
     onUpdateMessage,
     processStreamedMessage: userProcessStreamedMessage,
     messageLoadingComponent,
-    type = CrayonChatType.STANDALONE,
+    type = "standalone",
     theme,
     scrollVariant = "user-message-anchor",
     disableThemeProvider,
@@ -96,18 +90,10 @@ export const CrayonChat = (props: CrayonChatProps) => {
   } = props;
 
   // Extract bottom-tray specific props if type is bottom-tray
-  const isOpen =
-    type === CrayonChatType.BOTTOM_TRAY
-      ? (props as BottomTrayProps & BaseCrayonChatProps).isOpen
-      : undefined;
-  const onOpenChange =
-    type === CrayonChatType.BOTTOM_TRAY
-      ? (props as BottomTrayProps & BaseCrayonChatProps).onOpenChange
-      : undefined;
-  const defaultOpen =
-    type === CrayonChatType.BOTTOM_TRAY
-      ? (props as BottomTrayProps & BaseCrayonChatProps).defaultOpen
-      : undefined;
+  const { isOpen, onOpenChange, defaultOpen } =
+    type === "bottom-tray"
+      ? (props as BottomTrayProps)
+      : { isOpen: undefined, onOpenChange: undefined, defaultOpen: undefined };
 
   invariant(processMessage || userThreadManager, "processMessage or threadManager is required");
   const ThemeProviderComponent = disableThemeProvider ? DummyThemeProvider : ThemeProvider;
