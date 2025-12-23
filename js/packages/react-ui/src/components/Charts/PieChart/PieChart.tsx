@@ -139,6 +139,13 @@ const PieChartComponent = <T extends PieChartData>({
     [],
   );
 
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "pieChartPalette",
+    dataLength: sortedProcessedData.length,
+  });
+
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(
     () => transformDataWithPercentages(sortedProcessedData as T, dataKey),
@@ -146,8 +153,8 @@ const PieChartComponent = <T extends PieChartData>({
   );
 
   const chartConfig = useMemo(
-    () => getCategoricalChartConfig(sortedProcessedData as T, categoryKey, theme, transformedKeys),
-    [sortedProcessedData, categoryKey, theme, transformedKeys],
+    () => getCategoricalChartConfig(sortedProcessedData as T, categoryKey, colors, transformedKeys),
+    [sortedProcessedData, categoryKey, colors, transformedKeys],
   );
 
   const animationConfig = useMemo(
@@ -178,13 +185,6 @@ const PieChartComponent = <T extends PieChartData>({
       paddingAngle: variant === "donut" ? 0.5 : paddingAngle,
     };
   }, [cornerRadius, variant, paddingAngle, userTheme.rounded2xs]);
-
-  const colors = useChartPalette({
-    chartThemeName: theme,
-    customPalette,
-    themePaletteName: "pieChartPalette",
-    dataLength: sortedProcessedData.length,
-  });
 
   const legendItems = useMemo(
     () =>

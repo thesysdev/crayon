@@ -142,15 +142,23 @@ export const RadialChart = <T extends RadialChartData>({
   // Calculate chart radii
   const dimensions = useMemo(() => calculateRadialChartDimensions(chartSize), [chartSize]);
 
+  // Get color palette and distribute colors
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "radialChartPalette",
+    dataLength: sortedProcessedData.length,
+  });
+
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(
-    () => transformRadialDataWithPercentages(sortedProcessedData as T, dataKey, theme),
-    [sortedProcessedData, dataKey, theme],
+    () => transformRadialDataWithPercentages(sortedProcessedData as T, dataKey, colors),
+    [sortedProcessedData, dataKey, colors],
   );
 
   const chartConfig = useMemo(
-    () => getCategoricalChartConfig(sortedProcessedData as T, categoryKey, theme, transformedKeys),
-    [sortedProcessedData, categoryKey, theme, transformedKeys],
+    () => getCategoricalChartConfig(sortedProcessedData as T, categoryKey, colors, transformedKeys),
+    [sortedProcessedData, categoryKey, colors, transformedKeys],
   );
 
   const animationConfig = useMemo(
@@ -162,14 +170,6 @@ export const RadialChart = <T extends RadialChartData>({
     () => createRadialEventHandlers(onMouseEnter, onMouseLeave, onClick),
     [onMouseEnter, onMouseLeave, onClick],
   );
-
-  // Get color palette and distribute colors
-  const colors = useChartPalette({
-    chartThemeName: theme,
-    customPalette,
-    themePaletteName: "radialChartPalette",
-    dataLength: sortedProcessedData.length,
-  });
 
   // Create legend items for both variants
   const legendItems = useMemo(
