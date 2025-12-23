@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Cell, PolarGrid, RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
+import { usePrintContext } from "../../../context/PrintContext";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../Charts";
 import { useTransformedKeys } from "../hooks";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
@@ -67,6 +68,9 @@ export const RadialChart = <T extends RadialChartData>({
   height,
   width,
 }: RadialChartProps<T>) => {
+  const printContext = usePrintContext();
+  isAnimationActive = printContext ? false : isAnimationActive;
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
   const [hoveredLegendKey, setHoveredLegendKey] = useState<string | null>(null);
@@ -138,15 +142,23 @@ export const RadialChart = <T extends RadialChartData>({
   // Calculate chart radii
   const dimensions = useMemo(() => calculateRadialChartDimensions(chartSize), [chartSize]);
 
+  // Get color palette and distribute colors
+  const colors = useChartPalette({
+    chartThemeName: theme,
+    customPalette,
+    themePaletteName: "radialChartPalette",
+    dataLength: sortedProcessedData.length,
+  });
+
   // Memoize expensive data transformations and configurations
   const transformedData = useMemo(
-    () => transformRadialDataWithPercentages(sortedProcessedData as T, dataKey, theme),
-    [sortedProcessedData, dataKey, theme],
+    () => transformRadialDataWithPercentages(sortedProcessedData as T, dataKey, colors),
+    [sortedProcessedData, dataKey, colors],
   );
 
   const chartConfig = useMemo(
-    () => getCategoricalChartConfig(sortedProcessedData as T, categoryKey, theme, transformedKeys),
-    [sortedProcessedData, categoryKey, theme, transformedKeys],
+    () => getCategoricalChartConfig(sortedProcessedData as T, categoryKey, colors, transformedKeys),
+    [sortedProcessedData, categoryKey, colors, transformedKeys],
   );
 
   const animationConfig = useMemo(
@@ -158,14 +170,6 @@ export const RadialChart = <T extends RadialChartData>({
     () => createRadialEventHandlers(onMouseEnter, onMouseLeave, onClick),
     [onMouseEnter, onMouseLeave, onClick],
   );
-
-  // Get color palette and distribute colors
-  const colors = useChartPalette({
-    chartThemeName: theme,
-    customPalette,
-    themePaletteName: "radialChartPalette",
-    dataLength: sortedProcessedData.length,
-  });
 
   // Create legend items for both variants
   const legendItems = useMemo(

@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Line, LineChart as RechartsLineChart, XAxis, YAxis } from "recharts";
+import { usePrintContext } from "../../../context/PrintContext";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { DEFAULT_X_AXIS_HEIGHT, X_AXIS_PADDING } from "../constants";
@@ -69,6 +70,9 @@ const LineChartCondensedComponent = <T extends LineChartData>({
   width,
   strokeWidth = 2,
 }: LineChartCondensedProps<T>) => {
+  const printContext = usePrintContext();
+  isAnimationActive = printContext ? false : isAnimationActive;
+
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);

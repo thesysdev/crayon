@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -7,6 +7,7 @@ import {
   RadarChart as RechartsRadarChart,
   ResponsiveContainer,
 } from "recharts";
+import { usePrintContext } from "../../../context/PrintContext";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import { useTransformedKeys } from "../hooks/useTransformKey";
@@ -51,6 +52,9 @@ const RadarChartComponent = <T extends RadarChartData>({
   height,
   width,
 }: RadarChartProps<T>) => {
+  const printContext = usePrintContext();
+  isAnimationActive = printContext ? false : isAnimationActive;
+
   const dataKeys = useMemo(() => {
     return getDataKeys(data, categoryKey as string);
   }, [data, categoryKey]);
@@ -77,7 +81,7 @@ const RadarChartComponent = <T extends RadarChartData>({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
@@ -90,6 +94,11 @@ const RadarChartComponent = <T extends RadarChartData>({
         });
       }
     });
+
+    // Read initial dimensions synchronously before first paint to avoid size jump
+    const rect = wrapper.getBoundingClientRect();
+    setWrapperRect({ width: rect.width, height: rect.height });
+
     observer.observe(wrapper);
     return () => observer.disconnect();
   }, []);
