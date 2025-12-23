@@ -1,6 +1,7 @@
 import clsx from "clsx";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
+import { usePrintContext } from "../../../context/PrintContext.js";
 import { useTheme } from "../../ThemeProvider/ThemeProvider.js";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../Charts.js";
 import { useTransformedKeys } from "../hooks/index.js";
@@ -72,6 +73,9 @@ const PieChartComponent = <T extends PieChartData>({
   height,
   width,
 }: PieChartProps<T>) => {
+  const printContext = usePrintContext();
+  isAnimationActive = printContext ? false : isAnimationActive;
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
   const [hoveredLegendKey, setHoveredLegendKey] = useState<string | null>(null);
@@ -285,7 +289,8 @@ const PieChartComponent = <T extends PieChartData>({
     ],
   );
 
-  useEffect(() => {
+  // Use ResizeObserver for subsequent size changes
+  useLayoutEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
@@ -299,6 +304,10 @@ const PieChartComponent = <T extends PieChartData>({
       }
     });
     observer.observe(wrapper);
+
+    // Read initial dimensions synchronously before first paint to avoid size jump
+    const rect = wrapper.getBoundingClientRect();
+    setWrapperRect({ width: rect.width, height: rect.height });
     return () => observer.disconnect();
   }, []);
 

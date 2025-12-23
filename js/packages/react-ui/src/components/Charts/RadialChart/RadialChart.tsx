@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Cell, PolarGrid, RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
+import { usePrintContext } from "../../../context/PrintContext";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../Charts";
 import { useTransformedKeys } from "../hooks";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
@@ -67,6 +68,9 @@ export const RadialChart = <T extends RadialChartData>({
   height,
   width,
 }: RadialChartProps<T>) => {
+  const printContext = usePrintContext();
+  isAnimationActive = printContext ? false : isAnimationActive;
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
   const [hoveredLegendKey, setHoveredLegendKey] = useState<string | null>(null);

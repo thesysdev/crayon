@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Cell, ScatterChart as RechartsScatterChart, Scatter, XAxis, YAxis } from "recharts";
+import { usePrintContext } from "../../../context/PrintContext";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
@@ -61,6 +62,9 @@ export const ScatterChart = ({
   width,
   shape = "circle",
 }: ScatterChartProps) => {
+  const printContext = usePrintContext();
+  isAnimationActive = printContext ? false : isAnimationActive;
+
   const datasets = useMemo(() => {
     return getScatterDatasets(data);
   }, [data]);

@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart, XAxis } from "recharts";
+import { usePrintContext } from "../../../context/PrintContext";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer } from "../Charts";
 import { LineInBarShape } from "../shared";
@@ -40,6 +41,9 @@ export const MiniBarChart = ({
   className,
   barColor,
 }: MiniBarChartProps) => {
+  const printContext = usePrintContext();
+  isAnimationActive = printContext ? false : isAnimationActive;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
 
