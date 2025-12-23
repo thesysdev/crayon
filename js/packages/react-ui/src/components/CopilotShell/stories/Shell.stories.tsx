@@ -18,8 +18,8 @@ import styles from "./style.module.scss";
 import logoUrl from "./thesysdev_logo.jpeg";
 
 export default {
-  title: "Copilot Shell",
-  tags: ["!dev", "!autodocs"],
+  title: "Components/CopilotShell",
+  tags: ["dev", "!autodocs"],
 };
 
 export const Default = {

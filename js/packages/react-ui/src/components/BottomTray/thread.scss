@@ -1,0 +1,141 @@
+@use "../../cssUtils" as cssUtils;
+
+.crayon-bottom-tray-thread-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.crayon-bottom-tray-thread-scroll-container {
+  width: 100%;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.crayon-bottom-tray-thread-scroll-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to top, cssUtils.$bg-fill 0%, transparent);
+}
+
+.crayon-bottom-tray-thread-scroll-area {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: cssUtils.$spacing-m;
+  &--user-message-anchor {
+    & .crayon-bottom-tray-thread-messages > *:last-child {
+      min-height: calc(-200px + 100dvh);
+    }
+  }
+}
+
+// Artifact panel (overlay style)
+.crayon-bottom-tray-thread-artifact-panel--mobile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background-color: cssUtils.$bg-container;
+  animation: crayon-bottom-tray-slide-in-from-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes crayon-bottom-tray-slide-in-from-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.crayon-bottom-tray-thread-messages {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$spacing-xl;
+}
+
+.crayon-bottom-tray-thread-message-assistant {
+  width: 100%;
+  overflow: hidden;
+
+  // override theme variables so that other crayon components don't depend on chat colors
+  // this solves the case where the crayon-card component is used in the thread but without card component
+  --crayon-primary-text: #{cssUtils.$chat-assistant-response-text};
+  --crayon-container-fills: #{cssUtils.$chat-assistant-response-bg};
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$spacing-s;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    flex-grow: 1;
+  }
+
+  &__text {
+    @include cssUtils.typography(primary, default);
+    color: cssUtils.$chat-assistant-response-text;
+  }
+}
+
+.crayon-bottom-tray-thread-message-user {
+  display: flex;
+  justify-content: flex-end;
+
+  &__content {
+    @include cssUtils.typography(primary, default);
+    padding: cssUtils.$spacing-m cssUtils.$spacing-l;
+    background-color: cssUtils.$chat-user-response-bg;
+    color: cssUtils.$chat-user-response-text;
+    border-radius: cssUtils.$rounded-2xl;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    height: fit-content;
+  }
+}
+
+.crayon-bottom-tray-thread-composer {
+  width: 100%;
+  padding: 0 cssUtils.$spacing-s cssUtils.$spacing-s;
+
+  &__input-wrapper {
+    background-color: cssUtils.$bg-container;
+    border: 1.256px solid cssUtils.$stroke-default;
+    display: flex;
+    align-items: flex-end;
+    gap: cssUtils.$spacing-s;
+    padding: cssUtils.$spacing-m;
+    border-radius: cssUtils.$rounded-xl;
+  }
+
+  &__input {
+    flex-grow: 1;
+    padding: 0;
+    resize: none;
+    margin: auto 0px;
+    max-height: 154px;
+    outline: none;
+    border: none;
+    background: transparent;
+    overflow: hidden;
+
+    @include cssUtils.typography(primary, default);
+    color: cssUtils.$primary-text;
+    &::placeholder {
+      color: cssUtils.$disabled-text;
+    }
+  }
+}

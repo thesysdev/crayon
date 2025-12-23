@@ -15,10 +15,11 @@ import { useEffect, useRef } from "react";
 import invariant from "tiny-invariant";
 import { ScrollVariant } from "../../hooks/useScrollToBottom";
 import { ThemeProps, ThemeProvider } from "../ThemeProvider";
+import { ComposedBottomTray } from "./ComposedBottomTray";
 import { ComposedCopilot } from "./ComposedCopilot";
 import { ComposedStandalone } from "./ComposedStandalone";
 
-type CrayonChatProps = {
+type BaseCrayonChatProps = {
   // options used when threadManager not provided
   processMessage?: (params: {
     threadId: string;
@@ -39,7 +40,6 @@ type CrayonChatProps = {
 
   logoUrl?: string;
   agentName?: string;
-  type?: "copilot" | "standalone";
   scrollVariant?: ScrollVariant;
 
   messageLoadingComponent?: () => React.ReactNode;
@@ -49,28 +49,52 @@ type CrayonChatProps = {
   renderArtifact?: () => React.ReactNode;
 };
 
+type BottomTrayProps = {
+  type: "bottom-tray";
+  /** Control the open state of the bottom tray */
+  isOpen?: boolean;
+  /** Callback when bottom tray open state changes */
+  onOpenChange?: (isOpen: boolean) => void;
+  /** Default open state for bottom tray (uncontrolled) */
+  defaultOpen?: boolean;
+};
+
+type OtherTypeProps = {
+  type?: "copilot" | "standalone";
+};
+
+type CrayonChatProps = BaseCrayonChatProps & (BottomTrayProps | OtherTypeProps);
+
 const DummyThemeProvider = ({ children }: { children: React.ReactNode }) => {
   return children;
 };
 
-export const CrayonChat = ({
-  processMessage,
-  threadManager: userThreadManager,
-  threadListManager: userThreadListManager,
-  logoUrl = "https://crayonai.org/img/logo.png",
-  agentName = "My Agent",
-  responseTemplates,
-  createThread,
-  onUpdateMessage,
-  processStreamedMessage: userProcessStreamedMessage,
-  messageLoadingComponent,
-  type = "standalone",
-  theme,
-  scrollVariant = "user-message-anchor",
-  disableThemeProvider,
-  isArtifactActive,
-  renderArtifact,
-}: CrayonChatProps) => {
+export const CrayonChat = (props: CrayonChatProps) => {
+  const {
+    processMessage,
+    threadManager: userThreadManager,
+    threadListManager: userThreadListManager,
+    logoUrl = "https://crayonai.org/img/logo.png",
+    agentName = "My Agent",
+    responseTemplates,
+    createThread,
+    onUpdateMessage,
+    processStreamedMessage: userProcessStreamedMessage,
+    messageLoadingComponent,
+    type = "standalone",
+    theme,
+    scrollVariant = "user-message-anchor",
+    disableThemeProvider,
+    isArtifactActive,
+    renderArtifact,
+  } = props;
+
+  // Extract bottom-tray specific props if type is bottom-tray
+  const { isOpen, onOpenChange, defaultOpen } =
+    type === "bottom-tray"
+      ? (props as BottomTrayProps)
+      : { isOpen: undefined, onOpenChange: undefined, defaultOpen: undefined };
+
   invariant(processMessage || userThreadManager, "processMessage or threadManager is required");
   const ThemeProviderComponent = disableThemeProvider ? DummyThemeProvider : ThemeProvider;
 
@@ -155,6 +179,18 @@ export const CrayonChat = ({
             scrollVariant={scrollVariant}
             isArtifactActive={isArtifactActive}
             renderArtifact={renderArtifact}
+          />
+        ) : type === "bottom-tray" ? (
+          <ComposedBottomTray
+            logoUrl={logoUrl}
+            agentName={agentName}
+            messageLoadingComponent={messageLoadingComponent}
+            scrollVariant={scrollVariant}
+            isArtifactActive={isArtifactActive}
+            renderArtifact={renderArtifact}
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+            defaultOpen={defaultOpen}
           />
         ) : (
           <ComposedStandalone
