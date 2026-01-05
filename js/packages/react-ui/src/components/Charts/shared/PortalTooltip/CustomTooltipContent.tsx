@@ -53,6 +53,12 @@ export const CustomTooltipContent = memo(
     // this state is used to forcefully hide the tooltip when the user touches outside of the parent element
     // this is not handled by recharts
     const [forcefullyHideTooltip, setForcefullyHideTooltip] = useState(false);
+    const [parentScrollPosition, setParentScrollPosition] = useState({
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+    });
 
     const tooltipLabel = useMemo(() => {
       if (hideLabel || !payload?.length) {
@@ -203,11 +209,29 @@ export const CustomTooltipContent = memo(
         }
         setForcefullyHideTooltip(false);
       };
-
       document.body.addEventListener("touchstart", touchHandler);
+
+      const scrollHandler = () => {
+        setParentScrollPosition({
+          x: parent.scrollLeft,
+          y: parent.scrollTop,
+          width: parent.clientWidth,
+          height: parent.clientHeight,
+        });
+      };
+
+      parent.addEventListener("scroll", scrollHandler);
+
+      setParentScrollPosition({
+        x: parent.scrollLeft,
+        y: parent.scrollTop,
+        width: parent.clientWidth,
+        height: parent.clientHeight,
+      });
 
       return () => {
         document.body.removeEventListener("touchstart", touchHandler);
+        parent.removeEventListener("scroll", scrollHandler);
       };
     }, [parentRef.current]);
 
@@ -229,6 +253,16 @@ export const CustomTooltipContent = memo(
         )}
       </div>
     );
+    const coordinates = { x: props.coordinate?.x ?? 0, y: props.coordinate?.y ?? 0 };
+
+    if (
+      parentScrollPosition.x > coordinates.x ||
+      parentScrollPosition.y > coordinates.y ||
+      parentScrollPosition.width + parentScrollPosition.x < coordinates.x ||
+      parentScrollPosition.height + parentScrollPosition.y < coordinates.y
+    ) {
+      return null;
+    }
 
     return (
       <FloatingUIPortal chartId={id} portalContainer={portalContainer} position={props.coordinate}>
