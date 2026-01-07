@@ -8,6 +8,7 @@ import { useState } from "react";
 import {
   Composer,
   Container,
+  ConversationStarter,
   Header,
   MessageLoading,
   Messages,
@@ -21,7 +22,7 @@ import logoUrl from "./thesysdev_logo.jpeg";
 
 export default {
   title: "Components/BottomTray",
-  tags: ["dev", "!autodocs"],
+  tags: ["dev"],
   argTypes: {
     defaultOpen: {
       control: "boolean",
@@ -73,7 +74,9 @@ const BottomTrayStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) => 
 
   const threadManager = useThreadManager({
     threadId: threadListManager.selectedThreadId,
-    loadThread: async () => {
+    loadThread: async (threadId) => {
+      // Return empty for new thread (null), otherwise return existing messages
+      if (!threadId) return [];
       return [
         {
           id: crypto.randomUUID(),
@@ -135,6 +138,16 @@ const BottomTrayStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) => 
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
+            <ConversationStarter
+              starters={[
+                { displayText: "Help me get started", prompt: "Help me get started" },
+                { displayText: "What can you do?", prompt: "What can you do?" },
+                {
+                  displayText: "Tell me about your features",
+                  prompt: "Tell me about your features",
+                },
+              ]}
+            />
             <Composer />
           </ThreadContainer>
         </Container>
@@ -183,20 +196,24 @@ const CustomTriggerStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) 
 
   const threadManager = useThreadManager({
     threadId: threadListManager.selectedThreadId,
-    loadThread: async () => [
-      {
-        id: crypto.randomUUID(),
-        role: "user",
-        type: "prompt",
-        message: "Hello",
-      },
-      {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        type: "response",
-        message: [{ type: "text", text: "Hello! How can I help you today?" }],
-      },
-    ],
+    loadThread: async (threadId) => {
+      // Return empty for new thread (null), otherwise return existing messages
+      if (!threadId) return [];
+      return [
+        {
+          id: crypto.randomUUID(),
+          role: "user",
+          type: "prompt",
+          message: "Hello",
+        },
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          type: "response",
+          message: [{ type: "text", text: "Hello! How can I help you today?" }],
+        },
+      ];
+    },
     onProcessMessage: async ({ message, threadManager }) => {
       const newMessage = Object.assign({}, message, { id: crypto.randomUUID() }) as Message;
       threadManager.appendMessages(newMessage);
@@ -236,6 +253,12 @@ const CustomTriggerStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) 
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
+            <ConversationStarter
+              starters={[
+                { displayText: "Help me get started", prompt: "Help me get started" },
+                { displayText: "What can you do?", prompt: "What can you do?" },
+              ]}
+            />
             <Composer />
           </ThreadContainer>
         </Container>

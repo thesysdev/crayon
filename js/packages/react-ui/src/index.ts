@@ -52,3 +52,5 @@ export {
 export * from "./context/LayoutContext";
 
 export * from "./context/PrintContext";
+
+export type { ConversationStarterProps } from "./types/ConversationStarter";
