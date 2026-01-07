@@ -32,10 +32,7 @@ export interface ConversationStarterContainerProps {
   className?: string;
 }
 
-export const ConversationStarter = ({
-  starters,
-  className,
-}: ConversationStarterContainerProps) => {
+export const ConversationStarter = ({ starters, className }: ConversationStarterContainerProps) => {
   const { processMessage } = useThreadActions();
   const { isRunning, messages } = useThreadState();
 
