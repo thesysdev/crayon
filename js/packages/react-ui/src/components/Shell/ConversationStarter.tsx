@@ -70,4 +70,3 @@ export const ConversationStarter = ({ starters, className }: ConversationStarter
 };
 
 export default ConversationStarter;
-
