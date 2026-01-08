@@ -29,6 +29,7 @@ export const ComposedCopilot = ({
     <Container logoUrl={logoUrl} agentName={agentName}>
       <ThreadContainer isArtifactActive={isArtifactActive} renderArtifact={renderArtifact}>
         <Header />
+
         <ScrollArea scrollVariant={scrollVariant}>
           <Messages loader={<MessageLoadingComponent />} />
         </ScrollArea>
