@@ -14,7 +14,7 @@ import { ThreadList } from "../ThreadList";
 import logoUrl from "./thesysdev_logo.jpeg";
 
 export default {
-  title: "Shell",
+  title: "Components/Shell",
   tags: ["dev"],
   argTypes: {
     defaultOpen: {

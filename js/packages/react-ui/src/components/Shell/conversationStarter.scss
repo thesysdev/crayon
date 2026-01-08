@@ -3,15 +3,22 @@
 $center-align-spacing: calc(32px + cssUtils.$spacing-s);
 
 .crayon-shell-conversation-starter {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: cssUtils.$spacing-s;
+  width: 100%;
   max-width: 880px;
   margin: 0 auto;
   padding: 0 $center-align-spacing cssUtils.$spacing-m;
 
+  // 2-column layout for larger screens (≥640px)
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .crayon-shell-container--mobile & {
     padding: 0 cssUtils.$spacing-l cssUtils.$spacing-m;
+    grid-template-columns: 1fr; // Force single column on mobile
   }
 
   .crayon-shell-thread-container--artifact-active & {
