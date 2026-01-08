@@ -645,6 +645,289 @@ export const DataExplorer: Story = {
 };
 
 /**
+ * ## Large Dataset with Sidebar Tooltip
+ *
+ * This story demonstrates the sidebar tooltip feature that appears when you have
+ * more than 10 data series. Click on any point in the chart to see the sidebar
+ * tooltip in action. This provides a better UX for viewing many data series at once.
+ */
+export const LargeDatasetWithSidebarTooltip: Story = {
+  name: "🎯 Large Dataset (>10 Series) - Sidebar Tooltip",
+  args: {
+    data: [
+      {
+        month: "Jan",
+        line1: 120,
+        line2: 150,
+        line3: 180,
+        line4: 200,
+        line5: 160,
+        line6: 190,
+        line7: 220,
+        line8: 240,
+        line9: 210,
+        line10: 230,
+        line11: 250,
+        line12: 270,
+        line13: 260,
+        line14: 280,
+        line15: 300,
+      },
+      {
+        month: "Feb",
+        line1: 140,
+        line2: 170,
+        line3: 200,
+        line4: 220,
+        line5: 180,
+        line6: 210,
+        line7: 240,
+        line8: 260,
+        line9: 230,
+        line10: 250,
+        line11: 270,
+        line12: 290,
+        line13: 280,
+        line14: 300,
+        line15: 320,
+      },
+      {
+        month: "Mar",
+        line1: 160,
+        line2: 190,
+        line3: 220,
+        line4: 240,
+        line5: 200,
+        line6: 230,
+        line7: 260,
+        line8: 280,
+        line9: 250,
+        line10: 270,
+        line11: 290,
+        line12: 310,
+        line13: 300,
+        line14: 320,
+        line15: 340,
+      },
+      {
+        month: "Apr",
+        line1: 180,
+        line2: 210,
+        line3: 240,
+        line4: 260,
+        line5: 220,
+        line6: 250,
+        line7: 280,
+        line8: 300,
+        line9: 270,
+        line10: 290,
+        line11: 310,
+        line12: 330,
+        line13: 320,
+        line14: 340,
+        line15: 360,
+      },
+      {
+        month: "May",
+        line1: 200,
+        line2: 230,
+        line3: 260,
+        line4: 280,
+        line5: 240,
+        line6: 270,
+        line7: 300,
+        line8: 320,
+        line9: 290,
+        line10: 310,
+        line11: 330,
+        line12: 350,
+        line13: 340,
+        line14: 360,
+        line15: 380,
+      },
+      {
+        month: "Jun",
+        line1: 220,
+        line2: 250,
+        line3: 280,
+        line4: 300,
+        line5: 260,
+        line6: 290,
+        line7: 320,
+        line8: 340,
+        line9: 310,
+        line10: 330,
+        line11: 350,
+        line12: 370,
+        line13: 360,
+        line14: 380,
+        line15: 400,
+      },
+      {
+        month: "Jul",
+        line1: 240,
+        line2: 270,
+        line3: 300,
+        line4: 320,
+        line5: 280,
+        line6: 310,
+        line7: 340,
+        line8: 360,
+        line9: 330,
+        line10: 350,
+        line11: 370,
+        line12: 390,
+        line13: 380,
+        line14: 400,
+        line15: 420,
+      },
+      {
+        month: "Aug",
+        line1: 260,
+        line2: 290,
+        line3: 320,
+        line4: 340,
+        line5: 300,
+        line6: 330,
+        line7: 360,
+        line8: 380,
+        line9: 350,
+        line10: 370,
+        line11: 390,
+        line12: 410,
+        line13: 400,
+        line14: 420,
+        line15: 440,
+      },
+      {
+        month: "Sep",
+        line1: 280,
+        line2: 310,
+        line3: 340,
+        line4: 360,
+        line5: 320,
+        line6: 350,
+        line7: 380,
+        line8: 400,
+        line9: 370,
+        line10: 390,
+        line11: 410,
+        line12: 430,
+        line13: 420,
+        line14: 440,
+        line15: 460,
+      },
+      {
+        month: "Oct",
+        line1: 300,
+        line2: 330,
+        line3: 360,
+        line4: 380,
+        line5: 340,
+        line6: 370,
+        line7: 400,
+        line8: 420,
+        line9: 390,
+        line10: 410,
+        line11: 430,
+        line12: 450,
+        line13: 440,
+        line14: 460,
+        line15: 480,
+      },
+      {
+        month: "Nov",
+        line1: 320,
+        line2: 350,
+        line3: 380,
+        line4: 400,
+        line5: 360,
+        line6: 390,
+        line7: 420,
+        line8: 440,
+        line9: 410,
+        line10: 430,
+        line11: 450,
+        line12: 470,
+        line13: 460,
+        line14: 480,
+        line15: 500,
+      },
+      {
+        month: "Dec",
+        line1: 340,
+        line2: 370,
+        line3: 400,
+        line4: 420,
+        line5: 380,
+        line6: 410,
+        line7: 440,
+        line8: 460,
+        line9: 430,
+        line10: 450,
+        line11: 470,
+        line12: 490,
+        line13: 480,
+        line14: 500,
+        line15: 520,
+      },
+    ] as any,
+    categoryKey: "month" as any,
+    theme: "ocean",
+    variant: "natural",
+    tickVariant: "singleLine",
+    strokeWidth: 2,
+    grid: true,
+    isAnimationActive: false,
+    showYAxis: true,
+    xAxisLabel: "Months",
+    yAxisLabel: "Performance Metrics",
+    height: 300,
+  },
+  render: (args: any) => (
+    <div>
+      <div
+        style={{
+          marginBottom: "16px",
+          padding: "16px",
+          background: "#e3f2fd",
+          borderRadius: "8px",
+          border: "2px solid #2196f3",
+          maxWidth: "700px",
+        }}
+      >
+        <div style={{ fontSize: "14px", marginBottom: "8px" }}>
+          <strong>🎯 Sidebar Tooltip Demo</strong>
+        </div>
+        <div style={{ fontSize: "13px", color: "#1565c0", lineHeight: "1.6" }}>
+          This chart has <strong>15 data series</strong> (more than 10). <br />
+          <strong>✨ Click on any point</strong> in the chart to open the sidebar tooltip on the
+          right side.
+          <br />
+          The sidebar provides a scrollable list of all series values at that point, making it easy
+          to view large datasets.
+          <br />
+          <em>
+            💡 Try hovering first (shows inline tooltip), then click to see the sidebar version!
+          </em>
+        </div>
+      </div>
+      <Card style={{ width: "700px" }}>
+        <LineChartCondensed {...args} />
+      </Card>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**🎯 Large Dataset Handling:** When your chart has more than 10 data series, the inline tooltip becomes too crowded. This story demonstrates the sidebar tooltip feature:\n\n**Features:**\n- **15 data series** to showcase the sidebar tooltip\n- **Click interaction:** Click any point to open the sidebar\n- **Scrollable view:** All series values in an organized, scrollable list\n- **Better UX:** Cleaner way to view many data points simultaneously\n- **Color-coded:** Each series maintains its color for easy identification\n\n**Usage:**\n1. Hover over the chart to see the inline tooltip (works for smaller datasets)\n2. Click on any data point to open the sidebar tooltip\n3. Scroll through all 15 series values\n4. Click outside or on the X button to close the sidebar",
+      },
+    },
+  },
+};
+
+/**
  * ## Big Labels
  *
  * This story demonstrates the chart's ability to handle very long category labels.
