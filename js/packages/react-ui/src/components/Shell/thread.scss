@@ -217,6 +217,38 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
     max-width: 100%;
     height: fit-content;
   }
+
+  &__content-parts {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$spacing-xs;
+  }
+
+  &__text {
+    white-space: pre-wrap;
+  }
+
+  &__attachment {
+    display: flex;
+  }
+
+  &__image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: cssUtils.$rounded-m;
+    object-fit: cover;
+  }
+
+  &__file,
+  &__audio {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$spacing-xs;
+    padding: cssUtils.$spacing-xs cssUtils.$spacing-s;
+    background-color: cssUtils.$bg-sunk;
+    border-radius: cssUtils.$rounded-s;
+    @include cssUtils.typography(body, small);
+  }
 }
 
 // =============================================================================
@@ -270,4 +302,90 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
 .crayon-shell-thread-message-loading {
   display: flex;
   padding: 0 $center-align-spacing;
+}
+
+// =============================================================================
+// Composer Attachments
+// =============================================================================
+
+.crayon-shell-thread-composer__attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: cssUtils.$spacing-xs;
+  padding: cssUtils.$spacing-s cssUtils.$spacing-m;
+  border: 1px solid cssUtils.$stroke-default;
+  border-bottom: none;
+  border-radius: cssUtils.$rounded-xl cssUtils.$rounded-xl 0 0;
+  background-color: cssUtils.$bg-sunk;
+}
+
+.crayon-shell-thread-composer__attachment-preview {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.crayon-shell-thread-composer__attachment-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: cssUtils.$rounded-s;
+}
+
+.crayon-shell-thread-composer__attachment-file,
+.crayon-shell-thread-composer__attachment-audio {
+  display: flex;
+  align-items: center;
+  gap: cssUtils.$spacing-xs;
+  padding: cssUtils.$spacing-xs cssUtils.$spacing-s;
+  background-color: cssUtils.$bg-container;
+  border-radius: cssUtils.$rounded-s;
+  border: 1px solid cssUtils.$stroke-default;
+  @include cssUtils.typography(body, small);
+  color: cssUtils.$primary-text;
+  max-width: 150px;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.crayon-shell-thread-composer__attachment-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: cssUtils.$rounded-full;
+  background-color: cssUtils.$bg-inverted;
+  color: cssUtils.$accent-primary-text;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+
+  &:hover {
+    background-color: cssUtils.$interactive-hover;
+  }
+}
+
+.crayon-shell-thread-composer__attachment-buttons {
+  display: flex;
+  gap: cssUtils.$spacing-2xs;
+}
+
+.crayon-shell-thread-composer__file-input {
+  display: none;
+}
+
+// Adjust input wrapper when attachments are present
+.crayon-shell-thread-composer:has(.crayon-shell-thread-composer__attachments) {
+  .crayon-shell-thread-composer__input-wrapper {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
 }

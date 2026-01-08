@@ -8,6 +8,7 @@ import {
   ThreadListManager,
   ThreadManager,
   UserMessage,
+  UserMessageContentPart,
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
@@ -99,19 +100,41 @@ export const CrayonChat = (props: CrayonChatProps) => {
   const ThemeProviderComponent = disableThemeProvider ? DummyThemeProvider : ThemeProvider;
 
   const threadMessages = useRef<{ [threadId: string]: Message[] }>({});
+
+  /**
+   * Helper to extract text title from message content
+   * Handles both string and array formats
+   */
+  const getMessageTitle = (
+    messageContent: string | UserMessageContentPart[] | undefined,
+  ): string => {
+    if (!messageContent) {
+      return "New Thread";
+    }
+    if (typeof messageContent === "string") {
+      return messageContent;
+    }
+    // Extract text from array content
+    const textPart = messageContent.find((part) => part.type === "text");
+    if (textPart && textPart.type === "text") {
+      return textPart.text;
+    }
+    return "New Thread";
+  };
+
   const defaultThreadListManager = useThreadListManager({
     fetchThreadList: () => Promise.resolve([]),
     deleteThread: () => Promise.resolve(),
     updateThread: (t) => Promise.resolve(t),
-    onSwitchToNew: () => {},
-    onSelectThread: () => {},
+    onSwitchToNew: () => { },
+    onSelectThread: () => { },
     createThread: (message) => {
       if (createThread) {
         return createThread(message);
       }
       return Promise.resolve({
         threadId: crypto.randomUUID(),
-        title: message.message!,
+        title: getMessageTitle(message.message),
         createdAt: new Date(),
         messages: [message],
       });

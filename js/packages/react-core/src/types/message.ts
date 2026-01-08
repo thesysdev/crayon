@@ -11,6 +11,73 @@ type Common = {
 };
 
 /**
+ * Text content part for user messages
+ *
+ * @category Types
+ */
+export type TextContentPart = {
+  type: "text";
+  /** The text content */
+  text: string;
+};
+
+/**
+ * Image URL content part for user messages
+ *
+ * @category Types
+ */
+export type ImageUrlContentPart = {
+  type: "image_url";
+  image_url: {
+    /** The URL or base64 encoded image data */
+    url: string;
+    /** The detail level for the image */
+    detail?: "high" | "low" | "auto";
+  };
+};
+
+/**
+ * File content part for user messages
+ *
+ * @category Types
+ */
+export type FileContentPart = {
+  type: "file";
+  file: {
+    /** The name of the file */
+    filename: string;
+    /** The base64 encoded file data */
+    file_data: string;
+  };
+};
+
+/**
+ * Audio input content part for user messages
+ *
+ * @category Types
+ */
+export type InputAudioContentPart = {
+  type: "input_audio";
+  input_audio: {
+    /** The base64 encoded audio data */
+    data: string;
+    /** The audio format */
+    format: "wav" | "mp3";
+  };
+};
+
+/**
+ * Union type for all user message content parts
+ *
+ * @category Types
+ */
+export type UserMessageContentPart =
+  | TextContentPart
+  | ImageUrlContentPart
+  | FileContentPart
+  | InputAudioContentPart;
+
+/**
  * A type that represents a message sent by the user
  *
  * @category Types
@@ -19,8 +86,8 @@ export type UserMessage = Common & {
   role: "user";
 } & {
   type: "prompt";
-  /** The message content as a string */
-  message?: string;
+  /** The message content as a string or an array of content parts (text, images, files, audio) */
+  message?: string | UserMessageContentPart[];
   /** Additional data associated with the message */
   context?: JSONValue[];
 };
