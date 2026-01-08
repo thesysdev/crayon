@@ -634,6 +634,288 @@ export const DataExplorer: Story = {
 };
 
 /**
+ * ## Large Dataset with Sidebar Tooltip
+ *
+ * This story demonstrates the sidebar tooltip feature that appears when you have
+ * more than 10 data series. Click on any point in the chart to see the sidebar
+ * tooltip in action. This provides a better UX for viewing many data series at once.
+ */
+export const LargeDatasetWithSidebarTooltip: Story = {
+  name: "🎯 Large Dataset (>10 Series) - Sidebar Tooltip",
+  args: {
+    data: [
+      {
+        month: "Jan",
+        series1: 120,
+        series2: 150,
+        series3: 180,
+        series4: 200,
+        series5: 160,
+        series6: 190,
+        series7: 220,
+        series8: 240,
+        series9: 210,
+        series10: 230,
+        series11: 250,
+        series12: 270,
+        series13: 260,
+        series14: 280,
+        series15: 300,
+      },
+      {
+        month: "Feb",
+        series1: 140,
+        series2: 170,
+        series3: 200,
+        series4: 220,
+        series5: 180,
+        series6: 210,
+        series7: 240,
+        series8: 260,
+        series9: 230,
+        series10: 250,
+        series11: 270,
+        series12: 290,
+        series13: 280,
+        series14: 300,
+        series15: 320,
+      },
+      {
+        month: "Mar",
+        series1: 160,
+        series2: 190,
+        series3: 220,
+        series4: 240,
+        series5: 200,
+        series6: 230,
+        series7: 260,
+        series8: 280,
+        series9: 250,
+        series10: 270,
+        series11: 290,
+        series12: 310,
+        series13: 300,
+        series14: 320,
+        series15: 340,
+      },
+      {
+        month: "Apr",
+        series1: 180,
+        series2: 210,
+        series3: 240,
+        series4: 260,
+        series5: 220,
+        series6: 250,
+        series7: 280,
+        series8: 300,
+        series9: 270,
+        series10: 290,
+        series11: 310,
+        series12: 330,
+        series13: 320,
+        series14: 340,
+        series15: 360,
+      },
+      {
+        month: "May",
+        series1: 200,
+        series2: 230,
+        series3: 260,
+        series4: 280,
+        series5: 240,
+        series6: 270,
+        series7: 300,
+        series8: 320,
+        series9: 290,
+        series10: 310,
+        series11: 330,
+        series12: 350,
+        series13: 340,
+        series14: 360,
+        series15: 380,
+      },
+      {
+        month: "Jun",
+        series1: 220,
+        series2: 250,
+        series3: 280,
+        series4: 300,
+        series5: 260,
+        series6: 290,
+        series7: 320,
+        series8: 340,
+        series9: 310,
+        series10: 330,
+        series11: 350,
+        series12: 370,
+        series13: 360,
+        series14: 380,
+        series15: 400,
+      },
+      {
+        month: "Jul",
+        series1: 240,
+        series2: 270,
+        series3: 300,
+        series4: 320,
+        series5: 280,
+        series6: 310,
+        series7: 340,
+        series8: 360,
+        series9: 330,
+        series10: 350,
+        series11: 370,
+        series12: 390,
+        series13: 380,
+        series14: 400,
+        series15: 420,
+      },
+      {
+        month: "Aug",
+        series1: 260,
+        series2: 290,
+        series3: 320,
+        series4: 340,
+        series5: 300,
+        series6: 330,
+        series7: 360,
+        series8: 380,
+        series9: 350,
+        series10: 370,
+        series11: 390,
+        series12: 410,
+        series13: 400,
+        series14: 420,
+        series15: 440,
+      },
+      {
+        month: "Sep",
+        series1: 280,
+        series2: 310,
+        series3: 340,
+        series4: 360,
+        series5: 320,
+        series6: 350,
+        series7: 380,
+        series8: 400,
+        series9: 370,
+        series10: 390,
+        series11: 410,
+        series12: 430,
+        series13: 420,
+        series14: 440,
+        series15: 460,
+      },
+      {
+        month: "Oct",
+        series1: 300,
+        series2: 330,
+        series3: 360,
+        series4: 380,
+        series5: 340,
+        series6: 370,
+        series7: 400,
+        series8: 420,
+        series9: 390,
+        series10: 410,
+        series11: 430,
+        series12: 450,
+        series13: 440,
+        series14: 460,
+        series15: 480,
+      },
+      {
+        month: "Nov",
+        series1: 320,
+        series2: 350,
+        series3: 380,
+        series4: 400,
+        series5: 360,
+        series6: 390,
+        series7: 420,
+        series8: 440,
+        series9: 410,
+        series10: 430,
+        series11: 450,
+        series12: 470,
+        series13: 460,
+        series14: 480,
+        series15: 500,
+      },
+      {
+        month: "Dec",
+        series1: 340,
+        series2: 370,
+        series3: 400,
+        series4: 420,
+        series5: 380,
+        series6: 410,
+        series7: 440,
+        series8: 460,
+        series9: 430,
+        series10: 450,
+        series11: 470,
+        series12: 490,
+        series13: 480,
+        series14: 500,
+        series15: 520,
+      },
+    ] as any,
+    categoryKey: "month" as any,
+    theme: "ocean",
+    variant: "natural",
+    tickVariant: "singleLine",
+    grid: true,
+    isAnimationActive: false,
+    showYAxis: true,
+    xAxisLabel: "Months",
+    yAxisLabel: "Performance Metrics",
+    height: 300,
+  },
+  render: (args: any) => (
+    <div>
+      <div
+        style={{
+          marginBottom: "16px",
+          padding: "16px",
+          background: "#e3f2fd",
+          borderRadius: "8px",
+          border: "2px solid #2196f3",
+          maxWidth: "700px",
+        }}
+      >
+        <div style={{ fontSize: "14px", marginBottom: "8px" }}>
+          <strong>🎯 Sidebar Tooltip Demo</strong>
+        </div>
+        <div style={{ fontSize: "13px", color: "#1565c0", lineHeight: "1.6" }}>
+          This chart has <strong>15 data series</strong> (more than 10). <br />
+          <strong>✨ Click on any point</strong> in the chart to open the sidebar tooltip on the
+          right side.
+          <br />
+          The sidebar provides a scrollable list of all series values at that point, making it easy
+          to view large datasets.
+          <br />
+          <em>
+            💡 Try hovering first (shows inline tooltip), then click to see the sidebar version!
+          </em>
+        </div>
+      </div>
+      <Card style={{ width: "700px" }}>
+        <AreaChartCondensed {...args} />
+      </Card>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**🎯 Large Dataset Handling:** When your chart has more than 10 data series, the inline tooltip becomes too crowded. This story demonstrates the sidebar tooltip feature:\n\n**Features:**\n- **15 data series** to showcase the sidebar tooltip\n- **Click interaction:** Click any point to open the sidebar\n- **Scrollable view:** All series values in an organized, scrollable list\n- **Better UX:** Cleaner way to view many data points simultaneously\n- **Color-coded:** Each series maintains its color for easy identification\n\n**Usage:**\n1. Hover over the chart to see the inline tooltip (works for smaller datasets)\n2. Click on any data point to open the sidebar tooltip\n3. Scroll through all 15 series values\n4. Click outside or on the X button to close the sidebar",
+      },
+    },
+  },
+};
+
+/**
  * ## Big Labels
  *
  * This story demonstrates the chart's ability to handle very long category labels.

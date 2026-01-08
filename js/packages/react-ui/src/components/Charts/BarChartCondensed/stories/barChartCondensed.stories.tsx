@@ -592,6 +592,144 @@ export const DataExplorer: Story = {
 };
 
 /**
+ * ## Large Dataset with Sidebar Tooltip
+ *
+ * This story demonstrates the sidebar tooltip feature that appears when you have
+ * more than 10 data series. Click on any bar in the chart to see the sidebar
+ * tooltip in action. This provides a better UX for viewing many data series at once.
+ */
+export const LargeDatasetWithSidebarTooltip: Story = {
+  name: "🎯 Large Dataset (>10 Series) - Sidebar Tooltip",
+  args: {
+    data: [
+      {
+        quarter: "Q1",
+        metric1: 120,
+        metric2: 150,
+        metric3: 180,
+        metric4: 200,
+        metric5: 160,
+        metric6: 190,
+        metric7: 220,
+        metric8: 240,
+        metric9: 210,
+        metric10: 230,
+        metric11: 250,
+        metric12: 270,
+        metric13: 260,
+        metric14: 280,
+        metric15: 300,
+      },
+      {
+        quarter: "Q2",
+        metric1: 140,
+        metric2: 170,
+        metric3: 200,
+        metric4: 220,
+        metric5: 180,
+        metric6: 210,
+        metric7: 240,
+        metric8: 260,
+        metric9: 230,
+        metric10: 250,
+        metric11: 270,
+        metric12: 290,
+        metric13: 280,
+        metric14: 300,
+        metric15: 320,
+      },
+      {
+        quarter: "Q3",
+        metric1: 160,
+        metric2: 190,
+        metric3: 220,
+        metric4: 240,
+        metric5: 200,
+        metric6: 230,
+        metric7: 260,
+        metric8: 280,
+        metric9: 250,
+        metric10: 270,
+        metric11: 290,
+        metric12: 310,
+        metric13: 300,
+        metric14: 320,
+        metric15: 340,
+      },
+      {
+        quarter: "Q4",
+        metric1: 180,
+        metric2: 210,
+        metric3: 240,
+        metric4: 260,
+        metric5: 220,
+        metric6: 250,
+        metric7: 280,
+        metric8: 300,
+        metric9: 270,
+        metric10: 290,
+        metric11: 310,
+        metric12: 330,
+        metric13: 320,
+        metric14: 340,
+        metric15: 360,
+      },
+    ] as any,
+    categoryKey: "quarter" as any,
+    theme: "ocean",
+    variant: "grouped",
+    tickVariant: "singleLine",
+    grid: true,
+    isAnimationActive: false,
+    showYAxis: true,
+    xAxisLabel: "Quarters",
+    yAxisLabel: "Performance Metrics",
+    height: 300,
+  },
+  render: (args: any) => (
+    <div>
+      <div
+        style={{
+          marginBottom: "16px",
+          padding: "16px",
+          background: "#e3f2fd",
+          borderRadius: "8px",
+          border: "2px solid #2196f3",
+          maxWidth: "700px",
+        }}
+      >
+        <div style={{ fontSize: "14px", marginBottom: "8px" }}>
+          <strong>🎯 Sidebar Tooltip Demo</strong>
+        </div>
+        <div style={{ fontSize: "13px", color: "#1565c0", lineHeight: "1.6" }}>
+          This chart has <strong>15 data series</strong> (more than 10). <br />
+          <strong>✨ Click on any bar</strong> in the chart to open the sidebar tooltip on the right
+          side.
+          <br />
+          The sidebar provides a scrollable list of all series values at that quarter, making it
+          easy to view large datasets.
+          <br />
+          <em>
+            💡 Try hovering first (shows inline tooltip), then click to see the sidebar version!
+          </em>
+        </div>
+      </div>
+      <Card style={{ width: "700px" }}>
+        <BarChartCondensed {...args} />
+      </Card>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**🎯 Large Dataset Handling:** When your chart has more than 10 data series, the inline tooltip becomes too crowded. This story demonstrates the sidebar tooltip feature:\n\n**Features:**\n- **15 data series** to showcase the sidebar tooltip\n- **Click interaction:** Click any bar to open the sidebar\n- **Scrollable view:** All series values in an organized, scrollable list\n- **Better UX:** Cleaner way to view many data points simultaneously\n- **Color-coded:** Each series maintains its color for easy identification\n- **Works with both variants:** Try switching between grouped and stacked variants\n\n**Usage:**\n1. Hover over the chart to see the inline tooltip (works for smaller datasets)\n2. Click on any bar to open the sidebar tooltip\n3. Scroll through all 15 series values\n4. Click outside or on the X button to close the sidebar",
+      },
+    },
+  },
+};
+
+/**
  * ## Grouped vs Stacked Comparison
  *
  * Side-by-side comparison of grouped and stacked bar chart variants.

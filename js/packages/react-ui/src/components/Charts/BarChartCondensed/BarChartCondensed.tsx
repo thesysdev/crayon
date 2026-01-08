@@ -19,6 +19,7 @@ import {
   CustomTooltipContent,
   DefaultLegend,
   LineInBarShape,
+  SideBarTooltip,
   SVGXAxisTick,
   SVGXAxisTickVariant,
   YAxisTick,
@@ -26,8 +27,18 @@ import {
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { LegendItem } from "../types";
 import { getBarStackInfo, getRadiusArray } from "../utils/BarCharts/BarChartsUtils";
-import { get2dChartConfig, getDataKeys, getLegendItems } from "../utils/dataUtils";
+import {
+  get2dChartConfig,
+  getColorForDataKey,
+  getDataKeys,
+  getLegendItems,
+} from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
+
+// this a technic to get the type of the onClick event of the bar chart
+// we need to do this because the onClick event type is not exported by recharts
+type BarChartOnClick = React.ComponentProps<typeof RechartsBarChart>["onClick"];
+type BarClickData = Parameters<NonNullable<BarChartOnClick>>[0];
 
 export interface BarChartCondensedProps<T extends BarChartData> {
   data: T;
@@ -188,6 +199,23 @@ const BarChartCondensedComponent = <T extends BarChartData>({
   const handleChartMouseLeave = useCallback(() => {
     setHoveredCategory(null);
   }, []);
+
+  const onBarClick = useCallback(
+    (data: BarClickData) => {
+      if (data?.activePayload?.length && data.activePayload.length > 10) {
+        setIsSideBarTooltipOpen(true);
+        setSideBarTooltipData({
+          title: data.activeLabel as string,
+          values: data.activePayload.map((payload) => ({
+            value: payload.value as number,
+            label: payload.name || payload.dataKey,
+            color: getColorForDataKey(payload.dataKey, dataKeys, colors),
+          })),
+        });
+      }
+    },
+    [dataKeys, colors],
+  );
 
   // Observe container width for legend
   useEffect(() => {
@@ -379,6 +407,7 @@ const BarChartCondensedComponent = <T extends BarChartData>({
                   barCategoryGap={BAR_CATEGORY_GAP}
                   onMouseMove={handleChartMouseMove}
                   onMouseLeave={handleChartMouseLeave}
+                  onClick={onBarClick}
                 >
                   {grid && cartesianGrid()}
 
@@ -415,6 +444,7 @@ const BarChartCondensedComponent = <T extends BarChartData>({
                 </RechartsBarChart>
               </ChartContainer>
             </div>
+            {isSideBarTooltipOpen && <SideBarTooltip height={effectiveHeight} />}
           </div>
           {xAxisLabel && (
             <div className="crayon-bar-chart-condensed-x-axis-label">{xAxisLabel}</div>
