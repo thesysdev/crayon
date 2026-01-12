@@ -1,28 +1,81 @@
 import { useThreadActions, useThreadState } from "@crayonai/react-core";
 import clsx from "clsx";
-import { ConversationStarterProps } from "../../types/ConversationStarter";
+import { ArrowUp, Lightbulb } from "lucide-react";
+import { Fragment, ReactNode } from "react";
+import {
+  ConversationStarterIcon,
+  ConversationStarterProps,
+} from "../../types/ConversationStarter";
+import { Separator } from "../Separator";
+
+export type ConversationStarterVariant = "short" | "long";
 
 interface ConversationStarterItemProps extends ConversationStarterProps {
   onClick: (prompt: string) => void;
   disabled?: boolean;
+  variant: ConversationStarterVariant;
 }
+
+/**
+ * Renders the appropriate icon based on the icon prop value
+ * - undefined: Show default lightbulb icon
+ * - "": Show no icon
+ * - ReactNode: Show the provided icon
+ */
+const renderIcon = (icon: ConversationStarterIcon | undefined): ReactNode => {
+  if (icon === "") {
+    return null;
+  }
+  if (icon === undefined) {
+    return <Lightbulb size={16} />;
+  }
+  return icon;
+};
 
 const ConversationStarterItem = ({
   displayText,
   prompt,
   onClick,
   disabled = false,
+  variant,
+  icon,
 }: ConversationStarterItemProps) => {
+  const renderedIcon = renderIcon(icon);
+
+  if (variant === "short") {
+    return (
+      <button
+        type="button"
+        className={clsx("crayon-conversation-starter-item-short", {
+          "crayon-conversation-starter-item-short--disabled": disabled,
+        })}
+        onClick={() => onClick(prompt)}
+        disabled={disabled}
+      >
+        {displayText}
+      </button>
+    );
+  }
+
+  // Long variant (detailed list style)
   return (
     <button
       type="button"
-      className={clsx("crayon-conversation-starter-item", {
-        "crayon-conversation-starter-item--disabled": disabled,
+      className={clsx("crayon-conversation-starter-item-long", {
+        "crayon-conversation-starter-item-long--disabled": disabled,
       })}
       onClick={() => onClick(prompt)}
       disabled={disabled}
     >
-      {displayText}
+      <div className="crayon-conversation-starter-item-long__content">
+        {renderedIcon && (
+          <span className="crayon-conversation-starter-item-long__icon">{renderedIcon}</span>
+        )}
+        <span className="crayon-conversation-starter-item-long__text">{displayText}</span>
+      </div>
+      <span className="crayon-conversation-starter-item-long__arrow">
+        <ArrowUp size={16} />
+      </span>
     </button>
   );
 };
@@ -30,9 +83,19 @@ const ConversationStarterItem = ({
 export interface ConversationStarterContainerProps {
   starters: ConversationStarterProps[];
   className?: string;
+  /**
+   * Variant of the conversation starter
+   * - "short": Pill-style horizontal buttons (default)
+   * - "long": List items with icons and hover arrow
+   */
+  variant?: ConversationStarterVariant;
 }
 
-export const ConversationStarter = ({ starters, className }: ConversationStarterContainerProps) => {
+export const ConversationStarter = ({
+  starters,
+  className,
+  variant = "short",
+}: ConversationStarterContainerProps) => {
   const { processMessage } = useThreadActions();
   const { isRunning, messages } = useThreadState();
 
@@ -55,15 +118,30 @@ export const ConversationStarter = ({ starters, className }: ConversationStarter
   }
 
   return (
-    <div className={clsx("crayon-conversation-starter", className)}>
-      {starters.map((item) => (
-        <ConversationStarterItem
-          key={item.displayText}
-          displayText={item.displayText}
-          prompt={item.prompt}
-          onClick={handleClick}
-          disabled={isRunning}
-        />
+    <div
+      className={clsx(
+        "crayon-conversation-starter",
+        `crayon-conversation-starter--${variant}`,
+        className,
+      )}
+    >
+      {starters.map((item, index) => (
+        <Fragment key={`${item.displayText}-${index}`}>
+          <ConversationStarterItem
+            displayText={item.displayText}
+            prompt={item.prompt}
+            icon={item.icon}
+            onClick={handleClick}
+            disabled={isRunning}
+            variant={variant}
+          />
+          {/* Add separator between items in long variant */}
+          {variant === "long" && index < starters.length - 1 && (
+            <div className="crayon-conversation-starter__separator">
+              <Separator />
+            </div>
+          )}
+        </Fragment>
       ))}
     </div>
   );

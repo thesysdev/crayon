@@ -4,6 +4,7 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
+import { HelpCircle, MessageSquare, Sparkles, Zap } from "lucide-react";
 import { useState } from "react";
 import {
   Composer,
@@ -28,10 +29,21 @@ export default {
       control: "boolean",
       description: "Whether the tray starts open",
     },
+    variant: {
+      control: "select",
+      options: ["short", "long"],
+      description: "Conversation starter variant",
+    },
   },
 };
 
-const BottomTrayStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) => {
+const BottomTrayStory = ({
+  defaultOpen = false,
+  variant = "short",
+}: {
+  defaultOpen?: boolean;
+  variant?: "short" | "long";
+}) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   const threadListManager = useThreadListManager({
@@ -139,12 +151,22 @@ const BottomTrayStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) => 
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <ConversationStarter
+              variant={variant}
               starters={[
-                { displayText: "Help me get started", prompt: "Help me get started" },
-                { displayText: "What can you do?", prompt: "What can you do?" },
                 {
-                  displayText: "Tell me about your features",
-                  prompt: "Tell me about your features",
+                  displayText: "Tell me about the latest stock market trends and how they affect my portfolio",
+                  prompt: "Tell me about the latest stock market trends and how they affect my portfolio",
+                  icon: <Sparkles size={16} />,
+                },
+                {
+                  displayText: "Who is the president of Venezuela and where is he currently located (icon was not passed)",
+                  prompt: "Who is the president of Venezuela and where is he currently located?",
+                  // icon undefined = shows default lightbulb
+                },
+                {
+                  displayText: "Tell me about major stock (no icon empty string''",
+                  prompt: "Tell me about major stock",
+                  icon: "",
                 },
               ]}
             />
@@ -159,6 +181,7 @@ const BottomTrayStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) => 
 export const Default = {
   args: {
     defaultOpen: false,
+    variant: "short",
   },
   render: (args: any) => <BottomTrayStory {...args} />,
 };
@@ -166,12 +189,27 @@ export const Default = {
 export const OpenByDefault = {
   args: {
     defaultOpen: true,
+    variant: "short",
+  },
+  render: (args: any) => <BottomTrayStory {...args} />,
+};
+
+export const LongVariant = {
+  args: {
+    defaultOpen: true,
+    variant: "long",
   },
   render: (args: any) => <BottomTrayStory {...args} />,
 };
 
 // Example with custom trigger
-const CustomTriggerStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) => {
+const CustomTriggerStory = ({
+  defaultOpen = false,
+  variant = "short",
+}: {
+  defaultOpen?: boolean;
+  variant?: "short" | "long";
+}) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   const threadListManager = useThreadListManager({
@@ -254,9 +292,23 @@ const CustomTriggerStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) 
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <ConversationStarter
+              variant={variant}
               starters={[
-                { displayText: "Help me get started", prompt: "Help me get started" },
-                { displayText: "What can you do?", prompt: "What can you do?" },
+                {
+                  displayText: "Help me understand what features are available and how to get started with this application",
+                  prompt: "Help me understand what features are available and how to get started with this application",
+                  icon: <Zap size={16} />,
+                },
+                {
+                  displayText: "What can you help me with today? I need assistance with multiple tasks",
+                  prompt: "What can you help me with today? I need assistance with multiple tasks",
+                  icon: <MessageSquare size={16} />,
+                },
+                {
+                  displayText: "No icon example - this is a shorter prompt",
+                  prompt: "No icon example - this is a shorter prompt",
+                  icon: "", // Empty string = no icon
+                },
               ]}
             />
             <Composer />
@@ -270,6 +322,15 @@ const CustomTriggerStory = ({ defaultOpen = false }: { defaultOpen?: boolean }) 
 export const CustomTrigger = {
   args: {
     defaultOpen: false,
+    variant: "short",
+  },
+  render: (args: any) => <CustomTriggerStory {...args} />,
+};
+
+export const CustomTriggerLongVariant = {
+  args: {
+    defaultOpen: true,
+    variant: "long",
   },
   render: (args: any) => <CustomTriggerStory {...args} />,
 };

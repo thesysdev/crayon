@@ -1,14 +1,31 @@
 @use "../../cssUtils" as cssUtils;
 
+// Container styles
 .crayon-conversation-starter {
   display: flex;
-  flex-direction: column;
-  gap: cssUtils.$spacing-s;
   padding: 0 cssUtils.$spacing-s;
   margin-bottom: cssUtils.$spacing-s;
+
+  // Short variant - horizontal pill buttons
+  &--short {
+    flex-direction: column;
+    gap: cssUtils.$spacing-s;
+  }
+
+  // Long variant - vertical list items with separators
+  &--long {
+    flex-direction: column;
+    gap: cssUtils.$spacing-2xs;
+  }
+
+  // Separator wrapper for long variant
+  &__separator {
+    padding: cssUtils.$spacing-3xs cssUtils.$spacing-xs;
+  }
 }
 
-.crayon-conversation-starter-item {
+// Short variant item (pill-style buttons)
+.crayon-conversation-starter-item-short {
   width: 100%;
   padding: cssUtils.$spacing-m cssUtils.$spacing-l;
   background-color: cssUtils.$bg-container;
@@ -29,6 +46,82 @@
     background-color: cssUtils.$interactive-pressed;
   }
 
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Long variant item (list-style with icon and arrow)
+.crayon-conversation-starter-item-long {
+  display: flex;
+  align-items: center;
+  gap: cssUtils.$spacing-0;
+  width: 100%;
+  padding: cssUtils.$spacing-xs cssUtils.$spacing-xs;
+  background-color: transparent;
+  border: none;
+  border-radius: cssUtils.$rounded-m;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  @include cssUtils.typography(body, default);
+  color: cssUtils.$primary-text;
+  text-align: left;
+  overflow: hidden;
+
+  // Content wrapper (icon + text)
+  &__content {
+    display: flex;
+    align-items: flex-start;
+    gap: cssUtils.$spacing-xs;
+    flex: 1;
+    min-width: 0;
+  }
+
+  // Icon container - aligned to top with padding to align with first line of text
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding-top: cssUtils.$spacing-2xs;
+    color: cssUtils.$primary-text;
+  }
+
+  // Text - allows wrapping for long content
+  &__text {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.5;
+    // Text wraps naturally, no truncation
+  }
+
+  // Arrow icon (shown on hover)
+  &__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    color: cssUtils.$primary-text;
+  }
+
+  // Hover state
+  &:not(:disabled):hover {
+    background-color: cssUtils.$bg-sunk;
+
+    .crayon-conversation-starter-item-long__arrow {
+      opacity: 1;
+    }
+  }
+
+  // Active/pressed state
+  &:not(:disabled):active {
+    background-color: cssUtils.$interactive-pressed;
+  }
+
+  // Disabled state
   &--disabled {
     opacity: 0.5;
     cursor: not-allowed;

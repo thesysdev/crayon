@@ -53,4 +53,9 @@ export * from "./context/LayoutContext";
 
 export * from "./context/PrintContext";
 
-export type { ConversationStarterProps } from "./types/ConversationStarter";
+// Types Export
+export type {
+  ConversationStarterProps,
+  ConversationStarterIcon,
+} from "./types/ConversationStarter";
+export type { ConversationStarterVariant } from "./components/BottomTray/ConversationStarter";
