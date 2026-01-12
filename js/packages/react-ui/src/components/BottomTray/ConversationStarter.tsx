@@ -52,7 +52,10 @@ const ConversationStarterItem = ({
         onClick={() => onClick(prompt)}
         disabled={disabled}
       >
-        {displayText}
+        {renderedIcon && (
+          <span className="crayon-conversation-starter-item-short__icon">{renderedIcon}</span>
+        )}
+        <span className="crayon-conversation-starter-item-short__text">{displayText}</span>
       </button>
     );
   }

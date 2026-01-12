@@ -4,6 +4,7 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
+import { Sparkles } from "lucide-react";
 import {
   Composer,
   Container,
@@ -22,21 +23,37 @@ export default {
   title: "Components/CopilotShell",
   tags: ["dev"],
   argTypes: {
-    defaultOpen: {
-      control: "boolean",
-      description: "Whether to start with messages",
+    variant: {
+      control: "select",
+      options: ["short", "long"],
+      description: "Conversation starter variant",
     },
   },
 };
 
 const SAMPLE_STARTERS = [
-  { displayText: "Help me get started", prompt: "Help me get started" },
-  { displayText: "What can you do?", prompt: "What can you do?" },
-  { displayText: "Tell me about your features", prompt: "Tell me about your features" },
+  {
+    displayText: "Tell me about my portfolio",
+    prompt: "Tell me about the latest stock market trends and how they affect my portfolio",
+    icon: <Sparkles size={16} />,
+  },
+  {
+    displayText: "Who is the president of Venezuela and where is he currently located?",
+    prompt: "Who is the president of Venezuela and where is he currently located?",
+    // icon undefined = shows default lightbulb
+  },
+  {
+    displayText: "Tell me about major stock (no icon)",
+    prompt: "Tell me about major stock",
+    icon: "", // Empty string = no icon
+  },
 ];
 
 export const Default = {
-  render: () => {
+  args: {
+    variant: "short",
+  },
+  render: ({ variant }: { variant: "short" | "long" }) => {
     const threadListManager = useThreadListManager({
       createThread: async () => {
         return {
@@ -122,7 +139,7 @@ export const Default = {
               <ScrollArea>
                 <Messages loader={<MessageLoading />} />
               </ScrollArea>
-              <ConversationStarter starters={SAMPLE_STARTERS} />
+              <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
               <Composer />
             </ThreadContainer>
           </Container>
@@ -132,8 +149,11 @@ export const Default = {
   },
 };
 
-export const WithConversationStarter = {
-  render: () => {
+export const LongVariant = {
+  args: {
+    variant: "long",
+  },
+  render: ({ variant }: { variant: "short" | "long" }) => {
     const threadListManager = useThreadListManager({
       createThread: async () => ({
         threadId: crypto.randomUUID(),
@@ -179,7 +199,7 @@ export const WithConversationStarter = {
               <ScrollArea>
                 <Messages loader={<MessageLoading />} />
               </ScrollArea>
-              <ConversationStarter starters={SAMPLE_STARTERS} />
+              <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
               <Composer />
             </ThreadContainer>
           </Container>
