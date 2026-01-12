@@ -14,6 +14,7 @@ ChatProvider
 └── Container            (sidebar panel)
     └── ThreadContainer
         ├── Header           (logo, agent name)
+        ├── WelcomeScreen    (optional, shown when empty)
         ├── ScrollArea       (scrollable message area)
         │   └── Messages
         ├── ConversationStarter  (optional, shown when empty)
@@ -34,6 +35,7 @@ import {
   Messages,
   ScrollArea,
   ThreadContainer,
+  WelcomeScreen,
 } from "@crayonai/react-ui/CopilotShell";
 
 function MyCopilot() {
@@ -74,11 +76,23 @@ function MyCopilot() {
     responseTemplates: [],
   });
 
+  const hasMessages = threadManager.messages.length > 0;
+
   return (
     <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
       <Container logoUrl="/path/to/logo.png" agentName="AI Assistant">
         <ThreadContainer>
           <Header />
+
+          {/* WelcomeScreen - shown when no messages */}
+          {!hasMessages && (
+            <WelcomeScreen
+              title="Hi, I'm AI Assistant"
+              description="I can help you with your questions."
+              logoUrl="/path/to/logo.png"
+            />
+          )}
+
           <ScrollArea>
             <Messages loader={<MessageLoading />} />
           </ScrollArea>
@@ -148,14 +162,15 @@ Scrollable container for messages with smart scroll behavior.
 
 ### ConversationStarter
 
-Full-width clickable buttons shown when the thread is empty. Automatically submits the prompt as a message when clicked.
+Clickable prompts shown when the thread is empty. Automatically submits the prompt as a message when clicked.
 
 ```tsx
 <ConversationStarter
+  variant="short" // "short" (pill buttons) or "long" (list items)
   starters={[
-    { displayText: "Help me get started", prompt: "Help me get started" },
-    { displayText: "What can you do?", prompt: "What can you do?" },
-    { displayText: "Tell me about your features", prompt: "Tell me about your features" },
+    { displayText: "Help me get started", prompt: "Help me get started", icon: <Sparkles size={16} /> },
+    { displayText: "What can you do?", prompt: "What can you do?" }, // Default lightbulb icon
+    { displayText: "No icon example", prompt: "No icon", icon: "" }, // No icon
   ]}
   className="custom-class" // Optional custom styling
 />
@@ -163,7 +178,11 @@ Full-width clickable buttons shown when the thread is empty. Automatically submi
 
 **Props:**
 
-- `starters` - Array of objects with `displayText` (shown on button) and `prompt` (sent as message)
+- `variant` - `"short"` (pill-style buttons) or `"long"` (list items with separators)
+- `starters` - Array of objects with:
+  - `displayText` - Text shown on the button
+  - `prompt` - Message sent when clicked
+  - `icon` - Optional: `ReactNode` for custom icon, `undefined` for default lightbulb, `""` for no icon
 - `className` - Optional additional CSS class
 
 **Behavior:**
@@ -171,6 +190,48 @@ Full-width clickable buttons shown when the thread is empty. Automatically submi
 - Only visible when there are no messages in the thread
 - Clicking a button submits the `prompt` as a user message
 - Buttons are disabled when a response is being generated
+
+### WelcomeScreen
+
+A centered welcome message shown when the thread is empty. Supports either props-based content or custom children.
+
+**Props-based usage:**
+
+```tsx
+{!hasMessages && (
+  <WelcomeScreen
+    title="Hi, I'm AI Assistant"
+    description="I can help you with your questions."
+    logoUrl="/path/to/logo.png" // Logo image
+    // Or use icon prop for a custom icon component
+  />
+)}
+```
+
+**Custom children usage:**
+
+```tsx
+{!hasMessages && (
+  <WelcomeScreen>
+    <div style={{ textAlign: "center" }}>
+      <MyCustomLogo />
+      <h2>Welcome!</h2>
+      <p>Custom welcome content</p>
+    </div>
+  </WelcomeScreen>
+)}
+```
+
+**Props:**
+
+- `title` - Greeting/title text (optional)
+- `description` - Description text (optional)
+- `logoUrl` - URL for logo image (optional)
+- `icon` - Custom icon as ReactNode (optional, ignored if logoUrl is provided)
+- `children` - Custom content (mutually exclusive with title/description/logoUrl/icon)
+- `className` - Additional CSS class (optional)
+
+**Note:** You must conditionally render WelcomeScreen based on `hasMessages` state.
 
 ### Composer
 
@@ -186,6 +247,8 @@ CopilotShell is designed to be placed as a sidebar:
 
 ```tsx
 function AppLayout() {
+  const hasMessages = threadManager.messages.length > 0;
+
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       {/* Main content area */}
@@ -197,6 +260,13 @@ function AppLayout() {
           <Container logoUrl={logo} agentName="Assistant">
             <ThreadContainer>
               <Header />
+              {!hasMessages && (
+                <WelcomeScreen
+                  title="Hi, I'm Assistant"
+                  description="How can I help you today?"
+                  logoUrl={logo}
+                />
+              )}
               <ScrollArea>
                 <Messages loader={<MessageLoading />} />
               </ScrollArea>
@@ -232,4 +302,11 @@ All CopilotShell components use the `crayon-copilot-shell-` prefix:
 - `.crayon-copilot-shell-thread-message-assistant`
 - `.crayon-copilot-shell-thread-composer`
 - `.crayon-copilot-shell-conversation-starter`
-- `.crayon-copilot-shell-conversation-starter-item`
+- `.crayon-copilot-shell-conversation-starter-item-short`
+- `.crayon-copilot-shell-conversation-starter-item-long`
+- `.crayon-copilot-shell-welcome-screen`
+- `.crayon-copilot-shell-welcome-screen__icon-container`
+- `.crayon-copilot-shell-welcome-screen__logo-image`
+- `.crayon-copilot-shell-welcome-screen__content`
+- `.crayon-copilot-shell-welcome-screen__title`
+- `.crayon-copilot-shell-welcome-screen__description`

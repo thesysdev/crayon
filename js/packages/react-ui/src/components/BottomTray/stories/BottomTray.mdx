@@ -15,6 +15,7 @@ ChatProvider
 └── Container            (the tray panel)
     └── ThreadContainer
         ├── Header           (logo, agent name, actions)
+        ├── WelcomeScreen    (optional, shown when empty)
         ├── ScrollArea       (scrollable message area)
         │   └── Messages
         ├── ConversationStarter  (optional, shown when empty)
@@ -36,6 +37,7 @@ import {
   ScrollArea,
   ThreadContainer,
   Trigger,
+  WelcomeScreen,
 } from "@crayonai/react-ui";
 
 function MyApp() {
@@ -85,6 +87,8 @@ function MyApp() {
     responseTemplates: [],
   });
 
+  const hasMessages = threadManager.messages.length > 0;
+
   return (
     <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
       {/* Trigger - floating button */}
@@ -94,6 +98,16 @@ function MyApp() {
       <Container logoUrl="/path/to/logo.png" agentName="AI Assistant" isOpen={isOpen}>
         <ThreadContainer>
           <Header onMinimize={() => setIsOpen(false)} />
+
+          {/* WelcomeScreen - shown when no messages */}
+          {!hasMessages && (
+            <WelcomeScreen
+              title="Hi, I'm AI Assistant"
+              description="I can help you with your questions."
+              logoUrl="/path/to/logo.png"
+            />
+          )}
+
           <ScrollArea>
             <Messages loader={<MessageLoading />} />
           </ScrollArea>
@@ -189,12 +203,64 @@ Clickable prompts shown when thread is empty. Automatically hides when messages 
 
 ```tsx
 <ConversationStarter
+  variant="short" // "short" (pill buttons) or "long" (list items)
   starters={[
-    { displayText: "Help me get started", prompt: "Help me get started" },
-    { displayText: "What can you do?", prompt: "What can you do?" },
+    { displayText: "Help me get started", prompt: "Help me get started", icon: <Sparkles size={16} /> },
+    { displayText: "What can you do?", prompt: "What can you do?" }, // Default lightbulb icon
+    { displayText: "No icon example", prompt: "No icon", icon: "" }, // No icon
   ]}
 />
 ```
+
+**Props:**
+
+- `variant` - `"short"` (pill-style buttons) or `"long"` (list items with separators)
+- `starters` - Array of objects with:
+  - `displayText` - Text shown on the button
+  - `prompt` - Message sent when clicked
+  - `icon` - Optional: `ReactNode` for custom icon, `undefined` for default lightbulb, `""` for no icon
+
+### WelcomeScreen
+
+A centered welcome message shown when the thread is empty. Supports either props-based content or custom children.
+
+**Props-based usage:**
+
+```tsx
+{!hasMessages && (
+  <WelcomeScreen
+    title="Hi, I'm AI Assistant"
+    description="I can help you with your questions."
+    logoUrl="/path/to/logo.png" // Logo image
+    // Or use icon prop for a custom icon component
+  />
+)}
+```
+
+**Custom children usage:**
+
+```tsx
+{!hasMessages && (
+  <WelcomeScreen>
+    <div style={{ textAlign: "center" }}>
+      <MyCustomLogo />
+      <h2>Welcome!</h2>
+      <p>Custom welcome content</p>
+    </div>
+  </WelcomeScreen>
+)}
+```
+
+**Props:**
+
+- `title` - Greeting/title text (optional)
+- `description` - Description text (optional)
+- `logoUrl` - URL for logo image (optional)
+- `icon` - Custom icon as ReactNode (optional, ignored if logoUrl is provided)
+- `children` - Custom content (mutually exclusive with title/description/logoUrl/icon)
+- `className` - Additional CSS class (optional)
+
+**Note:** You must conditionally render WelcomeScreen based on `hasMessages` state.
 
 ### Composer
 

@@ -1,4 +1,3 @@
-import { useThreadState } from "@crayonai/react-core";
 import clsx from "clsx";
 import { ReactNode } from "react";
 
@@ -45,32 +44,20 @@ interface WelcomeScreenWithChildrenProps extends WelcomeScreenBaseProps {
   icon?: never;
 }
 
-export type WelcomeScreenProps =
-  | WelcomeScreenWithContentProps
-  | WelcomeScreenWithChildrenProps;
+export type WelcomeScreenProps = WelcomeScreenWithContentProps | WelcomeScreenWithChildrenProps;
 
 export const WelcomeScreen = (props: WelcomeScreenProps) => {
   const { className } = props;
-  const { messages } = useThreadState();
-
-  // Only show when there are no messages
-  // TODO: check with @abhithesys if this is correct
-  if (messages.length > 0) {
-    return null;
-  }
 
   // Check if children are provided
   if ("children" in props && props.children) {
     return (
-      <div className={clsx("crayon-copilot-shell-welcome-screen", className)}>
-        {props.children}
-      </div>
+      <div className={clsx("crayon-copilot-shell-welcome-screen", className)}>{props.children}</div>
     );
   }
 
   // Props-based content
-  const { title, description, logoUrl, icon } =
-    props as WelcomeScreenWithContentProps;
+  const { title, description, logoUrl, icon } = props as WelcomeScreenWithContentProps;
 
   const renderIcon = () => {
     if (logoUrl) {
@@ -93,21 +80,13 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   return (
     <div className={clsx("crayon-copilot-shell-welcome-screen", className)}>
       {(logoUrl || icon) && (
-        <div className="crayon-copilot-shell-welcome-screen__icon-container">
-          {renderIcon()}
-        </div>
+        <div className="crayon-copilot-shell-welcome-screen__icon-container">{renderIcon()}</div>
       )}
       {(title || description) && (
         <div className="crayon-copilot-shell-welcome-screen__content">
-          {title && (
-            <h2 className="crayon-copilot-shell-welcome-screen__title">
-              {title}
-            </h2>
-          )}
+          {title && <h2 className="crayon-copilot-shell-welcome-screen__title">{title}</h2>}
           {description && (
-            <p className="crayon-copilot-shell-welcome-screen__description">
-              {description}
-            </p>
+            <p className="crayon-copilot-shell-welcome-screen__description">{description}</p>
           )}
         </div>
       )}

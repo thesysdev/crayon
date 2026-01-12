@@ -45,42 +45,23 @@ interface WelcomeScreenWithChildrenProps extends WelcomeScreenBaseProps {
   icon?: never;
 }
 
-export type WelcomeScreenProps =
-  | WelcomeScreenWithContentProps
-  | WelcomeScreenWithChildrenProps;
+export type WelcomeScreenProps = WelcomeScreenWithContentProps | WelcomeScreenWithChildrenProps;
 
 export const WelcomeScreen = (props: WelcomeScreenProps) => {
   const { className } = props;
   const { messages } = useThreadState();
 
-  // Only show when there are no messages
-  // TODO: check with @abhithesys if this is correct
-  if (messages.length > 0) {
-    return null;
-  }
-
   // Check if children are provided
   if ("children" in props && props.children) {
-    return (
-      <div className={clsx("crayon-welcome-screen", className)}>
-        {props.children}
-      </div>
-    );
+    return <div className={clsx("crayon-welcome-screen", className)}>{props.children}</div>;
   }
 
   // Props-based content
-  const { title, description, logoUrl, icon } =
-    props as WelcomeScreenWithContentProps;
+  const { title, description, logoUrl, icon } = props as WelcomeScreenWithContentProps;
 
   const renderIcon = () => {
     if (logoUrl) {
-      return (
-        <img
-          src={logoUrl}
-          alt={title}
-          className="crayon-welcome-screen__logo-image"
-        />
-      );
+      return <img src={logoUrl} alt={title} className="crayon-welcome-screen__logo-image" />;
     }
 
     if (icon) {
@@ -93,16 +74,12 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   return (
     <div className={clsx("crayon-welcome-screen", className)}>
       {(logoUrl || icon) && (
-        <div className="crayon-welcome-screen__icon-container">
-          {renderIcon()}
-        </div>
+        <div className="crayon-welcome-screen__icon-container">{renderIcon()}</div>
       )}
       {(title || description) && (
         <div className="crayon-welcome-screen__content">
           {title && <h2 className="crayon-welcome-screen__title">{title}</h2>}
-          {description && (
-            <p className="crayon-welcome-screen__description">{description}</p>
-          )}
+          {description && <p className="crayon-welcome-screen__description">{description}</p>}
         </div>
       )}
     </div>

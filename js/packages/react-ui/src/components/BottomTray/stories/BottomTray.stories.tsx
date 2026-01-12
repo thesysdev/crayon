@@ -384,6 +384,9 @@ const WelcomeScreenStory = ({
     responseTemplates: [],
   });
 
+  // this can be used instead of thread state
+  const hasMessages = threadManager.messages.length > 0;
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -398,11 +401,13 @@ const WelcomeScreenStory = ({
           <ThreadContainer>
             <Header onMinimize={() => setIsOpen(false)} />
 
-            <WelcomeScreen
-              title="Hi, I'm Crayon Assistant"
-              description="I can help you with questions about your account, products, and more."
-              logoUrl={logoUrl}
-            />
+            {hasMessages ? null : (
+              <WelcomeScreen
+                title="Hi, I'm Crayon Assistant"
+                description="I can help you with questions about your account, products, and more."
+                logoUrl={logoUrl}
+              />
+            )}
 
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
@@ -488,6 +493,8 @@ const CustomWelcomeScreenStory = ({
     responseTemplates: [],
   });
 
+  const hasMessages = threadManager.messages.length > 0;
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -502,30 +509,32 @@ const CustomWelcomeScreenStory = ({
           <ThreadContainer>
             <Header onMinimize={() => setIsOpen(false)} />
 
-            <WelcomeScreen>
-              <div style={{ textAlign: "center" }}>
-                <div
-                  style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 16,
-                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    margin: "0 auto 16px",
-                  }}
-                >
-                  <Sparkles size={40} color="white" />
+            {hasMessages ? null : (
+              <WelcomeScreen>
+                <div style={{ textAlign: "center" }}>
+                  <div
+                    style={{
+                      width: 80,
+                      height: 80,
+                      borderRadius: 16,
+                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 auto 16px",
+                    }}
+                  >
+                    <Sparkles size={40} color="white" />
+                  </div>
+                  <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 600 }}>
+                    Welcome to AI Assistant
+                  </h2>
+                  <p style={{ margin: 0, color: "rgba(0,0,0,0.5)", fontSize: 14 }}>
+                    Your personal AI helper for all your questions
+                  </p>
                 </div>
-                <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 600 }}>
-                  Welcome to AI Assistant
-                </h2>
-                <p style={{ margin: 0, color: "rgba(0,0,0,0.5)", fontSize: 14 }}>
-                  Your personal AI helper for all your questions
-                </p>
-              </div>
-            </WelcomeScreen>
+              </WelcomeScreen>
+            )}
 
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
