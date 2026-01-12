@@ -2,34 +2,51 @@
 
 $center-align-spacing: calc(32px + cssUtils.$spacing-s);
 
+// Container styles
 .crayon-shell-conversation-starter {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: cssUtils.$spacing-s;
   width: 100%;
   max-width: 880px;
   margin: 0 auto;
   padding: 0 $center-align-spacing cssUtils.$spacing-m;
 
-  // 2-column layout for larger screens (≥640px)
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
+  // Short variant - horizontal wrapping buttons
+  &--short {
+    display: flex;
+    flex-wrap: wrap;
+    gap: cssUtils.$spacing-s;
   }
 
+  // Long variant - vertical stacked list with separators
+  &--long {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$spacing-2xs;
+  }
+
+  // Separator wrapper for long variant
+  &__separator {
+    padding: cssUtils.$spacing-3xs cssUtils.$spacing-xs;
+  }
+
+  // Mobile adjustments
   .crayon-shell-container--mobile & {
     padding: 0 cssUtils.$spacing-l cssUtils.$spacing-m;
-    grid-template-columns: 1fr; // Force single column on mobile
   }
 
+  // Artifact active adjustments
   .crayon-shell-thread-container--artifact-active & {
     padding-left: 0;
     padding-right: cssUtils.$spacing-m;
   }
 }
 
-.crayon-shell-conversation-starter-item {
-  width: 100%;
-  padding: cssUtils.$spacing-m cssUtils.$spacing-l;
+// Short variant item (pill-style buttons that wrap)
+.crayon-shell-conversation-starter-item-short {
+  display: flex;
+  align-items: center;
+  gap: cssUtils.$spacing-xs;
+  width: fit-content;
+  padding: cssUtils.$spacing-s cssUtils.$spacing-m;
   background-color: cssUtils.$bg-container;
   border: 1px solid cssUtils.$stroke-default;
   border-radius: cssUtils.$rounded-m;
@@ -38,6 +55,21 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
   @include cssUtils.typography(body, default);
   color: cssUtils.$primary-text;
   text-align: left;
+
+  // Icon container
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: cssUtils.$primary-text;
+  }
+
+  // Text
+  &__text {
+    flex: 1;
+    white-space: nowrap;
+  }
 
   &:not(:disabled):hover {
     background-color: cssUtils.$interactive-hover;
@@ -48,6 +80,86 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
     background-color: cssUtils.$interactive-pressed;
   }
 
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 480px) {
+    padding: cssUtils.$spacing-xs cssUtils.$spacing-s;
+  }
+}
+
+// Long variant item (list-style with icon and arrow)
+.crayon-shell-conversation-starter-item-long {
+  display: flex;
+  align-items: center;
+  gap: cssUtils.$spacing-0;
+  width: 100%;
+  padding: cssUtils.$spacing-xs cssUtils.$spacing-xs;
+  background-color: transparent;
+  border: none;
+  border-radius: cssUtils.$rounded-m;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  @include cssUtils.typography(body, default);
+  color: cssUtils.$primary-text;
+  text-align: left;
+  overflow: hidden;
+
+  // Content wrapper (icon + text)
+  &__content {
+    display: flex;
+    align-items: flex-start;
+    gap: cssUtils.$spacing-xs;
+    flex: 1;
+    min-width: 0;
+  }
+
+  // Icon container - aligned to top with padding to align with first line of text
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding-top: cssUtils.$spacing-2xs;
+    color: cssUtils.$primary-text;
+  }
+
+  // Text - allows wrapping for long content
+  &__text {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.5;
+    // Text wraps naturally, no truncation
+  }
+
+  // Arrow icon (shown on hover)
+  &__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    color: cssUtils.$primary-text;
+  }
+
+  // Hover state
+  &:not(:disabled):hover {
+    background-color: cssUtils.$bg-sunk;
+
+    .crayon-shell-conversation-starter-item-long__arrow {
+      opacity: 1;
+    }
+  }
+
+  // Active/pressed state
+  &:not(:disabled):active {
+    background-color: cssUtils.$interactive-pressed;
+  }
+
+  // Disabled state
   &--disabled {
     opacity: 0.5;
     cursor: not-allowed;

@@ -4,6 +4,7 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
+import { MessageSquare, Sparkles, Zap } from "lucide-react";
 import { Container } from "../Container";
 import { ConversationStarter } from "../ConversationStarter";
 import { MobileHeader } from "../MobileHeader";
@@ -17,21 +18,60 @@ export default {
   title: "Components/Shell",
   tags: ["dev"],
   argTypes: {
-    defaultOpen: {
-      control: "boolean",
-      description: "Whether to start with messages",
+    variant: {
+      control: "select",
+      options: ["short", "long"],
+      description: "Conversation starter variant",
     },
   },
 };
 
 const SAMPLE_STARTERS = [
-  { displayText: "Help me get started", prompt: "Help me get started" },
-  { displayText: "What can you do?", prompt: "What can you do?" },
-  { displayText: "Tell me about your features", prompt: "Tell me about your features" },
+  {
+    displayText: "Help me get started",
+    prompt: "Help me get started",
+    icon: <Sparkles size={16} />,
+  },
+  {
+    displayText: "What can you do?",
+    prompt: "What can you do?",
+    // icon undefined = shows default lightbulb
+  },
+  {
+    displayText: "Tell me about your features",
+    prompt: "Tell me about your features",
+    icon: <MessageSquare size={16} />,
+  },
+  {
+    displayText: "Show me some examples (no icon)",
+    prompt: "Show me some examples",
+    icon: "", // Empty string = no icon
+  },
+];
+
+const LONG_STARTERS = [
+  {
+    displayText: "Help me get started with this application and guide me through the features",
+    prompt: "Help me get started with this application",
+    icon: <Sparkles size={16} />,
+  },
+  {
+    displayText: "What can you do? I'd like to know all your capabilities and how you can help me",
+    prompt: "What can you do?",
+    icon: <Zap size={16} />,
+  },
+  {
+    displayText: "Tell me about your advanced features and how I can use them effectively",
+    prompt: "Tell me about your features",
+    // Default lightbulb icon
+  },
 ];
 
 export const Default = {
-  render: () => {
+  args: {
+    variant: "short",
+  },
+  render: ({ variant }: { variant: "short" | "long" }) => {
     const threadListManager = useThreadListManager({
       createThread: async () => {
         return {
@@ -90,9 +130,7 @@ export const Default = {
         ];
       },
       onProcessMessage: async ({ message, threadManager }) => {
-        const newMessage = Object.assign({}, message, {
-          id: crypto.randomUUID(),
-        }) as Message;
+        const newMessage = { ...message, id: crypto.randomUUID() } as Message;
         threadManager.appendMessages(newMessage);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         return [
@@ -123,7 +161,7 @@ export const Default = {
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
-            <ConversationStarter starters={SAMPLE_STARTERS} />
+            <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
             <Composer />
           </ThreadContainer>
         </Container>
@@ -133,7 +171,10 @@ export const Default = {
 };
 
 export const WithConversationStarter = {
-  render: () => {
+  args: {
+    variant: "short",
+  },
+  render: ({ variant }: { variant: "short" | "long" }) => {
     const threadListManager = useThreadListManager({
       createThread: async () => ({
         threadId: crypto.randomUUID(),
@@ -152,9 +193,7 @@ export const WithConversationStarter = {
       threadId: threadListManager.selectedThreadId,
       loadThread: async () => [], // Start with empty thread to show starters
       onProcessMessage: async ({ message, threadManager }) => {
-        const newMessage = Object.assign({}, message, {
-          id: crypto.randomUUID(),
-        }) as Message;
+        const newMessage = { ...message, id: crypto.randomUUID() } as Message;
         threadManager.appendMessages(newMessage);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         return [
@@ -185,7 +224,70 @@ export const WithConversationStarter = {
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
-            <ConversationStarter starters={SAMPLE_STARTERS} />
+            <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
+            <Composer />
+          </ThreadContainer>
+        </Container>
+      </ChatProvider>
+    );
+  },
+};
+
+export const LongVariant = {
+  args: {
+    variant: "long",
+  },
+  render: ({ variant }: { variant: "short" | "long" }) => {
+    const threadListManager = useThreadListManager({
+      createThread: async () => ({
+        threadId: crypto.randomUUID(),
+        title: "New Chat",
+        createdAt: new Date(),
+        isRunning: false,
+      }),
+      fetchThreadList: async () => [],
+      deleteThread: async () => {},
+      updateThread: async (t) => t,
+      onSwitchToNew: () => {},
+      onSelectThread: () => {},
+    });
+
+    const threadManager = useThreadManager({
+      threadId: threadListManager.selectedThreadId,
+      loadThread: async () => [], // Start with empty thread to show starters
+      onProcessMessage: async ({ message, threadManager }) => {
+        const newMessage = { ...message, id: crypto.randomUUID() } as Message;
+        threadManager.appendMessages(newMessage);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return [
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            type: "response",
+            message: [{ type: "text", text: `You asked: "${message.message}"` }],
+          },
+        ];
+      },
+      responseTemplates: [],
+    });
+
+    return (
+      <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
+        <Container logoUrl={logoUrl} agentName="Crayon">
+          <SidebarContainer>
+            <SidebarHeader />
+            <SidebarContent>
+              <NewChatButton />
+              <SidebarSeparator />
+              <ThreadList />
+            </SidebarContent>
+          </SidebarContainer>
+          <ThreadContainer>
+            <MobileHeader />
+            <ScrollArea>
+              <Messages loader={<MessageLoading />} />
+            </ScrollArea>
+            <ConversationStarter starters={LONG_STARTERS} variant={variant} />
             <Composer />
           </ThreadContainer>
         </Container>
