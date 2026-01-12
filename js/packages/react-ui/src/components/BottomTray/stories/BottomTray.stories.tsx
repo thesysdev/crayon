@@ -4,7 +4,7 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
-import { HelpCircle, MessageSquare, Sparkles, Zap } from "lucide-react";
+import { MessageSquare, Sparkles, Zap } from "lucide-react";
 import { useState } from "react";
 import {
   Composer,
@@ -154,12 +154,14 @@ const BottomTrayStory = ({
               variant={variant}
               starters={[
                 {
-                  displayText: "Tell me about the latest stock market trends and how they affect my portfolio",
-                  prompt: "Tell me about the latest stock market trends and how they affect my portfolio",
+                  displayText: "Tell me about my portfolio",
+                  prompt:
+                    "Tell me about the latest stock market trends and how they affect my portfolio",
                   icon: <Sparkles size={16} />,
                 },
                 {
-                  displayText: "Who is the president of Venezuela and where is he currently located (icon was not passed)",
+                  displayText:
+                    "Who is the president of Venezuela and where is he currently located (icon was not passed)",
                   prompt: "Who is the president of Venezuela and where is he currently located?",
                   // icon undefined = shows default lightbulb
                 },
@@ -295,12 +297,15 @@ const CustomTriggerStory = ({
               variant={variant}
               starters={[
                 {
-                  displayText: "Help me understand what features are available and how to get started with this application",
-                  prompt: "Help me understand what features are available and how to get started with this application",
+                  displayText:
+                    "Help me understand what features are available and how to get started with this application",
+                  prompt:
+                    "Help me understand what features are available and how to get started with this application",
                   icon: <Zap size={16} />,
                 },
                 {
-                  displayText: "What can you help me with today? I need assistance with multiple tasks",
+                  displayText:
+                    "What can you help me with today? I need assistance with multiple tasks",
                   prompt: "What can you help me with today? I need assistance with multiple tasks",
                   icon: <MessageSquare size={16} />,
                 },
