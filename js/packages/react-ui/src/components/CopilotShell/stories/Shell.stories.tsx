@@ -14,6 +14,7 @@ import {
   Messages,
   ScrollArea,
   ThreadContainer,
+  WelcomeScreen,
 } from "../../CopilotShell";
 // @ts-ignore
 import styles from "./style.module.scss";
@@ -196,6 +197,161 @@ export const LongVariant = {
           <Container logoUrl={logoUrl} agentName="Crayon">
             <ThreadContainer>
               <Header />
+              <ScrollArea>
+                <Messages loader={<MessageLoading />} />
+              </ScrollArea>
+              <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
+              <Composer />
+            </ThreadContainer>
+          </Container>
+        </ChatProvider>
+      </div>
+    );
+  },
+};
+
+// Example with WelcomeScreen
+export const WithWelcomeScreen = {
+  args: {
+    variant: "short",
+  },
+  render: ({ variant }: { variant: "short" | "long" }) => {
+    const threadListManager = useThreadListManager({
+      createThread: async () => ({
+        threadId: crypto.randomUUID(),
+        title: "New Chat",
+        createdAt: new Date(),
+        isRunning: false,
+      }),
+      fetchThreadList: async () => [],
+      deleteThread: async () => {},
+      updateThread: async (t) => t,
+      onSwitchToNew: () => {},
+      onSelectThread: () => {},
+    });
+
+    const threadManager = useThreadManager({
+      threadId: threadListManager.selectedThreadId,
+      loadThread: async () => [], // Start with empty thread to show welcome screen
+      onProcessMessage: async ({ message, threadManager }) => {
+        const newMessage = Object.assign({}, message, {
+          id: crypto.randomUUID(),
+        }) as Message;
+        threadManager.appendMessages(newMessage);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return [
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            type: "response",
+            message: [{ type: "text", text: `You asked: "${message.message}"` }],
+          },
+        ];
+      },
+      responseTemplates: [],
+    });
+
+    return (
+      <div className={styles.container}>
+        <div className={styles.left} />
+        <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
+          <Container logoUrl={logoUrl} agentName="Crayon Assistant">
+            <ThreadContainer>
+              <Header />
+
+              <WelcomeScreen
+                title="Hi, I'm Crayon Assistant"
+                description="I can help you with questions about your account, products, and more."
+                logoUrl={logoUrl}
+              />
+
+              <ScrollArea>
+                <Messages loader={<MessageLoading />} />
+              </ScrollArea>
+              <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
+              <Composer />
+            </ThreadContainer>
+          </Container>
+        </ChatProvider>
+      </div>
+    );
+  },
+};
+
+// Example with custom children in WelcomeScreen
+export const WithCustomWelcomeScreen = {
+  args: {
+    variant: "short",
+  },
+  render: ({ variant }: { variant: "short" | "long" }) => {
+    const threadListManager = useThreadListManager({
+      createThread: async () => ({
+        threadId: crypto.randomUUID(),
+        title: "New Chat",
+        createdAt: new Date(),
+        isRunning: false,
+      }),
+      fetchThreadList: async () => [],
+      deleteThread: async () => {},
+      updateThread: async (t) => t,
+      onSwitchToNew: () => {},
+      onSelectThread: () => {},
+    });
+
+    const threadManager = useThreadManager({
+      threadId: threadListManager.selectedThreadId,
+      loadThread: async () => [],
+      onProcessMessage: async ({ message, threadManager }) => {
+        const newMessage = Object.assign({}, message, {
+          id: crypto.randomUUID(),
+        }) as Message;
+        threadManager.appendMessages(newMessage);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return [
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            type: "response",
+            message: [{ type: "text", text: `You asked: "${message.message}"` }],
+          },
+        ];
+      },
+      responseTemplates: [],
+    });
+
+    return (
+      <div className={styles.container}>
+        <div className={styles.left} />
+        <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
+          <Container logoUrl={logoUrl} agentName="Crayon Assistant">
+            <ThreadContainer>
+              <Header />
+
+              <WelcomeScreen>
+                <div style={{ textAlign: "center" }}>
+                  <div
+                    style={{
+                      width: 80,
+                      height: 80,
+                      borderRadius: 16,
+                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 auto 16px",
+                    }}
+                  >
+                    <Sparkles size={40} color="white" />
+                  </div>
+                  <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 600 }}>
+                    Welcome to AI Assistant
+                  </h2>
+                  <p style={{ margin: 0, color: "rgba(0,0,0,0.5)", fontSize: 14 }}>
+                    Your personal AI helper for all your questions
+                  </p>
+                </div>
+              </WelcomeScreen>
+
               <ScrollArea>
                 <Messages loader={<MessageLoading />} />
               </ScrollArea>
