@@ -16,6 +16,7 @@ import {
   ScrollArea,
   ThreadContainer,
   Trigger,
+  WelcomeScreen,
 } from "../../BottomTray";
 // @ts-ignore
 import styles from "./style.module.scss";
@@ -338,4 +339,223 @@ export const CustomTriggerLongVariant = {
     variant: "long",
   },
   render: (args: any) => <CustomTriggerStory {...args} />,
+};
+
+// Example with WelcomeScreen
+const WelcomeScreenStory = ({
+  defaultOpen = true,
+  variant = "short",
+}: {
+  defaultOpen?: boolean;
+  variant?: "short" | "long";
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  const threadListManager = useThreadListManager({
+    createThread: async () => ({
+      threadId: crypto.randomUUID(),
+      title: "New Chat",
+      createdAt: new Date(),
+      isRunning: false,
+    }),
+    fetchThreadList: async () => [],
+    deleteThread: async () => {},
+    updateThread: async (t) => t,
+    onSwitchToNew: () => {},
+    onSelectThread: () => {},
+  });
+
+  const threadManager = useThreadManager({
+    threadId: threadListManager.selectedThreadId,
+    loadThread: async () => [], // Start with empty thread to show welcome screen
+    onProcessMessage: async ({ message, threadManager }) => {
+      const newMessage = Object.assign({}, message, { id: crypto.randomUUID() }) as Message;
+      threadManager.appendMessages(newMessage);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return [
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          type: "response",
+          message: [{ type: "text", text: `You asked: "${message.message}"` }],
+        },
+      ];
+    },
+    responseTemplates: [],
+  });
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <h1>Welcome Screen Example</h1>
+        <p>This example shows the WelcomeScreen component with title, description, and logo.</p>
+      </div>
+
+      <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
+        <Trigger onClick={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+
+        <Container logoUrl={logoUrl} agentName="Crayon Assistant" isOpen={isOpen}>
+          <ThreadContainer>
+            <Header onMinimize={() => setIsOpen(false)} />
+
+            <WelcomeScreen
+              title="Hi, I'm Crayon Assistant"
+              description="I can help you with questions about your account, products, and more."
+              logoUrl={logoUrl}
+            />
+
+            <ScrollArea>
+              <Messages loader={<MessageLoading />} />
+            </ScrollArea>
+            <ConversationStarter
+              variant={variant}
+              starters={[
+                {
+                  displayText: "Help me get started",
+                  prompt: "Help me get started",
+                  icon: <Sparkles size={16} />,
+                },
+                {
+                  displayText: "What can you do?",
+                  prompt: "What can you do?",
+                },
+              ]}
+            />
+            <Composer />
+          </ThreadContainer>
+        </Container>
+      </ChatProvider>
+    </div>
+  );
+};
+
+export const WithWelcomeScreen = {
+  args: {
+    defaultOpen: true,
+    variant: "short",
+  },
+  render: (args: any) => <WelcomeScreenStory {...args} />,
+};
+
+export const WithWelcomeScreenLongVariant = {
+  args: {
+    defaultOpen: true,
+    variant: "long",
+  },
+  render: (args: any) => <WelcomeScreenStory {...args} />,
+};
+
+// Example with custom children in WelcomeScreen
+const CustomWelcomeScreenStory = ({
+  defaultOpen = true,
+  variant = "short",
+}: {
+  defaultOpen?: boolean;
+  variant?: "short" | "long";
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  const threadListManager = useThreadListManager({
+    createThread: async () => ({
+      threadId: crypto.randomUUID(),
+      title: "New Chat",
+      createdAt: new Date(),
+      isRunning: false,
+    }),
+    fetchThreadList: async () => [],
+    deleteThread: async () => {},
+    updateThread: async (t) => t,
+    onSwitchToNew: () => {},
+    onSelectThread: () => {},
+  });
+
+  const threadManager = useThreadManager({
+    threadId: threadListManager.selectedThreadId,
+    loadThread: async () => [],
+    onProcessMessage: async ({ message, threadManager }) => {
+      const newMessage = Object.assign({}, message, { id: crypto.randomUUID() }) as Message;
+      threadManager.appendMessages(newMessage);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return [
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          type: "response",
+          message: [{ type: "text", text: `You asked: "${message.message}"` }],
+        },
+      ];
+    },
+    responseTemplates: [],
+  });
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <h1>Custom Welcome Screen Example</h1>
+        <p>This example shows WelcomeScreen with custom children instead of props.</p>
+      </div>
+
+      <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
+        <Trigger onClick={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+
+        <Container logoUrl={logoUrl} agentName="Crayon Assistant" isOpen={isOpen}>
+          <ThreadContainer>
+            <Header onMinimize={() => setIsOpen(false)} />
+
+            <WelcomeScreen>
+              <div style={{ textAlign: "center" }}>
+                <div
+                  style={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: 16,
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 16px",
+                  }}
+                >
+                  <Sparkles size={40} color="white" />
+                </div>
+                <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 600 }}>
+                  Welcome to AI Assistant
+                </h2>
+                <p style={{ margin: 0, color: "rgba(0,0,0,0.5)", fontSize: 14 }}>
+                  Your personal AI helper for all your questions
+                </p>
+              </div>
+            </WelcomeScreen>
+
+            <ScrollArea>
+              <Messages loader={<MessageLoading />} />
+            </ScrollArea>
+            <ConversationStarter
+              variant={variant}
+              starters={[
+                {
+                  displayText: "Help me get started",
+                  prompt: "Help me get started",
+                  icon: <Sparkles size={16} />,
+                },
+                {
+                  displayText: "What can you do?",
+                  prompt: "What can you do?",
+                },
+              ]}
+            />
+            <Composer />
+          </ThreadContainer>
+        </Container>
+      </ChatProvider>
+    </div>
+  );
+};
+
+export const WithCustomWelcomeScreen = {
+  args: {
+    defaultOpen: true,
+    variant: "short",
+  },
+  render: (args: any) => <CustomWelcomeScreenStory {...args} />,
 };
