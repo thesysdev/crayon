@@ -41,9 +41,13 @@ const ConversationStarterItem = ({
         onClick={() => onClick(prompt)}
       >
         {renderedIcon && (
-          <span className="crayon-bottom-tray-conversation-starter-item-short__icon">{renderedIcon}</span>
+          <span className="crayon-bottom-tray-conversation-starter-item-short__icon">
+            {renderedIcon}
+          </span>
         )}
-        <span className="crayon-bottom-tray-conversation-starter-item-short__text">{displayText}</span>
+        <span className="crayon-bottom-tray-conversation-starter-item-short__text">
+          {displayText}
+        </span>
       </button>
     );
   }
@@ -57,9 +61,13 @@ const ConversationStarterItem = ({
     >
       <div className="crayon-bottom-tray-conversation-starter-item-long__content">
         {renderedIcon && (
-          <span className="crayon-bottom-tray-conversation-starter-item-long__icon">{renderedIcon}</span>
+          <span className="crayon-bottom-tray-conversation-starter-item-long__icon">
+            {renderedIcon}
+          </span>
         )}
-        <span className="crayon-bottom-tray-conversation-starter-item-long__text">{displayText}</span>
+        <span className="crayon-bottom-tray-conversation-starter-item-long__text">
+          {displayText}
+        </span>
       </div>
       <span className="crayon-bottom-tray-conversation-starter-item-long__arrow">
         <ArrowUp size={16} />
