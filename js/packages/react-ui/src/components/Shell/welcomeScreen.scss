@@ -26,6 +26,14 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
     padding-right: cssUtils.$spacing-m;
   }
 
+  // Header section (icon + title/description)
+  &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: cssUtils.$spacing-l;
+  }
+
   // Icon container with sunk background
   &__icon-container {
     display: flex;
@@ -69,5 +77,73 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
     color: cssUtils.$secondary-text;
     margin: 0;
     max-width: 400px;
+  }
+
+  // Desktop welcome composer container
+  &__desktop-composer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    // Hide on mobile - keep the regular Composer on mobile
+    .crayon-shell-container--mobile & {
+      display: none;
+    }
+  }
+
+  // Desktop conversation starters container
+  &__desktop-starters {
+    width: 100%;
+
+    // Hide on mobile - keep the external ConversationStarter on mobile
+    .crayon-shell-container--mobile & {
+      display: none;
+    }
+
+    // Reset padding since welcome screen already has padding
+    .crayon-shell-conversation-starter {
+      padding: 0;
+    }
+  }
+
+  // When welcome screen has the desktop composer variant
+  &--with-composer {
+    // Adjust gap for desktop layout
+    gap: cssUtils.$spacing-2xl;
+
+    // On mobile, use normal gap
+    .crayon-shell-container--mobile & {
+      gap: cssUtils.$spacing-l;
+    }
+  }
+}
+
+// Hide the regular Composer when welcome screen with desktop composer is present (desktop only)
+// This uses CSS :has() to detect the welcome screen and hide the default composer
+.crayon-shell-thread-container:has(.crayon-shell-welcome-screen--with-composer) {
+  .crayon-shell-thread-composer {
+    display: none;
+  }
+
+  // But show it on mobile
+  .crayon-shell-container--mobile & .crayon-shell-thread-composer {
+    display: block;
+  }
+}
+
+// Alternative approach using parent mobile class for better specificity
+.crayon-shell-container:not(.crayon-shell-container--mobile) {
+  .crayon-shell-thread-container:has(.crayon-shell-welcome-screen--with-composer) {
+    .crayon-shell-thread-composer {
+      display: none;
+    }
+  }
+
+  // Hide the external ConversationStarter when desktop starters exist
+  // Use :not() to exclude the one inside the welcome screen
+  .crayon-shell-thread-container:has(.crayon-shell-welcome-screen__desktop-starters) {
+    .crayon-shell-conversation-starter:not(.crayon-shell-welcome-screen__desktop-starters .crayon-shell-conversation-starter) {
+      display: none;
+    }
   }
 }

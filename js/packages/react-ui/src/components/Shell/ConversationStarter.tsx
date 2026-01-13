@@ -9,7 +9,6 @@ export type ConversationStarterVariant = "short" | "long";
 
 interface ConversationStarterItemProps extends ConversationStarterProps {
   onClick: (prompt: string) => void;
-  disabled?: boolean;
   variant: ConversationStarterVariant;
 }
 
@@ -33,7 +32,6 @@ const ConversationStarterItem = ({
   displayText,
   prompt,
   onClick,
-  disabled = false,
   variant,
   icon,
 }: ConversationStarterItemProps) => {
@@ -43,11 +41,8 @@ const ConversationStarterItem = ({
     return (
       <button
         type="button"
-        className={clsx("crayon-shell-conversation-starter-item-short", {
-          "crayon-shell-conversation-starter-item-short--disabled": disabled,
-        })}
+        className="crayon-shell-conversation-starter-item-short"
         onClick={() => onClick(prompt)}
-        disabled={disabled}
       >
         {renderedIcon && (
           <span className="crayon-shell-conversation-starter-item-short__icon">{renderedIcon}</span>
@@ -61,11 +56,8 @@ const ConversationStarterItem = ({
   return (
     <button
       type="button"
-      className={clsx("crayon-shell-conversation-starter-item-long", {
-        "crayon-shell-conversation-starter-item-long--disabled": disabled,
-      })}
+      className="crayon-shell-conversation-starter-item-long"
       onClick={() => onClick(prompt)}
-      disabled={disabled}
     >
       <div className="crayon-shell-conversation-starter-item-long__content">
         {renderedIcon && (
@@ -132,7 +124,6 @@ export const ConversationStarter = ({
             prompt={item.prompt}
             icon={item.icon}
             onClick={handleClick}
-            disabled={isRunning}
             variant={variant}
           />
           {/* Add separator between items in long variant */}

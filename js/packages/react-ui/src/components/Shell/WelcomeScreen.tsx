@@ -1,11 +1,23 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
+import { ConversationStarterProps } from "../../types/ConversationStarter";
+import { DesktopWelcomeComposer } from "./components";
+import { ConversationStarter, ConversationStarterVariant } from "./ConversationStarter";
 
 interface WelcomeScreenBaseProps {
   /**
    * Additional CSS class name
    */
   className?: string;
+  /**
+   * Conversation starters to show below the composer (desktop only)
+   */
+  starters?: ConversationStarterProps[];
+  /**
+   * Variant for the conversation starters
+   * @default "long"
+   */
+  starterVariant?: ConversationStarterVariant;
 }
 
 interface WelcomeScreenWithContentProps extends WelcomeScreenBaseProps {
@@ -47,7 +59,7 @@ interface WelcomeScreenWithChildrenProps extends WelcomeScreenBaseProps {
 export type WelcomeScreenProps = WelcomeScreenWithContentProps | WelcomeScreenWithChildrenProps;
 
 export const WelcomeScreen = (props: WelcomeScreenProps) => {
-  const { className } = props;
+  const { className, starters = [], starterVariant = "long" } = props;
 
   // Check if children are provided
   if ("children" in props && props.children) {
@@ -70,14 +82,27 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   };
 
   return (
-    <div className={clsx("crayon-shell-welcome-screen", className)}>
-      {(logoUrl || icon) && (
-        <div className="crayon-shell-welcome-screen__icon-container">{renderIcon()}</div>
-      )}
-      {(title || description) && (
-        <div className="crayon-shell-welcome-screen__content">
-          {title && <h2 className="crayon-shell-welcome-screen__title">{title}</h2>}
-          {description && <p className="crayon-shell-welcome-screen__description">{description}</p>}
+    <div className={clsx("crayon-shell-welcome-screen", "crayon-shell-welcome-screen--with-composer", className)}>
+      <div className="crayon-shell-welcome-screen__header">
+        {(logoUrl || icon) && (
+          <div className="crayon-shell-welcome-screen__icon-container">{renderIcon()}</div>
+        )}
+        {(title || description) && (
+          <div className="crayon-shell-welcome-screen__content">
+            {title && <h2 className="crayon-shell-welcome-screen__title">{title}</h2>}
+            {description && <p className="crayon-shell-welcome-screen__description">{description}</p>}
+          </div>
+        )}
+      </div>
+      {/* Desktop-only welcome composer */}
+      
+      <div className="crayon-shell-welcome-screen__desktop-composer">
+        <DesktopWelcomeComposer />
+      </div>
+      {/* Desktop-only conversation starters */}
+      {starters.length > 0 && (
+        <div className="crayon-shell-welcome-screen__desktop-starters">
+          <ConversationStarter starters={starters} variant={starterVariant} />
         </div>
       )}
     </div>

@@ -1,8 +1,9 @@
 import { useThreadActions, useThreadState } from "@crayonai/react-core";
 import clsx from "clsx";
-import { ArrowUp, Paperclip, Square } from "lucide-react";
+import { ArrowUp, Square } from "lucide-react";
 import { useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../../hooks/useComposerState";
+import { IconButton } from "../../IconButton";
 
 export interface DesktopWelcomeComposerProps {
   className?: string;
@@ -11,7 +12,7 @@ export interface DesktopWelcomeComposerProps {
 
 export const DesktopWelcomeComposer = ({
   className,
-  placeholder = "Type your query here",
+  placeholder = "Type your message...",
 }: DesktopWelcomeComposerProps) => {
   const { textContent, setTextContent } = useComposerState();
   const { processMessage, onCancel } = useThreadActions();
@@ -60,22 +61,11 @@ export const DesktopWelcomeComposer = ({
         />
       </div>
       <div className="crayon-shell-desktop-welcome-composer__actions">
-        <button
-          type="button"
-          className="crayon-shell-desktop-welcome-composer__action-button crayon-shell-desktop-welcome-composer__action-button--secondary"
-          aria-label="Attach file"
-        >
-          <Paperclip size={16} />
-        </button>
-        <button
-          type="button"
-          className="crayon-shell-desktop-welcome-composer__action-button crayon-shell-desktop-welcome-composer__action-button--primary"
+        <IconButton
           onClick={isRunning ? onCancel : handleSubmit}
           disabled={!textContent.trim() && !isRunning}
-          aria-label={isRunning ? "Stop" : "Send"}
-        >
-          {isRunning ? <Square size={16} fill="currentColor" /> : <ArrowUp size={16} />}
-        </button>
+          icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
+        />
       </div>
     </div>
   );
