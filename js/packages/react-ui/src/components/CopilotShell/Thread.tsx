@@ -6,7 +6,7 @@ import {
   useThreadState,
 } from "@crayonai/react-core";
 import clsx from "clsx";
-import { ArrowRight, Square } from "lucide-react";
+import { ArrowUp, Square } from "lucide-react";
 import React, { memo, useEffect, useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../hooks/useComposerState";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
@@ -268,7 +268,7 @@ export const Composer = ({ className }: { className?: string }) => {
         />
         <IconButton
           onClick={isRunning ? onCancel : handleSubmit}
-          icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowRight size="1em" />}
+          icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
         />
       </div>
     </div>

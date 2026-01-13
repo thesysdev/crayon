@@ -1,6 +1,6 @@
 import { useThreadActions, useThreadState } from "@crayonai/react-core";
 import clsx from "clsx";
-import { ArrowRight, Square } from "lucide-react";
+import { ArrowUp, Square } from "lucide-react";
 import { useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../../hooks/useComposerState";
 import { IconButton } from "../../IconButton";
@@ -58,7 +58,7 @@ export const Composer = ({ className, placeholder = "Type your message..." }: Co
         />
         <IconButton
           onClick={isRunning ? onCancel : handleSubmit}
-          icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowRight size="1em" />}
+          icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
         />
       </div>
     </div>
