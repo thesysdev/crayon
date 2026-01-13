@@ -1,4 +1,3 @@
-import { useThreadState } from "@crayonai/react-core";
 import clsx from "clsx";
 import { ReactNode } from "react";
 
@@ -49,7 +48,6 @@ export type WelcomeScreenProps = WelcomeScreenWithContentProps | WelcomeScreenWi
 
 export const WelcomeScreen = (props: WelcomeScreenProps) => {
   const { className } = props;
-  const { messages } = useThreadState();
 
   // Check if children are provided
   if ("children" in props && props.children) {
