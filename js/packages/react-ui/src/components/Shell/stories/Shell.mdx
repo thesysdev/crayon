@@ -186,10 +186,15 @@ Full-width clickable buttons shown when the thread is empty. Automatically submi
 
 ```tsx
 <ConversationStarter
+  variant="short" // "short" (pill buttons) or "long" (list items)
   starters={[
-    { displayText: "Help me get started", prompt: "Help me get started" },
-    { displayText: "What can you do?", prompt: "What can you do?" },
-    { displayText: "Tell me about your features", prompt: "Tell me about your features" },
+    {
+      displayText: "Help me get started",
+      prompt: "Help me get started",
+      icon: <Sparkles size={16} />,
+    },
+    { displayText: "What can you do?", prompt: "What can you do?" }, // Default lightbulb icon
+    { displayText: "No icon example", prompt: "No icon", icon: "" }, // No icon
   ]}
   className="custom-class" // Optional custom styling
 />
@@ -197,15 +202,78 @@ Full-width clickable buttons shown when the thread is empty. Automatically submi
 
 **Props:**
 
-- `starters` - Array of objects with `displayText` (shown on button) and `prompt` (sent as message)
+- `variant` - `"short"` (pill-style buttons) or `"long"` (list items with separators)
+- `starters` - Array of objects with:
+  - `displayText` - Text shown on the button
+  - `prompt` - Message sent when clicked
+  - `icon` - Optional: `ReactNode` for custom icon, `undefined` for default lightbulb, `""` for no icon
 - `className` - Optional additional CSS class
 
 **Behavior:**
 
 - Only visible when there are no messages in the thread
 - Clicking a button submits the `prompt` as a user message
-- Buttons are disabled when a response is being generated
+- Clicks are ignored when a response is being generated
 - Respects Shell layout (centered with max-width, mobile padding)
+
+### WelcomeScreen
+
+A centered welcome message shown when the thread is empty. On desktop, includes a built-in composer and optional conversation starters.
+
+**Props-based usage:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen
+      title="Hi, I'm AI Assistant"
+      description="I can help you with your questions."
+      logoUrl="/path/to/logo.png" // Logo image
+      // Or use icon prop for a custom icon component
+      starters={[
+        { displayText: "Help me get started", prompt: "Help me get started" },
+        { displayText: "What can you do?", prompt: "What can you do?" },
+      ]}
+      starterVariant="long" // "short" or "long" (default: "long")
+    />
+  );
+}
+```
+
+**Custom children usage:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen>
+      <div style={{ textAlign: "center" }}>
+        <MyCustomLogo />
+        <h2>Welcome!</h2>
+        <p>Custom welcome content</p>
+      </div>
+    </WelcomeScreen>
+  );
+}
+```
+
+**Props:**
+
+- `title` - Greeting/title text (optional)
+- `description` - Description text (optional)
+- `logoUrl` - URL for logo image (optional)
+- `icon` - Custom icon as ReactNode (optional, ignored if logoUrl is provided)
+- `starters` - Conversation starters to show below the composer (desktop only)
+- `starterVariant` - `"short"` or `"long"` for starter style (default: `"long"`)
+- `children` - Custom content (mutually exclusive with title/description/logoUrl/icon)
+- `className` - Additional CSS class (optional)
+
+**Desktop behavior:**
+
+- Includes a built-in composer centered in the welcome screen
+- Conversation starters appear below the composer
+- The regular Composer component is hidden when WelcomeScreen is present
+
+**Note:** You must conditionally render WelcomeScreen based on `hasMessages` state.
 
 ### Composer
 

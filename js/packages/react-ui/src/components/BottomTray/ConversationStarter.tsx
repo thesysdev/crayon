@@ -41,13 +41,13 @@ const ConversationStarterItem = ({
     return (
       <button
         type="button"
-        className="crayon-conversation-starter-item-short"
+        className="crayon-bottom-tray-conversation-starter-item-short"
         onClick={() => onClick(prompt)}
       >
         {renderedIcon && (
-          <span className="crayon-conversation-starter-item-short__icon">{renderedIcon}</span>
+          <span className="crayon-bottom-tray-conversation-starter-item-short__icon">{renderedIcon}</span>
         )}
-        <span className="crayon-conversation-starter-item-short__text">{displayText}</span>
+        <span className="crayon-bottom-tray-conversation-starter-item-short__text">{displayText}</span>
       </button>
     );
   }
@@ -56,16 +56,16 @@ const ConversationStarterItem = ({
   return (
     <button
       type="button"
-      className="crayon-conversation-starter-item-long"
+      className="crayon-bottom-tray-conversation-starter-item-long"
       onClick={() => onClick(prompt)}
     >
-      <div className="crayon-conversation-starter-item-long__content">
+      <div className="crayon-bottom-tray-conversation-starter-item-long__content">
         {renderedIcon && (
-          <span className="crayon-conversation-starter-item-long__icon">{renderedIcon}</span>
+          <span className="crayon-bottom-tray-conversation-starter-item-long__icon">{renderedIcon}</span>
         )}
-        <span className="crayon-conversation-starter-item-long__text">{displayText}</span>
+        <span className="crayon-bottom-tray-conversation-starter-item-long__text">{displayText}</span>
       </div>
-      <span className="crayon-conversation-starter-item-long__arrow">
+      <span className="crayon-bottom-tray-conversation-starter-item-long__arrow">
         <ArrowUp size={16} />
       </span>
     </button>
@@ -112,8 +112,8 @@ export const ConversationStarter = ({
   return (
     <div
       className={clsx(
-        "crayon-conversation-starter",
-        `crayon-conversation-starter--${variant}`,
+        "crayon-bottom-tray-conversation-starter",
+        `crayon-bottom-tray-conversation-starter--${variant}`,
         className,
       )}
     >
@@ -128,7 +128,7 @@ export const ConversationStarter = ({
           />
           {/* Add separator between items in long variant */}
           {variant === "long" && index < starters.length - 1 && (
-            <div className="crayon-conversation-starter__separator">
+            <div className="crayon-bottom-tray-conversation-starter__separator">
               <Separator />
             </div>
           )}
