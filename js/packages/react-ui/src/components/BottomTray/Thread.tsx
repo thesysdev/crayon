@@ -65,7 +65,7 @@ export const ScrollArea = ({
 
   useScrollToBottom({
     ref,
-    lastMessage: messages[messages.length - 1] || { id: "" },
+    lastMessage: messages.at(-1) ?? { id: "" },
     scrollVariant,
     userMessageSelector,
     isRunning,
