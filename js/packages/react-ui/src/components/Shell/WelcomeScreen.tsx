@@ -82,7 +82,13 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   };
 
   return (
-    <div className={clsx("crayon-shell-welcome-screen", "crayon-shell-welcome-screen--with-composer", className)}>
+    <div
+      className={clsx(
+        "crayon-shell-welcome-screen",
+        "crayon-shell-welcome-screen--with-composer",
+        className,
+      )}
+    >
       <div className="crayon-shell-welcome-screen__header">
         {(logoUrl || icon) && (
           <div className="crayon-shell-welcome-screen__icon-container">{renderIcon()}</div>
@@ -90,21 +96,24 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
         {(title || description) && (
           <div className="crayon-shell-welcome-screen__content">
             {title && <h2 className="crayon-shell-welcome-screen__title">{title}</h2>}
-            {description && <p className="crayon-shell-welcome-screen__description">{description}</p>}
+            {description && (
+              <p className="crayon-shell-welcome-screen__description">{description}</p>
+            )}
           </div>
         )}
       </div>
       {/* Desktop-only welcome composer */}
-      
-      <div className="crayon-shell-welcome-screen__desktop-composer">
-        <DesktopWelcomeComposer />
-      </div>
-      {/* Desktop-only conversation starters */}
-      {starters.length > 0 && (
-        <div className="crayon-shell-welcome-screen__desktop-starters">
-          <ConversationStarter starters={starters} variant={starterVariant} />
+      <div className="crayon-shell-welcome-screen__composer-starters-container">
+        <div className="crayon-shell-welcome-screen__desktop-composer">
+          <DesktopWelcomeComposer />
         </div>
-      )}
+        {/* Desktop-only conversation starters */}
+        {starters.length > 0 && (
+          <div className="crayon-shell-welcome-screen__desktop-starters">
+            <ConversationStarter starters={starters} variant={starterVariant} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
