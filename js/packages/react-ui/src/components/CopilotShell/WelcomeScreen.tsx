@@ -18,14 +18,11 @@ interface WelcomeScreenWithContentProps extends WelcomeScreenBaseProps {
    */
   description?: string;
   /**
-   * Logo URL to display as an image
+   * Image to display - can be a URL object or a ReactNode
+   * - { url: string }: Renders an <img> tag with default styling (64x64, object-fit: cover, rounded)
+   * - ReactNode: Renders the provided element directly (for custom icons, styled images, etc.)
    */
-  logoUrl?: string;
-  /**
-   * Custom icon to display instead of the default image icon
-   * If logoUrl is provided, this will be ignored
-   */
-  icon?: ReactNode;
+  image?: { url: string } | ReactNode;
   /**
    * Children are not allowed when using props-based content
    */
@@ -35,16 +32,22 @@ interface WelcomeScreenWithContentProps extends WelcomeScreenBaseProps {
 interface WelcomeScreenWithChildrenProps extends WelcomeScreenBaseProps {
   /**
    * Custom content to render inside the welcome screen
-   * When children are provided, title, description, logoUrl, and icon are ignored
+   * When children are provided, title, description, and image are ignored
    */
   children: ReactNode;
   title?: never;
   description?: never;
-  logoUrl?: never;
-  icon?: never;
+  image?: never;
 }
 
 export type WelcomeScreenProps = WelcomeScreenWithContentProps | WelcomeScreenWithChildrenProps;
+
+/**
+ * Type guard to check if image is a URL object
+ */
+const isImageUrl = (image: { url: string } | ReactNode): image is { url: string } => {
+  return typeof image === "object" && image !== null && "url" in image;
+};
 
 export const WelcomeScreen = (props: WelcomeScreenProps) => {
   const { className } = props;
@@ -57,30 +60,28 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   }
 
   // Props-based content
-  const { title, description, logoUrl, icon } = props as WelcomeScreenWithContentProps;
+  const { title, description, image } = props as WelcomeScreenWithContentProps;
 
-  const renderIcon = () => {
-    if (logoUrl) {
+  const renderImage = () => {
+    if (!image) return null;
+
+    if (isImageUrl(image)) {
       return (
         <img
-          src={logoUrl}
-          alt={title}
-          className="crayon-copilot-shell-welcome-screen__logo-image"
+          src={image.url}
+          alt={title || ""}
+          className="crayon-copilot-shell-welcome-screen__image"
         />
       );
     }
 
-    if (icon) {
-      return icon;
-    }
-
-    return null;
+    return image;
   };
 
   return (
     <div className={clsx("crayon-copilot-shell-welcome-screen", className)}>
-      {(logoUrl || icon) && (
-        <div className="crayon-copilot-shell-welcome-screen__icon-container">{renderIcon()}</div>
+      {image && (
+        <div className="crayon-copilot-shell-welcome-screen__image-container">{renderImage()}</div>
       )}
       {(title || description) && (
         <div className="crayon-copilot-shell-welcome-screen__content">

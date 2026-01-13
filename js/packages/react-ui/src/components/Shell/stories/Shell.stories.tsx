@@ -356,7 +356,7 @@ export const WithWelcomeScreen = {
               <WelcomeScreen
                 title="Hi, I'm Crayon Assistant"
                 description="I can help you with questions about your account, products, and more."
-                logoUrl={logoUrl}
+                image={{ url: logoUrl }}
                 starters={SAMPLE_STARTERS}
                 starterVariant={variant}
               />

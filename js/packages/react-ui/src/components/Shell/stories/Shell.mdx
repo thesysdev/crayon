@@ -220,7 +220,7 @@ Full-width clickable buttons shown when the thread is empty. Automatically submi
 
 A centered welcome message shown when the thread is empty. On desktop, includes a built-in composer and optional conversation starters.
 
-**Props-based usage:**
+**Props-based usage with URL:**
 
 ```tsx
 {
@@ -228,13 +228,33 @@ A centered welcome message shown when the thread is empty. On desktop, includes 
     <WelcomeScreen
       title="Hi, I'm AI Assistant"
       description="I can help you with your questions."
-      logoUrl="/path/to/logo.png" // Logo image
-      // Or use icon prop for a custom icon component
+      image={{ url: "/path/to/logo.png" }}
       starters={[
         { displayText: "Help me get started", prompt: "Help me get started" },
         { displayText: "What can you do?", prompt: "What can you do?" },
       ]}
       starterVariant="long" // "short" or "long" (default: "long")
+    />
+  );
+}
+```
+
+**Props-based usage with styled image:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen
+      title="Hi, I'm AI Assistant"
+      description="I can help you with your questions."
+      image={
+        <img
+          src="/path/to/logo.png"
+          alt="AI Assistant"
+          style={{ width: 64, height: 64, borderRadius: 16, objectFit: "cover" }}
+        />
+      }
+      starters={[{ displayText: "Help me get started", prompt: "Help me get started" }]}
     />
   );
 }
@@ -260,11 +280,10 @@ A centered welcome message shown when the thread is empty. On desktop, includes 
 
 - `title` - Greeting/title text (optional)
 - `description` - Description text (optional)
-- `logoUrl` - URL for logo image (optional)
-- `icon` - Custom icon as ReactNode (optional, ignored if logoUrl is provided)
+- `image` - Image to display: `{ url: string }` for simple URL (renders with default 64x64 size, rounded corners), or `ReactNode` for custom styled elements (optional)
 - `starters` - Conversation starters to show below the composer (desktop only)
 - `starterVariant` - `"short"` or `"long"` for starter style (default: `"long"`)
-- `children` - Custom content (mutually exclusive with title/description/logoUrl/icon)
+- `children` - Custom content (mutually exclusive with title/description/image)
 - `className` - Additional CSS class (optional)
 
 **Desktop behavior:**

@@ -89,7 +89,13 @@ function MyCopilot() {
             <WelcomeScreen
               title="Hi, I'm AI Assistant"
               description="I can help you with your questions."
-              logoUrl="/path/to/logo.png"
+              image={
+                <img
+                  src="/path/to/logo.png"
+                  alt="AI Assistant"
+                  style={{ width: 64, height: 64, borderRadius: 16, objectFit: "cover" }}
+                />
+              }
             />
           )}
 
@@ -199,7 +205,7 @@ Clickable prompts shown when the thread is empty. Automatically submits the prom
 
 A centered welcome message shown when the thread is empty. Supports either props-based content or custom children.
 
-**Props-based usage:**
+**Props-based usage with URL:**
 
 ```tsx
 {
@@ -207,8 +213,41 @@ A centered welcome message shown when the thread is empty. Supports either props
     <WelcomeScreen
       title="Hi, I'm AI Assistant"
       description="I can help you with your questions."
-      logoUrl="/path/to/logo.png" // Logo image
-      // Or use icon prop for a custom icon component
+      image={{ url: "/path/to/logo.png" }}
+    />
+  );
+}
+```
+
+**Props-based usage with styled image:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen
+      title="Hi, I'm AI Assistant"
+      description="I can help you with your questions."
+      image={
+        <img
+          src="/path/to/logo.png"
+          alt="AI Assistant"
+          style={{ width: 64, height: 64, borderRadius: 16, objectFit: "cover" }}
+        />
+      }
+    />
+  );
+}
+```
+
+**Props-based usage with custom icon:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen
+      title="Hi, I'm AI Assistant"
+      description="I can help you with your questions."
+      image={<Sparkles size={32} />}
     />
   );
 }
@@ -234,9 +273,8 @@ A centered welcome message shown when the thread is empty. Supports either props
 
 - `title` - Greeting/title text (optional)
 - `description` - Description text (optional)
-- `logoUrl` - URL for logo image (optional)
-- `icon` - Custom icon as ReactNode (optional, ignored if logoUrl is provided)
-- `children` - Custom content (mutually exclusive with title/description/logoUrl/icon)
+- `image` - Image to display: `{ url: string }` for simple URL (renders with default 64x64 size, rounded corners), or `ReactNode` for custom styled elements (optional)
+- `children` - Custom content (mutually exclusive with title/description/image)
 - `className` - Additional CSS class (optional)
 
 **Note:** You must conditionally render WelcomeScreen based on `hasMessages` state.
@@ -272,7 +310,13 @@ function AppLayout() {
                 <WelcomeScreen
                   title="Hi, I'm Assistant"
                   description="How can I help you today?"
-                  logoUrl={logo}
+                  image={
+                    <img
+                      src={logo}
+                      alt="Assistant"
+                      style={{ width: 64, height: 64, borderRadius: 16, objectFit: "cover" }}
+                    />
+                  }
                 />
               )}
               <ScrollArea>
@@ -313,8 +357,7 @@ All CopilotShell components use the `crayon-copilot-shell-` prefix:
 - `.crayon-copilot-shell-conversation-starter-item-short`
 - `.crayon-copilot-shell-conversation-starter-item-long`
 - `.crayon-copilot-shell-welcome-screen`
-- `.crayon-copilot-shell-welcome-screen__icon-container`
-- `.crayon-copilot-shell-welcome-screen__logo-image`
+- `.crayon-copilot-shell-welcome-screen__image-container`
 - `.crayon-copilot-shell-welcome-screen__content`
 - `.crayon-copilot-shell-welcome-screen__title`
 - `.crayon-copilot-shell-welcome-screen__description`
