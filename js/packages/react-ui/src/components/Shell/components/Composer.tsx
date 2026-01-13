@@ -10,10 +10,7 @@ export interface ComposerProps {
   placeholder?: string;
 }
 
-export const Composer = ({
-  className,
-  placeholder = "Type your message...",
-}: ComposerProps) => {
+export const Composer = ({ className, placeholder = "Type your message..." }: ComposerProps) => {
   const { textContent, setTextContent } = useComposerState();
   const { processMessage, onCancel } = useThreadActions();
   const { isRunning, isLoadingMessages } = useThreadState();
