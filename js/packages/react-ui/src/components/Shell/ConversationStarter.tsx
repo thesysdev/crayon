@@ -2,10 +2,7 @@ import { useThreadActions, useThreadState } from "@crayonai/react-core";
 import clsx from "clsx";
 import { ArrowUp, Lightbulb } from "lucide-react";
 import { Fragment, ReactNode } from "react";
-import {
-  ConversationStarterIcon,
-  ConversationStarterProps,
-} from "../../types/ConversationStarter";
+import { ConversationStarterIcon, ConversationStarterProps } from "../../types/ConversationStarter";
 import { Separator } from "../Separator";
 
 export type ConversationStarterVariant = "short" | "long";
@@ -53,13 +50,9 @@ const ConversationStarterItem = ({
         disabled={disabled}
       >
         {renderedIcon && (
-          <span className="crayon-shell-conversation-starter-item-short__icon">
-            {renderedIcon}
-          </span>
+          <span className="crayon-shell-conversation-starter-item-short__icon">{renderedIcon}</span>
         )}
-        <span className="crayon-shell-conversation-starter-item-short__text">
-          {displayText}
-        </span>
+        <span className="crayon-shell-conversation-starter-item-short__text">{displayText}</span>
       </button>
     );
   }
@@ -76,13 +69,9 @@ const ConversationStarterItem = ({
     >
       <div className="crayon-shell-conversation-starter-item-long__content">
         {renderedIcon && (
-          <span className="crayon-shell-conversation-starter-item-long__icon">
-            {renderedIcon}
-          </span>
+          <span className="crayon-shell-conversation-starter-item-long__icon">{renderedIcon}</span>
         )}
-        <span className="crayon-shell-conversation-starter-item-long__text">
-          {displayText}
-        </span>
+        <span className="crayon-shell-conversation-starter-item-long__text">{displayText}</span>
       </div>
       <span className="crayon-shell-conversation-starter-item-long__arrow">
         <ArrowUp size={16} />
@@ -133,7 +122,7 @@ export const ConversationStarter = ({
       className={clsx(
         "crayon-shell-conversation-starter",
         `crayon-shell-conversation-starter--${variant}`,
-        className
+        className,
       )}
     >
       {starters.map((item, index) => (

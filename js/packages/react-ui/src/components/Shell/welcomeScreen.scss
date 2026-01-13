@@ -1,0 +1,73 @@
+@use "../../cssUtils" as cssUtils;
+
+$center-align-spacing: calc(32px + cssUtils.$spacing-s);
+
+.crayon-shell-welcome-screen {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$spacing-l;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: cssUtils.$spacing-2xl $center-align-spacing;
+
+  // Mobile adjustments
+  .crayon-shell-container--mobile & {
+    padding: cssUtils.$spacing-2xl cssUtils.$spacing-l;
+  }
+
+  // Artifact active adjustments
+  .crayon-shell-thread-container--artifact-active & {
+    padding-left: 0;
+    padding-right: cssUtils.$spacing-m;
+  }
+
+  // Icon container with sunk background
+  &__icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background-color: cssUtils.$bg-sunk;
+    border-radius: cssUtils.$rounded-xl;
+    overflow: hidden;
+    color: cssUtils.$secondary-text;
+    flex-shrink: 0;
+  }
+
+  // Logo image when using logoUrl
+  &__logo-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  // Content container (title + description)
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: cssUtils.$spacing-xs;
+    text-align: center;
+  }
+
+  // Title/greeting text
+  &__title {
+    @include cssUtils.typography(heading, small);
+    color: cssUtils.$primary-text;
+    margin: 0;
+  }
+
+  // Description text
+  &__description {
+    @include cssUtils.typography(body, small);
+    color: cssUtils.$secondary-text;
+    margin: 0;
+    max-width: 400px;
+  }
+}

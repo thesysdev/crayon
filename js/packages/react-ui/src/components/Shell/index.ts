@@ -1,3 +1,4 @@
+export * from "./components";
 export * from "./Container";
 export * from "./ConversationStarter";
 export * from "./MobileHeader";
@@ -6,3 +7,4 @@ export * from "./Sidebar";
 export * from "./store";
 export * from "./Thread";
 export * from "./ThreadList";
+export * from "./WelcomeScreen";
