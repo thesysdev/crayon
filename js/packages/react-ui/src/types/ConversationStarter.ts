@@ -3,10 +3,9 @@ import { ReactNode } from "react";
 /**
  * Icon type for conversation starters
  * - undefined: Show default lightbulb icon
- * - "": Show no icon
- * - ReactNode: Show the provided icon
+ * - ReactNode: Show the provided icon (use <></> or React.Fragment for no icon)
  */
-export type ConversationStarterIcon = ReactNode | "";
+export type ConversationStarterIcon = ReactNode;
 
 interface ConversationStarterProps {
   displayText: string;
@@ -14,8 +13,8 @@ interface ConversationStarterProps {
   /**
    * Optional icon to display
    * - If not provided (undefined): shows default lightbulb icon
-   * - If empty string (""): shows no icon
-   * - Otherwise: shows the provided React element
+   * - If provided: shows the provided React element
+   * - For no icon: pass an empty fragment (<></> or React.Fragment)
    */
   icon?: ConversationStarterIcon;
 }

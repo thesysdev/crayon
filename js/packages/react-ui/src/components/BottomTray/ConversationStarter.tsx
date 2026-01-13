@@ -15,13 +15,9 @@ interface ConversationStarterItemProps extends ConversationStarterProps {
 /**
  * Renders the appropriate icon based on the icon prop value
  * - undefined: Show default lightbulb icon
- * - "": Show no icon
- * - ReactNode: Show the provided icon
+ * - ReactNode: Show the provided icon (use <></> or React.Fragment for no icon)
  */
 const renderIcon = (icon: ConversationStarterIcon | undefined): ReactNode => {
-  if (icon === "") {
-    return null;
-  }
   if (icon === undefined) {
     return <Lightbulb size={16} />;
   }

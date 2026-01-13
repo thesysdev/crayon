@@ -167,9 +167,9 @@ const BottomTrayStory = ({
                   // icon undefined = shows default lightbulb
                 },
                 {
-                  displayText: "Tell me about major stock (no icon empty string''",
+                  displayText: "Tell me about major stock (no icon with empty fragment)",
                   prompt: "Tell me about major stock",
-                  icon: "",
+                  icon: <></>, // Empty fragment = no icon
                 },
               ]}
             />
@@ -313,7 +313,7 @@ const CustomTriggerStory = ({
                 {
                   displayText: "No icon example - this is a shorter prompt",
                   prompt: "No icon example - this is a shorter prompt",
-                  icon: "", // Empty string = no icon
+                  icon: <></>, // Empty fragment = no icon
                 },
               ]}
             />

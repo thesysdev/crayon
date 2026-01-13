@@ -46,7 +46,7 @@ const SAMPLE_STARTERS = [
   {
     displayText: "Show me some examples (no icon)",
     prompt: "Show me some examples",
-    icon: "", // Empty string = no icon
+    icon: <></>, // Empty fragment = no icon
   },
 ];
 

@@ -46,7 +46,7 @@ const SAMPLE_STARTERS = [
   {
     displayText: "Tell me about major stock (no icon)",
     prompt: "Tell me about major stock",
-    icon: "", // Empty string = no icon
+    icon: <></>, // Empty fragment = no icon
   },
 ];
 
