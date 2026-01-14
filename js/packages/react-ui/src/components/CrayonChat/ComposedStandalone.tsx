@@ -1,4 +1,4 @@
-import { useThreadState } from "@crayonai/react-core";
+import { useThreadListState, useThreadState } from "@crayonai/react-core";
 import { ScrollVariant } from "../../hooks/useScrollToBottom";
 import {
   Composer,
@@ -44,9 +44,10 @@ const WelcomeMessageRenderer = ({
   welcomeMessage?: WelcomeMessageConfig;
   conversationStarters?: ConversationStartersConfig;
 }) => {
-  const { messages } = useThreadState();
+  const { selectedThreadId } = useThreadListState();
+  const { messages, isLoadingMessages } = useThreadState();
 
-  if (!welcomeMessage || messages.length > 0) {
+  if (!welcomeMessage || selectedThreadId !== null || isLoadingMessages || messages.length > 0) {
     return null;
   }
 
@@ -68,6 +69,31 @@ const WelcomeMessageRenderer = ({
       image={welcomeMessage.image}
       starters={conversationStarters?.options}
       starterVariant={conversationStarters?.variant}
+    />
+  );
+};
+
+const ConversationStartersRenderer = ({
+  conversationStarters,
+}: {
+  conversationStarters?: ConversationStartersConfig;
+}) => {
+  const { selectedThreadId } = useThreadListState();
+  const { messages, isLoadingMessages } = useThreadState();
+
+  if (
+    !conversationStarters ||
+    selectedThreadId !== null ||
+    isLoadingMessages ||
+    messages.length > 0
+  ) {
+    return null;
+  }
+
+  return (
+    <ConversationStarter
+      variant={conversationStarters.variant}
+      starters={conversationStarters.options}
     />
   );
 };
@@ -101,12 +127,7 @@ export const ComposedStandalone = ({
         <ScrollArea scrollVariant={scrollVariant}>
           <Messages loader={<MessageLoadingComponent />} />
         </ScrollArea>
-        {conversationStarters && (
-          <ConversationStarter
-            variant={conversationStarters.variant}
-            starters={conversationStarters.options}
-          />
-        )}
+        <ConversationStartersRenderer conversationStarters={conversationStarters} />
         <Composer />
       </ThreadContainer>
     </Container>

@@ -1,4 +1,4 @@
-import { useThreadState } from "@crayonai/react-core";
+import { useThreadListState, useThreadState } from "@crayonai/react-core";
 import { ScrollVariant } from "../../hooks/useScrollToBottom";
 import {
   Composer,
@@ -31,9 +31,10 @@ interface ComposedCopilotProps {
  * Internal component to render welcome message based on thread state
  */
 const WelcomeMessageRenderer = ({ welcomeMessage }: { welcomeMessage?: WelcomeMessageConfig }) => {
-  const { messages } = useThreadState();
+  const { selectedThreadId } = useThreadListState();
+  const { messages, isLoadingMessages } = useThreadState();
 
-  if (!welcomeMessage || messages.length > 0) {
+  if (!welcomeMessage || selectedThreadId !== null || isLoadingMessages || messages.length > 0) {
     return null;
   }
 
@@ -56,6 +57,30 @@ const WelcomeMessageRenderer = ({ welcomeMessage }: { welcomeMessage?: WelcomeMe
   );
 };
 
+const ConversationStartersRenderer = ({
+  conversationStarters,
+}: {
+  conversationStarters?: ConversationStartersConfig;
+}) => {
+  const { selectedThreadId } = useThreadListState();
+  const { messages, isLoadingMessages } = useThreadState();
+
+  if (
+    !conversationStarters ||
+    selectedThreadId !== null ||
+    isLoadingMessages ||
+    messages.length > 0
+  ) {
+    return null;
+  }
+
+  return (
+    <ConversationStarter
+      variant={conversationStarters.variant}
+      starters={conversationStarters.options}
+    />
+  );
+};
 export const ComposedCopilot = ({
   logoUrl = "https://crayonai.org/img/logo.png",
   agentName = "My Agent",
@@ -74,12 +99,7 @@ export const ComposedCopilot = ({
         <ScrollArea scrollVariant={scrollVariant}>
           <Messages loader={<MessageLoadingComponent />} />
         </ScrollArea>
-        {conversationStarters && (
-          <ConversationStarter
-            variant={conversationStarters.variant}
-            starters={conversationStarters.options}
-          />
-        )}
+        <ConversationStartersRenderer conversationStarters={conversationStarters} />
         <Composer />
       </ThreadContainer>
     </Container>
