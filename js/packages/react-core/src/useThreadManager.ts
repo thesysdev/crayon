@@ -53,7 +53,7 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
         error: null,
         abortController: null,
         isRunning: false,
-        isLoadingMessages: false,
+        isLoadingMessages: true,
         setMessages: (messages: Message[]) => {
           set({ messages });
         },
