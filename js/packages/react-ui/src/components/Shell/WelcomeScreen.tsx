@@ -9,15 +9,6 @@ interface WelcomeScreenBaseProps {
    * Additional CSS class name
    */
   className?: string;
-  /**
-   * Conversation starters to show below the composer (desktop only)
-   */
-  starters?: ConversationStarterProps[];
-  /**
-   * Variant for the conversation starters
-   * @default "long"
-   */
-  starterVariant?: ConversationStarterVariant;
 }
 
 interface WelcomeScreenWithContentProps extends WelcomeScreenBaseProps {
@@ -36,6 +27,14 @@ interface WelcomeScreenWithContentProps extends WelcomeScreenBaseProps {
    */
   image?: { url: string } | ReactNode;
   /**
+   * Conversation starters to show below the composer
+   */
+  starters?: ConversationStarterProps[];
+  /**
+   * Variant of the conversation starters
+   */
+  starterVariant?: ConversationStarterVariant;
+  /**
    * Children are not allowed when using props-based content
    */
   children?: never;
@@ -50,6 +49,8 @@ interface WelcomeScreenWithChildrenProps extends WelcomeScreenBaseProps {
   title?: never;
   description?: never;
   image?: never;
+  starters?: never;
+  starterVariant?: never;
 }
 
 export type WelcomeScreenProps = WelcomeScreenWithContentProps | WelcomeScreenWithChildrenProps;

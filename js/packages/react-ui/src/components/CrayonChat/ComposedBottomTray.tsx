@@ -1,15 +1,20 @@
+import { useThreadState } from "@crayonai/react-core";
 import { useState } from "react";
 import { ScrollVariant } from "../../hooks/useScrollToBottom";
 import {
   Composer,
   Container,
+  ConversationStarter,
   Header,
   MessageLoading,
   Messages,
   ScrollArea,
   ThreadContainer,
   Trigger,
+  WelcomeScreen,
 } from "../BottomTray";
+import { ConversationStartersConfig, WelcomeMessageConfig } from "./types";
+import { isWelcomeComponent } from "./utils";
 
 interface ComposedBottomTrayProps {
   logoUrl?: string;
@@ -24,7 +29,40 @@ interface ComposedBottomTrayProps {
   onOpenChange?: (isOpen: boolean) => void;
   /** Default open state (uncontrolled) */
   defaultOpen?: boolean;
+  /** Welcome message shown when thread is empty */
+  welcomeMessage?: WelcomeMessageConfig;
+  /** Conversation starters shown when thread is empty */
+  conversationStarters?: ConversationStartersConfig;
 }
+
+/**
+ * Internal component to render welcome message based on thread state
+ */
+const WelcomeMessageRenderer = ({ welcomeMessage }: { welcomeMessage?: WelcomeMessageConfig }) => {
+  const { messages } = useThreadState();
+
+  if (!welcomeMessage || messages.length > 0) {
+    return null;
+  }
+
+  if (isWelcomeComponent(welcomeMessage)) {
+    const CustomWelcome = welcomeMessage;
+    // Wrap custom component with WelcomeScreen for proper container styling
+    return (
+      <WelcomeScreen>
+        <CustomWelcome />
+      </WelcomeScreen>
+    );
+  }
+
+  return (
+    <WelcomeScreen
+      title={welcomeMessage.title}
+      description={welcomeMessage.description}
+      image={welcomeMessage.image}
+    />
+  );
+};
 
 export const ComposedBottomTray = ({
   logoUrl = "https://crayonai.org/img/logo.png",
@@ -36,6 +74,8 @@ export const ComposedBottomTray = ({
   isOpen: controlledIsOpen,
   onOpenChange,
   defaultOpen = false,
+  welcomeMessage,
+  conversationStarters,
 }: ComposedBottomTrayProps) => {
   const [uncontrolledIsOpen, setUncontrolledIsOpen] = useState(defaultOpen);
 
@@ -62,9 +102,16 @@ export const ComposedBottomTray = ({
       <Container logoUrl={logoUrl} agentName={agentName} isOpen={isOpen}>
         <ThreadContainer isArtifactActive={isArtifactActive} renderArtifact={renderArtifact}>
           <Header onMinimize={() => handleOpenChange(false)} />
+          <WelcomeMessageRenderer welcomeMessage={welcomeMessage} />
           <ScrollArea scrollVariant={scrollVariant}>
             <Messages loader={<MessageLoadingComponent />} />
           </ScrollArea>
+          {conversationStarters && (
+            <ConversationStarter
+              variant={conversationStarters.variant}
+              starters={conversationStarters.options}
+            />
+          )}
           <Composer />
         </ThreadContainer>
       </Container>

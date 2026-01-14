@@ -1,0 +1,457 @@
+import { Meta } from "@storybook/blocks";
+import * as CrayonChatStories from "./CrayonChat.stories";
+
+<Meta of={CrayonChatStories} />
+
+# CrayonChat
+
+CrayonChat is a **high-level, batteries-included chat component** that provides a complete chat experience with minimal configuration. It wraps all the complexity of the composable shell components (Shell, CopilotShell, BottomTray) into a single, easy-to-use component.
+
+## When to Use CrayonChat
+
+Use `CrayonChat` when you want:
+
+- A quick, ready-to-use chat interface
+- Minimal boilerplate code
+- Automatic thread management
+- Built-in welcome screens and conversation starters
+
+Use the individual shell components (Shell, CopilotShell, BottomTray) when you need:
+
+- Full control over the UI composition
+- Custom layouts
+- Advanced customization
+
+## Types
+
+CrayonChat supports three different layout types:
+
+| Type          | Description                                           |
+| ------------- | ----------------------------------------------------- |
+| `standalone`  | Full-page chat with sidebar for thread list (default) |
+| `copilot`     | Side panel chat without sidebar                       |
+| `bottom-tray` | Floating chat panel in the bottom-right corner        |
+
+## Basic Usage
+
+```tsx
+import { CrayonChat } from "@crayonai/react-ui";
+
+function App() {
+  return (
+    <CrayonChat
+      processMessage={async ({ messages, threadId, abortController }) => {
+        // Send messages to your AI backend
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          body: JSON.stringify({ messages, threadId }),
+          signal: abortController.signal,
+        });
+        return response;
+      }}
+      type="standalone"
+      logoUrl="/path/to/logo.png"
+      agentName="AI Assistant"
+    />
+  );
+}
+```
+
+## With Welcome Message and Conversation Starters
+
+```tsx
+import { CrayonChat } from "@crayonai/react-ui";
+import { Sparkles, Zap } from "lucide-react";
+
+function App() {
+  return (
+    <CrayonChat
+      processMessage={...}
+      type="standalone"
+      logoUrl="/path/to/logo.png"
+      agentName="AI Assistant"
+      welcomeMessage={{
+        title: "Hi, I'm AI Assistant",
+        description: "I can help you with questions about your account, products, and more.",
+        image: { url: "/path/to/logo.png" },
+      }}
+      conversationStarters={{
+        variant: "short", // or "long"
+        options: [
+          {
+            displayText: "Help me get started",
+            prompt: "Help me get started",
+            icon: <Sparkles size={16} />,
+          },
+          {
+            displayText: "What can you do?",
+            prompt: "What can you do?",
+            // No icon = default lightbulb
+          },
+          {
+            displayText: "Tell me about features",
+            prompt: "Tell me about your features",
+            icon: <Zap size={16} />,
+          },
+        ],
+      }}
+    />
+  );
+}
+```
+
+## Bottom Tray Type
+
+The bottom-tray type provides a floating chat interface with a built-in trigger button (bottom-right corner):
+
+```tsx
+import { CrayonChat } from "@crayonai/react-ui";
+
+function App() {
+  return (
+    <CrayonChat
+      processMessage={...}
+      type="bottom-tray"
+      logoUrl="/logo.png"
+      agentName="AI Assistant"
+      welcomeMessage={{
+        title: "Need help?",
+        description: "I'm here to assist you.",
+        image: { url: "/logo.png" },
+      }}
+      conversationStarters={{
+        variant: "short",
+        options: [
+          { displayText: "Get started", prompt: "Help me get started" },
+        ],
+      }}
+    />
+  );
+}
+```
+
+**Note:** The bottom-tray includes a built-in floating trigger button that opens/closes the tray. You don't need to add your own toggle button.
+
+### Controlled Mode (Optional)
+
+If you need programmatic control over the tray's open state:
+
+```tsx
+import { useState } from "react";
+import { CrayonChat } from "@crayonai/react-ui";
+
+function App() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Example: Open tray programmatically after some action
+  const handleSomeAction = () => {
+    setIsOpen(true);
+  };
+
+  return (
+    <CrayonChat
+      processMessage={...}
+      type="bottom-tray"
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      logoUrl="/logo.png"
+      agentName="AI Assistant"
+    />
+  );
+}
+```
+
+## Copilot Type
+
+The copilot type is ideal for side panel integrations:
+
+```tsx
+import { CrayonChat } from "@crayonai/react-ui";
+
+function App() {
+  return (
+    <div style={{ display: "flex" }}>
+      <main style={{ flex: 1 }}>
+        {/* Your app content */}
+      </main>
+      <aside style={{ width: 400, borderLeft: "1px solid #eee" }}>
+        <CrayonChat
+          processMessage={...}
+          type="copilot"
+          logoUrl="/logo.png"
+          agentName="Assistant"
+          welcomeMessage={{
+            title: "Hi, I'm your copilot",
+            description: "Ask me anything about your work.",
+          }}
+        />
+      </aside>
+    </div>
+  );
+}
+```
+
+## Props
+
+### Core Props
+
+| Prop             | Type                                         | Description                           |
+| ---------------- | -------------------------------------------- | ------------------------------------- |
+| `type`           | `"standalone" \| "copilot" \| "bottom-tray"` | Layout type (default: `"standalone"`) |
+| `processMessage` | `(params) => Promise<Response>`              | Handler for processing messages       |
+| `logoUrl`        | `string`                                     | URL for the logo image                |
+| `agentName`      | `string`                                     | Name displayed in the header          |
+
+### Welcome Message
+
+| Prop             | Type                   | Description                   |
+| ---------------- | ---------------------- | ----------------------------- |
+| `welcomeMessage` | `WelcomeMessageConfig` | Welcome message configuration |
+
+`WelcomeMessageConfig` can be either:
+
+**Props-based configuration:**
+
+```typescript
+{
+  title?: string;
+  description?: string;
+  image?: { url: string } | ReactNode;
+  // { url: string } - Renders with default 64x64 size, rounded corners
+  // ReactNode - Full control over styling (e.g., <img />, <Sparkles />)
+}
+```
+
+**Custom component:**
+
+```typescript
+React.ComponentType<any>;
+// Note: Custom components are wrapped with WelcomeScreen for proper container styling
+```
+
+### Conversation Starters
+
+| Prop                   | Type                         | Description                         |
+| ---------------------- | ---------------------------- | ----------------------------------- |
+| `conversationStarters` | `ConversationStartersConfig` | Conversation starters configuration |
+
+```typescript
+interface ConversationStartersConfig {
+  variant?: "short" | "long";
+  options: Array<{
+    displayText: string;
+    prompt: string;
+    icon?: ReactNode; // undefined = default lightbulb, <></> = no icon
+  }>;
+}
+```
+
+**Icon options:**
+
+- `undefined` (not provided) - Shows default lightbulb icon
+- `<Sparkles size={16} />` - Custom icon
+- `<></>` (empty fragment) - No icon
+
+### Bottom Tray Props
+
+These props only apply when `type="bottom-tray"`. The tray includes a built-in trigger button, so these are optional for controlled mode:
+
+| Prop           | Type                        | Description                                     |
+| -------------- | --------------------------- | ----------------------------------------------- |
+| `isOpen`       | `boolean`                   | Controlled open state (optional)                |
+| `onOpenChange` | `(isOpen: boolean) => void` | Callback when open state changes (optional)     |
+| `defaultOpen`  | `boolean`                   | Initial open state, default: `false` (optional) |
+
+### Advanced Props
+
+| Prop                      | Type                           | Description                     |
+| ------------------------- | ------------------------------ | ------------------------------- |
+| `threadManager`           | `ThreadManager`                | Custom thread manager           |
+| `threadListManager`       | `ThreadListManager`            | Custom thread list manager      |
+| `responseTemplates`       | `ResponseTemplate[]`           | Response templates              |
+| `createThread`            | `(message) => Promise<Thread>` | Custom thread creation          |
+| `onUpdateMessage`         | `(props) => void`              | Message update callback         |
+| `processStreamedMessage`  | `function`                     | Custom stream processor         |
+| `theme`                   | `ThemeProps`                   | Theme configuration             |
+| `scrollVariant`           | `ScrollVariant`                | Scroll behavior variant         |
+| `disableThemeProvider`    | `boolean`                      | Disable built-in theme provider |
+| `messageLoadingComponent` | `() => ReactNode`              | Custom loading component        |
+| `isArtifactActive`        | `boolean`                      | Show artifact panel             |
+| `renderArtifact`          | `() => ReactNode`              | Artifact content renderer       |
+
+## Custom Welcome Component
+
+You can provide a custom welcome component instead of the props-based configuration. The custom component will be wrapped with `WelcomeScreen` for proper container styling:
+
+```tsx
+import { CrayonChat } from "@crayonai/react-ui";
+import { Sparkles } from "lucide-react";
+
+const MyCustomWelcome = () => (
+  <div style={{ textAlign: "center" }}>
+    <div
+      style={{
+        width: 80,
+        height: 80,
+        borderRadius: 16,
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        margin: "0 auto 16px",
+      }}
+    >
+      <Sparkles size={40} color="white" />
+    </div>
+    <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 600 }}>
+      Welcome to My App
+    </h2>
+    <p style={{ margin: 0, color: "rgba(0,0,0,0.5)", fontSize: 14 }}>
+      This is a custom welcome screen
+    </p>
+  </div>
+);
+
+<CrayonChat
+  processMessage={...}
+  welcomeMessage={MyCustomWelcome}
+/>
+```
+
+**Note:** When using a custom component, conversation starters are rendered separately below the welcome screen.
+
+## Conversation Starter Variants
+
+### Short Variant (default)
+
+Pill-style buttons that wrap horizontally:
+
+```tsx
+import { Sparkles } from "lucide-react";
+
+// In your component:
+conversationStarters={{
+  variant: "short",
+  options: [
+    { displayText: "With custom icon", prompt: "Prompt 1", icon: <Sparkles size={16} /> },
+    { displayText: "Default lightbulb", prompt: "Prompt 2" }, // icon undefined = lightbulb
+    { displayText: "No icon", prompt: "Prompt 3", icon: <></> }, // empty fragment = no icon
+  ],
+}}
+```
+
+### Long Variant
+
+Vertical list with separators and hover arrows:
+
+```tsx
+import { Sparkles } from "lucide-react";
+
+// In your component:
+conversationStarters={{
+  variant: "long",
+  options: [
+    {
+      displayText: "This is a longer prompt that explains more context",
+      prompt: "Full prompt text",
+      icon: <Sparkles size={16} />,
+    },
+  ],
+}}
+```
+
+## Using Custom Thread Managers
+
+For advanced use cases, you can provide your own thread managers:
+
+```tsx
+import { useThreadListManager, useThreadManager } from "@crayonai/react-core";
+
+function App() {
+  const threadListManager = useThreadListManager({
+    createThread: async () => ({ ... }),
+    fetchThreadList: async () => [...],
+    deleteThread: async (id) => { ... },
+    updateThread: async (thread) => thread,
+    onSwitchToNew: () => {},
+    onSelectThread: (threadId) => {},
+  });
+
+  const threadManager = useThreadManager({
+    threadId: threadListManager.selectedThreadId,
+    loadThread: async (threadId) => [...],
+    onProcessMessage: async ({ message, threadManager }) => [...],
+    responseTemplates: [],
+  });
+
+  return (
+    <CrayonChat
+      threadListManager={threadListManager}
+      threadManager={threadManager}
+      type="standalone"
+      welcomeMessage={{ title: "Hello!" }}
+    />
+  );
+}
+```
+
+## Theming
+
+CrayonChat uses CSS custom properties for theming. You can customize colors, spacing, and typography:
+
+```tsx
+<CrayonChat
+  theme={{
+    primaryColor: "#6366f1",
+    backgroundColor: "#f8fafc",
+    // ... other theme options
+  }}
+  processMessage={...}
+/>
+```
+
+Or disable the built-in theme provider to use your own:
+
+```tsx
+<CrayonChat
+  disableThemeProvider
+  processMessage={...}
+/>
+```
+
+## Migration from Composed Components
+
+If you're currently using the individual shell components and want to migrate to CrayonChat:
+
+**Before (using Shell components):**
+
+```tsx
+<ChatProvider threadListManager={...} threadManager={...}>
+  <Container logoUrl={logo} agentName="Assistant">
+    <SidebarContainer>...</SidebarContainer>
+    <ThreadContainer>
+      <MobileHeader />
+      <WelcomeScreen title="Hello" />
+      <ScrollArea>
+        <Messages loader={<MessageLoading />} />
+      </ScrollArea>
+      <ConversationStarter starters={[...]} />
+      <Composer />
+    </ThreadContainer>
+  </Container>
+</ChatProvider>
+```
+
+**After (using CrayonChat):**
+
+```tsx
+<CrayonChat
+  threadListManager={...}
+  threadManager={...}
+  type="standalone"
+  logoUrl={logo}
+  agentName="Assistant"
+  welcomeMessage={{ title: "Hello" }}
+  conversationStarters={{ options: [...] }}
+/>
+```
