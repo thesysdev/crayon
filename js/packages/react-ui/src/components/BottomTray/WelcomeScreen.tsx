@@ -1,3 +1,4 @@
+import { useThreadState } from "@crayonai/react-core";
 import clsx from "clsx";
 import { ReactNode } from "react";
 
@@ -51,6 +52,13 @@ const isImageUrl = (image: { url: string } | ReactNode): image is { url: string 
 
 export const WelcomeScreen = (props: WelcomeScreenProps) => {
   const { className } = props;
+
+  const { messages } = useThreadState();
+
+  // Only show when there are no messages
+  if (messages.length > 0) {
+    return null;
+  }
 
   // Check if children are provided
   if ("children" in props && props.children) {
