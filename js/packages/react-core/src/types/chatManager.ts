@@ -57,6 +57,8 @@ export type ThreadState = {
    * `responseTemplates` property provided to the hook.
    */
   responseTemplates: Record<string, ResponseTemplate>;
+  /** Indicates if the thread manager is initialized and the thread can show threadList or welcome screen */
+  isInitialized: boolean;
 };
 
 /**

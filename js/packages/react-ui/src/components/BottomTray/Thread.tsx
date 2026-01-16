@@ -35,7 +35,20 @@ export const ThreadContainer = ({
     setArtifactRenderer(renderArtifact);
   }, [isArtifactActive, renderArtifact, setIsArtifactActive, setArtifactRenderer]);
 
-  return <div className={clsx("crayon-bottom-tray-thread-container", className)}>{children}</div>;
+  const { isInitialized } = useThreadManagerSelector((store) => ({
+    isInitialized: store.isInitialized,
+  }));
+
+  return (
+    <div
+      className={clsx("crayon-bottom-tray-thread-container", className)}
+      style={{
+        visibility: isInitialized ? undefined : "hidden",
+      }}
+    >
+      {children}
+    </div>
+  );
 };
 
 export const ScrollArea = ({

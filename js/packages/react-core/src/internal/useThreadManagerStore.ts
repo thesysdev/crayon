@@ -10,6 +10,7 @@ export const useThreadManagerStore = (inputThreadManager: ThreadManager) => {
 
   const [threadManagerStore] = useState(() =>
     create<ThreadManager>(() => ({
+      isInitialized: inputThreadManager.isInitialized,
       isLoadingMessages: inputThreadManager.isLoadingMessages,
       isRunning: inputThreadManager.isRunning,
       messages: inputThreadManager.messages,
@@ -31,12 +32,14 @@ export const useThreadManagerStore = (inputThreadManager: ThreadManager) => {
       messages: inputThreadManager.messages,
       error: inputThreadManager.error,
       isLoadingMessages: inputThreadManager.isLoadingMessages,
+      isInitialized: inputThreadManager.isInitialized,
     });
   }, [
     inputThreadManager.isRunning,
     inputThreadManager.messages,
     inputThreadManager.error,
     inputThreadManager.isLoadingMessages,
+    inputThreadManager.isInitialized,
   ]);
 
   if (inputThreadManagerRef.current.responseTemplates !== inputThreadManager.responseTemplates) {

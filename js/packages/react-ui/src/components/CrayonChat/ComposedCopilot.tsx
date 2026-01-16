@@ -34,7 +34,7 @@ const WelcomeMessageRenderer = ({ welcomeMessage }: { welcomeMessage?: WelcomeMe
   const { selectedThreadId } = useThreadListState();
   const { messages, isLoadingMessages } = useThreadState();
 
-  if (!welcomeMessage || selectedThreadId !== null || isLoadingMessages || messages.length > 0) {
+  if (!welcomeMessage || selectedThreadId || isLoadingMessages || messages.length > 0) {
     return null;
   }
 
@@ -65,12 +65,7 @@ const ConversationStartersRenderer = ({
   const { selectedThreadId } = useThreadListState();
   const { messages, isLoadingMessages } = useThreadState();
 
-  if (
-    !conversationStarters ||
-    selectedThreadId !== null ||
-    isLoadingMessages ||
-    messages.length > 0
-  ) {
+  if (!conversationStarters || selectedThreadId || isLoadingMessages || messages.length > 0) {
     return null;
   }
 

@@ -53,7 +53,8 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
         error: null,
         abortController: null,
         isRunning: false,
-        isLoadingMessages: true,
+        isLoadingMessages: false,
+        isInitialized: false,
         setMessages: (messages: Message[]) => {
           set({ messages });
         },
@@ -145,6 +146,12 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
         });
     }
   }, [params.threadId, params.shouldResetThreadState]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      store.setState({ isInitialized: true });
+    }, 200);
+  }, []);
 
   return useStore(store);
 };

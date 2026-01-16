@@ -97,6 +97,7 @@ const CrayonChatStory = (args: any) => {
 
   const threadManager = useThreadManager({
     threadId: threadListManager.selectedThreadId,
+    shouldResetThreadState: threadListManager.shouldResetThreadState,
     loadThread: async (threadId) => {
       // Return empty to show welcome screen and conversation starters
       if (!threadId) return [];
@@ -109,6 +110,7 @@ const CrayonChatStory = (args: any) => {
           message: [{ type: "text", text: "Hello! How can I help you today?" }],
         },
       ];
+      // return [];
     },
     onProcessMessage: async ({ message, threadManager }) => {
       const newMessage = Object.assign({}, message, { id: crypto.randomUUID() }) as Message;

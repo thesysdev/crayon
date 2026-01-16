@@ -39,6 +39,10 @@ export const ThreadContainer = ({
     setArtifactRenderer(renderArtifact);
   }, [isArtifactActive, renderArtifact, setIsArtifactActive, setArtifactRenderer]);
 
+  const { isInitialized } = useThreadManagerSelector((store) => ({
+    isInitialized: store.isInitialized,
+  }));
+
   // Desktop-only: Handle resize logic for artifact panel
   const {
     containerRef,
@@ -59,6 +63,9 @@ export const ThreadContainer = ({
       className={clsx("crayon-shell-thread-container", className, {
         "crayon-shell-thread-container--artifact-active": isArtifactActive,
       })}
+      style={{
+        visibility: isInitialized ? undefined : "hidden",
+      }}
     >
       <div className="crayon-shell-thread-wrapper" ref={containerRef}>
         {/* Chat panel - always visible */}

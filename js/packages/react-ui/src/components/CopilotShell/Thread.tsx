@@ -35,7 +35,20 @@ export const ThreadContainer = ({
     setArtifactRenderer(renderArtifact);
   }, [isArtifactActive, setIsArtifactActive]);
 
-  return <div className={clsx("crayon-copilot-shell-thread-container", className)}>{children}</div>;
+  const { isInitialized } = useThreadManagerSelector((store) => ({
+    isInitialized: store.isInitialized,
+  }));
+
+  return (
+    <div
+      className={clsx("crayon-copilot-shell-thread-container", className)}
+      style={{
+        visibility: isInitialized ? undefined : "hidden",
+      }}
+    >
+      {children}
+    </div>
+  );
 };
 
 export const ScrollArea = ({
