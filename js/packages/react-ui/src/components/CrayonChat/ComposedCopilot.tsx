@@ -12,7 +12,7 @@ import {
   WelcomeScreen,
 } from "../CopilotShell";
 import { ConversationStartersConfig, WelcomeMessageConfig } from "./types";
-import { isWelcomeComponent } from "./utils";
+import { isChatEmpty, isWelcomeComponent } from "./utils";
 
 interface ComposedCopilotProps {
   logoUrl?: string;
@@ -31,9 +31,9 @@ interface ComposedCopilotProps {
  * Internal component to render welcome message based on thread state
  */
 const WelcomeMessageRenderer = ({ welcomeMessage }: { welcomeMessage?: WelcomeMessageConfig }) => {
-  const { messages } = useThreadState();
+  const { messages, isLoadingMessages } = useThreadState();
 
-  if (!welcomeMessage || messages.length > 0) {
+  if (!welcomeMessage || isChatEmpty({ isLoadingMessages, messages })) {
     return null;
   }
 
@@ -61,9 +61,9 @@ const ConversationStartersRenderer = ({
 }: {
   conversationStarters?: ConversationStartersConfig;
 }) => {
-  const { messages } = useThreadState();
+  const { messages, isLoadingMessages } = useThreadState();
 
-  if (!conversationStarters || messages.length > 0) {
+  if (!conversationStarters || isChatEmpty({ isLoadingMessages, messages })) {
     return null;
   }
 

@@ -1,3 +1,4 @@
+import { Message } from "@crayonai/react-core";
 import { WelcomeMessageConfig } from "../types";
 
 /**
@@ -23,4 +24,14 @@ export const isWelcomeComponent = (
   config: WelcomeMessageConfig,
 ): config is React.ComponentType<any> => {
   return typeof config === "function";
+};
+
+export const isChatEmpty = ({
+  isLoadingMessages,
+  messages,
+}: {
+  isLoadingMessages: boolean | undefined;
+  messages: Message[];
+}) => {
+  return isLoadingMessages || messages.length > 0;
 };
