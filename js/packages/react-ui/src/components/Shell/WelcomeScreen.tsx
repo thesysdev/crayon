@@ -2,6 +2,7 @@ import { useThreadState } from "@crayonai/react-core";
 import clsx from "clsx";
 import { ReactNode } from "react";
 import { ConversationStarterProps } from "../../types/ConversationStarter";
+import { isChatEmpty } from "../CrayonChat/utils";
 import { DesktopWelcomeComposer } from "./components";
 import { ConversationStarter, ConversationStarterVariant } from "./ConversationStarter";
 
@@ -66,10 +67,10 @@ const isImageUrl = (image: { url: string } | ReactNode): image is { url: string 
 export const WelcomeScreen = (props: WelcomeScreenProps) => {
   const { className, starters = [], starterVariant = "long" } = props;
 
-  const { messages } = useThreadState();
+  const { messages, isLoadingMessages } = useThreadState();
 
   // Only show when there are no messages
-  if (messages.length > 0) {
+  if (!isChatEmpty({ isLoadingMessages, messages })) {
     return null;
   }
 
