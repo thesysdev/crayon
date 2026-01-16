@@ -33,7 +33,7 @@ interface ComposedCopilotProps {
 const WelcomeMessageRenderer = ({ welcomeMessage }: { welcomeMessage?: WelcomeMessageConfig }) => {
   const { messages, isLoadingMessages } = useThreadState();
 
-  if (!welcomeMessage || isChatEmpty({ isLoadingMessages, messages })) {
+  if (!welcomeMessage || !isChatEmpty({ isLoadingMessages, messages })) {
     return null;
   }
 
@@ -63,7 +63,7 @@ const ConversationStartersRenderer = ({
 }) => {
   const { messages, isLoadingMessages } = useThreadState();
 
-  if (!conversationStarters || isChatEmpty({ isLoadingMessages, messages })) {
+  if (!conversationStarters || !isChatEmpty({ isLoadingMessages, messages })) {
     return null;
   }
 

@@ -33,5 +33,5 @@ export const isChatEmpty = ({
   isLoadingMessages: boolean | undefined;
   messages: Message[];
 }) => {
-  return isLoadingMessages || messages.length > 0;
+  return !isLoadingMessages && messages.length === 0;
 };
