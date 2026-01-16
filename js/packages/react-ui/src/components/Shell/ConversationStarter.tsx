@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { ArrowUp, Lightbulb } from "lucide-react";
 import { Fragment, ReactNode } from "react";
 import { ConversationStarterIcon, ConversationStarterProps } from "../../types/ConversationStarter";
+import { isChatEmpty } from "../CrayonChat/utils";
 import { Separator } from "../Separator";
 
 export type ConversationStarterVariant = "short" | "long";
@@ -85,7 +86,7 @@ export const ConversationStarter = ({
   variant = "short",
 }: ConversationStarterContainerProps) => {
   const { processMessage } = useThreadActions();
-  const { isRunning, messages } = useThreadState();
+  const { isRunning, messages, isLoadingMessages } = useThreadState();
 
   const handleClick = (prompt: string) => {
     if (isRunning) return;
@@ -97,7 +98,7 @@ export const ConversationStarter = ({
   };
 
   // Only show when there are no messages
-  if (messages.length > 0) {
+  if (!isChatEmpty({ isLoadingMessages, messages })) {
     return null;
   }
 
