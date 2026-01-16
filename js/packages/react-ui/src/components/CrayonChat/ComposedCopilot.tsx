@@ -1,4 +1,4 @@
-import { useThreadListState, useThreadState } from "@crayonai/react-core";
+import { useThreadState } from "@crayonai/react-core";
 import { ScrollVariant } from "../../hooks/useScrollToBottom";
 import {
   Composer,
@@ -31,10 +31,9 @@ interface ComposedCopilotProps {
  * Internal component to render welcome message based on thread state
  */
 const WelcomeMessageRenderer = ({ welcomeMessage }: { welcomeMessage?: WelcomeMessageConfig }) => {
-  const { selectedThreadId } = useThreadListState();
-  const { messages, isLoadingMessages } = useThreadState();
+  const { messages } = useThreadState();
 
-  if (!welcomeMessage || selectedThreadId || isLoadingMessages || messages.length > 0) {
+  if (!welcomeMessage || messages.length > 0) {
     return null;
   }
 
@@ -62,10 +61,9 @@ const ConversationStartersRenderer = ({
 }: {
   conversationStarters?: ConversationStartersConfig;
 }) => {
-  const { selectedThreadId } = useThreadListState();
-  const { messages, isLoadingMessages } = useThreadState();
+  const { messages } = useThreadState();
 
-  if (!conversationStarters || selectedThreadId || isLoadingMessages || messages.length > 0) {
+  if (!conversationStarters || messages.length > 0) {
     return null;
   }
 

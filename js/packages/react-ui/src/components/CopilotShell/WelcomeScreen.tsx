@@ -55,10 +55,10 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
 
   const { messages } = useThreadState();
 
-    // Only show when there are no messages
-    if (messages.length > 0) {
-      return null;
-    }
+  // Only show when there are no messages
+  if (messages.length > 0) {
+    return null;
+  }
 
   // Check if children are provided
   if ("children" in props && props.children) {
