@@ -1,0 +1,357 @@
+import { Meta } from "@storybook/blocks";
+import * as ShellStories from "./Shell.stories";
+
+<Meta of={ShellStories} />
+
+# Shell
+
+The Shell is a **full-page composable chat interface** with a sidebar for thread management. It's designed for applications where chat is the primary interface, providing a complete desktop and mobile experience.
+
+## Component Structure
+
+```
+ChatProvider
+└── Container                    (full-page wrapper)
+    ├── SidebarContainer         (collapsible sidebar)
+    │   ├── SidebarHeader        (logo, agent name, collapse button)
+    │   └── SidebarContent
+    │       ├── NewChatButton
+    │       ├── SidebarSeparator
+    │       └── ThreadList
+    └── ThreadContainer          (main chat area)
+        ├── MobileHeader         (mobile-only header)
+        ├── ScrollArea           (scrollable message area)
+        │   └── Messages
+        ├── ConversationStarter  (optional, shown when empty)
+        └── Composer             (text input)
+```
+
+## Basic Usage
+
+```tsx
+import { ChatProvider, useThreadListManager, useThreadManager } from "@crayonai/react-core";
+import {
+  Composer,
+  Container,
+  ConversationStarter,
+  MessageLoading,
+  Messages,
+  MobileHeader,
+  NewChatButton,
+  ScrollArea,
+  SidebarContainer,
+  SidebarContent,
+  SidebarHeader,
+  SidebarSeparator,
+  ThreadContainer,
+  ThreadList,
+} from "@crayonai/react-ui/Shell";
+
+function MyShell() {
+  const threadListManager = useThreadListManager({
+    createThread: async () => ({
+      threadId: crypto.randomUUID(),
+      title: "New Chat",
+      createdAt: new Date(),
+      isRunning: false,
+    }),
+    fetchThreadList: async () => [],
+    deleteThread: async () => {},
+    updateThread: async (t) => t,
+    onSwitchToNew: () => {},
+    onSelectThread: () => {},
+  });
+
+  const threadManager = useThreadManager({
+    threadId: threadListManager.selectedThreadId,
+    loadThread: async (threadId) => {
+      if (!threadId) return [];
+      // Load messages for thread
+      return [];
+    },
+    onProcessMessage: async ({ message, threadManager }) => {
+      threadManager.appendMessages({ ...message, id: crypto.randomUUID() });
+      // Send message to your AI backend
+      // Return assistant response
+      return [
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          type: "response",
+          message: [{ type: "text", text: "Response from AI" }],
+        },
+      ];
+    },
+    responseTemplates: [],
+  });
+
+  return (
+    <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
+      <Container logoUrl="/path/to/logo.png" agentName="AI Assistant">
+        <SidebarContainer>
+          <SidebarHeader />
+          <SidebarContent>
+            <NewChatButton />
+            <SidebarSeparator />
+            <ThreadList />
+          </SidebarContent>
+        </SidebarContainer>
+        <ThreadContainer>
+          <MobileHeader />
+          <ScrollArea>
+            <Messages loader={<MessageLoading />} />
+          </ScrollArea>
+          <ConversationStarter
+            starters={[
+              { displayText: "Help me get started", prompt: "Help me get started" },
+              { displayText: "What can you do?", prompt: "What can you do?" },
+            ]}
+          />
+          <Composer />
+        </ThreadContainer>
+      </Container>
+    </ChatProvider>
+  );
+}
+```
+
+## Individual Components
+
+### Container
+
+The main full-page wrapper for the Shell.
+
+```tsx
+<Container
+  logoUrl="/logo.png" // Logo shown in sidebar header
+  agentName="AI Assistant" // Name shown in sidebar header
+  className="custom-class" // Optional custom styling
+>
+  {children}
+</Container>
+```
+
+### Sidebar Components
+
+The sidebar provides thread management and navigation.
+
+```tsx
+<SidebarContainer>
+  <SidebarHeader /> {/* Logo, name, collapse button */}
+  <SidebarContent>
+    <NewChatButton /> {/* Creates new thread */}
+    <SidebarSeparator /> {/* Visual separator */}
+    <ThreadList /> {/* List of existing threads */}
+  </SidebarContent>
+</SidebarContainer>
+```
+
+### ThreadContainer
+
+Wrapper for the main chat area with optional artifact panel support.
+
+```tsx
+<ThreadContainer
+  isArtifactActive={false} // Show artifact panel (desktop: side-by-side, mobile: overlay)
+  renderArtifact={() => <div />} // Artifact content
+>
+  {children}
+</ThreadContainer>
+```
+
+### MobileHeader
+
+Header shown only on mobile devices with sidebar toggle.
+
+```tsx
+<MobileHeader />
+```
+
+### ScrollArea
+
+Scrollable container for messages with smart scroll behavior.
+
+```tsx
+<ScrollArea
+  scrollVariant="user-message-anchor" // Scroll behavior
+  userMessageSelector=".crayon-shell-thread-message-user" // CSS selector for user messages
+>
+  <Messages loader={<MessageLoading />} />
+</ScrollArea>
+```
+
+### ConversationStarter
+
+Full-width clickable buttons shown when the thread is empty. Automatically submits the prompt as a message when clicked.
+
+```tsx
+<ConversationStarter
+  variant="short" // "short" (pill buttons) or "long" (list items)
+  starters={[
+    {
+      displayText: "Help me get started",
+      prompt: "Help me get started",
+      icon: <Sparkles size={16} />,
+    },
+    { displayText: "What can you do?", prompt: "What can you do?" }, // Default lightbulb icon
+    { displayText: "No icon example", prompt: "No icon", icon: <></> }, // No icon (use empty fragment)
+  ]}
+  className="custom-class" // Optional custom styling
+/>
+```
+
+**Props:**
+
+- `variant` - `"short"` (pill-style buttons) or `"long"` (list items with separators)
+- `starters` - Array of objects with:
+  - `displayText` - Text shown on the button
+  - `prompt` - Message sent when clicked
+  - `icon` - Optional: `ReactNode` for custom icon, `undefined` for default lightbulb, `<></>` (empty fragment) for no icon
+- `className` - Optional additional CSS class
+
+**Behavior:**
+
+- Only visible when there are no messages in the thread
+- Clicking a button submits the `prompt` as a user message
+- Clicks are ignored when a response is being generated
+- Respects Shell layout (centered with max-width, mobile padding)
+
+### WelcomeScreen
+
+A centered welcome message shown when the thread is empty. On desktop, includes a built-in composer and optional conversation starters.
+
+**Props-based usage with URL:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen
+      title="Hi, I'm AI Assistant"
+      description="I can help you with your questions."
+      image={{ url: "/path/to/logo.png" }}
+      starters={[
+        { displayText: "Help me get started", prompt: "Help me get started" },
+        { displayText: "What can you do?", prompt: "What can you do?" },
+      ]}
+      starterVariant="long" // "short" or "long" (default: "long")
+    />
+  );
+}
+```
+
+**Props-based usage with styled image:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen
+      title="Hi, I'm AI Assistant"
+      description="I can help you with your questions."
+      image={
+        <img
+          src="/path/to/logo.png"
+          alt="AI Assistant"
+          style={{ width: 64, height: 64, borderRadius: 16, objectFit: "cover" }}
+        />
+      }
+      starters={[{ displayText: "Help me get started", prompt: "Help me get started" }]}
+    />
+  );
+}
+```
+
+**Custom children usage:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen>
+      <div style={{ textAlign: "center" }}>
+        <MyCustomLogo />
+        <h2>Welcome!</h2>
+        <p>Custom welcome content</p>
+      </div>
+    </WelcomeScreen>
+  );
+}
+```
+
+**Props:**
+
+- `title` - Greeting/title text (optional)
+- `description` - Description text (optional)
+- `image` - Image to display: `{ url: string }` for simple URL (renders with default 64x64 size, rounded corners), or `ReactNode` for custom styled elements (optional)
+- `starters` - Conversation starters to show below the composer (desktop only)
+- `starterVariant` - `"short"` or `"long"` for starter style (default: `"long"`)
+- `children` - Custom content (mutually exclusive with title/description/image)
+- `className` - Additional CSS class (optional)
+
+**Desktop behavior:**
+
+- Includes a built-in composer centered in the welcome screen
+- Conversation starters appear below the composer
+- The regular Composer component is hidden when WelcomeScreen is present
+
+**Note:** You must conditionally render WelcomeScreen based on `hasMessages` state.
+
+### Composer
+
+Text input for sending messages.
+
+```tsx
+<Composer className="custom-class" />
+```
+
+## Desktop vs Mobile
+
+The Shell automatically adapts to screen size:
+
+| Feature               | Desktop                 | Mobile                                |
+| --------------------- | ----------------------- | ------------------------------------- |
+| Sidebar               | Collapsible side panel  | Hidden, accessible via hamburger menu |
+| Header                | In sidebar              | MobileHeader at top of thread         |
+| Artifact panel        | Resizable side-by-side  | Full-screen overlay                   |
+| Conversation starters | Centered with max-width | Full-width with padding               |
+
+## Artifact Panel
+
+The Shell supports a resizable artifact panel on desktop:
+
+```tsx
+<ThreadContainer
+  isArtifactActive={true}
+  renderArtifact={() => <div>{/* Your artifact content (code preview, document, etc.) */}</div>}
+>
+  {/* Chat content */}
+</ThreadContainer>
+```
+
+On desktop, the artifact panel appears to the right of the chat and can be resized by dragging the separator. On mobile, it appears as a full-screen overlay.
+
+## Comparison with Other Components
+
+| Feature        | Shell             | CopilotShell       | BottomTray             |
+| -------------- | ----------------- | ------------------ | ---------------------- |
+| Layout         | Full page         | Sidebar panel      | Floating panel         |
+| Sidebar        | Yes (collapsible) | No                 | No                     |
+| Thread list    | Yes               | No                 | Yes (in header)        |
+| Artifact panel | Yes (resizable)   | Yes (overlay)      | No                     |
+| Mobile         | Responsive        | Responsive         | Fullscreen             |
+| Use case       | Primary chat app  | Side panel copilot | Secondary/support chat |
+
+## CSS Classes
+
+All Shell components use the `crayon-shell-` prefix:
+
+- `.crayon-shell-container`
+- `.crayon-shell-thread-container`
+- `.crayon-shell-thread-scroll-area`
+- `.crayon-shell-thread-messages`
+- `.crayon-shell-thread-message-user`
+- `.crayon-shell-thread-message-assistant`
+- `.crayon-shell-thread-composer`
+- `.crayon-shell-conversation-starter`
+- `.crayon-shell-conversation-starter-item`
+- `.crayon-shell-sidebar-container`
+- `.crayon-shell-sidebar-header`
+- `.crayon-shell-sidebar-content`

@@ -1,0 +1,363 @@
+import { Meta } from "@storybook/blocks";
+import * as ShellStories from "./Shell.stories";
+
+<Meta of={ShellStories} />
+
+# CopilotShell
+
+The CopilotShell is a **composable sidebar chat interface** designed to be embedded as a side panel in your application. It uses a composition pattern, giving you full control over placement and styling.
+
+## Component Structure
+
+```
+ChatProvider
+└── Container            (sidebar panel)
+    └── ThreadContainer
+        ├── Header           (logo, agent name)
+        ├── WelcomeScreen    (optional, shown when empty)
+        ├── ScrollArea       (scrollable message area)
+        │   └── Messages
+        ├── ConversationStarter  (optional, shown when empty)
+        └── Composer         (text input)
+```
+
+## Basic Usage
+
+```tsx
+import { useState } from "react";
+import { ChatProvider, useThreadListManager, useThreadManager } from "@crayonai/react-core";
+import {
+  Composer,
+  Container,
+  ConversationStarter,
+  Header,
+  MessageLoading,
+  Messages,
+  ScrollArea,
+  ThreadContainer,
+  WelcomeScreen,
+} from "@crayonai/react-ui/CopilotShell";
+
+function MyCopilot() {
+  const threadListManager = useThreadListManager({
+    createThread: async () => ({
+      threadId: crypto.randomUUID(),
+      title: "New Chat",
+      createdAt: new Date(),
+      isRunning: false,
+    }),
+    fetchThreadList: async () => [],
+    deleteThread: async () => {},
+    updateThread: async (t) => t,
+    onSwitchToNew: () => {},
+    onSelectThread: () => {},
+  });
+
+  const threadManager = useThreadManager({
+    threadId: threadListManager.selectedThreadId,
+    loadThread: async (threadId) => {
+      if (!threadId) return [];
+      // Load messages for thread
+      return [];
+    },
+    onProcessMessage: async ({ message, threadManager }) => {
+      threadManager.appendMessages({ ...message, id: crypto.randomUUID() });
+      // Send message to your AI backend
+      // Return assistant response
+      return [
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          type: "response",
+          message: [{ type: "text", text: "Response from AI" }],
+        },
+      ];
+    },
+    responseTemplates: [],
+  });
+
+  const hasMessages = threadManager.messages.length > 0;
+
+  return (
+    <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
+      <Container logoUrl="/path/to/logo.png" agentName="AI Assistant">
+        <ThreadContainer>
+          <Header />
+
+          {/* WelcomeScreen - shown when no messages */}
+          {!hasMessages && (
+            <WelcomeScreen
+              title="Hi, I'm AI Assistant"
+              description="I can help you with your questions."
+              image={
+                <img
+                  src="/path/to/logo.png"
+                  alt="AI Assistant"
+                  style={{ width: 64, height: 64, borderRadius: 16, objectFit: "cover" }}
+                />
+              }
+            />
+          )}
+
+          <ScrollArea>
+            <Messages loader={<MessageLoading />} />
+          </ScrollArea>
+          <ConversationStarter
+            starters={[
+              { displayText: "Help me get started", prompt: "Help me get started" },
+              { displayText: "What can you do?", prompt: "What can you do?" },
+            ]}
+          />
+          <Composer />
+        </ThreadContainer>
+      </Container>
+    </ChatProvider>
+  );
+}
+```
+
+## Individual Components
+
+### Container
+
+The main wrapper for the CopilotShell sidebar.
+
+```tsx
+<Container
+  logoUrl="/logo.png" // Logo shown in header
+  agentName="AI Assistant" // Name shown in header
+  className="custom-class" // Optional custom styling
+>
+  {children}
+</Container>
+```
+
+### ThreadContainer
+
+Wrapper for the thread content with optional artifact panel support.
+
+```tsx
+<ThreadContainer
+  isArtifactActive={false} // Show artifact panel
+  renderArtifact={() => <div />} // Artifact content
+>
+  {children}
+</ThreadContainer>
+```
+
+### Header
+
+The header with logo and agent name.
+
+```tsx
+<Header />
+```
+
+### ScrollArea
+
+Scrollable container for messages with smart scroll behavior.
+
+```tsx
+<ScrollArea
+  scrollVariant="user-message-anchor" // Scroll behavior
+  userMessageSelector=".crayon-copilot-shell-thread-message-user" // CSS selector for user messages
+>
+  <Messages loader={<MessageLoading />} />
+</ScrollArea>
+```
+
+### ConversationStarter
+
+Clickable prompts shown when the thread is empty. Automatically submits the prompt as a message when clicked.
+
+```tsx
+<ConversationStarter
+  variant="short" // "short" (pill buttons) or "long" (list items)
+  starters={[
+    {
+      displayText: "Help me get started",
+      prompt: "Help me get started",
+      icon: <Sparkles size={16} />,
+    },
+    { displayText: "What can you do?", prompt: "What can you do?" }, // Default lightbulb icon
+    { displayText: "No icon example", prompt: "No icon", icon: <></> }, // No icon (use empty fragment)
+  ]}
+  className="custom-class" // Optional custom styling
+/>
+```
+
+**Props:**
+
+- `variant` - `"short"` (pill-style buttons) or `"long"` (list items with separators)
+- `starters` - Array of objects with:
+  - `displayText` - Text shown on the button
+  - `prompt` - Message sent when clicked
+  - `icon` - Optional: `ReactNode` for custom icon, `undefined` for default lightbulb, `<></>` (empty fragment) for no icon
+- `className` - Optional additional CSS class
+
+**Behavior:**
+
+- Only visible when there are no messages in the thread
+- Clicking a button submits the `prompt` as a user message
+- Clicks are ignored when a response is being generated
+
+### WelcomeScreen
+
+A centered welcome message shown when the thread is empty. Supports either props-based content or custom children.
+
+**Props-based usage with URL:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen
+      title="Hi, I'm AI Assistant"
+      description="I can help you with your questions."
+      image={{ url: "/path/to/logo.png" }}
+    />
+  );
+}
+```
+
+**Props-based usage with styled image:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen
+      title="Hi, I'm AI Assistant"
+      description="I can help you with your questions."
+      image={
+        <img
+          src="/path/to/logo.png"
+          alt="AI Assistant"
+          style={{ width: 64, height: 64, borderRadius: 16, objectFit: "cover" }}
+        />
+      }
+    />
+  );
+}
+```
+
+**Props-based usage with custom icon:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen
+      title="Hi, I'm AI Assistant"
+      description="I can help you with your questions."
+      image={<Sparkles size={32} />}
+    />
+  );
+}
+```
+
+**Custom children usage:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen>
+      <div style={{ textAlign: "center" }}>
+        <MyCustomLogo />
+        <h2>Welcome!</h2>
+        <p>Custom welcome content</p>
+      </div>
+    </WelcomeScreen>
+  );
+}
+```
+
+**Props:**
+
+- `title` - Greeting/title text (optional)
+- `description` - Description text (optional)
+- `image` - Image to display: `{ url: string }` for simple URL (renders with default 64x64 size, rounded corners), or `ReactNode` for custom styled elements (optional)
+- `children` - Custom content (mutually exclusive with title/description/image)
+- `className` - Additional CSS class (optional)
+
+**Note:** You must conditionally render WelcomeScreen based on `hasMessages` state.
+
+### Composer
+
+Text input for sending messages.
+
+```tsx
+<Composer className="custom-class" />
+```
+
+## Layout Integration
+
+CopilotShell is designed to be placed as a sidebar:
+
+```tsx
+function AppLayout() {
+  const hasMessages = threadManager.messages.length > 0;
+
+  return (
+    <div style={{ display: "flex", height: "100vh" }}>
+      {/* Main content area */}
+      <main style={{ flex: 1 }}>{/* Your app content */}</main>
+
+      {/* Copilot sidebar */}
+      <aside style={{ width: 400, borderLeft: "1px solid #eee" }}>
+        <ChatProvider {...}>
+          <Container logoUrl={logo} agentName="Assistant">
+            <ThreadContainer>
+              <Header />
+              {!hasMessages && (
+                <WelcomeScreen
+                  title="Hi, I'm Assistant"
+                  description="How can I help you today?"
+                  image={
+                    <img
+                      src={logo}
+                      alt="Assistant"
+                      style={{ width: 64, height: 64, borderRadius: 16, objectFit: "cover" }}
+                    />
+                  }
+                />
+              )}
+              <ScrollArea>
+                <Messages loader={<MessageLoading />} />
+              </ScrollArea>
+              <ConversationStarter starters={[...]} />
+              <Composer />
+            </ThreadContainer>
+          </Container>
+        </ChatProvider>
+      </aside>
+    </div>
+  );
+}
+```
+
+## Comparison with BottomTray
+
+| Feature  | CopilotShell        | BottomTray             |
+| -------- | ------------------- | ---------------------- |
+| Layout   | Sidebar panel       | Floating panel         |
+| Position | Fixed sidebar       | Bottom-right corner    |
+| Trigger  | Always visible      | Floating button        |
+| Mobile   | Responsive          | Fullscreen             |
+| Use case | Main chat interface | Secondary/support chat |
+
+## CSS Classes
+
+All CopilotShell components use the `crayon-copilot-shell-` prefix:
+
+- `.crayon-copilot-shell-thread-container`
+- `.crayon-copilot-shell-thread-scroll-area`
+- `.crayon-copilot-shell-thread-messages`
+- `.crayon-copilot-shell-thread-message-user`
+- `.crayon-copilot-shell-thread-message-assistant`
+- `.crayon-copilot-shell-thread-composer`
+- `.crayon-copilot-shell-conversation-starter`
+- `.crayon-copilot-shell-conversation-starter-item-short`
+- `.crayon-copilot-shell-conversation-starter-item-long`
+- `.crayon-copilot-shell-welcome-screen`
+- `.crayon-copilot-shell-welcome-screen__image-container`
+- `.crayon-copilot-shell-welcome-screen__content`
+- `.crayon-copilot-shell-welcome-screen__title`
+- `.crayon-copilot-shell-welcome-screen__description`

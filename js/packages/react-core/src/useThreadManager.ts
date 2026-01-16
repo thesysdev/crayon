@@ -43,7 +43,7 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
   propsRef.current = params;
 
   const store = useMemo(() => {
-    return createStore<
+    const store = createStore<
       ThreadManager & {
         abortController: AbortController | null;
       }
@@ -54,6 +54,7 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
         abortController: null,
         isRunning: false,
         isLoadingMessages: false,
+        isInitialized: false,
         setMessages: (messages: Message[]) => {
           set({ messages });
         },
@@ -117,6 +118,21 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
         ),
       };
     });
+
+    /**
+     * Delay initialization to ensure proper thread manager setup.
+     *
+     * Why this delay is necessary:
+     * - Multiple React effects must run to determine the initial `selectedThreadId`
+     * - Without a definitive thread ID state (null vs. valid ID), the UI cannot
+     *   determine whether to render the thread list or welcome screen
+     * - This 200ms buffer allows all effects to complete, providing a stable state
+     *   before marking initialization as complete
+     */
+    setTimeout(() => {
+      store.setState({ isInitialized: true });
+    }, 200);
+    return store;
   }, [propsRef]);
 
   useEffect(() => {

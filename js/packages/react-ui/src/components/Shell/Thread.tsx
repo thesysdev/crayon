@@ -1,17 +1,13 @@
 import {
   Message,
   MessageProvider,
-  useThreadActions,
   useThreadManagerSelector,
   useThreadState,
 } from "@crayonai/react-core";
 import clsx from "clsx";
-import { ArrowRight, Square } from "lucide-react";
-import React, { memo, useEffect, useLayoutEffect, useRef } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
-import { useComposerState } from "../../hooks/useComposerState";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
-import { IconButton } from "../IconButton";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
 import { ResizableSeparator } from "./ResizableSeparator";
 import { useShellStore } from "./store";
@@ -43,6 +39,10 @@ export const ThreadContainer = ({
     setArtifactRenderer(renderArtifact);
   }, [isArtifactActive, renderArtifact, setIsArtifactActive, setArtifactRenderer]);
 
+  const { isInitialized } = useThreadManagerSelector((store) => ({
+    isInitialized: store.isInitialized,
+  }));
+
   // Desktop-only: Handle resize logic for artifact panel
   const {
     containerRef,
@@ -63,6 +63,9 @@ export const ThreadContainer = ({
       className={clsx("crayon-shell-thread-container", className, {
         "crayon-shell-thread-container--artifact-active": isArtifactActive,
       })}
+      style={{
+        visibility: isInitialized ? undefined : "hidden",
+      }}
     >
       <div className="crayon-shell-thread-wrapper" ref={containerRef}>
         {/* Chat panel - always visible */}
@@ -282,57 +285,5 @@ export const Messages = ({
   );
 };
 
-export const Composer = ({ className }: { className?: string }) => {
-  const { textContent, setTextContent } = useComposerState();
-  const { processMessage, onCancel } = useThreadActions();
-  const { isRunning, isLoadingMessages } = useThreadState();
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-
-  const handleSubmit = () => {
-    if (!textContent.trim() || isRunning || isLoadingMessages) {
-      return;
-    }
-
-    processMessage({
-      type: "prompt",
-      role: "user",
-      message: textContent,
-    });
-
-    setTextContent("");
-  };
-
-  useLayoutEffect(() => {
-    const input = inputRef.current;
-    if (!input) {
-      return;
-    }
-
-    input.style.height = "0px";
-    input.style.height = `${input.scrollHeight}px`;
-  }, [textContent]);
-
-  return (
-    <div className={clsx("crayon-shell-thread-composer", className)}>
-      <div className="crayon-shell-thread-composer__input-wrapper">
-        <textarea
-          ref={inputRef}
-          value={textContent}
-          onChange={(e) => setTextContent(e.target.value)}
-          className="crayon-shell-thread-composer__input"
-          placeholder="Type your message..."
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit();
-            }
-          }}
-        />
-        <IconButton
-          onClick={isRunning ? onCancel : handleSubmit}
-          icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowRight size="1em" />}
-        />
-      </div>
-    </div>
-  );
-};
+// Re-export Composer from components
+export { Composer } from "./components";

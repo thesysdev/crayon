@@ -18,6 +18,7 @@ import { ThemeProps, ThemeProvider } from "../ThemeProvider";
 import { ComposedBottomTray } from "./ComposedBottomTray";
 import { ComposedCopilot } from "./ComposedCopilot";
 import { ComposedStandalone } from "./ComposedStandalone";
+import { ConversationStartersConfig, WelcomeMessageConfig } from "./types";
 
 type BaseCrayonChatProps = {
   // options used when threadManager not provided
@@ -47,6 +48,11 @@ type BaseCrayonChatProps = {
 
   isArtifactActive?: boolean;
   renderArtifact?: () => React.ReactNode;
+
+  /** Welcome message shown when thread is empty */
+  welcomeMessage?: WelcomeMessageConfig;
+  /** Conversation starters shown when thread is empty */
+  conversationStarters?: ConversationStartersConfig;
 };
 
 type BottomTrayProps = {
@@ -87,6 +93,8 @@ export const CrayonChat = (props: CrayonChatProps) => {
     disableThemeProvider,
     isArtifactActive,
     renderArtifact,
+    welcomeMessage,
+    conversationStarters,
   } = props;
 
   // Extract bottom-tray specific props if type is bottom-tray
@@ -179,6 +187,8 @@ export const CrayonChat = (props: CrayonChatProps) => {
             scrollVariant={scrollVariant}
             isArtifactActive={isArtifactActive}
             renderArtifact={renderArtifact}
+            welcomeMessage={welcomeMessage}
+            conversationStarters={conversationStarters}
           />
         ) : type === "bottom-tray" ? (
           <ComposedBottomTray
@@ -191,6 +201,8 @@ export const CrayonChat = (props: CrayonChatProps) => {
             isOpen={isOpen}
             onOpenChange={onOpenChange}
             defaultOpen={defaultOpen}
+            welcomeMessage={welcomeMessage}
+            conversationStarters={conversationStarters}
           />
         ) : (
           <ComposedStandalone
@@ -200,6 +212,8 @@ export const CrayonChat = (props: CrayonChatProps) => {
             scrollVariant={scrollVariant}
             isArtifactActive={isArtifactActive}
             renderArtifact={renderArtifact}
+            welcomeMessage={welcomeMessage}
+            conversationStarters={conversationStarters}
           />
         )}
       </ChatProvider>

@@ -88,128 +88,450 @@ Use the `.crayon-component-name` prefix with BEM-like modifiers:
 }
 ```
 
-### 3. Typography System
+---
 
-#### Available Typography Mixins
+## Color System
 
-```scss
-// Body text variants
-@include cssUtils.typography(body, default); // Regular body text
-@include cssUtils.typography(body, small); // Smaller body text
-@include cssUtils.typography(body, large); // Larger body text
-@include cssUtils.typography(body, heavy); // Bold body text
+### Background Colors
 
-// Label variants
-@include cssUtils.typography(label, default); // Regular labels
-@include cssUtils.typography(label, small); // Small labels
-@include cssUtils.typography(label, large); // Large labels
-
-// Heading variants
-@include cssUtils.typography(heading, large); // H1 equivalent
-@include cssUtils.typography(heading, medium); // H2 equivalent
-@include cssUtils.typography(heading, small); // H3 equivalent
-
-// Number variants (for data display)
-@include cssUtils.typography(number, default); // Regular numbers
-@include cssUtils.typography(number, large); // Large numbers
-@include cssUtils.typography(number, title); // Title numbers
-```
-
-### 4. Color System
-
-#### Background Colors
+| Token                  | Usage                                   |
+| ---------------------- | --------------------------------------- |
+| `$bg-fill`             | Main page/app background                |
+| `$bg-container`        | Card/container backgrounds              |
+| `$bg-overlay`          | Modal/overlay backgrounds               |
+| `$bg-sunk`             | Input fields, recessed areas            |
+| `$bg-sunk-bg`          | Alternative sunk background             |
+| `$bg-elevated`         | Elevated surfaces (dropdowns, popovers) |
+| `$bg-inverted`         | Inverted/dark backgrounds               |
+| `$bg-danger`           | Error/danger state backgrounds          |
+| `$bg-success`          | Success state backgrounds               |
+| `$bg-info`             | Informational backgrounds               |
+| `$bg-alert`            | Warning/alert backgrounds               |
+| `$bg-highlight-subtle` | Subtle highlight (hover states)         |
+| `$bg-highlight-strong` | Strong highlight (selection)            |
 
 ```scss
-cssUtils.$bg-fill          // Main background
-cssUtils.$bg-container     // Card/container backgrounds
-cssUtils.$bg-overlay       // Modal/overlay backgrounds
-cssUtils.$bg-sunk          // Input field backgrounds
-cssUtils.$bg-elevated      // Elevated surfaces
-cssUtils.$bg-danger        // Error/danger backgrounds
-cssUtils.$bg-success       // Success backgrounds
-cssUtils.$bg-info          // Info backgrounds
+// Example usage
+.crayon-card {
+  background-color: cssUtils.$bg-container;
+}
+
+.crayon-modal-backdrop {
+  background-color: cssUtils.$bg-overlay;
+}
+
+.crayon-input {
+  background-color: cssUtils.$bg-sunk;
+}
+
+.crayon-error-banner {
+  background-color: cssUtils.$bg-danger;
+}
 ```
 
-#### Interactive Colors
+### Interactive Colors
+
+For buttons, clickable elements, and interactive states:
+
+| Token                   | Usage                |
+| ----------------------- | -------------------- |
+| `$interactive-default`  | Default state        |
+| `$interactive-hover`    | Hover state          |
+| `$interactive-pressed`  | Active/pressed state |
+| `$interactive-disabled` | Disabled state       |
+
+**Accent (Primary Actions):**
+
+| Token                          | Usage                   |
+| ------------------------------ | ----------------------- |
+| `$interactive-accent`          | Primary button default  |
+| `$interactive-accent-hover`    | Primary button hover    |
+| `$interactive-accent-pressed`  | Primary button pressed  |
+| `$interactive-accent-disabled` | Primary button disabled |
+
+**Destructive (Danger Actions):**
+
+| Token                                      | Usage                       |
+| ------------------------------------------ | --------------------------- |
+| `$interactive-destructive`                 | Destructive button default  |
+| `$interactive-destructive-hover`           | Destructive button hover    |
+| `$interactive-destructive-pressed`         | Destructive button pressed  |
+| `$interactive-destructive-disabled`        | Destructive button disabled |
+| `$interactive-destructive-accent`          | Filled destructive button   |
+| `$interactive-destructive-accent-hover`    | Filled destructive hover    |
+| `$interactive-destructive-accent-pressed`  | Filled destructive pressed  |
+| `$interactive-destructive-accent-disabled` | Filled destructive disabled |
 
 ```scss
-cssUtils.$interactive-default      // Default button background
-cssUtils.$interactive-hover        // Hover state
-cssUtils.$interactive-pressed      // Pressed/active state
-cssUtils.$interactive-disabled     // Disabled state
-cssUtils.$interactive-accent       // Primary action color
+// Primary button example
+.crayon-button-primary {
+  background-color: cssUtils.$interactive-accent;
+
+  &:not(:disabled):hover {
+    background-color: cssUtils.$interactive-accent-hover;
+  }
+
+  &:not(:disabled):active {
+    background-color: cssUtils.$interactive-accent-pressed;
+  }
+
+  &:disabled {
+    background-color: cssUtils.$interactive-accent-disabled;
+  }
+}
+
+// Destructive button example
+.crayon-button-destructive {
+  background-color: cssUtils.$interactive-destructive-accent;
+
+  &:not(:disabled):hover {
+    background-color: cssUtils.$interactive-destructive-accent-hover;
+  }
+}
 ```
 
-#### Text Colors
+### Text Colors
+
+**Primary Text:**
+
+| Token             | Usage                              |
+| ----------------- | ---------------------------------- |
+| `$primary-text`   | Main body text                     |
+| `$secondary-text` | Secondary/muted text, placeholders |
+| `$disabled-text`  | Disabled text                      |
+| `$link-text`      | Hyperlinks                         |
+
+**Accent Text:**
+
+| Token                    | Usage                                |
+| ------------------------ | ------------------------------------ |
+| `$accent-primary-text`   | Text on accent backgrounds           |
+| `$accent-secondary-text` | Secondary text on accent backgrounds |
+| `$accent-disabled-text`  | Disabled text on accent backgrounds  |
+
+**Status Text:**
+
+| Token                    | Usage                       |
+| ------------------------ | --------------------------- |
+| `$success-primary-text`  | Success messages            |
+| `$success-inverted-text` | Text on success backgrounds |
+| `$alert-primary-text`    | Warning messages            |
+| `$alert-inverted-text`   | Text on alert backgrounds   |
+| `$info-primary-text`     | Info messages               |
+| `$info-inverted-text`    | Text on info backgrounds    |
+
+**Danger Text:**
+
+| Token                             | Usage                                |
+| --------------------------------- | ------------------------------------ |
+| `$danger-primary-text`            | Error messages                       |
+| `$danger-secondary-text`          | Secondary error text                 |
+| `$danger-disabled-text`           | Disabled error text                  |
+| `$danger-inverted-primary-text`   | Primary text on danger backgrounds   |
+| `$danger-inverted-secondary-text` | Secondary text on danger backgrounds |
+| `$danger-inverted-disabled-text`  | Disabled text on danger backgrounds  |
 
 ```scss
-cssUtils.$primary-text      // Main text color
-cssUtils.$secondary-text    // Secondary/muted text
-cssUtils.$disabled-text     // Disabled text
-cssUtils.$accent-primary-text    // Primary accent text
-cssUtils.$success-primary-text   // Success text
-cssUtils.$danger-primary-text    // Error text
+// Example usage
+.crayon-label {
+  color: cssUtils.$secondary-text;
+}
+
+.crayon-error-message {
+  color: cssUtils.$danger-primary-text;
+}
+
+.crayon-link {
+  color: cssUtils.$link-text;
+}
 ```
 
-#### Stroke/Border Colors
+### Stroke/Border Colors
+
+| Token                             | Usage                                |
+| --------------------------------- | ------------------------------------ |
+| `$stroke-default`                 | Default borders                      |
+| `$stroke-emphasis`                | Emphasized borders                   |
+| `$stroke-interactive-el`          | Interactive element borders          |
+| `$stroke-interactive-el-selected` | Selected interactive element borders |
+
+**Semantic Strokes:**
+
+| Token                      | Usage                      |
+| -------------------------- | -------------------------- |
+| `$stroke-accent`           | Accent/brand borders       |
+| `$stroke-accent-emphasis`  | Emphasized accent borders  |
+| `$stroke-success`          | Success state borders      |
+| `$stroke-success-emphasis` | Emphasized success borders |
+| `$stroke-info`             | Info state borders         |
+| `$stroke-info-emphasis`    | Emphasized info borders    |
+| `$stroke-alert`            | Alert/warning borders      |
+| `$stroke-alert-emphasis`   | Emphasized alert borders   |
+| `$stroke-danger`           | Error state borders        |
+| `$stroke-danger-emphasis`  | Emphasized error borders   |
 
 ```scss
-cssUtils.$stroke-default           // Default borders
-cssUtils.$stroke-interactive-el    // Interactive element borders
-cssUtils.$stroke-emphasis          // Emphasis borders
-cssUtils.$stroke-accent            // Accent borders
-cssUtils.$stroke-danger            // Error borders
+// Example usage
+.crayon-input {
+  border: 1px solid cssUtils.$stroke-default;
+
+  &:focus {
+    border-color: cssUtils.$stroke-emphasis;
+  }
+
+  &-error {
+    border-color: cssUtils.$stroke-danger-emphasis;
+  }
+}
 ```
 
-### 5. Spacing System
+### Chat Colors
 
-Use the predefined spacing scale:
+For chat/conversation UI components:
+
+| Token                           | Usage                           |
+| ------------------------------- | ------------------------------- |
+| `$chat-container-bg`            | Chat container background       |
+| `$chat-assistant-response-bg`   | AI/assistant message background |
+| `$chat-assistant-response-text` | AI/assistant message text       |
+| `$chat-user-response-bg`        | User message background         |
+| `$chat-user-response-text`      | User message text               |
 
 ```scss
-cssUtils.$spacing-0     // 0px
-cssUtils.$spacing-3xs   // 2px
-cssUtils.$spacing-2xs   // 4px
-cssUtils.$spacing-xs    // 8px
-cssUtils.$spacing-s     // 12px
-cssUtils.$spacing-m     // 16px
-cssUtils.$spacing-l     // 20px
-cssUtils.$spacing-xl    // 24px
-cssUtils.$spacing-2xl   // 32px
-cssUtils.$spacing-3xl   // 40px
+// Example chat message styling
+.crayon-chat-message {
+  &-assistant {
+    background-color: cssUtils.$chat-assistant-response-bg;
+    color: cssUtils.$chat-assistant-response-text;
+  }
+
+  &-user {
+    background-color: cssUtils.$chat-user-response-bg;
+    color: cssUtils.$chat-user-response-text;
+  }
+}
 ```
 
-### 6. Border Radius System
+---
+
+## Spacing System
+
+Use the predefined spacing scale consistently:
+
+| Token          | Value | Usage                  |
+| -------------- | ----- | ---------------------- |
+| `$spacing-0`   | 0px   | No spacing             |
+| `$spacing-3xs` | 2px   | Minimal spacing        |
+| `$spacing-2xs` | 4px   | Very tight spacing     |
+| `$spacing-xs`  | 8px   | Tight spacing          |
+| `$spacing-s`   | 12px  | Small spacing          |
+| `$spacing-m`   | 16px  | Medium/default spacing |
+| `$spacing-l`   | 20px  | Large spacing          |
+| `$spacing-xl`  | 24px  | Extra large spacing    |
+| `$spacing-2xl` | 32px  | Section spacing        |
+| `$spacing-3xl` | 40px  | Large section spacing  |
 
 ```scss
-cssUtils.$rounded-0     // 0px (sharp corners)
-cssUtils.$rounded-3xs   // 2px
-cssUtils.$rounded-2xs   // 4px
-cssUtils.$rounded-xs    // 6px
-cssUtils.$rounded-s     // 8px
-cssUtils.$rounded-m     // 12px
-cssUtils.$rounded-l     // 16px
-cssUtils.$rounded-xl    // 20px
-cssUtils.$rounded-full  // 9999px (fully rounded)
+// Example usage
+.crayon-card {
+  padding: cssUtils.$spacing-m;
+  gap: cssUtils.$spacing-s;
+}
+
+.crayon-section {
+  margin-bottom: cssUtils.$spacing-2xl;
+}
 ```
 
-### 7. Shadow System
+---
+
+## Border Radius System
+
+| Token           | Value  | Usage                          |
+| --------------- | ------ | ------------------------------ |
+| `$rounded-0`    | 0px    | Sharp corners                  |
+| `$rounded-3xs`  | 2px    | Minimal rounding               |
+| `$rounded-2xs`  | 4px    | Subtle rounding                |
+| `$rounded-xs`   | 6px    | Small rounding                 |
+| `$rounded-s`    | 8px    | Standard small                 |
+| `$rounded-m`    | 12px   | Standard medium                |
+| `$rounded-l`    | 16px   | Large rounding                 |
+| `$rounded-xl`   | 20px   | Extra large rounding           |
+| `$rounded-2xl`  | 24px   | Very large rounding            |
+| `$rounded-3xl`  | 28px   | Maximum rounding               |
+| `$rounded-full` | 9999px | Fully rounded (pills, circles) |
 
 ```scss
-cssUtils.$shadow-s      // Small shadow
-cssUtils.$shadow-m      // Medium shadow
-cssUtils.$shadow-l      // Large shadow
-cssUtils.$shadow-xl     // Extra large shadow
-cssUtils.$shadow-2xl    // 2X large shadow
-cssUtils.$shadow-3xl    // 3X large shadow
+// Example usage
+.crayon-button {
+  border-radius: cssUtils.$rounded-m;
+}
+
+.crayon-avatar {
+  border-radius: cssUtils.$rounded-full;
+}
+
+.crayon-card {
+  border-radius: cssUtils.$rounded-l;
+}
 ```
+
+---
+
+## Shadow System
+
+| Token         | Usage                          |
+| ------------- | ------------------------------ |
+| `$shadow-s`   | Subtle elevation (buttons)     |
+| `$shadow-m`   | Medium elevation (cards)       |
+| `$shadow-l`   | Large elevation (dropdowns)    |
+| `$shadow-xl`  | Extra large elevation (modals) |
+| `$shadow-2xl` | High elevation (popovers)      |
+| `$shadow-3xl` | Maximum elevation              |
+
+```scss
+// Example usage
+.crayon-dropdown {
+  box-shadow: cssUtils.$shadow-l;
+}
+
+.crayon-modal {
+  box-shadow: cssUtils.$shadow-xl;
+}
+```
+
+---
+
+## Typography System
+
+Use the `typography` mixin for consistent text styling:
+
+```scss
+@include cssUtils.typography($category, $variant);
+```
+
+### Body Text
+
+| Variant       | Usage              |
+| ------------- | ------------------ |
+| `default`     | Standard body text |
+| `small`       | Smaller body text  |
+| `small-heavy` | Small bold text    |
+| `medium`      | Medium weight body |
+| `large`       | Larger body text   |
+| `large-heavy` | Large bold text    |
+| `heavy`       | Bold body text     |
+| `link`        | Link text styling  |
+
+```scss
+.crayon-paragraph {
+  @include cssUtils.typography(body, default);
+}
+
+.crayon-caption {
+  @include cssUtils.typography(body, small);
+}
+
+.crayon-emphasis {
+  @include cssUtils.typography(body, heavy);
+}
+```
+
+### Labels
+
+| Variant               | Usage                   |
+| --------------------- | ----------------------- |
+| `default`             | Standard labels         |
+| `heavy`               | Bold labels             |
+| `small`               | Small labels            |
+| `small-heavy`         | Small bold labels       |
+| `medium`              | Medium labels           |
+| `medium-heavy`        | Medium bold labels      |
+| `large`               | Large labels            |
+| `large-heavy`         | Large bold labels       |
+| `extra-small`         | Extra small labels      |
+| `extra-small-heavy`   | Extra small bold labels |
+| `2-extra-small`       | Tiny labels             |
+| `2-extra-small-heavy` | Tiny bold labels        |
+
+```scss
+.crayon-form-label {
+  @include cssUtils.typography(label, default);
+}
+
+.crayon-badge {
+  @include cssUtils.typography(label, small-heavy);
+}
+```
+
+### Headings
+
+| Variant       | Usage         |
+| ------------- | ------------- |
+| `large`       | H1 equivalent |
+| `medium`      | H2 equivalent |
+| `small`       | H3 equivalent |
+| `extra-small` | H4 equivalent |
+
+```scss
+.crayon-page-title {
+  @include cssUtils.typography(heading, large);
+}
+
+.crayon-section-title {
+  @include cssUtils.typography(heading, medium);
+}
+```
+
+### Numbers
+
+For data display and metrics:
+
+| Variant             | Usage                          |
+| ------------------- | ------------------------------ |
+| `default`           | Standard numbers               |
+| `small`             | Small numbers                  |
+| `small-heavy`       | Small bold numbers             |
+| `large`             | Large numbers                  |
+| `large-heavy`       | Large bold numbers             |
+| `heavy`             | Bold numbers                   |
+| `extra-small`       | Extra small numbers            |
+| `extra-small-heavy` | Extra small bold numbers       |
+| `title`             | Display numbers (hero metrics) |
+| `title-medium`      | Medium display numbers         |
+
+```scss
+.crayon-metric {
+  @include cssUtils.typography(number, large-heavy);
+}
+
+.crayon-stat-value {
+  @include cssUtils.typography(number, title);
+}
+```
+
+---
+
+## Utility Mixins
+
+### Button Reset
+
+Removes default button styling:
+
+```scss
+.crayon-icon-button {
+  @include cssUtils.button-reset;
+  // Add your custom styles
+  padding: cssUtils.$spacing-xs;
+  border-radius: cssUtils.$rounded-m;
+}
+```
+
+---
 
 ## Component Patterns
 
-### Standard Component Variants
-
-Most components should support these variants:
-
-#### Size Variants
+### Standard Size Variants
 
 ```scss
 &-small {
@@ -228,7 +550,7 @@ Most components should support these variants:
 }
 ```
 
-#### Button Variants
+### Button Variants
 
 ```scss
 &-primary {
@@ -238,6 +560,10 @@ Most components should support these variants:
 
   &:not(:disabled):hover {
     background-color: cssUtils.$interactive-accent-hover;
+  }
+
+  &:not(:disabled):active {
+    background-color: cssUtils.$interactive-accent-pressed;
   }
 
   &:disabled {
@@ -254,6 +580,29 @@ Most components should support these variants:
   &:not(:disabled):hover {
     background-color: cssUtils.$interactive-hover;
   }
+
+  &:not(:disabled):active {
+    background-color: cssUtils.$interactive-pressed;
+  }
+}
+
+&-destructive {
+  background-color: cssUtils.$interactive-destructive-accent;
+  color: cssUtils.$danger-inverted-primary-text;
+  border-color: cssUtils.$stroke-danger;
+
+  &:not(:disabled):hover {
+    background-color: cssUtils.$interactive-destructive-accent-hover;
+  }
+
+  &:not(:disabled):active {
+    background-color: cssUtils.$interactive-destructive-accent-pressed;
+  }
+
+  &:disabled {
+    background-color: cssUtils.$interactive-destructive-accent-disabled;
+    cursor: not-allowed;
+  }
 }
 ```
 
@@ -266,6 +615,7 @@ Most components should support these variants:
   border-radius: cssUtils.$rounded-m;
   background-color: cssUtils.$bg-sunk;
   color: cssUtils.$primary-text;
+  padding: cssUtils.$spacing-xs cssUtils.$spacing-s;
 
   &::placeholder {
     color: cssUtils.$secondary-text;
@@ -285,8 +635,44 @@ Most components should support these variants:
   &-error {
     border-color: cssUtils.$stroke-danger-emphasis;
   }
+
+  &-success {
+    border-color: cssUtils.$stroke-success-emphasis;
+  }
 }
 ```
+
+### Status Badges Pattern
+
+```scss
+.crayon-badge {
+  @include cssUtils.typography(label, small-heavy);
+  padding: cssUtils.$spacing-2xs cssUtils.$spacing-xs;
+  border-radius: cssUtils.$rounded-full;
+
+  &-success {
+    background-color: cssUtils.$bg-success;
+    color: cssUtils.$success-primary-text;
+  }
+
+  &-danger {
+    background-color: cssUtils.$bg-danger;
+    color: cssUtils.$danger-primary-text;
+  }
+
+  &-info {
+    background-color: cssUtils.$bg-info;
+    color: cssUtils.$info-primary-text;
+  }
+
+  &-alert {
+    background-color: cssUtils.$bg-alert;
+    color: cssUtils.$alert-primary-text;
+  }
+}
+```
+
+---
 
 ## Best Practices
 
@@ -318,20 +704,43 @@ Use the `:not(:disabled)` pattern for hover/active states:
 }
 ```
 
-### 3. Responsive Design
+### 3. Focus States (Accessibility)
 
-For responsive components, use CSS custom properties that can be controlled via JavaScript:
+Always include visible focus states:
 
 ```scss
-.my-responsive-component {
-  gap: var(--component-gap, cssUtils.$spacing-m);
-  padding: var(--component-padding, cssUtils.$spacing-m);
+&:focus-visible {
+  outline: 2px solid cssUtils.$stroke-accent;
+  outline-offset: 2px;
 }
 ```
 
-### 4. Component Composition
+### 4. Responsive Design
 
-Prefer composition over complex variants. Create small, focused components that can be combined:
+Use CSS custom properties for values that can be controlled via JavaScript:
+
+```scss
+.my-responsive-component {
+  gap: var(--component-gap, #{cssUtils.$spacing-m});
+  padding: var(--component-padding, #{cssUtils.$spacing-m});
+}
+```
+
+### 5. CSS Custom Properties for Theming
+
+```scss
+.crayon-themeable-component {
+  --component-bg: #{cssUtils.$bg-container};
+  --component-text: #{cssUtils.$primary-text};
+
+  background-color: var(--component-bg);
+  color: var(--component-text);
+}
+```
+
+### 6. Component Composition
+
+Prefer composition over complex variants:
 
 ```tsx
 // ✅ Good - Composable
@@ -356,33 +765,7 @@ Prefer composition over complex variants. Create small, focused components that 
 />
 ```
 
-### 5. CSS Custom Properties for Theming
-
-Use CSS custom properties for values that might need to be overridden:
-
-```scss
-.crayon-themeable-component {
-  --component-bg: #{cssUtils.$bg-container};
-  --component-text: #{cssUtils.$primary-text};
-
-  background-color: var(--component-bg);
-  color: var(--component-text);
-}
-```
-
-### 6. Accessibility Considerations
-
-- Always include focus states
-- Use appropriate color contrasts (handled by design tokens)
-- Support keyboard navigation
-- Include proper ARIA attributes in component markup
-
-### 7. Performance
-
-- Avoid deeply nested selectors
-- Use efficient CSS selectors
-- Minimize CSS specificity conflicts
-- Consider CSS-in-JS only when necessary (prefer SCSS for static styles)
+---
 
 ## When to Create New Components
 
@@ -405,6 +788,8 @@ Use CSS custom properties for values that might need to be overridden:
 - Layout-only components (use CSS Grid/Flexbox)
 - Text styling (use typography mixins)
 
+---
+
 ## Migration Guide
 
 When updating existing components:
@@ -415,18 +800,12 @@ When updating existing components:
 4. **Add missing states** - Include hover, focus, disabled, active states
 5. **Test thoroughly** - Verify all variants work correctly
 
+---
+
 ## Tooling
 
 - **SCSS Compilation**: `pnpm build:scss`
-- **Linting**: ESLint with custom rules
-- **Storybook**: For component development and testing
-- **Design Tokens**: All available in `cssUtils.scss`
-
-## Questions?
-
-When in doubt:
-
-1. Check existing components for similar patterns
-2. Look at `cssUtils.scss` for available tokens
-3. Ask in #design-system Slack channel
-4. Reference the design system documentation
+- **Watch Mode**: `pnpm watch`
+- **Storybook**: `pnpm storybook`
+- **Linting**: `pnpm lint:check`
+- **Format**: `pnpm format:check`

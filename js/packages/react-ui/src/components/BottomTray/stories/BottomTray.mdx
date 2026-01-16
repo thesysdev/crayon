@@ -1,0 +1,361 @@
+import { Meta } from "@storybook/blocks";
+import * as BottomTrayStories from "./BottomTray.stories";
+
+<Meta of={BottomTrayStories} />
+
+# BottomTray
+
+The BottomTray is a **composable chat interface** that appears as a floating panel in the bottom-right corner of your application. It uses a composition pattern, giving you full control over placement and styling.
+
+## Component Structure
+
+```
+ChatProvider
+├── Trigger              (floating button to open/close)
+└── Container            (the tray panel)
+    └── ThreadContainer
+        ├── Header           (logo, agent name, actions)
+        ├── WelcomeScreen    (optional, shown when empty)
+        ├── ScrollArea       (scrollable message area)
+        │   └── Messages
+        ├── ConversationStarter  (optional, shown when empty)
+        └── Composer         (text input)
+```
+
+## Basic Usage
+
+```tsx
+import { useState } from "react";
+import { ChatProvider, useThreadListManager, useThreadManager } from "@crayonai/react-core";
+import {
+  Composer,
+  Container,
+  ConversationStarter,
+  Header,
+  MessageLoading,
+  Messages,
+  ScrollArea,
+  ThreadContainer,
+  Trigger,
+  WelcomeScreen,
+} from "@crayonai/react-ui";
+
+function MyApp() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Set up thread list management
+  const threadListManager = useThreadListManager({
+    createThread: async () => ({
+      threadId: crypto.randomUUID(),
+      title: "New Chat",
+      createdAt: new Date(),
+      isRunning: false,
+    }),
+    fetchThreadList: async () => {
+      // Fetch threads from your backend
+      return [];
+    },
+    deleteThread: async (id) => {
+      // Delete thread from your backend
+    },
+    updateThread: async (thread) => thread,
+    onSwitchToNew: () => {},
+    onSelectThread: (threadId) => {},
+  });
+
+  // Set up thread management
+  const threadManager = useThreadManager({
+    threadId: threadListManager.selectedThreadId,
+    loadThread: async (threadId) => {
+      // Return empty for new thread, otherwise load messages
+      if (!threadId) return [];
+      // Fetch messages from your backend
+      return [];
+    },
+    onProcessMessage: async ({ message, threadManager }) => {
+      // Send message to your AI backend
+      // Return assistant response
+      return [
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          type: "response",
+          message: [{ type: "text", text: "Response from AI" }],
+        },
+      ];
+    },
+    responseTemplates: [],
+  });
+
+  const hasMessages = threadManager.messages.length > 0;
+
+  return (
+    <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
+      {/* Trigger - floating button */}
+      <Trigger onClick={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+
+      {/* Container - the tray panel */}
+      <Container logoUrl="/path/to/logo.png" agentName="AI Assistant" isOpen={isOpen}>
+        <ThreadContainer>
+          <Header onMinimize={() => setIsOpen(false)} />
+
+          {/* WelcomeScreen - shown when no messages */}
+          {!hasMessages && (
+            <WelcomeScreen
+              title="Hi, I'm AI Assistant"
+              description="I can help you with your questions."
+              image={
+                <img
+                  src="/path/to/logo.png"
+                  alt="AI Assistant"
+                  style={{ width: 64, height: 64, borderRadius: 16, objectFit: "cover" }}
+                />
+              }
+            />
+          )}
+
+          <ScrollArea>
+            <Messages loader={<MessageLoading />} />
+          </ScrollArea>
+          <ConversationStarter
+            starters={[
+              { displayText: "Help me get started", prompt: "Help me get started" },
+              { displayText: "What can you do?", prompt: "What can you do?" },
+            ]}
+          />
+          <Composer />
+        </ThreadContainer>
+      </Container>
+    </ChatProvider>
+  );
+}
+```
+
+## Components
+
+### Trigger
+
+The floating button that opens/closes the tray. Positioned fixed in the bottom-right corner.
+
+```tsx
+<Trigger
+  onClick={() => setIsOpen(!isOpen)}
+  isOpen={isOpen} // Controls shrink animation when open
+  className="custom-class" // Optional custom styling
+>
+  {/* Optional custom content, defaults to chevron icon */}
+  💬 Need Help?
+</Trigger>
+```
+
+### Container
+
+The main tray panel. Controls visibility with `isOpen` prop.
+
+```tsx
+<Container
+  logoUrl="/logo.png" // Logo shown in header
+  agentName="AI Assistant" // Name shown in header
+  isOpen={isOpen} // Controls open/closed animation
+  className="custom-class" // Optional custom styling
+>
+  {children}
+</Container>
+```
+
+### ThreadContainer
+
+Wrapper for thread content. Manages layout and artifact panels.
+
+```tsx
+<ThreadContainer
+  isArtifactActive={false} // Show artifact panel
+  renderArtifact={() => <div />} // Artifact content
+>
+  {children}
+</ThreadContainer>
+```
+
+### Header
+
+Header with logo, agent name, thread list, new chat button, and minimize.
+
+```tsx
+<Header
+  onMinimize={() => setIsOpen(false)} // Minimize callback
+  hideMinimizeButton={false} // Hide X button
+  hideNewChatButton={false} // Hide new chat button
+  hideThreadListContainer={false} // Hide thread list
+  rightChildren={<CustomActions />} // Custom actions
+/>
+```
+
+### ScrollArea
+
+Scrollable container for messages with auto-scroll behavior.
+
+```tsx
+<ScrollArea
+  scrollVariant="user-message-anchor" // Scroll behavior
+  userMessageSelector=".user-message" // CSS selector for user messages
+>
+  <Messages loader={<MessageLoading />} />
+</ScrollArea>
+```
+
+### ConversationStarter
+
+Clickable prompts shown when thread is empty. Automatically hides when messages exist.
+
+```tsx
+<ConversationStarter
+  variant="short" // "short" (pill buttons) or "long" (list items)
+  starters={[
+    {
+      displayText: "Help me get started",
+      prompt: "Help me get started",
+      icon: <Sparkles size={16} />,
+    },
+    { displayText: "What can you do?", prompt: "What can you do?" }, // Default lightbulb icon
+    { displayText: "No icon example", prompt: "No icon", icon: <></> }, // No icon (use empty fragment)
+  ]}
+/>
+```
+
+**Props:**
+
+- `variant` - `"short"` (pill-style buttons) or `"long"` (list items with separators)
+- `starters` - Array of objects with:
+  - `displayText` - Text shown on the button
+  - `prompt` - Message sent when clicked
+  - `icon` - Optional: `ReactNode` for custom icon, `undefined` for default lightbulb, `<></>` (empty fragment) for no icon
+
+### WelcomeScreen
+
+A centered welcome message shown when the thread is empty. Supports either props-based content or custom children.
+
+**Props-based usage with URL:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen
+      title="Hi, I'm AI Assistant"
+      description="I can help you with your questions."
+      image={{ url: "/path/to/logo.png" }}
+    />
+  );
+}
+```
+
+**Props-based usage with styled image:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen
+      title="Hi, I'm AI Assistant"
+      description="I can help you with your questions."
+      image={
+        <img
+          src="/path/to/logo.png"
+          alt="AI Assistant"
+          style={{ width: 64, height: 64, borderRadius: 16, objectFit: "cover" }}
+        />
+      }
+    />
+  );
+}
+```
+
+**Props-based usage with custom icon:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen
+      title="Hi, I'm AI Assistant"
+      description="I can help you with your questions."
+      image={<Sparkles size={32} />}
+    />
+  );
+}
+```
+
+**Custom children usage:**
+
+```tsx
+{
+  !hasMessages && (
+    <WelcomeScreen>
+      <div style={{ textAlign: "center" }}>
+        <MyCustomLogo />
+        <h2>Welcome!</h2>
+        <p>Custom welcome content</p>
+      </div>
+    </WelcomeScreen>
+  );
+}
+```
+
+**Props:**
+
+- `title` - Greeting/title text (optional)
+- `description` - Description text (optional)
+- `image` - Image to display: `{ url: string }` for simple URL (renders with default 64x64 size, rounded corners), or `ReactNode` for custom styled elements (optional)
+- `children` - Custom content (mutually exclusive with title/description/image)
+- `className` - Additional CSS class (optional)
+
+**Note:** You must conditionally render WelcomeScreen based on `hasMessages` state.
+
+### Composer
+
+Text input with submit button. Handles enter key and running state.
+
+```tsx
+<Composer className="custom-class" />
+```
+
+## Customization Examples
+
+### Custom Trigger Content
+
+```tsx
+<Trigger onClick={() => setIsOpen(!isOpen)} isOpen={isOpen}>
+  <img src="/custom-icon.png" alt="Chat" />
+</Trigger>
+```
+
+### Without ConversationStarter
+
+Simply omit the component:
+
+```tsx
+<ThreadContainer>
+  <Header onMinimize={() => setIsOpen(false)} />
+  <ScrollArea>
+    <Messages loader={<MessageLoading />} />
+  </ScrollArea>
+  <Composer />
+</ThreadContainer>
+```
+
+### Minimal Header
+
+```tsx
+<Header onMinimize={() => setIsOpen(false)} hideNewChatButton hideThreadListContainer />
+```
+
+## Animation
+
+The tray uses a **cone animation** that expands from the trigger button:
+
+- Opens with scale + clip-path animation from bottom-right
+- Trigger shrinks when tray is open
+- Smooth spring easing for natural feel
+
+## Mobile Behavior
+
+- Tray goes fullscreen on mobile (less than 768px)
+- Trigger hides when tray is open on mobile
+- Touch-friendly interactions

@@ -52,3 +52,10 @@ export {
 export * from "./context/LayoutContext";
 
 export * from "./context/PrintContext";
+
+// Types Export
+export type { ConversationStarterVariant } from "./components/BottomTray/ConversationStarter";
+export type {
+  ConversationStarterIcon,
+  ConversationStarterProps,
+} from "./types/ConversationStarter";
