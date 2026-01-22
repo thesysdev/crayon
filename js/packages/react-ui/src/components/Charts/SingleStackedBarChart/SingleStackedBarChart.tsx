@@ -103,6 +103,9 @@ export const SingleStackedBar = <T extends SingleStackedBarData>({
     [segments, colors],
   );
 
+  const printContext = usePrintContext();
+  animated = printContext ? false : animated;
+
   const exportData = useExportChartData({
     type: "bar",
     data,
