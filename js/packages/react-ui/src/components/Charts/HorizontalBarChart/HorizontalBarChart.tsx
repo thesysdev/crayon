@@ -6,7 +6,7 @@ import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useTransformedKeys } from "../hooks";
+import { useExportChartData, useTransformedKeys } from "../hooks";
 import { useHorizontalBarLabelHeight } from "../hooks/useMaxLabelHeight";
 import {
   CustomTooltipContent,
@@ -197,7 +197,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   useEffect(() => {
     // Set up ResizeObserver if height or width is not provided
     if (!chartContainerRef.current) {
-      return () => {};
+      return () => { };
     }
 
     const resizeObserver = new ResizeObserver((entries) => {
@@ -244,6 +244,20 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   const legendItems: LegendItem[] = useMemo(() => {
     return getLegendItems(dataKeys, colors, icons);
   }, [dataKeys, colors, icons]);
+
+  const exportData = useExportChartData({
+    type: "bar",
+    data,
+    categoryKey: categoryKey as string,
+    dataKeys,
+    colors,
+    legend,
+    xAxisLabel,
+    yAxisLabel,
+    extraOptions: {
+      barDir: "bar",
+    },
+  });
 
   const id = useId();
 
@@ -337,7 +351,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
     [dataKeys, colors],
   );
 
-  const setLabelWidth = useCallback(() => {}, []);
+  const setLabelWidth = useCallback(() => { }, []);
 
   return (
     <LabelTooltipProvider>
@@ -347,7 +361,10 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
         data={sideBarTooltipData}
         setData={setSideBarTooltipData}
       >
-        <div className={clsx("crayon-horizontal-bar-chart-container", className)}>
+        <div
+          className={clsx("crayon-horizontal-bar-chart-container", className)}
+          data-crayon-chart={exportData}
+        >
           <div
             className="crayon-horizontal-bar-chart-container-inner-wrapper"
             style={{

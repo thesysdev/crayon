@@ -4,7 +4,7 @@ import { Cell, Pie, PieChart as RechartsPieChart } from "recharts";
 import { usePrintContext } from "../../../context/PrintContext.js";
 import { useTheme } from "../../ThemeProvider/ThemeProvider.js";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../Charts.js";
-import { useTransformedKeys } from "../hooks/index.js";
+import { useExportChartData, useTransformedKeys } from "../hooks/index.js";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend.js";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend.js";
 import { LegendItem } from "../types/Legend.js";
@@ -144,6 +144,15 @@ const PieChartComponent = <T extends PieChartData>({
     customPalette,
     themePaletteName: "pieChartPalette",
     dataLength: sortedProcessedData.length,
+  });
+
+  const exportData = useExportChartData({
+    type: "pie",
+    data: sortedProcessedData,
+    categoryKey: categoryKey as string,
+    dataKeys: [dataKey as string],
+    colors,
+    legend,
   });
 
   // Memoize expensive data transformations and configurations
@@ -445,7 +454,12 @@ const PieChartComponent = <T extends PieChartData>({
   }, [width, height]);
 
   return (
-    <div ref={wrapperRef} className={wrapperClassName} style={wrapperStyle}>
+    <div
+      ref={wrapperRef}
+      className={wrapperClassName}
+      style={wrapperStyle}
+      data-crayon-chart={exportData}
+    >
       <div className="crayon-pie-chart-container">
         <div className="crayon-pie-chart-container-inner">
           <div style={chartSizeStyle}>

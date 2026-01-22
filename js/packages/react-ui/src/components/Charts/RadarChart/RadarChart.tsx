@@ -10,7 +10,7 @@ import {
 import { usePrintContext } from "../../../context/PrintContext";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useTransformedKeys } from "../hooks/useTransformKey";
+import { useExportChartData, useTransformedKeys } from "../hooks";
 import { ActiveDot, CustomTooltipContent, DefaultLegend } from "../shared";
 import { LegendItem } from "../types";
 import { useChartPalette } from "../utils/PalletUtils";
@@ -76,6 +76,15 @@ const RadarChartComponent = <T extends RadarChartData>({
   const legendItems: LegendItem[] = useMemo(() => {
     return getLegendItems(dataKeys, colors, icons);
   }, [dataKeys, colors, icons]);
+
+  const exportData = useExportChartData({
+    type: "radar",
+    data,
+    categoryKey: categoryKey as string,
+    dataKeys,
+    colors,
+    legend,
+  });
 
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -195,7 +204,12 @@ const RadarChartComponent = <T extends RadarChartData>({
       data={undefined}
       setData={() => {}}
     >
-      <div ref={wrapperRef} className={wrapperClassName} style={wrapperStyle}>
+      <div
+        ref={wrapperRef}
+        className={wrapperClassName}
+        style={wrapperStyle}
+        data-crayon-chart={exportData}
+      >
         <div className="crayon-radar-chart-container">
           <div className="crayon-radar-chart-container-inner">
             <div style={chartSizeStyle}>

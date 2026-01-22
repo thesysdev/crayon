@@ -6,7 +6,7 @@ import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
+import { useExportChartData, useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
 import {
   cartesianGrid,
   CustomTooltipContent,
@@ -206,7 +206,7 @@ const BarChartComponent = <T extends BarChartData>({
   useEffect(() => {
     // Only set up ResizeObserver if width is not provided
     if (width || !chartContainerRef.current) {
-      return () => {};
+      return () => { };
     }
 
     const resizeObserver = new ResizeObserver((entries) => {
@@ -252,6 +252,17 @@ const BarChartComponent = <T extends BarChartData>({
   const legendItems: LegendItem[] = useMemo(() => {
     return getLegendItems(dataKeys, colors, icons);
   }, [dataKeys, colors, icons]);
+
+  const exportData = useExportChartData({
+    type: "bar",
+    data,
+    categoryKey: categoryKey as string,
+    dataKeys,
+    colors,
+    legend,
+    xAxisLabel,
+    yAxisLabel,
+  });
 
   const id = useId();
 
@@ -428,6 +439,7 @@ const BarChartComponent = <T extends BarChartData>({
       >
         <div
           className={clsx("crayon-bar-chart-container", className)}
+          data-crayon-chart={exportData}
           style={{
             width: width ? `${width}px` : undefined,
           }}

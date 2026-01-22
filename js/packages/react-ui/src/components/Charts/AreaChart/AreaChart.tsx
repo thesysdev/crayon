@@ -5,7 +5,7 @@ import { usePrintContext } from "../../../context/PrintContext";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
+import { useExportChartData, useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
 import {
   ActiveDot,
   cartesianGrid,
@@ -182,7 +182,7 @@ const AreaChartComponent = <T extends AreaChartData>({
   useEffect(() => {
     // Only set up ResizeObserver if width is not provided
     if (width || !chartContainerRef.current) {
-      return () => {};
+      return () => { };
     }
 
     const resizeObserver = new ResizeObserver((entries) => {
@@ -228,6 +228,17 @@ const AreaChartComponent = <T extends AreaChartData>({
   const legendItems: LegendItem[] = useMemo(() => {
     return getLegendItems(dataKeys, colors, icons);
   }, [dataKeys, colors, icons]);
+
+  const exportData = useExportChartData({
+    type: "area",
+    data,
+    categoryKey: categoryKey as string,
+    dataKeys,
+    colors,
+    legend,
+    xAxisLabel,
+    yAxisLabel,
+  });
 
   const id = useId();
 
@@ -304,6 +315,7 @@ const AreaChartComponent = <T extends AreaChartData>({
       >
         <div
           className={clsx("crayon-area-chart-container", className)}
+          data-crayon-chart={exportData}
           style={{
             width: width ? `${width}px` : undefined,
           }}

@@ -11,6 +11,7 @@ export * from "./components/CheckBoxGroup";
 export * from "./components/CheckBoxItem";
 export * from "./components/CodeBlock";
 export * as CopilotShell from "./components/CopilotShell";
+export type { ExportChartData } from "./components/Charts/Charts";
 export * from "./components/CrayonChat";
 export * from "./components/DatePicker";
 export * from "./components/FollowUpBlock";
