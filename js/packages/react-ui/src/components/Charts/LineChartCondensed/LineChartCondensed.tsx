@@ -196,7 +196,7 @@ const LineChartCondensedComponent = <T extends LineChartData>({
   useEffect(() => {
     // Only set up ResizeObserver if width is not provided
     if (width || !containerRef.current || !chartContainerRef.current) {
-      return () => { };
+      return () => {};
     }
 
     const resizeObserver = new ResizeObserver((entries) => {

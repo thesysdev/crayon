@@ -193,7 +193,7 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
   useEffect(() => {
     // Only set up ResizeObserver if width is not provided
     if (width || !containerRef.current || !chartContainerRef.current) {
-      return () => { };
+      return () => {};
     }
 
     const resizeObserver = new ResizeObserver((entries) => {
@@ -377,7 +377,7 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
                         activeDot={<ActiveDot key={`active-dot-${key}-${id}`} />}
                         dot={false}
                         isAnimationActive={isAnimationActive}
-                      // strokeWidth={2}
+                        // strokeWidth={2}
                       />
                     );
                   })}
