@@ -5,7 +5,12 @@ import { usePrintContext } from "../../../context/PrintContext";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useExportChartData, useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
+import {
+  useExportChartData,
+  useMaxLabelHeight,
+  useTransformedKeys,
+  useYAxisLabelWidth,
+} from "../hooks";
 import {
   ActiveDot,
   cartesianGrid,
@@ -182,7 +187,7 @@ const AreaChartComponent = <T extends AreaChartData>({
   useEffect(() => {
     // Only set up ResizeObserver if width is not provided
     if (width || !chartContainerRef.current) {
-      return () => { };
+      return () => {};
     }
 
     const resizeObserver = new ResizeObserver((entries) => {

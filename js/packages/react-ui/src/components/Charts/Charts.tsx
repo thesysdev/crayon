@@ -28,16 +28,16 @@ export type ChartConfig = {
   } & (
     | { color?: string; secondaryColor?: string; theme?: never }
     | {
-      color?: never;
-      theme: Record<
-        keyof typeof THEMES,
-        | string
-        | {
-          color: string;
-          secondaryColor?: string;
-        }
-      >;
-    }
+        color?: never;
+        theme: Record<
+          keyof typeof THEMES,
+          | string
+          | {
+              color: string;
+              secondaryColor?: string;
+            }
+        >;
+      }
   );
 };
 
@@ -111,27 +111,27 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
             ([theme, prefix]) => `
     ${prefix} [data-chart=${id}] {
     ${colorConfig
-                .map(([_, itemConfig]) => {
-                  const transformedKey = itemConfig.transformed;
-                  const themeValue = itemConfig.theme?.[theme as keyof typeof itemConfig.theme];
-                  const color =
-                    typeof themeValue === "string" ? themeValue : themeValue?.color || itemConfig.color;
-                  const secondaryColor =
-                    typeof themeValue === "object"
-                      ? themeValue?.secondaryColor
-                      : "secondaryColor" in itemConfig
-                        ? itemConfig.secondaryColor
-                        : undefined;
+      .map(([_, itemConfig]) => {
+        const transformedKey = itemConfig.transformed;
+        const themeValue = itemConfig.theme?.[theme as keyof typeof itemConfig.theme];
+        const color =
+          typeof themeValue === "string" ? themeValue : themeValue?.color || itemConfig.color;
+        const secondaryColor =
+          typeof themeValue === "object"
+            ? themeValue?.secondaryColor
+            : "secondaryColor" in itemConfig
+              ? itemConfig.secondaryColor
+              : undefined;
 
-                  return [
-                    color ? `  --color-${transformedKey}: ${color};` : null,
-                    secondaryColor ? `  --color-${transformedKey}-secondary: ${secondaryColor};` : null,
-                  ]
-                    .filter(Boolean)
-                    .join("\n");
-                })
-                .filter(Boolean)
-                .join("\n")}
+        return [
+          color ? `  --color-${transformedKey}: ${color};` : null,
+          secondaryColor ? `  --color-${transformedKey}-secondary: ${secondaryColor};` : null,
+        ]
+          .filter(Boolean)
+          .join("\n");
+      })
+      .filter(Boolean)
+      .join("\n")}
     }
     `,
           )
@@ -205,14 +205,14 @@ const ChartTooltip = RechartsPrimitive.Tooltip;
 const ChartTooltipContent = forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-  React.ComponentProps<"div"> & {
-    hideLabel?: boolean;
-    hideIndicator?: boolean;
-    indicator?: "line" | "dot" | "dashed";
-    nameKey?: string;
-    labelKey?: string;
-    showPercentage?: boolean;
-  }
+    React.ComponentProps<"div"> & {
+      hideLabel?: boolean;
+      hideIndicator?: boolean;
+      indicator?: "line" | "dot" | "dashed";
+      nameKey?: string;
+      labelKey?: string;
+      showPercentage?: boolean;
+    }
 >(
   (
     {
@@ -356,10 +356,10 @@ const ChartLegend = RechartsPrimitive.Legend;
 const ChartLegendContent = forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> &
-  Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
-    hideIcon?: boolean;
-    nameKey?: string;
-  }
+    Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
+      hideIcon?: boolean;
+      nameKey?: string;
+    }
 >(({ className, hideIcon = false, payload, verticalAlign = "bottom", nameKey }, ref) => {
   const { config } = useChart();
 

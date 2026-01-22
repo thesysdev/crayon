@@ -6,7 +6,12 @@ import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useExportChartData, useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
+import {
+  useExportChartData,
+  useMaxLabelHeight,
+  useTransformedKeys,
+  useYAxisLabelWidth,
+} from "../hooks";
 import {
   cartesianGrid,
   CustomTooltipContent,
@@ -206,7 +211,7 @@ const BarChartComponent = <T extends BarChartData>({
   useEffect(() => {
     // Only set up ResizeObserver if width is not provided
     if (width || !chartContainerRef.current) {
-      return () => { };
+      return () => {};
     }
 
     const resizeObserver = new ResizeObserver((entries) => {

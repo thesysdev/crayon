@@ -197,7 +197,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
   useEffect(() => {
     // Set up ResizeObserver if height or width is not provided
     if (!chartContainerRef.current) {
-      return () => { };
+      return () => {};
     }
 
     const resizeObserver = new ResizeObserver((entries) => {
@@ -351,7 +351,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
     [dataKeys, colors],
   );
 
-  const setLabelWidth = useCallback(() => { }, []);
+  const setLabelWidth = useCallback(() => {}, []);
 
   return (
     <LabelTooltipProvider>

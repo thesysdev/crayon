@@ -75,4 +75,3 @@ export const useExportChartData = ({
     printContext,
   ]);
 };
-
