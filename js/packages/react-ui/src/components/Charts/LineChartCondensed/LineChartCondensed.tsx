@@ -8,6 +8,7 @@ import { DEFAULT_X_AXIS_HEIGHT, X_AXIS_PADDING } from "../constants";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import {
   useAutoAngleCalculation,
+  useExportChartData,
   useMaxLabelWidth,
   useTransformedKeys,
   useYAxisLabelWidth,
@@ -135,6 +136,20 @@ const LineChartCondensedComponent = <T extends LineChartData>({
   }, [dataKeys, icons, colors, transformedKeys]);
 
   const id = useId();
+
+  const exportData = useExportChartData({
+    type: "line",
+    data,
+    categoryKey: categoryKey as string,
+    dataKeys,
+    colors,
+    legend,
+    xAxisLabel,
+    yAxisLabel,
+    extraOptions: {
+      lineSize: strokeWidth,
+    },
+  });
 
   const chartMargin = useMemo(
     () => ({
@@ -279,6 +294,7 @@ const LineChartCondensedComponent = <T extends LineChartData>({
       >
         <div
           className={clsx("crayon-line-chart-condensed-container", className)}
+          data-crayon-chart={exportData}
           style={{
             width: width ? `${width}px` : undefined,
           }}

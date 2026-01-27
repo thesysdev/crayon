@@ -5,7 +5,12 @@ import { usePrintContext } from "../../../context/PrintContext";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
+import {
+  useExportChartData,
+  useMaxLabelHeight,
+  useTransformedKeys,
+  useYAxisLabelWidth,
+} from "../hooks";
 import {
   ActiveDot,
   cartesianGrid,
@@ -228,6 +233,20 @@ export const LineChart = <T extends LineChartData>({
     return getLegendItems(dataKeys, colors, icons);
   }, [dataKeys, colors, icons]);
 
+  const exportData = useExportChartData({
+    type: "line",
+    data,
+    categoryKey: categoryKey as string,
+    dataKeys,
+    colors,
+    legend,
+    xAxisLabel,
+    yAxisLabel,
+    extraOptions: {
+      lineSize: strokeWidth,
+    },
+  });
+
   const id = useId();
 
   const onLineClick = useCallback(
@@ -314,6 +333,7 @@ export const LineChart = <T extends LineChartData>({
       >
         <div
           className={clsx("crayon-line-chart-container", className)}
+          data-crayon-chart={exportData}
           style={{
             width: width ? `${width}px` : undefined,
           }}

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Cell, PolarGrid, RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
 import { usePrintContext } from "../../../context/PrintContext";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../Charts";
-import { useTransformedKeys } from "../hooks";
+import { useExportChartData, useTransformedKeys } from "../hooks";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend";
 import { LegendItem } from "../types/Legend";
@@ -148,6 +148,15 @@ export const RadialChart = <T extends RadialChartData>({
     customPalette,
     themePaletteName: "radialChartPalette",
     dataLength: sortedProcessedData.length,
+  });
+
+  const exportData = useExportChartData({
+    type: "pie",
+    data: sortedProcessedData,
+    categoryKey: categoryKey as string,
+    dataKeys: [dataKey as string],
+    colors,
+    legend,
   });
 
   // Memoize expensive data transformations and configurations
@@ -332,6 +341,7 @@ export const RadialChart = <T extends RadialChartData>({
       className={wrapperClassName}
       style={wrapperStyle}
       aria-description="radial-chart-wrapper"
+      data-crayon-chart={exportData}
     >
       <div className="crayon-radial-chart-container">
         <div className="crayon-radial-chart-container-inner">
