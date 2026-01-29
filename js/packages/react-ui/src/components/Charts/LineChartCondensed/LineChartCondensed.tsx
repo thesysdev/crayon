@@ -101,8 +101,10 @@ const LineChartCondensedComponent = <T extends LineChartData>({
     if (data.length === 0) {
       return 0;
     }
-    return chartContainerWidth / data.length;
-  }, [chartContainerWidth, data]);
+    // Use passed width if available, otherwise use observed chartContainerWidth
+    const chartWidth = width ?? chartContainerWidth;
+    return chartWidth / data.length;
+  }, [width, chartContainerWidth, data]);
 
   const { angle: calculatedAngle, height: xAxisHeight } = useAutoAngleCalculation(
     maxLabelWidth,

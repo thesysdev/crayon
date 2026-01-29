@@ -105,7 +105,9 @@ const BarChartCondensedComponent = <T extends BarChartData>({
     if (data.length === 0) {
       return 0;
     }
-    return chartContainerWidth / data.length;
+    // Use passed width if available, otherwise use observed chartContainerWidth
+    const chartWidth = width ?? chartContainerWidth;
+    return chartWidth / data.length;
   }, [chartContainerWidth, data]);
 
   const { angle: calculatedAngle, height: xAxisHeight } = useAutoAngleCalculation(
