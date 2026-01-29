@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { usePrintContext } from "../../../context/PrintContext";
 import { Separator } from "../../Separator";
+import { useExportChartData } from "../hooks";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
 import { FloatingUIPortal } from "../shared/PortalTooltip";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend";
@@ -101,6 +103,22 @@ export const SingleStackedBar = <T extends SingleStackedBarData>({
     [segments, colors],
   );
 
+  const printContext = usePrintContext();
+  animated = printContext ? false : animated;
+
+  const exportData = useExportChartData({
+    type: "bar",
+    data,
+    categoryKey: categoryKey as string,
+    dataKeys: [dataKey as string],
+    colors,
+    legend,
+    extraOptions: {
+      barDir: "bar",
+      barGrouping: "stacked",
+    },
+  });
+
   // Handle legend item hover with tooltip positioning
   const handleLegendItemHover = useCallback(
     (hoverIndex: number | null) => {
@@ -142,6 +160,7 @@ export const SingleStackedBar = <T extends SingleStackedBarData>({
         "crayon-single-stacked-bar-chart-container-gap": legend && legendVariant === "default",
       })}
       style={style}
+      data-crayon-chart={exportData}
     >
       <div className="crayon-single-stacked-bar-chart">
         {segments.map((segment, index) => {

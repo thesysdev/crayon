@@ -5,7 +5,7 @@ import { usePrintContext } from "../../../context/PrintContext";
 import { useId } from "../../../polyfills";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useYAxisLabelWidth } from "../hooks";
+import { useExportChartData, useYAxisLabelWidth } from "../hooks";
 import {
   CustomTooltipContent,
   DefaultLegend,
@@ -189,6 +189,21 @@ export const ScatterChart = ({
     return getLegendItems(datasets, colors);
   }, [datasets, colors]);
 
+  const exportData = useExportChartData({
+    type: "scatter",
+    data,
+    colors,
+    legend,
+    xAxisLabel,
+    yAxisLabel,
+    customDataTransform: () =>
+      data.map((dataset) => ({
+        name: dataset.name,
+        x: dataset.data.map((p) => p[xAxisDataKey] as number),
+        y: dataset.data.map((p) => p[yAxisDataKey] as number),
+      })),
+  });
+
   const id = useId();
 
   const xAxis = useMemo(() => {
@@ -299,6 +314,7 @@ export const ScatterChart = ({
     >
       <div
         className={clsx("crayon-scatter-chart-container", className)}
+        data-crayon-chart={exportData}
         style={{
           width: typeof width === "number" ? `${width}px` : width || "100%",
           height: isFixedNumericHeight ? "auto" : height || "100%",

@@ -9,6 +9,7 @@ import { DEFAULT_X_AXIS_HEIGHT, X_AXIS_PADDING } from "../constants";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import {
   useAutoAngleCalculation,
+  useExportChartData,
   useMaxLabelWidth,
   useTransformedKeys,
   useYAxisLabelWidth,
@@ -136,6 +137,17 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
   }, [dataKeys, icons, colors, transformedKeys]);
 
   const id = useId();
+
+  const exportData = useExportChartData({
+    type: "area",
+    data,
+    categoryKey: categoryKey as string,
+    dataKeys,
+    colors,
+    legend,
+    xAxisLabel,
+    yAxisLabel,
+  });
   const gradientID = useMemo(() => `area-chart-condensed-gradient-${id}`, [id]);
 
   const chartMargin = useMemo(
@@ -281,6 +293,7 @@ const AreaChartCondensedComponent = <T extends AreaChartData>({
       >
         <div
           className={clsx("crayon-area-chart-condensed-container", className)}
+          data-crayon-chart={exportData}
           style={{
             width: width ? `${width}px` : undefined,
           }}

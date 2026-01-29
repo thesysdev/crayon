@@ -6,7 +6,12 @@ import { useId } from "../../../polyfills";
 import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
-import { useMaxLabelHeight, useTransformedKeys, useYAxisLabelWidth } from "../hooks";
+import {
+  useExportChartData,
+  useMaxLabelHeight,
+  useTransformedKeys,
+  useYAxisLabelWidth,
+} from "../hooks";
 import {
   cartesianGrid,
   CustomTooltipContent,
@@ -253,6 +258,17 @@ const BarChartComponent = <T extends BarChartData>({
     return getLegendItems(dataKeys, colors, icons);
   }, [dataKeys, colors, icons]);
 
+  const exportData = useExportChartData({
+    type: "bar",
+    data,
+    categoryKey: categoryKey as string,
+    dataKeys,
+    colors,
+    legend,
+    xAxisLabel,
+    yAxisLabel,
+  });
+
   const id = useId();
 
   const yAxis = useMemo(() => {
@@ -428,6 +444,7 @@ const BarChartComponent = <T extends BarChartData>({
       >
         <div
           className={clsx("crayon-bar-chart-container", className)}
+          data-crayon-chart={exportData}
           style={{
             width: width ? `${width}px` : undefined,
           }}

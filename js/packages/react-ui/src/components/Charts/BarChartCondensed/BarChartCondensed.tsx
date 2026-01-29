@@ -10,6 +10,7 @@ import { DEFAULT_X_AXIS_HEIGHT, X_AXIS_PADDING } from "../constants";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import {
   useAutoAngleCalculation,
+  useExportChartData,
   useMaxLabelWidth,
   useTransformedKeys,
   useYAxisLabelWidth,
@@ -141,6 +142,17 @@ const BarChartCondensedComponent = <T extends BarChartData>({
   }, [dataKeys, icons, colors, transformedKeys]);
 
   const id = useId();
+
+  const exportData = useExportChartData({
+    type: "bar",
+    data,
+    categoryKey: categoryKey as string,
+    dataKeys,
+    colors,
+    legend,
+    xAxisLabel,
+    yAxisLabel,
+  });
 
   const chartMargin = useMemo(
     () => ({
@@ -380,6 +392,7 @@ const BarChartCondensedComponent = <T extends BarChartData>({
       >
         <div
           className={clsx("crayon-bar-chart-condensed-container", className)}
+          data-crayon-chart={exportData}
           style={{
             width: width ? `${width}px` : undefined,
           }}
