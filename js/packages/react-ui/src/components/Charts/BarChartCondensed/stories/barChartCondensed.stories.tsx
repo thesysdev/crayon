@@ -265,7 +265,7 @@ const salesData = [
       },
     },
   },
-  tags: ["!dev", "autodocs"],
+  tags: ["dev", "autodocs"],
   argTypes: {
     data: {
       description: `
@@ -1057,7 +1057,7 @@ export const CustomPaletteStory: Story = {
         </div>
       </div>
       <Card style={{ width: "600px" }}>
-        <BarChartCondensed {...args} />
+        <BarChartCondensed {...args} width={400} />
       </Card>
     </div>
   ),
