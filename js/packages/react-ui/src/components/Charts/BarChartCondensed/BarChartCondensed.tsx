@@ -233,25 +233,26 @@ const BarChartCondensedComponent = <T extends BarChartData>({
 
     // Use explicitChartWidth if available, otherwise fall back to chartContainerWidth
     const availableWidth = explicitChartWidth ?? chartContainerWidth;
-    
+
     if (!availableWidth || availableWidth === 0) return defaultBarWidth;
 
     // Parse category gap percentage
-    const categoryGapPercent = typeof BAR_CATEGORY_GAP === 'string' 
-      ? parseFloat(BAR_CATEGORY_GAP) / 100 
-      : BAR_CATEGORY_GAP / 100;
+    const categoryGapPercent =
+      typeof BAR_CATEGORY_GAP === "string"
+        ? parseFloat(BAR_CATEGORY_GAP) / 100
+        : BAR_CATEGORY_GAP / 100;
 
     // Calculate space per category
     const spacePerCategory = availableWidth / data.length;
-    
+
     // For grouped charts, multiple bars share the category space
-    const barsPerCategory = variant === 'stacked' ? 1 : dataKeys.length;
-    
+    const barsPerCategory = variant === "stacked" ? 1 : dataKeys.length;
+
     // Calculate available space for bars after accounting for gaps
     // Category gap is applied as a percentage of the category width
     const categoryGapWidth = spacePerCategory * categoryGapPercent;
     const spaceForBars = spacePerCategory - categoryGapWidth;
-    
+
     // Calculate bar width accounting for gaps between bars
     let barWidth: number;
     if (barsPerCategory === 1) {
@@ -261,10 +262,19 @@ const BarChartCondensedComponent = <T extends BarChartData>({
       const totalGapWidth = BAR_GAP * (barsPerCategory - 1);
       barWidth = (spaceForBars - totalGapWidth) / barsPerCategory;
     }
-    
+
     // Apply both minimum and maximum constraints
     return Math.max(minBarWidth, Math.min(maxBarWidth, barWidth));
-  }, [explicitChartWidth, chartContainerWidth, data.length, dataKeys.length, variant, minBarWidth, maxBarWidth, defaultBarWidth]);
+  }, [
+    explicitChartWidth,
+    chartContainerWidth,
+    data.length,
+    dataKeys.length,
+    variant,
+    minBarWidth,
+    maxBarWidth,
+    defaultBarWidth,
+  ]);
 
   // Handle mouse events for bar hovering
   const handleChartMouseMove = useCallback((state: any) => {
@@ -316,7 +326,7 @@ const BarChartCondensedComponent = <T extends BarChartData>({
 
     // Always observe chartContainerRef
     resizeObserver.observe(chartContainerRef.current);
-    
+
     // Only observe containerRef if width is not provided
     if (!width && containerRef.current) {
       resizeObserver.observe(containerRef.current);
@@ -476,7 +486,10 @@ const BarChartCondensedComponent = <T extends BarChartData>({
             <div className="crayon-bar-chart-condensed" ref={chartContainerRef}>
               <ChartContainer
                 config={chartConfig}
-                style={{ width: explicitChartWidth ? `${explicitChartWidth}px` : "100%", height: effectiveHeight }}
+                style={{
+                  width: explicitChartWidth ? `${explicitChartWidth}px` : "100%",
+                  height: effectiveHeight,
+                }}
                 rechartsProps={{
                   width: explicitChartWidth ?? "100%",
                   height: effectiveHeight,
