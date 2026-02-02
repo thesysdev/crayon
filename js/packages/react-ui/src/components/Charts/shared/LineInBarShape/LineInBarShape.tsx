@@ -23,7 +23,8 @@ interface LineInBarShapeProps {
 }
 
 const DEFAULT_STACK_GAP = 1;
-const MIN_LINE_DIMENSION = 8; // For internal line visibility
+const MIN_LINE_DIMENSION = 8; // For internal line visibility (height/width threshold)
+const MIN_BAR_WIDTH_FOR_LINE = 3; // Minimum bar width to show internal line in vertical mode
 const LINE_PADDING = 6;
 const MIN_GROUP_BAR_HEIGHT = 2; // For vertical bars
 const MIN_STACKED_BAR_HEIGHT = 4; // For vertical bars
@@ -302,7 +303,11 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
 
   const lineCoords = useMemo(() => {
     if (isVertical) {
-      if (width <= 0 || adjustedHeight < MIN_LINE_DIMENSION) return null;
+      // For vertical bars: hide line if bar width < 3px (too thin) OR height < 8px (too short)
+      // This ensures thin bars don't have a visible internal line that looks awkward
+      if (width <= 0 || width < MIN_BAR_WIDTH_FOR_LINE || adjustedHeight < MIN_LINE_DIMENSION) {
+        return null;
+      }
       const centerX = x + width / 2;
       return {
         x1: centerX,
@@ -311,7 +316,7 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
         y2: adjustedY + adjustedHeight - LINE_PADDING,
       };
     }
-    // Horizontal
+    // Horizontal bars: hide line if width < 8px OR height <= 0
     if (adjustedWidth < MIN_LINE_DIMENSION || height <= 0) return null;
     const centerY = y + height / 2;
     return {

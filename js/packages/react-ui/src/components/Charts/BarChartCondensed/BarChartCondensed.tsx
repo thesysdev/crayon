@@ -59,18 +59,12 @@ export interface BarChartCondensedProps<T extends BarChartData> {
   className?: string;
   height?: number;
   width?: number;
-  /** Minimum bar width in pixels. Default: 12 */
-  minBarWidth?: number;
-  /** Maximum bar width in pixels. Default: 12 */
+  /** Maximum bar width in pixels. Prevents bars from becoming too wide. Default: 12 */
   maxBarWidth?: number;
-  /** Default bar width used as fallback when container size is unknown. Default: 12 */
-  defaultBarWidth?: number;
 }
 
-// Default constants - can be overridden via props
-const DEFAULT_FALLBACK_BAR_WIDTH = 12;
-const DEFAULT_MIN_BAR_WIDTH = DEFAULT_FALLBACK_BAR_WIDTH;
-const DEFAULT_MAX_BAR_WIDTH = DEFAULT_FALLBACK_BAR_WIDTH;
+// Default maximum bar width - prevents bars from becoming too wide with sparse data
+const DEFAULT_MAX_BAR_WIDTH = 12;
 
 // Layout constants
 const BAR_GAP = 10;
@@ -98,9 +92,7 @@ const BarChartCondensedComponent = <T extends BarChartData>({
   className,
   height = CHART_HEIGHT,
   width,
-  minBarWidth = DEFAULT_MIN_BAR_WIDTH,
   maxBarWidth = DEFAULT_MAX_BAR_WIDTH,
-  defaultBarWidth = DEFAULT_FALLBACK_BAR_WIDTH,
 }: BarChartCondensedProps<T>) => {
   const printContext = usePrintContext();
   isAnimationActive = printContext ? false : isAnimationActive;
@@ -227,54 +219,28 @@ const BarChartCondensedComponent = <T extends BarChartData>({
   }, [width, showYAxis, yAxisWidth, chartMargin.left, chartMargin.right]);
 
   // Calculate optimal bar width based on available space
+  // Only applies maximum constraint - Recharts handles thin bars automatically
   const calculatedBarWidth = useMemo(() => {
-    // Fallback for empty data or unavailable dimensions
-    if (data.length === 0) return defaultBarWidth;
-
     // Use explicitChartWidth if available, otherwise fall back to chartContainerWidth
     const availableWidth = explicitChartWidth ?? chartContainerWidth;
 
-    if (!availableWidth || availableWidth === 0) return defaultBarWidth;
+    // If no width available, return undefined and let Recharts auto-size
+    if (!availableWidth || availableWidth === 0 || data.length === 0) {
+      return undefined;
+    }
 
-    // Parse category gap percentage
-    const categoryGapPercent =
-      typeof BAR_CATEGORY_GAP === "string"
-        ? parseFloat(BAR_CATEGORY_GAP) / 100
-        : BAR_CATEGORY_GAP / 100;
-
-    // Calculate space per category
+    // Calculate space per category (Recharts handles gaps automatically via barGap and barCategoryGap props)
     const spacePerCategory = availableWidth / data.length;
 
     // For grouped charts, multiple bars share the category space
     const barsPerCategory = variant === "stacked" ? 1 : dataKeys.length;
 
-    // Calculate available space for bars after accounting for gaps
-    // Category gap is applied as a percentage of the category width
-    const categoryGapWidth = spacePerCategory * categoryGapPercent;
-    const spaceForBars = spacePerCategory - categoryGapWidth;
+    // Simple division - let Recharts apply gaps via barGap and barCategoryGap props
+    const barWidth = spacePerCategory / barsPerCategory;
 
-    // Calculate bar width accounting for gaps between bars
-    let barWidth: number;
-    if (barsPerCategory === 1) {
-      barWidth = spaceForBars;
-    } else {
-      // For multiple bars: distribute space among bars and gaps
-      const totalGapWidth = BAR_GAP * (barsPerCategory - 1);
-      barWidth = (spaceForBars - totalGapWidth) / barsPerCategory;
-    }
-
-    // Apply both minimum and maximum constraints
-    return Math.max(minBarWidth, Math.min(maxBarWidth, barWidth));
-  }, [
-    explicitChartWidth,
-    chartContainerWidth,
-    data.length,
-    dataKeys.length,
-    variant,
-    minBarWidth,
-    maxBarWidth,
-    defaultBarWidth,
-  ]);
+    // Only apply maximum constraint, let Recharts handle thin bars automatically
+    return Math.min(maxBarWidth, barWidth);
+  }, [explicitChartWidth, chartContainerWidth, data.length, dataKeys.length, variant, maxBarWidth]);
 
   // Handle mouse events for bar hovering
   const handleChartMouseMove = useCallback((state: any) => {
