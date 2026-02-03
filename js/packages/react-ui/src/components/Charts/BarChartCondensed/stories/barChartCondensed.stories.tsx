@@ -1057,7 +1057,7 @@ export const CustomPaletteStory: Story = {
         </div>
       </div>
       <Card style={{ width: "600px" }}>
-        <BarChartCondensed {...args}/>
+        <BarChartCondensed {...args} />
       </Card>
     </div>
   ),
@@ -1662,9 +1662,7 @@ export const BarWidthPlayground: StoryObj<typeof BarChartCondensed> = {
               }}
             >
               <div style={{ fontWeight: 600, marginBottom: "4px" }}>🎯 Few Bars (Wide)</div>
-              <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                4 points, max 60px cap
-              </div>
+              <div style={{ fontSize: "12px", color: "#6b7280" }}>4 points, max 60px cap</div>
             </button>
 
             <button
@@ -1706,9 +1704,7 @@ export const BarWidthPlayground: StoryObj<typeof BarChartCondensed> = {
               }}
             >
               <div style={{ fontWeight: 600, marginBottom: "4px" }}>🔄 Fixed Container</div>
-              <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                24 points, stacked, 800px
-              </div>
+              <div style={{ fontSize: "12px", color: "#6b7280" }}>24 points, stacked, 800px</div>
             </button>
 
             <button
@@ -1728,9 +1724,7 @@ export const BarWidthPlayground: StoryObj<typeof BarChartCondensed> = {
               }}
             >
               <div style={{ fontWeight: 600, marginBottom: "4px" }}>🎨 Large Max Width</div>
-              <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                Medium data, max 100px
-              </div>
+              <div style={{ fontSize: "12px", color: "#6b7280" }}>Medium data, max 100px</div>
             </button>
 
             <button
@@ -1750,9 +1744,7 @@ export const BarWidthPlayground: StoryObj<typeof BarChartCondensed> = {
               }}
             >
               <div style={{ fontWeight: 600, marginBottom: "4px" }}>📱 Narrow Container</div>
-              <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                Small data, 400px width
-              </div>
+              <div style={{ fontSize: "12px", color: "#6b7280" }}>Small data, 400px width</div>
             </button>
 
             <button
@@ -1772,9 +1764,7 @@ export const BarWidthPlayground: StoryObj<typeof BarChartCondensed> = {
               }}
             >
               <div style={{ fontWeight: 600, marginBottom: "4px" }}>🔬 Ultra Condensed</div>
-              <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                50 points, stacked, max 20px
-              </div>
+              <div style={{ fontSize: "12px", color: "#6b7280" }}>50 points, stacked, max 20px</div>
             </button>
           </div>
         </Card>
