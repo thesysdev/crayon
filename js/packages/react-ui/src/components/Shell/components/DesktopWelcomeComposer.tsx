@@ -1,6 +1,6 @@
 import { useThreadActions, useThreadState } from "@crayonai/react-core";
 import clsx from "clsx";
-import { ArrowUp, Square } from "lucide-react";
+import { ArrowUp, Paperclip, Square } from "lucide-react";
 import { useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../../hooks/useComposerState";
 import { IconButton } from "../../IconButton";
@@ -8,11 +8,13 @@ import { IconButton } from "../../IconButton";
 export interface DesktopWelcomeComposerProps {
   className?: string;
   placeholder?: string;
+  onAttachmentClick?: () => void;
 }
 
 export const DesktopWelcomeComposer = ({
   className,
-  placeholder = "Type your message...",
+  placeholder = "Type your query here",
+  onAttachmentClick,
 }: DesktopWelcomeComposerProps) => {
   const { textContent, setTextContent } = useComposerState();
   const { processMessage, onCancel } = useThreadActions();
@@ -35,36 +37,44 @@ export const DesktopWelcomeComposer = ({
 
   useLayoutEffect(() => {
     const input = inputRef.current;
-    if (!input) {
-      return;
-    }
+    if (!input) return;
 
-    input.style.height = "0px";
+    input.style.height = "auto";
     input.style.height = `${input.scrollHeight}px`;
   }, [textContent]);
 
   return (
     <div className={clsx("crayon-shell-desktop-welcome-composer", className)}>
-      <div className="crayon-shell-desktop-welcome-composer__input-container">
-        <textarea
-          ref={inputRef}
-          value={textContent}
-          onChange={(e) => setTextContent(e.target.value)}
-          className="crayon-shell-desktop-welcome-composer__input"
-          placeholder={placeholder}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit();
-            }
-          }}
+      <textarea
+        ref={inputRef}
+        value={textContent}
+        onChange={(e) => setTextContent(e.target.value)}
+        className="crayon-shell-desktop-welcome-composer__input"
+        placeholder={placeholder}
+        rows={1}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit();
+          }
+        }}
+      />
+      <div className="crayon-shell-desktop-welcome-composer__action-bar">
+        <IconButton
+          icon={<Paperclip size="1em" />}
+          onClick={onAttachmentClick}
+          size="medium"
+          variant="tertiary"
+          className="crayon-shell-desktop-welcome-composer__attach-button"
         />
-      </div>
-      <div className="crayon-shell-desktop-welcome-composer__actions">
         <IconButton
           onClick={isRunning ? onCancel : handleSubmit}
           disabled={!textContent.trim() && !isRunning}
+          aria-label={isRunning ? "Cancel" : "Send"}
           icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
+          size="medium"
+          variant="primary"
+          className="crayon-shell-desktop-welcome-composer__submit-button"
         />
       </div>
     </div>
