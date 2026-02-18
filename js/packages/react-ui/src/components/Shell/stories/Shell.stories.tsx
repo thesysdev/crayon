@@ -150,9 +150,10 @@ export const Default = {
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         <Container logoUrl={logoUrl} agentName="Crayon">
           <SidebarContainer>
-            <SidebarHeader />
-            <SidebarContent>
+            <SidebarHeader>
               <NewChatButton />
+            </SidebarHeader>
+            <SidebarContent>
               <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
@@ -213,9 +214,10 @@ export const WithConversationStarter = {
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         <Container logoUrl={logoUrl} agentName="Crayon">
           <SidebarContainer>
-            <SidebarHeader />
-            <SidebarContent>
+            <SidebarHeader>
               <NewChatButton />
+            </SidebarHeader>
+            <SidebarContent>
               <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
@@ -276,9 +278,10 @@ export const LongVariant = {
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         <Container logoUrl={logoUrl} agentName="Crayon">
           <SidebarContainer>
-            <SidebarHeader />
-            <SidebarContent>
+            <SidebarHeader>
               <NewChatButton />
+            </SidebarHeader>
+            <SidebarContent>
               <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
@@ -342,9 +345,10 @@ export const WithWelcomeScreen = {
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         <Container logoUrl={logoUrl} agentName="Crayon Assistant">
           <SidebarContainer>
-            <SidebarHeader />
-            <SidebarContent>
+            <SidebarHeader>
               <NewChatButton />
+            </SidebarHeader>
+            <SidebarContent>
               <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
@@ -419,9 +423,10 @@ export const WithCustomWelcomeScreen = {
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         <Container logoUrl={logoUrl} agentName="Crayon Assistant">
           <SidebarContainer>
-            <SidebarHeader />
-            <SidebarContent>
+            <SidebarHeader>
               <NewChatButton />
+            </SidebarHeader>
+            <SidebarContent>
               <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
