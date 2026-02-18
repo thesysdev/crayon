@@ -46,13 +46,6 @@ export const Composer = ({
   return (
     <div className={clsx("crayon-shell-thread-composer", className)}>
       <div className="crayon-shell-thread-composer__input-wrapper">
-        <IconButton
-          icon={<Paperclip size="1em" />}
-          onClick={onAttachmentClick}
-          size="medium"
-          variant="tertiary"
-          className="crayon-shell-thread-composer__attach-button"
-        />
         <textarea
           ref={inputRef}
           value={textContent}
@@ -67,13 +60,22 @@ export const Composer = ({
             }
           }}
         />
-        <IconButton
-          onClick={isRunning ? onCancel : handleSubmit}
-          icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
-          size="medium"
-          variant="primary"
-          className="crayon-shell-thread-composer__submit-button"
-        />
+        <div className="crayon-shell-thread-composer__action-bar">
+          <IconButton
+            icon={<Paperclip size="1em" />}
+            onClick={onAttachmentClick}
+            size="medium"
+            variant="tertiary"
+            className="crayon-shell-thread-composer__attach-button"
+          />
+          <IconButton
+            onClick={isRunning ? onCancel : handleSubmit}
+            icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
+            size="medium"
+            variant="primary"
+            className="crayon-shell-thread-composer__submit-button"
+          />
+        </div>
       </div>
     </div>
   );
