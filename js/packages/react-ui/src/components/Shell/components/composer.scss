@@ -20,29 +20,49 @@ $center-align-spacing: calc(32px + cssUtils.$spacing-s);
   }
 
   &__input-wrapper {
-    border: 1.256px solid cssUtils.$stroke-default;
-    border-radius: cssUtils.$rounded-xl;
-    display: flex;
-    align-items: flex-end;
-    gap: cssUtils.$spacing-s;
-    padding: cssUtils.$spacing-m;
+    background-color: cssUtils.$bg-container;
+    border: 1px solid cssUtils.$stroke-interactive-el;
+    border-radius: cssUtils.$rounded-l;
+    box-shadow: cssUtils.$shadow-s;
+    overflow: clip;
+    contain: inline-size;
+    display: grid;
+    grid-template:
+      "primary primary primary" auto
+      "leading .       trailing" auto / auto 1fr auto;
+    align-items: center;
+    column-gap: cssUtils.$spacing-2xs;
+    row-gap: cssUtils.$spacing-s;
+    padding: cssUtils.$spacing-s;
+  }
+
+  &__attach-button {
+    grid-area: leading;
   }
 
   &__input {
-    flex-grow: 1;
-    padding: 0;
+    grid-area: primary;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    padding: 0 cssUtils.$spacing-3xs;
     resize: none;
-    margin: auto 0px;
     max-height: 154px;
     outline: none;
     border: none;
     background: transparent;
-    overflow: hidden;
+    overflow-y: auto;
     @include cssUtils.typography(body, default);
     color: cssUtils.$primary-text;
 
     &::placeholder {
-      color: cssUtils.$disabled-text;
+      color: cssUtils.$secondary-text;
     }
   }
+
+  &__submit-button {
+    grid-area: trailing;
+  }
+
 }

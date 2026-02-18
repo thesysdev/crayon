@@ -1,6 +1,6 @@
 import { useThreadActions, useThreadState } from "@crayonai/react-core";
 import clsx from "clsx";
-import { ArrowUp, Square } from "lucide-react";
+import { ArrowUp, Paperclip, Square } from "lucide-react";
 import { useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../../hooks/useComposerState";
 import { IconButton } from "../../IconButton";
@@ -8,9 +8,14 @@ import { IconButton } from "../../IconButton";
 export interface ComposerProps {
   className?: string;
   placeholder?: string;
+  onAttachmentClick?: () => void;
 }
 
-export const Composer = ({ className, placeholder = "Type your message..." }: ComposerProps) => {
+export const Composer = ({
+  className,
+  placeholder = "Type your query here",
+  onAttachmentClick,
+}: ComposerProps) => {
   const { textContent, setTextContent } = useComposerState();
   const { processMessage, onCancel } = useThreadActions();
   const { isRunning, isLoadingMessages } = useThreadState();
@@ -32,23 +37,29 @@ export const Composer = ({ className, placeholder = "Type your message..." }: Co
 
   useLayoutEffect(() => {
     const input = inputRef.current;
-    if (!input) {
-      return;
-    }
+    if (!input) return;
 
-    input.style.height = "0px";
+    input.style.height = "auto";
     input.style.height = `${input.scrollHeight}px`;
   }, [textContent]);
 
   return (
     <div className={clsx("crayon-shell-thread-composer", className)}>
       <div className="crayon-shell-thread-composer__input-wrapper">
+        <IconButton
+          icon={<Paperclip size="1em" />}
+          onClick={onAttachmentClick}
+          size="medium"
+          variant="tertiary"
+          className="crayon-shell-thread-composer__attach-button"
+        />
         <textarea
           ref={inputRef}
           value={textContent}
           onChange={(e) => setTextContent(e.target.value)}
           className="crayon-shell-thread-composer__input"
           placeholder={placeholder}
+          rows={1}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -59,6 +70,9 @@ export const Composer = ({ className, placeholder = "Type your message..." }: Co
         <IconButton
           onClick={isRunning ? onCancel : handleSubmit}
           icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
+          size="medium"
+          variant="primary"
+          className="crayon-shell-thread-composer__submit-button"
         />
       </div>
     </div>
