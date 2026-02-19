@@ -4,13 +4,14 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
-import { MessageSquare, Sparkles, Zap } from "lucide-react";
+import { MessageSquare, Paperclip, Share, Sparkles, Zap } from "lucide-react";
 import { Container } from "../Container";
 import { ConversationStarter } from "../ConversationStarter";
 import { MobileHeader } from "../MobileHeader";
 import { NewChatButton } from "../NewChatButton";
 import { SidebarContainer, SidebarContent, SidebarHeader, SidebarSeparator } from "../Sidebar";
-import { Composer, MessageLoading, Messages, ScrollArea, ThreadContainer } from "../Thread";
+import { Composer, MessageLoading, Messages, ScrollArea, ThreadContainer, ThreadHeader } from "../Thread";
+import { IconButton } from "../../IconButton";
 import { ThreadList } from "../ThreadList";
 import { WelcomeScreen } from "../WelcomeScreen";
 import logoUrl from "./thesysdev_logo.jpeg";
@@ -160,11 +161,23 @@ export const Default = {
           </SidebarContainer>
           <ThreadContainer>
             <MobileHeader />
+            <ThreadHeader>
+              <IconButton icon={<Share size={16} />} aria-label="Share" size="small" />
+            </ThreadHeader>
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -228,7 +241,16 @@ export const WithConversationStarter = {
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -292,7 +314,16 @@ export const LongVariant = {
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <ConversationStarter starters={LONG_STARTERS} variant={variant} />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -370,7 +401,16 @@ export const WithWelcomeScreen = {
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -465,7 +505,16 @@ export const WithCustomWelcomeScreen = {
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
