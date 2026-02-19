@@ -292,11 +292,7 @@ export const ThreadHeader = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return (
-    <div className={clsx("crayon-shell-thread-header", className)}>
-      {children}
-    </div>
-  );
+  return <div className={clsx("crayon-shell-thread-header", className)}>{children}</div>;
 };
 
 // Re-export Composer from components

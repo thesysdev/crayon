@@ -4,5 +4,5 @@ const Portal = RadixPortal;
 
 const Root = Portal;
 
-export { Portal, Root };
 export type { PortalProps } from "@radix-ui/react-portal";
+export { Portal, Root };

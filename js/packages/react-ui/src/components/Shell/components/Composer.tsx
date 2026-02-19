@@ -4,8 +4,8 @@ import { ArrowUp, Square } from "lucide-react";
 import { useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../../hooks/useComposerState";
 import { IconButton } from "../../IconButton";
-import { isAttachmentConfig } from "../utils/checks";
 import type { AttachmentConfig } from "../utils/checks";
+import { isAttachmentConfig } from "../utils/checks";
 
 export interface ComposerProps {
   className?: string;
