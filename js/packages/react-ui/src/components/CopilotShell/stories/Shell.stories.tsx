@@ -143,15 +143,15 @@ export const Default = {
               </ScrollArea>
               <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
               <Composer
-              attachment={
-                <IconButton
-                  icon={<Paperclip size="1em" />}
-                  onClick={() => console.log("attach")}
-                  size="medium"
-                  variant="tertiary"
-                />
-              }
-            />
+                attachment={
+                  <IconButton
+                    icon={<Paperclip size="1em" />}
+                    onClick={() => console.log("attach")}
+                    size="medium"
+                    variant="tertiary"
+                  />
+                }
+              />
             </ThreadContainer>
           </Container>
         </ChatProvider>
@@ -212,15 +212,15 @@ export const LongVariant = {
               </ScrollArea>
               <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
               <Composer
-              attachment={
-                <IconButton
-                  icon={<Paperclip size="1em" />}
-                  onClick={() => console.log("attach")}
-                  size="medium"
-                  variant="tertiary"
-                />
-              }
-            />
+                attachment={
+                  <IconButton
+                    icon={<Paperclip size="1em" />}
+                    onClick={() => console.log("attach")}
+                    size="medium"
+                    variant="tertiary"
+                  />
+                }
+              />
             </ThreadContainer>
           </Container>
         </ChatProvider>
@@ -293,15 +293,15 @@ export const WithWelcomeScreen = {
               </ScrollArea>
               <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
               <Composer
-              attachment={
-                <IconButton
-                  icon={<Paperclip size="1em" />}
-                  onClick={() => console.log("attach")}
-                  size="medium"
-                  variant="tertiary"
-                />
-              }
-            />
+                attachment={
+                  <IconButton
+                    icon={<Paperclip size="1em" />}
+                    onClick={() => console.log("attach")}
+                    size="medium"
+                    variant="tertiary"
+                  />
+                }
+              />
             </ThreadContainer>
           </Container>
         </ChatProvider>
@@ -393,15 +393,15 @@ export const WithCustomWelcomeScreen = {
               </ScrollArea>
               <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
               <Composer
-              attachment={
-                <IconButton
-                  icon={<Paperclip size="1em" />}
-                  onClick={() => console.log("attach")}
-                  size="medium"
-                  variant="tertiary"
-                />
-              }
-            />
+                attachment={
+                  <IconButton
+                    icon={<Paperclip size="1em" />}
+                    onClick={() => console.log("attach")}
+                    size="medium"
+                    variant="tertiary"
+                  />
+                }
+              />
             </ThreadContainer>
           </Container>
         </ChatProvider>
