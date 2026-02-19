@@ -1,20 +1,22 @@
 import { useThreadActions, useThreadState } from "@crayonai/react-core";
 import clsx from "clsx";
-import { ArrowUp, Paperclip, Square } from "lucide-react";
+import { ArrowUp, Square } from "lucide-react";
 import { useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../../hooks/useComposerState";
 import { IconButton } from "../../IconButton";
+import { isAttachmentConfig } from "../utils/checks";
+import type { AttachmentConfig } from "../utils/checks";
 
 export interface DesktopWelcomeComposerProps {
   className?: string;
   placeholder?: string;
-  onAttachmentClick?: () => void;
+  attachment?: React.ReactNode | AttachmentConfig;
 }
 
 export const DesktopWelcomeComposer = ({
   className,
   placeholder = "Type your query here",
-  onAttachmentClick,
+  attachment,
 }: DesktopWelcomeComposerProps) => {
   const { textContent, setTextContent } = useComposerState();
   const { processMessage, onCancel } = useThreadActions();
@@ -43,6 +45,22 @@ export const DesktopWelcomeComposer = ({
     input.style.height = `${input.scrollHeight}px`;
   }, [textContent]);
 
+  const renderAttachment = () => {
+    if (!attachment) return null;
+    if (isAttachmentConfig(attachment)) {
+      return (
+        <IconButton
+          icon={attachment.icon}
+          onClick={attachment.onClick}
+          size="medium"
+          variant="tertiary"
+          className="crayon-shell-desktop-welcome-composer__attach-button"
+        />
+      );
+    }
+    return attachment;
+  };
+
   return (
     <div className={clsx("crayon-shell-desktop-welcome-composer", className)}>
       <textarea
@@ -60,13 +78,7 @@ export const DesktopWelcomeComposer = ({
         }}
       />
       <div className="crayon-shell-desktop-welcome-composer__action-bar">
-        <IconButton
-          icon={<Paperclip size="1em" />}
-          onClick={onAttachmentClick}
-          size="medium"
-          variant="tertiary"
-          className="crayon-shell-desktop-welcome-composer__attach-button"
-        />
+        {renderAttachment()}
         <IconButton
           onClick={isRunning ? onCancel : handleSubmit}
           disabled={!textContent.trim() && !isRunning}

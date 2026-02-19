@@ -1,20 +1,22 @@
 import { useThreadActions, useThreadState } from "@crayonai/react-core";
 import clsx from "clsx";
-import { ArrowUp, Paperclip, Square } from "lucide-react";
+import { ArrowUp, Square } from "lucide-react";
 import { useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../../hooks/useComposerState";
 import { IconButton } from "../../IconButton";
+import { isAttachmentConfig } from "../utils/checks";
+import type { AttachmentConfig } from "../utils/checks";
 
 export interface ComposerProps {
   className?: string;
   placeholder?: string;
-  onAttachmentClick?: () => void;
+  attachment?: React.ReactNode | AttachmentConfig;
 }
 
 export const Composer = ({
   className,
   placeholder = "Type your query here",
-  onAttachmentClick,
+  attachment,
 }: ComposerProps) => {
   const { textContent, setTextContent } = useComposerState();
   const { processMessage, onCancel } = useThreadActions();
@@ -43,6 +45,22 @@ export const Composer = ({
     input.style.height = `${input.scrollHeight}px`;
   }, [textContent]);
 
+  const renderAttachment = () => {
+    if (!attachment) return null;
+    if (isAttachmentConfig(attachment)) {
+      return (
+        <IconButton
+          icon={attachment.icon}
+          onClick={attachment.onClick}
+          size="medium"
+          variant="tertiary"
+          className="crayon-shell-thread-composer__attach-button"
+        />
+      );
+    }
+    return attachment;
+  };
+
   return (
     <div className={clsx("crayon-shell-thread-composer", className)}>
       <div className="crayon-shell-thread-composer__input-wrapper">
@@ -61,13 +79,7 @@ export const Composer = ({
           }}
         />
         <div className="crayon-shell-thread-composer__action-bar">
-          <IconButton
-            icon={<Paperclip size="1em" />}
-            onClick={onAttachmentClick}
-            size="medium"
-            variant="tertiary"
-            className="crayon-shell-thread-composer__attach-button"
-          />
+          {renderAttachment()}
           <IconButton
             onClick={isRunning ? onCancel : handleSubmit}
             icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
