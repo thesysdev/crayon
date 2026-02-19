@@ -1,36 +1,5 @@
-import { AGUIEvent, EventType, StreamProtocolAdapter } from "../types";
 import type { ChatCompletionChunk } from "openai/resources/chat/completions";
-
-export const agUIAdapter = (): StreamProtocolAdapter => ({
-  async *parse(response: Response): AsyncIterable<AGUIEvent> {
-    const reader = response.body?.getReader();
-    if (!reader) throw new Error("No response body");
-
-    const decoder = new TextDecoder();
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split("\n");
-
-      for (const line of lines) {
-        if (!line.startsWith("data: ")) continue;
-        const data = line.slice(6).trim();
-        if (!data || data === "[DONE]") continue;
-
-        try {
-          const event = JSON.parse(data);
-          // Assuming the stream sends events matching AGUIEvent structure
-          yield event as AGUIEvent;
-        } catch (e) {
-          console.error("Failed to parse SSE event", e);
-        }
-      }
-    }
-  },
-});
+import { AGUIEvent, EventType, StreamProtocolAdapter } from "../../types";
 
 export const openAIAdapter = (): StreamProtocolAdapter => ({
   async *parse(response: Response): AsyncIterable<AGUIEvent> {
@@ -40,6 +9,7 @@ export const openAIAdapter = (): StreamProtocolAdapter => ({
     const decoder = new TextDecoder();
     const messageId = crypto.randomUUID();
     const toolCallIds: Record<number, string> = {};
+    let messageStarted = false;
 
     while (true) {
       const { done, value } = await reader.read();
@@ -59,6 +29,16 @@ export const openAIAdapter = (): StreamProtocolAdapter => ({
           const delta = choice?.delta;
 
           if (!delta) continue;
+
+          // Emit TEXT_MESSAGE_START on first meaningful delta
+          if (!messageStarted && (delta.content || delta.role)) {
+            yield {
+              type: EventType.TEXT_MESSAGE_START,
+              messageId,
+              role: "assistant",
+            };
+            messageStarted = true;
+          }
 
           if (delta.content) {
             yield {
@@ -91,6 +71,21 @@ export const openAIAdapter = (): StreamProtocolAdapter => ({
                   };
                 }
               }
+            }
+          }
+
+          // Emit end events based on finish_reason
+          if (choice?.finish_reason === "stop") {
+            yield {
+              type: EventType.TEXT_MESSAGE_END,
+              messageId,
+            };
+          } else if (choice?.finish_reason === "tool_calls") {
+            for (const toolCallId of Object.values(toolCallIds)) {
+              yield {
+                type: EventType.TOOL_CALL_END,
+                toolCallId,
+              };
             }
           }
         } catch (e) {
