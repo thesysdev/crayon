@@ -4,13 +4,22 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
-import { MessageSquare, Sparkles, Zap } from "lucide-react";
+import { MessageSquare, Paperclip, Share, Sparkles, Zap } from "lucide-react";
+import { Button } from "../../Button";
+import { IconButton } from "../../IconButton";
 import { Container } from "../Container";
 import { ConversationStarter } from "../ConversationStarter";
 import { MobileHeader } from "../MobileHeader";
 import { NewChatButton } from "../NewChatButton";
 import { SidebarContainer, SidebarContent, SidebarHeader, SidebarSeparator } from "../Sidebar";
-import { Composer, MessageLoading, Messages, ScrollArea, ThreadContainer } from "../Thread";
+import {
+  Composer,
+  MessageLoading,
+  Messages,
+  ScrollArea,
+  ThreadContainer,
+  ThreadHeader,
+} from "../Thread";
 import { ThreadList } from "../ThreadList";
 import { WelcomeScreen } from "../WelcomeScreen";
 import logoUrl from "./thesysdev_logo.jpeg";
@@ -150,20 +159,44 @@ export const Default = {
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         <Container logoUrl={logoUrl} agentName="Crayon">
           <SidebarContainer>
-            <SidebarHeader />
-            <SidebarContent>
+            <SidebarHeader>
               <NewChatButton />
+            </SidebarHeader>
+            <SidebarContent>
               <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
           </SidebarContainer>
           <ThreadContainer>
-            <MobileHeader />
+            <MobileHeader
+              rightChildren={
+                <IconButton
+                  icon={<Share size={16} />}
+                  aria-label="Share"
+                  size="medium"
+                  variant="secondary"
+                />
+              }
+            />
+            <ThreadHeader>
+              <Button iconLeft={<Share size={16} />} variant="secondary" size="small">
+                Share
+              </Button>
+            </ThreadHeader>
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -213,20 +246,34 @@ export const WithConversationStarter = {
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         <Container logoUrl={logoUrl} agentName="Crayon">
           <SidebarContainer>
-            <SidebarHeader />
-            <SidebarContent>
+            <SidebarHeader>
               <NewChatButton />
+            </SidebarHeader>
+            <SidebarContent>
               <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
           </SidebarContainer>
           <ThreadContainer>
-            <MobileHeader />
+            <MobileHeader
+              rightChildren={
+                <IconButton icon={<Share size={16} />} aria-label="Share" size="small" />
+              }
+            />
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -276,20 +323,34 @@ export const LongVariant = {
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         <Container logoUrl={logoUrl} agentName="Crayon">
           <SidebarContainer>
-            <SidebarHeader />
-            <SidebarContent>
+            <SidebarHeader>
               <NewChatButton />
+            </SidebarHeader>
+            <SidebarContent>
               <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
           </SidebarContainer>
           <ThreadContainer>
-            <MobileHeader />
+            <MobileHeader
+              rightChildren={
+                <IconButton icon={<Share size={16} />} aria-label="Share" size="small" />
+              }
+            />
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <ConversationStarter starters={LONG_STARTERS} variant={variant} />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -342,15 +403,20 @@ export const WithWelcomeScreen = {
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         <Container logoUrl={logoUrl} agentName="Crayon Assistant">
           <SidebarContainer>
-            <SidebarHeader />
-            <SidebarContent>
+            <SidebarHeader>
               <NewChatButton />
+            </SidebarHeader>
+            <SidebarContent>
               <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
           </SidebarContainer>
           <ThreadContainer>
-            <MobileHeader />
+            <MobileHeader
+              rightChildren={
+                <IconButton icon={<Share size={16} />} aria-label="Share" size="small" />
+              }
+            />
 
             {!hasMessages && (
               <WelcomeScreen
@@ -366,7 +432,16 @@ export const WithWelcomeScreen = {
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -419,15 +494,20 @@ export const WithCustomWelcomeScreen = {
       <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
         <Container logoUrl={logoUrl} agentName="Crayon Assistant">
           <SidebarContainer>
-            <SidebarHeader />
-            <SidebarContent>
+            <SidebarHeader>
               <NewChatButton />
+            </SidebarHeader>
+            <SidebarContent>
               <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
           </SidebarContainer>
           <ThreadContainer>
-            <MobileHeader />
+            <MobileHeader
+              rightChildren={
+                <IconButton icon={<Share size={16} />} aria-label="Share" size="small" />
+              }
+            />
 
             {!hasMessages && (
               <WelcomeScreen>
@@ -460,7 +540,16 @@ export const WithCustomWelcomeScreen = {
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
             <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>

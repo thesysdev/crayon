@@ -6,11 +6,9 @@ $sidebar-mobile-width: 294px;
 $sidebar-mobile-padding: cssUtils.$spacing-l;
 
 .crayon-shell-sidebar-container {
-  background: cssUtils.$bg-container;
-  border: 1px solid cssUtils.$stroke-default;
+  border-right: 1px solid cssUtils.$stroke-default;
   height: 100%;
   width: $sidebar-width;
-  border-radius: cssUtils.$rounded-m;
   padding: $sidebar-padding;
   display: flex;
   flex-direction: column;
@@ -34,10 +32,9 @@ $sidebar-mobile-padding: cssUtils.$spacing-l;
   }
 
   &--collapsed {
-    width: 104px; // Fixed width for collapsed state (logo:36px + button:40px + gaps:12px + padding:16px)
-    height: min-content;
+    width: 52px;
     transform: translateX(0);
-    gap: 0;
+    gap: cssUtils.$spacing-xs;
 
     .crayon-shell-container--mobile & {
       width: $sidebar-mobile-width;
@@ -54,13 +51,22 @@ $sidebar-mobile-padding: cssUtils.$spacing-l;
 
 .crayon-shell-sidebar-header {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: cssUtils.$spacing-s;
+
+  &__top-row {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$spacing-s;
+  }
 
   &__logo {
     width: 36px;
     height: 36px;
     border-radius: cssUtils.$rounded-s;
+    transition:
+      width 0.3s ease-in-out,
+      height 0.3s ease-in-out;
   }
 
   &__agent-name {
@@ -70,6 +76,20 @@ $sidebar-mobile-padding: cssUtils.$spacing-l;
 
     .crayon-shell-sidebar-container--collapsed & {
       display: none;
+    }
+  }
+
+  &--collapsed {
+    align-items: center;
+
+    .crayon-shell-sidebar-header__top-row {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .crayon-shell-sidebar-header__logo {
+      width: 28px;
+      height: 28px;
     }
   }
 }

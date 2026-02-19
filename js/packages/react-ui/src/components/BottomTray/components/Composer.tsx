@@ -4,8 +4,8 @@ import { ArrowUp, Square } from "lucide-react";
 import { useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../../hooks/useComposerState";
 import { IconButton } from "../../IconButton";
-import type { AttachmentConfig } from "../utils/checks";
-import { isAttachmentConfig } from "../utils/checks";
+import type { AttachmentConfig } from "../../Shell/utils/checks";
+import { isAttachmentConfig } from "../../Shell/utils/checks";
 
 export interface ComposerProps {
   className?: string;
@@ -15,7 +15,7 @@ export interface ComposerProps {
 
 export const Composer = ({
   className,
-  placeholder = "Type your query here",
+  placeholder = "Type your message...",
   attachment,
 }: ComposerProps) => {
   const { textContent, setTextContent } = useComposerState();
@@ -54,7 +54,7 @@ export const Composer = ({
           onClick={attachment.onClick}
           size="medium"
           variant="tertiary"
-          className="crayon-shell-thread-composer__attach-button"
+          className="crayon-bottom-tray-thread-composer__attach-button"
         />
       );
     }
@@ -62,13 +62,13 @@ export const Composer = ({
   };
 
   return (
-    <div className={clsx("crayon-shell-thread-composer", className)}>
-      <div className="crayon-shell-thread-composer__input-wrapper">
+    <div className={clsx("crayon-bottom-tray-thread-composer", className)}>
+      <div className="crayon-bottom-tray-thread-composer__input-wrapper">
         <textarea
           ref={inputRef}
           value={textContent}
           onChange={(e) => setTextContent(e.target.value)}
-          className="crayon-shell-thread-composer__input"
+          className="crayon-bottom-tray-thread-composer__input"
           placeholder={placeholder}
           rows={1}
           onKeyDown={(e) => {
@@ -78,14 +78,14 @@ export const Composer = ({
             }
           }}
         />
-        <div className="crayon-shell-thread-composer__action-bar">
+        <div className="crayon-bottom-tray-thread-composer__action-bar">
           {renderAttachment()}
           <IconButton
             onClick={isRunning ? onCancel : handleSubmit}
             icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
             size="medium"
             variant="primary"
-            className="crayon-shell-thread-composer__submit-button"
+            className="crayon-bottom-tray-thread-composer__submit-button"
           />
         </div>
       </div>

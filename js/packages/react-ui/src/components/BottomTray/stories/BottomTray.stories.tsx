@@ -4,7 +4,7 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
-import { MessageSquare, Sparkles, Zap } from "lucide-react";
+import { MessageSquare, Paperclip, Sparkles, Zap } from "lucide-react";
 import { useState } from "react";
 import {
   Composer,
@@ -18,6 +18,7 @@ import {
   Trigger,
   WelcomeScreen,
 } from "../../BottomTray";
+import { IconButton } from "../../IconButton";
 // @ts-ignore
 import styles from "./style.module.scss";
 import logoUrl from "./thesysdev_logo.jpeg";
@@ -173,7 +174,16 @@ const BottomTrayStory = ({
                 },
               ]}
             />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -317,7 +327,16 @@ const CustomTriggerStory = ({
                 },
               ]}
             />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -426,7 +445,16 @@ const WelcomeScreenStory = ({
                 },
               ]}
             />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -553,7 +581,16 @@ const CustomWelcomeScreenStory = ({
                 },
               ]}
             />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
