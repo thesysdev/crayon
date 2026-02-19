@@ -1,8 +1,5 @@
-import {
-  AGUIEvent,
-  EventType,
-  StreamProtocolAdapter,
-} from "../types";
+import { AGUIEvent, EventType, StreamProtocolAdapter } from "../types";
+import type { ChatCompletionChunk } from "openai/resources/chat/completions";
 
 export const agUIAdapter = (): StreamProtocolAdapter => ({
   async *parse(response: Response): AsyncIterable<AGUIEvent> {
@@ -57,7 +54,7 @@ export const openAIAdapter = (): StreamProtocolAdapter => ({
         if (!data || data === "[DONE]") continue;
 
         try {
-          const json = JSON.parse(data);
+          const json = JSON.parse(data) as ChatCompletionChunk;
           const choice = json.choices?.[0];
           const delta = choice?.delta;
 
