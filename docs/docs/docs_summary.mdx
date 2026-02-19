@@ -1,0 +1,64 @@
+# Documentation Summary
+
+This page provides an overview of all available Crayon documentation, organized by section.
+
+---
+
+## [Introduction](./index.mdx)
+
+Covers what Crayon is — a lightweight, backend-agnostic UI toolkit for building AI agents. Introduces the two main packages: **Core** (React-based state management and backend integration) and **Component Library** (accessible, pre-built UI components built on Radix). Also covers key features (customizable, batteries-included, lightweight, themeable) and FAQs about the project's relationship to [Thesys Canvas](https://app.thesys.dev).
+
+---
+
+## Quickstart
+
+Step-by-step guides to get a Crayon-powered agent running quickly:
+
+- **[NextJS](./quickstart/002-nextjs.mdx)** — Create a Next.js project, install `@crayonai/react-ui`, `@crayonai/react-core`, and `@crayonai/stream`, add the `CrayonChat` component, set up an OpenAI-backed API route, and serve the app.
+- **[Python FastAPI](./quickstart/001-python-fastapi.mdx)** — Set up a FastAPI backend with an OpenAI-powered `/chat` endpoint, create a React frontend with `CrayonChat`, and connect the two.
+
+---
+
+## Concepts
+
+Foundational ideas behind Crayon's architecture:
+
+- **[Core Concepts](./concepts/001-core-concepts.md)** — Explains Shells (pre-built UIs), Threads (conversation sessions managed by `ThreadManager`), Thread Lists (multiple conversations managed by `ThreadListManager`), Response Templates (schema + React component pairs for rich responses), and Structured Outputs (schemas that instruct the LLM how to format data).
+- **[Generative UI](./concepts/002-generative-ui.md)** — Describes dynamically generated interfaces where the LLM selects and populates UI templates in real-time, enabling personalized and context-aware experiences beyond static chat.
+- **[Streaming Protocol](./concepts/003-data-format.mdx)** — Documents the SSE-based streaming protocol Crayon uses for real-time communication. Covers event types: `TextDelta`, `ResponseTemplate`, `ResponseTemplatePropsChunk`, `ContextAppend`, `MessageUpdate`, and `Error`.
+
+---
+
+## Guides
+
+Hands-on guides for building and customizing your agent:
+
+- **[Getting Started](./guides/001-getting-started.mdx)** — Walks through implementing `processMessage`, creating a response template component, setting up a backend endpoint with structured output schemas, and wiring everything together with `CrayonChat`.
+- **[Rendering Markdown](./guides/002-rendering-markdown.mdx)** — Shows how to add a markdown renderer template using `react-markdown` so AI responses display with proper formatting (bold, italic, lists, code blocks).
+
+### Customization
+
+- **[Connecting to Backend](./guides/customization/003-connecting-to-backend.mdx)** — Demonstrates using `useThreadListManager` and `useThreadManager` hooks to persist threads, load message history, and sync with your own backend APIs.
+- **[Customizing Crayon UI](./guides/customization/004-customizing-ui.mdx)** — Shows how to use individual Crayon components (e.g., `Container`, `SidebarContainer`, `ThreadContainer`, `Messages`, `Composer`) instead of the all-in-one `CrayonChat`, and how to customize styling via custom CSS classes or `ThemeProvider`.
+- **[Creating Response Templates](./guides/customization/005-response-templates.mdx)** — End-to-end guide for building a custom response template (recipe card example): creating the React component, defining a Zod schema, and setting up the backend to pass the schema to the LLM via `templatesToResponseFormat`.
+
+### Advanced Customization
+
+- **[Integrating Custom Components](./guides/customization/advanced-customization/001-integrating-custom-components.md)** — Demonstrates building fully custom sidebar and composer components by accessing Crayon's state through `useThreadListState`, `useThreadListActions`, `useThreadState`, and `useThreadActions` hooks.
+- **[Interactive Agent Responses (Message Context)](./guides/customization/advanced-customization/002-message-context.mdx)** — Shows how to use `useMessage` to build interactive response templates (e.g., forms), persist user input in `message.context`, and prefill data on reload.
+
+---
+
+## [Examples](./examples.mdx)
+
+Real-world example projects:
+
+- **Simple Cookbook** — A Next.js app showcasing recipe generation with structured outputs and OpenAI integration.
+- **Fino Crayon** — A personal finance assistant demonstrating advanced UI customization with `ChatProvider`, database integration with Prisma, and full-stack implementation.
+
+---
+
+## [API Reference](./reference/js/react-core/index.md)
+
+Auto-generated TypeScript API reference for `@crayonai/react-core`, covering all exported functions, hooks, interfaces, and type aliases including `ChatProvider`, `useThreadManager`, `useThreadListManager`, `useMessage`, `useThreadState`, `useThreadActions`, `Message`, `Thread`, `ThreadManager`, `ThreadListManager`, `ResponseTemplate`, and more.
+

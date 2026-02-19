@@ -1,3 +1,3 @@
 export * from "./chatManager";
 export * from "./message";
-export * from "./responseTemplate";
+export * from "./stream";

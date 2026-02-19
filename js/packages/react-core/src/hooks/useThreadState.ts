@@ -18,7 +18,6 @@ export const useThreadState = (): ThreadState => {
     isRunning: useStore(threadManager, (store) => store.isRunning),
     messages: useStore(threadManager, (store) => store.messages),
     error: useStore(threadManager, (store) => store.error),
-    responseTemplates: useStore(threadManager, (store) => store.responseTemplates),
     isInitialized: useStore(threadManager, (store) => store.isInitialized),
   };
 };

@@ -1,5 +1,4 @@
 import { CreateMessage, Message, UserMessage } from "./message";
-import { ResponseTemplate } from "./responseTemplate";
 
 /**
  * Represents a chat thread
@@ -53,10 +52,6 @@ export type ThreadState = {
   messages: Message[];
   /** The error that occurred during the last message processing */
   error: Error | null | undefined;
-  /** The response templates available for the thread. If the {@link useThreadManager} hook was used to create the {@link ThreadManager}, this property is the same one as the
-   * `responseTemplates` property provided to the hook.
-   */
-  responseTemplates: Record<string, ResponseTemplate>;
   /** Indicates if the thread manager is initialized and the thread can show threadList or welcome screen */
   isInitialized: boolean;
 };

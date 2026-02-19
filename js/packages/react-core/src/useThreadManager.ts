@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { createStore, useStore } from "zustand";
-import { CreateMessage, Message, ResponseTemplate, ThreadManager } from "./types";
+import { CreateMessage, Message, ThreadManager } from "./types";
 
 /**
  * Parameters to be passed to the {@link useThreadManager} hook
@@ -22,8 +22,6 @@ export type UseThreadManagerParams = {
   }) => Promise<Message[]>;
   /** A function that defines how a message should be updated. Useful for integrating a backend API to update a message. */
   onUpdateMessage?: (props: { message: Message }) => void;
-  /** A list of response templates available to the thread. */
-  responseTemplates: ResponseTemplate[];
 };
 
 /**
@@ -109,13 +107,6 @@ export const useThreadManager = (params: UseThreadManagerParams): ThreadManager 
           const messages = store.getState().messages.filter((m) => m.id !== messageId);
           set({ messages });
         },
-        responseTemplates: propsRef.current.responseTemplates.reduce(
-          (acc, template) => {
-            acc[template.name] = template;
-            return acc;
-          },
-          {} as { [name: string]: ResponseTemplate },
-        ),
       };
     });
 

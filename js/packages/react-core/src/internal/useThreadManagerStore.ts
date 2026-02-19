@@ -16,7 +16,6 @@ export const useThreadManagerStore = (inputThreadManager: ThreadManager) => {
       messages: inputThreadManager.messages,
       error: inputThreadManager.error,
 
-      responseTemplates: inputThreadManagerRef.current.responseTemplates,
       onCancel: () => inputThreadManagerRef.current.onCancel?.(),
       processMessage: (...props) => inputThreadManagerRef.current.processMessage(...props),
       updateMessage: (...props) => inputThreadManagerRef.current.updateMessage(...props),
@@ -41,10 +40,6 @@ export const useThreadManagerStore = (inputThreadManager: ThreadManager) => {
     inputThreadManager.isLoadingMessages,
     inputThreadManager.isInitialized,
   ]);
-
-  if (inputThreadManagerRef.current.responseTemplates !== inputThreadManager.responseTemplates) {
-    throw new Error("memoize response templates");
-  }
 
   return threadManagerStore;
 };
