@@ -11,6 +11,7 @@ import { MobileHeader } from "../MobileHeader";
 import { NewChatButton } from "../NewChatButton";
 import { SidebarContainer, SidebarContent, SidebarHeader, SidebarSeparator } from "../Sidebar";
 import { Composer, MessageLoading, Messages, ScrollArea, ThreadContainer, ThreadHeader } from "../Thread";
+import { Button } from "../../Button";
 import { IconButton } from "../../IconButton";
 import { ThreadList } from "../ThreadList";
 import { WelcomeScreen } from "../WelcomeScreen";
@@ -160,9 +161,9 @@ export const Default = {
             </SidebarContent>
           </SidebarContainer>
           <ThreadContainer>
-            <MobileHeader />
+            <MobileHeader rightChildren={<IconButton icon={<Share size={16} />} aria-label="Share" size="medium" variant="secondary" />} />
             <ThreadHeader>
-              <IconButton icon={<Share size={16} />} aria-label="Share" size="small" />
+              <Button iconLeft={<Share size={16} />} variant="secondary" size="small">Share</Button>
             </ThreadHeader>
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
@@ -236,7 +237,7 @@ export const WithConversationStarter = {
             </SidebarContent>
           </SidebarContainer>
           <ThreadContainer>
-            <MobileHeader />
+            <MobileHeader rightChildren={<IconButton icon={<Share size={16} />} aria-label="Share" size="small" />} />
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
@@ -309,7 +310,7 @@ export const LongVariant = {
             </SidebarContent>
           </SidebarContainer>
           <ThreadContainer>
-            <MobileHeader />
+            <MobileHeader rightChildren={<IconButton icon={<Share size={16} />} aria-label="Share" size="small" />} />
             <ScrollArea>
               <Messages loader={<MessageLoading />} />
             </ScrollArea>
@@ -385,7 +386,7 @@ export const WithWelcomeScreen = {
             </SidebarContent>
           </SidebarContainer>
           <ThreadContainer>
-            <MobileHeader />
+            <MobileHeader rightChildren={<IconButton icon={<Share size={16} />} aria-label="Share" size="small" />} />
 
             {!hasMessages && (
               <WelcomeScreen
@@ -472,7 +473,7 @@ export const WithCustomWelcomeScreen = {
             </SidebarContent>
           </SidebarContainer>
           <ThreadContainer>
-            <MobileHeader />
+            <MobileHeader rightChildren={<IconButton icon={<Share size={16} />} aria-label="Share" size="small" />} />
 
             {!hasMessages && (
               <WelcomeScreen>
