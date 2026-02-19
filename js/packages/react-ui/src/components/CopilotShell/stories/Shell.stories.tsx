@@ -4,7 +4,7 @@ import {
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
-import { Sparkles } from "lucide-react";
+import { Paperclip, Sparkles } from "lucide-react";
 import {
   Composer,
   Container,
@@ -16,6 +16,7 @@ import {
   ThreadContainer,
   WelcomeScreen,
 } from "../../CopilotShell";
+import { IconButton } from "../../IconButton";
 // @ts-ignore
 import styles from "./style.module.scss";
 import logoUrl from "./thesysdev_logo.jpeg";
@@ -141,7 +142,16 @@ export const Default = {
                 <Messages loader={<MessageLoading />} />
               </ScrollArea>
               <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
-              <Composer />
+              <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
             </ThreadContainer>
           </Container>
         </ChatProvider>
@@ -201,7 +211,16 @@ export const LongVariant = {
                 <Messages loader={<MessageLoading />} />
               </ScrollArea>
               <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
-              <Composer />
+              <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
             </ThreadContainer>
           </Container>
         </ChatProvider>
@@ -273,7 +292,16 @@ export const WithWelcomeScreen = {
                 <Messages loader={<MessageLoading />} />
               </ScrollArea>
               <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
-              <Composer />
+              <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
             </ThreadContainer>
           </Container>
         </ChatProvider>
@@ -364,7 +392,16 @@ export const WithCustomWelcomeScreen = {
                 <Messages loader={<MessageLoading />} />
               </ScrollArea>
               <ConversationStarter starters={SAMPLE_STARTERS} variant={variant} />
-              <Composer />
+              <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
             </ThreadContainer>
           </Container>
         </ChatProvider>

@@ -1,16 +1,12 @@
 import {
   Message,
   MessageProvider,
-  useThreadActions,
   useThreadManagerSelector,
   useThreadState,
 } from "@crayonai/react-core";
 import clsx from "clsx";
-import { ArrowUp, Square } from "lucide-react";
-import React, { memo, useEffect, useLayoutEffect, useRef } from "react";
-import { useComposerState } from "../../hooks/useComposerState";
+import React, { memo, useEffect, useRef } from "react";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
-import { IconButton } from "../IconButton";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
 import { useShellStore } from "../Shell/store";
 
@@ -230,57 +226,5 @@ export const Messages = ({
   );
 };
 
-export const Composer = ({ className }: { className?: string }) => {
-  const { textContent, setTextContent } = useComposerState();
-  const { processMessage, onCancel } = useThreadActions();
-  const { isRunning } = useThreadState();
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-
-  const handleSubmit = () => {
-    if (!textContent.trim() || isRunning) {
-      return;
-    }
-
-    processMessage({
-      type: "prompt",
-      role: "user",
-      message: textContent,
-    });
-
-    setTextContent("");
-  };
-
-  useLayoutEffect(() => {
-    const input = inputRef.current;
-    if (!input) {
-      return;
-    }
-
-    input.style.height = "0px";
-    input.style.height = `${input.scrollHeight}px`;
-  }, [textContent]);
-
-  return (
-    <div className={clsx("crayon-bottom-tray-thread-composer", className)}>
-      <div className="crayon-bottom-tray-thread-composer__input-wrapper">
-        <textarea
-          ref={inputRef}
-          value={textContent}
-          onChange={(e) => setTextContent(e.target.value)}
-          className="crayon-bottom-tray-thread-composer__input"
-          placeholder="Type your message..."
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit();
-            }
-          }}
-        />
-        <IconButton
-          onClick={isRunning ? onCancel : handleSubmit}
-          icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
-        />
-      </div>
-    </div>
-  );
-};
+// Re-export Composer from components
+export { Composer } from "./components";
