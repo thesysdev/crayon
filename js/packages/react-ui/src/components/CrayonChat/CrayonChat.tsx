@@ -46,9 +46,6 @@ type BaseCrayonChatProps = {
   messageLoadingComponent?: () => React.ReactNode;
   disableThemeProvider?: boolean;
 
-  isArtifactActive?: boolean;
-  renderArtifact?: () => React.ReactNode;
-
   /** Welcome message shown when thread is empty */
   welcomeMessage?: WelcomeMessageConfig;
   /** Conversation starters shown when thread is empty */
@@ -91,8 +88,6 @@ export const CrayonChat = (props: CrayonChatProps) => {
     theme,
     scrollVariant = "user-message-anchor",
     disableThemeProvider,
-    isArtifactActive,
-    renderArtifact,
     welcomeMessage,
     conversationStarters,
   } = props;
@@ -185,8 +180,6 @@ export const CrayonChat = (props: CrayonChatProps) => {
             agentName={agentName}
             messageLoadingComponent={messageLoadingComponent}
             scrollVariant={scrollVariant}
-            isArtifactActive={isArtifactActive}
-            renderArtifact={renderArtifact}
             welcomeMessage={welcomeMessage}
             conversationStarters={conversationStarters}
           />
@@ -196,8 +189,6 @@ export const CrayonChat = (props: CrayonChatProps) => {
             agentName={agentName}
             messageLoadingComponent={messageLoadingComponent}
             scrollVariant={scrollVariant}
-            isArtifactActive={isArtifactActive}
-            renderArtifact={renderArtifact}
             isOpen={isOpen}
             onOpenChange={onOpenChange}
             defaultOpen={defaultOpen}
@@ -210,8 +201,6 @@ export const CrayonChat = (props: CrayonChatProps) => {
             agentName={agentName}
             messageLoadingComponent={messageLoadingComponent}
             scrollVariant={scrollVariant}
-            isArtifactActive={isArtifactActive}
-            renderArtifact={renderArtifact}
             welcomeMessage={welcomeMessage}
             conversationStarters={conversationStarters}
           />

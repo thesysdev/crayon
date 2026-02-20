@@ -1,11 +1,12 @@
 import {
   Message,
   MessageProvider,
+  useArtifact,
   useThreadManagerSelector,
   useThreadState,
 } from "@crayonai/react-core";
 import clsx from "clsx";
-import React, { memo, useEffect, useRef } from "react";
+import React, { memo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
@@ -16,28 +17,18 @@ import { useArtifactResize } from "./useArtifactResize";
 export const ThreadContainer = ({
   children,
   className,
-  isArtifactActive = false,
-  renderArtifact = () => null,
 }: {
   children?: React.ReactNode;
   className?: string;
-  isArtifactActive?: boolean;
-  renderArtifact?: () => React.ReactNode;
 }) => {
   const { layout } = useLayoutContext();
   const isMobile = layout === "mobile";
 
-  const { setIsSidebarOpen, setIsArtifactActive, setArtifactRenderer } = useShellStore((state) => ({
-    setIsSidebarOpen: state.setIsSidebarOpen,
-    setIsArtifactActive: state.setIsArtifactActive,
-    setArtifactRenderer: state.setArtifactRenderer,
-  }));
+  const { isArtifactActive, renderArtifact } = useArtifact();
 
-  // Sync artifact state and renderer with store
-  useEffect(() => {
-    setIsArtifactActive(isArtifactActive);
-    setArtifactRenderer(renderArtifact);
-  }, [isArtifactActive, renderArtifact, setIsArtifactActive, setArtifactRenderer]);
+  const { setIsSidebarOpen } = useShellStore((state) => ({
+    setIsSidebarOpen: state.setIsSidebarOpen,
+  }));
 
   const { isInitialized } = useThreadManagerSelector((store) => ({
     isInitialized: store.isInitialized,
@@ -123,10 +114,7 @@ export const ScrollArea = ({
   const isMobile = layout === "mobile";
 
   const { messages, isRunning, isLoadingMessages } = useThreadState();
-  const { isArtifactActive, artifactRenderer } = useShellStore((store) => ({
-    isArtifactActive: store.isArtifactActive,
-    artifactRenderer: store.artifactRenderer,
-  }));
+  const { isArtifactActive, renderArtifact } = useArtifact();
 
   useScrollToBottom({
     ref,
@@ -153,7 +141,7 @@ export const ScrollArea = ({
         {children}
       </div>
       {isMobile && isArtifactActive && (
-        <div className="crayon-shell-thread-artifact-panel--mobile">{artifactRenderer()}</div>
+        <div className="crayon-shell-thread-artifact-panel--mobile">{renderArtifact()}</div>
       )}
     </div>
   );

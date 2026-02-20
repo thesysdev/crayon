@@ -1,4 +1,5 @@
 import { FC, useMemo } from "react";
+import { ArtifactProvider } from "./ArtifactProvider";
 import { ChatContext } from "./internal/ChatContext";
 import { useThreadListManagerStore } from "./internal/useThreadListManagerStore";
 import { useThreadManagerStore } from "./internal/useThreadManagerStore";
@@ -23,5 +24,9 @@ export const ChatProvider: FC<React.PropsWithChildren<ChatManager>> = ({
     [threadListManagerStore, threadManagerStore],
   );
 
-  return <ChatContext.Provider value={ctxValue}>{children}</ChatContext.Provider>;
+  return (
+    <ChatContext.Provider value={ctxValue}>
+      <ArtifactProvider>{children}</ArtifactProvider>
+    </ChatContext.Provider>
+  );
 };

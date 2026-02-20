@@ -21,8 +21,6 @@ interface ComposedBottomTrayProps {
   agentName?: string;
   messageLoadingComponent?: () => React.ReactNode;
   scrollVariant: ScrollVariant;
-  isArtifactActive?: boolean;
-  renderArtifact?: () => React.ReactNode;
   /** Control the open state of the tray */
   isOpen?: boolean;
   /** Callback when open state changes */
@@ -87,8 +85,6 @@ export const ComposedBottomTray = ({
   agentName = "My Agent",
   messageLoadingComponent: MessageLoadingComponent = MessageLoading,
   scrollVariant,
-  isArtifactActive,
-  renderArtifact,
   isOpen: controlledIsOpen,
   onOpenChange,
   defaultOpen = false,
@@ -118,7 +114,7 @@ export const ComposedBottomTray = ({
 
       {/* Controlled container */}
       <Container logoUrl={logoUrl} agentName={agentName} isOpen={isOpen}>
-        <ThreadContainer isArtifactActive={isArtifactActive} renderArtifact={renderArtifact}>
+        <ThreadContainer>
           <Header onMinimize={() => handleOpenChange(false)} />
           <WelcomeMessageRenderer welcomeMessage={welcomeMessage} />
           <ScrollArea scrollVariant={scrollVariant}>

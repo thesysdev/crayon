@@ -148,13 +148,10 @@ The sidebar provides thread management and navigation.
 
 ### ThreadContainer
 
-Wrapper for the main chat area with optional artifact panel support.
+Wrapper for the main chat area. Automatically manages the artifact panel when an artifact is opened via `useArtifactState`.
 
 ```tsx
-<ThreadContainer
-  isArtifactActive={false} // Show artifact panel (desktop: side-by-side, mobile: overlay)
-  renderArtifact={() => <div />} // Artifact content
->
+<ThreadContainer>
   {children}
 </ThreadContainer>
 ```
@@ -315,18 +312,85 @@ The Shell automatically adapts to screen size:
 
 ## Artifact Panel
 
-The Shell supports a resizable artifact panel on desktop:
+The Shell supports a resizable artifact panel. Artifacts are powered by three exports from `@crayonai/react-core`:
+
+| Export | Where to use | Purpose |
+|---|---|---|
+| `useArtifactState({ artifactId })` | Inside your ResponseTemplate | Returns `openArtifact()`, `closeArtifact()`, `isArtifactActive` |
+| `ArtifactRenderer` | Inside your ResponseTemplate | Renders your panel component into the Shell's artifact panel when active |
+| `useArtifact()` | Internal to ThreadContainer (you rarely need this) | Shell-level state for layout |
+
+### How it works
+
+1. Your **ResponseTemplate** component renders an inline preview inside the message
+2. When the user clicks "Open", your component calls `openArtifact()` from `useArtifactState`
+3. The Shell automatically shows the split-pane layout with a resizable artifact panel
+4. Your **panel component** renders inside the artifact panel via `ArtifactRenderer`
+5. The panel component uses `createPortal` to render into the Shell's panel div
+
+On desktop, the artifact panel appears to the right of the chat and can be resized by dragging the separator. On mobile, it appears as an overlay below messages.
+
+### Artifact auto-cleanup
+
+- When the user **switches threads**, the artifact automatically closes (framework clears state on thread change)
+- When the **message unmounts**, `useArtifactState` auto-closes if this artifact was active
+- Only **one artifact** can be active at a time; opening a new one replaces the previous
+
+### Full example
 
 ```tsx
-<ThreadContainer
-  isArtifactActive={true}
-  renderArtifact={() => <div>{/* Your artifact content (code preview, document, etc.) */}</div>}
->
-  {/* Chat content */}
-</ThreadContainer>
+import { useArtifactState, ArtifactRenderer } from "@crayonai/react-core";
+import { createPortal } from "react-dom";
+
+// 1. Panel component -- renders in the Shell's artifact side panel
+const CodePanel = ({ code, language, onClose, renderInsideHTMLNode }) => {
+  if (!renderInsideHTMLNode) return null;
+  return createPortal(
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: 12, borderBottom: "1px solid #eee", display: "flex", justifyContent: "space-between" }}>
+        <span>{language}</span>
+        <button onClick={onClose}>Close</button>
+      </div>
+      <pre style={{ flex: 1, padding: 16, margin: 0, overflow: "auto" }}>
+        <code>{code}</code>
+      </pre>
+    </div>,
+    renderInsideHTMLNode,
+  );
+};
+
+// 2. ResponseTemplate component -- renders inline in the message bubble
+const CodeArtifact = ({ code, language, artifactId }) => {
+  const { openArtifact, closeArtifact, isArtifactActive } = useArtifactState({ artifactId });
+
+  return (
+    <div>
+      {/* Inline preview */}
+      <pre style={{ maxHeight: 100, overflow: "hidden" }}>{code.slice(0, 200)}...</pre>
+      <button onClick={isArtifactActive ? closeArtifact : openArtifact}>
+        {isArtifactActive ? "Close" : "Open in Editor"}
+      </button>
+
+      {/* Bridge -- renders CodePanel into the Shell's artifact panel when active */}
+      <ArtifactRenderer
+        artifactId={artifactId}
+        Component={CodePanel}
+        code={code}
+        language={language}
+        onClose={closeArtifact}
+      />
+    </div>
+  );
+};
+
+// 3. Register as a ResponseTemplate
+const threadManager = useThreadManager({
+  // ...
+  responseTemplates: [{ name: "code_artifact", Component: CodeArtifact }],
+});
 ```
 
-On desktop, the artifact panel appears to the right of the chat and can be resized by dragging the separator. On mobile, it appears as a full-screen overlay.
+No props needed on `ThreadContainer` -- the artifact panel appears automatically when `openArtifact()` is called.
 
 ## Comparison with Other Components
 
