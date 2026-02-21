@@ -1,7 +1,7 @@
-import { createContext, useContext } from "react";
-import { StoreApi, useStore } from "zustand";
+import { useStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 import { createStore } from "zustand/vanilla";
+import { useChatContext } from "./ChatContext";
 
 interface ArtifactStoreState {
   activeArtifact: { artifactId: string } | null;
@@ -25,12 +25,7 @@ export const createArtifactStore = () =>
     setArtifactHTMLNode: (node: HTMLElement | null) => set({ artifactHTMLNode: node }),
   }));
 
-export const ArtifactStoreContext = createContext<StoreApi<ArtifactStore> | null>(null);
-
 export const useArtifactStore = <T,>(selector: (state: ArtifactStore) => T): T => {
-  const store = useContext(ArtifactStoreContext);
-  if (!store) {
-    throw new Error("useArtifactStore must be used within ArtifactProvider");
-  }
-  return useStore(store, useShallow(selector));
+  const { artifactStore } = useChatContext();
+  return useStore(artifactStore, useShallow(selector));
 };
