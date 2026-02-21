@@ -19,8 +19,6 @@ interface ComposedCopilotProps {
   agentName?: string;
   messageLoadingComponent?: () => React.ReactNode;
   scrollVariant: ScrollVariant;
-  isArtifactActive?: boolean;
-  renderArtifact?: () => React.ReactNode;
   /** Welcome message shown when thread is empty */
   welcomeMessage?: WelcomeMessageConfig;
   /** Conversation starters shown when thread is empty */
@@ -79,14 +77,12 @@ export const ComposedCopilot = ({
   agentName = "My Agent",
   messageLoadingComponent: MessageLoadingComponent = MessageLoading,
   scrollVariant,
-  isArtifactActive,
-  renderArtifact,
   welcomeMessage,
   conversationStarters,
 }: ComposedCopilotProps) => {
   return (
     <Container logoUrl={logoUrl} agentName={agentName}>
-      <ThreadContainer isArtifactActive={isArtifactActive} renderArtifact={renderArtifact}>
+      <ThreadContainer>
         <Header />
         <WelcomeMessageRenderer welcomeMessage={welcomeMessage} />
         <ScrollArea scrollVariant={scrollVariant}>

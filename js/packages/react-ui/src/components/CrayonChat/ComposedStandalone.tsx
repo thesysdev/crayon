@@ -25,8 +25,6 @@ interface ComposedStandaloneProps {
   agentName?: string;
   messageLoadingComponent?: () => React.ReactNode;
   scrollVariant: ScrollVariant;
-  isArtifactActive?: boolean;
-  renderArtifact?: () => React.ReactNode;
   /** Welcome message shown when thread is empty */
   welcomeMessage?: WelcomeMessageConfig;
   /** Conversation starters shown when thread is empty */
@@ -96,8 +94,6 @@ export const ComposedStandalone = ({
   agentName = "My Agent",
   messageLoadingComponent: MessageLoadingComponent = MessageLoading,
   scrollVariant,
-  isArtifactActive,
-  renderArtifact,
   welcomeMessage,
   conversationStarters,
 }: ComposedStandaloneProps) => {
@@ -111,7 +107,7 @@ export const ComposedStandalone = ({
           <ThreadList />
         </SidebarContent>
       </SidebarContainer>
-      <ThreadContainer isArtifactActive={isArtifactActive} renderArtifact={renderArtifact}>
+      <ThreadContainer>
         <MobileHeader />
         <WelcomeMessageRenderer
           welcomeMessage={welcomeMessage}

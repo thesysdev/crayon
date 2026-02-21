@@ -1,3 +1,4 @@
+import { useArtifact } from "@crayonai/react-core";
 import clsx from "clsx";
 import { ArrowLeftFromLine, ArrowRightFromLine } from "lucide-react";
 import { useEffect } from "react";
@@ -12,11 +13,11 @@ export const SidebarContainer = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const { isSidebarOpen, setIsSidebarOpen, isArtifactActive } = useShellStore((state) => ({
+  const { isSidebarOpen, setIsSidebarOpen } = useShellStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
     setIsSidebarOpen: state.setIsSidebarOpen,
-    isArtifactActive: state.isArtifactActive,
   }));
+  const { isArtifactActive } = useArtifact();
   const { layout } = useLayoutContext() || {};
   const isMobile = layout === "mobile";
 

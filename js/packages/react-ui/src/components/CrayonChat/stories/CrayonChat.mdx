@@ -276,8 +276,58 @@ These props only apply when `type="bottom-tray"`. The tray includes a built-in t
 | `scrollVariant`           | `ScrollVariant`                | Scroll behavior variant         |
 | `disableThemeProvider`    | `boolean`                      | Disable built-in theme provider |
 | `messageLoadingComponent` | `() => ReactNode`              | Custom loading component        |
-| `isArtifactActive`        | `boolean`                      | Show artifact panel             |
-| `renderArtifact`          | `() => ReactNode`              | Artifact content renderer       |
+
+## Artifacts
+
+CrayonChat automatically supports artifacts through the `useArtifactState` and `ArtifactRenderer` APIs from `@crayonai/react-core`. No artifact-specific props are needed on CrayonChat -- the Shell handles the artifact panel automatically.
+
+Build your artifact as a **ResponseTemplate** and register it via the `responseTemplates` prop:
+
+```tsx
+import { useArtifactState, ArtifactRenderer } from "@crayonai/react-core";
+import { createPortal } from "react-dom";
+
+// Your artifact ResponseTemplate
+const CodeArtifact = ({ code, language, artifactId }) => {
+  const { openArtifact, closeArtifact, isArtifactActive } = useArtifactState({ artifactId });
+
+  return (
+    <div>
+      <pre>{code.slice(0, 100)}...</pre>
+      <button onClick={isArtifactActive ? closeArtifact : openArtifact}>
+        {isArtifactActive ? "Close" : "Open"}
+      </button>
+      <ArtifactRenderer
+        artifactId={artifactId}
+        Component={CodePanel}
+        code={code}
+        language={language}
+        onClose={closeArtifact}
+      />
+    </div>
+  );
+};
+
+// Panel component (portals into the Shell's side panel)
+const CodePanel = ({ code, onClose, renderInsideHTMLNode }) => {
+  if (!renderInsideHTMLNode) return null;
+  return createPortal(
+    <div>
+      <button onClick={onClose}>Close</button>
+      <pre>{code}</pre>
+    </div>,
+    renderInsideHTMLNode,
+  );
+};
+
+// Register it
+<CrayonChat
+  responseTemplates={[{ name: "code_artifact", Component: CodeArtifact }]}
+  processMessage={...}
+/>
+```
+
+For full artifact documentation, see the **Shell** component docs.
 
 ## Custom Welcome Component
 

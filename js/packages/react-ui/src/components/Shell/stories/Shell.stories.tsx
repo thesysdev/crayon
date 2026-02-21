@@ -1,10 +1,13 @@
 import {
+  ArtifactRenderer,
   ChatProvider,
   Message,
+  useArtifactState,
   useThreadListManager,
   useThreadManager,
 } from "@crayonai/react-core";
-import { MessageSquare, Paperclip, Share, Sparkles, Zap } from "lucide-react";
+import { Code, MessageSquare, Paperclip, Share, Sparkles, X, Zap } from "lucide-react";
+import { createPortal } from "react-dom";
 import { Button } from "../../Button";
 import { IconButton } from "../../IconButton";
 import { Container } from "../Container";
@@ -442,6 +445,296 @@ export const WithWelcomeScreen = {
                 />
               }
             />
+          </ThreadContainer>
+        </Container>
+      </ChatProvider>
+    );
+  },
+};
+
+// --- Artifact Demo Components ---
+
+const SAMPLE_CODE = `import { useState, useEffect } from "react";
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}`;
+
+const CodeArtifactPanel = ({
+  code,
+  language,
+  onClose,
+  renderInsideHTMLNode,
+}: {
+  code: string;
+  language: string;
+  onClose: () => void;
+  renderInsideHTMLNode: HTMLElement | null;
+}) => {
+  if (!renderInsideHTMLNode) return null;
+
+  return createPortal(
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "var(--crayon-bg-container, #fff)" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "12px 16px",
+          borderBottom: "1px solid var(--crayon-stroke-default, #e5e5e5)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Code size={16} />
+          <span style={{ fontWeight: 600 }}>{language}</span>
+        </div>
+        <button
+          onClick={onClose}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 4,
+            borderRadius: 4,
+            display: "flex",
+          }}
+        >
+          <X size={16} />
+        </button>
+      </div>
+      <pre
+        style={{
+          flex: 1,
+          margin: 0,
+          padding: 16,
+          overflow: "auto",
+          fontSize: 13,
+          lineHeight: 1.6,
+          fontFamily: "monospace",
+          background: "var(--crayon-bg-sunk, #f5f5f5)",
+        }}
+      >
+        <code>{code}</code>
+      </pre>
+    </div>,
+    renderInsideHTMLNode,
+  );
+};
+
+const CodeArtifact = ({ code, language, artifactId }: { code: string; language: string; artifactId: string }) => {
+  const { openArtifact, closeArtifact, isArtifactActive } = useArtifactState({ artifactId });
+
+  return (
+    <div>
+      <div
+        style={{
+          border: "1px solid var(--crayon-stroke-default, #e5e5e5)",
+          borderRadius: 8,
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "8px 12px",
+            background: "var(--crayon-bg-sunk, #f5f5f5)",
+            borderBottom: "1px solid var(--crayon-stroke-default, #e5e5e5)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <Code size={14} />
+            <span style={{ fontSize: 13, fontWeight: 500 }}>{language}</span>
+          </div>
+          <button
+            onClick={isArtifactActive ? closeArtifact : openArtifact}
+            style={{
+              fontSize: 12,
+              padding: "4px 10px",
+              borderRadius: 4,
+              border: "1px solid var(--crayon-stroke-default, #e5e5e5)",
+              background: isArtifactActive ? "var(--crayon-interactive-accent, #333)" : "var(--crayon-bg-container, #fff)",
+              color: isArtifactActive ? "var(--crayon-accent-primary-text, #fff)" : "inherit",
+              cursor: "pointer",
+            }}
+          >
+            {isArtifactActive ? "Close" : "Open"}
+          </button>
+        </div>
+        <pre
+          style={{
+            margin: 0,
+            padding: 12,
+            fontSize: 12,
+            lineHeight: 1.5,
+            fontFamily: "monospace",
+            maxHeight: 120,
+            overflow: "hidden",
+          }}
+        >
+          <code>{code.slice(0, 200)}...</code>
+        </pre>
+      </div>
+
+      <ArtifactRenderer
+        artifactId={artifactId}
+        Component={CodeArtifactPanel}
+        code={code}
+        language={language}
+        onClose={closeArtifact}
+      />
+    </div>
+  );
+};
+
+const SAMPLE_CODE_2 = `export async function fetchWithRetry(
+  url: string,
+  options?: RequestInit,
+  retries = 3,
+  delay = 1000,
+): Promise<Response> {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) throw new Error(\`HTTP \${response.status}\`);
+      return response;
+    } catch (error) {
+      if (attempt === retries - 1) throw error;
+      await new Promise((r) => setTimeout(r, delay * Math.pow(2, attempt)));
+    }
+  }
+  throw new Error("Unreachable");
+}`;
+
+const THREAD_MESSAGES: Record<string, Message[]> = {
+  "thread-1": [
+    { id: "t1-u1", role: "user", type: "prompt", message: "Write me a debounce hook" },
+    {
+      id: "t1-a1",
+      role: "assistant",
+      message: [
+        { type: "text", text: "Here's a reusable debounce hook:" },
+        {
+          type: "template",
+          name: "code_artifact",
+          templateProps: { code: SAMPLE_CODE, language: "TypeScript", artifactId: "artifact-debounce" },
+        },
+        { type: "text", text: "Use it like `const debouncedSearch = useDebounce(searchTerm, 300)`." },
+      ],
+    },
+  ],
+  "thread-2": [
+    { id: "t2-u1", role: "user", type: "prompt", message: "Show me a fetch with retry" },
+    {
+      id: "t2-a1",
+      role: "assistant",
+      message: [
+        { type: "text", text: "Here's a fetch wrapper with exponential backoff retry:" },
+        {
+          type: "template",
+          name: "code_artifact",
+          templateProps: { code: SAMPLE_CODE_2, language: "TypeScript", artifactId: "artifact-fetch-retry" },
+        },
+      ],
+    },
+  ],
+  "thread-3": [
+    { id: "t3-u1", role: "user", type: "prompt", message: "Hello!" },
+    {
+      id: "t3-a1",
+      role: "assistant",
+      message: [{ type: "text", text: "Hi there! Ask me to write some code and I'll show it as an artifact." }],
+    },
+  ],
+};
+
+// Shell with artifact demo (multiple threads to test thread switching)
+export const WithArtifact = {
+  render: () => {
+    const threadListManager = useThreadListManager({
+      createThread: async () => ({
+        threadId: crypto.randomUUID(),
+        title: "New Chat",
+        createdAt: new Date(),
+        isRunning: false,
+      }),
+      fetchThreadList: async () => {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        return [
+          { threadId: "thread-1", title: "Debounce Hook", createdAt: new Date("2025-01-03"), isRunning: false },
+          { threadId: "thread-2", title: "Fetch with Retry", createdAt: new Date("2025-01-02"), isRunning: false },
+          { threadId: "thread-3", title: "General Chat (no artifact)", createdAt: new Date("2025-01-01"), isRunning: false },
+        ];
+      },
+      deleteThread: async () => {},
+      updateThread: async (t) => t,
+      onSwitchToNew: () => {},
+      onSelectThread: () => {},
+    });
+
+    const threadManager = useThreadManager({
+      threadId: threadListManager.selectedThreadId,
+      shouldResetThreadState: threadListManager.shouldResetThreadState,
+      loadThread: async (threadId) => {
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        return THREAD_MESSAGES[threadId] ?? [];
+      },
+      onProcessMessage: async ({ message, threadManager }) => {
+        const newMessage = { ...message, id: crypto.randomUUID() } as Message;
+        threadManager.appendMessages(newMessage);
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        return [
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            message: [
+              { type: "text", text: "Here's a custom React hook for debouncing values:" },
+              {
+                type: "template",
+                name: "code_artifact",
+                templateProps: {
+                  code: SAMPLE_CODE,
+                  language: "TypeScript",
+                  artifactId: "artifact-" + crypto.randomUUID(),
+                },
+              },
+              { type: "text", text: "You can use this hook to debounce any value in your components." },
+            ],
+          },
+        ];
+      },
+      responseTemplates: [{ name: "code_artifact", Component: CodeArtifact }],
+    });
+
+    return (
+      <ChatProvider threadListManager={threadListManager} threadManager={threadManager}>
+        <Container logoUrl={logoUrl} agentName="Crayon">
+          <SidebarContainer>
+            <SidebarHeader>
+              <NewChatButton />
+            </SidebarHeader>
+            <SidebarContent>
+              <SidebarSeparator />
+              <ThreadList />
+            </SidebarContent>
+          </SidebarContainer>
+          <ThreadContainer>
+            <MobileHeader />
+            <ScrollArea>
+              <Messages loader={<MessageLoading />} />
+            </ScrollArea>
+            <Composer />
           </ThreadContainer>
         </Container>
       </ChatProvider>

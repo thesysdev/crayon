@@ -1,36 +1,22 @@
 import {
   Message,
   MessageProvider,
+  useArtifact,
   useThreadManagerSelector,
   useThreadState,
 } from "@crayonai/react-core";
 import clsx from "clsx";
-import React, { memo, useEffect, useRef } from "react";
+import React, { memo, useRef } from "react";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
-import { useShellStore } from "../Shell/store";
 
 export const ThreadContainer = ({
   children,
   className,
-  isArtifactActive = false,
-  renderArtifact = () => null,
 }: {
   children?: React.ReactNode;
   className?: string;
-  isArtifactActive?: boolean;
-  renderArtifact?: () => React.ReactNode;
 }) => {
-  const { setIsArtifactActive, setArtifactRenderer } = useShellStore((state) => ({
-    setIsArtifactActive: state.setIsArtifactActive,
-    setArtifactRenderer: state.setArtifactRenderer,
-  }));
-
-  useEffect(() => {
-    setIsArtifactActive(isArtifactActive);
-    setArtifactRenderer(renderArtifact);
-  }, [isArtifactActive, renderArtifact, setIsArtifactActive, setArtifactRenderer]);
-
   const { isInitialized } = useThreadManagerSelector((store) => ({
     isInitialized: store.isInitialized,
   }));
@@ -67,10 +53,7 @@ export const ScrollArea = ({
   const ref = useRef<HTMLDivElement>(null);
 
   const { messages, isRunning, isLoadingMessages } = useThreadState();
-  const { isArtifactActive, artifactRenderer } = useShellStore((store) => ({
-    isArtifactActive: store.isArtifactActive,
-    artifactRenderer: store.artifactRenderer,
-  }));
+  const { isArtifactActive, renderArtifact } = useArtifact();
 
   useScrollToBottom({
     ref,
@@ -99,7 +82,7 @@ export const ScrollArea = ({
       {/* Gradient to hide the bottom of the scroll area */}
       <div className="crayon-bottom-tray-thread-scroll-gradient" />
       {isArtifactActive && (
-        <div className="crayon-bottom-tray-thread-artifact-panel--mobile">{artifactRenderer()}</div>
+        <div className="crayon-bottom-tray-thread-artifact-panel--mobile">{renderArtifact()}</div>
       )}
     </div>
   );
