@@ -1,0 +1,36 @@
+---
+title: Message Format
+description: Convert messages between Crayon's format and your backend's format.
+---
+
+By default, `useChat` sends and receives messages in Crayon's native format (AG-UI aligned). If your backend expects a different format, use a `MessageFormatConverter`.
+
+## OpenAI format
+
+```tsx
+import { useChat, openAIMessageFormat } from "@crayonai/react-core";
+
+const chat = useChat({
+  apiUrl: "/api/chat",
+  messageFormat: openAIMessageFormat,
+});
+```
+
+This converts outgoing messages to OpenAI's `{ role, content }` format and incoming messages back to Crayon format.
+
+## Available converters
+
+| Converter | Description |
+|-----------|-------------|
+| `identityConverter` | **(default)** No conversion — messages are already in Crayon format |
+| `openAIMessageFormat` | Converts to/from OpenAI's `{ role, content }` format |
+| `openAIConversationMessageFormat` | Converts to/from OpenAI Responses API item format |
+
+## Custom converter
+
+```typescript
+interface MessageFormatConverter<ExternalMessage = any> {
+  toExternal(messages: Message[]): ExternalMessage[];
+  fromExternal(messages: ExternalMessage[]): Message[];
+}
+```

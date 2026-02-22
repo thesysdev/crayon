@@ -1,0 +1,49 @@
+---
+title: Streaming Protocol
+description: Configure how Crayon parses streamed responses from your backend.
+---
+
+`useChat` needs to know how to parse the streaming response from your backend. By default it uses Crayon's SSE format, but you can swap in a different adapter.
+
+## Usage
+
+```tsx
+import { useChat } from "@crayonai/react-core";
+import { openAIAdapter } from "@crayonai/stream/adapters/openai";
+
+const chat = useChat({
+  apiUrl: "/api/chat",
+  streamProtocol: openAIAdapter(),
+});
+```
+
+## Available adapters
+
+| Adapter | Description |
+|---------|-------------|
+| `crayonSSEAdapter` | **(default)** Crayon's custom SSE format |
+| `agUIAdapter` | AG-UI protocol events |
+| `openAIAdapter` | OpenAI Chat Completions stream format |
+| `openAIResponsesAdapter` | OpenAI Responses API stream format |
+| `plainTextSSEAdapter` | Plain text chunks via SSE |
+| `vercelAIAdapter` | Vercel AI SDK data stream protocol |
+
+## Mixing adapters and formats
+
+You can combine any stream adapter with any message format. For example, OpenAI-formatted messages with AG-UI streaming:
+
+```tsx
+const chat = useChat({
+  apiUrl: "/api/chat",
+  messageFormat: openAIMessageFormat,
+  streamProtocol: agUIAdapter(),
+});
+```
+
+## Custom adapter
+
+```typescript
+interface StreamProtocolAdapter {
+  parse(response: Response): AsyncIterable<CrayonStreamEvent>;
+}
+```

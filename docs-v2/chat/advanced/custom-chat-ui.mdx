@@ -1,0 +1,49 @@
+---
+title: Building a Custom Chat UI
+description: Go headless with ChatProvider and Shell primitives for full layout control.
+---
+
+If `CrayonChat` is too opinionated, you can build your own layout using Crayon's lower-level components.
+
+## Using ChatProvider + Shell primitives
+
+```tsx
+import { useChat, ChatProvider } from "@crayonai/react-core";
+import {
+  Container, ThreadContainer, ScrollArea,
+  Messages, Composer, MobileHeader,
+} from "@crayonai/react-ui/Shell";
+import { ThemeProvider } from "@crayonai/react-ui/ThemeProvider";
+
+function App() {
+  const chat = useChat({ apiUrl: "/api/chat" });
+
+  return (
+    <ThemeProvider mode="dark">
+      <ChatProvider
+        threadListManager={chat.threadListManager}
+        threadManager={chat.threadManager}
+      >
+        <Container logoUrl="/logo.png" agentName="Custom Agent">
+          <div className="my-custom-sidebar">
+            {/* Your sidebar */}
+          </div>
+          <ThreadContainer>
+            <MobileHeader />
+            <ScrollArea>
+              <Messages />
+            </ScrollArea>
+            <Composer placeholder="Ask something..." />
+          </ThreadContainer>
+        </Container>
+      </ChatProvider>
+    </ThemeProvider>
+  );
+}
+```
+
+## Using raw hooks
+
+For maximum control, use `useThreadManager` and `useThreadListManager` directly.
+
+{/* TODO: Add details on raw hooks usage */}

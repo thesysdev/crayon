@@ -1,0 +1,86 @@
+---
+title: useChat
+description: The core hook that manages messages, threads, and LLM communication.
+---
+
+`useChat` is the single hook that powers your chat. It handles message state, thread management, streaming, and LLM communication.
+
+## Minimal setup
+
+```tsx
+import { useChat } from "@crayonai/react-core";
+import { CrayonChat } from "@crayonai/react-ui";
+
+function App() {
+  const chat = useChat({
+    apiUrl: "/api/chat",
+  });
+
+  return <CrayonChat chat={chat} agentName="My Agent" />;
+}
+```
+
+That's it. Messages are managed in-memory, no thread persistence. Refreshing starts a new conversation.
+
+## With a custom fetch
+
+If you need more control over the request, use `processMessage` instead of `apiUrl`:
+
+```tsx
+const chat = useChat({
+  processMessage: async ({ threadId, messages, abortController }) => {
+    return fetch("/api/chat", {
+      method: "POST",
+      body: JSON.stringify({ threadId, messages }),
+      signal: abortController.signal,
+    });
+  },
+});
+```
+
+## Adding thread persistence
+
+To save conversations across page reloads, provide thread handlers:
+
+```tsx
+const chat = useChat({
+  apiUrl: "/api/chat",
+
+  // Shortcut: if your backend has standard CRUD routes
+  threadApiUrl: "/api/threads",
+});
+```
+
+Or provide individual functions:
+
+```tsx
+const chat = useChat({
+  apiUrl: "/api/chat",
+
+  fetchThreadList: () => fetch("/api/threads").then(r => r.json()),
+  createThread: (firstMessage) =>
+    fetch("/api/threads", {
+      method: "POST",
+      body: JSON.stringify({ title: firstMessage.content }),
+    }).then(r => r.json()),
+  deleteThread: (id) =>
+    fetch(`/api/threads/${id}`, { method: "DELETE" }),
+  loadThread: (threadId) =>
+    fetch(`/api/threads/${threadId}/messages`).then(r => r.json()),
+});
+```
+
+## What it returns
+
+`useChat` returns a `ChatManager` — a combined object containing both `threadManager` and `threadListManager`. Pass it directly to `CrayonChat` via the `chat` prop.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="CrayonChat" icon="palette" href="/chat/crayon-chat">
+    Configure layouts, themes, and branding.
+  </Card>
+  <Card title="Build the backend" icon="server" href="/chat/backend/llm-chat-endpoint">
+    Implement the chat and thread endpoints.
+  </Card>
+</CardGroup>

@@ -1,0 +1,59 @@
+---
+title: How LLM Chat Works
+description: Understand conversation history, threads, and the APIs that power an LLM chat application.
+---
+
+Before diving into Crayon's APIs, it helps to understand the building blocks of any LLM chat application.
+
+## Conversation as message history
+
+LLMs are stateless. Every request must include the full conversation history — the LLM doesn't "remember" previous messages.
+
+```
+User:      "What's the weather in NYC?"
+Assistant: "It's 72°F and sunny."
+User:      "What about tomorrow?"
+```
+
+For the LLM to understand "What about tomorrow?", your backend must send all three messages in the request. This is called the **message history**.
+
+## Threads
+
+A **thread** is a saved conversation — a list of messages that persists across page reloads.
+
+To support threads, your backend needs a few standard operations:
+
+| Operation | Purpose |
+|-----------|---------|
+| **Create** | Start a new conversation |
+| **Load** | Retrieve messages for an existing thread |
+| **List** | Show all conversations in a sidebar |
+| **Delete** | Remove a conversation |
+
+Crayon's `useChat` hook handles all of this on the frontend. You just provide the API endpoints or handler functions.
+
+## The chat endpoint
+
+The core of any LLM chat app is an endpoint that:
+
+1. Receives the message history
+2. Sends it to the LLM
+3. Streams the response back
+
+```
+Frontend  →  POST /api/chat { messages }  →  Backend  →  LLM API
+Frontend  ←  SSE stream (text chunks)     ←  Backend  ←  LLM API
+```
+
+Crayon is agnostic to how your backend is implemented — it only cares about the streaming response format. You can configure this with [stream protocol adapters](/chat/advanced/streaming-protocol).
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="useChat" icon="code" href="/chat/use-chat">
+    Wire up the frontend to your backend.
+  </Card>
+  <Card title="Build the backend" icon="server" href="/chat/backend/llm-chat-endpoint">
+    Implement the chat endpoint.
+  </Card>
+</CardGroup>

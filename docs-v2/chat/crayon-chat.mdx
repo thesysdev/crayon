@@ -1,0 +1,87 @@
+---
+title: CrayonChat
+description: Pre-built chat UI with layouts, theming, and branding.
+---
+
+`CrayonChat` is a pure UI component. It takes a `ChatManager` from `useChat` and renders a complete chat interface.
+
+```tsx
+<CrayonChat chat={chat} agentName="My Agent" logoUrl="/logo.png" />
+```
+
+## Layouts
+
+### Standalone (default)
+
+Full-page chat with sidebar for thread history.
+
+```tsx
+<CrayonChat chat={chat} type="standalone" agentName="My Agent" />
+```
+
+### Copilot / Sidebar
+
+Side panel that sits alongside your app content.
+
+```tsx
+<div style={{ display: "flex", height: "100vh" }}>
+  <main style={{ flex: 1 }}>{/* Your app */}</main>
+  <CrayonChat chat={chat} type="copilot" agentName="Copilot" />
+</div>
+```
+
+### Bottom Tray / Widget
+
+Floating widget that opens from the bottom of the screen.
+
+```tsx
+<CrayonChat
+  chat={chat}
+  type="bottom-tray"
+  isOpen={isOpen}
+  onOpenChange={setIsOpen}
+  agentName="Assistant"
+/>
+```
+
+## Theming
+
+```tsx
+<CrayonChat
+  chat={chat}
+  theme={{ mode: "dark" }}
+  agentName="My Agent"
+/>
+```
+
+## Welcome experience
+
+```tsx
+<CrayonChat
+  chat={chat}
+  welcomeMessage={{
+    title: "Welcome!",
+    description: "Ask me anything.",
+  }}
+  conversationStarters={[
+    { title: "What can you do?", message: "What can you help me with?" },
+    { title: "Get started", message: "Help me get started" },
+  ]}
+/>
+```
+
+## All props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `chat` | `ChatManager` | Return value of `useChat()` |
+| `type` | `"standalone" \| "copilot" \| "bottom-tray"` | Layout mode |
+| `theme` | `ThemeProps` | Theme configuration |
+| `logoUrl` | `string` | Agent logo |
+| `agentName` | `string` | Agent display name |
+| `welcomeMessage` | `WelcomeMessageConfig` | Welcome screen content |
+| `conversationStarters` | `ConversationStartersConfig` | Suggested prompts |
+| `isOpen` | `boolean` | Bottom-tray open state |
+| `onOpenChange` | `(open: boolean) => void` | Bottom-tray toggle callback |
+
+{/* TODO: Add screenshots for each layout */}
