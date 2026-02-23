@@ -1,8 +1,8 @@
 # Crayon SDK Usage Examples
 
-## Minimal
+## 1. Minimal Setup (Ephemeral Chat)
 
-The simplest possible setup. In-memory threads, Crayon SSE protocol, no persistence.
+The simplest possible setup using Crayon's default AG-UI protocol. No thread persistence is configured, so refreshing the page starts a new conversation.
 
 ```tsx
 import { useChat } from "@crayonai/react-core";
@@ -10,10 +10,11 @@ import { CrayonChat } from "@crayonai/react-ui";
 
 function App() {
   const chat = useChat({
-    processMessage: async ({ threadId, messages, abortController }) => {
+    // Simple endpoint that accepts { messages } and returns a stream
+    processMessage: async ({ messages, abortController }) => {
       return fetch("/api/chat", {
         method: "POST",
-        body: JSON.stringify({ threadId, messages }),
+        body: JSON.stringify({ messages }),
         signal: abortController.signal,
       });
     },
@@ -25,9 +26,9 @@ function App() {
 
 ---
 
-## With Backend Persistence
+## 2. With Thread Management (Standard API)
 
-Persist threads and messages to your own backend.
+If your backend follows Crayon's standard CRUD API patterns, you can simply provide `threadApiUrl`. This automatically handles `create`, `update`, `delete`, and `load` operations for threads.
 
 ```tsx
 import { useChat } from "@crayonai/react-core";
@@ -35,28 +36,11 @@ import { CrayonChat } from "@crayonai/react-ui";
 
 function App() {
   const chat = useChat({
-    fetchThreadList: () => fetch("/api/threads").then((r) => r.json()),
-    createThread: (msg) =>
-      fetch("/api/threads", {
-        method: "POST",
-        body: JSON.stringify({ title: msg.content }),
-      }).then((r) => r.json()),
-    deleteThread: (id) =>
-      fetch(`/api/threads/${id}`, { method: "DELETE" }).then(() => {}),
-    updateThread: (thread) =>
-      fetch(`/api/threads/${thread.threadId}`, {
-        method: "PATCH",
-        body: JSON.stringify(thread),
-      }).then((r) => r.json()),
-    loadThread: (threadId) =>
-      fetch(`/api/threads/${threadId}/messages`).then((r) => r.json()),
-    processMessage: async ({ threadId, messages, abortController }) => {
-      return fetch("/api/chat", {
-        method: "POST",
-        body: JSON.stringify({ threadId, messages }),
-        signal: abortController.signal,
-      });
-    },
+    // Base URL for thread operations: /get, /create, /update, /delete
+    threadApiUrl: "/api/threads",
+    
+    // Chat endpoint for sending messages
+    apiUrl: "/api/chat",
   });
 
   return <CrayonChat chat={chat} type="standalone" agentName="My Agent" />;
@@ -65,107 +49,68 @@ function App() {
 
 ---
 
-## With AG-UI Protocol
+## 3. With Custom Thread Management
 
-Connect to any [AG-UI](https://docs.ag-ui.com) compatible backend. Supports tool calls, reasoning, and activity messages out of the box.
+If you have a custom backend API structure, you can provide individual handler functions instead of `threadApiUrl`.
 
 ```tsx
 import { useChat } from "@crayonai/react-core";
 import { CrayonChat } from "@crayonai/react-ui";
-import { agUIAdapter } from "@crayonai/stream/adapters/ag-ui";
 
 function App() {
   const chat = useChat({
-    processMessage: async ({ threadId, messages, abortController }) => {
-      return fetch("/api/agent", {
+    fetchThreadList: () => fetch("/my-api/conversations").then((r) => r.json()),
+    
+    createThread: (firstMessage) =>
+      fetch("/my-api/conversations", {
         method: "POST",
-        body: JSON.stringify({ threadId, messages }),
-        signal: abortController.signal,
-      });
-    },
-    streamProtocol: agUIAdapter(),
-  });
-
-  return <CrayonChat chat={chat} agentName="AG-UI Agent" />;
-}
-```
-
----
-
-## With Vercel AI SDK Protocol
-
-Connect to a backend built with the [Vercel AI SDK](https://sdk.vercel.ai).
-
-```tsx
-import { useChat } from "@crayonai/react-core";
-import { CrayonChat } from "@crayonai/react-ui";
-import { vercelAIAdapter } from "@crayonai/stream/adapters/vercel";
-
-function App() {
-  const chat = useChat({
+        body: JSON.stringify({ initial_message: firstMessage.content }),
+      }).then((r) => r.json()), // Returns { threadId, title, messages, ... }
+      
+    deleteThread: (id) =>
+      fetch(`/my-api/conversations/${id}`, { method: "DELETE" }),
+      
+    loadThread: (threadId) =>
+      fetch(`/my-api/conversations/${threadId}/messages`).then((r) => r.json()),
+      
     processMessage: async ({ threadId, messages, abortController }) => {
-      return fetch("/api/chat", {
+      return fetch(`/my-api/conversations/${threadId}/chat`, {
         method: "POST",
         body: JSON.stringify({ messages }),
         signal: abortController.signal,
       });
     },
-    streamProtocol: vercelAIAdapter(),
   });
 
-  return <CrayonChat chat={chat} agentName="Vercel Bot" />;
+  return <CrayonChat chat={chat} type="standalone" agentName="Custom Backend" />;
 }
 ```
 
 ---
 
-## With Plain Text SSE
+## 4. OpenAI Chat Completions API Integration
 
-For the simplest possible backend that just streams text chunks.
+Use this setup when your backend uses `openai.chat.completions.create` with `stream: true`. This setup handles:
+1. Converting Crayon messages to OpenAI format (including multipart content and tool calls).
+2. Parsing the OpenAI stream chunks back into Crayon events.
 
 ```tsx
-import { useChat } from "@crayonai/react-core";
+import { 
+  useChat, 
+  openAIAdapter, 
+  openAIMessageFormat 
+} from "@crayonai/react-core";
 import { CrayonChat } from "@crayonai/react-ui";
-import { plainTextSSEAdapter } from "@crayonai/stream/adapters/plain-text";
 
 function App() {
   const chat = useChat({
-    processMessage: async ({ threadId, messages, abortController }) => {
-      return fetch("/api/chat", {
-        method: "POST",
-        body: JSON.stringify({ messages }),
-        signal: abortController.signal,
-      });
-    },
-    streamProtocol: plainTextSSEAdapter(),
-  });
-
-  return <CrayonChat chat={chat} agentName="Simple Bot" />;
-}
-```
-
----
-
-## With OpenAI Message Format Converter
-
-When your backend expects messages in OpenAI's `{role, content}` format instead of Crayon's native format.
-
-```tsx
-import { useChat } from "@crayonai/react-core";
-import { CrayonChat } from "@crayonai/react-ui";
-import { openAIMessageConverter } from "@crayonai/stream/converters/openai";
-
-function App() {
-  const chat = useChat({
-    processMessage: async ({ threadId, messages, abortController }) => {
-      // `messages` are already converted to OpenAI format by the converter
-      return fetch("/api/chat", {
-        method: "POST",
-        body: JSON.stringify({ messages }),
-        signal: abortController.signal,
-      });
-    },
-    messageConverter: openAIMessageConverter(),
+    apiUrl: "/api/chat", // Endpoint calling openai.chat.completions.create
+    
+    // Adapter for parsing OpenAI stream chunks
+    streamProtocol: openAIAdapter(),
+    
+    // Format converter for outgoing messages (Crayon -> OpenAI)
+    messageFormat: openAIMessageFormat,
   });
 
   return <CrayonChat chat={chat} agentName="OpenAI Agent" />;
@@ -174,73 +119,92 @@ function App() {
 
 ---
 
-## Protocol + Format Converter Combined
+## 5. OpenAI Responses / Conversations API Integration
 
-Mix and match: Vercel AI backend that expects OpenAI-formatted messages.
+Use this setup for the newer OpenAI `responses` or `conversations` APIs (e.g., `openai.responses.create`). This API uses a different stream format and message structure (items list).
 
 ```tsx
-import { useChat } from "@crayonai/react-core";
+import { 
+  useChat, 
+  openAIResponsesAdapter, 
+  openAIConversationMessageFormat 
+} from "@crayonai/react-core";
 import { CrayonChat } from "@crayonai/react-ui";
-import { vercelAIAdapter } from "@crayonai/stream/adapters/vercel";
-import { openAIMessageConverter } from "@crayonai/stream/converters/openai";
 
 function App() {
   const chat = useChat({
-    processMessage: async ({ threadId, messages, abortController }) => {
+    apiUrl: "/api/chat", // Endpoint calling openai.responses.create
+    
+    // Adapter for parsing OpenAI Response API events
+    streamProtocol: openAIResponsesAdapter(),
+    
+    // Format converter for Item-based conversations
+    messageFormat: openAIConversationMessageFormat,
+  });
+
+  return <CrayonChat chat={chat} agentName="Responses Agent" />;
+}
+```
+
+---
+
+## 6. Mixed Protocol (e.g., Vercel AI SDK)
+
+You can mix and match adapters and formats. For example, if using Vercel AI SDK which expects OpenAI-formatted messages but streams text delta.
+
+```tsx
+import { useChat, openAIMessageFormat, agUIAdapter } from "@crayonai/react-core";
+import { CrayonChat } from "@crayonai/react-ui";
+
+function App() {
+  const chat = useChat({
+    processMessage: async ({ messages, abortController }) => {
+      // openAIMessageFormat.toApi has already converted messages to OpenAI format
       return fetch("/api/chat", {
         method: "POST",
         body: JSON.stringify({ messages }),
         signal: abortController.signal,
       });
     },
-    streamProtocol: vercelAIAdapter(),
-    messageConverter: openAIMessageConverter(),
+    // Use OpenAI message format for sending
+    messageFormat: openAIMessageFormat,
+    
+    // Use AG-UI adapter (or whichever matches your stream) for receiving
+    streamProtocol: agUIAdapter(), 
   });
 
-  return <CrayonChat chat={chat} agentName="My Agent" />;
+  return <CrayonChat chat={chat} agentName="Vercel Agent" />;
 }
 ```
 
 ---
 
-## Copilot Layout
+## 7. Custom UI Layouts
 
-Side-panel chat, useful for embedding alongside your main app content.
+### Copilot / Sidebar
 
 ```tsx
 import { useChat } from "@crayonai/react-core";
 import { CrayonChat } from "@crayonai/react-ui";
 
 function App() {
-  const chat = useChat({
-    processMessage: async ({ threadId, messages, abortController }) => {
-      return fetch("/api/chat", {
-        method: "POST",
-        body: JSON.stringify({ threadId, messages }),
-        signal: abortController.signal,
-      });
-    },
-  });
+  const chat = useChat({ apiUrl: "/api/chat" });
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
-      <main style={{ flex: 1 }}>{/* Your app content */}</main>
+      <main style={{ flex: 1 }}>{/* App Content */}</main>
       <CrayonChat
         chat={chat}
         type="copilot"
         agentName="Copilot"
-        logoUrl="/copilot.png"
+        logoUrl="/copilot-logo.png"
       />
     </div>
   );
 }
 ```
 
----
-
-## Bottom Tray Layout
-
-Floating chat panel in the bottom-right corner.
+### Bottom Tray / Widget
 
 ```tsx
 import { useChat } from "@crayonai/react-core";
@@ -249,26 +213,17 @@ import { useState } from "react";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
-
-  const chat = useChat({
-    processMessage: async ({ threadId, messages, abortController }) => {
-      return fetch("/api/chat", {
-        method: "POST",
-        body: JSON.stringify({ threadId, messages }),
-        signal: abortController.signal,
-      });
-    },
-  });
+  const chat = useChat({ apiUrl: "/api/chat" });
 
   return (
     <>
-      <main>{/* Your app content */}</main>
+      <main>{/* App Content */}</main>
       <CrayonChat
         chat={chat}
         type="bottom-tray"
         isOpen={isOpen}
         onOpenChange={setIsOpen}
-        agentName="Help"
+        agentName="Assistant"
       />
     </>
   );
@@ -277,73 +232,9 @@ function App() {
 
 ---
 
-## Escape Hatch: Lower-Level Hooks
+## 8. Fully Custom UI (Headless Mode)
 
-For full control over thread and thread list management. Use `useThreadManager` and `useThreadListManager` directly.
-
-```tsx
-import { useThreadManager, useThreadListManager } from "@crayonai/react-core";
-import { CrayonChat } from "@crayonai/react-ui";
-
-function App() {
-  const threadListManager = useThreadListManager({
-    fetchThreadList: () => fetch("/api/threads").then((r) => r.json()),
-    createThread: (msg) =>
-      fetch("/api/threads", {
-        method: "POST",
-        body: JSON.stringify({ title: msg.content }),
-      }).then((r) => r.json()),
-    deleteThread: (id) =>
-      fetch(`/api/threads/${id}`, { method: "DELETE" }).then(() => {}),
-    updateThread: (thread) =>
-      fetch(`/api/threads/${thread.threadId}`, {
-        method: "PATCH",
-        body: JSON.stringify(thread),
-      }).then((r) => r.json()),
-    onSwitchToNew: () => {},
-    onSelectThread: () => {},
-  });
-
-  const threadManager = useThreadManager({
-    threadId: threadListManager.selectedThreadId,
-    shouldResetThreadState: threadListManager.shouldResetThreadState,
-    loadThread: (threadId) =>
-      fetch(`/api/threads/${threadId}/messages`).then((r) => r.json()),
-    onProcessMessage: async ({ message, threadManager, abortController }) => {
-      // Full control over message processing
-      threadManager.appendMessages({
-        id: crypto.randomUUID(),
-        ...message,
-      });
-
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        body: JSON.stringify({ message }),
-        signal: abortController.signal,
-      });
-
-      // Handle the stream yourself
-      // ...
-
-      return [];
-    },
-  });
-
-  return (
-    <CrayonChat
-      chat={{ threadManager, threadListManager }}
-      type="standalone"
-      agentName="Custom Agent"
-    />
-  );
-}
-```
-
----
-
-## Fully Custom UI with ChatProvider
-
-Skip `CrayonChat` entirely and compose individual Crayon components with your own.
+If you need complete control over the layout, you can use `ChatProvider` with individual UI components instead of `CrayonChat`.
 
 ```tsx
 import { useChat, ChatProvider } from "@crayonai/react-core";
@@ -354,30 +245,11 @@ import {
   Messages,
   Composer,
   MobileHeader,
-} from "@crayonai/react-ui/Shell";
+} from "@crayonai/react-ui/Shell"; // Import from subpath
 import { ThemeProvider } from "@crayonai/react-ui/ThemeProvider";
-import { CustomSidebar } from "./CustomSidebar";
 
 function App() {
-  const chat = useChat({
-    fetchThreadList: () => fetch("/api/threads").then((r) => r.json()),
-    createThread: (msg) =>
-      fetch("/api/threads", {
-        method: "POST",
-        body: JSON.stringify({ title: msg.content }),
-      }).then((r) => r.json()),
-    deleteThread: (id) =>
-      fetch(`/api/threads/${id}`, { method: "DELETE" }).then(() => {}),
-    loadThread: (id) =>
-      fetch(`/api/threads/${id}/messages`).then((r) => r.json()),
-    processMessage: async ({ threadId, messages, abortController }) => {
-      return fetch("/api/chat", {
-        method: "POST",
-        body: JSON.stringify({ threadId, messages }),
-        signal: abortController.signal,
-      });
-    },
-  });
+  const chat = useChat({ apiUrl: "/api/chat" });
 
   return (
     <ThemeProvider mode="dark">
@@ -386,13 +258,17 @@ function App() {
         threadManager={chat.threadManager}
       >
         <Container logoUrl="/logo.png" agentName="Custom Agent">
-          <CustomSidebar />
+          <div className="my-custom-sidebar">
+            {/* Custom Sidebar Content */}
+          </div>
+          
           <ThreadContainer>
             <MobileHeader />
             <ScrollArea>
+              {/* You can pass custom renderers to Messages too */}
               <Messages />
             </ScrollArea>
-            <Composer />
+            <Composer placeholder="Ask something..." />
           </ThreadContainer>
         </Container>
       </ChatProvider>
