@@ -1,0 +1,209 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-select-trigger {
+  box-sizing: border-box;
+  background-color: cssUtils.$highlight-subtle;
+  color: cssUtils.$text-neutral-primary;
+  @include cssUtils.typography(body, default);
+  border: 1px solid cssUtils.$border-default;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: cssUtils.$space-s;
+
+  &:hover {
+    background: cssUtils.$highlight;
+    border-color: cssUtils.$border-interactive;
+    color: cssUtils.$text-neutral-secondary;
+    &:not([data-placeholder]) {
+      color: cssUtils.$text-neutral-primary;
+    }
+  }
+
+  &:disabled {
+    background-color: cssUtils.$highlight-subtle;
+    color: cssUtils.$text-neutral-tertiary;
+    border-color: cssUtils.$border-default;
+    cursor: not-allowed;
+  }
+
+  &[data-state="open"] {
+    border-color: cssUtils.$border-interactive;
+    background-color: cssUtils.$highlight;
+  }
+  &[data-placeholder] {
+    color: cssUtils.$text-neutral-secondary;
+  }
+
+  &-sm {
+    @include cssUtils.typography(body, small);
+    padding: calc(cssUtils.$space-xs - 1.5px) cssUtils.$space-s;
+    border-radius: calc(cssUtils.$radius-s + 1px);
+  }
+  &-md {
+    padding: calc(cssUtils.$space-xs - 1px) calc(cssUtils.$space-m - 1px);
+    border-radius: cssUtils.$radius-m;
+  }
+  &-lg {
+    padding: calc(cssUtils.$space-s - 1px) cssUtils.$space-m;
+    border-radius: cssUtils.$radius-l;
+  }
+  &-icon {
+    height: 16px;
+    width: 16px;
+  }
+}
+
+.openui-select-trigger svg {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.openui-select-trigger[data-state="open"] svg {
+  transform: rotate(180deg);
+}
+
+.openui-select-content {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 50;
+  max-height: 372px;
+  min-width: var(--radix-select-trigger-width);
+  overflow: hidden;
+  border-radius: cssUtils.$radius-xl;
+  background-color: cssUtils.$foreground;
+  border: 1px solid cssUtils.$border-default;
+  box-shadow: cssUtils.$shadow-m;
+  color: cssUtils.$text-neutral-primary;
+  transform-origin: top center;
+  animation: select-show 0.18s ease-out forwards;
+}
+
+.openui-select-content-sm {
+  border-radius: cssUtils.$radius-l;
+
+  .openui-select-label,
+  .openui-select-item,
+  .openui-select-item-text,
+  .openui-select-item-text-value {
+    @include cssUtils.typography(body, small);
+  }
+}
+
+@keyframes select-show {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.openui-select-viewport {
+  box-sizing: border-box;
+  padding: 4px;
+
+  &[data-position="popper"] {
+    width: 100%;
+  }
+}
+
+.openui-select-group {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-3xs;
+}
+
+.openui-select-label {
+  box-sizing: border-box;
+  padding: cssUtils.$space-3xs cssUtils.$space-xs;
+  @include cssUtils.typography(primary, default);
+  color: cssUtils.$text-neutral-tertiary;
+}
+
+.openui-select-item {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  cursor: default;
+  user-select: none;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: cssUtils.$radius-s;
+  padding-top: cssUtils.$space-2xs;
+  padding-bottom: cssUtils.$space-2xs;
+  @include cssUtils.typography(primary, default);
+  color: cssUtils.$text-neutral-primary;
+  outline: 0;
+
+  // Variants based on showTick
+  &--with-tick {
+    padding-left: cssUtils.$space-xs;
+    padding-right: cssUtils.$space-xl;
+  }
+
+  &--without-tick {
+    padding-left: cssUtils.$space-xs;
+    padding-right: cssUtils.$space-xl;
+  }
+
+  // States
+  &[data-disabled] {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  &[data-highlighted] {
+    color: cssUtils.$text-neutral-primary;
+  }
+
+  &:not([data-state="checked"]):hover {
+    background-color: cssUtils.$highlight;
+    color: cssUtils.$text-neutral-primary;
+  }
+
+  &:focus {
+    background-color: cssUtils.$highlight;
+    color: cssUtils.$text-neutral-primary;
+  }
+
+  &[data-state="checked"] {
+    background-color: cssUtils.$highlight;
+    outline: 1px solid cssUtils.$border-interactive;
+    outline-offset: -1px;
+  }
+
+  // Check indicator
+  &-check-wrapper {
+    position: absolute;
+    right: 8px;
+    height: 14px;
+    width: 14px;
+  }
+
+  &-check-icon {
+    height: 16px;
+    width: 16px;
+  }
+
+  // Text content
+  &-text {
+    flex: 1;
+    @include cssUtils.typography(primary, default);
+    color: cssUtils.$text-neutral-secondary;
+  }
+
+  &-value {
+    color: cssUtils.$text-neutral-secondary;
+  }
+}
+
+.openui-select-separator {
+  box-sizing: border-box;
+  margin: 4px -4px;
+  height: 1px;
+  border-top: 1px solid cssUtils.$border-default;
+}

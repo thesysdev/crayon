@@ -1,0 +1,94 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-shell-thread-list {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-s;
+  overflow: auto;
+}
+
+.openui-shell-thread-list-group {
+  display: flex;
+  padding-left: cssUtils.$space-xs;
+  color: cssUtils.$text-neutral-secondary;
+  @include cssUtils.typography(label, default);
+}
+
+.openui-shell-thread-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-radius: cssUtils.$radius-s;
+  border: 1px solid transparent;
+
+  &--selected {
+    background-color: cssUtils.$sunk;
+    border-color: cssUtils.$border-default;
+  }
+
+  &:hover {
+    .openui-shell-thread-button-dropdown-trigger {
+      opacity: 1;
+    }
+  }
+}
+
+.openui-shell-thread-button-title {
+  @include cssUtils.button-reset;
+  @include cssUtils.typography(primary, default);
+  color: cssUtils.$text-neutral-primary;
+  padding: cssUtils.$space-2xs cssUtils.$space-xs;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.openui-shell-thread-button-dropdown-trigger {
+  @include cssUtils.button-reset;
+  outline: none;
+  @include cssUtils.typography(primary, default);
+  color: cssUtils.$text-neutral-primary;
+  padding: cssUtils.$space-2xs cssUtils.$space-xs;
+  flex-shrink: 0;
+  min-height: 28px;
+  cursor: pointer;
+  opacity: 0;
+
+  .openui-shell-container--mobile & {
+    opacity: 1;
+  }
+
+  &[data-state="open"] {
+    opacity: 1;
+  }
+}
+
+.openui-shell-thread-button-dropdown-menu {
+  display: flex;
+  flex-direction: column;
+  padding: cssUtils.$space-xs;
+  border: 1px solid cssUtils.$border-default;
+  border-radius: cssUtils.$radius-m;
+  background-color: cssUtils.$foreground;
+  z-index: 9999;
+}
+
+.openui-shell-thread-button-dropdown-menu-item {
+  @include cssUtils.button-reset;
+  @include cssUtils.typography(primary, default);
+  outline: none;
+  color: cssUtils.$text-neutral-primary;
+  padding: cssUtils.$space-2xs cssUtils.$space-xs;
+  display: flex;
+  align-items: center;
+  gap: cssUtils.$space-2xs;
+  cursor: pointer;
+}
+
+.openui-shell-thread-button-dropdown-menu-item-icon {
+  color: cssUtils.$text-neutral-secondary;
+}

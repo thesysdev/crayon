@@ -1,0 +1,73 @@
+---
+title: GenUI
+description: Use Generative UI with Chat components.
+---
+
+OpenUI Chat components support **GenUI** out of the box.
+
+If your backend streams OpenUI Lang responses and provides a component library prompt, chat messages can render rich UI (cards, charts, forms, layouts) directly in the conversation.
+
+## Two ways to enable GenUI
+
+### 1) Use `defaultLibrary` from `react-ui` (recommended)
+
+This is the fastest path and the one used in the OpenUI Lang quick start.
+
+- Import `defaultLibrary` from `@openuidev/react-ui`
+- Pass it to the chat component via `componentLibrary`
+- Use the generated system prompt on your backend so the model knows what components it can emit
+
+`defaultLibrary` includes 40+ ready-to-use components and examples, so you can ship quickly without defining schemas first.
+
+```tsx
+import { Copilot } from "@openuidev/react-ui";
+import { defaultLibrary } from "@openuidev/react-ui";
+
+export function App() {
+  return <Copilot apiUrl="/api/chat" componentLibrary={defaultLibrary} />;
+}
+```
+
+### 2) Create your own custom library
+
+If you need domain-specific components, define your own library and pass it as `componentLibrary`.
+
+See [Define Components](/docs/openui-lang/defining-components) for the full setup.
+
+```tsx
+import { Copilot } from "@openuidev/react-ui";
+import { myLibrary } from "@/lib/my-library";
+
+export function App() {
+  return <Copilot apiUrl="/api/chat" componentLibrary={myLibrary} />;
+}
+```
+
+## Use the standard library with all chat layouts
+
+The same `defaultLibrary` works across all built-in chat UIs:
+
+```tsx
+import { Copilot, FullScreen, BottomTray, defaultLibrary } from "@openuidev/react-ui";
+
+<Copilot apiUrl="/api/chat" componentLibrary={defaultLibrary} />;
+<FullScreen apiUrl="/api/chat" componentLibrary={defaultLibrary} />;
+<BottomTray apiUrl="/api/chat" componentLibrary={defaultLibrary} />;
+```
+
+### Related pages
+
+<Cards>
+  <Card title="Copilot" href="/docs/chat/copilot">
+    Sidebar layout with GenUI enabled via `componentLibrary`.
+  </Card>
+  <Card title="FullScreen" href="/docs/chat/fullscreen">
+    Full-page chat layout with the same GenUI setup.
+  </Card>
+  <Card title="BottomTray" href="/docs/chat/bottom-tray">
+    Floating widget layout with standard library support.
+  </Card>
+  <Card title="Define Components" href="/docs/openui-lang/defining-components">
+    Build and use a custom library for domain-specific UI.
+  </Card>
+</Cards>

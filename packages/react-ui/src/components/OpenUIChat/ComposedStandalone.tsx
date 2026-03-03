@@ -1,0 +1,120 @@
+import { useThread } from "@openuidev/react-headless";
+import {
+  Container,
+  ConversationStarter,
+  Composer as DefaultComposer,
+  MessageLoading,
+  Messages,
+  MobileHeader,
+  NewChatButton,
+  ScrollArea,
+  SidebarContainer,
+  SidebarContent,
+  SidebarHeader,
+  SidebarSeparator,
+  ThreadContainer,
+  ThreadList,
+  WelcomeScreen,
+} from "../Shell";
+import { CustomComposerAdapter } from "./CustomComposerAdapter";
+import type { SharedChatUIProps } from "./types";
+import { isChatEmpty, isWelcomeComponent } from "./utils";
+import { withChatProvider } from "./withChatProvider";
+
+const WelcomeMessageRenderer = ({
+  welcomeMessage,
+  conversationStarters,
+}: Pick<SharedChatUIProps, "welcomeMessage" | "conversationStarters">) => {
+  const messages = useThread((s) => s.messages);
+  const isLoadingMessages = useThread((s) => s.isLoadingMessages);
+
+  if (!welcomeMessage || !isChatEmpty({ isLoadingMessages, messages })) {
+    return null;
+  }
+
+  if (isWelcomeComponent(welcomeMessage)) {
+    const CustomWelcome = welcomeMessage;
+    return (
+      <WelcomeScreen>
+        <CustomWelcome />
+      </WelcomeScreen>
+    );
+  }
+
+  return (
+    <WelcomeScreen
+      title={welcomeMessage.title}
+      description={welcomeMessage.description}
+      image={welcomeMessage.image}
+      starters={conversationStarters?.options}
+      starterVariant={conversationStarters?.variant}
+    />
+  );
+};
+
+const ConversationStartersRenderer = ({
+  conversationStarters,
+}: Pick<SharedChatUIProps, "conversationStarters">) => {
+  const messages = useThread((s) => s.messages);
+  const isLoadingMessages = useThread((s) => s.isLoadingMessages);
+
+  if (!conversationStarters || !isChatEmpty({ isLoadingMessages, messages })) {
+    return null;
+  }
+
+  return (
+    <ConversationStarter
+      variant={conversationStarters.variant}
+      starters={conversationStarters.options}
+    />
+  );
+};
+
+const FullScreenInner = ({
+  logoUrl = "https://crayonai.org/img/logo.png",
+  agentName = "My Agent",
+  messageLoading: MessageLoadingComponent = MessageLoading,
+  scrollVariant = "user-message-anchor",
+  isArtifactActive,
+  renderArtifact,
+  welcomeMessage,
+  conversationStarters,
+  assistantMessage,
+  userMessage,
+  composer: ComposerComponent,
+}: SharedChatUIProps) => {
+  return (
+    <Container logoUrl={logoUrl} agentName={agentName}>
+      <SidebarContainer>
+        <SidebarHeader />
+        <SidebarContent>
+          <NewChatButton />
+          <SidebarSeparator />
+          <ThreadList />
+        </SidebarContent>
+      </SidebarContainer>
+      <ThreadContainer isArtifactActive={isArtifactActive} renderArtifact={renderArtifact}>
+        <MobileHeader />
+        <WelcomeMessageRenderer
+          welcomeMessage={welcomeMessage}
+          conversationStarters={conversationStarters}
+        />
+        <ScrollArea scrollVariant={scrollVariant}>
+          <Messages
+            loader={<MessageLoadingComponent />}
+            assistantMessage={assistantMessage}
+            userMessage={userMessage}
+          />
+        </ScrollArea>
+        <ConversationStartersRenderer conversationStarters={conversationStarters} />
+        {ComposerComponent ? (
+          <CustomComposerAdapter composer={ComposerComponent} />
+        ) : (
+          <DefaultComposer />
+        )}
+      </ThreadContainer>
+    </Container>
+  );
+};
+
+export const FullScreen = withChatProvider(FullScreenInner);

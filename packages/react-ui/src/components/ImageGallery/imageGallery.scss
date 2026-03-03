@@ -1,0 +1,300 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-gallery {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  border-radius: cssUtils.$radius-m;
+
+  &__grid {
+    display: grid;
+    width: 100%;
+    max-height: 376px;
+    grid-gap: cssUtils.$space-s;
+  }
+
+  // Layout variations
+  &--single &__grid {
+    grid-template-columns: 1fr;
+  }
+
+  &--double &__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  &--triple &__grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+
+    .openui-gallery__image:first-child {
+      grid-row: 1 / -1;
+    }
+  }
+
+  &--quad &__grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-areas:
+      "img1 img1 img2 img2 "
+      "img1 img1 img3 img4";
+    .openui-gallery__image {
+      &:nth-child(1) {
+        grid-area: img1;
+      }
+      &:nth-child(2) {
+        grid-area: img2;
+      }
+      &:nth-child(3) {
+        grid-area: img3;
+      }
+      &:nth-child(4) {
+        grid-area: img4;
+      }
+    }
+  }
+
+  &--default &__grid {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+
+    .openui-gallery__image:first-child {
+      grid-row: 1 / -1;
+    }
+  }
+
+  &__image {
+    position: relative;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    &--main {
+      img {
+        height: 100%;
+      }
+    }
+  }
+
+  &__show-all-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+  }
+
+  // Modal styles
+  &__modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+    backdrop-filter: blur(3px);
+    background-color: cssUtils.$overlay;
+  }
+
+  &__modal-content {
+    width: calc(100% - 80px);
+    height: calc(100% - 80px);
+    max-width: 720px;
+    max-height: 640px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    border: 1px solid cssUtils.$border-default;
+    background-color: cssUtils.$foreground;
+    border-radius: cssUtils.$radius-xl;
+    gap: cssUtils.$space-xl;
+    padding-top: cssUtils.$space-xl;
+    padding-bottom: cssUtils.$space-xl;
+  }
+  &__modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: cssUtils.$space-xl;
+    padding-right: cssUtils.$space-xl;
+  }
+  &__modal-heading {
+    @include cssUtils.typography(heading, extra-small);
+    color: cssUtils.$text-neutral-primary;
+  }
+
+  &__modal-main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: cssUtils.$space-xl;
+    padding-right: cssUtils.$space-xl;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: cssUtils.$radius-s;
+    }
+    &:hover {
+      .openui-gallery__modal-details {
+        display: flex;
+      }
+    }
+  }
+
+  &__modal-carousel-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  &__modal-carousel {
+    display: flex;
+    gap: cssUtils.$space-s;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    padding-left: cssUtils.$space-xl;
+    padding-right: cssUtils.$space-xl;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__modal-carousel-button-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: cssUtils.$foreground;
+    border-radius: cssUtils.$radius-xs;
+    overflow: hidden;
+    &-left {
+      left: 24px;
+    }
+    &-right {
+      right: 24px;
+    }
+  }
+
+  &__modal-thumbnail {
+    flex: 1;
+    height: 116px;
+    min-width: 174px;
+    cursor: pointer;
+    opacity: 0.6;
+    border-radius: cssUtils.$radius-s;
+    border: 1px solid transparent;
+    overflow: hidden;
+    transition: opacity 0.2s ease;
+    box-sizing: border-box;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &--active {
+      opacity: 1;
+      border-color: cssUtils.$border-interactive-selected;
+      border-radius: cssUtils.$radius-s;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    &--default &__grid {
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      grid-template-areas:
+        "img1 img1 img1  img2 img2 img2 "
+        "img3 img3 img4  img4 img5 img5";
+
+      .openui-gallery__image {
+        &:nth-child(1) {
+          grid-area: img1;
+        }
+        &:nth-child(2) {
+          grid-area: img2;
+        }
+        &:nth-child(3) {
+          grid-area: img3;
+        }
+        &:nth-child(4) {
+          grid-area: img4;
+        }
+        &:nth-child(5) {
+          grid-area: img5;
+        }
+      }
+    }
+    &--triple &__grid {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      grid-template-areas:
+        "img1 img1"
+        "img2 img3";
+
+      .openui-gallery__image {
+        &:nth-child(1) {
+          grid-area: img1;
+        }
+        &:nth-child(2) {
+          grid-area: img2;
+        }
+        &:nth-child(3) {
+          grid-area: img3;
+        }
+      }
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .openui-gallery__modal-content {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    max-height: none;
+    max-width: none;
+  }
+}

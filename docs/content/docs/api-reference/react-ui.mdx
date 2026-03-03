@@ -1,0 +1,110 @@
+---
+title: "@openuidev/react-ui"
+description: API reference for documented prebuilt chat layouts and standard component library exports.
+---
+
+Use this package for prebuilt chat UIs and default component library primitives.
+
+## Import
+
+```ts
+import { Copilot, FullScreen, BottomTray } from "@openuidev/react-ui";
+```
+
+## Layout components
+
+These layouts are documented in Chat UI guides and are all wrapped with `ChatProvider`.
+
+### `Copilot`
+
+Sidebar chat layout.
+
+```ts
+type CopilotProps = ChatLayoutProps;
+```
+
+### `FullScreen`
+
+Full-page chat layout with thread sidebar.
+
+```ts
+type FullScreenProps = ChatLayoutProps;
+```
+
+### `BottomTray`
+
+Floating/collapsible tray layout.
+
+```ts
+type BottomTrayProps = ChatLayoutProps & {
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
+  defaultOpen?: boolean;
+};
+```
+
+## Shared layout props (`ChatLayoutProps`)
+
+All three layouts accept:
+
+- Chat provider props: `apiUrl`/`processMessage`, thread APIs, `streamProtocol`, `messageFormat`
+- Shared UI props:
+  - `logoUrl?: string`
+  - `agentName?: string`
+  - `messageLoading?: React.ComponentType`
+  - `scrollVariant?: ScrollVariant`
+  - `isArtifactActive?: boolean`
+  - `renderArtifact?: () => React.ReactNode`
+  - `welcomeMessage?: WelcomeMessageConfig`
+  - `conversationStarters?: ConversationStartersConfig`
+  - `assistantMessage?: AssistantMessageComponent`
+  - `userMessage?: UserMessageComponent`
+  - `composer?: ComposerComponent`
+  - `componentLibrary?: Library` (from `@openuidev/lang-react`)
+- Theme wrapper props:
+  - `theme?: ThemeProps`
+  - `disableThemeProvider?: boolean`
+
+## UI customization types
+
+Types used by customization docs:
+
+```ts
+type AssistantMessageComponent = React.ComponentType<{ message: AssistantMessage }>;
+type UserMessageComponent = React.ComponentType<{ message: UserMessage }>;
+
+type ComposerProps = {
+  onSend: (message: string) => void;
+  onCancel: () => void;
+  isRunning: boolean;
+  isLoadingMessages: boolean;
+};
+type ComposerComponent = React.ComponentType<ComposerProps>;
+
+type WelcomeMessageConfig =
+  | React.ComponentType<any>
+  | {
+      title?: string;
+      description?: string;
+      image?: { url: string } | React.ReactNode;
+    };
+
+interface ConversationStartersConfig {
+  variant?: "short" | "long";
+  options: ConversationStarterProps[];
+}
+```
+
+## Standard component library exports
+
+Documented in Generative UI guides as the "standard/default component library".
+
+```ts
+import { defaultLibrary, defaultExamples, defaultComponentGroups } from "@openuidev/react-ui";
+```
+
+These exports are built with `createLibrary(...)` from `@openuidev/lang-react` and are ready to pass to:
+
+```tsx
+<Renderer text={message} library={defaultLibrary} />
+```

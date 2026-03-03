@@ -1,0 +1,51 @@
+---
+title: Next.js Implementation
+description: Build a Route Handler for streaming chat responses.
+---
+
+Create a Route Handler at `app/api/chat/route.ts` and stream model output back to the client.
+
+```ts
+import OpenAI from "openai";
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+
+  const stream = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages,
+    stream: true,
+  });
+
+  const encoder = new TextEncoder();
+  const readable = new ReadableStream({
+    async start(controller) {
+      for await (const chunk of stream) {
+        controller.enqueue(encoder.encode(JSON.stringify(chunk) + "\n"));
+      }
+      controller.close();
+    },
+  });
+
+  return new Response(readable, {
+    headers: { "Content-Type": "text/event-stream" },
+  });
+}
+```
+
+If you stream raw OpenAI chunks, configure frontend adapters:
+
+```tsx
+import { Copilot } from "@openuidev/react-ui";
+import { openAIAdapter, openAIMessageFormat } from "@openuidev/react-headless";
+
+<Copilot
+  apiUrl="/api/chat"
+  streamProtocol={openAIAdapter()}
+  messageFormat={openAIMessageFormat}
+/>;
+```
+
+For provider-specific options, see [Providers](/docs/chat/providers).

@@ -1,6 +1,6 @@
 # Contributing Guidelines
 
-Thank you for considering contributing to *crayon*! This document provides guidelines for contributing.
+Thank you for considering contributing to _openui_! This document provides guidelines for contributing.
 
 ## How to Contribute
 
@@ -13,6 +13,7 @@ Thank you for considering contributing to *crayon*! This document provides guide
 ## Bug Reports
 
 Use Github Issues to report bugs. When reporting bugs, please include:
+
 - A clear description of the issue
 - Steps to reproduce
 - Expected vs actual behavior

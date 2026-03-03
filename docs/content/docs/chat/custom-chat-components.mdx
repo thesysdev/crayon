@@ -1,0 +1,40 @@
+---
+title: Custom Chat Components
+description: Override the composer, assistant messages, and user messages.
+---
+
+You can customize specific UI surfaces without rebuilding the full chat stack:
+
+- `composer`
+- `assistantMessage`
+- `userMessage`
+
+### Custom composer
+
+```tsx
+function MyComposer({ onSend, onCancel, isRunning }) {
+  // your UI
+}
+
+<Copilot apiUrl="/api/chat" composer={MyComposer} />;
+```
+
+### Custom assistant/user messages
+
+```tsx
+function AssistantBubble({ message }) {
+  return <div>{message.content}</div>;
+}
+
+function UserBubble({ message }) {
+  return <div>{String(message.content)}</div>;
+}
+
+<Copilot
+  apiUrl="/api/chat"
+  assistantMessage={AssistantBubble}
+  userMessage={UserBubble}
+/>;
+```
+
+For full control over all layout pieces, move to [Headless Introduction](/docs/chat/headless-intro).

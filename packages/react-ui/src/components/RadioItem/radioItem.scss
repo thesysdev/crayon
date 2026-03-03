@@ -1,0 +1,101 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-radio-item-container {
+  display: flex;
+  align-items: flex-start;
+  gap: cssUtils.$space-s;
+  padding: cssUtils.$space-3xs cssUtils.$space-000;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.openui-radio-item-root {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  border-radius: cssUtils.$radius-full;
+  border: none;
+  height: 16px;
+  width: 16px;
+  cursor: pointer;
+  background-color: transparent;
+  margin-top: cssUtils.$space-2xs;
+
+  &[data-state] {
+    // This makes the root element a styling context for children
+    position: relative;
+  }
+
+  // Disabled state
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.openui-radio-item-svg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+// First path - circle between border and center
+.openui-radio-item-svg-path {
+  .openui-radio-item-root[data-state="unchecked"] & {
+    fill: cssUtils.$foreground;
+
+    .openui-radio-item-root:hover:not(:disabled) & {
+      fill: cssUtils.$foreground;
+    }
+  }
+
+  .openui-radio-item-root[data-state="checked"] & {
+    fill: cssUtils.$interactive-accent-default;
+  }
+}
+
+// Border path
+.openui-radio-item-svg-border {
+  .openui-radio-item-root[data-state="unchecked"] & {
+    stroke: cssUtils.$border-interactive;
+  }
+
+  .openui-radio-item-root[data-state="checked"] & {
+    stroke: cssUtils.$border-accent;
+  }
+}
+
+// Inner circle path
+.openui-radio-item-svg-inner {
+  .openui-radio-item-root[data-state="checked"] & {
+    fill: cssUtils.$foreground;
+  }
+
+  .openui-radio-item-root[data-state="unchecked"] & {
+    fill: cssUtils.$foreground;
+  }
+
+  .openui-radio-item-root[data-state="unchecked"]:hover:not(:disabled) & {
+    fill: cssUtils.$border-interactive;
+  }
+}
+.openui-radio-item-label {
+  flex: 1;
+  @include cssUtils.typography(primary, default);
+  color: cssUtils.$text-neutral-primary;
+  cursor: pointer;
+  &:disabled {
+    color: cssUtils.$text-neutral-tertiary;
+    cursor: not-allowed;
+  }
+}
+
+.openui-radio-item-description {
+  @include cssUtils.typography(body, default);
+  color: cssUtils.$text-neutral-secondary;
+}

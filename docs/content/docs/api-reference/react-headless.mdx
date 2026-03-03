@@ -1,0 +1,116 @@
+---
+title: "@openuidev/react-headless"
+description: API reference for documented chat state, hooks, and streaming adapters.
+---
+
+Use this package when you want headless chat state + streaming, with or without prebuilt UI.
+
+## Import
+
+```ts
+import {
+  ChatProvider,
+  useThread,
+  useThreadList,
+  openAIAdapter,
+  openAIResponsesAdapter,
+  openAIMessageFormat,
+  openAIConversationMessageFormat,
+} from "@openuidev/react-headless";
+```
+
+## `ChatProvider`
+
+Provides chat/thread state to UI components.
+
+```ts
+type ChatProviderProps = ThreadApiConfig &
+  ChatApiConfig & {
+    streamProtocol?: StreamProtocolAdapter;
+    messageFormat?: MessageFormat;
+    children: React.ReactNode;
+  };
+```
+
+`ThreadApiConfig`:
+
+- Provide `threadApiUrl`, **or**
+- Provide custom handlers: `fetchThreadList`, `createThread`, `deleteThread`, `updateThread`, `loadThread`
+
+`ChatApiConfig`:
+
+- Provide `apiUrl`, **or**
+- Provide `processMessage({ threadId, messages, abortController })`
+
+## `useThread()`
+
+Thread-level state/actions used throughout chat docs.
+
+```ts
+function useThread(): ThreadState & ThreadActions;
+function useThread<T>(selector: (state: ThreadState & ThreadActions) => T): T;
+```
+
+Shape:
+
+```ts
+type ThreadState = {
+  messages: Message[];
+  isRunning: boolean;
+  isLoadingMessages: boolean;
+  threadError: Error | null;
+};
+
+type ThreadActions = {
+  processMessage: (message: CreateMessage) => Promise<void>;
+  appendMessages: (...messages: Message[]) => void;
+  updateMessage: (message: Message) => void;
+  setMessages: (messages: Message[]) => void;
+  deleteMessage: (messageId: string) => void;
+  cancelMessage: () => void;
+};
+```
+
+## `useThreadList()`
+
+Thread list state/actions for sidebars and history.
+
+```ts
+function useThreadList(): ThreadListState & ThreadListActions;
+function useThreadList<T>(selector: (state: ThreadListState & ThreadListActions) => T): T;
+```
+
+## Stream adapters
+
+Adapters referenced in integration guides:
+
+```ts
+function openAIAdapter(): StreamProtocolAdapter; // OpenAI Chat Completions stream
+function openAIResponsesAdapter(): StreamProtocolAdapter; // OpenAI Responses stream
+```
+
+Related type:
+
+```ts
+interface StreamProtocolAdapter {
+  parse(response: Response): AsyncIterable<AGUIEvent>;
+}
+```
+
+## Message format adapters
+
+Converters referenced in integration guides:
+
+```ts
+const openAIMessageFormat: MessageFormat; // Chat Completions format
+const openAIConversationMessageFormat: MessageFormat; // Responses/Conversations item format
+```
+
+Base type:
+
+```ts
+interface MessageFormat {
+  toApi(messages: Message[]): unknown;
+  fromApi(data: unknown): Message[];
+}
+```

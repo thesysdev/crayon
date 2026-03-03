@@ -1,0 +1,146 @@
+---
+title: System Prompts
+description: Learn how to generate and customize system prompts for your OpenUI library.
+---
+
+You have defined your components with Zod, but the LLM doesn't know about them yet. To fix this, OpenUI generates a specialized **System Prompt** that teaches the model your component syntax, rules, and available props.
+
+### The `library.prompt()` API
+
+The core method is `library.prompt()`. It generates a string containing the OpenUI Lang definition for every component in your library, including their descriptions and prop types.
+
+```typescript
+import { myLibrary } from './registry';
+
+// Generate the instruction manual
+const systemPrompt = myLibrary.prompt();
+
+console.log(systemPrompt);
+// Output:
+// "You are an AI that renders UI...
+//  Available Components:
+//  - StatCard(label: string, value: string, trend: "up" | "down")
+//  ..."
+```
+
+### Customizing the Prompt
+
+You can pass options to `library.prompt()` to customize the output while keeping the auto-generated component definitions intact.
+
+```typescript
+const systemPrompt = myLibrary.prompt({
+  // 1. Set the Persona (overrides the default intro)
+  preamble: 'You are a helpful financial assistant named Fin.',
+
+  // 2. Add Business Rules (appended to the prompt)
+  additionalRules: [
+    'Always show a StatCard for revenue queries.',
+    'Never use red colors for positive trends.',
+    'If the user asks for "help", show the SupportForm.',
+  ],
+
+  // 3. Provide few-shot examples (see below)
+  examples: [
+    `User: Show me Q3 revenue
+Assistant:
+root = Root([card])
+card = StatCard("Q3 Revenue", "$1.2M", "up")`,
+  ],
+});
+```
+
+### Few-Shot Examples (Highly Recommended)
+
+Providing 2–3 examples of `User Input → OpenUI Lang Output` drastically reduces hallucinations and improves syntax accuracy. Each example is a plain string appended under an `## Examples` heading in the prompt.
+
+```typescript
+const systemPrompt = myLibrary.prompt({
+  examples: [
+    `User: I need to contact support
+Assistant:
+root = Root([form])
+form = ContactForm("support@example.com")`,
+
+    `User: Show me sales for last quarter
+Assistant:
+root = Root([chart])
+chart = BarChart("Q3 Sales", labels, values)
+labels = ["Jul", "Aug", "Sep"]
+values = [42000, 51000, 47000]`,
+  ],
+});
+```
+
+### Backend Integration
+
+This string must be sent as the **System Message** to your LLM. Here is how to do it with common SDKs.
+
+#### 1. OpenAI SDK
+
+```typescript
+import OpenAI from 'openai';
+import { myLibrary } from './registry';
+
+const client = new OpenAI();
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+
+  const response = await client.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [
+      { role: 'system', content: myLibrary.prompt() },
+      ...messages,
+    ],
+    stream: true,
+  });
+
+  // Return the stream...
+}
+```
+
+#### 2. Vercel AI SDK
+
+```typescript
+import { streamText } from 'ai';
+import { openai } from '@ai-sdk/openai';
+import { myLibrary } from './registry';
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+
+  const result = await streamText({
+    model: openai('gpt-5.2'),
+    system: myLibrary.prompt(), // Inject here
+    messages,
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+### Debugging
+
+If the LLM is hallucinating props or using components incorrectly, inspect the generated prompt.
+
+```typescript
+if (process.env.NODE_ENV === 'development') {
+  console.log("--- System Prompt ---");
+  console.log(myLibrary.prompt());
+  console.log("---------------------");
+}
+```
+
+<Callout type="info">
+  **Tip:** The generated prompt uses the strings from your `.describe()` Zod calls. If the model misuses a prop, try making your Zod description more specific.
+</Callout>
+
+### Next Steps
+
+Now that the backend is configured, you need to set up the frontend to render the response.
+
+<Cards>
+  <Card title="The Renderer" href="/docs/openui-lang/renderer">
+    Learn how to parse and display the LLM's response.
+  </Card>
+</Cards>

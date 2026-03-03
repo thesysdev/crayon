@@ -1,0 +1,115 @@
+---
+title: Quick Start
+description: Get a working chat UI running in under 5 minutes.
+---
+
+## 1. Create your app
+
+Run the create command. This sets up a Next.js app with **OpenUI Chat** and the **Standard Component Library** pre-configured.
+
+<Tabs groupId="pkg" items={['npx', 'pnpm', 'yarn', 'bun']} persist>
+  <Tab value="npx">
+    ```bash
+    npx create-openui-chat my-chat-app
+    cd my-chat-app
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm create openui-chat my-chat-app
+    cd my-chat-app
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn create openui-chat my-chat-app
+    cd my-chat-app
+    ```
+  </Tab>
+  <Tab value="bun">
+    ```bash
+    bun create openui-chat my-chat-app
+    cd my-chat-app
+    ```
+  </Tab>
+</Tabs>
+
+## 2. Add your API key
+
+Create a `.env.local` file in the project root:
+
+```bash
+OPENAI_API_KEY=sk-your-key-here
+```
+
+## 3. Start the dev server
+
+<Tabs groupId="pkg" items={['npx', 'pnpm', 'yarn', 'bun']} persist>
+  <Tab value="npx">
+    ```bash
+    npm run dev
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm dev
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn dev
+    ```
+  </Tab>
+  <Tab value="bun">
+    ```bash
+    bun dev
+    ```
+  </Tab>
+</Tabs>
+
+Open [http://localhost:3000](http://localhost:3000) in your browser. You should see the **Copilot** interface. Try sending a message!
+
+---
+
+## What you just built
+
+The scaffold generated two key files that power the chat experience:
+
+### The Frontend (`app/page.tsx`)
+
+It renders the `<Copilot />` component. This is a "batteries-included" sidebar that handles message history, loading states, and UI rendering.
+
+```tsx
+import { Copilot } from "@openuidev/react-ui";
+import { standardLibrary } from "@openuidev/react-ui";
+
+export default function Page() {
+  return (
+    <Copilot 
+      apiUrl="/api/chat" 
+      agentName="Assistant" 
+      componentLibrary={standardLibrary} // Enables Generative UI
+    />
+  );
+}
+```
+
+### The Backend (`app/api/chat/route.ts`)
+
+A Next.js Route Handler that receives messages and streams the response. It automatically injects the **System Prompt** from the standard library so the LLM knows how to render UI components.
+
+## Next steps
+
+Now that the app is running, make it yours.
+
+<Cards>
+  <Card title="Explore Layouts" href="/docs/chat/copilot">
+    Swap the Copilot for a FullScreen page or BottomTray widget.
+  </Card>
+  <Card title="Connect Backend" href="/docs/chat/connecting">
+    Learn how to configure the `apiUrl` and authentication headers.
+  </Card>
+  <Card title="Go Headless" href="/docs/chat/headless-intro">
+    Want to build your own UI? Learn about the `ChatProvider`.
+  </Card>
+</Cards>

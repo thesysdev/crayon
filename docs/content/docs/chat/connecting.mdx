@@ -1,0 +1,47 @@
+---
+title: Connecting to LLM
+description: Configure apiUrl, streamProtocol adapters, and authentication.
+---
+
+Every chat layout needs to know where to send messages. Use either:
+
+- `apiUrl` for standard endpoint usage
+- `processMessage` for full control (custom auth, URLs, payload transforms)
+
+### Standard setup
+
+```tsx
+import { Copilot } from "@openuidev/react-ui";
+
+<Copilot apiUrl="/api/chat" agentName="Assistant" />;
+```
+
+### Custom request logic
+
+```tsx
+<Copilot
+  processMessage={async ({ threadId, messages, abortController }) => {
+    return fetch(`/api/threads/${threadId}/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({ messages }),
+      signal: abortController.signal,
+    });
+  }}
+/>
+```
+
+### Stream adapters
+
+Use `streamProtocol` when your backend stream format differs from OpenUI default.
+
+```tsx
+import { openAIAdapter } from "@openuidev/react-headless";
+
+<Copilot apiUrl="/api/chat" streamProtocol={openAIAdapter()} />;
+```
+
+See full provider setup in [Providers](/docs/chat/providers).

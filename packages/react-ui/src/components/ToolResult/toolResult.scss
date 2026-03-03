@@ -1,0 +1,90 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-tool-result {
+  border: 1px solid cssUtils.$border-interactive;
+  border-radius: cssUtils.$radius-m;
+  overflow: hidden;
+  width: 100%;
+  background-color: cssUtils.$foreground;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: cssUtils.$border-interactive-emphasis;
+  }
+
+  &--error {
+    border-color: cssUtils.$border-danger;
+
+    &:hover {
+      border-color: cssUtils.$border-danger-emphasis;
+    }
+  }
+
+  &__header {
+    @include cssUtils.button-reset;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: cssUtils.$space-m;
+    cursor: pointer;
+    background-color: transparent;
+  }
+
+  &__header-left {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-xs;
+    min-width: 0;
+  }
+
+  &__icon--success {
+    flex-shrink: 0;
+    color: cssUtils.$text-success-primary;
+  }
+
+  &__icon--error {
+    flex-shrink: 0;
+    color: cssUtils.$text-danger-primary;
+  }
+
+  &__label {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-neutral-secondary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    color: cssUtils.$text-neutral-secondary;
+    transition: transform 0.2s ease;
+
+    &--expanded {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__content {
+    border-top: 1px solid cssUtils.$border-default;
+    padding: cssUtils.$space-s cssUtils.$space-m;
+    background-color: transparent;
+  }
+
+  &__error {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-danger-primary;
+    margin-bottom: cssUtils.$space-xs;
+  }
+
+  &__output {
+    @include cssUtils.typography(code, small);
+    color: cssUtils.$text-neutral-secondary;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+}

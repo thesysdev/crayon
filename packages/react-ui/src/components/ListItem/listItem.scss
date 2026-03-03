@@ -1,0 +1,147 @@
+@use "../../cssUtils.scss" as cssUtils;
+
+.openui-list-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-m;
+  width: 100%;
+
+  &-with-action {
+    border-bottom: 1px solid cssUtils.$border-default;
+    padding-bottom: cssUtils.$space-m;
+
+    &:hover {
+      .openui-list-item-indicator {
+        scale: 1.1;
+      }
+    }
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+}
+
+.openui-list-item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: cssUtils.$space-m;
+
+  &-clickable {
+    cursor: pointer;
+  }
+
+  &:not(:has(.openui-list-item-subtitle)) {
+    align-items: center;
+  }
+
+  &-indicator {
+    margin-top: cssUtils.$space-2xs;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: cssUtils.$sunk;
+    border-radius: cssUtils.$radius-m;
+    color: cssUtils.$text-neutral-secondary;
+    overflow: hidden;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+
+    &-no-subtitle {
+      height: 24px;
+      width: 24px;
+      margin-top: 0;
+      border-radius: cssUtils.$radius-s;
+    }
+
+    &-clickable {
+      background-color: cssUtils.$sunk;
+    }
+
+    // Inner wrapper for number variant — applies label typography to the number text
+    &-number {
+      color: cssUtils.$text-neutral-secondary;
+      @include cssUtils.typography(label, default);
+    }
+
+    // Inner wrapper for image variant — clips image to a rounded square that fills the indicator
+    &-image {
+      border-radius: cssUtils.$radius-s;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+    }
+  }
+
+  &-content-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  &-title {
+    color: cssUtils.$text-neutral-primary;
+    @include cssUtils.typography(body, default);
+  }
+
+  &-subtitle {
+    color: cssUtils.$text-neutral-secondary;
+    @include cssUtils.typography(body, default);
+  }
+
+  &-action {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: cssUtils.$space-2xs;
+    flex-shrink: 0;
+  }
+
+  &-action-label {
+    color: cssUtils.$text-neutral-secondary;
+    @include cssUtils.typography(body, default);
+  }
+
+  &-action-icon {
+    color: cssUtils.$text-neutral-secondary;
+    @include cssUtils.typography(body, default);
+  }
+
+  &:hover,
+  &:focus {
+    .openui-list-item-indicator-clickable {
+      background-color: cssUtils.$highlight-strong;
+    }
+
+    .openui-list-item-action-label {
+      color: cssUtils.$text-neutral-primary;
+    }
+
+    .openui-list-item-action-icon {
+      color: cssUtils.$text-neutral-primary;
+    }
+  }
+}

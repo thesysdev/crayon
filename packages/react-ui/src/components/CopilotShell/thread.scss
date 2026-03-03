@@ -1,0 +1,125 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-copilot-shell-thread-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.openui-copilot-shell-thread-scroll-container {
+  width: 100%;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.openui-copilot-shell-thread-scroll-area {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: cssUtils.$space-l;
+  &--user-message-anchor {
+    & .openui-copilot-shell-thread-messages > *:last-child {
+      min-height: calc(-200px + 100dvh);
+    }
+  }
+}
+
+// Artifact panel (overlay style)
+.openui-copilot-shell-thread-artifact-panel--mobile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background-color: cssUtils.$foreground;
+  animation: slideInFromBottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.openui-copilot-shell-thread-messages {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-xl;
+}
+
+.openui-copilot-shell-thread-message-assistant {
+  width: 100%;
+  overflow: hidden;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-s;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    flex-grow: 1;
+  }
+
+  &__text {
+    @include cssUtils.typography(primary, default);
+    color: cssUtils.$text-neutral-primary;
+  }
+}
+
+.openui-copilot-shell-thread-message-user {
+  display: flex;
+  justify-content: flex-end;
+
+  &__content {
+    @include cssUtils.typography(primary, default);
+    padding: cssUtils.$space-m cssUtils.$space-l;
+    background-color: cssUtils.$chat-user-response-bg;
+    color: cssUtils.$chat-user-response-text;
+    border-radius: cssUtils.$radius-2xl;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    height: fit-content;
+  }
+}
+
+.openui-copilot-shell-thread-composer {
+  width: 100%;
+  padding: cssUtils.$space-m cssUtils.$space-l cssUtils.$space-l;
+  background-color: cssUtils.$foreground;
+
+  &__input-wrapper {
+    border: 1.256px solid cssUtils.$border-default;
+    display: flex;
+    align-items: flex-end;
+    gap: cssUtils.$space-s;
+    padding: cssUtils.$space-m;
+    border-radius: cssUtils.$radius-l;
+  }
+
+  &__input {
+    flex-grow: 1;
+    padding: 0;
+    resize: none;
+    margin: auto 0px;
+    min-height: 1lh;
+    max-height: 154px;
+    outline: none;
+    border: none;
+    background: transparent;
+    overflow: hidden;
+    @include cssUtils.typography(primary, default);
+    color: cssUtils.$text-neutral-primary;
+    &::placeholder {
+      color: cssUtils.$text-neutral-tertiary;
+    }
+  }
+}

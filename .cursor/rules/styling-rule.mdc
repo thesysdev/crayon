@@ -1,14 +1,13 @@
 ---
-description: Comprehensive SCSS styling guidelines for the Crayon React UI component library
-globs: *.scss,*.tsx,*.ts
-alwaysApply: true
+description: Comprehensive SCSS styling guidelines for the OpenUI React UI component library
+alwaysApply: false
 ---
 
-# Crayon UI Styling System
+# OpenUI Styling System
 
 ## Overview
 
-Crayon UI uses a comprehensive design system with SCSS utilities, CSS custom properties, and consistent component patterns. All styling must follow these guidelines to maintain design consistency and component reusability.
+OpenUI uses a comprehensive design system with SCSS utilities, CSS custom properties, and consistent component patterns. All styling must follow these guidelines to maintain design consistency and component reusability.
 
 ## Core Principles
 
@@ -21,10 +20,10 @@ Crayon UI uses a comprehensive design system with SCSS utilities, CSS custom pro
 
 // ✅ Correct - Use design tokens
 .my-component {
-  background-color: cssUtils.$bg-container;
-  color: cssUtils.$primary-text;
-  padding: cssUtils.$spacing-m;
-  border-radius: cssUtils.$rounded-m;
+  background-color: cssUtils.$foreground;
+  color: cssUtils.$text-neutral-primary;
+  padding: cssUtils.$space-m;
+  border-radius: cssUtils.$radius-m;
   @include cssUtils.typography(body, default);
 }
 
@@ -56,10 +55,10 @@ components/ComponentName/
 
 #### CSS Class Naming Convention
 
-Use the `.crayon-component-name` prefix with BEM-like modifiers:
+Use the `.openui-component-name` prefix with BEM-like modifiers:
 
 ```scss
-.crayon-button {
+.openui-button {
   // Base styles
 
   &-primary {
@@ -92,59 +91,58 @@ Use the `.crayon-component-name` prefix with BEM-like modifiers:
 
 ## Color System
 
-### Background Colors
+### Surface / Background Colors
 
-| Token                  | Usage                                   |
-| ---------------------- | --------------------------------------- |
-| `$bg-fill`             | Main page/app background                |
-| `$bg-container`        | Card/container backgrounds              |
-| `$bg-overlay`          | Modal/overlay backgrounds               |
-| `$bg-sunk`             | Input fields, recessed areas            |
-| `$bg-sunk-bg`          | Alternative sunk background             |
-| `$bg-elevated`         | Elevated surfaces (dropdowns, popovers) |
-| `$bg-inverted`         | Inverted/dark backgrounds               |
-| `$bg-danger`           | Error/danger state backgrounds          |
-| `$bg-success`          | Success state backgrounds               |
-| `$bg-info`             | Informational backgrounds               |
-| `$bg-alert`            | Warning/alert backgrounds               |
-| `$bg-highlight-subtle` | Subtle highlight (hover states)         |
-| `$bg-highlight-strong` | Strong highlight (selection)            |
+| Token                  | Usage                           |
+| ---------------------- | ------------------------------- |
+| `$background`          | Main page/app background        |
+| `$foreground`          | Card/container backgrounds      |
+| `$popover-background`  | Popover/dropdown backgrounds    |
+| `$overlay`             | Modal/overlay backdrop          |
+| `$sunk-light`          | Lightly recessed surface        |
+| `$sunk`                | Recessed surface (inputs)       |
+| `$sunk-deep`           | Deeply recessed surface         |
+| `$elevated-light`      | Lightly elevated surface        |
+| `$elevated`            | Elevated surface                |
+| `$elevated-strong`     | Strongly elevated surface       |
+| `$elevated-intense`    | Intensely elevated surface      |
+| `$inverted-background` | Inverted/dark backgrounds       |
+| `$highlight-subtle`    | Subtle highlight (hover states) |
+| `$highlight`           | Default highlight               |
+| `$highlight-strong`    | Strong highlight                |
+| `$highlight-intense`   | Intense highlight (selection)   |
+| `$info-background`     | Informational backgrounds       |
+| `$success-background`  | Success state backgrounds       |
+| `$alert-background`    | Warning/alert backgrounds       |
+| `$danger-background`   | Error/danger state backgrounds  |
+| `$purple-background`   | Purple accent backgrounds       |
+| `$pink-background`     | Pink accent backgrounds         |
 
 ```scss
-// Example usage
-.crayon-card {
-  background-color: cssUtils.$bg-container;
+.openui-card {
+  background-color: cssUtils.$foreground;
 }
 
-.crayon-modal-backdrop {
-  background-color: cssUtils.$bg-overlay;
+.openui-modal-backdrop {
+  background-color: cssUtils.$overlay;
 }
 
-.crayon-input {
-  background-color: cssUtils.$bg-sunk;
+.openui-input {
+  background-color: cssUtils.$sunk;
 }
 
-.crayon-error-banner {
-  background-color: cssUtils.$bg-danger;
+.openui-error-banner {
+  background-color: cssUtils.$danger-background;
 }
 ```
 
 ### Interactive Colors
 
-For buttons, clickable elements, and interactive states:
-
-| Token                   | Usage                |
-| ----------------------- | -------------------- |
-| `$interactive-default`  | Default state        |
-| `$interactive-hover`    | Hover state          |
-| `$interactive-pressed`  | Active/pressed state |
-| `$interactive-disabled` | Disabled state       |
-
 **Accent (Primary Actions):**
 
 | Token                          | Usage                   |
 | ------------------------------ | ----------------------- |
-| `$interactive-accent`          | Primary button default  |
+| `$interactive-accent-default`  | Primary button default  |
 | `$interactive-accent-hover`    | Primary button hover    |
 | `$interactive-accent-pressed`  | Primary button pressed  |
 | `$interactive-accent-disabled` | Primary button disabled |
@@ -153,19 +151,19 @@ For buttons, clickable elements, and interactive states:
 
 | Token                                      | Usage                       |
 | ------------------------------------------ | --------------------------- |
-| `$interactive-destructive`                 | Destructive button default  |
-| `$interactive-destructive-hover`           | Destructive button hover    |
-| `$interactive-destructive-pressed`         | Destructive button pressed  |
-| `$interactive-destructive-disabled`        | Destructive button disabled |
-| `$interactive-destructive-accent`          | Filled destructive button   |
+| `$interactive-destructive-default`         | Destructive ghost default   |
+| `$interactive-destructive-hover`           | Destructive ghost hover     |
+| `$interactive-destructive-pressed`         | Destructive ghost pressed   |
+| `$interactive-destructive-disabled`        | Destructive ghost disabled  |
+| `$interactive-destructive-accent-default`  | Filled destructive default  |
 | `$interactive-destructive-accent-hover`    | Filled destructive hover    |
 | `$interactive-destructive-accent-pressed`  | Filled destructive pressed  |
 | `$interactive-destructive-accent-disabled` | Filled destructive disabled |
 
 ```scss
 // Primary button example
-.crayon-button-primary {
-  background-color: cssUtils.$interactive-accent;
+.openui-button-primary {
+  background-color: cssUtils.$interactive-accent-default;
 
   &:not(:disabled):hover {
     background-color: cssUtils.$interactive-accent-hover;
@@ -181,8 +179,8 @@ For buttons, clickable elements, and interactive states:
 }
 
 // Destructive button example
-.crayon-button-destructive {
-  background-color: cssUtils.$interactive-destructive-accent;
+.openui-button-destructive {
+  background-color: cssUtils.$interactive-destructive-accent-default;
 
   &:not(:disabled):hover {
     background-color: cssUtils.$interactive-destructive-accent-hover;
@@ -192,95 +190,110 @@ For buttons, clickable elements, and interactive states:
 
 ### Text Colors
 
-**Primary Text:**
+**Neutral Text:**
 
-| Token             | Usage                              |
-| ----------------- | ---------------------------------- |
-| `$primary-text`   | Main body text                     |
-| `$secondary-text` | Secondary/muted text, placeholders |
-| `$disabled-text`  | Disabled text                      |
-| `$link-text`      | Hyperlinks                         |
+| Token                     | Usage                              |
+| ------------------------- | ---------------------------------- |
+| `$text-neutral-primary`   | Main body text                     |
+| `$text-neutral-secondary` | Secondary/muted text, placeholders |
+| `$text-neutral-tertiary`  | Disabled/hint text                 |
+| `$text-neutral-link`      | Hyperlinks                         |
+
+**Brand & Fixed Text:**
+
+| Token         | Usage              |
+| ------------- | ------------------ |
+| `$text-brand` | Brand-colored text |
+| `$text-white` | Forced white text  |
+| `$text-black` | Forced black text  |
 
 **Accent Text:**
 
 | Token                    | Usage                                |
 | ------------------------ | ------------------------------------ |
-| `$accent-primary-text`   | Text on accent backgrounds           |
-| `$accent-secondary-text` | Secondary text on accent backgrounds |
-| `$accent-disabled-text`  | Disabled text on accent backgrounds  |
+| `$text-accent-primary`   | Text on accent backgrounds           |
+| `$text-accent-secondary` | Secondary text on accent backgrounds |
+| `$text-accent-tertiary`  | Disabled text on accent backgrounds  |
 
 **Status Text:**
 
 | Token                    | Usage                       |
 | ------------------------ | --------------------------- |
-| `$success-primary-text`  | Success messages            |
-| `$success-inverted-text` | Text on success backgrounds |
-| `$alert-primary-text`    | Warning messages            |
-| `$alert-inverted-text`   | Text on alert backgrounds   |
-| `$info-primary-text`     | Info messages               |
-| `$info-inverted-text`    | Text on info backgrounds    |
+| `$text-success-primary`  | Success messages            |
+| `$text-success-inverted` | Text on success backgrounds |
+| `$text-alert-primary`    | Warning messages            |
+| `$text-alert-inverted`   | Text on alert backgrounds   |
+| `$text-info-primary`     | Info messages               |
+| `$text-info-inverted`    | Text on info backgrounds    |
 
 **Danger Text:**
 
 | Token                             | Usage                                |
 | --------------------------------- | ------------------------------------ |
-| `$danger-primary-text`            | Error messages                       |
-| `$danger-secondary-text`          | Secondary error text                 |
-| `$danger-disabled-text`           | Disabled error text                  |
-| `$danger-inverted-primary-text`   | Primary text on danger backgrounds   |
-| `$danger-inverted-secondary-text` | Secondary text on danger backgrounds |
-| `$danger-inverted-disabled-text`  | Disabled text on danger backgrounds  |
+| `$text-danger-primary`            | Error messages                       |
+| `$text-danger-secondary`          | Secondary error text                 |
+| `$text-danger-tertiary`           | Disabled error text                  |
+| `$text-danger-inverted-primary`   | Primary text on danger backgrounds   |
+| `$text-danger-inverted-secondary` | Secondary text on danger backgrounds |
+| `$text-danger-inverted-tertiary`  | Disabled text on danger backgrounds  |
+
+**Extra Semantic Text:**
+
+| Token                   | Usage                      |
+| ----------------------- | -------------------------- |
+| `$text-pink-primary`    | Pink accent text           |
+| `$text-pink-inverted`   | Text on pink backgrounds   |
+| `$text-purple-primary`  | Purple accent text         |
+| `$text-purple-inverted` | Text on purple backgrounds |
 
 ```scss
-// Example usage
-.crayon-label {
-  color: cssUtils.$secondary-text;
+.openui-label {
+  color: cssUtils.$text-neutral-secondary;
 }
 
-.crayon-error-message {
-  color: cssUtils.$danger-primary-text;
+.openui-error-message {
+  color: cssUtils.$text-danger-primary;
 }
 
-.crayon-link {
-  color: cssUtils.$link-text;
+.openui-link {
+  color: cssUtils.$text-neutral-link;
 }
 ```
 
-### Stroke/Border Colors
+### Border Colors
 
-| Token                             | Usage                                |
-| --------------------------------- | ------------------------------------ |
-| `$stroke-default`                 | Default borders                      |
-| `$stroke-emphasis`                | Emphasized borders                   |
-| `$stroke-interactive-el`          | Interactive element borders          |
-| `$stroke-interactive-el-selected` | Selected interactive element borders |
+| Token                          | Usage                                |
+| ------------------------------ | ------------------------------------ |
+| `$border-default`              | Default borders                      |
+| `$border-interactive`          | Interactive element borders          |
+| `$border-interactive-emphasis` | Emphasized interactive borders       |
+| `$border-interactive-selected` | Selected interactive element borders |
 
-**Semantic Strokes:**
+**Semantic Borders:**
 
 | Token                      | Usage                      |
 | -------------------------- | -------------------------- |
-| `$stroke-accent`           | Accent/brand borders       |
-| `$stroke-accent-emphasis`  | Emphasized accent borders  |
-| `$stroke-success`          | Success state borders      |
-| `$stroke-success-emphasis` | Emphasized success borders |
-| `$stroke-info`             | Info state borders         |
-| `$stroke-info-emphasis`    | Emphasized info borders    |
-| `$stroke-alert`            | Alert/warning borders      |
-| `$stroke-alert-emphasis`   | Emphasized alert borders   |
-| `$stroke-danger`           | Error state borders        |
-| `$stroke-danger-emphasis`  | Emphasized error borders   |
+| `$border-accent`           | Accent/brand borders       |
+| `$border-accent-emphasis`  | Emphasized accent borders  |
+| `$border-info`             | Info state borders         |
+| `$border-info-emphasis`    | Emphasized info borders    |
+| `$border-alert`            | Alert/warning borders      |
+| `$border-alert-emphasis`   | Emphasized alert borders   |
+| `$border-success`          | Success state borders      |
+| `$border-success-emphasis` | Emphasized success borders |
+| `$border-danger`           | Error state borders        |
+| `$border-danger-emphasis`  | Emphasized error borders   |
 
 ```scss
-// Example usage
-.crayon-input {
-  border: 1px solid cssUtils.$stroke-default;
+.openui-input {
+  border: 1px solid cssUtils.$border-default;
 
   &:focus {
-    border-color: cssUtils.$stroke-emphasis;
+    border-color: cssUtils.$border-interactive-emphasis;
   }
 
   &-error {
-    border-color: cssUtils.$stroke-danger-emphasis;
+    border-color: cssUtils.$border-danger-emphasis;
   }
 }
 ```
@@ -289,17 +302,16 @@ For buttons, clickable elements, and interactive states:
 
 For chat/conversation UI components:
 
-| Token                           | Usage                           |
-| ------------------------------- | ------------------------------- |
-| `$chat-container-bg`            | Chat container background       |
-| `$chat-assistant-response-bg`   | AI/assistant message background |
-| `$chat-assistant-response-text` | AI/assistant message text       |
-| `$chat-user-response-bg`        | User message background         |
-| `$chat-user-response-text`      | User message text               |
+| Token                           | Usage                                                         |
+| ------------------------------- | ------------------------------------------------------------- |
+| `$chat-container-bg`            | Chat container background (alias for `$background`)           |
+| `$chat-assistant-response-bg`   | AI/assistant message background (alias for `$foreground`)     |
+| `$chat-assistant-response-text` | AI/assistant message text (alias for `$text-neutral-primary`) |
+| `$chat-user-response-bg`        | User message background                                       |
+| `$chat-user-response-text`      | User message text                                             |
 
 ```scss
-// Example chat message styling
-.crayon-chat-message {
+.openui-chat-message {
   &-assistant {
     background-color: cssUtils.$chat-assistant-response-bg;
     color: cssUtils.$chat-assistant-response-text;
@@ -318,28 +330,29 @@ For chat/conversation UI components:
 
 Use the predefined spacing scale consistently:
 
-| Token          | Value | Usage                  |
-| -------------- | ----- | ---------------------- |
-| `$spacing-0`   | 0px   | No spacing             |
-| `$spacing-3xs` | 2px   | Minimal spacing        |
-| `$spacing-2xs` | 4px   | Very tight spacing     |
-| `$spacing-xs`  | 8px   | Tight spacing          |
-| `$spacing-s`   | 12px  | Small spacing          |
-| `$spacing-m`   | 16px  | Medium/default spacing |
-| `$spacing-l`   | 20px  | Large spacing          |
-| `$spacing-xl`  | 24px  | Extra large spacing    |
-| `$spacing-2xl` | 32px  | Section spacing        |
-| `$spacing-3xl` | 40px  | Large section spacing  |
+| Token        | Value | Usage                  |
+| ------------ | ----- | ---------------------- |
+| `$space-000` | 0     | No spacing             |
+| `$space-3xs` | 2px   | Minimal spacing        |
+| `$space-2xs` | 4px   | Very tight spacing     |
+| `$space-xs`  | 6px   | Tight spacing          |
+| `$space-s`   | 8px   | Small spacing          |
+| `$space-s-m` | 10px  | Small-medium spacing   |
+| `$space-m`   | 12px  | Medium/default spacing |
+| `$space-m-l` | 16px  | Medium-large spacing   |
+| `$space-l`   | 18px  | Large spacing          |
+| `$space-xl`  | 24px  | Extra large spacing    |
+| `$space-2xl` | 36px  | Section spacing        |
+| `$space-3xl` | 48px  | Large section spacing  |
 
 ```scss
-// Example usage
-.crayon-card {
-  padding: cssUtils.$spacing-m;
-  gap: cssUtils.$spacing-s;
+.openui-card {
+  padding: cssUtils.$space-m;
+  gap: cssUtils.$space-s;
 }
 
-.crayon-section {
-  margin-bottom: cssUtils.$spacing-2xl;
+.openui-section {
+  margin-bottom: cssUtils.$space-2xl;
 }
 ```
 
@@ -347,32 +360,31 @@ Use the predefined spacing scale consistently:
 
 ## Border Radius System
 
-| Token           | Value  | Usage                          |
-| --------------- | ------ | ------------------------------ |
-| `$rounded-0`    | 0px    | Sharp corners                  |
-| `$rounded-3xs`  | 2px    | Minimal rounding               |
-| `$rounded-2xs`  | 4px    | Subtle rounding                |
-| `$rounded-xs`   | 6px    | Small rounding                 |
-| `$rounded-s`    | 8px    | Standard small                 |
-| `$rounded-m`    | 12px   | Standard medium                |
-| `$rounded-l`    | 16px   | Large rounding                 |
-| `$rounded-xl`   | 20px   | Extra large rounding           |
-| `$rounded-2xl`  | 24px   | Very large rounding            |
-| `$rounded-3xl`  | 28px   | Maximum rounding               |
-| `$rounded-full` | 9999px | Fully rounded (pills, circles) |
+| Token          | Value  | Usage                          |
+| -------------- | ------ | ------------------------------ |
+| `$radius-none` | 0      | Sharp corners                  |
+| `$radius-3xs`  | 1px    | Minimal rounding               |
+| `$radius-2xs`  | 2px    | Subtle rounding                |
+| `$radius-xs`   | 4px    | Small rounding                 |
+| `$radius-s`    | 6px    | Standard small                 |
+| `$radius-m`    | 8px    | Standard medium                |
+| `$radius-l`    | 10px   | Large rounding                 |
+| `$radius-xl`   | 12px   | Extra large rounding           |
+| `$radius-2xl`  | 14px   | Very large rounding            |
+| `$radius-3xl`  | 16px   | Maximum rounding               |
+| `$radius-full` | 9999px | Fully rounded (pills, circles) |
 
 ```scss
-// Example usage
-.crayon-button {
-  border-radius: cssUtils.$rounded-m;
+.openui-button {
+  border-radius: cssUtils.$radius-m;
 }
 
-.crayon-avatar {
-  border-radius: cssUtils.$rounded-full;
+.openui-avatar {
+  border-radius: cssUtils.$radius-full;
 }
 
-.crayon-card {
-  border-radius: cssUtils.$rounded-l;
+.openui-card {
+  border-radius: cssUtils.$radius-l;
 }
 ```
 
@@ -382,6 +394,7 @@ Use the predefined spacing scale consistently:
 
 | Token         | Usage                          |
 | ------------- | ------------------------------ |
+| `$shadow-0`   | No shadow                      |
 | `$shadow-s`   | Subtle elevation (buttons)     |
 | `$shadow-m`   | Medium elevation (cards)       |
 | `$shadow-l`   | Large elevation (dropdowns)    |
@@ -390,12 +403,11 @@ Use the predefined spacing scale consistently:
 | `$shadow-3xl` | Maximum elevation              |
 
 ```scss
-// Example usage
-.crayon-dropdown {
+.openui-dropdown {
   box-shadow: cssUtils.$shadow-l;
 }
 
-.crayon-modal {
+.openui-modal {
   box-shadow: cssUtils.$shadow-xl;
 }
 ```
@@ -412,73 +424,73 @@ Use the `typography` mixin for consistent text styling:
 
 ### Body Text
 
-| Variant       | Usage              |
-| ------------- | ------------------ |
-| `default`     | Standard body text |
-| `small`       | Smaller body text  |
-| `small-heavy` | Small bold text    |
-| `medium`      | Medium weight body |
-| `large`       | Larger body text   |
-| `large-heavy` | Large bold text    |
-| `heavy`       | Bold body text     |
-| `link`        | Link text styling  |
+| Variant       | Usage                                   |
+| ------------- | --------------------------------------- |
+| `default`     | Standard body text (16px)               |
+| `heavy`       | Bold body text (16px)                   |
+| `small`       | Smaller body text (14px)                |
+| `small-heavy` | Small bold text (14px)                  |
+| `large`       | Larger body text (18px)                 |
+| `large-heavy` | Large bold text (18px)                  |
+| `medium`      | Alias for default                       |
+| `link`        | Alias for default (use with link color) |
 
 ```scss
-.crayon-paragraph {
+.openui-paragraph {
   @include cssUtils.typography(body, default);
 }
 
-.crayon-caption {
+.openui-caption {
   @include cssUtils.typography(body, small);
 }
 
-.crayon-emphasis {
+.openui-emphasis {
   @include cssUtils.typography(body, heavy);
 }
 ```
 
 ### Labels
 
-| Variant               | Usage                   |
-| --------------------- | ----------------------- |
-| `default`             | Standard labels         |
-| `heavy`               | Bold labels             |
-| `small`               | Small labels            |
-| `small-heavy`         | Small bold labels       |
-| `medium`              | Medium labels           |
-| `medium-heavy`        | Medium bold labels      |
-| `large`               | Large labels            |
-| `large-heavy`         | Large bold labels       |
-| `extra-small`         | Extra small labels      |
-| `extra-small-heavy`   | Extra small bold labels |
-| `2-extra-small`       | Tiny labels             |
-| `2-extra-small-heavy` | Tiny bold labels        |
+| Variant               | Usage                          |
+| --------------------- | ------------------------------ |
+| `default`             | Standard labels (16px)         |
+| `heavy`               | Bold labels (16px)             |
+| `small`               | Small labels (14px)            |
+| `small-heavy`         | Small bold labels (14px)       |
+| `medium`              | Alias for default              |
+| `medium-heavy`        | Alias for heavy                |
+| `large`               | Large labels (18px)            |
+| `large-heavy`         | Large bold labels (18px)       |
+| `extra-small`         | Extra small labels (12px)      |
+| `extra-small-heavy`   | Extra small bold labels (12px) |
+| `2-extra-small`       | Alias for extra-small          |
+| `2-extra-small-heavy` | Alias for extra-small-heavy    |
 
 ```scss
-.crayon-form-label {
+.openui-form-label {
   @include cssUtils.typography(label, default);
 }
 
-.crayon-badge {
+.openui-badge {
   @include cssUtils.typography(label, small-heavy);
 }
 ```
 
 ### Headings
 
-| Variant       | Usage         |
-| ------------- | ------------- |
-| `large`       | H1 equivalent |
-| `medium`      | H2 equivalent |
-| `small`       | H3 equivalent |
-| `extra-small` | H4 equivalent |
+| Variant       | Usage                            |
+| ------------- | -------------------------------- |
+| `extra-small` | H4 equivalent (16px, weight 600) |
+| `small`       | H3 equivalent (18px, weight 600) |
+| `medium`      | H2 equivalent (24px, weight 600) |
+| `large`       | H1 equivalent (28px, weight 600) |
 
 ```scss
-.crayon-page-title {
+.openui-page-title {
   @include cssUtils.typography(heading, large);
 }
 
-.crayon-section-title {
+.openui-section-title {
   @include cssUtils.typography(heading, medium);
 }
 ```
@@ -487,26 +499,41 @@ Use the `typography` mixin for consistent text styling:
 
 For data display and metrics:
 
-| Variant             | Usage                          |
-| ------------------- | ------------------------------ |
-| `default`           | Standard numbers               |
-| `small`             | Small numbers                  |
-| `small-heavy`       | Small bold numbers             |
-| `large`             | Large numbers                  |
-| `large-heavy`       | Large bold numbers             |
-| `heavy`             | Bold numbers                   |
-| `extra-small`       | Extra small numbers            |
-| `extra-small-heavy` | Extra small bold numbers       |
-| `title`             | Display numbers (hero metrics) |
-| `title-medium`      | Medium display numbers         |
+| Variant             | Usage                                    |
+| ------------------- | ---------------------------------------- |
+| `default`           | Standard numbers (16px)                  |
+| `heavy`             | Bold numbers (16px)                      |
+| `small`             | Small numbers (14px)                     |
+| `small-heavy`       | Small bold numbers (14px)                |
+| `large`             | Large numbers (18px)                     |
+| `large-heavy`       | Large bold numbers (18px)                |
+| `extra-small`       | Extra small numbers (12px)               |
+| `extra-small-heavy` | Extra small bold numbers (12px)          |
+| `title`             | Display numbers (uses heading-lg)        |
+| `title-medium`      | Medium display numbers (uses heading-md) |
 
 ```scss
-.crayon-metric {
+.openui-metric {
   @include cssUtils.typography(number, large-heavy);
 }
 
-.crayon-stat-value {
+.openui-stat-value {
   @include cssUtils.typography(number, title);
+}
+```
+
+### Code
+
+| Variant       | Usage                       |
+| ------------- | --------------------------- |
+| `default`     | Code text (14px, monospace) |
+| `heavy`       | Bold code text (14px)       |
+| `small`       | Small code text (12px)      |
+| `small-heavy` | Small bold code text (12px) |
+
+```scss
+.openui-code-block {
+  @include cssUtils.typography(code, default);
 }
 ```
 
@@ -519,11 +546,10 @@ For data display and metrics:
 Removes default button styling:
 
 ```scss
-.crayon-icon-button {
+.openui-icon-button {
   @include cssUtils.button-reset;
-  // Add your custom styles
-  padding: cssUtils.$spacing-xs;
-  border-radius: cssUtils.$rounded-m;
+  padding: cssUtils.$space-xs;
+  border-radius: cssUtils.$radius-m;
 }
 ```
 
@@ -535,17 +561,17 @@ Removes default button styling:
 
 ```scss
 &-small {
-  padding: calc(cssUtils.$spacing-2xs - 1px) cssUtils.$spacing-s;
+  padding: calc(cssUtils.$space-2xs - 1px) cssUtils.$space-s;
   @include cssUtils.typography(body, small);
 }
 
 &-medium {
-  padding: calc(cssUtils.$spacing-xs - 1px) cssUtils.$spacing-m;
+  padding: calc(cssUtils.$space-xs - 1px) cssUtils.$space-m;
   @include cssUtils.typography(body, default);
 }
 
 &-large {
-  padding: calc(cssUtils.$spacing-s - 1px) cssUtils.$spacing-l;
+  padding: calc(cssUtils.$space-s - 1px) cssUtils.$space-l;
   @include cssUtils.typography(body, large);
 }
 ```
@@ -554,9 +580,9 @@ Removes default button styling:
 
 ```scss
 &-primary {
-  background-color: cssUtils.$interactive-accent;
-  color: cssUtils.$accent-primary-text;
-  border-color: cssUtils.$stroke-accent;
+  background-color: cssUtils.$interactive-accent-default;
+  color: cssUtils.$text-accent-primary;
+  border-color: cssUtils.$border-accent;
 
   &:not(:disabled):hover {
     background-color: cssUtils.$interactive-accent-hover;
@@ -573,23 +599,23 @@ Removes default button styling:
 }
 
 &-secondary {
-  background-color: cssUtils.$interactive-default;
-  color: cssUtils.$primary-text;
-  border-color: cssUtils.$stroke-interactive-el;
+  background-color: cssUtils.$foreground;
+  color: cssUtils.$text-neutral-primary;
+  border-color: cssUtils.$border-interactive;
 
   &:not(:disabled):hover {
-    background-color: cssUtils.$interactive-hover;
+    background-color: cssUtils.$highlight;
   }
 
   &:not(:disabled):active {
-    background-color: cssUtils.$interactive-pressed;
+    background-color: cssUtils.$highlight-strong;
   }
 }
 
 &-destructive {
-  background-color: cssUtils.$interactive-destructive-accent;
-  color: cssUtils.$danger-inverted-primary-text;
-  border-color: cssUtils.$stroke-danger;
+  background-color: cssUtils.$interactive-destructive-accent-default;
+  color: cssUtils.$text-danger-inverted-primary;
+  border-color: cssUtils.$border-danger;
 
   &:not(:disabled):hover {
     background-color: cssUtils.$interactive-destructive-accent-hover;
@@ -609,35 +635,35 @@ Removes default button styling:
 ### Form Components Pattern
 
 ```scss
-.crayon-input {
+.openui-input {
   @include cssUtils.typography(body, default);
-  border: 1px solid cssUtils.$stroke-default;
-  border-radius: cssUtils.$rounded-m;
-  background-color: cssUtils.$bg-sunk;
-  color: cssUtils.$primary-text;
-  padding: cssUtils.$spacing-xs cssUtils.$spacing-s;
+  border: 1px solid cssUtils.$border-default;
+  border-radius: cssUtils.$radius-m;
+  background-color: cssUtils.$sunk;
+  color: cssUtils.$text-neutral-primary;
+  padding: cssUtils.$space-xs cssUtils.$space-s;
 
   &::placeholder {
-    color: cssUtils.$secondary-text;
+    color: cssUtils.$text-neutral-secondary;
   }
 
   &:focus {
     outline: none;
-    border-color: cssUtils.$stroke-emphasis;
+    border-color: cssUtils.$border-interactive-emphasis;
   }
 
   &:disabled {
-    background-color: cssUtils.$bg-sunk;
-    color: cssUtils.$disabled-text;
+    background-color: cssUtils.$sunk;
+    color: cssUtils.$text-neutral-tertiary;
     cursor: not-allowed;
   }
 
   &-error {
-    border-color: cssUtils.$stroke-danger-emphasis;
+    border-color: cssUtils.$border-danger-emphasis;
   }
 
   &-success {
-    border-color: cssUtils.$stroke-success-emphasis;
+    border-color: cssUtils.$border-success-emphasis;
   }
 }
 ```
@@ -645,29 +671,29 @@ Removes default button styling:
 ### Status Badges Pattern
 
 ```scss
-.crayon-badge {
+.openui-badge {
   @include cssUtils.typography(label, small-heavy);
-  padding: cssUtils.$spacing-2xs cssUtils.$spacing-xs;
-  border-radius: cssUtils.$rounded-full;
+  padding: cssUtils.$space-2xs cssUtils.$space-xs;
+  border-radius: cssUtils.$radius-full;
 
   &-success {
-    background-color: cssUtils.$bg-success;
-    color: cssUtils.$success-primary-text;
+    background-color: cssUtils.$success-background;
+    color: cssUtils.$text-success-primary;
   }
 
   &-danger {
-    background-color: cssUtils.$bg-danger;
-    color: cssUtils.$danger-primary-text;
+    background-color: cssUtils.$danger-background;
+    color: cssUtils.$text-danger-primary;
   }
 
   &-info {
-    background-color: cssUtils.$bg-info;
-    color: cssUtils.$info-primary-text;
+    background-color: cssUtils.$info-background;
+    color: cssUtils.$text-info-primary;
   }
 
   &-alert {
-    background-color: cssUtils.$bg-alert;
-    color: cssUtils.$alert-primary-text;
+    background-color: cssUtils.$alert-background;
+    color: cssUtils.$text-alert-primary;
   }
 }
 ```
@@ -682,8 +708,8 @@ Always use design tokens instead of hardcoded values:
 
 ```scss
 // ✅ Good
-padding: cssUtils.$spacing-m;
-border-radius: cssUtils.$rounded-m;
+padding: cssUtils.$space-m;
+border-radius: cssUtils.$radius-m;
 
 // ❌ Bad
 padding: 16px;
@@ -696,11 +722,11 @@ Use the `:not(:disabled)` pattern for hover/active states:
 
 ```scss
 &:not(:disabled):hover {
-  background-color: cssUtils.$interactive-hover;
+  background-color: cssUtils.$interactive-accent-hover;
 }
 
 &:not(:disabled):active {
-  background-color: cssUtils.$interactive-pressed;
+  background-color: cssUtils.$interactive-accent-pressed;
 }
 ```
 
@@ -710,7 +736,7 @@ Always include visible focus states:
 
 ```scss
 &:focus-visible {
-  outline: 2px solid cssUtils.$stroke-accent;
+  outline: 2px solid cssUtils.$border-accent;
   outline-offset: 2px;
 }
 ```
@@ -721,17 +747,17 @@ Use CSS custom properties for values that can be controlled via JavaScript:
 
 ```scss
 .my-responsive-component {
-  gap: var(--component-gap, #{cssUtils.$spacing-m});
-  padding: var(--component-padding, #{cssUtils.$spacing-m});
+  gap: var(--component-gap, #{cssUtils.$space-m});
+  padding: var(--component-padding, #{cssUtils.$space-m});
 }
 ```
 
 ### 5. CSS Custom Properties for Theming
 
 ```scss
-.crayon-themeable-component {
-  --component-bg: #{cssUtils.$bg-container};
-  --component-text: #{cssUtils.$primary-text};
+.openui-themeable-component {
+  --component-bg: #{cssUtils.$foreground};
+  --component-text: #{cssUtils.$text-neutral-primary};
 
   background-color: var(--component-bg);
   color: var(--component-text);
@@ -796,7 +822,7 @@ When updating existing components:
 
 1. **Audit current styles** - Check for hardcoded values
 2. **Replace with tokens** - Use cssUtils variables
-3. **Update naming** - Ensure BEM-like class names
+3. **Update naming** - Ensure BEM-like class names with `openui-` prefix
 4. **Add missing states** - Include hover, focus, disabled, active states
 5. **Test thoroughly** - Verify all variants work correctly
 

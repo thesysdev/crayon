@@ -1,0 +1,194 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-accordion {
+  box-sizing: border-box;
+  border-radius: cssUtils.$radius-2xl;
+  border: 1px solid cssUtils.$border-default;
+  padding: calc(cssUtils.$space-m + 2px);
+  padding-bottom: 0;
+
+  &-clear {
+    border: 1px solid transparent;
+    box-shadow: none;
+    padding: 0;
+    .openui-accordion-trigger {
+      box-shadow: none;
+      padding-left: 0;
+      padding-right: 0;
+      padding-top: cssUtils.$space-l;
+      padding-bottom: cssUtils.$space-l;
+    }
+    .openui-accordion-item {
+      &:first-child {
+        .openui-accordion-trigger {
+          padding-top: 0;
+        }
+      }
+      &:last-child {
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+        border-bottom: 1px solid transparent;
+      }
+    }
+    .openui-accordion-content {
+      &-wrapper {
+        padding: 0;
+        padding-bottom: cssUtils.$space-l;
+        gap: cssUtils.$space-m;
+      }
+    }
+  }
+  &-card {
+    .openui-accordion-content {
+      &-wrapper {
+        padding: 0;
+        padding-bottom: cssUtils.$space-m;
+        gap: cssUtils.$space-l;
+      }
+    }
+
+    .openui-accordion-item {
+      &:last-child {
+        .openui-accordion-trigger {
+          border-bottom: none;
+        }
+      }
+    }
+    .openui-accordion-item {
+      &:last-child {
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+        border-bottom: none;
+      }
+    }
+  }
+
+  &-sunk {
+    background-color: cssUtils.$highlight-subtle;
+
+    .openui-accordion-content {
+      &-wrapper {
+        padding: 0;
+        padding-bottom: cssUtils.$space-m;
+        gap: cssUtils.$space-l;
+      }
+    }
+
+    .openui-accordion-item {
+      &:last-child {
+        .openui-accordion-trigger {
+          border-bottom: none;
+        }
+      }
+    }
+  }
+
+  &-item {
+    box-sizing: border-box;
+    overflow: hidden;
+    border-bottom: 1px solid cssUtils.$border-default;
+
+    &:first-child {
+      margin-top: 0;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+
+      .openui-accordion-trigger {
+        padding-top: 0;
+      }
+    }
+    &:last-child {
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+      border-bottom: none;
+    }
+    &:focus-within {
+      position: relative;
+      z-index: 1;
+    }
+  }
+  &-header {
+    display: flex;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+  }
+  &-trigger {
+    border: none;
+    box-sizing: border-box;
+    @include cssUtils.typography("body", "default");
+    background-color: transparent;
+    padding: cssUtils.$space-l 0;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: cssUtils.$text-neutral-primary;
+    cursor: pointer;
+
+    &-content {
+      display: flex;
+      align-items: center;
+      color: cssUtils.$text-neutral-primary;
+      gap: cssUtils.$space-xs;
+      &-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 16px;
+        width: 16px;
+      }
+    }
+
+    &-icon {
+      color: cssUtils.$text-neutral-primary;
+      height: 16px;
+      width: 16px;
+      transition: transform 300ms cubic-bezier(0.87, 0, 0.13, 1);
+    }
+    &[data-state="open"] {
+      .openui-accordion-trigger-icon {
+        transform: rotate(180deg);
+      }
+    }
+  }
+  &-content {
+    overflow: hidden;
+    color: cssUtils.$text-neutral-primary;
+    @include cssUtils.typography("body", "default");
+
+    &[data-state="open"] {
+      animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
+    }
+    &[data-state="closed"] {
+      animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
+    }
+    &-wrapper {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      gap: cssUtils.$space-l;
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}

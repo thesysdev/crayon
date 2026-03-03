@@ -1,0 +1,35 @@
+---
+title: Building Custom UI
+description: Build a chat interface from scratch using headless hooks.
+---
+
+This guide shows the typical headless composition:
+
+1. `ThreadSidebar` from `useThreadList()`
+2. `MessageList` from `useThread()`
+3. `Composer` using `processMessage()` and `cancelMessage()`
+
+```tsx
+import { ChatProvider, useThread, useThreadList } from "@openuidev/react-headless";
+
+function CustomChat() {
+  const { messages, processMessage, isRunning } = useThread();
+  const { threads, selectThread } = useThreadList();
+
+  // Render your own layout here
+  return null;
+}
+
+export default function App() {
+  return (
+    <ChatProvider apiUrl="/api/chat" threadApiUrl="/api/threads">
+      <CustomChat />
+    </ChatProvider>
+  );
+}
+```
+
+Start simple, then layer in:
+- custom rendering
+- optimistic UI
+- auth-aware backend calls with `processMessage`

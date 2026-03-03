@@ -1,0 +1,186 @@
+@use "../../../cssUtils" as cssUtils;
+
+/* Base calendar surface and shared dimensions */
+.openui-calendar-root {
+  --openui-calendar-day-size: calc(#{cssUtils.$space-2xl} + #{cssUtils.$space-2xs});
+  --openui-calendar-cell-radius: #{cssUtils.$radius-m};
+
+  @include cssUtils.typography(primary, default);
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: cssUtils.$space-l;
+  border: 1px solid cssUtils.$border-interactive;
+  border-radius: cssUtils.$radius-3xl;
+  background-color: cssUtils.$foreground;
+  color: cssUtils.$text-neutral-primary;
+}
+
+/* Caption and dropdown spacing by layout */
+.openui-calendar-nav {
+  &-mobile {
+    gap: cssUtils.$space-s;
+  }
+
+  &-fullscreen,
+  &-tray,
+  &-copilot {
+    gap: cssUtils.$space-m;
+  }
+}
+
+.openui-calendar-dropdowns {
+  &-mobile {
+    gap: cssUtils.$space-2xs;
+  }
+
+  &-fullscreen,
+  &-tray,
+  &-copilot {
+    gap: cssUtils.$space-s;
+  }
+}
+
+.openui-calendar-month {
+  color: cssUtils.$text-neutral-primary;
+}
+
+.openui-calendar-month-caption {
+  @include cssUtils.typography(body, default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: cssUtils.$space-s;
+  height: auto;
+  margin-bottom: cssUtils.$space-s;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+.openui-calendar-months-dropdown,
+.openui-calendar-years-dropdown {
+  cursor: pointer;
+}
+
+.openui-calendar-chevron {
+  fill: cssUtils.$interactive-accent-default;
+}
+
+/* Grid setup */
+.openui-calendar-month-grid {
+  width: auto;
+  table-layout: auto;
+  border-collapse: collapse;
+}
+
+.openui-calendar-weekdays {
+  color: cssUtils.$text-neutral-primary;
+}
+
+.openui-calendar-weekday {
+  @include cssUtils.typography(label, small);
+  color: cssUtils.$text-neutral-secondary;
+  width: var(--openui-calendar-day-size);
+  height: var(--openui-calendar-day-size);
+  padding: 0;
+  text-transform: none;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.openui-calendar-single-day,
+.openui-calendar-range-day {
+  width: var(--openui-calendar-day-size);
+  height: var(--openui-calendar-day-size);
+  min-width: var(--openui-calendar-day-size);
+  min-height: var(--openui-calendar-day-size);
+  padding: 0;
+  vertical-align: middle;
+}
+
+.openui-calendar-single-day-button,
+.openui-calendar-range-day-button {
+  @include cssUtils.typography(label, default);
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--openui-calendar-cell-radius);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid cssUtils.$border-accent;
+    outline-offset: cssUtils.$space-3xs;
+  }
+
+  &:not(:disabled):hover {
+    background-color: cssUtils.$highlight-subtle;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: cssUtils.$text-neutral-tertiary;
+  }
+}
+
+/* Hidden with dropdown captions */
+.openui-calendar-button-next,
+.openui-calendar-button-previous {
+  display: none;
+}
+
+/* Day states */
+.openui-calendar-today {
+  &[data-today]:not([aria-selected]) {
+    background-color: cssUtils.$sunk;
+    border-radius: var(--openui-calendar-cell-radius);
+  }
+}
+
+.openui-calendar-disabled {
+  color: cssUtils.$text-neutral-tertiary;
+}
+
+.openui-calendar-single-day-selected {
+  background: cssUtils.$interactive-accent-default;
+  color: cssUtils.$text-accent-primary;
+  border-radius: var(--openui-calendar-cell-radius);
+}
+
+/* Range states apply on day container cells */
+.openui-calendar-range-start {
+  background: cssUtils.$interactive-accent-default;
+  color: cssUtils.$text-accent-primary;
+  border-top-left-radius: var(--openui-calendar-cell-radius);
+  border-bottom-left-radius: var(--openui-calendar-cell-radius);
+}
+
+.openui-calendar-range-middle {
+  background: cssUtils.$highlight;
+}
+
+.openui-calendar-range-end {
+  background: cssUtils.$interactive-accent-default;
+  color: cssUtils.$text-accent-primary;
+  border-top-right-radius: var(--openui-calendar-cell-radius);
+  border-bottom-right-radius: var(--openui-calendar-cell-radius);
+}
+
+.openui-calendar-footer {
+  @include cssUtils.typography(primary, default);
+  color: cssUtils.$text-neutral-primary;
+}

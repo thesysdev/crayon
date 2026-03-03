@@ -1,0 +1,35 @@
+---
+title: Persistence (Threads)
+description: Configure threadApiUrl and load/save chat history.
+---
+
+To persist conversations, pass `threadApiUrl` or provide custom thread functions.
+
+### REST-style setup
+
+```tsx
+import { FullScreen } from "@openuidev/react-ui";
+
+<FullScreen apiUrl="/api/chat" threadApiUrl="/api/threads" />;
+```
+
+Expected endpoints under `/api/threads`:
+
+| Action | Method | URL |
+| :--- | :--- | :--- |
+| List threads | `GET` | `/api/threads` |
+| Create thread | `POST` | `/api/threads` |
+| Update thread | `PUT` | `/api/threads/:id` |
+| Delete thread | `DELETE` | `/api/threads/:id` |
+| Load messages | `GET` | `/api/threads/:id/messages` |
+
+### Custom functions
+
+If your API is non-REST or needs custom auth, pass:
+- `fetchThreadList`
+- `createThread`
+- `updateThread`
+- `deleteThread`
+- `loadThread`
+
+For the full payload spec, see [The API Contract](/docs/chat/api-contract).

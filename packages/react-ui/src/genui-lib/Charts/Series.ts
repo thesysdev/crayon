@@ -1,0 +1,14 @@
+import { defineComponent } from "@openuidev/lang-react";
+import { z } from "zod";
+
+export const SeriesSchema = z.object({
+  category: z.string(),
+  values: z.array(z.number()),
+});
+
+export const Series = defineComponent({
+  name: "Series",
+  props: SeriesSchema,
+  description: "One data series",
+  component: () => null,
+});

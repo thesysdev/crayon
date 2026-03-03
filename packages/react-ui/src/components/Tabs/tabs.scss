@@ -1,0 +1,310 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-tabs {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-l;
+
+  &-clear {
+    .openui-tabs-content {
+      padding: cssUtils.$space-3xs 0;
+      border: transparent;
+    }
+    .openui-tabs-list {
+      border-radius: 0;
+      gap: cssUtils.$space-l;
+      background: none;
+      padding: 0;
+      box-sizing: border-box;
+      flex: 1;
+      display: flex;
+      width: 100%;
+      position: relative;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-behavior: smooth;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+    .openui-tabs-trigger {
+      width: auto;
+      min-width: 0;
+      border: 0px;
+      border-radius: cssUtils.$radius-none;
+      flex-shrink: 0;
+      padding: cssUtils.$space-s 0;
+      &[data-state="active"] {
+        border: 0px;
+        box-shadow: none;
+        background-color: transparent;
+        @include cssUtils.typography(label, heavy);
+      }
+      &:not([data-state="active"]):hover {
+        color: cssUtils.$text-neutral-primary;
+        border: 0px;
+        background-color: transparent;
+      }
+    }
+
+    .openui-tabs-list--icon-title-subtext,
+    .openui-tabs-list--image-title-subtext {
+      .openui-tabs-trigger {
+        padding: cssUtils.$space-m 0;
+      }
+    }
+  }
+}
+
+.openui-tabs-list-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    height: 1px;
+    left: 0;
+    right: 0;
+    border-bottom: 1px solid cssUtils.$border-default;
+    pointer-events: none;
+  }
+}
+
+.openui-tabs-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 1.5px;
+  width: 0;
+  opacity: 0;
+  background-color: cssUtils.$border-interactive-selected;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.openui-tabs-scroll-button-container-left {
+  position: absolute;
+  height: 100%;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px 0 0;
+  background-color: cssUtils.$foreground;
+}
+
+.openui-tabs-scroll-button-container-right {
+  position: absolute;
+  height: 100%;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 0 4px;
+  background-color: cssUtils.$foreground;
+}
+
+.openui-tabs-scroll-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &.openui-tabs-scroll-left {
+    left: 2px;
+  }
+
+  &.openui-tabs-scroll-right {
+    right: 2px;
+  }
+}
+
+.openui-tabs-list {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  gap: cssUtils.$space-3xs;
+  flex-direction: row;
+  padding: cssUtils.$space-2xs;
+  border-radius: cssUtils.$radius-l;
+  background-color: cssUtils.$sunk;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.openui-tabs-trigger {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: cssUtils.$space-s;
+  box-sizing: border-box;
+  padding: cssUtils.$space-3xs cssUtils.$space-s;
+  border: 1px solid transparent;
+  border-radius: cssUtils.$radius-s;
+  min-width: 7.3rem;
+  width: 100%;
+  background-color: transparent;
+  color: cssUtils.$text-neutral-secondary;
+  @include cssUtils.typography(label, default);
+
+  &[data-state="active"] {
+    background-color: cssUtils.$elevated;
+    border: 1px solid cssUtils.$border-default;
+    color: cssUtils.$text-neutral-primary;
+    box-shadow: cssUtils.$shadow-s;
+  }
+  &:not([data-state="active"]):hover {
+    background-color: cssUtils.$sunk;
+    border: 1px solid cssUtils.$border-default;
+    color: cssUtils.$text-neutral-secondary;
+    box-shadow: cssUtils.$shadow-s;
+  }
+  &-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: cssUtils.$space-3xs;
+    min-width: 0;
+  }
+
+  &-text {
+    width: auto;
+    max-width: 232px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &-subtext {
+    @include cssUtils.typography(label, extra-small);
+    color: cssUtils.$text-neutral-secondary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 232px;
+  }
+
+  &-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    background: cssUtils.$sunk;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+.openui-tabs-list {
+  &--title {
+    .openui-tabs-trigger-content {
+      align-items: center;
+    }
+  }
+
+  &--icon-title,
+  &--image-title {
+    .openui-tabs-trigger-content {
+      align-items: flex-start;
+    }
+
+    .openui-tabs-trigger-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: cssUtils.$radius-s;
+      svg {
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+
+  &--icon-title-subtext,
+  &--image-title-subtext {
+    .openui-tabs-trigger {
+      align-items: flex-start;
+    }
+
+    .openui-tabs-trigger-content {
+      align-items: flex-start;
+    }
+  }
+
+  &--icon-title-subtext {
+    .openui-tabs-trigger-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: cssUtils.$radius-m;
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  &--image-title {
+    .openui-tabs-trigger-image {
+      width: 24px;
+      height: 24px;
+      border-radius: cssUtils.$radius-s;
+    }
+  }
+
+  &--image-title-subtext {
+    .openui-tabs-trigger-image {
+      width: 36px;
+      height: 36px;
+      border-radius: cssUtils.$radius-m;
+    }
+  }
+}
+
+.openui-tabs-content {
+  box-sizing: border-box;
+  padding: cssUtils.$space-l;
+  border: 1px solid transparent;
+  border-radius: cssUtils.$radius-m;
+  @include cssUtils.typography(body, default);
+
+  &-inner {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-l;
+  }
+}

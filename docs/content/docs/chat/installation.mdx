@@ -1,0 +1,144 @@
+---
+title: Installation
+description: Add OpenUI Chat to your existing React application.
+---
+
+Add OpenUI Chat to your existing React application.
+
+<Callout type="info">
+  **Starting a new project?**
+  Skip this guide and use our scaffold command instead:
+  `npx create-openui-chat my-app`
+</Callout>
+
+### 1. Install Dependencies
+
+Install the UI package and the headless core. We also recommend `lucide-react` for icons if you are not using it already.
+
+<Tabs items={["npm", "pnpm", "yarn", "bun"]}>
+  <Tab value="npm">
+    ```bash
+    npm install @openuidev/react-ui @openuidev/react-headless lucide-react
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add @openuidev/react-ui @openuidev/react-headless lucide-react
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add @openuidev/react-ui @openuidev/react-headless lucide-react
+    ```
+  </Tab>
+  <Tab value="bun">
+    ```bash
+    bun add @openuidev/react-ui @openuidev/react-headless lucide-react
+    ```
+  </Tab>
+</Tabs>
+
+### 2. Configure Styles
+
+OpenUI components come with a default theme. Import the CSS in your root layout file.
+
+**Next.js App Router (`app/layout.tsx`):**
+
+```tsx
+import "@openuidev/react-ui/styles.css"; // 👈 Add this line
+import "./globals.css";
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+
+### 3. Render chat component on a page
+
+Render a basic `Copilot` component to ensure everything is working.
+
+```tsx
+// app/page.tsx
+import { Copilot } from "@openuidev/react-ui";
+
+export default function Page() {
+  return (
+    <div className="h-screen w-full flex">
+      <main className="flex-1 p-8">
+        <h1 className="text-2xl font-bold">My App</h1>
+      </main>
+
+      {/* The Chat Sidebar */}
+      <Copilot
+        apiUrl="/api/chat"
+        agentName="Assistant"
+      />
+    </div>
+  );
+}
+```
+
+### 4. Create an LLM endpoint
+
+```ts
+// app/api/chat/route.ts
+
+import { NextRequest } from "next/server";
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+export async function POST(req: NextRequest) {
+  try {
+    const { messages, systemPrompt } = await req.json();
+
+    const chatMessages: OpenAI.ChatCompletionMessageParam[] = [
+      ...(systemPrompt ? [{ role: "system" as const, content: systemPrompt }] : []),
+      ...messages,
+    ];
+
+    const response = await client.chat.completions.create({
+      model: "gpt-5.2",
+      messages: chatMessages,
+      stream: true,
+    });
+
+    return new Response(response.toReadableStream(), {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+```
+
+
+### Next Steps
+
+Now that you have the library installed, choose a layout or configure your backend.
+
+<Cards>
+  <Card title="Explore Layouts" href="/docs/chat/copilot">
+    See the Copilot, FullScreen, and BottomTray components.
+  </Card>
+
+  <Card title="Connect Backend" href="/docs/chat/connecting">
+    Set up the API route to handle streaming responses.
+  </Card>
+</Cards>

@@ -1,0 +1,156 @@
+@use "../../cssUtils" as cssUtils;
+
+$center-align-spacing: calc(32px + cssUtils.$space-s);
+
+// Container styles
+.openui-shell-conversation-starter {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 $center-align-spacing cssUtils.$space-m;
+
+  // Short variant - horizontal wrapping buttons
+  &--short {
+    display: flex;
+    flex-wrap: wrap;
+    gap: cssUtils.$space-s;
+  }
+
+  // Long variant - vertical stacked list with separators
+  &--long {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-2xs;
+  }
+
+  // Separator wrapper for long variant
+  &__separator {
+    padding: cssUtils.$space-3xs cssUtils.$space-xs;
+  }
+
+  // Mobile adjustments
+  .openui-shell-container--mobile & {
+    padding: 0 cssUtils.$space-l;
+  }
+
+  // Artifact active adjustments
+  .openui-shell-thread-container--artifact-active & {
+    padding-left: 0;
+    padding-right: cssUtils.$space-m;
+  }
+}
+
+// Short variant item (pill-style buttons that wrap)
+.openui-shell-conversation-starter-item-short {
+  display: flex;
+  align-items: center;
+  gap: cssUtils.$space-xs;
+  width: fit-content;
+  padding: cssUtils.$space-s cssUtils.$space-m;
+  background-color: cssUtils.$foreground;
+  border: 1px solid cssUtils.$border-default;
+  border-radius: cssUtils.$radius-m;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  @include cssUtils.typography(body, default);
+  color: cssUtils.$text-neutral-primary;
+  text-align: left;
+
+  // Icon container
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: cssUtils.$text-neutral-primary;
+  }
+
+  // Text
+  &__text {
+    flex: 1;
+    white-space: nowrap;
+  }
+
+  &:not(:disabled):hover {
+    background-color: cssUtils.$highlight;
+    border-color: cssUtils.$border-interactive-emphasis;
+  }
+
+  &:not(:disabled):active {
+    background-color: cssUtils.$highlight-subtle;
+  }
+
+  @media (max-width: 480px) {
+    padding: cssUtils.$space-s cssUtils.$space-m;
+  }
+}
+
+// Long variant item (list-style with icon and arrow)
+.openui-shell-conversation-starter-item-long {
+  display: flex;
+  align-items: center;
+  gap: cssUtils.$space-000;
+  width: 100%;
+  padding: cssUtils.$space-xs cssUtils.$space-m;
+  background-color: transparent;
+  border: none;
+  border-radius: cssUtils.$radius-m;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  @include cssUtils.typography(body, default);
+  color: cssUtils.$text-neutral-primary;
+  text-align: left;
+  overflow: hidden;
+
+  // Content wrapper (icon + text)
+  &__content {
+    display: flex;
+    align-items: flex-start;
+    gap: cssUtils.$space-s;
+    flex: 1;
+    min-width: 0;
+  }
+
+  // Icon container - aligned to top with padding to align with first line of text
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding-top: cssUtils.$space-2xs;
+    color: cssUtils.$text-neutral-primary;
+  }
+
+  // Text - allows wrapping for long content
+  &__text {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.5;
+    // Text wraps naturally, no truncation
+  }
+
+  // Arrow icon (shown on hover)
+  &__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    color: cssUtils.$text-neutral-primary;
+  }
+
+  // Hover state
+  &:not(:disabled):hover {
+    background-color: cssUtils.$sunk;
+
+    .openui-shell-conversation-starter-item-long__arrow {
+      opacity: 1;
+    }
+  }
+
+  // Active/pressed state
+  &:not(:disabled):active {
+    background-color: cssUtils.$highlight-subtle;
+  }
+}

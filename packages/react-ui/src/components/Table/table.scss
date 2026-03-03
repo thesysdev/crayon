@@ -1,0 +1,139 @@
+@use "../../cssUtils" as cssUtils;
+
+// ─── Core table ───
+
+.openui-table-container {
+  position: relative;
+  width: 100%;
+  overflow: auto;
+  border: 1px solid cssUtils.$border-default;
+  border-radius: cssUtils.$radius-2xl;
+}
+
+.openui-table {
+  @include cssUtils.typography(body, small);
+  width: 100%;
+  caption-side: bottom;
+  border-collapse: collapse;
+}
+
+.openui-table-footer {
+  border-top: 1px solid cssUtils.$border-default;
+
+  & > tr:last-child {
+    border-bottom: 0;
+  }
+}
+
+.openui-table-cell,
+.openui-table-head {
+  padding-top: cssUtils.$space-m;
+  padding-bottom: cssUtils.$space-m;
+  padding-left: cssUtils.$space-m;
+  padding-right: cssUtils.$space-m;
+  color: cssUtils.$text-neutral-primary;
+}
+
+.openui-table-head {
+  border-bottom: 1px solid cssUtils.$border-default;
+
+  & .openui-table-head-label {
+    @include cssUtils.typography(body, small);
+    color: cssUtils.$text-neutral-secondary;
+    display: inline-flex;
+    flex-grow: 1;
+    justify-content: left;
+  }
+
+  & .openui-table-head-content {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-2xs;
+  }
+
+  & .openui-table-head-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: cssUtils.$text-neutral-secondary;
+  }
+}
+
+.openui-table-row {
+  &:nth-child(even) {
+    background-color: cssUtils.$highlight-subtle;
+  }
+  border-bottom: 1px solid cssUtils.$border-default;
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.openui-table-cell {
+  white-space: nowrap;
+}
+
+// ─── Alignment utilities ───
+
+.openui-table-align-left {
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.openui-table-align-right {
+  text-align: right;
+  justify-content: flex-end;
+
+  .openui-table-head-label {
+    justify-content: flex-end;
+  }
+}
+
+.openui-table-align-center {
+  text-align: center;
+  justify-content: center;
+
+  .openui-table-head-label {
+    justify-content: center;
+  }
+}
+
+// ─── ScrollableTable ───
+
+.openui-scrollable-table-wrapper {
+  position: relative;
+  width: 100%;
+  outline: none;
+}
+
+.openui-scrollable-table-scroll-container {
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.openui-scrollable-table-control {
+  position: absolute;
+  top: cssUtils.$space-s;
+  z-index: 2;
+  width: fit-content;
+  height: fit-content;
+  border-radius: cssUtils.$radius-s;
+  background-color: cssUtils.$foreground;
+
+  &-left {
+    left: cssUtils.$space-s;
+  }
+
+  &-right {
+    right: cssUtils.$space-s;
+  }
+
+  &-disabled {
+    display: none;
+  }
+}

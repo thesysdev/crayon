@@ -1,0 +1,128 @@
+@use "../../cssUtils" as cssUtils;
+
+$sidebar-width: 272px;
+$sidebar-padding: cssUtils.$space-m;
+$sidebar-mobile-width: 294px;
+$sidebar-mobile-padding: cssUtils.$space-l;
+
+.openui-shell-sidebar-container {
+  background: cssUtils.$foreground;
+  border: 1px solid cssUtils.$border-default;
+  height: 100%;
+  width: $sidebar-width;
+  border-radius: cssUtils.$radius-m;
+  padding: $sidebar-padding;
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-m;
+  z-index: 999;
+  transition:
+    width 0.4s ease-in-out,
+    height 0.4s ease-in-out,
+    transform 0.4s ease-in-out;
+
+  .openui-shell-container--mobile & {
+    width: $sidebar-mobile-width;
+    padding: $sidebar-mobile-padding;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    background-color: cssUtils.$foreground;
+    border-radius: 0;
+    transition: left 0.3s ease-in-out;
+  }
+
+  &--collapsed {
+    width: 104px; // Fixed width for collapsed state (logo:36px + button:40px + gaps:12px + padding:16px)
+    height: min-content;
+    transform: translateX(0);
+    gap: 0;
+
+    .openui-shell-container--mobile & {
+      width: $sidebar-mobile-width;
+      height: 100%;
+      left: -$sidebar-mobile-width;
+      transform: none; // Reset transform for mobile
+    }
+  }
+
+  &--hidden {
+    display: none;
+  }
+}
+
+.openui-shell-sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: cssUtils.$space-s;
+
+  &__logo {
+    width: 36px;
+    height: 36px;
+    border-radius: cssUtils.$radius-s;
+  }
+
+  &__agent-name {
+    @include cssUtils.typography(primary, default);
+    flex-grow: 1;
+    color: cssUtils.$text-neutral-primary;
+
+    .openui-shell-sidebar-container--collapsed & {
+      display: none;
+    }
+  }
+}
+
+.openui-shell-sidebar-content {
+  width: calc($sidebar-width - ($sidebar-padding * 2));
+
+  .openui-shell-container--mobile & {
+    width: 100%;
+  }
+
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-m;
+  overflow: hidden;
+  opacity: 1;
+  transition:
+    opacity 0.2s ease-in-out 0.3s,
+    display 0.4s 0.5s;
+
+  &--collapsed {
+    opacity: 0;
+    display: none;
+    transition:
+      opacity 0.2s ease-in-out,
+      display 0s 0.5s; // Delay display:none until after transitions complete
+  }
+}
+
+.openui-shell-sidebar-separator {
+  height: 1px;
+  width: 100%;
+  background-color: cssUtils.$border-default;
+}
+
+.openui-shell-sidebar-header__toggle-button {
+  .openui-shell-container--mobile & {
+    display: none;
+  }
+}
+
+.openui-shell-sidebar-container__overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: cssUtils.$overlay;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 99;
+
+  &--collapsed {
+    opacity: 0;
+    pointer-events: none;
+  }
+}

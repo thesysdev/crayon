@@ -1,0 +1,113 @@
+@use "../../../../cssUtils" as cssUtils;
+
+/*
+    Floating Date Picker Renderer Container Styles
+*/
+/*------------------------------------------------------------------------------------------------*/
+
+.openui-date-picker-renderer-floating-container {
+  position: relative;
+}
+
+/*
+    Floating Date Picker Renderer Input Styles
+*/
+/*------------------------------------------------------------------------------------------------*/
+
+.openui-date-picker-renderer-floating-input-container {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid cssUtils.$border-default;
+  border-radius: cssUtils.$radius-m;
+  background: cssUtils.$sunk;
+  padding: cssUtils.$space-s cssUtils.$space-m;
+  @include cssUtils.typography(primary, default);
+  color: cssUtils.$text-neutral-primary;
+  cursor: pointer;
+  box-shadow: cssUtils.$shadow-s;
+  width: 100%;
+
+  &:disabled {
+    color: cssUtils.$text-neutral-tertiary;
+    cursor: not-allowed;
+  }
+
+  &-open {
+    border-color: cssUtils.$border-interactive;
+    background-color: cssUtils.$sunk;
+  }
+
+  &-not-open {
+    &:hover {
+      border-color: cssUtils.$border-interactive;
+      background-color: cssUtils.$sunk;
+    }
+  }
+
+  &-has-no-selected-date {
+    color: cssUtils.$text-neutral-secondary;
+  }
+
+  & svg {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.openui-date-picker-renderer-floating-input-container-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.openui-date-picker-renderer-floating-input-container-icon {
+  transform: rotate(180deg);
+}
+
+/*
+    Floating Date Picker Renderer Menu Styles
+*/
+/*------------------------------------------------------------------------------------------------*/
+
+.openui-date-picker-renderer-floating-reference {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.openui-date-picker-renderer-floating-content {
+  z-index: 50;
+}
+
+.openui-date-picker-renderer-floating-menu {
+  background: cssUtils.$foreground;
+  border-radius: cssUtils.$radius-2xl;
+  box-shadow: cssUtils.$shadow-s;
+  border: 1px solid cssUtils.$border-interactive;
+  overflow: hidden;
+  transform-origin: top center;
+  animation: openui-date-picker-show 0.18s ease-out forwards;
+}
+
+// Avoid double framing: keep outer floating menu surface and remove
+// inner Calendar chrome only when rendered inside DatePicker dropdown.
+.openui-date-picker-renderer-floating-menu .openui-calendar-root {
+  border: none;
+  border-radius: 0;
+}
+
+@keyframes openui-date-picker-show {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

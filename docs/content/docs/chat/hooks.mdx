@@ -1,0 +1,34 @@
+---
+title: Hooks & State
+description: Deep dive into useThread, useThreadList, and related headless state hooks.
+---
+
+All headless hooks must run inside `ChatProvider`.
+
+### `useThread()`
+
+Handles active conversation state:
+- `messages`
+- `isRunning`
+- `processMessage()`
+- `cancelMessage()`
+- message mutation helpers
+
+```tsx
+const { messages, isRunning, processMessage, cancelMessage } = useThread();
+```
+
+### `useThreadList()`
+
+Handles thread sidebar state:
+- `threads`
+- `selectedThreadId`
+- `loadThreads()`
+- `selectThread()`
+- `createThread()` / `deleteThread()`
+
+```tsx
+const { threads, selectedThreadId, selectThread, switchToNewThread } = useThreadList();
+```
+
+Use selectors when needed to minimize re-renders, for example `useThread((s) => s.messages)`.
