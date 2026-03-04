@@ -3,19 +3,12 @@ name: Build JS
 on:
   push:
     branches: [ main ]
-    paths:
-      - js/**
   pull_request:
     branches: [ main ]
-    paths:
-      - js/**
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: js
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,7 +20,7 @@ jobs:
         with:
           node-version: 18
           cache: pnpm
-          cache-dependency-path: '**/pnpm-lock.yaml'
+          cache-dependency-path: 'pnpm-lock.yaml'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

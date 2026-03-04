@@ -4,6 +4,7 @@ const typescript = require("@typescript-eslint/parser");
 const prettier = require("eslint-config-prettier");
 const unusedImports = require("eslint-plugin-unused-imports");
 const eslintPluginPrettier = require("eslint-plugin-prettier");
+const reactHooks = require("eslint-plugin-react-hooks");
 
 module.exports = [
   {
@@ -20,6 +21,7 @@ module.exports = [
       "@typescript-eslint": tseslint,
       "unused-imports": unusedImports,
       prettier: eslintPluginPrettier,
+      "react-hooks": reactHooks,
     },
     rules: {
       "@typescript-eslint/interface-name-prefix": "off",
@@ -64,6 +66,17 @@ module.exports = [
         },
       ],
       ...eslintPluginPrettier.configs.recommended.rules,
+      "react-hooks/exhaustive-deps": "warn",
+    },
+  },
+  {
+    files: ["**/__tests__/**/*.{ts,tsx}", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+    languageOptions: {
+      parser: typescript,
+      parserOptions: {
+        project: null,
+        sourceType: "module",
+      },
     },
   },
   prettier,
