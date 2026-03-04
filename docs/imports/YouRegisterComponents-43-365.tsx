@@ -72,64 +72,31 @@ export default function YouRegisterComponents() {
     <div className="relative size-full" data-name="You register components">
       <div className="absolute h-[432px] left-0 rounded-[16px] top-0 w-[610px]" data-name="image 4" />
       <div className="absolute bg-black h-[290px] left-[49px] rounded-[16px] top-[48px] w-[443px]" />
-      <div className="absolute font-['Andale_Mono:Regular',sans-serif] leading-[0] left-[86px] not-italic text-[0px] text-[9px] text-white top-[102px] whitespace-nowrap">
-        <p className="mb-0">
-          <span className="leading-none">{`export interface `}</span>
-          <span className="leading-none text-[#b3a0fd]">HotelCardProps</span>
-          <span className="leading-none">{` {`}</span>
-        </p>
-        <p className="leading-none mb-0">{`  image: {`}</p>
-        <p className="mb-0">
-          <span className="leading-none">{`    src: `}</span>
-          <span className="leading-none text-[#b3a0fd]">string</span>
-        </p>
-        <p className="mb-0">
-          <span className="leading-none">{`    alt?: `}</span>
-          <span className="leading-none text-[#b3a0fd]">string</span>
-        </p>
-        <p className="leading-none mb-0">{`  }`}</p>
-        <p className="leading-none mb-0">&nbsp;</p>
-        <p className="leading-none mb-0">{`  badge?: {`}</p>
-        <p className="mb-0">
-          <span className="leading-none">{`    label: `}</span>
-          <span className="leading-none text-[#b3a0fd]">string</span>
-        </p>
-        <p className="mb-0">
-          <span className="leading-none">{`    icon?: `}</span>
-          <span className="leading-none text-[#b3a0fd]">React.ReactNode</span>
-        </p>
-        <p className="leading-none mb-0">{`  }`}</p>
-        <p className="leading-none mb-0">&nbsp;</p>
-        <p className="mb-0">
-          <span className="leading-none">{`  title: `}</span>
-          <span className="leading-none text-[#b3a0fd]">string</span>
-        </p>
-        <p className="mb-0">
-          <span className="leading-none">{`  description?: `}</span>
-          <span className="leading-none text-[#b3a0fd]">string</span>
-        </p>
-        <p className="leading-none mb-0">&nbsp;</p>
-        <p className="leading-none mb-0">{`  cta: {`}</p>
-        <p className="mb-0">
-          <span className="leading-none">{`    label: `}</span>
-          <span className="leading-none text-[#b3a0fd]">string</span>
-        </p>
-        <p className="mb-0">
-          <span className="leading-none">{`    onClick?: () => `}</span>
-          <span className="leading-none text-[#ff7979]">void</span>
-        </p>
-        <p className="mb-0">
-          <span className="leading-none">{`    href?: `}</span>
-          <span className="leading-none text-[#b3a0fd]">string</span>
-        </p>
-        <p className="mb-0">
-          <span className="leading-none">{`    icon?: `}</span>
-          <span className="leading-none text-[#b3a0fd]">React.ReactNode</span>
-        </p>
-        <p className="leading-none mb-0">{`  }`}</p>
-        <p className="leading-none">{`}`}</p>
-      </div>
-      <p className="absolute font-['Geist_Mono:Medium',sans-serif] font-medium leading-none left-[58px] text-[12px] text-[rgba(0,0,0,0.4)] top-[366px]">HOTEL CARD REACT PROPS</p>
+      <p className="absolute font-['Andale_Mono:Regular',sans-serif] h-[262px] leading-none left-[73px] not-italic text-[10px] text-white top-[71px] w-[254px] whitespace-pre-wrap">{`import { z } from "zod"
+import { defineComponent, createLibrary } from "@openuidev/lang-react"
+
+const CarouselCard = defineComponent({
+  name: "CarouselCard",
+  props: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    imageUrl: z.string().url(),
+    ctaLabel: z.string(),
+  }),
+})
+
+const Carousel = defineComponent({
+  name: "Carousel",
+  props: z.object({
+    cards: z.array(CarouselCard.ref),
+  }),
+})
+
+export const library = createLibrary({
+  root: "Carousel",
+  components: [Carousel, CarouselCard],
+})`}</p>
+      <p className="absolute font-['Geist_Mono:Medium',sans-serif] font-medium leading-none left-[58px] text-[12px] text-[rgba(0,0,0,0.4)] top-[366px]">DEFINE COMPONENT + LIBRARY</p>
       <Frame2 />
     </div>
   );
