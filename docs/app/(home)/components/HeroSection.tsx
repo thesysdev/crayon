@@ -84,35 +84,63 @@ function NpmButton({ className = "" }: { className?: string }) {
   };
 
   return (
-    <button
-      className={`flex h-12 items-center justify-center gap-2.5 pl-5 pr-2 shrink-0 cursor-pointer rounded-[999px] border-[1.25px] border-black/8 bg-white transition-all duration-200 hover:scale-105 ${className}`}
-      style={{ boxShadow: HERO_BUTTON_SHADOW }}
-      onClick={onCopy}
-    >
-      <span className="font-['Inter_Display',sans-serif] font-medium text-[18px] leading-6 text-black whitespace-nowrap overflow-hidden text-ellipsis">
-        {primaryCTA}
-      </span>
-      <span className="size-8 rounded-full bg-black flex items-center justify-center shrink-0">
-        <span className="relative size-4 flex items-center justify-center">
-          <span className={`absolute transition-all duration-300 ${copied ? "opacity-0 scale-50" : "opacity-100 scale-100"}`}>
-            <CopyIcon color="white" />
-          </span>
-          <svg
-            className={`size-4 absolute transition-all duration-300 ${copied ? "opacity-100 scale-100" : "opacity-0 scale-50"}`}
-            fill="none"
-            viewBox="0 0 14 14"
-          >
-            <path
-              d="M11.6667 3.5L5.25 9.91667L2.33334 7"
-              stroke="white"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="1.5"
-            />
-          </svg>
+    <>
+      <button
+        className={`flex h-12 items-center justify-center gap-2.5 pl-5 pr-2 shrink-0 cursor-pointer rounded-[999px] border-[1.25px] border-black/8 bg-white transition-all duration-200 hover:scale-105 ${className}`}
+        style={{ boxShadow: HERO_BUTTON_SHADOW }}
+        onClick={onCopy}
+      >
+        <span className="hidden lg:inline font-['Inter_Display',sans-serif] font-medium text-[18px] leading-6 text-black whitespace-nowrap">
+          {primaryCTA}
         </span>
-      </span>
-    </button>
+        <span className="lg:hidden relative flex-1 min-w-0 overflow-hidden">
+          <span className="npmTicker flex w-max items-center">
+            <span className="font-['Inter_Display',sans-serif] font-medium text-[18px] leading-6 text-black whitespace-nowrap pr-8">
+              {primaryCTA}
+            </span>
+            <span
+              aria-hidden="true"
+              className="font-['Inter_Display',sans-serif] font-medium text-[18px] leading-6 text-black whitespace-nowrap pr-8"
+            >
+              {primaryCTA}
+            </span>
+          </span>
+        </span>
+        <span className="size-8 rounded-full bg-black flex items-center justify-center shrink-0">
+          <span className="relative size-4 flex items-center justify-center">
+            <span className={`absolute transition-all duration-300 ${copied ? "opacity-0 scale-50" : "opacity-100 scale-100"}`}>
+              <CopyIcon color="white" />
+            </span>
+            <svg
+              className={`size-4 absolute transition-all duration-300 ${copied ? "opacity-100 scale-100" : "opacity-0 scale-50"}`}
+              fill="none"
+              viewBox="0 0 14 14"
+            >
+              <path
+                d="M11.6667 3.5L5.25 9.91667L2.33334 7"
+                stroke="white"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.5"
+              />
+            </svg>
+          </span>
+        </span>
+      </button>
+      <style jsx>{`
+        .npmTicker {
+          animation: npmTickerScroll 10s linear infinite;
+        }
+        @keyframes npmTickerScroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+      `}</style>
+    </>
   );
 }
 
@@ -120,8 +148,7 @@ function DesktopPlaygroundButton({ className = "" }: { className?: string }) {
   return (
     <a
       href="/playground"
-      className={`flex h-12 items-center justify-center gap-2 rounded-[999px] bg-white px-5 font-['Inter_Display',sans-serif] font-medium text-[18px] leading-6 text-black cursor-pointer transition-all duration-200 hover:scale-105 ${className}`}
-      style={{ boxShadow: HERO_BUTTON_SHADOW }}
+      className={`flex h-12 items-center justify-center gap-2 rounded-[999px] px-5 font-['Inter_Display',sans-serif] font-medium text-[18px] leading-6 text-black cursor-pointer transition-all duration-200 hover:scale-105 ${className}`}
     >
       <span>{secondaryCTA}</span>
       <span aria-hidden="true">→</span>
@@ -247,7 +274,11 @@ function DesktopHero() {
           {...fadeUp(DESKTOP.subtitle)}
         >
           <svg className="w-full h-full" fill="none" viewBox="0 0 1600 376">
-            <path d={svgHeroPaths.p38a6ed80} fill="black" fillOpacity="0.4" />
+            <g transform="translate(180 0)">
+              <g transform="translate(880 75) scale(1.5) translate(-980 -108)">
+                <path d={svgHeroPaths.p38a6ed80} fill="black" fillOpacity="0.4" />
+              </g>
+            </g>
           </svg>
         </motion.div>
 
