@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ThesysLogo, OpenUILogo } from './brand-logo';
+import { OpenUILogo } from './brand-logo';
 import { useSearchContext } from 'fumadocs-ui/contexts/search';
 import { SidebarTrigger } from 'fumadocs-ui/components/sidebar/base';
 import { siteConfig } from '@/lib/layout.shared';
@@ -55,7 +55,6 @@ function SearchBar() {
 
 export function DocsNavbar({ showSidebarToggle = false }: { showSidebarToggle?: boolean }) {
   const pathname = usePathname();
-  const [isThesysHovered, setIsThesysHovered] = useState(false);
 
   return (
     <header className="fixed top-0 inset-x-0 z-40 w-full border-b border-fd-border bg-fd-background/80 backdrop-blur-xl">
@@ -73,9 +72,6 @@ export function DocsNavbar({ showSidebarToggle = false }: { showSidebarToggle?: 
 
         {/* Brand */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <ThesysLogo isHovered={isThesysHovered} onHoverChange={setIsThesysHovered} />
-          <span className="font-semibold text-[15px] text-fd-foreground leading-6">thesys</span>
-          <span className="text-fd-muted-foreground text-[15px] select-none px-0.5">|</span>
           <OpenUILogo />
         </div>
 
