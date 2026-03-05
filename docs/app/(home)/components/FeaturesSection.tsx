@@ -19,12 +19,12 @@ interface Feature {
 const FEATURES: Feature[] = [
   {
     title: "Performance Optimized",
-    description: "upto 2.5x faster rendering than json-render",
+    description: "2.1x faster rendering than json-render",
     iconPath: svgPaths.p7658f00,
   },
   {
     title: "Token efficient",
-    description: "upto 52% lesser tokens than json-render",
+    description: "52% lesser tokens than json-render",
     iconPath: svgPaths.p2a8ddd80,
   },
   {

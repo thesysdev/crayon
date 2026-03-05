@@ -188,36 +188,15 @@ export function Footer() {
       <div className="bg-white px-5 lg:px-8 pt-[60px] pb-4">
         <div className="max-w-[1200px] mx-auto">
           {/* Desktop */}
-          <div className="hidden lg:flex items-start justify-between">
-            <div className="flex flex-col gap-3 w-[300px]">
-              <p className="font-['Inter',sans-serif] font-medium text-[15px] text-black/40 leading-[1.2]">
-                Keep in touch
-              </p>
-              <SocialIcons />
-            </div>
+          <div className="hidden lg:flex flex-col items-center">
 
             <ThesysLogo />
 
-            <div className="flex flex-col gap-3 items-end w-[300px]">
-              <p className="font-['Inter',sans-serif] font-medium text-[15px] text-black/40 leading-[1.2] text-right">
-                Subscribe to newsletter
-              </p>
-              <NewsletterInput />
-            </div>
           </div>
 
           {/* Mobile */}
           <div className="lg:hidden flex flex-col items-center gap-10">
             <ThesysLogo />
-            <div className="flex flex-col items-center gap-6 w-full">
-              <div className="flex flex-col items-center gap-3 w-full">
-                <p className="font-['Inter',sans-serif] font-medium text-[15px] text-black/40 leading-[1.2]">
-                  Subscribe to newsletter
-                </p>
-                <NewsletterInput />
-              </div>
-              <SocialIcons />
-            </div>
           </div>
 
           {/* Bottom bar */}
@@ -227,7 +206,7 @@ export function Footer() {
                 355 Bryant St, San Francisco, CA 94107
               </p>
               <p className="font-['Inter',sans-serif] text-xs lg:text-[15px] text-black/40 leading-[1.5] text-center lg:text-right">
-                2025 Thesys Inc. All Rights Reserved
+                © {new Date().getFullYear()} Thesys Inc. All Rights Reserved
               </p>
             </div>
           </div>
