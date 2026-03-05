@@ -1,85 +1,105 @@
 import svgPaths from "./svg-l2c2kzuful";
+const hotelPlazaImg = "/images/home/706ccb488b69a5bdb06bdd002656a2fdfb017071.png";
+const hotelGeorgeVImg = "/images/home/6dea3a71b902a0282d8518928f3b06373b617aba.png";
+const hotelShangriLaImg = "/images/home/d781d9c958cc5cf8f3fc5fd61562ebcf0c7ba0a5.png";
+
+type CardPreviewData = {
+  imageSrc: string;
+  tag: string;
+  tagClassName: string;
+  title: string;
+  description: string;
+};
+
+const CARD_PREVIEWS: CardPreviewData[] = [
+  {
+    imageSrc: hotelPlazaImg,
+    tag: "Free Wifi",
+    tagClassName: "bg-[rgba(13,160,94,0.1)] text-[#067647]",
+    title: "Hotel Plaza Athenee",
+    description: "Haute couture suites; courtyard dining; Dior spa; near Champs-Elysees.",
+  },
+  {
+    imageSrc: hotelGeorgeVImg,
+    tag: "Family-friendly",
+    tagClassName: "bg-[rgba(203,63,73,0.1)] text-[#e94852]",
+    title: "Four Seasons George V",
+    description: "Landmark hotel with opulent rooms, Michelin dining, and a lavish spa.",
+  },
+  {
+    imageSrc: hotelShangriLaImg,
+    tag: "Elite",
+    tagClassName: "bg-[rgba(0,0,0,0.06)] text-black",
+    title: "Shangri-La Hotel",
+    description: "Stunning Eiffel Tower views; Michelin dining; serene spa.",
+  },
+];
 
 function Group() {
   return (
     <div className="absolute contents left-[49px] top-[48px]">
       <div className="absolute bg-black h-[290px] left-[49px] rounded-[16px] top-[48px] w-[443px]" />
-      <p className="absolute font-['Andale_Mono:Regular',sans-serif] h-[110px] leading-none left-[73px] not-italic text-[10px] text-white top-[74px] w-[254px] whitespace-pre-wrap">
-        Card(header, children)
-        <br aria-hidden="true" />
-        {`header = Header("sometitle", "somesubtitle")`}
-        <br aria-hidden="true" />
-        children = [<br aria-hidden="true" />
-        {`  carousel,`}
-        <br aria-hidden="true" />]<br aria-hidden="true" />
-        carousel = Carousel(carousel_children)
-        <br aria-hidden="true" />
-        carousel_children = [<br aria-hidden="true" />
-        {`  `}
-        <br aria-hidden="true" />]
-      </p>
+      <p className="absolute font-['Andale_Mono:Regular',sans-serif] h-[198px] leading-none left-[73px] not-italic text-[10px] text-white top-[74px] w-[254px] whitespace-pre-wrap">{`root = Carousel([c1, c2, c3])
+c1 = CarouselCard(
+  "Hotel Plaza Athenee",
+  "Haute couture suites; courtyard dining; Dior spa.",
+  "https://images.example.com/plaza.jpg",
+  "Book"
+)
+c2 = CarouselCard(
+  "Four Seasons George V",
+  "Landmark hotel with opulent rooms and spa.",
+  "https://images.example.com/george-v.jpg",
+  "Book"
+)
+c3 = CarouselCard(
+  "Shangri-La Hotel",
+  "Stunning Eiffel Tower views and Michelin dining.",
+  "https://images.example.com/shangri-la.jpg",
+  "Book"
+)`}</p>
       <div className="absolute bg-gradient-to-b from-[rgba(0,0,0,0)] h-[65px] left-[60px] to-black top-[272px] w-[285px]" />
     </div>
   );
 }
 
-function Frame() {
+function Frame({ imageSrc }: { imageSrc: string }) {
   return (
-    <div className="aspect-[296/196] bg-[#dbdbdb] overflow-clip relative shrink-0 w-full">
-      <div className="absolute h-[80px] left-[3.84px] top-[55.84px] w-[157.5px]">
-        <div className="absolute inset-[14.91%_-0.22%_-0.44%_-0.22%]">
-          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 158.207 68.4271">
-            <path d={svgPaths.p4c0e640} id="Vector 30" stroke="var(--stroke-0, black)" strokeDasharray="2 2" strokeOpacity="0.1" />
-          </svg>
-        </div>
-      </div>
-      <div className="absolute h-[52px] left-[124.84px] top-[60.84px] w-[80.5px]">
-        <div className="absolute inset-[22.94%_-0.44%_-0.68%_-0.44%]">
-          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 81.2071 40.4272">
-            <path d={svgPaths.pd528680} id="Vector 31" stroke="var(--stroke-0, black)" strokeDasharray="2 2" strokeOpacity="0.1" />
-          </svg>
-        </div>
-      </div>
-      <div className="absolute left-[98.34px] size-[31px] top-[14.34px]">
-        <div className="absolute inset-[-1.61%]">
-          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 32 32">
-            <circle cx="16" cy="16" id="Ellipse 5" r="15.5" stroke="var(--stroke-0, black)" strokeDasharray="2 2" strokeOpacity="0.1" />
-          </svg>
-        </div>
-      </div>
+    <div className="aspect-[296/196] bg-[#dbdbdb] overflow-clip relative shrink-0 w-full rounded-[4px]">
+      <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imageSrc} />
     </div>
   );
 }
 
-function Frame3() {
+function Frame3({ tag, tagClassName }: Pick<CardPreviewData, "tag" | "tagClassName">) {
   return (
     <div className="content-stretch flex items-start relative shrink-0">
-      <div className="bg-[rgba(13,160,94,0.1)] content-stretch flex gap-[2.888px] h-[23.1px] items-center px-[5.775px] py-[4.331px] relative shrink-0" data-name="Tag">
-        <p className="font-['Inter:Regular',sans-serif] font-normal leading-[1.2] not-italic relative shrink-0 text-[#067647] text-[10.11px]">TAG</p>
+      <div className={`content-stretch flex gap-[2.888px] h-[23.1px] items-center px-[5.775px] py-[4.331px] relative shrink-0 ${tagClassName}`} data-name="Tag">
+        <p className="font-['Inter:Regular',sans-serif] font-normal leading-[1.2] not-italic relative shrink-0 text-[10.11px]">{tag}</p>
       </div>
     </div>
   );
 }
 
-function Frame1() {
+function Frame1({ title, description }: Pick<CardPreviewData, "title" | "description">) {
   return (
     <div className="content-stretch flex flex-col items-start leading-[1.5] not-italic relative shrink-0 text-[11.55px] w-full">
-      <p className="font-['Inter:Medium',sans-serif] font-medium relative shrink-0 text-black">Name</p>
-      <p className="font-['Inter:Regular',sans-serif] font-normal min-w-full relative shrink-0 text-[rgba(0,0,0,0.4)] w-[min-content] whitespace-pre-wrap">Description goes here</p>
+      <p className="font-['Inter:Medium',sans-serif] font-medium relative shrink-0 text-black">{title}</p>
+      <p className="font-['Inter:Regular',sans-serif] font-normal min-w-full relative shrink-0 text-[rgba(0,0,0,0.4)] w-[min-content] whitespace-pre-wrap">{description}</p>
     </div>
   );
 }
 
-function Frame2() {
+function Frame2({ className, data }: { className?: string; data: CardPreviewData }) {
   return (
-    <div className="absolute bg-white content-stretch flex flex-col gap-[8.663px] items-start left-[305px] p-[8.663px] top-[108px] w-[231px]">
+    <div className={`relative bg-white content-stretch flex flex-col gap-[8.663px] items-start p-[8.663px] w-[231px] ${className ?? ""}`}>
       <div aria-hidden="true" className="absolute border-[#e4e4e4] border-[1.023px] border-solid inset-0 pointer-events-none shadow-[-4px_0px_10.1px_0px_rgba(0,0,0,0.25)]" />
-      <Frame />
-      <Frame3 />
-      <Frame1 />
+      <Frame imageSrc={data.imageSrc} />
+      <Frame3 tag={data.tag} tagClassName={data.tagClassName} />
+      <Frame1 title={data.title} description={data.description} />
       <div className="bg-black content-stretch flex h-[25.988px] items-center justify-between px-[8.663px] py-[5.775px] relative shrink-0 w-[213.675px]" data-name="Primary Button">
         <div aria-hidden="true" className="absolute border-[0.722px] border-[rgba(255,255,255,0.08)] border-solid inset-0 pointer-events-none" />
-        <p className="font-['Inter:Regular',sans-serif] font-normal leading-[1.5] not-italic relative shrink-0 text-[11.55px] text-white">Action</p>
+        <p className="font-['Inter:Regular',sans-serif] font-normal leading-[1.5] not-italic relative shrink-0 text-[11.55px] text-white">Book</p>
         <div className="relative shrink-0 size-[11.55px]" data-name="Icon Container">
           <div className="absolute left-0 overflow-clip size-[11.55px] top-0" data-name="16 arrow-right">
             <div className="absolute inset-[20.83%]" data-name="Vector">
@@ -153,10 +173,10 @@ function Group1() {
 
 function Group2() {
   return (
-    <div className="absolute contents left-[219px] top-[16px]">
-      <Frame2 />
+    <>
       <Group1 />
-    </div>
+      <Frame2 data={CARD_PREVIEWS[0]} className="absolute left-[305px] top-[108px] z-30" />
+    </>
   );
 }
 
@@ -199,7 +219,7 @@ export default function LlmRespondsInOpenUiLang() {
         </div>
       </div>
       <Group2 />
-      <p className="absolute font-['Geist_Mono:Medium',sans-serif] font-medium leading-none left-[58px] text-[12px] text-[rgba(0,0,0,0.4)] top-[366px]">OPENUI LANG SNIPPET</p>
+      <p className="absolute font-['Geist_Mono:Medium',sans-serif] font-medium leading-none left-[58px] text-[12px] text-[rgba(0,0,0,0.4)] top-[366px]">OPENUI LANG (TOKEN EFFICIENT)</p>
     </div>
   );
 }
