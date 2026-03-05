@@ -70,7 +70,7 @@ export function DocsNavbar({ showSidebarToggle = false }: { showSidebarToggle?: 
   return (
     <header className="fixed top-0 inset-x-0 z-40 w-full border-b border-fd-border bg-fd-background/80 backdrop-blur-xl">
       {/* Top row: logo left, actions right */}
-      <div className="flex items-center h-16 max-w-[97rem] mx-auto px-8">
+      <div className="flex items-center h-16 max-w-[97rem] mx-auto px-3 md:px-8">
         {showSidebarToggle && (
           <SidebarTrigger className="docs-nav-sidebar-toggle flex items-center justify-center size-9 rounded-lg text-fd-muted-foreground bg-transparent border-none cursor-pointer mr-3">
             <svg
@@ -98,7 +98,7 @@ export function DocsNavbar({ showSidebarToggle = false }: { showSidebarToggle?: 
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-3 ml-auto shrink-0">
+        <div className="hidden md:flex items-center gap-3 ml-auto shrink-0">
           <SearchBar />
           <div className="flex items-center gap-0.5">
             {/* Discord */}
