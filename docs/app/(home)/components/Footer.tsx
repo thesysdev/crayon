@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from "react";
-import { ArrowRight, Check } from "lucide-react";
 import svgPaths from "@/imports/svg-urruvoh2be";
 import mascotSvgPaths from "@/imports/svg-xeurqn3j1r";
 
@@ -112,50 +110,6 @@ function ThesysLogo() {
   );
 }
 
-function NewsletterInput() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = () => {
-    if (!email || submitted) return;
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setEmail("");
-    }, 3000);
-  };
-
-  return (
-    <div className="bg-black/6 h-10 rounded-full w-[282px] lg:w-[240px] relative border border-black/10">
-      <div className="flex items-center gap-1 pl-3 pr-1.5 py-3 h-full">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          placeholder="name@email.com"
-          className="flex-1 bg-transparent outline-none font-['Inter',sans-serif] text-[15px] text-black leading-[1.5] placeholder:text-black/40 min-w-0"
-        />
-        <button
-          onClick={handleSubmit}
-          className="bg-black size-7 rounded-full flex items-center justify-center shrink-0 transition-colors duration-300 cursor-pointer"
-        >
-          <div className="relative size-4 flex items-center justify-center">
-            <ArrowRight
-              className={`size-4 text-white absolute transition-all duration-300 ${submitted ? "opacity-0 scale-50" : "opacity-100 scale-100"}`}
-              strokeWidth={2}
-            />
-            <Check
-              className={`size-4 text-white absolute transition-all duration-300 ${submitted ? "opacity-100 scale-100" : "opacity-0 scale-50"}`}
-              strokeWidth={2.5}
-            />
-          </div>
-        </button>
-      </div>
-    </div>
-  );
-}
-
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
@@ -189,25 +143,35 @@ export function Footer() {
         <div className="max-w-[1200px] mx-auto">
           {/* Desktop */}
           <div className="hidden lg:flex flex-col items-center">
-
             <ThesysLogo />
-
           </div>
-
           {/* Mobile */}
-          <div className="lg:hidden flex flex-col items-center gap-10">
+          <div className="lg:hidden flex w-full flex-col items-center">
             <ThesysLogo />
           </div>
 
           {/* Bottom bar */}
-          <div className="mt-[60px] border-t border-black/4 py-4">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-2">
-              <p className="font-['Inter',sans-serif] text-xs lg:text-[15px] text-black/40 leading-[1.5] text-center lg:text-left">
+          <div className="mt-10 lg:mt-[60px] border-t border-black/4 py-4 lg:py-4">
+            <div className="hidden lg:flex items-center justify-between gap-2">
+              <p className="font-['Inter',sans-serif] text-[15px] text-black/40 leading-[1.5] text-left">
                 355 Bryant St, San Francisco, CA 94107
               </p>
-              <p className="font-['Inter',sans-serif] text-xs lg:text-[15px] text-black/40 leading-[1.5] text-center lg:text-right">
+              <SocialIcons />
+              <p className="font-['Inter',sans-serif] text-[15px] text-black/40 leading-[1.5] text-right">
                 © {new Date().getFullYear()} Thesys Inc. All Rights Reserved
               </p>
+            </div>
+
+            <div className="lg:hidden flex flex-col items-center justify-start pt-10 pb-5">
+              <SocialIcons />
+              <div className="mt-10 text-center">
+                <p className="font-['Inter',sans-serif] text-xs text-black/40 leading-[1.5]">
+                  © {new Date().getFullYear()} Thesys Inc. All Rights Reserved
+                </p>
+                <p className="font-['Inter',sans-serif] text-xs text-black/40 leading-[1.5]">
+                  355 Bryant St, San Francisco, CA 94107
+                </p>
+              </div>
             </div>
           </div>
         </div>

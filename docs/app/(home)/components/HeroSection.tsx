@@ -5,7 +5,7 @@ import { useRef, useState, useEffect, lazy, Suspense } from "react";
 import svgHeroPaths from "@/imports/svg-a5kdrdeeao";
 import svgMascotPaths from "@/imports/svg-148i9mcxjn";
 import HeroPreviewFrame from "@/imports/Frame2147239423";
-import { BUTTON_SHADOW, CopyIcon } from "./shared";
+import { CopyIcon } from "./shared";
 
 const LazyMobileActionFigure = lazy(
   () => import("@/imports/MobileActionFigure")
@@ -22,6 +22,7 @@ const DESKTOP = { duration: 0.7, lines: 0, title: 0.5, subtitle: 1.0, cta: 1.5, 
 
 /** Mobile: snappier with tighter stagger */
 const MOBILE = { duration: 0.5, mascot: 0, title: 0.25, subtitle: 0.5, cta: 0.75 } as const;
+const HERO_BUTTON_SHADOW = "0 8px 16px -4px rgba(22, 34, 51, 0.08)";
 
 // ---------------------------------------------------------------------------
 // Animation helpers
@@ -49,41 +50,95 @@ const mobileFadeUp = (delay: number) => ({
 
 // CTAs
 const primaryCTA = "npm install @openuidev/lang-react @openuidev/react-ui";
-const secondaryCTA = "Playground";
+const secondaryCTA = "Try Playground";
+const COPIED_FEEDBACK_MS = 3000;
 // ---------------------------------------------------------------------------
 // Buttons
 // ---------------------------------------------------------------------------
 
-function PrimaryButton({ className = "" }: { className?: string }) {
+function NpmButton({ className = "" }: { className?: string }) {
+  const [copied, setCopied] = useState(false);
+  const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimeoutRef.current) {
+        clearTimeout(copiedTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const onCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(primaryCTA);
+      setCopied(true);
+      if (copiedTimeoutRef.current) {
+        clearTimeout(copiedTimeoutRef.current);
+      }
+      copiedTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, COPIED_FEEDBACK_MS);
+    } catch {
+      setCopied(false);
+    }
+  };
+
   return (
     <button
-      className={`bg-black flex gap-2.5 h-12 items-center justify-center px-5 rounded-full shrink-0 cursor-pointer transition-all duration-200 hover:scale-105 hover:bg-black/85 active:bg-black/75 ${className}`}
-      onClick={() => {
-        navigator.clipboard.writeText(primaryCTA);
-      }}
+      className={`flex h-12 items-center justify-center gap-2.5 pl-5 pr-2 shrink-0 cursor-pointer rounded-[999px] border-[1.25px] border-black/8 bg-white transition-all duration-200 hover:scale-105 ${className}`}
+      style={{ boxShadow: HERO_BUTTON_SHADOW }}
+      onClick={onCopy}
     >
-      <CopyIcon />
-      <span className="font-['Inter_Display',sans-serif] font-medium text-[18px] leading-6 text-white whitespace-nowrap">
+      <span className="font-['Inter_Display',sans-serif] font-medium text-[18px] leading-6 text-black whitespace-nowrap overflow-hidden text-ellipsis">
         {primaryCTA}
+      </span>
+      <span className="size-8 rounded-full bg-black flex items-center justify-center shrink-0">
+        <span className="relative size-4 flex items-center justify-center">
+          <span className={`absolute transition-all duration-300 ${copied ? "opacity-0 scale-50" : "opacity-100 scale-100"}`}>
+            <CopyIcon color="white" />
+          </span>
+          <svg
+            className={`size-4 absolute transition-all duration-300 ${copied ? "opacity-100 scale-100" : "opacity-0 scale-50"}`}
+            fill="none"
+            viewBox="0 0 14 14"
+          >
+            <path
+              d="M11.6667 3.5L5.25 9.91667L2.33334 7"
+              stroke="white"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.5"
+            />
+          </svg>
+        </span>
       </span>
     </button>
   );
 }
 
-function SecondaryButton({ className = "" }: { className?: string }) {
+function DesktopPlaygroundButton({ className = "" }: { className?: string }) {
+  return (
+    <a
+      href="/playground"
+      className={`flex h-12 items-center justify-center gap-2 rounded-[999px] bg-white px-5 font-['Inter_Display',sans-serif] font-medium text-[18px] leading-6 text-black cursor-pointer transition-all duration-200 hover:scale-105 ${className}`}
+      style={{ boxShadow: HERO_BUTTON_SHADOW }}
+    >
+      <span>{secondaryCTA}</span>
+      <span aria-hidden="true">→</span>
+    </a>
+  );
+}
+
+function MobilePlaygroundButton({ className = "" }: { className?: string }) {
   return (
     <a href="/playground">
       <button
-        className={`bg-white flex gap-2.5 h-12 items-center justify-center px-4 rounded-full shrink-0 cursor-pointer relative transition-all duration-200 hover:scale-105 ${className}`}
+        className={`flex h-12 items-center justify-center gap-2 rounded-[100px] bg-black px-5 shrink-0 cursor-pointer transition-all duration-200 hover:bg-black/85 ${className}`}
       >
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 pointer-events-none rounded-full border-[1.25px] border-black/8"
-          style={{ boxShadow: BUTTON_SHADOW }}
-        />
-        <span className="font-['Inter_Display',sans-serif] font-medium text-[18px] leading-6 text-black relative whitespace-nowrap">
+        <span className="font-['Inter_Display',sans-serif] font-medium text-[18px] leading-6 text-white whitespace-nowrap">
           {secondaryCTA}
         </span>
+        <span aria-hidden="true" className="text-white text-[20px] leading-none">→</span>
       </button>
     </a>
   );
@@ -202,12 +257,14 @@ function DesktopHero() {
 
         {/* CTA buttons */}
         <motion.div
-          className="absolute flex gap-1.5 will-change-[transform,opacity]"
-          style={{ left: "51.125%", top: "71.19%" }}
+          className="absolute will-change-[transform,opacity]"
+          style={{ left: "50%", top: "71.19%" }}
           {...fadeUp(DESKTOP.cta)}
         >
-          <PrimaryButton />
-          <SecondaryButton />
+          <div className="relative -translate-x-1/2 flex flex-col items-center gap-2 pt-14">
+            <NpmButton />
+            <DesktopPlaygroundButton />
+          </div>
         </motion.div>
       </div>
     </div>
@@ -261,8 +318,8 @@ function MobileHero() {
         className="relative flex flex-col items-center gap-3 px-10 pt-5 pb-20"
         {...mobileFadeUp(MOBILE.cta)}
       >
-        <SecondaryButton className="w-full max-w-[280px]" />
-        <PrimaryButton className="w-full max-w-[280px]" />
+        <MobilePlaygroundButton className="w-[320px] max-w-full" />
+        <NpmButton className="w-[320px] max-w-full" />
       </motion.div>
 
       {/* Full-width hero illustration */}
