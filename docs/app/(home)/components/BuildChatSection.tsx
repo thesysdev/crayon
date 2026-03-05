@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import dashboardImg from "/public/images/home/d67b5e94653944c1d0d4998c6b169c37f98060ad.png";
+import dashboardImg from "@/public/images/home/d67b5e94653944c1d0d4998c6b169c37f98060ad.png";
 import { CopyIcon } from "./shared";
 
 // ---------------------------------------------------------------------------
