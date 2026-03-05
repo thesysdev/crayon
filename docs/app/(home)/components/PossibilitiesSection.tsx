@@ -63,10 +63,12 @@ const MARQUEE_CARDS = Array.from({ length: MARQUEE_COPIES }, (_, copy) =>
 // ---------------------------------------------------------------------------
 
 export function PossibilitiesSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(0);
   const rafRef = useRef(0);
   const isPausedRef = useRef(false);
+  const isSectionVisibleRef = useRef(true);
   const isDraggingRef = useRef(false);
   const dragStartXRef = useRef(0);
   const dragStartOffsetRef = useRef(0);
@@ -75,13 +77,34 @@ export function PossibilitiesSection() {
 
   // ── Auto-scroll loop ──────────────────────────────────────────────────
   useEffect(() => {
+    const target = sectionRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isSectionVisibleRef.current = entry.isIntersecting;
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
     const singleSetWidth = () => el.scrollWidth / MARQUEE_COPIES;
 
     function tick() {
-      if (!isPausedRef.current && !isDraggingRef.current) {
+      const canAnimate =
+        document.visibilityState === "visible" &&
+        isSectionVisibleRef.current &&
+        !isPausedRef.current &&
+        !isDraggingRef.current;
+
+      if (canAnimate) {
         offsetRef.current -= SCROLL_SPEED;
       }
 
@@ -137,7 +160,7 @@ export function PossibilitiesSection() {
   const resumeScroll = useCallback(() => { isPausedRef.current = false; }, []);
 
   return (
-    <div className="w-full">
+    <div ref={sectionRef} className="w-full">
       {/* Header */}
       <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
         <div className="mb-8">

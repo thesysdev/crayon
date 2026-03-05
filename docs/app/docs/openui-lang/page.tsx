@@ -26,8 +26,8 @@ const steps = [
     code: `import { defineComponent, createLibrary } from '@openuidev/lang-react';
 import { z } from 'zod';
 
-const MyCard = defineComponent({
-  name: 'MyCard',
+const Card = defineComponent({
+  name: 'Card',
   description: 'Displays a titled content card.',
   props: z.object({
     title: z.string(),
@@ -35,21 +35,26 @@ const MyCard = defineComponent({
   component: ({ props }) => <div>{props.title}</div>,
 });
 
-export const myLibrary = createLibrary({
-  components: [MyCard, ...otherComponents],
+export const library = createLibrary({
+  components: [Card, ...otherComponents],
 });
 
-export const systemPrompt = myLibrary.prompt(); // Generated system prompt
+export const systemPrompt = library.prompt(); // Generated system prompt
 `,
   },
   {
     title: "LLM Generates OpenUI Syntax",
     description: "LLM outputs token-efficient, line-oriented syntax",
-    code: `root = Card([header, emailField, passwordField, signInButton])
-header = CardHeader("Welcome Back", "Continue your journey")
-emailField = FormControl("Email", Input("email", "Enter your email", "email"))
-passwordField = FormControl("Password", Input("password", "Enter password", "password"))
-signInButton = Button("Sign In", "action:signIn", "primary")
+    code: `root = Stack([welcomeCard])
+welcomeCard = Card([welcomeHeader, welcomeBody], "card")
+welcomeHeader = CardHeader("Welcome", "Get started with our platform")
+welcomeBody = Stack([signupForm], "column", "m")
+signupForm = Form("signup", [nameField, emailField], actions)
+nameField = FormControl("Name", Input("name", "Your name", "text", ["required", "minLength:2"]))
+emailField = FormControl("Email", Input("email", "you@example.com", "email", ["required", "email"]))
+actions = Buttons([signUpBtn, learnMoreBtn], "row")
+signUpBtn = Button("Sign up", "submit:signup", "primary")
+learnMoreBtn = Button("Learn more", "action:learn_more", "secondary")
 `,
   },
 ];
@@ -95,7 +100,7 @@ export default function OpenUILangOverview() {
           >
             A2UI
           </a>{" "}
-          that uses ~40% fewer tokens than equivalent JSON structures. Define
+          that uses ~52% fewer tokens than equivalent JSON structures. Define
           your component library with Zod schemas and parse LLM responses into
           renderable components.
         </p>
@@ -136,7 +141,7 @@ export default function OpenUILangOverview() {
             <Zap className="mb-4 size-8 text-blue-500" />
             <h3 className="mb-2 text-lg font-semibold">Token Efficient</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Uses ~40% fewer tokens than equivalent JSON structures,
+              Uses ~52% fewer tokens than equivalent JSON structures,
               significantly reducing inference cost and latency.
             </p>
           </SimpleCard>
@@ -172,42 +177,187 @@ export default function OpenUILangOverview() {
                 JSON Format
               </h3>
               <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-600 dark:bg-red-900/20 dark:text-red-400">
-                ~154 tokens
+                ~849 tokens
               </span>
             </div>
             <CodeBlock
               codeBlockClassName="h-100 overflow-y-auto"
               code={`{
-  "type": "Card",
-  "props": {
-    "title": "Welcome Back",
-    "description": "Continue your journey"
-  },
-  "children": [
-    {
-      "type": "Input",
-      "props": {
-        "label": "Email",
-        "placeholder": "Enter your email",
-        "type": "email"
-      }
-    },
-    {
-      "type": "Input",
-      "props": {
-        "label": "Password",
-        "placeholder": "Enter password",
-        "type": "password"
-      }
-    },
-    {
-      "type": "Button",
-      "props": {
-        "label": "Sign In",
-        "variant": "primary"
-      }
+  "component": {
+    "component": "Stack",
+    "props": {
+      "children": [
+        {
+          "component": "TextContent",
+          "props": {
+            "text": "Contact Us",
+            "size": "large-heavy"
+          }
+        },
+        {
+          "component": "Form",
+          "props": {
+            "name": "contact",
+            "fields": [
+              {
+                "component": "FormControl",
+                "props": {
+                  "label": "Name",
+                  "input": {
+                    "component": "Input",
+                    "props": {
+                      "name": "name",
+                      "placeholder": "Your full name",
+                      "type": "text",
+                      "rules": [
+                        "required",
+                        "minLength:2"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "component": "FormControl",
+                "props": {
+                  "label": "Email",
+                  "input": {
+                    "component": "Input",
+                    "props": {
+                      "name": "email",
+                      "placeholder": "you@example.com",
+                      "type": "email",
+                      "rules": [
+                        "required",
+                        "email"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "component": "FormControl",
+                "props": {
+                  "label": "Phone",
+                  "input": {
+                    "component": "Input",
+                    "props": {
+                      "name": "phone",
+                      "placeholder": "e.g., +1 555 123 4567",
+                      "type": "text",
+                      "rules": [
+                        "required",
+                        "minLength:7",
+                        "maxLength:20"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "component": "FormControl",
+                "props": {
+                  "label": "Subject",
+                  "input": {
+                    "component": "Select",
+                    "props": {
+                      "name": "subject",
+                      "items": [
+                        {
+                          "component": "SelectItem",
+                          "props": {
+                            "value": "general",
+                            "label": "General inquiry"
+                          }
+                        },
+                        {
+                          "component": "SelectItem",
+                          "props": {
+                            "value": "support",
+                            "label": "Support"
+                          }
+                        },
+                        {
+                          "component": "SelectItem",
+                          "props": {
+                            "value": "sales",
+                            "label": "Sales"
+                          }
+                        },
+                        {
+                          "component": "SelectItem",
+                          "props": {
+                            "value": "billing",
+                            "label": "Billing"
+                          }
+                        },
+                        {
+                          "component": "SelectItem",
+                          "props": {
+                            "value": "feedback",
+                            "label": "Feedback"
+                          }
+                        }
+                      ],
+                      "placeholder": "Select a subject...",
+                      "rules": [
+                        "required"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "component": "FormControl",
+                "props": {
+                  "label": "Message",
+                  "input": {
+                    "component": "TextArea",
+                    "props": {
+                      "name": "message",
+                      "placeholder": "How can we help?",
+                      "rows": 6,
+                      "rules": [
+                        "required",
+                        "minLength:10"
+                      ]
+                    }
+                  }
+                }
+              }
+            ],
+            "buttons": {
+              "component": "Buttons",
+              "props": {
+                "buttons": [
+                  {
+                    "component": "Button",
+                    "props": {
+                      "label": "Submit",
+                      "action": "submit:contact",
+                      "variant": "primary"
+                    }
+                  },
+                  {
+                    "component": "Button",
+                    "props": {
+                      "label": "Cancel",
+                      "action": "action:cancel_contact",
+                      "variant": "secondary"
+                    }
+                  }
+                ],
+                "direction": "row"
+              }
+            }
+          }
+        }
+      ],
+      "direction": "column",
+      "gap": "l"
     }
-  ]
+  },
+  "error": null
 }`}
             />
           </div>
@@ -218,12 +368,23 @@ export default function OpenUILangOverview() {
                 OpenUI Lang
               </h3>
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400">
-                ~86 tokens
+                ~294 tokens
               </span>
             </div>
             <CodeBlock
               codeBlockClassName="h-100 overflow-y-auto"
-              code={`root = Card([header, emailField, passwordField, signInButton])\nheader = CardHeader(\"Welcome Back\", \"Continue your journey\")\nemailField = FormControl(\"Email\", Input(\"email\", \"Enter your email\", \"email\"))\npasswordField = FormControl(\"Password\", Input(\"password\", \"Enter password\", \"password\"))\nsignInButton = Button(\"Sign In\", \"action:signIn\", \"primary\")\n`}
+              code={`root = Stack([title, form], "column", "l")
+title = TextContent("Contact Us", "large-heavy")
+form = Form("contact", [nameField, emailField, phoneField, subjectField, messageField], formButtons)
+nameField = FormControl("Name", Input("name", "Your full name", "text", ["required", "minLength:2"]))
+emailField = FormControl("Email", Input("email", "you@example.com", "email", ["required", "email"]))
+phoneField = FormControl("Phone", Input("phone", "e.g., +1 555 123 4567", "text", ["required", "minLength:7", "maxLength:20"]))
+subjectField = FormControl("Subject", Select("subject", subjectOptions, "Select a subject...", ["required"]))
+messageField = FormControl("Message", TextArea("message", "How can we help?", 6, ["required", "minLength:10"]))
+subjectOptions = [SelectItem("general", "General inquiry"), SelectItem("support", "Support"), SelectItem("sales", "Sales"), SelectItem("billing", "Billing"), SelectItem("feedback", "Feedback")]
+formButtons = Buttons([submitBtn, cancelBtn], "row")
+submitBtn = Button("Submit", "submit:contact", "primary")
+cancelBtn = Button("Cancel", "action:cancel_contact", "secondary")`}
             />
           </div>
         </div>

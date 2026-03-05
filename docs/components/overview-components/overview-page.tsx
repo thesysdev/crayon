@@ -143,7 +143,7 @@ export function OverviewPage() {
         <div className="grid gap-4 lg:grid-cols-2">
           {/* Left: Code Tabs */}
           <Tabs defaultValue="llm-output" className="flex w-full flex-col">
-            <TabsList className="grid w-full grid-cols-3 text-xs sm:text-sm">
+            <TabsList className="grid w-full grid-cols-2 text-xs sm:text-sm">
               <TabsTrigger value="define-library" className="px-1 sm:px-2">
                 Define Lib
               </TabsTrigger>
@@ -156,28 +156,23 @@ export function OverviewPage() {
               <CodeBlock
                 className="h-full"
                 title="Component Library Definition"
-                code={`import { defineComponent, createLibrary } from '@openuidev/lang-react';
-import { z } from 'zod';
+                code={`import "@openuidev/react-ui/components.css";
+import { defaultLibrary, defaultPromptOptions } from "@openuidev/react-ui";
+import { Renderer } from "@openuidev/lang-react";
 
-const MyCard = defineComponent({
-  name: 'MyCard',
-  description: 'Displays a titled content card.',
-  props: z.object({
-    title: z.string(),
-  }),
-  component: ({ props }) => <div>{props.title}</div>,
-  ...
-});
+const systemPrompt = defaultLibrary.prompt(defaultPromptOptions);
 
-export const myLibrary = createLibrary({
-  components: [MyCard],
-});`}
+// Later, render OpenUI Lang output from your LLM:
+<Renderer
+  library={defaultLibrary}
+  response={openuiLangOutput}
+/>`}
               />
             </TabsContent>
 
             <TabsContent value="llm-output" className="mt-3 flex-1">
               <CodeBlock
-                title="GenUI Language (Token Efficient)"
+                title="OpenUI Lang (Token Efficient)"
                 code={genuiOutput}
               />
             </TabsContent>
@@ -291,10 +286,13 @@ export function AssistantMessage({ content, isStreaming }) {
         <div className="mb-6">
           <CodeBlock
             title="Quick example"
-            code={`import { FullScreen } from 'genui-chat';
+            code={`import "@openuidev/react-ui/components.css";
+import "@openuidev/react-ui/styles/index.css";
+import { FullScreen, defaultLibrary } from "@openuidev/react-ui";
 
 <FullScreen
   apiUrl="/api/chat"
+  componentLibrary={defaultLibrary}
 />
 `}
           />
@@ -379,7 +377,7 @@ export function AssistantMessage({ content, isStreaming }) {
             <TabsContent value="quick-example" className="mt-4">
               <CodeBlock
                 title="Quick example"
-                code={`import { defaultLibrary } from 'genui-default';
+                code={`import { defaultLibrary } from '@openuidev/react-ui';
 
 // Use directly
 const prompt = defaultLibrary.getSystemPrompt();
@@ -395,8 +393,7 @@ const customLibrary = createLibrary({
             <TabsContent value="usage-with-chat" className="mt-4">
               <CodeBlock
                 title="Using with Chat UI"
-                code={`import { ChatProvider, Copilot } from 'genui-chat';
-import { defaultLibrary} from 'genui-default';
+                code={`import { ChatProvider, Copilot, defaultLibrary } from '@openuidev/react-ui';
 
 function App() {
   const handleMessage = async (message) => {

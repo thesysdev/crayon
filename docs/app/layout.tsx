@@ -2,11 +2,24 @@ import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
+import type { Metadata } from 'next';
 import { PHProvider } from './providers';
 
 const inter = Inter({
   subsets: ['latin'],
 });
+
+export const metadata: Metadata = {
+  title: {
+    default: 'OpenUI',
+    template: '%s | OpenUI',
+  },
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
+};
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
