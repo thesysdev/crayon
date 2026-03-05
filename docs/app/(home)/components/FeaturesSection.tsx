@@ -19,12 +19,12 @@ interface Feature {
 const FEATURES: Feature[] = [
   {
     title: "Performance Optimized",
-    description: "upto 3x faster rendering than json-render",
+    description: "2.1x faster rendering than json-render",
     iconPath: svgPaths.p7658f00,
   },
   {
     title: "Token efficient",
-    description: "upto 74% lesser tokens than json-render",
+    description: "52% lesser tokens than json-render",
     iconPath: svgPaths.p2a8ddd80,
   },
   {
@@ -212,7 +212,7 @@ export function FeaturesSection() {
         </div>
 
         {/* CTA button */}
-        <Link href="/docs/openui-lang/benchmark">
+        <Link href="/docs/openui-lang/benchmarks">
           <div className="flex justify-center mt-10 lg:mt-20">
             <motion.button
               className="bg-white text-black rounded-full h-12 px-4 font-['Inter',sans-serif] font-medium text-base lg:text-lg leading-6 border-[1.25px] border-black/8 w-full max-w-[280px] lg:max-w-none lg:w-auto transition-all duration-200 hover:scale-105 cursor-pointer"

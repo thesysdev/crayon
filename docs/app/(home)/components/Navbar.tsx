@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import svgPaths from "@/imports/svg-urruvoh2be";
 import { BUTTON_SHADOW } from "./shared";

@@ -10,7 +10,6 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-  InlineButton,
 } from "@/components/overview-components";
 import { genuiOutput } from "./genui";
 import { defaultLibrary } from "@openuidev/react-ui";
