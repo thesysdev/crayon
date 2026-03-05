@@ -1,5 +1,6 @@
 "use client";
 
+<<<<<<< HEAD
 import { siteConfig } from "@/lib/layout.shared";
 import { SidebarTrigger } from "fumadocs-ui/components/sidebar/base";
 import { useSearchContext } from "fumadocs-ui/contexts/search";
@@ -8,6 +9,18 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { OpenUILogo, ThesysLogo } from "./brand-logo";
 import { ThemeToggle } from "./theme-toggle";
+import { useTheme } from "next-themes";
+=======
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useTheme } from "next-themes";
+import { ThemeToggle } from '@/components/theme-toggle';
+import { ThesysLogo, OpenUILogo } from './brand-logo';
+import { useSearchContext } from 'fumadocs-ui/contexts/search';
+import { SidebarTrigger } from 'fumadocs-ui/components/sidebar/base';
+import { siteConfig } from '@/lib/layout.shared';
+>>>>>>> 11940f8 (Some more styling fixes)
 
 const tabs = [
   { title: "Introduction", url: "/docs/introduction" },
@@ -18,9 +31,16 @@ const tabs = [
 
 function SearchBar() {
   const { setOpenSearch } = useSearchContext();
+<<<<<<< HEAD
   const [isMac, setIsMac] = useState(
     () => typeof navigator !== "undefined" && /mac/i.test(navigator.userAgent),
   );
+=======
+  const [isMac] = useState(
+    () => typeof navigator !== "undefined" && /mac/i.test(navigator.userAgent),
+  );
+
+>>>>>>> 11940f8 (Some more styling fixes)
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -66,6 +86,12 @@ function SearchBar() {
 export function DocsNavbar({ showSidebarToggle = false }: { showSidebarToggle?: boolean }) {
   const pathname = usePathname();
   const [isThesysHovered, setIsThesysHovered] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  const logoVariant = mounted && resolvedTheme === "dark" ? "dark" : "light";
 
   return (
     <header className="fixed top-0 inset-x-0 z-40 w-full border-b border-fd-border bg-fd-background/80 backdrop-blur-xl">
@@ -92,9 +118,13 @@ export function DocsNavbar({ showSidebarToggle = false }: { showSidebarToggle?: 
 
         {/* Brand */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <ThesysLogo isHovered={isThesysHovered} onHoverChange={setIsThesysHovered} />
+          <ThesysLogo
+            isHovered={isThesysHovered}
+            onHoverChange={setIsThesysHovered}
+            variant={logoVariant}
+          />
           <span className="text-fd-muted-foreground text-[15px] select-none px-0.5">|</span>
-          <OpenUILogo />
+          <OpenUILogo variant={logoVariant} />
         </div>
 
         {/* Actions */}

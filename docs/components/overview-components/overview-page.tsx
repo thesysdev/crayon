@@ -22,14 +22,11 @@ export function OverviewPage() {
     <div className="mx-auto max-w-4xl px-3 py-8 font-sans text-slate-900 sm:px-4 sm:py-12 lg:px-8 dark:text-slate-100">
       {/* Introduction */}
       <div id="overview" className="mb-12 sm:mb-20">
-        <h1 className="mb-3 text-3xl font-bold sm:mb-4 sm:text-4xl">
-          Overview
-        </h1>
+        <h1 className="mb-3 text-3xl font-bold sm:mb-4 sm:text-4xl">Overview</h1>
         <p className="mb-6 text-base text-slate-600 sm:mb-8 sm:text-lg dark:text-slate-400">
-          OpenUI is a comprehensive toolkit for building LLM-powered user
-          interfaces. It consists of three core modules that work together to
-          provide an efficient, type-safe, and production-ready solution for
-          generative UI.
+          OpenUI is a comprehensive toolkit for building LLM-powered user interfaces. It consists of
+          three core modules that work together to provide an efficient, type-safe, and
+          production-ready solution for generative UI.
         </p>
 
         {/* Quick Navigation */}
@@ -62,12 +59,9 @@ export function OverviewPage() {
             <Code2 className="size-5 text-fd-foreground sm:size-6" />
           </div>
           <div>
-            <h2 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">
-              OpenUI Lang
-            </h2>
+            <h2 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">OpenUI Lang</h2>
             <p className="text-sm text-slate-500 sm:text-base dark:text-slate-400">
-              A custom language designed for token efficiency and accuracy in
-              structured LLM outputs
+              A custom language designed for token efficiency and accuracy in structured LLM outputs
             </p>
           </div>
         </div>
@@ -78,7 +72,7 @@ export function OverviewPage() {
             href="https://sdk.vercel.ai/docs/reference/ai-sdk-rsc/render"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 underline hover:no-underline dark:text-blue-400"
+            className="underline hover:no-underline "
           >
             Vercel JSON renderer
           </a>{" "}
@@ -87,31 +81,25 @@ export function OverviewPage() {
             href="https://a2a.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 underline hover:no-underline dark:text-blue-400"
+            className="underline hover:no-underline"
           >
             A2UI
           </a>{" "}
-          that reduces token usage by up to 90%. Define your component library
-          with Zod schemas, get automatic system prompts, and parse LLM
-          responses into renderable components.
+          that reduces token usage by up to 90%. Define your component library with Zod schemas, get
+          automatic system prompts, and parse LLM responses into renderable components.
         </p>
 
-        <SimpleCard className="mb-4 border-blue-200 bg-blue-50 p-3 sm:p-4 dark:border-blue-900 dark:bg-blue-900/20">
+        <SimpleCard className="mb-4 border-blue-200 p-3 sm:p-4">
           <p className="text-xs sm:text-sm">
             <strong>Quick start:</strong> Use our{" "}
-            <a
-              href="#library"
-              className="text-blue-600 underline dark:text-blue-400"
-            >
+            <a href="#library" className="  underlin">
               default component library
             </a>{" "}
             to get started immediately with 50+ pre-built components.
           </p>
         </SimpleCard>
 
-        <h3 className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">
-          Interactive Example
-        </h3>
+        <h3 className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">Interactive Example</h3>
 
         <div className="grid gap-4 lg:grid-cols-2">
           {/* Left: Code Tabs */}
@@ -149,10 +137,7 @@ export const myLibrary = createLibrary({
             </TabsContent>
 
             <TabsContent value="llm-output" className="mt-3 flex-1">
-              <CodeBlock
-                title="GenUI Language (Token Efficient)"
-                code={genuiOutput}
-              />
+              <CodeBlock title="GenUI Language (Token Efficient)" code={genuiOutput} />
             </TabsContent>
           </Tabs>
 
@@ -202,16 +187,8 @@ export function AssistantMessage({ content, isStreaming }) {
         </div>
 
         <div className="mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row">
-          <Button
-            href="/docs/openui-lang"
-            text="Get Started with OpenUI Lang"
-            variant="primary"
-          />
-          <Button
-            href="/docs/chat"
-            text="Usage with OpenUI Chat"
-            variant="secondary"
-          />
+          <Button href="/docs/openui-lang" text="Get Started with OpenUI Lang" variant="primary" />
+          <Button href="/docs/chat" text="Usage with OpenUI Chat" variant="secondary" />
         </div>
       </div>
 
@@ -224,26 +201,34 @@ export function AssistantMessage({ content, isStreaming }) {
             <MessageSquare className="size-5 text-fd-foreground sm:size-6" />
           </div>
           <div>
-            <h2 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">
-              OpenUI Chat
-            </h2>
+            <h2 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">OpenUI Chat</h2>
             <p className="text-sm text-slate-500 sm:text-base dark:text-slate-400">
-              Production-ready, themeable chat components with headless state
-              management
+              Production-ready, themeable chat components with headless state management
             </p>
           </div>
         </div>
 
         <p className="mb-4 text-sm text-slate-600 sm:mb-6 sm:text-base dark:text-slate-400">
-          Pre-built chat layouts (Copilot, Fullscreen, Bottom Tray) or build
-          custom UIs with headless hooks. Fully themeable and accessible out of
-          the box.
+          Pre-built chat layouts (Copilot, Fullscreen, Bottom Tray) or build custom UIs with
+          headless hooks. Fully themeable and accessible out of the box.
         </p>
 
         <FeatureCards direction="horizontal" cols={3} className="mb-6">
-          <FeatureCard direction="horizontal" title="Copilot" description="Floating widget for AI assistants" />
-          <FeatureCard direction="horizontal" title="Fullscreen" description="Full-page chat interface" />
-          <FeatureCard direction="horizontal" title="Bottom Tray" description="Slide-up mobile tray" />
+          <FeatureCard
+            direction="horizontal"
+            title="Copilot"
+            description="Floating widget for AI assistants"
+          />
+          <FeatureCard
+            direction="horizontal"
+            title="Fullscreen"
+            description="Full-page chat interface"
+          />
+          <FeatureCard
+            direction="horizontal"
+            title="Bottom Tray"
+            description="Slide-up mobile tray"
+          />
         </FeatureCards>
 
         <div className="mb-6">
@@ -264,11 +249,7 @@ export function AssistantMessage({ content, isStreaming }) {
             text="Get Started with OpenUI Chat"
             variant="primary"
           />
-          <Button
-            href="/docs/chat"
-            text="View Components"
-            variant="secondary"
-          />
+          <Button href="/docs/chat" text="View Components" variant="secondary" />
         </div>
       </div>
 
@@ -291,15 +272,18 @@ export function AssistantMessage({ content, isStreaming }) {
         </div>
 
         <p className="mb-4 text-sm text-slate-600 sm:mb-6 sm:text-base dark:text-slate-400">
-          50+ production-ready components optimized for LLM generation. Use them
-          directly or extend with your own custom components. Includes layouts,
-          forms, data display, charts, and more.
+          50+ production-ready components optimized for LLM generation. Use them directly or extend
+          with your own custom components. Includes layouts, forms, data display, charts, and more.
         </p>
 
         <FeatureCards direction="horizontal" cols={4} className="mb-4 sm:mb-6">
           <FeatureCard direction="horizontal" title="Layout" description="Grid, Stack, Flex" />
           <FeatureCard direction="horizontal" title="Forms" description="Input, Select, Radio" />
-          <FeatureCard direction="horizontal" title="Data Display" description="Table, Card, Badge" />
+          <FeatureCard
+            direction="horizontal"
+            title="Data Display"
+            description="Table, Card, Badge"
+          />
           <FeatureCard direction="horizontal" title="Charts" description="Line, Bar, Pie" />
         </FeatureCards>
 
