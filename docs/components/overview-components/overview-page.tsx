@@ -10,6 +10,8 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
+  FeatureCard,
+  FeatureCards,
 } from "@/components/overview-components";
 import { genuiOutput } from "./genui";
 import { defaultLibrary } from "@openuidev/react-ui";
@@ -31,62 +33,33 @@ export function OverviewPage() {
         </p>
 
         {/* Quick Navigation */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
-          <a href="#genui-lang" className="group no-underline">
-            <SimpleCard className="h-full p-4 transition-all hover:border-blue-500 hover:shadow-md sm:p-6">
-              <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-blue-50 group-hover:bg-blue-100 sm:mb-4 sm:size-12 dark:bg-blue-900/30 dark:group-hover:bg-blue-900/50">
-                <Code2 className="size-5 text-blue-600 sm:size-6 dark:text-blue-400" />
-              </div>
-              <h3 className="mb-1 text-sm font-semibold sm:mb-2 sm:text-base">
-                OpenUI Lang
-              </h3>
-              <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-                Token-efficient DSL for structured LLM outputs with automatic
-                prompt generation
-              </p>
-            </SimpleCard>
-          </a>
-
-          <a href="#chat-ui" className="group no-underline">
-            <SimpleCard className="h-full p-4 transition-all hover:border-purple-500 hover:shadow-md sm:p-6">
-              <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-purple-50 group-hover:bg-purple-100 sm:mb-4 sm:size-12 dark:bg-purple-900/30 dark:group-hover:bg-purple-900/50">
-                <MessageSquare className="size-5 text-purple-600 sm:size-6 dark:text-purple-400" />
-              </div>
-              <h3 className="mb-1 text-sm font-semibold sm:mb-2 sm:text-base">
-                OpenUI Chat
-              </h3>
-              <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-                Production-ready, themeable chat components with headless state
-                management
-              </p>
-            </SimpleCard>
-          </a>
-
-          <a
+        <FeatureCards>
+          <FeatureCard
+            icon={<Code2 />}
+            title="OpenUI Lang"
+            description="Token-efficient DSL for structured LLM outputs with automatic prompt generation"
+            href="#genui-lang"
+          />
+          <FeatureCard
+            icon={<MessageSquare />}
+            title="OpenUI Chat"
+            description="Production-ready, themeable chat components with headless state management"
+            href="#chat-ui"
+          />
+          <FeatureCard
+            icon={<Package />}
+            title="Default Component Library"
+            description="50+ pre-built components optimized for LLM generation, ready to use"
             href="#library"
-            className="group col-span-2 no-underline sm:col-span-1"
-          >
-            <SimpleCard className="h-full p-4 transition-all hover:border-emerald-500 hover:shadow-md sm:p-6">
-              <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-emerald-50 group-hover:bg-emerald-100 sm:mb-4 sm:size-12 dark:bg-emerald-900/30 dark:group-hover:bg-emerald-900/50">
-                <Package className="size-5 text-emerald-600 sm:size-6 dark:text-emerald-400" />
-              </div>
-              <h3 className="mb-1 text-sm font-semibold sm:mb-2 sm:text-base">
-                Default Component Library
-              </h3>
-              <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-                50+ pre-built components optimized for LLM generation, ready to
-                use
-              </p>
-            </SimpleCard>
-          </a>
-        </div>
+          />
+        </FeatureCards>
       </div>
 
       {/* OpenUI Lang Section */}
       <div id="genui-lang" className="mb-12 sm:mb-20">
         <div className="mb-4 flex items-start gap-3 sm:mb-6 sm:gap-4">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 sm:size-12 dark:bg-blue-900/30">
-            <Code2 className="size-5 text-blue-600 sm:size-6 dark:text-blue-400" />
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-fd-muted sm:size-12">
+            <Code2 className="size-5 text-fd-foreground sm:size-6" />
           </div>
           <div>
             <h2 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">
@@ -196,7 +169,7 @@ export const myLibrary = createLibrary({
 
             <TabsContent value="live-render" className="mt-3 flex-1">
               <SimpleCard className="flex h-full flex-col border-2">
-                <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/50">
+                <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-[var(--color-doc-border)] dark:bg-[var(--color-doc-surface)]">
                   <span className="text-sm font-medium">Output Preview</span>
                 </div>
                 <div className="p-6">
@@ -247,8 +220,8 @@ export function AssistantMessage({ content, isStreaming }) {
       {/* Chat UI Section */}
       <div id="chat-ui" className="mb-12 sm:mb-20">
         <div className="mb-4 flex items-start gap-3 sm:mb-6 sm:gap-4">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-purple-50 sm:size-12 dark:bg-purple-900/30">
-            <MessageSquare className="size-5 text-purple-600 sm:size-6 dark:text-purple-400" />
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-fd-muted sm:size-12">
+            <MessageSquare className="size-5 text-fd-foreground sm:size-6" />
           </div>
           <div>
             <h2 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">
@@ -267,26 +240,11 @@ export function AssistantMessage({ content, isStreaming }) {
           the box.
         </p>
 
-        <div className="mb-6 grid gap-4 sm:grid-cols-3">
-          <SimpleCard className="p-4">
-            <h4 className="mb-1 font-medium">Copilot</h4>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Floating widget for AI assistants
-            </p>
-          </SimpleCard>
-          <SimpleCard className="p-4">
-            <h4 className="mb-1 font-medium">Fullscreen</h4>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Full-page chat interface
-            </p>
-          </SimpleCard>
-          <SimpleCard className="p-4">
-            <h4 className="mb-1 font-medium">Bottom Tray</h4>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Slide-up mobile tray
-            </p>
-          </SimpleCard>
-        </div>
+        <FeatureCards direction="horizontal" cols={3} className="mb-6">
+          <FeatureCard direction="horizontal" title="Copilot" description="Floating widget for AI assistants" />
+          <FeatureCard direction="horizontal" title="Fullscreen" description="Full-page chat interface" />
+          <FeatureCard direction="horizontal" title="Bottom Tray" description="Slide-up mobile tray" />
+        </FeatureCards>
 
         <div className="mb-6">
           <CodeBlock
@@ -319,8 +277,8 @@ export function AssistantMessage({ content, isStreaming }) {
       {/* Default Library Section */}
       <div id="library" className="mb-12 sm:mb-20">
         <div className="mb-4 flex items-start gap-3 sm:mb-6 sm:gap-4">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 sm:size-12 dark:bg-emerald-900/30">
-            <Package className="size-5 text-emerald-600 sm:size-6 dark:text-emerald-400" />
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-fd-muted sm:size-12">
+            <Package className="size-5 text-fd-foreground sm:size-6" />
           </div>
           <div>
             <h2 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">
@@ -338,32 +296,12 @@ export function AssistantMessage({ content, isStreaming }) {
           forms, data display, charts, and more.
         </p>
 
-        <div className="mb-4 grid gap-3 sm:mb-6 sm:grid-cols-2 md:grid-cols-4">
-          <SimpleCard className="p-3">
-            <p className="text-sm font-medium">Layout</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Grid, Stack, Flex
-            </p>
-          </SimpleCard>
-          <SimpleCard className="p-3">
-            <p className="text-sm font-medium">Forms</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Input, Select, Radio
-            </p>
-          </SimpleCard>
-          <SimpleCard className="p-3">
-            <p className="text-sm font-medium">Data Display</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Table, Card, Badge
-            </p>
-          </SimpleCard>
-          <SimpleCard className="p-3">
-            <p className="text-sm font-medium">Charts</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Line, Bar, Pie
-            </p>
-          </SimpleCard>
-        </div>
+        <FeatureCards direction="horizontal" cols={4} className="mb-4 sm:mb-6">
+          <FeatureCard direction="horizontal" title="Layout" description="Grid, Stack, Flex" />
+          <FeatureCard direction="horizontal" title="Forms" description="Input, Select, Radio" />
+          <FeatureCard direction="horizontal" title="Data Display" description="Table, Card, Badge" />
+          <FeatureCard direction="horizontal" title="Charts" description="Line, Bar, Pie" />
+        </FeatureCards>
 
         <div className="mb-4">
           <Tabs defaultValue="quick-example" className="mb-6">

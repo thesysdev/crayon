@@ -17,6 +17,8 @@ import {
   SimpleCard,
   Separator,
   InlineButton,
+  FeatureCard,
+  FeatureCards,
 } from "@/components/overview-components";
 
 const steps = [
@@ -61,9 +63,9 @@ export default function OpenUILangOverview() {
     <div className="mx-auto max-w-4xl px-3 py-8 font-sans text-slate-900 sm:px-4 sm:py-12 lg:px-8 dark:text-slate-100">
       {/* Introduction */}
       <div className="mb-12 sm:mb-20">
-        <div className="mb-4 flex items-start gap-3 sm:mb-6 sm:gap-4">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 sm:size-12 dark:bg-emerald-900/30">
-            <Code2 className="size-5 text-emerald-600 sm:size-6 dark:text-emerald-400" />
+          <div className="mb-4 flex items-start gap-3 sm:mb-6 sm:gap-4">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-fd-muted sm:size-12">
+            <Code2 className="size-5 text-fd-foreground sm:size-6" />
           </div>
           <div>
             <h1 className="mb-1 text-3xl font-bold sm:mb-2 sm:text-4xl">
@@ -122,36 +124,11 @@ export default function OpenUILangOverview() {
           Key Features
         </h2>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <SimpleCard className="p-6">
-            <Waves className="mb-4 size-8 text-amber-500" />
-            <h3 className="mb-2 text-lg font-semibold">Streaming Native</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Line-oriented syntax means the UI renders line-by-line. No waiting
-              for valid JSON closing braces.
-            </p>
-          </SimpleCard>
-
-          <SimpleCard className="p-6">
-            <Zap className="mb-4 size-8 text-blue-500" />
-            <h3 className="mb-2 text-lg font-semibold">Token Efficient</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Uses ~40% fewer tokens than equivalent JSON structures,
-              significantly reducing inference cost and latency.
-            </p>
-          </SimpleCard>
-
-          <SimpleCard className="p-6">
-            <Shield className="mb-4 size-8 text-emerald-500" />
-            <h3 className="mb-2 text-lg font-semibold">
-              Hallucination Resistant
-            </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Strictly typed against your Zod schemas. If the generated code
-              does not match your definition, it does not render.
-            </p>
-          </SimpleCard>
-        </div>
+        <FeatureCards>
+          <FeatureCard icon={<Waves />} title="Streaming Native" description="Line-oriented syntax means the UI renders line-by-line. No waiting for valid JSON closing braces." />
+          <FeatureCard icon={<Zap />} title="Token Efficient" description="Uses ~40% fewer tokens than equivalent JSON structures, significantly reducing inference cost and latency." />
+          <FeatureCard icon={<Shield />} title="Hallucination Resistant" description="Strictly typed against your Zod schemas. If the generated code does not match your definition, it does not render." />
+        </FeatureCards>
       </div>
 
       <Separator className="my-8 sm:my-16" />
@@ -258,8 +235,8 @@ export default function OpenUILangOverview() {
         <SimpleCard className="p-4 sm:p-6">
           <div className="mb-4">
             <div className="mb-2 flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/30">
-                <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-fd-muted dark:bg-fd-muted">
+                <span className="text-sm font-semibold text-fd-foreground">
                   {activeStep + 1}
                 </span>
               </div>
@@ -307,44 +284,11 @@ export default function OpenUILangOverview() {
           Real-world applications where OpenUI Lang excels
         </p>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <SimpleCard className="p-4 sm:p-6">
-            <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-blue-50 sm:mb-4 sm:size-12 dark:bg-blue-900/30">
-              <BarChart3 className="size-5 text-blue-500 sm:size-6" />
-            </div>
-            <h3 className="mb-2 text-base font-semibold sm:text-lg">
-              Analytics Dashboards
-            </h3>
-            <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
-              Generate complex data visualizations and metric cards from natural
-              language queries.
-            </p>
-          </SimpleCard>
-
-          <SimpleCard className="p-4 sm:p-6">
-            <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-emerald-50 sm:mb-4 sm:size-12 dark:bg-emerald-900/30">
-              <MessageSquare className="size-5 text-emerald-500 sm:size-6" />
-            </div>
-            <h3 className="mb-2 text-base font-semibold sm:text-lg">
-              AI Chat Interfaces
-            </h3>
-            <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
-              Stream UI components in real-time as the LLM generates responses.
-            </p>
-          </SimpleCard>
-
-          <SimpleCard className="p-4 sm:p-6">
-            <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-purple-50 sm:mb-4 sm:size-12 dark:bg-purple-900/30">
-              <FileText className="size-5 text-purple-500 sm:size-6" />
-            </div>
-            <h3 className="mb-2 text-base font-semibold sm:text-lg">
-              Dynamic Forms
-            </h3>
-            <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
-              Build adaptive forms that change based on user input or context.
-            </p>
-          </SimpleCard>
-        </div>
+        <FeatureCards>
+          <FeatureCard icon={<BarChart3 />} title="Analytics Dashboards" description="Generate complex data visualizations and metric cards from natural language queries." />
+          <FeatureCard icon={<MessageSquare />} title="AI Chat Interfaces" description="Stream UI components in real-time as the LLM generates responses." />
+          <FeatureCard icon={<FileText />} title="Dynamic Forms" description="Build adaptive forms that change based on user input or context." />
+        </FeatureCards>
       </div>
     </div>
   );
