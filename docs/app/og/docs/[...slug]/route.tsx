@@ -11,11 +11,11 @@ export async function GET(_req: Request, { params }: RouteContext<'/og/docs/[...
   if (!page) notFound();
 
   return new ImageResponse(
-    <DefaultImage title={page.data.title} description={page.data.description} site="My App" />,
+    <DefaultImage title={page.data.title} description={page.data.description} site="OpenUI" />,
     {
       width: 1200,
       height: 630,
-      format: 'webp',
+      format: "webp",
     },
   );
 }
