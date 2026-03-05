@@ -8,82 +8,15 @@ function Group() {
           <path d={svgPaths.p1bd62700} fill="var(--fill-0, black)" id="Rectangle 34662625" />
         </svg>
       </div>
-      <p className="absolute font-['Andale_Mono:Regular',sans-serif] h-[262px] leading-[0] left-[73px] not-italic text-[0px] text-[10px] text-white top-[71px] w-[254px] whitespace-pre-wrap">
-        <span className="leading-none text-[#ff84cc]">import</span>
-        <span className="leading-none">{` { `}</span>
-        <span className="leading-none text-[#b3a0fd]">z</span>
-        <span className="leading-none">{` } from `}</span>
-        <span className="leading-none text-[#bdff52]">{`"zod"`}</span>
-        <span className="leading-none">
-          <br aria-hidden="true" />
-          <br aria-hidden="true" />
-        </span>
-        <span className="leading-none text-[#ff84cc]">export const</span>
-        <span className="leading-none">{` `}</span>
-        <span className="leading-none text-[#b29cff]">HotelCardSchema</span>
-        <span className="leading-none">
-          {` = z.object({`}
-          <br aria-hidden="true" />
-          {`  image: `}
-        </span>
-        <span className="leading-none text-[#ae98ff]">z</span>
-        <span className="leading-none">
-          {`.object({`}
-          <br aria-hidden="true" />
-          {`    src: `}
-        </span>
-        <span className="leading-none text-[#ae98ff]">z</span>
-        <span className="leading-none">{`.string().min(1, `}</span>
-        <span className="leading-none text-[#7cc900]">{`"image.src is required"`}</span>
-        <span className="leading-none">),</span>
-        <span className="leading-none">
-          <br aria-hidden="true" />
-          {`    alt: `}
-        </span>
-        <span className="leading-none text-[#ae98ff]">z</span>
-        <span className="leading-none">
-          .string().optional()
-          <br aria-hidden="true" />
-          {`  }),`}
-          <br aria-hidden="true" />
-          <br aria-hidden="true" />
-          {`  badge: `}
-        </span>
-        <span className="leading-none text-[#ae98ff]">z</span>
-        <span className="leading-none">
-          <br aria-hidden="true" />
-          {`    .object({`}
-          <br aria-hidden="true" />
-          {`      label: `}
-        </span>
-        <span className="leading-none text-[#ae98ff]">z</span>
-        <span className="leading-none">{`.string().min(1, `}</span>
-        <span className="leading-none text-[#7cc900]">{`"badge.label is required"`}</span>
-        <span className="leading-none">),</span>
-        <span className="leading-none">
-          <br aria-hidden="true" />
-          {`      // For icons in schema-driven UIs, use an id/name rather than ReactNode`}
-          <br aria-hidden="true" />
-          {`      icon: `}
-        </span>
-        <span className="leading-none text-[#ae98ff]">z</span>
-        <span className="leading-none">
-          {`.string().optional(), // e.g. "wifi"`}
-          <br aria-hidden="true" />
-          {`    })`}
-          <br aria-hidden="true" />
-          {`    .optional(),`}
-          <br aria-hidden="true" />
-          <br aria-hidden="true" />
-          {`  title: z.string().min(1, "title is required"),`}
-          <br aria-hidden="true" />
-          <br aria-hidden="true" />
-          {`  description: z.string().optional(),`}
-          <br aria-hidden="true" />
-          <br aria-hidden="true" />
-          {`  cta: z.object({`}
-        </span>
-      </p>
+      <p className="absolute font-['Andale_Mono:Regular',sans-serif] h-[262px] leading-none left-[73px] not-italic text-[10px] text-white top-[71px] w-[254px] whitespace-pre-wrap">{`import { library } from "./library"
+
+const systemPrompt = library.prompt()
+
+const completion = await client.chat.completions.create({
+  model: "gpt-5.2",
+  stream: true,
+  messages: [{ role: "system", content: systemPrompt }, ...messages]
+})`}</p>
       <div className="absolute bg-gradient-to-b from-[rgba(0,0,0,0)] h-[64px] left-[60px] to-black top-[272px] w-[285px]" />
     </div>
   );
@@ -168,10 +101,10 @@ function Frame2() {
 
 export default function OpenUiGeneratesSchema() {
   return (
-    <div className="overflow-clip relative rounded-[16px] size-full" data-name="OpenUI generates schema">
+    <div className="overflow-clip relative rounded-[16px] size-full" data-name="OpenUI generates prompt">
       <Group />
       <Frame2 />
-      <p className="absolute font-['Geist_Mono:Medium',sans-serif] font-medium leading-none left-[58px] text-[12px] text-[rgba(0,0,0,0.4)] top-[366px]">ZOD SCHEMA</p>
+      <p className="absolute font-['Geist_Mono:Medium',sans-serif] font-medium leading-none left-[58px] text-[12px] text-[rgba(0,0,0,0.4)] top-[366px]">SEND SYSTEM PROMPT TO LLM</p>
     </div>
   );
 }
