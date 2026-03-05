@@ -1,8 +1,4 @@
-import {
-  AssistantMessage,
-  EventType,
-  StreamProtocolAdapter,
-} from "../types";
+import { AssistantMessage, EventType, StreamProtocolAdapter } from "../types";
 import { agUIAdapter } from "./adapters";
 
 /**
@@ -68,9 +64,7 @@ export const processStreamedMessage = async ({
       case EventType.TOOL_CALL_ARGS:
         if (currentMessage.toolCalls) {
           const toolCalls = [...currentMessage.toolCalls];
-          const toolCallIndex = toolCalls.findIndex(
-            (tc) => tc.id === event.toolCallId
-          );
+          const toolCallIndex = toolCalls.findIndex((tc) => tc.id === event.toolCallId);
           if (toolCallIndex !== -1) {
             const currentToolCall = toolCalls[toolCallIndex];
             if (currentToolCall) {
@@ -79,8 +73,7 @@ export const processStreamedMessage = async ({
                 type: "function",
                 function: {
                   name: currentToolCall.function.name,
-                  arguments:
-                    currentToolCall.function.arguments + event.delta,
+                  arguments: currentToolCall.function.arguments + event.delta,
                 },
               };
               currentMessage = { ...currentMessage, toolCalls };
@@ -98,9 +91,10 @@ export const processStreamedMessage = async ({
         }
         break;
 
-      case EventType.RUN_ERROR:
-        console.error("Stream error:", (event as any).error);
-        break;
+      case EventType.RUN_ERROR: {
+        const msg = (event as any).message || (event as any).error || "Stream error";
+        throw new Error(typeof msg === "string" ? msg : JSON.stringify(msg));
+      }
     }
 
     if (isFirst) {
