@@ -71,8 +71,10 @@ export default function YouRegisterComponents() {
   return (
     <div className="relative size-full" data-name="You register components">
       <div className="absolute h-[432px] left-0 rounded-[16px] top-0 w-[610px]" data-name="image 4" />
-      <div className="absolute bg-black h-[290px] left-[49px] rounded-[16px] top-[48px] w-[443px]" />
-      <p className="absolute font-['Andale_Mono:Regular',sans-serif] h-[262px] leading-none left-[73px] not-italic text-[10px] text-white top-[71px] w-[254px] whitespace-pre-wrap">{`import { z } from "zod"
+      <div className="absolute bg-black h-[350px] left-[49px] rounded-[16px] top-[48px] w-[443px]" />
+      <p className="absolute font-['Andale_Mono:Regular',sans-serif] h-[262px] leading-none left-[73px] not-italic text-[10px] text-white top-[71px] w-[254px] whitespace-pre-wrap">{`
+import { z } from "zod"
+import { Carousel, CarouselCard } from "components/Carousel"
 import { defineComponent, createLibrary } from "@openuidev/lang-react"
 
 const CarouselCard = defineComponent({
@@ -83,6 +85,7 @@ const CarouselCard = defineComponent({
     imageUrl: z.string().url(),
     ctaLabel: z.string(),
   }),
+  component: ({ props }) => <CarouselCard {...props} />,
 })
 
 const Carousel = defineComponent({
@@ -90,6 +93,7 @@ const Carousel = defineComponent({
   props: z.object({
     cards: z.array(CarouselCard.ref),
   }),
+  component: ({ props }) => <Carousel {...props} />,
 })
 
 export const library = createLibrary({
