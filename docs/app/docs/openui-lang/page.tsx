@@ -1,23 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { Button } from "@/components/button";
+import { CodeBlock, InlineButton, Separator, SimpleCard } from "@/components/overview-components";
 import {
-  Code2,
-  Zap,
-  Shield,
-  Waves,
   ArrowRight,
   BarChart3,
-  MessageSquare,
+  Code2,
   FileText,
+  MessageSquare,
+  Shield,
+  Waves,
+  Zap,
 } from "lucide-react";
-import { Button } from "@/components/button";
-import {
-  CodeBlock,
-  SimpleCard,
-  Separator,
-  InlineButton,
-} from "@/components/overview-components";
+import { useState } from "react";
 
 const steps = [
   {
@@ -71,12 +66,9 @@ export default function OpenUILangOverview() {
             <Code2 className="size-5 text-emerald-600 sm:size-6 dark:text-emerald-400" />
           </div>
           <div>
-            <h1 className="mb-1 text-3xl font-bold sm:mb-2 sm:text-4xl">
-              OpenUI Lang
-            </h1>
+            <h1 className="mb-1 text-3xl font-bold sm:mb-2 sm:text-4xl">OpenUI Lang</h1>
             <p className="text-sm text-slate-500 sm:text-base dark:text-slate-400">
-              A line-oriented language designed for streaming, token efficiency,
-              and type safety
+              A line-oriented language designed for streaming, token efficiency, and type safety
             </p>
           </div>
         </div>
@@ -100,9 +92,8 @@ export default function OpenUILangOverview() {
           >
             A2UI
           </a>{" "}
-          that uses ~52% fewer tokens than equivalent JSON structures. Define
-          your component library with Zod schemas and parse LLM responses into
-          renderable components.
+          that uses ~52% fewer tokens than equivalent JSON structures. Define your component library
+          with Zod schemas and parse LLM responses into renderable components.
         </p>
 
         <div className="flex flex-col gap-3 sm:flex-row">
@@ -123,17 +114,15 @@ export default function OpenUILangOverview() {
 
       {/* Key Features */}
       <div className="mb-12 sm:mb-20">
-        <h2 className="mb-6 text-2xl font-bold sm:mb-8 sm:text-3xl">
-          Key Features
-        </h2>
+        <h2 className="mb-6 text-2xl font-bold sm:mb-8 sm:text-3xl">Key Features</h2>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           <SimpleCard className="p-6">
             <Waves className="mb-4 size-8 text-amber-500" />
             <h3 className="mb-2 text-lg font-semibold">Streaming Native</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Line-oriented syntax means the UI renders line-by-line. No waiting
-              for valid JSON closing braces.
+              Line-oriented syntax means the UI renders line-by-line. No waiting for valid JSON
+              closing braces.
             </p>
           </SimpleCard>
 
@@ -141,19 +130,17 @@ export default function OpenUILangOverview() {
             <Zap className="mb-4 size-8 text-blue-500" />
             <h3 className="mb-2 text-lg font-semibold">Token Efficient</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Uses ~52% fewer tokens than equivalent JSON structures,
-              significantly reducing inference cost and latency.
+              Uses ~52% fewer tokens than equivalent JSON structures, significantly reducing
+              inference cost and latency.
             </p>
           </SimpleCard>
 
           <SimpleCard className="p-6">
             <Shield className="mb-4 size-8 text-emerald-500" />
-            <h3 className="mb-2 text-lg font-semibold">
-              Hallucination Resistant
-            </h3>
+            <h3 className="mb-2 text-lg font-semibold">Hallucination Resistant</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Strictly typed against your Zod schemas. If the generated code
-              does not match your definition, it does not render.
+              Strictly typed against your Zod schemas. If the generated code does not match your
+              definition, it does not render.
             </p>
           </SimpleCard>
         </div>
@@ -163,9 +150,7 @@ export default function OpenUILangOverview() {
 
       {/* Comparison */}
       <div className="mb-12 sm:mb-20">
-        <h2 className="mb-3 text-2xl font-bold sm:mb-4 sm:text-3xl">
-          JSON vs OpenUI Lang
-        </h2>
+        <h2 className="mb-3 text-2xl font-bold sm:mb-4 sm:text-3xl">JSON vs OpenUI Lang</h2>
         <p className="mb-6 text-sm text-slate-600 sm:mb-8 sm:text-base dark:text-slate-400">
           Compare the same UI component in both formats
         </p>
@@ -173,9 +158,7 @@ export default function OpenUILangOverview() {
         <div className="mb-6 grid gap-4 lg:grid-cols-2">
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-base font-semibold sm:text-lg">
-                JSON Format
-              </h3>
+              <h3 className="text-base font-semibold sm:text-lg">JSON Format</h3>
               <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-600 dark:bg-red-900/20 dark:text-red-400">
                 ~849 tokens
               </span>
@@ -364,9 +347,7 @@ export default function OpenUILangOverview() {
 
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-base font-semibold sm:text-lg">
-                OpenUI Lang
-              </h3>
+              <h3 className="text-base font-semibold sm:text-lg">OpenUI Lang</h3>
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400">
                 ~294 tokens
               </span>
@@ -394,9 +375,7 @@ cancelBtn = Button("Cancel", "action:cancel_contact", "secondary")`}
 
       {/* How It Works */}
       <div className="mb-12 sm:mb-20">
-        <h2 className="mb-3 text-2xl font-bold sm:mb-4 sm:text-3xl">
-          How It Works
-        </h2>
+        <h2 className="mb-3 text-2xl font-bold sm:mb-4 sm:text-3xl">How It Works</h2>
         <p className="mb-6 text-sm text-slate-600 sm:mb-8 sm:text-base dark:text-slate-400">
           Click through each step to see the complete workflow
         </p>
@@ -406,10 +385,11 @@ cancelBtn = Button("Cancel", "action:cancel_contact", "secondary")`}
             <button
               key={index}
               onClick={() => setActiveStep(index)}
-              className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${activeStep === index
-                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-                }`}
+              className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                activeStep === index
+                  ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+                  : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+              }`}
             >
               {index + 1}. {step.title}
             </button>
@@ -425,9 +405,7 @@ cancelBtn = Button("Cancel", "action:cancel_contact", "secondary")`}
                 </span>
               </div>
               <div>
-                <h3 className="text-base font-semibold sm:text-lg">
-                  {steps[activeStep].title}
-                </h3>
+                <h3 className="text-base font-semibold sm:text-lg">{steps[activeStep].title}</h3>
                 <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
                   {steps[activeStep].description}
                 </p>
@@ -446,9 +424,7 @@ cancelBtn = Button("Cancel", "action:cancel_contact", "secondary")`}
               Previous
             </InlineButton>
             <InlineButton
-              onClick={() =>
-                setActiveStep(Math.min(steps.length - 1, activeStep + 1))
-              }
+              onClick={() => setActiveStep(Math.min(steps.length - 1, activeStep + 1))}
               disabled={activeStep === steps.length - 1}
             >
               Next Step <ArrowRight className="ml-2 size-3" />
@@ -461,9 +437,7 @@ cancelBtn = Button("Cancel", "action:cancel_contact", "secondary")`}
 
       {/* Use Cases */}
       <div className="mb-12 sm:mb-20">
-        <h2 className="mb-3 text-2xl font-bold sm:mb-4 sm:text-3xl">
-          Use Cases
-        </h2>
+        <h2 className="mb-3 text-2xl font-bold sm:mb-4 sm:text-3xl">Use Cases</h2>
         <p className="mb-6 text-sm text-slate-600 sm:mb-8 sm:text-base dark:text-slate-400">
           Real-world applications where OpenUI Lang excels
         </p>
@@ -473,12 +447,9 @@ cancelBtn = Button("Cancel", "action:cancel_contact", "secondary")`}
             <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-blue-50 sm:mb-4 sm:size-12 dark:bg-blue-900/30">
               <BarChart3 className="size-5 text-blue-500 sm:size-6" />
             </div>
-            <h3 className="mb-2 text-base font-semibold sm:text-lg">
-              Analytics Dashboards
-            </h3>
+            <h3 className="mb-2 text-base font-semibold sm:text-lg">Analytics Dashboards</h3>
             <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
-              Generate complex data visualizations and metric cards from natural
-              language queries.
+              Generate complex data visualizations and metric cards from natural language queries.
             </p>
           </SimpleCard>
 
@@ -486,9 +457,7 @@ cancelBtn = Button("Cancel", "action:cancel_contact", "secondary")`}
             <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-emerald-50 sm:mb-4 sm:size-12 dark:bg-emerald-900/30">
               <MessageSquare className="size-5 text-emerald-500 sm:size-6" />
             </div>
-            <h3 className="mb-2 text-base font-semibold sm:text-lg">
-              AI Chat Interfaces
-            </h3>
+            <h3 className="mb-2 text-base font-semibold sm:text-lg">AI Chat Interfaces</h3>
             <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
               Stream UI components in real-time as the LLM generates responses.
             </p>
@@ -498,9 +467,7 @@ cancelBtn = Button("Cancel", "action:cancel_contact", "secondary")`}
             <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-purple-50 sm:mb-4 sm:size-12 dark:bg-purple-900/30">
               <FileText className="size-5 text-purple-500 sm:size-6" />
             </div>
-            <h3 className="mb-2 text-base font-semibold sm:text-lg">
-              Dynamic Forms
-            </h3>
+            <h3 className="mb-2 text-base font-semibold sm:text-lg">Dynamic Forms</h3>
             <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
               Build adaptive forms that change based on user input or context.
             </p>

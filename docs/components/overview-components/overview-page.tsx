@@ -1,16 +1,16 @@
 "use client";
 
-import { Code2, MessageSquare, Package } from "lucide-react";
 import { Button } from "@/components/button";
 import {
   CodeBlock,
-  SimpleCard,
   Separator,
+  SimpleCard,
   Tabs,
+  TabsContent,
   TabsList,
   TabsTrigger,
-  TabsContent,
 } from "@/components/overview-components";
+import { Code2, MessageSquare, Package } from "lucide-react";
 import { genuiOutput } from "./genui";
 
 export function OverviewPage() {
@@ -18,14 +18,11 @@ export function OverviewPage() {
     <div className="mx-auto max-w-4xl px-3 py-8 font-sans text-slate-900 sm:px-4 sm:py-12 lg:px-8 dark:text-slate-100">
       {/* Introduction */}
       <div id="overview" className="mb-12 sm:mb-20">
-        <h1 className="mb-3 text-3xl font-bold sm:mb-4 sm:text-4xl">
-          Overview
-        </h1>
+        <h1 className="mb-3 text-3xl font-bold sm:mb-4 sm:text-4xl">Overview</h1>
         <p className="mb-6 text-base text-slate-600 sm:mb-8 sm:text-lg dark:text-slate-400">
-          OpenUI is a comprehensive toolkit for building LLM-powered user
-          interfaces. It consists of three core modules that work together to
-          provide an efficient, type-safe, and production-ready solution for
-          generative UI.
+          OpenUI is a comprehensive toolkit for building LLM-powered user interfaces. It consists of
+          three core modules that work together to provide an efficient, type-safe, and
+          production-ready solution for generative UI.
         </p>
 
         {/* Quick Navigation */}
@@ -35,12 +32,9 @@ export function OverviewPage() {
               <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-blue-50 group-hover:bg-blue-100 sm:mb-4 sm:size-12 dark:bg-blue-900/30 dark:group-hover:bg-blue-900/50">
                 <Code2 className="size-5 text-blue-600 sm:size-6 dark:text-blue-400" />
               </div>
-              <h3 className="mb-1 text-sm font-semibold sm:mb-2 sm:text-base">
-                OpenUI Lang
-              </h3>
+              <h3 className="mb-1 text-sm font-semibold sm:mb-2 sm:text-base">OpenUI Lang</h3>
               <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-                Token-efficient DSL for structured LLM outputs with automatic
-                prompt generation
+                Token-efficient DSL for structured LLM outputs with automatic prompt generation
               </p>
             </SimpleCard>
           </a>
@@ -50,20 +44,14 @@ export function OverviewPage() {
               <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-purple-50 group-hover:bg-purple-100 sm:mb-4 sm:size-12 dark:bg-purple-900/30 dark:group-hover:bg-purple-900/50">
                 <MessageSquare className="size-5 text-purple-600 sm:size-6 dark:text-purple-400" />
               </div>
-              <h3 className="mb-1 text-sm font-semibold sm:mb-2 sm:text-base">
-                OpenUI Chat
-              </h3>
+              <h3 className="mb-1 text-sm font-semibold sm:mb-2 sm:text-base">OpenUI Chat</h3>
               <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-                Production-ready, themeable chat components with headless state
-                management
+                Production-ready, themeable chat components with headless state management
               </p>
             </SimpleCard>
           </a>
 
-          <a
-            href="#library"
-            className="group col-span-2 no-underline sm:col-span-1"
-          >
+          <a href="#library" className="group col-span-2 no-underline sm:col-span-1">
             <SimpleCard className="h-full p-4 transition-all hover:border-emerald-500 hover:shadow-md sm:p-6">
               <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-emerald-50 group-hover:bg-emerald-100 sm:mb-4 sm:size-12 dark:bg-emerald-900/30 dark:group-hover:bg-emerald-900/50">
                 <Package className="size-5 text-emerald-600 sm:size-6 dark:text-emerald-400" />
@@ -72,8 +60,7 @@ export function OverviewPage() {
                 Default Component Library
               </h3>
               <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-                50+ pre-built components optimized for LLM generation, ready to
-                use
+                50+ pre-built components optimized for LLM generation, ready to use
               </p>
             </SimpleCard>
           </a>
@@ -87,12 +74,9 @@ export function OverviewPage() {
             <Code2 className="size-5 text-blue-600 sm:size-6 dark:text-blue-400" />
           </div>
           <div>
-            <h2 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">
-              OpenUI Lang
-            </h2>
+            <h2 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">OpenUI Lang</h2>
             <p className="text-sm text-slate-500 sm:text-base dark:text-slate-400">
-              A custom language designed for token efficiency and accuracy in
-              structured LLM outputs
+              A custom language designed for token efficiency and accuracy in structured LLM outputs
             </p>
           </div>
         </div>
@@ -116,27 +100,21 @@ export function OverviewPage() {
           >
             A2UI
           </a>{" "}
-          that reduces token usage by up to 52%. Define your component library
-          with Zod schemas, get automatic system prompts, and parse LLM
-          responses into renderable components.
+          that reduces token usage by up to 52%. Define your component library with Zod schemas, get
+          automatic system prompts, and parse LLM responses into renderable components.
         </p>
 
         <SimpleCard className="mb-4 border-blue-200 bg-blue-50 p-3 sm:p-4 dark:border-blue-900 dark:bg-blue-900/20">
           <p className="text-xs sm:text-sm">
             <strong>Quick start:</strong> Use our{" "}
-            <a
-              href="#library"
-              className="text-blue-600 underline dark:text-blue-400"
-            >
+            <a href="#library" className="text-blue-600 underline dark:text-blue-400">
               default component library
             </a>{" "}
             to get started immediately with 50+ pre-built components.
           </p>
         </SimpleCard>
 
-        <h3 className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">
-          Quick Example
-        </h3>
+        <h3 className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">Quick Example</h3>
 
         <div className="grid gap-4 lg:grid-cols-2">
           {/* Left: Code Tabs */}
@@ -151,7 +129,6 @@ export function OverviewPage() {
               <TabsTrigger value="llm-output" className="px-1 sm:px-2">
                 LLM Output
               </TabsTrigger>
-
             </TabsList>
 
             <TabsContent value="define-library" className="mt-3 flex-1">
@@ -167,7 +144,7 @@ const MyCard = defineComponent({
   props: z.object({
     children: z.array(z.any()),
   }),
-  component: ({ props }) => <div>{props.children.map((child) => child)}</div>,
+  component: ({ props, renderNode }) => <div>{renderNode(props.children)}</div>,
   ...
 });
 
@@ -178,7 +155,7 @@ export const myLibrary = createLibrary({
             </TabsContent>
 
             <TabsContent value="render-code" className="mt-3 flex-1">
-            <CodeBlock
+              <CodeBlock
                 title="Rendering Code"
                 code={`import { Renderer } from '@openuidev/lang-react';
 import { myLibrary } from './library';
@@ -199,10 +176,7 @@ export function AssistantMessage({ content, isStreaming }) {
             </TabsContent>
 
             <TabsContent value="llm-output" className="mt-3 flex-1">
-              <CodeBlock
-                title="OpenUI Lang (Token Efficient)"
-                code={genuiOutput}
-              />
+              <CodeBlock title="OpenUI Lang (Token Efficient)" code={genuiOutput} />
             </TabsContent>
           </Tabs>
           <SimpleCard className="flex h-full flex-col border-2">
@@ -213,20 +187,11 @@ export function AssistantMessage({ content, isStreaming }) {
               <img src="/images/openui-lang/example.png" alt="Quick Example" />
             </div>
           </SimpleCard>
-    
         </div>
 
         <div className="mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row">
-          <Button
-            href="/docs/openui-lang"
-            text="Get Started with OpenUI Lang"
-            variant="primary"
-          />
-          <Button
-            href="/docs/chat"
-            text="Usage with OpenUI Chat"
-            variant="secondary"
-          />
+          <Button href="/docs/openui-lang" text="Get Started with OpenUI Lang" variant="primary" />
+          <Button href="/docs/chat" text="Usage with OpenUI Chat" variant="secondary" />
         </div>
       </div>
 
@@ -239,20 +204,16 @@ export function AssistantMessage({ content, isStreaming }) {
             <MessageSquare className="size-5 text-purple-600 sm:size-6 dark:text-purple-400" />
           </div>
           <div>
-            <h2 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">
-              OpenUI Chat
-            </h2>
+            <h2 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">OpenUI Chat</h2>
             <p className="text-sm text-slate-500 sm:text-base dark:text-slate-400">
-              Production-ready, themeable chat components with headless state
-              management
+              Production-ready, themeable chat components with headless state management
             </p>
           </div>
         </div>
 
         <p className="mb-4 text-sm text-slate-600 sm:mb-6 sm:text-base dark:text-slate-400">
-          Pre-built chat layouts (Copilot, Fullscreen, Bottom Tray) or build
-          custom UIs with headless hooks. Fully themeable and accessible out of
-          the box.
+          Pre-built chat layouts (Copilot, Fullscreen, Bottom Tray) or build custom UIs with
+          headless hooks. Fully themeable and accessible out of the box.
         </p>
 
         <div className="mb-6 grid gap-4 sm:grid-cols-3">
@@ -264,15 +225,11 @@ export function AssistantMessage({ content, isStreaming }) {
           </SimpleCard>
           <SimpleCard className="p-4">
             <h4 className="mb-1 font-medium">Fullscreen</h4>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Full-page chat interface
-            </p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Full-page chat interface</p>
           </SimpleCard>
           <SimpleCard className="p-4">
             <h4 className="mb-1 font-medium">Bottom Tray</h4>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Slide-up mobile tray
-            </p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Slide-up mobile tray</p>
           </SimpleCard>
         </div>
 
@@ -297,11 +254,7 @@ import { FullScreen, defaultLibrary } from "@openuidev/react-ui";
             text="Get Started with OpenUI Chat"
             variant="primary"
           />
-          <Button
-            href="/docs/chat"
-            text="View Components"
-            variant="secondary"
-          />
+          <Button href="/docs/chat" text="View Components" variant="secondary" />
         </div>
       </div>
 
@@ -324,35 +277,26 @@ import { FullScreen, defaultLibrary } from "@openuidev/react-ui";
         </div>
 
         <p className="mb-4 text-sm text-slate-600 sm:mb-6 sm:text-base dark:text-slate-400">
-          50+ production-ready components optimized for LLM generation. Use them
-          directly or extend with your own custom components. Includes layouts,
-          forms, data display, charts, and more.
+          50+ production-ready components optimized for LLM generation. Use them directly or extend
+          with your own custom components. Includes layouts, forms, data display, charts, and more.
         </p>
 
         <div className="mb-4 grid gap-3 sm:mb-6 sm:grid-cols-2 md:grid-cols-4">
           <SimpleCard className="p-3">
             <p className="text-sm font-medium">Layout</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Grid, Stack, Flex
-            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Grid, Stack, Flex</p>
           </SimpleCard>
           <SimpleCard className="p-3">
             <p className="text-sm font-medium">Forms</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Input, Select, Radio
-            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Input, Select, Radio</p>
           </SimpleCard>
           <SimpleCard className="p-3">
             <p className="text-sm font-medium">Data Display</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Table, Card, Badge
-            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Table, Card, Badge</p>
           </SimpleCard>
           <SimpleCard className="p-3">
             <p className="text-sm font-medium">Charts</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Line, Bar, Pie
-            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Line, Bar, Pie</p>
           </SimpleCard>
         </div>
 
@@ -370,15 +314,25 @@ import { FullScreen, defaultLibrary } from "@openuidev/react-ui";
             <TabsContent value="quick-example" className="mt-4">
               <CodeBlock
                 title="Quick example"
-                code={`import { defaultLibrary } from '@openuidev/react-ui';
+                code={`import { createLibrary, defineComponent } from '@openuidev/lang-react';
+import { defaultLibrary, defaultPromptOptions } from '@openuidev/react-ui';
+import { z } from 'zod';
 
-// Use directly
-const prompt = defaultLibrary.getSystemPrompt();
+const prompt = defaultLibrary.prompt(defaultPromptOptions);
 
-// Or extend with custom components
+const CustomWidget = defineComponent({
+  name: 'CustomWidget',
+  description: 'A simple custom widget',
+  props: z.object({
+    title: z.string(),
+  }),
+  component: () => null,
+});
+
 const customLibrary = createLibrary({
-  ...defaultLibrary.components,
-  CustomWidget: { /* your component */ },
+  root: defaultLibrary.root ?? 'Stack',
+  componentGroups: defaultLibrary.componentGroups,
+  components: [...Object.values(defaultLibrary.components), CustomWidget],
 });`}
               />
             </TabsContent>
@@ -386,21 +340,14 @@ const customLibrary = createLibrary({
             <TabsContent value="usage-with-chat" className="mt-4">
               <CodeBlock
                 title="Using with Chat UI"
-                code={`import { ChatProvider, Copilot, defaultLibrary } from '@openuidev/react-ui';
+                code={`import { Copilot, defaultLibrary } from '@openuidev/react-ui';
 
 function App() {
-  const handleMessage = async (message) => {
-    const prompt = defaultLibrary.getSystemPrompt();
-    const response = await llm.generate(prompt, message);
-    const components = defaultLibrary.parse(response);
-    return components;
-  };
-
   return (
-    <ChatProvider>
-      <YourApp />
-      <Copilot onSendMessage={handleMessage} />
-    </ChatProvider>
+    <Copilot
+      apiUrl="/api/chat"
+      componentLibrary={defaultLibrary}
+    />
   );
 }`}
               />
