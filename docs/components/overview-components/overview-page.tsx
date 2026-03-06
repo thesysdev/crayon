@@ -12,8 +12,6 @@ import {
   TabsContent,
 } from "@/components/overview-components";
 import { genuiOutput } from "./genui";
-import { defaultLibrary } from "@openuidev/react-ui";
-import { Renderer } from "@openuidev/lang-react";
 
 export function OverviewPage() {
   return (
@@ -102,7 +100,7 @@ export function OverviewPage() {
         <p className="mb-4 text-sm text-slate-600 sm:mb-6 sm:text-base dark:text-slate-400">
           An alternative to{" "}
           <a
-            href="https://sdk.vercel.ai/docs/reference/ai-sdk-rsc/render"
+            href="https://json-render.dev/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 underline hover:no-underline dark:text-blue-400"
@@ -111,7 +109,7 @@ export function OverviewPage() {
           </a>{" "}
           and{" "}
           <a
-            href="https://a2a.vercel.app/"
+            href="https://a2ui.org/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 underline hover:no-underline dark:text-blue-400"
@@ -137,7 +135,7 @@ export function OverviewPage() {
         </SimpleCard>
 
         <h3 className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">
-          Interactive Example
+          Quick Example
         </h3>
 
         <div className="grid gap-4 lg:grid-cols-2">
@@ -147,61 +145,40 @@ export function OverviewPage() {
               <TabsTrigger value="define-library" className="px-1 sm:px-2">
                 Define Lib
               </TabsTrigger>
+              <TabsTrigger value="render-code" className="px-1 sm:px-2">
+                Render Code
+              </TabsTrigger>
               <TabsTrigger value="llm-output" className="px-1 sm:px-2">
                 LLM Output
               </TabsTrigger>
+
             </TabsList>
 
             <TabsContent value="define-library" className="mt-3 flex-1">
               <CodeBlock
                 className="h-full"
                 title="Component Library Definition"
-                code={`import "@openuidev/react-ui/components.css";
-import { defaultLibrary, defaultPromptOptions } from "@openuidev/react-ui";
-import { Renderer } from "@openuidev/lang-react";
+                code={`import { defineComponent, createLibrary } from '@openuidev/lang-react';
+import { z } from 'zod';
 
-const systemPrompt = defaultLibrary.prompt(defaultPromptOptions);
+const MyCard = defineComponent({
+  name: 'MyCard',
+  description: 'Displays a titled content card.',
+  props: z.object({
+    children: z.array(z.any()),
+  }),
+  component: ({ props }) => <div>{props.children.map((child) => child)}</div>,
+  ...
+});
 
-// Later, render OpenUI Lang output from your LLM:
-<Renderer
-  library={defaultLibrary}
-  response={openuiLangOutput}
-/>`}
+export const myLibrary = createLibrary({
+  components: [MyCard, ...otherComponents],
+});`}
               />
-            </TabsContent>
-
-            <TabsContent value="llm-output" className="mt-3 flex-1">
-              <CodeBlock
-                title="OpenUI Lang (Token Efficient)"
-                code={genuiOutput}
-              />
-            </TabsContent>
-          </Tabs>
-
-          {/* Right: Rendered Output */}
-          <Tabs defaultValue="live-render" className="flex w-full flex-col">
-            <TabsList className="grid w-full grid-cols-2 text-xs sm:text-sm">
-              <TabsTrigger value="live-render" className="px-1 sm:px-2">
-                Live Render
-              </TabsTrigger>
-              <TabsTrigger value="render-code" className="px-1 sm:px-2">
-                Render Code
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="live-render" className="mt-3 flex-1">
-              <SimpleCard className="flex h-full flex-col border-2">
-                <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/50">
-                  <span className="text-sm font-medium">Output Preview</span>
-                </div>
-                <div className="p-6">
-                  <Renderer response={genuiOutput} library={defaultLibrary} />
-                </div>
-              </SimpleCard>
             </TabsContent>
 
             <TabsContent value="render-code" className="mt-3 flex-1">
-              <CodeBlock
+            <CodeBlock
                 title="Rendering Code"
                 code={`import { Renderer } from '@openuidev/lang-react';
 import { myLibrary } from './library';
@@ -220,7 +197,23 @@ export function AssistantMessage({ content, isStreaming }) {
 }`}
               />
             </TabsContent>
+
+            <TabsContent value="llm-output" className="mt-3 flex-1">
+              <CodeBlock
+                title="OpenUI Lang (Token Efficient)"
+                code={genuiOutput}
+              />
+            </TabsContent>
           </Tabs>
+          <SimpleCard className="flex h-full flex-col border-2">
+            <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/50">
+              <span className="text-sm font-medium">Output Preview</span>
+            </div>
+            <div className="p-6">
+              <img src="/images/openui-lang/example.png" alt="Quick Example" />
+            </div>
+          </SimpleCard>
+    
         </div>
 
         <div className="mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row">
