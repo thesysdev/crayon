@@ -29,24 +29,27 @@ export const Form = defineComponent({
         <FormNameContext.Provider value={formName}>
           <div role="form" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {renderNode(props.fields)}
-            {props.buttons ? (
-              renderNode(props.buttons)
-            ) : (
-              <OpenUIButtons variant="horizontal">
-                <OpenUIButton
-                  variant="primary"
-                  size="medium"
-                  disabled={isStreaming}
-                  onClick={() => {
-                    const valid = formValidation.validateForm();
-                    if (!valid) return;
-                    triggerAction("Submit", `User clicked on Button: submit_${formName}`, formName);
-                  }}
-                >
-                  Submit
-                </OpenUIButton>
-              </OpenUIButtons>
-            )}
+            {props.buttons
+              ? renderNode(props.buttons)
+              : !isStreaming && (
+                  <OpenUIButtons variant="horizontal">
+                    <OpenUIButton
+                      variant="primary"
+                      size="medium"
+                      onClick={() => {
+                        const valid = formValidation.validateForm();
+                        if (!valid) return;
+                        triggerAction(
+                          "Submit",
+                          `User clicked on Button: submit:${formName}`,
+                          formName,
+                        );
+                      }}
+                    >
+                      Submit
+                    </OpenUIButton>
+                  </OpenUIButtons>
+                )}
           </div>
         </FormNameContext.Provider>
       </FormValidationContext.Provider>
