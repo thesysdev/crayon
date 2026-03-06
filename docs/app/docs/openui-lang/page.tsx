@@ -84,7 +84,7 @@ export default function OpenUILangOverview() {
         <p className="mb-6 text-sm text-slate-600 sm:mb-8 sm:text-base dark:text-slate-400">
           An alternative to{" "}
           <a
-            href="https://sdk.vercel.ai/docs/reference/ai-sdk-rsc/render"
+            href="https://json-render.dev/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 underline hover:no-underline dark:text-blue-400"
@@ -93,7 +93,7 @@ export default function OpenUILangOverview() {
           </a>{" "}
           and{" "}
           <a
-            href="https://a2a.vercel.app/"
+            href="https://a2ui.org/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 underline hover:no-underline dark:text-blue-400"

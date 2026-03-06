@@ -116,7 +116,7 @@ export function OverviewPage() {
           >
             A2UI
           </a>{" "}
-          that reduces token usage by up to 90%. Define your component library
+          that reduces token usage by up to 52%. Define your component library
           with Zod schemas, get automatic system prompts, and parse LLM
           responses into renderable components.
         </p>
@@ -163,7 +163,7 @@ import { z } from 'zod';
 
 const MyCard = defineComponent({
   name: 'MyCard',
-  description: 'Displays a titled content card.',
+  description: 'Display a card with multiple children',
   props: z.object({
     children: z.array(z.any()),
   }),
