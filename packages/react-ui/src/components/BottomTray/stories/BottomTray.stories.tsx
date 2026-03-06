@@ -1,6 +1,7 @@
 import { ChatProvider, Message } from "@openuidev/react-headless";
-import { MessageSquare, Sparkles, Zap } from "lucide-react";
+import { MessageSquare, Paperclip, Sparkles, Zap } from "lucide-react";
 import { useState } from "react";
+import { IconButton } from "../../IconButton";
 import {
   Composer,
   Container,
@@ -144,7 +145,16 @@ const BottomTrayStory = ({
                 },
               ]}
             />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -264,7 +274,16 @@ const CustomTriggerStory = ({
                 },
               ]}
             />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -351,7 +370,16 @@ const WelcomeScreenStory = ({
                 },
               ]}
             />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>
@@ -457,7 +485,16 @@ const CustomWelcomeScreenStory = ({
                 },
               ]}
             />
-            <Composer />
+            <Composer
+              attachment={
+                <IconButton
+                  icon={<Paperclip size="1em" />}
+                  onClick={() => console.log("attach")}
+                  size="medium"
+                  variant="tertiary"
+                />
+              }
+            />
           </ThreadContainer>
         </Container>
       </ChatProvider>

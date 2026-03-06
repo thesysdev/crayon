@@ -4,8 +4,8 @@ import { ArrowUp, Square } from "lucide-react";
 import { useLayoutEffect, useRef } from "react";
 import { useComposerState } from "../../../hooks/useComposerState";
 import { IconButton } from "../../IconButton";
-import type { AttachmentConfig } from "../utils/checks";
-import { isAttachmentConfig } from "../utils/checks";
+import type { AttachmentConfig } from "../../Shell/utils/checks";
+import { isAttachmentConfig } from "../../Shell/utils/checks";
 
 export interface ComposerProps {
   className?: string;
@@ -15,7 +15,7 @@ export interface ComposerProps {
 
 export const Composer = ({
   className,
-  placeholder = "Type your query here",
+  placeholder = "Type your message...",
   attachment,
 }: ComposerProps) => {
   const { textContent, setTextContent } = useComposerState();
@@ -55,7 +55,7 @@ export const Composer = ({
           onClick={attachment.onClick}
           size="medium"
           variant="tertiary"
-          className="openui-shell-thread-composer__attach-button"
+          className="openui-copilot-shell-thread-composer__attach-button"
         />
       );
     }
@@ -63,13 +63,13 @@ export const Composer = ({
   };
 
   return (
-    <div className={clsx("openui-shell-thread-composer", className)}>
-      <div className="openui-shell-thread-composer__input-wrapper">
+    <div className={clsx("openui-copilot-shell-thread-composer", className)}>
+      <div className="openui-copilot-shell-thread-composer__input-wrapper">
         <textarea
           ref={inputRef}
           value={textContent}
           onChange={(e) => setTextContent(e.target.value)}
-          className="openui-shell-thread-composer__input"
+          className="openui-copilot-shell-thread-composer__input"
           placeholder={placeholder}
           rows={1}
           onKeyDown={(e) => {
@@ -79,14 +79,14 @@ export const Composer = ({
             }
           }}
         />
-        <div className="openui-shell-thread-composer__action-bar">
+        <div className="openui-copilot-shell-thread-composer__action-bar">
           {renderAttachment()}
           <IconButton
             onClick={isRunning ? cancelMessage : handleSubmit}
             icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
             size="medium"
             variant="primary"
-            className="openui-shell-thread-composer__submit-button"
+            className="openui-copilot-shell-thread-composer__submit-button"
           />
         </div>
       </div>
