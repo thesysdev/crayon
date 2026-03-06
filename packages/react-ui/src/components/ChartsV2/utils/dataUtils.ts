@@ -22,7 +22,7 @@ export const get2dChartConfig = (
   colors: string[],
   transformedKeys: Record<string, string>,
   secondaryColors?: string[],
-  icons?: Partial<Record<string, React.ComponentType>>,
+  icons?: Partial<Record<string | number, React.ComponentType>>,
 ): ChartConfig => {
   return dataKeys.reduce(
     (config, key, index) => ({
@@ -42,7 +42,7 @@ export const get2dChartConfig = (
 export const getLegendItems = (
   dataKeys: string[],
   colors: string[],
-  icons?: Partial<Record<string, React.ComponentType>>,
+  icons?: Partial<Record<string | number, React.ComponentType>>,
 ): LegendItem[] => {
   return dataKeys.map((key, index) => ({
     key,

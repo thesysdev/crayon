@@ -1,18 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import {
-  Calendar,
-  Globe,
-  Laptop,
-  Monitor,
-  Smartphone,
-  TabletSmartphone,
-  Tv,
-  Watch,
-} from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Card } from "../../../Card";
 import { D3AreaChart } from "../D3AreaChart";
-import type { D3AreaChartProps, D3AreaChartData } from "../types";
+import type { D3AreaChartProps } from "../types";
 
 const dataVariations = {
   default: [
@@ -30,14 +20,54 @@ const dataVariations = {
     { month: "December", desktop: 600, mobile: 320, tablet: 280 },
   ],
   bigLabels: [
-    { category: "Very Long Category Name That Should Be Truncated", sales: 150, revenue: 90, profit: 120 },
-    { category: "Another Extremely Long Label That Causes Collisions", sales: 280, revenue: 180, profit: 140 },
-    { category: "Super Duper Long Category Name That Tests Truncation", sales: 220, revenue: 140, profit: 160 },
-    { category: "Incredibly Long Text That Should Trigger Collision Detection", sales: 180, revenue: 160, profit: 180 },
-    { category: "Maximum Length Category Name That Tests All Edge Cases", sales: 250, revenue: 120, profit: 140 },
-    { category: "Extra Long Business Category Name With Many Words", sales: 300, revenue: 180, profit: 160 },
-    { category: "Comprehensive Long Label For Testing Horizontal Offset", sales: 350, revenue: 220, profit: 180 },
-    { category: "Extended Category Name That Pushes Truncation Limits", sales: 400, revenue: 240, profit: 200 },
+    {
+      category: "Very Long Category Name That Should Be Truncated",
+      sales: 150,
+      revenue: 90,
+      profit: 120,
+    },
+    {
+      category: "Another Extremely Long Label That Causes Collisions",
+      sales: 280,
+      revenue: 180,
+      profit: 140,
+    },
+    {
+      category: "Super Duper Long Category Name That Tests Truncation",
+      sales: 220,
+      revenue: 140,
+      profit: 160,
+    },
+    {
+      category: "Incredibly Long Text That Should Trigger Collision Detection",
+      sales: 180,
+      revenue: 160,
+      profit: 180,
+    },
+    {
+      category: "Maximum Length Category Name That Tests All Edge Cases",
+      sales: 250,
+      revenue: 120,
+      profit: 140,
+    },
+    {
+      category: "Extra Long Business Category Name With Many Words",
+      sales: 300,
+      revenue: 180,
+      profit: 160,
+    },
+    {
+      category: "Comprehensive Long Label For Testing Horizontal Offset",
+      sales: 350,
+      revenue: 220,
+      profit: 180,
+    },
+    {
+      category: "Extended Category Name That Pushes Truncation Limits",
+      sales: 400,
+      revenue: 240,
+      profit: 200,
+    },
   ],
   denseTimeline: [
     { period: "Q1 2022 Jan-Mar", visitors: 120, conversions: 15, revenue: 1200 },
@@ -59,13 +89,48 @@ const dataVariations = {
   ],
   companyNames: [
     { company: "Apple Inc.", revenue: 394328000000, profit: 99803000000, marketCap: 3500000000000 },
-    { company: "Microsoft Corporation", revenue: 211915000000, profit: 83383000000, marketCap: 2800000000000 },
-    { company: "Alphabet Inc. (Google)", revenue: 307394000000, profit: 76033000000, marketCap: 2100000000000 },
-    { company: "Amazon.com Inc.", revenue: 574785000000, profit: 33364000000, marketCap: 1600000000000 },
-    { company: "Tesla Motors Inc.", revenue: 96773000000, profit: 15000000000, marketCap: 800000000000 },
-    { company: "Meta Platforms Inc.", revenue: 134902000000, profit: 39370000000, marketCap: 900000000000 },
-    { company: "NVIDIA Corporation", revenue: 60922000000, profit: 29760000000, marketCap: 1800000000000 },
-    { company: "Berkshire Hathaway Inc.", revenue: 364482000000, profit: 96223000000, marketCap: 780000000000 },
+    {
+      company: "Microsoft Corporation",
+      revenue: 211915000000,
+      profit: 83383000000,
+      marketCap: 2800000000000,
+    },
+    {
+      company: "Alphabet Inc. (Google)",
+      revenue: 307394000000,
+      profit: 76033000000,
+      marketCap: 2100000000000,
+    },
+    {
+      company: "Amazon.com Inc.",
+      revenue: 574785000000,
+      profit: 33364000000,
+      marketCap: 1600000000000,
+    },
+    {
+      company: "Tesla Motors Inc.",
+      revenue: 96773000000,
+      profit: 15000000000,
+      marketCap: 800000000000,
+    },
+    {
+      company: "Meta Platforms Inc.",
+      revenue: 134902000000,
+      profit: 39370000000,
+      marketCap: 900000000000,
+    },
+    {
+      company: "NVIDIA Corporation",
+      revenue: 60922000000,
+      profit: 29760000000,
+      marketCap: 1800000000000,
+    },
+    {
+      company: "Berkshire Hathaway Inc.",
+      revenue: 364482000000,
+      profit: 96223000000,
+      marketCap: 780000000000,
+    },
   ],
   countryData: [
     { country: "United States of America", population: 331900000, gdp: 26900000000000 },
@@ -96,12 +161,114 @@ const dataVariations = {
     { category: "Tablet Devices", users: 220, sessions: 140 },
   ],
   expandCollapseMarketing: [
-    { channel: "Website Traffic and Organic Search Results", impressions: 120000, clicks: 15000, conversions: 1200, cost: 8500, revenue: 24000, roi: 182, ctr: 12.5, cpc: 0.57, cpa: 7.08, reach: 95000, engagement: 8200, shares: 420, saves: 180, comments: 650, videoViews: 0 },
-    { channel: "Social Media Engagement and Brand Awareness", impressions: 85000, clicks: 12000, conversions: 950, cost: 6200, revenue: 19000, roi: 206, ctr: 14.1, cpc: 0.52, cpa: 6.53, reach: 72000, engagement: 15400, shares: 890, saves: 340, comments: 1200, videoViews: 28000 },
-    { channel: "Email Marketing Campaign Performance", impressions: 45000, clicks: 8500, conversions: 800, cost: 2100, revenue: 16000, roi: 562, ctr: 18.9, cpc: 0.25, cpa: 2.63, reach: 42000, engagement: 6800, shares: 120, saves: 85, comments: 240, videoViews: 0 },
-    { channel: "Paid Advertising and PPC Campaign ROI", impressions: 95000, clicks: 18000, conversions: 1500, cost: 12500, revenue: 30000, roi: 140, ctr: 18.9, cpc: 0.69, cpa: 8.33, reach: 88000, engagement: 12600, shares: 320, saves: 150, comments: 480, videoViews: 5200 },
-    { channel: "Content Marketing and Blog Performance", impressions: 60000, clicks: 9500, conversions: 750, cost: 4800, revenue: 15000, roi: 213, ctr: 15.8, cpc: 0.51, cpa: 6.4, reach: 55000, engagement: 7800, shares: 680, saves: 420, comments: 950, videoViews: 12000 },
-    { channel: "Mobile Application Downloads and Usage", impressions: 70000, clicks: 11000, conversions: 1100, cost: 5500, revenue: 22000, roi: 300, ctr: 15.7, cpc: 0.5, cpa: 5.0, reach: 65000, engagement: 9200, shares: 180, saves: 95, comments: 320, videoViews: 8500 },
+    {
+      channel: "Website Traffic and Organic Search Results",
+      impressions: 120000,
+      clicks: 15000,
+      conversions: 1200,
+      cost: 8500,
+      revenue: 24000,
+      roi: 182,
+      ctr: 12.5,
+      cpc: 0.57,
+      cpa: 7.08,
+      reach: 95000,
+      engagement: 8200,
+      shares: 420,
+      saves: 180,
+      comments: 650,
+      videoViews: 0,
+    },
+    {
+      channel: "Social Media Engagement and Brand Awareness",
+      impressions: 85000,
+      clicks: 12000,
+      conversions: 950,
+      cost: 6200,
+      revenue: 19000,
+      roi: 206,
+      ctr: 14.1,
+      cpc: 0.52,
+      cpa: 6.53,
+      reach: 72000,
+      engagement: 15400,
+      shares: 890,
+      saves: 340,
+      comments: 1200,
+      videoViews: 28000,
+    },
+    {
+      channel: "Email Marketing Campaign Performance",
+      impressions: 45000,
+      clicks: 8500,
+      conversions: 800,
+      cost: 2100,
+      revenue: 16000,
+      roi: 562,
+      ctr: 18.9,
+      cpc: 0.25,
+      cpa: 2.63,
+      reach: 42000,
+      engagement: 6800,
+      shares: 120,
+      saves: 85,
+      comments: 240,
+      videoViews: 0,
+    },
+    {
+      channel: "Paid Advertising and PPC Campaign ROI",
+      impressions: 95000,
+      clicks: 18000,
+      conversions: 1500,
+      cost: 12500,
+      revenue: 30000,
+      roi: 140,
+      ctr: 18.9,
+      cpc: 0.69,
+      cpa: 8.33,
+      reach: 88000,
+      engagement: 12600,
+      shares: 320,
+      saves: 150,
+      comments: 480,
+      videoViews: 5200,
+    },
+    {
+      channel: "Content Marketing and Blog Performance",
+      impressions: 60000,
+      clicks: 9500,
+      conversions: 750,
+      cost: 4800,
+      revenue: 15000,
+      roi: 213,
+      ctr: 15.8,
+      cpc: 0.51,
+      cpa: 6.4,
+      reach: 55000,
+      engagement: 7800,
+      shares: 680,
+      saves: 420,
+      comments: 950,
+      videoViews: 12000,
+    },
+    {
+      channel: "Mobile Application Downloads and Usage",
+      impressions: 70000,
+      clicks: 11000,
+      conversions: 1100,
+      cost: 5500,
+      revenue: 22000,
+      roi: 300,
+      ctr: 15.7,
+      cpc: 0.5,
+      cpa: 5.0,
+      reach: 65000,
+      engagement: 9200,
+      shares: 180,
+      saves: 95,
+      comments: 320,
+      videoViews: 8500,
+    },
   ],
 };
 
@@ -161,16 +328,40 @@ export const DataExplorer: Story = {
     yAxisLabel: "Values",
   },
   render: (args: any) => {
-    const [selectedDataType, setSelectedDataType] = useState<keyof typeof dataVariations>("default");
+    const [selectedDataType, setSelectedDataType] =
+      useState<keyof typeof dataVariations>("default");
     const currentData = dataVariations[selectedDataType];
     const currentCategoryKey = categoryKeys[selectedDataType];
 
-    const buttonStyle = { margin: "2px", padding: "6px 12px", fontSize: "12px", border: "1px solid #ddd", borderRadius: "4px", cursor: "pointer", background: "#fff", fontFamily: "monospace" };
-    const activeButtonStyle = { ...buttonStyle, background: "#007acc", color: "white", border: "1px solid #007acc" };
+    const buttonStyle = {
+      margin: "2px",
+      padding: "6px 12px",
+      fontSize: "12px",
+      border: "1px solid #ddd",
+      borderRadius: "4px",
+      cursor: "pointer",
+      background: "#fff",
+      fontFamily: "monospace",
+    };
+    const activeButtonStyle = {
+      ...buttonStyle,
+      background: "#007acc",
+      color: "white",
+      border: "1px solid #007acc",
+    };
 
     return (
       <div>
-        <div style={{ marginBottom: "16px", padding: "12px", background: "#f8f9fa", borderRadius: "8px", border: "1px solid #e9ecef", width: "600px" }}>
+        <div
+          style={{
+            marginBottom: "16px",
+            padding: "12px",
+            background: "#f8f9fa",
+            borderRadius: "8px",
+            border: "1px solid #e9ecef",
+            width: "600px",
+          }}
+        >
           <strong>D3 AreaChart Explorer:</strong>
           <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", gap: "4px" }}>
             {Object.keys(dataVariations).map((key) => (
@@ -183,8 +374,11 @@ export const DataExplorer: Story = {
               </button>
             ))}
           </div>
-          <div style={{ marginTop: "12px", fontSize: "12px", color: "#666", fontFamily: "monospace" }}>
-            Dataset: {selectedDataType} | Items: {currentData.length} | Category: {currentCategoryKey}
+          <div
+            style={{ marginTop: "12px", fontSize: "12px", color: "#666", fontFamily: "monospace" }}
+          >
+            Dataset: {selectedDataType} | Items: {currentData.length} | Category:{" "}
+            {currentCategoryKey}
           </div>
         </div>
         <Card style={{ width: "600px" }}>
@@ -540,19 +734,40 @@ export const DynamicSizing: Story = {
     const [heightVal, setHeightVal] = useState(296);
 
     const widthProp =
-      widthMode === "number" ? widthVal : widthMode === "percent" ? `${widthVal}%` : `${widthVal}px`;
+      widthMode === "number"
+        ? widthVal
+        : widthMode === "percent"
+          ? `${widthVal}%`
+          : `${widthVal}px`;
     const heightProp =
       heightMode === "default" ? undefined : heightMode === "number" ? heightVal : `${heightVal}px`;
 
     const labelStyle: React.CSSProperties = { fontSize: "13px", fontFamily: "monospace" };
-    const controlRow: React.CSSProperties = { display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" };
+    const controlRow: React.CSSProperties = {
+      display: "flex",
+      alignItems: "center",
+      gap: "12px",
+      marginBottom: "8px",
+    };
 
     return (
       <div style={{ width: "900px" }}>
-        <div style={{ padding: "12px", background: "#f8f9fa", borderRadius: "8px", border: "1px solid #e9ecef", marginBottom: "16px" }}>
+        <div
+          style={{
+            padding: "12px",
+            background: "#f8f9fa",
+            borderRadius: "8px",
+            border: "1px solid #e9ecef",
+            marginBottom: "16px",
+          }}
+        >
           <div style={controlRow}>
             <span style={labelStyle}>width:</span>
-            <select value={widthMode} onChange={(e) => setWidthMode(e.target.value as any)} style={{ fontSize: "13px" }}>
+            <select
+              value={widthMode}
+              onChange={(e) => setWidthMode(e.target.value as any)}
+              style={{ fontSize: "13px" }}
+            >
               <option value="number">number (px)</option>
               <option value="percent">string (%)</option>
               <option value="px">string (px)</option>
@@ -571,7 +786,11 @@ export const DynamicSizing: Story = {
           </div>
           <div style={controlRow}>
             <span style={labelStyle}>height:</span>
-            <select value={heightMode} onChange={(e) => setHeightMode(e.target.value as any)} style={{ fontSize: "13px" }}>
+            <select
+              value={heightMode}
+              onChange={(e) => setHeightMode(e.target.value as any)}
+              style={{ fontSize: "13px" }}
+            >
               <option value="default">undefined (default 296)</option>
               <option value="number">number (px)</option>
               <option value="px">string (px)</option>
@@ -601,6 +820,124 @@ export const DynamicSizing: Story = {
             theme="spectrum"
             width={widthProp as any}
             height={heightProp as any}
+          />
+        </Card>
+      </div>
+    );
+  },
+};
+
+export const OnClickHandler: Story = {
+  name: "onClick Handler",
+  render: () => {
+    const [clickLog, setClickLog] = useState<
+      Array<{ row: Record<string, unknown>; index: number }>
+    >([]);
+
+    const handleClick = useCallback((row: Record<string, string | number>, index: number) => {
+      setClickLog((prev) => [{ row, index }, ...prev].slice(0, 5));
+    }, []);
+
+    const logStyle: React.CSSProperties = {
+      fontSize: "12px",
+      fontFamily: "monospace",
+      padding: "6px 10px",
+      background: "#f0f4f8",
+      borderRadius: "4px",
+      marginBottom: "4px",
+      border: "1px solid #e2e8f0",
+    };
+
+    return (
+      <div>
+        <Card style={{ width: "600px" }}>
+          <D3AreaChart
+            data={dataVariations.default}
+            categoryKey="month"
+            theme="ocean"
+            variant="natural"
+            onClick={handleClick}
+          />
+        </Card>
+        <div
+          style={{
+            marginTop: "16px",
+            padding: "12px",
+            background: "#f8f9fa",
+            borderRadius: "8px",
+            border: "1px solid #e9ecef",
+            width: "600px",
+          }}
+        >
+          <strong style={{ fontSize: "13px" }}>Click Log (last 5):</strong>
+          <div style={{ marginTop: "8px" }}>
+            {clickLog.length === 0 ? (
+              <p style={{ fontSize: "12px", color: "#999", margin: 0 }}>
+                Click on the chart to see events here...
+              </p>
+            ) : (
+              clickLog.map((entry, i) => (
+                <div key={i} style={logStyle}>
+                  <span style={{ color: "#007acc" }}>index: {entry.index}</span> |{" "}
+                  {Object.entries(entry.row)
+                    .map(([k, v]) => `${k}: ${v}`)
+                    .join(", ")}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  },
+};
+
+export const PrintContext: Story = {
+  name: "Print Context",
+  render: () => {
+    const [simulatePrint, setSimulatePrint] = useState(false);
+
+    return (
+      <div>
+        <div
+          style={{
+            marginBottom: "16px",
+            padding: "12px",
+            background: "#f8f9fa",
+            borderRadius: "8px",
+            border: "1px solid #e9ecef",
+            width: "600px",
+          }}
+        >
+          <strong style={{ fontSize: "13px" }}>Print Context Demo</strong>
+          <p style={{ fontSize: "12px", color: "#666", margin: "8px 0" }}>
+            The <code>usePrintContext</code> hook automatically detects print mode (Ctrl+P / Cmd+P)
+            and disables animations so the chart renders its final state for print. Try printing
+            this page — the chart below has <code>isAnimationActive=true</code> but animations will
+            be suppressed in print preview.
+          </p>
+          <button
+            onClick={() => setSimulatePrint(!simulatePrint)}
+            style={{
+              padding: "6px 12px",
+              fontSize: "12px",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              cursor: "pointer",
+              background: simulatePrint ? "#007acc" : "#fff",
+              color: simulatePrint ? "white" : "inherit",
+            }}
+          >
+            {simulatePrint ? "Animation: OFF (simulated print)" : "Animation: ON (normal mode)"}
+          </button>
+        </div>
+        <Card style={{ width: "600px" }}>
+          <D3AreaChart
+            data={dataVariations.default}
+            categoryKey="month"
+            theme="orchid"
+            variant="natural"
+            isAnimationActive={!simulatePrint}
           />
         </Card>
       </div>

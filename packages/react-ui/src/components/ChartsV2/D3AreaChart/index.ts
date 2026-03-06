@@ -1,2 +1,2 @@
 export { D3AreaChart } from "./D3AreaChart";
-export type { D3AreaChartData, D3AreaChartVariant, D3AreaChartProps } from "./types";
+export type { D3AreaChartData, D3AreaChartProps, D3AreaChartVariant } from "./types";

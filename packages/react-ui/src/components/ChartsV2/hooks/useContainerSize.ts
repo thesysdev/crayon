@@ -27,7 +27,7 @@ export function useContainerSize(
     setSize({ width: rect.width, height: rect.height });
 
     return () => observer.disconnect();
-  }, [numericWidth, numericHeight]);
+  }, [numericWidth, numericHeight, ref]);
 
   return {
     width: numericWidth ?? size.width,

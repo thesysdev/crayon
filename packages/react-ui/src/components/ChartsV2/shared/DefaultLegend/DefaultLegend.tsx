@@ -70,14 +70,12 @@ const DefaultLegend = memo(
             <div className="openui-chart-legend-axis-label-container">
               {xAxisLabel && (
                 <span className="openui-chart-legend-axis-label">
-                  X-Axis:{" "}
-                  <span className="openui-chart-legend-axis-label-text">{xAxisLabel}</span>
+                  X-Axis: <span className="openui-chart-legend-axis-label-text">{xAxisLabel}</span>
                 </span>
               )}
               {yAxisLabel && (
                 <span className="openui-chart-legend-axis-label">
-                  Y-Axis:{" "}
-                  <span className="openui-chart-legend-axis-label-text">{yAxisLabel}</span>
+                  Y-Axis: <span className="openui-chart-legend-axis-label-text">{yAxisLabel}</span>
                 </span>
               )}
             </div>

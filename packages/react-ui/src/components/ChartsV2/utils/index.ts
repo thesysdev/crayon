@@ -1,4 +1,4 @@
-export * from "./paletteUtils";
 export * from "./dataUtils";
-export * from "./styleUtils";
+export * from "./paletteUtils";
 export * from "./scrollUtils";
+export * from "./styleUtils";

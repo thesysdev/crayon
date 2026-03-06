@@ -1,5 +1,5 @@
-export { LabelTooltip, LabelTooltipProvider } from "./LabelTooltip/LabelTooltip";
 export { DefaultLegend } from "./DefaultLegend/DefaultLegend";
-export { ScrollButtonsHorizontal } from "./ScrollButtonsHorizontal/ScrollButtonsHorizontal";
+export { LabelTooltip, LabelTooltipProvider } from "./LabelTooltip/LabelTooltip";
 export { CustomTooltipContent } from "./PortalTooltip/CustomTooltipContent";
 export { FloatingUIPortal } from "./PortalTooltip/FloatingUIPortal";
+export { ScrollButtonsHorizontal } from "./ScrollButtonsHorizontal/ScrollButtonsHorizontal";

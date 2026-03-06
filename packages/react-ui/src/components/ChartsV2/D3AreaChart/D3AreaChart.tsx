@@ -1,13 +1,16 @@
 import clsx from "clsx";
-import { scaleLinear, scalePoint } from "d3-scale";
+import type { ScalePoint } from "d3-scale";
 import { pointer } from "d3-selection";
-import { stack, stackOffsetNone, stackOrderNone } from "d3-shape";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useContainerSize } from "../hooks/useContainerSize";
+import { usePrintContext } from "../hooks/usePrintContext";
+import { useStackedData } from "../hooks/useStackedData";
 import { useTransformedKeys } from "../hooks/useTransformedKeys";
 import { useXAxisHeight } from "../hooks/useXAxisHeight";
+import { useXScale } from "../hooks/useXScale";
 import { useYAxisWidth } from "../hooks/useYAxisWidth";
+import { useYScale } from "../hooks/useYScale";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
 import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
 import { CustomTooltipContent } from "../shared/PortalTooltip/CustomTooltipContent";
@@ -32,6 +35,37 @@ import type { D3AreaChartData, D3AreaChartProps } from "./types";
 
 const MARGIN_TOP = 10;
 const DEFAULT_CHART_HEIGHT = 296;
+const SINGLE_LINE_BREAKPOINT = 300;
+
+let nextChartId = 0;
+
+function findNearestDataIndex(xScale: ScalePoint<string>, mouseX: number): number {
+  const domain = xScale.domain();
+  let nearestIdx = 0;
+  let minDist = Infinity;
+  domain.forEach((cat, idx) => {
+    const catX = xScale(cat) ?? 0;
+    const dist = Math.abs(mouseX - catX);
+    if (dist < minDist) {
+      minDist = dist;
+      nearestIdx = idx;
+    }
+  });
+  return nearestIdx;
+}
+
+function getRelativePosition(
+  clientX: number,
+  clientY: number,
+  containerRef: React.RefObject<HTMLDivElement | null>,
+): { x: number; y: number } | null {
+  const rect = containerRef.current?.getBoundingClientRect();
+  if (!rect) return null;
+  return {
+    x: clientX - rect.left + (containerRef.current?.scrollLeft ?? 0),
+    y: clientY - rect.top,
+  };
+}
 
 export function D3AreaChart<T extends D3AreaChartData>({
   data,
@@ -51,10 +85,30 @@ export function D3AreaChart<T extends D3AreaChartData>({
   className,
   height,
   width: fixedWidth,
+  onClick,
 }: D3AreaChartProps<T>) {
+  const isPrinting = usePrintContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
-  const chartId = useMemo(() => crypto.randomUUID(), []);
+  const legendRef = useRef<HTMLDivElement>(null);
+  const chartId = useMemo(() => `d3ac-${nextChartId++}`, []);
+  const [legendHeight, setLegendHeight] = useState(0);
+
+  useEffect(() => {
+    const el = legendRef.current;
+    if (!el) {
+      setLegendHeight(0);
+      return;
+    }
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setLegendHeight(entry.contentRect.height);
+      }
+    });
+    observer.observe(el);
+    setLegendHeight(el.getBoundingClientRect().height);
+    return () => observer.disconnect();
+  }, [showLegend]);
 
   const { width: containerWidth, height: containerHeight } = useContainerSize(
     containerRef,
@@ -79,14 +133,17 @@ export function D3AreaChart<T extends D3AreaChartData>({
   });
 
   const transformedKeys = useTransformedKeys(allDataKeys);
-  const widthOfGroup = getWidthOfGroup(data);
-  const tickVariant = containerWidth < 300 ? ("singleLine" as const) : tickVariantProp;
+  const widthOfGroup = getWidthOfGroup(data.length);
+
+  const tickVariant =
+    containerWidth < SINGLE_LINE_BREAKPOINT ? ("singleLine" as const) : tickVariantProp;
+
   const xAxisHeight = useXAxisHeight(data, catKey, tickVariant, widthOfGroup);
   const { yAxisWidth } = useYAxisWidth(data, dataKeys);
 
   const effectiveYAxisWidth = showYAxis ? yAxisWidth : 0;
   const chartConfig = useMemo(
-    () => get2dChartConfig(allDataKeys, colors, transformedKeys, undefined, icons as any),
+    () => get2dChartConfig(allDataKeys, colors, transformedKeys, undefined, icons),
     [allDataKeys, colors, transformedKeys, icons],
   );
 
@@ -126,72 +183,23 @@ export function D3AreaChart<T extends D3AreaChartData>({
       : containerHeight > 0
         ? containerHeight
         : DEFAULT_CHART_HEIGHT;
-  const chartInnerHeight = resolvedHeight - MARGIN_TOP - xAxisHeight;
-  const totalHeight = resolvedHeight;
+  const svgAvailableHeight = height ? resolvedHeight - legendHeight : resolvedHeight;
+  const chartInnerHeight = svgAvailableHeight - MARGIN_TOP - xAxisHeight;
+  const totalHeight = svgAvailableHeight;
   const svgWidth = needsScroll ? dataWidth : containerWidth - effectiveYAxisWidth;
 
-  const xScale = useMemo(() => {
-    return scalePoint<string>()
-      .domain(data.map((d) => String(d[catKey])))
-      .range([widthOfGroup / 2, svgWidth - widthOfGroup / 2])
-      .padding(0);
-  }, [data, catKey, svgWidth, widthOfGroup]);
-
-  const yScale = useMemo(() => {
-    let maxVal = 0;
-
-    if (stacked && dataKeys.length > 0) {
-      const stackGenerator = stack<Record<string, string | number>>()
-        .keys(dataKeys)
-        .order(stackOrderNone)
-        .offset(stackOffsetNone);
-      const stackedData = stackGenerator(data as Iterable<{ [key: string]: number }>);
-      stackedData.forEach((series) => {
-        series.forEach((point) => {
-          maxVal = Math.max(maxVal, point[1]);
-        });
-      });
-    } else {
-      data.forEach((row) => {
-        dataKeys.forEach((key) => {
-          const val = Number(row[key]) || 0;
-          maxVal = Math.max(maxVal, val);
-        });
-      });
-    }
-
-    return scaleLinear().domain([0, maxVal]).range([chartInnerHeight, 0]).nice();
-  }, [data, dataKeys, stacked, chartInnerHeight]);
+  const xScale = useXScale(data, catKey, svgWidth, widthOfGroup);
+  const stackedData = useStackedData(data, dataKeys, stacked);
+  const yScale = useYScale(data, dataKeys, chartInnerHeight, stackedData);
 
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
 
   const handleMouseMove = useCallback(
     (event: React.MouseEvent<SVGSVGElement>) => {
-      const svgElement = event.currentTarget;
-      const [mouseX] = pointer(event.nativeEvent, svgElement);
-
-      const domain = xScale.domain();
-      let nearestIdx = 0;
-      let minDist = Infinity;
-      domain.forEach((cat, idx) => {
-        const catX = xScale(cat) ?? 0;
-        const dist = Math.abs(mouseX - catX);
-        if (dist < minDist) {
-          minDist = dist;
-          nearestIdx = idx;
-        }
-      });
-
-      setHoveredIndex(nearestIdx);
-
-      const containerRect = mainContainerRef.current?.getBoundingClientRect();
-      if (containerRect) {
-        setMousePos({
-          x: event.clientX - containerRect.left + (mainContainerRef.current?.scrollLeft ?? 0),
-          y: event.clientY - containerRect.top,
-        });
-      }
+      const [mouseX] = pointer(event.nativeEvent, event.currentTarget);
+      setHoveredIndex(findNearestDataIndex(xScale, mouseX));
+      setMousePos(getRelativePosition(event.clientX, event.clientY, mainContainerRef));
     },
     [xScale],
   );
@@ -205,31 +213,10 @@ export function D3AreaChart<T extends D3AreaChartData>({
     (event: React.TouchEvent<SVGSVGElement>) => {
       const touch = event.touches[0];
       if (!touch) return;
-      const svgElement = event.currentTarget;
-      const svgRect = svgElement.getBoundingClientRect();
+      const svgRect = event.currentTarget.getBoundingClientRect();
       const mouseX = touch.clientX - svgRect.left;
-
-      const domain = xScale.domain();
-      let nearestIdx = 0;
-      let minDist = Infinity;
-      domain.forEach((cat, idx) => {
-        const catX = xScale(cat) ?? 0;
-        const dist = Math.abs(mouseX - catX);
-        if (dist < minDist) {
-          minDist = dist;
-          nearestIdx = idx;
-        }
-      });
-
-      setHoveredIndex(nearestIdx);
-
-      const containerRect = mainContainerRef.current?.getBoundingClientRect();
-      if (containerRect) {
-        setMousePos({
-          x: touch.clientX - containerRect.left + (mainContainerRef.current?.scrollLeft ?? 0),
-          y: touch.clientY - containerRect.top,
-        });
-      }
+      setHoveredIndex(findNearestDataIndex(xScale, mouseX));
+      setMousePos(getRelativePosition(touch.clientX, touch.clientY, mainContainerRef));
     },
     [xScale],
   );
@@ -239,8 +226,35 @@ export function D3AreaChart<T extends D3AreaChartData>({
     setMousePos(null);
   }, []);
 
+  const handleClick = useCallback(
+    (event: React.MouseEvent<SVGSVGElement>) => {
+      if (!onClick) return;
+      const [mouseX] = pointer(event.nativeEvent, event.currentTarget);
+      const idx = findNearestDataIndex(xScale, mouseX);
+      if (idx >= 0 && idx < data.length) {
+        onClick(data[idx]!, idx);
+      }
+    },
+    [onClick, xScale, data],
+  );
+
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(needsScroll);
+
+  useEffect(() => {
+    if (!needsScroll) {
+      setCanScrollLeft(false);
+      setCanScrollRight(false);
+      return;
+    }
+    const el = mainContainerRef.current;
+    if (el) {
+      setCanScrollLeft(el.scrollLeft > 1);
+      setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 1);
+    } else {
+      setCanScrollRight(true);
+    }
+  }, [needsScroll]);
 
   const handleScroll = useCallback(() => {
     const el = mainContainerRef.current;
@@ -262,7 +276,7 @@ export function D3AreaChart<T extends D3AreaChartData>({
   );
 
   const legendItems = useMemo(
-    () => getLegendItems(allDataKeys, colors, icons as any),
+    () => getLegendItems(allDataKeys, colors, icons),
     [allDataKeys, colors, icons],
   );
   const [isLegendExpanded, setIsLegendExpanded] = useState(false);
@@ -301,7 +315,7 @@ export function D3AreaChart<T extends D3AreaChartData>({
   }, [hoveredIndex, data, dataKeys, catKey, chartConfig]);
 
   if (!data || data.length === 0) {
-    return null;
+    return <div className={clsx("openui-d3-area-chart-container", className)} />;
   }
 
   const containerStyle = useMemo(() => {
@@ -317,6 +331,7 @@ export function D3AreaChart<T extends D3AreaChartData>({
         ref={containerRef}
         className={clsx("openui-d3-area-chart-container", className)}
         style={containerStyle as React.CSSProperties}
+        data-openui-chart="area"
       >
         <div className="openui-d3-area-chart-container-inner">
           {showYAxis && (
@@ -345,6 +360,7 @@ export function D3AreaChart<T extends D3AreaChartData>({
               onMouseLeave={handleMouseLeave}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
+              onClick={handleClick}
             >
               <GradientDefs
                 dataKeys={dataKeys}
@@ -355,19 +371,21 @@ export function D3AreaChart<T extends D3AreaChartData>({
                 chartHeight={chartInnerHeight}
               />
               <g transform={`translate(0, ${MARGIN_TOP})`} clipPath={`url(#clip-${chartId})`}>
-                {grid && <Grid yScale={yScale} chartWidth={svgWidth} chartHeight={chartInnerHeight} />}
+                {grid && (
+                  <Grid yScale={yScale} chartWidth={svgWidth} chartHeight={chartInnerHeight} />
+                )}
                 <AreaSeries
                   data={data}
                   dataKeys={dataKeys}
                   xScale={xScale}
                   yScale={yScale}
                   variant={variant}
-                  stacked={stacked}
+                  stackedData={stackedData}
                   categoryKey={catKey}
                   transformedKeys={transformedKeys}
                   colors={colorMap}
                   chartId={chartId}
-                  isAnimationActive={isAnimationActive}
+                  isAnimationActive={isAnimationActive && !isPrinting}
                 />
                 <Crosshair
                   hoveredIndex={hoveredIndex}
@@ -377,7 +395,7 @@ export function D3AreaChart<T extends D3AreaChartData>({
                   dataKeys={dataKeys}
                   categoryKey={catKey}
                   colors={colorMap}
-                  stacked={stacked}
+                  stackedData={stackedData}
                   chartHeight={chartInnerHeight}
                 />
               </g>
@@ -406,6 +424,7 @@ export function D3AreaChart<T extends D3AreaChartData>({
 
         {showLegend && (
           <DefaultLegend
+            ref={legendRef}
             items={legendItems}
             hiddenSeries={hiddenSeries}
             onItemClick={handleLegendItemClick}

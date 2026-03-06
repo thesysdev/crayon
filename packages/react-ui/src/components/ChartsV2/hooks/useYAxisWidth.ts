@@ -7,10 +7,7 @@ const MIN_Y_AXIS_WIDTH = 20;
 const MAX_Y_AXIS_WIDTH = 200;
 const LABEL_PADDING = 10;
 
-export const useYAxisWidth = (
-  data: Array<Record<string, string | number>>,
-  dataKeys: string[],
-) => {
+export const useYAxisWidth = (data: Array<Record<string, string | number>>, dataKeys: string[]) => {
   const context = useCanvasContextForLabelSize();
   const [maxLabelWidthReceived, setMaxLabelWidthReceived] = useState(0);
 

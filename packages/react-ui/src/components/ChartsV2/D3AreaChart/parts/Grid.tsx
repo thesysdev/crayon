@@ -16,13 +16,7 @@ export const Grid: React.FC<GridProps> = ({ yScale, chartWidth, chartHeight }) =
   return (
     <g className="openui-d3-area-chart-grid">
       {ticks.map((tick) => (
-        <line
-          key={tick}
-          x1={0}
-          x2={chartWidth}
-          y1={yScale(tick)}
-          y2={yScale(tick)}
-        />
+        <line key={tick} x1={0} x2={chartWidth} y1={yScale(tick)} y2={yScale(tick)} />
       ))}
     </g>
   );

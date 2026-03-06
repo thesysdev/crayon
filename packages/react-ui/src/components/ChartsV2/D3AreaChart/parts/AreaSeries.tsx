@@ -1,15 +1,13 @@
+import type { ScaleLinear, ScalePoint } from "d3-scale";
 import {
-  area as d3Area,
-  line as d3Line,
-  stack,
-  stackOrderNone,
-  stackOffsetNone,
   curveLinear,
   curveMonotoneX,
   curveStepAfter,
+  area as d3Area,
+  line as d3Line,
 } from "d3-shape";
-import type { ScaleLinear, ScalePoint } from "d3-scale";
-import React, { useMemo, useRef, useEffect } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
+import type { StackedData } from "../../hooks/useStackedData";
 import { D3AreaChartVariant } from "../types";
 
 const curveMap = {
@@ -24,7 +22,7 @@ interface AreaSeriesProps {
   xScale: ScalePoint<string>;
   yScale: ScaleLinear<number, number>;
   variant: D3AreaChartVariant;
-  stacked: boolean;
+  stackedData: StackedData | null;
   categoryKey: string;
   transformedKeys: Record<string, string>;
   colors: Record<string, string>;
@@ -38,7 +36,7 @@ export const AreaSeries: React.FC<AreaSeriesProps> = ({
   xScale,
   yScale,
   variant,
-  stacked,
+  stackedData,
   categoryKey,
   transformedKeys,
   colors,
@@ -48,14 +46,7 @@ export const AreaSeries: React.FC<AreaSeriesProps> = ({
   const curve = curveMap[variant];
 
   const seriesPaths = useMemo(() => {
-    if (stacked) {
-      const stackGenerator = stack<Record<string, string | number>>()
-        .keys(dataKeys)
-        .order(stackOrderNone)
-        .offset(stackOffsetNone);
-
-      const stackedData = stackGenerator(data as Iterable<{ [key: string]: number }>);
-
+    if (stackedData) {
       return stackedData.map((series) => {
         const areaGenerator = d3Area<[number, number]>()
           .x((_, i) => xScale(String(data[i]![categoryKey])) ?? 0)
@@ -94,7 +85,7 @@ export const AreaSeries: React.FC<AreaSeriesProps> = ({
         };
       });
     }
-  }, [data, dataKeys, xScale, yScale, variant, stacked, categoryKey, curve]);
+  }, [data, dataKeys, xScale, yScale, variant, stackedData, categoryKey, curve]);
 
   return (
     <g className="openui-d3-area-chart-areas">
@@ -108,11 +99,7 @@ export const AreaSeries: React.FC<AreaSeriesProps> = ({
               d={areaPath}
               fill={`url(#grad-${chartId}-${transformedKey})`}
             />
-            <AnimatedLine
-              linePath={linePath}
-              color={color}
-              isAnimationActive={isAnimationActive}
-            />
+            <AnimatedLine linePath={linePath} color={color} isAnimationActive={isAnimationActive} />
           </g>
         );
       })}

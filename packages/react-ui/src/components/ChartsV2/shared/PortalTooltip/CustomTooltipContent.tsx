@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { memo, useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { FloatingUIPortal } from "./FloatingUIPortal";
 import { tooltipNumberFormatter } from "./utils";
 
@@ -163,4 +163,4 @@ function CustomTooltipContentRender({
 export const CustomTooltipContent = memo(CustomTooltipContentRender);
 CustomTooltipContent.displayName = "CustomTooltipContent";
 
-export type { TooltipItem, CustomTooltipContentProps };
+export type { CustomTooltipContentProps, TooltipItem };

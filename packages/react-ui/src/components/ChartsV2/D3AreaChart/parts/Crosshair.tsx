@@ -1,6 +1,6 @@
 import type { ScaleLinear, ScalePoint } from "d3-scale";
-import { stack, stackOrderNone, stackOffsetNone } from "d3-shape";
-import React, { useMemo } from "react";
+import React from "react";
+import type { StackedData } from "../../hooks/useStackedData";
 
 interface CrosshairProps {
   hoveredIndex: number | null;
@@ -10,7 +10,7 @@ interface CrosshairProps {
   dataKeys: string[];
   categoryKey: string;
   colors: Record<string, string>;
-  stacked: boolean;
+  stackedData: StackedData | null;
   chartHeight: number;
 }
 
@@ -22,18 +22,9 @@ export const Crosshair: React.FC<CrosshairProps> = ({
   dataKeys,
   categoryKey,
   colors,
-  stacked,
+  stackedData,
   chartHeight,
 }) => {
-  const stackedData = useMemo(() => {
-    if (!stacked || dataKeys.length === 0) return null;
-    const stackGenerator = stack<Record<string, string | number>>()
-      .keys(dataKeys)
-      .order(stackOrderNone)
-      .offset(stackOffsetNone);
-    return stackGenerator(data as Iterable<{ [key: string]: number }>);
-  }, [data, dataKeys, stacked]);
-
   if (hoveredIndex === null || hoveredIndex < 0 || hoveredIndex >= data.length) {
     return null;
   }
@@ -44,16 +35,10 @@ export const Crosshair: React.FC<CrosshairProps> = ({
 
   return (
     <g className="openui-d3-area-chart-crosshair">
-      <line
-        className="openui-d3-area-chart-crosshair-line"
-        x1={x}
-        x2={x}
-        y1={0}
-        y2={chartHeight}
-      />
+      <line className="openui-d3-area-chart-crosshair-line" x1={x} x2={x} y1={0} y2={chartHeight} />
       {dataKeys.map((key, seriesIndex) => {
         let yValue: number;
-        if (stacked && stackedData) {
+        if (stackedData) {
           const series = stackedData[seriesIndex];
           const point = series?.[hoveredIndex];
           yValue = point ? point[1] : 0;
@@ -66,12 +51,7 @@ export const Crosshair: React.FC<CrosshairProps> = ({
 
         return (
           <g key={key}>
-            <circle
-              cx={x}
-              cy={y}
-              r={4}
-              className="openui-d3-area-chart-active-dot-outer"
-            />
+            <circle cx={x} cy={y} r={4} className="openui-d3-area-chart-active-dot-outer" />
             <circle
               cx={x}
               cy={y}

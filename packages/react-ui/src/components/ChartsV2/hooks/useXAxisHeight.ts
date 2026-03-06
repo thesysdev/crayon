@@ -1,8 +1,9 @@
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "../../ThemeProvider";
 import { XAxisTickVariant } from "../types";
 
 const DEFAULT_HEIGHT = 30;
+const X_AXIS_LABEL_PADDING = 13;
 
 export const useXAxisHeight = (
   data: Record<string, string | number>[],
@@ -12,9 +13,12 @@ export const useXAxisHeight = (
 ) => {
   const { theme: userTheme } = useTheme();
 
-  const maxLabelHeight = useMemo(() => {
+  const [maxLabelHeight, setMaxLabelHeight] = useState(DEFAULT_HEIGHT);
+
+  useEffect(() => {
     if (typeof window === "undefined" || !data || data.length === 0) {
-      return DEFAULT_HEIGHT;
+      setMaxLabelHeight(DEFAULT_HEIGHT);
+      return;
     }
 
     const largestLabel = data.reduce((max, item) => {
@@ -52,14 +56,23 @@ export const useXAxisHeight = (
       div2.getBoundingClientRect().height,
       div3.getBoundingClientRect().height * 3,
     );
-    div1.remove();
 
-    return largestLabelHeight;
-  }, [data, categoryKey, tickVariant, widthOfGroup]);
+    setMaxLabelHeight(largestLabelHeight);
+
+    return () => {
+      div1.remove();
+    };
+  }, [
+    data,
+    categoryKey,
+    tickVariant,
+    widthOfGroup,
+    userTheme.textLabelXs,
+    userTheme.textLabelXsLetterSpacing,
+  ]);
 
   if (tickVariant === "multiLine") {
-    return Math.max(maxLabelHeight + 13, DEFAULT_HEIGHT);
-  } else {
-    return DEFAULT_HEIGHT;
+    return Math.max(maxLabelHeight + X_AXIS_LABEL_PADDING, DEFAULT_HEIGHT);
   }
+  return DEFAULT_HEIGHT;
 };

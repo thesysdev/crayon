@@ -3,6 +3,8 @@ import React, { useRef } from "react";
 import { LabelTooltip } from "../../shared/LabelTooltip/LabelTooltip";
 import { XAxisTickVariant } from "../../types";
 
+const X_AXIS_TOP_GAP = 4;
+
 interface XAxisProps {
   scale: ScalePoint<string>;
   data: Array<Record<string, string | number>>;
@@ -32,15 +34,11 @@ export const XAxis: React.FC<XAxisProps> = ({
           <foreignObject
             key={category}
             x={x - widthOfGroup / 2}
-            y={4}
+            y={X_AXIS_TOP_GAP}
             width={widthOfGroup}
             height={labelHeight}
           >
-            <XAxisLabel
-              label={label}
-              tickVariant={tickVariant}
-              width={widthOfGroup}
-            />
+            <XAxisLabel label={label} tickVariant={tickVariant} width={widthOfGroup} />
           </foreignObject>
         );
       })}
@@ -63,11 +61,7 @@ const XAxisLabel: React.FC<{
 
   return (
     <LabelTooltip content={label} disabled={!isTruncated}>
-      <div
-        ref={labelRef}
-        className={className}
-        style={{ maxWidth: width }}
-      >
+      <div ref={labelRef} className={className} style={{ maxWidth: width }}>
         {label}
       </div>
     </LabelTooltip>
@@ -80,8 +74,18 @@ function useIsTruncated(ref: React.RefObject<HTMLElement | null>): boolean {
   React.useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    setTruncated(el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight);
-  });
+
+    const check = () => {
+      setTruncated(el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight);
+    };
+
+    check();
+
+    const observer = new ResizeObserver(check);
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [ref]);
 
   return truncated;
 }
