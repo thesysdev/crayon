@@ -1,0 +1,62 @@
+import clsx from "clsx";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import React from "react";
+import { IconButton } from "../../../IconButton";
+
+interface ScrollButtonsHorizontalProps {
+  dataWidth: number;
+  effectiveWidth: number;
+  canScrollLeft: boolean;
+  canScrollRight: boolean;
+  onScrollLeft: () => void;
+  onScrollRight: () => void;
+}
+
+export const ScrollButtonsHorizontal = React.memo(
+  ({
+    dataWidth,
+    effectiveWidth,
+    canScrollLeft,
+    canScrollRight,
+    onScrollLeft,
+    onScrollRight,
+  }: ScrollButtonsHorizontalProps) => {
+    if (dataWidth <= effectiveWidth) {
+      return null;
+    }
+
+    return (
+      <div className="openui-chart-horizontal-scroll-buttons-container">
+        <IconButton
+          className={clsx(
+            "openui-chart-horizontal-scroll-button openui-chart-horizontal-scroll-button--left",
+            {
+              "openui-chart-horizontal-scroll-button--disabled": !canScrollLeft,
+            },
+          )}
+          icon={<ChevronLeft />}
+          variant="secondary"
+          onClick={onScrollLeft}
+          size="2-extra-small"
+          disabled={!canScrollLeft}
+        />
+
+        <IconButton
+          className={clsx(
+            "openui-chart-horizontal-scroll-button openui-chart-horizontal-scroll-button--right",
+            {
+              "openui-chart-horizontal-scroll-button--disabled": !canScrollRight,
+            },
+          )}
+          icon={<ChevronRight />}
+          variant="secondary"
+          size="2-extra-small"
+          onClick={onScrollRight}
+          disabled={!canScrollRight}
+        />
+      </div>
+    );
+  },
+);
+
+ScrollButtonsHorizontal.displayName = "ScrollButtonsHorizontal";
