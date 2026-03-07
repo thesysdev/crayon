@@ -10,11 +10,11 @@ D3-based chart components for OpenUI. Three chart types share a common infrastru
 
 ## Architecture
 
-``` text
+```text
 ┌────────────────────────────────────────────────-─┐
 │              D3[Type]Chart Component             │
 │                                                  │
-│  useChartOrchestration ◄── master hook           │
+│  useChartScrollableOrchestrator ◄── master hook           │
 │  ├── useChartData         (keys, colors, legend) │
 │  ├── useChartDimensions   (sizing, layout)       │
 │  ├── useChartHover        (hover state, handlers)│
@@ -40,9 +40,9 @@ All hooks are in `hooks/` and re-exported from `hooks/index.ts`.
 
 ### Orchestration
 
-| Hook                    | Signature                         | Description                                                                                                                                                                                                                                                           |
-| ----------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `useChartOrchestration` | `(params) => OrchestrationResult` | Master hook that composes `useChartData`, `useChartDimensions`, `useChartHover`, and `useChartScroll`. Returns 40+ properties covering refs, data, dimensions, hover, scroll, legend, tooltip, styles, and a `createMouseHandlers` factory. Used by all three charts. |
+| Hook                             | Signature                         | Description                                                                                                                                                                                                                                                           |
+| -------------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `useChartScrollableOrchestrator` | `(params) => OrchestrationResult` | Master hook that composes `useChartData`, `useChartDimensions`, `useChartHover`, and `useChartScroll`. Returns 40+ properties covering refs, data, dimensions, hover, scroll, legend, tooltip, styles, and a `createMouseHandlers` factory. Used by all three charts. |
 
 ### Data
 
@@ -143,7 +143,7 @@ To add a new chart type (e.g., `D3ScatterChart`):
 
 1. **Create the directory** following the existing pattern:
 
-   ``` text
+   ```text
    D3ScatterChart/
    ├── D3ScatterChart.tsx
    ├── types.ts
@@ -157,7 +157,7 @@ To add a new chart type (e.g., `D3ScatterChart`):
 
 2. **Define types** in `types.ts` — extend `BaseChartProps<T>` from `types/common.ts` and add chart-specific props (e.g., `dotRadius`, `variant`).
 
-3. **Use `useChartOrchestration`** as the primary hook — it provides data, dimensions, hover, scroll, legend, and tooltip state out of the box.
+3. **Use `useChartScrollableOrchestrator`** as the primary hook — it provides data, dimensions, hover, scroll, legend, and tooltip state out of the box.
 
 4. **Pick the right scale hook** — `useXScale` (point) for continuous positioning, `useXBandScale` (band) for discrete categories.
 

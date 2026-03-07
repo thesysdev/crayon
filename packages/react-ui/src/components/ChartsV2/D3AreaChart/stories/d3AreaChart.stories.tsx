@@ -901,12 +901,7 @@ export const Condensed: Story = {
           condensed — 12 months in 400px card (no scroll)
         </p>
         <Card style={{ width: "400px" }}>
-          <D3AreaChart
-            data={dataVariations.default}
-            categoryKey="month"
-            theme="ocean"
-            condensed
-          />
+          <D3AreaChart data={dataVariations.default} categoryKey="month" theme="ocean" condensed />
         </Card>
       </div>
       <div>
@@ -927,11 +922,7 @@ export const Condensed: Story = {
           normal (default) — same data scrolls
         </p>
         <Card style={{ width: "400px" }}>
-          <D3AreaChart
-            data={dataVariations.default}
-            categoryKey="month"
-            theme="ocean"
-          />
+          <D3AreaChart data={dataVariations.default} categoryKey="month" theme="ocean" />
         </Card>
       </div>
     </div>

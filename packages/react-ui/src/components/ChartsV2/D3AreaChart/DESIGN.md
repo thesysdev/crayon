@@ -337,13 +337,13 @@ The tooltip payload is constructed by the `useTooltipPayload` hook:
 
 ```typescript
 interface TooltipItem {
-  name: string;   // series key
-  value: number;  // series value at hovered index
-  color: string;  // series color
+  name: string; // series key
+  value: number; // series value at hovered index
+  color: string; // series color
 }
 
 interface TooltipPayload {
-  label: string;        // category value at hovered index
+  label: string; // category value at hovered index
   items: TooltipItem[];
 }
 ```

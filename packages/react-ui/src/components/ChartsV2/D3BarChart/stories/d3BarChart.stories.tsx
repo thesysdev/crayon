@@ -481,27 +481,22 @@ export const FixedPixelDimensions: Story = {
 };
 
 export const Condensed: Story = {
-  name: "Condensed",
+  name: "Condensed (Angled Labels)",
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       <div>
         <p style={{ margin: "0 0 8px", fontSize: "13px", fontFamily: "monospace", color: "#666" }}>
-          condensed — 12 months in 400px card (no scroll)
+          condensed — 12 months with angled labels
         </p>
-        <Card style={{ width: "400px" }}>
-          <D3BarChart
-            data={dataVariations.default}
-            categoryKey="month"
-            theme="ocean"
-            condensed
-          />
+        <Card style={{ width: "500px" }}>
+          <D3BarChart data={dataVariations.default} categoryKey="month" theme="ocean" condensed />
         </Card>
       </div>
       <div>
         <p style={{ margin: "0 0 8px", fontSize: "13px", fontFamily: "monospace", color: "#666" }}>
-          condensed stacked — 12 months in 400px card
+          condensed stacked — angled labels
         </p>
-        <Card style={{ width: "400px" }}>
+        <Card style={{ width: "500px" }}>
           <D3BarChart
             data={dataVariations.default}
             categoryKey="month"
@@ -513,13 +508,40 @@ export const Condensed: Story = {
       </div>
       <div>
         <p style={{ margin: "0 0 8px", fontSize: "13px", fontFamily: "monospace", color: "#666" }}>
-          normal (default) — same data scrolls
+          condensed — long labels (big angle)
         </p>
-        <Card style={{ width: "400px" }}>
+        <Card style={{ width: "500px" }}>
+          <D3BarChart
+            data={dataVariations.bigLabels}
+            categoryKey="category"
+            theme="orchid"
+            condensed
+          />
+        </Card>
+      </div>
+      <div>
+        <p style={{ margin: "0 0 8px", fontSize: "13px", fontFamily: "monospace", color: "#666" }}>
+          condensed — short labels (minimal angle)
+        </p>
+        <Card style={{ width: "500px" }}>
+          <D3BarChart
+            data={dataVariations.singleSeries}
+            categoryKey="month"
+            theme="emerald"
+            condensed
+          />
+        </Card>
+      </div>
+      <div>
+        <p style={{ margin: "0 0 8px", fontSize: "13px", fontFamily: "monospace", color: "#666" }}>
+          condensed — narrow container (300px)
+        </p>
+        <Card style={{ width: "300px" }}>
           <D3BarChart
             data={dataVariations.default}
             categoryKey="month"
-            theme="ocean"
+            theme="spectrum"
+            condensed
           />
         </Card>
       </div>
