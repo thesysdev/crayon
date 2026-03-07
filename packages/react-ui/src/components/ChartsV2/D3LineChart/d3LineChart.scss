@@ -1,0 +1,31 @@
+@use "../../../cssUtils" as cssUtils;
+@use "../shared/chartBase" as base;
+
+@include base.chart-base("line-chart");
+@include base.crosshair-styles("line-chart");
+
+.openui-d3-line-chart-line {
+  fill: none;
+  stroke-width: 2;
+  transition: d 0.3s ease-out;
+}
+
+.openui-d3-line-chart-dot {
+  stroke: cssUtils.$foreground;
+  stroke-width: 1;
+  transition:
+    cx 0.3s ease-out,
+    cy 0.3s ease-out;
+}
+
+.openui-d3-line-chart-line--animated {
+  stroke-dasharray: var(--path-length);
+  stroke-dashoffset: var(--path-length);
+  animation: openui-d3-line-draw 1s ease-out forwards;
+}
+
+@keyframes openui-d3-line-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
