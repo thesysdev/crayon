@@ -68,18 +68,7 @@ module.exports = [
           allow: ["error", "warn", "info"],
         },
       ],
-      "no-restricted-imports": [
-        "error",
-        {
-          paths: [
-            {
-              name: "react",
-              importNames: ["useId"],
-              message: "import of useId is allowed only using polyfills",
-            },
-          ],
-        },
-      ],
+      "no-restricted-imports": "off",
       ...eslintPluginPrettier.configs.recommended.rules,
       "react-hooks/exhaustive-deps": "warn",
     },
