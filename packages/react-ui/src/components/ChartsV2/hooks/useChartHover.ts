@@ -14,7 +14,7 @@ export function useChartHover<T extends ChartData>({ data, onClick }: UseChartHo
 
   const createMouseHandlers = useCallback(
     (findIndex: (mouseX: number) => number) => {
-      const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
+      const handleMouseMove = (event: React.MouseEvent<SVGElement>) => {
         const [mouseX] = pointer(event.nativeEvent, event.currentTarget);
         setHoveredIndex(findIndex(mouseX));
         setMousePos({ x: event.clientX, y: event.clientY });
@@ -25,7 +25,7 @@ export function useChartHover<T extends ChartData>({ data, onClick }: UseChartHo
         setMousePos(null);
       };
 
-      const handleTouchMove = (event: React.TouchEvent<SVGSVGElement>) => {
+      const handleTouchMove = (event: React.TouchEvent<SVGElement>) => {
         const touch = event.touches[0];
         if (!touch) return;
         const svgRect = event.currentTarget.getBoundingClientRect();
@@ -40,7 +40,7 @@ export function useChartHover<T extends ChartData>({ data, onClick }: UseChartHo
       };
 
       const handleClick = onClick
-        ? (event: React.MouseEvent<SVGSVGElement>) => {
+        ? (event: React.MouseEvent<SVGElement>) => {
             const [mouseX] = pointer(event.nativeEvent, event.currentTarget);
             const idx = findIndex(mouseX);
             if (idx >= 0 && idx < data.length) {

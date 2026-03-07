@@ -1,15 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 
+import { CHART_MARGIN_TOP, DEFAULT_CHART_HEIGHT, SINGLE_LINE_BREAKPOINT } from "../utils/constants";
 import { getWidthOfData, getWidthOfGroup } from "../utils/scrollUtils";
 import { useContainerSize } from "./useContainerSize";
+import { useLegendHeight } from "./useLegendHeight";
 import { useXAxisHeight } from "./useXAxisHeight";
 import { useYAxisWidth } from "./useYAxisWidth";
 
 import type { ChartData } from "../types";
-
-const MARGIN_TOP = 10;
-const DEFAULT_CHART_HEIGHT = 296;
-const SINGLE_LINE_BREAKPOINT = 300;
 
 export interface UseChartDimensionsParams<T extends ChartData> {
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -40,23 +38,7 @@ export function useChartDimensions<T extends ChartData>({
   tickVariantProp,
   condensed,
 }: UseChartDimensionsParams<T>) {
-  const [legendHeight, setLegendHeight] = useState(0);
-
-  useEffect(() => {
-    const el = legendRef.current;
-    if (!el) {
-      setLegendHeight(0);
-      return;
-    }
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setLegendHeight(entry.contentRect.height);
-      }
-    });
-    observer.observe(el);
-    setLegendHeight(el.getBoundingClientRect().height);
-    return () => observer.disconnect();
-  }, [showLegend, legendRef]);
+  const legendHeight = useLegendHeight(legendRef, showLegend);
 
   const { width: containerWidth, height: containerHeight } = useContainerSize(
     containerRef,
@@ -96,7 +78,7 @@ export function useChartDimensions<T extends ChartData>({
         : DEFAULT_CHART_HEIGHT;
   const shouldFitLegend = fitLegendInHeight ?? !!height;
   const svgAvailableHeight = shouldFitLegend ? resolvedHeight - legendHeight : resolvedHeight;
-  const chartInnerHeight = svgAvailableHeight - MARGIN_TOP - xAxisHeight;
+  const chartInnerHeight = Math.max(0, svgAvailableHeight - CHART_MARGIN_TOP - xAxisHeight);
   const totalHeight = svgAvailableHeight;
   const svgWidth = needsScroll ? dataWidth : containerWidth - effectiveYAxisWidth;
 
@@ -112,6 +94,6 @@ export function useChartDimensions<T extends ChartData>({
     widthOfGroup,
     needsScroll,
     labelInterval,
-    MARGIN_TOP,
+    MARGIN_TOP: CHART_MARGIN_TOP,
   };
 }
