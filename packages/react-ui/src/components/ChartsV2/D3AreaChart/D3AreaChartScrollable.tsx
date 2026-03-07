@@ -1,22 +1,15 @@
-import clsx from "clsx";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 
 import { useChartScrollableOrchestrator } from "../hooks/useChartScrollableOrchestrator";
 import { usePrintContext } from "../hooks/usePrintContext";
 import { useStackedData } from "../hooks/useStackedData";
 import { useXScale } from "../hooks/useXScale";
 import { useYScale } from "../hooks/useYScale";
-import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
-import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
-import { ChartTooltip } from "../shared/PortalTooltip/ChartTooltip";
-import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/ScrollButtonsHorizontal";
-import { findNearestDataIndex } from "../utils/mouseUtils";
-
-import { Grid } from "../shared/Grid";
+import { LineDotCrosshair } from "../shared/LineDotCrosshair";
+import { ScrollableChartLayout } from "../shared/ScrollableChartLayout";
 import { XAxis } from "../shared/XAxis";
-import { YAxis } from "../shared/YAxis";
+import { findNearestDataIndex } from "../utils/mouseUtils";
 import { AreaSeries } from "./parts/AreaSeries";
-import { Crosshair } from "./parts/Crosshair";
 import { GradientDefs } from "./parts/GradientDefs";
 
 import type { D3AreaChartData, D3AreaChartProps } from "./types";
@@ -41,6 +34,7 @@ export function D3AreaChartScrollable<T extends D3AreaChartData>({
   width: fixedWidth,
   fitLegendInHeight,
   condensed = false,
+  density,
   onClick,
 }: D3AreaChartProps<T>) {
   const isPrinting = usePrintContext();
@@ -60,157 +54,98 @@ export function D3AreaChartScrollable<T extends D3AreaChartData>({
     icons,
     onClick,
     condensed,
+    density,
   });
 
-  const xScale = useXScale(data, orch.catKey, orch.svgWidth, orch.widthOfGroup);
-  const stackedData = useStackedData(data, orch.dataKeys, stacked);
-  const yScale = useYScale(data, orch.dataKeys, orch.chartInnerHeight, stackedData);
+  const xScale = useXScale(
+    data,
+    orch.data.catKey,
+    orch.dimensions.svgWidth,
+    orch.dimensions.widthOfGroup,
+  );
+  const stackedData = useStackedData(data, orch.data.dataKeys, stacked);
+  const yScale = useYScale(data, orch.data.dataKeys, orch.dimensions.chartInnerHeight, stackedData);
+
+  const getYValue = useCallback(
+    (_row: Record<string, string | number>, key: string, seriesIndex: number) => {
+      if (stackedData && orch.hover.hoveredIndex !== null) {
+        const series = stackedData[seriesIndex];
+        const point = series?.[orch.hover.hoveredIndex];
+        return point ? point[1] : 0;
+      }
+      return Number(_row[key]) || 0;
+    },
+    [stackedData, orch.hover.hoveredIndex],
+  );
 
   const findIndex = useCallback((mouseX: number) => findNearestDataIndex(xScale, mouseX), [xScale]);
-  const { handleMouseMove, handleMouseLeave, handleTouchMove, handleTouchEnd, handleClick } =
-    orch.createMouseHandlers(findIndex);
-
-  if (!data || data.length === 0) {
-    return <div className={clsx("openui-d3-area-chart-container", className)} />;
-  }
+  const mouseHandlers = orch.hover.createMouseHandlers(findIndex);
 
   return (
-    <LabelTooltipProvider>
-      <div
-        ref={orch.containerRef}
-        className={clsx("openui-d3-area-chart-container", className)}
-        style={orch.containerStyle as React.CSSProperties}
-        data-openui-chart="area"
-      >
-        <div className="openui-d3-area-chart-container-inner">
-          {showYAxis && (
-            <div className="openui-d3-area-chart-y-axis-container">
-              <svg
-                width={orch.effectiveYAxisWidth}
-                height={orch.totalHeight}
-                style={{ overflow: "visible" }}
-              >
-                <g transform={`translate(0, ${orch.MARGIN_TOP})`}>
-                  <YAxis
-                    className="openui-d3-area-chart-y-axis"
-                    tickClassName="openui-d3-area-chart-y-tick"
-                    scale={yScale}
-                    width={orch.effectiveYAxisWidth}
-                    chartHeight={orch.chartInnerHeight}
-                  />
-                </g>
-              </svg>
-            </div>
-          )}
-
-          <div
-            ref={orch.mainContainerRef}
-            className="openui-d3-area-chart-main-container"
-            onScroll={orch.handleScroll}
-          >
-            <svg
-              role="img"
-              aria-label="Area chart"
-              width={orch.svgWidth}
-              height={orch.totalHeight}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              onClick={handleClick}
-            >
-              <GradientDefs
-                dataKeys={orch.dataKeys}
-                transformedKeys={orch.transformedKeys}
-                colors={orch.colorMap}
-                chartId={orch.chartId}
-                chartWidth={orch.svgWidth}
-                chartHeight={orch.chartInnerHeight}
-              />
-              <g
-                transform={`translate(0, ${orch.MARGIN_TOP})`}
-                clipPath={`url(#clip-${orch.chartId})`}
-              >
-                {grid && (
-                  <Grid
-                    className="openui-d3-area-chart-grid"
-                    yScale={yScale}
-                    chartWidth={orch.svgWidth}
-                    chartHeight={orch.chartInnerHeight}
-                  />
-                )}
-                <AreaSeries
-                  data={data}
-                  dataKeys={orch.dataKeys}
-                  xScale={xScale}
-                  yScale={yScale}
-                  variant={variant}
-                  stackedData={stackedData}
-                  categoryKey={orch.catKey}
-                  transformedKeys={orch.transformedKeys}
-                  colors={orch.colorMap}
-                  chartId={orch.chartId}
-                  isAnimationActive={isAnimationActive && !isPrinting}
-                />
-                <Crosshair
-                  hoveredIndex={orch.hoveredIndex}
-                  xScale={xScale}
-                  yScale={yScale}
-                  data={data}
-                  dataKeys={orch.dataKeys}
-                  categoryKey={orch.catKey}
-                  colors={orch.colorMap}
-                  stackedData={stackedData}
-                  chartHeight={orch.chartInnerHeight}
-                />
-              </g>
-              <g transform={`translate(0, ${orch.chartInnerHeight + orch.MARGIN_TOP})`}>
-                <XAxis
-                  scale={xScale}
-                  data={data}
-                  categoryKey={orch.catKey}
-                  tickVariant={orch.tickVariant}
-                  widthOfGroup={orch.widthOfGroup}
-                  labelHeight={orch.xAxisHeight}
-                  labelInterval={orch.labelInterval}
-                  classPrefix="openui-d3-area-chart"
-                />
-              </g>
-            </svg>
-          </div>
-        </div>
-
-        <ScrollButtonsHorizontal
-          dataWidth={orch.dataWidth}
-          effectiveWidth={orch.containerWidth - orch.effectiveYAxisWidth}
-          canScrollLeft={orch.canScrollLeft}
-          canScrollRight={orch.canScrollRight}
-          onScrollLeft={() => orch.scrollTo("left")}
-          onScrollRight={() => orch.scrollTo("right")}
+    <ScrollableChartLayout
+      orch={orch}
+      yScale={yScale}
+      mouseHandlers={mouseHandlers}
+      classPrefix="area-chart"
+      chartType="area"
+      ariaLabel="Area chart"
+      showYAxis={showYAxis}
+      grid={grid}
+      showLegend={showLegend}
+      xAxisLabel={xAxisLabel}
+      yAxisLabel={yAxisLabel}
+      className={className}
+      defs={
+        <GradientDefs
+          dataKeys={orch.data.dataKeys}
+          transformedKeys={orch.data.transformedKeys}
+          colors={orch.data.colorMap}
+          chartId={orch.identity.chartId}
+          chartWidth={orch.dimensions.svgWidth}
+          chartHeight={orch.dimensions.chartInnerHeight}
         />
-
-        {showLegend && (
-          <DefaultLegend
-            ref={orch.legendRef}
-            items={orch.legendItems}
-            hiddenSeries={orch.hiddenSeries}
-            onItemClick={orch.handleLegendItemClick}
-            isExpanded={orch.isLegendExpanded}
-            setIsExpanded={orch.setIsLegendExpanded}
-            containerWidth={orch.containerWidth}
-            xAxisLabel={xAxisLabel}
-            yAxisLabel={yAxisLabel}
+      }
+      series={
+        <>
+          <AreaSeries
+            data={data}
+            dataKeys={orch.data.dataKeys}
+            xScale={xScale}
+            yScale={yScale}
+            variant={variant}
+            stackedData={stackedData}
+            categoryKey={orch.data.catKey}
+            transformedKeys={orch.data.transformedKeys}
+            colors={orch.data.colorMap}
+            chartId={orch.identity.chartId}
+            isAnimationActive={isAnimationActive && !isPrinting}
           />
-        )}
-
-        {orch.tooltipPayload && orch.mousePos && (
-          <ChartTooltip
-            label={orch.tooltipPayload.label}
-            items={orch.tooltipPayload.items}
-            viewportPosition={orch.mousePos}
+          <LineDotCrosshair
+            hoveredIndex={orch.hover.hoveredIndex}
+            xScale={xScale}
+            yScale={yScale}
+            data={data}
+            dataKeys={orch.data.dataKeys}
+            categoryKey={orch.data.catKey}
+            colors={orch.data.colorMap}
+            chartHeight={orch.dimensions.chartInnerHeight}
+            getYValue={getYValue}
+            classPrefix="openui-d3-area-chart"
           />
-        )}
-      </div>
-    </LabelTooltipProvider>
+        </>
+      }
+      xAxis={
+        <XAxis
+          scale={xScale}
+          data={data}
+          categoryKey={orch.data.catKey}
+          tickVariant={orch.dimensions.tickVariant}
+          widthOfGroup={orch.dimensions.widthOfGroup}
+          labelHeight={orch.dimensions.xAxisHeight}
+          labelInterval={orch.dimensions.labelInterval}
+          classPrefix="openui-d3-area-chart"
+        />
+      }
+    />
   );
 }

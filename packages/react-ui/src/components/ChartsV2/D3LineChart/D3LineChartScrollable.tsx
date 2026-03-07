@@ -1,21 +1,14 @@
-import clsx from "clsx";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 
 import { useChartScrollableOrchestrator } from "../hooks/useChartScrollableOrchestrator";
 import { usePrintContext } from "../hooks/usePrintContext";
 import { useXScale } from "../hooks/useXScale";
 import { useYScale } from "../hooks/useYScale";
-import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
-import { LabelTooltipProvider } from "../shared/LabelTooltip/LabelTooltip";
-import { ChartTooltip } from "../shared/PortalTooltip/ChartTooltip";
-import { ScrollButtonsHorizontal } from "../shared/ScrollButtonsHorizontal/ScrollButtonsHorizontal";
-import { findNearestDataIndex } from "../utils/mouseUtils";
-
 import { ClipDefs } from "../shared/ClipDefs";
-import { Grid } from "../shared/Grid";
+import { LineDotCrosshair } from "../shared/LineDotCrosshair";
+import { ScrollableChartLayout } from "../shared/ScrollableChartLayout";
 import { XAxis } from "../shared/XAxis";
-import { YAxis } from "../shared/YAxis";
-import { Crosshair } from "./parts/Crosshair";
+import { findNearestDataIndex } from "../utils/mouseUtils";
 import { LineSeries } from "./parts/LineSeries";
 
 import type { D3LineChartData, D3LineChartProps } from "./types";
@@ -41,6 +34,7 @@ export function D3LineChartScrollable<T extends D3LineChartData>({
   width: fixedWidth,
   fitLegendInHeight,
   condensed = false,
+  density,
   onClick,
 }: D3LineChartProps<T>) {
   const isPrinting = usePrintContext();
@@ -60,153 +54,88 @@ export function D3LineChartScrollable<T extends D3LineChartData>({
     icons,
     onClick,
     condensed,
+    density,
   });
 
-  const xScale = useXScale(data, orch.catKey, orch.svgWidth, orch.widthOfGroup);
-  const yScale = useYScale(data, orch.dataKeys, orch.chartInnerHeight, null);
+  const xScale = useXScale(
+    data,
+    orch.data.catKey,
+    orch.dimensions.svgWidth,
+    orch.dimensions.widthOfGroup,
+  );
+  const yScale = useYScale(data, orch.data.dataKeys, orch.dimensions.chartInnerHeight, null);
+
+  const getYValue = useCallback(
+    (row: Record<string, string | number>, key: string) => Number(row[key]) || 0,
+    [],
+  );
 
   const findIndex = useCallback((mouseX: number) => findNearestDataIndex(xScale, mouseX), [xScale]);
-  const { handleMouseMove, handleMouseLeave, handleTouchMove, handleTouchEnd, handleClick } =
-    orch.createMouseHandlers(findIndex);
-
-  if (!data || data.length === 0) {
-    return <div className={clsx("openui-d3-line-chart-container", className)} />;
-  }
+  const mouseHandlers = orch.hover.createMouseHandlers(findIndex);
 
   return (
-    <LabelTooltipProvider>
-      <div
-        ref={orch.containerRef}
-        className={clsx("openui-d3-line-chart-container", className)}
-        style={orch.containerStyle as React.CSSProperties}
-        data-openui-chart="line"
-      >
-        <div className="openui-d3-line-chart-container-inner">
-          {showYAxis && (
-            <div className="openui-d3-line-chart-y-axis-container">
-              <svg
-                width={orch.effectiveYAxisWidth}
-                height={orch.totalHeight}
-                style={{ overflow: "visible" }}
-              >
-                <g transform={`translate(0, ${orch.MARGIN_TOP})`}>
-                  <YAxis
-                    className="openui-d3-line-chart-y-axis"
-                    tickClassName="openui-d3-line-chart-y-tick"
-                    scale={yScale}
-                    width={orch.effectiveYAxisWidth}
-                    chartHeight={orch.chartInnerHeight}
-                  />
-                </g>
-              </svg>
-            </div>
-          )}
-
-          <div
-            ref={orch.mainContainerRef}
-            className="openui-d3-line-chart-main-container"
-            onScroll={orch.handleScroll}
-          >
-            <svg
-              role="img"
-              aria-label="Line chart"
-              width={orch.svgWidth}
-              height={orch.totalHeight}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              onClick={handleClick}
-            >
-              <defs>
-                <ClipDefs
-                  chartId={orch.chartId}
-                  chartWidth={orch.svgWidth}
-                  chartHeight={orch.chartInnerHeight}
-                />
-              </defs>
-              <g
-                transform={`translate(0, ${orch.MARGIN_TOP})`}
-                clipPath={`url(#clip-${orch.chartId})`}
-              >
-                {grid && (
-                  <Grid
-                    className="openui-d3-line-chart-grid"
-                    yScale={yScale}
-                    chartWidth={orch.svgWidth}
-                    chartHeight={orch.chartInnerHeight}
-                  />
-                )}
-                <LineSeries
-                  data={data}
-                  dataKeys={orch.dataKeys}
-                  xScale={xScale}
-                  yScale={yScale}
-                  variant={variant}
-                  categoryKey={orch.catKey}
-                  colors={orch.colorMap}
-                  showDots={showDots}
-                  dotRadius={dotRadius}
-                  isAnimationActive={isAnimationActive && !isPrinting}
-                />
-                <Crosshair
-                  hoveredIndex={orch.hoveredIndex}
-                  xScale={xScale}
-                  yScale={yScale}
-                  data={data}
-                  dataKeys={orch.dataKeys}
-                  categoryKey={orch.catKey}
-                  colors={orch.colorMap}
-                  chartHeight={orch.chartInnerHeight}
-                />
-              </g>
-              <g transform={`translate(0, ${orch.chartInnerHeight + orch.MARGIN_TOP})`}>
-                <XAxis
-                  scale={xScale}
-                  data={data}
-                  categoryKey={orch.catKey}
-                  tickVariant={orch.tickVariant}
-                  widthOfGroup={orch.widthOfGroup}
-                  labelHeight={orch.xAxisHeight}
-                  labelInterval={orch.labelInterval}
-                  classPrefix="openui-d3-line-chart"
-                />
-              </g>
-            </svg>
-          </div>
-        </div>
-
-        <ScrollButtonsHorizontal
-          dataWidth={orch.dataWidth}
-          effectiveWidth={orch.containerWidth - orch.effectiveYAxisWidth}
-          canScrollLeft={orch.canScrollLeft}
-          canScrollRight={orch.canScrollRight}
-          onScrollLeft={() => orch.scrollTo("left")}
-          onScrollRight={() => orch.scrollTo("right")}
+    <ScrollableChartLayout
+      orch={orch}
+      yScale={yScale}
+      mouseHandlers={mouseHandlers}
+      classPrefix="line-chart"
+      chartType="line"
+      ariaLabel="Line chart"
+      showYAxis={showYAxis}
+      grid={grid}
+      showLegend={showLegend}
+      xAxisLabel={xAxisLabel}
+      yAxisLabel={yAxisLabel}
+      className={className}
+      defs={
+        <defs>
+          <ClipDefs
+            chartId={orch.identity.chartId}
+            chartWidth={orch.dimensions.svgWidth}
+            chartHeight={orch.dimensions.chartInnerHeight}
+          />
+        </defs>
+      }
+      series={
+        <>
+          <LineSeries
+            data={data}
+            dataKeys={orch.data.dataKeys}
+            xScale={xScale}
+            yScale={yScale}
+            variant={variant}
+            categoryKey={orch.data.catKey}
+            colors={orch.data.colorMap}
+            showDots={showDots}
+            dotRadius={dotRadius}
+            isAnimationActive={isAnimationActive && !isPrinting}
+          />
+          <LineDotCrosshair
+            hoveredIndex={orch.hover.hoveredIndex}
+            xScale={xScale}
+            yScale={yScale}
+            data={data}
+            dataKeys={orch.data.dataKeys}
+            categoryKey={orch.data.catKey}
+            colors={orch.data.colorMap}
+            chartHeight={orch.dimensions.chartInnerHeight}
+            getYValue={getYValue}
+            classPrefix="openui-d3-line-chart"
+          />
+        </>
+      }
+      xAxis={
+        <XAxis
+          scale={xScale}
+          data={data}
+          categoryKey={orch.data.catKey}
+          tickVariant={orch.dimensions.tickVariant}
+          widthOfGroup={orch.dimensions.widthOfGroup}
+          labelHeight={orch.dimensions.xAxisHeight}
+          labelInterval={orch.dimensions.labelInterval}
+          classPrefix="openui-d3-line-chart"
         />
-
-        {showLegend && (
-          <DefaultLegend
-            ref={orch.legendRef}
-            items={orch.legendItems}
-            hiddenSeries={orch.hiddenSeries}
-            onItemClick={orch.handleLegendItemClick}
-            isExpanded={orch.isLegendExpanded}
-            setIsExpanded={orch.setIsLegendExpanded}
-            containerWidth={orch.containerWidth}
-            xAxisLabel={xAxisLabel}
-            yAxisLabel={yAxisLabel}
-          />
-        )}
-
-        {orch.tooltipPayload && orch.mousePos && (
-          <ChartTooltip
-            label={orch.tooltipPayload.label}
-            items={orch.tooltipPayload.items}
-            viewportPosition={orch.mousePos}
-          />
-        )}
-      </div>
-    </LabelTooltipProvider>
+      }
+    />
   );
 }
