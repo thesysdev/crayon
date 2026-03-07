@@ -28,4 +28,9 @@ export interface BaseChartProps<T extends ChartData> {
   className?: string;
   height?: number | string;
   width?: number | string;
+  /** When true, legend height is subtracted from container height so chart + legend
+   *  fit within specified dimensions. Defaults to true when `height` is set, false otherwise. */
+  fitLegendInHeight?: boolean;
+  /** When true, all data fits within the container width (no scrolling). Default false. */
+  condensed?: boolean;
 }

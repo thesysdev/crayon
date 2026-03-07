@@ -1,5 +1,12 @@
+export { ClipDefs } from "./ClipDefs";
 export { DefaultLegend } from "./DefaultLegend/DefaultLegend";
+export { Grid } from "./Grid";
 export { LabelTooltip, LabelTooltipProvider } from "./LabelTooltip/LabelTooltip";
-export { CustomTooltipContent } from "./PortalTooltip/CustomTooltipContent";
-export { FloatingUIPortal } from "./PortalTooltip/FloatingUIPortal";
+export { LineDotCrosshair } from "./LineDotCrosshair";
+export { ChartTooltip } from "./PortalTooltip/ChartTooltip";
+export type { TooltipItem } from "./PortalTooltip/ChartTooltip";
 export { ScrollButtonsHorizontal } from "./ScrollButtonsHorizontal/ScrollButtonsHorizontal";
+export { useIsTruncated } from "./useIsTruncated";
+export { XAxis } from "./XAxis";
+export { XAxisLabel } from "./XAxisLabel";
+export { YAxis } from "./YAxis";

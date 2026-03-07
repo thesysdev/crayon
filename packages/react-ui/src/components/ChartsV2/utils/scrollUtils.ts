@@ -7,7 +7,7 @@ export const getWidthOfData = (data: ChartData, containerWidth: number) => {
   if (data.length === 0) {
     return containerWidth;
   }
-  const width = data.length * getWidthOfGroup(data.length);
+  const width = data.length * getWidthOfGroup();
 
   if (containerWidth >= width) {
     return containerWidth;
@@ -42,8 +42,7 @@ export const findNearestSnapPosition = (
   }
 };
 
-export const getWidthOfGroup = (dataLength: number): number => {
-  if (dataLength === 0) return MIN_SINGLE_POINT_WIDTH;
+export const getWidthOfGroup = (): number => {
   return ELEMENT_SPACING;
 };
 
@@ -51,7 +50,7 @@ export const getSnapPositions = (data: ChartData): number[] => {
   if (data.length === 0) return [0];
 
   const positions = [0];
-  const groupWidthValue = getWidthOfGroup(data.length);
+  const groupWidthValue = getWidthOfGroup();
 
   for (let i = 1; i < data.length; i++) {
     positions.push(i * groupWidthValue);

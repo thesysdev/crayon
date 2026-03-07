@@ -1,0 +1,85 @@
+@use "../../../cssUtils" as cssUtils;
+
+@mixin chart-base($prefix) {
+  .openui-d3-#{$prefix} {
+    &-container {
+      width: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    &-container-inner {
+      display: flex;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+    }
+
+    &-y-axis-container {
+      flex-shrink: 0;
+    }
+
+    &-main-container {
+      flex: 1;
+      min-width: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+  }
+
+  .openui-d3-#{$prefix}-grid line {
+    stroke: cssUtils.$border-default;
+    stroke-dasharray: 3 3;
+  }
+
+  .openui-d3-#{$prefix}-y-tick {
+    @include cssUtils.typography(label, extra-small);
+    fill: cssUtils.$text-neutral-secondary;
+  }
+
+  .openui-d3-#{$prefix}-x-tick-multi-line {
+    @include cssUtils.typography(label, extra-small);
+    color: cssUtils.$text-neutral-secondary;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-align: center;
+    word-break: break-word;
+  }
+
+  .openui-d3-#{$prefix}-x-tick-single-line {
+    @include cssUtils.typography(label, extra-small);
+    color: cssUtils.$text-neutral-secondary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+  }
+}
+
+@mixin crosshair-styles($prefix) {
+  .openui-d3-#{$prefix}-crosshair-line {
+    stroke: cssUtils.$border-default;
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+  }
+
+  .openui-d3-#{$prefix}-active-dot-outer {
+    fill: cssUtils.$foreground;
+    stroke: cssUtils.$border-default;
+    stroke-width: 1;
+  }
+
+  .openui-d3-#{$prefix}-active-dot-inner {
+    stroke: none;
+  }
+}
