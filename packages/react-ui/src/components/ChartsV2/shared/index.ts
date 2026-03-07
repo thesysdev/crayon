@@ -1,3 +1,4 @@
+export { AngledXAxis } from "./AngledXAxis";
 export { ClipDefs } from "./ClipDefs";
 export { DefaultLegend } from "./DefaultLegend/DefaultLegend";
 export { Grid } from "./Grid";

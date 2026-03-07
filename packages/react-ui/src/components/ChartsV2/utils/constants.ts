@@ -1,0 +1,4 @@
+export const CHART_MARGIN_TOP = 10;
+export const DEFAULT_CHART_HEIGHT = 296;
+export const SINGLE_LINE_BREAKPOINT = 300;
+export const ANGLED_LABEL_THRESHOLD = 100;
