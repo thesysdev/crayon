@@ -1,5 +1,6 @@
 import React, { useId, useMemo, useRef, useState } from "react";
 
+import { buildContainerStyle } from "../utils/buildContainerStyle";
 import { useTooltipPayload } from "./useTooltipPayload";
 
 import { useChartData } from "./useChartData";
@@ -10,7 +11,7 @@ import { useChartScroll } from "./useChartScroll";
 import type { ChartData } from "../types";
 import type { PaletteName } from "../utils/paletteUtils";
 
-export interface UseChartOrchestrationParams<T extends ChartData> {
+export interface UseChartScrollableOrchestratorParams<T extends ChartData> {
   data: T;
   categoryKey: keyof T[number];
   chartThemeName: PaletteName;
@@ -27,7 +28,7 @@ export interface UseChartOrchestrationParams<T extends ChartData> {
   condensed?: boolean;
 }
 
-export function useChartOrchestration<T extends ChartData>({
+export function useChartScrollableOrchestrator<T extends ChartData>({
   data,
   categoryKey,
   chartThemeName,
@@ -42,7 +43,7 @@ export function useChartOrchestration<T extends ChartData>({
   icons,
   onClick,
   condensed = false,
-}: UseChartOrchestrationParams<T>) {
+}: UseChartScrollableOrchestratorParams<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const legendRef = useRef<HTMLDivElement>(null);
@@ -96,12 +97,10 @@ export function useChartOrchestration<T extends ChartData>({
   );
 
   // Container style
-  const containerStyle = useMemo(() => {
-    const s: Record<string, string | number | undefined> = { ...chartData.chartStyle };
-    if (typeof fixedWidth === "string") s["width"] = fixedWidth;
-    if (typeof height === "string") s["height"] = height;
-    return s;
-  }, [chartData.chartStyle, fixedWidth, height]);
+  const containerStyle = useMemo(
+    () => buildContainerStyle(chartData.chartStyle, fixedWidth, height),
+    [chartData.chartStyle, fixedWidth, height],
+  );
 
   return {
     // Refs
