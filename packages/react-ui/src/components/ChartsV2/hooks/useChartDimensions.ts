@@ -8,6 +8,7 @@ import { useXAxisHeight } from "./useXAxisHeight";
 import { useYAxisWidth } from "./useYAxisWidth";
 
 import type { ChartData } from "../types";
+import type { ChartDensity } from "../utils/scrollUtils";
 
 export interface UseChartDimensionsParams<T extends ChartData> {
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -22,6 +23,7 @@ export interface UseChartDimensionsParams<T extends ChartData> {
   fitLegendInHeight?: boolean;
   tickVariantProp: "singleLine" | "multiLine";
   condensed: boolean;
+  density?: ChartDensity;
 }
 
 export function useChartDimensions<T extends ChartData>({
@@ -37,6 +39,7 @@ export function useChartDimensions<T extends ChartData>({
   fitLegendInHeight,
   tickVariantProp,
   condensed,
+  density,
 }: UseChartDimensionsParams<T>) {
   const legendHeight = useLegendHeight(legendRef, showLegend);
 
@@ -50,7 +53,9 @@ export function useChartDimensions<T extends ChartData>({
   const effectiveYAxisWidth = showYAxis ? yAxisWidth : 0;
   const availableWidth = containerWidth - effectiveYAxisWidth;
 
-  const widthOfGroup = condensed ? availableWidth / Math.max(data.length, 1) : getWidthOfGroup();
+  const widthOfGroup = condensed
+    ? availableWidth / Math.max(data.length, 1)
+    : getWidthOfGroup(density);
 
   const tickVariant = condensed
     ? ("singleLine" as const)
@@ -61,8 +66,8 @@ export function useChartDimensions<T extends ChartData>({
   const xAxisHeight = useXAxisHeight(data, catKey, tickVariant, widthOfGroup);
 
   const dataWidth = useMemo(
-    () => (condensed ? availableWidth : getWidthOfData(data, availableWidth)),
-    [condensed, data, availableWidth],
+    () => (condensed ? availableWidth : getWidthOfData(data, availableWidth, density)),
+    [condensed, data, availableWidth, density],
   );
   const needsScroll = condensed ? false : dataWidth > availableWidth;
 

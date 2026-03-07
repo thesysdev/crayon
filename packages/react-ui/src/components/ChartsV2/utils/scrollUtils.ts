@@ -1,13 +1,23 @@
 type ChartData = Array<Record<string, string | number>>;
 
-const ELEMENT_SPACING = 72;
+export type ChartDensity = "compact" | "default" | "spacious";
+
+const DENSITY_SPACING: Record<ChartDensity, number> = {
+  compact: 48,
+  default: 72,
+  spacious: 96,
+};
 const MIN_SINGLE_POINT_WIDTH = 200;
 
-export const getWidthOfData = (data: ChartData, containerWidth: number) => {
+export const getWidthOfData = (
+  data: ChartData,
+  containerWidth: number,
+  density: ChartDensity = "default",
+) => {
   if (data.length === 0) {
     return containerWidth;
   }
-  const width = data.length * getWidthOfGroup();
+  const width = data.length * getWidthOfGroup(density);
 
   if (containerWidth >= width) {
     return containerWidth;
@@ -42,15 +52,15 @@ export const findNearestSnapPosition = (
   }
 };
 
-export const getWidthOfGroup = (): number => {
-  return ELEMENT_SPACING;
+export const getWidthOfGroup = (density: ChartDensity = "default"): number => {
+  return DENSITY_SPACING[density];
 };
 
-export const getSnapPositions = (data: ChartData): number[] => {
+export const getSnapPositions = (data: ChartData, density: ChartDensity = "default"): number[] => {
   if (data.length === 0) return [0];
 
   const positions = [0];
-  const groupWidthValue = getWidthOfGroup();
+  const groupWidthValue = getWidthOfGroup(density);
 
   for (let i = 1; i < data.length; i++) {
     positions.push(i * groupWidthValue);

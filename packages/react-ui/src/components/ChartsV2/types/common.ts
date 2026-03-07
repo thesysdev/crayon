@@ -33,4 +33,6 @@ export interface BaseChartProps<T extends ChartData> {
   fitLegendInHeight?: boolean;
   /** When true, all data fits within the container width (no scrolling). Default false. */
   condensed?: boolean;
+  /** Controls spacing between data points in scrollable mode. Default "default". */
+  density?: "compact" | "default" | "spacious";
 }

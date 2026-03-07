@@ -10,6 +10,7 @@ import { useChartScroll } from "./useChartScroll";
 
 import type { ChartData } from "../types";
 import type { PaletteName } from "../utils/paletteUtils";
+import type { ChartDensity } from "../utils/scrollUtils";
 
 export interface UseChartScrollableOrchestratorParams<T extends ChartData> {
   data: T;
@@ -26,6 +27,7 @@ export interface UseChartScrollableOrchestratorParams<T extends ChartData> {
   icons?: Partial<Record<keyof T[number], React.ComponentType>>;
   onClick?: (row: T[number], index: number) => void;
   condensed?: boolean;
+  density?: ChartDensity;
 }
 
 export function useChartScrollableOrchestrator<T extends ChartData>({
@@ -43,6 +45,7 @@ export function useChartScrollableOrchestrator<T extends ChartData>({
   icons,
   onClick,
   condensed = false,
+  density,
 }: UseChartScrollableOrchestratorParams<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mainContainerRef = useRef<HTMLDivElement>(null);
@@ -72,6 +75,7 @@ export function useChartScrollableOrchestrator<T extends ChartData>({
     fitLegendInHeight,
     tickVariantProp,
     condensed,
+    density,
   });
 
   // Hover: index, mouse position, handler factory
@@ -82,6 +86,7 @@ export function useChartScrollableOrchestrator<T extends ChartData>({
     mainContainerRef,
     data,
     needsScroll: dimensions.needsScroll,
+    density,
   });
 
   // Legend expand/collapse
@@ -103,60 +108,50 @@ export function useChartScrollableOrchestrator<T extends ChartData>({
   );
 
   return {
-    // Refs
-    containerRef,
-    mainContainerRef,
-    legendRef,
-    chartId,
-
-    // Data (spread from useChartData)
-    catKey: chartData.catKey,
-    allDataKeys: chartData.allDataKeys,
-    dataKeys: chartData.dataKeys,
-    colors: chartData.colors,
-    transformedKeys: chartData.transformedKeys,
-    widthOfGroup: dimensions.widthOfGroup,
-    chartConfig: chartData.chartConfig,
-    colorMap: chartData.colorMap,
-    chartStyle: chartData.chartStyle,
-
-    // Dimensions (spread from useChartDimensions)
-    effectiveYAxisWidth: dimensions.effectiveYAxisWidth,
-    containerWidth: dimensions.containerWidth,
-    tickVariant: dimensions.tickVariant,
-    xAxisHeight: dimensions.xAxisHeight,
-    chartInnerHeight: dimensions.chartInnerHeight,
-    totalHeight: dimensions.totalHeight,
-    svgWidth: dimensions.svgWidth,
-    dataWidth: dimensions.dataWidth,
-    needsScroll: dimensions.needsScroll,
-    labelInterval: dimensions.labelInterval,
-    MARGIN_TOP: dimensions.MARGIN_TOP,
-
-    // Hover (spread from useChartHover)
-    hoveredIndex: hover.hoveredIndex,
-    mousePos: hover.mousePos,
-
-    // Scroll (spread from useChartScroll)
-    canScrollLeft: scroll.canScrollLeft,
-    canScrollRight: scroll.canScrollRight,
-    handleScroll: scroll.handleScroll,
-    scrollTo: scroll.scrollTo,
-
-    // Legend
-    legendItems: chartData.legendItems,
-    hiddenSeries: chartData.hiddenSeries,
-    isLegendExpanded,
-    setIsLegendExpanded,
-    handleLegendItemClick: chartData.toggleSeries,
-
-    // Tooltip
-    tooltipPayload,
-
-    // Style
-    containerStyle,
-
-    // Mouse handler factory
-    createMouseHandlers: hover.createMouseHandlers,
+    refs: { containerRef, mainContainerRef, legendRef },
+    identity: { chartId },
+    data: {
+      catKey: chartData.catKey,
+      allDataKeys: chartData.allDataKeys,
+      dataKeys: chartData.dataKeys,
+      colors: chartData.colors,
+      transformedKeys: chartData.transformedKeys,
+      chartConfig: chartData.chartConfig,
+      colorMap: chartData.colorMap,
+    },
+    dimensions: {
+      containerWidth: dimensions.containerWidth,
+      effectiveYAxisWidth: dimensions.effectiveYAxisWidth,
+      tickVariant: dimensions.tickVariant,
+      xAxisHeight: dimensions.xAxisHeight,
+      chartInnerHeight: dimensions.chartInnerHeight,
+      totalHeight: dimensions.totalHeight,
+      svgWidth: dimensions.svgWidth,
+      dataWidth: dimensions.dataWidth,
+      widthOfGroup: dimensions.widthOfGroup,
+      needsScroll: dimensions.needsScroll,
+      labelInterval: dimensions.labelInterval,
+      MARGIN_TOP: dimensions.MARGIN_TOP,
+    },
+    hover: {
+      hoveredIndex: hover.hoveredIndex,
+      mousePos: hover.mousePos,
+      createMouseHandlers: hover.createMouseHandlers,
+    },
+    scroll: {
+      canScrollLeft: scroll.canScrollLeft,
+      canScrollRight: scroll.canScrollRight,
+      handleScroll: scroll.handleScroll,
+      scrollTo: scroll.scrollTo,
+    },
+    legend: {
+      legendItems: chartData.legendItems,
+      hiddenSeries: chartData.hiddenSeries,
+      isLegendExpanded,
+      setIsLegendExpanded,
+      handleLegendItemClick: chartData.toggleSeries,
+    },
+    tooltip: { tooltipPayload },
+    style: { containerStyle, chartStyle: chartData.chartStyle },
   };
 }

@@ -98,39 +98,40 @@ export function useChartCondensedOrchestrator<T extends ChartData>({
   );
 
   return {
-    containerRef,
-    legendRef,
-    chartId,
-
-    catKey: chartData.catKey,
-    dataKeys: chartData.dataKeys,
-    colorMap: chartData.colorMap,
-    chartConfig: chartData.chartConfig,
-    chartStyle: chartData.chartStyle,
-    transformedKeys: chartData.transformedKeys,
-    legendItems: chartData.legendItems,
-    hiddenSeries: chartData.hiddenSeries,
-    toggleSeries: chartData.toggleSeries,
-
-    effectiveYAxisWidth,
-    chartAreaWidth,
-    widthPerDataPoint,
-    containerWidth,
-    angle,
-    xAxisHeight,
-    chartInnerHeight,
-    totalSvgHeight,
-    totalSvgWidth,
-    CHART_MARGIN_TOP,
-
-    hoveredIndex: hover.hoveredIndex,
-    mousePos: hover.mousePos,
-    createMouseHandlers: hover.createMouseHandlers,
-
-    tooltipPayload,
-    containerStyle,
-
-    isLegendExpanded,
-    setIsLegendExpanded,
+    refs: { containerRef, legendRef },
+    identity: { chartId },
+    data: {
+      catKey: chartData.catKey,
+      dataKeys: chartData.dataKeys,
+      colorMap: chartData.colorMap,
+      chartConfig: chartData.chartConfig,
+      chartStyle: chartData.chartStyle,
+      transformedKeys: chartData.transformedKeys,
+    },
+    dimensions: {
+      effectiveYAxisWidth,
+      chartAreaWidth,
+      widthPerDataPoint,
+      containerWidth,
+      chartInnerHeight,
+      totalSvgHeight,
+      totalSvgWidth,
+      CHART_MARGIN_TOP,
+    },
+    xAxis: { angle, xAxisHeight },
+    hover: {
+      hoveredIndex: hover.hoveredIndex,
+      mousePos: hover.mousePos,
+      createMouseHandlers: hover.createMouseHandlers,
+    },
+    legend: {
+      legendItems: chartData.legendItems,
+      hiddenSeries: chartData.hiddenSeries,
+      toggleSeries: chartData.toggleSeries,
+      isLegendExpanded,
+      setIsLegendExpanded,
+    },
+    tooltip: { tooltipPayload },
+    style: { containerStyle },
   };
 }
