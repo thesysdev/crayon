@@ -10,6 +10,7 @@ export * from "./components/CardHeader";
 export * from "./components/Carousel";
 export * from "./components/Charts";
 export type { ExportChartData } from "./components/Charts/Charts";
+export * from "./components/ChartsV2";
 export * from "./components/CheckBoxGroup";
 export * from "./components/CheckBoxItem";
 export * from "./components/CodeBlock";
