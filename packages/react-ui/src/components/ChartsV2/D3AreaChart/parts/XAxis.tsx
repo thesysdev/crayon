@@ -1,6 +1,6 @@
 import type { ScalePoint } from "d3-scale";
-import React, { useRef } from "react";
-import { LabelTooltip } from "../../shared/LabelTooltip/LabelTooltip";
+import React from "react";
+import { XAxisLabel } from "../../shared/XAxisLabel";
 import { XAxisTickVariant } from "../../types";
 
 const X_AXIS_TOP_GAP = 4;
@@ -12,23 +12,26 @@ interface XAxisProps {
   tickVariant: XAxisTickVariant;
   widthOfGroup: number;
   labelHeight: number;
+  labelInterval?: number;
 }
 
 export const XAxis: React.FC<XAxisProps> = ({
   scale,
-  data,
-  categoryKey,
+  data: _data,
+  categoryKey: _categoryKey,
   tickVariant,
   widthOfGroup,
   labelHeight,
+  labelInterval = 1,
 }) => {
   const domain = scale.domain();
 
   return (
     <g className="openui-d3-area-chart-x-axis">
-      {domain.map((category) => {
+      {domain.map((category, i) => {
         const x = scale(category) ?? 0;
         const label = String(category);
+        const showLabel = labelInterval <= 1 || i % labelInterval === 0 || i === domain.length - 1;
 
         return (
           <foreignObject
@@ -38,54 +41,18 @@ export const XAxis: React.FC<XAxisProps> = ({
             width={widthOfGroup}
             height={labelHeight}
           >
-            <XAxisLabel label={label} tickVariant={tickVariant} width={widthOfGroup} />
+            {showLabel && (
+              <XAxisLabel
+                label={label}
+                tickVariant={tickVariant}
+                width={widthOfGroup}
+                multiLineClassName="openui-d3-area-chart-x-tick-multi-line"
+                singleLineClassName="openui-d3-area-chart-x-tick-single-line"
+              />
+            )}
           </foreignObject>
         );
       })}
     </g>
   );
 };
-
-const XAxisLabel: React.FC<{
-  label: string;
-  tickVariant: XAxisTickVariant;
-  width: number;
-}> = ({ label, tickVariant, width }) => {
-  const labelRef = useRef<HTMLDivElement>(null);
-  const isTruncated = useIsTruncated(labelRef);
-
-  const className =
-    tickVariant === "multiLine"
-      ? "openui-d3-area-chart-x-tick-multi-line"
-      : "openui-d3-area-chart-x-tick-single-line";
-
-  return (
-    <LabelTooltip content={label} disabled={!isTruncated}>
-      <div ref={labelRef} className={className} style={{ maxWidth: width }}>
-        {label}
-      </div>
-    </LabelTooltip>
-  );
-};
-
-function useIsTruncated(ref: React.RefObject<HTMLElement | null>): boolean {
-  const [truncated, setTruncated] = React.useState(false);
-
-  React.useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const check = () => {
-      setTruncated(el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight);
-    };
-
-    check();
-
-    const observer = new ResizeObserver(check);
-    observer.observe(el);
-
-    return () => observer.disconnect();
-  }, [ref]);
-
-  return truncated;
-}

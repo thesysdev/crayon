@@ -1,9 +1,8 @@
 import React from "react";
+import { ClipDefs } from "../../shared/ClipDefs";
 
 const GRADIENT_TOP_OPACITY = 0.6;
 const GRADIENT_BOTTOM_OPACITY = 0;
-/** Extra space above/below the clip rect so strokes and dots at the chart edges aren't clipped. */
-const CLIP_OVERFLOW = 6;
 
 interface GradientDefsProps {
   dataKeys: string[];
@@ -24,9 +23,7 @@ export const GradientDefs: React.FC<GradientDefsProps> = ({
 }) => {
   return (
     <defs>
-      <clipPath id={`clip-${chartId}`}>
-        <rect y={-CLIP_OVERFLOW} width={chartWidth} height={chartHeight + CLIP_OVERFLOW} />
-      </clipPath>
+      <ClipDefs chartId={chartId} chartWidth={chartWidth} chartHeight={chartHeight} />
       {dataKeys.map((key) => {
         const transformedKey = transformedKeys[key];
         const color = colors[key] ?? "#000";

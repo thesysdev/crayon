@@ -892,6 +892,52 @@ export const OnClickHandler: Story = {
   },
 };
 
+export const Condensed: Story = {
+  name: "Condensed",
+  render: () => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      <div>
+        <p style={{ margin: "0 0 8px", fontSize: "13px", fontFamily: "monospace", color: "#666" }}>
+          condensed — 12 months in 400px card (no scroll)
+        </p>
+        <Card style={{ width: "400px" }}>
+          <D3AreaChart
+            data={dataVariations.default}
+            categoryKey="month"
+            theme="ocean"
+            condensed
+          />
+        </Card>
+      </div>
+      <div>
+        <p style={{ margin: "0 0 8px", fontSize: "13px", fontFamily: "monospace", color: "#666" }}>
+          condensed — 16 dense timeline items in 400px card
+        </p>
+        <Card style={{ width: "400px" }}>
+          <D3AreaChart
+            data={dataVariations.denseTimeline as any}
+            categoryKey={"period" as any}
+            theme="sunset"
+            condensed
+          />
+        </Card>
+      </div>
+      <div>
+        <p style={{ margin: "0 0 8px", fontSize: "13px", fontFamily: "monospace", color: "#666" }}>
+          normal (default) — same data scrolls
+        </p>
+        <Card style={{ width: "400px" }}>
+          <D3AreaChart
+            data={dataVariations.default}
+            categoryKey="month"
+            theme="ocean"
+          />
+        </Card>
+      </div>
+    </div>
+  ),
+};
+
 export const PrintContext: Story = {
   name: "Print Context",
   render: () => {

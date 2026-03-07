@@ -1,6 +1,7 @@
 import type { ScaleLinear, ScalePoint } from "d3-scale";
-import React from "react";
+import React, { useCallback } from "react";
 import type { StackedData } from "../../hooks/useStackedData";
+import { LineDotCrosshair } from "../../shared/LineDotCrosshair";
 
 interface CrosshairProps {
   hoveredIndex: number | null;
@@ -25,43 +26,30 @@ export const Crosshair: React.FC<CrosshairProps> = ({
   stackedData,
   chartHeight,
 }) => {
-  if (hoveredIndex === null || hoveredIndex < 0 || hoveredIndex >= data.length) {
-    return null;
-  }
-
-  const row = data[hoveredIndex]!;
-  const category = String(row[categoryKey]);
-  const x = xScale(category) ?? 0;
+  const getYValue = useCallback(
+    (_row: Record<string, string | number>, key: string, seriesIndex: number) => {
+      if (stackedData && hoveredIndex !== null) {
+        const series = stackedData[seriesIndex];
+        const point = series?.[hoveredIndex];
+        return point ? point[1] : 0;
+      }
+      return Number(_row[key]) || 0;
+    },
+    [stackedData, hoveredIndex],
+  );
 
   return (
-    <g className="openui-d3-area-chart-crosshair">
-      <line className="openui-d3-area-chart-crosshair-line" x1={x} x2={x} y1={0} y2={chartHeight} />
-      {dataKeys.map((key, seriesIndex) => {
-        let yValue: number;
-        if (stackedData) {
-          const series = stackedData[seriesIndex];
-          const point = series?.[hoveredIndex];
-          yValue = point ? point[1] : 0;
-        } else {
-          yValue = Number(row[key]) || 0;
-        }
-
-        const y = yScale(yValue);
-        const color = colors[key] ?? "#000";
-
-        return (
-          <g key={key}>
-            <circle cx={x} cy={y} r={4} className="openui-d3-area-chart-active-dot-outer" />
-            <circle
-              cx={x}
-              cy={y}
-              r={2}
-              fill={color}
-              className="openui-d3-area-chart-active-dot-inner"
-            />
-          </g>
-        );
-      })}
-    </g>
+    <LineDotCrosshair
+      hoveredIndex={hoveredIndex}
+      xScale={xScale}
+      yScale={yScale}
+      data={data}
+      dataKeys={dataKeys}
+      categoryKey={categoryKey}
+      colors={colors}
+      chartHeight={chartHeight}
+      getYValue={getYValue}
+      classPrefix="openui-d3-area-chart"
+    />
   );
 };

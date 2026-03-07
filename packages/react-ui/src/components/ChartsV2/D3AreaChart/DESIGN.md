@@ -45,8 +45,7 @@ ChartsV2/
 │   │   └── hooks/
 │   │       └── useDefaultLegend.ts
 │   ├── PortalTooltip/                  ← @floating-ui tooltip
-│   │   ├── CustomTooltipContent.tsx    ← adapted for D3 payload shape
-│   │   ├── FloatingUIPortal.tsx
+│   │   ├── ChartTooltip.tsx           ← virtual-element tooltip (replaces CustomTooltipContent + FloatingUIPortal)
 │   │   ├── portalTooltip.scss
 │   │   └── utils/index.ts
 │   ├── ScrollButtonsHorizontal/
@@ -334,25 +333,22 @@ User mouses over chart body
   → Tooltip renders via FloatingUIPortal at mouse position
 ```
 
-The tooltip payload is constructed to match the existing `CustomTooltipContent` contract:
+The tooltip payload is constructed by the `useTooltipPayload` hook:
 
 ```typescript
-// Payload shape for tooltip
+interface TooltipItem {
+  name: string;   // series key
+  value: number;  // series value at hovered index
+  color: string;  // series color
+}
+
 interface TooltipPayload {
-  active: boolean;
-  label: string; // category value at hovered index
-  coordinate: { x: number; y: number };
-  payload: Array<{
-    name: string; // series key
-    dataKey: string; // series key
-    value: number; // series value at hovered index
-    color: string; // series color
-    payload: DataRow; // full data row
-  }>;
+  label: string;        // category value at hovered index
+  items: TooltipItem[];
 }
 ```
 
-The tooltip is positioned using the mouse event coordinates relative to the chart container, then `FloatingUIPortal` handles placement and flipping.
+The tooltip is positioned using viewport coordinates (`event.clientX`, `event.clientY`). `ChartTooltip` uses Floating UI's virtual element API (`getBoundingClientRect`) — no phantom DOM div — with `offset`, `flip`, and `shift` middleware. It portals to `document.body` with the theme class from `useTheme()`.
 
 **Touch support**: Same `touchstart`/`touchmove` handlers, with `touchend` clearing the hover state.
 
@@ -608,8 +604,8 @@ Each of these is copied from `Charts/shared/` into `ChartsV2/shared/` with modif
 ### `PortalTooltip`
 
 - **Source**: `Charts/shared/PortalTooltip/`
-- **Changes**: Decouple `CustomTooltipContent` from `useChart()` recharts context. Instead, accept tooltip data via props. Keep `FloatingUIPortal` as-is.
-- **Files**: `CustomTooltipContent.tsx`, `FloatingUIPortal.tsx`, `portalTooltip.scss`, `utils/index.ts`
+- **Changes**: Replaced `CustomTooltipContent` + `FloatingUIPortal` with a single `ChartTooltip` component using Floating UI's virtual element API. Accepts viewport coordinates directly, no phantom DOM div or manual scroll-clipping.
+- **Files**: `ChartTooltip.tsx`, `portalTooltip.scss`, `utils/index.ts`
 
 ### `ScrollButtonsHorizontal`
 
@@ -751,9 +747,7 @@ Props (data, categoryKey, theme, stacked, variant, ...)
 │    </div>                                    │
 │    <ScrollButtonsHorizontal ... />           │
 │    <DefaultLegend ... />                     │
-│    <FloatingUIPortal>                        │  ← portal tooltip
-│      <CustomTooltipContent ... />            │
-│    </FloatingUIPortal>                       │
+│    <ChartTooltip ... />                       │  ← portal tooltip (virtual element)
 │  </div>                                      │
 └─────────────────────────────────────────────┘
 ```
@@ -769,7 +763,7 @@ Props (data, categoryKey, theme, stacked, variant, ...)
 | `<XAxis dataKey="..." interval={0}>` | `xScale.domain().map(...)` → `<foreignObject>` ticks | Same HTML-in-SVG approach for text       |
 | `<YAxis>`                            | `yScale.ticks()` → `<text>` elements                 | Simpler, no foreignObject needed         |
 | `<CartesianGrid>`                    | `yScale.ticks()` → `<line>` elements                 | Horizontal lines only                    |
-| `<ChartTooltip content={...}>`       | `onMouseMove` → `FloatingUIPortal`                   | Decoupled from recharts context          |
+| `<ChartTooltip content={...}>`       | `onMouseMove` → `ChartTooltip` (virtual element)     | Decoupled from recharts context          |
 | `<ResponsiveContainer>`              | `useContainerSize()` hook                            | `ResizeObserver` directly                |
 | `activeDot={<ActiveDot />}`          | `<Crosshair>` component                              | Renders dots at hovered index            |
 | `<linearGradient>` in `<defs>`       | Same — `<GradientDefs>` component                    | Identical SVG pattern                    |
