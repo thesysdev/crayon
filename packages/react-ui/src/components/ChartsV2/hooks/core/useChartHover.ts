@@ -1,7 +1,7 @@
 import { pointer } from "d3-selection";
 import React, { useCallback, useState } from "react";
 
-import type { ChartData } from "../types";
+import type { ChartData } from "../../types";
 
 export interface UseChartHoverParams<T extends ChartData> {
   data: T;

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { useCanvasContextForLabelSize } from "./useCanvasContextForLabelSize";
+import { useCanvasContextForLabelSize } from "../core/useCanvasContextForLabelSize";
 
 /**
  * Measures the pixel width of each category label and returns the maximum width found.

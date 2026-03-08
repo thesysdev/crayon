@@ -1,10 +1,12 @@
 import { useCallback } from "react";
 
-import { useChartCondensedOrchestrator } from "../hooks/useChartCondensedOrchestrator";
-import { usePrintContext } from "../hooks/usePrintContext";
-import { useStackedData } from "../hooks/useStackedData";
-import { useXScale } from "../hooks/useXScale";
-import { useYScale } from "../hooks/useYScale";
+import {
+  useChartCondensedOrchestrator,
+  usePrintContext,
+  useStackedData,
+  useXScale,
+  useYScale,
+} from "../hooks";
 import { AngledXAxis } from "../shared/AngledXAxis";
 import { CondensedChartLayout } from "../shared/CondensedChartLayout";
 import { LineDotCrosshair } from "../shared/LineDotCrosshair";

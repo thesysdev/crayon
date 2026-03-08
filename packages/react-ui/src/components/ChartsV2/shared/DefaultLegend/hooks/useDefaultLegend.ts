@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useCanvasContextForLabelSize } from "../../../hooks/useCanvasContextForLabelSize";
+import { useCanvasContextForLabelSize } from "../../../hooks";
 import { LegendItem } from "../../../types";
 
 const CHARACTER_WIDTH = 7;

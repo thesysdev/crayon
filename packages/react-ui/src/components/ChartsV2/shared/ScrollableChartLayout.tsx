@@ -2,7 +2,7 @@ import clsx from "clsx";
 import type { ScaleLinear } from "d3-scale";
 import React from "react";
 
-import type { useChartScrollableOrchestrator } from "../hooks/useChartScrollableOrchestrator";
+import type { useChartScrollableOrchestrator } from "../hooks";
 import { DefaultLegend } from "./DefaultLegend/DefaultLegend";
 import { Grid } from "./Grid";
 import { LabelTooltipProvider } from "./LabelTooltip/LabelTooltip";

@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-import { findNearestSnapPosition, getSnapPositions } from "../utils/scrollUtils";
+import { findNearestSnapPosition, getSnapPositions } from "../../utils/scrollUtils";
 
-import type { ChartData } from "../types";
-import type { ChartDensity } from "../utils/scrollUtils";
+import type { ChartData } from "../../types";
+import type { ChartDensity } from "../../utils/scrollUtils";
 
 export interface UseChartScrollParams<T extends ChartData> {
   mainContainerRef: React.RefObject<HTMLDivElement | null>;

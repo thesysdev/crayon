@@ -1,14 +1,18 @@
 import React, { useMemo } from "react";
 
-import { CHART_MARGIN_TOP, DEFAULT_CHART_HEIGHT, SINGLE_LINE_BREAKPOINT } from "../utils/constants";
-import { getWidthOfData, getWidthOfGroup } from "../utils/scrollUtils";
-import { useContainerSize } from "./useContainerSize";
-import { useLegendHeight } from "./useLegendHeight";
+import {
+  CHART_MARGIN_TOP,
+  DEFAULT_CHART_HEIGHT,
+  SINGLE_LINE_BREAKPOINT,
+} from "../../utils/constants";
+import { getWidthOfData, getWidthOfGroup } from "../../utils/scrollUtils";
+import { useContainerSize } from "../core/useContainerSize";
+import { useLegendHeight } from "../core/useLegendHeight";
 import { useXAxisHeight } from "./useXAxisHeight";
 import { useYAxisWidth } from "./useYAxisWidth";
 
-import type { ChartData } from "../types";
-import type { ChartDensity } from "../utils/scrollUtils";
+import type { ChartData } from "../../types";
+import type { ChartDensity } from "../../utils/scrollUtils";
 
 export interface UseChartDimensionsParams<T extends ChartData> {
   containerRef: React.RefObject<HTMLDivElement | null>;

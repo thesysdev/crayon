@@ -1,9 +1,6 @@
 import { useCallback } from "react";
 
-import { useChartScrollableOrchestrator } from "../hooks/useChartScrollableOrchestrator";
-import { usePrintContext } from "../hooks/usePrintContext";
-import { useXScale } from "../hooks/useXScale";
-import { useYScale } from "../hooks/useYScale";
+import { useChartScrollableOrchestrator, usePrintContext, useXScale, useYScale } from "../hooks";
 import { ClipDefs } from "../shared/ClipDefs";
 import { LineDotCrosshair } from "../shared/LineDotCrosshair";
 import { ScrollableChartLayout } from "../shared/ScrollableChartLayout";

@@ -1,18 +1,22 @@
 import React, { useId, useMemo, useRef, useState } from "react";
 
-import { buildContainerStyle } from "../utils/buildContainerStyle";
-import { ANGLED_LABEL_THRESHOLD, CHART_MARGIN_TOP, DEFAULT_CHART_HEIGHT } from "../utils/constants";
+import { buildContainerStyle } from "../../utils/buildContainerStyle";
+import {
+  ANGLED_LABEL_THRESHOLD,
+  CHART_MARGIN_TOP,
+  DEFAULT_CHART_HEIGHT,
+} from "../../utils/constants";
+import { useChartData } from "../core/useChartData";
+import { useChartHover } from "../core/useChartHover";
+import { useContainerSize } from "../core/useContainerSize";
+import { useLegendHeight } from "../core/useLegendHeight";
+import { useTooltipPayload } from "../core/useTooltipPayload";
 import { useAutoAngleCalculation } from "./useAutoAngleCalculation";
-import { useChartData } from "./useChartData";
-import { useChartHover } from "./useChartHover";
-import { useContainerSize } from "./useContainerSize";
-import { useLegendHeight } from "./useLegendHeight";
 import { useMaxLabelWidth } from "./useMaxLabelWidth";
-import { useTooltipPayload } from "./useTooltipPayload";
 import { useYAxisWidth } from "./useYAxisWidth";
 
-import type { ChartData } from "../types";
-import type { PaletteName } from "../utils/paletteUtils";
+import type { ChartData } from "../../types";
+import type { PaletteName } from "../../utils/paletteUtils";
 
 export interface UseChartCondensedOrchestratorParams<T extends ChartData> {
   data: T;

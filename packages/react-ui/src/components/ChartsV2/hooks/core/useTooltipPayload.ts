@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import type { TooltipItem } from "../shared/PortalTooltip/ChartTooltip";
-import type { ChartData } from "../types";
+import type { TooltipItem } from "../../shared/PortalTooltip/ChartTooltip";
+import type { ChartData } from "../../types";
 
 export interface TooltipPayload {
   label: string;

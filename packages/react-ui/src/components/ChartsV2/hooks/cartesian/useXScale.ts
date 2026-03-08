@@ -1,7 +1,7 @@
 import type { ScalePoint } from "d3-scale";
 import { scalePoint } from "d3-scale";
 import { useMemo } from "react";
-import type { ChartData } from "../types";
+import type { ChartData } from "../../types";
 
 export const useXScale = (
   data: ChartData,

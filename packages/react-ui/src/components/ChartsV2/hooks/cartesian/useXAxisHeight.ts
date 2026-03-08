@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useTheme } from "../../ThemeProvider";
-import { XAxisTickVariant } from "../types";
+import { useTheme } from "../../../ThemeProvider";
+import { XAxisTickVariant } from "../../types";
 
 const DEFAULT_HEIGHT = 30;
 const X_AXIS_LABEL_PADDING = 13;

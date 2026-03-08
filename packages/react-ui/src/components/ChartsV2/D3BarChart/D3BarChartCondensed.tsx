@@ -1,10 +1,12 @@
 import { useCallback } from "react";
 
-import { useChartCondensedOrchestrator } from "../hooks/useChartCondensedOrchestrator";
-import { usePrintContext } from "../hooks/usePrintContext";
-import { useStackedData } from "../hooks/useStackedData";
-import { useXBandScale } from "../hooks/useXBandScale";
-import { useYScale } from "../hooks/useYScale";
+import {
+  useChartCondensedOrchestrator,
+  usePrintContext,
+  useStackedData,
+  useXBandScale,
+  useYScale,
+} from "../hooks";
 import { AngledXAxis } from "../shared/AngledXAxis";
 import { ClipDefs } from "../shared/ClipDefs";
 import { CondensedChartLayout } from "../shared/CondensedChartLayout";

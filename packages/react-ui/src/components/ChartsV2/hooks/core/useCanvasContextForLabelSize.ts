@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useTheme } from "../../ThemeProvider";
+import { useTheme } from "../../../ThemeProvider";
 
 export const useCanvasContextForLabelSize = () => {
   const { theme: userTheme } = useTheme();

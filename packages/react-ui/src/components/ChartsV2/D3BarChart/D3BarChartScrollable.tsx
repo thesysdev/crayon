@@ -1,10 +1,12 @@
 import { useCallback } from "react";
 
-import { useChartScrollableOrchestrator } from "../hooks/useChartScrollableOrchestrator";
-import { usePrintContext } from "../hooks/usePrintContext";
-import { useStackedData } from "../hooks/useStackedData";
-import { useXBandScale } from "../hooks/useXBandScale";
-import { useYScale } from "../hooks/useYScale";
+import {
+  useChartScrollableOrchestrator,
+  usePrintContext,
+  useStackedData,
+  useXBandScale,
+  useYScale,
+} from "../hooks";
 import { ClipDefs } from "../shared/ClipDefs";
 import { ScrollableChartLayout } from "../shared/ScrollableChartLayout";
 import { XAxis } from "../shared/XAxis";

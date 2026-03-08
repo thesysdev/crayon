@@ -3,5 +3,6 @@ export * from "./constants";
 export * from "./dataUtils";
 export * from "./mouseUtils";
 export * from "./paletteUtils";
+export * from "./polarUtils";
 export * from "./scrollUtils";
 export * from "./styleUtils";

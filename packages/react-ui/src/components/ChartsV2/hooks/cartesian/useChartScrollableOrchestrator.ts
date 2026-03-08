@@ -1,16 +1,15 @@
 import React, { useId, useMemo, useRef, useState } from "react";
 
-import { buildContainerStyle } from "../utils/buildContainerStyle";
-import { useTooltipPayload } from "./useTooltipPayload";
-
-import { useChartData } from "./useChartData";
+import { buildContainerStyle } from "../../utils/buildContainerStyle";
+import { useChartData } from "../core/useChartData";
+import { useChartHover } from "../core/useChartHover";
+import { useTooltipPayload } from "../core/useTooltipPayload";
 import { useChartDimensions } from "./useChartDimensions";
-import { useChartHover } from "./useChartHover";
 import { useChartScroll } from "./useChartScroll";
 
-import type { ChartData } from "../types";
-import type { PaletteName } from "../utils/paletteUtils";
-import type { ChartDensity } from "../utils/scrollUtils";
+import type { ChartData } from "../../types";
+import type { PaletteName } from "../../utils/paletteUtils";
+import type { ChartDensity } from "../../utils/scrollUtils";
 
 export interface UseChartScrollableOrchestratorParams<T extends ChartData> {
   data: T;

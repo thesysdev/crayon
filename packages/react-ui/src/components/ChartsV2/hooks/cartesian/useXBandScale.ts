@@ -1,7 +1,7 @@
 import type { ScaleBand } from "d3-scale";
 import { scaleBand } from "d3-scale";
 import { useMemo } from "react";
-import type { ChartData } from "../types";
+import type { ChartData } from "../../types";
 
 export const useXBandScale = (
   data: ChartData,

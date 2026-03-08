@@ -1,9 +1,6 @@
 import { useCallback } from "react";
 
-import { useChartCondensedOrchestrator } from "../hooks/useChartCondensedOrchestrator";
-import { usePrintContext } from "../hooks/usePrintContext";
-import { useXScale } from "../hooks/useXScale";
-import { useYScale } from "../hooks/useYScale";
+import { useChartCondensedOrchestrator, usePrintContext, useXScale, useYScale } from "../hooks";
 import { AngledXAxis } from "../shared/AngledXAxis";
 import { ClipDefs } from "../shared/ClipDefs";
 import { CondensedChartLayout } from "../shared/CondensedChartLayout";

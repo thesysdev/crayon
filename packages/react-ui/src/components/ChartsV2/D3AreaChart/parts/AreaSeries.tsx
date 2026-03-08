@@ -7,7 +7,7 @@ import {
   line as d3Line,
 } from "d3-shape";
 import React, { useEffect, useMemo, useRef } from "react";
-import type { StackedData } from "../../hooks/useStackedData";
+import type { StackedData } from "../../hooks";
 import { D3AreaChartVariant } from "../types";
 
 const curveMap = {

@@ -1,7 +1,7 @@
 import type { ScaleBand, ScaleLinear } from "d3-scale";
 import { scaleBand } from "d3-scale";
 import React, { useMemo } from "react";
-import type { StackedData } from "../../hooks/useStackedData";
+import type { StackedData } from "../../hooks";
 import type { D3BarChartVariant } from "../types";
 
 const DEFAULT_MAX_BAR_WIDTH = 16;

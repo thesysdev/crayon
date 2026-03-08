@@ -1,7 +1,7 @@
 import type { ScaleLinear } from "d3-scale";
 import { scaleLinear } from "d3-scale";
 import { useMemo } from "react";
-import type { ChartData } from "../types";
+import type { ChartData } from "../../types";
 import type { StackedData } from "./useStackedData";
 
 export const useYScale = (

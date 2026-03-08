@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { numberTickFormatter } from "../utils/styleUtils";
-import { useCanvasContextForLabelSize } from "./useCanvasContextForLabelSize";
+import { numberTickFormatter } from "../../utils/styleUtils";
+import { useCanvasContextForLabelSize } from "../core/useCanvasContextForLabelSize";
 
 const DEFAULT_Y_AXIS_WIDTH = 40;
 const MIN_Y_AXIS_WIDTH = 20;

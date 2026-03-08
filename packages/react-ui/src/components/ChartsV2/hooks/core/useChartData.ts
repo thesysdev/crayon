@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useState } from "react";
 
-import { get2dChartConfig, getDataKeys, getLegendItems } from "../utils/dataUtils";
-import { useChartPalette } from "../utils/paletteUtils";
+import { get2dChartConfig, getDataKeys, getLegendItems } from "../../utils/dataUtils";
+import { useChartPalette } from "../../utils/paletteUtils";
 import { useTransformedKeys } from "./useTransformedKeys";
 
-import type { ChartData } from "../types";
-import type { PaletteName } from "../utils/paletteUtils";
+import type { ChartData } from "../../types";
+import type { PaletteName } from "../../utils/paletteUtils";
 
 export interface UseChartDataParams<T extends ChartData> {
   data: T;

@@ -1,7 +1,7 @@
 import type { Series } from "d3-shape";
 import { stack, stackOffsetNone, stackOrderNone } from "d3-shape";
 import { useMemo } from "react";
-import type { ChartData } from "../types";
+import type { ChartData } from "../../types";
 
 export type StackedData = Series<Record<string, string | number>, string>[];
 

@@ -7,4 +7,10 @@ export type { D3LineChartData, D3LineChartProps, D3LineChartVariant } from "./D3
 export { D3BarChart } from "./D3BarChart";
 export type { D3BarChartData, D3BarChartProps, D3BarChartVariant } from "./D3BarChart/types";
 
+export { D3PieChart } from "./D3PieChart";
+export type { D3PieChartData, D3PieChartProps } from "./D3PieChart/types";
+
+export { D3RadialChart } from "./D3RadialChart";
+export type { D3RadialChartData, D3RadialChartProps } from "./D3RadialChart/types";
+
 export type { BaseChartProps, ChartData, LegendItem, XAxisTickVariant } from "./types";
