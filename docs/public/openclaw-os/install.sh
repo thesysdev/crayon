@@ -13,6 +13,7 @@ REPO="thesysdev/openclaw-os"
 SRC_DIR="$HOME/.openclaw/openui/openclaw-os"
 PLUGIN_DIR="$SRC_DIR/packages/claw-plugin"
 PLUGIN_ID="openclaw-os-plugin"
+PLUGIN_PATH_SLUG="openclawos"
 OPENCLAW_CONFIG="$HOME/.openclaw/openclaw.json"
 
 BOLD='\033[1m'
@@ -170,6 +171,53 @@ verify() {
   fi
 }
 
+print_dashboard_url() {
+  step "Opening OpenClaw OS"
+
+  # The plugin (via `api.registerCli`) constructs the auth-bearing URL from the
+  # gateway-validated config — survives `--dev`/`--profile`, no JSON parsing.
+  # Clipboard + browser open stay in shell so the plugin doesn't need
+  # `child_process` (would trip openclaw's install security scan).
+  local url=""
+  if openclaw os --help >/dev/null 2>&1; then
+    # The openclaw CLI emits plugin-registration logs to stdout when loading a
+    # plugin to discover its commands. The action runs *after* registration, so
+    # the URL is the last http-shaped line. `tail -n1` is more robust than
+    # `head -1` against future log lines that happen to contain URLs.
+    url="$(openclaw os url 2>/dev/null | grep -Eo 'https?://[^[:space:]]+' | tail -n1 || true)"
+  fi
+
+  if [[ -z "$url" ]]; then
+    warn "\`openclaw os url\` not available — older plugin or missing token."
+    log "Open http://127.0.0.1:18789/plugins/$PLUGIN_PATH_SLUG and paste the token from $OPENCLAW_CONFIG."
+    return
+  fi
+
+  printf "\n  ${BOLD}Dashboard URL:${NC} %s\n\n" "$url"
+
+  case "$(uname -s)" in
+    Darwin)
+      command -v pbcopy >/dev/null 2>&1 && printf '%s' "$url" | pbcopy 2>/dev/null && log "Copied to clipboard."
+      open "$url" >/dev/null 2>&1 && ok "Opened in your browser. Keep that tab to use OpenClaw OS." \
+        || log "Open the URL above to use OpenClaw OS."
+      ;;
+    Linux)
+      if   command -v wl-copy >/dev/null 2>&1; then printf '%s' "$url" | wl-copy 2>/dev/null && log "Copied to clipboard."
+      elif command -v xclip   >/dev/null 2>&1; then printf '%s' "$url" | xclip -selection clipboard 2>/dev/null && log "Copied to clipboard."
+      fi
+      if command -v xdg-open >/dev/null 2>&1; then
+        xdg-open "$url" >/dev/null 2>&1 && ok "Opened in your browser. Keep that tab to use OpenClaw OS." \
+          || log "Open the URL above to use OpenClaw OS."
+      else
+        log "Open the URL above to use OpenClaw OS."
+      fi
+      ;;
+    *)
+      log "Open the URL above to use OpenClaw OS."
+      ;;
+  esac
+}
+
 uninstall_plugin() {
   step "Disabling $PLUGIN_ID"
   if openclaw plugins disable "$PLUGIN_ID" 2>&1; then
@@ -179,7 +227,8 @@ uninstall_plugin() {
   fi
 
   step "Uninstalling $PLUGIN_ID"
-  if openclaw plugins uninstall "$PLUGIN_ID" 2>&1; then
+  # --force skips the interactive y/N prompt (no TTY in `curl | bash`).
+  if openclaw plugins uninstall "$PLUGIN_ID" --force 2>&1; then
     ok "Plugin uninstalled"
   else
     warn "Could not uninstall plugin (may not be registered). Continuing."
@@ -217,7 +266,7 @@ do_install() {
   verify
 
   printf "\n${SUCCESS}${BOLD}✓ OpenClaw OS installed.${NC}\n"
-  printf "${INFO}  Open the Claw UI from your OpenClaw client to start generating apps.${NC}\n\n"
+  print_dashboard_url
 }
 
 do_uninstall() {

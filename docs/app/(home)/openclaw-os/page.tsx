@@ -41,7 +41,8 @@ export default function OpenClawOSPage() {
           mobilePreviewImageWidth={804}
           mobilePreviewImageHeight={880}
           mobilePreviewImageCropTopPercent={20}
-          showGitHubBanner={false}
+          githubRepoUrl="https://github.com/thesysdev/openclaw-os"
+          githubButtonLabel="Star on GitHub"
           widePreview
           showTagline
           taglineCompact

@@ -116,6 +116,30 @@ function MobilePlaygroundButton({ className = "" }: { className?: string }) {
   );
 }
 
+function DesktopGithubButton({
+  href,
+  label = "Star on GitHub",
+  className = "",
+}: {
+  href: string;
+  label?: string;
+  className?: string;
+}) {
+  return (
+    <PillLink
+      href={href}
+      external
+      className={`${styles.desktopPlaygroundButton} ${className}`.trim()}
+      arrow={<TrailingArrow />}
+    >
+      <span aria-hidden="true" className={styles.heroBannerIcon}>
+        <GitHubIcon />
+      </span>
+      <span>{label}</span>
+    </PillLink>
+  );
+}
+
 function AnnouncementBanner({ className = "" }: { className?: string }) {
   return (
     <>
@@ -150,10 +174,18 @@ function AnnouncementBanner({ className = "" }: { className?: string }) {
   );
 }
 
-function GitHubBanner({ className = "" }: { className?: string }) {
+function GitHubBanner({
+  href = "https://github.com/thesysdev/openui",
+  label = "Star us on Github",
+  className = "",
+}: {
+  href?: string;
+  label?: string;
+  className?: string;
+}) {
   return (
     <a
-      href="https://github.com/thesysdev/openui"
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       className={`${styles.heroBanner} ${styles.mobileGithubButton} ${className}`.trim()}
@@ -162,7 +194,7 @@ function GitHubBanner({ className = "" }: { className?: string }) {
         <span aria-hidden="true" className={styles.heroBannerIcon}>
           <GitHubIcon />
         </span>
-        <span>Star us on Github</span>
+        <span>{label}</span>
       </span>
       <TrailingArrow />
     </a>
@@ -180,6 +212,8 @@ function DesktopHero({
   compact,
   showBanner,
   showPlaygroundButton,
+  githubRepoUrl,
+  githubButtonLabel,
 }: {
   title: ReactNode;
   subtitle: ReactNode;
@@ -187,7 +221,13 @@ function DesktopHero({
   compact: boolean;
   showBanner: boolean;
   showPlaygroundButton: boolean;
+  githubRepoUrl?: string;
+  githubButtonLabel?: string;
 }) {
+  // The shadow-room class compensates for the absent secondary CTA — only
+  // applied when both the playground button AND the GitHub button are off.
+  const hasSecondaryCta = showPlaygroundButton || !!githubRepoUrl;
+
   return (
     <div className={styles.desktopHero}>
       <div className={styles.desktopHeroInner}>
@@ -203,11 +243,14 @@ function DesktopHero({
 
         <div
           className={`${styles.desktopCtaStack} ${
-            !showPlaygroundButton ? styles.desktopCtaStackShadowRoom : ""
+            !hasSecondaryCta ? styles.desktopCtaStackShadowRoom : ""
           }`.trim()}
         >
           <NpmButton command={command} />
           {showPlaygroundButton && <DesktopPlaygroundButton />}
+          {githubRepoUrl && (
+            <DesktopGithubButton href={githubRepoUrl} label={githubButtonLabel} />
+          )}
         </div>
       </div>
     </div>
@@ -227,6 +270,7 @@ function MobileHero({
   showBanner,
   showPlaygroundButton,
   showGitHubBanner,
+  githubRepoUrl,
   mobileImageOverride,
   mobileImageAlt,
   mobileImageWidth,
@@ -241,6 +285,7 @@ function MobileHero({
   showBanner: boolean;
   showPlaygroundButton: boolean;
   showGitHubBanner: boolean;
+  githubRepoUrl?: string;
   mobileImageOverride?: string;
   mobileImageAlt?: string;
   mobileImageWidth?: number;
@@ -282,7 +327,9 @@ function MobileHero({
       <div className={styles.mobileCtaStack}>
         <NpmButton className={styles.mobileCtaButtonWidth} command={command} />
         {showPlaygroundButton && <MobilePlaygroundButton className={styles.mobileCtaButtonWidth} />}
-        {showGitHubBanner && <GitHubBanner className={styles.mobileCtaButtonWidth} />}
+        {showGitHubBanner && (
+          <GitHubBanner href={githubRepoUrl} className={styles.mobileCtaButtonWidth} />
+        )}
       </div>
 
       {/* Mobile hero image */}
@@ -391,6 +438,8 @@ export function HeroSection({
   tagline,
   taglineCompact = false,
   showGitHubBanner = true,
+  githubRepoUrl,
+  githubButtonLabel,
   mobilePreviewImage,
   mobilePreviewImageAlt,
   mobilePreviewImageWidth,
@@ -412,6 +461,12 @@ export function HeroSection({
   tagline?: ReactNode;
   taglineCompact?: boolean;
   showGitHubBanner?: boolean;
+  /** When set, adds a desktop GitHub PillLink CTA pointing here AND uses
+   *  this URL for the mobile GitHub banner (instead of the default openui
+   *  repo). Useful for sub-product pages like /openclaw-os. */
+  githubRepoUrl?: string;
+  /** Optional override for the desktop GitHub button label (default: "Star on GitHub"). */
+  githubButtonLabel?: string;
   mobilePreviewImage?: string;
   mobilePreviewImageAlt?: string;
   mobilePreviewImageWidth?: number;
@@ -429,6 +484,8 @@ export function HeroSection({
         compact={compact}
         showBanner={showBanner}
         showPlaygroundButton={showPlaygroundButton}
+        githubRepoUrl={githubRepoUrl}
+        githubButtonLabel={githubButtonLabel}
       />
       <MobileHero
         theme={theme}
@@ -439,6 +496,7 @@ export function HeroSection({
         showBanner={showBanner}
         showPlaygroundButton={showPlaygroundButton}
         showGitHubBanner={showGitHubBanner}
+        githubRepoUrl={githubRepoUrl}
         mobileImageOverride={mobilePreviewImage}
         mobileImageAlt={mobilePreviewImageAlt}
         mobileImageWidth={mobilePreviewImageWidth}

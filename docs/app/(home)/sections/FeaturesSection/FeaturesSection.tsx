@@ -1,12 +1,13 @@
 "use client";
 
 import {
-  Browsers,
-  Eye,
-  MagicWand,
-  PushPin,
-  SlidersHorizontal,
-  SquaresFour,
+  BellIcon,
+  BrowserIcon,
+  EyeIcon,
+  MagicWandIcon,
+  PushPinIcon,
+  SlidersHorizontalIcon,
+  SquaresFourIcon,
 } from "@phosphor-icons/react";
 import svgPaths from "@/imports/svg-urruvoh2be";
 import { PillLink } from "../../components/Button/Button";
@@ -80,32 +81,37 @@ export const OPENCLAW_FEATURES: FeatureListItem[] = [
   {
     title: "Generative UI",
     description: "Build apps, dashboards, and artifacts on demand",
-    icon: <MagicWand size={PHOSPHOR_ICON_SIZE} weight="fill" />,
+    icon: <MagicWandIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
   },
   {
     title: "Persistent apps",
     description: "Apps stay in place and refresh with live data automatically",
-    icon: <PushPin size={PHOSPHOR_ICON_SIZE} weight="fill" />,
+    icon: <PushPinIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
   },
   {
     title: "Structured workspace",
     description: "Agents, sessions, artifacts, and apps in one organized space",
-    icon: <SquaresFour size={PHOSPHOR_ICON_SIZE} weight="fill" />,
+    icon: <SquaresFourIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
   },
   {
     title: "Full visibility",
     description: "Inspect tool calls, context, and agent actions in real time",
-    icon: <Eye size={PHOSPHOR_ICON_SIZE} weight="fill" />,
+    icon: <EyeIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
   },
   {
     title: "Direct control",
     description: "Permissions, schedules, and execution from one interface",
-    icon: <SlidersHorizontal size={PHOSPHOR_ICON_SIZE} weight="fill" />,
+    icon: <SlidersHorizontalIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
+  },
+  {
+    title: "Live notifications",
+    description: "Cron jobs notifications",
+    icon: <BellIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
   },
   {
     title: "Elegant interface",
     description: "Built for clarity with responsive layouts and themes",
-    icon: <Browsers size={PHOSPHOR_ICON_SIZE} weight="fill" />,
+    icon: <BrowserIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
   },
 ];
 
