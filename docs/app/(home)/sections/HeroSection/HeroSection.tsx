@@ -12,7 +12,7 @@ export const heroStyles = styles;
 // CTAs
 const primaryCTA = "npx @openuidev/cli@latest create";
 const secondaryCTA = "Try Playground";
-const openclawOsHref = "https://www.openui.com/openclaw-os";
+const openclawOsHref = "/openclaw-os";
 const DESKTOP_HERO_IMAGE = {
   light: "/homepage/hero-web.png",
   dark: "/homepage/hero-web-dark.png",
@@ -151,8 +151,6 @@ function AnnouncementBanner({ className = "" }: { className?: string }) {
         <div className={styles.heroBannerActions}>
           <Link
             href={openclawOsHref}
-            target="_blank"
-            rel="noopener noreferrer"
             className={`${styles.heroBannerButton} ${styles.heroBannerButtonPrimary}`}
           >
             <span>Meet OpenClaw-OS</span>
@@ -161,8 +159,6 @@ function AnnouncementBanner({ className = "" }: { className?: string }) {
       </div>
       <Link
         href={openclawOsHref}
-        target="_blank"
-        rel="noopener noreferrer"
         className={`${styles.heroBanner} ${styles.heroBannerMobile} ${className}`.trim()}
       >
         <span className={styles.heroBannerLabel}>
