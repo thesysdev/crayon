@@ -12,7 +12,7 @@ export const heroStyles = styles;
 // CTAs
 const primaryCTA = "npx @openuidev/cli@latest create";
 const secondaryCTA = "Try Playground";
-const architectureHref = "/docs/openui-lang/how-it-works";
+const openclawOsHref = "https://www.openui.com/openclaw-os";
 const DESKTOP_HERO_IMAGE = {
   light: "/homepage/hero-web.png",
   dark: "/homepage/hero-web-dark.png",
@@ -146,28 +146,28 @@ function AnnouncementBanner({ className = "" }: { className?: string }) {
       <div className={`${styles.heroBanner} ${styles.heroBannerDesktop} ${className}`.trim()}>
         <span className={styles.heroBannerLabel}>
           <span className={styles.heroBannerBadge}>New</span>
-          <span>We&apos;re introducing OpenUI Lang v0.5</span>
+          <span>The default workspace for OpenClaw. Meet OpenClaw-OS.</span>
         </span>
         <div className={styles.heroBannerActions}>
           <Link
-            href="/demo/github"
+            href={openclawOsHref}
             target="_blank"
+            rel="noopener noreferrer"
             className={`${styles.heroBannerButton} ${styles.heroBannerButtonPrimary}`}
           >
-            <span>Try</span>
-          </Link>
-          <Link href={architectureHref} className={styles.heroBannerButton}>
-            <span>Read more</span>
+            <span>Meet OpenClaw-OS</span>
           </Link>
         </div>
       </div>
       <Link
-        href={architectureHref}
+        href={openclawOsHref}
+        target="_blank"
+        rel="noopener noreferrer"
         className={`${styles.heroBanner} ${styles.heroBannerMobile} ${className}`.trim()}
       >
         <span className={styles.heroBannerLabel}>
           <span className={styles.heroBannerBadge}>New</span>
-          <span>Introducing OpenUI Lang v0.5</span>
+          <span>The default workspace for OpenClaw. Meet OpenClaw-OS.</span>
         </span>
       </Link>
     </>
