@@ -35,7 +35,7 @@ require_cmd() {
 }
 
 banner() {
-  printf "\n${BOLD}${ACCENT}OpenClaw OS${NC} ${INFO}— Generative UI for OpenClaw${NC}\n\n"
+  printf "\n${BOLD}${ACCENT}OpenClaw OS${NC} ${INFO}— The default workspace for OpenClaw${NC}\n\n"
 }
 
 check_prereqs() {

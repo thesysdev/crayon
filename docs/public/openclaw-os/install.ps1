@@ -30,6 +30,7 @@ $Repo           = 'thesysdev/openclaw-os'
 $SrcDir         = Join-Path $env:USERPROFILE '.openclaw\openui\openclaw-os'
 $PluginDir      = Join-Path $SrcDir 'packages\claw-plugin'
 $PluginId       = 'openclaw-os-plugin'
+$PluginPathSlug = 'openclawos'
 $OpenclawConfig = Join-Path $env:USERPROFILE '.openclaw\openclaw.json'
 $LegacyDir      = Join-Path $env:USERPROFILE ".openclaw\extensions\$PluginId"
 
@@ -50,7 +51,7 @@ function Require-Cmd($name, $hint) {
 function Banner {
   Write-Host ""
   Write-Host "OpenClaw OS" -ForegroundColor Magenta -NoNewline
-  Write-Host " — Generative UI for OpenClaw" -ForegroundColor DarkGray
+  Write-Host " — The default workspace for OpenClaw" -ForegroundColor DarkGray
   Write-Host ""
 }
 
@@ -215,7 +216,8 @@ function Uninstall-Plugin {
   if ($LASTEXITCODE -ne 0) { Write-Warn2 'Could not disable plugin (may not be installed). Continuing.' } else { Write-Ok 'Plugin disabled' }
 
   Write-Step "Uninstalling $PluginId"
-  & openclaw plugins uninstall $PluginId
+  # --force skips the interactive y/N prompt (no TTY in `iwr | iex`).
+  & openclaw plugins uninstall $PluginId --force
   if ($LASTEXITCODE -ne 0) { Write-Warn2 'Could not uninstall plugin (may not be registered). Continuing.' } else { Write-Ok 'Plugin uninstalled' }
 }
 
@@ -233,6 +235,49 @@ function Remove-LegacyGlobalInstall {
   }
 }
 
+function Print-DashboardUrl {
+  Write-Step 'Opening OpenClaw OS'
+
+  # The plugin (via `api.registerCli`) constructs the auth-bearing URL from the
+  # gateway-validated config — survives `--dev`/`--profile`, no JSON parsing.
+  $url = $null
+  & openclaw os --help 2>&1 | Out-Null
+  if ($LASTEXITCODE -eq 0) {
+    # The openclaw CLI emits plugin-registration logs to stdout when loading a
+    # plugin to discover its commands; grep just the URL line.
+    $output = (& openclaw os url 2>$null | Out-String)
+    if ($output) {
+      $match = [regex]::Match($output, 'https?://[^\s]+')
+      if ($match.Success) { $url = $match.Value }
+    }
+  }
+
+  if (-not $url) {
+    Write-Warn2 '`openclaw os url` not available — older plugin or missing token.'
+    Write-Log "Open http://127.0.0.1:18789/plugins/$PluginPathSlug and paste the token from $OpenclawConfig."
+    return
+  }
+
+  Write-Host ""
+  Write-Host "  Dashboard URL: " -NoNewline
+  Write-Host $url -ForegroundColor Cyan
+  Write-Host ""
+
+  try {
+    Set-Clipboard -Value $url -ErrorAction Stop
+    Write-Log 'Copied to clipboard.'
+  } catch {
+    # Set-Clipboard missing on PS 5.0; ignore — URL was printed above.
+  }
+
+  try {
+    Start-Process $url -ErrorAction Stop
+    Write-Ok 'Opened in your browser. Keep that tab to use OpenClaw OS.'
+  } catch {
+    Write-Log 'Open the URL above to use OpenClaw OS.'
+  }
+}
+
 function Do-Install {
   Banner
   Check-Prereqs
@@ -245,8 +290,7 @@ function Do-Install {
   Verify
   Write-Host ""
   Write-Host "✓ OpenClaw OS installed." -ForegroundColor Cyan
-  Write-Host "  Open the Claw UI from your OpenClaw client to start generating apps." -ForegroundColor DarkGray
-  Write-Host ""
+  Print-DashboardUrl
 }
 
 function Do-Uninstall {
