@@ -118,7 +118,7 @@ function MobilePlaygroundButton({ className = "" }: { className?: string }) {
 
 function DesktopGithubButton({
   href,
-  label = "Star on GitHub",
+  label = "Star us on GitHub",
   className = "",
 }: {
   href: string;
