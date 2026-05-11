@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import styles from "../page.module.css";
 import { FeaturesSection, OPENCLAW_FEATURES } from "../sections/FeaturesSection/FeaturesSection";
 import { Footer } from "../sections/Footer/Footer";
@@ -8,6 +9,26 @@ import { PossibilitiesSection } from "../sections/PossibilitiesSection/Possibili
 import { StuckInChatSection } from "../sections/StuckInChatSection/StuckInChatSection";
 
 const INSTALL_COMMAND = "curl -fsSL https://openui.com/openclaw-os/install.sh | bash";
+
+export const metadata: Metadata = {
+  title: "OpenClaw OS - The Default Workspace for OpenClaw",
+  description:
+    "OpenClaw OS is the default workspace for OpenClaw. Generate interactive apps and artifacts instantly for any use case, always updated with live data.",
+  alternates: { canonical: "/openclaw-os" },
+  openGraph: {
+    title: "OpenClaw OS — The Default Workspace for OpenClaw",
+    description:
+      "The default workspace for OpenClaw. Generate interactive apps and artifacts instantly, always updated with live data.",
+    url: "/openclaw-os",
+    type: "website",
+  },
+  twitter: {
+    title: "OpenClaw OS — The Default Workspace for OpenClaw",
+    description:
+      "The default workspace for OpenClaw. Generate interactive apps and artifacts instantly, always updated with live data.",
+    card: "summary_large_image",
+  },
+};
 
 export default function OpenClawOSPage() {
   return (
