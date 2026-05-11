@@ -8,7 +8,7 @@ import { useExportChartData, useTransformedKeys } from "../hooks/index.js";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend.js";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend.js";
 import { LegendItem } from "../types/Legend.js";
-import { ensureChartData, getCategoricalChartConfig } from "../utils/dataUtils.js";
+import { getCategoricalChartConfig } from "../utils/dataUtils.js";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils.js";
 import { PieChartData } from "./types/index.js";
 import {
@@ -76,7 +76,6 @@ const PieChartComponent = <T extends PieChartData>({
 }: PieChartProps<T>) => {
   const printContext = usePrintContext();
   isAnimationActive = printContext ? false : isAnimationActive;
-  const chartData = useMemo(() => ensureChartData<T[number]>(data), [data]);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -91,8 +90,8 @@ const PieChartComponent = <T extends PieChartData>({
 
   // Sort data by value (highest to lowest) for pie chart rendering
   const sortedProcessedData = useMemo(
-    () => [...chartData].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
-    [chartData, dataKey],
+    () => [...data].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
+    [data, dataKey],
   );
 
   const categories = useMemo(

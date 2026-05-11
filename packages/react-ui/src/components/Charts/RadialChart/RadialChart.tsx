@@ -7,7 +7,7 @@ import { useExportChartData, useTransformedKeys } from "../hooks";
 import { DefaultLegend } from "../shared/DefaultLegend/DefaultLegend";
 import { StackedLegend } from "../shared/StackedLegend/StackedLegend";
 import { LegendItem } from "../types/Legend";
-import { ensureChartData, getCategoricalChartConfig } from "../utils/dataUtils";
+import { getCategoricalChartConfig } from "../utils/dataUtils";
 import { PaletteName, useChartPalette } from "../utils/PalletUtils";
 import { RadialChartData } from "./types";
 import {
@@ -70,7 +70,6 @@ export const RadialChart = <T extends RadialChartData>({
 }: RadialChartProps<T>) => {
   const printContext = usePrintContext();
   isAnimationActive = printContext ? false : isAnimationActive;
-  const chartData = useMemo(() => ensureChartData<T[number]>(data), [data]);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [wrapperRect, setWrapperRect] = useState({ width: 0, height: 0 });
@@ -84,8 +83,8 @@ export const RadialChart = <T extends RadialChartData>({
 
   // Sort data by value (highest to lowest) for radial chart rendering
   const sortedProcessedData = useMemo(
-    () => [...chartData].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
-    [chartData, dataKey],
+    () => [...data].sort((a, b) => Number(b[dataKey]) - Number(a[dataKey])),
+    [data, dataKey],
   );
 
   const categories = useMemo(

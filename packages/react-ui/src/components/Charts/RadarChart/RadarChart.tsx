@@ -14,7 +14,7 @@ import { useExportChartData, useTransformedKeys } from "../hooks";
 import { ActiveDot, CustomTooltipContent, DefaultLegend } from "../shared";
 import { LegendItem } from "../types";
 import { useChartPalette } from "../utils/PalletUtils";
-import { ensureChartData, get2dChartConfig, getDataKeys, getLegendItems } from "../utils/dataUtils";
+import { get2dChartConfig, getDataKeys, getLegendItems } from "../utils/dataUtils";
 import { AxisLabel } from "./components/AxisLabel";
 import { RadarChartData } from "./types";
 
@@ -54,11 +54,10 @@ const RadarChartComponent = <T extends RadarChartData>({
 }: RadarChartProps<T>) => {
   const printContext = usePrintContext();
   isAnimationActive = printContext ? false : isAnimationActive;
-  const chartData = useMemo(() => ensureChartData<T[number]>(data), [data]);
 
   const dataKeys = useMemo(() => {
-    return getDataKeys(chartData, categoryKey as string);
-  }, [chartData, categoryKey]);
+    return getDataKeys(data, categoryKey as string);
+  }, [data, categoryKey]);
 
   const transformedKeys = useTransformedKeys(dataKeys);
 
@@ -80,7 +79,7 @@ const RadarChartComponent = <T extends RadarChartData>({
 
   const exportData = useExportChartData({
     type: "radar",
-    data: chartData,
+    data,
     categoryKey: categoryKey as string,
     dataKeys,
     colors,
@@ -220,7 +219,7 @@ const RadarChartComponent = <T extends RadarChartData>({
                 rechartsProps={rechartsProps}
               >
                 <RechartsRadarChart
-                  data={chartData}
+                  data={data}
                   margin={{
                     left: 10,
                     right: 10,
