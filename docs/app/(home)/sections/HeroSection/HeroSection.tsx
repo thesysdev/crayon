@@ -163,7 +163,7 @@ function AnnouncementBanner({ className = "" }: { className?: string }) {
       >
         <span className={styles.heroBannerLabel}>
           <span className={styles.heroBannerBadge}>New</span>
-          <span>The default workspace for OpenClaw. Meet OpenClaw-OS.</span>
+          <span>Meet OpenClaw-OS</span>
         </span>
       </Link>
     </>
