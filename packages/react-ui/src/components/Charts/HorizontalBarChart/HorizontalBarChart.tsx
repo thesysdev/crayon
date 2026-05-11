@@ -117,11 +117,7 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
 
   // Calculate label height for better group height calculation
   // Use chart width for label height calculation since labels span full width
-  const labelHeight = useHorizontalBarLabelHeight(
-    chartData,
-    categoryKey as string,
-    effectiveWidth,
-  );
+  const labelHeight = useHorizontalBarLabelHeight(chartData, categoryKey as string, effectiveWidth);
 
   const dataKeys = useMemo(() => {
     return getDataKeys(chartData, categoryKey as string);

@@ -241,7 +241,14 @@ const BarChartCondensedComponent = <T extends BarChartData>({
 
     // Only apply maximum constraint, let Recharts handle thin bars automatically
     return Math.min(maxBarWidth, barWidth);
-  }, [explicitChartWidth, chartContainerWidth, chartData.length, dataKeys.length, variant, maxBarWidth]);
+  }, [
+    explicitChartWidth,
+    chartContainerWidth,
+    chartData.length,
+    dataKeys.length,
+    variant,
+    maxBarWidth,
+  ]);
 
   // Handle mouse events for bar hovering
   const handleChartMouseMove = useCallback((state: any) => {
