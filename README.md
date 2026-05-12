@@ -27,9 +27,11 @@ OpenUI is a full-stack Generative UI framework — a compact streaming-first lan
 ---
 
 
+<div align="center">
 
-[Docs](https://openui.com) · [Playground](https://www.openui.com/playground) · [Sample Chat App](./examples/openui-chat) · [Discord](https://discord.com/invite/Pbv5PsqUSv) · [Contributing](./CONTRIBUTING.md) · [Code of Conduct](./CODE_OF_CONDUCT.md) · [Security](./SECURITY.md) · [License](./LICENSE)
+[Docs](https://openui.com) · [Playground](https://www.openui.com/playground) · [Discord](https://discord.com/invite/Pbv5PsqUSv) · [Contributing](./CONTRIBUTING.md) · English · [中文](./translations/zh-CN)
 
+</div>
 
 ---
 
