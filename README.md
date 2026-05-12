@@ -69,34 +69,7 @@ What this gives you:
 - **Streaming support** - Update the UI progressively as output arrives.
 - **Working app foundation** - Start from a ready-to-run example instead of wiring everything manually.
 
-## OpenAI-compatible providers
 
-The example chat app supports OpenAI-compatible APIs through the optional `OPENAI_BASE_URL` environment variable.
-
-### OpenAI
-
-```env
-OPENAI_API_KEY=sk-your-key-here
-OPENAI_MODEL=gpt-5.4
-```
-
-### Gemini
-
-```env
-OPENAI_API_KEY=AIza...
-OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
-OPENAI_MODEL=gemini-2.5-flash
-```
-
-### OpenRouter
-
-```env
-OPENAI_API_KEY=sk-or-v1-...
-OPENAI_BASE_URL=https://openrouter.ai/api/v1
-OPENAI_MODEL=openai/gpt-4.1-mini
-```
-
-This preserves the default OpenAI behavior while enabling compatibility with other OpenAI-compatible providers.
 
 ## How it works
 
