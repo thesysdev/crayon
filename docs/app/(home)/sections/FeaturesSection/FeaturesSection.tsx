@@ -1,5 +1,6 @@
 "use client";
 
+import svgPaths from "@/imports/svg-urruvoh2be";
 import {
   BellIcon,
   BrowserIcon,
@@ -9,7 +10,6 @@ import {
   SlidersHorizontalIcon,
   SquaresFourIcon,
 } from "@phosphor-icons/react";
-import svgPaths from "@/imports/svg-urruvoh2be";
 import { PillLink } from "../../components/Button/Button";
 import { FeatureList, type FeatureListItem } from "../../components/FeatureList/FeatureList";
 import styles from "./FeaturesSection.module.css";

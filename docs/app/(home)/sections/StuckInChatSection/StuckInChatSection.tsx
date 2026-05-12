@@ -1,6 +1,7 @@
 "use client";
 
 import { EyeSlash, LockSimple, Scroll } from "@phosphor-icons/react";
+import { useState } from "react";
 import { NpmButton } from "../HeroSection/HeroSection";
 import styles from "./StuckInChatSection.module.css";
 
@@ -24,7 +25,15 @@ const NEGATIVES = [
   },
 ];
 
-export function StuckInChatSection({ installCommand }: { installCommand: string }) {
+export function StuckInChatSection({
+  installCommand,
+  windowsInstallCommand,
+}: {
+  installCommand: string;
+  windowsInstallCommand: string;
+}) {
+  const [showWindowsCommand, setShowWindowsCommand] = useState(false);
+
   return (
     <section className={styles.section}>
       <div className={styles.container}>
@@ -45,7 +54,38 @@ export function StuckInChatSection({ installCommand }: { installCommand: string 
 
         <div className={styles.cta}>
           <p className={styles.ctaSub}>Setup OpenClaw OS in under a minute</p>
-          <NpmButton command={installCommand} className={styles.installButton} />
+          <div className={styles.installCommands}>
+            <div className={styles.installTabs} role="tablist" aria-label="Install platform">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={!showWindowsCommand}
+                className={`${styles.installTab} ${
+                  !showWindowsCommand ? styles.installTabActive : ""
+                }`.trim()}
+                onClick={() => setShowWindowsCommand(false)}
+              >
+                macOS / Linux
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={showWindowsCommand}
+                className={`${styles.installTab} ${
+                  showWindowsCommand ? styles.installTabActive : ""
+                }`.trim()}
+                onClick={() => setShowWindowsCommand(true)}
+              >
+                Windows
+              </button>
+            </div>
+            <div className={styles.installCommandItem}>
+              <NpmButton
+                command={showWindowsCommand ? windowsInstallCommand : installCommand}
+                className={styles.installButton}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>

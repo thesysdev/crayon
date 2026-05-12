@@ -1,7 +1,7 @@
 # OpenClaw OS Installer (Windows / PowerShell 5.1+)
 #
 # Install:
-#   iwr -useb https://openui.com/openclaw-os/install.ps1 | iex
+#   powershell -c "irm https://openui.com/openclaw-os/install.ps1 | iex"
 #
 # Uninstall (one-liner):
 #   & ([scriptblock]::Create((iwr -useb https://openui.com/openclaw-os/install.ps1).Content)) -Uninstall
@@ -100,8 +100,8 @@ function Download-Source {
 }
 
 function Build-Plugin {
-  Write-Step 'Building plugin (pnpm install + bundle-ui + build)'
-  Write-Log 'Compiles claw-client UI and bundles the plugin. Expect 1–3 minutes on first run.'
+  Write-Step 'Building plugin (pnpm install + claw-client build + plugin bundle)'
+  Write-Log 'Compiles claw-client UI and bundles the plugin. Expect 1-3 minutes on first run.'
 
   Push-Location $SrcDir
   try {
@@ -109,14 +109,33 @@ function Build-Plugin {
     if ($LASTEXITCODE -ne 0) { Write-Fatal 'Workspace pnpm install failed.' }
   } finally { Pop-Location }
 
-  # Run README's canonical sequence explicitly, not the `prepack` lifecycle —
-  # protects against silent no-op if the package.json script gets renamed.
+  $clientDir = Join-Path $SrcDir 'packages\claw-client'
+  $clientOutDir = Join-Path $clientDir 'out'
+  $staticDir = Join-Path $PluginDir 'static'
+  $distDir = Join-Path $PluginDir 'dist'
+
+  # Keep this Windows-native: the package scripts are also cross-platform in the
+  # repo, but the installer avoids shell-specific rm/cp assumptions.
+  Push-Location $clientDir
+  try {
+    & pnpm install --frozen-lockfile=false
+    if ($LASTEXITCODE -ne 0) { Write-Fatal 'claw-client pnpm install failed.' }
+    & pnpm build
+    if ($LASTEXITCODE -ne 0) { Write-Fatal 'claw-client build failed.' }
+  } finally { Pop-Location }
+
+  if (-not (Test-Path $clientOutDir)) { Write-Fatal "claw-client build did not produce $clientOutDir." }
+  if (Test-Path $staticDir) { Remove-Item -Recurse -Force $staticDir }
+  Copy-Item -Path $clientOutDir -Destination $staticDir -Recurse -Force
+
+  if (Test-Path $distDir) { Remove-Item -Recurse -Force $distDir }
+  New-Item -ItemType Directory -Force -Path $distDir | Out-Null
+
   Push-Location $PluginDir
   try {
-    & pnpm bundle-ui
-    if ($LASTEXITCODE -ne 0) { Write-Fatal 'pnpm bundle-ui failed.' }
-    & pnpm build
-    if ($LASTEXITCODE -ne 0) { Write-Fatal 'pnpm build failed.' }
+    $banner = 'import { createRequire } from "node:module"; const require = createRequire(import.meta.url);'
+    & pnpm exec esbuild 'src/index.ts' '--bundle' '--platform=node' '--target=node22' '--format=esm' '--outfile=dist/index.js' '--external:openclaw' '--external:openclaw/*' '--external:node:*' '--loader:.json=json' "--banner:js=$banner"
+    if ($LASTEXITCODE -ne 0) { Write-Fatal 'Plugin esbuild bundle failed.' }
   } finally { Pop-Location }
 
   if (-not (Test-Path (Join-Path $PluginDir 'dist\index.js'))) { Write-Fatal 'Build did not produce dist\index.js.' }
@@ -244,11 +263,12 @@ function Print-DashboardUrl {
   & openclaw os --help 2>&1 | Out-Null
   if ($LASTEXITCODE -eq 0) {
     # The openclaw CLI emits plugin-registration logs to stdout when loading a
-    # plugin to discover its commands; grep just the URL line.
+    # plugin to discover its commands. The action runs after registration, so
+    # use the last URL-shaped line in case earlier logs contain URLs too.
     $output = (& openclaw os url 2>$null | Out-String)
     if ($output) {
-      $match = [regex]::Match($output, 'https?://[^\s]+')
-      if ($match.Success) { $url = $match.Value }
+      $matches = [regex]::Matches($output, 'https?://[^\s]+')
+      if ($matches.Count -gt 0) { $url = $matches[$matches.Count - 1].Value }
     }
   }
 

@@ -92,6 +92,45 @@ export function NpmButton({ className = "", command }: { className?: string; com
   );
 }
 
+function CommandTabs({
+  showSecondaryCommand,
+  setShowSecondaryCommand,
+  secondaryCommand,
+}: {
+  showSecondaryCommand: boolean;
+  setShowSecondaryCommand: (value: boolean) => void;
+  secondaryCommand?: string;
+}) {
+  if (!secondaryCommand) return null;
+
+  return (
+    <div className={styles.commandTabs} role="tablist" aria-label="Install platform">
+      <button
+        type="button"
+        role="tab"
+        aria-selected={!showSecondaryCommand}
+        className={`${styles.commandTab} ${
+          !showSecondaryCommand ? styles.commandTabActive : ""
+        }`.trim()}
+        onClick={() => setShowSecondaryCommand(false)}
+      >
+        macOS / Linux
+      </button>
+      <button
+        type="button"
+        role="tab"
+        aria-selected={showSecondaryCommand}
+        className={`${styles.commandTab} ${
+          showSecondaryCommand ? styles.commandTabActive : ""
+        }`.trim()}
+        onClick={() => setShowSecondaryCommand(true)}
+      >
+        Windows
+      </button>
+    </div>
+  );
+}
+
 function DesktopPlaygroundButton({ className = "" }: { className?: string }) {
   return (
     <PillLink
@@ -209,6 +248,9 @@ function DesktopHero({
   title,
   subtitle,
   command,
+  commandLabel,
+  secondaryCommand,
+  secondaryCommandLabel,
   compact,
   showBanner,
   showPlaygroundButton,
@@ -218,6 +260,9 @@ function DesktopHero({
   title: ReactNode;
   subtitle: ReactNode;
   command: string;
+  commandLabel?: string;
+  secondaryCommand?: string;
+  secondaryCommandLabel?: string;
   compact: boolean;
   showBanner: boolean;
   showPlaygroundButton: boolean;
@@ -227,6 +272,7 @@ function DesktopHero({
   // The shadow-room class compensates for the absent secondary CTA — only
   // applied when both the playground button AND the GitHub button are off.
   const hasSecondaryCta = showPlaygroundButton || !!githubRepoUrl;
+  const [showSecondaryCommand, setShowSecondaryCommand] = useState(false);
 
   return (
     <div className={styles.desktopHero}>
@@ -246,11 +292,20 @@ function DesktopHero({
             !hasSecondaryCta ? styles.desktopCtaStackShadowRoom : ""
           }`.trim()}
         >
-          <NpmButton command={command} />
+          <div className={styles.commandGroup}>
+            <CommandTabs
+              showSecondaryCommand={showSecondaryCommand}
+              setShowSecondaryCommand={setShowSecondaryCommand}
+              secondaryCommand={secondaryCommand}
+            />
+            <div className={styles.commandItem}>
+              <NpmButton
+                command={showSecondaryCommand && secondaryCommand ? secondaryCommand : command}
+              />
+            </div>
+          </div>
           {showPlaygroundButton && <DesktopPlaygroundButton />}
-          {githubRepoUrl && (
-            <DesktopGithubButton href={githubRepoUrl} label={githubButtonLabel} />
-          )}
+          {githubRepoUrl && <DesktopGithubButton href={githubRepoUrl} label={githubButtonLabel} />}
         </div>
       </div>
     </div>
@@ -266,6 +321,9 @@ function MobileHero({
   title,
   subtitle,
   command,
+  commandLabel,
+  secondaryCommand,
+  secondaryCommandLabel,
   compact,
   showBanner,
   showPlaygroundButton,
@@ -281,6 +339,9 @@ function MobileHero({
   title: ReactNode;
   subtitle: ReactNode;
   command: string;
+  commandLabel?: string;
+  secondaryCommand?: string;
+  secondaryCommandLabel?: string;
   compact: boolean;
   showBanner: boolean;
   showPlaygroundButton: boolean;
@@ -292,6 +353,7 @@ function MobileHero({
   mobileImageHeight?: number;
   mobileImageCropTopPercent?: number;
 }) {
+  const [showSecondaryCommand, setShowSecondaryCommand] = useState(false);
   const mobileHeroImage =
     mobileImageOverride ?? (theme === "dark" ? MOBILE_HERO_IMAGE.dark : MOBILE_HERO_IMAGE.light);
 
@@ -313,7 +375,9 @@ function MobileHero({
           {showBanner && <AnnouncementBanner />}
 
           <div className={styles.mobileBrandGroup}>
-            <p className={`${styles.mobileTitle} ${compact ? styles.mobileTitleCompact : ""}`.trim()}>
+            <p
+              className={`${styles.mobileTitle} ${compact ? styles.mobileTitleCompact : ""}`.trim()}
+            >
               {title}
             </p>
           </div>
@@ -325,7 +389,19 @@ function MobileHero({
 
       {/* CTA buttons */}
       <div className={styles.mobileCtaStack}>
-        <NpmButton className={styles.mobileCtaButtonWidth} command={command} />
+        <div className={styles.commandGroup}>
+          <CommandTabs
+            showSecondaryCommand={showSecondaryCommand}
+            setShowSecondaryCommand={setShowSecondaryCommand}
+            secondaryCommand={secondaryCommand}
+          />
+          <div className={styles.commandItem}>
+            <NpmButton
+              className={styles.mobileCtaButtonWidth}
+              command={showSecondaryCommand && secondaryCommand ? secondaryCommand : command}
+            />
+          </div>
+        </div>
         {showPlaygroundButton && <MobilePlaygroundButton className={styles.mobileCtaButtonWidth} />}
         {showGitHubBanner && (
           <GitHubBanner href={githubRepoUrl} className={styles.mobileCtaButtonWidth} />
@@ -370,8 +446,7 @@ function PreviewImage({
   widePreview?: boolean;
 }) {
   const desktopHeroImage =
-    desktopImageOverride ??
-    (theme === "dark" ? DESKTOP_HERO_IMAGE.dark : DESKTOP_HERO_IMAGE.light);
+    desktopImageOverride ?? (theme === "dark" ? DESKTOP_HERO_IMAGE.dark : DESKTOP_HERO_IMAGE.light);
 
   return (
     <div
@@ -426,6 +501,9 @@ export function HeroSection({
   title = "OpenUI",
   subtitle = "The Open Standard for Generative UI",
   command = primaryCTA,
+  commandLabel,
+  secondaryCommand,
+  secondaryCommandLabel,
   compact = false,
   showBanner = true,
   showPlaygroundButton = true,
@@ -449,6 +527,9 @@ export function HeroSection({
   title?: ReactNode;
   subtitle?: ReactNode;
   command?: string;
+  commandLabel?: string;
+  secondaryCommand?: string;
+  secondaryCommandLabel?: string;
   compact?: boolean;
   showBanner?: boolean;
   showPlaygroundButton?: boolean;
@@ -481,6 +562,9 @@ export function HeroSection({
         title={title}
         subtitle={subtitle}
         command={command}
+        commandLabel={commandLabel}
+        secondaryCommand={secondaryCommand}
+        secondaryCommandLabel={secondaryCommandLabel}
         compact={compact}
         showBanner={showBanner}
         showPlaygroundButton={showPlaygroundButton}
@@ -492,6 +576,9 @@ export function HeroSection({
         title={title}
         subtitle={subtitle}
         command={command}
+        commandLabel={commandLabel}
+        secondaryCommand={secondaryCommand}
+        secondaryCommandLabel={secondaryCommandLabel}
         compact={compact}
         showBanner={showBanner}
         showPlaygroundButton={showPlaygroundButton}

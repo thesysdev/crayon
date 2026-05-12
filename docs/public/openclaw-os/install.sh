@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# OpenClaw OS Installer (macOS / Linux)
+# OpenClaw OS Installer (macOS / Linux / WSL2)
 # Install:   curl -fsSL https://openui.com/openclaw-os/install.sh | bash
 # Uninstall: curl -fsSL https://openui.com/openclaw-os/install.sh | bash -s -- uninstall
 

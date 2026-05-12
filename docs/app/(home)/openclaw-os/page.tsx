@@ -8,6 +8,8 @@ import { PossibilitiesSection } from "../sections/PossibilitiesSection/Possibili
 import { StuckInChatSection } from "../sections/StuckInChatSection/StuckInChatSection";
 
 const INSTALL_COMMAND = "curl -fsSL https://openui.com/openclaw-os/install.sh | bash";
+const WINDOWS_INSTALL_COMMAND =
+  'powershell -c "irm https://openui.com/openclaw-os/install.ps1 | iex"';
 
 export default function OpenClawOSPage() {
   return (
@@ -29,6 +31,9 @@ export default function OpenClawOSPage() {
             </>
           }
           command={INSTALL_COMMAND}
+          commandLabel="macOS / Linux"
+          secondaryCommand={WINDOWS_INSTALL_COMMAND}
+          secondaryCommandLabel="Windows PowerShell"
           compact
           showBanner={false}
           showPlaygroundButton={false}
@@ -84,7 +89,10 @@ export default function OpenClawOSPage() {
             ]}
           />
           <FeaturesSection features={OPENCLAW_FEATURES} showCta={false} />
-          <StuckInChatSection installCommand={INSTALL_COMMAND} />
+          <StuckInChatSection
+            installCommand={INSTALL_COMMAND}
+            windowsInstallCommand={WINDOWS_INSTALL_COMMAND}
+          />
         </div>
         <GradientDivider direction="up" />
       </div>
