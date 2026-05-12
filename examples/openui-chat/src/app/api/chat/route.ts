@@ -60,7 +60,7 @@ function calculate({ expression }: { expression: string }): Promise<string> {
     setTimeout(() => {
       try {
         const sanitized = expression.replace(/[^0-9+\-*/().%\s,Math.sqrtpowabsceilfloorround]/g, "");
-         
+
         const result = new Function(`return (${sanitized})`)();
         resolve(JSON.stringify({ expression, result: Number(result) }));
       } catch {
@@ -201,7 +201,9 @@ export async function POST(req: NextRequest) {
 
   const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.OPENAI_BASE_URL || undefined,
   });
+
   const MODEL = process.env.OPENAI_MODEL || "gpt-5.4";
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -211,9 +213,11 @@ export async function POST(req: NextRequest) {
       if (m.role === "assistant" && m.tool_calls?.length) {
         // Strip tool_calls (runTools re-runs the agentic loop server-side)
         // but preserve content so prior replies remain in context.
-        const { tool_calls: _tc, ...rest } = m; // eslint-disable-line @typescript-eslint/no-unused-vars
+        const { tool_calls: _tc, ...rest } = m;
+
         return rest;
       }
+
       return m;
     });
 
@@ -229,15 +233,32 @@ export async function POST(req: NextRequest) {
     start(controller) {
       const enqueue = (data: Uint8Array) => {
         if (controllerClosed) return;
-        try { controller.enqueue(data); } catch { /* already closed */ }
-      };
-      const close = () => {
-        if (controllerClosed) return;
-        controllerClosed = true;
-        try { controller.close(); } catch { /* already closed */ }
+
+        try {
+          controller.enqueue(data);
+        } catch {
+          // already closed
+        }
       };
 
-      const pendingCalls: Array<{ id: string; name: string; arguments: string }> = [];
+      const close = () => {
+        if (controllerClosed) return;
+
+        controllerClosed = true;
+
+        try {
+          controller.close();
+        } catch {
+          // already closed
+        }
+      };
+
+      const pendingCalls: Array<{
+        id: string;
+        name: string;
+        arguments: string;
+      }> = [];
+
       let callIdx = 0;
       let resultIdx = 0;
 
@@ -246,22 +267,54 @@ export async function POST(req: NextRequest) {
         model: MODEL,
         messages: chatMessages,
         tools,
-        stream: true
+        stream: true,
       });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       runner.on("functionToolCall", (fc: any) => {
         const id = `tc-${callIdx}`;
-        pendingCalls.push({ id, name: fc.name, arguments: fc.arguments });
-        enqueue(sseToolCallStart(encoder, { id, function: { name: fc.name } }, callIdx));
+
+        pendingCalls.push({
+          id,
+          name: fc.name,
+          arguments: fc.arguments,
+        });
+
+        enqueue(
+          sseToolCallStart(
+            encoder,
+            {
+              id,
+              function: {
+                name: fc.name,
+              },
+            },
+            callIdx,
+          ),
+        );
+
         callIdx++;
       });
 
       runner.on("functionToolCallResult", (result: string) => {
         const tc = pendingCalls[resultIdx];
+
         if (tc) {
-          enqueue(sseToolCallArgs(encoder, { id: tc.id, function: { arguments: tc.arguments } }, result, resultIdx));
+          enqueue(
+            sseToolCallArgs(
+              encoder,
+              {
+                id: tc.id,
+                function: {
+                  arguments: tc.arguments,
+                },
+              },
+              result,
+              resultIdx,
+            ),
+          );
         }
+
         resultIdx++;
       });
 
@@ -269,12 +322,23 @@ export async function POST(req: NextRequest) {
       runner.on("chunk", (chunk: any) => {
         const choice = chunk.choices?.[0];
         const delta = choice?.delta;
+
         if (!delta) return;
+
         if (delta.content) {
-          enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
+          enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify(chunk)}\n\n`,
+            ),
+          );
         }
+
         if (choice?.finish_reason === "stop") {
-          enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
+          enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify(chunk)}\n\n`,
+            ),
+          );
         }
       });
 
@@ -285,9 +349,19 @@ export async function POST(req: NextRequest) {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       runner.on("error", (err: any) => {
-        const msg = err instanceof Error ? err.message : "Stream error";
+        const msg =
+          err instanceof Error
+            ? err.message
+            : "Stream error";
+
         console.error("Chat route error:", msg);
-        enqueue(encoder.encode(`data: ${JSON.stringify({ error: msg })}\n\n`));
+
+        enqueue(
+          encoder.encode(
+            `data: ${JSON.stringify({ error: msg })}\n\n`,
+          ),
+        );
+
         close();
       });
     },
