@@ -2,7 +2,14 @@ This is an [OpenUI](https://openui.com) Agent Chat project bootstrapped with [`o
 
 ## Getting Started
 
-First, run the development server:
+First, create a `.env` file:
+
+```env
+OPENAI_API_KEY=sk-your-key-here
+OPENAI_MODEL=gpt-5.4
+```
+
+Then run the development server:
 
 ```bash
 npm run dev
@@ -18,6 +25,20 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `src/app/api/route.ts` and improving your agent
 by adding system prompts or tools.
+
+## OpenAI-compatible APIs
+
+The example chat app supports OpenAI-compatible APIs through the optional `OPENAI_BASE_URL` environment variable.
+
+Example using OpenRouter:
+
+```env
+OPENAI_API_KEY=sk-or-v1-...
+OPENAI_BASE_URL=https://openrouter.ai/api/v1
+OPENAI_MODEL=openai/gpt-4.1-mini
+```
+
+This also works with other OpenAI-compatible providers.
 
 ## Learn More
 
