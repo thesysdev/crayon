@@ -22,7 +22,11 @@
 
 OpenUI is a full-stack Generative UI framework — a compact streaming-first language, a React runtime with built-in component libraries, and ready-to-use chat interfaces — that is up to 67% more token-efficient than JSON.
 
+⚠️ Important Notice: OpenUI has no official cryptocurrency, token, or coin.
 
+Any token or coin using the OpenUI name on Pump.fun or any other platform is not affiliated with, endorsed by, or created by this project or its maintainers.
+
+Do not purchase any cryptocurrency claiming to be associated with OpenUI.
 
 ---
 
