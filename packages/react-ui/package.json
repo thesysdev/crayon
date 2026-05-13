@@ -2,14 +2,21 @@
   "type": "module",
   "name": "@openuidev/react-ui",
   "license": "MIT",
-  "version": "0.10.1",
+  "version": "0.11.6",
   "description": "Component library for Generative UI SDK",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.cts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./components.css": {
       "default": "./dist/components/index.css"
@@ -21,19 +28,27 @@
       "default": "./dist/styles/*"
     },
     "./genui-lib": {
-      "types": "./dist/genui-lib/index.d.ts",
-      "default": "./dist/genui-lib/index.js"
-    },
-    "./tailwind": {
-      "types": "./dist/lib/tailwind/tailwind.d.ts",
-      "default": "./dist/lib/tailwind/tailwind.js"
+      "import": {
+        "types": "./dist/genui-lib/index.d.mts",
+        "default": "./dist/genui-lib/index.mjs"
+      },
+      "require": {
+        "types": "./dist/genui-lib/index.d.cts",
+        "default": "./dist/genui-lib/index.cjs"
+      }
     },
     "./scssUtils": {
       "default": "./dist/styles/cssUtils.scss"
     },
     "./*": {
-      "types": "./dist/components/*/index.d.ts",
-      "default": "./dist/components/*/index.js"
+      "import": {
+        "types": "./dist/components/*/index.d.ts",
+        "default": "./dist/components/*/index.js"
+      },
+      "require": {
+        "types": "./dist/components/*/index.d.ts",
+        "default": "./dist/components/*/index.cjs"
+      }
     }
   },
   "sideEffects": [
@@ -46,15 +61,14 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generate-tailwind-plugin": "npx tsx src/lib/tailwind/generateTailwindPlugin.ts && pnpm build:plugin",
-    "cleanup": "rm -rf src/lib/tailwind/tailwind.ts",
     "copy-css": "node cp-css.js",
     "generate-scss-index": "node src/scripts/scss-import.js",
     "generate:css-utils": "tsx src/scripts/generate-css-utils.ts",
-    "build": "rm -rf dist && pnpm generate:css-utils && pnpm build:scss && pnpm build:tsc && pnpm cleanup && pnpm run copy-css",
+    "build": "rm -rf dist && pnpm generate:css-utils && pnpm build:scss && pnpm build:tsc && pnpm build:cjs && pnpm run copy-css",
+    "typecheck": "tsc --noEmit",
     "build:tsc": "tsc -p . || true",
+    "build:cjs": "tsdown",
     "build:scss": "sass src:dist --style compressed --no-source-map",
-    "build:plugin": "tsc src/lib/tailwind/tailwind --outDir dist/lib/tailwind --module esnext --allowSyntheticDefaultImports --moduleResolution bundler --declaration",
     "storybook": "storybook dev -p 6006",
     "build:storybook": "storybook build -o ../../../docs/static/ui",
     "watch": "concurrently \"pnpm run build --watch\" \"pnpm run build:tsc --watch\" \"pnpm run build:scss --watch\"",
@@ -62,15 +76,19 @@
     "lint:fix": "eslint ./src --fix",
     "format:fix": "prettier --write ./src",
     "format:check": "prettier --check ./src",
+    "check:publint": "publint",
+    "check:attw": "attw --pack . --ignore-rules no-resolution",
     "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run check:publint && pnpm run check:attw",
     "ci": "pnpm run lint:check && pnpm run format:check"
   },
   "peerDependencies": {
     "@openuidev/react-headless": "workspace:^",
     "@openuidev/react-lang": "workspace:^",
-    "react": ">=19.0.0",
-    "react-dom": ">=19.0.0",
-    "zustand": "^4.5.5"
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "zustand": "^4.5.5",
+    "zod": "^3.25.0 || ^4.0.0"
   },
   "dependencies": {
     "@floating-ui/react-dom": "^2.1.2",
@@ -101,8 +119,7 @@
     "remark-emoji": "^5.0.1",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
-    "tiny-invariant": "^1.3.3",
-    "zod": "^4.3.6"
+    "tiny-invariant": "^1.3.3"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.4",

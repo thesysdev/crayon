@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { CheckCheck, Copy } from "lucide-react";
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { IconButton } from "../IconButton";
 
 export interface CodeBlockProps {
@@ -32,6 +32,7 @@ export const CodeBlock = ({ language, codeString, theme }: CodeBlockProps) => {
           "openui-code-block-copy-button-copied": copied,
         })}
         icon={copied ? <CheckCheck /> : <Copy />}
+        aria-label={copied ? "Copied to clipboard" : "Copy code"}
       />
       <SyntaxHighlighter
         style={theme ?? vscDarkPlus}

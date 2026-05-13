@@ -1,5 +1,5 @@
 // ── Library (framework-generic) ──
-export { createLibrary, defineComponent } from "./library";
+export { createLibrary, defineComponent, tagSchemaId } from "./library";
 export type {
   ComponentGroup,
   ComponentRenderProps,
@@ -31,6 +31,8 @@ export { enrichErrors } from "./parser/enrich-errors";
 export { mergeStatements } from "./parser/merge";
 export { generatePrompt } from "./parser/prompt";
 export type { ComponentPromptSpec, PromptSpec, ToolSpec } from "./parser/prompt";
+export { jsonToOpenUI } from "./parser/serialize";
+export type { SerializeOptions } from "./parser/serialize";
 export { BuiltinActionType } from "./parser/types";
 export type {
   ActionEvent,

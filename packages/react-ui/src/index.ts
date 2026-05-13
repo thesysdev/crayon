@@ -64,16 +64,8 @@ export * from "./components/TagBlock";
 export * from "./components/TextArea";
 export * from "./components/TextCallout";
 export * from "./components/TextContent";
-export {
-  Theme,
-  ThemeProvider,
-  createTheme,
-  defaultDarkTheme,
-  defaultLightTheme,
-  swatchTokens,
-} from "./components/ThemeProvider";
-export type { ThemeProps } from "./components/ThemeProvider/ThemeProvider";
-export type { ThemeMode } from "./components/ThemeProvider/types";
+export * from "./components/ThemeProvider";
+
 export * from "./components/ToolCall";
 export * from "./components/ToolResult";
 

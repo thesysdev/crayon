@@ -1,35 +1,68 @@
 export type Theme = "system" | "light" | "dark";
 export type Status = "idle" | "streaming" | "done" | "error";
 
-export const GITHUB_STARTERS = [
+export const GITHUB_DEMO_MODEL = "anthropic/claude-sonnet-4-6";
+export const GITHUB_DEMO_MODEL_LABEL = "Claude Sonnet 4.6";
+
+export type GitHubStarterIconKey =
+  | "commit-activity"
+  | "pull-requests"
+  | "issue-tracking"
+  | "code-reviews"
+  | "language-breakdown"
+  | "repository-stats";
+
+export type GitHubStarterTone = "green" | "purple" | "red" | "blue" | "amber" | "pink";
+
+export type GitHubStarter = {
+  label: string;
+  prompt: string;
+  icon: GitHubStarterIconKey;
+  tone: GitHubStarterTone;
+};
+
+export const GITHUB_STARTERS: GitHubStarter[] = [
   {
-    label: "Profile Dashboard",
+    label: "Commit Activity",
     prompt:
-      "Build a profile dashboard with KPIs, language breakdown chart, and top repos table with sorting and language filter",
-    icon: "📊",
+      "Build a dashboard focused on commit activity, contribution streaks, busiest repositories, and recent work patterns over time.",
+    icon: "commit-activity",
+    tone: "green",
   },
   {
-    label: "Coding Patterns",
+    label: "Pull Requests",
     prompt:
-      "Analyze my coding patterns — show activity breakdown, language distribution, and a recent events timeline",
-    icon: "🔥",
+      "Create a pull request dashboard with open versus merged trends, review turnaround, and the repositories with the most PR activity.",
+    icon: "pull-requests",
+    tone: "purple",
   },
   {
-    label: "Star History",
-    prompt: "Show star history charts for my most popular repos with a comparison view",
-    icon: "⭐",
+    label: "Issue Tracking",
+    prompt:
+      "Show issue tracking insights with open versus closed trends, response speed, issue backlog, and the repos with the most active discussions.",
+    icon: "issue-tracking",
+    tone: "red",
   },
   {
-    label: "Repo Organizer",
+    label: "Code Reviews",
     prompt:
-      "Build a repo organizer with bookmarks, tags, search, and language filter. Include a bookmark form in a modal.",
-    icon: "🗂️",
+      "Analyze code reviews by showing review volume, average turnaround, participation by repository, and recent review activity.",
+    icon: "code-reviews",
+    tone: "blue",
   },
   {
-    label: "Open Source Impact",
+    label: "Language Breakdown",
     prompt:
-      "Show my open source impact — follower stats, total stars, top repos by forks, language expertise breakdown, and community reach",
-    icon: "🌍",
+      "Visualize language breakdown across repositories with usage share, top projects per language, and how the stack changes over time.",
+    icon: "language-breakdown",
+    tone: "amber",
+  },
+  {
+    label: "Repository Stats",
+    prompt:
+      "Build a repository stats dashboard with stars, forks, watchers, top repositories, and overall portfolio health.",
+    icon: "repository-stats",
+    tone: "pink",
   },
 ];
 
@@ -45,5 +78,4 @@ export interface ChatMessage {
   content: string;
   text?: string;
   hasCode: boolean;
-  runtimeTools?: ToolCallEntry[];
 }

@@ -14,6 +14,19 @@ Most AI applications are limited to returning text (as markdown) or rendering pr
 Generative UI fundamentally changes this relationship. Instead of merely providing content, the AI composes the interface itself. It dynamically selects, configures, and composes components from a predefined library to create a purpose-built interface tailored to the user's immediate request, be it an interactive chart, a complex form, or a multi-tab dashboard.
 
 <TryItOut />
+
+## Architecture at a Glance
+
+<img src="/images/openui-lang/openui-chart-flow.png" alt="Architecture diagram" />
+
+1.  **System prompt includes OpenUI Lang spec**: Your backend appends the generated component library prompt alongside your system prompt, instructing the LLM to respond in OpenUI Lang instead of plain text or JSON.
+
+2.  **LLM generates OpenUI Lang**: Instead of returning markdown, the model outputs a compact, line-oriented syntax (e.g., `root = Stack([chart])`) constrained to your component library.
+
+3.  **Streaming render**: On the client, the `<Renderer />` component parses each line as it arrives and maps it to your React components in real-time. Structure renders first, then data fills in progressively.
+
+The result is a native UI dynamically composed by the AI, streamed efficiently, and rendered safely from your own components. For data-driven apps with live tools and reactive state, see [Architecture](/docs/openui-lang/how-it-works).
+
 ## OpenUI Lang
 
 OpenUI Lang is a compact, line-oriented language designed specifically for Large Language Models (LLMs) to generate user interfaces. It serves as a more efficient, predictable, and stream-friendly alternative to verbose formats like JSON. For the complete syntax reference, see the [Language Specification](/docs/openui-lang/specification-v05).
@@ -31,18 +44,6 @@ OpenUI Lang was created to solve these core issues:
 - **Robustness:** LLMs are unpredictable. They can hallucinate component names or produce invalid structures. OpenUI Lang validates output and drops invalid portions, rendering only what's valid.
 
 <StreamingComparison />
-
-## Architecture at a Glance
-
-<img src="/images/openui-lang/openui-chart-flow.png" alt="Architecture diagram" />
-
-1.  **System prompt includes OpenUI Lang spec**: Your backend appends the generated component library prompt alongside your system prompt, instructing the LLM to respond in OpenUI Lang instead of plain text or JSON.
-
-2.  **LLM generates OpenUI Lang**: Instead of returning markdown, the model outputs a compact, line-oriented syntax (e.g., `root = Stack([chart])`) constrained to your component library.
-
-3.  **Streaming render**: On the client, the `<Renderer />` component parses each line as it arrives and maps it to your React components in real-time. Structure renders first, then data fills in progressively.
-
-The result is a native UI dynamically composed by the AI, streamed efficiently, and rendered safely from your own components. For data-driven apps with live tools and reactive state, see [Architecture](/docs/openui-lang/how-it-works).
 
 ## What can you build?
 

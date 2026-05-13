@@ -1,6 +1,13 @@
 <div align="center">
 
-<img src="./assets/banner.png" alt="OpenUI — The Open Standard for Generative UI" width="100%">
+<a href="https://www.openui.com" target="_blank" rel="noopener noreferrer">
+  <img 
+    src="./assets/banner.png" 
+    alt="OpenUI — The Open Standard for Generative UI" 
+    width="100%" 
+    style="cursor: pointer;"
+  >
+</a>
 
 # OpenUI — The Open Standard for Generative UI
 
@@ -15,14 +22,20 @@
 
 OpenUI is a full-stack Generative UI framework — a compact streaming-first language, a React runtime with built-in component libraries, and ready-to-use chat interfaces — that is up to 67% more token-efficient than JSON.
 
+⚠️ Important Notice: OpenUI has no official cryptocurrency, token, or coin.
 
+Any token or coin using the OpenUI name on Pump.fun or any other platform is not affiliated with, endorsed by, or created by this project or its maintainers.
+
+Do not purchase any cryptocurrency claiming to be associated with OpenUI.
 
 ---
 
 
+<div align="center">
 
-[Docs](https://openui.com) · [Playground](https://www.openui.com/playground) · [Sample Chat App](./examples/openui-chat) · [Discord](https://discord.com/invite/Pbv5PsqUSv) · [Contributing](./CONTRIBUTING.md) · [Code of Conduct](./CODE_OF_CONDUCT.md) · [Security](./SECURITY.md) · [License](./LICENSE)
+[Docs](https://openui.com) · [Playground](https://www.openui.com/playground) · [Discord](https://discord.com/invite/Pbv5PsqUSv) · [Contributing](./CONTRIBUTING.md) · English · [中文](./translations/zh-CN)
 
+</div>
 
 ---
 
@@ -176,6 +189,16 @@ cp -r skills/openui .claude/skills/openui
 ```
  
 The skill covers component library design, OpenUI Lang syntax, system prompt generation, the Renderer, SDK packages, and debugging malformed LLM output.
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=thesysdev%2Fopenui&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=thesysdev/openui&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=thesysdev/openui&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=thesysdev/openui&type=date&legend=top-left" />
+ </picture>
+</a>
 
 ## License
 

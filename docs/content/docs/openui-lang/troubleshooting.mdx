@@ -3,6 +3,29 @@ title: Troubleshooting
 description: Common issues and fixes when working with OpenUI Lang and the Renderer.
 ---
 
+## Library Definition Issues
+
+### Why do I get "Component was defined with a Zod 3 schema"?
+
+If you're on `zod@3.25.x`, import component schemas from `zod/v4`, not `zod`. OpenUI component definitions expect the Zod 4 schema objects, and the `zod@3.25` package ships those under the `zod/v4` subpath.
+
+```ts
+import { z } from "zod/v4";
+```
+
+If you want one import path that works across `zod@3.25.x` and `zod@4`, prefer `zod/v4`.
+
+### Why does a prop show up as `any` in the generated prompt?
+
+`defineComponent(...)` automatically names component schemas, but standalone helper schemas do not get a friendly prompt name by default. Tag those helper schemas explicitly.
+
+```ts
+const ActionExpression = z.any();
+tagSchemaId(ActionExpression, "ActionExpression");
+```
+
+This only affects prompt signatures. Validation behavior stays the same.
+
 ## LLM Output Issues
 
 ### Why are extra arguments being dropped?
@@ -122,7 +145,7 @@ Error codes:
 
 `onError` is for error handling. It collects errors from all layers (parser, runtime, queries) into a single callback.
 
-`onParseResult` is for inspection. It gives you the raw parse tree: the AST, statement count, unresolved references. Use it when you need to see what the parser produced, not just what went wrong.
+`onParseResult` is for inspection. It gives you the raw parse tree: the AST, statement count, unresolved references, and orphaned statements. Use it when you need to see what the parser produced, not just what went wrong.
 
 ```tsx
 <Renderer
@@ -130,6 +153,8 @@ Error codes:
     if (result) {
       console.log("Statements:", result.meta.statementCount);
       console.log("Unresolved:", result.meta.unresolved);
+      console.log("Orphaned:", result.meta.orphaned);
+      console.log("Errors:", result.meta.errors);
     }
   }}
 />

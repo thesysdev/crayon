@@ -189,9 +189,9 @@ export const SidebarHeader = ({
           onClick={() => {
             setIsSidebarOpen(!isSidebarOpen);
           }}
-          aria-label={showExpandedIcon ? "Close sidebar" : "Open sidebar"}
           size="small"
           variant="tertiary"
+          aria-label={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
           className="openui-shell-sidebar-header__toggle-button"
         />
       </div>

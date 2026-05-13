@@ -9,7 +9,6 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   serverExternalPackages: ["@takumi-rs/image-response"],
-  transpilePackages: ["@openuidev/react-ui", "@openuidev/react-lang", "@openuidev/react-headless"],
   turbopack: {
     root: dirname(dirname(__dirname)),
   },
@@ -21,6 +20,11 @@ const config = {
         source: "/docs",
         destination: "/docs/openui-lang",
         permanent: false,
+      },
+      {
+        source: "/blog/should-chat-be-the-new-homepage-for-saas",
+        destination: "/blog/beyond-the-chatbar",
+        permanent: true,
       },
     ];
   },

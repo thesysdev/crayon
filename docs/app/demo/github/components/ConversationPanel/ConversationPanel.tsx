@@ -1,9 +1,10 @@
 "use client";
 
 import { IconButton } from "@openuidev/react-ui";
+import { MarkDownRenderer } from "@openuidev/react-ui/MarkDownRenderer";
 import { ChevronRight, MessageSquare, Send, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type { ChatMessage, ToolCallEntry } from "../../constants";
+import type { ChatMessage } from "../../constants";
 import "./ConversationPanel.css";
 
 type ConversationPanelProps = {
@@ -11,7 +12,6 @@ type ConversationPanelProps = {
   streamingText: string;
   isStreaming: boolean;
   elapsed: number | null;
-  toolCalls: ToolCallEntry[];
   onSend: (text: string) => void;
   onStop: () => void;
   hasDashboard: boolean;
@@ -23,7 +23,6 @@ export function ConversationPanel({
   streamingText,
   isStreaming,
   elapsed,
-  toolCalls,
   onSend,
   onStop,
   hasDashboard,
@@ -49,8 +48,6 @@ export function ConversationPanel({
     onSend(input.trim());
     setInput("");
   };
-
-  const pendingTools = toolCalls.filter((t) => t.status === "pending");
 
   if (collapsed) {
     return (
@@ -83,33 +80,18 @@ export function ConversationPanel({
               <div className="conv-user-bubble">{msg.content}</div>
             ) : (
               <div className="conv-assistant">
-                {/* Runtime tool call badges */}
-                {msg.runtimeTools && msg.runtimeTools.length > 0 && (
-                  <div className="conv-tools-badge conv-tools-runtime">
-                    <div className="conv-tools-label">
-                      <span>⚡</span> Live data fetched
-                    </div>
-                    <div className="conv-tools-list">
-                      {msg.runtimeTools.map((tc, j) => (
-                        <span key={j} className={`conv-tool-chip conv-tool-${tc.status}`}>
-                          {tc.status === "done" ? "✓" : tc.status === "error" ? "✗" : "⏳"}{" "}
-                          {tc.tool}
-                        </span>
-                      ))}
-                    </div>
+                {/* Text response */}
+                {msg.text && (
+                  <div className="conv-assistant-bubble">
+                    <MarkDownRenderer textMarkdown={msg.text} />
                   </div>
                 )}
-
-                {/* Text response */}
-                {msg.text && <div className="conv-assistant-bubble">{msg.text}</div>}
 
                 {/* Dashboard updated badge */}
                 {msg.hasCode && <span className="conv-code-badge">✓ dashboard updated</span>}
 
                 {/* Empty response */}
-                {!msg.text && !msg.hasCode && !msg.runtimeTools?.length && (
-                  <div className="conv-empty">(empty response)</div>
-                )}
+                {!msg.text && !msg.hasCode && <div className="conv-empty">(empty response)</div>}
               </div>
             )}
           </div>
@@ -119,29 +101,15 @@ export function ConversationPanel({
         {isStreaming && (
           <div className="conv-msg">
             <div className="conv-assistant">
-              {/* Live runtime tool calls */}
-              {toolCalls.length > 0 && (
-                <div className="conv-tools-badge conv-tools-live">
-                  <div className="conv-tools-list">
-                    <span className="conv-tools-label-text">
-                      {pendingTools.length > 0 ? "Fetching" : "Loaded"}
-                    </span>
-                    {toolCalls.map((tc, j) => (
-                      <span key={j} className={`conv-tool-chip conv-tool-${tc.status}`}>
-                        {tc.status === "pending" ? "⏳" : "✓"} {tc.tool}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* Streaming text or thinking indicator */}
               {streamingText ? (
-                <div className="conv-assistant-bubble">{streamingText}</div>
+                <div className="conv-assistant-bubble">
+                  <MarkDownRenderer textMarkdown={streamingText} />
+                </div>
               ) : (
                 <div className="conv-thinking">
                   {elapsed
-                    ? `${(elapsed / 1000).toFixed(1)}s — ${responseHasCode ? "writing code..." : "thinking..."}`
+                    ? `${(elapsed / 1000).toFixed(1)}s — ${responseHasCode ? "writing openui-lang..." : "thinking..."}`
                     : "thinking..."}
                 </div>
               )}
