@@ -169,6 +169,9 @@ Good places to start:
 - [Discord](https://discord.com/invite/Pbv5PsqUSv) — Ask questions, share what you're building
 - [GitHub Issues](https://github.com/thesysdev/openui/issues) — Report bugs or request features
 
+## Adopters
+
+A list of organizations and projects using OpenUI is maintained in [`ADOPTERS.md`](./ADOPTERS.md). If you're using OpenUI, please consider adding your organization — it helps the project gain momentum and helps other adopters find peers using OpenUI in similar contexts.
 
 ## Contributing
 
