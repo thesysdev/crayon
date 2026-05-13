@@ -45,19 +45,12 @@ export const SidebarContainer = ({
     isSidebarOpen ? "expanded" : "collapsed",
   );
   const animationTimeoutsRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
+  const previousIsMobileRef = useRef<boolean | null>(null);
 
   const clearAnimationTimeouts = () => {
     animationTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
     animationTimeoutsRef.current = [];
   };
-
-  useEffect(() => {
-    if (isMobile) {
-      setIsSidebarOpen(false);
-    } else {
-      setIsSidebarOpen(true);
-    }
-  }, [isMobile]);
 
   useEffect(() => {
     return () => {
@@ -67,6 +60,19 @@ export const SidebarContainer = ({
 
   useEffect(() => {
     clearAnimationTimeouts();
+
+    const justSwitchedLayout = previousIsMobileRef.current !== isMobile;
+    previousIsMobileRef.current = isMobile;
+
+    // On viewport breakpoint change, force sidebar open state and let the effect
+    // re-run with the new `isSidebarOpen` to drive the animation.
+    if (justSwitchedLayout) {
+      const targetOpen = !isMobile;
+      if (isSidebarOpen !== targetOpen) {
+        setIsSidebarOpen(targetOpen);
+        return;
+      }
+    }
 
     if (isMobile) {
       setIsCollapsedLayout(!isSidebarOpen);
@@ -186,7 +192,8 @@ export const SidebarHeader = ({
         <div className="openui-shell-sidebar-header__agent-name">{agentName}</div>
         <IconButton
           icon={showExpandedIcon ? <PanelLeftClose size="1em" /> : <PanelLeftOpen size="1em" />}
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             setIsSidebarOpen(!isSidebarOpen);
           }}
           size="small"

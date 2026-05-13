@@ -23,7 +23,10 @@ export const NewChatButton = ({ className }: { className?: string }) => {
     return (
       <IconButton
         icon={<SquarePen size="1em" />}
-        onClick={switchToNewThread}
+        onClick={(e) => {
+          e.stopPropagation();
+          switchToNewThread();
+        }}
         variant="secondary"
         size={isMobile ? "medium" : "small"}
         className={clsx("openui-shell-new-chat-button_collapsed", className)}

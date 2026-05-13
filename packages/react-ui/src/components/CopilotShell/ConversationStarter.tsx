@@ -31,7 +31,7 @@ const hasRenderableIcon = (icon: ReactNode): boolean => {
     return false;
   }
 
-  if (isValidElement(icon) && icon.type === Fragment) {
+  if (isValidElement<{ children?: ReactNode }>(icon) && icon.type === Fragment) {
     return Boolean(icon.props.children);
   }
 

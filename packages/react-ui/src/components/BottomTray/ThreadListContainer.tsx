@@ -5,6 +5,7 @@ import { EllipsisVerticalIcon, MenuIcon, Trash2Icon } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "../Button";
 import { IconButton } from "../IconButton";
+import { useTheme } from "../ThemeProvider";
 
 const ThreadItem = ({
   title,
@@ -17,6 +18,7 @@ const ThreadItem = ({
   onSelect: () => void;
   onDelete: () => void;
 }) => {
+  const { portalThemeClassName } = useTheme();
   return (
     <div
       className={clsx("openui-bottom-tray-thread-item", {
@@ -38,7 +40,7 @@ const ThreadItem = ({
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content
-            className="openui-bottom-tray-thread-item-menu"
+            className={clsx("openui-bottom-tray-thread-item-menu", portalThemeClassName)}
             side="right"
             align="start"
             sideOffset={4}
@@ -74,6 +76,7 @@ export const ThreadListContainer = () => {
   const loadThreads = useThreadList((s) => s.loadThreads);
   const selectThread = useThreadList((s) => s.selectThread);
   const deleteThread = useThreadList((s) => s.deleteThread);
+  const { portalThemeClassName } = useTheme();
 
   useEffect(() => {
     loadThreads();
@@ -91,7 +94,7 @@ export const ThreadListContainer = () => {
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="openui-bottom-tray-thread-list-dropdown"
+          className={clsx("openui-bottom-tray-thread-list-dropdown", portalThemeClassName)}
           side="bottom"
           align="end"
           sideOffset={8}
