@@ -31,7 +31,3 @@ Open a pull request that adds a row to the table above with:
 - **Organization** — name, linked to your homepage or a relevant product page.
 - **Contact** — a GitHub handle, email, or link to a blog post / case study / talk. Useful for other adopters reaching out.
 - **Description of Use** — one sentence on what you're building with OpenUI.
-
-## Removing your entry
-
-If you no longer use OpenUI or want to be delisted, open a PR removing your row, or email the maintainers — we'll process the removal promptly.
