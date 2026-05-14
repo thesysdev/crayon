@@ -1,7 +1,8 @@
 import type { ToolCall } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { ChevronDown, SquareCode } from "lucide-react";
-import { useState } from "react";
+import { Globe, SquareCode } from "lucide-react";
+import { SourceIcon } from "./SourceIcon";
+import { ToolCodeBlock } from "./ToolCodeBlock";
 
 export interface ToolCallProps {
   toolCall: ToolCall;
@@ -20,24 +21,35 @@ export const ToolCallComponent = ({
   className,
 }: ToolCallProps) => {
   const isRunning = !!isStreaming && !toolsDone;
-  const actionLabel = isRunning
-    ? `Calling the ${toolCall.function.name} tool`
-    : `Called the ${toolCall.function.name} tool`;
+  const toolName = toolCall.function.name;
 
-  let parsedArgs: { _request?: unknown; _response?: unknown } | null = null;
+  let parsedArgs: Record<string, unknown> | null = null;
   try {
     parsedArgs = JSON.parse(toolCall.function.arguments);
   } catch {
-    // not parseable yet
+    // not parseable yet (partial JSON during streaming)
   }
 
-  const hasRequest = parsedArgs && parsedArgs._request != null;
-  const hasResponse = parsedArgs && parsedArgs._response != null;
-  const requestStr = hasRequest ? JSON.stringify(parsedArgs!._request, null, 2) : null;
-  const responseStr = hasResponse ? JSON.stringify(parsedArgs!._response, null, 2) : null;
+  const title = parsedArgs?.["_title"] as string | undefined;
+  const reasoning = parsedArgs?.["_reasoning"] as string | undefined;
+  const isWebSearch = parsedArgs?.["_type"] === "WEB_SEARCH";
+  const sources =
+    isWebSearch && Array.isArray(parsedArgs?.["_sources"])
+      ? (parsedArgs!["_sources"] as Array<{
+          sourceTitle: string;
+          sourceDescription: string;
+          sourceUrl: string;
+          sourceLogoSrc?: string;
+        }>)
+      : null;
+
+  const hasRequest = parsedArgs && parsedArgs["_request"] != null;
+  const hasResponse = parsedArgs && parsedArgs["_response"] != null;
+  const requestStr = hasRequest ? JSON.stringify(parsedArgs!["_request"], null, 2) : null;
+  const responseStr = hasResponse ? JSON.stringify(parsedArgs!["_response"], null, 2) : null;
 
   const plainArgs =
-    !hasRequest && !hasResponse && toolCall.function.arguments
+    !hasRequest && !hasResponse && !isWebSearch && toolCall.function.arguments
       ? (() => {
           try {
             return JSON.stringify(JSON.parse(toolCall.function.arguments), null, 2);
@@ -47,6 +59,12 @@ export const ToolCallComponent = ({
         })()
       : null;
 
+  const actionLabel = title
+    ? title
+    : isRunning
+      ? `Calling the ${toolName} tool`
+      : `Called the ${toolName} tool`;
+
   return (
     <div className={clsx("openui-tool-call", className)}>
       <div className="openui-tool-call__title-row">
@@ -55,7 +73,11 @@ export const ToolCallComponent = ({
             "openui-tool-call__icon--blinking": isRunning && isLast,
           })}
         >
-          <SquareCode size={14} className="openui-tool-call__icon" />
+          {isWebSearch ? (
+            <Globe size={14} className="openui-tool-call__icon" />
+          ) : (
+            <SquareCode size={14} className="openui-tool-call__icon" />
+          )}
         </span>
         <span
           className={clsx("openui-tool-call__name", {
@@ -71,80 +93,55 @@ export const ToolCallComponent = ({
         })}
       >
         <div className="openui-tool-call__args-block">
-          {requestStr && (
-            <ToolCodeBlock
-              type="request"
-              code={requestStr}
-              isRunning={isRunning && !hasResponse}
-              toolName={toolCall.function.name}
-            />
-          )}
-          {responseStr && (
-            <ToolCodeBlock
-              type="response"
-              code={responseStr}
-              isRunning={isRunning && isLast}
-              toolName={toolCall.function.name}
-            />
-          )}
-          {plainArgs && (
-            <ToolCodeBlock
-              type="request"
-              code={plainArgs}
-              isRunning={isRunning}
-              toolName={toolCall.function.name}
-            />
+          {reasoning && <p className="openui-tool-call__reasoning">{reasoning}</p>}
+          {sources ? (
+            <div className="openui-tool-call__sources">
+              {sources.map((source) => (
+                <a
+                  key={source.sourceUrl}
+                  className="openui-tool-call__source"
+                  href={source.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="openui-tool-call__source-left">
+                    <SourceIcon src={source.sourceLogoSrc} />
+                    <span className="openui-tool-call__source-title">{source.sourceTitle}</span>
+                  </div>
+                  <span className="openui-tool-call__source-desc">{source.sourceDescription}</span>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <>
+              {requestStr && (
+                <ToolCodeBlock
+                  type="request"
+                  code={requestStr}
+                  isRunning={isRunning && !hasResponse}
+                  toolName={toolName}
+                />
+              )}
+              {responseStr && (
+                <ToolCodeBlock
+                  type="response"
+                  code={responseStr}
+                  isRunning={isRunning && isLast}
+                  toolName={toolName}
+                />
+              )}
+              {plainArgs && (
+                <ToolCodeBlock
+                  type="request"
+                  code={plainArgs}
+                  isRunning={isRunning}
+                  toolName={toolName}
+                />
+              )}
+            </>
           )}
         </div>
       </div>
-    </div>
-  );
-};
-
-// ── Expandable code block (request / response) ──
-
-interface ToolCodeBlockProps {
-  type: "request" | "response";
-  code: string;
-  isRunning?: boolean;
-  toolName: string;
-}
-
-const ToolCodeBlock = ({ type, code, isRunning = false, toolName }: ToolCodeBlockProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const label = type === "request" ? "Tool Request" : "Tool Response";
-  const runningLabel =
-    type === "request"
-      ? `Sending request to ${toolName}...`
-      : `Awaiting response from ${toolName}...`;
-
-  return (
-    <div className="openui-tool-code-block">
-      <button
-        className="openui-tool-code-block__header"
-        onClick={() => setIsExpanded((v) => !v)}
-        type="button"
-      >
-        <span
-          className={clsx("openui-tool-code-block__label", {
-            "openui-tool-code-block__label--loading": isRunning,
-          })}
-        >
-          {isRunning ? runningLabel : label}
-        </span>
-        <ChevronDown
-          size={14}
-          className={clsx("openui-tool-code-block__chevron", {
-            "openui-tool-code-block__chevron--expanded": isExpanded,
-          })}
-        />
-      </button>
-      {isExpanded && (
-        <div className="openui-tool-code-block__content">
-          <pre className="openui-tool-code-block__code">{code}</pre>
-        </div>
-      )}
     </div>
   );
 };

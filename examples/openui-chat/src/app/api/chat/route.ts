@@ -60,7 +60,7 @@ function calculate({ expression }: { expression: string }): Promise<string> {
     setTimeout(() => {
       try {
         const sanitized = expression.replace(/[^0-9+\-*/().%\s,Math.sqrtpowabsceilfloorround]/g, "");
-         
+
         const result = new Function(`return (${sanitized})`)();
         resolve(JSON.stringify({ expression, result: Number(result) }));
       } catch {
@@ -169,15 +169,27 @@ function sseToolCallStart(
   );
 }
 
+const toolMeta: Record<string, { reasoning: string; title: string }> = {
+  get_weather: { reasoning: "Looking up current weather conditions for the requested location.", title: "Checking weather data" },
+  get_stock_price: { reasoning: "Fetching the latest stock price and market data for the requested ticker.", title: "Looking up stock price" },
+  calculate: { reasoning: "Evaluating the math expression to get a precise result.", title: "Calculating result" },
+  search_web: { reasoning: "Searching the web for the latest information on this topic.", title: "Searching the web" },
+};
+
 function sseToolCallArgs(
   encoder: TextEncoder,
-  tc: { id: string; function: { arguments: string } },
+  tc: { id: string; name: string; function: { arguments: string } },
   result: string,
   index: number,
 ) {
+  const meta = toolMeta[tc.name];
   let enrichedArgs: string;
   try {
-    enrichedArgs = JSON.stringify({ _request: JSON.parse(tc.function.arguments), _response: JSON.parse(result) });
+    enrichedArgs = JSON.stringify({
+      _request: JSON.parse(tc.function.arguments),
+      _response: JSON.parse(result),
+      ...(meta ? { _reasoning: meta.reasoning, _title: meta.title } : {}),
+    });
   } catch {
     enrichedArgs = tc.function.arguments;
   }
@@ -260,7 +272,7 @@ export async function POST(req: NextRequest) {
       runner.on("functionToolCallResult", (result: string) => {
         const tc = pendingCalls[resultIdx];
         if (tc) {
-          enqueue(sseToolCallArgs(encoder, { id: tc.id, function: { arguments: tc.arguments } }, result, resultIdx));
+          enqueue(sseToolCallArgs(encoder, { id: tc.id, name: tc.name, function: { arguments: tc.arguments } }, result, resultIdx));
         }
         resultIdx++;
       });
