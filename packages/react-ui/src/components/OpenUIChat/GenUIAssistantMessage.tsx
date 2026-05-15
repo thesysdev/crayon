@@ -8,8 +8,7 @@ import { useCallback, useMemo } from "react";
 import { separateContentAndContext, wrapContent, wrapContext } from "../../utils/contentParser";
 import { ToolMessageRenderer } from "../_shared/tool-renderer";
 import { AssistantMessageContainer } from "../Shell";
-import { BehindTheScenes, ToolCallComponent } from "../ToolCall";
-import { ToolResult } from "../ToolResult";
+import { BehindTheScenes, deriveThinkItems } from "../ToolCall";
 
 export const GenUIAssistantMessage = ({
   message,
@@ -122,26 +121,15 @@ export const GenUIAssistantMessage = ({
     return { toolCall, tm };
   });
 
-  const hasToolActivity =
-    (message.toolCalls && message.toolCalls.length > 0) || toolMessages.length > 0;
+  const thinkItems = useMemo(
+    () => deriveThinkItems(message.toolCalls ?? [], toolMessages),
+    [message.toolCalls, toolMessages],
+  );
 
   return (
     <AssistantMessageContainer>
-      {hasToolActivity && (
-        <BehindTheScenes isStreaming={isStreaming} toolCallsComplete={!!message.content}>
-          {message.toolCalls?.map((toolCall, idx) => (
-            <ToolCallComponent
-              key={toolCall.id}
-              toolCall={toolCall}
-              isStreaming={isStreaming}
-              toolsDone={!!message.content}
-              isLast={idx === (message.toolCalls?.length ?? 0) - 1 && toolMessages.length === 0}
-            />
-          ))}
-          {toolMessages.map((tm) => (
-            <ToolResult key={tm.id} message={tm} toolName={getToolName(tm.toolCallId)} />
-          ))}
-        </BehindTheScenes>
+      {thinkItems.length > 0 && (
+        <BehindTheScenes items={thinkItems} isThinking={isStreaming && !message.content} />
       )}
       {dispatchableEntries.map(({ tm, toolCall }) => (
         <ToolMessageRenderer

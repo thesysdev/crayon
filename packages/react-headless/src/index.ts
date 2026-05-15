@@ -75,3 +75,12 @@ export { identityMessageFormat } from "./types/messageFormat";
 export type { MessageFormat } from "./types/messageFormat";
 export { EventType } from "./types/stream";
 export type { AGUIEvent, StreamProtocolAdapter } from "./types/stream";
+
+export { ThinkItemType } from "./types/thinkItem";
+export type {
+  ThinkItem,
+  ThinkItemBase,
+  ToolCallThinkItemData,
+  WebSearchSource,
+  WebSearchThinkItemData,
+} from "./types/thinkItem";

@@ -12,8 +12,7 @@ import type { AssistantMessageComponent, UserMessageComponent } from "../_shared
 import { Callout } from "../Callout";
 import { MarkDownRenderer } from "../MarkDownRenderer";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
-import { ToolCallComponent } from "../ToolCall";
-import { ToolResult } from "../ToolResult";
+import { BehindTheScenes, deriveThinkItems } from "../ToolCall";
 import { ResizableSeparator } from "./ResizableSeparator";
 import { useDetailedViewResize } from "./useDetailedViewResize";
 
@@ -179,11 +178,12 @@ export const UserMessageContainer = ({
 const AssistantMessageContent = ({
   message,
   allMessages,
+  isStreaming = false,
 }: {
   message: AssistantMessage;
   allMessages: Message[];
+  isStreaming?: boolean;
 }) => {
-  // Collect tool messages that follow this assistant message
   const toolMessages: ToolMessage[] = [];
   const msgIndex = allMessages.findIndex((m) => m.id === message.id);
   if (msgIndex !== -1) {
@@ -197,28 +197,27 @@ const AssistantMessageContent = ({
     }
   }
 
+  const thinkItems = React.useMemo(
+    () => deriveThinkItems(message.toolCalls ?? [], toolMessages),
+    [message.toolCalls, toolMessages],
+  );
+
   return (
     <>
+      {thinkItems.length > 0 && (
+        <BehindTheScenes items={thinkItems} isThinking={isStreaming && !message.content} />
+      )}
       {message.content && (
         <MarkDownRenderer
           textMarkdown={message.content}
           className="openui-shell-thread-message-assistant__text"
         />
       )}
-      {message.toolCalls?.map((toolCall) => (
-        <ToolCallComponent key={toolCall.id} toolCall={toolCall} />
-      ))}
       {toolMessages.map((tm) => {
         const toolCall = message.toolCalls?.find((tc) => tc.id === tm.toolCallId);
-        const fallback = <ToolResult message={tm} toolName={toolCall?.function.name} />;
-        if (!toolCall) return <span key={tm.id}>{fallback}</span>;
+        if (!toolCall) return null;
         return (
-          <ToolMessageRenderer
-            key={tm.id}
-            toolMessage={tm}
-            toolCall={toolCall}
-            fallback={fallback}
-          />
+          <ToolMessageRenderer key={tm.id} toolMessage={tm} toolCall={toolCall} fallback={null} />
         );
       })}
     </>
@@ -284,7 +283,11 @@ export const RenderMessage = memo(
       }
       return (
         <AssistantMessageContainer className={className}>
-          <AssistantMessageContent message={message} allMessages={allMessages} />
+          <AssistantMessageContent
+            message={message}
+            allMessages={allMessages}
+            isStreaming={isStreaming}
+          />
         </AssistantMessageContainer>
       );
     }
