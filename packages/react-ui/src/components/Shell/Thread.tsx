@@ -3,7 +3,6 @@ import { MessageProvider, useActiveArtifact, useThread } from "@openuidev/react-
 import clsx from "clsx";
 import React, { memo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
-import { ComposerStateProvider } from "../../hooks/useComposerState";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { separateContentAndContext } from "../../utils/contentParser";
 import { ArtifactOverlay, ArtifactPortalTarget } from "../_shared/artifact";
@@ -49,48 +48,46 @@ export const ThreadContainer = ({
   });
 
   return (
-    <ComposerStateProvider>
-      <div
-        className={clsx("openui-shell-thread-container", className, {
-          "openui-shell-thread-container--artifact-active": isArtifactActive,
-        })}
-        style={{
-          visibility: isLoadingMessages ? "hidden" : undefined,
-        }}
-      >
-        <div className="openui-shell-thread-wrapper" ref={containerRef}>
-          {/* Chat panel - always visible */}
-          <div
-            ref={chatPanelRef}
-            className={clsx("openui-shell-thread-chat-panel", {
-              "openui-shell-thread-chat-panel--animating": !isDragging,
-            })}
-          >
-            {children}
-            {isMobile && <ArtifactOverlay />}
-          </div>
-
-          {/* Desktop only: Resizable separator and artifact panel */}
-          {!isMobile && isArtifactActive && (
-            <>
-              <ResizableSeparator
-                onResize={handleResize}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-              />
-              <div
-                ref={artifactPanelRef}
-                className={clsx("openui-shell-thread-artifact-panel", {
-                  "openui-shell-thread-artifact-panel--animating": !isDragging,
-                })}
-              >
-                <ArtifactPortalTarget />
-              </div>
-            </>
-          )}
+    <div
+      className={clsx("openui-shell-thread-container", className, {
+        "openui-shell-thread-container--artifact-active": isArtifactActive,
+      })}
+      style={{
+        visibility: isLoadingMessages ? "hidden" : undefined,
+      }}
+    >
+      <div className="openui-shell-thread-wrapper" ref={containerRef}>
+        {/* Chat panel - always visible */}
+        <div
+          ref={chatPanelRef}
+          className={clsx("openui-shell-thread-chat-panel", {
+            "openui-shell-thread-chat-panel--animating": !isDragging,
+          })}
+        >
+          {children}
+          {isMobile && <ArtifactOverlay />}
         </div>
+
+        {/* Desktop only: Resizable separator and artifact panel */}
+        {!isMobile && isArtifactActive && (
+          <>
+            <ResizableSeparator
+              onResize={handleResize}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+            />
+            <div
+              ref={artifactPanelRef}
+              className={clsx("openui-shell-thread-artifact-panel", {
+                "openui-shell-thread-artifact-panel--animating": !isDragging,
+              })}
+            >
+              <ArtifactPortalTarget />
+            </div>
+          </>
+        )}
       </div>
-    </ComposerStateProvider>
+    </div>
   );
 };
 

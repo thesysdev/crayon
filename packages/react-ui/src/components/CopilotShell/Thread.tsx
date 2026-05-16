@@ -2,7 +2,6 @@ import type { AssistantMessage, Message, ToolMessage } from "@openuidev/react-he
 import { MessageProvider, useThread } from "@openuidev/react-headless";
 import clsx from "clsx";
 import React, { memo, useRef } from "react";
-import { ComposerStateProvider } from "../../hooks/useComposerState";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { ArtifactOverlay } from "../_shared/artifact";
 import { useShellStore } from "../_shared/store";
@@ -22,17 +21,15 @@ export const ThreadContainer = ({
   const isLoadingMessages = useThread((s) => s.isLoadingMessages);
 
   return (
-    <ComposerStateProvider>
-      <div
-        className={clsx("openui-copilot-shell-thread-container", className)}
-        style={{
-          visibility: isLoadingMessages ? "hidden" : undefined,
-        }}
-      >
-        {children}
-        <ArtifactOverlay />
-      </div>
-    </ComposerStateProvider>
+    <div
+      className={clsx("openui-copilot-shell-thread-container", className)}
+      style={{
+        visibility: isLoadingMessages ? "hidden" : undefined,
+      }}
+    >
+      {children}
+      <ArtifactOverlay />
+    </div>
   );
 };
 

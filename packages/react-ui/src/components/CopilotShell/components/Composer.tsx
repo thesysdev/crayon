@@ -43,6 +43,7 @@ export const Composer = ({ className, placeholder = "Type your message..." }: Co
   return (
     <div
       className={clsx("openui-copilot-shell-thread-composer", className)}
+      data-drafting={textContent.length > 0 || undefined}
       onClick={(e) => {
         if (!(e.target as HTMLElement).closest("button, a, [role='button']")) {
           inputRef.current?.focus();

@@ -2,7 +2,6 @@ import { useThread } from "@openuidev/react-headless";
 import clsx from "clsx";
 import { ArrowUp, Lightbulb } from "lucide-react";
 import { Fragment, ReactNode, isValidElement } from "react";
-import { useComposerState } from "../../hooks/useComposerState";
 import { ConversationStarterIcon, ConversationStarterProps } from "../../types/ConversationStarter";
 import { Carousel, CarouselContent } from "../Carousel";
 import { isChatEmpty } from "../_shared/utils";
@@ -107,12 +106,10 @@ export const ConversationStarter = ({
   className,
   variant = "short",
 }: ConversationStarterContainerProps) => {
-  const { textContent } = useComposerState();
   const processMessage = useThread((s) => s.processMessage);
   const isRunning = useThread((s) => s.isRunning);
   const messages = useThread((s) => s.messages);
   const isLoadingMessages = useThread((s) => s.isLoadingMessages);
-  const isDrafting = textContent.length > 0;
 
   const handleClick = (prompt: string) => {
     if (isRunning) return;
@@ -138,9 +135,6 @@ export const ConversationStarter = ({
         className={clsx(
           "openui-copilot-shell-conversation-starter",
           "openui-copilot-shell-conversation-starter--short",
-          {
-            "openui-copilot-shell-conversation-starter--hidden": isDrafting,
-          },
           className,
         )}
       >
@@ -165,9 +159,6 @@ export const ConversationStarter = ({
       className={clsx(
         "openui-copilot-shell-conversation-starter",
         `openui-copilot-shell-conversation-starter--${variant}`,
-        {
-          "openui-copilot-shell-conversation-starter--hidden": isDrafting,
-        },
         className,
       )}
     >

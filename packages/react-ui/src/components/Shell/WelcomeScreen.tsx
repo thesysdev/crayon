@@ -1,7 +1,6 @@
 import { useThread } from "@openuidev/react-headless";
 import clsx from "clsx";
 import { ReactNode } from "react";
-import { useComposerState } from "../../hooks/useComposerState";
 import { ConversationStarterProps } from "../../types/ConversationStarter";
 import { isChatEmpty } from "../_shared/utils";
 import { DesktopWelcomeComposer } from "./components";
@@ -67,11 +66,9 @@ const isImageUrl = (image: { url: string } | ReactNode): image is { url: string 
 
 export const WelcomeScreen = (props: WelcomeScreenProps) => {
   const { className, starters = [], starterVariant = "long" } = props;
-  const { textContent } = useComposerState();
 
   const messages = useThread((s) => s.messages);
   const isLoadingMessages = useThread((s) => s.isLoadingMessages);
-  const isDrafting = textContent.length > 0;
 
   // Only show when there are no messages
   if (!isChatEmpty({ isLoadingMessages, messages })) {
@@ -120,21 +117,13 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
         )}
       </div>
       {/* Desktop-only welcome composer */}
-      <div
-        className={clsx("openui-shell-welcome-screen__composer-starters-container", {
-          "openui-shell-welcome-screen__composer-starters-container--drafting": isDrafting,
-        })}
-      >
+      <div className="openui-shell-welcome-screen__composer-starters-container">
         <div className="openui-shell-welcome-screen__desktop-composer">
           <DesktopWelcomeComposer />
         </div>
         {/* Desktop-only conversation starters */}
         {starters.length > 0 && (
-          <div
-            className={clsx("openui-shell-welcome-screen__desktop-starters", {
-              "openui-shell-welcome-screen__desktop-starters--hidden": isDrafting,
-            })}
-          >
+          <div className="openui-shell-welcome-screen__desktop-starters">
             <ConversationStarter starters={starters} variant={starterVariant} />
           </div>
         )}

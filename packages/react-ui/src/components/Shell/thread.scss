@@ -14,6 +14,23 @@
   flex-direction: column;
 }
 
+// Hide conversation starters and welcome-screen starters while the user is
+// drafting in any composer inside the thread. The drafting flag is set on the
+// composer root via `data-drafting`; nothing in JS reads it.
+.openui-shell-thread-container:has([data-drafting]),
+.openui-shell-welcome-screen:has([data-drafting]) {
+  .openui-shell-conversation-starter,
+  .openui-shell-welcome-screen__desktop-starters {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.openui-shell-conversation-starter,
+.openui-shell-welcome-screen__desktop-starters {
+  transition: opacity 150ms ease;
+}
+
 // Wrapper for horizontal layout (chat + separator + artifact)
 .openui-shell-thread-wrapper {
   flex: 1;

@@ -44,7 +44,10 @@ export const DesktopWelcomeComposer = ({
   }, [textContent]);
 
   return (
-    <div className={clsx("openui-shell-desktop-welcome-composer", className)}>
+    <div
+      className={clsx("openui-shell-desktop-welcome-composer", className)}
+      data-drafting={textContent.length > 0 || undefined}
+    >
       <textarea
         ref={inputRef}
         value={textContent}
