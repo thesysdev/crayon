@@ -1,6 +1,7 @@
 import type { Message } from "@openuidev/react-headless";
 import { ChevronDown, Download, Share, Sparkles, ThumbsUp, Zap } from "lucide-react";
 import { useState } from "react";
+import { makeMockLLM, makeMockStorage, mockSSEResponse } from "../../../__test-helpers/mockChat";
 import logoUrl from "../../BottomTray/stories/thesysdev_logo.jpeg";
 import { Button } from "../../Button";
 import { IconButton } from "../../IconButton";
@@ -13,21 +14,6 @@ export default {
   title: "Components/OpenUIChat",
   tags: ["dev"],
 };
-
-function mockSSEResponse(text: string, delayMs = 500): Promise<Response> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const events = `data: ${JSON.stringify({ type: "TEXT_MESSAGE_CONTENT", delta: text })}\n\ndata: [DONE]\n\n`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(events));
-          controller.close();
-        },
-      });
-      resolve(new Response(stream));
-    }, delayMs);
-  });
-}
 
 const SAMPLE_WELCOME_MESSAGE: WelcomeMessageConfig = {
   title: "Hi, I'm OpenUI Assistant",
@@ -80,30 +66,24 @@ const mockGenerateShareLink = async (threadId: string) => {
   return `https://example.com/shared/${threadId}`;
 };
 
-const mockProcessMessage = async ({ messages }: { messages: Message[] }) => {
-  const lastMsg = messages[messages.length - 1];
-  const content =
-    lastMsg?.role === "user" && typeof lastMsg.content === "string" ? lastMsg.content : "";
-  return mockSSEResponse(`You said: "${content}". This is a response from the AI assistant.`);
-};
+const mockLLM = makeMockLLM({
+  send: async ({ messages }) => {
+    const lastMsg = messages[messages.length - 1];
+    const content =
+      lastMsg?.role === "user" && typeof lastMsg.content === "string" ? lastMsg.content : "";
+    return mockSSEResponse(`You said: "${content}". This is a response from the AI assistant.`);
+  },
+});
 
-const sharedProps = {
-  processMessage: mockProcessMessage,
-  fetchThreadList: async () => ({
+const mockStorage = makeMockStorage({
+  listThreads: async () => ({
     threads: [
       { id: "1", title: "Previous Chat 1", createdAt: Date.now() },
       { id: "2", title: "Previous Chat 2", createdAt: Date.now() },
       { id: "3", title: "Previous Chat 3", createdAt: Date.now() },
     ],
   }),
-  createThread: async () => ({
-    id: crypto.randomUUID(),
-    title: "New Chat",
-    createdAt: Date.now(),
-  }),
-  deleteThread: async () => {},
-  updateThread: async (t: any) => t,
-  loadThread: async (threadId: string) => {
+  getMessages: async (threadId: string) => {
     if (!threadId) return [];
     return [
       { id: crypto.randomUUID(), role: "user", content: "Hello" },
@@ -114,6 +94,11 @@ const sharedProps = {
       },
     ] as Message[];
   },
+});
+
+const sharedProps = {
+  storage: mockStorage,
+  llm: mockLLM,
   logoUrl,
   agentName: "OpenUI Assistant",
 };

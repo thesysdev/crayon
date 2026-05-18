@@ -26,6 +26,18 @@ export {
 } from "./stream/formats";
 export { processStreamedMessage } from "./stream/processStreamedMessage";
 
+// ── Adapter interfaces + factories ──
+export type {
+  ChatLLM,
+  ChatStorage,
+  FetchLLMOptions,
+  PinningStorage,
+  ShareStorage,
+  ShareTarget,
+  ThreadStorage,
+} from "./adapters";
+export { fetchLLM } from "./adapters";
+
 export type {
   AppRendererConfig,
   AppRendererControls,

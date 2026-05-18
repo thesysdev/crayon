@@ -5,7 +5,7 @@ import { useTheme } from "@/hooks/use-system-theme";
 import { codeBlockRenderer } from "@/lib/codeBlockRenderer";
 import { enrichedArgsAdapter } from "@/lib/enrichedArgsAdapter";
 import { artifactDemoLibrary } from "@/library";
-import { openAIMessageFormat } from "@openuidev/react-headless";
+import { fetchLLM, openAIMessageFormat } from "@openuidev/react-headless";
 import { FullScreen } from "@openuidev/react-ui";
 
 export default function Page() {
@@ -14,17 +14,11 @@ export default function Page() {
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       <FullScreen
-        processMessage={async ({ messages, abortController }) => {
-          return fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              messages: openAIMessageFormat.toApi(messages),
-            }),
-            signal: abortController.signal,
-          });
-        }}
-        streamProtocol={enrichedArgsAdapter()}
+        llm={fetchLLM({
+          url: "/api/chat",
+          streamAdapter: enrichedArgsAdapter(),
+          messageFormat: openAIMessageFormat,
+        })}
         componentLibrary={artifactDemoLibrary}
         appRenderers={[codeBlockRenderer]}
         agentName="Artifact Demo"

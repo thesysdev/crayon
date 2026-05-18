@@ -1,6 +1,5 @@
+import type { ChatLLM, ChatStorage } from "../adapters/types";
 import type { Message, UserMessage } from "../types/message";
-import type { MessageFormat } from "../types/messageFormat";
-import type { StreamProtocolAdapter } from "../types/stream";
 import type { AppRendererConfig } from "./appRendererTypes";
 
 export type { Message, UserMessage } from "../types/message";
@@ -65,47 +64,17 @@ export type ChatStore = ThreadListState &
 
 // ── Provider props ──
 
-type ThreadApiConfig =
-  | {
-      threadApiUrl: string;
-      fetchThreadList?: never;
-      createThread?: never;
-      deleteThread?: never;
-      updateThread?: never;
-      loadThread?: never;
-    }
-  | {
-      threadApiUrl?: never;
-      fetchThreadList?: (cursor?: any) => Promise<{ threads: Thread[]; nextCursor?: any }>;
-      createThread?: (firstMessage: UserMessage) => Promise<Thread>;
-      deleteThread?: (id: string) => Promise<void>;
-      updateThread?: (updated: Thread) => Promise<Thread>;
-      loadThread?: (threadId: string) => Promise<Message[]>;
-    };
-
-type ChatApiConfig =
-  | {
-      apiUrl: string;
-      processMessage?: never;
-    }
-  | {
-      apiUrl?: never;
-      processMessage: (params: {
-        threadId: string;
-        messages: Message[];
-        abortController: AbortController;
-      }) => Promise<Response>;
-    };
-
-export type ChatProviderProps = ThreadApiConfig &
-  ChatApiConfig & {
-    streamProtocol?: StreamProtocolAdapter;
-    messageFormat?: MessageFormat;
-    /**
-     * App renderers matched against tool calls in the conversation.
-     * Captured at mount; subsequent prop changes are ignored (dev warning).
-     * Order is priority: first match wins on duplicate `toolName`.
-     */
-    appRenderers?: ReadonlyArray<AppRendererConfig<any>>;
-    children: React.ReactNode;
-  };
+export interface ChatProviderProps {
+  /** Optional — defaults to an internal in-memory storage (no persistence). */
+  storage?: ChatStorage;
+  /** Required — drives message sending and stream parsing. */
+  llm: ChatLLM;
+  /**
+   * App renderers matched against tool calls in the conversation.
+   * Captured at mount; subsequent prop changes are ignored (dev warning).
+   * Order is priority: first match wins on duplicate `toolName`.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  appRenderers?: ReadonlyArray<AppRendererConfig<any>>;
+  children: React.ReactNode;
+}

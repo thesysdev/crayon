@@ -36,7 +36,7 @@ export function buildAppRendererRegistry(
   for (const config of configs) {
     if (typeof config.toolName === "string") {
       if (literal.has(config.toolName)) {
-        if (process.env["NODE_ENV"] !== "production") {
+        if (typeof process !== "undefined" && process.env?.["NODE_ENV"] !== "production") {
           console.warn(
             `[OpenUI] AppRenderer for toolName "${config.toolName}" was ignored ` +
               `(already registered earlier in the array).`,
@@ -72,7 +72,7 @@ export function lookupAppRenderer(
 ): AppRendererConfig<unknown> | null {
   const literal = registry.literal.get(toolName);
 
-  if (process.env["NODE_ENV"] !== "production") {
+  if (typeof process !== "undefined" && process.env?.["NODE_ENV"] !== "production") {
     const matches: AppRendererConfig<unknown>[] = [];
     if (literal) matches.push(literal);
     for (const r of registry.regex) {

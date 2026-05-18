@@ -1,6 +1,7 @@
 import { ChatProvider, Message } from "@openuidev/react-headless";
 import { MessageSquare, Sparkles, Zap } from "lucide-react";
 import { useState } from "react";
+import { makeMockLLM, makeMockStorage, mockSSEResponse } from "../../../__test-helpers/mockChat";
 import {
   Composer,
   Container,
@@ -17,20 +18,77 @@ import {
 import styles from "./style.module.scss";
 import logoUrl from "./thesysdev_logo.jpeg";
 
-function mockSSEResponse(text: string, delayMs = 500): Promise<Response> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const events = `data: ${JSON.stringify({ type: "TEXT_MESSAGE_CONTENT", delta: text })}\n\ndata: [DONE]\n\n`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(events));
-          controller.close();
-        },
-      });
-      resolve(new Response(stream));
-    }, delayMs);
-  });
-}
+const populatedStorage3 = makeMockStorage({
+  listThreads: async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return {
+      threads: [
+        { id: "1", title: "test", createdAt: Date.now() },
+        { id: "2", title: "test 2", createdAt: Date.now() },
+        { id: "3", title: "test 3", createdAt: Date.now() },
+      ],
+    };
+  },
+  getMessages: async (threadId) => {
+    if (!threadId) return [];
+    return [
+      { id: crypto.randomUUID(), role: "user", content: "Hello" },
+      {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: "Hello! How can I help you today?",
+      },
+    ] as Message[];
+  },
+});
+
+const populatedStorage2 = makeMockStorage({
+  listThreads: async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return {
+      threads: [
+        { id: "1", title: "test", createdAt: Date.now() },
+        { id: "2", title: "test 2", createdAt: Date.now() },
+      ],
+    };
+  },
+  getMessages: async (threadId) => {
+    if (!threadId) return [];
+    return [
+      { id: crypto.randomUUID(), role: "user", content: "Hello" },
+      {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: "Hello! How can I help you today?",
+      },
+    ] as Message[];
+  },
+});
+
+const emptyStorage = makeMockStorage({});
+
+const trayLLM = makeMockLLM({
+  send: async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return mockSSEResponse("This is a response from the bottom tray assistant!", 0);
+  },
+});
+
+const supportLLM = makeMockLLM({
+  send: async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return mockSSEResponse("This is a response from the assistant!", 0);
+  },
+});
+
+const echoLLM = makeMockLLM({
+  send: async ({ messages }) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const lastUser = messages.filter((m) => m.role === "user").pop();
+    const content = typeof lastUser?.content === "string" ? lastUser.content : "";
+    return mockSSEResponse(`You asked: "${content}"`, 0);
+  },
+});
 
 export default {
   title: "Components/BottomTray",
@@ -74,48 +132,9 @@ const BottomTrayStory = ({
         </button>
       </div>
 
-      <ChatProvider
-        processMessage={async ({ threadId, messages, abortController }) => {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          return mockSSEResponse("This is a response from the bottom tray assistant!", 0);
-        }}
-        fetchThreadList={async () => {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          return {
-            threads: [
-              { id: "1", title: "test", createdAt: Date.now() },
-              { id: "2", title: "test 2", createdAt: Date.now() },
-              { id: "3", title: "test 3", createdAt: Date.now() },
-            ],
-          };
-        }}
-        createThread={async () => ({
-          id: crypto.randomUUID(),
-          title: "test",
-          createdAt: Date.now(),
-        })}
-        deleteThread={async () => {}}
-        updateThread={async (t) => t}
-        loadThread={async (threadId) => {
-          if (!threadId) return [];
-          return [
-            {
-              id: crypto.randomUUID(),
-              role: "user",
-              content: "Hello",
-            },
-            {
-              id: crypto.randomUUID(),
-              role: "assistant",
-              content: "Hello! How can I help you today?",
-            },
-          ] as Message[];
-        }}
-      >
-        {/* Trigger is always visible - toggles the tray (hidden on mobile when open) */}
+      <ChatProvider storage={populatedStorage3} llm={trayLLM}>
         <Trigger onClick={() => setIsOpen(!isOpen)} isOpen={isOpen} />
 
-        {/* Container is controlled externally */}
         <Container logoUrl={logoUrl} agentName="OpenUI Assistant" isOpen={isOpen}>
           <ThreadContainer>
             <Header onMinimize={() => setIsOpen(false)} />
@@ -135,12 +154,11 @@ const BottomTrayStory = ({
                   displayText:
                     "Who is the president of Venezuela and where is he currently located (icon was not passed)",
                   prompt: "Who is the president of Venezuela and where is he currently located?",
-                  // icon undefined = shows default lightbulb
                 },
                 {
                   displayText: "Tell me about major stock (no icon with empty fragment)",
                   prompt: "Tell me about major stock",
-                  icon: <></>, // Empty fragment = no icon
+                  icon: <></>,
                 },
               ]}
             />
@@ -176,7 +194,6 @@ export const LongVariant = {
   render: (args: any) => <BottomTrayStory {...args} />,
 };
 
-// Example with custom trigger
 const CustomTriggerStory = ({
   defaultOpen = false,
   variant = "short",
@@ -193,40 +210,7 @@ const CustomTriggerStory = ({
         <p>Use a fully custom trigger with your own styling and content.</p>
       </div>
 
-      <ChatProvider
-        processMessage={async () => {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          return mockSSEResponse("This is a response from the assistant!", 0);
-        }}
-        fetchThreadList={async () => {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          return {
-            threads: [
-              { id: "1", title: "test", createdAt: Date.now() },
-              { id: "2", title: "test 2", createdAt: Date.now() },
-            ],
-          };
-        }}
-        createThread={async () => ({
-          id: crypto.randomUUID(),
-          title: "test",
-          createdAt: Date.now(),
-        })}
-        deleteThread={async () => {}}
-        updateThread={async (t) => t}
-        loadThread={async (threadId) => {
-          if (!threadId) return [];
-          return [
-            { id: crypto.randomUUID(), role: "user", content: "Hello" },
-            {
-              id: crypto.randomUUID(),
-              role: "assistant",
-              content: "Hello! How can I help you today?",
-            },
-          ] as Message[];
-        }}
-      >
-        {/* Custom trigger - always visible, toggles tray (hidden on mobile when open) */}
+      <ChatProvider storage={populatedStorage2} llm={supportLLM}>
         <Trigger
           onClick={() => setIsOpen(!isOpen)}
           isOpen={isOpen}
@@ -260,7 +244,7 @@ const CustomTriggerStory = ({
                 {
                   displayText: "No icon example - this is a shorter prompt",
                   prompt: "No icon example - this is a shorter prompt",
-                  icon: <></>, // Empty fragment = no icon
+                  icon: <></>,
                 },
               ]}
             />
@@ -288,7 +272,6 @@ export const CustomTriggerLongVariant = {
   render: (args: any) => <CustomTriggerStory {...args} />,
 };
 
-// Example with WelcomeScreen
 const WelcomeScreenStory = ({
   defaultOpen = true,
   variant = "short",
@@ -305,23 +288,7 @@ const WelcomeScreenStory = ({
         <p>This example shows the WelcomeScreen component with title, description, and logo.</p>
       </div>
 
-      <ChatProvider
-        processMessage={async ({ messages }) => {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          const lastUser = messages.filter((m) => m.role === "user").pop();
-          const content = typeof lastUser?.content === "string" ? lastUser.content : "";
-          return mockSSEResponse(`You asked: "${content}"`, 0);
-        }}
-        fetchThreadList={async () => ({ threads: [] })}
-        createThread={async () => ({
-          id: crypto.randomUUID(),
-          title: "New Chat",
-          createdAt: Date.now(),
-        })}
-        deleteThread={async () => {}}
-        updateThread={async (t) => t}
-        loadThread={async () => []}
-      >
+      <ChatProvider storage={emptyStorage} llm={echoLLM}>
         <Trigger onClick={() => setIsOpen(!isOpen)} isOpen={isOpen} />
 
         <Container logoUrl={logoUrl} agentName="OpenUI Assistant" isOpen={isOpen}>
@@ -375,7 +342,6 @@ export const WithWelcomeScreenLongVariant = {
   render: (args: any) => <WelcomeScreenStory {...args} />,
 };
 
-// Example with custom children in WelcomeScreen
 const CustomWelcomeScreenStory = ({
   defaultOpen = true,
   variant = "short",
@@ -392,23 +358,7 @@ const CustomWelcomeScreenStory = ({
         <p>This example shows WelcomeScreen with custom children instead of props.</p>
       </div>
 
-      <ChatProvider
-        processMessage={async ({ messages }) => {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          const lastUser = messages.filter((m) => m.role === "user").pop();
-          const content = typeof lastUser?.content === "string" ? lastUser.content : "";
-          return mockSSEResponse(`You asked: "${content}"`, 0);
-        }}
-        fetchThreadList={async () => ({ threads: [] })}
-        createThread={async () => ({
-          id: crypto.randomUUID(),
-          title: "New Chat",
-          createdAt: Date.now(),
-        })}
-        deleteThread={async () => {}}
-        updateThread={async (t) => t}
-        loadThread={async () => []}
-      >
+      <ChatProvider storage={emptyStorage} llm={echoLLM}>
         <Trigger onClick={() => setIsOpen(!isOpen)} isOpen={isOpen} />
 
         <Container logoUrl={logoUrl} agentName="OpenUI Assistant" isOpen={isOpen}>

@@ -24,7 +24,8 @@ export const createDetailedViewStore = () => {
       _detailedViewPanelNode: null,
       _setDetailedViewPanelNode: (node) => {
         if (
-          process.env["NODE_ENV"] !== "production" &&
+          typeof process !== "undefined" &&
+          process.env?.["NODE_ENV"] !== "production" &&
           node &&
           get()._detailedViewPanelNode &&
           get()._detailedViewPanelNode !== node

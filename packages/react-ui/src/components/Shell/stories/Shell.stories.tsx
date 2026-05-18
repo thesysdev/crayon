@@ -1,5 +1,6 @@
-import { ChatProvider, Message, type Thread } from "@openuidev/react-headless";
+import { ChatProvider, Message } from "@openuidev/react-headless";
 import { MessageSquare, Share, Sparkles, Zap } from "lucide-react";
+import { makeMockLLM, makeMockStorage, mockSSEResponse } from "../../../__test-helpers/mockChat";
 import { Button } from "../../Button";
 import { IconButton } from "../../IconButton";
 import { Container } from "../Container";
@@ -19,26 +20,53 @@ import { ThreadList } from "../ThreadList";
 import { WelcomeScreen } from "../WelcomeScreen";
 import logoUrl from "./thesysdev_logo.jpeg";
 
-function mockSSEResponse(text: string, delayMs = 500): Promise<Response> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const events = `data: ${JSON.stringify({ type: "TEXT_MESSAGE_CONTENT", delta: text })}\n\ndata: [DONE]\n\n`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(events));
-          controller.close();
-        },
-      });
-      resolve(new Response(stream));
-    }, delayMs);
-  });
-}
-
 function getLastUserContent(messages: Message[]): string {
   const lastUser = [...messages].reverse().find((m) => m.role === "user");
   if (!lastUser) return "";
   return typeof lastUser.content === "string" ? lastUser.content : "";
 }
+
+// ── Reusable adapter setups ──
+
+const populatedStorage = makeMockStorage({
+  listThreads: async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return {
+      threads: [
+        { id: "1", title: "test", createdAt: Date.now() },
+        { id: "2", title: "test 2", createdAt: Date.now() },
+        { id: "3", title: "test 3", createdAt: Date.now() },
+      ],
+    };
+  },
+  getMessages: async (threadId) => {
+    if (!threadId) return [];
+    return [
+      { id: crypto.randomUUID(), role: "user", content: "Hello" },
+      {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: "Hello! How can I help you today?",
+      },
+    ] as Message[];
+  },
+});
+
+const emptyStorage = makeMockStorage({});
+
+const defaultLLM = makeMockLLM({
+  send: async () => {
+    await new Promise((r) => setTimeout(r, 100));
+    return mockSSEResponse("This is a response from the AI assistant.", 1000);
+  },
+});
+
+const echoLLM = makeMockLLM({
+  send: async ({ messages }) => {
+    const content = getLastUserContent(messages);
+    return mockSSEResponse(`You asked: "${content}"`, 1000);
+  },
+});
 
 export default {
   title: "Components/Shell",
@@ -96,40 +124,7 @@ export const Default = {
     variant: "short",
   },
   render: ({ variant }: { variant: "short" | "long" }) => (
-    <ChatProvider
-      processMessage={async () => {
-        await new Promise((r) => setTimeout(r, 100));
-        return mockSSEResponse("This is a response from the AI assistant.", 1000);
-      }}
-      fetchThreadList={async () => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        return {
-          threads: [
-            { id: "1", title: "test", createdAt: Date.now() },
-            { id: "2", title: "test 2", createdAt: Date.now() },
-            { id: "3", title: "test 3", createdAt: Date.now() },
-          ],
-        };
-      }}
-      createThread={async () => ({
-        id: crypto.randomUUID(),
-        title: "test",
-        createdAt: Date.now(),
-      })}
-      deleteThread={async () => {}}
-      updateThread={async (t: Thread) => t}
-      loadThread={async (threadId) => {
-        if (!threadId) return [];
-        return [
-          { id: crypto.randomUUID(), role: "user", content: "Hello" },
-          {
-            id: crypto.randomUUID(),
-            role: "assistant",
-            content: "Hello! How can I help you today?",
-          },
-        ];
-      }}
-    >
+    <ChatProvider storage={populatedStorage} llm={defaultLLM}>
       <Container logoUrl={logoUrl} agentName="OpenUI">
         <SidebarContainer>
           <SidebarHeader>
@@ -172,21 +167,7 @@ export const WithThreadHeader = {
     variant: "short",
   },
   render: ({ variant }: { variant: "short" | "long" }) => (
-    <ChatProvider
-      processMessage={async ({ messages }: { messages: Message[] }) => {
-        const content = getLastUserContent(messages);
-        return mockSSEResponse(`You asked: "${content}"`, 1000);
-      }}
-      fetchThreadList={async () => ({ threads: [] })}
-      createThread={async () => ({
-        id: crypto.randomUUID(),
-        title: "New Chat",
-        createdAt: Date.now(),
-      })}
-      deleteThread={async () => {}}
-      updateThread={async (t: Thread) => t}
-      loadThread={async () => []}
-    >
+    <ChatProvider storage={emptyStorage} llm={echoLLM}>
       <Container logoUrl={logoUrl} agentName="OpenUI">
         <SidebarContainer>
           <SidebarHeader>
@@ -233,21 +214,7 @@ export const WithConversationStarter = {
     variant: "short",
   },
   render: ({ variant }: { variant: "short" | "long" }) => (
-    <ChatProvider
-      processMessage={async ({ messages }: { messages: Message[] }) => {
-        const content = getLastUserContent(messages);
-        return mockSSEResponse(`You asked: "${content}"`, 1000);
-      }}
-      fetchThreadList={async () => ({ threads: [] })}
-      createThread={async () => ({
-        id: crypto.randomUUID(),
-        title: "New Chat",
-        createdAt: Date.now(),
-      })}
-      deleteThread={async () => {}}
-      updateThread={async (t: Thread) => t}
-      loadThread={async () => []}
-    >
+    <ChatProvider storage={emptyStorage} llm={echoLLM}>
       <Container logoUrl={logoUrl} agentName="OpenUI">
         <SidebarContainer>
           <SidebarHeader>
@@ -285,21 +252,7 @@ export const LongVariant = {
     variant: "long",
   },
   render: ({ variant }: { variant: "short" | "long" }) => (
-    <ChatProvider
-      processMessage={async ({ messages }: { messages: Message[] }) => {
-        const content = getLastUserContent(messages);
-        return mockSSEResponse(`You asked: "${content}"`, 1000);
-      }}
-      fetchThreadList={async () => ({ threads: [] })}
-      createThread={async () => ({
-        id: crypto.randomUUID(),
-        title: "New Chat",
-        createdAt: Date.now(),
-      })}
-      deleteThread={async () => {}}
-      updateThread={async (t: Thread) => t}
-      loadThread={async () => []}
-    >
+    <ChatProvider storage={emptyStorage} llm={echoLLM}>
       <Container logoUrl={logoUrl} agentName="OpenUI">
         <SidebarContainer>
           <SidebarHeader>
@@ -337,21 +290,7 @@ export const WithWelcomeScreen = {
     variant: "short",
   },
   render: ({ variant }: { variant: "short" | "long" }) => (
-    <ChatProvider
-      processMessage={async ({ messages }: { messages: Message[] }) => {
-        const content = getLastUserContent(messages);
-        return mockSSEResponse(`You asked: "${content}"`, 1000);
-      }}
-      fetchThreadList={async () => ({ threads: [] })}
-      createThread={async () => ({
-        id: crypto.randomUUID(),
-        title: "New Chat",
-        createdAt: Date.now(),
-      })}
-      deleteThread={async () => {}}
-      updateThread={async (t: Thread) => t}
-      loadThread={async () => []}
-    >
+    <ChatProvider storage={emptyStorage} llm={echoLLM}>
       <Container logoUrl={logoUrl} agentName="OpenUI Assistant">
         <SidebarContainer>
           <SidebarHeader>
@@ -396,21 +335,7 @@ export const WithCustomWelcomeScreen = {
     variant: "short",
   },
   render: ({ variant }: { variant: "short" | "long" }) => (
-    <ChatProvider
-      processMessage={async ({ messages }: { messages: Message[] }) => {
-        const content = getLastUserContent(messages);
-        return mockSSEResponse(`You asked: "${content}"`, 1000);
-      }}
-      fetchThreadList={async () => ({ threads: [] })}
-      createThread={async () => ({
-        id: crypto.randomUUID(),
-        title: "New Chat",
-        createdAt: Date.now(),
-      })}
-      deleteThread={async () => {}}
-      updateThread={async (t: Thread) => t}
-      loadThread={async () => []}
-    >
+    <ChatProvider storage={emptyStorage} llm={echoLLM}>
       <Container logoUrl={logoUrl} agentName="OpenUI Assistant">
         <SidebarContainer>
           <SidebarHeader>

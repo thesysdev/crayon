@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FC } from "react";
+import { createDefaultInMemoryStorage } from "../adapters/_defaultStorage";
 import { AppRenderersContext, buildAppRendererRegistry } from "./AppRenderersContext";
 import { ChatContext } from "./ChatContext";
 import { createChatStore } from "./createChatStore";
@@ -8,8 +9,18 @@ import { DetailedViewContext } from "./DetailedViewContext";
 import { ThreadContextContext } from "./ThreadContextContext";
 import type { ChatProviderProps } from "./types";
 
-export const ChatProvider: FC<ChatProviderProps> = ({ children, appRenderers, ...config }) => {
-  const [chatStore] = useState(() => createChatStore(config));
+export const ChatProvider: FC<ChatProviderProps> = ({
+  children,
+  storage,
+  llm,
+  appRenderers,
+}) => {
+  const [chatStore] = useState(() =>
+    createChatStore({
+      storage: storage ?? createDefaultInMemoryStorage(),
+      llm,
+    }),
+  );
   const [detailedViewStore] = useState(() => createDetailedViewStore());
   const [threadContextStore] = useState(() => createThreadContextStore());
   const [appRendererRegistry] = useState(() => buildAppRendererRegistry(appRenderers ?? []));
@@ -20,7 +31,8 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children, appRenderers, ..
   const hasWarnedRef = useRef(false);
   useEffect(() => {
     if (
-      process.env["NODE_ENV"] !== "production" &&
+      typeof process !== "undefined" &&
+      process.env?.["NODE_ENV"] !== "production" &&
       !hasWarnedRef.current &&
       initialAppRenderersRef.current !== appRenderers
     ) {

@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { createChatStore } from "../createChatStore";
 import { createDetailedViewStore } from "../createDetailedViewStore";
+import { makeStore } from "./__helpers/makeStore";
 
 const flushPromises = () => new Promise((r) => setTimeout(r, 0));
 
 describe("detailed-view thread-switch cleanup", () => {
   const setupStores = () => {
-    const chatStore = createChatStore({ processMessage: vi.fn() });
+    const chatStore = makeStore();
     const detailedViewStore = createDetailedViewStore();
 
     const unsubscribe = chatStore.subscribe(
@@ -47,7 +47,7 @@ describe("detailed-view thread-switch cleanup", () => {
 
   it("clears active view when active thread is deleted", async () => {
     const deleteThread = vi.fn().mockResolvedValue(undefined);
-    const chatStore = createChatStore({ deleteThread, processMessage: vi.fn() });
+    const chatStore = makeStore({ deleteThread });
     const detailedViewStore = createDetailedViewStore();
 
     const unsubscribe = chatStore.subscribe(
@@ -94,8 +94,8 @@ describe("detailed-view thread-switch cleanup", () => {
   });
 
   it("handles rapid thread switches cleanly", async () => {
-    const loadThread = vi.fn().mockResolvedValue([]);
-    const chatStore = createChatStore({ loadThread, processMessage: vi.fn() });
+    const getMessages = vi.fn().mockResolvedValue([]);
+    const chatStore = makeStore({ getMessages });
     const detailedViewStore = createDetailedViewStore();
 
     const unsubscribe = chatStore.subscribe(
