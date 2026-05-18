@@ -1,4 +1,7 @@
-import type { ResponseStreamEvent } from "openai/resources/responses/responses";
+import type {
+  ResponseFunctionToolCallOutputItem,
+  ResponseStreamEvent,
+} from "openai/resources/responses/responses";
 import { AGUIEvent, EventType, StreamProtocolAdapter } from "../../types";
 
 export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
@@ -27,7 +30,10 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
 
           switch (event.type) {
             case "response.output_item.added": {
-              const item = event.item;
+              // OpenAI's Conversations API surfaces function_call_output as an
+              // output item even though the SDK's ResponseOutputItem union does
+              // not declare it. Widen the type so we can branch on it below.
+              const item = event.item as typeof event.item | ResponseFunctionToolCallOutputItem;
               if (item.type === "message" && item.role === "assistant") {
                 yield {
                   type: EventType.TEXT_MESSAGE_START,
