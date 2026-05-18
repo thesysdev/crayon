@@ -3,13 +3,13 @@
 <a href="https://www.openui.com" target="_blank" rel="noopener noreferrer">
   <img 
     src="./assets/banner.png" 
-    alt="OpenUI — The Open Standard for Generative UI" 
+    alt="OpenUI - The Open Standard for Generative UI" 
     width="100%" 
     style="cursor: pointer;"
   >
 </a>
 
-# OpenUI — The Open Standard for Generative UI
+# OpenUI - The Open Standard for Generative UI
 
 [![Build](https://github.com/thesysdev/openui/actions/workflows/build-js.yml/badge.svg)](https://github.com/thesysdev/openui/actions/workflows/build-js.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
@@ -20,22 +20,15 @@
 </div>
 
 
-OpenUI is a full-stack Generative UI framework — a compact streaming-first language, a React runtime with built-in component libraries, and ready-to-use chat interfaces — that is up to 67% more token-efficient than JSON.
-
-⚠️ Important Notice: OpenUI has no official cryptocurrency, token, or coin.
-
-Any token or coin using the OpenUI name on Pump.fun or any other platform is not affiliated with, endorsed by, or created by this project or its maintainers.
-
-Do not purchase any cryptocurrency claiming to be associated with OpenUI.
-
----
-
+OpenUI is a full-stack Generative UI framework: a compact streaming-first language, a React runtime with built-in component libraries, and ready-to-use chat interfaces that are up to 67% more token-efficient than JSON.
 
 <div align="center">
 
 [Docs](https://openui.com) · [Playground](https://www.openui.com/playground) · [Discord](https://discord.com/invite/Pbv5PsqUSv) · [Contributing](./CONTRIBUTING.md) · English · [中文](./translations/zh-CN)
 
 </div>
+
+> **Important:** OpenUI has no official cryptocurrency, token, or coin. Any asset using the OpenUI name is unaffiliated with this project and is not endorsed by its maintainers.
 
 ---
 
@@ -50,10 +43,10 @@ At the center of OpenUI is **OpenUI Lang**: a compact, streaming-first language 
 
 **Core capabilities:**
 
-- **OpenUI Lang** — A compact language for structured UI generation designed for streaming output.
-- **Built-in component libraries** — Charts, forms, tables, layouts, and more — ready to use or extend.
-- **Prompt generation from your component library** — Generate model instructions directly from the components you allow.
-- **Streaming renderer** — Parse and render model output progressively in React as tokens arrive.
+- **OpenUI Lang** - A compact language for structured UI generation designed for streaming output.
+- **Built-in component libraries** - Charts, forms, tables, layouts, and more, ready to use or extend.
+- **Prompt generation from your component library** - Generate model instructions directly from the components you allow.
+- **Streaming renderer** - Parse and render model output progressively in React as tokens arrive.
 - **Chat and app surfaces** - Use the same foundation for assistants, copilots, and broader interactive product flows.
 
 
@@ -96,13 +89,13 @@ flowchart LR
 4. Stream OpenUI Lang output back to the client.
 5. Render the output progressively with Renderer.
 
-Try it yourself in the [Playground](https://www.openui.com/playground) — generate UI live with the default component library.
+Try it yourself in the [Playground](https://www.openui.com/playground): generate UI live with the default component library.
 
 ## Packages
 
 | Package | Description |
 | :--- | :--- |
-| [`@openuidev/react-lang`](./packages/react-lang) | Core runtime — component definitions, parser, renderer, prompt generation |
+| [`@openuidev/react-lang`](./packages/react-lang) | Core runtime: component definitions, parser, renderer, prompt generation |
 | [`@openuidev/react-headless`](./packages/react-headless) | Headless chat state, streaming adapters, message format converters |
 | [`@openuidev/react-ui`](./packages/react-ui) | Prebuilt chat layouts and two built-in component libraries |
 | [`@openuidev/cli`](./packages/openui-cli) | CLI for scaffolding apps and generating system prompts |
@@ -115,10 +108,10 @@ npm install @openuidev/react-lang @openuidev/react-ui
 
 OpenUI Lang is designed for model-generated UI that needs to be both structured and streamable.
 
-- **Streaming output** — Emit UI incrementally as tokens arrive.
-- **Token efficiency** — Up to 67% fewer tokens than equivalent JSON (see [benchmarks](./benchmarks)).
-- **Controlled rendering** — Restrict output to the components you define and register.
-- **Typed component contracts** — Define component props and structure up front with Zod schemas.
+- **Streaming output** - Emit UI incrementally as tokens arrive.
+- **Token efficiency** - Up to 67% fewer tokens than equivalent JSON (see [benchmarks](./benchmarks)).
+- **Controlled rendering** - Restrict output to the components you define and register.
+- **Typed component contracts** - Define component props and structure up front with Zod schemas.
 
 ### Token efficiency benchmarks
 
@@ -166,12 +159,12 @@ Good places to start:
 
 ## Community
 
-- [Discord](https://discord.com/invite/Pbv5PsqUSv) — Ask questions, share what you're building
-- [GitHub Issues](https://github.com/thesysdev/openui/issues) — Report bugs or request features
+- [Discord](https://discord.com/invite/Pbv5PsqUSv) - Ask questions, share what you're building
+- [GitHub Issues](https://github.com/thesysdev/openui/issues) - Report bugs or request features
 
 ## Adopters
 
-A list of organizations and projects using OpenUI is maintained in [`ADOPTERS.md`](./ADOPTERS.md). If you're using OpenUI, please consider adding your organization — it helps the project gain momentum and helps other adopters find peers using OpenUI in similar contexts.
+A list of organizations and projects using OpenUI is maintained in [`ADOPTERS.md`](./ADOPTERS.md). If you're using OpenUI, please consider adding your organization; it helps the project gain momentum and helps other adopters find peers using OpenUI in similar contexts.
 
 ## Contributing
 
@@ -187,7 +180,7 @@ OpenUI ships an [Agent Skill](https://agentskills.io) so AI coding assistants (C
 # With the skills CLI (works across all agents)
 npx skills add thesysdev/openui --skill openui
  
-# Manual — copy into your project
+# Manual - copy into your project
 cp -r skills/openui .claude/skills/openui
 ```
  
