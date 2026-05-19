@@ -1,8 +1,10 @@
 # @openuidev/browser-bundle
 
-Prebuilt IIFE browser bundle of [`@openuidev/react-lang`](../react-lang) + [`@openuidev/react-ui`](../react-ui) plus all their runtime dependencies (React, ReactDOM, Radix, Recharts, date-fns, react-markdown, etc.) in a single file, plus a combined stylesheet.
+Prebuilt browser bundle for OpenUI's React renderer and UI library. It packages `@openuidev/react-lang`, `@openuidev/react-ui`, React, ReactDOM, and runtime dependencies into one script plus one stylesheet.
 
 Intended for **iframe, CDN, and no-build-pipeline** contexts where ESM/CJS module resolution isn't available and you just want a `<script>` tag that gives you the OpenUI renderer and component library.
+
+**Links:** [OpenUI docs](https://openui.com/docs) | [GitHub repo](https://github.com/thesysdev/openui)
 
 Example consumers:
 
@@ -14,7 +16,7 @@ For any build-pipeline project, use `@openuidev/react-lang` and `@openuidev/reac
 
 ## Install
 
-You almost certainly want to use the CDN — that's the point of this package. jsDelivr and unpkg both auto-publish from npm:
+You almost certainly want to use the CDN. jsDelivr and unpkg both auto-publish from npm:
 
 ```html
 <link
@@ -57,8 +59,8 @@ This shape is a **stable public contract**. Any change to the keys or their expo
 
 ## Size
 
-- `openui-bundle.min.js` — ~2.2 MB raw / ~650 KB gzipped
-- `openui-styles.css` — ~150 KB raw
+- `openui-bundle.min.js`: ~2.2 MB raw / ~650 KB gzipped
+- `openui-styles.css`: ~150 KB raw
 
 All dependencies are inlined; there are no runtime fetches beyond the two files above.
 
@@ -70,3 +72,9 @@ pnpm --filter @openuidev/browser-bundle build
 ```
 
 This produces `dist/openui-bundle.min.js` and `dist/openui-styles.css`.
+
+## Documentation
+
+- [OpenUI docs](https://openui.com/docs)
+- [OpenUI Lang guide](https://openui.com/docs/openui-lang)
+- [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/browser-bundle)

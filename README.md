@@ -102,6 +102,7 @@ Try it yourself in the [Playground](https://www.openui.com/playground): generate
 | [`@openuidev/react-headless`](./packages/react-headless) | Headless chat state, streaming adapters, message format converters |
 | [`@openuidev/react-ui`](./packages/react-ui) | Prebuilt chat layouts and two built-in component libraries |
 | [`@openuidev/cli`](./packages/openui-cli) | CLI for scaffolding apps and generating system prompts |
+| [`@openuidev/openclaw-os-plugin`](https://github.com/thesysdev/openclaw-os/tree/main/packages/claw-plugin) | OpenClaw OS plugin for serving OpenUI-powered OpenClaw workspaces |
 
 ```bash
 npm install @openuidev/react-lang @openuidev/react-ui

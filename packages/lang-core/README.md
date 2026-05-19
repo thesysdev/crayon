@@ -1,9 +1,11 @@
 # @openuidev/lang-core
 
-Framework-agnostic core for [OpenUI Lang](https://openui.com): parser, prompt generation, runtime evaluator, and type definitions.
+Framework-agnostic core for OpenUI Lang. This is the parser, prompt-generation, runtime-evaluation, and type layer used by the framework packages.
 
 [![npm](https://img.shields.io/npm/v/@openuidev/lang-core)](https://www.npmjs.com/package/@openuidev/lang-core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
+
+**Links:** [OpenUI Lang docs](https://openui.com/docs/openui-lang) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -15,7 +17,7 @@ pnpm add @openuidev/lang-core
 
 ## What this package does
 
-`@openuidev/lang-core` is the framework-agnostic foundation that powers OpenUI Lang. It has no React or other framework dependencies. Use it when you need to:
+`@openuidev/lang-core` has no React, Vue, or Svelte dependency. Use it when you need to:
 
 - **Parse** OpenUI Lang text into a typed element tree (one-shot or streaming)
 - **Generate system prompts** from a component spec + tool definitions
@@ -131,7 +133,9 @@ import type {
 
 ## Documentation
 
-Full documentation, guides, and the language specification are available at **[openui.com](https://openui.com)**.
+- [OpenUI Lang guide](https://openui.com/docs/openui-lang)
+- [Language specification](https://openui.com/docs/openui-lang/specification-v05)
+- [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/lang-core)
 
 ## License
 

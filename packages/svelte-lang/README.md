@@ -1,8 +1,10 @@
 # @openuidev/svelte-lang
 
-Svelte 5 runtime for [OpenUI](https://openui.com) — define component libraries, generate model prompts, and render structured UI from streaming LLM output.
+Svelte 5 bindings for OpenUI Lang. Define model-renderable Svelte components, generate prompts from those definitions, and render streamed OpenUI Lang in a Svelte app.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
+
+**Links:** [OpenUI Lang docs](https://openui.com/docs/openui-lang) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -16,11 +18,11 @@ pnpm add @openuidev/svelte-lang
 
 ## Overview
 
-`@openuidev/svelte-lang` provides three core capabilities:
+`@openuidev/svelte-lang` brings the OpenUI Lang runtime to Svelte:
 
-1. **Define components** — Use `defineComponent` and `createLibrary` to declare what the model is allowed to generate, with typed props via Zod schemas.
-2. **Generate prompts** — Call `library.prompt()` to produce a system prompt that instructs the model how to emit OpenUI Lang output.
-3. **Render output** — Use `<Renderer>` to parse and progressively render streamed OpenUI Lang into Svelte components.
+1. **Define Svelte components** that a model is allowed to call, with Zod schemas for props.
+2. **Generate prompts** from the component library.
+3. **Render streamed output** with `<Renderer>` as OpenUI Lang arrives.
 
 ## Quick Start
 
@@ -166,7 +168,7 @@ After the stream ends, check `meta.unresolved` for any identifiers that were ref
 | `unknown-component` | Component name not found in the library schema      |
 | `excess-args`       | More positional args passed than the schema defines |
 
-Errors do not affect rendering — the parser stays permissive and renders what it can:
+Errors do not affect rendering. The parser stays permissive and renders what it can:
 
 ```ts
 const result = parser.parse(output);
@@ -180,7 +182,7 @@ Use these inside component renderers to interact with the rendering context:
 | Function                   | Returns               | Description                                                                    |
 | :------------------------- | :-------------------- | :----------------------------------------------------------------------------- |
 | `getOpenUIContext()`       | `OpenUIContextValue`  | Access the full context object (library, streaming state, field accessors)     |
-| `getIsStreaming()`         | `() => boolean`       | Returns a getter for the streaming state — call it reactively: `isStreaming()` |
+| `getIsStreaming()`         | `() => boolean`       | Returns a getter for the streaming state. Call it reactively: `isStreaming()` |
 | `getTriggerAction()`       | `Function`            | Trigger an action event                                                        |
 | `getGetFieldValue()`       | `Function`            | Get a form field's current value                                               |
 | `getSetFieldValue()`       | `Function`            | Set a form field's value                                                       |
@@ -251,7 +253,9 @@ const schema = library.toJSONSchema();
 
 ## Documentation
 
-Full documentation, guides, and the language specification are available at **[openui.com](https://openui.com)**.
+- [OpenUI Lang guide](https://openui.com/docs/openui-lang)
+- [Language specification](https://openui.com/docs/openui-lang/specification-v05)
+- [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/svelte-lang)
 
 ## License
 
