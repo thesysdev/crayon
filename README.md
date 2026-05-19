@@ -11,9 +11,12 @@
 
 # OpenUI - The Open Standard for Generative UI
 
-[![Build](https://github.com/thesysdev/openui/actions/workflows/build-js.yml/badge.svg)](https://github.com/thesysdev/openui/actions/workflows/build-js.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-[![Discord](https://img.shields.io/badge/Discord-Chat-7289da?logo=discord&logoColor=white)](https://discord.com/invite/Pbv5PsqUSv)
+<p align="center">
+  <a href="https://github.com/thesysdev/openui/actions/workflows/build-js.yml"><img alt="Build" src="https://github.com/thesysdev/openui/actions/workflows/build-js.yml/badge.svg"></a>
+  <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
+  <a href="https://discord.com/invite/Pbv5PsqUSv"><img alt="Discord" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Fv10%2Finvites%2FPbv5PsqUSv%3Fwith_counts%3Dtrue&query=%24.approximate_presence_count&label=Discord&suffix=%20online&logo=discord&logoColor=white&color=5865F2"></a>
+  <a href="https://www.npmjs.com/search?q=%40openuidev"><img alt="npm downloads" src="https://img.shields.io/badge/npm%20downloads-358%2C370-CB3837?logo=npm&logoColor=white"></a>
+</p>
 
 <a href="https://trendshift.io/repositories/22357" target="_blank"><img src="https://trendshift.io/api/badge/repositories/22357" alt="thesysdev%2Fopenui | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
