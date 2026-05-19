@@ -204,7 +204,7 @@ export async function POST(req: NextRequest) {
     baseURL: process.env.OPENAI_BASE_URL || undefined,
   });
 
-  const MODEL = process.env.OPENAI_MODEL || "gpt-5.4";
+  const MODEL = process.env.OPENAI_MODEL || "gpt-5.5";
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cleanMessages = (messages as any[])

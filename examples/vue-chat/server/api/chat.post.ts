@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   const { messages } = await readBody(event);
 
   const result = streamText({
-    model: openai("gpt-5.4"),
+    model: openai("gpt-5.5"),
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
     tools,

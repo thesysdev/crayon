@@ -43,7 +43,7 @@ export async function POST(req: Request) {
   console.info("[Main Agent] Full model chat history:\n", prettyJson(modelMessages));
 
   const result = streamText({
-    model: openai("gpt-5.4"),
+    model: openai("gpt-5.5"),
     system: mainAgentSystemPrompt,
     messages: modelMessages,
     tools,

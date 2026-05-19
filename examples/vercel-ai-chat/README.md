@@ -151,7 +151,7 @@ The API route uses the Vercel AI SDK's `streamText` with five arguments:
 
 | Argument | Value | Purpose |
 | -------- | ----- | ------- |
-| `model` | `openai("gpt-5.4")` | The LLM to call |
+| `model` | `openai("gpt-5.5")` | The LLM to call |
 | `system` | contents of `system-prompt.txt` | Teaches the model OpenUI Lang and the available components |
 | `messages` | conversation history from client | The full thread so far |
 | `tools` | four tool definitions | Functions the LLM can call mid-generation |

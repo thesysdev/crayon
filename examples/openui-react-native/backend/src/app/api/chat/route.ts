@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
   if (lastUserMsg) conversationLog.push({ role: "user", content: extractText(lastUserMsg) });
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-5.5",
     stream: true,
     messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
   });

@@ -209,7 +209,7 @@ export const WithThreadHeader = {
                 fontSize: "13px",
               }}
             >
-              <option>GPT-4o</option>
+              <option>GPT-5.5</option>
               <option>Claude 3.5 Sonnet</option>
               <option>Gemini Pro</option>
             </select>

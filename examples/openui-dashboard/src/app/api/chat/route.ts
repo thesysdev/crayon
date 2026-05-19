@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
   const apiKey = process.env.LLM_API_KEY || process.env.OPENAI_API_KEY || "";
   const baseURL = process.env.LLM_BASE_URL || "https://api.openai.com/v1";
-  const model = process.env.LLM_MODEL || "gpt-5.4";
+  const model = process.env.LLM_MODEL || "gpt-5.5";
 
   if (!apiKey) {
     return new Response(

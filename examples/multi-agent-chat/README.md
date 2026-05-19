@@ -150,7 +150,7 @@ The API route uses `streamText` with the following configuration:
 
 | Argument   | Value                | Purpose                                                              |
 | ---------- | -------------------- | -------------------------------------------------------------------- |
-| `model`    | `openai("gpt-5.4")`  | The LLM for the main orchestrator                                    |
+| `model`    | `openai("gpt-5.5")`  | The LLM for the main orchestrator                                    |
 | `system`   | orchestrator prompt  | Instructs the agent to delegate visual tasks to `analytics_subagent` |
 | `messages` | conversation history | The full thread from the client                                      |
 | `tools`    | 5 tool definitions   | Sub-agent + 4 helper tools                                           |
