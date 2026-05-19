@@ -16,7 +16,7 @@ To add your organization to this list, [open a PR](https://github.com/thesysdev/
 
 | Organization | Contact | Description of Use |
 | :--- | :--- | :--- |
-| _Your org here_ | [@handle](https://github.com/handle) | _e.g., Customer-facing AI copilot built on OpenUI Lang._ |
+| [Standard Metrics]([https://acme.example.com](https://standardmetrics.io/)) | [@eliasinho](https://github.com/eliasinho) | Standard Metrics combines institutional-grade infrastructure with cutting-edge AI to transform portfolio management |
 
 <!--
 Example row, copy and edit:
