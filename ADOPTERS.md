@@ -14,9 +14,9 @@ To add your organization to this list, [open a PR](https://github.com/thesysdev/
 
 ## OpenUI Adopters
 
-| Organization | Contact | Description of Use |
-| :--- | :--- | :--- |
-| [Standard Metrics](https://standardmetrics.io/) | - | Standard Metrics combines institutional-grade infrastructure with cutting-edge AI to transform portfolio management |
+| Organization                                    | Contact                                       | Description of Use                                                                                                  |
+| :---------------------------------------------- | :-------------------------------------------- | :------------------------------------------------------------------------------------------------------------------ |
+| [Standard Metrics](https://standardmetrics.io/) | [Elias Tounzal](https://github.com/eliasinho) | Standard Metrics combines institutional-grade infrastructure with cutting-edge AI to transform portfolio management |
 
 <!--
 Example row, copy and edit:
