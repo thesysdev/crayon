@@ -27,11 +27,11 @@ function activeTabUrl(pathname: string): string {
 
 function SearchBar() {
   const { setOpenSearch } = useSearchContext();
-  const [isMac] = useState(
-    () => typeof navigator !== "undefined" && /mac/i.test(navigator.userAgent),
-  );
+  const [isMac, setIsMac] = useState(false);
 
   useEffect(() => {
+    setIsMac(/mac/i.test(navigator.userAgent));
+
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
