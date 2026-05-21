@@ -63,14 +63,14 @@ const STACK_ROWS: StackRow[] = [
       {
         name: "xAI",
         iconKind: "image",
-        slug: "xai",
+        localSrc: "/brand-icons/xai.svg",
         iconColor: "ffffff",
         badgeClassName: stackChipStyles.badgeBlack,
       },
       {
         name: "DeepSeek",
         iconKind: "image",
-        slug: "deepseek",
+        localSrc: "/brand-icons/deepseek.svg",
         iconColor: "ffffff",
         badgeClassName: stackChipStyles.badgeDeepSeek,
       },
