@@ -23,17 +23,22 @@ const config = {
       },
       {
         source: "/docs/add-ons",
-        destination: "/registry",
+        destination: "/projects",
         permanent: false,
       },
       {
         source: "/add-ons",
-        destination: "/registry",
+        destination: "/projects",
         permanent: false,
       },
       {
         source: "/ecosystem",
-        destination: "/registry",
+        destination: "/projects",
+        permanent: false,
+      },
+      {
+        source: "/registry",
+        destination: "/projects",
         permanent: false,
       },
       {

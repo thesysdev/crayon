@@ -15,25 +15,25 @@ import { PillLink } from "../components/Button/Button";
 import { Footer } from "../sections/Footer/Footer";
 import styles from "./page.module.css";
 
-type RegistryStatus = "Official" | "Community";
+type ProjectStatus = "Official" | "Community";
 
-interface RegistryLink {
+interface ProjectLink {
   label: string;
   href: string;
   external?: boolean;
 }
 
-interface RegistryItem {
+interface ProjectItem {
   name: string;
   description: string;
   type: string;
-  status: RegistryStatus;
+  status: ProjectStatus;
   accent: "blue" | "green" | "purple" | "orange" | "slate";
   icon: ComponentType<{ className?: string; strokeWidth?: number }>;
-  links: RegistryLink[];
+  links: ProjectLink[];
 }
 
-const registryItems: RegistryItem[] = [
+const projects: ProjectItem[] = [
   {
     name: "OpenUI Forge",
     description:
@@ -194,30 +194,28 @@ const registryItems: RegistryItem[] = [
 const highlights = [
   {
     label: "Community contributions",
-    value: registryItems.filter((item) => item.status === "Community").length.toString(),
+    value: projects.filter((item) => item.status === "Community").length.toString(),
   },
-  { label: "Projects", value: registryItems.length.toString() },
+  { label: "Projects", value: projects.length.toString() },
   {
     label: "Official projects",
-    value: registryItems.filter((item) => item.status === "Official").length.toString(),
+    value: projects.filter((item) => item.status === "Official").length.toString(),
   },
 ];
 
 export const metadata: Metadata = {
-  title: "OpenUI Registry",
-  description: "Plugins, packages, tools, templates, and integrations built around OpenUI.",
-  alternates: { canonical: "/registry" },
+  title: "OpenUI Projects",
+  description: "Official and community projects built around OpenUI.",
+  alternates: { canonical: "/projects" },
   openGraph: {
-    title: "OpenUI Registry",
-    description:
-      "Discover plugins, packages, tools, templates, and integrations built around OpenUI.",
-    url: "/registry",
+    title: "OpenUI Projects",
+    description: "Discover official and community projects built around OpenUI.",
+    url: "/projects",
     type: "website",
   },
   twitter: {
-    title: "OpenUI Registry",
-    description:
-      "Discover plugins, packages, tools, templates, and integrations built around OpenUI.",
+    title: "OpenUI Projects",
+    description: "Discover official and community projects built around OpenUI.",
     card: "summary_large_image",
   },
 };
@@ -235,18 +233,17 @@ function LinkIcon({ label }: { label: string }) {
   return <ExternalIndicator external />;
 }
 
-export default function RegistryPage() {
+export default function ProjectsPage() {
   return (
     <main className={styles.page}>
       <section className={styles.heroSection}>
         <div className={styles.heroInner}>
           <div className={styles.heroCopy}>
-            <div className={styles.eyebrow}>OpenUI registry</div>
-            <h1 className={styles.title}>OpenUI Registry</h1>
+            <div className={styles.eyebrow}>OpenUI projects</div>
+            <h1 className={styles.title}>OpenUI Projects</h1>
             <p className={styles.subtitle}>
-              A curated registry of official and community projects that extend OpenUI across
-              plugins, framework packages, local-model workflows, editor tools, and starter
-              examples.
+              Official and community projects that extend OpenUI across plugins, framework packages,
+              local-model workflows, editor tools, and starter examples.
             </p>
             <div className={styles.heroActions}>
               <PillLink
@@ -260,7 +257,7 @@ export default function RegistryPage() {
             </div>
           </div>
 
-          <div className={styles.heroPanel} aria-label="Registry summary">
+          <div className={styles.heroPanel} aria-label="Projects summary">
             {highlights.map((item) => (
               <div className={styles.metricTile} key={item.label}>
                 <span className={styles.metricLabel}>{item.label}</span>
@@ -283,7 +280,7 @@ export default function RegistryPage() {
         </div>
 
         <div className={styles.grid}>
-          {registryItems.map((item) => {
+          {projects.map((item) => {
             const Icon = item.icon;
 
             return (
