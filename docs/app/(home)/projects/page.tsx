@@ -86,7 +86,7 @@ const projects: ProjectItem[] = [
   {
     name: "Genui VS Code Extension",
     description:
-      "Preview `.openui` files live in VS Code and Open VSX-compatible editors while agents write OpenUI Lang.",
+      "Preview '.openui' files live in VS Code and Open VSX-compatible editors while agents write OpenUI Lang.",
     type: "Extension",
     status: "Community",
     accent: "blue",
