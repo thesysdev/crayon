@@ -45,8 +45,8 @@ const projects: ProjectItem[] = [
     accent: "purple",
     icon: Wrench,
     links: [
-      { label: "Website", href: "https://spruce-prism-8yya.here.now/", external: true },
       { label: "GitHub", href: "https://github.com/OthmanAdi/openui-forge", external: true },
+      { label: "Website", href: "https://spruce-prism-8yya.here.now/", external: true },
     ],
   },
   {
@@ -112,12 +112,12 @@ const projects: ProjectItem[] = [
     accent: "orange",
     icon: Sparkles,
     links: [
-      { label: "Website", href: "/openclaw-os", external: true },
       {
         label: "GitHub",
         href: "https://github.com/thesysdev/openclaw-os/tree/main/packages/claw-plugin",
         external: true,
       },
+      { label: "Website", href: "/openclaw-os", external: true },
     ],
   },
   {
@@ -180,12 +180,12 @@ const projects: ProjectItem[] = [
     accent: "slate",
     icon: MonitorSmartphone,
     links: [
-      { label: "Docs", href: "/docs/openui-lang/examples/react-native", external: true },
       {
         label: "GitHub",
         href: "https://github.com/thesysdev/openui/tree/main/examples/openui-react-native",
         external: true,
       },
+      { label: "Docs", href: "/docs/openui-lang/examples/react-native", external: true },
     ],
   },
 ];
