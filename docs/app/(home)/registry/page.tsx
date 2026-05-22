@@ -1,14 +1,15 @@
 import {
+  BadgeCheck,
   Bot,
   Boxes,
   Code2,
   ExternalLink,
   Github,
-  Globe2,
   MonitorSmartphone,
   Package,
   PlugZap,
   Sparkles,
+  Users,
   Wrench,
 } from "lucide-react";
 import type { Metadata } from "next";
@@ -194,17 +195,16 @@ const registryItems: RegistryItem[] = [
 ];
 
 const highlights = [
-  { label: "Projects", value: registryItems.length.toString(), icon: Boxes },
   {
     label: "Community contributions",
     value: registryItems.filter((item) => item.status === "Community").length.toString(),
-    icon: Sparkles,
-    emphasis: "community",
+    icon: Users,
   },
+  { label: "Projects", value: registryItems.length.toString(), icon: Boxes },
   {
-    label: "Categories",
-    value: new Set(registryItems.map((item) => item.type)).size.toString(),
-    icon: Globe2,
+    label: "Official projects",
+    value: registryItems.filter((item) => item.status === "Official").length.toString(),
+    icon: BadgeCheck,
   },
 ];
 
@@ -270,7 +270,7 @@ export default function RegistryPage() {
               const Icon = item.icon;
 
               return (
-                <div className={styles.metricTile} data-emphasis={item.emphasis} key={item.label}>
+                <div className={styles.metricTile} key={item.label}>
                   <Icon className={styles.metricIcon} strokeWidth={1.8} aria-hidden="true" />
                   <span className={styles.metricValue}>{item.value}</span>
                   <span className={styles.metricLabel}>{item.label}</span>
