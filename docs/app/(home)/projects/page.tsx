@@ -205,9 +205,10 @@ const highlights = [
   { label: "Projects", value: projects.length.toString(), accent: "slate", icon: Boxes },
   {
     label: "Discord",
-    value: "Showcase",
+    value: "Share your projects with the community",
     accent: "blue",
     icon: DiscordIcon,
+    kind: "cta",
     href: "https://discord.gg/suzHfJnpw",
   },
 ];
@@ -294,6 +295,7 @@ export default function ProjectsPage() {
                   <a
                     className={styles.metricTile}
                     data-accent={item.accent}
+                    data-kind={item.kind}
                     href={item.href}
                     key={item.label}
                     target="_blank"
@@ -305,7 +307,12 @@ export default function ProjectsPage() {
               }
 
               return (
-                <div className={styles.metricTile} data-accent={item.accent} key={item.label}>
+                <div
+                  className={styles.metricTile}
+                  data-accent={item.accent}
+                  data-kind={item.kind}
+                  key={item.label}
+                >
                   {content}
                 </div>
               );
