@@ -1,7 +1,5 @@
 import {
-  BadgeCheck,
   Bot,
-  Boxes,
   Code2,
   ExternalLink,
   Github,
@@ -9,7 +7,6 @@ import {
   Package,
   PlugZap,
   Sparkles,
-  Users,
   Wrench,
 } from "lucide-react";
 import type { Metadata } from "next";
@@ -198,13 +195,11 @@ const highlights = [
   {
     label: "Community contributions",
     value: registryItems.filter((item) => item.status === "Community").length.toString(),
-    icon: Users,
   },
-  { label: "Projects", value: registryItems.length.toString(), icon: Boxes },
+  { label: "Projects", value: registryItems.length.toString() },
   {
     label: "Official projects",
     value: registryItems.filter((item) => item.status === "Official").length.toString(),
-    icon: BadgeCheck,
   },
 ];
 
@@ -266,17 +261,12 @@ export default function RegistryPage() {
           </div>
 
           <div className={styles.heroPanel} aria-label="Registry summary">
-            {highlights.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <div className={styles.metricTile} key={item.label}>
-                  <Icon className={styles.metricIcon} strokeWidth={1.8} aria-hidden="true" />
-                  <span className={styles.metricValue}>{item.value}</span>
-                  <span className={styles.metricLabel}>{item.label}</span>
-                </div>
-              );
-            })}
+            {highlights.map((item) => (
+              <div className={styles.metricTile} key={item.label}>
+                <span className={styles.metricLabel}>{item.label}</span>
+                <span className={styles.metricValue}>{item.value}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
