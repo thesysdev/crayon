@@ -75,7 +75,6 @@ const projects: ProjectItem[] = [
     accent: "green",
     icon: Bot,
     links: [
-      { label: "Providers", href: "/docs/chat/providers" },
       {
         label: "Article",
         href: "https://dev.to/shogun444/i-tested-openui-with-ollama-models-heres-what-actually-worked-45m7",
