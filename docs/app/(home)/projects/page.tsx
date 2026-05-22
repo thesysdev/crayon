@@ -204,8 +204,8 @@ const highlights = [
   },
   { label: "Projects", value: projects.length.toString(), accent: "slate", icon: Boxes },
   {
-    label: "Showcase",
-    value: "Discord",
+    label: "Discord",
+    value: "Showcase",
     accent: "blue",
     icon: DiscordIcon,
     href: "https://discord.gg/suzHfJnpw",
