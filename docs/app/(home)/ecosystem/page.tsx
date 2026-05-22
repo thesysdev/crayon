@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import {
   Bot,
   Boxes,
@@ -12,6 +11,7 @@ import {
   Sparkles,
   Wrench,
 } from "lucide-react";
+import type { Metadata } from "next";
 import type { ComponentType } from "react";
 import { PillLink } from "../components/Button/Button";
 import { Footer } from "../sections/Footer/Footer";
@@ -119,6 +119,27 @@ const ecosystemItems: EcosystemItem[] = [
     ],
   },
   {
+    name: "OpenUI Plotly",
+    description:
+      "Scaffold a Next.js generative UI chat with typed Plotly chart components for data-heavy responses.",
+    type: "Package",
+    status: "Community",
+    accent: "purple",
+    icon: Package,
+    links: [
+      {
+        label: "GitHub",
+        href: "https://github.com/vishxrad/openui-plotly",
+        external: true,
+      },
+      {
+        label: "npm",
+        href: "https://www.npmjs.com/package/@vishxrad/openui-plotly?activeTab=readme",
+        external: true,
+      },
+    ],
+  },
+  {
     name: "Vue Lang",
     description: "Define OpenUI component libraries and render OpenUI Lang responses in Vue 3.",
     type: "Framework",
@@ -147,7 +168,11 @@ const ecosystemItems: EcosystemItem[] = [
         href: "https://github.com/thesysdev/openui/tree/main/packages/svelte-lang",
         external: true,
       },
-      { label: "npm", href: "https://www.npmjs.com/package/@openuidev/svelte-lang", external: true },
+      {
+        label: "npm",
+        href: "https://www.npmjs.com/package/@openuidev/svelte-lang",
+        external: true,
+      },
     ],
   },
   {
@@ -171,13 +196,16 @@ const ecosystemItems: EcosystemItem[] = [
 const highlights = [
   { label: "Projects", value: ecosystemItems.length.toString(), icon: Boxes },
   { label: "Official entries", value: "1", icon: Package },
-  { label: "Categories", value: "5", icon: Globe2 },
+  {
+    label: "Categories",
+    value: new Set(ecosystemItems.map((item) => item.type)).size.toString(),
+    icon: Globe2,
+  },
 ];
 
 export const metadata: Metadata = {
   title: "OpenUI Ecosystem",
-  description:
-    "Plugins, packages, tools, templates, and integrations built around OpenUI.",
+  description: "Plugins, packages, tools, templates, and integrations built around OpenUI.",
   alternates: { canonical: "/ecosystem" },
   openGraph: {
     title: "OpenUI Ecosystem",
@@ -216,8 +244,8 @@ export default function EcosystemPage() {
             <div className={styles.eyebrow}>OpenUI ecosystem</div>
             <h1 className={styles.title}>OpenUI Ecosystem</h1>
             <p className={styles.subtitle}>
-              Discover plugins, framework packages, local-model workflows, editor tools, and
-              starter examples maintained by the OpenUI team and the community.
+              Discover plugins, framework packages, local-model workflows, editor tools, and starter
+              examples maintained by the OpenUI team and the community.
             </p>
             <div className={styles.heroActions}>
               <PillLink
