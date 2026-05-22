@@ -17,7 +17,7 @@ import { PillLink } from "../components/Button/Button";
 import { Footer } from "../sections/Footer/Footer";
 import styles from "./page.module.css";
 
-type EcosystemStatus = "Official" | "Community" | "Package" | "Template";
+type EcosystemStatus = "Official" | "Community";
 
 interface EcosystemLink {
   label: string;
@@ -143,7 +143,7 @@ const ecosystemItems: EcosystemItem[] = [
     name: "Vue Lang",
     description: "Define OpenUI component libraries and render OpenUI Lang responses in Vue 3.",
     type: "Framework",
-    status: "Package",
+    status: "Official",
     accent: "green",
     icon: Code2,
     links: [
@@ -159,7 +159,7 @@ const ecosystemItems: EcosystemItem[] = [
     name: "Svelte Lang",
     description: "Define OpenUI component libraries and render OpenUI Lang responses in Svelte 5.",
     type: "Framework",
-    status: "Package",
+    status: "Official",
     accent: "orange",
     icon: Code2,
     links: [
@@ -179,7 +179,7 @@ const ecosystemItems: EcosystemItem[] = [
     name: "React Native Example",
     description: "A mobile chat example showing OpenUI rendered in a React Native application.",
     type: "Example",
-    status: "Template",
+    status: "Official",
     accent: "slate",
     icon: MonitorSmartphone,
     links: [
@@ -195,7 +195,11 @@ const ecosystemItems: EcosystemItem[] = [
 
 const highlights = [
   { label: "Projects", value: ecosystemItems.length.toString(), icon: Boxes },
-  { label: "Official entries", value: "1", icon: Package },
+  {
+    label: "Official entries",
+    value: ecosystemItems.filter((item) => item.status === "Official").length.toString(),
+    icon: Package,
+  },
   {
     label: "Categories",
     value: new Set(ecosystemItems.map((item) => item.type)).size.toString(),
@@ -297,8 +301,10 @@ export default function EcosystemPage() {
                     <Icon className={styles.cardIcon} strokeWidth={1.8} aria-hidden="true" />
                   </div>
                   <div className={styles.tags}>
+                    <span className={styles.statusTag} data-status={item.status}>
+                      {item.status}
+                    </span>
                     <span className={styles.typeTag}>{item.type}</span>
-                    <span className={styles.statusTag}>{item.status}</span>
                   </div>
                 </div>
                 <h3 className={styles.cardTitle}>{item.name}</h3>
