@@ -196,9 +196,10 @@ const registryItems: RegistryItem[] = [
 const highlights = [
   { label: "Projects", value: registryItems.length.toString(), icon: Boxes },
   {
-    label: "Official entries",
-    value: registryItems.filter((item) => item.status === "Official").length.toString(),
-    icon: Package,
+    label: "Community contributions",
+    value: registryItems.filter((item) => item.status === "Community").length.toString(),
+    icon: Sparkles,
+    emphasis: "community",
   },
   {
     label: "Categories",
@@ -269,7 +270,7 @@ export default function RegistryPage() {
               const Icon = item.icon;
 
               return (
-                <div className={styles.metricTile} key={item.label}>
+                <div className={styles.metricTile} data-emphasis={item.emphasis} key={item.label}>
                   <Icon className={styles.metricIcon} strokeWidth={1.8} aria-hidden="true" />
                   <span className={styles.metricValue}>{item.value}</span>
                   <span className={styles.metricLabel}>{item.label}</span>
