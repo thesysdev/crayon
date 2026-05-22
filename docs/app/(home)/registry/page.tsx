@@ -17,25 +17,25 @@ import { PillLink } from "../components/Button/Button";
 import { Footer } from "../sections/Footer/Footer";
 import styles from "./page.module.css";
 
-type EcosystemStatus = "Official" | "Community";
+type RegistryStatus = "Official" | "Community";
 
-interface EcosystemLink {
+interface RegistryLink {
   label: string;
   href: string;
   external?: boolean;
 }
 
-interface EcosystemItem {
+interface RegistryItem {
   name: string;
   description: string;
   type: string;
-  status: EcosystemStatus;
+  status: RegistryStatus;
   accent: "blue" | "green" | "purple" | "orange" | "slate";
   icon: ComponentType<{ className?: string; strokeWidth?: number }>;
-  links: EcosystemLink[];
+  links: RegistryLink[];
 }
 
-const ecosystemItems: EcosystemItem[] = [
+const registryItems: RegistryItem[] = [
   {
     name: "OpenUI Forge",
     description:
@@ -194,32 +194,32 @@ const ecosystemItems: EcosystemItem[] = [
 ];
 
 const highlights = [
-  { label: "Projects", value: ecosystemItems.length.toString(), icon: Boxes },
+  { label: "Projects", value: registryItems.length.toString(), icon: Boxes },
   {
     label: "Official entries",
-    value: ecosystemItems.filter((item) => item.status === "Official").length.toString(),
+    value: registryItems.filter((item) => item.status === "Official").length.toString(),
     icon: Package,
   },
   {
     label: "Categories",
-    value: new Set(ecosystemItems.map((item) => item.type)).size.toString(),
+    value: new Set(registryItems.map((item) => item.type)).size.toString(),
     icon: Globe2,
   },
 ];
 
 export const metadata: Metadata = {
-  title: "OpenUI Ecosystem",
+  title: "OpenUI Registry",
   description: "Plugins, packages, tools, templates, and integrations built around OpenUI.",
-  alternates: { canonical: "/ecosystem" },
+  alternates: { canonical: "/registry" },
   openGraph: {
-    title: "OpenUI Ecosystem",
+    title: "OpenUI Registry",
     description:
       "Discover plugins, packages, tools, templates, and integrations built around OpenUI.",
-    url: "/ecosystem",
+    url: "/registry",
     type: "website",
   },
   twitter: {
-    title: "OpenUI Ecosystem",
+    title: "OpenUI Registry",
     description:
       "Discover plugins, packages, tools, templates, and integrations built around OpenUI.",
     card: "summary_large_image",
@@ -239,17 +239,18 @@ function LinkIcon({ label }: { label: string }) {
   return <ExternalIndicator external />;
 }
 
-export default function EcosystemPage() {
+export default function RegistryPage() {
   return (
     <main className={styles.page}>
       <section className={styles.heroSection}>
         <div className={styles.heroInner}>
           <div className={styles.heroCopy}>
-            <div className={styles.eyebrow}>OpenUI ecosystem</div>
-            <h1 className={styles.title}>OpenUI Ecosystem</h1>
+            <div className={styles.eyebrow}>OpenUI registry</div>
+            <h1 className={styles.title}>OpenUI Registry</h1>
             <p className={styles.subtitle}>
-              Discover plugins, framework packages, local-model workflows, editor tools, and starter
-              examples maintained by the OpenUI team and the community.
+              A curated registry of official and community projects that extend OpenUI across
+              plugins, framework packages, local-model workflows, editor tools, and starter
+              examples.
             </p>
             <div className={styles.heroActions}>
               <PillLink
@@ -263,7 +264,7 @@ export default function EcosystemPage() {
             </div>
           </div>
 
-          <div className={styles.heroPanel} aria-label="Ecosystem summary">
+          <div className={styles.heroPanel} aria-label="Registry summary">
             {highlights.map((item) => {
               const Icon = item.icon;
 
@@ -291,7 +292,7 @@ export default function EcosystemPage() {
         </div>
 
         <div className={styles.grid}>
-          {ecosystemItems.map((item) => {
+          {registryItems.map((item) => {
             const Icon = item.icon;
 
             return (
