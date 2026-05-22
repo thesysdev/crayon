@@ -44,7 +44,10 @@ const projects: ProjectItem[] = [
     status: "Community",
     accent: "purple",
     icon: Wrench,
-    links: [{ label: "GitHub", href: "https://github.com/OthmanAdi/openui-forge", external: true }],
+    links: [
+      { label: "Website", href: "https://spruce-prism-8yya.here.now/", external: true },
+      { label: "GitHub", href: "https://github.com/OthmanAdi/openui-forge", external: true },
+    ],
   },
   {
     name: "Open WebUI Plugin",
