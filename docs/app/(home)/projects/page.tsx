@@ -4,6 +4,7 @@ import {
   Code2,
   ExternalLink,
   Github,
+  MessageCircle,
   MonitorSmartphone,
   Package,
   PlugZap,
@@ -201,6 +202,13 @@ const highlights = [
     icon: Users,
   },
   { label: "Projects", value: projects.length.toString(), accent: "slate", icon: Boxes },
+  {
+    label: "Showcase",
+    value: "Discord",
+    accent: "blue",
+    icon: MessageCircle,
+    href: "https://discord.gg/suzHfJnpw",
+  },
 ];
 
 export const metadata: Metadata = {
@@ -260,9 +268,8 @@ export default function ProjectsPage() {
           <div className={styles.heroPanel} aria-label="Projects summary">
             {highlights.map((item) => {
               const Icon = item.icon;
-
-              return (
-                <div className={styles.metricTile} data-accent={item.accent} key={item.label}>
+              const content = (
+                <>
                   <div className={styles.metricTop}>
                     <span className={styles.metricIconFrame}>
                       <Icon className={styles.metricIcon} strokeWidth={1.8} aria-hidden="true" />
@@ -270,6 +277,27 @@ export default function ProjectsPage() {
                     <span className={styles.metricValue}>{item.value}</span>
                   </div>
                   <span className={styles.metricLabel}>{item.label}</span>
+                </>
+              );
+
+              if (item.href) {
+                return (
+                  <a
+                    className={styles.metricTile}
+                    data-accent={item.accent}
+                    href={item.href}
+                    key={item.label}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {content}
+                  </a>
+                );
+              }
+
+              return (
+                <div className={styles.metricTile} data-accent={item.accent} key={item.label}>
+                  {content}
                 </div>
               );
             })}
