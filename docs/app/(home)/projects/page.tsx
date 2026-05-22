@@ -202,7 +202,7 @@ const highlights = [
     accent: "purple",
     icon: Users,
   },
-  { label: "Projects", value: projects.length.toString(), accent: "slate", icon: Boxes },
+  { label: "Featured projects", value: projects.length.toString(), accent: "slate", icon: Boxes },
   {
     label: "Discord",
     value: "Share your projects with the community",
