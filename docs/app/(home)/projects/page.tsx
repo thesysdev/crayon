@@ -63,7 +63,7 @@ const projects: ProjectItem[] = [
         href: "https://openwebui.com/posts/generative_ui_plugin_for_open_webui_6c017d62",
         external: true,
       },
-      { label: "Open WebUI", href: "https://openwebui.com", external: true },
+      { label: "Open WebUI", href: "https://github.com/open-webui/open-webui", external: true },
     ],
   },
   {
@@ -112,7 +112,7 @@ const projects: ProjectItem[] = [
     accent: "orange",
     icon: Sparkles,
     links: [
-      { label: "Website", href: "/openclaw-os" },
+      { label: "Website", href: "/openclaw-os", external: true },
       {
         label: "GitHub",
         href: "https://github.com/thesysdev/openclaw-os/tree/main/packages/claw-plugin",
@@ -180,7 +180,7 @@ const projects: ProjectItem[] = [
     accent: "slate",
     icon: MonitorSmartphone,
     links: [
-      { label: "Docs", href: "/docs/openui-lang/examples/react-native" },
+      { label: "Docs", href: "/docs/openui-lang/examples/react-native", external: true },
       {
         label: "GitHub",
         href: "https://github.com/thesysdev/openui/tree/main/examples/openui-react-native",
