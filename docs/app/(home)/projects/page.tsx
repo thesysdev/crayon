@@ -1,5 +1,7 @@
 import {
+  BadgeCheck,
   Bot,
+  Boxes,
   Code2,
   ExternalLink,
   Github,
@@ -7,6 +9,7 @@ import {
   Package,
   PlugZap,
   Sparkles,
+  Users,
   Wrench,
 } from "lucide-react";
 import type { Metadata } from "next";
@@ -193,13 +196,17 @@ const projects: ProjectItem[] = [
 
 const highlights = [
   {
-    label: "Community contributions",
+    label: "Community",
     value: projects.filter((item) => item.status === "Community").length.toString(),
+    accent: "purple",
+    icon: Users,
   },
-  { label: "Projects", value: projects.length.toString() },
+  { label: "Projects", value: projects.length.toString(), accent: "slate", icon: Boxes },
   {
-    label: "Official projects",
+    label: "Official",
     value: projects.filter((item) => item.status === "Official").length.toString(),
+    accent: "blue",
+    icon: BadgeCheck,
   },
 ];
 
@@ -258,12 +265,21 @@ export default function ProjectsPage() {
           </div>
 
           <div className={styles.heroPanel} aria-label="Projects summary">
-            {highlights.map((item) => (
-              <div className={styles.metricTile} key={item.label}>
-                <span className={styles.metricLabel}>{item.label}</span>
-                <span className={styles.metricValue}>{item.value}</span>
-              </div>
-            ))}
+            {highlights.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <div className={styles.metricTile} data-accent={item.accent} key={item.label}>
+                  <div className={styles.metricTop}>
+                    <span className={styles.metricIconFrame}>
+                      <Icon className={styles.metricIcon} strokeWidth={1.8} aria-hidden="true" />
+                    </span>
+                    <span className={styles.metricValue}>{item.value}</span>
+                  </div>
+                  <span className={styles.metricLabel}>{item.label}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
