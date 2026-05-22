@@ -130,11 +130,6 @@ const projects: ProjectItem[] = [
     icon: Package,
     links: [
       {
-        label: "GitHub",
-        href: "https://github.com/vishxrad/openui-plotly",
-        external: true,
-      },
-      {
         label: "npm",
         href: "https://www.npmjs.com/package/@vishxrad/openui-plotly?activeTab=readme",
         external: true,
