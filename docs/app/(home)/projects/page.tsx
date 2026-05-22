@@ -197,7 +197,7 @@ const projects: ProjectItem[] = [
 
 const highlights = [
   {
-    label: "Community",
+    label: "Community projects",
     value: projects.filter((item) => item.status === "Community").length.toString(),
     accent: "purple",
     icon: Users,
