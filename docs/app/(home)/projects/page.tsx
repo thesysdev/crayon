@@ -1,5 +1,4 @@
 import {
-  BadgeCheck,
   Bot,
   Boxes,
   Code2,
@@ -202,12 +201,6 @@ const highlights = [
     icon: Users,
   },
   { label: "Projects", value: projects.length.toString(), accent: "slate", icon: Boxes },
-  {
-    label: "Official",
-    value: projects.filter((item) => item.status === "Official").length.toString(),
-    accent: "blue",
-    icon: BadgeCheck,
-  },
 ];
 
 export const metadata: Metadata = {
