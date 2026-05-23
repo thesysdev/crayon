@@ -121,7 +121,7 @@ OpenUI Lang is designed for model-generated UI that needs to be both structured 
 Measured with `tiktoken` (GPT-5 encoder). OpenUI Lang vs two JSON-based streaming formats across seven UI scenarios:
 
 | Scenario           | Vercel JSON-Render | Thesys C1 JSON | OpenUI Lang |  vs Vercel |      vs C1 |
-|--------------------|-------------------:|---------------:|------------:|-----------:|-----------:|
+| ------------------ | -----------------: | -------------: | ----------: | ---------: | ---------: |
 | simple-table       |                340 |            357 |         148 |     -56.5% |     -58.5% |
 | chart-with-data    |                520 |            516 |         231 |     -55.6% |     -55.2% |
 | contact-form       |                893 |            849 |         294 |     -67.1% |     -65.4% |
