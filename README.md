@@ -95,13 +95,13 @@ Try it yourself in the [Playground](https://www.openui.com/playground): generate
 
 ## Packages
 
-| Package                                                                                                    | Description                                                              |
-|:-----------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------|
-| [`@openuidev/react-lang`](./packages/react-lang)                                                           | Core runtime: component definitions, parser, renderer, prompt generation |
-| [`@openuidev/react-headless`](./packages/react-headless)                                                   | Headless chat state, streaming adapters, message format converters       |
-| [`@openuidev/react-ui`](./packages/react-ui)                                                               | Prebuilt chat layouts and two built-in component libraries               |
-| [`@openuidev/cli`](./packages/openui-cli)                                                                  | CLI for scaffolding apps and generating system prompts                   |
-| [`@openuidev/openclaw-os-plugin`](https://github.com/thesysdev/openclaw-os/tree/main/packages/claw-plugin) | OpenClaw OS plugin for serving OpenUI-powered OpenClaw workspaces        |
+| Package | Description |
+| :--- | :--- |
+| [`@openuidev/react-lang`](./packages/react-lang) | Core runtime: component definitions, parser, renderer, prompt generation |
+| [`@openuidev/react-headless`](./packages/react-headless) | Headless chat state, streaming adapters, message format converters |
+| [`@openuidev/react-ui`](./packages/react-ui) | Prebuilt chat layouts and two built-in component libraries |
+| [`@openuidev/cli`](./packages/openui-cli) | CLI for scaffolding apps and generating system prompts |
+| [`@openuidev/openclaw-os-plugin`](https://github.com/thesysdev/openclaw-os/tree/main/packages/claw-plugin) | OpenClaw OS plugin for serving OpenUI-powered OpenClaw workspaces | 
 
 ```bash
 npm install @openuidev/react-lang @openuidev/react-ui
@@ -121,7 +121,7 @@ OpenUI Lang is designed for model-generated UI that needs to be both structured 
 Measured with `tiktoken` (GPT-5 encoder). OpenUI Lang vs two JSON-based streaming formats across seven UI scenarios:
 
 | Scenario           | Vercel JSON-Render | Thesys C1 JSON | OpenUI Lang |  vs Vercel |      vs C1 |
-|--------------------|-------------------:|---------------:|------------:|-----------:|-----------:|
+| ------------------ | -----------------: | -------------: | ----------: | ---------: | ---------: |
 | simple-table       |                340 |            357 |         148 |     -56.5% |     -58.5% |
 | chart-with-data    |                520 |            516 |         231 |     -55.6% |     -55.2% |
 | contact-form       |                893 |            849 |         294 |     -67.1% |     -65.4% |
@@ -168,7 +168,7 @@ Good places to start:
 ## How OpenUI compares
 
 | Feature                | OpenUI | json-render (Vercel) | A2UI (Google) | CopilotKit OpenGenUI |
-|------------------------|-------:|---------------------:|--------------:|---------------------:|
+| ---------------------- | -----: | -------------------: | ------------: | -------------------: |
 | Tokens                 |     1x |                   3x |            3x |                   4x |
 | Latency (60 tok/s)     |   4.9s |                14.2s |         14.2s |                 ~20s |
 | Streaming              |    Yes |                  Yes |           Yes |              Partial |
