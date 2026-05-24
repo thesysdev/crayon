@@ -1,0 +1,395 @@
+import {
+  Bot,
+  Boxes,
+  Code2,
+  ExternalLink,
+  Github,
+  MonitorSmartphone,
+  Package,
+  PlugZap,
+  Sparkles,
+  Users,
+  Wrench,
+} from "lucide-react";
+import type { Metadata } from "next";
+import type { ComponentType } from "react";
+import { PillLink } from "../components/Button/Button";
+import { Footer } from "../sections/Footer/Footer";
+import styles from "./page.module.css";
+
+type ProjectStatus = "Official" | "Community";
+
+interface ProjectLink {
+  label: string;
+  href: string;
+  external?: boolean;
+}
+
+interface ProjectItem {
+  name: string;
+  description: string;
+  type: string;
+  status: ProjectStatus;
+  accent: "blue" | "green" | "purple" | "orange" | "slate";
+  icon: ComponentType<{ className?: string; strokeWidth?: number }>;
+  links: ProjectLink[];
+}
+
+const projects: ProjectItem[] = [
+  {
+    name: "OpenUI Forge",
+    description:
+      "A coding-assistant toolkit for generating and wiring OpenUI integrations across common AI stacks.",
+    type: "Tool",
+    status: "Community",
+    accent: "purple",
+    icon: Wrench,
+    links: [
+      { label: "GitHub", href: "https://github.com/OthmanAdi/openui-forge", external: true },
+      { label: "Website", href: "https://spruce-prism-8yya.here.now/", external: true },
+    ],
+  },
+  {
+    name: "Open WebUI Plugin",
+    description: "Bring OpenUI-rendered interactive responses into Open WebUI chat workflows.",
+    type: "Plugin",
+    status: "Community",
+    accent: "blue",
+    icon: PlugZap,
+    links: [
+      { label: "GitHub", href: "https://github.com/thesysdev/openwebui-plugin", external: true },
+      {
+        label: "Guide",
+        href: "https://openwebui.com/posts/generative_ui_plugin_for_open_webui_6c017d62",
+        external: true,
+      },
+      { label: "Open WebUI", href: "https://github.com/open-webui/open-webui", external: true },
+    ],
+  },
+  {
+    name: "Ollama Integration",
+    description:
+      "Use OpenUI with local Ollama models through an OpenAI-compatible route or an Open WebUI workflow.",
+    type: "Provider",
+    status: "Community",
+    accent: "green",
+    icon: Bot,
+    links: [
+      {
+        label: "Article",
+        href: "https://dev.to/shogun444/i-tested-openui-with-ollama-models-heres-what-actually-worked-45m7",
+        external: true,
+      },
+      { label: "Ollama", href: "https://ollama.com", external: true },
+    ],
+  },
+  {
+    name: "Genui VS Code Extension",
+    description:
+      "Preview '.openui' files live in VS Code and Open VSX-compatible editors while agents write OpenUI Lang.",
+    type: "Extension",
+    status: "Community",
+    accent: "blue",
+    icon: Code2,
+    links: [
+      {
+        label: "VS Code",
+        href: "https://marketplace.visualstudio.com/items?itemName=Ginaphi.generative-ui",
+        external: true,
+      },
+      {
+        label: "Open VSX",
+        href: "https://open-vsx.org/extension/ginaphi/generative-ui",
+        external: true,
+      },
+    ],
+  },
+  {
+    name: "OpenClaw OS Plugin",
+    description: "Use OpenUI inside OpenClaw OS through the external OpenClaw plugin package.",
+    type: "Plugin",
+    status: "Official",
+    accent: "orange",
+    icon: Sparkles,
+    links: [
+      {
+        label: "GitHub",
+        href: "https://github.com/thesysdev/openclaw-os/tree/main/packages/claw-plugin",
+        external: true,
+      },
+      { label: "Website", href: "/openclaw-os", external: true },
+    ],
+  },
+  {
+    name: "OpenUI Plotly",
+    description:
+      "Scaffold a Next.js generative UI chat with typed Plotly chart components for data-heavy responses.",
+    type: "Package",
+    status: "Community",
+    accent: "purple",
+    icon: Package,
+    links: [
+      {
+        label: "npm",
+        href: "https://www.npmjs.com/package/@vishxrad/openui-plotly?activeTab=readme",
+        external: true,
+      },
+    ],
+  },
+  {
+    name: "Vue Lang",
+    description: "Define OpenUI component libraries and render OpenUI Lang responses in Vue 3.",
+    type: "Framework",
+    status: "Official",
+    accent: "green",
+    icon: Code2,
+    links: [
+      {
+        label: "GitHub",
+        href: "https://github.com/thesysdev/openui/tree/main/packages/vue-lang",
+        external: true,
+      },
+      { label: "npm", href: "https://www.npmjs.com/package/@openuidev/vue-lang", external: true },
+    ],
+  },
+  {
+    name: "Svelte Lang",
+    description: "Define OpenUI component libraries and render OpenUI Lang responses in Svelte 5.",
+    type: "Framework",
+    status: "Official",
+    accent: "orange",
+    icon: Code2,
+    links: [
+      {
+        label: "GitHub",
+        href: "https://github.com/thesysdev/openui/tree/main/packages/svelte-lang",
+        external: true,
+      },
+      {
+        label: "npm",
+        href: "https://www.npmjs.com/package/@openuidev/svelte-lang",
+        external: true,
+      },
+    ],
+  },
+  {
+    name: "React Native Example",
+    description: "A mobile chat example showing OpenUI rendered in a React Native application.",
+    type: "Example",
+    status: "Official",
+    accent: "slate",
+    icon: MonitorSmartphone,
+    links: [
+      {
+        label: "GitHub",
+        href: "https://github.com/thesysdev/openui/tree/main/examples/openui-react-native",
+        external: true,
+      },
+      { label: "Docs", href: "/docs/openui-lang/examples/react-native", external: true },
+    ],
+  },
+];
+
+const highlights = [
+  {
+    label: "Community projects",
+    value: projects.filter((item) => item.status === "Community").length.toString(),
+    accent: "purple",
+    icon: Users,
+  },
+  { label: "Featured projects", value: projects.length.toString(), accent: "slate", icon: Boxes },
+  {
+    label: "Discord",
+    value: "Share your projects with the community",
+    accent: "blue",
+    icon: DiscordIcon,
+    kind: "cta",
+    href: "https://discord.gg/suzHfJnpw",
+  },
+];
+
+export const metadata: Metadata = {
+  title: "OpenUI Projects",
+  description: "Official and community projects built around OpenUI.",
+  alternates: { canonical: "/projects" },
+  openGraph: {
+    title: "OpenUI Projects",
+    description: "Discover official and community projects built around OpenUI.",
+    url: "/projects",
+    type: "website",
+  },
+  twitter: {
+    title: "OpenUI Projects",
+    description: "Discover official and community projects built around OpenUI.",
+    card: "summary_large_image",
+  },
+};
+
+function ExternalIndicator({ external }: { external?: boolean }) {
+  if (!external) return null;
+  return <ExternalLink className={styles.linkIcon} strokeWidth={1.8} aria-hidden="true" />;
+}
+
+function LinkIcon({ label }: { label: string }) {
+  if (label === "GitHub") {
+    return <Github className={styles.linkIcon} strokeWidth={1.8} aria-hidden="true" />;
+  }
+
+  return <ExternalIndicator external />;
+}
+
+function DiscordIcon({ className }: { className?: string; strokeWidth?: number }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+    </svg>
+  );
+}
+
+export default function ProjectsPage() {
+  return (
+    <main className={styles.page}>
+      <section className={styles.heroSection}>
+        <div className={styles.heroInner}>
+          <div className={styles.heroCopy}>
+            <div className={styles.eyebrow}>OpenUI projects</div>
+            <h1 className={styles.title}>OpenUI Projects</h1>
+            <p className={styles.subtitle}>
+              Official and community projects that extend OpenUI across plugins, framework packages,
+              local-model workflows, editor tools, and starter examples.
+            </p>
+            <div className={styles.heroActions}>
+              <PillLink
+                className={styles.primaryAction}
+                href="https://github.com/thesysdev/openui/issues"
+                external
+              >
+                Submit a project
+                <ExternalLink className={styles.actionIcon} strokeWidth={1.8} aria-hidden="true" />
+              </PillLink>
+            </div>
+          </div>
+
+          <div className={styles.heroPanel} aria-label="Projects summary">
+            {highlights.map((item) => {
+              const Icon = item.icon;
+              const content = (
+                <>
+                  <div className={styles.metricTop}>
+                    <span className={styles.metricIconFrame}>
+                      <Icon className={styles.metricIcon} strokeWidth={1.8} aria-hidden="true" />
+                    </span>
+                    <span className={styles.metricValue}>{item.value}</span>
+                  </div>
+                  <span className={styles.metricLabel}>{item.label}</span>
+                </>
+              );
+
+              if (item.href) {
+                return (
+                  <a
+                    className={styles.metricTile}
+                    data-accent={item.accent}
+                    data-kind={item.kind}
+                    href={item.href}
+                    key={item.label}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {content}
+                  </a>
+                );
+              }
+
+              return (
+                <div
+                  className={styles.metricTile}
+                  data-accent={item.accent}
+                  data-kind={item.kind}
+                  key={item.label}
+                >
+                  {content}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.directorySection} id="directory">
+        <div className={styles.sectionHeader}>
+          <div>
+            <p className={styles.sectionKicker}>Directory</p>
+            <h2 className={styles.sectionTitle}>Featured projects</h2>
+          </div>
+          <p className={styles.sectionDescription}>
+            A curated starting point for projects that extend OpenUI beyond the core SDK.
+          </p>
+        </div>
+
+        <div className={styles.grid}>
+          {projects.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <article className={styles.card} data-accent={item.accent} key={item.name}>
+                <div className={styles.cardTop}>
+                  <div className={styles.iconFrame}>
+                    <Icon className={styles.cardIcon} strokeWidth={1.8} aria-hidden="true" />
+                  </div>
+                  <div className={styles.tags}>
+                    <span className={styles.statusTag} data-status={item.status}>
+                      {item.status}
+                    </span>
+                    <span className={styles.typeTag}>{item.type}</span>
+                  </div>
+                </div>
+                <h3 className={styles.cardTitle}>{item.name}</h3>
+                <p className={styles.cardDescription}>{item.description}</p>
+                <div className={styles.cardLinks}>
+                  {item.links.map((link) => (
+                    <a
+                      className={styles.cardLink}
+                      href={link.href}
+                      key={`${item.name}-${link.label}`}
+                      {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    >
+                      {link.label === "GitHub" ? (
+                        <LinkIcon label={link.label} />
+                      ) : (
+                        <ExternalIndicator external={link.external} />
+                      )}
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className={styles.submitSection}>
+        <div className={styles.submitCopy}>
+          <p className={styles.sectionKicker}>Contribute</p>
+          <h2 className={styles.sectionTitle}>Add your project</h2>
+          <p className={styles.sectionDescription}>
+            Open an issue or PR with the package link, a short description, install steps,
+            maintainer contact, license, and whether it is official, community-maintained, or
+            experimental.
+          </p>
+        </div>
+        <PillLink
+          className={styles.primaryAction}
+          href="https://github.com/thesysdev/openui/issues"
+          external
+        >
+          Submit a project
+          <ExternalLink className={styles.actionIcon} strokeWidth={1.8} aria-hidden="true" />
+        </PillLink>
+      </section>
+
+      <Footer />
+    </main>
+  );
+}

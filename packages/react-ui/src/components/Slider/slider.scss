@@ -1,0 +1,265 @@
+@use "../../cssUtils" as cssUtils;
+
+// ─── Base Slider ────────────────────────────────────────────────────────────
+
+.openui-slider {
+  &-wrapper {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-s;
+    width: 100%;
+  }
+
+  &-left-content,
+  &-right-content {
+    display: flex;
+    align-items: center;
+    min-width: fit-content;
+    color: cssUtils.$text-neutral-primary;
+    @include cssUtils.typography(label, small);
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &-container {
+    padding: 0 10px;
+    background-color: cssUtils.$sunk;
+    height: 10px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: cssUtils.$radius-s;
+  }
+
+  &-root {
+    position: relative;
+    display: flex;
+    height: 20px;
+    width: 100%;
+    min-width: 100px;
+    max-width: 100%;
+    touch-action: none;
+    user-select: none;
+    align-items: center;
+  }
+
+  &-track {
+    position: relative;
+    height: 10px;
+    flex-grow: 1;
+    border-radius: cssUtils.$radius-full;
+  }
+
+  &-range {
+    position: absolute;
+    height: 100%;
+    border-radius: cssUtils.$radius-s;
+    background-color: cssUtils.$interactive-accent-default;
+    margin-left: -10px;
+    margin-right: -8px;
+
+    &--at-min {
+      background-color: transparent;
+    }
+  }
+
+  &-thumb {
+    outline: none;
+
+    &-handle {
+      display: block;
+      width: 20px;
+      height: 20px;
+      border-radius: cssUtils.$radius-s;
+      outline: 1px solid cssUtils.$border-default;
+      background-color: cssUtils.$foreground;
+      overflow: hidden;
+      box-shadow: cssUtils.$shadow-s;
+
+      &-inner {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        background-color: cssUtils.$foreground;
+        transition: background-color 0.2s;
+
+        &:hover {
+          background-color: cssUtils.$sunk;
+        }
+
+        &-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: cssUtils.$radius-3xs;
+          background-color: cssUtils.$interactive-accent-default;
+        }
+      }
+    }
+
+    &-value {
+      @include cssUtils.typography(label, small);
+      position: absolute;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: cssUtils.$foreground;
+      color: cssUtils.$text-neutral-primary;
+      padding: cssUtils.$space-2xs;
+      border-radius: cssUtils.$radius-s;
+      box-shadow: cssUtils.$shadow-s;
+      opacity: 0;
+      transition: opacity 0.2s;
+      border: 1px solid cssUtils.$border-interactive;
+
+      .openui-slider-thumb-handle:hover &,
+      .openui-slider-thumb-handle:focus & {
+        opacity: 1;
+      }
+    }
+  }
+
+  &-dots {
+    &-dot {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 4px;
+      height: 4px;
+      border-radius: cssUtils.$radius-full;
+      background-color: cssUtils.$text-neutral-tertiary;
+
+      &--active {
+        background-color: cssUtils.$foreground;
+      }
+    }
+  }
+
+  &-container-wrapper {
+    width: 100%;
+  }
+
+  &-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: cssUtils.$space-s;
+    color: cssUtils.$text-neutral-secondary;
+    @include cssUtils.typography(label, small);
+    padding: 0 cssUtils.$space-2xs;
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+// ─── Slider Block ───────────────────────────────────────────────────────────
+
+.openui-slider-block {
+  width: 100%;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: calc(cssUtils.$space-s + cssUtils.$space-xs);
+
+    &--with-error {
+      align-items: flex-start;
+      margin-bottom: cssUtils.$space-s;
+    }
+  }
+
+  &__label {
+    @include cssUtils.typography(label, default);
+    color: cssUtils.$text-neutral-primary;
+    padding-top: cssUtils.$space-xs;
+  }
+
+  &__controls {
+    display: flex;
+    gap: cssUtils.$space-xs;
+    position: relative;
+    flex-direction: column;
+    align-items: flex-end;
+
+    input,
+    button {
+      height: 36px;
+    }
+
+    &.is-range {
+      .openui-slider-block__validated-input input {
+        width: 64px;
+      }
+
+      button {
+        width: 80px;
+      }
+    }
+
+    &.is-single {
+      .openui-slider-block__validated-input input {
+        width: 80px;
+      }
+
+      button {
+        width: 100px;
+      }
+    }
+  }
+
+  &__content {
+    display: flex;
+    align-items: center;
+  }
+
+  &__validated-input-container {
+    display: flex;
+    gap: cssUtils.$space-xs;
+    align-items: center;
+  }
+
+  &__validated-select-container {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-xs;
+  }
+
+  &__validated-input {
+    position: relative;
+
+    .openui-slider-block__input-error {
+      border-color: cssUtils.$border-danger-emphasis !important;
+    }
+  }
+
+  &__input {
+    text-align: right !important;
+    padding-left: cssUtils.$space-s !important;
+    padding-right: cssUtils.$space-s !important;
+  }
+
+  &__error-message {
+    display: flex;
+    gap: cssUtils.$space-2xs;
+    align-items: center;
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-danger-primary;
+    white-space: nowrap;
+    padding-right: cssUtils.$space-2xs;
+  }
+
+  &__separator {
+    width: 8px;
+    height: 2px;
+    background-color: cssUtils.$text-neutral-secondary;
+    flex-shrink: 0;
+  }
+}
