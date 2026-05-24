@@ -1,0 +1,62 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-input {
+  @include cssUtils.typography(body, default);
+  border: 1px solid cssUtils.$border-interactive;
+  border-radius: cssUtils.$radius-l;
+  box-sizing: border-box;
+  width: 100%;
+  gap: cssUtils.$space-xs;
+  background-color: cssUtils.$highlight-subtle;
+  color: cssUtils.$text-neutral-primary;
+  transition:
+    box-shadow 0.16s ease,
+    border-color 0.16s ease,
+    background-color 0.16s ease;
+
+  &-small {
+    border-radius: calc(cssUtils.$radius-m - 1px);
+    padding: calc(cssUtils.$space-2xs - 1px) cssUtils.$space-s;
+  }
+
+  &-medium {
+    border-radius: cssUtils.$radius-m;
+    padding: calc(cssUtils.$space-xs - 1px) calc(cssUtils.$space-m - 1px);
+  }
+
+  &-large {
+    padding: calc(cssUtils.$space-s - 1px) cssUtils.$space-m;
+  }
+  &::placeholder {
+    color: cssUtils.$text-neutral-secondary;
+  }
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2.5px cssUtils.$border-default;
+  }
+
+  &:not(.openui-input-error):focus {
+    border-color: cssUtils.$border-interactive-emphasis;
+  }
+
+  &:disabled {
+    background-color: cssUtils.$sunk;
+    border: 1px solid cssUtils.$border-default;
+    cursor: not-allowed;
+    color: cssUtils.$text-neutral-tertiary;
+  }
+
+  &:not(:focus):not(:disabled):not(.openui-input-error):hover {
+    border-color: cssUtils.$border-interactive;
+  }
+
+  &-error {
+    border-color: cssUtils.$border-danger-emphasis;
+    box-shadow: 0 0 0 2.5px cssUtils.$border-danger;
+
+    &:focus {
+      border-color: cssUtils.$border-danger-emphasis;
+      box-shadow: 0 0 0 2.5px cssUtils.$border-danger;
+    }
+  }
+}

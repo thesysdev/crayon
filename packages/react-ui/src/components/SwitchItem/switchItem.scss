@@ -1,0 +1,77 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-switch-item-container {
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  gap: cssUtils.$space-s;
+  max-width: 100%;
+  width: 100%;
+  overflow: hidden;
+  padding: cssUtils.$space-3xs cssUtils.$space-000;
+}
+
+.openui-switch-item-root {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  height: 16px;
+  width: 24px;
+  margin-top: cssUtils.$space-2xs;
+  cursor: pointer;
+  border-radius: cssUtils.$radius-full;
+  padding: cssUtils.$space-3xs;
+  border: 1px solid cssUtils.$border-default;
+  background-color: cssUtils.$sunk;
+  transition-property: background-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+
+  &:not([data-disabled], [data-state="checked"]):hover {
+    border: 1px solid cssUtils.$border-interactive;
+  }
+
+  &[data-state="checked"] {
+    background-color: cssUtils.$interactive-accent-default;
+    border: 1px solid cssUtils.$border-accent;
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.openui-switch-item-thumb {
+  position: absolute;
+  display: block;
+  height: 10px;
+  width: 10px;
+  border-radius: cssUtils.$radius-full;
+  border: none;
+  background-color: cssUtils.$foreground;
+  transform: translateY(-50%) translateX(0px);
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  box-shadow: cssUtils.$shadow-s;
+
+  &[data-state="checked"] {
+    transform: translateY(-50%) translateX(8px);
+    border-color: cssUtils.$border-interactive;
+  }
+}
+
+.openui-switch-item-label {
+  flex: 1;
+  @include cssUtils.typography(primary, default);
+  color: cssUtils.$text-neutral-primary;
+  &:disabled {
+    color: cssUtils.$text-neutral-tertiary;
+  }
+}
+
+.openui-switch-item-description {
+  @include cssUtils.typography(body, default);
+  color: cssUtils.$text-neutral-secondary;
+}

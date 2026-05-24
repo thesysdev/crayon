@@ -1,0 +1,228 @@
+@use "../../cssUtils" as cssUtils;
+
+// ── "Behind the scenes" wrapper ──
+
+.openui-behind-the-scenes {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: cssUtils.$space-m;
+  width: 100%;
+
+  &__toggle {
+    @include cssUtils.button-reset;
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-m;
+    padding: cssUtils.$space-2xs cssUtils.$space-s;
+    border-radius: cssUtils.$radius-m;
+    @include cssUtils.typography(label, small-heavy);
+    color: cssUtils.$text-neutral-primary;
+    cursor: pointer;
+    background-color: transparent;
+
+    &:not(:disabled):hover {
+      background-color: cssUtils.$sunk;
+    }
+
+    &:not(:disabled):active {
+      background-color: cssUtils.$sunk;
+    }
+  }
+
+  &__toggle-icon {
+    flex-shrink: 0;
+    color: cssUtils.$text-neutral-secondary;
+    transition: transform 0.2s ease;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+}
+
+// ── Timeline item (each tool call) ──
+
+.openui-tool-call {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-left: cssUtils.$space-l;
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-m;
+    color: cssUtils.$text-neutral-secondary;
+  }
+
+  &__icon-wrapper {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    color: cssUtils.$text-neutral-secondary;
+  }
+
+  &__icon--blinking {
+    animation: openui-tool-call-icon-blink 1.5s ease-in-out infinite;
+  }
+
+  &__name {
+    @include cssUtils.typography(body, default);
+    color: cssUtils.$text-neutral-primary;
+    -webkit-text-fill-color: currentColor;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__name--shimmer {
+    display: inline-block;
+    background-image:
+      linear-gradient(
+        90deg,
+        transparent calc(50% - 50px),
+        cssUtils.$text-neutral-primary,
+        transparent calc(50% + 50px)
+      ),
+      linear-gradient(cssUtils.$text-neutral-secondary, cssUtils.$text-neutral-secondary);
+    background-size:
+      250% 100%,
+      auto;
+    background-repeat: no-repeat, padding-box;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: cssUtils.$text-neutral-primary;
+    background-clip: text;
+    animation: openui-tool-code-shimmer 2s linear infinite;
+  }
+
+  &__connector {
+    display: flex;
+    gap: cssUtils.$space-m;
+    padding: cssUtils.$space-s-m cssUtils.$space-s;
+    padding-right: 0;
+    min-height: 20px;
+
+    // 6px offset = half of 14px icon - half of 1px border
+    margin-left: 6px;
+    border-left: 1px solid cssUtils.$border-interactive;
+  }
+
+  &__connector--last {
+    border-left-color: transparent;
+  }
+
+  &__args-block {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-xs;
+    padding-left: cssUtils.$space-m;
+    width: 100%;
+  }
+}
+
+// ── Expandable code block (request / response) ──
+
+.openui-tool-code-block {
+  border: 1px solid cssUtils.$border-interactive;
+  border-radius: cssUtils.$radius-m;
+  overflow: hidden;
+  width: 100%;
+  background-color: cssUtils.$foreground;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: cssUtils.$border-interactive-emphasis;
+  }
+
+  &__header {
+    @include cssUtils.button-reset;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: cssUtils.$space-s;
+    cursor: pointer;
+    background-color: transparent;
+  }
+
+  &__label {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-neutral-secondary;
+    -webkit-text-fill-color: currentColor;
+  }
+
+  &__label--loading {
+    @include cssUtils.typography(label, small);
+    display: inline-block;
+    background-image:
+      linear-gradient(
+        90deg,
+        transparent calc(50% - 40px),
+        cssUtils.$text-neutral-primary,
+        transparent calc(50% + 40px)
+      ),
+      linear-gradient(cssUtils.$text-neutral-secondary, cssUtils.$text-neutral-secondary);
+    background-size:
+      250% 100%,
+      auto;
+    background-repeat: no-repeat, padding-box;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: cssUtils.$text-neutral-primary;
+    background-clip: text;
+    animation: openui-tool-code-shimmer 2s linear infinite;
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    color: cssUtils.$text-neutral-secondary;
+    transition: transform 0.2s ease;
+  }
+
+  &__chevron--expanded {
+    transform: rotate(180deg);
+  }
+
+  &__content {
+    border-top: 1px solid cssUtils.$border-default;
+    max-height: 250px;
+    overflow: auto;
+    padding: cssUtils.$space-s cssUtils.$space-m;
+    background-color: transparent;
+  }
+
+  &__code {
+    @include cssUtils.typography(code, small);
+    color: cssUtils.$text-neutral-secondary;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+}
+
+@keyframes openui-tool-call-icon-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes openui-tool-code-shimmer {
+  0% {
+    background-position: 100% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
+}
