@@ -1,0 +1,191 @@
+.code-panel .panel-header {
+  background: var(--code-bg);
+  border-bottom: 1px solid var(--code-border);
+}
+
+/* ─── Tabs ───────────────────────────────────────────────────────────────────── */
+.code-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.code-tab {
+  background: transparent;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--code-text-tertiary);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.code-tab:hover {
+  color: var(--code-text-secondary);
+  background: var(--code-hover);
+}
+
+.code-tab.active {
+  color: var(--code-text);
+  background: var(--code-hover-strong);
+}
+
+/* ─── Token Count Badge (on tabs) ───────────────────────────────────────────── */
+.token-count {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--code-hover);
+  color: var(--code-text-tertiary);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.5;
+  font-family: var(--font-mono);
+}
+
+.code-tab.active .token-count {
+  background: var(--code-hover-strong);
+  color: var(--code-text-secondary);
+}
+
+/* ─── Tooltip ────────────────────────────────────────────────────────────────── */
+.code-panel [data-tooltip] {
+  position: relative;
+}
+
+.code-panel [data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--code-bg) 88%, var(--openui-foreground));
+  border: 1px solid var(--code-border);
+  color: var(--code-text-secondary);
+  font-size: 11px;
+  font-weight: 400;
+  font-family: var(--font-sans);
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  box-shadow: var(--openui-shadow-l);
+  z-index: 100;
+}
+
+.code-panel [data-tooltip]:hover::after {
+  opacity: 1;
+}
+
+/* ─── Token Saving Badge ─────────────────────────────────────────────────────── */
+.token-saving-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: var(--playground-success-tint);
+  border: 1px solid var(--playground-success-border);
+  color: var(--playground-success-text);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.code-panel .panel-title {
+  color: var(--code-text-secondary);
+}
+
+.code-panel .panel-icon-btn {
+  color: var(--code-text-tertiary);
+}
+
+.code-panel .panel-icon-btn:hover {
+  background: var(--code-hover);
+  color: var(--code-text);
+}
+
+.code-panel .empty-state {
+  color: var(--code-text-tertiary);
+}
+
+.code-body {
+  flex: 1;
+  overflow: auto;
+  background: var(--code-bg);
+}
+
+.code-pre {
+  padding: 20px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--code-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 100%;
+}
+
+/* ─── Status Dot ─────────────────────────────────────────────────────────────── */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.status-dot.streaming {
+  background: var(--openui-border-success-emphasis);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.status-dot.error {
+  background: var(--openui-border-danger-emphasis);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* ─── Streaming Cursor ──────────────────────────────────────────────────────── */
+.streaming-cursor::after {
+  content: "▋";
+  animation: blink 0.8s step-end infinite;
+  opacity: 0.7;
+  font-size: 0.85em;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0;
+  }
+}

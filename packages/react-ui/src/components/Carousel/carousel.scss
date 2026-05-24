@@ -1,0 +1,104 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-carousel {
+  position: relative;
+  display: flex;
+
+  &-content {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    gap: cssUtils.$space-m;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -ms-overflow-x: hidden;
+    scrollbar-width: none;
+
+    &.openui-carousel-content--mask-left.openui-carousel-content--mask-right {
+      mask-image: linear-gradient(
+        to right,
+        transparent,
+        black 40px,
+        black calc(100% - 40px),
+        transparent
+      );
+      -webkit-mask-image: linear-gradient(
+        to right,
+        transparent,
+        black 40px,
+        black calc(100% - 40px),
+        transparent
+      );
+    }
+
+    &.openui-carousel-content--mask-left:not(.openui-carousel-content--mask-right) {
+      mask-image: linear-gradient(to right, transparent, black 40px, black);
+      -webkit-mask-image: linear-gradient(to right, transparent, black 40px, black);
+    }
+
+    &.openui-carousel-content--mask-right:not(.openui-carousel-content--mask-left) {
+      mask-image: linear-gradient(to left, transparent, black 40px, black);
+      -webkit-mask-image: linear-gradient(to left, transparent, black 40px, black);
+    }
+
+    &-wrapper {
+      display: flex;
+      gap: cssUtils.$space-m;
+    }
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    & > * {
+      box-sizing: border-box;
+      scroll-snap-align: start;
+    }
+  }
+
+  &-item {
+    @include cssUtils.typography(body, default);
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-m;
+    width: 280px;
+    flex-shrink: 0;
+    border-radius: cssUtils.$radius-2xl;
+    background-color: cssUtils.$foreground;
+    padding: cssUtils.$space-m;
+    border: 1px solid cssUtils.$border-default;
+  }
+
+  &-button {
+    position: absolute;
+    top: 50%;
+    z-index: 10;
+    transform: translateY(-50%);
+    background: cssUtils.$foreground;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: cssUtils.$radius-s;
+
+    &-left {
+      left: -12px;
+    }
+
+    &-right {
+      right: -12px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .openui-carousel-item {
+      width: 248px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.openui-carousel--sunk {
+  .openui-carousel-item {
+    background-color: cssUtils.$highlight-subtle;
+  }
+}
