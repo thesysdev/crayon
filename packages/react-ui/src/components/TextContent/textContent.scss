@@ -1,0 +1,35 @@
+@use "../../cssUtils" as cssUtils;
+
+@mixin text-content-variants($variant) {
+  @if $variant == "sunk" {
+    padding: cssUtils.$space-m;
+    background: cssUtils.$sunk;
+    border-radius: cssUtils.$radius-m;
+    border-color: cssUtils.$border-default;
+  } @else if $variant == "card" {
+    padding: cssUtils.$space-m;
+    border-radius: cssUtils.$radius-m;
+    border-color: cssUtils.$border-default;
+  } @else if $variant == "clear" {
+    border-color: transparent;
+  }
+}
+
+.text-content {
+  box-sizing: border-box;
+  color: cssUtils.$text-neutral-primary;
+  @include cssUtils.typography(primary, default);
+  border: 1px solid;
+
+  &-sunk {
+    @include text-content-variants("sunk");
+  }
+
+  &-card {
+    @include text-content-variants("card");
+  }
+
+  &-clear {
+    @include text-content-variants("clear");
+  }
+}
