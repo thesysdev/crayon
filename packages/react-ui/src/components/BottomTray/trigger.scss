@@ -1,0 +1,47 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-bottom-tray-trigger {
+  position: fixed;
+  bottom: cssUtils.$space-l;
+  right: cssUtils.$space-l;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: cssUtils.$radius-full;
+  background: cssUtils.$inverted-background;
+  color: cssUtils.$text-accent-primary;
+  box-shadow: cssUtils.$shadow-xl;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  z-index: 1000;
+  overflow: hidden;
+
+  &:hover {
+    background: cssUtils.$interactive-accent-hover;
+    box-shadow: cssUtils.$shadow-2xl;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    scale: 0.95;
+  }
+
+  // Desktop open state - shrink the trigger
+  &--open {
+    transform: scale(0.85);
+  }
+
+  // Mobile
+  @media (max-width: 768px) {
+    bottom: cssUtils.$space-m;
+    right: cssUtils.$space-m;
+
+    // Hide trigger on mobile when tray is open (tray goes fullscreen)
+    &--open {
+      display: none;
+    }
+  }
+}

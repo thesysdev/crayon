@@ -1,0 +1,126 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.navLink {
+  font: var(--text-label-default);
+  color: var(--text-neutral-primary);
+  text-decoration: none;
+  padding: var(--space-2xs) 0;
+}
+
+.navLink:hover {
+  color: var(--text-accent-primary);
+}
+
+.navLinkDisabled {
+  font: var(--text-label-default);
+  color: var(--text-neutral-tertiary);
+  cursor: default;
+}
+
+/* Main two-column layout — no page scroll, both panels fixed height */
+.body {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: var(--space-l);
+  height: calc(100vh - 200px);
+  overflow: hidden;
+}
+
+/* Left: only this panel scrolls */
+.leftPanel {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-right: var(--space-2xs);
+}
+
+.leftPanel::-webkit-scrollbar {
+  display: none;
+}
+
+.stepList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+}
+
+.stepSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.stepHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: var(--radius-l);
+  background: transparent;
+  color: var(--text-neutral-primary);
+  padding: var(--space-s) var(--space-m);
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.stepHeader:hover {
+  background: var(--highlight-subtle);
+}
+
+.stepHeaderActive {
+  background: var(--highlight-subtle);
+  border-color: var(--border-default);
+}
+
+.stepLabel {
+  font: var(--text-label-sm);
+  color: var(--text-neutral-secondary);
+}
+
+.stepTitle {
+  font: var(--text-label-default);
+  color: var(--text-neutral-primary);
+}
+
+/* Right: fixed, does not scroll */
+.rightPanel {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-l);
+  background: var(--highlight-subtle);
+  overflow: hidden;
+  height: 100%;
+  margin-bottom: var(--space-l);
+}
+
+@media (max-width: 1024px) {
+  .body {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+  }
+
+  .leftPanel {
+    overflow: visible;
+    max-height: none;
+  }
+
+  .rightPanel {
+    height: 400px;
+  }
+}
