@@ -1,0 +1,333 @@
+---
+title: "@openuidev/react-lang"
+description: API reference for the OpenUI Lang runtime, library, parser, and renderer.
+---
+
+Use this package for OpenUI Lang authoring and rendering.
+
+## Import
+
+```ts
+import {
+  defineComponent,
+  createLibrary,
+  Renderer,
+  BuiltinActionType,
+  createParser,
+  createStreamingParser,
+} from "@openuidev/react-lang";
+```
+
+## `defineComponent(config)`
+
+Defines a single component with name, Zod schema, description, and React renderer. Returns a `DefinedComponent` with a `.ref` for cross-referencing in parent schemas.
+
+```ts
+function defineComponent<T extends z.ZodObject<any>>(config: {
+  name: string;
+  props: T;
+  description: string;
+  component: ComponentRenderer<z.infer<T>>;
+}): DefinedComponent<T>;
+```
+
+```ts
+interface DefinedComponent<T extends z.ZodObject<any> = z.ZodObject<any>> {
+  name: string;
+  props: T;
+  description: string;
+  component: ComponentRenderer<z.infer<T>>;
+  /** Use in parent schemas: `z.array(ChildComponent.ref)` */
+  ref: z.ZodType<SubComponentOf<z.infer<T>>>;
+}
+```
+
+## `createLibrary(input)`
+
+Creates a `Library` from an array of defined components.
+
+```ts
+function createLibrary(input: LibraryDefinition): Library;
+```
+
+Core types:
+
+```ts
+interface LibraryDefinition {
+  components: DefinedComponent[];
+  componentGroups?: ComponentGroup[];
+  root?: string;
+}
+
+interface ComponentGroup {
+  name: string;
+  components: string[];
+  notes?: string[];
+}
+
+interface Library {
+  readonly components: Record<string, DefinedComponent>;
+  readonly componentGroups: ComponentGroup[] | undefined;
+  readonly root: string | undefined;
+
+  prompt(options?: PromptOptions): string;
+  toJSONSchema(): object;
+  toSpec(): PromptSpec;
+}
+
+interface PromptOptions {
+  preamble?: string;
+  additionalRules?: string[];
+  examples?: string[];
+  toolExamples?: string[];
+  editMode?: boolean;
+  inlineMode?: boolean;
+  /** Enable Query(), Mutation(), @Run, built-in functions. Default: true if tools provided. */
+  toolCalls?: boolean;
+  /** Enable $variables, @Set, @Reset, built-in functions. Default: true if toolCalls. */
+  bindings?: boolean;
+}
+```
+
+## `<Renderer />`
+
+Parses OpenUI Lang text and renders nodes with your `Library`.
+
+```ts
+interface RendererProps {
+  response: string | null;
+  library: Library;
+  isStreaming?: boolean;
+  onAction?: (event: ActionEvent) => void;
+  onStateUpdate?: (state: Record<string, unknown>) => void;
+  initialState?: Record<string, any>;
+  onParseResult?: (result: ParseResult | null) => void;
+  toolProvider?:
+    | Record<string, (args: Record<string, unknown>) => Promise<unknown>>
+    | McpClientLike
+    | null;
+  queryLoader?: React.ReactNode;
+  onError?: (errors: OpenUIError[]) => void;
+}
+```
+
+## Tool Provider
+
+Handles `Query()` and `Mutation()` tool calls at runtime. The `toolProvider` prop accepts two forms:
+
+- **Function map** — `Record<string, (args) => Promise<unknown>>` — the simplest option
+- **MCP client** — any object implementing `callTool({ name, arguments })` (e.g. from `@modelcontextprotocol/sdk`)
+
+The Renderer detects which form was passed and normalizes internally.
+
+## Error types
+
+```ts
+type OpenUIErrorSource = "parser" | "runtime" | "query" | "mutation";
+
+interface OpenUIError {
+  source: OpenUIErrorSource;
+  code: string;
+  message: string;
+  statementId?: string;
+  component?: string;
+  path?: string;
+  hint?: string;
+}
+
+class ToolNotFoundError extends Error {
+  toolName: string;
+  availableTools: string[];
+}
+```
+
+Error codes: `unknown-component`, `missing-required`, `null-required`, `inline-reserved`, `tool-not-found`, `parse-failed`, `parse-exception`, `runtime-error`, `render-error`.
+
+## Actions
+
+```ts
+enum BuiltinActionType {
+  ContinueConversation = "continue_conversation",
+  OpenUrl = "open_url",
+}
+
+interface ActionEvent {
+  type: string;
+  params: Record<string, any>;
+  humanFriendlyMessage: string;
+  formState?: Record<string, any>;
+  formName?: string;
+}
+```
+
+Action steps (runtime types from the evaluator):
+
+```ts
+type ActionStep =
+  | { type: "run"; statementId: string; refType: "query" | "mutation" }
+  | { type: "continue_conversation"; message: string; context?: string }
+  | { type: "open_url"; url: string }
+  | { type: "set"; target: string; valueAST: ASTNode }
+  | { type: "reset"; targets: string[] };
+```
+
+| Step type                 | Triggered by          | Description                                                        |
+| ------------------------- | --------------------- | ------------------------------------------------------------------ |
+| `"run"`                   | `@Run(ref)`           | Execute a Mutation or re-fetch a Query. `refType` indicates which. |
+| `"set"`                   | `@Set($var, val)`     | Change a `$variable`. `valueAST` is evaluated at click time.       |
+| `"reset"`                 | `@Reset($a, $b)`      | Restore `$variables` to declared defaults.                         |
+| `"continue_conversation"` | `@ToAssistant("msg")` | Send message to LLM. Optional `context`.                           |
+| `"open_url"`              | `@OpenUrl("url")`     | Open URL in new tab.                                               |
+
+## Parser APIs
+
+Both `createParser` and `createStreamingParser` accept a `LibraryJSONSchema` (from `library.toJSONSchema()`).
+
+```ts
+interface LibraryJSONSchema {
+  $defs?: Record<
+    string,
+    {
+      properties?: Record<string, unknown>;
+      required?: string[];
+    }
+  >;
+}
+
+function createParser(schema: LibraryJSONSchema): Parser;
+function createStreamingParser(schema: LibraryJSONSchema): StreamParser;
+
+interface Parser {
+  parse(input: string): ParseResult;
+}
+
+interface StreamParser {
+  push(chunk: string): ParseResult;
+  getResult(): ParseResult;
+}
+```
+
+Core parsed types:
+
+```ts
+interface ElementNode {
+  type: "element";
+  typeName: string;
+  props: Record<string, unknown>;
+  partial: boolean;
+}
+
+/**
+ * Parser-level validation errors (schema mismatches).
+ */
+type ValidationErrorCode =
+  | "missing-required"
+  | "null-required"
+  | "unknown-component"
+  | "inline-reserved";
+
+interface ValidationError {
+  code: ValidationErrorCode;
+  component: string;
+  path: string;
+  message: string;
+  statementId?: string;
+}
+
+interface ParseResult {
+  root: ElementNode | null;
+  meta: {
+    incomplete: boolean;
+    /** References used but not yet defined (dropped as null in output). */
+    unresolved: string[];
+    /** Value statements defined but not reachable from root. Excludes $state, Query, and Mutation. */
+    orphaned: string[];
+    statementCount: number;
+    /**
+     * Validation errors:
+     * - "missing-required" — required prop not provided
+     * - "null-required" — required prop explicitly null
+     * - "unknown-component" — component not in library schema
+     * - "inline-reserved" — Query/Mutation used inline instead of top-level
+     * - "excess-args" — more positional args than schema params (extras dropped, component still renders)
+     */
+    errors: ValidationError[];
+  };
+  /** Extracted Query() statements with tool name, args AST, defaults AST */
+  queryStatements: QueryStatementInfo[];
+  /** Extracted Mutation() statements with tool name, args AST */
+  mutationStatements: MutationStatementInfo[];
+  /** Declared $variables with their default values */
+  stateDeclarations: Record<string, unknown>;
+}
+```
+
+## Context hooks (inside renderer components)
+
+```ts
+// Reactive state binding — preferred for form inputs and $variable-bound components
+function useStateField(
+  name: string,
+  value?: unknown,
+): {
+  value: unknown;
+  setValue: (value: unknown) => void;
+};
+
+function useRenderNode(): (value: unknown) => React.ReactNode;
+function useTriggerAction(): (
+  userMessage: string,
+  formName?: string,
+  action?: { type?: string; params?: Record<string, any> },
+) => void;
+function useIsStreaming(): boolean;
+function useIsQueryLoading(): boolean;
+function useGetFieldValue(): (formName: string | undefined, name: string) => any;
+function useSetFieldValue(): (
+  formName: string | undefined,
+  componentType: string | undefined,
+  name: string,
+  value: any,
+  shouldTriggerSaveCallback?: boolean,
+) => void;
+function useFormName(): string | undefined;
+function useSetDefaultValue(options: {
+  formName?: string;
+  componentType: string;
+  name: string;
+  existingValue: any;
+  defaultValue: any;
+  shouldTriggerSaveCallback?: boolean;
+}): void;
+```
+
+## Form validation APIs
+
+```ts
+interface FormValidationContextValue {
+  errors: Record<string, string | undefined>;
+  validateField: (name: string, value: unknown, rules: ParsedRule[]) => boolean;
+  registerField: (name: string, rules: ParsedRule[], getValue: () => unknown) => void;
+  unregisterField: (name: string) => void;
+  validateForm: () => boolean;
+  clearFieldError: (name: string) => void;
+}
+
+function useFormValidation(): FormValidationContextValue | null;
+function useCreateFormValidation(): FormValidationContextValue;
+function validate(
+  value: unknown,
+  rules: ParsedRule[],
+  customValidators?: Record<string, ValidatorFn>,
+): string | undefined;
+function parseRules(rules: unknown): ParsedRule[];
+function parseStructuredRules(rules: unknown): ParsedRule[];
+const builtInValidators: Record<string, ValidatorFn>;
+```
+
+Context providers for advanced usage:
+
+```ts
+const FormValidationContext: React.Context<FormValidationContextValue | null>;
+const FormNameContext: React.Context<string | undefined>;
+```

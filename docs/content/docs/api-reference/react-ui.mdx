@@ -1,0 +1,168 @@
+---
+title: "@openuidev/react-ui"
+description: API reference for prebuilt chat layouts and default component library exports.
+---
+
+Use this package for prebuilt chat UIs and default component library primitives.
+
+## Import
+
+```ts
+import { Copilot, FullScreen, BottomTray } from "@openuidev/react-ui";
+```
+
+## Layout components
+
+These layouts are documented in Chat UI guides and are all wrapped with `ChatProvider`.
+
+### `Copilot`
+
+Sidebar chat layout.
+
+```ts
+type CopilotProps = ChatLayoutProps;
+```
+
+### `FullScreen`
+
+Full-page chat layout with thread sidebar.
+
+```ts
+type FullScreenProps = ChatLayoutProps;
+```
+
+### `BottomTray`
+
+Floating/collapsible tray layout.
+
+```ts
+type BottomTrayProps = ChatLayoutProps & {
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
+  defaultOpen?: boolean;
+};
+```
+
+## Shared layout props (`ChatLayoutProps`)
+
+All three layouts accept:
+
+- Chat provider props: `apiUrl`/`processMessage`, thread APIs, `streamProtocol`, `messageFormat`
+- Shared UI props:
+  - `logoUrl?: string`
+  - `agentName?: string`
+  - `messageLoading?: React.ComponentType`
+  - `scrollVariant?: ScrollVariant`
+  - `isArtifactActive?: boolean`
+  - `renderArtifact?: () => React.ReactNode`
+  - `welcomeMessage?: WelcomeMessageConfig`
+  - `conversationStarters?: ConversationStartersConfig`
+  - `assistantMessage?: AssistantMessageComponent`
+  - `userMessage?: UserMessageComponent`
+  - `composer?: ComposerComponent`
+  - `componentLibrary?: Library` (from `@openuidev/react-lang`)
+- Theme wrapper props:
+  - `theme?: ThemeProps`
+  - `disableThemeProvider?: boolean`
+
+## UI customization types
+
+Types used by customization docs:
+
+```ts
+type AssistantMessageComponent = React.ComponentType<{ message: AssistantMessage }>;
+type UserMessageComponent = React.ComponentType<{ message: UserMessage }>;
+
+type ComposerProps = {
+  onSend: (message: string) => void;
+  onCancel: () => void;
+  isRunning: boolean;
+  isLoadingMessages: boolean;
+};
+type ComposerComponent = React.ComponentType<ComposerProps>;
+
+type WelcomeMessageConfig =
+  | React.ComponentType<any>
+  | {
+      title?: string;
+      description?: string;
+      image?: { url: string } | React.ReactNode;
+    };
+
+interface ConversationStartersConfig {
+  variant?: "short" | "long";
+  options: ConversationStarterProps[];
+}
+```
+
+## Component library exports
+
+Two ready-to-use libraries ship with `@openuidev/react-ui`. Import from the `genui-lib` subpath:
+
+```ts
+import {
+  // Chat-optimised (root = Card, includes FollowUpBlock, ListBlock, SectionBlock)
+  openuiChatLibrary,
+  openuiChatPromptOptions,
+  openuiChatExamples,
+  openuiChatAdditionalRules,
+  openuiChatComponentGroups,
+
+  // General-purpose (root = Stack, full component suite)
+  openuiLibrary,
+  openuiPromptOptions,
+  openuiExamples,
+  openuiAdditionalRules,
+  openuiComponentGroups,
+} from "@openuidev/react-ui/genui-lib";
+```
+
+**`openuiChatLibrary`** — Root is `Card` (vertical, no layout params). Includes chat-specific components: `FollowUpBlock`, `ListBlock`, `SectionBlock`. Does not include `Stack`. Use with `FullScreen` / `BottomTray` / `Copilot` chat interfaces.
+
+**`openuiLibrary`** — Root is `Stack`. Full layout suite with `Stack`, `Tabs`, `Carousel`, `Accordion`, `Modal`, etc. Use with the standalone `Renderer` or any non-chat layout (e.g., playground, embedded widgets, dashboards).
+
+**`openuiPromptOptions`** — includes examples and additional rules for the general-purpose library. Does not include `toolExamples` — pass those in your app-level `PromptSpec` alongside tool descriptions.
+
+Generate the system prompt at build time with the CLI:
+
+```bash
+npx @openuidev/cli@latest generate ./src/library.ts --out src/generated/system-prompt.txt
+```
+
+```tsx
+// Chat interface — system prompt stays on the server
+<FullScreen componentLibrary={openuiChatLibrary} ... />
+
+// Standalone renderer
+<Renderer response={message} library={openuiLibrary} />
+```
+
+## Skeleton components
+
+`Skeleton` and `TableSkeleton` are loading-state placeholders that render while data-driven genui components wait for `Query()` results. They use theme-aware CSS variables and a pulsing opacity animation.
+
+```tsx
+import { Skeleton, TableSkeleton } from "@openuidev/react-ui";
+```
+
+### `Skeleton`
+
+A generic skeleton bar. Use standalone or with `count` for stacked bars.
+
+| Prop       | Type     | Default      | Description |
+|------------|----------|--------------|-------------|
+| `count`    | `number` | `1`          | Number of bars to stack |
+| `height`   | `string` | `"16px"`     | Bar height |
+| `width`    | `string` | `"100%"`     | Bar width |
+| `borderRadius` | `string` | `undefined` | Bar border radius (defaults to `--openui-radius-xs`) |
+
+### `TableSkeleton`
+
+A table-shaped placeholder used by the genui `Table` component while queries load.
+
+| Prop    | Type     | Default | Description |
+|---------|----------|---------|-------------|
+| `rows`  | `number` | `5`     | Number of skeleton rows |
+| `columns` | `number` | `4`   | Number of skeleton columns |
+
+Built-in genui components like `Table` automatically render `TableSkeleton` when `useIsQueryLoading()` is `true` and no data rows exist yet.
