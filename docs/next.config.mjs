@@ -46,6 +46,11 @@ const config = {
         destination: "/blog/beyond-the-chatbar",
         permanent: true,
       },
+      {
+        source: "/components/blocks/accordian",
+        destination: "/components/blocks/accordion",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

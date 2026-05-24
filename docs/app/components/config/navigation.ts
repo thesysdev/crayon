@@ -39,10 +39,9 @@ export const BLOCKS_NAV_ITEMS: NavGroup[] = [
     label: "Individual blocks",
     items: [
       {
-        id: "accordian",
-        label: "Accordian",
-        href: "/components/blocks/accordian",
-        badgeText: "Fixing",
+        id: "accordion",
+        label: "Accordion",
+        href: "/components/blocks/accordion",
       },
       { id: "button-group", label: "Buttons", href: "/components/blocks/button-group" },
       { id: "callout", label: "Callout", href: "/components/blocks/callout" },

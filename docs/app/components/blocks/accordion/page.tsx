@@ -172,7 +172,7 @@ function AccordionControls({
   );
 }
 
-export default function BlocksAccordianPage() {
+export default function BlocksAccordionPage() {
   const [variant, setVariant] = useState<VariantMode>("clear");
   const [type, setType] = useState<TypeMode>("single");
 

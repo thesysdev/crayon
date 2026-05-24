@@ -41,7 +41,7 @@ export const BLOCKS_NAV_ITEMS: NavGroup[] = [
     id: "individual-blocks",
     label: "Individual blocks",
     items: [
-      { id: "accordian", label: "Accordian", href: `${BASE}/blocks/accordian` },
+      { id: "accordion", label: "Accordion", href: `${BASE}/blocks/accordion` },
       { id: "button-group", label: "Buttons", href: `${BASE}/blocks/button-group` },
       { id: "callout", label: "Callout", href: `${BASE}/blocks/callout` },
       { id: "image-items", label: "Image items", href: `${BASE}/blocks/image-items` },
