@@ -17,7 +17,8 @@ To add your organization to this list, [open a PR](https://github.com/thesysdev/
 | Organization                                    | Contact                                       | Description of Use                                                                                                  |
 | :---------------------------------------------- | :-------------------------------------------- | :------------------------------------------------------------------------------------------------------------------ |
 | [Standard Metrics](https://standardmetrics.io/) | [Elias Tounzal](https://github.com/eliasinho) | Standard Metrics combines institutional-grade infrastructure with cutting-edge AI to transform portfolio management |
-| [openui-forge](https://github.com/OthmanAdi/openui-forge) | [@OthmanAdi](https://github.com/OthmanAdi)   | Cross-IDE agent skill for OpenUI. Templates for OpenAI, Anthropic, LangChain, Vercel AI SDK, plus FastAPI / Go / Rust backends. Mirrors to 11 agent platforms.                  |
+| [openui-forge](https://github.com/OthmanAdi/openui-forge) | [OthmanAdi](https://github.com/OthmanAdi)   | Cross-IDE agent skill for OpenUI. Templates for OpenAI, Anthropic, LangChain, Vercel AI SDK, plus FastAPI / Go / Rust backends. Mirrors to 11 agent platforms.                  |
+| [Entelligence.AI](https://entelligence.ai) | [Aiswarya Sankar](https://www.linkedin.com/in/sankaraiswarya/)   | AI platform that gives developers noise-free, self-verifying code reviews to catch bugs before they ship, while providing engineering leaders with the analytics needed to measure the true ROI of their AI coding tools.            |
 
 <!--
 Example row, copy and edit:
