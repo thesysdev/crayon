@@ -1,3 +1,7 @@
+import {
+  createDemoCreditsErrorPayload,
+  isDemoCreditsExhaustedError,
+} from "@/lib/demo-credits";
 import { readFileSync } from "fs";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
@@ -280,8 +284,16 @@ export async function POST(req: NextRequest) {
   const lastUserMsg = (messages as any[]).filter((m: any) => m.role === "user").pop();
   if (lastUserMsg) conversationLog.push({ role: "user", content: extractText(lastUserMsg) });
 
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    return Response.json(
+      { error: { message: "OPENROUTER_API_KEY not configured" } },
+      { status: 500 },
+    );
+  }
+
   const client = new OpenAI({
-    apiKey: process.env.OPENROUTER_API_KEY,
+    apiKey,
     baseURL: "https://openrouter.ai/api/v1",
   });
   const MODEL = "openai/gpt-5.4";
@@ -391,6 +403,16 @@ export async function POST(req: NextRequest) {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       runner.on("error", (err: any) => {
+        if (isDemoCreditsExhaustedError(err)) {
+          enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify({ error: createDemoCreditsErrorPayload() })}\n\n`,
+            ),
+          );
+          close();
+          return;
+        }
+
         const msg = err instanceof Error ? err.message : "Stream error";
         console.error("Chat route error:", msg);
         enqueue(encoder.encode(`data: ${JSON.stringify({ error: msg })}\n\n`));

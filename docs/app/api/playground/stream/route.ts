@@ -1,4 +1,8 @@
 import { BASE_URL } from "@/lib/source";
+import {
+  createDemoCreditsExhaustedResponse,
+  isDemoCreditsExhaustedError,
+} from "@/lib/demo-credits";
 import { readFileSync } from "fs";
 import { type NextRequest } from "next/server";
 import { join } from "path";
@@ -36,6 +40,10 @@ export async function POST(req: NextRequest) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
+    if (isDemoCreditsExhaustedError(err, res.status)) {
+      return createDemoCreditsExhaustedResponse();
+    }
+
     return Response.json(
       {
         error: (err as { error?: { message?: string } }).error ?? {

@@ -3,6 +3,8 @@
 import { Send, Square } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCallback, useRef, useState } from "react";
+import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
+import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { CodePanel } from "./components/CodePanel/CodePanel";
 import { Header } from "./components/Header/Header";
 import { PreviewPanel } from "./components/PreviewPanel/PreviewPanel";
@@ -16,6 +18,7 @@ export default function PlaygroundPage() {
   const [parsedJson, setParsedJson] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [showCreditsDialog, setShowCreditsDialog] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -48,6 +51,7 @@ export default function PlaygroundPage() {
     setCode("");
     setParsedJson(null);
     setErrorMsg("");
+    setShowCreditsDialog(false);
     setStatus("streaming");
 
     try {
@@ -60,6 +64,12 @@ export default function PlaygroundPage() {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
+        if (isDemoCreditsErrorPayload((err as { error?: unknown }).error)) {
+          setShowCreditsDialog(true);
+          setStatus("idle");
+          return;
+        }
+
         throw new Error(
           (err as { error?: { message?: string } }).error?.message ?? `Server error ${res.status}`,
         );
@@ -197,6 +207,10 @@ export default function PlaygroundPage() {
           </div>
         </div>
       </div>
+      <DemoCreditsDialog
+        open={showCreditsDialog}
+        onClose={() => setShowCreditsDialog(false)}
+      />
     </div>
   );
 }

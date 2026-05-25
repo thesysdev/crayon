@@ -18,6 +18,8 @@ import {
 import { useTheme } from "next-themes";
 import { Highlight, themes } from "prism-react-renderer";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
+import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { ConversationPanel } from "./components/ConversationPanel/ConversationPanel";
 import { GitHubConnect } from "./components/GitHubConnect/GitHubConnect";
 import { Header } from "./components/Header/Header";
@@ -137,7 +139,7 @@ async function streamChat(
   onDone: () => void,
   signal?: AbortSignal,
   onFirstChunk?: () => void,
-) {
+): Promise<"done" | "credits-exhausted"> {
   const res = await fetch("/api/demo/github/stream", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -147,11 +149,15 @@ async function streamChat(
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
+    if (isDemoCreditsErrorPayload((err as { error?: unknown }).error)) {
+      return "credits-exhausted";
+    }
+
     onChunk(
       `Error: ${(err as { error?: { message?: string } }).error?.message ?? `Server error ${res.status}`}`,
     );
     onDone();
-    return;
+    return "done";
   }
 
   const reader = res.body!.getReader();
@@ -169,7 +175,7 @@ async function streamChat(
       const data = trimmed.slice(5).trim();
       if (data === "[DONE]") {
         onDone();
-        return;
+        return "done";
       }
       try {
         const parsed = JSON.parse(data) as {
@@ -189,6 +195,7 @@ async function streamChat(
     }
   }
   onDone();
+  return "done";
 }
 
 // ── Main Page ────────────────────────────────────────────────────────────
@@ -222,6 +229,7 @@ export default function GitHubDemoPage() {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [showCreditsDialog, setShowCreditsDialog] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
   const responseRef = useRef("");
@@ -298,6 +306,7 @@ export default function GitHubDemoPage() {
     setShowSource(false);
     setParsedJson(null);
     setErrorMsg("");
+    setShowCreditsDialog(false);
   };
 
   // ── Send message ─────────────────────────────────────────────────────
@@ -311,6 +320,7 @@ export default function GitHubDemoPage() {
       setStartTime(null);
       setElapsed(null);
       setErrorMsg("");
+      setShowCreditsDialog(false);
       responseRef.current = "";
       setStreamingText("");
       setToolCalls([]);
@@ -353,7 +363,7 @@ export default function GitHubDemoPage() {
       abortRef.current = controller;
 
       try {
-        await streamChat(
+        const streamResult = await streamChat(
           {
             prompt: githubContext ? `${githubContext}\n\n${trimmed}` : trimmed,
             messages: apiMessages.slice(0, -1),
@@ -403,6 +413,13 @@ export default function GitHubDemoPage() {
             setStartTime(streamStartTime);
           },
         );
+
+        if (streamResult === "credits-exhausted") {
+          abortRef.current = null;
+          setStatus("idle");
+          setStreamResponseHasCode(false);
+          setShowCreditsDialog(true);
+        }
       } catch (err: unknown) {
         if (err instanceof Error && err.name === "AbortError") {
           setStreamResponseHasCode(false);
@@ -707,6 +724,10 @@ export default function GitHubDemoPage() {
 
       {/* Error banner */}
       {status === "error" && errorMsg && <div className="error-banner">{errorMsg}</div>}
+      <DemoCreditsDialog
+        open={showCreditsDialog}
+        onClose={() => setShowCreditsDialog(false)}
+      />
     </div>
   );
 }
