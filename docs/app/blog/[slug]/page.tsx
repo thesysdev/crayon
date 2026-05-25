@@ -2,7 +2,7 @@ import { PillLink } from "@/app/(home)/components/Button/Button";
 import { blog } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { TOCItems } from "fumadocs-ui/components/toc/default";
-import { TOCProvider, TOCScrollArea } from "fumadocs-ui/components/toc/index";
+import { TOCProvider, TOCScrollArea } from "fumadocs-ui/components/toc";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
