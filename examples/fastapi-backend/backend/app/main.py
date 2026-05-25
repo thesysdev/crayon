@@ -10,7 +10,7 @@ from starlette.responses import StreamingResponse
 load_dotenv()
 
 client = AsyncOpenAI()
-MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.2")
+MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.5")
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
