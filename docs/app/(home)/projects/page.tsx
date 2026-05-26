@@ -1,4 +1,5 @@
 import {
+  BookOpen,
   Bot,
   Boxes,
   Code2,
@@ -7,6 +8,7 @@ import {
   MonitorSmartphone,
   Package,
   PlugZap,
+  Server,
   Sparkles,
   Users,
   Wrench,
@@ -186,6 +188,38 @@ const projects: ProjectItem[] = [
         external: true,
       },
       { label: "Docs", href: "/docs/openui-lang/examples/react-native", external: true },
+    ],
+  },
+  {
+    name: "FastAPI Backend Example",
+    description:
+      "A full-stack example streaming OpenUI Lang from a Python FastAPI backend into a Vite + React frontend.",
+    type: "Example",
+    status: "Community",
+    accent: "green",
+    icon: Server,
+    links: [
+      {
+        label: "GitHub",
+        href: "https://github.com/thesysdev/openui/tree/main/examples/fastapi-backend",
+        external: true,
+      },
+    ],
+  },
+  {
+    name: "Generative UI のためのフレームワーク OpenUI",
+    description:
+      "A Japanese deep-dive by azukiazusa exploring OpenUI Lang as a framework for safe, brand-consistent generative UI.",
+    type: "Article",
+    status: "Community",
+    accent: "purple",
+    icon: BookOpen,
+    links: [
+      {
+        label: "Article",
+        href: "https://azukiazusa.dev/blog/openui-framework-for-generative-ui/",
+        external: true,
+      },
     ],
   },
 ];
