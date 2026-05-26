@@ -105,15 +105,192 @@ function getStockPrice({ symbol }: { symbol: string }): Promise<string> {
   });
 }
 
+// ── Safe math expression parser (replaces new Function) ──
+
+type MathToken =
+  | { type: "number"; value: number }
+  | { type: "op"; value: string }
+  | { type: "func"; value: string }
+  | { type: "paren"; value: string }
+  | { type: "comma" };
+
+const ALLOWED_FUNCTIONS = new Set([
+  "Math.sqrt",
+  "Math.pow",
+  "Math.abs",
+  "Math.ceil",
+  "Math.floor",
+  "Math.round",
+  "sqrt",
+  "pow",
+  "abs",
+  "ceil",
+  "floor",
+  "round",
+]);
+
+const MATH_FNS: Record<string, (...args: number[]) => number> = {
+  sqrt: Math.sqrt,
+  pow: Math.pow,
+  abs: Math.abs,
+  ceil: Math.ceil,
+  floor: Math.floor,
+  round: Math.round,
+};
+
+function tokenizeMath(expr: string): MathToken[] {
+  const tokens: MathToken[] = [];
+  let i = 0;
+  while (i < expr.length) {
+    const ch = expr[i];
+    if (/\s/.test(ch)) {
+      i++;
+      continue;
+    }
+    if (/[0-9]/.test(ch) || (ch === "." && i + 1 < expr.length && /[0-9]/.test(expr[i + 1]))) {
+      let num = "";
+      while (i < expr.length && (/[0-9]/.test(expr[i]) || expr[i] === ".")) num += expr[i++];
+      tokens.push({ type: "number", value: parseFloat(num) });
+      continue;
+    }
+    if ("+-*/%".includes(ch)) {
+      tokens.push({ type: "op", value: ch });
+      i++;
+      continue;
+    }
+    if (ch === "(" || ch === ")") {
+      tokens.push({ type: "paren", value: ch });
+      i++;
+      continue;
+    }
+    if (ch === ",") {
+      tokens.push({ type: "comma" });
+      i++;
+      continue;
+    }
+    if (/[a-zA-Z]/.test(ch)) {
+      let word = "";
+      while (i < expr.length && /[a-zA-Z.]/.test(expr[i])) word += expr[i++];
+      if (!ALLOWED_FUNCTIONS.has(word)) throw new Error("Unknown identifier: " + word);
+      const funcName = word.includes(".") ? word.split(".")[1] : word;
+      tokens.push({ type: "func", value: funcName });
+      continue;
+    }
+    throw new Error("Invalid character: " + ch);
+  }
+  return tokens;
+}
+
+type ParseCtx = { tokens: MathToken[]; pos: number };
+
+function parseExpression(ctx: ParseCtx): number {
+  let left = parseTerm(ctx);
+  while (ctx.pos < ctx.tokens.length) {
+    const t = ctx.tokens[ctx.pos];
+    if (t.type === "op" && (t.value === "+" || t.value === "-")) {
+      ctx.pos++;
+      const right = parseTerm(ctx);
+      left = t.value === "+" ? left + right : left - right;
+    } else break;
+  }
+  return left;
+}
+
+function parseTerm(ctx: ParseCtx): number {
+  let left = parseUnary(ctx);
+  while (ctx.pos < ctx.tokens.length) {
+    const t = ctx.tokens[ctx.pos];
+    if (t.type === "op" && (t.value === "*" || t.value === "/" || t.value === "%")) {
+      ctx.pos++;
+      const right = parseUnary(ctx);
+      if (t.value === "*") left *= right;
+      else if (t.value === "/") left /= right;
+      else left %= right;
+    } else break;
+  }
+  return left;
+}
+
+function parseUnary(ctx: ParseCtx): number {
+  const t = ctx.tokens[ctx.pos];
+  if (t && t.type === "op" && (t.value === "+" || t.value === "-")) {
+    ctx.pos++;
+    const val = parseUnary(ctx);
+    return t.value === "-" ? -val : val;
+  }
+  return parsePrimary(ctx);
+}
+
+function parsePrimary(ctx: ParseCtx): number {
+  const t = ctx.tokens[ctx.pos];
+  if (!t) throw new Error("Unexpected end of expression");
+
+  if (t.type === "number") {
+    ctx.pos++;
+    return t.value;
+  }
+
+  if (t.type === "func") {
+    const fname = t.value;
+    ctx.pos++;
+    if (
+      ctx.pos >= ctx.tokens.length ||
+      ctx.tokens[ctx.pos].type !== "paren" ||
+      (ctx.tokens[ctx.pos] as { value: string }).value !== "("
+    ) {
+      throw new Error("Expected ( after function " + fname);
+    }
+    ctx.pos++; // skip (
+    const args: number[] = [parseExpression(ctx)];
+    while (ctx.pos < ctx.tokens.length && ctx.tokens[ctx.pos].type === "comma") {
+      ctx.pos++;
+      args.push(parseExpression(ctx));
+    }
+    if (
+      ctx.pos >= ctx.tokens.length ||
+      ctx.tokens[ctx.pos].type !== "paren" ||
+      (ctx.tokens[ctx.pos] as { value: string }).value !== ")"
+    ) {
+      throw new Error("Expected )");
+    }
+    ctx.pos++; // skip )
+    const fn = MATH_FNS[fname];
+    if (!fn) throw new Error("Unknown function: " + fname);
+    return fn(...args);
+  }
+
+  if (t.type === "paren" && t.value === "(") {
+    ctx.pos++;
+    const val = parseExpression(ctx);
+    if (
+      ctx.pos >= ctx.tokens.length ||
+      ctx.tokens[ctx.pos].type !== "paren" ||
+      (ctx.tokens[ctx.pos] as { value: string }).value !== ")"
+    ) {
+      throw new Error("Expected )");
+    }
+    ctx.pos++;
+    return val;
+  }
+
+  throw new Error("Unexpected token: " + JSON.stringify(t));
+}
+
+function safeMathEval(expr: string): number {
+  const tokens = tokenizeMath(expr);
+  const ctx: ParseCtx = { tokens, pos: 0 };
+  const result = parseExpression(ctx);
+  if (ctx.pos < ctx.tokens.length) {
+    throw new Error("Unexpected token: " + JSON.stringify(ctx.tokens[ctx.pos]));
+  }
+  return result;
+}
+
 function calculate({ expression }: { expression: string }): Promise<string> {
   return new Promise((resolve) => {
     setTimeout(() => {
       try {
-        const sanitized = expression.replace(
-          /[^0-9+\-*/().%\s,Math.sqrtpowabsceilfloorround]/g,
-          "",
-        );
-        const result = new Function(`return (${sanitized})`)();
+        const result = safeMathEval(expression);
         resolve(JSON.stringify({ expression, result: Number(result) }));
       } catch {
         resolve(JSON.stringify({ expression, error: "Invalid expression" }));
