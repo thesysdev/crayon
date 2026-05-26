@@ -27,9 +27,11 @@ import { PreviewPanel } from "./components/PreviewPanel/PreviewPanel";
 import {
   GITHUB_DEMO_MODEL_LABEL,
   GITHUB_STARTERS,
+  STREAM_RESULT,
   type ChatMessage,
   type GitHubStarterIconKey,
   type Status,
+  type StreamResult,
   type Theme,
   type ToolCallEntry,
 } from "./constants";
@@ -139,7 +141,7 @@ async function streamChat(
   onDone: () => void,
   signal?: AbortSignal,
   onFirstChunk?: () => void,
-): Promise<"done" | "credits-exhausted"> {
+): Promise<StreamResult> {
   const res = await fetch("/api/demo/github/stream", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -150,14 +152,14 @@ async function streamChat(
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     if (isDemoCreditsErrorPayload((err as { error?: unknown }).error)) {
-      return "credits-exhausted";
+      return STREAM_RESULT.CreditsExhausted;
     }
 
     onChunk(
       `Error: ${(err as { error?: { message?: string } }).error?.message ?? `Server error ${res.status}`}`,
     );
     onDone();
-    return "done";
+    return STREAM_RESULT.Done;
   }
 
   const reader = res.body!.getReader();
@@ -175,7 +177,7 @@ async function streamChat(
       const data = trimmed.slice(5).trim();
       if (data === "[DONE]") {
         onDone();
-        return "done";
+        return STREAM_RESULT.Done;
       }
       try {
         const parsed = JSON.parse(data) as {
@@ -195,7 +197,7 @@ async function streamChat(
     }
   }
   onDone();
-  return "done";
+  return STREAM_RESULT.Done;
 }
 
 // ── Main Page ────────────────────────────────────────────────────────────
@@ -414,7 +416,7 @@ export default function GitHubDemoPage() {
           },
         );
 
-        if (streamResult === "credits-exhausted") {
+        if (streamResult === STREAM_RESULT.CreditsExhausted) {
           abortRef.current = null;
           setStatus("idle");
           setStreamResponseHasCode(false);
