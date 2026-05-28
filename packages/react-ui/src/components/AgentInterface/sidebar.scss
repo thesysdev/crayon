@@ -1,0 +1,194 @@
+@use "../../cssUtils" as cssUtils;
+
+$sidebar-width: 272px;
+$sidebar-padding: cssUtils.$space-m;
+$sidebar-mobile-width: 294px;
+$sidebar-mobile-padding: cssUtils.$space-l;
+
+.openui-agent-sidebar-container {
+  border-right: 1px solid cssUtils.$border-default;
+  height: 100%;
+  width: $sidebar-width;
+  padding: $sidebar-padding;
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-m;
+  z-index: 999;
+  transition:
+    width 0.4s ease-in-out,
+    height 0.4s ease-in-out,
+    transform 0.4s ease-in-out;
+
+  .openui-agent-container--mobile & {
+    width: $sidebar-mobile-width;
+    padding: $sidebar-mobile-padding;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    background-color: cssUtils.$foreground;
+    border-radius: 0;
+    transition: left 0.3s ease-in-out;
+  }
+
+  &--collapsed {
+    width: 52px;
+    transform: translateX(0);
+    gap: cssUtils.$space-xs;
+
+    .openui-agent-container--mobile & {
+      width: $sidebar-mobile-width;
+      height: 100%;
+      left: -$sidebar-mobile-width;
+      transform: none;
+    }
+  }
+
+  &--hidden {
+    display: none;
+  }
+}
+
+.openui-agent-sidebar-header {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-s;
+
+  &__top-row {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-s;
+  }
+
+  &__logo {
+    width: 36px;
+    height: 36px;
+    border-radius: cssUtils.$radius-s;
+    transition:
+      width 0.3s ease-in-out,
+      height 0.3s ease-in-out;
+  }
+
+  &__agent-name {
+    @include cssUtils.typography(primary, default);
+    flex-grow: 1;
+    color: cssUtils.$text-neutral-primary;
+
+    .openui-agent-sidebar-container--collapsed & {
+      display: none;
+    }
+  }
+
+  &--collapsed {
+    align-items: center;
+
+    .openui-agent-sidebar-header__top-row {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .openui-agent-sidebar-header__logo {
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+
+.openui-agent-sidebar-content {
+  width: calc($sidebar-width - ($sidebar-padding * 2));
+
+  .openui-agent-container--mobile & {
+    width: 100%;
+  }
+
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-m;
+  overflow: hidden;
+  opacity: 1;
+  transition:
+    opacity 0.2s ease-in-out 0.3s,
+    display 0.4s 0.5s;
+
+  &--collapsed {
+    opacity: 0;
+    display: none;
+    transition:
+      opacity 0.2s ease-in-out,
+      display 0s 0.5s;
+  }
+}
+
+.openui-agent-sidebar-separator {
+  height: 1px;
+  width: 100%;
+  background-color: cssUtils.$border-default;
+}
+
+.openui-agent-sidebar-header__toggle-button {
+  .openui-agent-container--mobile & {
+    display: none;
+  }
+}
+
+.openui-agent-sidebar-container__overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: cssUtils.$overlay;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 99;
+
+  &--collapsed {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.openui-agent-sidebar-item {
+  @include cssUtils.button-reset;
+  @include cssUtils.typography(primary, default);
+
+  display: flex;
+  align-items: center;
+  gap: cssUtils.$space-xs;
+  width: 100%;
+  padding: cssUtils.$space-2xs cssUtils.$space-xs;
+  border-radius: cssUtils.$radius-s;
+  border: 1px solid transparent;
+  color: cssUtils.$text-neutral-primary;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: cssUtils.$sunk;
+  }
+
+  &--selected {
+    background-color: cssUtils.$sunk;
+    border-color: cssUtils.$border-default;
+  }
+}
+
+.openui-agent-sidebar-item__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: cssUtils.$text-neutral-secondary;
+}
+
+.openui-agent-sidebar-item__label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.openui-agent-sidebar-item__trailing {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: cssUtils.$text-neutral-secondary;
+}

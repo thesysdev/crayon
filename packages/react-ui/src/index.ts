@@ -1,6 +1,7 @@
 "use client";
 
 export * from "./components/Accordion";
+export * from "./components/AgentInterface";
 
 // DetailedView() factory — generates a ComponentRenderer with detailed-view wiring
 export { DetailedView } from "./detailed-view";
