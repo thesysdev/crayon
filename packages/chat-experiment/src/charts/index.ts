@@ -1,5 +1,5 @@
-// Public chart API — faithful port of bklit-ui's charts/index.ts barrel.
-// Paths are relative to this charts/ directory and match the flat layout here.
+// Public chart API. Components are organized under core/ (engine), primitives/
+// (shared visual building blocks), and families/<chart>/ (one folder per chart).
 
 // Re-export visx gradient and pattern components for bar fill styling
 export {
@@ -16,25 +16,14 @@ export {
   RadialGradient,
 } from "@visx/gradient";
 // Area chart components
-export { Area, type AreaProps } from "./area";
-export { AreaChart, type AreaChartProps } from "./area-chart";
+export { Area, type AreaProps } from "./families/area/area";
+export { AreaChart, type AreaChartProps } from "./families/area/area-chart";
 // Bar chart components
-export { Bar, type BarAnimationType, type BarLineCap, type BarProps } from "./bar";
-export { BarChart, type BarChartProps, type BarOrientation } from "./bar-chart";
-export { BarXAxis, type BarXAxisProps } from "./bar-x-axis";
-export { BarYAxis, type BarYAxisProps } from "./bar-y-axis";
-export { Candlestick, type CandlestickProps } from "./candlestick";
-export {
-  CandlestickChart,
-  type CandlestickChartProps,
-  type OHLCDataPoint,
-} from "./candlestick-chart";
-export { ChartBrush, type ChartBrushProps, type ChartBrushSelection } from "./chart-brush";
 export {
   chartCenterContainerClassName,
   chartCenterLabelClassName,
   chartCenterValueClassName,
-} from "./chart-center-typography";
+} from "./core/chart-center-typography";
 export {
   ChartConfigProvider,
   DEFAULT_CHART_CONFIG,
@@ -42,7 +31,7 @@ export {
   type ChartConfigProviderProps,
   type ChartConfigValue,
   type SpringConfig,
-} from "./chart-config-context";
+} from "./core/chart-config-context";
 export {
   ChartProvider,
   chartCssVars,
@@ -56,16 +45,31 @@ export {
   type LineConfig,
   type Margin,
   type TooltipData,
-} from "./chart-context";
+} from "./core/chart-context";
+export { Bar, type BarAnimationType, type BarLineCap, type BarProps } from "./families/bar/bar";
+export { BarChart, type BarChartProps, type BarOrientation } from "./families/bar/bar-chart";
+export { BarXAxis, type BarXAxisProps } from "./families/bar/bar-x-axis";
+export { BarYAxis, type BarYAxisProps } from "./families/bar/bar-y-axis";
+export { Candlestick, type CandlestickProps } from "./families/candlestick/candlestick";
+export {
+  CandlestickChart,
+  type CandlestickChartProps,
+  type OHLCDataPoint,
+} from "./families/candlestick/candlestick-chart";
+export {
+  ChartBrush,
+  type ChartBrushProps,
+  type ChartBrushSelection,
+} from "./primitives/chart-brush";
 // Legacy legend component (backward compatibility)
-export { ChartLegend, type ChartLegendProps, type LegendItem } from "./chart-legend";
-export { ChartRevealClip, type ChartRevealClipProps } from "./chart-reveal-clip";
+export { ChartRevealClip, type ChartRevealClipProps } from "./core/chart-reveal-clip";
+export { ChartLegend, type ChartLegendProps, type LegendItem } from "./primitives/chart-legend";
 export {
   ChartStatFlow,
   defaultChartStatFlowFormat,
   type ChartStatFlowFormat,
   type ChartStatFlowProps,
-} from "./chart-stat-flow";
+} from "./primitives/chart-stat-flow";
 // Choropleth chart components
 export {
   ChoroplethChart,
@@ -86,20 +90,20 @@ export {
   type ChoroplethTooltipData,
   type ChoroplethTooltipProps,
   type TransformMatrix,
-} from "./choropleth";
+} from "./families/choropleth";
 // Composed time-series (line + area + SeriesBar on shared time scale)
-export { ComposedChart, type ComposedChartProps } from "./composed-chart";
+export { ComposedChart, type ComposedChartProps } from "./families/composed/composed-chart";
 // Funnel chart components
 export {
   FunnelChart,
   type FunnelChartProps,
   type FunnelGradientStop,
   type FunnelStage,
-} from "./funnel-chart";
+} from "./families/funnel/funnel-chart";
 // Gauge chart
-export { Gauge, type GaugeProps } from "./gauge";
+export { Gauge, type GaugeProps } from "./families/gauge/gauge";
 // Shared chart elements
-export { Grid, type GridProps } from "./grid";
+export { Grid, type GridProps } from "./primitives/grid";
 // Composable legend components
 export {
   Legend,
@@ -120,21 +124,25 @@ export {
   type LegendProgressProps,
   type LegendProps,
   type LegendValueProps,
-} from "./legend";
+} from "./primitives/legend";
 // Line chart components
-export { Line, type LineProps } from "./line";
-export { LineChart, type LineChartProps } from "./line-chart";
+export { Line, type LineProps } from "./families/line/line";
+export { LineChart, type LineChartProps } from "./families/line/line-chart";
 export {
   LiveLine,
   detectMomentum,
   type LiveLineProps,
   type Momentum,
   type MomentumColors,
-} from "./live-line";
+} from "./families/live/live-line";
 // Live line chart (real-time streaming)
-export { LiveLineChart, type LiveLineChartProps, type LiveLinePoint } from "./live-line-chart";
-export { LiveXAxis, type LiveXAxisProps } from "./live-x-axis";
-export { LiveYAxis, type LiveYAxisProps } from "./live-y-axis";
+export {
+  LiveLineChart,
+  type LiveLineChartProps,
+  type LiveLinePoint,
+} from "./families/live/live-line-chart";
+export { LiveXAxis, type LiveXAxisProps } from "./families/live/live-x-axis";
+export { LiveYAxis, type LiveYAxisProps } from "./families/live/live-y-axis";
 // Marker components
 export {
   ChartMarkers,
@@ -145,12 +153,12 @@ export {
   type ChartMarkersProps,
   type MarkerGroupProps,
   type MarkerTooltipContentProps,
-} from "./markers";
-export { PatternArea, type PatternAreaProps } from "./pattern-area";
+} from "./primitives/markers";
+export { PatternArea, type PatternAreaProps } from "./primitives/pattern-area";
 // Pie chart components
-export { PieCenter, type PieCenterProps } from "./pie-center";
-export { PieCenterShell, type PieCenterShellProps } from "./pie-center-shell";
-export { DEFAULT_HOVER_OFFSET, PieChart, type PieChartProps } from "./pie-chart";
+export { PieCenterShell, type PieCenterShellProps } from "./core/pie-center-shell";
+export { PieCenter, type PieCenterProps } from "./families/pie/pie-center";
+export { DEFAULT_HOVER_OFFSET, PieChart, type PieChartProps } from "./families/pie/pie-chart";
 export {
   PieProvider,
   defaultPieColors,
@@ -159,18 +167,18 @@ export {
   type PieArcData,
   type PieContextValue,
   type PieData,
-} from "./pie-context";
-export { PieSlice, type PieSliceHoverEffect, type PieSliceProps } from "./pie-slice";
+} from "./families/pie/pie-context";
+export { PieSlice, type PieSliceHoverEffect, type PieSliceProps } from "./families/pie/pie-slice";
 // Profit/loss line (sign-colored segments on LineChart)
 export {
   PROFIT_LOSS_LEGEND_ITEMS,
   ProfitLossLegend,
   type ProfitLossLegendProps,
-} from "./profit-loss-legend";
+} from "./families/profit-loss/profit-loss-legend";
 export {
   ProfitLossLegendHoverProvider,
   useProfitLossLegendHover,
-} from "./profit-loss-legend-hover";
+} from "./families/profit-loss/profit-loss-legend-hover";
 export {
   PROFIT_LOSS_NEGATIVE_COLOR,
   PROFIT_LOSS_POSITIVE_COLOR,
@@ -179,12 +187,15 @@ export {
   profitLossColor,
   resolveProfitLossTooltipLabel,
   type ProfitLossLineProps,
-} from "./profit-loss-line";
-export { splitProfitLossSegments, type ProfitLossSegment } from "./profit-loss-segments";
+} from "./families/profit-loss/profit-loss-line";
+export {
+  splitProfitLossSegments,
+  type ProfitLossSegment,
+} from "./families/profit-loss/profit-loss-segments";
 // Radar chart components
-export { RadarArea, type RadarAreaProps } from "./radar-area";
-export { RadarAxis, type RadarAxisProps } from "./radar-axis";
-export { RadarChart, type RadarChartProps } from "./radar-chart";
+export { RadarArea, type RadarAreaProps } from "./families/radar/radar-area";
+export { RadarAxis, type RadarAxisProps } from "./families/radar/radar-axis";
+export { RadarChart, type RadarChartProps } from "./families/radar/radar-chart";
 export {
   RadarProvider,
   defaultRadarColors,
@@ -193,13 +204,13 @@ export {
   type RadarContextValue,
   type RadarData,
   type RadarMetric,
-} from "./radar-context";
-export { RadarGrid, type RadarGridProps } from "./radar-grid";
-export { RadarLabels, type RadarLabelsProps } from "./radar-labels";
+} from "./families/radar/radar-context";
+export { RadarGrid, type RadarGridProps } from "./families/radar/radar-grid";
+export { RadarLabels, type RadarLabelsProps } from "./families/radar/radar-labels";
 // Ring chart components
-export { Ring, type RingLineCap, type RingProps } from "./ring";
-export { RingCenter, type RingCenterProps } from "./ring-center";
-export { RingChart, type RingChartProps } from "./ring-chart";
+export { Ring, type RingLineCap, type RingProps } from "./families/ring/ring";
+export { RingCenter, type RingCenterProps } from "./families/ring/ring-center";
+export { RingChart, type RingChartProps } from "./families/ring/ring-chart";
 export {
   RingProvider,
   defaultRingColors,
@@ -207,7 +218,7 @@ export {
   useRing,
   type RingContextValue,
   type RingData,
-} from "./ring-context";
+} from "./families/ring/ring-context";
 // Sankey chart components
 export {
   SankeyChart,
@@ -226,10 +237,10 @@ export {
   type SankeyNodeProps,
   type SankeyTooltipData,
   type SankeyTooltipProps,
-} from "./sankey";
+} from "./families/sankey";
 // Scatter chart components
-export { Scatter, type ScatterProps } from "./scatter";
-export { ScatterChart, type ScatterChartProps } from "./scatter-chart";
+export { Scatter, type ScatterProps } from "./families/scatter/scatter";
+export { ScatterChart, type ScatterChartProps } from "./families/scatter/scatter-chart";
 // Segment selection components
 export {
   SegmentBackground,
@@ -238,16 +249,16 @@ export {
   type SegmentBackgroundProps,
   type SegmentLineProps,
   type SegmentLineVariant,
-} from "./segment";
+} from "./primitives/segment";
 // Series bar (time-based columns for ComposedChart)
-export { SeriesBar, type SeriesBarProps } from "./series-bar";
-export { SeriesMarkers, type SeriesMarkersProps } from "./series-markers";
+export { SeriesBar, type SeriesBarProps } from "./families/bar/series-bar";
+export { SeriesMarkers, type SeriesMarkersProps } from "./primitives/series-markers";
 export {
   SeriesPointMarker,
   getSeriesMarkerVisualExtent,
   type SeriesPointMarkerProps,
   type SeriesPointMarkerStyle,
-} from "./series-point-marker";
+} from "./primitives/series-point-marker";
 // Tooltip components
 export {
   ChartTooltip,
@@ -264,9 +275,14 @@ export {
   type TooltipDotProps,
   type TooltipIndicatorProps,
   type TooltipRow,
-} from "./tooltip";
+} from "./primitives/tooltip";
 // Chart interaction hook
-export { useChartInteraction, type ChartSelection } from "./use-chart-interaction";
-export { PatternCircles, PatternHexagons, PatternLines, PatternWaves } from "./visx-pattern";
-export { XAxis, type XAxisProps } from "./x-axis";
-export { YAxis, type YAxisProps } from "./y-axis";
+export { useChartInteraction, type ChartSelection } from "./core/use-chart-interaction";
+export {
+  PatternCircles,
+  PatternHexagons,
+  PatternLines,
+  PatternWaves,
+} from "./primitives/visx-pattern";
+export { XAxis, type XAxisProps } from "./primitives/x-axis";
+export { YAxis, type YAxisProps } from "./primitives/y-axis";
