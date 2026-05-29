@@ -16,8 +16,15 @@ const BAR_HEIGHT_CLASSES = [
   styles.barHeight1047,
 ];
 
-export function GradientDivider({ direction = "down" }: { direction?: "down" | "up" }) {
-  const bars = direction === "up" ? [...BAR_HEIGHT_CLASSES].reverse() : BAR_HEIGHT_CLASSES;
+export function GradientDivider({
+  direction = "down",
+  compact = false,
+}: {
+  direction?: "down" | "up";
+  compact?: boolean;
+}) {
+  const source = compact ? BAR_HEIGHT_CLASSES.slice(2) : BAR_HEIGHT_CLASSES;
+  const bars = direction === "up" ? [...source].reverse() : source;
 
   return (
     <div className={styles.divider}>
