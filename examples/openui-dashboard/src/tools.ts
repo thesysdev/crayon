@@ -10,6 +10,13 @@ import { ToolDef } from "./lib/tool-def";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
+/** Simulated network delay to surface intermediate loading states (ms). */
+const TOOL_DELAY_MS = Number(process.env.NEXT_PUBLIC_TOOL_DELAY_MS) || 0;
+
+function delay(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
 function dateOffset(daysAgo: number): string {
   const d = new Date();
   d.setDate(d.getDate() + daysAgo);
@@ -152,7 +159,7 @@ export const tools: ToolDef[] = [
         }),
       ),
     }),
-    execute: async (args) => getUsageMetrics(args),
+    execute: async (args) => { await delay(TOOL_DELAY_MS); return getUsageMetrics(args); },
   }),
   new ToolDef({
     name: "get_top_endpoints",
@@ -168,7 +175,7 @@ export const tools: ToolDef[] = [
         }),
       ),
     }),
-    execute: async (args) => getTopEndpoints(args),
+    execute: async (args) => { await delay(TOOL_DELAY_MS); return getTopEndpoints(args); },
   }),
   new ToolDef({
     name: "get_resource_breakdown",
@@ -179,7 +186,7 @@ export const tools: ToolDef[] = [
         z.object({ name: z.string(), events: z.number(), users: z.number(), cost: z.number() }),
       ),
     }),
-    execute: async () => getResourceBreakdown(),
+    execute: async () => { await delay(TOOL_DELAY_MS); return getResourceBreakdown(); },
   }),
   new ToolDef({
     name: "get_error_breakdown",
@@ -188,7 +195,7 @@ export const tools: ToolDef[] = [
     outputSchema: z.object({
       errors: z.array(z.object({ category: z.string(), count: z.number() })),
     }),
-    execute: async () => getErrorBreakdown(),
+    execute: async () => { await delay(TOOL_DELAY_MS * 2); return getErrorBreakdown(); },
   }),
   new ToolDef({
     name: "get_server_health",
@@ -203,7 +210,7 @@ export const tools: ToolDef[] = [
         z.object({ time: z.string(), cpu: z.number(), memory: z.number(), latencyP95: z.number() }),
       ),
     }),
-    execute: async () => getServerHealth(),
+    execute: async () => { await delay(TOOL_DELAY_MS); return getServerHealth(); },
   }),
   new ToolDef({
     name: "get_experiment_results",
@@ -214,7 +221,7 @@ export const tools: ToolDef[] = [
         z.object({ variant: z.string(), conversionRate: z.number(), users: z.number() }),
       ),
     }),
-    execute: async () => getExperimentResults(),
+    execute: async () => { await delay(TOOL_DELAY_MS); return getExperimentResults(); },
   }),
   new ToolDef({
     name: "get_geo_usage",
@@ -223,13 +230,13 @@ export const tools: ToolDef[] = [
     outputSchema: z.object({
       regions: z.array(z.object({ region: z.string(), users: z.number(), events: z.number() })),
     }),
-    execute: async () => getGeoUsage(),
+    execute: async () => { await delay(TOOL_DELAY_MS); return getGeoUsage(); },
   }),
   new ToolDef({
     name: "get_funnel_metrics",
     description: "Get conversion funnel metrics",
     inputSchema: z.object({}),
     outputSchema: z.object({ steps: z.array(z.object({ step: z.string(), users: z.number() })) }),
-    execute: async () => getFunnelMetrics(),
+    execute: async () => { await delay(TOOL_DELAY_MS); return getFunnelMetrics(); },
   }),
 ];

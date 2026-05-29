@@ -4,9 +4,12 @@ import type { ChatCompletionMessageParam } from "openai/resources/chat/completio
 import { generatePrompt } from "@openuidev/lang-core";
 import { promptSpec } from "@/prompt-config";
 import { tools as toolDefs } from "@/tools";
-import { sseResponseFromRunner } from "@/lib/sse-stream";
 
-const tools = toolDefs.map((t) => t.toOpenAITool());
+const SSE_HEADERS = {
+  "Content-Type": "text/event-stream",
+  "Cache-Control": "no-cache, no-transform",
+  Connection: "keep-alive",
+} as const;
 
 function buildSystemPrompt(): string {
   return generatePrompt({
@@ -20,7 +23,7 @@ export async function POST(req: NextRequest) {
 
   const apiKey = process.env.LLM_API_KEY || process.env.OPENAI_API_KEY || "";
   const baseURL = process.env.LLM_BASE_URL || "https://api.openai.com/v1";
-  const model = process.env.LLM_MODEL || "gpt-5.4";
+  const model = process.env.LLM_MODEL || "gpt-5.5";
 
   if (!apiKey) {
     return new Response(
@@ -30,13 +33,26 @@ export async function POST(req: NextRequest) {
   }
 
   const client = new OpenAI({ apiKey, baseURL });
-  const runner = client.chat.completions.runTools({
+  const stream = await client.chat.completions.create({
     model,
     messages: [{ role: "system" as const, content: buildSystemPrompt() }, ...messages],
-    tools,
     stream: true,
     // reasoning: { effort: "low" },
   });
 
-  return sseResponseFromRunner(runner);
+  const encoder = new TextEncoder();
+  const readable = new ReadableStream({
+    async start(controller) {
+      try {
+        for await (const chunk of stream) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
+        }
+      } finally {
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(readable, { headers: SSE_HEADERS });
 }

@@ -64,7 +64,7 @@ Output contract (strict):
       console.info("[analytics_subagent] Prompt:\n", prompt);
 
       const result = streamText({
-        model: openai("gpt-5.4"),
+        model: openai("gpt-5.5"),
         system: analyticsSubagentSystemPrompt,
         prompt,
         abortSignal,

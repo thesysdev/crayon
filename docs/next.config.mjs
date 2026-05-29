@@ -17,8 +17,38 @@ const config = {
   async redirects() {
     return [
       {
+        source: "/components/blocks/accordian",
+        destination: "/components/blocks/accordion",
+        permanent: true,
+      },
+      {
+        source: "/docs/design-system/blocks/accordian",
+        destination: "/docs/design-system/blocks/accordion",
+        permanent: true,
+      },
+      {
         source: "/docs",
         destination: "/docs/openui-lang",
+        permanent: false,
+      },
+      {
+        source: "/docs/add-ons",
+        destination: "/projects",
+        permanent: false,
+      },
+      {
+        source: "/add-ons",
+        destination: "/projects",
+        permanent: false,
+      },
+      {
+        source: "/ecosystem",
+        destination: "/projects",
+        permanent: false,
+      },
+      {
+        source: "/registry",
+        destination: "/projects",
         permanent: false,
       },
       {

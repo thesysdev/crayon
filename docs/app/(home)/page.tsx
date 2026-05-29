@@ -13,7 +13,11 @@ export default function HomePage() {
   return (
     <div className={styles.page}>
       <div className={styles.heroShell}>
-        <HeroSection />
+        <HeroSection
+          showPlaygroundButton={false}
+          githubRepoUrl="https://github.com/thesysdev/openui"
+          githubButtonLabel="Star us on GitHub"
+        />
         <ShiroMascot />
         <StepsSection />
       </div>

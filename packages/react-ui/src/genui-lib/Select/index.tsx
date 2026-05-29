@@ -68,6 +68,7 @@ export const Select = defineComponent({
         value={value}
         onValueChange={handleChange}
         disabled={isStreaming}
+        size={({ small: "sm", medium: "md", large: "lg" } as const)[props.size as string] ?? "md"}
       >
         <OpenUISelectTrigger>
           <OpenUISelectValue placeholder={props.placeholder || "Select..."} />

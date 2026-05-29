@@ -60,6 +60,7 @@ export * from "./components/SectionBlock";
 export * from "./components/Select";
 export * from "./components/Separator";
 export * as Shell from "./components/Shell";
+export * from "./components/Skeleton";
 export * from "./components/Slider";
 export * from "./components/Steps";
 export * from "./components/SwitchGroup";

@@ -80,8 +80,6 @@ export const ScrollArea = ({
       >
         {children}
       </div>
-      {/* Gradient to hide the bottom of the scroll area */}
-      <div className="openui-bottom-tray-thread-scroll-gradient" />
     </div>
   );
 };

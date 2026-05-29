@@ -67,7 +67,7 @@ cp .env.local.example .env.local
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase dashboard → Settings → API → Project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase dashboard → Settings → API → anon/public key |
 | `OPENROUTER_API_KEY` | [openrouter.ai/keys](https://openrouter.ai/keys) |
-| `OPENROUTER_MODEL` _(optional)_ | Defaults to `openai/gpt-4o-mini` |
+| `OPENROUTER_MODEL` _(optional)_ | Defaults to `openai/gpt-5.5` |
 
 ### 5. Install and run
 

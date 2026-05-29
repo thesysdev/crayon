@@ -44,7 +44,10 @@ export const DesktopWelcomeComposer = ({
   }, [textContent]);
 
   return (
-    <div className={clsx("openui-shell-desktop-welcome-composer", className)}>
+    <div
+      className={clsx("openui-shell-desktop-welcome-composer", className)}
+      data-drafting={textContent.length > 0 || undefined}
+    >
       <textarea
         ref={inputRef}
         value={textContent}
@@ -65,7 +68,7 @@ export const DesktopWelcomeComposer = ({
           disabled={!textContent.trim() && !isRunning}
           aria-label={isRunning ? "Cancel" : "Send"}
           icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
-          size="medium"
+          size="extra-small"
           variant="primary"
           className="openui-shell-desktop-welcome-composer__submit-button"
         />

@@ -381,6 +381,8 @@ export function useOpenUIState(
     renderErrorsRef.current.push(error);
   }, []);
 
+  const isQueryLoading = querySnapshot.__openui_loading.length > 0;
+
   // ─── Context value ───
   const contextValue = useMemo<OpenUIContextValue>(
     () => ({
@@ -393,11 +395,13 @@ export function useOpenUIState(
       store,
       evaluationContext,
       reportError,
+      isQueryLoading,
     }),
     [
       library,
       renderDeep,
       isStreaming,
+      isQueryLoading,
       triggerAction,
       getFieldValue,
       setFieldValue,
@@ -431,8 +435,6 @@ export function useOpenUIState(
       return result;
     }
   }, [result, evaluationContext, library, store, storeSnapshot, querySnapshot]);
-
-  const isQueryLoading = querySnapshot.__openui_loading.length > 0;
 
   // ─── Collect and fire onError ───
   const lastErrorKeyRef = useRef<string>("");

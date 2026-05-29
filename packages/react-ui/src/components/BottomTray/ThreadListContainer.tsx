@@ -3,7 +3,9 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import { EllipsisVerticalIcon, MenuIcon, Trash2Icon } from "lucide-react";
 import { useEffect } from "react";
+import { Button } from "../Button";
 import { IconButton } from "../IconButton";
+import { useTheme } from "../ThemeProvider";
 
 const ThreadItem = ({
   title,
@@ -16,6 +18,7 @@ const ThreadItem = ({
   onSelect: () => void;
   onDelete: () => void;
 }) => {
+  const { portalThemeClassName } = useTheme();
   return (
     <div
       className={clsx("openui-bottom-tray-thread-item", {
@@ -27,26 +30,38 @@ const ThreadItem = ({
       </button>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <button className="openui-bottom-tray-thread-item-menu-trigger">
-            <EllipsisVerticalIcon size={14} />
-          </button>
+          <IconButton
+            icon={<EllipsisVerticalIcon size="1em" />}
+            aria-label={`More actions for ${title}`}
+            variant="tertiary"
+            size="extra-small"
+            className="openui-bottom-tray-thread-item-menu-trigger"
+          />
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content
-            className="openui-bottom-tray-thread-item-menu"
+            className={clsx("openui-bottom-tray-thread-item-menu", portalThemeClassName)}
             side="right"
             align="start"
             sideOffset={4}
           >
             <DropdownMenu.Item
-              className="openui-bottom-tray-thread-item-menu-action"
+              asChild
               onSelect={(e) => {
                 e.stopPropagation();
                 onDelete();
               }}
             >
-              <Trash2Icon size={14} className="openui-bottom-tray-thread-item-menu-icon" />
-              Delete
+              <Button
+                type="button"
+                variant="tertiary"
+                buttonType="destructive"
+                size="small"
+                iconLeft={<Trash2Icon size={14} />}
+                className="openui-bottom-tray-thread-item-menu-action"
+              >
+                Delete
+              </Button>
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
@@ -61,10 +76,11 @@ export const ThreadListContainer = () => {
   const loadThreads = useThreadList((s) => s.loadThreads);
   const selectThread = useThreadList((s) => s.selectThread);
   const deleteThread = useThreadList((s) => s.deleteThread);
+  const { portalThemeClassName } = useTheme();
 
   useEffect(() => {
     loadThreads();
-  }, []);
+  }, [loadThreads]);
 
   return (
     <DropdownMenu.Root>
@@ -78,7 +94,7 @@ export const ThreadListContainer = () => {
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="openui-bottom-tray-thread-list-dropdown"
+          className={clsx("openui-bottom-tray-thread-list-dropdown", portalThemeClassName)}
           side="bottom"
           align="end"
           sideOffset={8}

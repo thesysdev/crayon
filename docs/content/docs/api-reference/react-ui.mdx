@@ -136,3 +136,33 @@ npx @openuidev/cli@latest generate ./src/library.ts --out src/generated/system-p
 // Standalone renderer
 <Renderer response={message} library={openuiLibrary} />
 ```
+
+## Skeleton components
+
+`Skeleton` and `TableSkeleton` are loading-state placeholders that render while data-driven genui components wait for `Query()` results. They use theme-aware CSS variables and a pulsing opacity animation.
+
+```tsx
+import { Skeleton, TableSkeleton } from "@openuidev/react-ui";
+```
+
+### `Skeleton`
+
+A generic skeleton bar. Use standalone or with `count` for stacked bars.
+
+| Prop       | Type     | Default      | Description |
+|------------|----------|--------------|-------------|
+| `count`    | `number` | `1`          | Number of bars to stack |
+| `height`   | `string` | `"16px"`     | Bar height |
+| `width`    | `string` | `"100%"`     | Bar width |
+| `borderRadius` | `string` | `undefined` | Bar border radius (defaults to `--openui-radius-xs`) |
+
+### `TableSkeleton`
+
+A table-shaped placeholder used by the genui `Table` component while queries load.
+
+| Prop    | Type     | Default | Description |
+|---------|----------|---------|-------------|
+| `rows`  | `number` | `5`     | Number of skeleton rows |
+| `columns` | `number` | `4`   | Number of skeleton columns |
+
+Built-in genui components like `Table` automatically render `TableSkeleton` when `useIsQueryLoading()` is `true` and no data rows exist yet.

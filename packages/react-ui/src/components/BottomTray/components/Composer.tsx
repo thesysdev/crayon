@@ -43,6 +43,7 @@ export const Composer = ({ className, placeholder = "Type your message..." }: Co
   return (
     <div
       className={clsx("openui-bottom-tray-thread-composer", className)}
+      data-drafting={textContent.length > 0 || undefined}
       onClick={(e) => {
         if (!(e.target as HTMLElement).closest("button, a, [role='button']")) {
           inputRef.current?.focus();
@@ -68,7 +69,7 @@ export const Composer = ({ className, placeholder = "Type your message..." }: Co
           <IconButton
             onClick={isRunning ? cancelMessage : handleSubmit}
             icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
-            size="medium"
+            size="extra-small"
             variant="primary"
             className="openui-bottom-tray-thread-composer__submit-button"
           />

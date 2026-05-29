@@ -42,7 +42,7 @@ This is perfectly fine for what it does. LLMs know JSON quite well. It's one of 
 
 But look at that chart. The data is baked into the output. `[120, 150, 180]` is frozen in time the moment the LLM writes it. There's no filter dropdown, no date range picker, no refresh button. Want to change anything? Go back to the LLM. Every. Single. Time.
 
-We needed UIs that could actually *do* things on their own. Fetch data, manage state, respond to user input, call APIs. And we needed the LLM to wire all of that up in a single generation pass, then get out of the way.
+We needed UIs that could actually _do_ things on their own. Fetch data, manage state, respond to user input, call APIs. And we needed the LLM to wire all of that up in a single generation pass, then get out of the way.
 
 ## The JSON approach to interactivity (it gets ugly fast)
 
@@ -163,23 +163,28 @@ Their button validation example for "accept terms AND provide email or phone" lo
 
 ```json
 {
-  "checks": [{
-    "condition": {
-      "call": "and",
-      "args": {
-        "values": [
-          { "call": "required", "args": { "value": { "path": "/formData/terms" } } },
-          { "call": "or", "args": {
-              "values": [
-                { "call": "required", "args": { "value": { "path": "/formData/email" } } },
-                { "call": "required", "args": { "value": { "path": "/formData/phone" } } }
-              ]
-          }}
-        ]
-      }
-    },
-    "message": "You must accept terms AND provide either email or phone"
-  }]
+  "checks": [
+    {
+      "condition": {
+        "call": "and",
+        "args": {
+          "values": [
+            { "call": "required", "args": { "value": { "path": "/formData/terms" } } },
+            {
+              "call": "or",
+              "args": {
+                "values": [
+                  { "call": "required", "args": { "value": { "path": "/formData/email" } } },
+                  { "call": "required", "args": { "value": { "path": "/formData/phone" } } }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "message": "You must accept terms AND provide either email or phone"
+    }
+  ]
 }
 ```
 
@@ -205,7 +210,7 @@ Seven lines. `root` comes first so the UI shell renders immediately during strea
 
 You already saw what state binding and conditionals look like in JSON above. In OpenUI Lang, passing `$title` to a component binds it (undeclared variables are auto-created), and `item.completed ? "line-through" : "none"` is just a ternary. The LLM already knows how all of these work.
 
-The features that *don't* have clean JSON equivalents are more interesting.
+The features that _don't_ have clean JSON equivalents are more interesting.
 
 ### Data transforms and functional composition
 
@@ -291,7 +296,7 @@ Same result. Up to 80% fewer tokens, 5x faster edits.
 After switching from JSON, structural parse errors dropped to zero. It didn't just get better, it dropped to **zero**.
 The reason: there's no document-level nesting to get wrong. In JSON, a missing `}` on line 12 corrupts everything after it. In OpenUI Lang, each line is self-contained. Brackets close within the same line they opened on. The LLM can't accidentally leave a `{` unclosed and wreck 50 lines of output, because nothing on line 13 depends on line 12's brackets.
 
-The LLM still makes mistakes, but they're *semantic* instead of *structural*: wrong component name, missing a required prop, referencing a tool that doesn't exist.
+The LLM still makes mistakes, but they're _semantic_ instead of _structural_: wrong component name, missing a required prop, referencing a tool that doesn't exist.
 And because each statement has a name, OpenUI renderer returns diagnostics that read like linter output:
 
 ```json
@@ -382,8 +387,8 @@ Same app. One is 12 JSONL patch operations, each a dense line of nested JSON wit
 
 ## The space in between
 
-*JSON is a data format pretending to be a language.* <br />
-*JavaScript is a language with far more power than this problem needs.* <br />
+_JSON is a data format pretending to be a language._ <br />
+_JavaScript is a language with far more power than this problem needs._ <br />
 The interesting space is in between.
 
 When you bolt language features onto a data format, you end up reinventing programming concepts inside object literals: `{ "$cond": { "$state": "/path", "eq": value }, "$then": x, "$else": y }`. When you hand the LLM a full language, you get security headaches, streaming challenges, and models spending tokens on incidental complexity instead of UI design.

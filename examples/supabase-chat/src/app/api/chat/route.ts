@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
 
-const MODEL = process.env.OPENROUTER_MODEL ?? "openai/gpt-4o-mini";
+const MODEL = process.env.OPENROUTER_MODEL ?? "openai/gpt-5.5";
 
 /**
  * POST /api/chat

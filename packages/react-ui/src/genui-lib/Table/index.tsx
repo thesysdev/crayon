@@ -1,10 +1,11 @@
 "use client";
 
-import { defineComponent } from "@openuidev/react-lang";
+import { defineComponent, useIsQueryLoading } from "@openuidev/react-lang";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React from "react";
 import { z } from "zod/v4";
 import { IconButton } from "../../components/IconButton";
+import { TableSkeleton } from "../../components/Skeleton";
 import {
   ScrollableTable as OpenUITable,
   TableBody as OpenUITableBody,
@@ -34,12 +35,12 @@ export const Table = defineComponent({
   }),
   description: "Data table — column-oriented. Each Col holds its own data array.",
   component: ({ props, renderNode }) => {
+    const isQueryLoading = useIsQueryLoading();
     const effectivePageSize = DEFAULT_PAGE_SIZE;
 
     const [currentPage, setCurrentPage] = React.useState(0);
 
     const columns = props.columns ?? [];
-    if (!columns.length) return null;
 
     const colDefs = columns
       .filter((c: any) => c != null && c.props)
@@ -47,9 +48,15 @@ export const Table = defineComponent({
         label: c.props?.label ?? "",
         data: asArray(c.props?.data ?? []),
       }));
-    if (!colDefs.length) return null;
 
-    const rowCount = Math.max(...colDefs.map((c) => c.data.length), 0);
+    const rowCount = colDefs.length > 0 ? Math.max(...colDefs.map((c) => c.data.length), 0) : 0;
+
+    if (isQueryLoading && rowCount === 0) {
+      const skeletonCols = Math.max(colDefs.length || columns.length, 3);
+      return <TableSkeleton rows={5} columns={skeletonCols} />;
+    }
+
+    if (!colDefs.length) return null;
 
     const totalPages = Math.ceil(rowCount / effectivePageSize);
     const safePage = Math.min(currentPage, Math.max(0, totalPages - 1));

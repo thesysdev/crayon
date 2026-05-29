@@ -27,6 +27,9 @@ export interface OpenUIContextValue {
   /** Whether the LLM is currently streaming content. */
   isStreaming: boolean;
 
+  /** Whether any Query is currently fetching data (e.g., MCP tool calls in-flight). */
+  isQueryLoading: boolean;
+
   /** Get a field value. Top-level for $bindings, nested under formName for form fields. */
   getFieldValue: (formName: string | undefined, name: string) => any;
 
@@ -97,6 +100,14 @@ export function useTriggerAction() {
  */
 export function useIsStreaming() {
   return useOpenUI().isStreaming;
+}
+
+/**
+ * Whether any Query is currently fetching data.
+ * Useful for showing skeleton/loading states in data-driven components.
+ */
+export function useIsQueryLoading() {
+  return useOpenUI().isQueryLoading;
 }
 
 /**

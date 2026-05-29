@@ -81,6 +81,7 @@ interface FullScreenSpecificProps extends SharedChatUIProps {
 const FullScreenInner = ({
   logoUrl = "https://www.openui.com/favicon.svg",
   agentName = "My Agent",
+  showAssistantLogo = false,
   messageLoading: MessageLoadingComponent = MessageLoading,
   scrollVariant = "user-message-anchor",
   welcomeMessage,
@@ -97,7 +98,7 @@ const FullScreenInner = ({
   ) : null;
 
   return (
-    <Container logoUrl={logoUrl} agentName={agentName}>
+    <Container logoUrl={logoUrl} agentName={agentName} showAssistantLogo={showAssistantLogo}>
       <SidebarContainer>
         <SidebarHeader />
         <SidebarContent>

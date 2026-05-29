@@ -150,13 +150,24 @@ export const AssistantMessageContainer = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const { logoUrl } = useShellStore((store) => ({
+  const { logoUrl, showAssistantLogo } = useShellStore((store) => ({
     logoUrl: store.logoUrl,
+    showAssistantLogo: store.showAssistantLogo,
   }));
 
   return (
-    <div className={clsx("openui-shell-thread-message-assistant", className)}>
-      <img src={logoUrl} alt="Assistant" className="openui-shell-thread-message-assistant__logo" />
+    <div
+      className={clsx("openui-shell-thread-message-assistant", className, {
+        "openui-shell-thread-message-assistant--without-logo": !showAssistantLogo,
+      })}
+    >
+      {showAssistantLogo && (
+        <img
+          src={logoUrl}
+          alt="Assistant"
+          className="openui-shell-thread-message-assistant__logo"
+        />
+      )}
       <div className="openui-shell-thread-message-assistant__content">{children}</div>
     </div>
   );

@@ -1,10 +1,12 @@
 # @openuidev/react-headless
 
-Headless React primitives for [OpenUI](https://openui.com) — chat state management, streaming adapters, and message format converters. Build any chat UI while OpenUI handles the streaming, threading, and state.
+Headless React state and streaming primitives for OpenUI chat experiences. Bring your own UI; this package handles threads, messages, adapters, and message format conversion.
 
 [![npm](https://img.shields.io/npm/v/@openuidev/react-headless)](https://www.npmjs.com/package/@openuidev/react-headless)
 [![npm downloads](https://img.shields.io/npm/dm/@openuidev/react-headless)](https://www.npmjs.com/package/@openuidev/react-headless)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
+
+**Links:** [Package docs](https://openui.com/docs/api-reference/react-headless) | [Chat docs](https://openui.com/docs/chat) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -18,18 +20,18 @@ pnpm add @openuidev/react-headless
 
 ## Overview
 
-`@openuidev/react-headless` gives you everything needed to build a chat experience without imposing any UI. It provides:
+Use `@openuidev/react-headless` when you want OpenUI's chat behavior without OpenUI's visual components:
 
-- **`ChatProvider`** — A React context provider that manages threads, messages, and streaming state via a Zustand store.
-- **Selector hooks** — `useThread()` and `useThreadList()` to read and interact with chat state.
-- **Streaming adapters** — Parse SSE or SDK responses from OpenAI, AG-UI, or custom backends.
-- **Message formats** — Convert between your API's message format and the internal AG-UI format.
+- **`ChatProvider`** manages threads, messages, and streaming state through a Zustand store.
+- **Selector hooks** expose thread and thread-list state without coupling you to a layout.
+- **Streaming adapters** parse SSE or SDK responses from OpenAI, AG-UI, or custom backends.
+- **Message formats** convert between your API shape and OpenUI's internal AG-UI shape.
 
 ## Quick Start
 
 ### URL-based setup
 
-The simplest configuration — point to your API and the provider handles REST calls and streaming automatically:
+The simplest configuration points to your API and lets the provider handle REST calls and streaming automatically:
 
 ```tsx
 import { ChatProvider } from "@openuidev/react-headless";
@@ -185,7 +187,7 @@ import { ChatProvider, openAIAdapter } from "@openuidev/react-headless";
 
 | Adapter | Description |
 | :--- | :--- |
-| `agUIAdapter` | Default — parses AG-UI SSE events (`data: {json}\n`) |
+| `agUIAdapter` | Default adapter for AG-UI SSE events (`data: {json}\n`) |
 | `openAIAdapter` | Parses OpenAI Chat Completions streaming (`ChatCompletionChunk`) |
 | `openAIResponsesAdapter` | Parses OpenAI Responses API streaming (`ResponseStreamEvent`) |
 | `openAIReadableStreamAdapter` | Parses OpenAI SDK's `Stream.toReadableStream()` NDJSON output |
@@ -218,7 +220,7 @@ import { ChatProvider, openAIMessageFormat } from "@openuidev/react-headless";
 
 | Format | Description |
 | :--- | :--- |
-| `identityMessageFormat` | Default — no conversion (messages are already AG-UI format) |
+| `identityMessageFormat` | Default format when messages are already AG-UI shaped |
 | `openAIMessageFormat` | Converts to/from OpenAI `ChatCompletionMessageParam[]` |
 | `openAIConversationMessageFormat` | Converts to/from OpenAI Responses API `ResponseInputItem[]` |
 
@@ -263,7 +265,9 @@ import type {
 
 ## Documentation
 
-Full documentation and guides are available at **[openui.com](https://openui.com)**.
+- [React Headless API reference](https://openui.com/docs/api-reference/react-headless)
+- [Chat guides](https://openui.com/docs/chat)
+- [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/react-headless)
 
 ## License
 

@@ -43,6 +43,7 @@ export {
   FormNameContext,
   useFormName,
   useGetFieldValue,
+  useIsQueryLoading,
   useIsStreaming,
   useRenderNode,
   useSetDefaultValue,
