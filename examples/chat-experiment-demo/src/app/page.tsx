@@ -9,21 +9,12 @@ import {
   Candlestick,
   CandlestickChart,
   ChartTooltip,
-  ChoroplethChart,
-  type ChoroplethChartProps,
-  ChoroplethFeatureComponent,
-  ChoroplethGraticule,
-  ChoroplethTooltip,
   ComposedChart,
   FunnelChart,
   Gauge,
   Grid,
   Line,
   LineChart,
-  LiveLine,
-  LiveLineChart,
-  LiveXAxis,
-  LiveYAxis,
   PieCenter,
   PieChart,
   PieSlice,
@@ -35,18 +26,11 @@ import {
   Ring,
   RingCenter,
   RingChart,
-  SankeyChart,
-  SankeyLink,
-  SankeyNode,
-  SankeyTooltip,
   Scatter,
   ScatterChart,
   SeriesBar,
   XAxis,
 } from "@openuidev/chat-experiment";
-import { useEffect, useState } from "react";
-import * as topojson from "topojson-client";
-import worldRaw from "world-atlas/countries-110m.json";
 import {
   areaData,
   barData,
@@ -58,15 +42,8 @@ import {
   radarData,
   radarMetrics,
   ringData,
-  sankeyData,
   scatterData,
 } from "./sample-data";
-
-const worldGeo = topojson.feature(
-  worldRaw as unknown as Parameters<typeof topojson.feature>[0],
-  (worldRaw as unknown as { objects: { countries: unknown } }).objects
-    .countries as Parameters<typeof topojson.feature>[1]
-) as unknown as ChoroplethChartProps["data"];
 
 function Card({
   title,
@@ -105,45 +82,6 @@ function Centered({
       }}
     >
       {children}
-    </div>
-  );
-}
-
-function LiveDemo() {
-  const [data, setData] = useState<{ time: number; value: number }[]>(() => {
-    const now = Date.now() / 1000;
-    return Array.from({ length: 30 }, (_, i) => ({
-      time: now - (30 - i),
-      value: 100 + Math.sin(i / 3) * 8,
-    }));
-  });
-  const [value, setValue] = useState(100);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      const next =
-        100 + Math.sin(Date.now() / 1500) * 8 + (Math.random() - 0.5) * 4;
-      setData((prev) => [
-        ...prev.slice(-500),
-        { time: Date.now() / 1000, value: next },
-      ]);
-      setValue(next);
-    }, 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  return (
-    <div style={{ height: 300 }}>
-      <LiveLineChart data={data} value={value} window={30}>
-        <LiveLine
-          dataKey="value"
-          formatValue={(v) => `$${v.toFixed(2)}`}
-          stroke="var(--chart-line-primary)"
-        />
-        <ChartTooltip showDatePill={false} />
-        <LiveXAxis />
-        <LiveYAxis formatValue={(v) => `$${v.toFixed(2)}`} position="left" />
-      </LiveLineChart>
     </div>
   );
 }
@@ -233,10 +171,6 @@ export default function GalleryPage() {
           </ComposedChart>
         </Card>
 
-        <Card desc="Real-time streaming, scrolling axes, live dot." title="Live Line" wide>
-          <LiveDemo />
-        </Card>
-
         <Card desc="Animated donut slices + NumberFlow center." title="Pie / Donut">
           <Centered>
             <PieChart data={pieData} innerRadius={70} size={240}>
@@ -293,28 +227,6 @@ export default function GalleryPage() {
           <div style={{ height: 280 }}>
             <FunnelChart color="var(--chart-1)" data={funnelData} layers={3} />
           </div>
-        </Card>
-
-        <Card desc="Animated links + node hover tooltips." title="Sankey" wide>
-          <div style={{ height: 320 }}>
-            <SankeyChart data={sankeyData}>
-              <SankeyLink />
-              <SankeyNode lineCap={4} />
-              <SankeyTooltip />
-            </SankeyChart>
-          </div>
-        </Card>
-
-        <Card
-          desc="Geographic projection, region hover tooltip + zoom."
-          title="Choropleth"
-          wide
-        >
-          <ChoroplethChart aspectRatio="16 / 9" data={worldGeo}>
-            <ChoroplethGraticule />
-            <ChoroplethFeatureComponent fill="var(--chart-1)" />
-            <ChoroplethTooltip />
-          </ChoroplethChart>
         </Card>
       </div>
     </main>

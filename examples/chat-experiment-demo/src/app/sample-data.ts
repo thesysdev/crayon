@@ -1,8 +1,6 @@
 // Static sample datasets for the chart gallery. Shapes mirror the bklit-ui
 // component docs so each ported chart receives data it expects.
 
-import type { SankeyData } from "@openuidev/chat-experiment";
-
 const MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
@@ -118,23 +116,3 @@ export const ringData = [
   { label: "Paid", value: 3120, maxValue: 5000, color: "var(--chart-2)" },
   { label: "Email", value: 2100, maxValue: 5000, color: "var(--chart-3)" },
 ];
-
-export const sankeyData: SankeyData = {
-  nodes: [
-    { name: "Organic Search", category: "source" },
-    { name: "Direct", category: "source" },
-    { name: "Homepage", category: "landing" },
-    { name: "Pricing", category: "landing" },
-    { name: "Converted", category: "outcome" },
-    { name: "Bounced", category: "outcome" },
-  ],
-  links: [
-    { source: 0, target: 2, value: 100 },
-    { source: 1, target: 3, value: 60 },
-    { source: 0, target: 3, value: 40 },
-    { source: 2, target: 4, value: 70 },
-    { source: 2, target: 5, value: 30 },
-    { source: 3, target: 4, value: 65 },
-    { source: 3, target: 5, value: 35 },
-  ],
-};
