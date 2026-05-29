@@ -1,0 +1,91 @@
+{
+  "type": "module",
+  "name": "@openuidev/chat-experiment",
+  "license": "MIT",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Experimental bklit-style animated chart components for OpenUI (Visx + Motion + d3 + NumberFlow)",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.cts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./charts.css": {
+      "default": "./dist/charts.css"
+    }
+  },
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build:styles": "node scripts/build-styles.mjs",
+    "build:css": "pnpm build:styles && sass src/styles/index.scss dist/charts.css --style compressed --no-source-map",
+    "build:js": "tsdown",
+    "build": "rm -rf dist && pnpm build:css && pnpm build:js",
+    "typecheck": "tsc --noEmit",
+    "lint:check": "eslint ./src",
+    "lint:fix": "eslint ./src --fix",
+    "format:check": "prettier --check ./src",
+    "format:fix": "prettier --write ./src",
+    "ci": "pnpm run lint:check && pnpm run format:check"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "@number-flow/react": "^0.5.4",
+    "@visx/brush": "3.12.0",
+    "@visx/curve": "4.0.1-alpha.0",
+    "@visx/event": "4.0.1-alpha.0",
+    "@visx/geo": "4.0.1-alpha.0",
+    "@visx/gradient": "4.0.1-alpha.0",
+    "@visx/grid": "4.0.1-alpha.0",
+    "@visx/group": "4.0.1-alpha.0",
+    "@visx/pattern": "4.0.1-alpha.0",
+    "@visx/responsive": "4.0.1-alpha.0",
+    "@visx/sankey": "4.0.1-alpha.0",
+    "@visx/scale": "4.0.1-alpha.0",
+    "@visx/shape": "4.0.1-alpha.0",
+    "@visx/zoom": "4.0.1-alpha.0",
+    "clsx": "^2.1.1",
+    "d3-array": "3.2.4",
+    "d3-geo": "3.1.0",
+    "d3-scale": "4.0.2",
+    "d3-shape": "^3.2.0",
+    "motion": "^12.27.0",
+    "react-use-measure": "^2.1.7",
+    "topojson-client": "3.1.0"
+  },
+  "devDependencies": {
+    "@types/d3-array": "^3.2.1",
+    "@types/d3-geo": "^3.1.0",
+    "@types/d3-sankey": "^0.12.5",
+    "@types/d3-scale": "^4.0.9",
+    "@types/d3-shape": "^3.1.6",
+    "@types/geojson": "^7946.0.16",
+    "@types/node": "^22.12.0",
+    "@types/react": ">=19.0.0",
+    "@types/react-dom": ">=19.0.0",
+    "@types/topojson-client": "^3.1.5",
+    "@types/topojson-specification": "^1.0.5",
+    "eslint": "^9.0.0",
+    "sass": "^1.83.4",
+    "tsdown": "^0.21.7",
+    "typescript": "^5.9.3"
+  }
+}

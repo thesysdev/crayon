@@ -1,0 +1,203 @@
+// Funnel chart. Mirrors bklit's Tailwind:
+//   root:            relative w-full select-none overflow-visible
+//   grid-svg:        pointer-events-none absolute inset-0 h-full w-full
+//   segments:        absolute inset-0 flex overflow-visible (+ flex-row|flex-col)
+//   segment:         pointer-events-none relative shrink-0 overflow-visible
+//   entrance:        absolute inset-0 overflow-visible
+//   segment-svg:     absolute inset-0 h-full w-full overflow-visible
+//   hit (overlay):   absolute cursor-pointer
+//   label-overlay:   absolute inset-0 flex (+ flex-col|flex-row items-center, justify-*)
+//   cell:            flex (+ size / items / justify / padding per variant)
+//   group:           flex gap-1.5 (+ flex-col|flex-row, items-*)
+//   value:           whitespace-nowrap font-semibold text-foreground text-sm
+//   pct:             rounded-full bg-foreground px-3 py-1 font-bold text-background text-xs shadow-sm
+//   label:           whitespace-nowrap font-medium text-muted-foreground text-xs
+
+.ce-funnel {
+  position: relative;
+  width: 100%;
+  user-select: none;
+  overflow: visible;
+}
+
+.ce-funnel__grid-svg {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.ce-funnel__segments {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  overflow: visible;
+}
+
+.ce-funnel__segments--row {
+  flex-direction: row;
+}
+
+.ce-funnel__segments--col {
+  flex-direction: column;
+}
+
+.ce-funnel__segment {
+  pointer-events: none;
+  position: relative;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.ce-funnel__entrance {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.ce-funnel__segment-svg {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  overflow: visible;
+}
+
+// Per-segment hover trigger / label container (absolute cursor-pointer).
+.ce-funnel__hit {
+  position: absolute;
+  cursor: pointer;
+}
+
+// ── Label overlay ──────────────────────────────────────────────────
+.ce-funnel__label-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+.ce-funnel__label-overlay--col {
+  flex-direction: column;
+  align-items: center;
+}
+
+.ce-funnel__label-overlay--row {
+  flex-direction: row;
+  align-items: center;
+}
+
+// Justify modifiers (used by the grouped layout overlay).
+.ce-funnel--justify-start {
+  justify-content: flex-start;
+}
+
+.ce-funnel--justify-center {
+  justify-content: center;
+}
+
+.ce-funnel--justify-end {
+  justify-content: flex-end;
+}
+
+// Items modifiers (used by the grouped layout inner group).
+.ce-funnel--items-start {
+  align-items: flex-start;
+}
+
+.ce-funnel--items-center {
+  align-items: center;
+}
+
+.ce-funnel--items-end {
+  align-items: flex-end;
+}
+
+// ── Spread layout cells ────────────────────────────────────────────
+.ce-funnel__cell {
+  display: flex;
+}
+
+// flex flex-1 items-center justify-center
+.ce-funnel__cell--center {
+  flex: 1 1 0%;
+  align-items: center;
+  justify-content: center;
+}
+
+// flex h-[16%] items-end justify-center pb-1
+.ce-funnel__cell--h-top {
+  height: 16%;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0.25rem;
+}
+
+// flex h-[16%] items-start justify-center pt-1
+.ce-funnel__cell--h-bottom {
+  height: 16%;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 0.25rem;
+}
+
+// flex w-[16%] items-center justify-end pr-2
+.ce-funnel__cell--v-left {
+  width: 16%;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.5rem;
+}
+
+// flex w-[16%] items-center justify-start pl-2
+.ce-funnel__cell--v-right {
+  width: 16%;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 0.5rem;
+}
+
+// ── Grouped layout inner group (flex gap-1.5) ──────────────────────
+.ce-funnel__group {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.ce-funnel__group--col {
+  flex-direction: column;
+}
+
+.ce-funnel__group--row {
+  flex-direction: row;
+}
+
+// ── Label text pieces ──────────────────────────────────────────────
+.ce-funnel__value {
+  white-space: nowrap;
+  font-weight: 600;
+  color: var(--chart-foreground);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.ce-funnel__pct {
+  border-radius: 9999px;
+  background-color: var(--chart-foreground);
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  font-weight: 700;
+  color: var(--chart-background);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.ce-funnel__label {
+  white-space: nowrap;
+  font-weight: 500;
+  color: var(--chart-foreground-muted);
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
