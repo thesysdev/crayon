@@ -1,25 +1,36 @@
 import {
+  ArrowUpRight,
   BookOpen,
   Bot,
-  Boxes,
   Code2,
-  ExternalLink,
   Github,
   MonitorSmartphone,
   Package,
   PlugZap,
+  Plus,
   Server,
   Sparkles,
-  Users,
   Wrench,
 } from "lucide-react";
 import type { Metadata } from "next";
 import type { ComponentType } from "react";
 import { PillLink } from "../components/Button/Button";
 import { Footer } from "../sections/Footer/Footer";
+import { GradientDivider } from "../sections/GradientDivider/GradientDivider";
 import styles from "./page.module.css";
 
 type ProjectStatus = "Official" | "Community";
+
+const TYPE_ACCENT: Record<string, "blue" | "green" | "purple" | "orange" | "slate"> = {
+  Tool: "purple",
+  Plugin: "blue",
+  Provider: "green",
+  Extension: "blue",
+  Package: "purple",
+  Framework: "orange",
+  Example: "slate",
+  Article: "purple",
+};
 
 interface ProjectLink {
   label: string;
@@ -224,23 +235,7 @@ const projects: ProjectItem[] = [
   },
 ];
 
-const highlights = [
-  {
-    label: "Community projects",
-    value: projects.filter((item) => item.status === "Community").length.toString(),
-    accent: "purple",
-    icon: Users,
-  },
-  { label: "Featured projects", value: projects.length.toString(), accent: "slate", icon: Boxes },
-  {
-    label: "Discord",
-    value: "Share your projects with the community",
-    accent: "blue",
-    icon: DiscordIcon,
-    kind: "cta",
-    href: "https://discord.gg/suzHfJnpw",
-  },
-];
+const DISCORD_URL = "https://discord.gg/suzHfJnpw";
 
 export const metadata: Metadata = {
   title: "OpenUI Projects",
@@ -259,20 +254,7 @@ export const metadata: Metadata = {
   },
 };
 
-function ExternalIndicator({ external }: { external?: boolean }) {
-  if (!external) return null;
-  return <ExternalLink className={styles.linkIcon} strokeWidth={1.8} aria-hidden="true" />;
-}
-
-function LinkIcon({ label }: { label: string }) {
-  if (label === "GitHub") {
-    return <Github className={styles.linkIcon} strokeWidth={1.8} aria-hidden="true" />;
-  }
-
-  return <ExternalIndicator external />;
-}
-
-function DiscordIcon({ className }: { className?: string; strokeWidth?: number }) {
+function DiscordIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
@@ -286,11 +268,11 @@ export default function ProjectsPage() {
       <section className={styles.heroSection}>
         <div className={styles.heroInner}>
           <div className={styles.heroCopy}>
-            <div className={styles.eyebrow}>OpenUI projects</div>
             <h1 className={styles.title}>OpenUI Projects</h1>
             <p className={styles.subtitle}>
-              Official and community projects that extend OpenUI across plugins, framework packages,
-              local-model workflows, editor tools, and starter examples.
+              Tools, packages, plugins, and examples
+              <br />
+              for building with OpenUI across the stack.
             </p>
             <div className={styles.heroActions}>
               <PillLink
@@ -298,87 +280,46 @@ export default function ProjectsPage() {
                 href="https://github.com/thesysdev/openui/issues"
                 external
               >
+                <Plus className={styles.actionIcon} strokeWidth={2} aria-hidden="true" />
                 Submit a project
-                <ExternalLink className={styles.actionIcon} strokeWidth={1.8} aria-hidden="true" />
+              </PillLink>
+              <PillLink className={styles.secondaryAction} href={DISCORD_URL} external>
+                <DiscordIcon className={styles.actionIcon} />
+                Share on Discord
               </PillLink>
             </div>
-          </div>
-
-          <div className={styles.heroPanel} aria-label="Projects summary">
-            {highlights.map((item) => {
-              const Icon = item.icon;
-              const content = (
-                <>
-                  <div className={styles.metricTop}>
-                    <span className={styles.metricIconFrame}>
-                      <Icon className={styles.metricIcon} strokeWidth={1.8} aria-hidden="true" />
-                    </span>
-                    <span className={styles.metricValue}>{item.value}</span>
-                  </div>
-                  <span className={styles.metricLabel}>{item.label}</span>
-                </>
-              );
-
-              if (item.href) {
-                return (
-                  <a
-                    className={styles.metricTile}
-                    data-accent={item.accent}
-                    data-kind={item.kind}
-                    href={item.href}
-                    key={item.label}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {content}
-                  </a>
-                );
-              }
-
-              return (
-                <div
-                  className={styles.metricTile}
-                  data-accent={item.accent}
-                  data-kind={item.kind}
-                  key={item.label}
-                >
-                  {content}
-                </div>
-              );
-            })}
           </div>
         </div>
       </section>
 
-      <section className={styles.directorySection} id="directory">
+      <div className={styles.contentSection}>
+        <GradientDivider direction="down" compact />
+
+        <section className={styles.directorySection} id="directory">
         <div className={styles.sectionHeader}>
           <div>
-            <p className={styles.sectionKicker}>Directory</p>
             <h2 className={styles.sectionTitle}>Featured projects</h2>
           </div>
-          <p className={styles.sectionDescription}>
-            A curated starting point for projects that extend OpenUI beyond the core SDK.
-          </p>
+          <p className={styles.sectionDescription}>{projects.length} projects</p>
         </div>
 
         <div className={styles.grid}>
           {projects.map((item) => {
-            const Icon = item.icon;
-
             return (
-              <article className={styles.card} data-accent={item.accent} key={item.name}>
-                <div className={styles.cardTop}>
-                  <div className={styles.iconFrame}>
-                    <Icon className={styles.cardIcon} strokeWidth={1.8} aria-hidden="true" />
-                  </div>
-                  <div className={styles.tags}>
-                    <span className={styles.statusTag} data-status={item.status}>
-                      {item.status}
-                    </span>
-                    <span className={styles.typeTag}>{item.type}</span>
+              <article
+                className={styles.card}
+                data-accent={TYPE_ACCENT[item.type] ?? "slate"}
+                key={item.name}
+              >
+                <div className={styles.cardHeader}>
+                  <div className={styles.cardHeaderContent}>
+                    <h3 className={styles.cardTitle}>{item.name}</h3>
+                    <div className={styles.tags}>
+                      <span className={styles.typeTag}>{item.type}</span>
+                      <span className={styles.statusMeta}>by {item.status}</span>
+                    </div>
                   </div>
                 </div>
-                <h3 className={styles.cardTitle}>{item.name}</h3>
                 <p className={styles.cardDescription}>{item.description}</p>
                 <div className={styles.cardLinks}>
                   {item.links.map((link) => (
@@ -388,12 +329,19 @@ export default function ProjectsPage() {
                       key={`${item.name}-${link.label}`}
                       {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                     >
-                      {link.label === "GitHub" ? (
-                        <LinkIcon label={link.label} />
-                      ) : (
-                        <ExternalIndicator external={link.external} />
+                      {link.label === "GitHub" && (
+                        <Github
+                          className={styles.linkIcon}
+                          strokeWidth={1.8}
+                          aria-hidden="true"
+                        />
                       )}
                       {link.label}
+                      <ArrowUpRight
+                        className={styles.cardLinkArrow}
+                        strokeWidth={1.8}
+                        aria-hidden="true"
+                      />
                     </a>
                   ))}
                 </div>
@@ -401,26 +349,41 @@ export default function ProjectsPage() {
             );
           })}
         </div>
-      </section>
+        </section>
+
+        <GradientDivider direction="up" compact />
+      </div>
 
       <section className={styles.submitSection}>
         <div className={styles.submitCopy}>
-          <p className={styles.sectionKicker}>Contribute</p>
           <h2 className={styles.sectionTitle}>Add your project</h2>
-          <p className={styles.sectionDescription}>
-            Open an issue or PR with the package link, a short description, install steps,
-            maintainer contact, license, and whether it is official, community-maintained, or
-            experimental.
+          <p className={styles.submitDescription}>
+            Open an issue or PR with the items below, or share it in our Discord.
           </p>
+          <ol className={styles.submitSteps}>
+            <li>Package link &amp; description</li>
+            <li>Install steps</li>
+            <li>Maintainer contact &amp; license</li>
+            <li>
+              Status:&nbsp;
+              <span className={styles.stepDetail}>Official, Community, or Experimental</span>
+            </li>
+          </ol>
         </div>
-        <PillLink
-          className={styles.primaryAction}
-          href="https://github.com/thesysdev/openui/issues"
-          external
-        >
-          Submit a project
-          <ExternalLink className={styles.actionIcon} strokeWidth={1.8} aria-hidden="true" />
-        </PillLink>
+        <div className={styles.submitActions}>
+          <PillLink
+            className={styles.primaryAction}
+            href="https://github.com/thesysdev/openui/issues"
+            external
+          >
+            <Plus className={styles.actionIcon} strokeWidth={2} aria-hidden="true" />
+            Submit a project
+          </PillLink>
+          <PillLink className={styles.secondaryAction} href={DISCORD_URL} external>
+            <DiscordIcon className={styles.actionIcon} />
+            Share on Discord
+          </PillLink>
+        </div>
       </section>
 
       <Footer />
