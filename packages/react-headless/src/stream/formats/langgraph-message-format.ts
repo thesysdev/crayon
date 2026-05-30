@@ -1,5 +1,6 @@
 import type { AssistantMessage, Message, ToolMessage, UserMessage } from "../../types";
 import type { MessageFormat } from "../../types/messageFormat";
+import { safeRandomUUID } from "../../utils/safe-random-uuid";
 
 // ── LangGraph / LangChain message types ──────────────────────────
 
@@ -61,7 +62,7 @@ function toLangChainMessage(message: Message): LangChainMessage {
 // ── Inbound (LangGraph → AG-UI) ────────────────────────────────
 
 function fromLangChainMessage(msg: LangChainMessage): Message {
-  const id = msg.id ?? crypto.randomUUID();
+  const id = msg.id ?? safeRandomUUID();
 
   switch (msg.type) {
     case "human":
@@ -139,7 +140,7 @@ function safeParseArgs(args: string): Record<string, unknown> | string {
  * LangGraph → AG-UI (fromApi):
  *   - Maps `type` to `role` (`"human"` → `"user"`, `"ai"` → `"assistant"`)
  *   - Converts tool call `args` object to JSON string
- *   - Generates `id` via `crypto.randomUUID()` if not present
+ *   - Generates `id` via `safeRandomUUID()` if not present
  */
 export const langGraphMessageFormat: MessageFormat = {
   toApi(messages: Message[]): LangChainMessage[] {

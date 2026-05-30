@@ -3,6 +3,7 @@ import { subscribeWithSelector } from "zustand/middleware";
 import { processStreamedMessage } from "../stream/processStreamedMessage";
 import { identityMessageFormat } from "../types/messageFormat";
 import type { ChatProviderProps, ChatStore, Message, Thread, UserMessage } from "./types";
+import { safeRandomUUID } from "../utils/safe-random-uuid";
 
 type StoreConfig = Omit<ChatProviderProps, "children">;
 
@@ -213,7 +214,7 @@ export const createChatStore = (config: StoreConfig) => {
         const abortController = new AbortController();
         const optimisticMessage: UserMessage = {
           ...message,
-          id: crypto.randomUUID(),
+          id: safeRandomUUID(),
           role: "user",
         };
 

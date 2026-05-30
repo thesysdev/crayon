@@ -1,5 +1,6 @@
 import type { ChatCompletionChunk } from "openai/resources/chat/completions";
 import { AGUIEvent, EventType, StreamProtocolAdapter } from "../../types";
+import { safeRandomUUID } from "../../utils/safe-random-uuid";
 
 export const openAIAdapter = (): StreamProtocolAdapter => ({
   async *parse(response: Response): AsyncIterable<AGUIEvent> {
@@ -7,7 +8,7 @@ export const openAIAdapter = (): StreamProtocolAdapter => ({
     if (!reader) throw new Error("No response body");
 
     const decoder = new TextDecoder();
-    const messageId = crypto.randomUUID();
+    const messageId = safeRandomUUID();
     const toolCallIds: Record<number, string> = {};
     let messageStarted = false;
 

@@ -9,6 +9,7 @@ import type {
 } from "openai/resources/responses/responses";
 import type { AssistantMessage, Message, ToolMessage, UserMessage } from "../../types";
 import type { MessageFormat } from "../../types/messageFormat";
+import { safeRandomUUID } from "../../utils/safe-random-uuid";
 
 // ── Outbound (AG-UI → OpenAI Responses/Conversations input) ─────
 
@@ -162,7 +163,7 @@ function fromItems(items: ConversationItem[]): Message[] {
         const tc = item as { id?: string; call_id: string; name: string; arguments: string };
 
         if (!currentAssistant) {
-          currentAssistant = { id: crypto.randomUUID(), role: "assistant" };
+          currentAssistant = { id: safeRandomUUID(), role: "assistant" };
         }
 
         currentAssistant = {

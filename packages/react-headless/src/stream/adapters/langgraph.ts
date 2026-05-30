@@ -1,4 +1,5 @@
 import { AGUIEvent, EventType, StreamProtocolAdapter } from "../../types";
+import { safeRandomUUID } from "../../utils/safe-random-uuid";
 
 /**
  * Represents a LangGraph AI message (or chunk) as received in the
@@ -66,7 +67,7 @@ export const langGraphAdapter = (options?: LangGraphAdapterOptions): StreamProto
     if (!reader) throw new Error("No response body");
 
     const decoder = new TextDecoder();
-    const messageId = crypto.randomUUID();
+    const messageId = safeRandomUUID();
     const toolCallIds: Record<number, string> = {};
     let messageStarted = false;
     let buffer = "";
@@ -174,7 +175,7 @@ export const langGraphAdapter = (options?: LangGraphAdapterOptions): StreamProto
                 const tc = msg.tool_calls[i];
                 if (!tc) continue;
 
-                const toolCallId = tc.id || crypto.randomUUID();
+                const toolCallId = tc.id || safeRandomUUID();
 
                 // Only emit if we haven't already started this tool call
                 // via tool_call_chunks

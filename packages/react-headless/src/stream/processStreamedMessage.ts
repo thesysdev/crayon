@@ -1,5 +1,6 @@
 import { AssistantMessage, EventType, StreamProtocolAdapter } from "../types";
 import { agUIAdapter } from "./adapters";
+import { safeRandomUUID } from "../utils/safe-random-uuid";
 
 /**
  * @inline
@@ -27,7 +28,7 @@ export const processStreamedMessage = async ({
   adapter = agUIAdapter(),
 }: Parameters): Promise<AssistantMessage | void> => {
   let currentMessage: AssistantMessage = {
-    id: crypto.randomUUID(),
+    id: safeRandomUUID(),
     role: "assistant",
     content: "",
     toolCalls: [],

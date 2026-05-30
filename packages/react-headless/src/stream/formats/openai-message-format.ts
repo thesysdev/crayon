@@ -6,6 +6,7 @@ import type {
 } from "openai/resources/chat/completions";
 import type { AssistantMessage, Message, ToolMessage, UserMessage } from "../../types";
 import type { MessageFormat } from "../../types/messageFormat";
+import { safeRandomUUID } from "../../utils/safe-random-uuid";
 
 // ── Outbound (AG-UI → OpenAI Completions) ───────────────────────
 
@@ -83,7 +84,7 @@ function fromOpenAIAssistant(msg: ChatCompletionAssistantMessageParam): Assistan
   const content = typeof msg.content === "string" ? msg.content : undefined;
 
   const result: AssistantMessage = {
-    id: crypto.randomUUID(),
+    id: safeRandomUUID(),
     role: "assistant",
     content,
   };
@@ -106,7 +107,7 @@ function fromOpenAIAssistant(msg: ChatCompletionAssistantMessageParam): Assistan
 
 function fromOpenAIUser(msg: ChatCompletionUserMessageParam): UserMessage {
   if (typeof msg.content === "string") {
-    return { id: crypto.randomUUID(), role: "user", content: msg.content };
+    return { id: safeRandomUUID(), role: "user", content: msg.content };
   }
 
   const content = msg.content.map((part): { type: "text"; text: string } => {
@@ -114,7 +115,7 @@ function fromOpenAIUser(msg: ChatCompletionUserMessageParam): UserMessage {
     return { type: "text", text: "" };
   });
 
-  return { id: crypto.randomUUID(), role: "user", content };
+  return { id: safeRandomUUID(), role: "user", content };
 }
 
 function fromOpenAITool(msg: ChatCompletionToolMessageParam): ToolMessage {
@@ -122,7 +123,7 @@ function fromOpenAITool(msg: ChatCompletionToolMessageParam): ToolMessage {
     typeof msg.content === "string" ? msg.content : msg.content.map((p) => p.text).join("");
 
   return {
-    id: crypto.randomUUID(),
+    id: safeRandomUUID(),
     role: "tool",
     content,
     toolCallId: msg.tool_call_id,
@@ -139,18 +140,18 @@ function fromOpenAI(data: ChatCompletionMessageParam): Message {
       return fromOpenAITool(data);
     case "system":
       return {
-        id: crypto.randomUUID(),
+        id: safeRandomUUID(),
         role: "system",
         content: typeof data.content === "string" ? data.content : "",
       };
     case "developer":
       return {
-        id: crypto.randomUUID(),
+        id: safeRandomUUID(),
         role: "developer",
         content: typeof data.content === "string" ? data.content : "",
       };
     default:
-      return { id: crypto.randomUUID(), role: "system", content: "" };
+      return { id: safeRandomUUID(), role: "system", content: "" };
   }
 }
 
@@ -170,7 +171,7 @@ function fromOpenAI(data: ChatCompletionMessageParam): Message {
  *   - Converts multipart `content` arrays to OpenAI content format
  *
  * OpenAI → AG-UI (fromApi):
- *   - Generates `id` via `crypto.randomUUID()`
+ *   - Generates `id` via `safeRandomUUID()`
  *   - Converts `tool_calls` → `toolCalls`
  *   - Converts `tool_call_id` → `toolCallId`
  */

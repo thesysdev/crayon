@@ -1,5 +1,6 @@
 import type { ChatCompletionChunk } from "openai/resources/chat/completions";
 import { AGUIEvent, EventType, StreamProtocolAdapter } from "../../types";
+import { safeRandomUUID } from "../../utils/safe-random-uuid";
 
 /**
  * Adapter for streams produced by the OpenAI SDK's `Stream.toReadableStream()`.
@@ -12,7 +13,7 @@ export const openAIReadableStreamAdapter = (): StreamProtocolAdapter => ({
     if (!reader) throw new Error("No response body");
 
     const decoder = new TextDecoder();
-    const messageId = crypto.randomUUID();
+    const messageId = safeRandomUUID();
     const toolCallIds: Record<number, string> = {};
     let messageStarted = false;
     let buffer = "";
