@@ -25,6 +25,7 @@ const TYPE_ACCENT: Record<string, "blue" | "green" | "purple" | "orange" | "slat
   Tool: "purple",
   Plugin: "blue",
   Provider: "green",
+  App: "green",
   Extension: "blue",
   Package: "purple",
   Framework: "orange",
@@ -60,6 +61,19 @@ const projects: ProjectItem[] = [
     links: [
       { label: "GitHub", href: "https://github.com/OthmanAdi/openui-forge", external: true },
       { label: "Website", href: "https://spruce-prism-8yya.here.now/", external: true },
+    ],
+  },
+  {
+    name: "GAIA",
+    description:
+      "A proactive personal AI assistant for inboxes, calendars, tools, and workflows built with OpenUI.",
+    type: "App",
+    status: "Community",
+    accent: "green",
+    icon: Bot,
+    links: [
+      { label: "Website", href: "https://heygaia.io/", external: true },
+      { label: "GitHub", href: "https://github.com/theexperiencecompany/gaia", external: true },
     ],
   },
   {
@@ -296,59 +310,59 @@ export default function ProjectsPage() {
         <GradientDivider direction="down" compact />
 
         <section className={styles.directorySection} id="directory">
-        <div className={styles.sectionHeader}>
-          <div>
-            <h2 className={styles.sectionTitle}>Featured projects</h2>
+          <div className={styles.sectionHeader}>
+            <div>
+              <h2 className={styles.sectionTitle}>Featured projects</h2>
+            </div>
+            <p className={styles.sectionDescription}>{projects.length} projects</p>
           </div>
-          <p className={styles.sectionDescription}>{projects.length} projects</p>
-        </div>
 
-        <div className={styles.grid}>
-          {projects.map((item) => {
-            return (
-              <article
-                className={styles.card}
-                data-accent={TYPE_ACCENT[item.type] ?? "slate"}
-                key={item.name}
-              >
-                <div className={styles.cardHeader}>
-                  <div className={styles.cardHeaderContent}>
-                    <h3 className={styles.cardTitle}>{item.name}</h3>
-                    <div className={styles.tags}>
-                      <span className={styles.typeTag}>{item.type}</span>
-                      <span className={styles.statusMeta}>by {item.status}</span>
+          <div className={styles.grid}>
+            {projects.map((item) => {
+              return (
+                <article
+                  className={styles.card}
+                  data-accent={TYPE_ACCENT[item.type] ?? "slate"}
+                  key={item.name}
+                >
+                  <div className={styles.cardHeader}>
+                    <div className={styles.cardHeaderContent}>
+                      <h3 className={styles.cardTitle}>{item.name}</h3>
+                      <div className={styles.tags}>
+                        <span className={styles.typeTag}>{item.type}</span>
+                        <span className={styles.statusMeta}>by {item.status}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <p className={styles.cardDescription}>{item.description}</p>
-                <div className={styles.cardLinks}>
-                  {item.links.map((link) => (
-                    <a
-                      className={styles.cardLink}
-                      href={link.href}
-                      key={`${item.name}-${link.label}`}
-                      {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                    >
-                      {link.label === "GitHub" && (
-                        <Github
-                          className={styles.linkIcon}
+                  <p className={styles.cardDescription}>{item.description}</p>
+                  <div className={styles.cardLinks}>
+                    {item.links.map((link) => (
+                      <a
+                        className={styles.cardLink}
+                        href={link.href}
+                        key={`${item.name}-${link.label}`}
+                        {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                      >
+                        {link.label === "GitHub" && (
+                          <Github
+                            className={styles.linkIcon}
+                            strokeWidth={1.8}
+                            aria-hidden="true"
+                          />
+                        )}
+                        {link.label}
+                        <ArrowUpRight
+                          className={styles.cardLinkArrow}
                           strokeWidth={1.8}
                           aria-hidden="true"
                         />
-                      )}
-                      {link.label}
-                      <ArrowUpRight
-                        className={styles.cardLinkArrow}
-                        strokeWidth={1.8}
-                        aria-hidden="true"
-                      />
-                    </a>
-                  ))}
-                </div>
-              </article>
-            );
-          })}
-        </div>
+                      </a>
+                    ))}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </section>
 
         <GradientDivider direction="up" compact />
