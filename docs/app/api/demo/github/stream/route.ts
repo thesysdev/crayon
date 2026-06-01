@@ -1,8 +1,8 @@
-import { BASE_URL } from "@/lib/source";
 import {
   createDemoCreditsExhaustedResponse,
   isDemoCreditsExhaustedError,
 } from "@/lib/demo-credits";
+import { BASE_URL } from "@/lib/source";
 import { generatePrompt, type PromptSpec } from "@openuidev/lang-core";
 import { readFileSync } from "fs";
 import { type NextRequest } from "next/server";
@@ -100,6 +100,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Keep credit handling to provider 4xx responses. Provider-specific mid-stream
+  // error chunks are intentionally passed through because they are harder to
+  // maintain across OpenRouter/OpenAI streaming shape changes.
   return new Response(res.body, {
     headers: {
       "Content-Type": "text/event-stream",

@@ -1,5 +1,7 @@
 "use client";
 
+import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
+import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { mergeStatements } from "@openuidev/react-lang";
 import { Button } from "@openuidev/react-ui";
 import { encode } from "gpt-tokenizer";
@@ -18,8 +20,6 @@ import {
 import { useTheme } from "next-themes";
 import { Highlight, themes } from "prism-react-renderer";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
-import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { ConversationPanel } from "./components/ConversationPanel/ConversationPanel";
 import { GitHubConnect } from "./components/GitHubConnect/GitHubConnect";
 import { Header } from "./components/Header/Header";
@@ -179,20 +179,24 @@ async function streamChat(
         onDone();
         return STREAM_RESULT.Done;
       }
+      let parsed: {
+        error?: unknown;
+        choices?: Array<{ delta?: { content?: string }; finish_reason?: string }>;
+      };
       try {
-        const parsed = JSON.parse(data) as {
-          choices: Array<{ delta: { content?: string } }>;
-        };
-        const content = parsed.choices[0]?.delta?.content;
-        if (content) {
-          if (!firstChunkFired) {
-            firstChunkFired = true;
-            onFirstChunk?.();
-          }
-          onChunk(content);
-        }
+        parsed = JSON.parse(data);
       } catch {
         // skip malformed chunks
+        continue;
+      }
+
+      const content = parsed.choices?.[0]?.delta?.content;
+      if (content) {
+        if (!firstChunkFired) {
+          firstChunkFired = true;
+          onFirstChunk?.();
+        }
+        onChunk(content);
       }
     }
   }
@@ -231,7 +235,7 @@ export default function GitHubDemoPage() {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
-  const [showCreditsDialog, setShowCreditsDialog] = useState(false);
+  const [showGitHubCreditsDialog, setShowGitHubCreditsDialog] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
   const responseRef = useRef("");
@@ -308,7 +312,7 @@ export default function GitHubDemoPage() {
     setShowSource(false);
     setParsedJson(null);
     setErrorMsg("");
-    setShowCreditsDialog(false);
+    setShowGitHubCreditsDialog(false);
   };
 
   // ── Send message ─────────────────────────────────────────────────────
@@ -322,7 +326,7 @@ export default function GitHubDemoPage() {
       setStartTime(null);
       setElapsed(null);
       setErrorMsg("");
-      setShowCreditsDialog(false);
+      setShowGitHubCreditsDialog(false);
       responseRef.current = "";
       setStreamingText("");
       setToolCalls([]);
@@ -420,7 +424,7 @@ export default function GitHubDemoPage() {
           abortRef.current = null;
           setStatus("idle");
           setStreamResponseHasCode(false);
-          setShowCreditsDialog(true);
+          setShowGitHubCreditsDialog(true);
         }
       } catch (err: unknown) {
         if (err instanceof Error && err.name === "AbortError") {
@@ -727,8 +731,8 @@ export default function GitHubDemoPage() {
       {/* Error banner */}
       {status === "error" && errorMsg && <div className="error-banner">{errorMsg}</div>}
       <DemoCreditsDialog
-        open={showCreditsDialog}
-        onClose={() => setShowCreditsDialog(false)}
+        open={showGitHubCreditsDialog}
+        onClose={() => setShowGitHubCreditsDialog(false)}
       />
     </div>
   );

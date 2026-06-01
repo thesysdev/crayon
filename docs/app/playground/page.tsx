@@ -1,10 +1,10 @@
 "use client";
 
+import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
+import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { Send, Square } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCallback, useRef, useState } from "react";
-import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
-import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { CodePanel } from "./components/CodePanel/CodePanel";
 import { Header } from "./components/Header/Header";
 import { PreviewPanel } from "./components/PreviewPanel/PreviewPanel";
@@ -18,7 +18,7 @@ export default function PlaygroundPage() {
   const [parsedJson, setParsedJson] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
-  const [showCreditsDialog, setShowCreditsDialog] = useState(false);
+  const [showPlaygroundCreditsDialog, setShowPlaygroundCreditsDialog] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -51,7 +51,7 @@ export default function PlaygroundPage() {
     setCode("");
     setParsedJson(null);
     setErrorMsg("");
-    setShowCreditsDialog(false);
+    setShowPlaygroundCreditsDialog(false);
     setStatus("streaming");
 
     try {
@@ -65,7 +65,7 @@ export default function PlaygroundPage() {
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         if (isDemoCreditsErrorPayload((err as { error?: unknown }).error)) {
-          setShowCreditsDialog(true);
+          setShowPlaygroundCreditsDialog(true);
           setStatus("idle");
           return;
         }
@@ -91,15 +91,19 @@ export default function PlaygroundPage() {
             setStatus("done");
             return;
           }
+          let parsed: {
+            error?: unknown;
+            choices?: Array<{ delta?: { content?: string }; finish_reason?: string }>;
+          };
           try {
-            const parsed = JSON.parse(data) as {
-              choices: Array<{ delta: { content?: string } }>;
-            };
-            const content = parsed.choices[0]?.delta?.content;
-            if (content) setCode((prev) => prev + content);
+            parsed = JSON.parse(data);
           } catch {
             // skip malformed chunks
+            continue;
           }
+
+          const content = parsed.choices?.[0]?.delta?.content;
+          if (content) setCode((prev) => prev + content);
         }
       }
       setStatus("done");
@@ -208,8 +212,8 @@ export default function PlaygroundPage() {
         </div>
       </div>
       <DemoCreditsDialog
-        open={showCreditsDialog}
-        onClose={() => setShowCreditsDialog(false)}
+        open={showPlaygroundCreditsDialog}
+        onClose={() => setShowPlaygroundCreditsDialog(false)}
       />
     </div>
   );

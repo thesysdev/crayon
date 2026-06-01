@@ -34,26 +34,11 @@ export function isDemoCreditsErrorPayload(value: unknown): value is DemoCreditsE
   );
 }
 
-function errorText(value: unknown): string {
-  if (value instanceof Error) {
-    return `${value.name} ${value.message}`.toLowerCase();
-  }
-  if (typeof value === "string") return value.toLowerCase();
-  try {
-    return JSON.stringify(value).toLowerCase();
-  } catch {
-    return "";
-  }
-}
-
 function hasPaymentRequiredCode(value: unknown, depth = 0): boolean {
   if (depth > 4 || typeof value !== "object" || value === null) return false;
 
   for (const [key, child] of Object.entries(value)) {
-    if (
-      ["code", "status", "statusCode"].includes(key) &&
-      (child === 402 || child === "402")
-    ) {
+    if (["code", "status", "statusCode"].includes(key) && (child === 402 || child === "402")) {
       return true;
     }
 
@@ -65,30 +50,9 @@ function hasPaymentRequiredCode(value: unknown, depth = 0): boolean {
   return false;
 }
 
-function hasSignal(text: string, signal: string): boolean {
-  return new RegExp(`(^|[^a-z0-9_])${signal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^a-z0-9_]|$)`).test(
-    text,
-  );
-}
-
 export function isDemoCreditsExhaustedError(error: unknown, status?: number): boolean {
   if (status === 402) return true;
-  if (hasPaymentRequiredCode(error)) return true;
-
-  const text = errorText(error);
-  if (!text) return false;
-
-  return [
-    DEMO_CREDITS_EXHAUSTED_CODE,
-    "insufficient_quota",
-    "insufficient credits",
-    "insufficient quota",
-    "insufficient balance",
-    "requires more credits",
-    "can only afford",
-    "payment required",
-    "out of credits",
-  ].some((signal) => hasSignal(text, signal));
+  return hasPaymentRequiredCode(error);
 }
 
 export function createDemoCreditsExhaustedResponse(): Response {

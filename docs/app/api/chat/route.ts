@@ -1,7 +1,3 @@
-import {
-  createDemoCreditsErrorPayload,
-  isDemoCreditsExhaustedError,
-} from "@/lib/demo-credits";
 import { readFileSync } from "fs";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
@@ -375,6 +371,9 @@ export async function POST(req: NextRequest) {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       runner.on("chunk", (chunk: any) => {
+        // Keep credit handling to non-2xx responses. Provider-specific mid-stream
+        // chunks are intentionally ignored because they are harder to maintain
+        // across OpenRouter/OpenAI streaming shape changes.
         const choice = chunk.choices?.[0];
         const delta = choice?.delta;
         if (!delta) return;
@@ -388,6 +387,8 @@ export async function POST(req: NextRequest) {
       });
 
       runner.on("end", () => {
+        if (controllerClosed) return;
+
         conversationLog.push({ role: "assistant", content: fullResponse });
         console.info(
           "[OpenUI Lang] Conversation:\n",
@@ -403,15 +404,7 @@ export async function POST(req: NextRequest) {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       runner.on("error", (err: any) => {
-        if (isDemoCreditsExhaustedError(err)) {
-          enqueue(
-            encoder.encode(
-              `data: ${JSON.stringify({ error: createDemoCreditsErrorPayload() })}\n\n`,
-            ),
-          );
-          close();
-          return;
-        }
+        if (controllerClosed) return;
 
         const msg = err instanceof Error ? err.message : "Stream error";
         console.error("Chat route error:", msg);
