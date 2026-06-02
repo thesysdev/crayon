@@ -8,7 +8,7 @@ const meta: Meta<typeof MessageLoading> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { MessageLoading } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { MessageLoading } from '@openuidev/react-ui';\n```",
       },
     },
   },

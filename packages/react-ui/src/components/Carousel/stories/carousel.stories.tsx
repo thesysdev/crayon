@@ -36,7 +36,7 @@ const meta: Meta<typeof Carousel> = {
     docs: {
       description: {
         component:
-          "```tsx\nimport { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious } from '@openui-ui/react-ui';\n```",
+          "```tsx\nimport { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious } from '@openuidev/react-ui';\n```",
       },
     },
   },

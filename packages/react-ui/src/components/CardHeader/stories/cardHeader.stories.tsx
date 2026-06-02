@@ -10,7 +10,7 @@ const meta: Meta<typeof CardHeader> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { CardHeader } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { CardHeader } from '@openuidev/react-ui';\n```",
       },
     },
   },

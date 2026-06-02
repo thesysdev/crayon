@@ -8,7 +8,7 @@ const meta: Meta<typeof CheckBoxItem> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { CheckBoxItem } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { CheckBoxItem } from '@openuidev/react-ui';\n```",
       },
     },
   },

@@ -13,7 +13,7 @@ const meta: Meta<typeof FollowUpBlock> = {
     docs: {
       description: {
         component:
-          "```tsx\nimport { FollowUpBlock, FollowUpItem } from '@openui-ui/react-ui';\n```",
+          "```tsx\nimport { FollowUpBlock, FollowUpItem } from '@openuidev/react-ui';\n```",
       },
     },
   },

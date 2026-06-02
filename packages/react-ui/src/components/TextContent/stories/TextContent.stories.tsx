@@ -9,7 +9,7 @@ const meta: Meta<typeof TextContent> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { TextContent } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { TextContent } from '@openuidev/react-ui';\n```",
       },
     },
   },

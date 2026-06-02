@@ -14,7 +14,7 @@ const meta: Meta<typeof FormControl> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { FormControl, Hint } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { FormControl, Hint } from '@openuidev/react-ui';\n```",
       },
     },
   },

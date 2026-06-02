@@ -454,7 +454,7 @@ const meta: Meta<ScatterChartProps> = {
 ## Installation and Basic Usage
 
 \`\`\`tsx
-import { ScatterChart } from '@openui-ui/react-ui/Charts/ScatterChart';
+import { ScatterChart } from '@openuidev/react-ui/Charts/ScatterChart';
 
 const scatterData = [
   { x: 100, y: 200, category: "A" },

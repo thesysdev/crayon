@@ -12,7 +12,7 @@ const meta: Meta<typeof SwitchGroup> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { SwitchGroup, SwitchItem } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { SwitchGroup, SwitchItem } from '@openuidev/react-ui';\n```",
       },
     },
   },
