@@ -396,6 +396,13 @@ describe("createChatStore", () => {
     beforeEach(() => {
       fetchSpy = vi.fn();
       vi.stubGlobal("fetch", fetchSpy);
+      // processStreamedMessage debounces updates via requestAnimationFrame,
+      // which is absent in the node test environment. Run callbacks synchronously.
+      vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) => {
+        cb(0);
+        return 0;
+      });
+      vi.stubGlobal("cancelAnimationFrame", () => {});
     });
 
     it("sends POST to apiUrl with threadId and messages", async () => {
@@ -456,6 +463,79 @@ describe("createChatStore", () => {
       expect(store.getState().messages[0].role).toBe("user");
       expect(store.getState().messages[1].role).toBe("assistant");
       expect((store.getState().messages[1] as any).content).toBe("response text");
+    });
+
+    it("accumulates REASONING_MESSAGE_CONTENT into the assistant message's reasoning", async () => {
+      const sseBody =
+        `data: ${JSON.stringify({ type: "REASONING_MESSAGE_START", messageId: "r1", role: "reasoning" })}\n\n` +
+        `data: ${JSON.stringify({ type: "REASONING_MESSAGE_CONTENT", messageId: "r1", delta: "let me " })}\n\n` +
+        `data: ${JSON.stringify({ type: "REASONING_MESSAGE_CONTENT", messageId: "r1", delta: "think" })}\n\n` +
+        `data: ${JSON.stringify({ type: "REASONING_MESSAGE_END", messageId: "r1" })}\n\n` +
+        `data: [DONE]\n\n`;
+      const stream = new ReadableStream({
+        start(c) {
+          c.enqueue(new TextEncoder().encode(sseBody));
+          c.close();
+        },
+      });
+      fetchSpy.mockResolvedValue(new Response(stream));
+
+      const store = createChatStore({ apiUrl: "/api/chat" });
+      store.setState({ selectedThreadId: "t1" });
+
+      await store.getState().processMessage({ role: "user", content: "hello" });
+
+      const assistant = store.getState().messages[1] as any;
+      expect(assistant.role).toBe("assistant");
+      expect(assistant.reasoning).toBe("let me think");
+    });
+
+    it("leaves reasoning undefined when no reasoning events are streamed", async () => {
+      const sseBody = `data: ${JSON.stringify({ type: "TEXT_MESSAGE_CONTENT", delta: "just an answer" })}\n\ndata: [DONE]\n\n`;
+      const stream = new ReadableStream({
+        start(c) {
+          c.enqueue(new TextEncoder().encode(sseBody));
+          c.close();
+        },
+      });
+      fetchSpy.mockResolvedValue(new Response(stream));
+
+      const store = createChatStore({ apiUrl: "/api/chat" });
+      store.setState({ selectedThreadId: "t1" });
+
+      await store.getState().processMessage({ role: "user", content: "hello" });
+
+      const assistant = store.getState().messages[1] as any;
+      expect(assistant.role).toBe("assistant");
+      expect(assistant.content).toBe("just an answer");
+      expect(assistant.reasoning).toBeUndefined();
+    });
+
+    it("preserves reasoning across a TEXT_MESSAGE_START id swap and colocates it with content", async () => {
+      const sseBody =
+        `data: ${JSON.stringify({ type: "REASONING_MESSAGE_CONTENT", messageId: "r1", delta: "thinking..." })}\n\n` +
+        `data: ${JSON.stringify({ type: "TEXT_MESSAGE_START", messageId: "m1", role: "assistant" })}\n\n` +
+        `data: ${JSON.stringify({ type: "TEXT_MESSAGE_CONTENT", messageId: "m1", delta: "answer" })}\n\n` +
+        `data: [DONE]\n\n`;
+      const stream = new ReadableStream({
+        start(c) {
+          c.enqueue(new TextEncoder().encode(sseBody));
+          c.close();
+        },
+      });
+      fetchSpy.mockResolvedValue(new Response(stream));
+
+      const store = createChatStore({ apiUrl: "/api/chat" });
+      store.setState({ selectedThreadId: "t1" });
+
+      await store.getState().processMessage({ role: "user", content: "hello" });
+
+      const assistants = store.getState().messages.filter((m) => m.role === "assistant");
+      expect(assistants).toHaveLength(1);
+      const assistant = assistants[0] as any;
+      expect(assistant.id).toBe("m1");
+      expect(assistant.reasoning).toBe("thinking...");
+      expect(assistant.content).toBe("answer");
     });
 
     it("throws when neither apiUrl nor processMessage provided", async () => {

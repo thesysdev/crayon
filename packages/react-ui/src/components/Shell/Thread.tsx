@@ -11,6 +11,7 @@ import type { AssistantMessageComponent, UserMessageComponent } from "../_shared
 import { Callout } from "../Callout";
 import { MarkDownRenderer } from "../MarkDownRenderer";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
+import { ReasoningSection } from "../Reasoning";
 import { ToolCallComponent } from "../ToolCall";
 import { ToolResult } from "../ToolResult";
 import { ResizableSeparator } from "./ResizableSeparator";
@@ -189,9 +190,11 @@ export const UserMessageContainer = ({
 const AssistantMessageContent = ({
   message,
   allMessages,
+  isStreaming,
 }: {
   message: AssistantMessage;
   allMessages: Message[];
+  isStreaming: boolean;
 }) => {
   // Find tool result messages that correspond to this message's tool calls
   const getToolName = (toolCallId: string) => {
@@ -215,6 +218,11 @@ const AssistantMessageContent = ({
 
   return (
     <>
+      <ReasoningSection
+        reasoning={message.reasoning}
+        isStreaming={isStreaming}
+        hasContent={!!message.content}
+      />
       {message.content && (
         <MarkDownRenderer
           textMarkdown={message.content}
@@ -290,7 +298,11 @@ export const RenderMessage = memo(
       }
       return (
         <AssistantMessageContainer className={className}>
-          <AssistantMessageContent message={message} allMessages={allMessages} />
+          <AssistantMessageContent
+            message={message}
+            allMessages={allMessages}
+            isStreaming={isStreaming}
+          />
         </AssistantMessageContainer>
       );
     }

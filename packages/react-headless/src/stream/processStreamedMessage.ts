@@ -95,6 +95,19 @@ export const processStreamedMessage = async ({
         }
         break;
 
+      // Reasoning/thinking deltas, colocated on the assistant turn. CHUNK may
+      // carry a role change but, like TEXT_MESSAGE_CHUNK, we treat it as CONTENT.
+      // The reasoning's own messageId is ignored — a later TEXT_MESSAGE_START
+      // swaps in the real assistant id, and the spread preserves `reasoning`.
+      // (START/END carry no payload we need, so they fall through unhandled.)
+      case EventType.REASONING_MESSAGE_CHUNK:
+      case EventType.REASONING_MESSAGE_CONTENT:
+        currentMessage = {
+          ...currentMessage,
+          reasoning: (currentMessage.reasoning || "") + (event.delta ?? ""),
+        };
+        break;
+
       case EventType.TEXT_MESSAGE_START:
         // Use the ID from the event if it differs from our optimistic ID
         if (event.messageId !== currentMessage.id) {
