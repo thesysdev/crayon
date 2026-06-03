@@ -31,6 +31,15 @@ import {
   SeriesBar,
   XAxis,
 } from "@openuidev/chat-experiment";
+import { RawD3Area } from "./RawD3Area";
+import { RawD3Bar } from "./RawD3Bar";
+import { RawD3Candlestick } from "./RawD3Candlestick";
+import { RawD3Composed } from "./RawD3Composed";
+import { RawD3Line } from "./RawD3Line";
+import { RawD3Pie } from "./RawD3Pie";
+import { RawD3Radar } from "./RawD3Radar";
+import { RawD3Ring } from "./RawD3Ring";
+import { RawD3Scatter } from "./RawD3Scatter";
 import {
   areaData,
   barData,
@@ -110,6 +119,13 @@ export default function GalleryPage() {
           </LineChart>
         </Card>
 
+        <Card
+          desc="Same chart drawn with raw d3 (d3-selection + transition), no Visx."
+          title="Line — raw d3"
+        >
+          <RawD3Line />
+        </Card>
+
         <Card desc="Stacked gradient areas with hover tooltip." title="Area">
           <AreaChart data={areaData}>
             <Grid horizontal />
@@ -118,6 +134,13 @@ export default function GalleryPage() {
             <XAxis />
             <ChartTooltip />
           </AreaChart>
+        </Card>
+
+        <Card
+          desc="Same chart drawn with raw d3 (gradient fill + clip reveal), no Visx."
+          title="Area — raw d3"
+        >
+          <RawD3Area />
         </Card>
 
         <Card desc="Spring entrance + grouped bars, hover dim." title="Bar">
@@ -138,6 +161,13 @@ export default function GalleryPage() {
           </BarChart>
         </Card>
 
+        <Card
+          desc="Same chart drawn with raw d3 (spring entrance + hover dim), no Visx."
+          title="Bar — raw d3"
+        >
+          <RawD3Bar />
+        </Card>
+
         <Card desc="Ring markers, fade/blur on hover." title="Scatter">
           <ScatterChart data={scatterData}>
             <Grid horizontal />
@@ -148,6 +178,13 @@ export default function GalleryPage() {
           </ScatterChart>
         </Card>
 
+        <Card
+          desc="Same chart drawn with raw d3 (ring markers + fade/blur), no Visx."
+          title="Scatter — raw d3"
+        >
+          <RawD3Scatter />
+        </Card>
+
         <Card desc="OHLC candles with entrance animation." title="Candlestick">
           <CandlestickChart data={ohlcData}>
             <Grid horizontal />
@@ -155,6 +192,13 @@ export default function GalleryPage() {
             <XAxis />
             <ChartTooltip />
           </CandlestickChart>
+        </Card>
+
+        <Card
+          desc="Same chart drawn with raw d3 (scaleY entrance + hover dim), no Visx."
+          title="Candlestick — raw d3"
+        >
+          <RawD3Candlestick />
         </Card>
 
         <Card
@@ -171,6 +215,13 @@ export default function GalleryPage() {
           </ComposedChart>
         </Card>
 
+        <Card
+          desc="Same chart drawn with raw d3 (shared scale, clip reveal), no Visx."
+          title="Composed — raw d3"
+        >
+          <RawD3Composed />
+        </Card>
+
         <Card desc="Animated donut slices + NumberFlow center." title="Pie / Donut">
           <Centered>
             <PieChart data={pieData} innerRadius={70} size={240}>
@@ -179,6 +230,15 @@ export default function GalleryPage() {
               ))}
               <PieCenter defaultLabel="Total" />
             </PieChart>
+          </Centered>
+        </Card>
+
+        <Card
+          desc="Same chart drawn with raw d3 (slice sweep + pop-out, rolling center), no Visx."
+          title="Pie / Donut — raw d3"
+        >
+          <Centered>
+            <RawD3Pie />
           </Centered>
         </Card>
 
@@ -193,6 +253,15 @@ export default function GalleryPage() {
           </Centered>
         </Card>
 
+        <Card
+          desc="Same chart drawn with raw d3 (progress sweep + hover push, rolling center), no Visx."
+          title="Ring — raw d3"
+        >
+          <Centered>
+            <RawD3Ring />
+          </Centered>
+        </Card>
+
         <Card desc="Animated polygons, per-axis hover." title="Radar">
           <Centered height={340}>
             <RadarChart data={radarData} metrics={radarMetrics} size={300}>
@@ -203,6 +272,15 @@ export default function GalleryPage() {
                 <RadarArea index={index} key={item.label} />
               ))}
             </RadarChart>
+          </Centered>
+        </Card>
+
+        <Card
+          desc="Same chart drawn with raw d3 (grid + axes grow-in, polygon hover scale + glow), no Visx."
+          title="Radar — raw d3"
+        >
+          <Centered height={340}>
+            <RawD3Radar />
           </Centered>
         </Card>
 
