@@ -72,8 +72,20 @@ const projects: ProjectItem[] = [
     accent: "green",
     icon: Bot,
     links: [
-      { label: "Website", href: "https://heygaia.io/", external: true },
       { label: "GitHub", href: "https://github.com/theexperiencecompany/gaia", external: true },
+      { label: "Website", href: "https://heygaia.io/", external: true },
+    ],
+  },
+  {
+    name: "Field Theory UI",
+    description:
+      "A local-first web interface for exploring X/Twitter bookmarks with OpenUI-powered interactive dashboards.",
+    type: "App",
+    status: "Community",
+    accent: "green",
+    icon: MonitorSmartphone,
+    links: [
+      { label: "GitHub", href: "https://github.com/Gitmaxd/field-theory-ui", external: true },
     ],
   },
   {
