@@ -105,23 +105,6 @@ function getStockPrice({ symbol }: { symbol: string }): Promise<string> {
   });
 }
 
-function calculate({ expression }: { expression: string }): Promise<string> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      try {
-        const sanitized = expression.replace(
-          /[^0-9+\-*/().%\s,Math.sqrtpowabsceilfloorround]/g,
-          "",
-        );
-        const result = new Function(`return (${sanitized})`)();
-        resolve(JSON.stringify({ expression, result: Number(result) }));
-      } catch {
-        resolve(JSON.stringify({ expression, error: "Invalid expression" }));
-      }
-    }, 300);
-  });
-}
-
 function searchWeb({ query }: { query: string }): Promise<string> {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -177,20 +160,6 @@ const tools: any[] = [
         required: ["symbol"],
       },
       function: getStockPrice,
-      parse: JSON.parse,
-    },
-  },
-  {
-    type: "function",
-    function: {
-      name: "calculate",
-      description: "Evaluate a math expression.",
-      parameters: {
-        type: "object",
-        properties: { expression: { type: "string", description: "Math expression to evaluate" } },
-        required: ["expression"],
-      },
-      function: calculate,
       parse: JSON.parse,
     },
   },
