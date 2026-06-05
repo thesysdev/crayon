@@ -19,7 +19,6 @@ export function SavedSidebar({
 }: SavedSidebarProps) {
   return (
     <aside className="saved-sidebar">
-      <div className="saved-sidebar-title">Saved dashboards</div>
       <button className="saved-sidebar-new" onClick={onNew}>
         <Plus size={14} strokeWidth={2} />
         New dashboard

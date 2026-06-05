@@ -13,7 +13,6 @@ import {
   Copy,
   GitPullRequest,
   Hexagon,
-  Save,
   Search,
   Zap,
   type LucideIcon,
@@ -232,18 +231,16 @@ export default function GitHubDemoPage() {
   const [parsedJson, setParsedJson] = useState<string | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
 
-  // Saved dashboards (localStorage)
   const [savedDashboards, setSavedDashboards] = useState<SavedDashboard[]>([]);
   const [activeSavedId, setActiveSavedId] = useState<string | null>(null);
   const [convCollapsed, setConvCollapsed] = useState(false);
 
+  const activeSavedIdRef = useRef<string | null>(null);
+  const githubUsernameRef = useRef<string | null>(null);
+
   useEffect(() => {
     setSavedDashboards(getSavedDashboards());
   }, []);
-
-  // The saved entry the current dashboard maps to (drives Save vs Update).
-  const activeSaved = savedDashboards.find((d) => d.id === activeSavedId) ?? null;
-  const isSavedClean = activeSaved !== null && activeSaved.code === dashboardCode;
 
   // Conversation
   const [conversation, setConversation] = useState<ChatMessage[]>([]);
@@ -313,6 +310,7 @@ export default function GitHubDemoPage() {
       setToolCalls([...calls]);
     });
     resetToolCallsRef.current = resetCalls;
+    githubUsernameRef.current = username;
     setGithubUsername(username);
     setToolProvider(wrapped);
   }, []);
@@ -321,6 +319,8 @@ export default function GitHubDemoPage() {
     abortRef.current?.abort();
     abortRef.current = null;
     clearCache();
+    githubUsernameRef.current = null;
+    activeSavedIdRef.current = null;
     setGithubUsername(null);
     setToolProvider(null);
     setDashboardCode(null);
@@ -366,16 +366,10 @@ export default function GitHubDemoPage() {
       setConversation(updated);
       const existingCode = dashboardCode;
 
-      // Build API messages
-      const apiMessages = updated.map((m, i) => {
-        if (m.role === "user" && i === updated.length - 1 && existingCode) {
-          return {
-            role: m.role,
-            content: `${m.content}\n\n<current-dashboard>\n${existingCode}\n</current-dashboard>`,
-          };
-        }
-        return { role: m.role, content: m.content };
-      });
+      const apiMessages = updated.map((m) => ({ role: m.role, content: m.content }));
+      const currentTurn = existingCode
+        ? `${trimmed}\n\n<current-dashboard>\n${existingCode}\n</current-dashboard>`
+        : trimmed;
 
       // Prefetch GitHub data on first message to warm cache + give LLM context
       // Use raw (unwrapped) tools to avoid triggering tool-call tracking side effects
@@ -394,7 +388,7 @@ export default function GitHubDemoPage() {
       try {
         const streamResult = await streamChat(
           {
-            prompt: githubContext ? `${githubContext}\n\n${trimmed}` : trimmed,
+            prompt: githubContext ? `${githubContext}\n\n${currentTurn}` : currentTurn,
             messages: apiMessages.slice(0, -1),
           },
           (chunk) => {
@@ -433,6 +427,24 @@ export default function GitHubDemoPage() {
               if (newCode) {
                 const merged = existingCode ? mergeStatements(existingCode, newCode) : newCode;
                 setDashboardCode(merged);
+
+                // Auto-save: one entry per session, upserted in place on every
+                // successful generation/edit. Only real code is persisted, so
+                // prose/error replies never create or pollute a saved entry.
+                const username = githubUsernameRef.current;
+                if (username) {
+                  const firstPrompt = updated.find((m) => m.role === "user")?.content.trim();
+                  const title = firstPrompt ? firstPrompt.slice(0, 60) : `@${username} dashboard`;
+                  const saved = upsertDashboard({
+                    id: activeSavedIdRef.current,
+                    username,
+                    title,
+                    code: merged,
+                  });
+                  activeSavedIdRef.current = saved.id;
+                  setActiveSavedId(saved.id);
+                  setSavedDashboards(getSavedDashboards());
+                }
               }
             }
           },
@@ -488,20 +500,6 @@ export default function GitHubDemoPage() {
 
   // ── Saved dashboards ───────────────────────────────────────────────────
 
-  const handleSaveDashboard = () => {
-    if (!dashboardCode || !githubUsername) return;
-    const firstPrompt = conversation.find((m) => m.role === "user")?.content.trim();
-    const title = firstPrompt ? firstPrompt.slice(0, 60) : `@${githubUsername} dashboard`;
-    const saved = upsertDashboard({
-      id: activeSavedId,
-      username: githubUsername,
-      title,
-      code: dashboardCode,
-    });
-    setSavedDashboards(getSavedDashboards());
-    setActiveSavedId(saved.id);
-  };
-
   const handleSelectSaved = (d: SavedDashboard) => {
     abortRef.current?.abort();
     abortRef.current = null;
@@ -517,18 +515,21 @@ export default function GitHubDemoPage() {
     setElapsed(null);
     setDashboardCode(d.code);
     setStatus("done");
+    activeSavedIdRef.current = d.id;
     setActiveSavedId(d.id);
     setConvCollapsed(true);
   };
 
   const handleDeleteSaved = (id: string) => {
     setSavedDashboards(deleteSavedDashboard(id));
-    if (activeSavedId === id) setActiveSavedId(null);
+    if (activeSavedId === id) {
+      activeSavedIdRef.current = null;
+      setActiveSavedId(null);
+    }
   };
 
   const handleNewDashboard = () => {
     handleDisconnect();
-    setActiveSavedId(null);
   };
 
   // ── Render ─────────────────────────────────────────────────────────────
@@ -625,16 +626,6 @@ export default function GitHubDemoPage() {
                     <Code2 size={12} />
                     {showSource ? "Hide code" : "View code"}
                   </Button>
-                  <Button
-                    className="dashboard-source-toggle"
-                    variant="tertiary"
-                    size="extra-small"
-                    onClick={handleSaveDashboard}
-                    disabled={isSavedClean}
-                  >
-                    {isSavedClean ? <Check size={12} /> : <Save size={12} />}
-                    {isSavedClean ? "Saved" : activeSaved ? "Update" : "Save"}
-                  </Button>
                 </div>
               )}
 
@@ -729,14 +720,6 @@ export default function GitHubDemoPage() {
                     className="gh-connected-avatar"
                   />
                   <span>@{githubUsername}</span>
-                  <Button
-                    className="gh-connected-change"
-                    variant="tertiary"
-                    size="extra-small"
-                    onClick={handleDisconnect}
-                  >
-                    Change
-                  </Button>
                 </div>
               )}
 
