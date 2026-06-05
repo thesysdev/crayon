@@ -246,7 +246,7 @@ describe("markdown fences and multiline comments in strings", () => {
   });
 
   it("preserves python fenced code blocks inside strings", () => {
-    const code = 'root = Title("```python\\nprint(\'hi\')\\n```")';
+    const code = "root = Title(\"```python\\nprint('hi')\\n```\")";
     const result = parse(code, schema);
     expect(result.meta.errors).toHaveLength(0);
     expect(result.root).not.toBeNull();
@@ -261,7 +261,7 @@ https://example.com/
     const result = parse(code, schema);
     expect(result.meta.errors).toHaveLength(0);
     expect(result.root).not.toBeNull();
-    expect(result.root?.props.text).toBe('\nHello // World\nhttps://example.com/\n');
+    expect(result.root?.props.text).toBe("\nHello // World\nhttps://example.com/\n");
   });
 
   it("preserves # inside multiline strings", () => {
@@ -272,6 +272,6 @@ https://example.com/
     const result = parse(code, schema);
     expect(result.meta.errors).toHaveLength(0);
     expect(result.root).not.toBeNull();
-    expect(result.root?.props.text).toBe('\nHello # World\nhttps://example.com/\n');
+    expect(result.root?.props.text).toBe("\nHello # World\nhttps://example.com/\n");
   });
 });
