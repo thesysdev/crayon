@@ -2,7 +2,7 @@
 // Statement splitter for openui-lang
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { T, type Token } from "./tokens";
+import { T, type Token, tokenText } from "./tokens";
 
 export interface RawStmt {
   id: string;
@@ -69,7 +69,7 @@ export function autoClose(input: string): { text: string; wasIncomplete: boolean
  *
  * Invalid lines (no `=`, or no identifier) are silently skipped.
  */
-export function split(tokens: Token[]): RawStmt[] {
+export function split(tokens: Token[], skipped?: string[]): RawStmt[] {
   const stmts: RawStmt[] = [];
   let pos = 0;
 
@@ -81,7 +81,12 @@ export function split(tokens: Token[]): RawStmt[] {
     // Expect: Ident|Type|StateVar = expression
     const tok = tokens[pos];
     if (tok.t !== T.Ident && tok.t !== T.Type && tok.t !== T.StateVar) {
-      while (pos < tokens.length && tokens[pos].t !== T.Newline && tokens[pos].t !== T.EOF) pos++;
+      let text = "";
+      while (pos < tokens.length && tokens[pos].t !== T.Newline && tokens[pos].t !== T.EOF) {
+        text += tokenText(tokens[pos]);
+        pos++;
+      }
+      if (skipped && text.trim()) skipped.push(text.trim());
       continue;
     }
     const id = tok.v as string;
@@ -90,7 +95,12 @@ export function split(tokens: Token[]): RawStmt[] {
 
     // Must be followed by `=`
     if (pos >= tokens.length || tokens[pos].t !== T.Equals) {
-      while (pos < tokens.length && tokens[pos].t !== T.Newline && tokens[pos].t !== T.EOF) pos++;
+      let text = id;
+      while (pos < tokens.length && tokens[pos].t !== T.Newline && tokens[pos].t !== T.EOF) {
+        text += tokenText(tokens[pos]);
+        pos++;
+      }
+      if (skipped && text.trim()) skipped.push(text.trim());
       continue;
     }
     pos++;
