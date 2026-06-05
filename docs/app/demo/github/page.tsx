@@ -334,6 +334,7 @@ export default function GitHubDemoPage() {
     setParsedJson(null);
     setErrorMsg("");
     setShowGitHubCreditsDialog(false);
+    setActiveSavedId(null);
   };
 
   // ── Send message ─────────────────────────────────────────────────────
