@@ -274,4 +274,16 @@ https://example.com/
     expect(result.root).not.toBeNull();
     expect(result.root?.props.text).toBe("\nHello # World\nhttps://example.com/\n");
   });
+
+  it("does not treat apostrophes as string delimiters when stripping fences", () => {
+    const code = `Here's the code:
+
+\`\`\`js
+root = Title("hello")
+\`\`\``;
+    const result = parse(code, schema);
+    expect(result.meta.errors).toHaveLength(0);
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props.text).toBe("hello");
+  });
 });
