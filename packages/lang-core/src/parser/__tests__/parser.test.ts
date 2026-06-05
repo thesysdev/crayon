@@ -235,3 +235,61 @@ describe("orphaned statements", () => {
     expect(result.meta.orphaned).toHaveLength(0);
   });
 });
+
+// ── strict mode ────────────────────────────────────────────────────────────────
+
+describe("strict mode", () => {
+  it("ignores non-statement lines by default (non-strict)", () => {
+    const result = parse(
+      'Here is the response:\nroot = Stack([Title("hi")])',
+      schema,
+    );
+    expect(result.meta.errors).toHaveLength(0);
+    expect(result.root).not.toBeNull();
+  });
+
+  it("reports non-statement lines as errors in strict mode", () => {
+    const result = parse(
+      'Here is the response:\nroot = Stack([Title("hi")])',
+      schema,
+      undefined,
+      true,
+    );
+    expect(result.meta.errors.length).toBeGreaterThan(0);
+    expect(result.meta.errors[0].code).toBe("parse-failed");
+    expect(result.meta.errors[0].message).toMatch(/unexpected text/i);
+  });
+
+  it("reports invalid identifier lines in strict mode", () => {
+    const result = parse(
+      'foo bar\nroot = Stack([Title("hi")])',
+      schema,
+      undefined,
+      true,
+    );
+    expect(result.meta.errors.length).toBeGreaterThan(0);
+    expect(result.meta.errors[0].code).toBe("parse-failed");
+  });
+
+  it("still parses valid statements correctly in strict mode", () => {
+    const result = parse(
+      'root = Stack([Title("hi")])',
+      schema,
+      undefined,
+      true,
+    );
+    expect(result.meta.errors).toHaveLength(0);
+    expect(result.root).not.toBeNull();
+  });
+
+  it("reports multiple invalid lines", () => {
+    const result = parse(
+      'some text\nmore noise\nroot = Stack([Title("hi")])',
+      schema,
+      undefined,
+      true,
+    );
+    expect(result.meta.errors).toHaveLength(2);
+    expect(result.meta.errors.every((e: { code: string }) => e.code === "parse-failed")).toBe(true);
+  });
+});
