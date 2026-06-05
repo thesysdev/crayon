@@ -1,10 +1,12 @@
 "use client";
 
 import Box from "@mui/material/Box";
+import type { SxProps, Theme } from "@mui/material/styles";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { defineComponent } from "@openuidev/react-lang";
+import { useEffect, useRef, type ReactNode } from "react";
 import { z } from "zod";
 
 import { asArray, buildPie, buildSeries, hasAllProps } from "../helpers";
@@ -12,6 +14,45 @@ import { CHART_PALETTE } from "../theme";
 
 const CHART_HEIGHT = 260;
 const CHART_MARGIN = { top: 16, right: 16, bottom: 30, left: 44 };
+
+// The x-charts tooltip anchors a Popper to the pointer's viewport coordinates. Inside
+// this scrolling chat surface, Popper's default `preventOverflow` modifier detects a
+// bad clipping boundary and clamps the tooltip's vertical position to the top of the
+// viewport — so on hover it renders far above the bars, detached from the chart.
+// Disabling `preventOverflow` lets the tooltip sit at the pointer where it belongs
+// (`flip` is kept, so it still flips sides near the right edge).
+const CHART_TOOLTIP_SLOT_PROPS = {
+  popper: { popperOptions: { modifiers: [{ name: "preventOverflow", enabled: false }] } },
+};
+
+// Even correctly anchored, the tooltip is portaled to <body> and won't follow the
+// chart when the chat surface scrolls — it would stay at its last pointer position and
+// drift away from the bars. A hover tooltip's intent is gone the moment the user
+// scrolls, so we dismiss it: on any scroll we send a synthetic pointerleave to the
+// chart's SVG surface, which clears the interaction state and closes the tooltip.
+// Scroll events don't bubble but do reach `window` in the capture phase, so one window
+// listener covers the scrolling chat container.
+function ChartFrame({ children, sx }: { children: ReactNode; sx?: SxProps<Theme> }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const dismissTooltip = () => {
+      node.querySelector("svg")?.dispatchEvent(
+        new PointerEvent("pointerleave", { bubbles: true, pointerType: "mouse" }),
+      );
+    };
+    window.addEventListener("scroll", dismissTooltip, { capture: true, passive: true });
+    return () => window.removeEventListener("scroll", dismissTooltip, { capture: true });
+  }, []);
+
+  return (
+    <Box ref={ref} sx={sx}>
+      {children}
+    </Box>
+  );
+}
 
 // ── Virtual sub-components (data-only) ──
 
@@ -59,8 +100,9 @@ export const BarChartComponent = defineComponent({
     const stacked = props.variant === "stacked";
 
     return (
-      <Box sx={{ width: "100%" }}>
+      <ChartFrame sx={{ width: "100%" }}>
         <BarChart
+          slotProps={CHART_TOOLTIP_SLOT_PROPS}
           height={CHART_HEIGHT}
           margin={CHART_MARGIN}
           xAxis={[{ data: labels, scaleType: "band", label: props.xLabel }]}
@@ -72,7 +114,7 @@ export const BarChartComponent = defineComponent({
             ...(stacked ? { stack: "total" } : {}),
           }))}
         />
-      </Box>
+      </ChartFrame>
     );
   },
 });
@@ -95,8 +137,9 @@ export const LineChartComponent = defineComponent({
     if (!series.length) return null;
 
     return (
-      <Box sx={{ width: "100%" }}>
+      <ChartFrame sx={{ width: "100%" }}>
         <LineChart
+          slotProps={CHART_TOOLTIP_SLOT_PROPS}
           height={CHART_HEIGHT}
           margin={CHART_MARGIN}
           xAxis={[{ data: labels, scaleType: "point", label: props.xLabel }]}
@@ -109,7 +152,7 @@ export const LineChartComponent = defineComponent({
             showMark: false,
           }))}
         />
-      </Box>
+      </ChartFrame>
     );
   },
 });
@@ -129,8 +172,9 @@ export const PieChartComponent = defineComponent({
     const colored = data.map((d, i) => ({ ...d, color: CHART_PALETTE[i % CHART_PALETTE.length] }));
 
     return (
-      <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
+      <ChartFrame sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
         <PieChart
+          slotProps={CHART_TOOLTIP_SLOT_PROPS}
           height={CHART_HEIGHT}
           series={[
             {
@@ -141,7 +185,7 @@ export const PieChartComponent = defineComponent({
             },
           ]}
         />
-      </Box>
+      </ChartFrame>
     );
   },
 });
