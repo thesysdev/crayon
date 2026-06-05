@@ -13,6 +13,7 @@ import {
   Copy,
   GitPullRequest,
   Hexagon,
+  Save,
   Search,
   Zap,
   type LucideIcon,
@@ -24,6 +25,7 @@ import { ConversationPanel } from "./components/ConversationPanel/ConversationPa
 import { GitHubConnect } from "./components/GitHubConnect/GitHubConnect";
 import { Header } from "./components/Header/Header";
 import { PreviewPanel } from "./components/PreviewPanel/PreviewPanel";
+import { SavedSidebar } from "./components/SavedSidebar/SavedSidebar";
 import {
   GITHUB_DEMO_MODEL_LABEL,
   GITHUB_STARTERS,
@@ -36,6 +38,12 @@ import {
   type ToolCallEntry,
 } from "./constants";
 import { clearCache, createGitHubToolProvider, prefetchAndSummarize } from "./github/tools";
+import {
+  deleteSavedDashboard,
+  getSavedDashboards,
+  upsertDashboard,
+  type SavedDashboard,
+} from "./saved/store";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -224,6 +232,19 @@ export default function GitHubDemoPage() {
   const [parsedJson, setParsedJson] = useState<string | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
 
+  // Saved dashboards (localStorage)
+  const [savedDashboards, setSavedDashboards] = useState<SavedDashboard[]>([]);
+  const [activeSavedId, setActiveSavedId] = useState<string | null>(null);
+  const [convCollapsed, setConvCollapsed] = useState(false);
+
+  useEffect(() => {
+    setSavedDashboards(getSavedDashboards());
+  }, []);
+
+  // The saved entry the current dashboard maps to (drives Save vs Update).
+  const activeSaved = savedDashboards.find((d) => d.id === activeSavedId) ?? null;
+  const isSavedClean = activeSaved !== null && activeSaved.code === dashboardCode;
+
   // Conversation
   const [conversation, setConversation] = useState<ChatMessage[]>([]);
   const [streamingText, setStreamingText] = useState("");
@@ -322,6 +343,7 @@ export default function GitHubDemoPage() {
       if (!text.trim() || isStreaming) return;
       const trimmed = text.trim();
 
+      setConvCollapsed(false);
       setStatus("streaming");
       setStartTime(null);
       setElapsed(null);
@@ -463,9 +485,54 @@ export default function GitHubDemoPage() {
     [handleConnect],
   );
 
+  // ── Saved dashboards ───────────────────────────────────────────────────
+
+  const handleSaveDashboard = () => {
+    if (!dashboardCode || !githubUsername) return;
+    const firstPrompt = conversation.find((m) => m.role === "user")?.content.trim();
+    const title = firstPrompt ? firstPrompt.slice(0, 60) : `@${githubUsername} dashboard`;
+    const saved = upsertDashboard({
+      id: activeSavedId,
+      username: githubUsername,
+      title,
+      code: dashboardCode,
+    });
+    setSavedDashboards(getSavedDashboards());
+    setActiveSavedId(saved.id);
+  };
+
+  const handleSelectSaved = (d: SavedDashboard) => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    clearCache();
+    handleConnect(d.username);
+    setConversation([]);
+    setStreamingText("");
+    setToolCalls([]);
+    setStreamResponseHasCode(false);
+    setShowSource(false);
+    setParsedJson(null);
+    setErrorMsg("");
+    setElapsed(null);
+    setDashboardCode(d.code);
+    setStatus("done");
+    setActiveSavedId(d.id);
+    setConvCollapsed(true);
+  };
+
+  const handleDeleteSaved = (id: string) => {
+    setSavedDashboards(deleteSavedDashboard(id));
+    if (activeSavedId === id) setActiveSavedId(null);
+  };
+
+  const handleNewDashboard = () => {
+    handleDisconnect();
+    setActiveSavedId(null);
+  };
+
   // ── Render ─────────────────────────────────────────────────────────────
 
-  const showConversation = conversation.length > 0 || isStreaming;
+  const showConversation = conversation.length > 0 || isStreaming || hasDashboard;
 
   return (
     <div className={`app ${isHomeState ? "app-home" : "app-artifact"}`}>
@@ -476,6 +543,17 @@ export default function GitHubDemoPage() {
       />
 
       <div className={`app-body ${isHomeState ? "app-body-home" : ""}`}>
+        {/* Saved dashboards sidebar */}
+        {savedDashboards.length > 0 && (
+          <SavedSidebar
+            dashboards={savedDashboards}
+            activeId={activeSavedId}
+            onSelect={handleSelectSaved}
+            onDelete={handleDeleteSaved}
+            onNew={handleNewDashboard}
+          />
+        )}
+
         {/* Phase 1: Connect Screen */}
         {isHomeState && (
           <div className="content-wrapper content-wrapper-home">
@@ -545,6 +623,16 @@ export default function GitHubDemoPage() {
                   >
                     <Code2 size={12} />
                     {showSource ? "Hide code" : "View code"}
+                  </Button>
+                  <Button
+                    className="dashboard-source-toggle"
+                    variant="tertiary"
+                    size="extra-small"
+                    onClick={handleSaveDashboard}
+                    disabled={isSavedClean}
+                  >
+                    {isSavedClean ? <Check size={12} /> : <Save size={12} />}
+                    {isSavedClean ? "Saved" : activeSaved ? "Update" : "Save"}
                   </Button>
                 </div>
               )}
@@ -722,6 +810,8 @@ export default function GitHubDemoPage() {
                 onStop={handleStop}
                 hasDashboard={hasDashboard}
                 responseHasCode={streamResponseHasCode}
+                collapsed={convCollapsed}
+                onToggleCollapsed={() => setConvCollapsed((v) => !v)}
               />
             )}
           </div>
