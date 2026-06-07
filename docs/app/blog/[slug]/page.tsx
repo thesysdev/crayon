@@ -1,5 +1,6 @@
 import { PillLink } from "@/app/(home)/components/Button/Button";
-import { blog } from "@/lib/source";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { BASE_URL, blog, getBlogImage } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { TOCItems } from "fumadocs-ui/components/toc/default";
 import { TOCProvider, TOCScrollArea } from "fumadocs-ui/components/toc/index";
@@ -21,8 +22,38 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
   if (!page) notFound();
   const Mdx = page.data.body;
 
+  const url = `${BASE_URL}${page.url}`;
+  const imageUrl = `${BASE_URL}${getBlogImage(page).url}`;
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: page.data.title,
+      description: page.data.description,
+      image: imageUrl,
+      datePublished: new Date(page.data.date).toISOString(),
+      author: { "@type": "Person", name: page.data.author },
+      publisher: {
+        "@type": "Organization",
+        name: "OpenUI",
+        logo: { "@type": "ImageObject", url: `${BASE_URL}/favicon.svg` },
+      },
+      mainEntityOfPage: { "@type": "WebPage", "@id": url },
+      url,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Blog", item: `${BASE_URL}/blog` },
+        { "@type": "ListItem", position: 2, name: page.data.title, item: url },
+      ],
+    },
+  ];
+
   return (
     <TOCProvider toc={page.data.toc}>
+      <JsonLd data={jsonLd} />
       <main className="mx-auto flex w-full max-w-[1200px] gap-4 px-4 pt-16 pb-40 lg:gap-28 lg:pr-8 min-[1249px]:pl-0 min-[1024px]:max-[1248px]:pl-8">
         <aside className="hidden w-56 shrink-0 lg:block">
           <div className="sticky top-24">
@@ -68,9 +99,28 @@ export async function generateMetadata(props: {
 
   if (!page) notFound();
 
+  const url = page.url;
+  const image = getBlogImage(page).url;
+
   return {
     title: page.data.title,
     description: page.data.description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title: page.data.title,
+      description: page.data.description,
+      publishedTime: new Date(page.data.date).toISOString(),
+      authors: [page.data.author],
+      images: [{ url: image, width: 1200, height: 630, alt: page.data.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: page.data.title,
+      description: page.data.description,
+      images: [image],
+    },
   };
 }
 
