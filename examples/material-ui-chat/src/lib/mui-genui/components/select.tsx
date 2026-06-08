@@ -1,0 +1,93 @@
+"use client";
+
+import MuiFormControl from "@mui/material/FormControl";
+import MenuItem from "@mui/material/MenuItem";
+import MuiSelect, { type SelectChangeEvent } from "@mui/material/Select";
+import {
+  defineComponent,
+  parseStructuredRules,
+  useFormName,
+  useFormValidation,
+  useGetFieldValue,
+  useIsStreaming,
+  useSetFieldValue,
+} from "@openuidev/react-lang";
+import React from "react";
+import { z } from "zod";
+import { rulesSchema } from "../rules";
+
+const SelectItemSchema = z.object({
+  value: z.string(),
+  label: z.string(),
+});
+
+export const SelectItem = defineComponent({
+  name: "SelectItem",
+  props: SelectItemSchema,
+  description: "Option for Select dropdown.",
+  component: () => null,
+});
+
+const SelectSchema = z.object({
+  name: z.string(),
+  items: z.array(SelectItem.ref),
+  placeholder: z.string().optional(),
+  rules: rulesSchema,
+});
+
+export const Select = defineComponent({
+  name: "Select",
+  props: SelectSchema,
+  description: "Dropdown select. items: SelectItem[], placeholder, rules for validation.",
+  component: ({ props }) => {
+    const formName = useFormName();
+    const getFieldValue = useGetFieldValue();
+    const setFieldValue = useSetFieldValue();
+    const isStreaming = useIsStreaming();
+    const formValidation = useFormValidation();
+
+    const fieldName = props.name as string;
+    const rules = React.useMemo(() => parseStructuredRules(props.rules), [props.rules]);
+    const value = (getFieldValue(formName, fieldName) as string | undefined) ?? "";
+
+    React.useEffect(() => {
+      if (!isStreaming && rules.length > 0 && formValidation) {
+        formValidation.registerField(fieldName, rules, () => getFieldValue(formName, fieldName));
+        return () => formValidation.unregisterField(fieldName);
+      }
+      return undefined;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isStreaming, rules.length > 0]);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const items = ((props.items ?? []) as any[]).filter((item) => item?.props?.value);
+
+    return (
+      <MuiFormControl fullWidth size="small" disabled={isStreaming}>
+        <MuiSelect
+          displayEmpty
+          value={value}
+          renderValue={(selected) =>
+            selected ? (
+              String(selected)
+            ) : (
+              <span style={{ opacity: 0.6 }}>{props.placeholder ?? "Select..."}</span>
+            )
+          }
+          onChange={(e: SelectChangeEvent) => {
+            const val = e.target.value;
+            setFieldValue(formName, "Select", fieldName, val, true);
+            if (rules.length > 0 && formValidation)
+              formValidation.validateField(fieldName, val, rules);
+          }}
+        >
+          {items.map((item, i) => (
+            <MenuItem key={i} value={item.props.value}>
+              {item.props.label || item.props.value}
+            </MenuItem>
+          ))}
+        </MuiSelect>
+      </MuiFormControl>
+    );
+  },
+});

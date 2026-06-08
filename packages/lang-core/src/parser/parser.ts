@@ -246,6 +246,22 @@ function buildResult(
 // Public API
 // ─────────────────────────────────────────────────────────────────────────────
 
+function skipString(input: string, start: number): number {
+  if (input[start] !== '"') return start;
+  let i = start + 1;
+  while (i < input.length) {
+    const c = input[i];
+    if (c === "\\") {
+      i += 2; // skip escape character and the escaped character
+    } else if (c === '"') {
+      return i + 1; // return index after the closing quote
+    } else {
+      i++;
+    }
+  }
+  return i; // return length if string was unclosed
+}
+
 /** Extract code from markdown fences, or return as-is if no fences found.
  *  String-context-aware: skips ``` inside double-quoted strings. */
 export function stripFences(input: string): string {
@@ -253,8 +269,29 @@ export function stripFences(input: string): string {
   let i = 0;
 
   while (i < input.length) {
-    // Look for opening ```
-    const fenceStart = input.indexOf("```", i);
+    // Scan for opening ``` while tracking string context
+    let fenceStart = -1;
+    while (i < input.length) {
+      const nextI = skipString(input, i);
+      if (nextI > i) {
+        i = nextI;
+        continue;
+      }
+
+      const c = input[i];
+      if (
+        c === "`" &&
+        i + 1 < input.length &&
+        input[i + 1] === "`" &&
+        i + 2 < input.length &&
+        input[i + 2] === "`"
+      ) {
+        fenceStart = i;
+        break;
+      }
+      i++;
+    }
+
     if (fenceStart === -1) break;
 
     // Skip language tag until newline
@@ -269,26 +306,15 @@ export function stripFences(input: string): string {
     j++; // skip the newline
 
     // Scan for closing ``` while tracking string context
-    let inStr = false;
     let closePos = -1;
     let k = j;
     while (k < input.length) {
+      const nextK = skipString(input, k);
+      if (nextK > k) {
+        k = nextK;
+        continue;
+      }
       const c = input[k];
-      if (inStr) {
-        if (c === "\\" && k + 1 < input.length) {
-          k += 2; // skip escaped character
-          continue;
-        }
-        if (c === '"') inStr = false;
-        k++;
-        continue;
-      }
-      // Not in string
-      if (c === '"') {
-        inStr = true;
-        k++;
-        continue;
-      }
       if (
         c === "`" &&
         k + 1 < input.length &&
@@ -333,10 +359,10 @@ export function stripFences(input: string): string {
 
 /** Strip // and # line comments outside of strings (handles both " and ' delimiters). */
 function stripComments(input: string): string {
+  let inStr: false | '"' | "'" = false;
   return input
     .split("\n")
     .map((line) => {
-      let inStr: false | '"' | "'" = false;
       for (let i = 0; i < line.length; i++) {
         const c = line[i];
         if (inStr) {
