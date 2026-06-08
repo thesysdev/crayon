@@ -22,7 +22,7 @@ const meta: Meta<AccordionStoryProps> = {
     docs: {
       description: {
         component:
-          "```tsx\nimport { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@openui-ui/react-ui';\n```",
+          "```tsx\nimport { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@openuidev/react-ui';\n```",
       },
     },
   },

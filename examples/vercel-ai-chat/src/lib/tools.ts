@@ -68,26 +68,6 @@ export const tools = {
     },
   }),
 
-  calculate: tool({
-    description: "Evaluate a math expression.",
-    inputSchema: z.object({
-      expression: z.string().describe("Math expression to evaluate"),
-    }),
-    execute: async ({ expression }) => {
-      await new Promise((r) => setTimeout(r, 300));
-      try {
-        const sanitized = expression.replace(
-          /[^0-9+\-*/().%\s,Math.sqrtpowabsceilfloorround]/g,
-          "",
-        );
-        const result = new Function(`return (${sanitized})`)();
-        return { expression, result: Number(result) };
-      } catch {
-        return { expression, error: "Invalid expression" };
-      }
-    },
-  }),
-
   search_web: tool({
     description: "Search the web for information.",
     inputSchema: z.object({

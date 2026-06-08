@@ -8,7 +8,7 @@ const meta = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { TextArea } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { TextArea } from '@openuidev/react-ui';\n```",
       },
     },
   },

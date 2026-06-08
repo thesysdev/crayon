@@ -13,7 +13,7 @@ const meta: Meta<typeof ToggleGroup> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { ToggleGroup, ToggleItem } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { ToggleGroup, ToggleItem } from '@openuidev/react-ui';\n```",
       },
     },
   },

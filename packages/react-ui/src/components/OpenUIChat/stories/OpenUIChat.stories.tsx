@@ -173,7 +173,7 @@ export const StandaloneWithThreadHeader = {
         threadHeader={
           <>
             <Button iconLeft={<ChevronDown size={14} />} variant="secondary" size="small">
-              GPT-4o
+              GPT-5.5
             </Button>
             <div style={{ display: "flex", gap: "4px" }}>
               <IconButton

@@ -64,7 +64,7 @@ Output contract (strict):
       console.info("[analytics_subagent] Prompt:\n", prompt);
 
       const result = streamText({
-        model: openai("gpt-5.4"),
+        model: openai("gpt-5.5"),
         system: analyticsSubagentSystemPrompt,
         prompt,
         abortSignal,
@@ -154,26 +154,6 @@ Output contract (strict):
         day_high: parseFloat((price + Math.abs(change) + 1.5).toFixed(2)),
         day_low: parseFloat((price - Math.abs(change) - 1.2).toFixed(2)),
       };
-    },
-  }),
-
-  calculate: tool({
-    description: "Evaluate a math expression.",
-    inputSchema: z.object({
-      expression: z.string().describe("Math expression to evaluate"),
-    }),
-    execute: async ({ expression }) => {
-      await new Promise((r) => setTimeout(r, 300));
-      try {
-        const sanitized = expression.replace(
-          /[^0-9+\-*/().%\s,Math.sqrtpowabsceilfloorround]/g,
-          "",
-        );
-        const result = new Function(`return (${sanitized})`)();
-        return { expression, result: Number(result) };
-      } catch {
-        return { expression, error: "Invalid expression" };
-      }
     },
   }),
 

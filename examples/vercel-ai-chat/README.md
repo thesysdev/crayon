@@ -151,7 +151,7 @@ The API route uses the Vercel AI SDK's `streamText` with five arguments:
 
 | Argument | Value | Purpose |
 | -------- | ----- | ------- |
-| `model` | `openai("gpt-5.4")` | The LLM to call |
+| `model` | `openai("gpt-5.5")` | The LLM to call |
 | `system` | contents of `system-prompt.txt` | Teaches the model OpenUI Lang and the available components |
 | `messages` | conversation history from client | The full thread so far |
 | `tools` | four tool definitions | Functions the LLM can call mid-generation |
@@ -193,7 +193,7 @@ The hook exposes:
 
 ### `src/lib/tools.ts` — Mock Tools
 
-All four tools are mock implementations with simulated network delays. They return realistic-looking data so the LLM can generate rich UI responses.
+All three tools are mock implementations with simulated network delays. They return realistic-looking data so the LLM can generate rich UI responses.
 
 #### `get_weather`
 
@@ -232,15 +232,6 @@ Returns current price data for a stock ticker.
 | `day_low` | `188.90` |
 
 Hardcoded prices for: AAPL ($189.84), GOOGL ($141.80), TSLA ($248.42), MSFT ($378.91), AMZN ($178.25), NVDA ($875.28), META ($485.58). Other tickers get a random price.
-
-#### `calculate`
-
-Evaluates a math expression safely.
-
-- **Input**: `expression` (string) — e.g. `"2 * (3 + 4)"` or `"Math.sqrt(144)"`
-- **Simulated delay**: 300ms
-- **Supports**: `+`, `-`, `*`, `/`, `()`, `%`, `Math.sqrt`, `pow`, `abs`, `ceil`, `floor`, `round`
-- **Returns**: `{ expression, result }` or `{ expression, error }` on invalid input
 
 #### `search_web`
 

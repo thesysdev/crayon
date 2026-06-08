@@ -7,6 +7,7 @@ import styles from "./site-primary-nav.module.css";
 export const PRIMARY_SITE_NAV_ITEMS = [
   { title: "Docs", href: "/docs", newTab: false },
   { title: "Playground", href: "/playground", newTab: false },
+  { title: "Projects", href: "/projects", newTab: false },
   { title: "Demo", href: "/demo/github", newTab: true },
   { title: "Blogs", href: "/blog", newTab: false },
   { title: "OpenClaw OS", href: "/openclaw-os", newTab: false, badge: "New" },

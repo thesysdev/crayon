@@ -1,10 +1,12 @@
 # @openuidev/vue-lang
 
-Core runtime for [OpenUI](https://openui.com) in Vue 3 — define component libraries, generate model prompts, and render structured UI from streaming LLM output.
+Vue 3 bindings for OpenUI Lang. Define model-renderable Vue components, generate prompts from those definitions, and render streamed OpenUI Lang in a Vue app.
 
 [![npm](https://img.shields.io/npm/v/@openuidev/vue-lang)](https://www.npmjs.com/package/@openuidev/vue-lang)
 [![npm downloads](https://img.shields.io/npm/dm/@openuidev/vue-lang)](https://www.npmjs.com/package/@openuidev/vue-lang)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
+
+**Links:** [OpenUI Lang docs](https://openui.com/docs/openui-lang) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -18,11 +20,11 @@ pnpm add @openuidev/vue-lang
 
 ## Overview
 
-`@openuidev/vue-lang` provides three core capabilities:
+`@openuidev/vue-lang` brings the OpenUI Lang runtime to Vue:
 
-1. **Define components** — Use `defineComponent` and `createLibrary` to declare what the model is allowed to generate, with typed props via Zod schemas.
-2. **Generate prompts** — Call `library.prompt()` to produce a system prompt that instructs the model how to emit OpenUI Lang output.
-3. **Render output** — Use `<Renderer>` to parse and progressively render streamed OpenUI Lang into Vue components.
+1. **Define Vue components** that a model is allowed to call, with Zod schemas for props.
+2. **Generate prompts** from the component library.
+3. **Render streamed output** with `<Renderer>` as OpenUI Lang arrives.
 
 ## Quick Start
 
@@ -129,7 +131,7 @@ import { Renderer } from "@openuidev/vue-lang";
 | `unknown-component` | Component name not found in the library schema      |
 | `excess-args`       | More positional args passed than the schema defines |
 
-Errors do not affect rendering — the parser stays permissive and renders what it can. Use `code` to decide how to surface or log errors:
+Errors do not affect rendering. The parser stays permissive and renders what it can. Use `code` to decide how to surface or log errors:
 
 ```ts
 const result = parser.parse(output);
@@ -200,7 +202,9 @@ const schema = library.toJSONSchema();
 
 ## Documentation
 
-Full documentation, guides, and the language specification are available at **[openui.com](https://openui.com)**.
+- [OpenUI Lang guide](https://openui.com/docs/openui-lang)
+- [Language specification](https://openui.com/docs/openui-lang/specification-v05)
+- [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/vue-lang)
 
 ## License
 

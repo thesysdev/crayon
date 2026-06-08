@@ -11,9 +11,11 @@
 
 # OpenUI - The Open Standard for Generative UI
 
-[![Build](https://github.com/thesysdev/openui/actions/workflows/build-js.yml/badge.svg)](https://github.com/thesysdev/openui/actions/workflows/build-js.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-[![Discord](https://img.shields.io/badge/Discord-Chat-7289da?logo=discord&logoColor=white)](https://discord.com/invite/Pbv5PsqUSv)
+<p align="center">
+  <a href="https://github.com/thesysdev/openui/actions/workflows/build-js.yml"><img alt="Build" src="https://github.com/thesysdev/openui/actions/workflows/build-js.yml/badge.svg"></a>
+  <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
+  <a href="https://discord.com/invite/Pbv5PsqUSv"><img alt="Discord" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Fv10%2Finvites%2FPbv5PsqUSv%3Fwith_counts%3Dtrue&query=%24.approximate_presence_count&label=Discord&suffix=%20online&logo=discord&logoColor=white&color=5865F2"></a>
+</p>
 
 <a href="https://trendshift.io/repositories/22357" target="_blank"><img src="https://trendshift.io/api/badge/repositories/22357" alt="thesysdev%2Fopenui | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
@@ -24,7 +26,7 @@ OpenUI is a full-stack Generative UI framework: a compact streaming-first langua
 
 <div align="center">
 
-[Docs](https://openui.com) · [Playground](https://www.openui.com/playground) · [Discord](https://discord.com/invite/Pbv5PsqUSv) · [Contributing](./CONTRIBUTING.md) · English · [中文](./translations/zh-CN)
+[Docs](https://openui.com) · [Playground](https://www.openui.com/playground) · [Discord](https://discord.com/invite/Pbv5PsqUSv) · [Contributing](./CONTRIBUTING.md)
 
 </div>
 
@@ -99,6 +101,7 @@ Try it yourself in the [Playground](https://www.openui.com/playground): generate
 | [`@openuidev/react-headless`](./packages/react-headless) | Headless chat state, streaming adapters, message format converters |
 | [`@openuidev/react-ui`](./packages/react-ui) | Prebuilt chat layouts and two built-in component libraries |
 | [`@openuidev/cli`](./packages/openui-cli) | CLI for scaffolding apps and generating system prompts |
+| [`@openuidev/openclaw-os-plugin`](https://github.com/thesysdev/openclaw-os/tree/main/packages/claw-plugin) | OpenClaw OS plugin for serving OpenUI-powered OpenClaw workspaces | 
 
 ```bash
 npm install @openuidev/react-lang @openuidev/react-ui
@@ -161,6 +164,21 @@ Good places to start:
 
 - [Discord](https://discord.com/invite/Pbv5PsqUSv) - Ask questions, share what you're building
 - [GitHub Issues](https://github.com/thesysdev/openui/issues) - Report bugs or request features
+
+## How OpenUI compares
+
+| Feature                |             OpenUI |           json-render (Vercel) |     A2UI (Google) | CopilotKit OpenGenUI |
+|------------------------|-------------------:|-------------------------------:|------------------:|---------------------:|
+| Tokens                 |                 1x |                             3x |                3x |                   4x |
+| Latency (60 tok/s)     |               4.9s |                          14.2s |             14.2s |                 ~20s |
+| Streaming              |                Yes |                            Yes |               Yes |              Partial |
+| Consistent output      |                Yes |                            Yes |               Yes |                   No |
+| Components             |   Library + custom |               Library + custom |       Custom only |                 None |
+| Multi-platform         | Web, mobile, email | Web, mobile, PDF, email, video | Web, iOS, Android |                  Web |
+| Built-in data fetching |                Yes |                             No |                No |                   No |
+| Chat UI included       |                Yes |                             No |                No |                  Yes |
+
+For more details, refer to the official [OpenUI Lang comparison documentation](https://www.openui.com/docs/openui-lang/comparison).
 
 ## Adopters
 

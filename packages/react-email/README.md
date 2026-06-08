@@ -1,10 +1,12 @@
 # @openuidev/react-email
 
-React Email components for [OpenUI](https://openui.com) — API reference for the pre-built email templates library and prompt options, ready for LLM-driven email generation.
+React Email component definitions for OpenUI Lang. Use this package when a model should generate email layouts that can be previewed, rendered, and converted to HTML.
 
 [![npm](https://img.shields.io/npm/v/@openuidev/react-email)](https://www.npmjs.com/package/@openuidev/react-email)
 [![npm downloads](https://img.shields.io/npm/dm/@openuidev/react-email)](https://www.npmjs.com/package/@openuidev/react-email)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
+
+**Links:** [Package docs](https://openui.com/docs/api-reference/react-email) | [OpenUI Lang guide](https://openui.com/docs/openui-lang) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -65,7 +67,9 @@ const html = await render(
 
 ## Documentation
 
-Full documentation, guides, and the language specification are available at **[openui.com](https://openui.com)**.
+- [React Email API reference](https://openui.com/docs/api-reference/react-email)
+- [OpenUI Lang guide](https://openui.com/docs/openui-lang)
+- [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/react-email)
 
 ## License
 

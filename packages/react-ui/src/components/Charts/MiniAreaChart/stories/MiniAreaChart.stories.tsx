@@ -34,7 +34,7 @@ const meta: Meta<typeof MiniAreaChart> = {
     docs: {
       description: {
         component:
-          "```tsx\nimport { MiniAreaChart } from '@openui-ui/react-ui/Charts/AreaCharts/MiniAreaChart';\n```\n\nA responsive mini area chart component that accepts 1D data (numbers or objects with value/label) with automatic data filtering for space-constrained containers. Features linear gradient fills from color to transparent.",
+          "```tsx\nimport { MiniAreaChart } from '@openuidev/react-ui/Charts/AreaCharts/MiniAreaChart';\n```\n\nA responsive mini area chart component that accepts 1D data (numbers or objects with value/label) with automatic data filtering for space-constrained containers. Features linear gradient fills from color to transparent.",
       },
     },
   },

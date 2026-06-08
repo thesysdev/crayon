@@ -6,7 +6,7 @@ First, create a `.env` file:
 
 ```env
 OPENAI_API_KEY=sk-your-key-here
-OPENAI_MODEL=gpt-5.4
+OPENAI_MODEL=gpt-5.5
 ```
 
 Then run the development server:
@@ -35,7 +35,7 @@ Example using OpenRouter:
 ```env
 OPENAI_API_KEY=sk-or-v1-...
 OPENAI_BASE_URL=https://openrouter.ai/api/v1
-OPENAI_MODEL=openai/gpt-4.1-mini
+OPENAI_MODEL=openai/gpt-5.5
 ```
 
 This also works with other OpenAI-compatible providers.

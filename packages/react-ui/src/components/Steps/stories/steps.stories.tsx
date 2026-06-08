@@ -32,7 +32,7 @@ const meta: Meta<StepsProps> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { Steps, StepsItem } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { Steps, StepsItem } from '@openuidev/react-ui';\n```",
       },
     },
   },

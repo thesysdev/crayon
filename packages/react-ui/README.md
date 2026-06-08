@@ -1,10 +1,12 @@
 # @openuidev/react-ui
 
-React UI components, chat layouts, and component libraries for [OpenUI](https://openui.com). Drop-in chat surfaces with theming, or use individual components in your own layout.
+React components and chat layouts for OpenUI. Use the ready-made chat surfaces, the built-in model-renderable component library, or the individual UI primitives in your own layout.
 
 [![npm](https://img.shields.io/npm/v/@openuidev/react-ui)](https://www.npmjs.com/package/@openuidev/react-ui)
 [![npm downloads](https://img.shields.io/npm/dm/@openuidev/react-ui)](https://www.npmjs.com/package/@openuidev/react-ui)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
+
+**Links:** [Package docs](https://openui.com/docs/api-reference/react-ui) | [Chat docs](https://openui.com/docs/chat) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -26,9 +28,9 @@ import "@openuidev/react-ui/components.css";
 
 This package provides three layers:
 
-1. **Chat layouts** — Ready-to-use chat surfaces (`FullScreen`, `Copilot`, `BottomTray`) that wire up the provider, streaming, and rendering automatically.
-2. **Component library** — A built-in set of UI components (charts, tables, forms, cards, etc.) that models can generate via OpenUI Lang.
-3. **Individual components** — Use `Button`, `Card`, `Table`, `Charts`, and 30+ components directly in your own UI.
+1. **Chat layouts** for full-screen chat, copilots, and bottom-tray experiences.
+2. **Model-renderable components** for charts, tables, forms, cards, and other OpenUI Lang output.
+3. **Standalone UI primitives** such as `Button`, `Card`, `Table`, `Charts`, and the chat shell pieces.
 
 ## Quick Start
 
@@ -79,7 +81,7 @@ The package ships with two preconfigured OpenUI Lang libraries:
 
 | Export | Description |
 | :--- | :--- |
-| `openuiLibrary` | Full component library — charts, tables, forms, cards, images, and more |
+| `openuiLibrary` | Full component library for charts, tables, forms, cards, images, and more |
 | `openuiChatLibrary` | Chat-optimized subset with follow-ups, steps, and callouts |
 
 Use them directly when building custom chat experiences:
@@ -137,6 +139,37 @@ function App() {
 | `defaultDarkTheme` | Built-in dark theme |
 | `swatchTokens` | Token palette for use in theme builders |
 
+## Styling integration
+
+OpenUI's component styles live inside a CSS cascade layer named `openui`. Any unlayered consumer CSS overrides OpenUI without `!important` or specificity matching:
+
+```css
+@import "@openuidev/react-ui/components.css";
+
+/* Wins, no specificity tricks needed */
+.openui-button-base-primary { background: hotpink; }
+```
+
+### With Tailwind v4
+
+Declare layer order at the top of your entry stylesheet so `openui` sits above Tailwind's reset but below `components` and `utilities`:
+
+```css
+@layer theme, base, openui, components, utilities;
+@import "@openuidev/react-ui/components.css";
+@import "tailwindcss";
+```
+
+This places Tailwind's Preflight (in `base`) below OpenUI components so its element resets don't override them, while keeping utilities (`bg-red-500`, etc.) winning over OpenUI styles.
+
+### With Tailwind v3, CSS Modules, or CSS-in-JS
+
+No configuration needed — these all emit unlayered CSS, which automatically beats anything in `@layer openui`.
+
+### Browser support
+
+CSS cascade layers require Chrome 99+, Firefox 97+, Safari 15.4+, or Edge 99+ (all baseline from March 2022). On older browsers, the `@layer { ... }` block is dropped entirely and components render unstyled. The package declares this floor via the `browserslist` field in its `package.json`.
+
 ## Components
 
 All components are available as individual imports:
@@ -175,7 +208,9 @@ import { Charts } from "@openuidev/react-ui/Charts";
 
 ## Documentation
 
-Full documentation, component guides, and live examples are available at **[openui.com](https://openui.com)**.
+- [React UI API reference](https://openui.com/docs/api-reference/react-ui)
+- [Chat guides](https://openui.com/docs/chat)
+- [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/react-ui)
 
 
 ## License

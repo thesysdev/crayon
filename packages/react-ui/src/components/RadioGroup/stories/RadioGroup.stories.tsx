@@ -12,7 +12,7 @@ const meta: Meta<typeof RadioGroup> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { RadioGroup, RadioItem } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { RadioGroup, RadioItem } from '@openuidev/react-ui';\n```",
       },
     },
   },

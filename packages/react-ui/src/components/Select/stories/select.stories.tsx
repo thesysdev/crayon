@@ -26,7 +26,7 @@ const meta: Meta<SelectStoryProps> = {
     docs: {
       description: {
         component:
-          "```tsx\nimport { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from '@openui-ui/react-ui';\n```",
+          "```tsx\nimport { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from '@openuidev/react-ui';\n```",
       },
     },
   },

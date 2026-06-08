@@ -13,7 +13,7 @@ const meta: Meta<typeof TagBlock> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { TagBlock, Tag } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { TagBlock, Tag } from '@openuidev/react-ui';\n```",
       },
     },
   },

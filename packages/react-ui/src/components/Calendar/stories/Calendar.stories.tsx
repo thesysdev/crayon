@@ -12,7 +12,7 @@ const meta: Meta<typeof Calendar> = {
 A flexible \`calendar\` component built on top of [react-day-picker](https://react-day-picker.js.org/).
 
 \`\`\`tsx
-import { Calendar } from '@openui-ui/react-ui';
+import { Calendar } from '@openuidev/react-ui';
 \`\`\`
 `,
       },

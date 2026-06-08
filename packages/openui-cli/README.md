@@ -1,9 +1,11 @@
 # @openuidev/cli
 
-Command-line tool for [OpenUI](https://openui.com) — scaffold AI-powered generative UI chat apps and generate LLM system prompts from your React component libraries.
+Command-line tools for starting OpenUI projects and generating model instructions from component libraries.
 
 [![npm](https://img.shields.io/npm/v/@openuidev/cli)](https://www.npmjs.com/package/@openuidev/cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
+
+**Links:** [CLI docs](https://openui.com/docs/api-reference/cli) | [GitHub repo](https://github.com/thesysdev/openui)
 
 It currently supports two workflows:
 
@@ -159,7 +161,9 @@ node dist/index.js generate --help
 
 ## Documentation
 
-Full documentation and guides are available at **[openui.com](https://openui.com)**.
+- [CLI API reference](https://openui.com/docs/api-reference/cli)
+- [Chat quick start](https://openui.com/docs/chat/quick-start)
+- [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/openui-cli)
 
 ## License
 

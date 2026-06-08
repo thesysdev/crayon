@@ -74,9 +74,6 @@ function Check-Prereqs {
     }
   }
 
-  $nodeMajor = [int](node -p 'process.versions.node.split(".")[0]')
-  if ($nodeMajor -lt 22) { Write-Fatal "Node $nodeMajor detected. OpenClaw OS plugin requires Node 22+." }
-
   $oc = (& openclaw --version 2>$null | Select-Object -First 1)
   Write-Ok "openclaw $oc · node $(node --version) · pnpm $(pnpm --version)"
 }

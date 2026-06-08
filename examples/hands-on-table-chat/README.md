@@ -62,7 +62,7 @@ An AI-powered spreadsheet app that pairs a full-featured [Handsontable](https://
 ### Prerequisites
 
 - Node.js 18+
-- An [OpenAI API key](https://platform.openai.com/api-keys) (GPT-4o recommended)
+- An [OpenAI API key](https://platform.openai.com/api-keys) (GPT-5.5 recommended)
 
 ### Setup
 
@@ -87,7 +87,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the spreadsheet with 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `OPENAI_API_KEY` | Yes | — | Your OpenAI API key |
-| `OPENAI_MODEL` | No | `gpt-4o` | Model to use for chat completions |
+| `OPENAI_MODEL` | No | `gpt-5.5` | Model to use for chat completions |
 
 ## Project Structure
 

@@ -1,10 +1,12 @@
 # @openuidev/react-lang
 
-Core runtime for [OpenUI](https://openui.com) — define component libraries, generate model prompts, and render structured UI from streaming LLM output.
+React bindings for OpenUI Lang. Use this package when your model needs to emit structured UI and your React app needs to render it while the response is still streaming.
 
 [![npm](https://img.shields.io/npm/v/@openuidev/react-lang)](https://www.npmjs.com/package/@openuidev/react-lang)
 [![npm downloads](https://img.shields.io/npm/dm/@openuidev/react-lang)](https://www.npmjs.com/package/@openuidev/react-lang)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
+
+**Links:** [Package docs](https://openui.com/docs/api-reference/react-lang) | [OpenUI Lang guide](https://openui.com/docs/openui-lang) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -18,11 +20,11 @@ pnpm add @openuidev/react-lang
 
 ## Overview
 
-`@openuidev/react-lang` provides three core capabilities:
+`@openuidev/react-lang` is the React runtime layer for OpenUI Lang. It covers the loop most apps need:
 
-1. **Define components** — Use `defineComponent` and `createLibrary` to declare what the model is allowed to generate, with typed props via Zod schemas.
-2. **Generate prompts** — Call `library.prompt()` to produce a system prompt that instructs the model how to emit OpenUI Lang output.
-3. **Render output** — Use `<Renderer>` to parse and progressively render streamed OpenUI Lang into React components.
+1. **Define components** that a model is allowed to use, with Zod schemas for props.
+2. **Generate prompts** from that component library so the model knows the exact output language.
+3. **Render streamed output** with `<Renderer>` as OpenUI Lang arrives from your backend.
 
 ## Quick Start
 
@@ -139,7 +141,7 @@ After the stream ends, check `meta.unresolved` for any identifiers that were ref
 | `unknown-component` | Component name not found in the library schema |
 | `excess-args` | More positional args passed than the schema defines |
 
-Errors do not affect rendering — the parser stays permissive and renders what it can. Use `code` to decide how to surface or log errors:
+Errors do not affect rendering. The parser stays permissive and renders what it can. Use `code` to decide how to surface or log errors:
 
 ```ts
 const result = parser.parse(output);
@@ -212,7 +214,9 @@ const schema = library.toJSONSchema();
 
 ## Documentation
 
-Full documentation, guides, and the language specification are available at **[openui.com](https://openui.com)**.
+- [React API reference](https://openui.com/docs/api-reference/react-lang)
+- [OpenUI Lang guide](https://openui.com/docs/openui-lang)
+- [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/react-lang)
 
 ## License
 

@@ -200,7 +200,7 @@ The full library (`shadcnChatLibrary`) is assembled with `createLibrary({ root: 
 
 ### Mock Tools
 
-All four tools are mock implementations with simulated network delays. They return realistic-looking data so the LLM can generate rich UI responses.
+All three tools are mock implementations with simulated network delays. They return realistic-looking data so the LLM can generate rich UI responses.
 
 #### `get_weather`
 
@@ -239,15 +239,6 @@ Returns current price data for a stock ticker.
 | `day_low` | `188.90` |
 
 Hardcoded prices for: AAPL ($189.84), GOOGL ($141.80), TSLA ($248.42), MSFT ($378.91), AMZN ($178.25), NVDA ($875.28), META ($485.58). Other tickers get a random price.
-
-#### `calculate`
-
-Evaluates a math expression safely.
-
-- **Input**: `expression` (string) — e.g. `"2 * (3 + 4)"` or `"Math.sqrt(144)"`
-- **Simulated delay**: 300ms
-- **Supports**: `+`, `-`, `*`, `/`, `()`, `%`, `Math.sqrt`, `pow`, `abs`, `ceil`, `floor`, `round`
-- **Returns**: `{ expression, result }` or `{ expression, error }` on invalid input
 
 #### `search_web`
 

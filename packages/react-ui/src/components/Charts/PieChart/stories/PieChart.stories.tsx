@@ -74,7 +74,7 @@ const meta: Meta<PieChartProps<typeof monthlySalesData>> = {
 ## Installation and Basic Usage
 
 \`\`\`tsx
-import { PieChart } from '@openui-ui/react-ui/Charts/PieChart';
+import { PieChart } from '@openuidev/react-ui/Charts/PieChart';
 
 // Basic implementation
 <PieChart

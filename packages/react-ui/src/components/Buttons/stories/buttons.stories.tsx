@@ -11,7 +11,7 @@ const meta: Meta<typeof Buttons> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { Buttons } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { Buttons } from '@openuidev/react-ui';\n```",
       },
     },
   },

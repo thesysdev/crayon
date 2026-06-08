@@ -58,7 +58,7 @@ const agent = new MastraAgent({
     name: "OpenUI Agent",
     instructions: `You are a helpful assistant. Use tools when relevant and help the user with their requests. Always format your responses cleanly.\n\n${systemPromptFile}`,
     model: {
-      id: (process.env.OPENAI_MODEL as `${string}/${string}`) || "openai/gpt-4o",
+      id: (process.env.OPENAI_MODEL as `${string}/${string}`) || "openai/gpt-5.5",
       apiKey: process.env.OPENAI_API_KEY,
       url: process.env.OPENAI_BASE_URL || "https://api.openai.com/v1",
     },

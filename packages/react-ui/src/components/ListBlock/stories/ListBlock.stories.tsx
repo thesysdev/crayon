@@ -13,7 +13,7 @@ const meta: Meta<typeof ListBlock> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { ListBlock, ListItem } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { ListBlock, ListItem } from '@openuidev/react-ui';\n```",
       },
     },
   },
