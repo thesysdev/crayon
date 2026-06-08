@@ -54,6 +54,20 @@ import { FullScreen } from "@openuidev/react-ui";
 
 `disableThemeProvider` only skips the wrapper. It does not remove any chat functionality.
 
+## Override component styles with CSS
+
+OpenUI's component styles live in `@layer openui`. Any unlayered consumer CSS overrides them without `!important` or matching specificity:
+
+```css
+.openui-button-base-primary {
+  background: hotpink;
+}
+```
+
+For Tailwind v4 apps, declare `@layer theme, base, openui, components, utilities;` ahead of `@import "tailwindcss";` in your global stylesheet (see [Installation](/docs/chat/installation#3-for-tailwind-v4-set-the-cascade-layer-order)) so utility classes also override OpenUI styles. CSS Modules, CSS-in-JS, and Tailwind v3 utilities emit unlayered CSS and override OpenUI automatically with no configuration.
+
+Browser support: Chrome 99+, Firefox 97+, Safari 15.4+, Edge 99+ (all baseline from March 2022).
+
 <div className="grid md:grid-cols-2 gap-6 my-6">
   <div>
     <p className="text-sm text-center font-medium mb-2">Light (default)</p>
