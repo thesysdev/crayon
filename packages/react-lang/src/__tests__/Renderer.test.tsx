@@ -48,9 +48,7 @@ describe("Renderer", () => {
   it("calls onParseResult with a ParseResult when given valid openui-lang", async () => {
     const onParseResult = vi.fn();
 
-    render(
-      <Renderer response={VALID_RESPONSE} library={library} onParseResult={onParseResult} />,
-    );
+    render(<Renderer response={VALID_RESPONSE} library={library} onParseResult={onParseResult} />);
 
     expect(onParseResult).toHaveBeenCalled();
     const result = onParseResult.mock.calls[onParseResult.mock.calls.length - 1]![0];
@@ -62,9 +60,7 @@ describe("Renderer", () => {
   it("parse result contains the correct component typeName", async () => {
     const onParseResult = vi.fn();
 
-    render(
-      <Renderer response={VALID_RESPONSE} library={library} onParseResult={onParseResult} />,
-    );
+    render(<Renderer response={VALID_RESPONSE} library={library} onParseResult={onParseResult} />);
 
     const result = onParseResult.mock.calls[onParseResult.mock.calls.length - 1]![0];
     expect(result?.root?.typeName).toBe("TextContent");
@@ -77,9 +73,7 @@ describe("Renderer", () => {
   });
 
   it("accepts isStreaming prop without errors", () => {
-    const { container } = render(
-      <Renderer response={null} library={library} isStreaming={true} />,
-    );
+    const { container } = render(<Renderer response={null} library={library} isStreaming={true} />);
     expect(container).toBeDefined();
   });
 });
