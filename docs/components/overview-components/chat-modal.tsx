@@ -1,6 +1,9 @@
 "use client";
 
-import "@openuidev/react-ui/components.css";
+// NOTE: do not import react-ui CSS here. It is loaded once, app-wide, via
+// docs/app/global.css. A second react-ui CSS import makes the bundler hoist a
+// statement-less `@layer openui` chunk that loads BEFORE global.css's `@layer`
+// order declaration, which breaks the cascade order (Tailwind preflight wins).
 import "./chat-modal.css";
 
 import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";

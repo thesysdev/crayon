@@ -259,6 +259,18 @@ const projects: ProjectItem[] = [
       },
     ],
   },
+  {
+    name: "AI Native Dashboard",
+    description:
+      "An OpenUI-powered infinite canvas for generating movable, resizable dashboard widgets from natural language.",
+    type: "App",
+    status: "Community",
+    accent: "green",
+    icon: Sparkles,
+    links: [
+      { label: "GitHub", href: "https://github.com/jaibhasin/AI-Native-Dashboard", external: true },
+    ],
+  },
 ];
 
 const DISCORD_URL = "https://discord.gg/suzHfJnpw";
