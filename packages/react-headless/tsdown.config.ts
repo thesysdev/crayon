@@ -9,6 +9,6 @@ export default defineConfig({
   outDir: "dist",
   clean: true,
   deps: {
-    neverBundle: [/^[^./]/],
+    neverBundle: [/^(?![./]|[A-Za-z]:[/\\])/],
   },
 });
