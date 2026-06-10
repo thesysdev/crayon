@@ -205,7 +205,7 @@ OpenUI Lang connects to your backend through tools. You can register a `toolProv
     :library="library"
     :tool-provider="toolProvider"
     :query-loader="SpinnerComponent"
-    @error="handleErrors"
+    :on-error="handleErrors"
   />
 </template>
 
