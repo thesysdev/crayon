@@ -236,6 +236,51 @@ describe("orphaned statements", () => {
   });
 });
 
+describe("no-root diagnostic", () => {
+  it("emits no-root when only a $state declaration is present", () => {
+    const result = parse('$data = ["a", "b"]', schema);
+    expect(result.root).toBeNull();
+    expect(result.meta.errors).toHaveLength(1);
+    expect(result.meta.errors[0]).toMatchObject({
+      code: "no-root",
+      statementId: "$data",
+    });
+  });
+
+  it("emits no-root when the entry resolves to a literal, not a component", () => {
+    const result = parse('greeting = "hello"', schema);
+    expect(result.root).toBeNull();
+    expect(codes('greeting = "hello"')).toContain("no-root");
+  });
+
+  it("emits no-root for a data-only program (multiple non-component statements)", () => {
+    const result = parse("$items = [1, 2, 3]\n$count = 3", schema);
+    expect(result.root).toBeNull();
+    expect(result.meta.errors.map((e: { code: string }) => e.code)).toEqual(["no-root"]);
+  });
+
+  it("does NOT emit no-root when a valid root resolves", () => {
+    const result = parse('root = Stack(["hi"])', schema);
+    expect(result.root).not.toBeNull();
+    expect(codes('root = Stack(["hi"])')).not.toContain("no-root");
+  });
+
+  it("does NOT double-report: a missing-required root is not also no-root", () => {
+    const result = parse("root = Stack()", schema);
+    expect(result.root).toBeNull();
+    const errCodes = result.meta.errors.map((e: { code: string }) => e.code);
+    expect(errCodes).toContain("missing-required");
+    expect(errCodes).not.toContain("no-root");
+  });
+
+  it("does NOT emit no-root mid-stream while input is still incomplete", () => {
+    const sp = createStreamParser(schema);
+    const p1 = sp.push("$data = [1, 2");
+    expect(p1.meta.incomplete).toBe(true);
+    expect(p1.meta.errors.map((e: { code: string }) => e.code)).not.toContain("no-root");
+  });
+});
+
 describe("markdown fences and multiline comments in strings", () => {
   it("preserves js markdown fences inside strings", () => {
     const code = 'root = Title("```js\\nconsole.log(\\"Hello World\\");\\n```")';

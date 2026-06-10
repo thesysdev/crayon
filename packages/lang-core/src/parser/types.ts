@@ -73,7 +73,8 @@ export type ValidationErrorCode =
   | "null-required"
   | "unknown-component"
   | "inline-reserved"
-  | "excess-args";
+  | "excess-args"
+  | "no-root";
 
 /**
  * A prop validation error. Components with missing required props are
@@ -101,7 +102,7 @@ export type OpenUIErrorSource = "parser" | "runtime" | "query" | "mutation";
  * Machine-readable error codes for the openui-lang pipeline.
  *
  * - Parser: "unknown-component", "missing-required", "null-required", "inline-reserved",
- *   "parse-exception", "parse-failed"
+ *   "no-root", "parse-exception", "parse-failed"
  * - Runtime: "runtime-error" (prop evaluation), "render-error" (React render)
  * - Query/Mutation: "tool-not-found", "tool-error", "mcp-error"
  */
