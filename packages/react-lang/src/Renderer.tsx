@@ -43,8 +43,35 @@ export interface RendererProps {
     | Record<string, (args: Record<string, unknown>) => Promise<unknown>>
     | McpClientLike
     | null;
-  /** Custom loading indicator shown while queries are fetching. Defaults to a spinner. */
+  /**
+   * Custom loading indicator shown while queries are fetching. Defaults to a
+   * DOM spinner on the web. On non-web hosts (e.g. React Native) the default
+   * spinner is skipped — pass your own node here to show a loader.
+   */
   queryLoader?: React.ReactNode;
+  /**
+   * Host element used for the Renderer's outer wrapper.
+   *
+   * Defaults to `"div"` for the web. On React Native / Expo, lowercase tag
+   * names like `"div"` are not valid host components and crash with
+   * "View config getter callback for component div ...". Pass a native host
+   * (e.g. `View` from `react-native`) so the Renderer mounts native elements:
+   *
+   * ```tsx
+   * import { View } from "react-native";
+   * <Renderer containerComponent={View} contentComponent={View} ... />
+   * ```
+   *
+   * The component receives a `style` prop, so it must accept one (both `div`
+   * and `View` do).
+   */
+  containerComponent?: React.ElementType;
+  /**
+   * Host element used for the inner content wrapper (the one that fades while
+   * queries load). Defaults to `"div"`. See {@link containerComponent} for
+   * React Native usage.
+   */
+  contentComponent?: React.ElementType;
   /**
    * Called with structured, LLM-friendly errors from the parser and query system.
    * Only includes errors fixable by changing the openui-lang code (unknown components,
@@ -208,6 +235,8 @@ export function Renderer({
   onParseResult,
   toolProvider,
   queryLoader,
+  containerComponent,
+  contentComponent,
   onError,
 }: RendererProps) {
   useInsertionEffect(() => {
@@ -269,14 +298,32 @@ export function Renderer({
     return null;
   }
 
+  const Container = containerComponent ?? "div";
+  const Content = contentComponent ?? "div";
+
+  // Web host elements are referenced by their string tag ("div"); native hosts
+  // (e.g. React Native's View) are component references. CSS transitions and the
+  // default DOM spinner are web-only, so only apply them when the wrapper is a
+  // web host — passing them to a native View would warn or crash.
+  const isWebContent = typeof Content === "string";
+  const isWebContainer = typeof Container === "string";
+
+  const contentStyle = isWebContent
+    ? { opacity: isQueryLoading ? 0.7 : 1, transition: "opacity 0.2s ease" }
+    : { opacity: isQueryLoading ? 0.7 : 1 };
+
+  // Fall back to the DOM spinner only on web hosts. On native, render nothing
+  // unless the host supplied its own queryLoader.
+  const loader = queryLoader ?? (isWebContainer ? <DefaultQueryLoader /> : null);
+
   return (
     <OpenUIContext.Provider value={contextValue}>
-      <div style={{ position: "relative" }}>
-        {isQueryLoading && (queryLoader ?? <DefaultQueryLoader />)}
-        <div style={{ opacity: isQueryLoading ? 0.7 : 1, transition: "opacity 0.2s ease" }}>
+      <Container style={{ position: "relative" }}>
+        {isQueryLoading && loader}
+        <Content style={contentStyle}>
           <RenderNode node={result.root} />
-        </div>
-      </div>
+        </Content>
+      </Container>
     </OpenUIContext.Provider>
   );
 }

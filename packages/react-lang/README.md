@@ -42,9 +42,7 @@ const Greeting = defineComponent({
     mood: z.enum(["happy", "excited"]).optional().describe("Tone of the greeting"),
   }),
   component: ({ name, mood }) => (
-    <div className={mood === "excited" ? "text-xl font-bold" : ""}>
-      Hello, {name}!
-    </div>
+    <div className={mood === "excited" ? "text-xl font-bold" : ""}>Hello, {name}!</div>
   ),
 });
 ```
@@ -91,42 +89,100 @@ function AssistantMessage({ response, isStreaming }) {
 
 ### Component Definition
 
-| Export | Description |
-| :--- | :--- |
-| `defineComponent(config)` | Define a single component with a name, Zod props schema, description, and React renderer |
-| `createLibrary(definition)` | Create a library from an array of defined components |
+| Export                      | Description                                                                              |
+| :-------------------------- | :--------------------------------------------------------------------------------------- |
+| `defineComponent(config)`   | Define a single component with a name, Zod props schema, description, and React renderer |
+| `createLibrary(definition)` | Create a library from an array of defined components                                     |
 
 ### Rendering
 
-| Export | Description |
-| :--- | :--- |
+| Export     | Description                                                |
+| :--------- | :--------------------------------------------------------- |
 | `Renderer` | React component that parses and renders OpenUI Lang output |
 
 **`RendererProps`:**
 
-| Prop | Type | Description |
-| :--- | :--- | :--- |
-| `response` | `string \| null` | Raw OpenUI Lang text from the model |
-| `library` | `Library` | Component library from `createLibrary()` |
-| `isStreaming` | `boolean` | Whether the model is still streaming (disables form interactions) |
-| `onAction` | `(event: ActionEvent) => void` | Callback when a component triggers an action |
-| `onStateUpdate` | `(state: Record<string, any>) => void` | Callback when form field values change |
-| `initialState` | `Record<string, any>` | Initial form state for hydration |
-| `onParseResult` | `(result: ParseResult \| null) => void` | Callback when the parse result changes |
+| Prop                 | Type                                    | Description                                                                                                                        |
+| :------------------- | :-------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
+| `response`           | `string \| null`                        | Raw OpenUI Lang text from the model                                                                                                |
+| `library`            | `Library`                               | Component library from `createLibrary()`                                                                                           |
+| `isStreaming`        | `boolean`                               | Whether the model is still streaming (disables form interactions)                                                                  |
+| `onAction`           | `(event: ActionEvent) => void`          | Callback when a component triggers an action                                                                                       |
+| `onStateUpdate`      | `(state: Record<string, any>) => void`  | Callback when form field values change                                                                                             |
+| `initialState`       | `Record<string, any>`                   | Initial form state for hydration                                                                                                   |
+| `onParseResult`      | `(result: ParseResult \| null) => void` | Callback when the parse result changes                                                                                             |
+| `queryLoader`        | `React.ReactNode`                       | Custom loading indicator shown while queries fetch. Defaults to a DOM spinner on the web; skipped on non-web hosts unless provided |
+| `containerComponent` | `React.ElementType`                     | Host element for the outer wrapper. Defaults to `"div"`. Set to a native host (e.g. `View`) for React Native — see below           |
+| `contentComponent`   | `React.ElementType`                     | Host element for the inner content wrapper. Defaults to `"div"`. Set to a native host for React Native                             |
+
+## React Native / Expo
+
+By default the `Renderer` wraps your content in web host elements (`<div>`). In
+React Native and Expo, lowercase tag names like `div` are not valid host
+components — Metro/React Native interprets them as native component references
+and the app crashes with:
+
+```
+View config getter callback for component `div` must be a function (received `undefined`)
+```
+
+Pass native host components for the two wrappers so the Renderer mounts native
+elements instead. The web-only CSS fade transition and the default DOM spinner
+are automatically skipped when a non-string host is supplied:
+
+```tsx
+import { View } from "react-native";
+import { Renderer } from "@openuidev/react-lang";
+
+<Renderer
+  response={openui}
+  library={library}
+  containerComponent={View}
+  contentComponent={View}
+  // On native there's no default spinner — supply your own if you want one:
+  queryLoader={<ActivityIndicator />}
+/>;
+```
+
+Your component library should also use native primitives (`View`, `Text`,
+`Pressable`, …) in each component's renderer rather than web elements.
+
+### Single React copy (pnpm workspaces / Expo)
+
+React hooks require exactly one copy of React at runtime. When you link this
+package from a monorepo (e.g. a pnpm workspace consumed by an Expo app), Metro
+can end up resolving the library's own development copy of React, producing
+`Invalid hook call`. Force every import of `react` and `react-dom` to resolve to
+the app's copy in `metro.config.js`:
+
+```js
+const { getDefaultConfig } = require("expo/metro-config");
+const path = require("path");
+
+const config = getDefaultConfig(__dirname);
+
+config.resolver.extraNodeModules = {
+  ...config.resolver.extraNodeModules,
+  react: path.resolve(__dirname, "node_modules/react"),
+  "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
+};
+
+module.exports = config;
+```
 
 ### Parser (Server-Side)
 
-| Export | Description |
-| :--- | :--- |
-| `createParser(library)` | Create a one-shot parser for complete OpenUI Lang text |
-| `createStreamingParser(library)` | Create an incremental parser for streaming input |
+| Export                           | Description                                            |
+| :------------------------------- | :----------------------------------------------------- |
+| `createParser(library)`          | Create a one-shot parser for complete OpenUI Lang text |
+| `createStreamingParser(library)` | Create an incremental parser for streaming input       |
 
 The streaming parser exposes two methods:
 
-| Method | Description |
-| :--- | :--- |
+| Method        | Description                                           |
+| :------------ | :---------------------------------------------------- |
 | `push(chunk)` | Feed the next chunk; returns the latest `ParseResult` |
-| `getResult()` | Get the latest result without consuming new data |
+| `getResult()` | Get the latest result without consuming new data      |
 
 After the stream ends, check `meta.unresolved` for any identifiers that were referenced but never defined. During streaming these are expected (forward refs) and are not treated as errors.
 
@@ -134,20 +190,18 @@ After the stream ends, check `meta.unresolved` for any identifiers that were ref
 
 `ParseResult.meta.errors` contains structured `OpenUIError` objects. Each error has a `type` discriminant (currently always `"validation"`) and a `code` for consumer-side filtering:
 
-| Code | Meaning |
-| :--- | :--- |
-| `missing-required` | Required prop absent with no default |
-| `null-required` | Required prop explicitly null with no default |
-| `unknown-component` | Component name not found in the library schema |
-| `excess-args` | More positional args passed than the schema defines |
+| Code                | Meaning                                             |
+| :------------------ | :-------------------------------------------------- |
+| `missing-required`  | Required prop absent with no default                |
+| `null-required`     | Required prop explicitly null with no default       |
+| `unknown-component` | Component name not found in the library schema      |
+| `excess-args`       | More positional args passed than the schema defines |
 
 Errors do not affect rendering. The parser stays permissive and renders what it can. Use `code` to decide how to surface or log errors:
 
 ```ts
 const result = parser.parse(output);
-const critical = result.meta.errors.filter(
-  (e) => e.code === "unknown-component"
-);
+const critical = result.meta.errors.filter((e) => e.code === "unknown-component");
 ```
 
 To check for unresolved references after streaming, inspect `meta.unresolved`:
@@ -162,24 +216,24 @@ if (result.meta.unresolved.length > 0) {
 
 Use these inside component renderers to interact with the rendering context:
 
-| Hook | Description |
-| :--- | :--- |
-| `useIsStreaming()` | Whether the model is still streaming |
-| `useRenderNode()` | Render child element nodes |
-| `useTriggerAction()` | Trigger an action event |
-| `useGetFieldValue()` | Get a form field's current value |
-| `useSetFieldValue()` | Set a form field's value |
-| `useSetDefaultValue()` | Set a field's default value |
-| `useFormName()` | Get the current form's name |
+| Hook                   | Description                          |
+| :--------------------- | :----------------------------------- |
+| `useIsStreaming()`     | Whether the model is still streaming |
+| `useRenderNode()`      | Render child element nodes           |
+| `useTriggerAction()`   | Trigger an action event              |
+| `useGetFieldValue()`   | Get a form field's current value     |
+| `useSetFieldValue()`   | Set a form field's value             |
+| `useSetDefaultValue()` | Set a field's default value          |
+| `useFormName()`        | Get the current form's name          |
 
 ### Form Validation
 
-| Export | Description |
-| :--- | :--- |
-| `useFormValidation()` | Access form validation state |
-| `useCreateFormValidation()` | Create a form validation context |
-| `validate(value, rules)` | Run validation rules against a value |
-| `builtInValidators` | Built-in validators (required, email, min, max, etc.) |
+| Export                      | Description                                           |
+| :-------------------------- | :---------------------------------------------------- |
+| `useFormValidation()`       | Access form validation state                          |
+| `useCreateFormValidation()` | Create a form validation context                      |
+| `validate(value, rules)`    | Run validation rules against a value                  |
+| `builtInValidators`         | Built-in validators (required, email, min, max, etc.) |
 
 ### Types
 
