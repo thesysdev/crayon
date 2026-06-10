@@ -236,8 +236,9 @@ export const ThemeProvider = ({
   const useAutoScope = isNested && !hasExplicitSelector;
   const styleSelector = useAutoScope ? `.${scopedClassName}` : effectiveCssSelector;
 
-  // Intentionally unlayered — must override @layer openui so runtime theme
-  // switching takes effect. See README "Styling integration" before changing.
+  // Intentionally unlayered — must override component styles in both modes,
+  // including when consumers opt into layered-components.css (@layer openui),
+  // so runtime theming always wins. See README "Styling integration" before changing.
   useInsertionEffect(() => {
     const style = document.createElement("style");
     style.setAttribute("data-openui-theme", id);

@@ -141,34 +141,45 @@ function App() {
 
 ## Styling integration
 
-OpenUI's component styles live inside a CSS cascade layer named `openui`. Any unlayered consumer CSS overrides OpenUI without `!important` or specificity matching:
+OpenUI ships its component styles in two variants:
+
+| Import | Cascade behavior |
+| --- | --- |
+| `@openuidev/react-ui/components.css` (default) | Unlayered — override via normal CSS specificity, as in 0.11.x and earlier |
+| `@openuidev/react-ui/layered-components.css` (opt-in) | Wrapped in `@layer openui` — any unlayered consumer CSS wins |
+
+Per-component granular imports follow the same split: `./styles/*` (unlayered) and `./layered/styles/*` (layered).
+
+With the layered variant, plain CSS overrides OpenUI without `!important` or specificity matching:
 
 ```css
-@import "@openuidev/react-ui/components.css";
+@import "@openuidev/react-ui/layered-components.css";
 
 /* Wins, no specificity tricks needed */
 .openui-button-base-primary { background: hotpink; }
 ```
 
-### With Tailwind v4
+### With Tailwind v4 (layered variant)
 
 Declare layer order at the top of your entry stylesheet so `openui` sits above Tailwind's reset but below `components` and `utilities`:
 
 ```css
 @layer theme, base, openui, components, utilities;
-@import "@openuidev/react-ui/components.css";
+@import "@openuidev/react-ui/layered-components.css";
 @import "tailwindcss";
 ```
 
 This places Tailwind's Preflight (in `base`) below OpenUI components so its element resets don't override them, while keeping utilities (`bg-red-500`, etc.) winning over OpenUI styles.
 
-### With Tailwind v3, CSS Modules, or CSS-in-JS
+### Rules for the layered variant
 
-No configuration needed — these all emit unlayered CSS, which automatically beats anything in `@layer openui`.
+- Import OpenUI CSS from **exactly one place** — multiple import sites under chunk-splitting bundlers (e.g. Turbopack) can register `openui` before your layer-order statement and lock the wrong order.
+- Wrap app-wide resets in a layer below `openui` (e.g. `@layer base { * { margin: 0; } }`) — unlayered resets beat all layered styles regardless of specificity.
+- `./defaults.css` and the `ThemeProvider` runtime style injection stay unlayered in both modes so runtime theming always overrides component defaults.
 
 ### Browser support
 
-CSS cascade layers require Chrome 99+, Firefox 97+, Safari 15.4+, or Edge 99+ (all baseline from March 2022). On older browsers, the `@layer { ... }` block is dropped entirely and components render unstyled. The package declares this floor via the `browserslist` field in its `package.json`.
+The layered variant requires CSS cascade layers: Chrome 99+, Firefox 97+, Safari 15.4+, Edge 99+ (all baseline from March 2022). On older browsers the `@layer { ... }` block is dropped entirely and components render unstyled. The default unlayered styles have no such floor.
 
 ## Components
 
