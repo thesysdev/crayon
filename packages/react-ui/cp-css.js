@@ -15,6 +15,11 @@ function ensureDirectoryExists(dirPath) {
 // Wrap a CSS file's contents in @layer openui { ... } if not already wrapped.
 // Idempotency check protects watch-mode and back-to-back builds.
 function wrapInLayer(content) {
+  // Sass emits a UTF-8 BOM for files with non-ASCII output. At byte 0 the
+  // decoder strips it, but wrapping would push it inside the layer block,
+  // where U+FEFF parses as an identifier and kills the first rule
+  // (e.g. the :root theme tokens). Strip it before wrapping.
+  content = content.replace(/^\uFEFF/, "");
   if (content.trim() === "") return content;
   if (/^\s*@layer\s+openui\b/.test(content)) return content;
   return `@layer openui{${content}}`;
