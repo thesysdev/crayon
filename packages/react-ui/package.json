@@ -21,11 +21,17 @@
     "./components.css": {
       "default": "./dist/components/index.css"
     },
+    "./layered-components.css": {
+      "default": "./dist/layered/components/index.css"
+    },
     "./defaults.css": {
       "default": "./dist/styles/openui-defaults.css"
     },
     "./styles/*": {
       "default": "./dist/styles/*"
+    },
+    "./layered/styles/*": {
+      "default": "./dist/layered/styles/*"
     },
     "./genui-lib": {
       "import": {
@@ -60,7 +66,7 @@
     "README.md"
   ],
   "scripts": {
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "copy-css": "node cp-css.js",
     "generate-scss-index": "node src/scripts/scss-import.js",
     "generate:css-utils": "tsx src/scripts/generate-css-utils.ts",
@@ -76,10 +82,11 @@
     "lint:fix": "eslint ./src --fix",
     "format:fix": "prettier --write ./src",
     "format:check": "prettier --check ./src",
+    "check:css": "node check-css-artifacts.js",
     "check:publint": "publint",
     "check:attw": "attw --pack . --ignore-rules no-resolution",
     "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm run check:publint && pnpm run check:attw",
+    "prepublishOnly": "pnpm run check:css && pnpm run check:publint && pnpm run check:attw",
     "ci": "pnpm run lint:check && pnpm run format:check"
   },
   "peerDependencies": {
@@ -196,7 +203,6 @@
   "bugs": {
     "url": "https://github.com/thesysdev/openui/issues"
   },
-  "browserslist": "defaults and supports css-cascade-layers",
   "eslintConfig": {
     "extends": [
       "plugin:storybook/recommended"
