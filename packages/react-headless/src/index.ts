@@ -32,11 +32,12 @@ export type {
   ChatStorage,
   FetchLLMOptions,
   PinningStorage,
+  RestStorageOptions,
   ShareStorage,
   ShareTarget,
   ThreadStorage,
 } from "./adapters";
-export { fetchLLM } from "./adapters";
+export { fetchLLM, restStorage } from "./adapters";
 
 export type {
   AppRendererConfig,

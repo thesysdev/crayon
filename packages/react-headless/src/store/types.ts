@@ -57,7 +57,7 @@ export type ChatStore = ThreadListState &
   ThreadState &
   ThreadActions & {
     /** @internal */
-    _nextCursor?: any;
+    _nextCursor?: string | undefined;
     /** @internal */
     _abortController: AbortController | null;
   };

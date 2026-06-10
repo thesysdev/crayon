@@ -3,6 +3,20 @@
 export * from "./components/Accordion";
 export * from "./components/AgentInterface";
 
+// Adapter factories + types — paired with AgentInterface's `storage` / `llm` props,
+// re-exported so consumers can build adapters without reaching into react-headless.
+export { fetchLLM, restStorage } from "@openuidev/react-headless";
+export type {
+  ChatLLM,
+  ChatStorage,
+  FetchLLMOptions,
+  PinningStorage,
+  RestStorageOptions,
+  ShareStorage,
+  ShareTarget,
+  ThreadStorage,
+} from "@openuidev/react-headless";
+
 // DetailedView() factory — generates a ComponentRenderer with detailed-view wiring
 export { DetailedView } from "./detailed-view";
 export type { DetailedViewConfig, DetailedViewControls } from "./detailed-view";
