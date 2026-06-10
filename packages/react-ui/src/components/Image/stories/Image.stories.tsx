@@ -20,7 +20,7 @@ const meta: Meta<typeof Image> = {
   parameters: {
     docs: {
       description: {
-        component: "```tsx\nimport { Image } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { Image } from '@openuidev/react-ui';\n```",
       },
     },
   },

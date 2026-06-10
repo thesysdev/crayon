@@ -95,7 +95,7 @@ const meta: Meta<RadarChartProps<typeof radarChartData>> = {
 ## Installation and Basic Usage
 
 \`\`\`tsx
-import { RadarChart } from '@openui-ui/react-ui/Charts/RadarChart';
+import { RadarChart } from '@openuidev/react-ui/Charts/RadarChart';
 
 // Basic implementation
 <RadarChart

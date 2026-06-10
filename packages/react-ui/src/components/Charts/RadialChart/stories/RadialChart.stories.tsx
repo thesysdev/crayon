@@ -101,7 +101,7 @@ const meta: Meta<RadialChartProps<typeof monthlyRevenueData>> = {
 ## Installation and Basic Usage
 
 \`\`\`tsx
-import { RadialChart } from '@openui-ui/react-ui/Charts/RadialChart';
+import { RadialChart } from '@openuidev/react-ui/Charts/RadialChart';
 
 // Basic implementation
 <RadialChart

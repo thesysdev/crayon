@@ -32,7 +32,7 @@ const meta: Meta<typeof MiniLineChart> = {
     docs: {
       description: {
         component:
-          "```tsx\nimport { MiniLineChart } from '@openui-ui/react-ui/Charts/LineCharts/MiniLineChart';\n```\n\nA responsive mini line chart component that accepts 1D data (numbers or objects with value/label) with automatic data filtering for space-constrained containers. Features smooth line interpolation and customizable styling.",
+          "```tsx\nimport { MiniLineChart } from '@openuidev/react-ui/Charts/LineCharts/MiniLineChart';\n```\n\nA responsive mini line chart component that accepts 1D data (numbers or objects with value/label) with automatic data filtering for space-constrained containers. Features smooth line interpolation and customizable styling.",
       },
     },
   },

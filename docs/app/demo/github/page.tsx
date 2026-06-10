@@ -1,5 +1,7 @@
 "use client";
 
+import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
+import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { mergeStatements } from "@openuidev/react-lang";
 import { Button } from "@openuidev/react-ui";
 import { encode } from "gpt-tokenizer";
@@ -22,16 +24,25 @@ import { ConversationPanel } from "./components/ConversationPanel/ConversationPa
 import { GitHubConnect } from "./components/GitHubConnect/GitHubConnect";
 import { Header } from "./components/Header/Header";
 import { PreviewPanel } from "./components/PreviewPanel/PreviewPanel";
+import { SavedSidebar } from "./components/SavedSidebar/SavedSidebar";
 import {
   GITHUB_DEMO_MODEL_LABEL,
   GITHUB_STARTERS,
+  STREAM_RESULT,
   type ChatMessage,
   type GitHubStarterIconKey,
   type Status,
+  type StreamResult,
   type Theme,
   type ToolCallEntry,
 } from "./constants";
 import { clearCache, createGitHubToolProvider, prefetchAndSummarize } from "./github/tools";
+import {
+  deleteSavedDashboard,
+  getSavedDashboards,
+  upsertDashboard,
+  type SavedDashboard,
+} from "./saved/store";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -137,7 +148,7 @@ async function streamChat(
   onDone: () => void,
   signal?: AbortSignal,
   onFirstChunk?: () => void,
-) {
+): Promise<StreamResult> {
   const res = await fetch("/api/demo/github/stream", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -147,11 +158,15 @@ async function streamChat(
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
+    if (isDemoCreditsErrorPayload((err as { error?: unknown }).error)) {
+      return STREAM_RESULT.CreditsExhausted;
+    }
+
     onChunk(
       `Error: ${(err as { error?: { message?: string } }).error?.message ?? `Server error ${res.status}`}`,
     );
     onDone();
-    return;
+    return STREAM_RESULT.Done;
   }
 
   const reader = res.body!.getReader();
@@ -169,26 +184,31 @@ async function streamChat(
       const data = trimmed.slice(5).trim();
       if (data === "[DONE]") {
         onDone();
-        return;
+        return STREAM_RESULT.Done;
       }
+      let parsed: {
+        error?: unknown;
+        choices?: Array<{ delta?: { content?: string }; finish_reason?: string }>;
+      };
       try {
-        const parsed = JSON.parse(data) as {
-          choices: Array<{ delta: { content?: string } }>;
-        };
-        const content = parsed.choices[0]?.delta?.content;
-        if (content) {
-          if (!firstChunkFired) {
-            firstChunkFired = true;
-            onFirstChunk?.();
-          }
-          onChunk(content);
-        }
+        parsed = JSON.parse(data);
       } catch {
         // skip malformed chunks
+        continue;
+      }
+
+      const content = parsed.choices?.[0]?.delta?.content;
+      if (content) {
+        if (!firstChunkFired) {
+          firstChunkFired = true;
+          onFirstChunk?.();
+        }
+        onChunk(content);
       }
     }
   }
   onDone();
+  return STREAM_RESULT.Done;
 }
 
 // ── Main Page ────────────────────────────────────────────────────────────
@@ -211,6 +231,17 @@ export default function GitHubDemoPage() {
   const [parsedJson, setParsedJson] = useState<string | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
 
+  const [savedDashboards, setSavedDashboards] = useState<SavedDashboard[]>([]);
+  const [activeSavedId, setActiveSavedId] = useState<string | null>(null);
+  const [convCollapsed, setConvCollapsed] = useState(false);
+
+  const activeSavedIdRef = useRef<string | null>(null);
+  const githubUsernameRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    setSavedDashboards(getSavedDashboards());
+  }, []);
+
   // Conversation
   const [conversation, setConversation] = useState<ChatMessage[]>([]);
   const [streamingText, setStreamingText] = useState("");
@@ -222,6 +253,7 @@ export default function GitHubDemoPage() {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [showGitHubCreditsDialog, setShowGitHubCreditsDialog] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
   const responseRef = useRef("");
@@ -278,6 +310,7 @@ export default function GitHubDemoPage() {
       setToolCalls([...calls]);
     });
     resetToolCallsRef.current = resetCalls;
+    githubUsernameRef.current = username;
     setGithubUsername(username);
     setToolProvider(wrapped);
   }, []);
@@ -286,6 +319,8 @@ export default function GitHubDemoPage() {
     abortRef.current?.abort();
     abortRef.current = null;
     clearCache();
+    githubUsernameRef.current = null;
+    activeSavedIdRef.current = null;
     setGithubUsername(null);
     setToolProvider(null);
     setDashboardCode(null);
@@ -298,6 +333,8 @@ export default function GitHubDemoPage() {
     setShowSource(false);
     setParsedJson(null);
     setErrorMsg("");
+    setShowGitHubCreditsDialog(false);
+    setActiveSavedId(null);
   };
 
   // ── Send message ─────────────────────────────────────────────────────
@@ -307,10 +344,12 @@ export default function GitHubDemoPage() {
       if (!text.trim() || isStreaming) return;
       const trimmed = text.trim();
 
+      setConvCollapsed(false);
       setStatus("streaming");
       setStartTime(null);
       setElapsed(null);
       setErrorMsg("");
+      setShowGitHubCreditsDialog(false);
       responseRef.current = "";
       setStreamingText("");
       setToolCalls([]);
@@ -327,16 +366,10 @@ export default function GitHubDemoPage() {
       setConversation(updated);
       const existingCode = dashboardCode;
 
-      // Build API messages
-      const apiMessages = updated.map((m, i) => {
-        if (m.role === "user" && i === updated.length - 1 && existingCode) {
-          return {
-            role: m.role,
-            content: `${m.content}\n\n<current-dashboard>\n${existingCode}\n</current-dashboard>`,
-          };
-        }
-        return { role: m.role, content: m.content };
-      });
+      const apiMessages = updated.map((m) => ({ role: m.role, content: m.content }));
+      const currentTurn = existingCode
+        ? `${trimmed}\n\n<current-dashboard>\n${existingCode}\n</current-dashboard>`
+        : trimmed;
 
       // Prefetch GitHub data on first message to warm cache + give LLM context
       // Use raw (unwrapped) tools to avoid triggering tool-call tracking side effects
@@ -353,9 +386,9 @@ export default function GitHubDemoPage() {
       abortRef.current = controller;
 
       try {
-        await streamChat(
+        const streamResult = await streamChat(
           {
-            prompt: githubContext ? `${githubContext}\n\n${trimmed}` : trimmed,
+            prompt: githubContext ? `${githubContext}\n\n${currentTurn}` : currentTurn,
             messages: apiMessages.slice(0, -1),
           },
           (chunk) => {
@@ -394,6 +427,24 @@ export default function GitHubDemoPage() {
               if (newCode) {
                 const merged = existingCode ? mergeStatements(existingCode, newCode) : newCode;
                 setDashboardCode(merged);
+
+                // Auto-save: one entry per session, upserted in place on every
+                // successful generation/edit. Only real code is persisted, so
+                // prose/error replies never create or pollute a saved entry.
+                const username = githubUsernameRef.current;
+                if (username) {
+                  const firstPrompt = updated.find((m) => m.role === "user")?.content.trim();
+                  const title = firstPrompt ? firstPrompt.slice(0, 60) : `@${username} dashboard`;
+                  const saved = upsertDashboard({
+                    id: activeSavedIdRef.current,
+                    username,
+                    title,
+                    code: merged,
+                  });
+                  activeSavedIdRef.current = saved.id;
+                  setActiveSavedId(saved.id);
+                  setSavedDashboards(getSavedDashboards());
+                }
               }
             }
           },
@@ -403,6 +454,13 @@ export default function GitHubDemoPage() {
             setStartTime(streamStartTime);
           },
         );
+
+        if (streamResult === STREAM_RESULT.CreditsExhausted) {
+          abortRef.current = null;
+          setStatus("idle");
+          setStreamResponseHasCode(false);
+          setShowGitHubCreditsDialog(true);
+        }
       } catch (err: unknown) {
         if (err instanceof Error && err.name === "AbortError") {
           setStreamResponseHasCode(false);
@@ -440,9 +498,43 @@ export default function GitHubDemoPage() {
     [handleConnect],
   );
 
+  // ── Saved dashboards ───────────────────────────────────────────────────
+
+  const handleSelectSaved = (d: SavedDashboard) => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    clearCache();
+    handleConnect(d.username);
+    setConversation([]);
+    setStreamingText("");
+    setToolCalls([]);
+    setStreamResponseHasCode(false);
+    setShowSource(false);
+    setParsedJson(null);
+    setErrorMsg("");
+    setElapsed(null);
+    setDashboardCode(d.code);
+    setStatus("done");
+    activeSavedIdRef.current = d.id;
+    setActiveSavedId(d.id);
+    setConvCollapsed(true);
+  };
+
+  const handleDeleteSaved = (id: string) => {
+    setSavedDashboards(deleteSavedDashboard(id));
+    if (activeSavedId === id) {
+      activeSavedIdRef.current = null;
+      setActiveSavedId(null);
+    }
+  };
+
+  const handleNewDashboard = () => {
+    handleDisconnect();
+  };
+
   // ── Render ─────────────────────────────────────────────────────────────
 
-  const showConversation = conversation.length > 0 || isStreaming;
+  const showConversation = conversation.length > 0 || isStreaming || hasDashboard;
 
   return (
     <div className={`app ${isHomeState ? "app-home" : "app-artifact"}`}>
@@ -453,6 +545,17 @@ export default function GitHubDemoPage() {
       />
 
       <div className={`app-body ${isHomeState ? "app-body-home" : ""}`}>
+        {/* Saved dashboards sidebar */}
+        {savedDashboards.length > 0 && (
+          <SavedSidebar
+            dashboards={savedDashboards}
+            activeId={activeSavedId}
+            onSelect={handleSelectSaved}
+            onDelete={handleDeleteSaved}
+            onNew={handleNewDashboard}
+          />
+        )}
+
         {/* Phase 1: Connect Screen */}
         {isHomeState && (
           <div className="content-wrapper content-wrapper-home">
@@ -617,14 +720,6 @@ export default function GitHubDemoPage() {
                     className="gh-connected-avatar"
                   />
                   <span>@{githubUsername}</span>
-                  <Button
-                    className="gh-connected-change"
-                    variant="tertiary"
-                    size="extra-small"
-                    onClick={handleDisconnect}
-                  >
-                    Change
-                  </Button>
                 </div>
               )}
 
@@ -699,6 +794,8 @@ export default function GitHubDemoPage() {
                 onStop={handleStop}
                 hasDashboard={hasDashboard}
                 responseHasCode={streamResponseHasCode}
+                collapsed={convCollapsed}
+                onToggleCollapsed={() => setConvCollapsed((v) => !v)}
               />
             )}
           </div>
@@ -707,6 +804,10 @@ export default function GitHubDemoPage() {
 
       {/* Error banner */}
       {status === "error" && errorMsg && <div className="error-banner">{errorMsg}</div>}
+      <DemoCreditsDialog
+        open={showGitHubCreditsDialog}
+        onClose={() => setShowGitHubCreditsDialog(false)}
+      />
     </div>
   );
 }

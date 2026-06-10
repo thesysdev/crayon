@@ -1,9 +1,16 @@
 /* Scope playground resets so they do not leak into other routes after navigation.
-   Use `:where()` to keep specificity at zero and avoid overriding react-ui classes. */
-:where(.app, .app *, .app *::before, .app *::after) {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+   Use `:where()` to keep specificity at zero and avoid overriding react-ui classes.
+
+   IMPORTANT: wrap in `@layer base` so this reset sits BELOW `@layer openui`. Unlayered,
+   it beats every layered OpenUI component style regardless of specificity, zeroing the
+   padding/margin of rendered OpenUI components. In `@layer base`, OpenUI (higher layer)
+   and the demo's own shell classes (unlayered) win over it. */
+@layer base {
+  :where(.app, .app *, .app *::before, .app *::after) {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 /* ─── Global ────────────────────────────────────────────────────────────────── */
@@ -163,8 +170,7 @@
 .openui-button-base.send-btn:focus-visible,
 .openui-button-base.stop-btn:focus-visible,
 .openui-button-base.chip:focus-visible,
-.openui-button-base.dashboard-source-toggle:focus-visible,
-.openui-button-base.gh-connected-change:focus-visible {
+.openui-button-base.dashboard-source-toggle:focus-visible {
   outline: 2px solid var(--openui-border-accent);
   outline-offset: 2px;
 }
@@ -681,27 +687,6 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-}
-
-.openui-button-base.gh-connected-change {
-  margin-left: auto;
-  background: transparent;
-  border: none;
-  color: var(--openui-text-neutral-tertiary);
-  font-size: 12px;
-  cursor: pointer;
-  padding: var(--openui-space-2xs) var(--openui-space-xs);
-  border-radius: var(--openui-radius-s);
-  font-family: var(--openui-font-body);
-  box-shadow: none;
-  transition:
-    color 0.15s,
-    background-color 0.15s;
-}
-
-.openui-button-base.gh-connected-change:hover:not(:disabled) {
-  color: var(--openui-text-neutral-primary);
-  background: var(--openui-highlight);
 }
 
 /* GitHub starters welcome (inside artifact layout) */

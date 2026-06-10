@@ -9,7 +9,7 @@ const meta: Meta<SliderBlockProps> = {
     docs: {
       description: {
         component:
-          "A slider component with a label, inline value editing (text input for continuous, select dropdown for discrete), range support, and validation.\n\n```tsx\nimport { SliderBlock } from '@openui-ui/react-ui';\n```",
+          "A slider component with a label, inline value editing (text input for continuous, select dropdown for discrete), range support, and validation.\n\n```tsx\nimport { SliderBlock } from '@openuidev/react-ui';\n```",
       },
     },
   },

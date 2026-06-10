@@ -8,7 +8,7 @@ const meta: Meta<TextCalloutProps> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { TextCallout } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { TextCallout } from '@openuidev/react-ui';\n```",
       },
     },
   },

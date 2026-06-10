@@ -15,7 +15,7 @@ const meta: Meta<SingleStackedBarProps<any>> = {
 ## Installation and Basic Usage
 
 \`\`\`tsx
-import { SingleStackedBar } from '@openui-ui/react-ui/Charts/SingleStackedBar';
+import { SingleStackedBar } from '@openuidev/react-ui/Charts/SingleStackedBar';
 
 // Basic implementation
 <SingleStackedBar

@@ -16,6 +16,8 @@ type ConversationPanelProps = {
   onStop: () => void;
   hasDashboard: boolean;
   responseHasCode: boolean;
+  collapsed: boolean;
+  onToggleCollapsed: () => void;
 };
 
 export function ConversationPanel({
@@ -27,9 +29,10 @@ export function ConversationPanel({
   onStop,
   hasDashboard,
   responseHasCode,
+  collapsed,
+  onToggleCollapsed,
 }: ConversationPanelProps) {
   const [input, setInput] = useState("");
-  const [collapsed, setCollapsed] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -52,11 +55,7 @@ export function ConversationPanel({
   if (collapsed) {
     return (
       <div className="conv-collapsed">
-        <button
-          className="conv-expand-btn"
-          onClick={() => setCollapsed(false)}
-          title="Expand conversation"
-        >
+        <button className="conv-expand-btn" onClick={onToggleCollapsed} title="Expand conversation">
           <MessageSquare size={16} />
           {messages.length > 0 && <span className="conv-badge">{messages.length}</span>}
         </button>
@@ -68,7 +67,7 @@ export function ConversationPanel({
     <div className="conv-panel">
       <div className="conv-header">
         <span>Conversation</span>
-        <button className="conv-collapse-btn" onClick={() => setCollapsed(true)} title="Collapse">
+        <button className="conv-collapse-btn" onClick={onToggleCollapsed} title="Collapse">
           <ChevronRight size={16} />
         </button>
       </div>

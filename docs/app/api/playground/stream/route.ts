@@ -1,3 +1,7 @@
+import {
+  createDemoCreditsExhaustedResponse,
+  isDemoCreditsExhaustedError,
+} from "@/lib/demo-credits";
 import { BASE_URL } from "@/lib/source";
 import { readFileSync } from "fs";
 import { type NextRequest } from "next/server";
@@ -36,6 +40,10 @@ export async function POST(req: NextRequest) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
+    if (isDemoCreditsExhaustedError(err, res.status)) {
+      return createDemoCreditsExhaustedResponse();
+    }
+
     return Response.json(
       {
         error: (err as { error?: { message?: string } }).error ?? {
@@ -46,6 +54,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Keep credit handling to provider 4xx responses. Provider-specific mid-stream
+  // error chunks are intentionally passed through because they are harder to
+  // maintain across OpenRouter/OpenAI streaming shape changes.
   const [streamForClient, streamForLog] = res.body!.tee();
 
   const reader = streamForLog.getReader();

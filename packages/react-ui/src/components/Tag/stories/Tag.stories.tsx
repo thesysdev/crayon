@@ -9,7 +9,7 @@ const meta: Meta<typeof Tag> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { Tag } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { Tag } from '@openuidev/react-ui';\n```",
       },
     },
   },

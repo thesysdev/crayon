@@ -9,7 +9,7 @@ const meta: Meta<typeof ImageGallery> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { ImageGallery } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { ImageGallery } from '@openuidev/react-ui';\n```",
       },
     },
   },

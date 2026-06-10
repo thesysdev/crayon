@@ -139,6 +139,37 @@ function App() {
 | `defaultDarkTheme` | Built-in dark theme |
 | `swatchTokens` | Token palette for use in theme builders |
 
+## Styling integration
+
+OpenUI's component styles live inside a CSS cascade layer named `openui`. Any unlayered consumer CSS overrides OpenUI without `!important` or specificity matching:
+
+```css
+@import "@openuidev/react-ui/components.css";
+
+/* Wins, no specificity tricks needed */
+.openui-button-base-primary { background: hotpink; }
+```
+
+### With Tailwind v4
+
+Declare layer order at the top of your entry stylesheet so `openui` sits above Tailwind's reset but below `components` and `utilities`:
+
+```css
+@layer theme, base, openui, components, utilities;
+@import "@openuidev/react-ui/components.css";
+@import "tailwindcss";
+```
+
+This places Tailwind's Preflight (in `base`) below OpenUI components so its element resets don't override them, while keeping utilities (`bg-red-500`, etc.) winning over OpenUI styles.
+
+### With Tailwind v3, CSS Modules, or CSS-in-JS
+
+No configuration needed — these all emit unlayered CSS, which automatically beats anything in `@layer openui`.
+
+### Browser support
+
+CSS cascade layers require Chrome 99+, Firefox 97+, Safari 15.4+, or Edge 99+ (all baseline from March 2022). On older browsers, the `@layer { ... }` block is dropped entirely and components render unstyled. The package declares this floor via the `browserslist` field in its `package.json`.
+
 ## Components
 
 All components are available as individual imports:

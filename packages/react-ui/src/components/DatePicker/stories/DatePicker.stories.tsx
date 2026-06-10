@@ -10,7 +10,7 @@ const meta: Meta<typeof DatePicker> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { DatePicker } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { DatePicker } from '@openuidev/react-ui';\n```",
       },
     },
   },
