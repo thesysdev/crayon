@@ -56,7 +56,9 @@ import { FullScreen } from "@openuidev/react-ui";
 
 ## Override component styles with CSS
 
-OpenUI's component styles live in `@layer openui`. Any unlayered consumer CSS overrides them without `!important` or matching specificity:
+By default OpenUI ships **unlayered** styles: override them like any other stylesheet — with a selector of equal or higher specificity loaded after the component CSS.
+
+If you import the **layered** variant (`@openuidev/react-ui/layered-components.css`), all component styles live in `@layer openui`, and any unlayered consumer CSS overrides them without `!important` or specificity matching:
 
 ```css
 .openui-button-base-primary {
@@ -64,9 +66,9 @@ OpenUI's component styles live in `@layer openui`. Any unlayered consumer CSS ov
 }
 ```
 
-For Tailwind v4 apps, declare `@layer theme, base, openui, components, utilities;` ahead of `@import "tailwindcss";` in your global stylesheet (see [Installation](/docs/chat/installation#3-for-tailwind-v4-set-the-cascade-layer-order)) so utility classes also override OpenUI styles. CSS Modules, CSS-in-JS, and Tailwind v3 utilities emit unlayered CSS and override OpenUI automatically with no configuration.
+For Tailwind v4 apps using the layered variant, declare `@layer theme, base, openui, components, utilities;` ahead of `@import "tailwindcss";` in your global stylesheet (see [Installation](/docs/chat/installation#3-optional-opt-into-cascade-layered-styles)) so utility classes also override OpenUI styles. CSS Modules, CSS-in-JS, and Tailwind v3 utilities emit unlayered CSS and override the layered variant automatically with no configuration.
 
-Browser support: Chrome 99+, Firefox 97+, Safari 15.4+, Edge 99+ (all baseline from March 2022).
+Browser support for the layered variant: Chrome 99+, Firefox 97+, Safari 15.4+, Edge 99+ (all baseline from March 2022). The default unlayered styles have no browser floor.
 
 <div className="grid md:grid-cols-2 gap-6 my-6">
   <div>

@@ -13,9 +13,11 @@ import { Copilot, FullScreen, BottomTray } from "@openuidev/react-ui";
 
 ### Cascade-layer contract
 
-`@openuidev/react-ui/components.css` wraps every component rule in `@layer openui`. Unlayered consumer CSS overrides OpenUI components without specificity matching or `!important`. See [Chat → Theming](/docs/chat/theming#override-component-styles-with-css) for override patterns, and [Chat → Installation](/docs/chat/installation#3-for-tailwind-v4-set-the-cascade-layer-order) for the Tailwind v4 layer-order setup.
+The default stylesheet exports (`./components.css`, `./styles/*`) are **unlayered**. Two parallel exports — `@openuidev/react-ui/layered-components.css` and `@openuidev/react-ui/layered/styles/*` — ship the same rules wrapped in `@layer openui`; with the layered variant, unlayered consumer CSS overrides OpenUI components without specificity matching or `!important`. Import OpenUI CSS (either variant) from exactly one place in your app — multiple import sites under chunk-splitting bundlers can register cascade layers in the wrong order. See [Chat → Theming](/docs/chat/theming#override-component-styles-with-css) for override patterns, and [Chat → Installation](/docs/chat/installation#3-optional-opt-into-cascade-layered-styles) for the Tailwind v4 layer-order setup.
 
-Browser support: Chrome 99+, Firefox 97+, Safari 15.4+, Edge 99+ (all baseline from March 2022).
+`./defaults.css` and the `ThemeProvider` runtime style injection are always unlayered, so theme tokens override component defaults in both modes.
+
+Browser support for the layered variant: Chrome 99+, Firefox 97+, Safari 15.4+, Edge 99+ (all baseline from March 2022); older browsers drop the `@layer` block entirely. The default unlayered styles have no such floor.
 
 ## Layout components
 

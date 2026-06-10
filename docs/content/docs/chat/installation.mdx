@@ -57,9 +57,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 These imports give you the default chat layout styling and theme tokens.
 
-## 3. (For Tailwind v4) Set the cascade-layer order
+## 3. (Optional) Opt into cascade-layered styles
 
-OpenUI's component styles live in `@layer openui`. If your app uses Tailwind v4, declare the layer order in your global stylesheet so `openui` sits above Tailwind's reset (`base`) but below `components` and `utilities`:
+The default import above ships **unlayered** CSS — overrides work via normal specificity, exactly as in earlier versions. If you prefer your plain app CSS to win over OpenUI styles without specificity matching (recommended for Tailwind v4 apps), import the **layered** variant instead:
+
+```tsx
+import "@openuidev/react-ui/layered-components.css";
+import "./globals.css";
+```
+
+With Tailwind v4, also declare the layer order in your global stylesheet so `openui` sits above Tailwind's reset (`base`) but below `components` and `utilities`:
 
 ```css
 /* app/globals.css */
@@ -69,7 +76,12 @@ OpenUI's component styles live in `@layer openui`. If your app uses Tailwind v4,
 
 This places OpenUI above Tailwind's Preflight (so its element resets don't override component styles) while keeping Tailwind utilities like `bg-red-500` winning over OpenUI. Without this declaration, the cascade order is bundler-dependent and `openui` may end up declared *after* `utilities`, which prevents utility overrides from taking effect.
 
-Tailwind v3, plain CSS, CSS Modules, and CSS-in-JS need no configuration — their styles are unlayered and beat anything in `@layer openui` automatically.
+Two rules when using the layered variant:
+
+- Import OpenUI CSS from **exactly one place** (your root layout or global stylesheet, not both) — multiple import sites under chunk-splitting bundlers like Turbopack can lock the wrong layer order.
+- Wrap your own global resets in a layer below `openui` (e.g. `@layer base { ... }`) — unlayered resets beat all layered styles regardless of specificity.
+
+The layered variant requires cascade-layer support: Chrome 99+, Firefox 97+, Safari 15.4+, Edge 99+ (March 2022 baseline). Tailwind v3, plain CSS, CSS Modules, and CSS-in-JS need no configuration with either variant.
 
 See [`@openuidev/react-ui`](/docs/api-reference/react-ui#cascade-layer-contract) for the full styling integration contract.
 
