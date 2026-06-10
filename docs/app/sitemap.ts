@@ -1,6 +1,6 @@
 import { BASE_URL, blog, source } from "@/lib/source";
 
-const STATIC_PATHS = ["/", "/playground", "/blog"];
+const STATIC_PATHS = ["/", "/playground", "/blog", "/openclaw-os"];
 
 export default async function sitemap() {
   const staticRoutes = STATIC_PATHS.map((path) => ({
@@ -17,8 +17,8 @@ export default async function sitemap() {
 
   const blogRoutes = blog.getPages().map((page) => ({
     url: `${BASE_URL}${page.url}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
+    lastModified: page.data.date ? new Date(page.data.date) : new Date(),
+    changeFrequency: "monthly" as const,
   }));
 
   return [...staticRoutes, ...docsRoutes, ...blogRoutes];
