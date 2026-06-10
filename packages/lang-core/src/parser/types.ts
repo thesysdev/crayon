@@ -73,7 +73,8 @@ export type ValidationErrorCode =
   | "null-required"
   | "unknown-component"
   | "inline-reserved"
-  | "excess-args";
+  | "excess-args"
+  | "parse-failed";
 
 /**
  * A prop validation error. Components with missing required props are

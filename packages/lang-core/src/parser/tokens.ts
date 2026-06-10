@@ -50,3 +50,41 @@ export type Token = {
   t: T;
   v?: string | number;
 };
+
+/** Reconstruct the text representation of a token. */
+export function tokenText(tok: Token): string {
+  if (tok.v !== undefined) return String(tok.v);
+  switch (tok.t) {
+    case T.Newline: return "\n";
+    case T.LParen: return "(";
+    case T.RParen: return ")";
+    case T.LBrack: return "[";
+    case T.RBrack: return "]";
+    case T.LBrace: return "{";
+    case T.RBrace: return "}";
+    case T.Comma: return ",";
+    case T.Colon: return ":";
+    case T.Equals: return "=";
+    case T.True: return "true";
+    case T.False: return "false";
+    case T.Null: return "null";
+    case T.Dot: return ".";
+    case T.Plus: return "+";
+    case T.Minus: return "-";
+    case T.Star: return "*";
+    case T.Slash: return "/";
+    case T.Percent: return "%";
+    case T.EqEq: return "==";
+    case T.NotEq: return "!=";
+    case T.Greater: return ">";
+    case T.Less: return "<";
+    case T.GreaterEq: return ">=";
+    case T.LessEq: return "<=";
+    case T.And: return "&&";
+    case T.Or: return "||";
+    case T.Not: return "!";
+    case T.Question: return "?";
+    case T.EOF: return "";
+    default: return "";
+  }
+}

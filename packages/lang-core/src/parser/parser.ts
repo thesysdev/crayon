@@ -401,14 +401,16 @@ function preprocess(input: string): string {
  *
  * @param input  - Full openui-lang source text (may be partial/streaming)
  * @param cat    - Param map for positional-arg → named-prop mapping
+ * @param strict - When true, report lines that are not valid openui-lang as errors
  * @returns      ParseResult with root ElementNode (or null) and metadata
  */
-export function parse(input: string, cat: ParamMap, rootName?: string): ParseResult {
+export function parse(input: string, cat: ParamMap, rootName?: string, strict?: boolean): ParseResult {
   const trimmed = preprocess(input);
   if (!trimmed) return emptyResult();
 
   const { text, wasIncomplete } = autoClose(trimmed);
-  const stmts = split(tokenize(text));
+  const skipped: string[] = [];
+  const stmts = split(tokenize(text), strict ? skipped : undefined);
   if (!stmts.length) return emptyResult(wasIncomplete);
 
   const stmtMap = new Map<string, Statement>();
@@ -422,7 +424,21 @@ export function parse(input: string, cat: ParamMap, rootName?: string): ParseRes
   // Derive from map to deduplicate — Map.set overwrites duplicates
   const typedStmts = [...stmtMap.values()];
 
-  return buildResult(stmtMap, typedStmts, firstId, wasIncomplete, stmtMap.size, cat, rootName);
+  const result = buildResult(stmtMap, typedStmts, firstId, wasIncomplete, stmtMap.size, cat, rootName);
+
+  // In strict mode, add parse-level errors for skipped lines
+  if (strict && skipped.length > 0) {
+    for (const line of skipped) {
+      result.meta.errors.push({
+        code: "parse-failed",
+        component: "",
+        path: "",
+        message: `Unexpected text: "${line}" — expected a valid openui-lang statement (identifier = expression)`,
+      });
+    }
+  }
+
+  return result;
 }
 
 export interface StreamParser {
@@ -654,6 +670,20 @@ export function createParser(schema: LibraryJSONSchema, rootName?: string): Pars
   return {
     parse(input: string): ParseResult {
       return parse(input, paramMap, rootName);
+    },
+  };
+}
+
+/**
+ * Create a parser from a library JSON Schema document with strict mode.
+ * When strict is true, lines that don't parse as valid openui-lang statements
+ * are reported as errors instead of being silently skipped.
+ */
+export function createStrictParser(schema: LibraryJSONSchema, rootName?: string): Parser {
+  const paramMap = compileSchema(schema);
+  return {
+    parse(input: string): ParseResult {
+      return parse(input, paramMap, rootName, true);
     },
   };
 }

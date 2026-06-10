@@ -236,6 +236,66 @@ describe("orphaned statements", () => {
   });
 });
 
+// ── strict mode ────────────────────────────────────────────────────────────────
+
+describe("strict mode", () => {
+  it("ignores non-statement lines by default (non-strict)", () => {
+    const result = parse(
+      'Here is the response:\nroot = Stack([Title("hi")])',
+      schema,
+    );
+    expect(result.meta.errors).toHaveLength(0);
+    expect(result.root).not.toBeNull();
+  });
+
+  it("reports non-statement lines as errors in strict mode", () => {
+    const result = parse(
+      'Here is the response:\nroot = Stack([Title("hi")])',
+      schema,
+      undefined,
+      true,
+    );
+    expect(result.meta.errors.length).toBeGreaterThan(0);
+    expect(result.meta.errors[0].code).toBe("parse-failed");
+    expect(result.meta.errors[0].message).toMatch(/unexpected text/i);
+  });
+
+  it("reports invalid identifier lines in strict mode", () => {
+    const result = parse(
+      'foo bar\nroot = Stack([Title("hi")])',
+      schema,
+      undefined,
+      true,
+    );
+    expect(result.meta.errors.length).toBeGreaterThan(0);
+    expect(result.meta.errors[0].code).toBe("parse-failed");
+  });
+
+  it("still parses valid statements correctly in strict mode", () => {
+    const result = parse(
+      'root = Stack([Title("hi")])',
+      schema,
+      undefined,
+      true,
+    );
+    expect(result.meta.errors).toHaveLength(0);
+    expect(result.root).not.toBeNull();
+  });
+
+  it("reports multiple invalid lines", () => {
+    const result = parse(
+      'some text\nmore noise\nroot = Stack([Title("hi")])',
+      schema,
+      undefined,
+      true,
+    );
+    expect(result.meta.errors).toHaveLength(2);
+    expect(result.meta.errors.every((e: { code: string }) => e.code === "parse-failed")).toBe(true);
+  });
+});
+
+// ── markdown fences ──────────────────────────────────────────────────────────────
+
 describe("markdown fences and multiline comments in strings", () => {
   it("preserves js markdown fences inside strings", () => {
     const code = 'root = Title("```js\\nconsole.log(\\"Hello World\\");\\n```")';
@@ -285,5 +345,6 @@ root = Title("hello")
     expect(result.meta.errors).toHaveLength(0);
     expect(result.root).not.toBeNull();
     expect(result.root?.props.text).toBe("hello");
+
   });
 });

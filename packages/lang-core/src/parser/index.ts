@@ -13,7 +13,7 @@ export type {
   ValidationErrorCode,
 } from "./types";
 
-export { createParser, createStreamingParser, parse } from "./parser";
+export { createParser, createStrictParser, createStreamingParser, parse } from "./parser";
 export type { Parser, StreamParser } from "./parser";
 
 export { enrichErrors } from "./enrich-errors";
