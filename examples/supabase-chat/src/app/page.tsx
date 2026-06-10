@@ -1,6 +1,6 @@
 "use client";
 
-import "@openuidev/react-ui/components.css";
+import "@openuidev/react-ui/layered-components.css";
 
 import { openAIAdapter, openAIMessageFormat } from "@openuidev/react-headless";
 import { FullScreen } from "@openuidev/react-ui";
