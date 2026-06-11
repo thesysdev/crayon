@@ -2,7 +2,8 @@
 import mascotDarkSvgPaths from "@/imports/svg-mascot-dark";
 import svgPaths from "@/imports/svg-urruvoh2be";
 import mascotSvgPaths from "@/imports/svg-xeurqn3j1r";
-import { useId } from "react";
+import { useTheme } from "next-themes";
+import { useEffect, useId, useState } from "react";
 import styles from "./Footer.module.css";
 
 // ---------------------------------------------------------------------------
@@ -193,7 +194,11 @@ function HandcraftedMascot({ isDark }: { isDark: boolean }) {
 // ---------------------------------------------------------------------------
 
 export function Footer() {
-  const isDark = false;
+  const { resolvedTheme } = useTheme();
+  // Resolve the theme only after mount so the server and first client render match
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isDark = mounted && resolvedTheme === "dark";
 
   return (
     <footer className={styles.footer}>
