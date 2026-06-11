@@ -44,6 +44,17 @@ assert(
   `layered mirror has ${layered.length} css files, unlayered has ${unlayered.length}`,
 );
 
+// Every per-component DEFAULT style must stay unlayered too — not just the
+// index files checked above. Guards against a regression that re-wraps
+// dist/styles/*.css in place (the `wrapComponentCssInPlace` behavior this
+// contract intentionally removed); since consumers can import individual
+// ./styles/<component>.css, an index-only check would miss it.
+// openui-defaults.css is asserted unlayered separately above.
+for (const name of unlayered) {
+  if (name === "openui-defaults.css") continue;
+  assert(!/^\s*@layer/.test(read(path.join("styles", name))), `styles/${name} must stay unlayered`);
+}
+
 for (const f of [
   ...layered.map((n) => path.join("layered", "styles", n)),
   "layered/components/index.css",
