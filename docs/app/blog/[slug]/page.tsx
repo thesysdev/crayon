@@ -1,4 +1,5 @@
 import { PillLink } from "@/app/(home)/components/Button/Button";
+import { Footer } from "@/app/(home)/sections/Footer/Footer";
 import { blog } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { TOCItems } from "fumadocs-ui/components/toc/default";
@@ -23,6 +24,8 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
 
   return (
     <TOCProvider toc={page.data.toc}>
+      {/* Blend from the menu bar's surface color into the page background, then back into the footer's surface */}
+      <div className="min-h-screen bg-[linear-gradient(to_bottom,var(--openui-foreground),var(--openui-background)_10rem,var(--openui-background)_calc(100%_-_10rem),var(--openui-foreground))]">
       <main className="mx-auto flex w-full max-w-[1200px] gap-4 px-4 pt-16 pb-40 lg:gap-28 lg:pr-8 min-[1249px]:pl-0 min-[1024px]:max-[1248px]:pl-8">
         <aside className="hidden w-56 shrink-0 lg:block">
           <div className="sticky top-24">
@@ -56,6 +59,8 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
           </div>
         </div>
       </main>
+      </div>
+      <Footer />
     </TOCProvider>
   );
 }
