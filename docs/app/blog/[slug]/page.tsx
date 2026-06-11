@@ -2,7 +2,7 @@ import { PillLink } from "@/app/(home)/components/Button/Button";
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
 import { blog } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
-import { TOCItems } from "fumadocs-ui/components/toc/default";
+import { TOCItem, TOCItems } from "fumadocs-ui/components/toc/default";
 import { TOCProvider, TOCScrollArea } from "fumadocs-ui/components/toc";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -31,7 +31,11 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
           <div className="sticky top-24">
             <p className="mb-3 text-sm font-medium text-fd-foreground">On this page</p>
             <TOCScrollArea className="max-h-[calc(100vh-8rem)]">
-              <TOCItems />
+              <TOCItems>
+                {page.data.toc.map((item) => (
+                  <TOCItem key={item.url} item={item} />
+                ))}
+              </TOCItems>
             </TOCScrollArea>
           </div>
         </aside>
