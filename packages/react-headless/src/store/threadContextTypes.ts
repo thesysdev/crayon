@@ -1,25 +1,13 @@
 /**
- * A registered app entry in the per-thread context.
- *
- * Apps are interactive surfaces (e.g. dashboards) produced by tool calls.
- * Versions for the same `id` are kept in an ordered list so the sidebar
- * can show history; the latest version (highest `version` number) is the
- * default open target.
- *
- * @category Types
- */
-export type AppEntry = {
-  id: string;
-  version: number;
-  heading: string;
-};
-
-/**
  * A registered artifact entry in the per-thread context.
  *
- * Artifacts are durable structured outputs (e.g. presentations, reports)
- * produced by tool calls. Same shape as {@link AppEntry} for now —
- * separate type so future fields can diverge without a discriminated union.
+ * Artifacts are durable structured outputs (dashboards, presentations,
+ * reports, …) produced by tool calls. Versions for the same `id` are kept in
+ * an ordered list so the workspace can show history; the latest version
+ * (highest `version` number) is the default open target.
+ *
+ * `type` comes from the matched renderer's config and drives category
+ * grouping (see `ArtifactCategory`).
  *
  * @category Types
  */
@@ -27,6 +15,8 @@ export type ArtifactEntry = {
   id: string;
   version: number;
   heading: string;
+  /** Artifact type from the renderer config, e.g. `'th_dashboard'`. */
+  type: string;
 };
 
 /**
@@ -35,8 +25,6 @@ export type ArtifactEntry = {
  * @category Types
  */
 export type ThreadContextState = {
-  /** Apps registered in the active thread, grouped by `id`, sorted ascending by `version`. */
-  apps: Record<string, AppEntry[]>;
   /** Artifacts registered in the active thread, grouped by `id`, sorted ascending by `version`. */
   artifacts: Record<string, ArtifactEntry[]>;
 };
@@ -48,23 +36,17 @@ export type ThreadContextState = {
  */
 export type ThreadContextActions = {
   /**
-   * Upserts an app entry by `(id, version)`.
+   * Upserts an artifact entry by `(id, version)`.
    *
    * - If no entry with the same `id` exists, creates a new bucket.
    * - If a different `version` exists, inserts and keeps versions sorted ascending.
-   * - If the same `(id, version)` exists, updates `heading` (no-op when unchanged).
-   */
-  registerApp: (entry: AppEntry) => void;
-  /** Removes an app version. No-op if `(id, version)` is not registered. */
-  unregisterApp: (id: string, version: number) => void;
-  /**
-   * Upserts an artifact entry by `(id, version)`. See {@link registerApp} for semantics.
+   * - If the same `(id, version)` exists, updates `heading`/`type` (no-op when unchanged).
    */
   registerArtifact: (entry: ArtifactEntry) => void;
   /** Removes an artifact version. No-op if `(id, version)` is not registered. */
   unregisterArtifact: (id: string, version: number) => void;
   /**
-   * Clears all registries. Called automatically on thread switch.
+   * Clears the registry. Called automatically on thread switch.
    */
   reset: () => void;
 };

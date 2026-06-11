@@ -5,10 +5,38 @@ import { useTheme } from "@/hooks/use-system-theme";
 import {
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
+  restStorage,
+  type ChatLLM,
 } from "@openuidev/react-headless";
 import { FullScreen } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 import { codeArtifactRenderer } from "@/lib/codeArtifactRenderer";
+
+// Thread persistence: the /api/threads routes follow the restStorage
+// conventions (GET /get · POST /create · GET /get/:id · PATCH /update/:id ·
+// DELETE /delete/:id).
+const storage = restStorage({
+  baseUrl: "/api/threads",
+  messageFormat: openAIConversationMessageFormat,
+});
+
+const llm: ChatLLM = {
+  send: async ({ threadId, messages, signal }) => {
+    // OpenAI persists via `conversation: threadId` linkage, so send
+    // only the latest message — full history lives server-side.
+    const latest = messages.slice(-1);
+    return fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        threadId,
+        input: openAIConversationMessageFormat.toApi(latest),
+      }),
+      signal,
+    });
+  },
+  streamProtocol: openAIResponsesAdapter(),
+};
 
 export default function Page() {
   const mode = useTheme();
@@ -16,25 +44,10 @@ export default function Page() {
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       <FullScreen
-        threadApiUrl="/api/threads"
-        messageFormat={openAIConversationMessageFormat}
-        processMessage={async ({ threadId, messages, abortController }) => {
-          // OpenAI persists via `conversation: threadId` linkage, so send
-          // only the latest message — full history lives server-side.
-          const latest = messages.slice(-1);
-          return fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              threadId,
-              input: openAIConversationMessageFormat.toApi(latest),
-            }),
-            signal: abortController.signal,
-          });
-        }}
-        streamProtocol={openAIResponsesAdapter()}
+        storage={storage}
+        llm={llm}
         componentLibrary={openuiChatLibrary}
-        appRenderers={[codeArtifactRenderer]}
+        artifactRenderers={[codeArtifactRenderer]}
         agentName="OpenUI Chat (Responses API)"
         theme={{ mode }}
         conversationStarters={{

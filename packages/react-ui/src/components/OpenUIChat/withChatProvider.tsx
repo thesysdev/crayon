@@ -28,7 +28,8 @@ export function withChatProvider<ExtraProps = {}>(WrappedComponent: React.Compon
     const {
       storage,
       llm,
-      appRenderers,
+      artifactRenderers,
+      artifactCategories,
       theme,
       disableThemeProvider,
       ...innerProps
@@ -63,7 +64,7 @@ export function withChatProvider<ExtraProps = {}>(WrappedComponent: React.Compon
 
     return (
       <ThemeProviderComponent {...theme}>
-        <ChatProvider storage={storage} llm={llm} appRenderers={appRenderers}>
+        <ChatProvider storage={storage} llm={llm} artifactRenderers={artifactRenderers} artifactCategories={artifactCategories}>
           <WrappedComponent {...finalInnerProps} />
         </ChatProvider>
       </ThemeProviderComponent>

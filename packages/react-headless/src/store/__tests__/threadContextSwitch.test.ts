@@ -18,12 +18,12 @@ describe("thread-context thread-switch cleanup", () => {
   };
 
   const populate = (store: ReturnType<typeof createThreadContextStore>) => {
-    store.getState().registerApp({ id: "app-1", version: 1, heading: "App" });
-    store.getState().registerArtifact({ id: "art-1", version: 1, heading: "Artifact" });
+    store.getState().registerArtifact({ id: "app-1", version: 1, heading: "App", type: "th_dashboard" });
+    store.getState().registerArtifact({ id: "art-1", version: 1, heading: "Artifact", type: "th_presentation" });
   };
 
   const expectEmpty = (store: ReturnType<typeof createThreadContextStore>) => {
-    expect(store.getState().apps).toEqual({});
+    
     expect(store.getState().artifacts).toEqual({});
   };
 
@@ -96,7 +96,7 @@ describe("thread-context thread-switch cleanup", () => {
     chatStore.getState().selectThread("thread-1");
     await flushPromises();
 
-    expect(threadContextStore.getState().apps["app-1"]?.length).toBe(1);
+    expect(threadContextStore.getState().artifacts["app-1"]?.length).toBe(1);
     expect(threadContextStore.getState().artifacts["art-1"]?.length).toBe(1);
 
     unsubscribe();

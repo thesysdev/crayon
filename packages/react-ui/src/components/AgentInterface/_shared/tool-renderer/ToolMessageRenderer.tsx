@@ -1,4 +1,4 @@
-import { useAppRenderer, type ToolCall, type ToolMessage } from "@openuidev/react-headless";
+import { useArtifactRenderer, type ToolCall, type ToolMessage } from "@openuidev/react-headless";
 import type { ReactNode } from "react";
 import { RendererInstance } from "./RendererInstance";
 
@@ -26,7 +26,7 @@ export type ToolMessageRendererProps = {
  * `<ToolResult>`).
  *
  * Looks up `toolCall.function.name` against the AppRenderer registry provided
- * by `<ChatProvider appRenderers={...}>`. On match, hands off to
+ * by `<ChatProvider artifactRenderers={...}>`. On match, hands off to
  * {@link RendererInstance} which runs the parser, registers in ThreadContext,
  * and renders the inline preview + detailed-view panel.
  *
@@ -42,7 +42,7 @@ export const ToolMessageRenderer = ({
   toolCall,
   fallback,
 }: ToolMessageRendererProps) => {
-  const renderer = useAppRenderer(toolCall.function.name);
+  const renderer = useArtifactRenderer(toolCall.function.name);
 
   if (!renderer) return <>{fallback}</>;
 

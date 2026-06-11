@@ -17,7 +17,11 @@ import type { ConversationStarterProps } from "../../types/ConversationStarter";
 import { GenUIAssistantMessage } from "../OpenUIChat/GenUIAssistantMessage";
 import { GenUIUserMessage } from "../OpenUIChat/GenUIUserMessage";
 import { ThemeProvider, type ThemeProps } from "../ThemeProvider";
+import { parseArtifactPath } from "./_shared/artifactPaths";
 import { NavProvider, useNav } from "./_shared/navContext";
+import { ArtifactBrowserPage } from "./ArtifactBrowserPage";
+import { ArtifactNav } from "./ArtifactNav";
+import { ArtifactViewPage } from "./ArtifactViewPage";
 import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
 import { StartersProvider } from "./_shared/startersContext";
 import { Composer } from "./Composer";
@@ -43,6 +47,7 @@ import {
 } from "./Thread";
 import { ThreadList } from "./ThreadList";
 import { WelcomeScreen } from "./WelcomeScreen";
+import { Workspace } from "./Workspace";
 
 export interface AgentInterfaceComponents {
   AssistantMessage?: AssistantMessageComponent;
@@ -82,6 +87,7 @@ interface ExtractedSlots {
   threadHeader?: ReactElement;
   welcome?: ReactElement;
   composer?: ReactElement;
+  workspace?: ReactElement;
   routes: ReactElement[];
   rest: ReactNode[];
 }
@@ -95,6 +101,7 @@ const SLOT_KEY_BY_TYPE = new Map<unknown, SingleSlotKey>([
   [ThreadHeader, "threadHeader"],
   [WelcomeScreen, "welcome"],
   [Composer, "composer"],
+  [Workspace, "workspace"],
 ]);
 
 const isDev = () =>
@@ -137,6 +144,8 @@ interface AgentInterfaceComponent extends FC<AgentInterfaceProps> {
   SidebarContent: typeof SidebarContent;
   SidebarSeparator: typeof SidebarSeparator;
   SidebarItem: typeof SidebarItem;
+  ArtifactNav: typeof ArtifactNav;
+  Workspace: typeof Workspace;
   Route: typeof Route;
   MobileHeader: typeof MobileHeader;
   ThreadHeader: typeof ThreadHeader;
@@ -153,7 +162,8 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
   const {
     storage,
     llm,
-    appRenderers,
+    artifactRenderers,
+    artifactCategories,
     componentLibrary,
     components,
     theme,
@@ -203,7 +213,12 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
 
   return (
     <ThemeProviderComponent {...theme}>
-      <ChatProvider storage={storage} llm={llm} appRenderers={appRenderers}>
+      <ChatProvider
+        storage={storage}
+        llm={llm}
+        artifactRenderers={artifactRenderers}
+        artifactCategories={artifactCategories}
+      >
         <NavProvider path={path} defaultPath={defaultPath} onNavigate={onNavigate}>
           <StartersProvider starters={starters} starterVariant={starterVariant}>
             <AgentInterfaceBody
@@ -237,12 +252,18 @@ const AgentInterfaceBody = ({
 }: AgentInterfaceBodyProps) => {
   const { path } = useNav();
 
+  // Reserved `artifacts/` prefix is matched BEFORE user-defined Routes.
+  const artifactPath = useMemo(
+    () => (path === undefined ? null : parseArtifactPath(path)),
+    [path],
+  );
+
   const activeRoute = useMemo(() => {
-    if (path === undefined) return undefined;
+    if (path === undefined || artifactPath) return undefined;
     return slots.routes.find(
       (route) => (route.props as { path: string }).path === path,
     );
-  }, [path, slots.routes]);
+  }, [path, artifactPath, slots.routes]);
 
   return (
     <Container logoUrl={logoUrl} agentName={agentName}>
@@ -253,30 +274,46 @@ const AgentInterfaceBody = ({
           <>
             {slots.sidebarHeader ?? <SidebarHeader />}
             <SidebarContent>
+              <ArtifactNav />
               <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
           </>
         )}
       </SidebarContainer>
-      {activeRoute ? (
+      {artifactPath ? (
+        <ThreadContainer>
+          {artifactPath.kind === "list" ? (
+            <ArtifactBrowserPage categoryName={artifactPath.categoryName} />
+          ) : (
+            <ArtifactViewPage
+              artifactId={artifactPath.artifactId}
+              categoryName={artifactPath.categoryName}
+            />
+          )}
+        </ThreadContainer>
+      ) : activeRoute ? (
         <ThreadContainer>
           {(activeRoute.props as { children?: ReactNode }).children}
         </ThreadContainer>
       ) : (
-        <ThreadContainer>
-          {slots.mobileHeader ?? <MobileHeader />}
-          {slots.threadHeader}
-          {slots.welcome}
-          <ScrollArea>
-            <Messages
-              loader={<MessageLoading />}
-              assistantMessage={resolvedAssistantMessage}
-              userMessage={resolvedUserMessage}
-            />
-          </ScrollArea>
-          {slots.composer ?? <Composer />}
-        </ThreadContainer>
+        <>
+          <ThreadContainer>
+            {slots.mobileHeader ?? <MobileHeader />}
+            {slots.threadHeader}
+            {slots.welcome}
+            <ScrollArea>
+              <Messages
+                loader={<MessageLoading />}
+                assistantMessage={resolvedAssistantMessage}
+                userMessage={resolvedUserMessage}
+              />
+            </ScrollArea>
+            {slots.composer ?? <Composer />}
+          </ThreadContainer>
+          {/* Per-thread workspace rail — thread view only (hidden on Route/artifact pages). */}
+          {slots.workspace ?? <Workspace />}
+        </>
       )}
       {slots.rest}
     </Container>
@@ -288,6 +325,8 @@ AgentInterface.SidebarHeader = SidebarHeader;
 AgentInterface.SidebarContent = SidebarContent;
 AgentInterface.SidebarSeparator = SidebarSeparator;
 AgentInterface.SidebarItem = SidebarItem;
+AgentInterface.ArtifactNav = ArtifactNav;
+AgentInterface.Workspace = Workspace;
 AgentInterface.Route = Route;
 AgentInterface.MobileHeader = MobileHeader;
 AgentInterface.ThreadHeader = ThreadHeader;

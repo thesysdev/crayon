@@ -27,8 +27,8 @@ export interface RestStorageOptions {
  * `threadApiUrl` prop used, so an existing backend keeps working by swapping
  * `threadApiUrl="/x"` for `storage={restStorage({ baseUrl: "/x" })}`.
  *
- * Only the `thread` channel is implemented (the legacy `threadApiUrl` had no
- * pinning/share). Pair with an `llm` adapter (e.g. `fetchLLM`).
+ * Only the `thread` channel is implemented. Pair with an `llm` adapter
+ * (e.g. `fetchLLM`).
  */
 export function restStorage({
   baseUrl,

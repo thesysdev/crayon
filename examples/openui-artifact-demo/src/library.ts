@@ -18,7 +18,7 @@ export const artifactDemoPromptOptions: PromptOptions = {
   // Override the default preamble — the chat library's default says "ENTIRE
   // response must be valid openui-lang code", which suppresses tool calls.
   // For this example we want both: openui-lang for chat content + tool calls
-  // for code blocks rendered via defineAppRenderer.
+  // for code blocks rendered via defineArtifactRenderer.
   preamble:
     "You are an AI assistant that responds with TWO INDEPENDENT channels:\n" +
     "1. **openui-lang** — for chat content (intro text, explanations, follow-ups). Must be valid openui-lang starting with `root = Card([...])`.\n" +

@@ -46,13 +46,19 @@ function unescapeJSONString(s: string): string {
 }
 
 export const codeArtifactRenderer = defineArtifactRenderer({
+  type: "code_artifact",
   toolName: "create_code_artifact",
   parser: ({ args }) => {
     if (typeof args !== "string") return null;
-    return parseCodeArgs(args);
+    const props = parseCodeArgs(args);
+    if (!props) return null;
+    return {
+      props,
+      meta: props.title
+        ? { id: `code:${props.title}`, version: 1, heading: props.title }
+        : null,
+    };
   },
-  meta: (props) =>
-    props.title ? { id: `code:${props.title}`, version: 1, heading: props.title } : null,
   preview: (props, { isStreaming, isActive, toggle }) => (
     <button
       type="button"

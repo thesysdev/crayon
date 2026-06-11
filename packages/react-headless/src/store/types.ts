@@ -1,6 +1,6 @@
-import type { ChatLLM, ChatStorage } from "../adapters/types";
+import type { ArtifactCategory, ChatLLM, ChatStorage } from "../adapters/types";
 import type { Message, UserMessage } from "../types/message";
-import type { AppRendererConfig } from "./appRendererTypes";
+import type { ArtifactRendererConfig } from "./artifactRendererTypes";
 
 export type { Message, UserMessage } from "../types/message";
 export type CreateMessage = Omit<UserMessage, "id">;
@@ -70,11 +70,17 @@ export interface ChatProviderProps {
   /** Required — drives message sending and stream parsing. */
   llm: ChatLLM;
   /**
-   * App renderers matched against tool calls in the conversation.
-   * Captured at mount; subsequent prop changes are ignored (dev warning).
-   * Order is priority: first match wins on duplicate `toolName`.
+   * Artifact renderers matched against tool calls (by `toolName`) and stored
+   * artifacts (by `type`). Captured at mount; subsequent prop changes are
+   * ignored (dev warning). Order is priority: first registration wins on
+   * duplicate `toolName`/`type`.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  appRenderers?: ReadonlyArray<AppRendererConfig<any>>;
+  artifactRenderers?: ReadonlyArray<ArtifactRendererConfig<any>>;
+  /**
+   * Global artifact categories. Drive the sidebar Artifacts split, the
+   * artifact browser's pre-applied filters, and workspace section grouping.
+   */
+  artifactCategories?: ArtifactCategory[];
   children: React.ReactNode;
 }

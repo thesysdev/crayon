@@ -661,3 +661,242 @@ const ControlledRoutingStory = () => {
 export const ControlledRouting = {
   render: () => <ControlledRoutingStory />,
 };
+
+/**
+ * Global artifact browser. `artifactCategories` split the sidebar nav into
+ * "Apps" + "Reports"; clicking one opens the searchable artifact list
+ * (reserved path `artifacts/{category}`); clicking an artifact opens the
+ * full-page view with Back + "Go to thread".
+ */
+const MOCK_ARTIFACTS = Array.from({ length: 12 }, (_, i) => ({
+  id: `artifact-${i + 1}`,
+  title: i % 2 === 0 ? `Sales dashboard ${i + 1}` : `Quarterly report ${i + 1}`,
+  type: i % 2 === 0 ? "th_dashboard" : "th_report",
+  threadId: String((i % 3) + 1),
+  content: {
+    heading: i % 2 === 0 ? `Sales dashboard ${i + 1}` : `Quarterly report ${i + 1}`,
+    body: `Stored content for artifact ${i + 1}.`,
+  },
+}));
+
+const PAGE_SIZE = 5;
+
+const mockArtifactStorage = {
+  list: async ({ name, type, cursor }: { name?: string; type?: string[]; cursor?: string } = {}) => {
+    await new Promise((r) => setTimeout(r, 300));
+    const filtered = MOCK_ARTIFACTS.filter(
+      (a) =>
+        (!name || a.title.toLowerCase().includes(name.toLowerCase())) &&
+        (!type || type.includes(a.type)),
+    );
+    const start = cursor ? Number(cursor) : 0;
+    const page = filtered.slice(start, start + PAGE_SIZE);
+    const next = start + PAGE_SIZE < filtered.length ? String(start + PAGE_SIZE) : undefined;
+    return {
+      artifacts: page.map(({ content: _c, ...summary }) => summary),
+      nextCursor: next,
+    };
+  },
+  get: async (id: string) => {
+    await new Promise((r) => setTimeout(r, 300));
+    const found = MOCK_ARTIFACTS.find((a) => a.id === id);
+    if (!found) throw new Error(`Artifact ${id} not found`);
+    return found;
+  },
+  update: async ({ id }: { id: string; content: unknown }) => {
+    const { content: _c, ...summary } = MOCK_ARTIFACTS.find((a) => a.id === id)!;
+    return summary;
+  },
+};
+
+const storedArtifactRenderer = (type: string) => ({
+  type,
+  toolName: `${type}:create`,
+  parser: ({ response }: { args: unknown; response: unknown }) => {
+    const content = response as { heading: string; body: string } | null;
+    if (!content?.heading) return null;
+    return { props: content, meta: { id: content.heading, version: 1, heading: content.heading } };
+  },
+  preview: (props: { heading: string }) => <div>{props.heading}</div>,
+  actual: (props: { heading: string; body: string }) => (
+    <div style={{ padding: 24 }}>
+      <h2 style={{ marginTop: 0 }}>{props.heading}</h2>
+      <p>{props.body}</p>
+      <p style={{ color: "rgba(0,0,0,0.4)", fontSize: 13 }}>
+        Rendered from storage via the type-matched artifact renderer.
+      </p>
+    </div>
+  ),
+});
+
+const ARTIFACT_RENDERERS = [
+  storedArtifactRenderer("th_dashboard"),
+  storedArtifactRenderer("th_report"),
+];
+
+const ARTIFACT_CATEGORIES = [
+  { name: "Apps", filter: { type: ["th_dashboard"] } },
+  { name: "Reports", filter: { type: ["th_report"] } },
+];
+
+export const ArtifactBrowser = {
+  render: () => (
+    <AgentInterface
+      storage={{ ...makeMockStorage(), artifact: mockArtifactStorage }}
+      llm={defaultLLM}
+      logoUrl={logoUrl}
+      agentName="OpenUI"
+      artifactRenderers={ARTIFACT_RENDERERS}
+      artifactCategories={ARTIFACT_CATEGORIES}
+    />
+  ),
+};
+
+/** Without categories: a single "Artifacts" sidebar item browsing everything. */
+export const ArtifactBrowserUncategorized = {
+  render: () => (
+    <AgentInterface
+      storage={{ ...makeMockStorage(), artifact: mockArtifactStorage }}
+      llm={defaultLLM}
+      logoUrl={logoUrl}
+      agentName="OpenUI"
+      artifactRenderers={ARTIFACT_RENDERERS}
+    />
+  ),
+};
+
+/**
+ * Per-thread Workspace rail. Send a message (or click the starter) — the
+ * mock LLM replies with a `dashboard:create` tool call; the matched artifact
+ * renderer registers an entry in the ThreadContext, the Workspace rail
+ * auto-appears on the right, and clicking the entry opens its DetailedView
+ * (the rail auto-collapses while the view is open).
+ */
+const toolCallSSE = (toolName: string, args: object, result: object): Promise<Response> => {
+  const events = [
+    { type: "TEXT_MESSAGE_CONTENT", delta: "Sure — here's your dashboard. " },
+    { type: "TOOL_CALL_START", toolCallId: "tc-1", toolCallName: toolName },
+    { type: "TOOL_CALL_ARGS", toolCallId: "tc-1", delta: JSON.stringify(args) },
+    { type: "TOOL_CALL_END", toolCallId: "tc-1" },
+    { type: "TOOL_CALL_RESULT", toolCallId: "tc-1", content: JSON.stringify(result) },
+  ];
+  const body = events.map((e) => `data: ${JSON.stringify(e)}\n\n`).join("") + "data: [DONE]\n\n";
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode(body));
+          controller.close();
+        },
+      });
+      resolve(new Response(stream));
+    }, 400);
+  });
+};
+
+let dashboardCount = 0;
+
+const workspaceLLM = makeMockLLM({
+  send: async () => {
+    dashboardCount += 1;
+    const heading = `Revenue dashboard ${dashboardCount}`;
+    return toolCallSSE(
+      "dashboard:create",
+      { heading },
+      { heading, body: `Widgets and charts for ${heading}.` },
+    );
+  },
+});
+
+const dashboardRenderer = {
+  type: "th_dashboard",
+  toolName: "dashboard:create",
+  parser: ({ response }: { args: unknown; response: unknown }) => {
+    if (typeof response !== "string") return null;
+    try {
+      const content = JSON.parse(response) as { heading: string; body: string };
+      if (!content.heading) return null;
+      return {
+        props: content,
+        meta: { id: content.heading, version: 1, heading: content.heading },
+      };
+    } catch {
+      return null;
+    }
+  },
+  preview: (
+    props: { heading: string },
+    controls: { open: () => void; isActive: boolean },
+  ) => (
+    <button
+      type="button"
+      onClick={controls.open}
+      style={{
+        display: "block",
+        padding: "10px 14px",
+        margin: "8px 0",
+        border: "1px solid #ddd",
+        borderRadius: 8,
+        cursor: "pointer",
+        background: controls.isActive ? "#eef2ff" : "#fff",
+      }}
+    >
+      📊 {props.heading} — click to open
+    </button>
+  ),
+  actual: (props: { heading: string; body: string }) => (
+    <div style={{ padding: 16 }}>
+      <h3 style={{ marginTop: 0 }}>{props.heading}</h3>
+      <p>{props.body}</p>
+    </div>
+  ),
+};
+
+export const WithWorkspace = {
+  render: () => (
+    <AgentInterface
+      storage={populatedStorage}
+      llm={workspaceLLM}
+      logoUrl={logoUrl}
+      agentName="OpenUI"
+      artifactRenderers={[dashboardRenderer]}
+      artifactCategories={ARTIFACT_CATEGORIES}
+      starters={[
+        {
+          displayText: "Create a revenue dashboard",
+          prompt: "Create a revenue dashboard",
+          icon: <Sparkles size={16} />,
+        },
+      ]}
+    />
+  ),
+};
+
+/** Workspace Mode C — children replace the rail entirely. */
+export const WorkspaceCustomChildren = {
+  render: () => (
+    <AgentInterface
+      storage={populatedStorage}
+      llm={workspaceLLM}
+      logoUrl={logoUrl}
+      agentName="OpenUI"
+      artifactRenderers={[dashboardRenderer]}
+    >
+      <AgentInterface.Workspace>
+        <div
+          style={{
+            width: 240,
+            padding: 16,
+            borderLeft: "1px solid #eee",
+            background: "#fafafa",
+          }}
+        >
+          <strong>My custom rail</strong>
+          <p style={{ fontSize: 13, color: "#666" }}>
+            Replaces the default Workspace (always visible — you own the chrome).
+          </p>
+        </div>
+      </AgentInterface.Workspace>
+    </AgentInterface>
+  ),
+};

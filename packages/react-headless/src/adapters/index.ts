@@ -1,9 +1,11 @@
 export type {
+  Artifact,
+  ArtifactCategory,
+  ArtifactListParams,
+  ArtifactStorage,
+  ArtifactSummary,
   ChatLLM,
   ChatStorage,
-  PinningStorage,
-  ShareStorage,
-  ShareTarget,
   ThreadStorage,
 } from "./types";
 

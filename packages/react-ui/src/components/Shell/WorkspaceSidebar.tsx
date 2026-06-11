@@ -1,21 +1,24 @@
 import {
   useActiveDetailedView,
-  useAppList,
+  useArtifactCategories,
   useArtifactList,
   useDetailedView,
   useDetailedViewStore,
-  type AppEntry,
   type ArtifactEntry,
 } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { AppWindow, ArrowLeftFromLine, ArrowRightFromLine, FileText } from "lucide-react";
+import { ArrowLeftFromLine, ArrowRightFromLine, FileText } from "lucide-react";
 import { useEffect } from "react";
 import { IconButton } from "../IconButton";
 import { useShellStore } from "../_shared/store";
 
 /**
- * Right-side collapsible sidebar that lists the apps and artifacts attached
- * to the current thread (sourced from `useAppList` / `useArtifactList`).
+ * Right-side collapsible sidebar that lists the artifacts attached to the
+ * current thread (sourced from `useArtifactList`).
+ *
+ * Sections are driven by the `artifactCategories` configured on
+ * `<ChatProvider>`: each category lists the entries whose `type` matches its
+ * filter. Without categories, a single "Artifacts" section lists everything.
  *
  * Each item activates the corresponding `DetailedView` when clicked. Use
  * inside the Shell layout — a `ChatProvider` ancestor is required.
@@ -28,6 +31,7 @@ export const WorkspaceSidebar = ({ className }: { className?: string }) => {
     setIsWorkspaceOpen: state.setIsWorkspaceOpen,
   }));
   const { isDetailedViewActive } = useActiveDetailedView();
+  const categories = useArtifactCategories();
 
   // Auto-collapse the workspace when a DetailedView opens (focus on the view);
   // auto-expand when it closes. Fires only on transition, so manual toggles
@@ -36,12 +40,8 @@ export const WorkspaceSidebar = ({ className }: { className?: string }) => {
     setIsWorkspaceOpen(!isDetailedViewActive);
   }, [isDetailedViewActive, setIsWorkspaceOpen]);
 
-  const apps = useAppList();
-  const artifacts = useArtifactList();
-  const appLatest = latestPerId(apps);
-  const artifactLatest = latestPerId(artifacts);
-
-  const isEmpty = appLatest.length === 0 && artifactLatest.length === 0;
+  const all = useArtifactList();
+  const isEmpty = Object.keys(all).length === 0;
 
   return (
     <div
@@ -66,16 +66,16 @@ export const WorkspaceSidebar = ({ className }: { className?: string }) => {
       </div>
 
       <div className="openui-shell-workspace-sidebar__content">
-        <WorkspaceSection title="Apps" entries={appLatest} kind="app" emptyHint="No apps yet" />
-        <WorkspaceSection
-          title="Artifacts"
-          entries={artifactLatest}
-          kind="artifact"
-          emptyHint="No artifacts yet"
-        />
+        {categories.length > 0 ? (
+          categories.map((category) => (
+            <CategorySection key={category.name} name={category.name} types={category.filter.type} />
+          ))
+        ) : (
+          <WorkspaceSection title="Artifacts" entries={latestPerId(all)} emptyHint="No artifacts yet" />
+        )}
         {isEmpty && (
           <div className="openui-shell-workspace-sidebar__empty">
-            Apps and artifacts created by the assistant will appear here.
+            Artifacts created by the assistant will appear here.
           </div>
         )}
       </div>
@@ -83,15 +83,20 @@ export const WorkspaceSidebar = ({ className }: { className?: string }) => {
   );
 };
 
+const CategorySection = ({ name, types }: { name: string; types: string[] }) => {
+  const entries = useArtifactList({ type: types });
+  return (
+    <WorkspaceSection title={name} entries={latestPerId(entries)} emptyHint={`No ${name.toLowerCase()} yet`} />
+  );
+};
+
 const WorkspaceSection = ({
   title,
   entries,
-  kind,
   emptyHint,
 }: {
   title: string;
-  entries: ReadonlyArray<AppEntry | ArtifactEntry>;
-  kind: "app" | "artifact";
+  entries: ReadonlyArray<ArtifactEntry>;
   emptyHint: string;
 }) => {
   if (entries.length === 0) {
@@ -108,26 +113,18 @@ const WorkspaceSection = ({
       <div className="openui-shell-workspace-sidebar__section-header">{title}</div>
       <ul className="openui-shell-workspace-sidebar__list">
         {entries.map((entry) => (
-          <WorkspaceItem key={entry.id} entry={entry} kind={kind} />
+          <WorkspaceItem key={entry.id} entry={entry} />
         ))}
       </ul>
     </div>
   );
 };
 
-const WorkspaceItem = ({
-  entry,
-  kind,
-}: {
-  entry: AppEntry | ArtifactEntry;
-  kind: "app" | "artifact";
-}) => {
+const WorkspaceItem = ({ entry }: { entry: ArtifactEntry }) => {
   const viewId = `${entry.id}:${entry.version}`;
   const { isActive } = useDetailedView(viewId);
   const store = useDetailedViewStore();
   const onClick = () => store.getState().setActiveDetailedView(viewId);
-
-  const Icon = kind === "app" ? AppWindow : FileText;
 
   return (
     <li>
@@ -139,7 +136,7 @@ const WorkspaceItem = ({
           "openui-shell-workspace-sidebar__item--active": isActive,
         })}
       >
-        <Icon size={14} className="openui-shell-workspace-sidebar__item-icon" />
+        <FileText size={14} className="openui-shell-workspace-sidebar__item-icon" />
         <span className="openui-shell-workspace-sidebar__item-label">{entry.heading}</span>
       </button>
     </li>

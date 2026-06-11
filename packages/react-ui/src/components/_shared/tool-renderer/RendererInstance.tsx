@@ -1,32 +1,31 @@
 import {
   useDetailedView,
   useThreadContextStore,
-  type AppRendererConfig,
-  type AppRendererControls,
+  type ArtifactRendererConfig,
+  type ArtifactRendererControls,
 } from "@openuidev/react-headless";
 import { useEffect, useId, useMemo } from "react";
 import { DetailedViewPanel } from "../detailed-view";
 
 /**
- * Renders a matched renderer (app or artifact) for a single tool call/response.
+ * Renders a matched artifact renderer for a single tool call/response.
  *
  * Lifecycle:
- * 1. Run `parser({ args, response })` to derive Props.
- * 2. Run `meta(props, ctx)` to derive ThreadContext entry.
- * 3. If meta returns non-null, register the entry on mount; unregister on unmount.
- *    The `kind` field on the renderer routes to apps (default) or artifacts.
- * 4. Render `preview(props, controls)` inline + `<DetailedViewPanel>` containing
+ * 1. Run `parser({ args, response }, { isStreaming })` → `{ props, meta } | null`.
+ * 2. If `meta` is non-null, register the entry (with the renderer's `type`)
+ *    in the ThreadContext on mount; unregister on unmount.
+ * 3. Render `preview(props, controls)` inline + `<DetailedViewPanel>` containing
  *    `actual(props, controls)` for the side panel.
  *
  * If `parser` returns `null`, renders nothing (caller should fall back).
- * If `meta` returns `null`, renders inline + panel but skips ThreadContext registration —
+ * If `meta` is `null`, renders inline + panel but skips ThreadContext registration —
  * a fallback `viewId` derived from `useId()` is used so `controls` remain functional.
  *
  * The same component instance is reused as a tool call transitions from
  * streaming (args partial, response null, isStreaming true) to completed
- * (args full, response present, isStreaming false). Parser + meta + render
- * functions are re-invoked on each update; ThreadContext registration stays
- * stable as long as `meta`'s `(id, version)` does not change.
+ * (args full, response present, isStreaming false). The parser is re-invoked
+ * on each update; ThreadContext registration stays stable as long as the
+ * returned `(id, version)` does not change.
  *
  * Internal — consumers should use {@link ToolMessageRenderer}.
  *
@@ -38,7 +37,7 @@ export function RendererInstance<Props>({
   response,
   isStreaming = false,
 }: {
-  renderer: AppRendererConfig<Props>;
+  renderer: ArtifactRendererConfig<Props>;
   args: unknown;
   response: unknown;
   isStreaming?: boolean;
@@ -46,38 +45,29 @@ export function RendererInstance<Props>({
   const fallbackId = useId();
   const tcStore = useThreadContextStore();
 
-  const props = useMemo(() => renderer.parser({ args, response }), [renderer, args, response]);
-
-  const meta = useMemo(() => {
-    if (props === null) return null;
-    return renderer.meta(props, { isStreaming });
-  }, [renderer, props, isStreaming]);
+  const parsed = useMemo(
+    () => renderer.parser({ args, response }, { isStreaming }),
+    [renderer, args, response, isStreaming],
+  );
+  const meta = parsed?.meta ?? null;
 
   // viewId derives from meta when present, otherwise from React's useId
   // so `controls.open` still works for an inline-only renderer.
   const viewId = meta ? `${meta.id}:${meta.version}` : fallbackId;
 
   // Register entry on mount; unregister on unmount or when (id, version) changes.
-  // The `kind` field on the renderer routes to the correct ThreadContext slice
-  // (apps for `defineAppRenderer`, artifacts for `defineArtifactRenderer`).
-  // Heading-only changes upsert via the store's idempotent register* actions.
-  const kind = renderer.kind ?? "app";
+  // Heading/type-only changes upsert via the store's idempotent registerArtifact.
   useEffect(() => {
     if (!meta) return;
-    const state = tcStore.getState();
-    if (kind === "artifact") {
-      state.registerArtifact(meta);
-      return () => tcStore.getState().unregisterArtifact(meta.id, meta.version);
-    }
-    state.registerApp(meta);
-    return () => tcStore.getState().unregisterApp(meta.id, meta.version);
-  }, [tcStore, kind, meta?.id, meta?.version, meta?.heading]); // eslint-disable-line react-hooks/exhaustive-deps
+    tcStore.getState().registerArtifact({ ...meta, type: renderer.type });
+    return () => tcStore.getState().unregisterArtifact(meta.id, meta.version);
+  }, [tcStore, renderer.type, meta?.id, meta?.version, meta?.heading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { isActive, open, close, toggle } = useDetailedView(viewId);
 
-  if (props === null) return null;
+  if (parsed === null) return null;
 
-  const controls: AppRendererControls = {
+  const controls: ArtifactRendererControls = {
     isActive,
     open,
     close,
@@ -87,9 +77,9 @@ export function RendererInstance<Props>({
 
   return (
     <>
-      {renderer.preview(props, controls)}
+      {renderer.preview(parsed.props, controls)}
       <DetailedViewPanel viewId={viewId} title={meta?.heading ?? "Detailed view"}>
-        {renderer.actual(props, controls)}
+        {renderer.actual(parsed.props, controls)}
       </DetailedViewPanel>
     </>
   );

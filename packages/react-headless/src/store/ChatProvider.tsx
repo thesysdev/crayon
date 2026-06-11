@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState, type FC } from "react";
 import { createDefaultInMemoryStorage } from "../adapters/_defaultStorage";
-import { AppRenderersContext, buildAppRendererRegistry } from "./AppRenderersContext";
+import { ArtifactCategoriesContext } from "./ArtifactCategoriesContext";
+import {
+  ArtifactRenderersContext,
+  buildArtifactRendererRegistry,
+} from "./ArtifactRenderersContext";
+import { ArtifactStorageContext } from "./ArtifactStorageContext";
 import { ChatContext } from "./ChatContext";
 import { createChatStore } from "./createChatStore";
 import { createDetailedViewStore } from "./createDetailedViewStore";
@@ -9,41 +14,42 @@ import { DetailedViewContext } from "./DetailedViewContext";
 import { ThreadContextContext } from "./ThreadContextContext";
 import type { ChatProviderProps } from "./types";
 
+const EMPTY_CATEGORIES: never[] = [];
+
 export const ChatProvider: FC<ChatProviderProps> = ({
   children,
   storage,
   llm,
-  appRenderers,
+  artifactRenderers,
+  artifactCategories,
 }) => {
-  const [chatStore] = useState(() =>
-    createChatStore({
-      storage: storage ?? createDefaultInMemoryStorage(),
-      llm,
-    }),
-  );
+  const [resolvedStorage] = useState(() => storage ?? createDefaultInMemoryStorage());
+  const [chatStore] = useState(() => createChatStore({ storage: resolvedStorage, llm }));
   const [detailedViewStore] = useState(() => createDetailedViewStore());
   const [threadContextStore] = useState(() => createThreadContextStore());
-  const [appRendererRegistry] = useState(() => buildAppRendererRegistry(appRenderers ?? []));
+  const [artifactRendererRegistry] = useState(() =>
+    buildArtifactRendererRegistry(artifactRenderers ?? []),
+  );
 
-  // Dev-mode warning if appRenderers reference changes after mount —
+  // Dev-mode warning if artifactRenderers reference changes after mount —
   // captured registry is mount-only, so changes are silently ignored otherwise.
-  const initialAppRenderersRef = useRef(appRenderers);
+  const initialRenderersRef = useRef(artifactRenderers);
   const hasWarnedRef = useRef(false);
   useEffect(() => {
     if (
       typeof process !== "undefined" &&
       process.env?.["NODE_ENV"] !== "production" &&
       !hasWarnedRef.current &&
-      initialAppRenderersRef.current !== appRenderers
+      initialRenderersRef.current !== artifactRenderers
     ) {
       console.warn(
-        "[OpenUI] `appRenderers` prop changed after ChatProvider mount. " +
+        "[OpenUI] `artifactRenderers` prop changed after ChatProvider mount. " +
           "The original array is kept; new renderers will not be registered. " +
           "Memoize the array (useMemo) to avoid this warning.",
       );
       hasWarnedRef.current = true;
     }
-  }, [appRenderers]);
+  }, [artifactRenderers]);
 
   // Cross-store subscription: reset detailed-view + thread-context state when the active thread changes.
   // useEffect (not inline) so the cleanup function unsubscribes on unmount.
@@ -62,9 +68,13 @@ export const ChatProvider: FC<ChatProviderProps> = ({
     <ChatContext.Provider value={chatStore}>
       <DetailedViewContext.Provider value={detailedViewStore}>
         <ThreadContextContext.Provider value={threadContextStore}>
-          <AppRenderersContext.Provider value={appRendererRegistry}>
-            {children}
-          </AppRenderersContext.Provider>
+          <ArtifactRenderersContext.Provider value={artifactRendererRegistry}>
+            <ArtifactStorageContext.Provider value={resolvedStorage.artifact ?? null}>
+              <ArtifactCategoriesContext.Provider value={artifactCategories ?? EMPTY_CATEGORIES}>
+                {children}
+              </ArtifactCategoriesContext.Provider>
+            </ArtifactStorageContext.Provider>
+          </ArtifactRenderersContext.Provider>
         </ThreadContextContext.Provider>
       </DetailedViewContext.Provider>
     </ChatContext.Provider>

@@ -18,7 +18,7 @@ import {
  * - a synthetic `TOOL_CALL_END` for the call,
  * - followed by `TOOL_CALL_RESULT` carrying `_response` as a tool message.
  *
- * The result: `defineAppRenderer` sees a clean `{ args, response }` pair and
+ * The result: `defineArtifactRenderer` sees a clean `{ args, response }` pair and
  * a `ToolMessage` is created in the thread for downstream UI dispatch.
  *
  * Plain (non-enriched) tool calls are passed through untouched.

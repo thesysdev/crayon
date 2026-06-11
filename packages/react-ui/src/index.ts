@@ -7,15 +7,20 @@ export * from "./components/AgentInterface";
 // re-exported so consumers can build adapters without reaching into react-headless.
 export { fetchLLM, restStorage } from "@openuidev/react-headless";
 export type {
+  Artifact,
+  ArtifactCategory,
+  ArtifactListParams,
+  ArtifactRendererConfig,
+  ArtifactRendererControls,
+  ArtifactStorage,
+  ArtifactSummary,
   ChatLLM,
   ChatStorage,
   FetchLLMOptions,
-  PinningStorage,
   RestStorageOptions,
-  ShareStorage,
-  ShareTarget,
   ThreadStorage,
 } from "@openuidev/react-headless";
+export { defineArtifactRenderer } from "@openuidev/react-headless";
 
 // DetailedView() factory — generates a ComponentRenderer with detailed-view wiring
 export { DetailedView } from "./detailed-view";

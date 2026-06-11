@@ -29,23 +29,26 @@ const isCodeBlockProps = (value: unknown): value is CodeBlockProps =>
  * detailed-view side panel.
  */
 export const codeBlockRenderer = defineArtifactRenderer({
+  type: "code_block",
   toolName: "create_code_block",
 
   parser: ({ args }) => {
     if (typeof args !== "string") return null;
     try {
       const parsed = JSON.parse(args);
-      return isCodeBlockProps(parsed) ? parsed : null;
+      if (!isCodeBlockProps(parsed)) return null;
+      return {
+        props: parsed,
+        meta: {
+          id: parsed.title, // filename is a stable per-block identifier
+          version: 1,
+          heading: parsed.title,
+        },
+      };
     } catch {
       return null;
     }
   },
-
-  meta: (props) => ({
-    id: props.title, // filename is a stable per-block identifier
-    version: 1,
-    heading: props.title,
-  }),
 
   preview: (props, { open, isActive }) => (
     <InlinePreview

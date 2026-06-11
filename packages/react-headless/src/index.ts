@@ -1,14 +1,21 @@
 export { useActiveDetailedView } from "./hooks/useActiveDetailedView";
-export { useAppList } from "./hooks/useAppList";
-export { useAppRenderer } from "./hooks/useAppRenderer";
 export { useArtifactList } from "./hooks/useArtifactList";
+export type { ArtifactListFilter } from "./hooks/useArtifactList";
+export { useArtifactRenderer } from "./hooks/useArtifactRenderer";
 export { useDetailedView } from "./hooks/useDetailedView";
 export { useDetailedViewPortalTarget } from "./hooks/useDetailedViewPortalTarget";
 export { MessageContext, MessageProvider, useMessage } from "./hooks/useMessage";
 export { useThread, useThreadList } from "./hooks/useThread";
 
-export { AppRenderersContext, useAppRendererRegistry } from "./store/AppRenderersContext";
-export { defineAppRenderer, defineArtifactRenderer } from "./store/appRendererTypes";
+export { useArtifactCategories } from "./store/ArtifactCategoriesContext";
+export {
+  ArtifactRenderersContext,
+  lookupArtifactRenderer,
+  lookupArtifactRendererByType,
+  useArtifactRendererRegistry,
+} from "./store/ArtifactRenderersContext";
+export { defineArtifactRenderer } from "./store/artifactRendererTypes";
+export { useArtifactStorage } from "./store/ArtifactStorageContext";
 export { ChatProvider } from "./store/ChatProvider";
 export { DetailedViewContext, useDetailedViewStore } from "./store/DetailedViewContext";
 export { ThreadContextContext, useThreadContextStore } from "./store/ThreadContextContext";
@@ -28,27 +35,28 @@ export { processStreamedMessage } from "./stream/processStreamedMessage";
 
 // ── Adapter interfaces + factories ──
 export type {
+  Artifact,
+  ArtifactCategory,
+  ArtifactListParams,
+  ArtifactStorage,
+  ArtifactSummary,
   ChatLLM,
   ChatStorage,
   FetchLLMOptions,
-  PinningStorage,
   RestStorageOptions,
-  ShareStorage,
-  ShareTarget,
   ThreadStorage,
 } from "./adapters";
 export { fetchLLM, restStorage } from "./adapters";
 
 export type {
-  AppRendererConfig,
-  AppRendererControls,
-  AppRendererKind,
-} from "./store/appRendererTypes";
+  ArtifactRendererConfig,
+  ArtifactRendererControls,
+  ParsedArtifact,
+} from "./store/artifactRendererTypes";
 
 export type { DetailedViewActions, DetailedViewState } from "./store/detailedViewTypes";
 
 export type {
-  AppEntry,
   ArtifactEntry,
   ThreadContextActions,
   ThreadContextState,

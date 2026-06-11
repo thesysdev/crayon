@@ -20,7 +20,7 @@ export default function Page() {
           messageFormat: openAIMessageFormat,
         })}
         componentLibrary={artifactDemoLibrary}
-        appRenderers={[codeBlockRenderer]}
+        artifactRenderers={[codeBlockRenderer]}
         agentName="Artifact Demo"
         theme={{ mode }}
         conversationStarters={{

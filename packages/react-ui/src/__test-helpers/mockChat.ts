@@ -6,13 +6,9 @@ import type { ChatLLM, ChatStorage, ThreadStorage } from "@openuidev/react-headl
  * with sensible defaults and per-story overrides.
  */
 
-export interface MockStorageOverrides extends Partial<ThreadStorage> {
-  pinning?: ChatStorage["pinning"];
-  share?: ChatStorage["share"];
-}
+export type MockStorageOverrides = Partial<ThreadStorage>;
 
 export function makeMockStorage(overrides: MockStorageOverrides = {}): ChatStorage {
-  const { pinning, share, ...threadOverrides } = overrides;
   return {
     thread: {
       listThreads: async () => ({ threads: [] }),
@@ -24,10 +20,8 @@ export function makeMockStorage(overrides: MockStorageOverrides = {}): ChatStora
       getMessages: async () => [],
       updateThread: async (t) => t,
       deleteThread: async () => {},
-      ...threadOverrides,
+      ...overrides,
     },
-    pinning,
-    share,
   };
 }
 

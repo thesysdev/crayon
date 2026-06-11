@@ -1,19 +1,20 @@
 import { createStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import type { AppEntry, ArtifactEntry, ThreadContextStore } from "./threadContextTypes";
+import type { ArtifactEntry, ThreadContextStore } from "./threadContextTypes";
 
-type RegistryEntry = AppEntry | ArtifactEntry;
+const entriesEqual = (a: ArtifactEntry, b: ArtifactEntry) =>
+  a.heading === b.heading && a.type === b.type;
 
-const upsertVersion = <T extends RegistryEntry>(
-  registry: Record<string, T[]>,
-  entry: T,
-): Record<string, T[]> => {
+const upsertVersion = (
+  registry: Record<string, ArtifactEntry[]>,
+  entry: ArtifactEntry,
+): Record<string, ArtifactEntry[]> => {
   const existing = registry[entry.id] ?? [];
   const sameVersionIdx = existing.findIndex((e) => e.version === entry.version);
 
   if (sameVersionIdx !== -1) {
     const current = existing[sameVersionIdx]!;
-    if (current.heading === entry.heading) return registry;
+    if (entriesEqual(current, entry)) return registry;
     const next = existing.slice();
     next[sameVersionIdx] = entry;
     return { ...registry, [entry.id]: next };
@@ -28,11 +29,11 @@ const upsertVersion = <T extends RegistryEntry>(
   return { ...registry, [entry.id]: next };
 };
 
-const removeVersion = <T extends RegistryEntry>(
-  registry: Record<string, T[]>,
+const removeVersion = (
+  registry: Record<string, ArtifactEntry[]>,
   id: string,
   version: number,
-): Record<string, T[]> => {
+): Record<string, ArtifactEntry[]> => {
   const existing = registry[id];
   if (!existing) return registry;
   const idx = existing.findIndex((e) => e.version === version);
@@ -49,7 +50,7 @@ const removeVersion = <T extends RegistryEntry>(
 };
 
 /**
- * Creates a Zustand store managing the per-thread registries of apps and artifacts.
+ * Creates a Zustand store managing the per-thread artifact registry.
  *
  * Active detailed-view state lives in a separate store
  * (see {@link useDetailedView} / {@link useActiveDetailedView}) — TC tracks
@@ -62,16 +63,7 @@ const removeVersion = <T extends RegistryEntry>(
 export const createThreadContextStore = () => {
   return createStore<ThreadContextStore>()(
     subscribeWithSelector((set) => ({
-      apps: {},
       artifacts: {},
-
-      registerApp: (entry) => {
-        set((s) => ({ apps: upsertVersion(s.apps, entry) }));
-      },
-
-      unregisterApp: (id, version) => {
-        set((s) => ({ apps: removeVersion(s.apps, id, version) }));
-      },
 
       registerArtifact: (entry) => {
         set((s) => ({ artifacts: upsertVersion(s.artifacts, entry) }));
@@ -82,7 +74,7 @@ export const createThreadContextStore = () => {
       },
 
       reset: () => {
-        set({ apps: {}, artifacts: {} });
+        set({ artifacts: {} });
       },
     })),
   );

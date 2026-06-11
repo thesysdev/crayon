@@ -5,8 +5,6 @@ import { createChatStore } from "../../createChatStore";
 export interface MakeStoreOverrides extends Partial<ThreadStorage> {
   send?: ChatLLM["send"];
   streamProtocol?: ChatLLM["streamProtocol"];
-  pinning?: ChatStorage["pinning"];
-  share?: ChatStorage["share"];
 }
 
 /**
@@ -15,7 +13,7 @@ export interface MakeStoreOverrides extends Partial<ThreadStorage> {
  * overridden gets a vi.fn() mock with a sensible default return.
  */
 export function makeStore(overrides: MakeStoreOverrides = {}) {
-  const { send, streamProtocol, pinning, share, ...threadOverrides } = overrides;
+  const { send, streamProtocol, ...threadOverrides } = overrides;
 
   const storage: ChatStorage = {
     thread: {
@@ -30,8 +28,6 @@ export function makeStore(overrides: MakeStoreOverrides = {}) {
       deleteThread: vi.fn().mockResolvedValue(undefined),
       ...threadOverrides,
     },
-    pinning,
-    share,
   };
 
   const llm: ChatLLM = {
