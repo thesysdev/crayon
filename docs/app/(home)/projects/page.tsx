@@ -16,7 +16,6 @@ import type { Metadata } from "next";
 import type { ComponentType } from "react";
 import { PillLink } from "../components/Button/Button";
 import { Footer } from "../sections/Footer/Footer";
-import { GradientDivider } from "../sections/GradientDivider/GradientDivider";
 import styles from "./page.module.css";
 
 type ProjectStatus = "Official" | "Community";
@@ -331,8 +330,6 @@ export default function ProjectsPage() {
       </section>
 
       <div className={styles.contentSection}>
-        <GradientDivider direction="down" compact />
-
         <section className={styles.directorySection} id="directory">
           <div className={styles.sectionHeader}>
             <div>
@@ -388,8 +385,6 @@ export default function ProjectsPage() {
             })}
           </div>
         </section>
-
-        <GradientDivider direction="up" compact />
       </div>
 
       <section className={styles.submitSection}>
