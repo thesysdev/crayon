@@ -14,7 +14,7 @@ Discussions of Generative UI tend to conflate two decisions that are independent
 
 Most disagreements about which library to use dissolve once these are separated. They are two independent axes (two transports, three generation styles), and any pairing is valid.
 
-> **[IMAGE: Two-layer stack diagram emphasizing orthogonality. Top layer labeled "Generation — what the agent emits" with three equal boxes: "Static", "Declarative", "Open-Ended". Bottom layer labeled "Transport — where the UI appears" with two equal boxes: "AG-UI (your frontend)" and "MCP-Apps (someone else's host)". Lines connect every generation box to every transport box (3x2, all six paths drawn identically), with a caption: "Any generation style can ride on either transport." No cell or path is visually privileged.]**
+![The two independent layers of Generative UI: a Generation layer (Static, Declarative, Open-Ended) describing what the agent emits, and a Transport layer (AG-UI for your frontend, MCP-Apps for someone else's host) describing where the UI appears; any generation style can ride on either transport](./images/generative-ui-layers.png)
 
 This post covers both axes in turn: the protocols, the formats, and the tradeoffs as they exist in Q2 2026. It closes with a decision procedure. For the generation axis it uses a three-way split: Static, Declarative, and Open-Ended.
 
@@ -61,11 +61,13 @@ The tradeoffs follow from the design. Sandboxing adds overhead. The resource doe
 
 "AG-UI vs MCP-Apps" implies a choice that, for many teams, doesn't exist. A team building an agent feature into its own product that also wants a presence inside ChatGPT or Claude ships the same agent over both transports: AG-UI for its own application, MCP-Apps for distribution into hosts it doesn't own. The question is not which protocol wins but where the UI needs to appear, and the answer is frequently "both places."
 
-> **[IMAGE: Simple fork diagram. Single node "Where does the UI appear?" splitting into two branches: "Your app → AG-UI (event stream into your render tree)" and "Someone else's host → MCP-Apps (sandboxed HTML resource)". A dashed third arrow joins both branches into a node labeled "Many teams: both".]**
+![The same generated UI delivered to two surfaces: your own app via AG-UI as an event stream into your render tree, and a host app like ChatGPT via MCP-Apps as a sandboxed HTML resource](./images/your-app-vs-host-app.png)
 
 ## Generation: Static vs Declarative vs Open-Ended
 
 The generation decision is a tradeoff between control (how much the host enforces) and freedom (how much the model gets to invent). The three styles are points on that axis.
+
+![The Generative UI spectrum from control to freedom: Static, where the agent selects from your components; Declarative, where the agent composes your primitives and most production teams land; and Open-Ended, where the agent writes the page](./images/generative-ui-spectrum.png)
 
 ### Static generation: the agent selects pre-built components
 
@@ -140,8 +142,6 @@ The case for it: some outputs are genuinely one-off, like a results page tailore
 
 The tradeoffs are inherent to the approach rather than flaws in any implementation: generated HTML does not inherit the application's design tokens, so visual consistency requires extra effort; the sandbox that makes it safe also limits integration with the rest of the app; and output varies between runs of the same prompt. Generation latency is also higher than spec-based approaches, since the model emits a full page of markup per request.
 
-> **[IMAGE: Horizontal spectrum graphic. Left end labeled "Control", right end "Freedom". Three points along it: "Static — agent selects from your components", "Declarative — agent composes your primitives", "Open-Ended — agent writes the page". Annotation under Declarative: "where most production teams land".]**
-
 In practice, Static and Open-Ended are positions taken for specific reasons (a bounded product surface in the first case, genuinely one-off output in the second), and Declarative is the default for most production work. The active competition in 2026 is within the Declarative bucket, which makes the differences between its formats worth measuring.
 
 ### Combining styles: an Open-Ended component inside a Declarative catalog
@@ -160,7 +160,7 @@ The result is that the spectrum becomes per-component rather than per-applicatio
 
 This also keeps the governance story simple. The security review localizes to one component instead of the entire output surface, prompt guidance can steer the model toward catalog primitives first, and deployments that don't want arbitrary generation can omit the component from the catalog entirely; the same mechanism that enables the escape hatch is the mechanism that disables it.
 
-> **[IMAGE: Diagram of a rendered page composed mostly of catalog components (Card, Heading, BarChart, Button — drawn in the design system's style), with one clearly demarcated region labeled "GeneratedView (sandboxed iframe)" containing freeform content. Side annotation: "Catalog primitives by default; Open-Ended only where the catalog doesn't reach."]**
+![A rendered page built from catalog primitives (Heading, Card, BarChart, Button) with one demarcated GeneratedView region in a sandboxed iframe: catalog primitives by default, Open-Ended only where the catalog doesn't reach](./images/generative-ui-catalog.png)
 
 ## Token efficiency benchmarks: format choice is a latency choice
 
@@ -177,7 +177,7 @@ We publish a reproducible benchmark in the OpenUI repository ([`benchmarks/`](ht
 
 At 60 tokens/sec, the e-commerce scenario completes in 19.4s as OpenUI Lang versus 40.8s as json-render patches and 39.7s as legacy C1 JSON. The widest gap is the contact-form scenario: 4.9s versus 14.9s, a 3.04x difference. The mechanism is straightforward: JSON pays for keys, quotes, and brackets on every field, while a line-oriented DSL does not.
 
-> **[IMAGE: Grouped bar chart. X-axis: benchmark scenarios (contact-form, simple-table, dashboard, e-commerce-product, ...). Y-axis: seconds to full render at 60 tok/s. Bars per scenario: OpenUI Lang vs json-render vs legacy C1 JSON. Callout on contact-form: "3.04x". Source note: thesysdev/openui benchmarks, GPT-5 tokenizer.]**
+![Token-efficiency benchmark bar chart: seconds to full render at 60 tokens per second across seven scenarios, comparing OpenUI Lang, json-render, and legacy C1 JSON; OpenUI Lang renders the contact form 3.04x faster](./images/token-efficiency.png)
 
 Two caveats, in fairness. First, this is our benchmark of our own format; the methodology is published and fully reproducible, and we encourage teams to rerun it against their own component catalogs before deciding. Second, token cost is one input among several: json-render's renderer breadth and A2UI's native targets are real capabilities that OpenUI doesn't offer, and for many teams they will justify the additional tokens. The point is simply that the format overhead is measurable (roughly 2x on the published numbers), and at high request volume it surfaces as user-visible latency, so it belongs in the decision alongside the capability comparison.
 
