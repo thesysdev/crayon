@@ -214,7 +214,6 @@ import { Charts } from "@openuidev/react-ui/Charts";
 | `@openuidev/react-ui/layered-components.css` | Opt-in aggregate stylesheet wrapped in `@layer openui` |
 | `@openuidev/react-ui/defaults.css` | Theme tokens, always unlayered |
 | `@openuidev/react-ui/genui-lib` | OpenUI Lang libraries and prompt options |
-| `@openuidev/react-ui/tailwind` | Tailwind CSS plugin |
 | `@openuidev/react-ui/styles/*` | Per-component compiled styles (unlayered) |
 | `@openuidev/react-ui/layered/styles/*` | Per-component styles wrapped in `@layer openui` |
 | `@openuidev/react-ui/scssUtils` | SCSS utility functions |
