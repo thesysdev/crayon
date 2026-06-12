@@ -165,8 +165,8 @@ Declare layer order at the top of your entry stylesheet so `openui` sits above T
 
 ```css
 @layer theme, base, openui, components, utilities;
-@import "@openuidev/react-ui/layered-components.css";
 @import "tailwindcss";
+@import "@openuidev/react-ui/layered-components.css";
 ```
 
 This places Tailwind's Preflight (in `base`) below OpenUI components so its element resets don't override them, while keeping utilities (`bg-red-500`, etc.) winning over OpenUI styles.
