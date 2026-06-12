@@ -36,6 +36,41 @@ function strip3DCode(content: string) {
   return "";
 }
 
+function SceneStreamPreview({ content, isStreaming }: { content: string; isStreaming: boolean }) {
+  const lines = content.split("\n").filter((line) => line.trim().length > 0);
+  const visibleLines = lines.slice(-8);
+
+  return (
+    <div className="overflow-hidden rounded-lg border border-zinc-200 bg-zinc-950 text-zinc-100 shadow-sm">
+      <div className="flex items-center justify-between border-b border-white/10 px-3 py-2">
+        <div className="flex items-center gap-2 text-xs font-medium text-zinc-300">
+          <span className="h-2 w-2 rounded-full bg-emerald-400" />
+          3D scene stream
+        </div>
+        <div className="text-[11px] text-zinc-500">
+          {lines.length} {lines.length === 1 ? "statement" : "statements"}
+        </div>
+      </div>
+      <pre className="max-h-52 overflow-hidden px-3 py-2 font-mono text-[11px] leading-5 text-zinc-300">
+        {visibleLines.map((line, lineIndex) => {
+          const isLastLine = lineIndex === visibleLines.length - 1;
+          return (
+            <div key={`${lineIndex}-${line}`} className={isLastLine && isStreaming ? "text-emerald-200" : ""}>
+              <span className="select-none pr-2 text-zinc-600">
+                {String(lines.length - visibleLines.length + lineIndex + 1).padStart(2, "0")}
+              </span>
+              {line}
+              {isLastLine && isStreaming ? (
+                <span className="ml-1 inline-block h-3 w-1 translate-y-0.5 animate-pulse bg-emerald-300" />
+              ) : null}
+            </div>
+          );
+        })}
+      </pre>
+    </div>
+  );
+}
+
 function supportsHtmlInCanvas() {
   if (typeof document === "undefined") return false;
   const canvas = document.createElement("canvas") as HTMLCanvasElement & {
@@ -216,9 +251,10 @@ export default function Page() {
                           <div className="min-w-0 flex-1">
                             {message.role === "assistant" ? (
                               messageIs3D ? (
-                                <div className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-900">
-                                  Streaming updates into the same 3D canvas.
-                                </div>
+                                <SceneStreamPreview
+                                  content={message.content}
+                                  isStreaming={isStreaming && index === messages.length - 1}
+                                />
                               ) : visibleContent ? (
                                 <div className="whitespace-pre-wrap text-sm leading-6 text-zinc-800">
                                   {visibleContent}
