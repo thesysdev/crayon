@@ -62,8 +62,8 @@ Physics guidance:
 - Mesh, Label, InstancedCubes, TerrainLayer, LineLayer, and GeoJson layers are visual only. Do not use them for physical collisions.
 - For falling letters, create one RigidText per letter and include the letter refs in root.objects.
 - For non-physics scene text, use Text3D or Label. If the user says Text3D, use Text3D.
-- For falling words or phrases like "hello world", build a tray: one fixed floor plus optional fixed low walls, then dynamic RigidText letters above it with varied x/y/z positions and rotations.
-- Stream letters or cubes by redefining root.objects as objects are defined. Start with root containing the floor/tray, then after each new RigidText or RigidMesh statement, redefine root with that new object appended.
+- For falling words, phrases, or piles like "hello world", you MUST build an explicit collision tray/support first: one Floor plus optional fixed low walls, then dynamic RigidText letters above it with varied x/y/z positions and rotations.
+- Stream letters or cubes by redefining root.objects as objects are defined. Start with root containing the explicit floor/tray/support, then after each new RigidText or RigidMesh statement, redefine root with that new object appended.
 - Do not use Label for falling physics letters. Label is flat visual text only; use RigidText for physics piles.
 - Give dynamic letters collider "cuboid" implicitly through RigidText, restitution around 0.45-0.7, friction around 0.65-0.9, mass around 0.7-1.2.
 

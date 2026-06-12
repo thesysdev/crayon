@@ -632,6 +632,10 @@ function RenderRigidMesh({ mesh }: { mesh: unknown }) {
   const collider = String(props.collider ?? "ball");
   const scale = asVec3(props.scale as Vec3 | undefined, [1, 1, 1]);
   const dimensions = geometryDimensions(props.geometry, scale);
+  const [spawnPosition] = useState(() => asVec3(props.position as Vec3 | undefined, [0, 0, 0]));
+  const [spawnRotation] = useState(() => asVec3(props.rotation as Vec3 | undefined, [0, 0, 0]));
+  const position = bodyType === "dynamic" ? spawnPosition : asVec3(props.position as Vec3 | undefined, [0, 0, 0]);
+  const rotation = bodyType === "dynamic" ? spawnRotation : asVec3(props.rotation as Vec3 | undefined, [0, 0, 0]);
 
   if (collider === "trimesh") {
     return (
@@ -639,8 +643,8 @@ function RenderRigidMesh({ mesh }: { mesh: unknown }) {
         key={rigidBodyKey(objectKey(mesh, "rigid-mesh"), props)}
         type={bodyType === "fixed" ? "fixed" : bodyType === "kinematic" ? "kinematicPosition" : "dynamic"}
         colliders="trimesh"
-        position={asVec3(props.position as Vec3 | undefined, [0, 0, 0])}
-        rotation={asVec3(props.rotation as Vec3 | undefined, [0, 0, 0])}
+        position={position}
+        rotation={rotation}
         scale={scale}
         restitution={Number(props.restitution ?? 0.45)}
         friction={Number(props.friction ?? 0.8)}
@@ -656,8 +660,8 @@ function RenderRigidMesh({ mesh }: { mesh: unknown }) {
       key={rigidBodyKey(objectKey(mesh, "rigid-mesh"), props)}
       type={bodyType === "fixed" ? "fixed" : bodyType === "kinematic" ? "kinematicPosition" : "dynamic"}
       colliders={false}
-      position={asVec3(props.position as Vec3 | undefined, [0, 0, 0])}
-      rotation={asVec3(props.rotation as Vec3 | undefined, [0, 0, 0])}
+      position={position}
+      rotation={rotation}
       restitution={Number(props.restitution ?? 0.45)}
       friction={Number(props.friction ?? 0.8)}
       mass={Number(props.mass ?? 1)}
@@ -783,6 +787,14 @@ function InteractiveDoor({ door }: { door: unknown }) {
 
 function RenderRigidText({ textObject }: { textObject: unknown }) {
   const props = elementProps(textObject);
+  const text = String(props.text ?? "");
+  const size = Number(props.size ?? 1);
+  const colliderWidth = Math.max(0.28, text.length * size * 0.34);
+  const colliderHeight = Math.max(0.35, size * 0.58);
+  const colliderDepth = Math.max(0.12, size * 0.12);
+  const [spawnPosition] = useState(() => asVec3(props.position as Vec3 | undefined, [0, 3, 0]));
+  const [spawnRotation] = useState(() => asVec3(props.rotation as Vec3 | undefined, [0, 0, 0]));
+
   return (
     <RigidBody
       key={rigidBodyKey(objectKey(textObject, "rigid-text"), {
@@ -792,21 +804,22 @@ function RenderRigidText({ textObject }: { textObject: unknown }) {
         geometry: "text",
       })}
       type="dynamic"
-      colliders="cuboid"
-      position={asVec3(props.position as Vec3 | undefined, [0, 3, 0])}
-      rotation={asVec3(props.rotation as Vec3 | undefined, [0, 0, 0])}
+      colliders={false}
+      position={spawnPosition}
+      rotation={spawnRotation}
       restitution={Number(props.restitution ?? 0.55)}
       friction={Number(props.friction ?? 0.75)}
       mass={Number(props.mass ?? 0.8)}
     >
+      <CuboidCollider args={[colliderWidth, colliderHeight, colliderDepth]} />
       <Text
-        fontSize={Number(props.size ?? 1)}
+        fontSize={size}
         anchorX="center"
         anchorY="middle"
         castShadow
         receiveShadow
       >
-        {String(props.text ?? "")}
+        {text}
         <RenderMaterial material={props.material} />
       </Text>
     </RigidBody>

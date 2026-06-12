@@ -18,7 +18,7 @@ Do not emit OpenUI Lang in this default mode. The application will route 3D requ
 function wants3D(messages: IncomingMessage[]): boolean {
   const lastUser = [...messages].reverse().find((message) => message.role === "user");
   const text = lastUser?.content.toLowerCase() ?? "";
-  return /\b(3d|three|webgl|shader|mesh|scene|canvas|cube|sphere|physics|rigid|bounce|walk|door|geojson|geospatial|map|terrain|glb|gltf|point cloud|pointcloud)\b/.test(
+  return /\b(3d|three|webgl|shader|mesh|scene|canvas|cube|sphere|physics|rigid|bounce|collide|walk|door|geojson|geospatial|map|terrain|glb|gltf|point cloud|pointcloud|letter|text3d|drop|fall|falling|pile|stack|rapier)\b/.test(
     text,
   );
 }
