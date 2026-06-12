@@ -3,7 +3,7 @@
 import { Html } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Renderer, type OpenUIError } from "@openuidev/react-lang";
-import { Bot, Box, CircleStop, Compass, RotateCcw, SendHorizonal } from "lucide-react";
+import { Bot, Box, ChevronDown, ChevronRight, CircleStop, Compass, RotateCcw, SendHorizonal } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { openui3dLibrary } from "@/openui3d/library";
 
@@ -24,11 +24,12 @@ function isScene3D(content: string) {
 }
 
 function combined3D(messages: ChatMessage[]) {
-  return messages
+  const code = messages
     .filter((message) => message.role === "assistant" && isScene3D(message.content))
     .map((message) => message.content.trim())
     .filter(Boolean)
     .join("\n");
+  return makeSceneUpdatesDurable(code);
 }
 
 function strip3DCode(content: string) {
@@ -36,37 +37,188 @@ function strip3DCode(content: string) {
   return "";
 }
 
+function wants3DScene(content: string) {
+  return /\b(3d|three|webgl|shader|mesh|scene|canvas|cube|sphere|physics|rigid|bounce|collide|walk|door|geojson|geospatial|map|terrain|glb|gltf|point\s*cloud|letter|text3d|floor|rapier|drop|fall|pile)\b/i.test(
+    content,
+  );
+}
+
+function looksLikeOpenUIStream(content: string) {
+  return (
+    isScene3D(content) ||
+    /^\s*[a-zA-Z]\w*\s*=/m.test(content) ||
+    /\b(Scene3D|PerspectiveCamera|OrbitControls|WalkControls|Mesh|RigidMesh|RigidText|Text3D|InstancedCubes|BrunoChallenge|ShaderPreset|GeoJson|LineLayer|TerrainLayer)\s*\(/.test(
+      content,
+    )
+  );
+}
+
+function previousUserMessage(messages: ChatMessage[], index: number) {
+  for (let i = index - 1; i >= 0; i -= 1) {
+    if (messages[i]?.role === "user") return messages[i].content;
+  }
+  return "";
+}
+
+function splitTopLevel(value: string) {
+  const parts: string[] = [];
+  let current = "";
+  let parens = 0;
+  let brackets = 0;
+  let braces = 0;
+  let quote: '"' | "'" | null = null;
+  let escaped = false;
+
+  for (const char of value) {
+    current += char;
+
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === quote) {
+        quote = null;
+      }
+      continue;
+    }
+
+    if (char === '"' || char === "'") quote = char;
+    else if (char === "(") parens += 1;
+    else if (char === ")") parens -= 1;
+    else if (char === "[") brackets += 1;
+    else if (char === "]") brackets -= 1;
+    else if (char === "{") braces += 1;
+    else if (char === "}") braces -= 1;
+
+    if (char === "," && parens === 0 && brackets === 0 && braces === 0) {
+      parts.push(current.slice(0, -1).trim());
+      current = "";
+    }
+  }
+
+  const tail = current.trim();
+  if (tail) parts.push(tail);
+  return parts;
+}
+
+function callArgsRange(line: string, callName: string) {
+  const callStart = line.indexOf(`${callName}(`);
+  if (callStart === -1) return null;
+
+  const start = callStart + callName.length + 1;
+  let depth = 1;
+  let quote: '"' | "'" | null = null;
+  let escaped = false;
+
+  for (let index = start; index < line.length; index += 1) {
+    const char = line[index];
+
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === quote) {
+        quote = null;
+      }
+      continue;
+    }
+
+    if (char === '"' || char === "'") quote = char;
+    else if (char === "(") depth += 1;
+    else if (char === ")") {
+      depth -= 1;
+      if (depth === 0) return { start, end: index };
+    }
+  }
+
+  return null;
+}
+
+function arrayItems(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed.startsWith("[") || !trimmed.endsWith("]")) return null;
+  const body = trimmed.slice(1, -1).trim();
+  if (!body) return [];
+  return splitTopLevel(body).filter(Boolean);
+}
+
+function addUnique(items: string[], item: string) {
+  if (!items.includes(item)) items.push(item);
+}
+
+function makeSceneUpdatesDurable(code: string) {
+  const durableObjects: string[] = [];
+
+  return code
+    .split("\n")
+    .map((line) => {
+      if (!/^\s*root\s*=/.test(line) || !line.includes("Scene3D(")) return line;
+
+      const range = callArgsRange(line, "Scene3D");
+      if (!range) return line;
+
+      const args = splitTopLevel(line.slice(range.start, range.end));
+      if (args.length < 3) return line;
+
+      const objects = arrayItems(args[2]);
+      if (!objects) return line;
+
+      objects.forEach((object) => addUnique(durableObjects, object));
+      args[2] = `[${durableObjects.join(", ")}]`;
+
+      return `${line.slice(0, range.start)}${args.join(", ")}${line.slice(range.end)}`;
+    })
+    .join("\n");
+}
+
 function SceneStreamPreview({ content, isStreaming }: { content: string; isStreaming: boolean }) {
+  const [expanded, setExpanded] = useState(true);
   const lines = content.split("\n").filter((line) => line.trim().length > 0);
-  const visibleLines = lines.slice(-8);
+  const visibleLines = expanded ? lines.slice(-14) : lines.slice(-3);
 
   return (
     <div className="overflow-hidden rounded-lg border border-zinc-200 bg-zinc-950 text-zinc-100 shadow-sm">
-      <div className="flex items-center justify-between border-b border-white/10 px-3 py-2">
+      <button
+        type="button"
+        onClick={() => setExpanded((current) => !current)}
+        className="flex w-full items-center justify-between border-b border-white/10 px-3 py-2 text-left"
+      >
         <div className="flex items-center gap-2 text-xs font-medium text-zinc-300">
+          {expanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
           <span className="h-2 w-2 rounded-full bg-emerald-400" />
-          3D scene stream
+          OpenUI Lang stream
         </div>
         <div className="text-[11px] text-zinc-500">
           {lines.length} {lines.length === 1 ? "statement" : "statements"}
         </div>
-      </div>
-      <pre className="max-h-52 overflow-hidden px-3 py-2 font-mono text-[11px] leading-5 text-zinc-300">
-        {visibleLines.map((line, lineIndex) => {
-          const isLastLine = lineIndex === visibleLines.length - 1;
-          return (
-            <div key={`${lineIndex}-${line}`} className={isLastLine && isStreaming ? "text-emerald-200" : ""}>
-              <span className="select-none pr-2 text-zinc-600">
-                {String(lines.length - visibleLines.length + lineIndex + 1).padStart(2, "0")}
-              </span>
-              {line}
-              {isLastLine && isStreaming ? (
-                <span className="ml-1 inline-block h-3 w-1 translate-y-0.5 animate-pulse bg-emerald-300" />
-              ) : null}
-            </div>
-          );
-        })}
-      </pre>
+      </button>
+      {expanded ? (
+        lines.length > 0 ? (
+          <pre className="max-h-72 overflow-hidden px-3 py-2 font-mono text-[11px] leading-5 text-zinc-300">
+            {visibleLines.map((line, lineIndex) => {
+              const isLastLine = lineIndex === visibleLines.length - 1;
+              return (
+                <div key={`${lineIndex}-${line}`} className={isLastLine && isStreaming ? "text-emerald-200" : ""}>
+                  <span className="select-none pr-2 text-zinc-600">
+                    {String(lines.length - visibleLines.length + lineIndex + 1).padStart(2, "0")}
+                  </span>
+                  {line}
+                  {isLastLine && isStreaming ? (
+                    <span className="ml-1 inline-block h-3 w-1 translate-y-0.5 animate-pulse bg-emerald-300" />
+                  ) : null}
+                </div>
+              );
+            })}
+          </pre>
+        ) : (
+          <div className="px-3 py-2 font-mono text-[11px] leading-5 text-zinc-500">
+            Waiting for OpenUI Lang
+            {isStreaming ? <span className="ml-1 inline-block h-3 w-1 translate-y-0.5 animate-pulse bg-emerald-300" /> : null}
+          </div>
+        )
+      ) : null}
     </div>
   );
 }
@@ -242,6 +394,12 @@ export default function Page() {
                     {messages.map((message, index) => {
                       const visibleContent = strip3DCode(message.content);
                       const messageIs3D = message.role === "assistant" && isScene3D(message.content);
+                      const isLatestStreamingAssistant = isStreaming && index === messages.length - 1;
+                      const shouldShowScenePreview =
+                        message.role === "assistant" &&
+                        (messageIs3D ||
+                          looksLikeOpenUIStream(message.content) ||
+                          (isLatestStreamingAssistant && wants3DScene(previousUserMessage(messages, index))));
 
                       return (
                         <div key={index} className="flex gap-3">
@@ -250,10 +408,10 @@ export default function Page() {
                           </div>
                           <div className="min-w-0 flex-1">
                             {message.role === "assistant" ? (
-                              messageIs3D ? (
+                              shouldShowScenePreview ? (
                                 <SceneStreamPreview
                                   content={message.content}
-                                  isStreaming={isStreaming && index === messages.length - 1}
+                                  isStreaming={isLatestStreamingAssistant}
                                 />
                               ) : visibleContent ? (
                                 <div className="whitespace-pre-wrap text-sm leading-6 text-zinc-800">

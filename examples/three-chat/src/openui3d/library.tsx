@@ -534,11 +534,16 @@ function DurableOrbitControls({ controls, target }: { controls: unknown; target:
   return (
     <OrbitControls
       ref={ref}
+      makeDefault
       enablePan={Boolean(props.enablePan ?? true)}
       enableZoom={Boolean(props.enableZoom ?? true)}
       enableRotate={Boolean(props.enableRotate ?? true)}
+      enableDamping
+      dampingFactor={0.08}
       autoRotate={Boolean(props.autoRotate ?? false)}
       autoRotateSpeed={Number(props.autoRotateSpeed ?? 0.1)}
+      minDistance={Number(props.minDistance ?? 0.35)}
+      maxDistance={Number(props.maxDistance ?? 160)}
       minPolarAngle={props.fixedPolarAngle ? Math.PI / 4 : undefined}
       maxPolarAngle={props.fixedPolarAngle ? Math.PI / 4 : undefined}
     />
@@ -1284,7 +1289,7 @@ const PerspectiveCamera3D = defineComponent({
 const OrbitControls3D = defineComponent({
   name: "OrbitControls",
   description:
-    "Interactive orbit controls: enable pan, zoom, rotate, optional slow auto-rotate, and optional fixed Bruno-style camera angle.",
+    "Interactive orbit controls: enable pan, zoom, rotate, optional slow auto-rotate, optional fixed Bruno-style camera angle, and zoom distance limits.",
   props: z.object({
     enablePan: z.boolean().default(true),
     enableZoom: z.boolean().default(true),
@@ -1292,6 +1297,8 @@ const OrbitControls3D = defineComponent({
     autoRotate: z.boolean().default(false),
     autoRotateSpeed: z.number().default(0.1),
     fixedPolarAngle: z.boolean().default(false),
+    minDistance: z.number().default(0.35),
+    maxDistance: z.number().default(160),
   }),
   component: () => null,
 });

@@ -14,6 +14,7 @@ OpenUI Lang rules:
 - Make scenes visually polished by default: use a bright "#f0f0f0" background, warm key lights, cool fill/sky colors, roughness between 0.35 and 0.8, subtle metalness, and enough contrast for readable forms.
 - Avoid underlit scenes. Even though the renderer provides default cinematic lights, still add at least a HemisphereLight and one DirectionalLight in most scenes.
 - Prefer camera angles with height and depth, not straight-on flat views.
+- Keep OrbitControls zoom and rotate enabled for ordinary 3D scenes so the user can change camera angle and zoom out. Use maxDistance 120 or higher for large scenes.
 - If the user asks for the PMNDRS instanced vertex colors example, use InstancedCubes(1000, 10, 0.6, 1, ["#ff4e50", "#fc913a", "#f9d423", "#ede574", "#e1f5c4"], ...), camera [0, 0, 15], background "#f0f0f0", and orbit controls with slow auto-rotate.
 - If the user asks for the Bruno Simon 20k challenge example, use BrunoChallenge. Do not approximate it with primitive boxes.
 - For beautiful abstract scenes, prefer InstancedCubes with the PMNDRS palette instead of many individual cube Mesh statements.
@@ -23,7 +24,7 @@ OpenUI Lang rules:
 Component signatures:
 - Scene3D(camera: PerspectiveCamera, lights: Light[], objects: Object[], controls?: OrbitControls, background?: string, gravity?: [number, number, number], effects?: "standard" | "instanced" | "bruno" | "none")
 - PerspectiveCamera(position: vec3, target: vec3, fov: number)
-- OrbitControls(enablePan: boolean, enableZoom: boolean, enableRotate: boolean, autoRotate?: boolean, autoRotateSpeed?: number, fixedPolarAngle?: boolean)
+- OrbitControls(enablePan: boolean, enableZoom: boolean, enableRotate: boolean, autoRotate?: boolean, autoRotateSpeed?: number, fixedPolarAngle?: boolean, minDistance?: number, maxDistance?: number)
 - WalkControls(speed: number)
 - AmbientLight(intensity: number, color?: string)
 - HemisphereLight(skyColor: string, groundColor: string, intensity: number)
@@ -122,7 +123,7 @@ cubes = InstancedCubes(1000, 10, 0.6, 1, ["#ff4e50", "#fc913a", "#f9d423", "#ede
 Example Bruno Simon 20k challenge:
 root = Scene3D(camera, [ambient, sun], [bruno], controls, "#f0f0f0", [0, -4, 0], "bruno")
 camera = PerspectiveCamera([-30, 35, -15], [0, 0, -2.5], 12)
-controls = OrbitControls(false, true, true, true, 0.1, true)
+controls = OrbitControls(false, true, true, true, 0.1, false, 0.35, 160)
 ambient = AmbientLight(0.5, "#ffffff")
 sun = DirectionalLight([-10, 10, 5], 1.0, "#ffffff")
 bruno = BrunoChallenge(80, [0, 0, 0], [0, 0, 0], [1, 1, 1])
