@@ -2,7 +2,7 @@ import fs from "fs";
 import { camelCase } from "lodash-es";
 import path from "path";
 import { fileURLToPath } from "url";
-import { mirrorStylesWithLayer, writeLayeredCopy } from "./css-layer-utils.mjs";
+import { mirrorStylesWithLayer, stripBom, writeLayeredCopy } from "./css-layer-utils.mjs";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -33,6 +33,23 @@ function fixScssImportsInJs(dir) {
   });
 }
 
+// Strip Sass's leading UTF-8 BOM (compressed-mode output for non-ASCII) from
+// every *.css under dir, in place — so the unlayered default exports
+// (./components.css, ./styles/*) ship BOM-free. The layered mirror strips it
+// separately via wrapInLayer.
+function stripBomFromCssInDir(dir) {
+  for (const entry of fs.readdirSync(dir)) {
+    const full = path.join(dir, entry);
+    if (fs.statSync(full).isDirectory()) {
+      stripBomFromCssInDir(full);
+    } else if (entry.endsWith(".css")) {
+      const content = fs.readFileSync(full, "utf8");
+      const stripped = stripBom(content);
+      if (stripped !== content) fs.writeFileSync(full, stripped, "utf8");
+    }
+  }
+}
+
 // Copy CSS files from src to dist
 function copyCssFiles() {
   const srcDir = path.join(dirname, "dist", "components");
@@ -40,6 +57,16 @@ function copyCssFiles() {
 
   // Ensure the dist/styles directory exists
   ensureDirectoryExists(distDir);
+
+  // Strip Sass's leading BOM from the unlayered sass output before copying, so
+  // the default exports (./components.css, ./styles/*) ship BOM-free.
+  stripBomFromCssInDir(srcDir);
+  const defaultsCssSrc = path.join(dirname, "dist", "openui-defaults.css");
+  if (fs.existsSync(defaultsCssSrc)) {
+    const content = fs.readFileSync(defaultsCssSrc, "utf8");
+    const stripped = stripBom(content);
+    if (stripped !== content) fs.writeFileSync(defaultsCssSrc, stripped, "utf8");
+  }
 
   // Read all component directories
   const components = fs.readdirSync(srcDir);

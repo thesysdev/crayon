@@ -55,6 +55,14 @@ for (const name of unlayered) {
   assert(!/^\s*@layer/.test(read(path.join("styles", name))), `styles/${name} must stay unlayered`);
 }
 
+// Unlayered default exports must also be BOM-free. A leading BOM is harmless in
+// an unlayered file (the decoder drops it at byte 0), but cp-css.js strips it,
+// and a regression re-arms the 2026-06 incident the moment these files are ever
+// wrapped. Covers ./components.css and every ./styles/* (incl. openui-defaults).
+for (const rel of ["components/index.css", ...unlayered.map((n) => path.join("styles", n))]) {
+  assert(!read(rel).includes("﻿"), `${rel} contains a BOM (unlayered export must be BOM-free)`);
+}
+
 for (const f of [
   ...layered.map((n) => path.join("layered", "styles", n)),
   "layered/components/index.css",

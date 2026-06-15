@@ -1,14 +1,21 @@
 import fs from "fs";
 import path from "path";
 
+// Strip a leading UTF-8 BOM (U+FEFF). Sass emits one in compressed mode for
+// files with non-ASCII output. A browser drops it at byte 0, but it is noise in
+// shipped artifacts and becomes fatal if the content is ever wrapped \u2014 the BOM
+// would land mid-stylesheet inside a layer block, where U+FEFF parses as an
+// identifier and kills the first rule (e.g. the :root theme tokens; the 2026-06
+// incident). Used for both the unlayered defaults (cp-css.js) and the layered
+// mirror (wrapInLayer below).
+export function stripBom(content) {
+  return content.replace(/^\uFEFF/, "");
+}
+
 // Wrap a CSS file's contents in @layer openui { ... } if not already wrapped.
 // Idempotency check protects watch-mode and back-to-back builds.
 export function wrapInLayer(content) {
-  // Sass emits a UTF-8 BOM for files with non-ASCII output. At byte 0 the
-  // decoder strips it, but wrapping would push it inside the layer block,
-  // where U+FEFF parses as an identifier and kills the first rule
-  // (e.g. the :root theme tokens). Strip it before wrapping.
-  content = content.replace(/^\uFEFF/, "");
+  content = stripBom(content);
   if (content.trim() === "") return content;
   if (/^\s*@layer\s+openui\b/.test(content)) return content;
   return `@layer openui{${content}}`;
