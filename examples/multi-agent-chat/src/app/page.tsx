@@ -1,16 +1,17 @@
 "use client";
 
-import { AssistantMessage } from "@/components/assistant-message";
+
+import { useChat } from "@ai-sdk/react";
+import { useRef, useEffect, useState } from "react";
+import { useTheme } from "@/hooks/use-system-theme";
+import { useThreads } from "@/hooks/use-threads";
 import { ChatHeader } from "@/components/chat-header";
 import { ChatInput } from "@/components/chat-input";
 import { ConversationStarters } from "@/components/conversation-starters";
-import { Sidebar } from "@/components/sidebar";
-import { ThinkingIndicator } from "@/components/thinking-indicator";
+import { AssistantMessage } from "@/components/assistant-message";
 import { UserMessage } from "@/components/user-message";
-import { useTheme } from "@/hooks/use-system-theme";
-import { useThreads } from "@/hooks/use-threads";
-import { useChat } from "@ai-sdk/react";
-import { useEffect, useRef, useState } from "react";
+import { ThinkingIndicator } from "@/components/thinking-indicator";
+import { Sidebar } from "@/components/sidebar";
 
 export default function Page() {
   useTheme();
@@ -86,7 +87,10 @@ export default function Page() {
           sidebarOpen ? "md:ml-[280px]" : "ml-0"
         }`}
       >
-        <ChatHeader isSidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen((o) => !o)} />
+        <ChatHeader
+          isSidebarOpen={sidebarOpen}
+          onToggleSidebar={() => setSidebarOpen((o) => !o)}
+        />
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
           {isEmpty ? (
@@ -95,7 +99,13 @@ export default function Page() {
             <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
               {messages.map((m) => {
                 if (m.role === "assistant") {
-                  return <AssistantMessage key={m.id} message={m} onSend={handleSend} />;
+                  return (
+                    <AssistantMessage
+                      key={m.id}
+                      message={m}
+                      onSend={handleSend}
+                    />
+                  );
                 }
                 if (m.role === "user") {
                   return <UserMessage key={m.id} message={m} />;

@@ -1,15 +1,17 @@
 "use client";
 
-import { spreadsheetLibrary } from "@/lib/spreadsheet-library";
-import { openAIAdapter, openAIMessageFormat } from "@openuidev/react-headless";
+import { openAIMessageFormat, openAIAdapter } from "@openuidev/react-headless";
 import { Copilot } from "@openuidev/react-ui";
-import "@openuidev/react-ui/layered-components.css";
+import { spreadsheetLibrary } from "@/lib/spreadsheet-library";
+import { TableProvider, useTableContext } from "./TableContext";
+import { useState, useEffect, useCallback } from "react";
 import { MessageSquare, PanelRightClose } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
-import { TableProvider, useTableContext } from "./TableContext";
 
-const PersistentSpreadsheet = dynamic(() => import("./PersistentSpreadsheet"), { ssr: false });
+const PersistentSpreadsheet = dynamic(
+  () => import("./PersistentSpreadsheet"),
+  { ssr: false }
+);
 
 function ChatPanel({ onClose }: { onClose: () => void }) {
   const { threadId } = useTableContext();
@@ -39,14 +41,16 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
           agentName="Spreadsheet AI"
           welcomeMessage={{
             title: "Spreadsheet AI",
-            description: "I can help you analyze, visualize, and modify your product revenue data.",
+            description:
+              "I can help you analyze, visualize, and modify your product revenue data.",
           }}
           conversationStarters={{
             variant: "long",
             options: [
               {
                 displayText: "Chart revenue by quarter",
-                prompt: "Show me a bar chart comparing Q1 through Q4 revenue for all products.",
+                prompt:
+                  "Show me a bar chart comparing Q1 through Q4 revenue for all products.",
               },
               {
                 displayText: "Add Vision Pro to the lineup",
@@ -97,7 +101,11 @@ export default function Home() {
         {chatOpen && <ChatPanel onClose={closeChat} />}
 
         {!chatOpen && (
-          <button onClick={() => setChatOpen(true)} className="chat-fab" aria-label="Open chat">
+          <button
+            onClick={() => setChatOpen(true)}
+            className="chat-fab"
+            aria-label="Open chat"
+          >
             <MessageSquare size={22} />
             <span className="chat-fab__label">AI Chat</span>
           </button>

@@ -1,10 +1,9 @@
 "use client";
-import "@openuidev/react-ui/layered-components.css";
 
 import { useTheme } from "@/hooks/use-system-theme";
-import { artifactDemoLibrary } from "@/library";
 import { openAIAdapter, openAIMessageFormat } from "@openuidev/react-headless";
 import { FullScreen } from "@openuidev/react-ui";
+import { artifactDemoLibrary } from "@/library";
 
 export default function Page() {
   const mode = useTheme();
@@ -31,19 +30,23 @@ export default function Page() {
           options: [
             {
               displayText: "React login form",
-              prompt: "Build me a React login form with email and password validation",
+              prompt:
+                "Build me a React login form with email and password validation",
             },
             {
               displayText: "Python REST API",
-              prompt: "Create a FastAPI REST API with CRUD endpoints for a todo app",
+              prompt:
+                "Create a FastAPI REST API with CRUD endpoints for a todo app",
             },
             {
               displayText: "CSS animation",
-              prompt: "Write a CSS animation for a bouncing loading indicator",
+              prompt:
+                "Write a CSS animation for a bouncing loading indicator",
             },
             {
               displayText: "SQL schema",
-              prompt: "Design a SQL schema for a blog with users, posts, and comments",
+              prompt:
+                "Design a SQL schema for a blog with users, posts, and comments",
             },
           ],
         }}

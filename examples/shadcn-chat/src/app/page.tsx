@@ -1,5 +1,4 @@
 "use client";
-import "@openuidev/react-ui/layered-components.css";
 
 import { useTheme } from "@/hooks/use-system-theme";
 import { shadcnChatLibrary } from "@/lib/shadcn-genui";
