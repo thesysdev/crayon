@@ -21,7 +21,7 @@ pnpm add @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless
 Don't forget to import the component styles:
 
 ```ts
-import "@openuidev/react-ui/components.css";
+import "@openuidev/react-ui/styles/index.css";
 ```
 
 ## Overview
@@ -38,7 +38,7 @@ The fastest way to get a working chat app:
 
 ```tsx
 import { FullScreen } from "@openuidev/react-ui";
-import "@openuidev/react-ui/components.css";
+import "@openuidev/react-ui/styles/index.css";
 
 function App() {
   return (
@@ -145,15 +145,15 @@ OpenUI ships its component styles in two variants:
 
 | Import | Cascade behavior |
 | --- | --- |
-| `@openuidev/react-ui/components.css` (default) | Unlayered — override via normal CSS specificity, as in 0.11.x and earlier |
-| `@openuidev/react-ui/layered-components.css` (opt-in) | Wrapped in `@layer openui` — any unlayered consumer CSS wins |
+| `@openuidev/react-ui/styles/index.css` (default) | Unlayered — override via normal CSS specificity, as in 0.11.x and earlier |
+| `@openuidev/react-ui/layered/styles/index.css` (opt-in) | Wrapped in `@layer openui` — any unlayered consumer CSS wins |
 
-Per-component granular imports follow the same split: `./styles/*` (unlayered) and `./layered/styles/*` (layered).
+Need a single component's CSS? Import it per component: `./styles/<Component>.css` (unlayered) or `./layered/styles/<Component>.css` (layered).
 
 With the layered variant, plain CSS overrides OpenUI without `!important` or specificity matching:
 
 ```css
-@import "@openuidev/react-ui/layered-components.css";
+@import "@openuidev/react-ui/layered/styles/index.css";
 
 /* Wins, no specificity tricks needed */
 .openui-button-base-primary { background: hotpink; }
@@ -166,7 +166,7 @@ Declare layer order at the top of your entry stylesheet so `openui` sits above T
 ```css
 @layer theme, base, openui, components, utilities;
 @import "tailwindcss";
-@import "@openuidev/react-ui/layered-components.css";
+@import "@openuidev/react-ui/layered/styles/index.css";
 ```
 
 This places Tailwind's Preflight (in `base`) below OpenUI components so its element resets don't override them, while keeping utilities (`bg-red-500`, etc.) winning over OpenUI styles.
@@ -210,8 +210,8 @@ import { Charts } from "@openuidev/react-ui/Charts";
 | Import path | Description |
 | :--- | :--- |
 | `@openuidev/react-ui` | All components and libraries |
-| `@openuidev/react-ui/components.css` | Compiled component styles |
-| `@openuidev/react-ui/layered-components.css` | Opt-in aggregate stylesheet wrapped in `@layer openui` |
+| `@openuidev/react-ui/styles/index.css` | Full compiled stylesheet, unlayered (default import) |
+| `@openuidev/react-ui/layered/styles/index.css` | Full stylesheet wrapped in `@layer openui` (opt-in) |
 | `@openuidev/react-ui/defaults.css` | Theme tokens, always unlayered |
 | `@openuidev/react-ui/genui-lib` | OpenUI Lang libraries and prompt options |
 | `@openuidev/react-ui/styles/*` | Per-component compiled styles (unlayered) |
