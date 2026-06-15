@@ -276,14 +276,14 @@ export default function ProjectsPage() {
             </p>
             <div className={styles.heroActions}>
               <PillLink
-                className={styles.primaryAction}
+                variant="primary"
                 href="https://github.com/thesysdev/openui/issues"
                 external
               >
                 <Plus className={styles.actionIcon} strokeWidth={2} aria-hidden="true" />
                 Submit a project
               </PillLink>
-              <PillLink className={styles.secondaryAction} href={DISCORD_URL} external>
+              <PillLink variant="secondary" href={DISCORD_URL} external>
                 <DiscordIcon className={styles.actionIcon} />
                 Share on Discord
               </PillLink>
@@ -372,14 +372,14 @@ export default function ProjectsPage() {
         </div>
         <div className={styles.submitActions}>
           <PillLink
-            className={styles.primaryAction}
+            variant="primary"
             href="https://github.com/thesysdev/openui/issues"
             external
           >
             <Plus className={styles.actionIcon} strokeWidth={2} aria-hidden="true" />
             Submit a project
           </PillLink>
-          <PillLink className={styles.secondaryAction} href={DISCORD_URL} external>
+          <PillLink variant="secondary" href={DISCORD_URL} external>
             <DiscordIcon className={styles.actionIcon} />
             Share on Discord
           </PillLink>

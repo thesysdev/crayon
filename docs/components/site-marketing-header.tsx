@@ -8,7 +8,7 @@ import {
   type LogoVariant,
 } from "@/components/brand-logo";
 import { SiteHeaderFrame } from "@/components/site-header";
-import { PRIMARY_SITE_NAV_ITEMS, SitePrimaryNav } from "@/components/site-primary-nav";
+import { isNavDropdown, PRIMARY_SITE_NAV_ITEMS, SitePrimaryNav } from "@/components/site-primary-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AnimatePresence, motion } from "motion/react";
 import { useTheme } from "next-themes";
@@ -63,6 +63,32 @@ function MobileMenu({ starCount, onClose }: { starCount: number | null; onClose:
     "--mobile-github-button-shadow": BUTTON_SHADOW,
   } as CSSProperties;
 
+  const leafItems = PRIMARY_SITE_NAV_ITEMS.filter(
+    (item): item is Extract<(typeof PRIMARY_SITE_NAV_ITEMS)[number], { href: string }> =>
+      !isNavDropdown(item),
+  );
+  const dropdownSections = PRIMARY_SITE_NAV_ITEMS.filter(isNavDropdown);
+
+  const agentInterface = leafItems.find((item) => item.title === "Agent Interface");
+  const otherLeafItems = leafItems.filter((item) => item !== agentInterface);
+
+  const productSection = {
+    title: "Product",
+    items: [
+      { title: "OpenUI", href: "/", newTab: false, badge: undefined as string | undefined },
+      ...(agentInterface
+        ? [
+            {
+              title: agentInterface.title,
+              href: agentInterface.href,
+              newTab: agentInterface.newTab,
+              badge: agentInterface.badge,
+            },
+          ]
+        : []),
+    ],
+  };
+
   return (
     <>
       <motion.div
@@ -82,18 +108,57 @@ function MobileMenu({ starCount, onClose }: { starCount: number | null; onClose:
       >
         <div className={styles.mobileTray}>
           <div className={styles.mobileTrayInner}>
-            {PRIMARY_SITE_NAV_ITEMS.map((item, index) => {
-              const badge = "badge" in item ? item.badge : undefined;
-              return (
-                <div key={item.href}>
-                  {index > 0 && <div className={styles.mobileTrayDivider} />}
-                  <Link href={item.href} className={styles.mobileTrayLink}>
-                    {item.title}
-                    {badge && <span className={styles.mobileTrayBadge}>{badge}</span>}
+            <div className={styles.mobileTraySection}>
+              <div className={styles.mobileTraySectionHeading}>{productSection.title}</div>
+              {productSection.items.map((entry) => (
+                <Link
+                  key={entry.href}
+                  className={styles.mobileTrayLink}
+                  href={entry.href}
+                  {...(entry.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                >
+                  <span>{entry.title}</span>
+                  {entry.badge && (
+                    <span className={styles.mobileTrayBadge}>{entry.badge}</span>
+                  )}
+                </Link>
+              ))}
+            </div>
+
+            {otherLeafItems.length > 0 && (
+              <div className={styles.mobileTraySection}>
+                <div className={styles.mobileTraySectionHeading}>Resources</div>
+                {otherLeafItems.map((entry) => (
+                  <Link
+                    key={entry.href}
+                    className={styles.mobileTrayLink}
+                    href={entry.href}
+                    {...(entry.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  >
+                    <span>{entry.title}</span>
+                    {entry.badge && (
+                      <span className={styles.mobileTrayBadge}>{entry.badge}</span>
+                    )}
                   </Link>
-                </div>
-              );
-            })}
+                ))}
+              </div>
+            )}
+
+            {dropdownSections.map((section) => (
+              <div key={section.title} className={styles.mobileTraySection}>
+                <div className={styles.mobileTraySectionHeading}>{section.title}</div>
+                {section.children.map((child) => (
+                  <Link
+                    key={child.href}
+                    className={styles.mobileTrayLink}
+                    href={child.href}
+                    {...(child.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  >
+                    <span>{child.title}</span>
+                  </Link>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
         <div className={styles.mobileGithubButtonWrap}>

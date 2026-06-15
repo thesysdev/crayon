@@ -1,4 +1,5 @@
 import styles from "./page.module.css";
+import { AgentInterfaceBanner } from "./sections/AgentInterfaceBanner/AgentInterfaceBanner";
 import { CompatibilitySection } from "./sections/CompatibilitySection/CompatibilitySection";
 import { FeaturesSection } from "./sections/FeaturesSection/FeaturesSection";
 import { Footer } from "./sections/Footer/Footer";
@@ -25,7 +26,10 @@ export default function HomePage() {
         <GradientDivider direction="down" />
         <div className={styles.contentShell}>
           <PossibilitiesSection />
-          <CompatibilitySection />
+          <AgentInterfaceBanner />
+          <div className={styles.compatibilityWrap}>
+            <CompatibilitySection />
+          </div>
           <FeaturesSection />
           <TweetWallSection />
         </div>
