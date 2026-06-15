@@ -1,5 +1,4 @@
 "use client";
-import "@openuidev/react-ui/components.css";
 
 import { useTheme } from "@/hooks/use-system-theme";
 import { agUIAdapter } from "@openuidev/react-headless";

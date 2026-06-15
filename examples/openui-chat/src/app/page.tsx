@@ -1,5 +1,4 @@
 "use client";
-import "@openuidev/react-ui/components.css";
 
 import { useTheme } from "@/hooks/use-system-theme";
 import { openAIAdapter, openAIMessageFormat } from "@openuidev/react-headless";
