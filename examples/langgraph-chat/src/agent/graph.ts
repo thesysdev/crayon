@@ -38,10 +38,10 @@ const OPENUI_SYSTEM_PROMPT = loadSystemPrompt();
 const MODEL = process.env.OPENAI_MODEL || "gpt-5.5";
 
 /** Streaming model used by the specialists (tokens stream to the UI). */
-const chatModel = new ChatOpenAI({ model: MODEL, temperature: 0, streaming: true });
+const chatModel = new ChatOpenAI({ model: MODEL, streaming: true });
 
 /** Non-streaming model used by the router for a single structured decision. */
-const routerModel = new ChatOpenAI({ model: MODEL, temperature: 0 });
+const routerModel = new ChatOpenAI({ model: MODEL });
 
 // ── Specialists ──────────────────────────────────────────────────
 // Each specialist owns one tool and a short role hint layered on top of the

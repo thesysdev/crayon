@@ -11,6 +11,32 @@ const API_KEY = process.env.LANGSMITH_API_KEY;
 // decision) and must not surface as assistant output in the chat.
 const INTERNAL_NODES = new Set(["router"]);
 
+interface LangGraphInputMessage {
+  type: string;
+  content?: unknown;
+  tool_calls?: unknown;
+  tool_call_id?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * The browser stores the specialist's streamed tool call and final answer as
+ * one assistant message, but it does not store the ToolNode result. Replaying
+ * that partial tool transcript makes OpenAI reject the next request. Tool
+ * execution belongs to the current graph run, so retain only visible chat
+ * history between stateless runs.
+ */
+function stripInternalToolHistory(messages: LangGraphInputMessage[]): LangGraphInputMessage[] {
+  return messages.flatMap((message) => {
+    if (message.type === "tool") return [];
+    if (message.type !== "ai" || !message.tool_calls) return [message];
+
+    const visibleMessage = { ...message };
+    delete visibleMessage.tool_calls;
+    return [visibleMessage];
+  });
+}
+
 /**
  * Proxies the browser <-> LangGraph server.
  *
@@ -24,7 +50,8 @@ const INTERNAL_NODES = new Set(["router"]);
  * deployment URL server-side.
  */
 export async function POST(req: NextRequest) {
-  const { messages } = await req.json();
+  const { messages = [] } = (await req.json()) as { messages?: LangGraphInputMessage[] };
+  const visibleMessages = stripInternalToolHistory(messages);
 
   const client = new Client({ apiUrl: API_URL, apiKey: API_KEY });
   const encoder = new TextEncoder();
@@ -55,7 +82,7 @@ export async function POST(req: NextRequest) {
 
       try {
         const run = client.runs.stream(null, ASSISTANT_ID, {
-          input: { messages },
+          input: { messages: visibleMessages },
           streamMode: ["messages-tuple", "updates"],
           signal: req.signal,
         });
