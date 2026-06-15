@@ -57,7 +57,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 These imports give you the default chat layout styling and theme tokens.
 
-## 3. Render a layout to verify setup
+## 3. (For Tailwind v4) Set the cascade-layer order
+
+OpenUI's component styles live in `@layer openui`. If your app uses Tailwind v4, declare the layer order in your global stylesheet so `openui` sits above Tailwind's reset (`base`) but below `components` and `utilities`:
+
+```css
+/* app/globals.css */
+@layer theme, base, openui, components, utilities;
+@import "tailwindcss";
+```
+
+This places OpenUI above Tailwind's Preflight (so its element resets don't override component styles) while keeping Tailwind utilities like `bg-red-500` winning over OpenUI. Without this declaration, the cascade order is bundler-dependent and `openui` may end up declared *after* `utilities`, which prevents utility overrides from taking effect.
+
+Tailwind v3, plain CSS, CSS Modules, and CSS-in-JS need no configuration — their styles are unlayered and beat anything in `@layer openui` automatically.
+
+See [`@openuidev/react-ui`](/docs/api-reference/react-ui#cascade-layer-contract) for the full styling integration contract.
+
+## 4. Render a layout to verify setup
 
 Render one of the built-in layouts on a page to confirm the package is installed correctly.
 

@@ -12,7 +12,7 @@ const meta: Meta<typeof Card> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { Card } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { Card } from '@openuidev/react-ui';\n```",
       },
     },
   },

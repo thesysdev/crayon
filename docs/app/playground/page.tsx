@@ -1,5 +1,7 @@
 "use client";
 
+import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
+import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { Send, Square } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCallback, useRef, useState } from "react";
@@ -16,6 +18,7 @@ export default function PlaygroundPage() {
   const [parsedJson, setParsedJson] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [showPlaygroundCreditsDialog, setShowPlaygroundCreditsDialog] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -48,6 +51,7 @@ export default function PlaygroundPage() {
     setCode("");
     setParsedJson(null);
     setErrorMsg("");
+    setShowPlaygroundCreditsDialog(false);
     setStatus("streaming");
 
     try {
@@ -60,6 +64,12 @@ export default function PlaygroundPage() {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
+        if (isDemoCreditsErrorPayload((err as { error?: unknown }).error)) {
+          setShowPlaygroundCreditsDialog(true);
+          setStatus("idle");
+          return;
+        }
+
         throw new Error(
           (err as { error?: { message?: string } }).error?.message ?? `Server error ${res.status}`,
         );
@@ -81,15 +91,19 @@ export default function PlaygroundPage() {
             setStatus("done");
             return;
           }
+          let parsed: {
+            error?: unknown;
+            choices?: Array<{ delta?: { content?: string }; finish_reason?: string }>;
+          };
           try {
-            const parsed = JSON.parse(data) as {
-              choices: Array<{ delta: { content?: string } }>;
-            };
-            const content = parsed.choices[0]?.delta?.content;
-            if (content) setCode((prev) => prev + content);
+            parsed = JSON.parse(data);
           } catch {
             // skip malformed chunks
+            continue;
           }
+
+          const content = parsed.choices?.[0]?.delta?.content;
+          if (content) setCode((prev) => prev + content);
         }
       }
       setStatus("done");
@@ -197,6 +211,10 @@ export default function PlaygroundPage() {
           </div>
         </div>
       </div>
+      <DemoCreditsDialog
+        open={showPlaygroundCreditsDialog}
+        onClose={() => setShowPlaygroundCreditsDialog(false)}
+      />
     </div>
   );
 }

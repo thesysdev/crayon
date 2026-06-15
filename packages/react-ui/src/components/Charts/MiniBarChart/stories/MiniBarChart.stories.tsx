@@ -40,7 +40,7 @@ const meta: Meta<MiniBarChartProps> = {
     docs: {
       description: {
         component:
-          "```tsx\nimport { MiniBarChart } from '@openui-ui/react-ui/Charts/BarCharts/MiniBarChart';\n```",
+          "```tsx\nimport { MiniBarChart } from '@openuidev/react-ui/Charts/BarCharts/MiniBarChart';\n```",
       },
     },
   },

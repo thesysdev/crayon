@@ -1,23 +1,51 @@
 ---
 title: OpenUI SDK
-description: API reference for the documented surfaces of @openuidev/react-lang, @openuidev/react-headless, @openuidev/react-ui, and @openuidev/react-email.
+description: Package guide for the full OpenUI SDK surface, including framework-agnostic, React, Vue, Svelte, email, browser-bundle, and CLI entrypoints.
 ---
 
 The OpenUI SDK is split into packages that build on each other:
 
-- **`@openuidev/react-lang`** — Core runtime. Define component libraries with Zod schemas, generate system prompts, parse OpenUI Lang, and render streamed output to React. This is the foundation — you need it for any OpenUI integration.
+- **`@openuidev/lang-core`** — Framework-agnostic parser, prompt-generation, runtime-evaluation, and type layer. Use this when you need OpenUI Lang outside React, or when a backend/Edge function needs to generate prompts and parse streamed output without pulling in UI bindings.
+
+- **`@openuidev/react-lang`** — React runtime. Define component libraries with Zod schemas, generate system prompts, parse OpenUI Lang, and render streamed output to React. This is the foundation for React integrations.
 
 - **`@openuidev/react-headless`** — Headless chat state management. Provides `ChatProvider`, thread/message hooks, streaming protocol adapters (OpenAI, AG-UI), and message format converters. Use this when you want full control over your chat UI.
 
 - **`@openuidev/react-ui`** — Prebuilt chat layouts (`Copilot`, `FullScreen`, `BottomTray`) and two ready-to-use component libraries (general-purpose and chat-optimized). Depends on both packages above. Use this for the fastest path to a working chat interface.
 
-- **`@openuidev/react-email`** — API reference for the pre-built email templates library and prompt options.
+- **`@openuidev/react-email`** — Pre-built email component library and prompt options for model-generated emails that can be rendered to HTML with React Email.
+
+- **`@openuidev/vue-lang`** — Vue 3 bindings for defining model-renderable components, generating prompts from those definitions, and rendering streamed OpenUI Lang in Vue apps.
+
+- **`@openuidev/svelte-lang`** — Svelte 5 bindings for defining model-renderable components, generating prompts, and rendering streamed OpenUI Lang in Svelte apps.
+
+- **`@openuidev/browser-bundle`** — Prebuilt browser bundle for CDN, iframe, and no-build integrations. It packages the renderer, UI library, React, ReactDOM, and styles into script-tag-friendly assets.
 
 - **`@openuidev/cli`** — Command-line tool for scaffolding new OpenUI chat apps and generating system prompts or JSON schemas from library definitions.
+
+## Choosing a package
+
+| If you need...                                                     | Start here                                                                                           |
+| :----------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
+| Prompt generation or parsing without a UI framework                | [`@openuidev/lang-core`](https://github.com/thesysdev/openui/tree/main/packages/lang-core)           |
+| React rendering primitives for OpenUI Lang                         | [`@openuidev/react-lang`](/docs/api-reference/react-lang)                                            |
+| Chat state and streaming without prebuilt UI                       | [`@openuidev/react-headless`](/docs/api-reference/react-headless)                                    |
+| A ready-made React chat surface                                    | [`@openuidev/react-ui`](/docs/api-reference/react-ui)                                                |
+| Model-generated emails                                             | [`@openuidev/react-email`](/docs/api-reference/react-email)                                          |
+| Vue integration                                                    | [`@openuidev/vue-lang`](https://github.com/thesysdev/openui/tree/main/packages/vue-lang)             |
+| Svelte integration                                                 | [`@openuidev/svelte-lang`](https://github.com/thesysdev/openui/tree/main/packages/svelte-lang)       |
+| Script-tag, CDN, or iframe embeds                                  | [`@openuidev/browser-bundle`](https://github.com/thesysdev/openui/tree/main/packages/browser-bundle) |
+| App scaffolding and prompt/schema generation from the command line | [`@openuidev/cli`](/docs/api-reference/cli)                                                          |
 
 ## Packages
 
 <Cards>
+  <Card
+    title="@openuidev/lang-core"
+    href="https://github.com/thesysdev/openui/tree/main/packages/lang-core"
+  >
+    Framework-agnostic parser, prompt-generation, runtime-evaluation, and type APIs for OpenUI Lang.
+  </Card>
   <Card title="@openuidev/react-lang" href="/docs/api-reference/react-lang">
     defineComponent, createLibrary, Renderer, parser APIs, action types, context hooks, and form
     validation.
@@ -32,6 +60,24 @@ The OpenUI SDK is split into packages that build on each other:
   </Card>
   <Card title="@openuidev/react-email" href="/docs/api-reference/react-email">
     API reference for the pre-built email templates library and prompt options.
+  </Card>
+  <Card
+    title="@openuidev/vue-lang"
+    href="https://github.com/thesysdev/openui/tree/main/packages/vue-lang"
+  >
+    Vue 3 bindings for defining model-renderable components and rendering streamed OpenUI Lang.
+  </Card>
+  <Card
+    title="@openuidev/svelte-lang"
+    href="https://github.com/thesysdev/openui/tree/main/packages/svelte-lang"
+  >
+    Svelte 5 bindings for defining model-renderable components and rendering streamed OpenUI Lang.
+  </Card>
+  <Card
+    title="@openuidev/browser-bundle"
+    href="https://github.com/thesysdev/openui/tree/main/packages/browser-bundle"
+  >
+    CDN, iframe, and no-build browser bundle for the renderer, UI library, React, and styles.
   </Card>
   <Card title="@openuidev/cli" href="/docs/api-reference/cli">
     openui create (scaffold a Next.js app) and openui generate (system prompt / JSON schema from a

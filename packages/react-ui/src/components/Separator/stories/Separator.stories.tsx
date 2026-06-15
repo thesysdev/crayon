@@ -9,7 +9,7 @@ const meta: Meta<typeof Separator> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { Separator } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { Separator } from '@openuidev/react-ui';\n```",
       },
     },
   },

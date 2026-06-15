@@ -1,6 +1,12 @@
 export type Theme = "system" | "light" | "dark";
 export type Status = "idle" | "streaming" | "done" | "error";
 
+export const STREAM_RESULT = {
+  Done: "done",
+  CreditsExhausted: "credits-exhausted",
+} as const;
+export type StreamResult = (typeof STREAM_RESULT)[keyof typeof STREAM_RESULT];
+
 export const GITHUB_DEMO_MODEL = "anthropic/claude-sonnet-4-6";
 export const GITHUB_DEMO_MODEL_LABEL = "Claude Sonnet 4.6";
 

@@ -9,7 +9,7 @@ const meta: Meta<typeof FollowUpItem> = {
     layout: "centered",
     docs: {
       description: {
-        component: "```tsx\nimport { FollowUpItem } from '@openui-ui/react-ui';\n```",
+        component: "```tsx\nimport { FollowUpItem } from '@openuidev/react-ui';\n```",
       },
     },
   },

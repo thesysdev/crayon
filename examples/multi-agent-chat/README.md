@@ -50,7 +50,6 @@ The Vercel AI SDK handles the streaming transport on both ends:
 │                              │       │  │    ├──────────────────────────────┤  │    │
 │                              │       │  │    │ get_weather (mock)           │  │    │
 │                              │       │  │    │ get_stock_price (mock)       │  │    │
-│                              │       │  │    │ calculate (mock)             │  │    │
 │                              │       │  │    │ search_web (mock)            │  │    │
 │                              │       │  │    └──────────────────────────────┘  │    │
 │                              │       │  └──────────────────────────────────────┘    │
@@ -94,7 +93,7 @@ multi-agent-chat/
 │   │   ├── use-system-theme.tsx       # Detects system light/dark preference
 │   │   └── use-threads.ts            # Thread CRUD + localStorage persistence
 │   ├── lib/
-│   │   ├── tools.ts                   # Tool definitions: analytics sub-agent + 4 mock tools
+│   │   ├── tools.ts                   # Tool definitions: analytics sub-agent + 3 mock tools
 │   │   └── thread-store.ts           # Read/write threads to localStorage
 │   ├── library.ts                     # OpenUI library export for prompt generation
 │   └── generated/
@@ -206,14 +205,13 @@ Conversations are organized into threads stored in localStorage. Each thread has
 
 ### Helper Tools (`src/lib/tools.ts`)
 
-Four mock tools with simulated network delays that return realistic data:
+Three mock tools with simulated network delays that return realistic data:
 
 
 | Tool              | Input                  | Delay  | Description                                             |
 | ----------------- | ---------------------- | ------ | ------------------------------------------------------- |
 | `get_weather`     | `location` (city name) | 800ms  | Temperature, conditions, humidity, wind, 2-day forecast |
 | `get_stock_price` | `symbol` (ticker)      | 600ms  | Price, change, volume, day range                        |
-| `calculate`       | `expression` (math)    | 300ms  | Evaluates math expressions safely                       |
 | `search_web`      | `query` (search term)  | 1000ms | Returns 3 mock search results                           |
 
 

@@ -436,7 +436,7 @@ const meta: Meta<HorizontalBarChartProps<typeof horizontalBarChartData>> = {
 ## Installation and Basic Usage
 
 \`\`\`tsx
-import { HorizontalBarChart } from '@openui-ui/react-ui/Charts/HorizontalBarChart';
+import { HorizontalBarChart } from '@openuidev/react-ui/Charts/HorizontalBarChart';
 
 const salesData = [
   { region: "North America", sales: 150000, profit: 45000 },

@@ -1,7 +1,7 @@
 import fs from "fs";
 import { camelCase } from "lodash-es";
 import path from "path";
-import {fileURLToPath} from "url"
+import { fileURLToPath } from "url";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -9,6 +9,29 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 function ensureDirectoryExists(dirPath) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
+  }
+}
+
+// Wrap a CSS file's contents in @layer openui { ... } if not already wrapped.
+// Idempotency check protects watch-mode and back-to-back builds.
+function wrapInLayer(content) {
+  if (content.trim() === "") return content;
+  if (/^\s*@layer\s+openui\b/.test(content)) return content;
+  return `@layer openui{${content}}`;
+}
+
+// Walk dist/components and wrap every emitted .css file in @layer openui.
+// *.module.css are Storybook CSS Modules — locally scoped, not shipped, not wrapped.
+function wrapComponentCssInPlace(dir) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      wrapComponentCssInPlace(full);
+    } else if (entry.name.endsWith(".css") && !entry.name.endsWith(".module.css")) {
+      const content = fs.readFileSync(full, "utf8");
+      const wrapped = wrapInLayer(content);
+      if (wrapped !== content) fs.writeFileSync(full, wrapped, "utf8");
+    }
   }
 }
 
@@ -36,6 +59,12 @@ function fixScssImportsInJs(dir) {
 function copyCssFiles() {
   const srcDir = path.join(dirname, "dist", "components");
   const distDir = path.join(dirname, "dist", "styles");
+
+  // Wrap every emitted component CSS in @layer openui before copying.
+  // dist/openui-defaults.css lives outside dist/components and stays unwrapped
+  // so the defaults.css export remains in the unlayered cascade — matching the
+  // ThemeProvider runtime injection contract.
+  wrapComponentCssInPlace(srcDir);
 
   // Ensure the dist/styles directory exists
   ensureDirectoryExists(distDir);

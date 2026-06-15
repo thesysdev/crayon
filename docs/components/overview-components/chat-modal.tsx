@@ -1,14 +1,19 @@
 "use client";
 
-import "@openuidev/react-ui/components.css";
+// NOTE: do not import react-ui CSS here. It is loaded once, app-wide, via
+// docs/app/global.css. A second react-ui CSS import makes the bundler hoist a
+// statement-less `@layer openui` chunk that loads BEFORE global.css's `@layer`
+// order declaration, which breaks the cascade order (Tailwind preflight wins).
 import "./chat-modal.css";
 
+import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
+import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { openAIAdapter, openAIMessageFormat } from "@openuidev/react-headless";
 import { FullScreen } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 import { X } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface ChatModalProps {
@@ -17,6 +22,7 @@ interface ChatModalProps {
 
 export function ChatModal({ onClose }: ChatModalProps) {
   const { resolvedTheme } = useTheme();
+  const [showOverviewCreditsDialog, setShowOverviewCreditsDialog] = useState(false);
 
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
@@ -44,7 +50,7 @@ export function ChatModal({ onClose }: ChatModalProps) {
           <FullScreen
             welcomeMessage={{ title: "Hello, how can I help you today?" }}
             processMessage={async ({ messages, abortController }) => {
-              return fetch("/api/chat", {
+              const response = await fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -52,6 +58,21 @@ export function ChatModal({ onClose }: ChatModalProps) {
                 }),
                 signal: abortController.signal,
               });
+
+              if (!response.ok) {
+                const err = await response
+                  .clone()
+                  .json()
+                  .catch(() => ({}));
+                if (isDemoCreditsErrorPayload((err as { error?: unknown }).error)) {
+                  setShowOverviewCreditsDialog(true);
+                  return new Response("data: [DONE]\n\n", {
+                    headers: { "Content-Type": "text/event-stream" },
+                  });
+                }
+              }
+
+              return response;
             }}
             streamProtocol={openAIAdapter()}
             componentLibrary={openuiChatLibrary}
@@ -84,6 +105,10 @@ export function ChatModal({ onClose }: ChatModalProps) {
             }}
           />
         </div>
+        <DemoCreditsDialog
+          open={showOverviewCreditsDialog}
+          onClose={() => setShowOverviewCreditsDialog(false)}
+        />
       </div>
     </div>,
     document.body,

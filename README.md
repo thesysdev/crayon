@@ -21,7 +21,6 @@
 
 </div>
 
-
 OpenUI is a full-stack Generative UI framework: a compact streaming-first language, a React runtime with built-in component libraries, and ready-to-use chat interfaces that are up to 67% more token-efficient than JSON.
 
 <div align="center">
@@ -51,7 +50,6 @@ At the center of OpenUI is **OpenUI Lang**: a compact, streaming-first language 
 - **Streaming renderer** - Parse and render model output progressively in React as tokens arrive.
 - **Chat and app surfaces** - Use the same foundation for assistants, copilots, and broader interactive product flows.
 
-
 ## Quick Start
 
 ```bash
@@ -69,8 +67,6 @@ What this gives you:
 - **Library-driven prompts** - Generate instructions from your allowed component set.
 - **Streaming support** - Update the UI progressively as output arrives.
 - **Working app foundation** - Start from a ready-to-run example instead of wiring everything manually.
-
-
 
 ## How it works
 
@@ -95,16 +91,31 @@ Try it yourself in the [Playground](https://www.openui.com/playground): generate
 
 ## Packages
 
-| Package | Description |
-| :--- | :--- |
-| [`@openuidev/react-lang`](./packages/react-lang) | Core runtime: component definitions, parser, renderer, prompt generation |
-| [`@openuidev/react-headless`](./packages/react-headless) | Headless chat state, streaming adapters, message format converters |
-| [`@openuidev/react-ui`](./packages/react-ui) | Prebuilt chat layouts and two built-in component libraries |
-| [`@openuidev/cli`](./packages/openui-cli) | CLI for scaffolding apps and generating system prompts |
-| [`@openuidev/openclaw-os-plugin`](https://github.com/thesysdev/openclaw-os/tree/main/packages/claw-plugin) | OpenClaw OS plugin for serving OpenUI-powered OpenClaw workspaces | 
+| Package                                                                                                    | Best for                                         | Description                                                                                                  |
+| :--------------------------------------------------------------------------------------------------------- | :----------------------------------------------- | :----------------------------------------------------------------------------------------------------------- |
+| [`@openuidev/lang-core`](./packages/lang-core)                                                             | Framework-agnostic parsing and prompt generation | Core parser, prompt-generation, runtime-evaluation, and type layer with no React, Vue, or Svelte dependency  |
+| [`@openuidev/react-lang`](./packages/react-lang)                                                           | React rendering runtimes                         | Define component libraries, generate prompts, and render streamed OpenUI Lang in React                       |
+| [`@openuidev/react-headless`](./packages/react-headless)                                                   | Bring-your-own React chat UI                     | Headless chat state, streaming adapters, and message format converters                                       |
+| [`@openuidev/react-ui`](./packages/react-ui)                                                               | Fastest path to a full React chat experience     | Prebuilt chat layouts, standalone UI primitives, and two built-in component libraries                        |
+| [`@openuidev/react-email`](./packages/react-email)                                                         | Email generation and HTML export                 | React Email component definitions plus prompt options for model-generated emails                             |
+| [`@openuidev/vue-lang`](./packages/vue-lang)                                                               | Vue integrations                                 | Vue 3 bindings for defining model-renderable components and rendering streamed OpenUI Lang                   |
+| [`@openuidev/svelte-lang`](./packages/svelte-lang)                                                         | Svelte integrations                              | Svelte 5 bindings for defining model-renderable components and rendering streamed OpenUI Lang                |
+| [`@openuidev/browser-bundle`](./packages/browser-bundle)                                                   | CDN, iframe, and no-build embeds                 | Prebuilt browser bundle that ships the renderer, UI library, React, and styles as script + stylesheet assets |
+| [`@openuidev/cli`](./packages/openui-cli)                                                                  | Project scaffolding and prompt generation        | CLI for creating new apps and generating system prompts or JSON schema from a library definition             |
+| [`@openuidev/openclaw-os-plugin`](https://github.com/thesysdev/openclaw-os/tree/main/packages/claw-plugin) | OpenClaw workspaces                              | OpenClaw OS plugin for serving OpenUI-powered OpenClaw workspaces                                            |
+
+Common starting points:
 
 ```bash
+# React app with OpenUI rendering and prebuilt components
 npm install @openuidev/react-lang @openuidev/react-ui
+
+# Framework-agnostic backend or Edge prompt generation
+npm install @openuidev/lang-core
+
+# Vue or Svelte runtime
+npm install @openuidev/vue-lang
+npm install @openuidev/svelte-lang
 ```
 
 ## Why OpenUI Lang
@@ -145,6 +156,11 @@ openui/
 │   ├── react-lang/       # Core runtime (parser, renderer, prompt generation)
 │   ├── react-headless/   # Headless chat state & streaming adapters
 │   ├── react-ui/         # Prebuilt chat layouts & component libraries
+│   ├── react-email/      # React Email component library for generated emails
+│   ├── lang-core/        # Framework-agnostic parser, prompt, and runtime layer
+│   ├── vue-lang/         # Vue runtime bindings for OpenUI Lang
+│   ├── svelte-lang/      # Svelte runtime bindings for OpenUI Lang
+│   ├── browser-bundle/   # Script-tag bundle for CDN / iframe / no-build embeds
 │   └── openui-cli/       # CLI for scaffolding & prompt generation
 ├── skills/
 │   └── openui/           # Claude Code skill for AI-assisted development
@@ -168,7 +184,7 @@ Good places to start:
 ## How OpenUI compares
 
 | Feature                |             OpenUI |           json-render (Vercel) |     A2UI (Google) | CopilotKit OpenGenUI |
-|------------------------|-------------------:|-------------------------------:|------------------:|---------------------:|
+| ---------------------- | -----------------: | -----------------------------: | ----------------: | -------------------: |
 | Tokens                 |                 1x |                             3x |                3x |                   4x |
 | Latency (60 tok/s)     |               4.9s |                          14.2s |             14.2s |                 ~20s |
 | Streaming              |                Yes |                            Yes |               Yes |              Partial |
@@ -189,19 +205,19 @@ A list of organizations and projects using OpenUI is maintained in [`ADOPTERS.md
 Contributions are welcome. See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for contribution guidelines and ways to get involved.
 
 ## Agent Skill
- 
+
 OpenUI ships an [Agent Skill](https://agentskills.io) so AI coding assistants (Claude Code, Codex, Cursor, Copilot, etc.) can help you scaffold, build, and debug Generative UI apps using OpenUI Lang.
- 
+
 ### Install
- 
+
 ```bash
 # With the skills CLI (works across all agents)
 npx skills add thesysdev/openui --skill openui
- 
+
 # Manual - copy into your project
 cp -r skills/openui .claude/skills/openui
 ```
- 
+
 The skill covers component library design, OpenUI Lang syntax, system prompt generation, the Renderer, SDK packages, and debugging malformed LLM output.
 
 ## Star History

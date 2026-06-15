@@ -235,3 +235,55 @@ describe("orphaned statements", () => {
     expect(result.meta.orphaned).toHaveLength(0);
   });
 });
+
+describe("markdown fences and multiline comments in strings", () => {
+  it("preserves js markdown fences inside strings", () => {
+    const code = 'root = Title("```js\\nconsole.log(\\"Hello World\\");\\n```")';
+    const result = parse(code, schema);
+    expect(result.meta.errors).toHaveLength(0);
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props.text).toBe('```js\nconsole.log("Hello World");\n```');
+  });
+
+  it("preserves python fenced code blocks inside strings", () => {
+    const code = "root = Title(\"```python\\nprint('hi')\\n```\")";
+    const result = parse(code, schema);
+    expect(result.meta.errors).toHaveLength(0);
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props.text).toBe("```python\nprint('hi')\n```");
+  });
+
+  it("preserves // inside multiline strings", () => {
+    const code = `root = Title("
+Hello // World
+https://example.com/
+")`;
+    const result = parse(code, schema);
+    expect(result.meta.errors).toHaveLength(0);
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props.text).toBe("\nHello // World\nhttps://example.com/\n");
+  });
+
+  it("preserves # inside multiline strings", () => {
+    const code = `root = Title("
+Hello # World
+https://example.com/
+")`;
+    const result = parse(code, schema);
+    expect(result.meta.errors).toHaveLength(0);
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props.text).toBe("\nHello # World\nhttps://example.com/\n");
+  });
+
+  it("does not treat apostrophes as string delimiters when stripping fences", () => {
+    const code = `Here's the code:
+
+\`\`\`js
+root = Title("hello")
+\`\`\``;
+    const result = parse(code, schema);
+    expect(result.meta.errors).toHaveLength(0);
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props.text).toBe("hello");
+  });
+});

@@ -15,7 +15,7 @@ const meta: Meta<typeof Tabs> = {
     docs: {
       description: {
         component:
-          "```tsx\nimport { Tabs, TabsContent, TabsList, TabsTrigger } from '@openui-ui/react-ui';\n```",
+          "```tsx\nimport { Tabs, TabsContent, TabsList, TabsTrigger } from '@openuidev/react-ui';\n```",
       },
     },
   },
