@@ -29,7 +29,7 @@ docs/
 │   ├── sitemap.ts                          # Sitemap generation
 │   │
 │   ├── (home)/                             # Landing page (no docs layout)
-│   │   ├── layout.tsx                      # DocsNavbar + content wrapper
+│   │   ├── layout.tsx                      # Web theme provider + home Navbar
 │   │   └── page.tsx
 │   │
 │   ├── docs/                               # Fumadocs documentation pages
@@ -38,7 +38,7 @@ docs/
 │   │
 │   ├── components/                         # Component / Design System pages
 │   │   ├── layout.tsx                      # AppThemeProvider + TopNav shell
-│   │   ├── page.tsx                        # Main components directory redirect page
+│   │   ├── page.tsx                        # Design System landing page
 │   │   ├── blocks/                         # Component block previews
 │   │   ├── foundation/                     # Design tokens (colors, spacing, etc.)
 │   │   ├── compose/                        # Composition examples
@@ -79,7 +79,7 @@ docs/
 │   └── playground-system-prompt.txt
 │
 ├── shared/                                 # Shared code and style tokens
-│   ├── design-system/                      # Design system shared code (non-route)
+│   ├── design-system/                      # Legacy design system code (unused by active components)
 │   │   ├── components/                     # UI components (SideNav, TopNav, preview/, etc.)
 │   │   ├── config/                         # Navigation config, compose example data
 │   │   ├── styles/                         # CSS custom properties (colors, spacing, typography)
@@ -117,21 +117,21 @@ Each section maintains its own navigation structure through its `meta.json` conf
 
 ### Design System pages
 
-The design system lives at `/components/*` and serves component previews (Blocks / Foundation / Compose) with its own theme provider and side navigations under `app/components/`.
+The design system lives at `/components/*` and serves component previews (Blocks / Foundation / Compose) with its own theme provider and navigation under `app/components/`.
 
-Shared code is in `shared/design-system/` and imported via the `@design-system/*` path alias.
+Active component-preview specific modules are located under `app/components/` and imported via the `@components/*` path alias. The `shared/design-system/` folder contains legacy implementation code that is not used by active component pages.
 
 ### Navigation
 
-A custom `DocsNavbar` component (`components/docs-navbar.tsx`) provides top-level horizontal tabs: OpenUI, Chat, API Reference. It replaces Fumadocs' default nav and is shared between the homepage and docs layouts.
+A custom `DocsNavbar` component (`components/docs-navbar.tsx`) provides top-level horizontal tabs: OpenUI, Chat, API Reference. It replaces Fumadocs' default nav and is used across the docs pages.
 
 ## Path aliases
 
-| Alias              | Resolves to                | Usage                                      |
-| ------------------ | -------------------------- | ------------------------------------------ |
-| `@/*`              | `./` (project root)        | Docs-site code (`@/components/`, `@/lib/`) |
-| `@components/*`    | `./app/components/*`       | Component preview sub-app specific modules |
-| `@design-system/*` | `./shared/design-system/*` | Design system shared code                  |
+| Alias              | Resolves to                | Usage                                           |
+| ------------------ | -------------------------- | ----------------------------------------------- |
+| `@/*`              | `./` (project root)        | Docs-site code (`@/components/`, `@/lib/`)      |
+| `@components/*`    | `./app/components/*`       | Component preview sub-app specific modules      |
+| `@design-system/*` | `./shared/design-system/*` | Legacy path alias (unused by active components) |
 
 ## Key dependencies
 
@@ -148,5 +148,5 @@ A custom `DocsNavbar` component (`components/docs-navbar.tsx`) provides top-leve
 ## Adding design system pages
 
 1. Add the route page in `app/components/<section>/`.
-2. Add shared components/config in `shared/design-system/`.
+2. Add shared components/config inside `app/components/` (imported via the `@components/*` path alias).
 3. Update `app/components/config/navigation.ts` with the new nav items.
