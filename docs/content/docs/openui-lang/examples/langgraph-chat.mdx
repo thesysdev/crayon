@@ -1,0 +1,188 @@
+---
+title: LangGraph Chat
+description: A multi-agent LangGraph supervisor that routes each message to a weather, finance, or research specialist and streams OpenUI Lang into live generative UI.
+---
+
+OpenUI's renderer is transport-agnostic: it turns a stream of OpenUI Lang markup into interactive React components no matter how that stream is produced. This example produces it with a **multi-agent [LangGraph](https://langchain-ai.github.io/langgraphjs/) graph**: a supervisor routes each user message to one of three specialists (**weather**, **finance**, or **research**), and the chosen agent streams its answer as OpenUI Lang, which `<FullScreen>` renders into cards, tables, and charts as the tokens arrive.
+
+Because every specialist shares the same OpenUI system prompt (generated from the component library), any agent you add automatically speaks generative UI.
+
+[View source on GitHub →](https://github.com/thesysdev/openui/tree/main/examples/langgraph-chat)
+
+<div className="bg-[rgba(0,0,0,0.05)] dark:bg-gray-900 rounded-2xl h-[500px] flex p-2">
+  <video
+    src="/videos/langgraph-chat.mp4"
+    noControls
+    playsInline
+    muted
+    preload="metadata"
+    className="w-full rounded-lg m-auto"
+    autoPlay
+    loop
+  />
+</div>
+
+## Architecture
+
+```
+browser ──fetch /api/chat──▶ Next.js route ──@langchain/langgraph-sdk──▶ LangGraph server
+   ▲                              │                                          (router → specialist
+   └────── SSE (LangGraph) ───────┘                                           → tools → OpenUI Lang)
+        parsed by langGraphAdapter()
+```
+
+The example runs **two processes**: the LangGraph server runs the graph (and the LLM), and the Next.js app serves the UI. The browser never talks to the LangGraph server directly. A thin Next.js proxy route opens a run, forwards the stream, and keeps the API key and deployment URL server-side.
+
+## Connecting the frontend
+
+The client is a single `<FullScreen>`. `processMessage` posts the conversation to the proxy, and `langGraphAdapter()` parses the LangGraph SSE stream that comes back:
+
+```tsx
+import { langGraphAdapter, langGraphMessageFormat } from "@openuidev/react-headless";
+import { FullScreen } from "@openuidev/react-ui";
+import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
+
+<FullScreen
+  processMessage={async ({ messages, abortController }) =>
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      // Convert OpenUI messages to LangChain shape. The run is stateless,
+      // so the full history is sent each turn.
+      body: JSON.stringify({ messages: langGraphMessageFormat.toApi(messages) }),
+      signal: abortController.signal,
+    })
+  }
+  streamProtocol={langGraphAdapter()}
+  componentLibrary={openuiChatLibrary}
+  agentName="OpenUI + LangGraph Chat"
+/>;
+```
+
+- `processMessage`: posts the conversation to the proxy; `langGraphMessageFormat.toApi` converts OpenUI messages into the LangChain message shape the graph expects
+- `streamProtocol={langGraphAdapter()}`: parses LangGraph's `messages` SSE events back into streaming assistant text
+- `componentLibrary={openuiChatLibrary}`: maps OpenUI Lang nodes to the built-in component set (cards, tables, charts, forms)
+
+## The proxy route
+
+The browser posts messages already in LangChain format, and the route opens a **stateless** streaming run against the LangGraph server, forwarding its Server-Sent Events to the browser. Keeping the connection here is what lets you attach the API key and hide the deployment URL.
+
+```tsx
+import { Client } from "@langchain/langgraph-sdk";
+
+// Tokens from internal nodes (the supervisor's routing decision) must not
+// surface as assistant output.
+const INTERNAL_NODES = new Set(["router"]);
+
+const client = new Client({ apiUrl: API_URL, apiKey: API_KEY });
+
+const run = client.runs.stream(null, ASSISTANT_ID, {
+  input: { messages: visibleMessages },
+  streamMode: ["messages-tuple", "updates"],
+  signal: req.signal,
+});
+
+for await (const chunk of run) {
+  if (chunk.event?.startsWith("messages")) {
+    const meta = Array.isArray(chunk.data) ? chunk.data[1] : undefined;
+    if (meta?.langgraph_node && INTERNAL_NODES.has(meta.langgraph_node)) continue;
+    // Normalize the event name to what langGraphAdapter() expects.
+    send("messages", chunk.data);
+  }
+}
+```
+
+The graph streams in `messages-tuple` mode; the proxy filters out the supervisor's tokens and re-emits the rest as `event: messages`, which is exactly what `langGraphAdapter()` consumes.
+
+## The multi-agent graph
+
+Each specialist owns one tool and a short role hint layered on top of the shared OpenUI prompt. The supervisor makes a single structured routing decision, then the chosen specialist runs its own ReAct loop (`agent → tools → agent → … → END`):
+
+```tsx
+const SPECIALISTS = {
+  weather: { tools: [getWeather], hint: "You are the weather specialist. Use get_weather, then present conditions and the forecast as generative UI..." },
+  finance: { tools: [getStockPrice], hint: "You are the finance specialist. Use get_stock_price, then present the quote and day range as generative UI..." },
+  research: { tools: [searchWeb], hint: "You are the research specialist. Use search_web, then summarize the findings as generative UI..." },
+};
+
+function agentNode(specialist) {
+  const { tools, hint } = SPECIALISTS[specialist];
+  const boundModel = chatModel.bindTools(tools);
+  // Every specialist shares the generated OpenUI prompt. This is what makes
+  // each agent's streamed output render as generative UI.
+  const systemMessage = new SystemMessage(`${OPENUI_SYSTEM_PROMPT}\n\n${hint}`);
+  return async (state) => ({ messages: [await boundModel.invoke([systemMessage, ...state.messages])] });
+}
+
+export const graph = new StateGraph(AgentState)
+  .addNode("router", router)
+  .addNode("weather_agent", agentNode("weather"))
+  .addNode("weather_tools", new ToolNode(SPECIALISTS.weather.tools))
+  // ...finance and research nodes wired the same way
+  .addEdge(START, "router")
+  .addConditionalEdges("router", (state) => state.next, {
+    weather: "weather_agent",
+    finance: "finance_agent",
+    research: "research_agent",
+  })
+  .compile();
+```
+
+The supervisor (`router`) uses `withStructuredOutput` against a small Zod enum to pick exactly one specialist, defaulting to `research` if routing fails. The tools (`get_weather`, `get_stock_price`, `search_web`) return canned-but-plausible JSON, so the example runs without any third-party API keys. Swap the bodies for real API calls when adapting it.
+
+Add a specialist by extending the `SPECIALISTS` map and wiring a matching `*_agent` / `*_tools` node pair; it inherits the OpenUI prompt for free.
+
+## Project layout
+
+```
+examples/langgraph-chat/
+|- src/app/page.tsx           # <FullScreen> wired to langGraphAdapter()
+|- src/app/api/chat/route.ts  # Stateless proxy to the LangGraph server (SSE)
+|- src/agent/graph.ts         # Supervisor + specialist ReAct loops
+|- src/agent/tools.ts         # Mock weather / finance / research tools
+|- src/library.ts             # The OpenUI components the model can render
+|- src/generated/             # Generated OpenUI system prompt
+|- langgraph.json             # Graph config for `langgraphjs dev` / deploy
+```
+
+## Run the example
+
+This example runs **two processes**, so use two terminals. Run these commands from `examples/langgraph-chat`.
+
+1. Install dependencies and create a `.env` from the template:
+
+```bash
+cd examples/langgraph-chat
+pnpm install
+cp .env.example .env
+```
+
+Add your `OPENAI_API_KEY` to `.env`. It is read by the **LangGraph server** (which runs the LLM), so it belongs next to `langgraph.json`. The Next.js app only needs the `LANGGRAPH_*` variables, which already default to the local server.
+
+2. **Terminal 1: LangGraph server** (generates the OpenUI prompt, then hot-reloads the graph on `:2024`):
+
+```bash
+pnpm langgraph:dev
+```
+
+3. **Terminal 2: Next.js app**:
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) and try a starter such as "Weather in Tokyo" or "AAPL stock price".
+
+## Deploy to LangGraph Platform
+
+The folder already ships a `langgraph.json`, so you can deploy the graph and point the app at the deployment with no app code changes, just update `.env`:
+
+```bash
+LANGGRAPH_API_URL=https://your-deployment.us.langgraph.app
+LANGGRAPH_ASSISTANT_ID=agent        # graph name, or a created assistant id
+LANGSMITH_API_KEY=lsv2-...          # auth for the deployment
+```
+
+The SDK sends `LANGSMITH_API_KEY` as `x-api-key` from the server side only. Restart `pnpm dev` after changing `.env`.
+
+For the configuration-level decision between `apiUrl` and `processMessage` when wiring any LangGraph backend, see the [Providers guide](/docs/chat/providers#langgraph).
