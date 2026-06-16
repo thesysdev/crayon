@@ -84,13 +84,15 @@ openui generate [entry] [options]
 
 **Options**
 
-| Flag                      | Description                                                          |
-| ------------------------- | -------------------------------------------------------------------- |
-| `-o, --out <file>`        | Write output to a file instead of stdout                             |
-| `--json-schema`           | Output JSON schema instead of a system prompt                        |
-| `--export <name>`         | Name of the export to use (auto-detected by default)                 |
-| `--prompt-options <name>` | Name of the `PromptOptions` export to use (auto-detected by default) |
-| `--no-interactive`        | Fail instead of prompting for missing `entry`                        |
+| Flag                           | Description                                                                  |
+| ------------------------------ | ---------------------------------------------------------------------------- |
+| `-o, --out <file>`             | Write output to a file instead of stdout                                     |
+| `--json-schema`                | Output JSON schema instead of a system prompt                                |
+| `--export <name>`              | Name of the export to use (auto-detected by default)                         |
+| `--prompt-options <name>`      | Name of the `PromptOptions` export to use (auto-detected by default)         |
+| `--component-allowlist <list>` | Comma-separated allow-list of components to include in the prompt            |
+| `--no-include-dependencies`    | With `--component-allowlist`, do not auto-include sub-component dependencies |
+| `--no-interactive`             | Fail instead of prompting for missing `entry`                                |
 
 **Examples**
 
@@ -106,6 +108,12 @@ openui generate ./src/library.ts --json-schema
 
 # Explicit export names
 openui generate ./src/library.ts --export myLibrary --prompt-options myOptions
+
+# Only include a subset of components (plus root and their sub-component deps)
+openui generate ./src/library.ts --component-allowlist Card,Table,LineChart
+
+# Subset with exactly the listed components (no auto-included dependencies)
+openui generate ./src/library.ts --component-allowlist Card,Table --no-include-dependencies
 ```
 
 ### Export auto-detection
@@ -140,6 +148,13 @@ interface PromptOptions {
   toolCalls?: boolean;
   /** Enable $variables, @Set, @Reset, built-in functions. Default: true if toolCalls. */
   bindings?: boolean;
+  /** Restrict the prompt to a subset of the library. Omit for all components. */
+  componentAllowlist?: {
+    /** Component names to keep. Root + sub-component deps are kept automatically. */
+    components: string[];
+    /** Auto-include sub-component dependencies of the listed components. Default: true. */
+    includeDependencies?: boolean;
+  };
 }
 ```
 

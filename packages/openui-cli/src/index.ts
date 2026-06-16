@@ -39,6 +39,14 @@ program
     "--prompt-options <name>",
     "Name of the PromptOptions export to use (auto-detected by default)",
   )
+  .option(
+    "--component-allowlist <list>",
+    "Comma-separated allow-list of components to include in the prompt (e.g. Card,Table,Stat)",
+  )
+  .option(
+    "--no-include-dependencies",
+    "Do not auto-include sub-component dependencies of --component-allowlist",
+  )
   .option("--no-interactive", "Fail with error if required args are missing")
   .action(
     async (
@@ -48,6 +56,8 @@ program
         jsonSchema?: boolean;
         export?: string;
         promptOptions?: string;
+        componentAllowlist?: string;
+        includeDependencies?: boolean;
         interactive: boolean;
       },
     ) => {

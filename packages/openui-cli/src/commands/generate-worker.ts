@@ -3,7 +3,8 @@
  * prompt or JSON schema. Asset imports are stubbed during bundling so React
  * component modules can be evaluated without CSS/image/font loaders.
  *
- * argv: [entryPath, exportName?, "--json-schema"?, "--prompt-options", name?]
+ * argv: [entryPath, exportName?, "--json-schema"?, "--prompt-options", name?,
+ *        "--component-allowlist", "Card,Table", "--no-include-dependencies"?]
  * stdout: the prompt string or JSON schema
  */
 
@@ -80,6 +81,7 @@ interface PromptOptions {
   inlineMode?: boolean;
   toolCalls?: boolean;
   bindings?: boolean;
+  componentAllowlist?: { components: string[]; includeDependencies?: boolean };
 }
 
 function isPromptOptions(value: unknown): value is PromptOptions {
@@ -130,12 +132,24 @@ async function main(): Promise<void> {
   }
 
   const jsonSchema = args.includes("--json-schema");
+  const noIncludeDependencies = args.includes("--no-include-dependencies");
   const promptOptionsIdx = args.indexOf("--prompt-options");
   const promptOptionsName = promptOptionsIdx !== -1 ? args[promptOptionsIdx + 1] : undefined;
-  const reserved = new Set(["--json-schema", "--prompt-options"]);
+  const allowlistIdx = args.indexOf("--component-allowlist");
+  const allowlistArg = allowlistIdx !== -1 ? args[allowlistIdx + 1] : undefined;
+  const reserved = new Set([
+    "--json-schema",
+    "--no-include-dependencies",
+    "--prompt-options",
+    "--component-allowlist",
+  ]);
   if (promptOptionsName) reserved.add(promptOptionsName);
+  if (allowlistArg) reserved.add(allowlistArg);
   const exportName = args.find(
-    (a, i) => a !== entryPath && !reserved.has(a) && !(i > 0 && args[i - 1] === "--prompt-options"),
+    (a, i) =>
+      a !== entryPath &&
+      !reserved.has(a) &&
+      !(i > 0 && (args[i - 1] === "--prompt-options" || args[i - 1] === "--component-allowlist")),
   );
 
   const bundleDir = fs.mkdtempSync(path.join(os.tmpdir(), "openui-generate-"));
@@ -188,7 +202,23 @@ async function main(): Promise<void> {
     output = JSON.stringify(library.toSpec(), null, 2);
   } else {
     const promptOptions = findPromptOptions(mod, promptOptionsName);
-    output = library.prompt(promptOptions);
+    const finalOptions: PromptOptions = { ...(promptOptions ?? {}) };
+    if (allowlistArg !== undefined) {
+      finalOptions.componentAllowlist = {
+        components: allowlistArg
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        ...(noIncludeDependencies ? { includeDependencies: false } : {}),
+      };
+    } else if (noIncludeDependencies && finalOptions.componentAllowlist) {
+      // --no-include-dependencies on its own refines an allowlist from the module's PromptOptions.
+      finalOptions.componentAllowlist = {
+        ...finalOptions.componentAllowlist,
+        includeDependencies: false,
+      };
+    }
+    output = library.prompt(finalOptions);
   }
 
   process.stdout.write(output);

@@ -7,6 +7,10 @@ export interface GenerateOptions {
   jsonSchema?: boolean;
   export?: string;
   promptOptions?: string;
+  /** Comma-separated allow-list of components to include in the prompt. */
+  componentAllowlist?: string;
+  /** When false, skip auto-including sub-component dependencies of `--component-allowlist`. */
+  includeDependencies?: boolean;
 }
 
 export async function runGenerate(entry: string, options: GenerateOptions): Promise<void> {
@@ -23,6 +27,9 @@ export async function runGenerate(entry: string, options: GenerateOptions): Prom
   if (options.export) workerArgs.push(options.export);
   if (options.jsonSchema) workerArgs.push("--json-schema");
   if (options.promptOptions) workerArgs.push("--prompt-options", options.promptOptions);
+  if (options.componentAllowlist)
+    workerArgs.push("--component-allowlist", options.componentAllowlist);
+  if (options.includeDependencies === false) workerArgs.push("--no-include-dependencies");
 
   let output: string;
   try {
