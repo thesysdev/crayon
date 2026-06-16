@@ -272,10 +272,14 @@ const AgentInterfaceBody = ({
           (slots.sidebar.props as { children?: ReactNode }).children
         ) : (
           <>
-            {slots.sidebarHeader ?? <SidebarHeader />}
+            <div className="openui-agent-sidebar-actions">
+              {slots.sidebarHeader ?? <SidebarHeader />}
+              <div className="openui-agent-sidebar-primary-actions">
+                <NewChatButton />
+                <ArtifactNav className="openui-agent-sidebar-artifact-nav" />
+              </div>
+            </div>
             <SidebarContent>
-              <ArtifactNav />
-              <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
           </>

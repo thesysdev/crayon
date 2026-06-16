@@ -150,13 +150,8 @@ export const AssistantMessageContainer = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const { logoUrl } = useAgentInterfaceStore((store) => ({
-    logoUrl: store.logoUrl,
-  }));
-
   return (
     <div className={clsx("openui-agent-thread-message-assistant", className)}>
-      <img src={logoUrl} alt="Assistant" className="openui-agent-thread-message-assistant__logo" />
       <div className="openui-agent-thread-message-assistant__content">{children}</div>
     </div>
   );

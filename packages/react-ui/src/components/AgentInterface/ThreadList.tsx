@@ -2,9 +2,11 @@ import type { Thread } from "@openuidev/react-headless";
 import { useThreadList } from "@openuidev/react-headless";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
-import { EllipsisVerticalIcon, Trash2Icon } from "lucide-react";
-import { Fragment, useEffect } from "react";
+import { EllipsisIcon, Trash2Icon } from "lucide-react";
+import { Fragment, useEffect, useState } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
+import { Button } from "../Button";
+import { IconButton } from "../IconButton";
 import { useOptionalNav } from "./_shared/navContext";
 import { useAgentInterfaceStore } from "./_shared/store";
 
@@ -26,6 +28,7 @@ export const ThreadButton = ({
   }));
   const { layout } = useLayoutContext();
   const nav = useOptionalNav();
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
 
   return (
     <div
@@ -33,6 +36,7 @@ export const ThreadButton = ({
         "openui-agent-thread-button",
         {
           "openui-agent-thread-button--selected": selectedThreadId === id,
+          "openui-agent-thread-button--actions-open": isActionsOpen,
         },
         className,
       )}
@@ -52,30 +56,38 @@ export const ThreadButton = ({
       >
         {title}
       </button>
-      <DropdownMenu.Root>
+      <DropdownMenu.Root open={isActionsOpen} onOpenChange={setIsActionsOpen}>
         <DropdownMenu.Trigger asChild>
-          <button className="openui-agent-thread-button-dropdown-trigger">
-            <EllipsisVerticalIcon size={14} />
-          </button>
+          <IconButton
+            className="openui-agent-thread-button-dropdown-trigger"
+            icon={<EllipsisIcon size="1em" />}
+            size="2-extra-small"
+            variant="tertiary"
+            aria-label="Thread actions"
+          />
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content
             className="openui-agent-thread-button-dropdown-menu"
             side="bottom"
             align="start"
-            sideOffset={2}
+            sideOffset={4}
           >
             <DropdownMenu.Item
-              className="openui-agent-thread-button-dropdown-menu-item"
+              asChild
               onSelect={() => {
                 deleteThread(id);
               }}
             >
-              <Trash2Icon
-                size={14}
-                className="openui-agent-thread-button-dropdown-menu-item-icon"
-              />
-              Delete
+              <Button
+                buttonType="destructive"
+                className="openui-agent-thread-button-dropdown-menu-item"
+                iconLeft={<Trash2Icon size="1em" />}
+                size="extra-small"
+                variant="tertiary"
+              >
+                Delete
+              </Button>
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>

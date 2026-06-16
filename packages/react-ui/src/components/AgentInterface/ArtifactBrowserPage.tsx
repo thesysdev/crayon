@@ -3,13 +3,23 @@ import {
   useArtifactStorage,
   type ArtifactSummary,
 } from "@openuidev/react-headless";
-import { FileText, Search } from "lucide-react";
+import { FileText, Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../Button";
 import { artifactViewPath } from "./_shared/artifactPaths";
 import { useNav } from "./_shared/navContext";
 
 const SEARCH_DEBOUNCE_MS = 300;
+
+const formatArtifactUpdatedAt = (updatedAt: ArtifactSummary["updatedAt"]) => {
+  if (updatedAt === undefined) return undefined;
+  const date = new Date(updatedAt);
+  if (Number.isNaN(date.getTime())) return undefined;
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+};
 
 /**
  * Full-page searchable artifact list for one category (reserved path
@@ -102,13 +112,23 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
         <div className="openui-agent-artifact-browser__search">
           <Search size={14} className="openui-agent-artifact-browser__search-icon" />
           <input
-            type="search"
+            type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by title"
             className="openui-agent-artifact-browser__search-input"
             aria-label="Search artifacts by title"
           />
+          {search && (
+            <button
+              type="button"
+              aria-label="Clear search"
+              className="openui-agent-artifact-browser__search-clear"
+              onClick={() => setSearch("")}
+            >
+              <X size="1em" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -123,17 +143,23 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
             {debouncedSearch ? "No artifacts match your search." : "No artifacts yet."}
           </div>
         )}
-        {artifacts.map((artifact) => (
-          <button
-            key={artifact.id}
-            type="button"
-            className="openui-agent-artifact-browser__item"
-            onClick={() => navigate(artifactViewPath(categoryName, artifact.id))}
-          >
-            <FileText size={16} className="openui-agent-artifact-browser__item-icon" />
-            <span className="openui-agent-artifact-browser__item-title">{artifact.title}</span>
-          </button>
-        ))}
+        {artifacts.map((artifact) => {
+          const updatedAt = formatArtifactUpdatedAt(artifact.updatedAt);
+          return (
+            <button
+              key={artifact.id}
+              type="button"
+              className="openui-agent-artifact-browser__item"
+              onClick={() => navigate(artifactViewPath(categoryName, artifact.id))}
+            >
+              <FileText size={16} className="openui-agent-artifact-browser__item-icon" />
+              <span className="openui-agent-artifact-browser__item-title">{artifact.title}</span>
+              {updatedAt && (
+                <span className="openui-agent-artifact-browser__item-updated-at">{updatedAt}</span>
+              )}
+            </button>
+          );
+        })}
         {isLoading && <div className="openui-agent-artifact-browser__loading">Loading…</div>}
         {!isLoading && nextCursor !== undefined && (
           <Button variant="secondary" size="small" onClick={loadMore}>

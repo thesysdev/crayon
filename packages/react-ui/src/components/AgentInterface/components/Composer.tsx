@@ -68,7 +68,7 @@ export const Composer = ({ className, placeholder = "Type your query here" }: Co
           <IconButton
             onClick={isRunning ? cancelMessage : handleSubmit}
             icon={isRunning ? <Square size="1em" fill="currentColor" /> : <ArrowUp size="1em" />}
-            size="medium"
+            size="extra-small"
             variant="primary"
             aria-label={isRunning ? "Cancel message" : "Send message"}
             className="openui-agent-thread-composer__submit-button"

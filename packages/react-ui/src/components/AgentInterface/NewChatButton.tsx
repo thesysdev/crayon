@@ -1,8 +1,9 @@
 import { useThreadList } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { Plus, SquarePen } from "lucide-react";
-import { Button } from "../Button";
-import { IconButton } from "../IconButton";
+import { SquarePen } from "lucide-react";
+import { useOptionalSidebarVisualState } from "./Sidebar";
+import { SidebarTooltip } from "./SidebarTooltip";
+import { useOptionalNav } from "./_shared/navContext";
 import { useAgentInterfaceStore } from "./_shared/store";
 
 export const NewChatButton = ({ className }: { className?: string }) => {
@@ -10,29 +11,35 @@ export const NewChatButton = ({ className }: { className?: string }) => {
   const { isSidebarOpen } = useAgentInterfaceStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
   }));
-
-  if (!isSidebarOpen) {
-    return (
-      <IconButton
-        icon={<SquarePen size="1em" />}
-        onClick={switchToNewThread}
-        variant="primary"
-        size="small"
-        aria-label="New chat"
-        className={clsx("openui-agent-new-chat-button_collapsed", className)}
-      />
-    );
-  }
+  const sidebarVisualState = useOptionalSidebarVisualState();
+  const showExpandedButton = sidebarVisualState
+    ? !sidebarVisualState.isCollapsedLayout
+    : isSidebarOpen;
+  const nav = useOptionalNav();
 
   return (
-    <Button
-      className={clsx("openui-agent-new-chat-button", className)}
-      iconRight={<Plus />}
-      variant="primary"
-      size="small"
-      onClick={switchToNewThread}
-    >
-      New Chat
-    </Button>
+    <SidebarTooltip content="New Chat" disabled={showExpandedButton}>
+      <button
+        type="button"
+        className={clsx(
+          "openui-agent-new-chat-button",
+          { "openui-agent-new-chat-button--collapsed": !showExpandedButton },
+          className,
+        )}
+        onClick={(e) => {
+          e.stopPropagation();
+          switchToNewThread();
+          if (nav && nav.path !== undefined) {
+            nav.navigate(undefined);
+          }
+        }}
+        aria-label="New chat"
+      >
+        <div className="openui-agent-new-chat-button__icon" aria-hidden="true">
+          <SquarePen size="1em" />
+        </div>
+        <div className="openui-agent-new-chat-button__label">New Chat</div>
+      </button>
+    </SidebarTooltip>
   );
 };

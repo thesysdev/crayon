@@ -1,23 +1,37 @@
 @use "../../cssUtils" as cssUtils;
 
 $sidebar-width: 272px;
-$sidebar-padding: cssUtils.$space-m;
+$sidebar-padding-y: cssUtils.$space-m-l;
+$sidebar-padding-x: cssUtils.$space-s-m;
+$sidebar-header-inline-offset: 0px;
+$sidebar-collapsed-control-size: 32px;
+$sidebar-logo-size: 30px;
+$sidebar-collapsed-width: calc(
+  #{$sidebar-collapsed-control-size} + #{$sidebar-padding-x} + #{$sidebar-padding-x} +
+    #{$sidebar-header-inline-offset}
+);
 $sidebar-mobile-width: 294px;
 $sidebar-mobile-padding: cssUtils.$space-l;
+$sidebar-fade-duration: 90ms;
+$sidebar-resize-duration: 160ms;
+$sidebar-mobile-slide-duration: 400ms;
+$sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
 .openui-agent-sidebar-container {
   border-right: 1px solid cssUtils.$border-default;
   height: 100%;
   width: $sidebar-width;
-  padding: $sidebar-padding;
+  padding: $sidebar-padding-y $sidebar-padding-x;
   display: flex;
   flex-direction: column;
-  gap: cssUtils.$space-m;
+  gap: cssUtils.$space-xl;
+  background-color: cssUtils.$highlight-subtle;
   z-index: 999;
   transition:
-    width 0.4s ease-in-out,
-    height 0.4s ease-in-out,
-    transform 0.4s ease-in-out;
+    width $sidebar-resize-duration $sidebar-motion-ease,
+    height $sidebar-resize-duration $sidebar-motion-ease,
+    transform $sidebar-resize-duration $sidebar-motion-ease,
+    background-color $sidebar-resize-duration $sidebar-motion-ease;
 
   .openui-agent-container--mobile & {
     width: $sidebar-mobile-width;
@@ -28,24 +42,39 @@ $sidebar-mobile-padding: cssUtils.$space-l;
     z-index: 1000;
     background-color: cssUtils.$foreground;
     border-radius: 0;
-    transition: left 0.3s ease-in-out;
+    transition: left $sidebar-mobile-slide-duration $sidebar-motion-ease;
   }
 
   &--collapsed {
-    width: 52px;
+    width: $sidebar-collapsed-width;
     transform: translateX(0);
     gap: cssUtils.$space-xs;
+    background-color: cssUtils.$foreground;
+    cursor: e-resize;
 
     .openui-agent-container--mobile & {
       width: $sidebar-mobile-width;
       height: 100%;
       left: -$sidebar-mobile-width;
       transform: none;
+      cursor: default;
     }
   }
 
   &--hidden {
     display: none;
+  }
+
+  &[data-sidebar-visual-state="collapsing"],
+  &[data-sidebar-visual-state="expanding"] {
+    .openui-agent-sidebar-content,
+    .openui-agent-new-chat-button__label,
+    .openui-agent-sidebar-item__label,
+    .openui-agent-sidebar-item__trailing,
+    .openui-agent-sidebar-header__agent-name {
+      opacity: 0;
+      pointer-events: none;
+    }
   }
 }
 
@@ -58,21 +87,25 @@ $sidebar-mobile-padding: cssUtils.$space-l;
     display: flex;
     align-items: center;
     gap: cssUtils.$space-s;
+    min-height: $sidebar-collapsed-control-size;
+    transition: opacity $sidebar-fade-duration $sidebar-motion-ease;
   }
 
   &__logo {
-    width: 36px;
-    height: 36px;
+    display: block;
+    width: $sidebar-logo-size;
+    height: $sidebar-logo-size;
+    margin-left: 1px;
+    align-self: flex-start;
+    flex-shrink: 0;
     border-radius: cssUtils.$radius-s;
-    transition:
-      width 0.3s ease-in-out,
-      height 0.3s ease-in-out;
   }
 
   &__agent-name {
-    @include cssUtils.typography(primary, default);
+    @include cssUtils.typography(label, small);
     flex-grow: 1;
     color: cssUtils.$text-neutral-primary;
+    transition: opacity $sidebar-fade-duration $sidebar-motion-ease;
 
     .openui-agent-sidebar-container--collapsed & {
       display: none;
@@ -80,22 +113,32 @@ $sidebar-mobile-padding: cssUtils.$space-l;
   }
 
   &--collapsed {
-    align-items: center;
+    align-items: flex-start;
 
     .openui-agent-sidebar-header__top-row {
-      flex-direction: column;
-      align-items: center;
+      display: block;
+      position: relative;
+      width: $sidebar-collapsed-control-size;
+      min-height: $sidebar-collapsed-control-size;
+      align-items: flex-start;
     }
 
-    .openui-agent-sidebar-header__logo {
-      width: 28px;
-      height: 28px;
+    .openui-agent-sidebar-header__logo,
+    .openui-agent-sidebar-header__toggle-button {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .openui-agent-sidebar-header__toggle-button {
+      opacity: 0;
+      pointer-events: none;
     }
   }
 }
 
 .openui-agent-sidebar-content {
-  width: calc($sidebar-width - ($sidebar-padding * 2));
+  width: calc(#{$sidebar-width} - (#{$sidebar-padding-x} * 2));
 
   .openui-agent-container--mobile & {
     width: 100%;
@@ -106,16 +149,13 @@ $sidebar-mobile-padding: cssUtils.$space-l;
   gap: cssUtils.$space-m;
   overflow: hidden;
   opacity: 1;
-  transition:
-    opacity 0.2s ease-in-out 0.3s,
-    display 0.4s 0.5s;
+  transition: opacity $sidebar-fade-duration $sidebar-motion-ease;
 
   &--collapsed {
+    width: 100%;
+    align-items: flex-start;
     opacity: 0;
-    display: none;
-    transition:
-      opacity 0.2s ease-in-out,
-      display 0s 0.5s;
+    pointer-events: none;
   }
 }
 
@@ -126,8 +166,22 @@ $sidebar-mobile-padding: cssUtils.$space-l;
 }
 
 .openui-agent-sidebar-header__toggle-button {
+  transition: opacity $sidebar-fade-duration $sidebar-motion-ease;
+
   .openui-agent-container--mobile & {
     display: none;
+  }
+}
+
+.openui-agent-sidebar-container--collapsed:hover {
+  .openui-agent-sidebar-header__logo {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .openui-agent-sidebar-header__toggle-button {
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
@@ -138,7 +192,7 @@ $sidebar-mobile-padding: cssUtils.$space-l;
   width: 100%;
   height: 100%;
   background-color: cssUtils.$overlay;
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity $sidebar-resize-duration $sidebar-motion-ease;
   z-index: 99;
 
   &--collapsed {
@@ -149,41 +203,55 @@ $sidebar-mobile-padding: cssUtils.$space-l;
 
 .openui-agent-sidebar-item {
   @include cssUtils.button-reset;
-  @include cssUtils.typography(primary, default);
+  @include cssUtils.typography(label, small);
 
   display: flex;
   align-items: center;
-  gap: cssUtils.$space-xs;
+  gap: cssUtils.$space-3xs;
   width: 100%;
-  padding: cssUtils.$space-2xs cssUtils.$space-xs;
-  border-radius: cssUtils.$radius-s;
-  border: 1px solid transparent;
+  border-radius: calc(cssUtils.$radius-s + 1px);
   color: cssUtils.$text-neutral-primary;
   text-align: left;
   cursor: pointer;
   white-space: nowrap;
+  overflow: hidden;
 
   &:hover {
-    background-color: cssUtils.$sunk;
+    background-color: cssUtils.$highlight;
   }
 
   &--selected {
     background-color: cssUtils.$sunk;
-    border-color: cssUtils.$border-default;
+  }
+
+  .openui-agent-sidebar-container--collapsed & {
+    width: $sidebar-collapsed-control-size;
+    gap: 0;
   }
 }
 
 .openui-agent-sidebar-item__icon {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  width: $sidebar-collapsed-control-size;
+  height: $sidebar-collapsed-control-size;
   flex-shrink: 0;
-  color: cssUtils.$text-neutral-secondary;
+  font-size: 16px;
+  color: cssUtils.$text-neutral-primary;
 }
 
 .openui-agent-sidebar-item__label {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
+  opacity: 1;
+  transition: opacity $sidebar-fade-duration $sidebar-motion-ease;
+
+  .openui-agent-sidebar-container--collapsed & {
+    width: 0;
+    opacity: 0;
+  }
 }
 
 .openui-agent-sidebar-item__trailing {
@@ -191,4 +259,11 @@ $sidebar-mobile-padding: cssUtils.$space-l;
   align-items: center;
   flex-shrink: 0;
   color: cssUtils.$text-neutral-secondary;
+  opacity: 1;
+  transition: opacity $sidebar-fade-duration $sidebar-motion-ease;
+
+  .openui-agent-sidebar-container--collapsed & {
+    width: 0;
+    opacity: 0;
+  }
 }

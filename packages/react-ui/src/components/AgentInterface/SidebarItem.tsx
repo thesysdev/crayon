@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import type { ComponentPropsWithoutRef, MouseEventHandler, ReactNode } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
+import { useOptionalSidebarVisualState } from "./Sidebar";
+import { SidebarTooltip } from "./SidebarTooltip";
 import { useOptionalNav } from "./_shared/navContext";
 import { useAgentInterfaceStore } from "./_shared/store";
 
@@ -42,6 +44,8 @@ export const SidebarItem = ({
   const nav = useOptionalNav();
   const layoutCtx = useLayoutContext();
   const setIsSidebarOpen = useAgentInterfaceStore((s) => s.setIsSidebarOpen);
+  const sidebarVisualState = useOptionalSidebarVisualState();
+  const isCollapsedLayout = sidebarVisualState?.isCollapsedLayout ?? false;
 
   const isActive =
     selected !== undefined ? selected : path !== undefined && nav?.path === path;
@@ -57,7 +61,7 @@ export const SidebarItem = ({
     }
   };
 
-  return (
+  const button = (
     <button
       type="button"
       className={clsx(
@@ -74,5 +78,11 @@ export const SidebarItem = ({
         <span className="openui-agent-sidebar-item__trailing">{trailing}</span>
       )}
     </button>
+  );
+
+  return (
+    <SidebarTooltip content={children} disabled={!isCollapsedLayout}>
+      {button}
+    </SidebarTooltip>
   );
 };

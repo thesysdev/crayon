@@ -5,7 +5,10 @@
   flex-direction: column;
   gap: cssUtils.$space-m;
   height: 100%;
-  padding: cssUtils.$space-l;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 96px cssUtils.$space-l cssUtils.$space-l;
   overflow-y: auto;
 }
 
@@ -13,32 +16,87 @@
   display: flex;
   flex-direction: column;
   gap: cssUtils.$space-s;
+  
 }
 
 .openui-agent-artifact-browser__title {
-  @include cssUtils.typography(primary, strong);
+  @include cssUtils.typography(heading, large);
   color: cssUtils.$text-neutral-primary;
-  margin: 0;
+  margin: 0 0 cssUtils.$space-l;
+  padding-left: 4px;
 }
 
 .openui-agent-artifact-browser__search {
+  @include cssUtils.typography(body, default);
+
   display: flex;
   align-items: center;
-  gap: cssUtils.$space-xs;
-  padding: cssUtils.$space-2xs cssUtils.$space-xs;
-  border: 1px solid cssUtils.$border-default;
-  border-radius: cssUtils.$radius-s;
-  max-width: 360px;
+  gap: cssUtils.$space-s;
+  width: 100%;
+  padding: calc(cssUtils.$space-xs - 1px) calc(cssUtils.$space-xs - 1px)
+    calc(cssUtils.$space-xs - 1px) calc(cssUtils.$space-m - 1px);
+  border: 1px solid cssUtils.$border-interactive;
+  border-radius: cssUtils.$radius-m;
+  box-sizing: border-box;
+  background-color: cssUtils.$highlight-subtle;
   color: cssUtils.$text-neutral-secondary;
+  transition:
+    box-shadow 0.16s ease,
+    border-color 0.16s ease,
+    background-color 0.16s ease;
+
+  &:focus-within {
+    border-color: cssUtils.$border-interactive-emphasis;
+    box-shadow: 0 0 0 2.5px cssUtils.$border-default;
+  }
+
+  &:not(:focus-within):hover {
+    border-color: cssUtils.$border-interactive;
+  }
 }
 
 .openui-agent-artifact-browser__search-input {
-  @include cssUtils.typography(primary, default);
+  @include cssUtils.typography(body, default);
+
   border: none;
   outline: none;
   background: transparent;
   flex: 1;
+  width: 100%;
+  min-width: 0;
   color: cssUtils.$text-neutral-primary;
+
+  &::placeholder {
+    color: cssUtils.$text-neutral-secondary;
+  }
+}
+
+.openui-agent-artifact-browser__search-clear {
+  @include cssUtils.button-reset;
+
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+  border-radius: cssUtils.$radius-xs;
+  color: cssUtils.$text-neutral-primary;
+  cursor: pointer;
+  font-size: 16px;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease;
+
+  &:hover {
+    background-color: cssUtils.$highlight;
+  }
+
+  &:active {
+    background-color: cssUtils.$highlight;
+    border-color: cssUtils.$border-interactive;
+  }
 }
 
 .openui-agent-artifact-browser__list {
@@ -72,9 +130,18 @@
 }
 
 .openui-agent-artifact-browser__item-title {
+  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.openui-agent-artifact-browser__item-updated-at {
+  @include cssUtils.typography(label, small);
+
+  margin-left: auto;
+  flex-shrink: 0;
+  color: cssUtils.$text-neutral-secondary;
 }
 
 .openui-agent-artifact-browser__empty,

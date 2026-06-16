@@ -1,10 +1,22 @@
 import { useActiveDetailedView } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { ArrowLeftFromLine, ArrowRightFromLine } from "lucide-react";
-import { useEffect } from "react";
+import { PanelLeft } from "lucide-react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { IconButton } from "../IconButton";
 import { useAgentInterfaceStore } from "./_shared/store";
+
+const SIDEBAR_FADE_DURATION_MS = 90;
+const SIDEBAR_RESIZE_DURATION_MS = 160;
+
+type SidebarVisualState = "expanded" | "collapsing" | "collapsed" | "expanding";
+
+const SidebarVisualStateContext = createContext<{
+  isCollapsedLayout: boolean;
+  visualState: SidebarVisualState;
+} | null>(null);
+
+export const useOptionalSidebarVisualState = () => useContext(SidebarVisualStateContext);
 
 export const SidebarContainer = ({
   children,
@@ -20,17 +32,95 @@ export const SidebarContainer = ({
   const { isDetailedViewActive } = useActiveDetailedView();
   const { layout } = useLayoutContext() || {};
   const isMobile = layout === "mobile";
+  const [isCollapsedLayout, setIsCollapsedLayout] = useState(!isSidebarOpen);
+  const [visualState, setVisualState] = useState<SidebarVisualState>(
+    isSidebarOpen ? "expanded" : "collapsed",
+  );
+  const animationTimeoutsRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
+  const previousIsMobileRef = useRef<boolean | null>(null);
+
+  const clearAnimationTimeouts = () => {
+    animationTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    animationTimeoutsRef.current = [];
+  };
 
   useEffect(() => {
-    if (isMobile) {
-      setIsSidebarOpen(false);
-    } else {
-      setIsSidebarOpen(true);
+    return () => {
+      clearAnimationTimeouts();
+    };
+  }, []);
+
+  useEffect(() => {
+    clearAnimationTimeouts();
+
+    const justSwitchedLayout = previousIsMobileRef.current !== isMobile;
+    previousIsMobileRef.current = isMobile;
+
+    if (justSwitchedLayout) {
+      const targetOpen = !isMobile;
+      if (isSidebarOpen !== targetOpen) {
+        setIsSidebarOpen(targetOpen);
+        return;
+      }
     }
-  }, [isMobile]);
+
+    if (isMobile) {
+      setIsCollapsedLayout(!isSidebarOpen);
+      setVisualState(isSidebarOpen ? "expanded" : "collapsed");
+      return;
+    }
+
+    if (isSidebarOpen) {
+      if (visualState === "expanded" && !isCollapsedLayout) {
+        return;
+      }
+
+      setIsCollapsedLayout(true);
+      setVisualState("expanding");
+
+      animationTimeoutsRef.current.push(
+        setTimeout(() => {
+          setIsCollapsedLayout(false);
+          animationTimeoutsRef.current.push(
+            setTimeout(() => {
+              setVisualState("expanded");
+            }, SIDEBAR_RESIZE_DURATION_MS),
+          );
+        }, SIDEBAR_FADE_DURATION_MS),
+      );
+
+      return;
+    }
+
+    if (visualState === "collapsed" && isCollapsedLayout) {
+      return;
+    }
+
+    setIsCollapsedLayout(false);
+    setVisualState("collapsing");
+
+    animationTimeoutsRef.current.push(
+      setTimeout(() => {
+        setIsCollapsedLayout(true);
+        animationTimeoutsRef.current.push(
+          setTimeout(() => {
+            setVisualState("collapsed");
+          }, SIDEBAR_RESIZE_DURATION_MS),
+        );
+      }, SIDEBAR_FADE_DURATION_MS),
+    );
+  }, [isMobile, isSidebarOpen]);
+
+  const contextValue = useMemo(
+    () => ({
+      isCollapsedLayout,
+      visualState,
+    }),
+    [isCollapsedLayout, visualState],
+  );
 
   return (
-    <>
+    <SidebarVisualStateContext.Provider value={contextValue}>
       {isMobile && (
         <div
           className={clsx("openui-agent-sidebar-container__overlay", {
@@ -45,15 +135,21 @@ export const SidebarContainer = ({
         className={clsx(
           "openui-agent-sidebar-container",
           {
-            "openui-agent-sidebar-container--collapsed": !isSidebarOpen,
+            "openui-agent-sidebar-container--collapsed": isCollapsedLayout,
             "openui-agent-sidebar-container--hidden": isDetailedViewActive && !isMobile,
           },
           className,
         )}
+        data-sidebar-visual-state={visualState}
+        onClick={() => {
+          if (!isMobile && isCollapsedLayout) {
+            setIsSidebarOpen(true);
+          }
+        }}
       >
         {children}
       </div>
-    </>
+    </SidebarVisualStateContext.Provider>
   );
 };
 
@@ -80,6 +176,8 @@ export const SidebarHeader = ({
       isSidebarOpen: state.isSidebarOpen,
     }),
   );
+  const sidebarVisualState = useOptionalSidebarVisualState();
+  const isCollapsedLayout = sidebarVisualState?.isCollapsedLayout ?? !isSidebarOpen;
 
   if (children != null) {
     if (
@@ -95,7 +193,7 @@ export const SidebarHeader = ({
       <div
         className={clsx(
           "openui-agent-sidebar-header",
-          { "openui-agent-sidebar-header--collapsed": !isSidebarOpen },
+          { "openui-agent-sidebar-header--collapsed": isCollapsedLayout },
           className,
         )}
       >
@@ -112,12 +210,13 @@ export const SidebarHeader = ({
   );
   const defaultCollapseButton = (
     <IconButton
-      icon={isSidebarOpen ? <ArrowLeftFromLine size="1em" /> : <ArrowRightFromLine size="1em" />}
-      onClick={() => {
+      icon={<PanelLeft size="1em" strokeWidth={2} />}
+      onClick={(e) => {
+        e.stopPropagation();
         setIsSidebarOpen(!isSidebarOpen);
       }}
       size="small"
-      variant="secondary"
+      variant="tertiary"
       aria-label={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
       className="openui-agent-sidebar-header__toggle-button"
     />
@@ -127,7 +226,7 @@ export const SidebarHeader = ({
     <div
       className={clsx(
         "openui-agent-sidebar-header",
-        { "openui-agent-sidebar-header--collapsed": !isSidebarOpen },
+        { "openui-agent-sidebar-header--collapsed": isCollapsedLayout },
         className,
       )}
     >
@@ -147,14 +246,14 @@ export const SidebarContent = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const { isSidebarOpen } = useAgentInterfaceStore((state) => ({
-    isSidebarOpen: state.isSidebarOpen,
-  }));
+  const isSidebarOpen = useAgentInterfaceStore((state) => state.isSidebarOpen);
+  const sidebarVisualState = useOptionalSidebarVisualState();
+  const isCollapsedLayout = sidebarVisualState?.isCollapsedLayout ?? !isSidebarOpen;
 
   return (
     <div
       className={clsx("openui-agent-sidebar-content", className, {
-        "openui-agent-sidebar-content--collapsed": !isSidebarOpen,
+        "openui-agent-sidebar-content--collapsed": isCollapsedLayout,
       })}
     >
       {children}
