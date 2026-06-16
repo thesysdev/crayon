@@ -1,5 +1,10 @@
 import type { AssistantMessage, Message, ToolMessage } from "@openuidev/react-headless";
-import { MessageProvider, useActiveDetailedView, useThread } from "@openuidev/react-headless";
+import {
+  MessageProvider,
+  useActiveDetailedView,
+  useThread,
+  useThreadList,
+} from "@openuidev/react-headless";
 import clsx from "clsx";
 import React, { memo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
@@ -366,7 +371,18 @@ export const ThreadHeader = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return <div className={clsx("openui-agent-thread-header", className)}>{children}</div>;
+  const threads = useThreadList((s) => s.threads);
+  const selectedThreadId = useThreadList((s) => s.selectedThreadId);
+  const selectedThreadTitle = threads.find((thread) => thread.id === selectedThreadId)?.title;
+
+  return (
+    <div className={clsx("openui-agent-thread-header", className)}>
+      <div className="openui-agent-thread-header__title">
+        {selectedThreadTitle ?? (selectedThreadId ? "New Chat" : "")}
+      </div>
+      {children && <div className="openui-agent-thread-header__actions">{children}</div>}
+    </div>
+  );
 };
 
 // Re-export Composer from components

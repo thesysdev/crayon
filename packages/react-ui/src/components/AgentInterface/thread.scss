@@ -14,6 +14,23 @@
   flex-direction: column;
 }
 
+// Hide conversation starters and welcome-screen starters while the user is
+// drafting in any composer inside the thread. The drafting flag is set on the
+// composer root via `data-drafting`; nothing in JS reads it.
+.openui-agent-thread-container:has([data-drafting]),
+.openui-agent-welcome-screen:has([data-drafting]) {
+  .openui-agent-conversation-starter,
+  .openui-agent-welcome-screen__desktop-starters {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.openui-agent-conversation-starter,
+.openui-agent-welcome-screen__desktop-starters {
+  transition: opacity 150ms ease;
+}
+
 // Wrapper for horizontal layout (chat + separator + detailed view)
 .openui-agent-thread-wrapper {
   flex: 1;
@@ -101,6 +118,30 @@ $center-align-spacing: calc(32px + cssUtils.$space-s);
   position: relative;
   overflow: hidden;
 
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: cssUtils.$space-xl;
+    background: linear-gradient(to bottom, cssUtils.$foreground 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: cssUtils.$space-xl;
+    background: linear-gradient(to top, cssUtils.$foreground 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
   // When WelcomeScreen is present, don't grow so WelcomeScreen can take the space
   .openui-agent-thread-container:has(.openui-agent-welcome-screen) & {
     flex-grow: 0;
@@ -111,7 +152,14 @@ $center-align-spacing: calc(32px + cssUtils.$space-s);
   width: 100%;
   height: 100%;
   overflow: auto;
-  padding: cssUtils.$space-xl $center-align-spacing cssUtils.$space-xl;
+  padding: cssUtils.$space-m 0;
+
+  .openui-agent-thread-container:not(:has(.openui-agent-thread-header)):not(
+      :has(.openui-agent-welcome-screen)
+    )
+    & {
+    padding-top: cssUtils.$space-2xl;
+  }
 
   scrollbar-width: thin;
   scrollbar-color: cssUtils.$highlight-strong transparent;
@@ -139,13 +187,12 @@ $center-align-spacing: calc(32px + cssUtils.$space-s);
   }
 
   .openui-agent-container--mobile & {
-    padding: cssUtils.$space-l;
+    padding: cssUtils.$space-l 0;
   }
 
   // When detailed view is active, reduce padding to maximize space
   .openui-agent-thread-container--detailed-view-active & {
-    padding-left: 0;
-    padding-right: cssUtils.$space-m;
+    padding-right: 0;
   }
 
   &--user-message-anchor {
@@ -245,12 +292,31 @@ $center-align-spacing: calc(32px + cssUtils.$space-s);
 .openui-agent-thread-header {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: cssUtils.$space-m cssUtils.$space-s cssUtils.$space-xs;
+  justify-content: space-between;
+  gap: cssUtils.$space-m;
+  padding: cssUtils.$space-m-l cssUtils.$space-m-l cssUtils.$space-m;
   flex-shrink: 0;
 
   .openui-agent-container--mobile & {
     display: none;
+  }
+
+  &__title {
+    @include cssUtils.typography(label, small);
+
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: cssUtils.$text-neutral-primary;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-s;
+    flex-shrink: 0;
   }
 }
 

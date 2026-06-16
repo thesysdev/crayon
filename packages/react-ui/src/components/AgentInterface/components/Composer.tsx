@@ -43,6 +43,7 @@ export const Composer = ({ className, placeholder = "Type your query here" }: Co
   return (
     <div
       className={clsx("openui-agent-thread-composer", className)}
+      data-drafting={textContent.length > 0 || undefined}
       onClick={(e) => {
         if (!(e.target as HTMLElement).closest("button, a, [role='button']")) {
           inputRef.current?.focus();

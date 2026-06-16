@@ -5,23 +5,31 @@
   flex-direction: column;
   gap: cssUtils.$space-m;
   height: 100%;
-  max-width: 800px;
   width: 100%;
-  margin: 0 auto;
   padding: 96px cssUtils.$space-l cssUtils.$space-l;
+  box-sizing: border-box;
   overflow-y: auto;
+}
+
+.openui-agent-artifact-browser__content {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-m;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .openui-agent-artifact-browser__header {
   display: flex;
   flex-direction: column;
   gap: cssUtils.$space-s;
-  
 }
 
 .openui-agent-artifact-browser__title {
   @include cssUtils.typography(heading, large);
   color: cssUtils.$text-neutral-primary;
+  font-weight: 500;
   margin: 0 0 cssUtils.$space-l;
   padding-left: 4px;
 }
@@ -80,7 +88,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid transparent;
+  border: 1px solid cssUtils.$border-default;
   border-radius: cssUtils.$radius-xs;
   color: cssUtils.$text-neutral-primary;
   cursor: pointer;
@@ -100,47 +108,266 @@
 }
 
 .openui-agent-artifact-browser__list {
-  display: flex;
-  flex-direction: column;
-  gap: cssUtils.$space-2xs;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  row-gap: cssUtils.$space-xl;
+  column-gap: cssUtils.$space-m-l;
+  align-items: stretch;
+  width: 100%;
+  margin-top: cssUtils.$space-l;
 }
 
 .openui-agent-artifact-browser__item {
   @include cssUtils.button-reset;
-  @include cssUtils.typography(primary, default);
+  @include cssUtils.typography(body, default);
+
   display: flex;
-  align-items: center;
-  gap: cssUtils.$space-xs;
+  flex-direction: column;
+  align-items: stretch;
+  gap: calc(cssUtils.$space-m + 2px);
   width: 100%;
-  padding: cssUtils.$space-xs;
-  border-radius: cssUtils.$radius-s;
+  height: 100%;
+  min-width: 0;
+  padding: cssUtils.$space-s-m;
+  border: 1px solid cssUtils.$border-default;
+  border-radius: cssUtils.$radius-3xl;
+  background-color: cssUtils.$foreground;
+  box-shadow: cssUtils.$shadow-s;
   color: cssUtils.$text-neutral-primary;
   text-align: left;
   cursor: pointer;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
 
   &:hover {
-    background-color: cssUtils.$sunk;
+    border-color: cssUtils.$border-default;
+    box-shadow: cssUtils.$shadow-m;
+  }
+
+  &:focus-visible {
+    outline: 2px solid cssUtils.$border-accent;
+    outline-offset: 2px;
   }
 }
 
-.openui-agent-artifact-browser__item-icon {
+.openui-agent-artifact-browser__preview-illustration {
+  --artifact-preview-bg: #{cssUtils.$sunk-light};
+  --artifact-preview-accent: #{cssUtils.$text-neutral-primary};
+  --artifact-preview-muted: #{cssUtils.$sunk};
+
+  position: relative;
+  width: 100%;
+  height: 108px;
+  overflow: hidden;
+  border-radius: cssUtils.$radius-m;
+  background-color: var(--artifact-preview-bg);
+
+  &--report {
+    --artifact-preview-bg: #{cssUtils.$info-background};
+    --artifact-preview-accent: #{cssUtils.$text-info-primary};
+    --artifact-preview-muted: #{cssUtils.$info-background};
+  }
+
+  &--slide {
+    --artifact-preview-bg: #{cssUtils.$success-background};
+    --artifact-preview-accent: #{cssUtils.$text-success-primary};
+    --artifact-preview-muted: #{cssUtils.$success-background};
+  }
+
+  &--app {
+    --artifact-preview-bg: #{cssUtils.$purple-background};
+    --artifact-preview-accent: #{cssUtils.$text-purple-primary};
+    --artifact-preview-muted: #{cssUtils.$purple-background};
+  }
+}
+
+.openui-agent-artifact-browser__preview-canvas {
+  position: absolute;
+  inset: cssUtils.$space-s cssUtils.$space-s 0;
+  overflow: hidden;
+  border-radius: cssUtils.$radius-s cssUtils.$radius-s 0 0;
+  background-color: cssUtils.$foreground;
+  box-shadow: cssUtils.$shadow-s;
+}
+
+.openui-agent-artifact-browser__preview-illustration--report
+  .openui-agent-artifact-browser__preview-canvas {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.openui-agent-artifact-browser__preview-illustration--slide
+  .openui-agent-artifact-browser__preview-canvas {
+  inset: calc(cssUtils.$space-s + cssUtils.$space-s) auto 0 50%;
+  width: 85%;
+  max-width: 196px;
+  transform: translateX(-50%);
+}
+
+.openui-agent-artifact-browser__preview-illustration--app
+  .openui-agent-artifact-browser__preview-canvas {
+  inset: calc(cssUtils.$space-s + cssUtils.$space-s) auto 0 50%;
+  width: 85%;
+  max-width: 196px;
+  transform: translateX(-50%);
+}
+
+.openui-agent-artifact-browser__preview-illustration--slide
+  .openui-agent-artifact-browser__preview-canvas::after,
+.openui-agent-artifact-browser__preview-illustration--app
+  .openui-agent-artifact-browser__preview-canvas::after,
+.openui-agent-artifact-browser__report-paper::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent 0%, cssUtils.$foreground 100%);
+  pointer-events: none;
+}
+
+.openui-agent-artifact-browser__preview-title,
+.openui-agent-artifact-browser__slide-title,
+.openui-agent-artifact-browser__app-title {
+  @include cssUtils.typography(label, small-heavy);
+
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--artifact-preview-accent);
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.openui-agent-artifact-browser__report-paper {
+  position: absolute;
+  top: cssUtils.$space-s;
+  bottom: 0;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-l;
+  width: 72%;
+  max-width: 176px;
+  padding: cssUtils.$space-m-l cssUtils.$space-m-l;
+  box-sizing: border-box;
+  border-radius: cssUtils.$radius-s cssUtils.$radius-s 0 0;
+  background-color: cssUtils.$foreground;
+  box-shadow: cssUtils.$shadow-s;
+  overflow: hidden;
+  transform: translateX(-50%);
+}
+
+.openui-agent-artifact-browser__preview-title {
   flex-shrink: 0;
-  color: cssUtils.$text-neutral-secondary;
+}
+
+.openui-agent-artifact-browser__report-lines {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: cssUtils.$space-s;
+
+  span {
+    height: 10px;
+    opacity: 0.7;
+    border-radius: cssUtils.$radius-2xs;
+    background-color: var(--artifact-preview-muted);
+  }
+}
+
+.openui-agent-artifact-browser__report-lines span:nth-child(2) {
+  width: 80%;
+}
+
+.openui-agent-artifact-browser__slide-title {
+  position: absolute;
+  top: 50%;
+  left: cssUtils.$space-m-l;
+  z-index: 1;
+  max-width: 80%;
+  transform: translateY(-50%);
+}
+
+.openui-agent-artifact-browser__slide-shape {
+  position: absolute;
+  color: var(--artifact-preview-accent);
+  pointer-events: none;
+}
+
+.openui-agent-artifact-browser__slide-shape {
+  right: -8%;
+  bottom: 10%;
+  width: 34%;
+  height: auto;
+}
+
+.openui-agent-artifact-browser__app-title {
+  margin: cssUtils.$space-m cssUtils.$space-m 0;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.openui-agent-artifact-browser__app-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: cssUtils.$space-xs;
+  margin: cssUtils.$space-m cssUtils.$space-m 0;
+
+  span {
+    min-height: 24px;
+    opacity: 0.45;
+    border-radius: cssUtils.$radius-xs;
+    background-color: var(--artifact-preview-muted);
+  }
+
+  span:first-child {
+    grid-column: span 2;
+    min-height: 32px;
+  }
+
+  span:nth-child(4) {
+    grid-column: span 2;
+    min-height: 32px;
+  }
+}
+
+.openui-agent-artifact-browser__app-footer {
+  display: flex;
+  gap: cssUtils.$space-xs;
+  margin: cssUtils.$space-xs cssUtils.$space-m 0;
+
+  span {
+    width: 28%;
+    height: 8px;
+    border-radius: cssUtils.$radius-xs;
+    background-color: var(--artifact-preview-muted);
+  }
+}
+
+.openui-agent-artifact-browser__item-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+  gap: cssUtils.$space-m;
+  min-width: 0;
+  padding: 0 cssUtils.$space-2xs cssUtils.$space-3xs cssUtils.$space-2xs;
 }
 
 .openui-agent-artifact-browser__item-title {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  @include cssUtils.typography(label, default);
+
+  overflow-wrap: anywhere;
 }
 
 .openui-agent-artifact-browser__item-updated-at {
   @include cssUtils.typography(label, small);
 
-  margin-left: auto;
-  flex-shrink: 0;
   color: cssUtils.$text-neutral-secondary;
 }
 
@@ -148,8 +375,30 @@
 .openui-agent-artifact-browser__loading,
 .openui-agent-artifact-browser__error {
   @include cssUtils.typography(primary, default);
+
+  grid-column: 1 / -1;
   color: cssUtils.$text-neutral-secondary;
   padding: cssUtils.$space-s 0;
+}
+
+.openui-agent-artifact-browser__load-more {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 860px) {
+  .openui-agent-artifact-browser__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .openui-agent-artifact-browser {
+    padding-top: cssUtils.$space-xl;
+  }
+
+  .openui-agent-artifact-browser__list {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .openui-agent-artifact-view {
