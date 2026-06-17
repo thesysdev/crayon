@@ -1,19 +1,15 @@
 /**
- * Pure parsing for the artifact tool-call envelope (no React imports).
+ * Pure parsing for the artifact tool-call carrier (no React imports).
  *
- * The renderer's parser sees `response` in one of these shapes:
- *  1. LIVE — the tool's function_call_output: a JSON string
- *     {"artifact_id","type":"presentation"|"report","name","version","content"}
- *     where content is the openui-lang program.
- *  2. STRIPPED RELOAD — the same envelope minus "content" (stored items are
- *     metadata-only). The view hydrates via ArtifactStorage.get(id).
- *  3. STORAGE — the artifact browser passes { args: undefined, response:
- *     artifact.content } in the envelope shape; a bare program string is
- *     tolerated (kind sniffed from the program root).
- *  4. Anything else → null → the default tool chip remains.
+ * The carrier is now ONE inline-sentinel string (backend artifact-shared.ts):
+ *   ]]>openui:artifact {"artifact_id","type","name"?,"version"?}\n<program>
+ * Same shape live (header first, program appends), at completion, and — header
+ * only, no program — on a stripped reload. So there is a SINGLE parser; the
+ * old dual-shape (streaming {content} + full {artifact_id,…}) is gone, and the
+ * artifact_id is known from the first frame (register immediately).
  *
- * `response === null` + isStreaming = in-flight: the call started, args may be
- * partial JSON, no result yet.
+ * `parseArtifactResult` remains for STORAGE content (a bare program fetched via
+ * ArtifactStorage.get) and the bare-program fallback.
  */
 
 export type ArtifactKind = "presentation" | "report";
@@ -33,11 +29,11 @@ export type ParsedArtifactResult =
 
 export interface ArtifactProps {
   kind: ArtifactKind;
-  /** Storage id; null for the bare-program fallback and the earliest frames. */
+  /** Storage id; null only for the bare-program fallback / earliest in-flight frames. */
   artifactId: string | null;
   name: string | null;
   version: string | null;
-  /** openui-lang program; null ⇒ streaming or stripped reload. */
+  /** openui-lang program; null ⇒ streaming-before-program or stripped reload. */
   content: string | null;
   phase: "streaming" | "ready";
 }
@@ -46,6 +42,8 @@ export interface ArtifactParseResult {
   props: ArtifactProps;
   meta: { id: string; version: number; heading: string } | null;
 }
+
+const OPENUI_ARTIFACT_MARKER = "]]>openui:artifact";
 
 const KIND_BY_TYPE: Record<string, ArtifactKind> = {
   presentation: "presentation",
@@ -77,27 +75,55 @@ function stripProgramFences(s: string): string {
   return t.trim();
 }
 
-/** Streaming-morph carrier. During streaming the adapter re-delivers the
- *  growing program as a content-only partial envelope {"content":"…"} — no
- *  artifact_id yet. Returns the fence-stripped program for that shape, else
- *  null. A full envelope (artifact_id present) is intentionally NOT matched. */
-export function extractStreamingProgramCarrier(raw: unknown): string | null {
-  if (typeof raw !== "string" || raw.trim() === "") return null;
-  const text = raw.trim();
-  if (!text.startsWith("{")) return null;
+export interface ArtifactSentinelHeader {
+  artifact_id: string;
+  type: ArtifactKind;
+  name?: string;
+  version?: string;
+}
+
+/**
+ * Parse the inline-sentinel carrier `]]>openui:artifact <header-json>\n<program>`.
+ * Returns the validated header + raw program (program may be "" on a stripped
+ * reload). Returns null when `raw` is not an artifact sentinel — the caller then
+ * tries the bare-program fallback.
+ */
+export function parseArtifactSentinel(
+  raw: unknown,
+): { header: ArtifactSentinelHeader; program: string } | null {
+  if (typeof raw !== "string") return null;
+  const prefix = `${OPENUI_ARTIFACT_MARKER} `;
+  if (!raw.startsWith(prefix)) return null;
+  const nl = raw.indexOf("\n");
+  const headerStr = nl === -1 ? raw.slice(prefix.length) : raw.slice(prefix.length, nl);
+  const program = nl === -1 ? "" : raw.slice(nl + 1);
+  let parsed: unknown;
   try {
-    const parsed: unknown = JSON.parse(text);
-    if (typeof parsed !== "object" || parsed === null) return null;
-    const obj = parsed as Record<string, unknown>;
-    if (typeof obj["artifact_id"] === "string" && obj["artifact_id"] !== "") return null;
-    if (typeof obj["content"] !== "string") return null;
-    return stripProgramFences(obj["content"]);
+    parsed = JSON.parse(headerStr);
   } catch {
     return null;
   }
+  if (typeof parsed !== "object" || parsed === null) return null;
+  const h = parsed as Record<string, unknown>;
+  if (typeof h["artifact_id"] !== "string" || h["artifact_id"] === "") return null;
+  const kind = typeof h["type"] === "string" ? KIND_BY_TYPE[h["type"]] : undefined;
+  if (kind === undefined) return null;
+  return {
+    header: {
+      artifact_id: h["artifact_id"],
+      type: kind,
+      ...(typeof h["name"] === "string" && h["name"] !== "" ? { name: h["name"] } : {}),
+      ...(typeof h["version"] === "string" && h["version"] !== "" ? { version: h["version"] } : {}),
+    },
+    program: stripProgramFences(program),
+  };
 }
 
-/** Classify a complete tool result (or stored content). */
+/**
+ * Classify STORAGE content (or a bare-program fallback). Storage returns the
+ * bare openui-lang program; the legacy JSON envelope branch is retained only
+ * for older stored rows.
+ */
 export function parseArtifactResult(raw: unknown): ParsedArtifactResult | null {
   if (typeof raw !== "string" || raw.trim() === "") return null;
   const text = raw.trim();
@@ -125,17 +151,17 @@ export function parseArtifactResult(raw: unknown): ParsedArtifactResult | null {
           };
         }
       }
-      return null; // valid JSON, but not our envelope
+      return null;
     } catch {
       /* not JSON — fall through to the program sniff */
     }
   }
 
-  const root = PROGRAM_ROOT_RE.exec(text);
+  const program = stripProgramFences(text);
+  const root = PROGRAM_ROOT_RE.exec(program);
   if (root) {
-    return { source: "program", kind: root[1] === "ReportView" ? "report" : "presentation", content: text };
+    return { source: "program", kind: root[1] === "ReportView" ? "report" : "presentation", content: program };
   }
-
   return null;
 }
 
@@ -183,45 +209,31 @@ export function artifactParser(
   ctx: { isStreaming: boolean },
 ): ArtifactParseResult | null {
   if (raw.response !== null && raw.response !== undefined) {
-    const parsed = parseArtifactResult(raw.response);
-    if (parsed === null) {
-      // Streaming morph: the content-only carrier {"content":"<partial>"} is
-      // not a full envelope. Render the partial program so the preview morphs
-      // as it grows; register nothing (the stable id lands with the final
-      // envelope, which re-renders this same tool message).
-      const streamingProgram = extractStreamingProgramCarrier(raw.response);
-      if (streamingProgram === null) return null;
-      const partialArgs = extractStreamingArgs(raw.args);
-      const root = PROGRAM_ROOT_RE.exec(streamingProgram);
-      if (root) {
-        return {
-          props: {
-            kind: root[1] === "ReportView" ? "report" : "presentation",
-            artifactId: null,
-            name: partialArgs.name,
-            version: null,
-            content: streamingProgram,
-            phase: "streaming",
-          },
-          meta: null,
-        };
-      }
-      // Carrier seen but the program root hasn't arrived yet: skeleton.
+    // ── Inline-sentinel carrier: ONE shape for live stream + final + reload.
+    const sentinel = parseArtifactSentinel(raw.response);
+    if (sentinel !== null) {
+      const { header, program } = sentinel;
+      const hasProgram = program !== "";
+      const props: ArtifactProps = {
+        kind: header.type,
+        artifactId: header.artifact_id,
+        name: header.name ?? null,
+        version: header.version ?? null,
+        // null ⇒ header-only (stripped reload) OR header-before-program: the
+        // view hydrates via ArtifactStorage.get(artifactId).
+        content: hasProgram ? program : null,
+        phase: ctx.isStreaming ? "streaming" : "ready",
+      };
+      // Register from frame 1 — the header always carries a stable artifact_id.
       return {
-        props: {
-          kind: partialArgs.kind ?? "presentation",
-          artifactId: partialArgs.artifactId,
-          name: partialArgs.name,
-          version: null,
-          content: null,
-          phase: "streaming",
-        },
-        meta: null,
+        props,
+        meta: { id: header.artifact_id, version: numericVersion(header.version), heading: artifactHeading(props) },
       };
     }
 
-    if (parsed.source === "program") {
-      // Bare-program storage fallback: render, never register (no stable id).
+    // ── Bare-program storage fallback (no sentinel): render, never register.
+    const parsed = parseArtifactResult(raw.response);
+    if (parsed?.source === "program") {
       return {
         props: {
           kind: parsed.kind,
@@ -234,20 +246,7 @@ export function artifactParser(
         meta: null,
       };
     }
-
-    const env = parsed.envelope;
-    const props: ArtifactProps = {
-      kind: env.type,
-      artifactId: env.artifact_id,
-      name: env.name ?? null,
-      version: env.version ?? null,
-      content: env.content ?? null,
-      phase: "ready",
-    };
-    return {
-      props,
-      meta: { id: env.artifact_id, version: numericVersion(env.version), heading: artifactHeading(props) },
-    };
+    return null;
   }
 
   // No result outside streaming = a dropped/foreign result — skip.

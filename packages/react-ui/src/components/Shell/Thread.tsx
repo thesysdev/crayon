@@ -4,7 +4,7 @@ import clsx from "clsx";
 import React, { memo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
-import { separateContentAndContext } from "../../utils/contentParser";
+import { separateContentAndContext } from "../../utils/sentinelParser";
 import { DetailedViewOverlay, DetailedViewPortalTarget } from "../_shared/detailed-view";
 import { useShellStore } from "../_shared/store";
 import { ToolMessageRenderer } from "../_shared/tool-renderer";

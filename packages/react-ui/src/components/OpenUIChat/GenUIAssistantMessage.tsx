@@ -10,7 +10,7 @@ import {
   wrapContent,
   wrapContentWithHeader,
   wrapContext,
-} from "../../utils/contentParser";
+} from "../../utils/sentinelParser";
 import { ToolMessageRenderer } from "../_shared/tool-renderer";
 import { AssistantMessageContainer } from "../Shell";
 import { BehindTheScenes, ToolCallComponent } from "../ToolCall";

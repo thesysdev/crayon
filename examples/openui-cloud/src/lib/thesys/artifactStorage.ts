@@ -25,22 +25,6 @@ function toSummary(artifact: CloudArtifact): ArtifactSummary {
   };
 }
 
-/**
- * Return stored content in the SAME envelope the live artifact tool emits
- * ({artifact_id,type,name?,version?,content}) so the renderer's parser handles
- * one shape everywhere — live stream, reload, and the artifact browser. Here
- * `content` is always present (the full program); its presence is the
- * "already hydrated" signal vs the metadata-only stream shape.
- */
-function toCarrierContent(artifact: CloudArtifact): string {
-  return JSON.stringify({
-    artifact_id: artifact.id,
-    type: artifact.kind,
-    ...(artifact.name !== undefined ? { name: artifact.name } : {}),
-    ...(artifact.version !== undefined ? { version: artifact.version } : {}),
-    content: artifact.content,
-  });
-}
 
 export function cloudArtifactStorage({
   baseUrl,
@@ -63,11 +47,12 @@ export function cloudArtifactStorage({
       return { artifacts: envelope.data.map(toSummary), nextCursor: nextCursorOf(envelope) };
     },
 
-    /** GET /v1/artifacts/:id → carrier-shaped content. */
+    /** GET /v1/artifacts/:id → the stored openui-lang program (bare program;
+     *  the renderer's parser sniffs the `root = …` root). */
     async get(id: string): Promise<Artifact> {
       const res = await request(`/v1/artifacts/${encodeURIComponent(id)}`);
       const artifact = (await res.json()) as CloudArtifact;
-      return { ...toSummary(artifact), content: toCarrierContent(artifact) };
+      return { ...toSummary(artifact), content: artifact.content };
     },
 
     /** POST /v1/artifacts/:id {content}. Send the edited inner program (a

@@ -79,6 +79,22 @@ export function RendererInstance<Props>({
     if (dv.activeDetailedViewId === prev) dv.setActiveDetailedView(viewId);
   }, [viewId, dvStore]);
 
+  // Follow an edit across instances: an edit bumps the version onto a NEW
+  // RendererInstance (the old one keeps its viewId), so the same-instance
+  // migration above never fires. When a NEWER version of the artifact that's
+  // currently open in the detailed view registers, re-point the active view to
+  // it — otherwise the open panel keeps showing the stale prior version.
+  useEffect(() => {
+    if (!meta) return;
+    const dv = dvStore.getState();
+    const active = dv.activeDetailedViewId;
+    if (!active || active === viewId || !active.startsWith(`${meta.id}:`)) return;
+    const activeVersion = Number(active.slice(meta.id.length + 1));
+    if (!Number.isFinite(activeVersion) || meta.version > activeVersion) {
+      dv.setActiveDetailedView(viewId);
+    }
+  }, [dvStore, viewId, meta?.id, meta?.version]);
+
   const { isActive, open, close, toggle } = useDetailedView(viewId);
 
   if (parsed === null) return null;

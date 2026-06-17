@@ -3,7 +3,7 @@
 import type { UserMessage } from "@openuidev/react-headless";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { separateContentAndContext } from "../../utils/contentParser";
+import { separateContentAndContext } from "../../utils/sentinelParser";
 
 /**
  * Extracts the first plain object from a context string.

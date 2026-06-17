@@ -162,3 +162,64 @@ function parseLegacyXml(raw: string): { content: string; contextString: string |
 
   return { content, contextString };
 }
+
+// ---------------------------------------------------------------------------
+// Artifact sentinel — the `]]>openui:artifact` member of the inline-sentinel
+// family. Unlike content/context (assistant-message channel), this rides the
+// tool-result channel (function_call_output + response.artifact_call.delta).
+// Carrier: `]]>openui:artifact <header-json>\n<program>` (header-only on a
+// stripped reload). Byte-mirrors the example renderer's parseArtifact.ts and
+// the backend builder (muse artifact-shared.ts buildArtifactSentinel).
+// ---------------------------------------------------------------------------
+const ARTIFACT_MARKER = `${OPENUI_INLINE_SENTINEL}artifact`;
+
+export type ArtifactKind = "presentation" | "report";
+
+export interface ArtifactSentinelHeader {
+  artifact_id: string;
+  type: ArtifactKind;
+  name?: string;
+  version?: string;
+}
+
+const ARTIFACT_KIND_BY_TYPE: Record<string, ArtifactKind> = {
+  presentation: "presentation",
+  slides: "presentation",
+  report: "report",
+};
+
+/**
+ * Parse the artifact carrier `]]>openui:artifact <header-json>\n<program>` into
+ * the validated header + raw program (program is "" on a stripped reload).
+ * Returns null when `raw` is not an artifact sentinel.
+ */
+export function parseArtifactSentinel(
+  raw: unknown,
+): { header: ArtifactSentinelHeader; program: string } | null {
+  if (typeof raw !== "string") return null;
+  const prefix = `${ARTIFACT_MARKER} `;
+  if (!raw.startsWith(prefix)) return null;
+  const nl = raw.indexOf("\n");
+  const headerStr = nl === -1 ? raw.slice(prefix.length) : raw.slice(prefix.length, nl);
+  const program = nl === -1 ? "" : raw.slice(nl + 1);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(headerStr);
+  } catch {
+    return null;
+  }
+  if (typeof parsed !== "object" || parsed === null) return null;
+  const h = parsed as Record<string, unknown>;
+  if (typeof h["artifact_id"] !== "string" || h["artifact_id"] === "") return null;
+  const kind = typeof h["type"] === "string" ? ARTIFACT_KIND_BY_TYPE[h["type"]] : undefined;
+  if (kind === undefined) return null;
+  return {
+    header: {
+      artifact_id: h["artifact_id"],
+      type: kind,
+      ...(typeof h["name"] === "string" && h["name"] !== "" ? { name: h["name"] } : {}),
+      ...(typeof h["version"] === "string" && h["version"] !== "" ? { version: h["version"] } : {}),
+    },
+    program,
+  };
+}

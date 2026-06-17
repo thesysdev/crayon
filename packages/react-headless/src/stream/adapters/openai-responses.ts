@@ -49,16 +49,18 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
             };
             const callId = e.call_id ?? (e.item_id ? itemIdToCallId[e.item_id] : undefined);
             if (callId && typeof e.delta === "string") {
-              // The backend streams the MERGED program progressively (generate
-              // or edit alike) — accumulate it and re-deliver the carrier on
-              // each delta. The client never merges ops; it always sees a
-              // coherent growing program. content = the accumulated program text.
+              // The backend streams the inline-sentinel carrier progressively:
+              // the FIRST delta is the header line
+              // (`]]>openui:artifact <header-json>\n`), then raw program chunks.
+              // Accumulate them verbatim — the running value IS the carrier
+              // string, identical to the final function_call_output. The client
+              // never merges ops; it always sees a coherent growing carrier.
               artifactProgramByCallId[callId] = (artifactProgramByCallId[callId] ?? "") + e.delta;
               yield {
                 type: EventType.TOOL_CALL_RESULT,
                 messageId: e.item_id ?? `artifact_call_${callId}`,
                 toolCallId: callId,
-                content: JSON.stringify({ content: artifactProgramByCallId[callId] }),
+                content: artifactProgramByCallId[callId],
               };
             }
             continue;
