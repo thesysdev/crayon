@@ -2,10 +2,12 @@ import type { AssistantMessage, Message, ToolMessage } from "@openuidev/react-he
 import {
   MessageProvider,
   useActiveDetailedView,
+  useArtifactList,
   useThread,
   useThreadList,
 } from "@openuidev/react-headless";
 import clsx from "clsx";
+import { ArrowLeftFromLine, ArrowRightFromLine } from "lucide-react";
 import React, { memo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
@@ -15,6 +17,7 @@ import { useAgentInterfaceStore } from "./_shared/store";
 import { ToolMessageRenderer } from "./_shared/tool-renderer";
 import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
 import { Callout } from "../Callout";
+import { IconButton } from "../IconButton";
 import { MarkDownRenderer } from "../MarkDownRenderer";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
 import { ToolCallComponent } from "../ToolCall";
@@ -101,7 +104,7 @@ export const ScrollArea = ({
   children,
   className,
   scrollVariant = "user-message-anchor",
-  userMessageSelector,
+  userMessageSelector = ".openui-agent-thread-message-user",
 }: {
   children?: React.ReactNode;
   className?: string;
@@ -380,8 +383,34 @@ export const ThreadHeader = ({
       <div className="openui-agent-thread-header__title">
         {selectedThreadTitle ?? (selectedThreadId ? "New Chat" : "")}
       </div>
-      {children && <div className="openui-agent-thread-header__actions">{children}</div>}
+      <div className="openui-agent-thread-header__actions">
+        {children}
+        <WorkspaceToggleButton />
+      </div>
     </div>
+  );
+};
+
+const WorkspaceToggleButton = () => {
+  const artifacts = useArtifactList();
+  const { isWorkspaceOpen, setIsWorkspaceOpen } = useAgentInterfaceStore((state) => ({
+    isWorkspaceOpen: state.isWorkspaceOpen,
+    setIsWorkspaceOpen: state.setIsWorkspaceOpen,
+  }));
+
+  if (Object.keys(artifacts).length === 0) return null;
+
+  return (
+    <IconButton
+      icon={
+        isWorkspaceOpen ? <ArrowRightFromLine size="1em" /> : <ArrowLeftFromLine size="1em" />
+      }
+      onClick={() => setIsWorkspaceOpen(!isWorkspaceOpen)}
+      size="small"
+      variant="secondary"
+      aria-label={isWorkspaceOpen ? "Collapse workspace" : "Expand workspace"}
+      className="openui-agent-thread-header__workspace-toggle-button"
+    />
   );
 };
 

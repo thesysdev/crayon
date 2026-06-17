@@ -685,7 +685,7 @@ export const ControlledRouting = {
 
 /**
  * Global artifact browser. `artifactCategories` split the sidebar nav into
- * "Apps" + "Reports" + "Slides"; clicking one opens the searchable artifact list
+ * "Apps" + "Artifacts"; clicking one opens the searchable artifact list
  * (reserved path `artifacts/{category}`); clicking an artifact opens the
  * full-page view with Back + "Go to thread".
  */
@@ -718,13 +718,10 @@ const MOCK_ARTIFACTS = Array.from({ length: 12 }, (_, i) => {
   };
 });
 
-const PAGE_SIZE = 5;
-
 const mockArtifactStorage = {
   list: async ({
     name,
     type,
-    cursor,
   }: { name?: string; type?: string[]; cursor?: string } = {}) => {
     await new Promise((r) => setTimeout(r, 300));
     const filtered = MOCK_ARTIFACTS.filter(
@@ -732,12 +729,9 @@ const mockArtifactStorage = {
         (!name || a.title.toLowerCase().includes(name.toLowerCase())) &&
         (!type || type.includes(a.type)),
     );
-    const start = cursor ? Number(cursor) : 0;
-    const page = filtered.slice(start, start + PAGE_SIZE);
-    const next = start + PAGE_SIZE < filtered.length ? String(start + PAGE_SIZE) : undefined;
     return {
-      artifacts: page.map(({ content: _c, ...summary }) => summary),
-      nextCursor: next,
+      artifacts: filtered.map(({ content: _c, ...summary }) => summary),
+      nextCursor: undefined,
     };
   },
   get: async (id: string) => {
@@ -780,8 +774,7 @@ const ARTIFACT_RENDERERS = [
 
 const ARTIFACT_CATEGORIES = [
   { name: "Apps", filter: { type: ["th_dashboard"] } },
-  { name: "Reports", filter: { type: ["th_report"] } },
-  { name: "Slides", filter: { type: ["th_presentation"] } },
+  { name: "Artifacts", filter: { type: ["th_report", "th_presentation"] } },
 ];
 
 export const ArtifactBrowser = {

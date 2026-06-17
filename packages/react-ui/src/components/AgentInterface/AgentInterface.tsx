@@ -304,7 +304,7 @@ const AgentInterfaceBody = ({
         <>
           <ThreadContainer>
             {slots.mobileHeader ?? <MobileHeader />}
-            {slots.threadHeader}
+            {slots.threadHeader ?? <ThreadHeader />}
             {slots.welcome}
             <ScrollArea>
               <Messages

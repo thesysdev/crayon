@@ -59,7 +59,7 @@ export function RendererInstance<Props>({
   // Heading/type-only changes upsert via the store's idempotent registerArtifact.
   useEffect(() => {
     if (!meta) return;
-    tcStore.getState().registerArtifact({ ...meta, type: renderer.type });
+    tcStore.getState().registerArtifact({ ...meta, type: renderer.type, updatedAt: Date.now() });
     return () => tcStore.getState().unregisterArtifact(meta.id, meta.version);
   }, [tcStore, renderer.type, meta?.id, meta?.version, meta?.heading]); // eslint-disable-line react-hooks/exhaustive-deps
 
