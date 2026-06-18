@@ -49,6 +49,11 @@
   flex-shrink: 0;
   position: relative;
 
+  .openui-agent-container--mobile & {
+    width: 100%;
+    min-width: 0;
+  }
+
   &--animating {
     transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -110,6 +115,12 @@
 // =============================================================================
 
 $center-align-spacing: calc(32px + cssUtils.$space-s);
+$top-mask-height: calc(cssUtils.$space-l + cssUtils.$space-3xs);
+$bottom-mask-height: calc(cssUtils.$space-2xl + cssUtils.$space-2xl);
+$thread-content-inline-padding: cssUtils.$space-m-l;
+$thread-content-max-width: calc(
+  880px + #{$thread-content-inline-padding} + #{$thread-content-inline-padding}
+);
 
 .openui-agent-thread-scroll-container {
   display: flex;
@@ -124,10 +135,10 @@ $center-align-spacing: calc(32px + cssUtils.$space-s);
     top: 0;
     left: 0;
     right: 0;
-    height: cssUtils.$space-xl;
+    height: $top-mask-height;
     background: linear-gradient(to bottom, cssUtils.$foreground 0%, transparent 100%);
     pointer-events: none;
-    z-index: 1;
+    z-index: 2;
   }
 
   &::after {
@@ -136,8 +147,12 @@ $center-align-spacing: calc(32px + cssUtils.$space-s);
     left: 0;
     right: 0;
     bottom: 0;
-    height: cssUtils.$space-xl;
-    background: linear-gradient(to top, cssUtils.$foreground 0%, transparent 100%);
+    height: $bottom-mask-height;
+    background: linear-gradient(
+      to top,
+      cssUtils.$foreground 0%,
+      transparent 100%
+    );
     pointer-events: none;
     z-index: 1;
   }
@@ -153,6 +168,7 @@ $center-align-spacing: calc(32px + cssUtils.$space-s);
   height: 100%;
   overflow: auto;
   padding: cssUtils.$space-m 0;
+  scroll-padding-top: calc($top-mask-height + cssUtils.$space-3xs);
 
   .openui-agent-thread-container:not(:has(.openui-agent-thread-header)):not(
       :has(.openui-agent-welcome-screen)
@@ -207,11 +223,17 @@ $center-align-spacing: calc(32px + cssUtils.$space-s);
 // =============================================================================
 
 .openui-agent-thread-messages {
-  max-width: 880px;
+  width: 100%;
+  max-width: $thread-content-max-width;
   margin: 0 auto;
+  padding: 0 $thread-content-inline-padding;
   display: flex;
   flex-direction: column;
   gap: calc(2 * cssUtils.$space-l);
+
+  .openui-agent-thread-container--detailed-view-active & {
+    padding: 0 $thread-content-inline-padding;
+  }
 }
 
 .openui-agent-thread-message-assistant {
@@ -283,6 +305,10 @@ $center-align-spacing: calc(32px + cssUtils.$space-s);
   .openui-agent-container--mobile & {
     padding: 0;
   }
+
+  .openui-agent-thread-container--detailed-view-active & {
+    padding: 0;
+  }
 }
 
 // =============================================================================
@@ -294,8 +320,7 @@ $center-align-spacing: calc(32px + cssUtils.$space-s);
   align-items: center;
   justify-content: space-between;
   gap: cssUtils.$space-m;
-  min-height: 64px;
-  padding: 0 cssUtils.$space-m-l;
+  padding: cssUtils.$space-m-l cssUtils.$space-m-l cssUtils.$space-xs;
   flex-shrink: 0;
 
   .openui-agent-container--mobile & {
@@ -319,11 +344,24 @@ $center-align-spacing: calc(32px + cssUtils.$space-s);
     gap: cssUtils.$space-s;
     flex-shrink: 0;
   }
+
+  &__workspace-toggle-button--hidden {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .openui-agent-thread-container--detailed-view-active &__workspace-toggle-button {
+    display: none;
+  }
 }
 
 .openui-agent-thread-message-loading {
   display: flex;
   padding: 0 $center-align-spacing;
+
+  .openui-agent-thread-container--detailed-view-active & {
+    padding: 0;
+  }
 }
 
 // =============================================================================

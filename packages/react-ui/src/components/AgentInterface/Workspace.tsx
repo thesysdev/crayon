@@ -14,6 +14,7 @@ import {
   getArtifactPreviewKind,
   getArtifactTypeLabel,
 } from "./ArtifactBrowserPage";
+import { useLayoutContext } from "../../context/LayoutContext";
 import { useAgentInterfaceStore } from "./_shared/store";
 
 export interface WorkspaceProps {
@@ -54,6 +55,7 @@ const DefaultWorkspace = ({ className }: { className?: string }) => {
     setIsWorkspaceOpen: state.setIsWorkspaceOpen,
   }));
   const { isDetailedViewActive } = useActiveDetailedView();
+  const { layout } = useLayoutContext();
   const categories = useArtifactCategories();
   const all = useArtifactList();
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("all");
@@ -62,34 +64,45 @@ const DefaultWorkspace = ({ className }: { className?: string }) => {
   // auto-expand when it closes. Fires only on transition, so manual toggles
   // while the active state is unchanged are preserved.
   useEffect(() => {
+    if (layout === "mobile") return;
     setIsWorkspaceOpen(!isDetailedViewActive);
-  }, [isDetailedViewActive, setIsWorkspaceOpen]);
+  }, [isDetailedViewActive, layout, setIsWorkspaceOpen]);
 
   // Auto-show on first artifact: nothing renders while the registry is empty.
   if (Object.keys(all).length === 0) return null;
 
   return (
-    <div
-      className={clsx(
-        "openui-agent-workspace-sidebar",
-        { "openui-agent-workspace-sidebar--collapsed": !isWorkspaceOpen },
-        className,
+    <>
+      {layout === "mobile" && (
+        <div
+          className={clsx("openui-agent-workspace-sidebar__overlay", {
+            "openui-agent-workspace-sidebar__overlay--collapsed": !isWorkspaceOpen,
+          })}
+          onClick={() => setIsWorkspaceOpen(false)}
+        />
       )}
-    >
-      <div className="openui-agent-workspace-sidebar__header">
-        <WorkspaceTabs activeTab={activeTab} onChange={setActiveTab} />
-      </div>
-
-      <div className="openui-agent-workspace-sidebar__content">
-        {categories.length > 0 ? (
-          <WorkspaceSections categories={categories} activeTab={activeTab} />
-        ) : activeTab === "all" || activeTab === "artifacts" ? (
-          <WorkspaceSection title="Artifacts" entries={latestPerId(all)} emptyHint="No artifacts yet" />
-        ) : (
-          <WorkspaceSection title="Apps" entries={[]} emptyHint="No apps yet" />
+      <div
+        className={clsx(
+          "openui-agent-workspace-sidebar",
+          { "openui-agent-workspace-sidebar--collapsed": !isWorkspaceOpen },
+          className,
         )}
+      >
+        <div className="openui-agent-workspace-sidebar__header">
+          <WorkspaceTabs activeTab={activeTab} onChange={setActiveTab} />
+        </div>
+
+        <div className="openui-agent-workspace-sidebar__content">
+          {categories.length > 0 ? (
+            <WorkspaceSections categories={categories} activeTab={activeTab} />
+          ) : activeTab === "all" || activeTab === "artifacts" ? (
+            <WorkspaceSection title="Artifacts" entries={latestPerId(all)} emptyHint="No artifacts yet" />
+          ) : (
+            <WorkspaceSection title="Apps" entries={[]} emptyHint="No apps yet" />
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

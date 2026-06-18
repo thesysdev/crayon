@@ -9,13 +9,15 @@
   padding: 0 cssUtils.$space-l 80px;
   box-sizing: border-box;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .openui-agent-artifact-browser__content {
   display: flex;
   flex-direction: column;
-  gap: cssUtils.$space-xl;
+  gap: cssUtils.$space-l;
   width: 100%;
+  min-width: 0;
   max-width: 800px;
   margin: 0 auto;
 }
@@ -27,9 +29,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: cssUtils.$space-s;
+  gap: cssUtils.$space-xl;
   padding: 80px cssUtils.$space-m cssUtils.$space-m;
   background-color: cssUtils.$foreground;
+  min-width: 0;
 
   &::after {
     content: "";
@@ -49,6 +52,7 @@
   font-weight: 500;
   margin: 0;
   padding-left: 4px;
+  min-width: 0;
 }
 
 .openui-agent-artifact-browser__search {
@@ -59,6 +63,7 @@
   gap: cssUtils.$space-s;
   width: 240px;
   max-width: 50%;
+  min-width: 0;
   padding: calc(cssUtils.$space-xs - 1px) calc(cssUtils.$space-xs - 1px)
     calc(cssUtils.$space-xs - 1px) calc(cssUtils.$space-m - 1px);
   border: 1px solid cssUtils.$border-interactive;
@@ -128,8 +133,9 @@
 .openui-agent-artifact-browser__list {
   display: flex;
   flex-direction: column;
-  gap: cssUtils.$space-xs;
+  gap: cssUtils.$space-m;
   width: 100%;
+  min-width: 0;
 }
 
 .openui-agent-artifact-browser__item {
@@ -141,7 +147,8 @@
   gap: cssUtils.$space-m-l;
   width: 100%;
   min-width: 0;
-  padding: cssUtils.$space-m;
+  max-width: 100%;
+  padding: cssUtils.$space-s;
   border: 0;
   border-radius: cssUtils.$radius-2xl;
   background-color: transparent;
@@ -151,7 +158,7 @@
   transition: background-color 0.16s ease;
 
   &:hover {
-    background-color: cssUtils.$highlight-subtle;
+    background-color: cssUtils.$highlight;
   }
 
   &:focus-visible {
@@ -165,6 +172,7 @@
   --artifact-preview-muted: #{cssUtils.$sunk};
 
   position: relative;
+  align-self: flex-start;
   width: 64px;
   height: 52px;
   flex-shrink: 0;
@@ -418,12 +426,20 @@
   justify-content: center;
   gap: cssUtils.$space-s;
   min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   padding: 0;
 }
 
 .openui-agent-artifact-browser__item-title {
   @include cssUtils.typography(label, default);
 
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-word;
   overflow-wrap: anywhere;
 }
 
@@ -447,10 +463,14 @@
 }
 
 @media (max-width: 560px) {
+  .openui-agent-artifact-browser {
+    padding: 0 cssUtils.$space-m-l 80px;
+  }
+
   .openui-agent-artifact-browser__header {
     align-items: stretch;
     flex-direction: column;
-    padding-top: cssUtils.$space-xl;
+    padding: cssUtils.$space-xl 0 cssUtils.$space-m;
   }
 
   .openui-agent-artifact-browser__search {
@@ -469,13 +489,18 @@
 .openui-agent-artifact-view__header {
   display: flex;
   align-items: center;
-  gap: cssUtils.$space-s;
-  padding: cssUtils.$space-s cssUtils.$space-m;
+  gap: cssUtils.$space-m;
+  padding: cssUtils.$space-m-l cssUtils.$space-m-l cssUtils.$space-m;
   border-bottom: 1px solid cssUtils.$border-default;
+  flex-shrink: 0;
+
+  .openui-agent-container--mobile & {
+    display: none;
+  }
 }
 
 .openui-agent-artifact-view__title {
-  @include cssUtils.typography(primary, strong);
+  @include cssUtils.typography(label, small);
   color: cssUtils.$text-neutral-primary;
   flex: 1;
   overflow: hidden;

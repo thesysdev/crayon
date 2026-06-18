@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { X } from "lucide-react";
 import { Component, forwardRef, useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { IconButton } from "../../../IconButton";
 import { useTheme } from "../../../ThemeProvider/ThemeProvider";
 
 /** @internal */
@@ -66,13 +67,13 @@ export type DetailedViewPanelProps = {
 const DefaultHeader = ({ title, onClose }: { title: string; onClose: () => void }) => (
   <div className="openui-detailed-view-panel__header">
     <span className="openui-detailed-view-panel__title">{title}</span>
-    <button
-      className="openui-detailed-view-panel__close"
+    <IconButton
+      variant="tertiary"
+      size="small"
+      icon={<X size="1em" />}
       onClick={onClose}
       aria-label="Close detailed-view panel"
-    >
-      <X size={16} />
-    </button>
+    />
   </div>
 );
 

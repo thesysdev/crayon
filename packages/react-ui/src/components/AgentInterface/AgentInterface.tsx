@@ -1,14 +1,22 @@
 import {
   ChatProvider,
   type AssistantMessage,
+  type Artifact,
   type ChatProviderProps,
   type UserMessage,
+  useArtifactList,
+  useArtifactStorage,
+  useThreadList,
 } from "@openuidev/react-headless";
 import type { Library } from "@openuidev/react-lang";
+import { ArrowLeft, MessageSquare, PanelRight } from "lucide-react";
 import {
   Children,
   isValidElement,
+  useEffect,
   useMemo,
+  useRef,
+  useState,
   type FC,
   type ReactElement,
   type ReactNode,
@@ -17,8 +25,9 @@ import type { ConversationStarterProps } from "../../types/ConversationStarter";
 import { GenUIAssistantMessage } from "../OpenUIChat/GenUIAssistantMessage";
 import { GenUIUserMessage } from "../OpenUIChat/GenUIUserMessage";
 import { ThemeProvider, type ThemeProps } from "../ThemeProvider";
-import { parseArtifactPath } from "./_shared/artifactPaths";
+import { artifactListPath, parseArtifactPath } from "./_shared/artifactPaths";
 import { NavProvider, useNav } from "./_shared/navContext";
+import { useAgentInterfaceStore } from "./_shared/store";
 import { ArtifactBrowserPage } from "./ArtifactBrowserPage";
 import { ArtifactNav } from "./ArtifactNav";
 import { ArtifactViewPage } from "./ArtifactViewPage";
@@ -27,6 +36,7 @@ import { StartersProvider } from "./_shared/startersContext";
 import { Composer } from "./Composer";
 import { type ConversationStarterVariant } from "./ConversationStarter";
 import { Container } from "./Container";
+import { IconButton } from "../IconButton";
 import { MobileHeader } from "./MobileHeader";
 import { NewChatButton } from "./NewChatButton";
 import { Route } from "./Route";
@@ -243,6 +253,97 @@ interface AgentInterfaceBodyProps {
   resolvedUserMessage: UserMessageComponent | undefined;
 }
 
+const ArtifactViewMobileHeader = ({
+  artifactId,
+  categoryName,
+}: {
+  artifactId: string;
+  categoryName?: string;
+}) => {
+  const storage = useArtifactStorage();
+  const selectThread = useThreadList(
+    (s: { selectThread: (threadId: string) => void }) => s.selectThread,
+  );
+  const { navigate } = useNav();
+  const [artifact, setArtifact] = useState<Artifact | null>(null);
+  const requestIdRef = useRef(0);
+
+  useEffect(() => {
+    if (!storage) {
+      setArtifact(null);
+      return;
+    }
+
+    const requestId = ++requestIdRef.current;
+    setArtifact(null);
+    storage
+      .get(artifactId)
+      .then((a: Artifact) => {
+        if (requestId !== requestIdRef.current) return;
+        setArtifact(a);
+      })
+      .catch(() => {
+        if (requestId !== requestIdRef.current) return;
+        setArtifact(null);
+      });
+  }, [storage, artifactId]);
+
+  const backToList = () => navigate(artifactListPath(categoryName));
+  const goToThread = () => {
+    if (!artifact) return;
+    selectThread(artifact.threadId);
+    navigate(undefined);
+  };
+
+  return (
+    <MobileHeader
+      menuButton={
+        <IconButton
+          size="medium"
+          icon={<ArrowLeft size="1em" />}
+          onClick={backToList}
+          variant="secondary"
+          aria-label="Back to artifacts"
+        />
+      }
+      agentName={
+        <span className="openui-agent-mobile-header-agent-name">{artifact?.title ?? ""}</span>
+      }
+      newChatButton={
+        <IconButton
+          size="medium"
+          icon={<MessageSquare size="1em" />}
+          onClick={goToThread}
+          variant="secondary"
+          aria-label="Go to thread"
+          disabled={!artifact}
+        />
+      }
+    />
+  );
+};
+
+const MobileWorkspaceToggleButton = () => {
+  const artifacts = useArtifactList();
+  const { isWorkspaceOpen, setIsWorkspaceOpen } = useAgentInterfaceStore((state) => ({
+    isWorkspaceOpen: state.isWorkspaceOpen,
+    setIsWorkspaceOpen: state.setIsWorkspaceOpen,
+  }));
+  const hasArtifacts = Object.keys(artifacts).length > 0;
+
+  if (!hasArtifacts) return null;
+
+  return (
+    <IconButton
+      size="medium"
+      icon={<PanelRight size="1em" />}
+      onClick={() => setIsWorkspaceOpen(!isWorkspaceOpen)}
+      variant="secondary"
+      aria-label={isWorkspaceOpen ? "Collapse workspace" : "Expand workspace"}
+    />
+  );
+};
+
 const AgentInterfaceBody = ({
   slots,
   logoUrl,
@@ -287,6 +388,15 @@ const AgentInterfaceBody = ({
       </SidebarContainer>
       {artifactPath ? (
         <ThreadContainer>
+          {slots.mobileHeader ??
+            (artifactPath.kind === "view" ? (
+              <ArtifactViewMobileHeader
+                artifactId={artifactPath.artifactId}
+                categoryName={artifactPath.categoryName}
+              />
+            ) : (
+              <MobileHeader />
+            ))}
           {artifactPath.kind === "list" ? (
             <ArtifactBrowserPage categoryName={artifactPath.categoryName} />
           ) : (
@@ -303,7 +413,7 @@ const AgentInterfaceBody = ({
       ) : (
         <>
           <ThreadContainer>
-            {slots.mobileHeader ?? <MobileHeader />}
+            {slots.mobileHeader ?? <MobileHeader actions={<MobileWorkspaceToggleButton />} />}
             {slots.threadHeader ?? <ThreadHeader />}
             {slots.welcome}
             <ScrollArea>

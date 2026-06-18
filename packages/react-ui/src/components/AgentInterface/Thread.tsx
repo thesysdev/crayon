@@ -4,10 +4,9 @@ import {
   useActiveDetailedView,
   useArtifactList,
   useThread,
-  useThreadList,
 } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { ArrowLeftFromLine, ArrowRightFromLine } from "lucide-react";
+import { PanelRight } from "lucide-react";
 import React, { memo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
@@ -16,8 +15,8 @@ import { DetailedViewOverlay, DetailedViewPortalTarget } from "./_shared/detaile
 import { useAgentInterfaceStore } from "./_shared/store";
 import { ToolMessageRenderer } from "./_shared/tool-renderer";
 import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
+import { Button } from "../Button";
 import { Callout } from "../Callout";
-import { IconButton } from "../IconButton";
 import { MarkDownRenderer } from "../MarkDownRenderer";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
 import { ToolCallComponent } from "../ToolCall";
@@ -374,14 +373,10 @@ export const ThreadHeader = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const threads = useThreadList((s) => s.threads);
-  const selectedThreadId = useThreadList((s) => s.selectedThreadId);
-  const selectedThreadTitle = threads.find((thread) => thread.id === selectedThreadId)?.title;
-
   return (
     <div className={clsx("openui-agent-thread-header", className)}>
       <div className="openui-agent-thread-header__title">
-        {selectedThreadTitle ?? (selectedThreadId ? "New Chat" : "")}
+        {/* Thread title hidden for now. */}
       </div>
       <div className="openui-agent-thread-header__actions">
         {children}
@@ -397,20 +392,25 @@ const WorkspaceToggleButton = () => {
     isWorkspaceOpen: state.isWorkspaceOpen,
     setIsWorkspaceOpen: state.setIsWorkspaceOpen,
   }));
-
-  if (Object.keys(artifacts).length === 0) return null;
+  const hasArtifacts = Object.keys(artifacts).length > 0;
 
   return (
-    <IconButton
-      icon={
-        isWorkspaceOpen ? <ArrowRightFromLine size="1em" /> : <ArrowLeftFromLine size="1em" />
-      }
-      onClick={() => setIsWorkspaceOpen(!isWorkspaceOpen)}
+    <Button
+      iconRight={<PanelRight size="1em" />}
+      onClick={() => {
+        if (hasArtifacts) setIsWorkspaceOpen(!isWorkspaceOpen);
+      }}
       size="small"
-      variant="secondary"
+      variant="tertiary"
       aria-label={isWorkspaceOpen ? "Collapse workspace" : "Expand workspace"}
-      className="openui-agent-thread-header__workspace-toggle-button"
-    />
+      aria-hidden={!hasArtifacts}
+      tabIndex={hasArtifacts ? undefined : -1}
+      className={clsx("openui-agent-thread-header__workspace-toggle-button", {
+        "openui-agent-thread-header__workspace-toggle-button--hidden": !hasArtifacts,
+      })}
+    >
+      Workspace
+    </Button>
   );
 };
 

@@ -16,7 +16,7 @@ interface AgentInterfaceState {
 export const createAgentInterfaceStore = ({ logoUrl, agentName }: { logoUrl: string; agentName: string }) =>
   create<AgentInterfaceState>((set) => ({
     isSidebarOpen: true,
-    isWorkspaceOpen: true,
+    isWorkspaceOpen: false,
     agentName: agentName,
     logoUrl: logoUrl,
     setIsSidebarOpen: (isOpen: boolean) => set({ isSidebarOpen: isOpen }),

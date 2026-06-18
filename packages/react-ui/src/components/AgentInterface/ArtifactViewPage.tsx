@@ -9,6 +9,7 @@ import {
 import { ArrowLeft, MessageSquare } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../Button";
+import { IconButton } from "../IconButton";
 import { artifactListPath } from "./_shared/artifactPaths";
 import { useNav } from "./_shared/navContext";
 
@@ -121,18 +122,17 @@ export const ArtifactViewPage = ({
   return (
     <div className="openui-agent-artifact-view">
       <div className="openui-agent-artifact-view__header">
-        <Button
-          variant="secondary"
+        <IconButton
+          variant="tertiary"
           size="small"
-          iconLeft={<ArrowLeft size={14} />}
+          icon={<ArrowLeft size="1em" />}
+          aria-label="Back"
           onClick={backToList}
-        >
-          Back
-        </Button>
+        />
         <span className="openui-agent-artifact-view__title">{artifact?.title ?? ""}</span>
         {artifact && (
           <Button
-            variant="secondary"
+            variant="tertiary"
             size="small"
             iconLeft={<MessageSquare size={14} />}
             onClick={goToThread}

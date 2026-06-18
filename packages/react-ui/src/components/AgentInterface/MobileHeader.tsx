@@ -1,6 +1,6 @@
 import { useThreadList } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { Menu, Plus } from "lucide-react";
+import { Menu, SquarePen } from "lucide-react";
 import type { ReactNode } from "react";
 import { IconButton } from "../IconButton";
 import { useAgentInterfaceStore } from "./_shared/store";
@@ -25,9 +25,8 @@ export const MobileHeader = ({
   children,
 }: MobileHeaderProps) => {
   const switchToNewThread = useThreadList((s) => s.switchToNewThread);
-  const { logoUrl, agentName: ctxAgentName, setIsSidebarOpen } = useAgentInterfaceStore(
+  const { agentName: ctxAgentName, setIsSidebarOpen } = useAgentInterfaceStore(
     (state) => ({
-      logoUrl: state.logoUrl,
       agentName: state.agentName,
       setIsSidebarOpen: state.setIsSidebarOpen,
     }),
@@ -60,10 +59,6 @@ export const MobileHeader = ({
     />
   );
 
-  const defaultLogo = (
-    <img className="openui-agent-mobile-header-logo" src={logoUrl} alt="Logo" />
-  );
-
   const defaultAgentName = (
     <span className="openui-agent-mobile-header-agent-name">{ctxAgentName}</span>
   );
@@ -71,7 +66,7 @@ export const MobileHeader = ({
   const defaultNewChatButton = (
     <IconButton
       size="medium"
-      icon={<Plus size="1em" />}
+      icon={<SquarePen size="1em" />}
       onClick={switchToNewThread}
       variant="secondary"
       aria-label="New chat"
@@ -82,12 +77,12 @@ export const MobileHeader = ({
     <div className={clsx("openui-agent-mobile-header", className)}>
       {menuButton === false ? null : (menuButton ?? defaultMenuButton)}
       <div className="openui-agent-mobile-header-logo-container">
-        {logo ?? defaultLogo}
+        {logo}
         {agentNameProp ?? defaultAgentName}
       </div>
       <div className="openui-agent-mobile-header-actions">
-        {actions}
         {newChatButton === false ? null : (newChatButton ?? defaultNewChatButton)}
+        {actions}
       </div>
     </div>
   );

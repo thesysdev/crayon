@@ -11,7 +11,8 @@ $sidebar-collapsed-width: calc(
     #{$sidebar-header-inline-offset}
 );
 $sidebar-mobile-width: 294px;
-$sidebar-mobile-padding: cssUtils.$space-l;
+$sidebar-mobile-padding-y: cssUtils.$space-l;
+$sidebar-mobile-padding-x: cssUtils.$space-000;
 $sidebar-fade-duration: 90ms;
 $sidebar-resize-duration: 160ms;
 $sidebar-mobile-slide-duration: 400ms;
@@ -24,7 +25,7 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
   padding: $sidebar-padding-y $sidebar-padding-x;
   display: flex;
   flex-direction: column;
-  gap: cssUtils.$space-xl;
+  gap: cssUtils.$space-2xl;
   background-color: cssUtils.$highlight-subtle;
   z-index: 999;
   transition:
@@ -35,7 +36,7 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
   .openui-agent-container--mobile & {
     width: $sidebar-mobile-width;
-    padding: $sidebar-mobile-padding;
+    padding: $sidebar-mobile-padding-y $sidebar-mobile-padding-x;
     position: absolute;
     left: 0;
     top: 0;
@@ -82,12 +83,20 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
   flex-direction: column;
   gap: cssUtils.$space-s;
 
+  .openui-agent-container--mobile & {
+    padding: 0 cssUtils.$space-m-l;
+  }
+
   &__top-row {
     display: flex;
     align-items: center;
     gap: cssUtils.$space-s;
     min-height: $sidebar-collapsed-control-size;
     transition: opacity $sidebar-fade-duration $sidebar-motion-ease;
+
+    .openui-agent-container--mobile & {
+      gap: cssUtils.$space-m;
+    }
   }
 
   &__logo {
@@ -98,6 +107,14 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
     align-self: flex-start;
     flex-shrink: 0;
     border-radius: cssUtils.$radius-s;
+    transition: opacity $sidebar-fade-duration $sidebar-motion-ease;
+
+    .openui-agent-container--mobile & {
+      width: 36px;
+      height: 36px;
+      margin-left: 0;
+      border-radius: cssUtils.$radius-m;
+    }
   }
 
   &__agent-name {
@@ -108,6 +125,10 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
     .openui-agent-sidebar-container--collapsed & {
       display: none;
+    }
+
+    .openui-agent-container--mobile & {
+      @include cssUtils.typography(label, large);
     }
   }
 
@@ -141,6 +162,7 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
   .openui-agent-container--mobile & {
     width: 100%;
+    padding: 0 cssUtils.$space-m-l;
   }
 
   display: flex;
@@ -172,7 +194,7 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
-.openui-agent-sidebar-container--collapsed:hover {
+.openui-agent-sidebar-container[data-sidebar-visual-state="collapsed"]:hover {
   .openui-agent-sidebar-header__logo {
     opacity: 0;
     pointer-events: none;
@@ -216,6 +238,12 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
   overflow: hidden;
   padding-right: cssUtils.$space-xs;
   transition: background-color $sidebar-fade-duration $sidebar-motion-ease;
+
+  .openui-agent-container--mobile & {
+    @include cssUtils.typography(label, default);
+
+    gap: cssUtils.$space-s-m;
+  }
 
   &:not(:disabled):hover {
     background-color: cssUtils.$highlight;
@@ -281,6 +309,13 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
     height: calc(#{$sidebar-collapsed-control-size} - #{cssUtils.$space-2xs});
     margin: cssUtils.$space-3xs;
     overflow: hidden;
+
+    .openui-agent-container--mobile & {
+      width: 36px;
+      height: 36px;
+      margin: 0;
+      border-radius: cssUtils.$radius-m;
+    }
   }
 }
 
@@ -324,6 +359,10 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
   color: cssUtils.$text-neutral-secondary;
   opacity: 1;
   transition: opacity $sidebar-fade-duration $sidebar-motion-ease;
+
+  .openui-agent-container--mobile & {
+    @include cssUtils.typography(number, small);
+  }
 
   .openui-agent-sidebar-container--collapsed & {
     width: 0;
