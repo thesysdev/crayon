@@ -42,9 +42,8 @@ export const ShellStoreContext = createContext<ReturnType<typeof createShellStor
 export const useShellStore = <T,>(selector: (state: ShellState) => T): T => {
   const store = useContext(ShellStoreContext);
   if (!store) {
-    throw new Error("useShellStore must be used within ShellStoreProvider");
+    throw new Error("useShellStore must be used within a ShellStoreProvider");
   }
-
   return store(useShallow(selector));
 };
 

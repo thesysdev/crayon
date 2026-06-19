@@ -9,7 +9,12 @@ import clsx from "clsx";
 import React, { memo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
-import { separateContentAndContext } from "../../utils/contentParser";
+import { separateContentAndContext } from "../../utils/sentinelParser";
+import { DetailedViewOverlay, DetailedViewPortalTarget } from "./_shared/detailed-view";
+import { useAgentInterfaceStore } from "./_shared/store";
+import { ToolMessageRenderer } from "./_shared/tool-renderer";
+import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
+
 import { Callout } from "../Callout";
 import { IconButton } from "../IconButton";
 import { MarkDownRenderer } from "../MarkDownRenderer";
@@ -19,10 +24,6 @@ import { ToolResult } from "../ToolResult";
 import { ResizableSeparator } from "./ResizableSeparator";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
-import { DetailedViewOverlay, DetailedViewPortalTarget } from "./_shared/detailed-view";
-import { useAgentInterfaceStore } from "./_shared/store";
-import { ToolMessageRenderer } from "./_shared/tool-renderer";
-import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
 import { useDetailedViewResize } from "./useDetailedViewResize";
 
 export const ThreadContainer = ({

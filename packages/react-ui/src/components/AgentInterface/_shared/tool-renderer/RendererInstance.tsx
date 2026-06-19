@@ -1,10 +1,11 @@
 import {
   useDetailedView,
+  useDetailedViewStore,
   useThreadContextStore,
   type ArtifactRendererConfig,
   type ArtifactRendererControls,
 } from "@openuidev/react-headless";
-import { useEffect, useId, useMemo } from "react";
+import { useEffect, useId, useMemo, useRef } from "react";
 import { DetailedViewPanel } from "../detailed-view";
 
 /**
@@ -44,6 +45,7 @@ export function RendererInstance<Props>({
 }) {
   const fallbackId = useId();
   const tcStore = useThreadContextStore();
+  const dvStore = useDetailedViewStore();
 
   const parsed = useMemo(
     () => renderer.parser({ args, response }, { isStreaming }),
@@ -62,6 +64,36 @@ export function RendererInstance<Props>({
     tcStore.getState().registerArtifact({ ...meta, type: renderer.type, updatedAt: Date.now() });
     return () => tcStore.getState().unregisterArtifact(meta.id, meta.version);
   }, [tcStore, renderer.type, meta?.id, meta?.version, meta?.heading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Keep an OPEN side panel alive when this instance's viewId changes for the
+  // same logical artifact. A streamed artifact opened mid-stream keys on the
+  // fallback id (its real id isn't known until the result lands); when it
+  // resolves to `${id}:${version}` — or the version bumps on edit — re-point the
+  // active detailed view so the open panel doesn't orphan and blank out.
+  const prevViewIdRef = useRef(viewId);
+  useEffect(() => {
+    const prev = prevViewIdRef.current;
+    if (prev === viewId) return;
+    prevViewIdRef.current = viewId;
+    const dv = dvStore.getState();
+    if (dv.activeDetailedViewId === prev) dv.setActiveDetailedView(viewId);
+  }, [viewId, dvStore]);
+
+  // Follow an edit across instances: an edit bumps the version onto a NEW
+  // RendererInstance (the old one keeps its viewId), so the same-instance
+  // migration above never fires. When a NEWER version of the artifact that's
+  // currently open in the detailed view registers, re-point the active view to
+  // it — otherwise the open panel keeps showing the stale prior version.
+  useEffect(() => {
+    if (!meta) return;
+    const dv = dvStore.getState();
+    const active = dv.activeDetailedViewId;
+    if (!active || active === viewId || !active.startsWith(`${meta.id}:`)) return;
+    const activeVersion = Number(active.slice(meta.id.length + 1));
+    if (!Number.isFinite(activeVersion) || meta.version > activeVersion) {
+      dv.setActiveDetailedView(viewId);
+    }
+  }, [dvStore, viewId, meta?.id, meta?.version]);
 
   const { isActive, open, close, toggle } = useDetailedView(viewId);
 

@@ -3,7 +3,7 @@
 import type { UserMessage } from "@openuidev/react-headless";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { separateContentAndContext } from "../../utils/contentParser";
+import { separateContentAndContext } from "../../utils/sentinelParser";
 
 /**
  * Extracts the first plain object from a context string.
@@ -103,7 +103,7 @@ function FormDataAccordion({ state }: { state: Record<string, any> }) {
 
 /**
  * Renders a user message, handling both plain text messages and
- * XML-formatted messages from form submissions (which contain <content> and <context> tags).
+ * inline-formatted messages from form submissions.
  */
 export const GenUIUserMessage = ({ message }: { message: UserMessage }) => {
   const rawContent = typeof message.content === "string" ? message.content : "";

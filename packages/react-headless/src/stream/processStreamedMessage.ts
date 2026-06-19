@@ -8,8 +8,8 @@ interface Parameters {
   response: Response;
   /** A function that creates a new message in the thread (assistant or tool). */
   createMessage: (message: Message) => void;
-  /** A function that updates an existing assistant message in the thread */
-  updateMessage: (message: AssistantMessage) => void;
+  /** A function that updates an existing message in the thread (matched by id). */
+  updateMessage: (message: Message) => void;
   /** The adapter to use for parsing the stream */
   adapter?: StreamProtocolAdapter;
 }
@@ -31,6 +31,11 @@ export const processStreamedMessage = async ({
   };
 
   let isFirst = true;
+
+  // Tool messages by toolCallId, so repeated TOOL_CALL_RESULTs for the same
+  // call (e.g. streamed artifact_call.delta snapshots, each re-delivering the
+  // growing program) UPDATE one message in place instead of duplicating it.
+  const toolMessagesByCallId = new Map<string, ToolMessage>();
 
   let rafId: number | null = null;
   const debouncedUpdate = (msg: AssistantMessage) => {
@@ -101,16 +106,24 @@ export const processStreamedMessage = async ({
         break;
 
       case EventType.TOOL_CALL_RESULT: {
-        // Append a tool message to the thread for this tool call.
-        // The current assistant message (with its toolCalls) is preserved as-is;
-        // subsequent text/tool-call events keep updating it.
-        const toolMessage: ToolMessage = {
-          id: crypto.randomUUID(),
-          role: "tool",
-          toolCallId: event.toolCallId,
-          content: event.content,
-        };
-        createMessage(toolMessage);
+        // Upsert the tool message for this toolCallId. First result → create;
+        // subsequent results for the same call (streamed artifact_call.delta
+        // snapshots) → update the same message in place (no duplicates).
+        const existing = toolMessagesByCallId.get(event.toolCallId);
+        if (existing) {
+          const updated: ToolMessage = { ...existing, content: event.content };
+          toolMessagesByCallId.set(event.toolCallId, updated);
+          updateMessage(updated);
+        } else {
+          const toolMessage: ToolMessage = {
+            id: crypto.randomUUID(),
+            role: "tool",
+            toolCallId: event.toolCallId,
+            content: event.content,
+          };
+          toolMessagesByCallId.set(event.toolCallId, toolMessage);
+          createMessage(toolMessage);
+        }
         continue; // skip the trailing isFirst/update logic — this event doesn't touch currentMessage
       }
 
