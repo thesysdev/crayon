@@ -1,7 +1,7 @@
 import { useThread } from "@openuidev/react-headless";
 import clsx from "clsx";
 import { ArrowUp, Square } from "lucide-react";
-import { useLayoutEffect, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { useComposerState } from "../../../hooks/useComposerState";
 import { IconButton } from "../../IconButton";
 
@@ -17,6 +17,18 @@ export const Composer = ({ className, placeholder = "Type your query here" }: Co
   const isRunning = useThread((s) => s.isRunning);
   const isLoadingMessages = useThread((s) => s.isLoadingMessages);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [hasInputOverflowTop, setHasInputOverflowTop] = useState(false);
+  const [hasInputOverflowBottom, setHasInputOverflowBottom] = useState(false);
+
+  const updateInputOverflow = useCallback(() => {
+    const input = inputRef.current;
+    if (!input) return;
+
+    const maxScrollTop = input.scrollHeight - input.clientHeight;
+
+    setHasInputOverflowTop(maxScrollTop > 0 && input.scrollTop > 0);
+    setHasInputOverflowBottom(maxScrollTop > 0 && input.scrollTop < maxScrollTop - 1);
+  }, []);
 
   const handleSubmit = () => {
     if (!textContent.trim() || isRunning || isLoadingMessages) {
@@ -38,7 +50,8 @@ export const Composer = ({ className, placeholder = "Type your query here" }: Co
     // Reset to 0 (not "auto") so scrollHeight reflects content, not container
     input.style.height = "0px";
     input.style.height = `${Math.max(input.scrollHeight, 24)}px`;
-  }, [textContent]);
+    updateInputOverflow();
+  }, [textContent, updateInputOverflow]);
 
   return (
     <div
@@ -50,11 +63,16 @@ export const Composer = ({ className, placeholder = "Type your query here" }: Co
         }
       }}
     >
-      <div className="openui-agent-thread-composer__input-wrapper">
+      <div
+        className="openui-agent-thread-composer__input-wrapper"
+        data-overflow-top={hasInputOverflowTop || undefined}
+        data-overflow-bottom={hasInputOverflowBottom || undefined}
+      >
         <textarea
           ref={inputRef}
           value={textContent}
           onChange={(e) => setTextContent(e.target.value)}
+          onScroll={updateInputOverflow}
           className="openui-agent-thread-composer__input"
           placeholder={placeholder}
           rows={1}

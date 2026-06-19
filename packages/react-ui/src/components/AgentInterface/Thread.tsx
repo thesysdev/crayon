@@ -6,22 +6,23 @@ import {
   useThread,
 } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { PanelRight } from "lucide-react";
 import React, { memo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { separateContentAndContext } from "../../utils/contentParser";
-import { DetailedViewOverlay, DetailedViewPortalTarget } from "./_shared/detailed-view";
-import { useAgentInterfaceStore } from "./_shared/store";
-import { ToolMessageRenderer } from "./_shared/tool-renderer";
-import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
-import { Button } from "../Button";
 import { Callout } from "../Callout";
+import { IconButton } from "../IconButton";
 import { MarkDownRenderer } from "../MarkDownRenderer";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
 import { ToolCallComponent } from "../ToolCall";
 import { ToolResult } from "../ToolResult";
 import { ResizableSeparator } from "./ResizableSeparator";
+import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
+import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
+import { DetailedViewOverlay, DetailedViewPortalTarget } from "./_shared/detailed-view";
+import { useAgentInterfaceStore } from "./_shared/store";
+import { ToolMessageRenderer } from "./_shared/tool-renderer";
+import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
 import { useDetailedViewResize } from "./useDetailedViewResize";
 
 export const ThreadContainer = ({
@@ -375,9 +376,7 @@ export const ThreadHeader = ({
 }) => {
   return (
     <div className={clsx("openui-agent-thread-header", className)}>
-      <div className="openui-agent-thread-header__title">
-        {/* Thread title hidden for now. */}
-      </div>
+      <div className="openui-agent-thread-header__title">{/* Thread title hidden for now. */}</div>
       <div className="openui-agent-thread-header__actions">
         {children}
         <WorkspaceToggleButton />
@@ -388,29 +387,28 @@ export const ThreadHeader = ({
 
 const WorkspaceToggleButton = () => {
   const artifacts = useArtifactList();
+  const { isDetailedViewActive } = useActiveDetailedView();
   const { isWorkspaceOpen, setIsWorkspaceOpen } = useAgentInterfaceStore((state) => ({
     isWorkspaceOpen: state.isWorkspaceOpen,
     setIsWorkspaceOpen: state.setIsWorkspaceOpen,
   }));
   const hasArtifacts = Object.keys(artifacts).length > 0;
 
+  if (!hasArtifacts || isDetailedViewActive) return null;
+
   return (
-    <Button
-      iconRight={<PanelRight size="1em" />}
-      onClick={() => {
-        if (hasArtifacts) setIsWorkspaceOpen(!isWorkspaceOpen);
-      }}
-      size="small"
-      variant="tertiary"
-      aria-label={isWorkspaceOpen ? "Collapse workspace" : "Expand workspace"}
-      aria-hidden={!hasArtifacts}
-      tabIndex={hasArtifacts ? undefined : -1}
-      className={clsx("openui-agent-thread-header__workspace-toggle-button", {
-        "openui-agent-thread-header__workspace-toggle-button--hidden": !hasArtifacts,
-      })}
-    >
-      Workspace
-    </Button>
+    <AgentInterfaceTooltip content="Apps & Artifacts" side="left">
+      <IconButton
+        icon={<GalleryHorizontalEndIcon size="1em" />}
+        onClick={() => {
+          if (hasArtifacts) setIsWorkspaceOpen(!isWorkspaceOpen);
+        }}
+        size="small"
+        variant="tertiary"
+        aria-label={isWorkspaceOpen ? "Collapse workspace" : "Expand workspace"}
+        className="openui-agent-thread-header__workspace-toggle-button"
+      />
+    </AgentInterfaceTooltip>
   );
 };
 

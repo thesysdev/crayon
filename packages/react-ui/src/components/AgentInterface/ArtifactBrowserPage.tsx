@@ -6,6 +6,7 @@ import {
 import { Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../Button";
+import { IconButton } from "../IconButton";
 import { artifactViewPath } from "./_shared/artifactPaths";
 import { useNav } from "./_shared/navContext";
 
@@ -52,18 +53,25 @@ export const getArtifactTypeLabel = (artifact: { type: string }) =>
   ARTIFACT_TYPE_LABEL_BY_TYPE[artifact.type] ?? artifact.type;
 
 export const ArtifactPreviewIllustration = ({
+  className,
   kind,
   title,
 }: {
+  className?: string;
   kind: ArtifactPreviewKind;
   title: string;
 }) => {
+  const illustrationClassName = [
+    "openui-agent-artifact-browser__preview-illustration",
+    `openui-agent-artifact-browser__preview-illustration--${kind}`,
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   if (kind === "report") {
     return (
-      <div
-        className="openui-agent-artifact-browser__preview-illustration openui-agent-artifact-browser__preview-illustration--report"
-        aria-hidden="true"
-      >
+      <div className={illustrationClassName} aria-hidden="true">
         <div className="openui-agent-artifact-browser__preview-canvas">
           <div className="openui-agent-artifact-browser__report-paper">
             <div className="openui-agent-artifact-browser__report-lines">
@@ -80,10 +88,7 @@ export const ArtifactPreviewIllustration = ({
 
   if (kind === "slide") {
     return (
-      <div
-        className="openui-agent-artifact-browser__preview-illustration openui-agent-artifact-browser__preview-illustration--slide"
-        aria-hidden="true"
-      >
+      <div className={illustrationClassName} aria-hidden="true">
         <div className="openui-agent-artifact-browser__preview-canvas">
           <div className="openui-agent-artifact-browser__slide-lines">
             <span />
@@ -99,10 +104,7 @@ export const ArtifactPreviewIllustration = ({
   }
 
   return (
-    <div
-      className="openui-agent-artifact-browser__preview-illustration openui-agent-artifact-browser__preview-illustration--app"
-      aria-hidden="true"
-    >
+    <div className={illustrationClassName} aria-hidden="true">
       <div className="openui-agent-artifact-browser__preview-canvas">
         <div className="openui-agent-artifact-browser__app-lines">
           <span />
@@ -183,6 +185,11 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
   }, [search]);
 
   const typeKey = typeFilter?.join(" ");
+  const emptyPreviewKind = categoryName === "Apps" ? "app" : "report";
+  const emptyItemLabel = categoryName === "Apps" ? "apps" : "artifacts";
+  const emptyMessage = debouncedSearch
+    ? `No ${emptyItemLabel} match your search`
+    : `No ${emptyItemLabel} yet`;
 
   // Initial page + reload on search/category change.
   useEffect(() => {
@@ -249,14 +256,13 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
               aria-label="Search artifacts by title"
             />
             {search && (
-              <button
-                type="button"
+              <IconButton
+                size="2-extra-small"
+                variant="tertiary"
+                icon={<X size="1em" />}
                 aria-label="Clear search"
-                className="openui-agent-artifact-browser__search-clear"
                 onClick={() => setSearch("")}
-              >
-                <X size="1em" />
-              </button>
+              />
             )}
           </div>
         </div>
@@ -269,7 +275,12 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
           )}
           {!error && artifacts.length === 0 && !isLoading && (
             <div className="openui-agent-artifact-browser__empty">
-              {debouncedSearch ? "No artifacts match your search." : "No artifacts yet."}
+              <ArtifactPreviewIllustration
+                className="openui-agent-artifact-browser__empty-illustration"
+                kind={emptyPreviewKind}
+                title={emptyMessage}
+              />
+              <span className="openui-agent-artifact-browser__empty-text">{emptyMessage}</span>
             </div>
           )}
           {artifacts.map((artifact) => {

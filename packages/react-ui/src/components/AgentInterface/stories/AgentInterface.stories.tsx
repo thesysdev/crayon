@@ -223,9 +223,7 @@ export const WithThreadHeader = {
   render: () => (
     <AgentInterface storage={emptyStorage} llm={echoLLM} logoUrl={logoUrl} agentName="OpenUI">
       <AgentInterface.ThreadHeader>
-        <Button iconLeft={<Share size={16} />} variant="tertiary" size="small">
-          Share
-        </Button>
+        <IconButton icon={<Share size={16} />} variant="tertiary" size="small" aria-label="Share" />
       </AgentInterface.ThreadHeader>
     </AgentInterface>
   ),
@@ -806,9 +804,8 @@ export const ArtifactBrowserUncategorized = {
 /**
  * Per-thread Workspace rail. Send a message (or click the starter) — the
  * mock LLM replies with a `dashboard:create` tool call; the matched artifact
- * renderer registers an entry in the ThreadContext, the Workspace rail
- * auto-appears on the right, and clicking the entry opens its DetailedView
- * (the rail auto-collapses while the view is open).
+ * renderer registers an entry in the ThreadContext. Use the header Workspace
+ * button to open the rail, then click the entry to open its DetailedView.
  */
 const toolCallSSE = (toolName: string, args: object, result: object): Promise<Response> => {
   const events = [

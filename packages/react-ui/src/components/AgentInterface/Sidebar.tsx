@@ -4,6 +4,7 @@ import { PanelLeft } from "lucide-react";
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { IconButton } from "../IconButton";
+import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { useAgentInterfaceStore } from "./_shared/store";
 
 const SIDEBAR_FADE_DURATION_MS = 90;
@@ -168,14 +169,17 @@ export const SidebarHeader = ({
   collapseButton,
   children,
 }: SidebarHeaderProps) => {
-  const { agentName: ctxAgentName, logoUrl, setIsSidebarOpen, isSidebarOpen } = useAgentInterfaceStore(
-    (state) => ({
-      agentName: state.agentName,
-      logoUrl: state.logoUrl,
-      setIsSidebarOpen: state.setIsSidebarOpen,
-      isSidebarOpen: state.isSidebarOpen,
-    }),
-  );
+  const {
+    agentName: ctxAgentName,
+    logoUrl,
+    setIsSidebarOpen,
+    isSidebarOpen,
+  } = useAgentInterfaceStore((state) => ({
+    agentName: state.agentName,
+    logoUrl: state.logoUrl,
+    setIsSidebarOpen: state.setIsSidebarOpen,
+    isSidebarOpen: state.isSidebarOpen,
+  }));
   const sidebarVisualState = useOptionalSidebarVisualState();
   const isCollapsedLayout = sidebarVisualState?.isCollapsedLayout ?? !isSidebarOpen;
 
@@ -209,17 +213,22 @@ export const SidebarHeader = ({
     <div className="openui-agent-sidebar-header__agent-name">{ctxAgentName}</div>
   );
   const defaultCollapseButton = (
-    <IconButton
-      icon={<PanelLeft size="1em" strokeWidth={2} />}
-      onClick={(e) => {
-        e.stopPropagation();
-        setIsSidebarOpen(!isSidebarOpen);
-      }}
-      size="small"
-      variant="tertiary"
-      aria-label={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-      className="openui-agent-sidebar-header__toggle-button"
-    />
+    <AgentInterfaceTooltip
+      content={isCollapsedLayout ? "Open sidebar" : "Close sidebar"}
+      side="right"
+    >
+      <IconButton
+        icon={<PanelLeft size="1em" strokeWidth={2} />}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsSidebarOpen(!isSidebarOpen);
+        }}
+        size="small"
+        variant="tertiary"
+        aria-label={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+        className="openui-agent-sidebar-header__toggle-button"
+      />
+    </AgentInterfaceTooltip>
   );
 
   return (

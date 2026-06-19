@@ -1,15 +1,16 @@
 import {
   ChatProvider,
-  type AssistantMessage,
-  type Artifact,
-  type ChatProviderProps,
-  type UserMessage,
+  useActiveDetailedView,
   useArtifactList,
   useArtifactStorage,
   useThreadList,
+  type Artifact,
+  type AssistantMessage,
+  type ChatProviderProps,
+  type UserMessage,
 } from "@openuidev/react-headless";
 import type { Library } from "@openuidev/react-lang";
-import { ArrowLeft, MessageSquare, PanelRight } from "lucide-react";
+import { ArrowLeft, MessageSquare } from "lucide-react";
 import {
   Children,
   isValidElement,
@@ -22,39 +23,30 @@ import {
   type ReactNode,
 } from "react";
 import type { ConversationStarterProps } from "../../types/ConversationStarter";
+import { IconButton } from "../IconButton";
 import { GenUIAssistantMessage } from "../OpenUIChat/GenUIAssistantMessage";
 import { GenUIUserMessage } from "../OpenUIChat/GenUIUserMessage";
 import { ThemeProvider, type ThemeProps } from "../ThemeProvider";
+import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { artifactListPath, parseArtifactPath } from "./_shared/artifactPaths";
+import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
 import { NavProvider, useNav } from "./_shared/navContext";
+import { StartersProvider } from "./_shared/startersContext";
 import { useAgentInterfaceStore } from "./_shared/store";
+import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
 import { ArtifactBrowserPage } from "./ArtifactBrowserPage";
 import { ArtifactNav } from "./ArtifactNav";
 import { ArtifactViewPage } from "./ArtifactViewPage";
-import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
-import { StartersProvider } from "./_shared/startersContext";
 import { Composer } from "./Composer";
-import { type ConversationStarterVariant } from "./ConversationStarter";
 import { Container } from "./Container";
-import { IconButton } from "../IconButton";
+import { type ConversationStarterVariant } from "./ConversationStarter";
 import { MobileHeader } from "./MobileHeader";
 import { NewChatButton } from "./NewChatButton";
 import { Route } from "./Route";
-import {
-  SidebarContainer,
-  SidebarContent,
-  SidebarHeader,
-  SidebarSeparator,
-} from "./Sidebar";
+import { SidebarContainer, SidebarContent, SidebarHeader, SidebarSeparator } from "./Sidebar";
 import { SidebarItem } from "./SidebarItem";
 import { SidebarSlot } from "./SidebarSlot";
-import {
-  MessageLoading,
-  Messages,
-  ScrollArea,
-  ThreadContainer,
-  ThreadHeader,
-} from "./Thread";
+import { MessageLoading, Messages, ScrollArea, ThreadContainer, ThreadHeader } from "./Thread";
 import { ThreadList } from "./ThreadList";
 import { WelcomeScreen } from "./WelcomeScreen";
 import { Workspace } from "./Workspace";
@@ -114,8 +106,7 @@ const SLOT_KEY_BY_TYPE = new Map<unknown, SingleSlotKey>([
   [Workspace, "workspace"],
 ]);
 
-const isDev = () =>
-  typeof process !== "undefined" && process.env?.["NODE_ENV"] !== "production";
+const isDev = () => typeof process !== "undefined" && process.env?.["NODE_ENV"] !== "production";
 
 function extractSlots(children: ReactNode): ExtractedSlots {
   const result: ExtractedSlots = { routes: [], rest: [] };
@@ -325,22 +316,25 @@ const ArtifactViewMobileHeader = ({
 
 const MobileWorkspaceToggleButton = () => {
   const artifacts = useArtifactList();
+  const { isDetailedViewActive } = useActiveDetailedView();
   const { isWorkspaceOpen, setIsWorkspaceOpen } = useAgentInterfaceStore((state) => ({
     isWorkspaceOpen: state.isWorkspaceOpen,
     setIsWorkspaceOpen: state.setIsWorkspaceOpen,
   }));
   const hasArtifacts = Object.keys(artifacts).length > 0;
 
-  if (!hasArtifacts) return null;
+  if (!hasArtifacts || isDetailedViewActive) return null;
 
   return (
-    <IconButton
-      size="medium"
-      icon={<PanelRight size="1em" />}
-      onClick={() => setIsWorkspaceOpen(!isWorkspaceOpen)}
-      variant="secondary"
-      aria-label={isWorkspaceOpen ? "Collapse workspace" : "Expand workspace"}
-    />
+    <AgentInterfaceTooltip content="Apps & Artifacts" side="left">
+      <IconButton
+        size="medium"
+        icon={<GalleryHorizontalEndIcon size="1em" />}
+        onClick={() => setIsWorkspaceOpen(!isWorkspaceOpen)}
+        variant="secondary"
+        aria-label={isWorkspaceOpen ? "Collapse workspace" : "Expand workspace"}
+      />
+    </AgentInterfaceTooltip>
   );
 };
 
@@ -354,16 +348,11 @@ const AgentInterfaceBody = ({
   const { path } = useNav();
 
   // Reserved `artifacts/` prefix is matched BEFORE user-defined Routes.
-  const artifactPath = useMemo(
-    () => (path === undefined ? null : parseArtifactPath(path)),
-    [path],
-  );
+  const artifactPath = useMemo(() => (path === undefined ? null : parseArtifactPath(path)), [path]);
 
   const activeRoute = useMemo(() => {
     if (path === undefined || artifactPath) return undefined;
-    return slots.routes.find(
-      (route) => (route.props as { path: string }).path === path,
-    );
+    return slots.routes.find((route) => (route.props as { path: string }).path === path);
   }, [path, artifactPath, slots.routes]);
 
   return (
