@@ -24,6 +24,7 @@ export const blogPosts = defineCollections({
   schema: pageSchema.extend({
     author: z.string(),
     date: z.string().date().or(z.date()),
+    featured: z.boolean().optional(),
   }),
 });
 

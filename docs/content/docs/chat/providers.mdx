@@ -89,6 +89,27 @@ Use the same decision rules:
 - start with `apiUrl` when the endpoint already matches the request and stream shape your frontend expects
 - switch to `processMessage` when you need auth headers, a custom body, dynamic routing, or provider-specific metadata
 
+`@openuidev/react-headless` ships `langGraphAdapter()` and `langGraphMessageFormat` for exactly this. Pair them with a `processMessage` that posts to a proxy route, converting messages with `langGraphMessageFormat.toApi`:
+
+```tsx
+import { langGraphAdapter, langGraphMessageFormat } from "@openuidev/react-headless";
+import { FullScreen } from "@openuidev/react-ui";
+
+<FullScreen
+  processMessage={async ({ messages, abortController }) =>
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: langGraphMessageFormat.toApi(messages) }),
+      signal: abortController.signal,
+    })
+  }
+  streamProtocol={langGraphAdapter()}
+/>;
+```
+
+For a complete, runnable version (including a multi-agent supervisor graph and the server-side proxy that hides your API key), see the [LangGraph Chat example](/docs/openui-lang/examples/langgraph-chat).
+
 {/* add visual: flow-chart showing provider choice splitting first by emitted stream format, then by whether messageFormat is needed */}
 
 ## Related guides

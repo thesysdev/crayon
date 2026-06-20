@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import styles from "../page.module.css";
 import { FeaturesSection, OPENCLAW_FEATURES } from "../sections/FeaturesSection/FeaturesSection";
 import { Footer } from "../sections/Footer/Footer";
-import { GradientDivider } from "../sections/GradientDivider/GradientDivider";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
 import heroStyles from "../sections/HeroSection/HeroSection.module.css";
 import { PossibilitiesSection } from "../sections/PossibilitiesSection/PossibilitiesSection";
@@ -115,7 +114,6 @@ export default function OpenClawOSPage() {
             windowsInstallCommand={WINDOWS_INSTALL_COMMAND}
           />
         </div>
-        <GradientDivider direction="up" />
       </div>
       <Footer />
     </div>

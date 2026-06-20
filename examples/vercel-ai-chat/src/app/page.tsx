@@ -1,6 +1,5 @@
 "use client";
 
-import "@openuidev/react-ui/components.css";
 
 import { useChat } from "@ai-sdk/react";
 import { useRef, useEffect, useState } from "react";

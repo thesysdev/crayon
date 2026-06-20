@@ -1,6 +1,5 @@
 "use client";
 
-import "@openuidev/react-ui/components.css";
 import { openAIMessageFormat, openAIAdapter } from "@openuidev/react-headless";
 import { Copilot } from "@openuidev/react-ui";
 import { spreadsheetLibrary } from "@/lib/spreadsheet-library";

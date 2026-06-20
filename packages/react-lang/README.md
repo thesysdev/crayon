@@ -2,8 +2,8 @@
 
 React bindings for OpenUI Lang. Use this package when your model needs to emit structured UI and your React app needs to render it while the response is still streaming.
 
-[![npm](https://img.shields.io/npm/v/@openuidev/react-lang)](https://www.npmjs.com/package/@openuidev/react-lang)
-[![npm downloads](https://img.shields.io/npm/dm/@openuidev/react-lang)](https://www.npmjs.com/package/@openuidev/react-lang)
+[![npm version](https://img.shields.io/npm/v/@openuidev/react-lang)](https://www.npmjs.com/package/@openuidev/react-lang)
+[![monthly downloads](https://img.shields.io/npm/dm/@openuidev/react-lang)](https://www.npmjs.com/package/@openuidev/react-lang)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
 
 **Links:** [Package docs](https://openui.com/docs/api-reference/react-lang) | [OpenUI Lang guide](https://openui.com/docs/openui-lang) | [GitHub repo](https://github.com/thesysdev/openui)

@@ -35,7 +35,7 @@ const shared = {
   outDir: "dist",
   clean: false,
   deps: {
-    neverBundle: [/^[^./]/, /\.scss$/, /\.css$/],
+    neverBundle: [/^(?![./]|[A-Za-z]:[/\\])/, /\.scss$/, /\.css$/],
   },
 } satisfies Parameters<typeof defineConfig>[0];
 
