@@ -6,7 +6,7 @@ import {
   useThread,
 } from "@openuidev/react-headless";
 import clsx from "clsx";
-import React, { memo, useRef } from "react";
+import React, { memo, useId, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { separateContentAndContext } from "../../utils/sentinelParser";
@@ -49,13 +49,18 @@ export const ThreadContainer = ({
     detailedViewPanelRef,
     isDragging,
     handleResize,
+    handleResizeStep,
     handleDragStart,
     handleDragEnd,
+    getResizeAria,
   } = useDetailedViewResize({
     isDetailedViewActive,
     isMobile,
     setIsSidebarOpen,
   });
+
+  const chatPanelId = useId();
+  const detailPanelId = useId();
 
   return (
     <div
@@ -70,6 +75,7 @@ export const ThreadContainer = ({
         {/* Chat panel - always visible */}
         <div
           ref={chatPanelRef}
+          id={chatPanelId}
           className={clsx("openui-agent-thread-chat-panel", {
             "openui-agent-thread-chat-panel--animating": !isDragging,
           })}
@@ -83,11 +89,16 @@ export const ThreadContainer = ({
           <>
             <ResizableSeparator
               onResize={handleResize}
+              onResizeStep={handleResizeStep}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              getAriaValues={getResizeAria}
+              controlsId={`${chatPanelId} ${detailPanelId}`}
+              ariaLabel="Resize chat panel"
             />
             <div
               ref={detailedViewPanelRef}
+              id={detailPanelId}
               className={clsx("openui-agent-thread-detailed-view-panel", {
                 "openui-agent-thread-detailed-view-panel--animating": !isDragging,
               })}
