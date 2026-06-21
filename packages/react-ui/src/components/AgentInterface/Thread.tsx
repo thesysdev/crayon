@@ -9,7 +9,6 @@ import clsx from "clsx";
 import React, { memo, useId, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
-import { separateContentAndContext } from "../../utils/sentinelParser";
 import { DetailedViewOverlay, DetailedViewPortalTarget } from "./_shared/detailed-view";
 import { useAgentInterfaceStore } from "./_shared/store";
 import { ToolMessageRenderer } from "./_shared/tool-renderer";
@@ -22,6 +21,7 @@ import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
 import { ToolCallComponent } from "../ToolCall";
 import { ToolResult } from "../ToolResult";
 import { ResizableSeparator } from "./ResizableSeparator";
+import { UserMessageContent } from "./UserMessageContent";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
 import { useDetailedViewResize } from "./useDetailedViewResize";
@@ -235,38 +235,6 @@ const AssistantMessageContent = ({
             fallback={fallback}
           />
         );
-      })}
-    </>
-  );
-};
-
-const UserMessageContent = ({ message }: { message: Message }) => {
-  if (message.role !== "user") return null;
-  const content = message.content;
-  if (typeof content === "string") {
-    // Strip XML wrapper tags (<content>, <context>) so the bubble shows clean text
-    const { content: humanText } = separateContentAndContext(content);
-    return <>{humanText}</>;
-  }
-  // InputContent[] — render text parts
-  return (
-    <>
-      {content?.map((part, i) => {
-        if (part.type === "text") {
-          return <span key={i}>{part.text}</span>;
-        }
-        // Binary content — could be image, file, etc.
-        if (part.type === "binary" && part.url) {
-          return (
-            <img
-              key={i}
-              src={part.url}
-              alt=""
-              className="openui-agent-thread-message-user__image"
-            />
-          );
-        }
-        return null;
       })}
     </>
   );
