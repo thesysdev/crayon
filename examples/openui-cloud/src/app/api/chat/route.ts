@@ -1,6 +1,6 @@
+import { envOr, requiredEnv } from "@/lib/env";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
 import type { ResponseInputItem } from "openai/resources/responses/responses";
-import { envOr, requiredEnv } from "@/lib/env";
 
 /**
  * Generation plane: browser → THIS route → OpenUI Cloud
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
-
+  console.log("artifactTool", artifactTool());
   const upstream = await fetch(
     `${envOr("OPENUI_CLOUD_BASE_URL", "http://localhost:3102")}/v1/embed/responses`,
     {
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         // A bare provider/model id (versioned managed ids are mutually
         // exclusive with the instructions config block).
-        model: envOr("OPENUI_MODEL", "openai/gpt-5"),
+        model: "anthropic/claude-sonnet-4-5-20250929",
         conversation: threadId,
         input,
         stream: true,

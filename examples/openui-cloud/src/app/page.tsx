@@ -9,17 +9,16 @@ import {
   type ChatStorage,
 } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
-// The chat component library the backend's generated programs target.
-import { chatLibrary } from "@openuidev/thesys";
+// All four come from the migrated SDK — the src/cloud + src/shared/artifact/renderers
+// that moved into @openuidev/thesys — instead of the local examples/openui-cloud/src/lib
+// copies (which stay on disk but are no longer imported here):
+//   chatLibrary       — component library the backend's generated programs target
+//   openuiCloud       — one-call browser ChatStorage over the /v1 API, fct_-authenticated
+//   artifactRenderers — defineArtifactRenderer configs (type 'presentation' | 'report',
+//                       toolName 'thesys_generate_artifact' / 'thesys_edit_artifact')
+//   artifactCategories
 import { useTheme } from "@/hooks/use-system-theme";
-
-// openuiCloud: one-call browser wiring — a ChatStorage over the /v1 API,
-// authenticated per-request with an fct_ token. The browser hits the API
-// directly; `token` names the backend mint endpoint that issues the fct_.
-import { openuiCloud } from "@/lib/thesys";
-// Artifact renderers: defineArtifactRenderer configs. type 'presentation' |
-// 'report', toolName 'thesys_generate_artifact' (+ 'thesys_edit_artifact').
-import { artifactCategories, artifactRenderers } from "@/lib/artifactRenderers";
+import { artifactCategories, artifactRenderers, chatLibrary, openuiCloud } from "@openuidev/thesys";
 
 const storage: ChatStorage = openuiCloud({
   // Defaults to https://api.thesys.dev; set NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL to override (e.g. a local stack).
