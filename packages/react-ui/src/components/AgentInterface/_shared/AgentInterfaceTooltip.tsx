@@ -16,19 +16,18 @@ export const AgentInterfaceTooltip = ({
   align = "center",
   sideOffset = 8,
 }: AgentInterfaceTooltipProps) => (
-  <Tooltip.Provider delayDuration={250}>
-    <Tooltip.Root>
-      <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
-      <Tooltip.Portal>
-        <Tooltip.Content
-          className="openui-agent-tooltip"
-          side={side}
-          align={align}
-          sideOffset={sideOffset}
-        >
-          {content}
-        </Tooltip.Content>
-      </Tooltip.Portal>
-    </Tooltip.Root>
-  </Tooltip.Provider>
+  // Provider is hoisted once into <Container> so delay/skip-delay are shared.
+  <Tooltip.Root>
+    <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
+    <Tooltip.Portal>
+      <Tooltip.Content
+        className="openui-agent-tooltip"
+        side={side}
+        align={align}
+        sideOffset={sideOffset}
+      >
+        {content}
+      </Tooltip.Content>
+    </Tooltip.Portal>
+  </Tooltip.Root>
 );

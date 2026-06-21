@@ -1,3 +1,4 @@
+import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import { useRef } from "react";
 import { LayoutContextProvider } from "../../context/LayoutContext";
@@ -27,18 +28,23 @@ export const Container = ({ children, logoUrl, agentName, className }: Container
           exist here (instead of falling back to defaults). */}
       <ShellStoreProvider logoUrl={logoUrl} agentName={agentName}>
         <LayoutContextProvider layout={layout}>
-          <div
-            className={clsx(
-              "openui-agent-container",
-              {
-                "openui-agent-container--mobile": isMobile,
-              },
-              className,
-            )}
-            ref={ref}
-          >
-            {children}
-          </div>
+          {/* Single shared Tooltip.Provider for the whole interface so hover-open
+              delay and skip-delay behavior are shared across all tooltips
+              (instead of each tooltip mounting its own provider). */}
+          <Tooltip.Provider delayDuration={250}>
+            <div
+              className={clsx(
+                "openui-agent-container",
+                {
+                  "openui-agent-container--mobile": isMobile,
+                },
+                className,
+              )}
+              ref={ref}
+            >
+              {children}
+            </div>
+          </Tooltip.Provider>
         </LayoutContextProvider>
       </ShellStoreProvider>
     </AgentInterfaceStoreProvider>
