@@ -13,12 +13,15 @@ export default function Home() {
     <div className="h-screen w-screen overflow-hidden">
       <FullScreen
         // Without a thread backend, OpenUI sends a constant "ephemeral" id for
-        // every chat, collapsing them onto one pi session. Assign each new thread
+        // every chat, collapsing them onto one Pi session. Assign each new thread
         // a stable client-generated id so threads get isolated sessions and
         // "new chat" forks a fresh one.
         createThread={async (firstMessage) => {
           const content = (firstMessage as { content?: unknown }).content;
-          const title = typeof content === "string" && content.trim() ? content.trim().slice(0, 50) : "New chat";
+          const title =
+            typeof content === "string" && content.trim()
+              ? content.trim().slice(0, 50)
+              : "New chat";
           return { id: crypto.randomUUID(), title, createdAt: Date.now() };
         }}
         processMessage={async ({ threadId, messages, abortController }) => {
@@ -26,7 +29,7 @@ export default function Home() {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              // Map each chat thread to its own persistent pi AgentSession.
+              // Map each chat thread to its own persistent Pi AgentSession.
               "x-conversation-id": threadId,
             },
             body: JSON.stringify({

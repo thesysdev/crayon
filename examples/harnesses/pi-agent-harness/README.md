@@ -1,10 +1,10 @@
-# OpenUI + pi Agent Harness
+# OpenUI + Pi Agent Harness
 
-A generative-UI frontend where you chat with the **pi coding agent** and get **generative UI**
+A generative-UI frontend where you chat with the **Pi coding agent** and get **generative UI**
 answers — live React components instead of plain markdown — rendered with
 [OpenUI](https://openui.com).
 
-The App-Router route `src/app/api/chat/route.ts` _is_ the backend bridge to the pi SDK
+The App-Router route `src/app/api/chat/route.ts` _is_ the backend bridge to the Pi SDK
 ([`@earendil-works/pi-coding-agent`](https://www.npmjs.com/package/@earendil-works/pi-coding-agent)),
 so there's no second server and no CORS. Unlike the other examples, the "agent" here is a real
 coding agent with `read` / `bash` / `edit` / `write` tools that act on a workspace you choose at
@@ -26,7 +26,7 @@ launch — see **Security** below.
                                                                            │
                                           session.subscribe() → text/thinking/tool events
                                           session.prompt(lastUserText)     ▼
-                                                            pi SDK (read/bash/edit/write)
+                                                            Pi SDK (read/bash/edit/write)
                                                             operating on the server cwd
 ```
 
@@ -35,20 +35,20 @@ launch — see **Security** below.
   events into `delta.content`, and pi's reasoning + tool executions into `delta.tool_calls`.
 - **System prompt:** `page.tsx` generates the OpenUI Lang prompt client-side
   (`openuiLibrary.prompt(openuiPromptOptions)`) and sends it in the request body; the route
-  injects it into pi via `DefaultResourceLoader({ appendSystemPrompt: [...] })`, so the backend
+  injects it into Pi via `DefaultResourceLoader({ appendSystemPrompt: [...] })`, so the backend
   prompt and the frontend renderer always reference the same component library.
 - **Sessions:** each chat thread (a stable id sent as the `x-conversation-id` header) maps to
-  one persistent pi `AgentSession`, so multi-turn context is preserved.
+  one persistent Pi `AgentSession`, so multi-turn context is preserved.
 
 ## Prerequisites
 
-All you need is a **model provider API key**. You do **not** need the pi CLI installed — this app
-embeds the pi SDK and reads credentials directly. Pick one of:
+All you need is a **model provider API key**. You do **not** need the Pi CLI installed — this app
+embeds the Pi SDK and reads credentials directly. Pick one of:
 
-1. **An API key (recommended — no pi required).** Copy `.env.example` to `.env` and set a provider
+1. **An API key (recommended — no Pi required).** Copy `.env.example` to `.env` and set a provider
    key, e.g. `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or `GEMINI_API_KEY`. With just a key and no
    other config, the SDK resolves that provider's default model.
-2. **An existing pi login.** If you already use the pi CLI, the app automatically picks up your
+2. **An existing Pi login.** If you already use the Pi CLI, the app automatically picks up your
    `~/.pi/agent` auth and settings (model, provider, thinking level) — no `.env` needed.
 
 If neither resolves, the chat still streams but opens with the SDK's "no models available" notice.
@@ -68,7 +68,7 @@ Then, from this example, set a provider key and point the agent at a project to 
 
 ```bash
 cd examples/pi-agent-harness
-cp .env.example .env   # set a provider API key (skip if using an existing pi login)
+cp .env.example .env   # set a provider API key (skip if using an existing Pi login)
 
 # Point the agent at the project you want it to work on:
 pnpm dev -- /path/to/your/project
@@ -101,13 +101,13 @@ pnpm build && pnpm start
 
 The model's reasoning (a streaming "Thinking" card) and each tool run (`read`/`bash`/`edit`/`write`
 with its input) are forwarded as `tool_calls` and render in OpenUI's collapsible "behind the
-scenes" section, like the pi CLI. The "Thinking" card only appears when your model emits
+scenes" section, like the Pi CLI. The "Thinking" card only appears when your model emits
 reasoning. Tool _results_ (command output) aren't shown yet — OpenUI's streaming path renders
 tool calls but not inline results; surfacing those needs a custom adapter/renderer.
 
 ## Why `--webpack`
 
-The pi SDK is an **ESM-only** package (its `exports` map has no `require` entry) and a Node-only
+The Pi SDK is an **ESM-only** package (its `exports` map has no `require` entry) and a Node-only
 chain that spawns bash, uses `import.meta`, and reads its own prompt/skill/theme files from disk —
 it must run as a real Node module at runtime, never bundled. `src/lib/pi-session.ts` loads it via
 a native dynamic `import()`, and `next.config.ts` marks it as an external so the bundler keeps it
@@ -125,11 +125,11 @@ you can experiment with the default Turbopack + `serverExternalPackages` if you 
 
 **This endpoint runs a real coding agent and is unauthenticated.** By default the agent has the
 full toolset (`read`, `bash`, `edit`, `write`) and tools execute with **no human approval** (the
-interactive approval prompt only exists in the pi TUI). It runs with the launching user's
+interactive approval prompt only exists in the Pi TUI). It runs with the launching user's
 permissions on `PI_AGENT_CWD`, and `bash` is **not** confined to that directory. Treat the
 ability to reach this port as remote code execution.
 
-- **Local, single-user use** (the default) is equivalent to running the pi CLI yourself — fine.
+- **Local, single-user use** (the default) is equivalent to running the Pi CLI yourself — fine.
 - **Any networked / shared / multi-user exposure requires protection.** At minimum:
   - set `PI_WEB_TOOLS=read-only` to disable `bash`/`edit`/`write`;
   - put it behind authentication / a reverse proxy and bind to loopback

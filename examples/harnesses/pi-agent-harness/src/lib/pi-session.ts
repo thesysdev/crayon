@@ -1,8 +1,8 @@
 /**
- * Server-only registry of pi `AgentSession`s, one per chat thread.
+ * Server-only registry of Pi `AgentSession`s, one per chat thread.
  *
  * The OpenUI frontend is stateless per request (it re-sends the whole thread
- * each turn), but the pi SDK keeps its own transcript and only wants the newest
+ * each turn), but the Pi SDK keeps its own transcript and only wants the newest
  * user turn via `session.prompt(text)`. So we key a persistent `AgentSession`
  * by the frontend's per-thread conversation id and reuse it across turns to
  * preserve context.
@@ -96,15 +96,19 @@ function toolOptions(): { tools?: string[] } {
   return {};
 }
 
-async function createSession(cwd: string, systemPrompt: string | undefined): Promise<PiSessionEntry> {
-  const { createAgentSession, DefaultResourceLoader, getAgentDir, SettingsManager } = await loadSdk();
+async function createSession(
+  cwd: string,
+  systemPrompt: string | undefined,
+): Promise<PiSessionEntry> {
+  const { createAgentSession, DefaultResourceLoader, getAgentDir, SettingsManager } =
+    await loadSdk();
 
   evictOldestIfFull();
 
   const agentDir = getAgentDir();
   const settingsManager = SettingsManager.create(cwd, agentDir);
 
-  // Inject the OpenUI Lang instructions via appendSystemPrompt so the pi model
+  // Inject the OpenUI Lang instructions via appendSystemPrompt so the Pi model
   // emits generative UI markup. createAgentSession only auto-reloads the loader
   // it creates itself, so a custom loader must be reloaded here.
   const resourceLoader = new DefaultResourceLoader({
