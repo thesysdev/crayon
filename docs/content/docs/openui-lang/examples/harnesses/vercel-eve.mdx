@@ -1,0 +1,133 @@
+---
+title: Vercel Eve
+description: Connect a Vercel Eve agent to OpenUI and render streamed responses and tool calls as live generative UI.
+---
+
+OpenUI can render output from a [Vercel Eve](https://github.com/vercel/eve) agent without replacing Eve's session protocol. This example uses Eve's built-in HTTP channel for delivery and resumable streaming, translates its events to AG-UI, and passes that stream to OpenUI's `<FullScreen>` chat.
+
+The agent receives the OpenUI component-library prompt when a session starts, so its responses use OpenUI Lang and render as cards, tables, charts, forms, and other interactive components.
+
+[View source on GitHub →](https://github.com/thesysdev/openui/tree/main/examples/harnesses/vercel-eve)
+
+## Architecture
+
+```text
+browser ── Eve session HTTP ──▶ Eve agent ── model + tools
+   ▲                               │
+   └── AG-UI SSE ── event adapter ─┘
+         rendered by <FullScreen>
+```
+
+The integration has four main pieces:
+
+| Piece | File | Role |
+| --- | --- | --- |
+| OpenUI chat | `src/app/page.tsx` | Renders `<FullScreen>` with `agUIAdapter()` and the built-in OpenUI component library. |
+| Session bridge | `src/eve-chat.ts` | Delivers turns through Eve's HTTP API, follows its resumable event stream, and returns AG-UI SSE to OpenUI. |
+| Event adapter | `src/eve-stream.ts` | Maps Eve text, tool-call, and failure events to AG-UI events. |
+| Agent instructions | `agent/instructions/openui.ts` | Adds the generated OpenUI system prompt when each Eve session starts. |
+
+## Connecting OpenUI
+
+The page creates Eve-backed chat callbacks and passes them to `<FullScreen>`. OpenUI's AG-UI adapter consumes the SSE response produced by `processMessage`:
+
+```tsx
+import { agUIAdapter } from "@openuidev/react-headless";
+import { FullScreen } from "@openuidev/react-ui";
+import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
+import { createEveChatProps } from "../eve-chat";
+
+const chatProps = createEveChatProps();
+
+<FullScreen
+  {...chatProps}
+  streamProtocol={agUIAdapter()}
+  componentLibrary={openuiChatLibrary}
+  agentName="Eve + OpenUI"
+/>;
+```
+
+`createEveChatProps()` also provides OpenUI's thread callbacks. The example stores thread metadata, transcripts, Eve session IDs, continuation tokens, and stream cursors in `localStorage`, so each OpenUI thread resumes the corresponding Eve conversation.
+
+## Teaching Eve OpenUI Lang
+
+Eve loads instructions from `agent/instructions`. A dynamic instruction adds the component library's generated prompt once when a session starts:
+
+```ts
+import { openuiChatLibrary, openuiChatPromptOptions } from "@openuidev/react-ui/genui-lib";
+import { defineDynamic, defineInstructions } from "eve/instructions";
+
+export default defineDynamic({
+  events: {
+    "session.started": () =>
+      defineInstructions({
+        markdown: openuiChatLibrary.prompt(openuiChatPromptOptions),
+      }),
+  },
+});
+```
+
+This keeps the model's instructions synchronized with the exact component library used by the renderer.
+
+## Translating Eve events
+
+Eve emits typed session events. The adapter in `src/eve-stream.ts` converts the events OpenUI needs:
+
+```text
+actions.requested  -> TOOL_CALL_START / TOOL_CALL_ARGS / TOOL_CALL_END
+message.appended   -> TEXT_MESSAGE_CONTENT
+message.completed  -> TEXT_MESSAGE_CONTENT (non-streaming fallback)
+turn.failed        -> RUN_ERROR
+session.failed     -> RUN_ERROR
+```
+
+Tool calls and text share one assistant message ID. OpenUI renders tool activity in its behind-the-scenes section and the final OpenUI Lang response in the conversation.
+
+## Eve session protocol
+
+The browser talks to the same-origin Eve endpoints installed by `withEve()`:
+
+```text
+POST /eve/v1/session
+POST /eve/v1/session/:id
+GET  /eve/v1/session/:id/stream?startIndex=N
+```
+
+For a follow-up turn, the bridge sends the saved continuation token and resumes from the saved stream index. A completed session clears the cursor; waiting and failed sessions remain resumable.
+
+The demo channel uses anonymous authentication for local development. Replace `none()` in `agent/channels/eve.ts` with an authenticated Eve channel before exposing the application.
+
+## Project layout
+
+```text
+examples/harnesses/vercel-eve/
+|- agent/agent.ts                    # Eve model and build configuration
+|- agent/channels/eve.ts             # Eve HTTP session channel
+|- agent/instructions/openui.ts      # Generated OpenUI Lang instructions
+|- agent/tools/get_current_time.ts   # Example Eve tool
+|- src/app/page.tsx                  # OpenUI FullScreen chat
+|- src/eve-chat.ts                   # Session transport and persistence
+|- src/eve-stream.ts                 # Eve-to-AG-UI event mapping
+|- src/thread-store.ts               # Browser thread and transcript storage
+|- next.config.ts                    # Installs Eve with withEve()
+```
+
+## Run the example
+
+Eve 0.11 requires Node.js 24. From the repository root:
+
+```bash
+pnpm install
+
+cd examples/harnesses/vercel-eve
+LLM_API_KEY=your-api-key pnpm dev
+```
+
+By default the agent uses OpenAI. Configure `LLM_MODEL` and `LLM_BASE_URL` to use another OpenAI-compatible endpoint. Open [http://localhost:3000](http://localhost:3000) and start a conversation.
+
+The repository scripts also expose Eve directly when you need to build or run the agent separately:
+
+```bash
+pnpm eve:build
+pnpm eve:start
+```
