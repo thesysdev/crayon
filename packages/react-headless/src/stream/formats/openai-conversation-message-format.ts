@@ -118,15 +118,34 @@ function toInputMessage(message: UserMessage): EasyInputMessage {
 function fromItems(items: ConversationItem[]): Message[] {
   const messages: Message[] = [];
   let currentAssistant: AssistantMessage | null = null;
+  // Tool outputs for the in-progress assistant turn. BUFFERED rather than
+  // pushed immediately so that an assistant turn with MULTIPLE tool calls
+  // (e.g. thesys_get_artifact_description THEN thesys_generate_artifact)
+  // reconstructs as ONE assistant message + its tool messages — matching the
+  // live stream shape — instead of one assistant message PER tool call. The
+  // latter renders a duplicate "Behind the scenes" group for every call on
+  // reload, because each function_call_output used to flush the assistant.
+  let pendingToolMsgs: ToolMessage[] = [];
+
+  // Emit the in-progress assistant turn: the assistant message first, then its
+  // buffered tool results (the renderer pairs tool messages that immediately
+  // follow their assistant message).
+  const flushAssistant = () => {
+    if (currentAssistant) {
+      messages.push(currentAssistant);
+      currentAssistant = null;
+    }
+    if (pendingToolMsgs.length > 0) {
+      messages.push(...pendingToolMsgs);
+      pendingToolMsgs = [];
+    }
+  };
 
   for (const item of items) {
     switch (item.type) {
       case "message": {
-        // Flush any pending assistant message
-        if (currentAssistant) {
-          messages.push(currentAssistant);
-          currentAssistant = null;
-        }
+        // A non-tool message ends the current assistant turn.
+        flushAssistant();
 
         const msg = item as ConversationMessage;
 
@@ -180,13 +199,10 @@ function fromItems(items: ConversationItem[]): Message[] {
       }
 
       case "function_call_output": {
-        if (currentAssistant) {
-          messages.push(currentAssistant);
-          currentAssistant = null;
-        }
-
+        // Buffer alongside the current assistant — do NOT flush here, so
+        // sibling tool calls in the same turn stay on one assistant message.
         const output = item as ResponseFunctionToolCallOutputItem;
-        messages.push({
+        pendingToolMsgs.push({
           id: output.id,
           role: "tool",
           content:
@@ -202,9 +218,7 @@ function fromItems(items: ConversationItem[]): Message[] {
     }
   }
 
-  if (currentAssistant) {
-    messages.push(currentAssistant);
-  }
+  flushAssistant();
 
   return messages;
 }

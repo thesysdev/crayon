@@ -17,6 +17,8 @@ export type ArtifactEntry = {
   heading: string;
   /** Artifact type from the renderer config, e.g. `'th_dashboard'`. */
   type: string;
+  /** Timestamp when this artifact was registered/updated in the thread context. */
+  updatedAt?: string | number;
 };
 
 /**

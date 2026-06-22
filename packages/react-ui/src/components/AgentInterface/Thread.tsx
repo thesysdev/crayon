@@ -1,20 +1,29 @@
 import type { AssistantMessage, Message, ToolMessage } from "@openuidev/react-headless";
-import { MessageProvider, useActiveDetailedView, useThread } from "@openuidev/react-headless";
+import {
+  MessageProvider,
+  useActiveDetailedView,
+  useArtifactList,
+  useThread,
+} from "@openuidev/react-headless";
 import clsx from "clsx";
-import React, { memo, useRef } from "react";
+import React, { memo, useId, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
-import { separateContentAndContext } from "../../utils/contentParser";
 import { DetailedViewOverlay, DetailedViewPortalTarget } from "./_shared/detailed-view";
 import { useAgentInterfaceStore } from "./_shared/store";
 import { ToolMessageRenderer } from "./_shared/tool-renderer";
 import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
+
 import { Callout } from "../Callout";
+import { IconButton } from "../IconButton";
 import { MarkDownRenderer } from "../MarkDownRenderer";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
 import { ToolCallComponent } from "../ToolCall";
 import { ToolResult } from "../ToolResult";
 import { ResizableSeparator } from "./ResizableSeparator";
+import { UserMessageContent } from "./UserMessageContent";
+import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
+import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
 import { useDetailedViewResize } from "./useDetailedViewResize";
 
 export const ThreadContainer = ({
@@ -40,13 +49,18 @@ export const ThreadContainer = ({
     detailedViewPanelRef,
     isDragging,
     handleResize,
+    handleResizeStep,
     handleDragStart,
     handleDragEnd,
+    getResizeAria,
   } = useDetailedViewResize({
     isDetailedViewActive,
     isMobile,
     setIsSidebarOpen,
   });
+
+  const chatPanelId = useId();
+  const detailPanelId = useId();
 
   return (
     <div
@@ -61,6 +75,7 @@ export const ThreadContainer = ({
         {/* Chat panel - always visible */}
         <div
           ref={chatPanelRef}
+          id={chatPanelId}
           className={clsx("openui-agent-thread-chat-panel", {
             "openui-agent-thread-chat-panel--animating": !isDragging,
           })}
@@ -74,11 +89,16 @@ export const ThreadContainer = ({
           <>
             <ResizableSeparator
               onResize={handleResize}
+              onResizeStep={handleResizeStep}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              getAriaValues={getResizeAria}
+              controlsId={`${chatPanelId} ${detailPanelId}`}
+              ariaLabel="Resize chat panel"
             />
             <div
               ref={detailedViewPanelRef}
+              id={detailPanelId}
               className={clsx("openui-agent-thread-detailed-view-panel", {
                 "openui-agent-thread-detailed-view-panel--animating": !isDragging,
               })}
@@ -96,7 +116,7 @@ export const ScrollArea = ({
   children,
   className,
   scrollVariant = "user-message-anchor",
-  userMessageSelector,
+  userMessageSelector = ".openui-agent-thread-message-user",
 }: {
   children?: React.ReactNode;
   className?: string;
@@ -150,13 +170,8 @@ export const AssistantMessageContainer = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const { logoUrl } = useAgentInterfaceStore((store) => ({
-    logoUrl: store.logoUrl,
-  }));
-
   return (
     <div className={clsx("openui-agent-thread-message-assistant", className)}>
-      <img src={logoUrl} alt="Assistant" className="openui-agent-thread-message-assistant__logo" />
       <div className="openui-agent-thread-message-assistant__content">{children}</div>
     </div>
   );
@@ -220,38 +235,6 @@ const AssistantMessageContent = ({
             fallback={fallback}
           />
         );
-      })}
-    </>
-  );
-};
-
-const UserMessageContent = ({ message }: { message: Message }) => {
-  if (message.role !== "user") return null;
-  const content = message.content;
-  if (typeof content === "string") {
-    // Strip XML wrapper tags (<content>, <context>) so the bubble shows clean text
-    const { content: humanText } = separateContentAndContext(content);
-    return <>{humanText}</>;
-  }
-  // InputContent[] — render text parts
-  return (
-    <>
-      {content?.map((part, i) => {
-        if (part.type === "text") {
-          return <span key={i}>{part.text}</span>;
-        }
-        // Binary content — could be image, file, etc.
-        if (part.type === "binary" && part.url) {
-          return (
-            <img
-              key={i}
-              src={part.url}
-              alt=""
-              className="openui-agent-thread-message-user__image"
-            />
-          );
-        }
-        return null;
       })}
     </>
   );
@@ -371,7 +354,42 @@ export const ThreadHeader = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return <div className={clsx("openui-agent-thread-header", className)}>{children}</div>;
+  return (
+    <div className={clsx("openui-agent-thread-header", className)}>
+      <div className="openui-agent-thread-header__title">{/* Thread title hidden for now. */}</div>
+      <div className="openui-agent-thread-header__actions">
+        {children}
+        <WorkspaceToggleButton />
+      </div>
+    </div>
+  );
+};
+
+const WorkspaceToggleButton = () => {
+  const artifacts = useArtifactList();
+  const { isDetailedViewActive } = useActiveDetailedView();
+  const { isWorkspaceOpen, setIsWorkspaceOpen } = useAgentInterfaceStore((state) => ({
+    isWorkspaceOpen: state.isWorkspaceOpen,
+    setIsWorkspaceOpen: state.setIsWorkspaceOpen,
+  }));
+  const hasArtifacts = Object.keys(artifacts).length > 0;
+
+  if (!hasArtifacts || isDetailedViewActive) return null;
+
+  return (
+    <AgentInterfaceTooltip content="Apps & Artifacts" side="left">
+      <IconButton
+        icon={<GalleryHorizontalEndIcon size="1em" />}
+        onClick={() => {
+          if (hasArtifacts) setIsWorkspaceOpen(!isWorkspaceOpen);
+        }}
+        size="small"
+        variant="tertiary"
+        aria-label={isWorkspaceOpen ? "Collapse workspace" : "Expand workspace"}
+        className="openui-agent-thread-header__workspace-toggle-button"
+      />
+    </AgentInterfaceTooltip>
+  );
 };
 
 // Re-export Composer from components

@@ -81,6 +81,25 @@ const SAMPLE_STARTERS = [
   },
 ];
 
+const COMPOSER_STARTERS = [
+  ...SAMPLE_STARTERS,
+  {
+    displayText: "Show me examples",
+    prompt: "Show me examples",
+    icon: <BookOpen size={16} />,
+  },
+  {
+    displayText: "What's new?",
+    prompt: "What's new?",
+    icon: <Star size={16} />,
+  },
+  {
+    displayText: "Open settings",
+    prompt: "Open settings",
+    icon: <Settings size={16} />,
+  },
+];
+
 const LONG_STARTERS = [
   {
     displayText: "Help me get started with this application and guide me through the features",
@@ -178,8 +197,8 @@ export const WithWelcome = {
       starterVariant="long"
     >
       <AgentInterface.Welcome
-        title="Hi, I'm OpenUI Assistant"
-        description="I help with questions about your account, products, and more."
+        title="OpenUI Assistant"
+        description="Everything you'll need, in one place"
         image={{ url: logoUrl }}
       />
     </AgentInterface>
@@ -194,7 +213,7 @@ export const ComposerStarters = {
       llm={echoLLM}
       logoUrl={logoUrl}
       agentName="OpenUI"
-      starters={SAMPLE_STARTERS}
+      starters={COMPOSER_STARTERS}
     />
   ),
 };
@@ -204,9 +223,7 @@ export const WithThreadHeader = {
   render: () => (
     <AgentInterface storage={emptyStorage} llm={echoLLM} logoUrl={logoUrl} agentName="OpenUI">
       <AgentInterface.ThreadHeader>
-        <Button iconLeft={<Share size={16} />} variant="secondary" size="small">
-          Share
-        </Button>
+        <IconButton icon={<Share size={16} />} variant="tertiary" size="small" aria-label="Share" />
       </AgentInterface.ThreadHeader>
     </AgentInterface>
   ),
@@ -463,7 +480,7 @@ const SidebarItemsStory = () => {
         <AgentInterface.SidebarHeader />
 
         {/* Top section: custom SidebarItems with icons + selected state */}
-        <div style={{ padding: "0 8px", display: "flex", flexDirection: "column", gap: 2 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <AgentInterface.SidebarItem
             icon={<Sparkles size={14} />}
             selected={section === "home"}
@@ -475,7 +492,7 @@ const SidebarItemsStory = () => {
             icon={<Star size={14} />}
             selected={section === "favorites"}
             onClick={() => setSection("favorites")}
-            trailing={<span style={{ fontSize: 11 }}>3</span>}
+            trailing={3}
           >
             Favorites
           </AgentInterface.SidebarItem>
@@ -488,15 +505,21 @@ const SidebarItemsStory = () => {
           </AgentInterface.SidebarItem>
         </div>
 
-        <AgentInterface.SidebarSeparator />
-
         {/* Default ThreadList below */}
         <AgentInterface.SidebarContent>
           <AgentInterface.ThreadList />
         </AgentInterface.SidebarContent>
 
         {/* Footer items */}
-        <div style={{ padding: "8px", display: "flex", flexDirection: "column", gap: 2 }}>
+        <div
+          style={{
+            marginTop: "auto",
+            padding: "8px 0",
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+          }}
+        >
           <AgentInterface.SidebarItem icon={<Settings size={14} />}>
             Settings
           </AgentInterface.SidebarItem>
@@ -560,7 +583,7 @@ const RoutingStory = () => (
     <AgentInterface.Sidebar>
       <AgentInterface.SidebarHeader />
 
-      <div style={{ padding: "0 8px", display: "flex", flexDirection: "column", gap: 2 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <AgentInterface.SidebarItem path="/settings" icon={<Settings size={14} />}>
           Settings
         </AgentInterface.SidebarItem>
@@ -571,8 +594,6 @@ const RoutingStory = () => (
           Help
         </AgentInterface.SidebarItem>
       </div>
-
-      <AgentInterface.SidebarSeparator />
 
       <AgentInterface.SidebarContent>
         <AgentInterface.ThreadList />
@@ -627,7 +648,7 @@ const ControlledRoutingStory = () => {
       <AgentInterface.Sidebar>
         <AgentInterface.SidebarHeader />
 
-        <div style={{ padding: "0 8px", display: "flex", flexDirection: "column", gap: 2 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <AgentInterface.SidebarItem path="/settings" icon={<Settings size={14} />}>
             Settings
           </AgentInterface.SidebarItem>
@@ -635,8 +656,6 @@ const ControlledRoutingStory = () => {
             Docs
           </AgentInterface.SidebarItem>
         </div>
-
-        <AgentInterface.SidebarSeparator />
 
         <AgentInterface.SidebarContent>
           <AgentInterface.ThreadList />
@@ -664,37 +683,53 @@ export const ControlledRouting = {
 
 /**
  * Global artifact browser. `artifactCategories` split the sidebar nav into
- * "Apps" + "Reports"; clicking one opens the searchable artifact list
+ * "Apps" + "Artifacts"; clicking one opens the searchable artifact list
  * (reserved path `artifacts/{category}`); clicking an artifact opens the
  * full-page view with Back + "Go to thread".
  */
-const MOCK_ARTIFACTS = Array.from({ length: 12 }, (_, i) => ({
-  id: `artifact-${i + 1}`,
-  title: i % 2 === 0 ? `Sales dashboard ${i + 1}` : `Quarterly report ${i + 1}`,
-  type: i % 2 === 0 ? "th_dashboard" : "th_report",
-  threadId: String((i % 3) + 1),
-  content: {
-    heading: i % 2 === 0 ? `Sales dashboard ${i + 1}` : `Quarterly report ${i + 1}`,
-    body: `Stored content for artifact ${i + 1}.`,
-  },
-}));
+const MOCK_ARTIFACT_TYPES = [
+  { type: "th_dashboard", titlePrefix: "Sales dashboard" },
+  { type: "th_report", titlePrefix: "Quarterly report" },
+  { type: "th_presentation", titlePrefix: "Market overview" },
+] as const;
 
-const PAGE_SIZE = 5;
+const MOCK_LONG_ARTIFACT_TITLES: Record<number, string> = {
+  3: "Executive market overview presentation for global sales leadership",
+  4: "Sales dashboard with regional revenue attribution and pipeline movement",
+  8: "Quarterly report covering customer expansion, renewals, and churn signals",
+};
+
+const MOCK_ARTIFACTS = Array.from({ length: 12 }, (_, i) => {
+  const artifactType = MOCK_ARTIFACT_TYPES[i % MOCK_ARTIFACT_TYPES.length]!;
+  const title = MOCK_LONG_ARTIFACT_TITLES[i + 1] ?? `${artifactType.titlePrefix} ${i + 1}`;
+
+  return {
+    id: `artifact-${i + 1}`,
+    title,
+    type: artifactType.type,
+    threadId: String((i % 3) + 1),
+    updatedAt: new Date(Date.UTC(2026, 5, 16, 9, 30 - i * 7)).toISOString(),
+    content: {
+      heading: title,
+      body: `Stored content for artifact ${i + 1}.`,
+    },
+  };
+});
 
 const mockArtifactStorage = {
-  list: async ({ name, type, cursor }: { name?: string; type?: string[]; cursor?: string } = {}) => {
+  list: async ({
+    name,
+    type,
+  }: { name?: string; type?: string[]; cursor?: string } = {}) => {
     await new Promise((r) => setTimeout(r, 300));
     const filtered = MOCK_ARTIFACTS.filter(
       (a) =>
         (!name || a.title.toLowerCase().includes(name.toLowerCase())) &&
         (!type || type.includes(a.type)),
     );
-    const start = cursor ? Number(cursor) : 0;
-    const page = filtered.slice(start, start + PAGE_SIZE);
-    const next = start + PAGE_SIZE < filtered.length ? String(start + PAGE_SIZE) : undefined;
     return {
-      artifacts: page.map(({ content: _c, ...summary }) => summary),
-      nextCursor: next,
+      artifacts: filtered.map(({ content: _c, ...summary }) => summary),
+      nextCursor: undefined,
     };
   },
   get: async (id: string) => {
@@ -732,11 +767,12 @@ const storedArtifactRenderer = (type: string) => ({
 const ARTIFACT_RENDERERS = [
   storedArtifactRenderer("th_dashboard"),
   storedArtifactRenderer("th_report"),
+  storedArtifactRenderer("th_presentation"),
 ];
 
 const ARTIFACT_CATEGORIES = [
   { name: "Apps", filter: { type: ["th_dashboard"] } },
-  { name: "Reports", filter: { type: ["th_report"] } },
+  { name: "Artifacts", filter: { type: ["th_report", "th_presentation"] } },
 ];
 
 export const ArtifactBrowser = {
@@ -768,9 +804,8 @@ export const ArtifactBrowserUncategorized = {
 /**
  * Per-thread Workspace rail. Send a message (or click the starter) — the
  * mock LLM replies with a `dashboard:create` tool call; the matched artifact
- * renderer registers an entry in the ThreadContext, the Workspace rail
- * auto-appears on the right, and clicking the entry opens its DetailedView
- * (the rail auto-collapses while the view is open).
+ * renderer registers an entry in the ThreadContext. Use the header Workspace
+ * button to open the rail, then click the entry to open its DetailedView.
  */
 const toolCallSSE = (toolName: string, args: object, result: object): Promise<Response> => {
   const events = [
@@ -824,10 +859,7 @@ const dashboardRenderer = {
       return null;
     }
   },
-  preview: (
-    props: { heading: string },
-    controls: { open: () => void; isActive: boolean },
-  ) => (
+  preview: (props: { heading: string }, controls: { open: () => void; isActive: boolean }) => (
     <button
       type="button"
       onClick={controls.open}

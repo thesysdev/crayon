@@ -7,7 +7,7 @@ import { themeToCssVars } from "./utils";
  * Props for the {@link ThemeProvider} component.
  */
 export type ThemeProps = {
-  /** Active color scheme. @default "light" */
+  /** Active color scheme. Defaults to the parent ThemeProvider mode when nested, otherwise `"light"`. */
   mode?: ThemeMode;
   /** Application content rendered inside the theme context. */
   children?: React.ReactNode;
@@ -148,7 +148,7 @@ function validateThemeObject(themeObj: Theme, propName: string) {
  */
 
 export const ThemeProvider = ({
-  mode = "light",
+  mode: modeProp,
   children,
   lightTheme,
   darkTheme,
@@ -158,6 +158,7 @@ export const ThemeProvider = ({
   const id = cssSafeId(useId());
   const parent = useContext(InternalContext);
   const isNested = parent != null;
+  const mode = modeProp ?? parent?.mode ?? "light";
   const effectiveCssSelector = cssSelector || "body";
   const hasExplicitSelector = effectiveCssSelector !== "body";
 

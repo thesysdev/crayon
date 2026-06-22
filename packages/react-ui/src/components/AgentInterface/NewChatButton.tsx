@@ -1,8 +1,12 @@
 import { useThreadList } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { Plus, SquarePen } from "lucide-react";
+import { SquarePen } from "lucide-react";
+import type { MouseEvent } from "react";
+import { useLayoutContext } from "../../context/LayoutContext";
 import { Button } from "../Button";
-import { IconButton } from "../IconButton";
+import { useOptionalSidebarVisualState } from "./Sidebar";
+import { SidebarTooltip } from "./SidebarTooltip";
+import { useOptionalNav } from "./_shared/navContext";
 import { useAgentInterfaceStore } from "./_shared/store";
 
 export const NewChatButton = ({ className }: { className?: string }) => {
@@ -10,29 +14,54 @@ export const NewChatButton = ({ className }: { className?: string }) => {
   const { isSidebarOpen } = useAgentInterfaceStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
   }));
+  const sidebarVisualState = useOptionalSidebarVisualState();
+  const showExpandedButton = sidebarVisualState
+    ? !sidebarVisualState.isCollapsedLayout
+    : isSidebarOpen;
+  const nav = useOptionalNav();
+  const { layout } = useLayoutContext();
+  const isMobile = layout === "mobile";
 
-  if (!isSidebarOpen) {
+  const handleNewChat = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    switchToNewThread();
+    if (nav && nav.path !== undefined) {
+      nav.navigate(undefined);
+    }
+  };
+
+  if (isMobile) {
     return (
-      <IconButton
-        icon={<SquarePen size="1em" />}
-        onClick={switchToNewThread}
+      <Button
         variant="primary"
-        size="small"
+        size="large"
+        iconLeft={<SquarePen size="1em" />}
+        className={clsx("openui-agent-new-chat-floating-button", className)}
+        onClick={handleNewChat}
         aria-label="New chat"
-        className={clsx("openui-agent-new-chat-button_collapsed", className)}
-      />
+      >
+        New Chat
+      </Button>
     );
   }
 
   return (
-    <Button
-      className={clsx("openui-agent-new-chat-button", className)}
-      iconRight={<Plus />}
-      variant="primary"
-      size="small"
-      onClick={switchToNewThread}
-    >
-      New Chat
-    </Button>
+    <SidebarTooltip content="New Chat" disabled={showExpandedButton}>
+      <button
+        type="button"
+        className={clsx(
+          "openui-agent-new-chat-button",
+          { "openui-agent-new-chat-button--collapsed": !showExpandedButton },
+          className,
+        )}
+        onClick={handleNewChat}
+        aria-label="New chat"
+      >
+        <div className="openui-agent-new-chat-button__icon" aria-hidden="true">
+          <SquarePen size="1em" />
+        </div>
+        <div className="openui-agent-new-chat-button__label">New Chat</div>
+      </button>
+    </SidebarTooltip>
   );
 };

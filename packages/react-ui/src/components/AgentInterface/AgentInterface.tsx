@@ -1,50 +1,52 @@
 import {
   ChatProvider,
+  useActiveDetailedView,
+  useArtifactList,
+  useArtifactStorage,
+  useThreadList,
+  type Artifact,
   type AssistantMessage,
   type ChatProviderProps,
   type UserMessage,
 } from "@openuidev/react-headless";
 import type { Library } from "@openuidev/react-lang";
+import { ArrowLeft, MessageSquare } from "lucide-react";
 import {
   Children,
   isValidElement,
+  useEffect,
   useMemo,
+  useRef,
+  useState,
   type FC,
   type ReactElement,
   type ReactNode,
 } from "react";
 import type { ConversationStarterProps } from "../../types/ConversationStarter";
+import { IconButton } from "../IconButton";
 import { GenUIAssistantMessage } from "../OpenUIChat/GenUIAssistantMessage";
 import { GenUIUserMessage } from "../OpenUIChat/GenUIUserMessage";
 import { ThemeProvider, type ThemeProps } from "../ThemeProvider";
-import { parseArtifactPath } from "./_shared/artifactPaths";
+import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
+import { artifactListPath, parseArtifactPath } from "./_shared/artifactPaths";
+import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
 import { NavProvider, useNav } from "./_shared/navContext";
+import { StartersProvider } from "./_shared/startersContext";
+import { useAgentInterfaceStore } from "./_shared/store";
+import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
 import { ArtifactBrowserPage } from "./ArtifactBrowserPage";
 import { ArtifactNav } from "./ArtifactNav";
 import { ArtifactViewPage } from "./ArtifactViewPage";
-import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
-import { StartersProvider } from "./_shared/startersContext";
 import { Composer } from "./Composer";
-import { type ConversationStarterVariant } from "./ConversationStarter";
 import { Container } from "./Container";
+import { type ConversationStarterVariant } from "./ConversationStarter";
 import { MobileHeader } from "./MobileHeader";
 import { NewChatButton } from "./NewChatButton";
 import { Route } from "./Route";
-import {
-  SidebarContainer,
-  SidebarContent,
-  SidebarHeader,
-  SidebarSeparator,
-} from "./Sidebar";
+import { SidebarContainer, SidebarContent, SidebarHeader, SidebarSeparator } from "./Sidebar";
 import { SidebarItem } from "./SidebarItem";
 import { SidebarSlot } from "./SidebarSlot";
-import {
-  MessageLoading,
-  Messages,
-  ScrollArea,
-  ThreadContainer,
-  ThreadHeader,
-} from "./Thread";
+import { MessageLoading, Messages, ScrollArea, ThreadContainer, ThreadHeader } from "./Thread";
 import { ThreadList } from "./ThreadList";
 import { WelcomeScreen } from "./WelcomeScreen";
 import { Workspace } from "./Workspace";
@@ -104,8 +106,7 @@ const SLOT_KEY_BY_TYPE = new Map<unknown, SingleSlotKey>([
   [Workspace, "workspace"],
 ]);
 
-const isDev = () =>
-  typeof process !== "undefined" && process.env?.["NODE_ENV"] !== "production";
+const isDev = () => typeof process !== "undefined" && process.env?.["NODE_ENV"] !== "production";
 
 function extractSlots(children: ReactNode): ExtractedSlots {
   const result: ExtractedSlots = { routes: [], rest: [] };
@@ -243,6 +244,100 @@ interface AgentInterfaceBodyProps {
   resolvedUserMessage: UserMessageComponent | undefined;
 }
 
+const ArtifactViewMobileHeader = ({
+  artifactId,
+  categoryName,
+}: {
+  artifactId: string;
+  categoryName?: string;
+}) => {
+  const storage = useArtifactStorage();
+  const selectThread = useThreadList(
+    (s: { selectThread: (threadId: string) => void }) => s.selectThread,
+  );
+  const { navigate } = useNav();
+  const [artifact, setArtifact] = useState<Artifact | null>(null);
+  const requestIdRef = useRef(0);
+
+  useEffect(() => {
+    if (!storage) {
+      setArtifact(null);
+      return;
+    }
+
+    const requestId = ++requestIdRef.current;
+    setArtifact(null);
+    storage
+      .get(artifactId)
+      .then((a: Artifact) => {
+        if (requestId !== requestIdRef.current) return;
+        setArtifact(a);
+      })
+      .catch(() => {
+        if (requestId !== requestIdRef.current) return;
+        setArtifact(null);
+      });
+  }, [storage, artifactId]);
+
+  const backToList = () => navigate(artifactListPath(categoryName));
+  const goToThread = () => {
+    if (!artifact) return;
+    selectThread(artifact.threadId);
+    navigate(undefined);
+  };
+
+  return (
+    <MobileHeader
+      menuButton={
+        <IconButton
+          size="medium"
+          icon={<ArrowLeft size="1em" />}
+          onClick={backToList}
+          variant="secondary"
+          aria-label="Back to artifacts"
+        />
+      }
+      agentName={
+        <span className="openui-agent-mobile-header-agent-name">{artifact?.title ?? ""}</span>
+      }
+      newChatButton={
+        <IconButton
+          size="medium"
+          icon={<MessageSquare size="1em" />}
+          onClick={goToThread}
+          variant="secondary"
+          aria-label="Go to thread"
+          disabled={!artifact}
+        />
+      }
+    />
+  );
+};
+
+const MobileWorkspaceToggleButton = () => {
+  const artifacts = useArtifactList();
+  const { isDetailedViewActive } = useActiveDetailedView();
+  const { isWorkspaceOpen, setIsWorkspaceOpen } = useAgentInterfaceStore((state) => ({
+    isWorkspaceOpen: state.isWorkspaceOpen,
+    setIsWorkspaceOpen: state.setIsWorkspaceOpen,
+  }));
+  const hasArtifacts = Object.keys(artifacts).length > 0;
+
+  if (!hasArtifacts || isDetailedViewActive) return null;
+
+  return (
+    <AgentInterfaceTooltip content="Apps & Artifacts" side="left">
+      <IconButton
+        size="medium"
+        icon={<GalleryHorizontalEndIcon size="1em" />}
+        onClick={() => setIsWorkspaceOpen(!isWorkspaceOpen)}
+        variant="secondary"
+        aria-label={isWorkspaceOpen ? "Collapse workspace" : "Expand workspace"}
+      />
+    </AgentInterfaceTooltip>
+  );
+};
+
 const AgentInterfaceBody = ({
   slots,
   logoUrl,
@@ -253,16 +348,11 @@ const AgentInterfaceBody = ({
   const { path } = useNav();
 
   // Reserved `artifacts/` prefix is matched BEFORE user-defined Routes.
-  const artifactPath = useMemo(
-    () => (path === undefined ? null : parseArtifactPath(path)),
-    [path],
-  );
+  const artifactPath = useMemo(() => (path === undefined ? null : parseArtifactPath(path)), [path]);
 
   const activeRoute = useMemo(() => {
     if (path === undefined || artifactPath) return undefined;
-    return slots.routes.find(
-      (route) => (route.props as { path: string }).path === path,
-    );
+    return slots.routes.find((route) => (route.props as { path: string }).path === path);
   }, [path, artifactPath, slots.routes]);
 
   return (
@@ -272,10 +362,14 @@ const AgentInterfaceBody = ({
           (slots.sidebar.props as { children?: ReactNode }).children
         ) : (
           <>
-            {slots.sidebarHeader ?? <SidebarHeader />}
+            <div className="openui-agent-sidebar-actions">
+              {slots.sidebarHeader ?? <SidebarHeader />}
+              <div className="openui-agent-sidebar-primary-actions">
+                <NewChatButton />
+                <ArtifactNav className="openui-agent-sidebar-artifact-nav" />
+              </div>
+            </div>
             <SidebarContent>
-              <ArtifactNav />
-              <SidebarSeparator />
               <ThreadList />
             </SidebarContent>
           </>
@@ -283,6 +377,15 @@ const AgentInterfaceBody = ({
       </SidebarContainer>
       {artifactPath ? (
         <ThreadContainer>
+          {slots.mobileHeader ??
+            (artifactPath.kind === "view" ? (
+              <ArtifactViewMobileHeader
+                artifactId={artifactPath.artifactId}
+                categoryName={artifactPath.categoryName}
+              />
+            ) : (
+              <MobileHeader />
+            ))}
           {artifactPath.kind === "list" ? (
             <ArtifactBrowserPage categoryName={artifactPath.categoryName} />
           ) : (
@@ -299,8 +402,8 @@ const AgentInterfaceBody = ({
       ) : (
         <>
           <ThreadContainer>
-            {slots.mobileHeader ?? <MobileHeader />}
-            {slots.threadHeader}
+            {slots.mobileHeader ?? <MobileHeader actions={<MobileWorkspaceToggleButton />} />}
+            {slots.threadHeader ?? <ThreadHeader />}
             {slots.welcome}
             <ScrollArea>
               <Messages

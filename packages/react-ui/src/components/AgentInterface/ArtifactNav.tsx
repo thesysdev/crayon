@@ -1,5 +1,5 @@
 import { useArtifactCategories, useArtifactStorage } from "@openuidev/react-headless";
-import { Boxes } from "lucide-react";
+import { Boxes, FileText, LayoutDashboard } from "lucide-react";
 import type { ReactNode } from "react";
 import { artifactListPath } from "./_shared/artifactPaths";
 import { useOptionalNav } from "./_shared/navContext";
@@ -38,13 +38,33 @@ export const ArtifactNav = ({ className, icon }: ArtifactNavProps) => {
       ? categories.map((c) => ({ label: c.name, path: artifactListPath(c.name) }))
       : [{ label: "Artifacts", path: artifactListPath() }];
 
+  const getItemIcon = (label: string) => {
+    if (icon) return icon;
+    const normalizedLabel = label.toLowerCase();
+    if (normalizedLabel === "apps") return <LayoutDashboard size="1em" />;
+    if (normalizedLabel === "reports" || normalizedLabel === "artifacts") {
+      return <FileText size="1em" />;
+    }
+    return <Boxes size="1em" />;
+  };
+
+  const getItemClassName = (label: string) => {
+    const normalizedLabel = label.toLowerCase();
+    if (normalizedLabel === "apps") return "openui-agent-sidebar-item--apps";
+    if (normalizedLabel === "reports" || normalizedLabel === "artifacts") {
+      return "openui-agent-sidebar-item--artifacts";
+    }
+    return undefined;
+  };
+
   return (
     <div className={className}>
       {items.map((item) => (
         <SidebarItem
           key={item.path}
           path={item.path}
-          icon={icon ?? <Boxes size={14} />}
+          icon={getItemIcon(item.label)}
+          className={getItemClassName(item.label)}
           // Highlight on the list page AND while viewing an artifact within it.
           selected={nav?.path === item.path || nav?.path?.startsWith(`${item.path}/`) === true}
         >
