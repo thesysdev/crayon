@@ -117,6 +117,7 @@ export const ScrollArea = ({
   className,
   scrollVariant = "user-message-anchor",
   userMessageSelector = ".openui-agent-thread-message-user",
+  scrollOnLoad = true,
 }: {
   children?: React.ReactNode;
   className?: string;
@@ -128,6 +129,11 @@ export const ScrollArea = ({
    * Selector for the user message
    */
   userMessageSelector?: string;
+  /**
+   * When false, do not auto-scroll on initial load / conversation switch
+   * (auto-scroll then only happens while a response is generating).
+   */
+  scrollOnLoad?: boolean;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -142,6 +148,7 @@ export const ScrollArea = ({
     userMessageSelector,
     isRunning,
     isLoadingMessages,
+    scrollOnLoad,
   });
 
   return (
