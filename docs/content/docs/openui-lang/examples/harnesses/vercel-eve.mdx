@@ -9,23 +9,32 @@ The agent receives the OpenUI component-library prompt when a session starts, so
 
 [View source on GitHub →](https://github.com/thesysdev/openui/tree/main/examples/harnesses/vercel-eve)
 
-## Architecture
+<div className="bg-[rgba(0,0,0,0.05)] dark:bg-gray-900 rounded-2xl h-[500px] flex p-2">
+  <video
+    src="/videos/vercel-eve.mp4"
+    noControls
+    playsInline
+    muted
+    preload="metadata"
+    className="w-full rounded-lg m-auto"
+    autoPlay
+    loop
+  />
+</div>
 
-```text
-browser ── Eve session HTTP ──▶ Eve agent ── model + tools
-   ▲                               │
-   └── AG-UI SSE ── event adapter ─┘
-         rendered by <FullScreen>
-```
+## How it connects
 
-The integration has four main pieces:
+| Piece              | File                           | Role                                                                                                        |
+| ------------------ | ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| OpenUI chat        | `src/app/page.tsx`             | Renders `<FullScreen>` with `agUIAdapter()` and the built-in OpenUI component library.                      |
+| Session bridge     | `src/eve-chat.ts`              | Delivers turns through Eve's HTTP API, follows its resumable event stream, and returns AG-UI SSE to OpenUI. |
+| Event adapter      | `src/eve-stream.ts`            | Maps Eve text, tool-call, and failure events to AG-UI events.                                               |
+| Agent instructions | `agent/instructions/openui.ts` | Adds the generated OpenUI system prompt when each Eve session starts.                                       |
 
-| Piece | File | Role |
-| --- | --- | --- |
-| OpenUI chat | `src/app/page.tsx` | Renders `<FullScreen>` with `agUIAdapter()` and the built-in OpenUI component library. |
-| Session bridge | `src/eve-chat.ts` | Delivers turns through Eve's HTTP API, follows its resumable event stream, and returns AG-UI SSE to OpenUI. |
-| Event adapter | `src/eve-stream.ts` | Maps Eve text, tool-call, and failure events to AG-UI events. |
-| Agent instructions | `agent/instructions/openui.ts` | Adds the generated OpenUI system prompt when each Eve session starts. |
+The Next.js app and Eve development server start together through `withEve()`. The browser uses
+Eve's same-origin session endpoints directly, so the integration does not need a custom backend
+route or CORS configuration. OpenUI threads retain Eve's session ID, continuation token, and
+stream cursor, preserving multi-turn context and resumable delivery.
 
 ## Connecting OpenUI
 
@@ -69,7 +78,34 @@ export default defineDynamic({
 
 This keeps the model's instructions synchronized with the exact component library used by the renderer.
 
-## Translating Eve events
+## The session bridge
+
+The browser talks to the same-origin Eve endpoints installed by `withEve()`:
+
+```text
+POST /eve/v1/session
+POST /eve/v1/session/:id
+GET  /eve/v1/session/:id/stream?startIndex=N
+```
+
+The first turn creates a session. Follow-up turns send the saved continuation token, and the
+stream request resumes from the saved event index. Completed sessions clear the cursor; waiting
+and failed sessions remain resumable.
+
+```ts
+const delivered = await fetch(
+  state.sessionId ? `/eve/v1/session/${state.sessionId}` : "/eve/v1/session",
+  {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ message, continuationToken: state.continuationToken }),
+  },
+);
+
+const streamed = await fetch(`/eve/v1/session/${sessionId}/stream?startIndex=${state.streamIndex}`);
+```
+
+## Tool calls and streamed UI
 
 Eve emits typed session events. The adapter in `src/eve-stream.ts` converts the events OpenUI needs:
 
@@ -83,17 +119,17 @@ session.failed     -> RUN_ERROR
 
 Tool calls and text share one assistant message ID. OpenUI renders tool activity in its behind-the-scenes section and the final OpenUI Lang response in the conversation.
 
-## Eve session protocol
+The included `get_current_time` tool is a minimal example. Additional Eve tools automatically
+surface through the same AG-UI tool-call mapping.
 
-The browser talks to the same-origin Eve endpoints installed by `withEve()`:
+## Thread persistence
 
-```text
-POST /eve/v1/session
-POST /eve/v1/session/:id
-GET  /eve/v1/session/:id/stream?startIndex=N
-```
+`src/thread-store.ts` keeps OpenUI thread metadata and transcripts in browser `localStorage`.
+`src/eve-chat.ts` stores the Eve session ID, continuation token, and stream index under the same
+thread ID. Reopening a thread therefore restores both the visible transcript and its server-side
+Eve conversation.
 
-For a follow-up turn, the bridge sends the saved continuation token and resumes from the saved stream index. A completed session clears the cursor; waiting and failed sessions remain resumable.
+## Authentication and security
 
 The demo channel uses anonymous authentication for local development. Replace `none()` in `agent/channels/eve.ts` with an authenticated Eve channel before exposing the application.
 
@@ -114,16 +150,25 @@ examples/harnesses/vercel-eve/
 
 ## Run the example
 
-Eve 0.11 requires Node.js 24. From the repository root:
+Eve 0.11 requires Node.js 24. From the repository root, follow these steps:
 
 ```bash
+# 1. Install workspace dependencies.
 pnpm install
 
+# 2. Enter the example.
 cd examples/harnesses/vercel-eve
-LLM_API_KEY=your-api-key pnpm dev
+
+# 3. Configure an OpenAI-compatible model provider.
+cp .env.example .env
+# Edit .env and set LLM_API_KEY.
+
+# 4. Start Next.js and the embedded Eve development server.
+pnpm dev
 ```
 
-By default the agent uses OpenAI. Configure `LLM_MODEL` and `LLM_BASE_URL` to use another OpenAI-compatible endpoint. Open [http://localhost:3000](http://localhost:3000) and start a conversation.
+Open [http://localhost:3000](http://localhost:3000) and start a conversation. `OPENAI_API_KEY`,
+`OPENAI_MODEL`, and `OPENAI_BASE_URL` are accepted as aliases for the `LLM_*` variables.
 
 The repository scripts also expose Eve directly when you need to build or run the agent separately:
 
