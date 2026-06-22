@@ -6,28 +6,23 @@ import {
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
   type ChatLLM,
-  type ChatStorage,
 } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
 // All four come from the migrated SDK — the src/cloud + src/shared/artifact/renderers
 // that moved into @openuidev/thesys — instead of the local examples/openui-cloud/src/lib
 // copies (which stay on disk but are no longer imported here):
-//   chatLibrary       — component library the backend's generated programs target
-//   openuiCloud       — one-call browser ChatStorage over the /v1 API, fct_-authenticated
-//   artifactRenderers — defineArtifactRenderer configs (type 'presentation' | 'report',
-//                       toolName 'thesys_generate_artifact' / 'thesys_edit_artifact')
+//   chatLibrary           — component library the backend's generated programs target
+//   useOpenuiCloudStorage — hook: browser ChatStorage over the /v1 API, fct_-authenticated
+//   artifactRenderers     — defineArtifactRenderer configs (type 'presentation' | 'report',
+//                           toolName 'thesys_generate_artifact' / 'thesys_edit_artifact')
 //   artifactCategories
 import { useTheme } from "@/hooks/use-system-theme";
-import { artifactCategories, artifactRenderers, chatLibrary, openuiCloud } from "@openuidev/thesys";
-
-const storage: ChatStorage = openuiCloud({
-  // Defaults to https://api.thesys.dev; set NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL to override (e.g. a local stack).
-  apiBaseUrl: process.env.NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL,
-  // Backend mint proxy (POST → { token, expires_at }); openuiCloud caches +
-  // refreshes it and injects x-thesys-frontend-token on every /v1 call.
-  token: "/api/frontend-token",
-  features: { artifact: true },
-});
+import {
+  artifactCategories,
+  artifactRenderers,
+  chatLibrary,
+  useOpenuiCloudStorage,
+} from "@openuidev/thesys";
 
 const llm: ChatLLM = {
   send: async ({ threadId, messages, signal }) => {
@@ -46,6 +41,17 @@ const llm: ChatLLM = {
 
 export default function Page() {
   const mode = useTheme();
+  // useOpenuiCloudStorage: browser ChatStorage over /v1, fct_-authenticated. As a
+  // hook the storage + its fct_ token manager are created on mount (not at module
+  // load), so the token fetch follows this component's lifecycle.
+  const storage = useOpenuiCloudStorage({
+    // Defaults to https://api.thesys.dev; set NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL to override (e.g. a local stack).
+    apiBaseUrl: process.env.NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL,
+    // Backend mint proxy (POST → { token, expires_at }); the hook caches +
+    // refreshes it and injects x-thesys-frontend-token on every /v1 call.
+    token: "/api/frontend-token",
+    features: { artifact: true },
+  });
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
