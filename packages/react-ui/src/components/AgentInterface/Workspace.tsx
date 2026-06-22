@@ -274,7 +274,7 @@ const WorkspaceItem = ({ entry }: { entry: ArtifactEntry }) => {
           "openui-agent-workspace-sidebar__item--active": isActive,
         })}
       >
-        <ArtifactPreviewIllustration kind={previewKind} title={entry.heading} />
+        <ArtifactPreviewIllustration kind={previewKind} />
         <span className="openui-agent-workspace-sidebar__item-body">
           <span className="openui-agent-workspace-sidebar__item-label">{entry.heading}</span>
           {metadata && (

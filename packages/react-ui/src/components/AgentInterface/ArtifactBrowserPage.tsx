@@ -7,7 +7,7 @@ import { Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../Button";
 import { IconButton } from "../IconButton";
-import { artifactViewPath } from "./_shared/artifactPaths";
+import { artifactListPath, artifactViewPath } from "./_shared/artifactPaths";
 import { useNav } from "./_shared/navContext";
 
 const SEARCH_DEBOUNCE_MS = 300;
@@ -55,11 +55,9 @@ export const getArtifactTypeLabel = (artifact: { type: string }) =>
 export const ArtifactPreviewIllustration = ({
   className,
   kind,
-  title,
 }: {
   className?: string;
   kind: ArtifactPreviewKind;
-  title: string;
 }) => {
   const illustrationClassName = [
     "openui-agent-artifact-browser__preview-illustration",
@@ -142,7 +140,7 @@ const ArtifactBrowserCard = ({
       className={`openui-agent-artifact-browser__item openui-agent-artifact-browser__item--${previewKind}`}
       onClick={onClick}
     >
-      <ArtifactPreviewIllustration kind={previewKind} title={artifact.title} />
+      <ArtifactPreviewIllustration kind={previewKind} />
       <div className="openui-agent-artifact-browser__item-meta">
         <span className="openui-agent-artifact-browser__item-title">{artifact.title}</span>
         {metadata && (
@@ -169,6 +167,11 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
   const { navigate } = useNav();
 
   const category = categoryName ? categories.find((c) => c.name === categoryName) : undefined;
+  // A named category that matches no configured category (stale/renamed path,
+  // hand-edited or bookmarked URL). Distinct from `all` (categoryName undefined),
+  // which intentionally lists everything. `categories` is static config, so this
+  // is decided synchronously with no loading race.
+  const notFound = categoryName !== undefined && category === undefined;
   const typeFilter = category?.filter.type;
 
   const [search, setSearch] = useState("");
@@ -193,7 +196,7 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
 
   // Initial page + reload on search/category change.
   useEffect(() => {
-    if (!storage) return;
+    if (!storage || notFound) return;
     const requestId = ++requestIdRef.current;
     setIsLoading(true);
     setError(null);
@@ -213,7 +216,7 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
         setError(e instanceof Error ? e : new Error(String(e)));
         setIsLoading(false);
       });
-  }, [storage, debouncedSearch, typeKey]);
+  }, [storage, debouncedSearch, typeKey, notFound]);
 
   const loadMore = () => {
     if (!storage || nextCursor === undefined || isLoading) return;
@@ -239,6 +242,32 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
   };
 
   if (!storage) return null;
+
+  if (notFound) {
+    return (
+      <div className="openui-agent-artifact-browser">
+        <div className="openui-agent-artifact-browser__content">
+          <div className="openui-agent-artifact-browser__header">
+            <h2 className="openui-agent-artifact-browser__title">Artifacts</h2>
+          </div>
+          <div className="openui-agent-artifact-browser__list">
+            <div className="openui-agent-artifact-browser__empty">
+              <ArtifactPreviewIllustration
+                className="openui-agent-artifact-browser__empty-illustration"
+                kind="report"
+              />
+              <span className="openui-agent-artifact-browser__empty-text">
+                No category named “{categoryName}”
+              </span>
+              <Button variant="secondary" size="small" onClick={() => navigate(artifactListPath())}>
+                View all artifacts
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="openui-agent-artifact-browser">
@@ -278,7 +307,6 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
               <ArtifactPreviewIllustration
                 className="openui-agent-artifact-browser__empty-illustration"
                 kind={emptyPreviewKind}
-                title={emptyMessage}
               />
               <span className="openui-agent-artifact-browser__empty-text">{emptyMessage}</span>
             </div>
