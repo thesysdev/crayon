@@ -2,6 +2,8 @@ import { execFileSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 
+import { CreateError, telemetry } from "../lib/telemetry";
+
 export interface GenerateOptions {
   out?: string;
   jsonSchema?: boolean;
@@ -10,11 +12,15 @@ export interface GenerateOptions {
 }
 
 export async function runGenerate(entry: string, options: GenerateOptions): Promise<void> {
+  const t0 = Date.now();
+  telemetry.capture("cli_generate_started", {
+    json_schema: !!options.jsonSchema,
+    out_to_file: !!options.out,
+  });
   const entryPath = path.resolve(process.cwd(), entry);
 
   if (!fs.existsSync(entryPath)) {
-    console.error(`Error: File not found: ${entryPath}`);
-    process.exit(1);
+    throw new CreateError("generate_entry_missing", `File not found: ${entryPath}`);
   }
 
   const workerPath = path.join(__dirname, "generate-worker.js");
@@ -32,8 +38,7 @@ export async function runGenerate(entry: string, options: GenerateOptions): Prom
       stdio: ["inherit", "pipe", "inherit"],
     });
   } catch (err) {
-    console.error(err);
-    process.exit(1);
+    throw new CreateError("generate_worker", err instanceof Error ? err.message : String(err));
   }
 
   if (options.out) {
@@ -44,4 +49,10 @@ export async function runGenerate(entry: string, options: GenerateOptions): Prom
   } else {
     process.stdout.write(output + "\n");
   }
+
+  telemetry.capture("cli_generate_succeeded", {
+    json_schema: !!options.jsonSchema,
+    out_to_file: !!options.out,
+    duration_ms: Date.now() - t0,
+  });
 }
