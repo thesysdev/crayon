@@ -1,0 +1,346 @@
+---
+title: Components
+description: Reference for the slots and primitive statics on AgentInterface — Sidebar, ThreadHeader, Welcome, Composer, Workspace, SidebarItem, Route, and the rest.
+---
+
+Every customizable region of `AgentInterface` is exposed as a **compound static** — a component hung off `AgentInterface` (e.g. `AgentInterface.Welcome`, `AgentInterface.SidebarItem`). You compose the interface by placing these as children:
+
+```tsx
+import { AgentInterface } from "@openuidev/react-ui";
+
+<AgentInterface llm={llm}>
+  <AgentInterface.Welcome title="Ask me anything" />
+  <AgentInterface.Sidebar>
+    <AgentInterface.SidebarHeader />
+    <AgentInterface.SidebarItem path="settings" icon={<GearIcon />}>
+      Settings
+    </AgentInterface.SidebarItem>
+    <AgentInterface.SidebarSeparator />
+    <AgentInterface.ThreadList />
+  </AgentInterface.Sidebar>
+</AgentInterface>
+```
+
+There are two kinds:
+
+- **Slots** — named regions of the layout (`Sidebar`, `Welcome`, `Composer`, …). `AgentInterface` matches them **by component reference** (not by position or string), routes each into the right region, and treats anything unrecognized as free content. Order doesn't matter. Slots support a subset of three override modes:
+  - **A — omit:** the built-in default renders.
+  - **B — props:** the default structure renders with your values swapped into specific pieces.
+  - **C — children:** your children replace the region entirely (children win over props; a dev warning fires if you pass both).
+- **Primitives / statics** — building blocks you place *inside* slots (or, for `Route`, at the top level) to assemble custom layouts: `SidebarItem`, `SidebarContent`, `SidebarSeparator`, `ArtifactNav`, `Route`, `NewChatButton`, `ThreadList`, `Messages`, `MessageLoading`, `ScrollArea`.
+
+All of these are also reachable as named exports from `@openuidev/react-ui`, but the compound-static form (`AgentInterface.X`) is the documented usage.
+
+## Slots
+
+Pass these at the top level of `<AgentInterface>` to override a layout region. The **Modes** column lists which of the three override modes (A — omit, B — props, C — children) each slot supports.
+
+| Slot | Region | Modes |
+|------|--------|-------|
+| `AgentInterface.Sidebar` | The entire left sidebar | A, C |
+| `AgentInterface.SidebarHeader` | Header at the top of the sidebar | A, B, C |
+| `AgentInterface.MobileHeader` | Top bar shown on mobile in place of the sidebar | A, B, C |
+| `AgentInterface.ThreadHeader` | Header above the active conversation | A, C |
+| `AgentInterface.Welcome` | Empty-state screen shown before a thread starts | A, B, C |
+| `AgentInterface.Composer` | Message input at the bottom of the thread | A, B, C |
+| `AgentInterface.Workspace` | Per-thread right rail listing the thread's artifacts | A, C |
+
+### `AgentInterface.Sidebar`
+
+The whole left sidebar. **Modes A, C.**
+
+- **A — omit:** the default sidebar renders (`SidebarHeader` + `SidebarContent` containing `ArtifactNav` when `storage.artifact` is configured, a `SidebarSeparator`, and `ThreadList`).
+- **C — children:** your children replace the sidebar's inner content. You compose `SidebarHeader`, `SidebarItem`, `SidebarSeparator`, `ThreadList`, etc. as you like.
+
+```tsx
+<AgentInterface.Sidebar>
+  <AgentInterface.SidebarHeader />
+  <AgentInterface.SidebarContent>
+    <AgentInterface.SidebarItem path="dashboard">Dashboard</AgentInterface.SidebarItem>
+    <AgentInterface.SidebarSeparator />
+    <AgentInterface.ThreadList />
+  </AgentInterface.SidebarContent>
+</AgentInterface.Sidebar>
+```
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `children` | `ReactNode` | Mode C — replaces the sidebar's inner content. |
+
+<Callout type="info">
+When you provide `<AgentInterface.Sidebar>`, a `<AgentInterface.SidebarHeader>` placed at the **top level** (outside `Sidebar`) is ignored with a dev warning — put it inside `Sidebar`.
+</Callout>
+
+### `AgentInterface.SidebarHeader`
+
+The header strip at the top of the sidebar — brand logo, agent name, and the collapse button. **Modes A, B, C.**
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `logo` | `ReactNode` | Defaults to `logoUrl` from `<AgentInterface>`. |
+| `agentName` | `ReactNode` | Defaults to `agentName` from `<AgentInterface>`. |
+| `collapseButton` | `ReactNode \| false` | Pass `false` to hide the collapse control. |
+| `children` | `ReactNode` | Mode C — replaces the header body. |
+| `className` | `string` | |
+
+### `AgentInterface.MobileHeader`
+
+The top bar shown on mobile viewports in place of the (collapsed) sidebar. **Modes A, B, C.**
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `logo` | `ReactNode` | |
+| `agentName` | `ReactNode` | |
+| `menuButton` | `ReactNode \| false` | Opens the mobile sidebar drawer. Pass `false` to hide. |
+| `newChatButton` | `ReactNode \| false` | Pass `false` to hide. |
+| `actions` | `ReactNode` | Extra controls, right-aligned. |
+| `children` | `ReactNode` | Mode C — replaces the header. |
+| `className` | `string` | |
+
+### `AgentInterface.ThreadHeader`
+
+Header bar above the active conversation. **Modes A, C.**
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `children` | `ReactNode` | Mode C — replaces the header. |
+| `className` | `string` | |
+
+### `AgentInterface.Welcome`
+
+The empty-state screen shown before the first message of a thread. **Modes A, B, C.** As with every slot, `children` (mode C) win over the content props (mode B) and a dev warning fires if you pass both.
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `title` | `string` | Greeting/title text. |
+| `description` | `string` | Sub-text under the title. |
+| `image` | `{ url: string } \| ReactNode` | `{ url }` renders a styled 64×64 rounded `<img>`; a `ReactNode` is rendered as-is. |
+| `starters` | `ConversationStarterProps[]` | Conversation starters. Inherits from `<AgentInterface starters>` when omitted. |
+| `starterVariant` | `"short" \| "long"` | Layout for the starters. Inherits from `<AgentInterface starterVariant>`. |
+| `children` | `ReactNode` | Mode C — replaces the screen; when passed, `title`/`description`/`image`/`starters` are ignored (dev warning). |
+| `className` | `string` | |
+
+```tsx
+<AgentInterface.Welcome
+  title="Ask me anything"
+  description="I can pull reports, build dashboards, and answer questions."
+  image={{ url: "/logo.png" }}
+  starters={[{ displayText: "Summarize Q3 revenue", prompt: "Summarize Q3 revenue" }]}
+  starterVariant="short"
+/>
+```
+
+Each entry in `starters` is a `ConversationStarterProps`: `{ displayText: string; prompt: string; icon?: ReactNode }`. See [Welcome & starters](/docs/agent/customize/welcome-and-starters) for the full guide.
+
+### `AgentInterface.Composer`
+
+The message input at the bottom of the thread. **Modes A, B, C.**
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `placeholder` | `string` | Input placeholder. |
+| `starters` | `ConversationStarterProps[]` | Starter chips shown above the input when the chat is empty. Inherits from `<AgentInterface starters>`. |
+| `starterVariant` | `"short" \| "long"` | Inherits from `<AgentInterface starterVariant>`. |
+| `children` | `ReactNode` | Mode C — fully replaces the composer area; auto-starter rendering is then disabled. |
+| `className` | `string` | |
+
+### `AgentInterface.Workspace`
+
+The per-thread right rail listing the artifacts registered in the active thread. **Modes A, C.**
+
+- **Auto-shows on the first registered artifact** and renders nothing while the thread's registry is empty — drop-in users with no artifact renderers never see it.
+- Sections are driven by the `artifactCategories` configured on `<AgentInterface>`; a single "Artifacts" section lists everything when no categories are configured.
+- Clicking an item opens the corresponding artifact's detailed view.
+- Rendered **only in the thread view** — hidden on `Route` pages and the artifact browser. Hidden on mobile.
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `children` | `ReactNode` | Mode C — replaces the entire rail (you own its chrome and visibility). |
+| `className` | `string` | |
+
+See [Artifacts](/docs/agent/core-concepts/artifacts) for the artifact model the Workspace surfaces.
+
+## Primitives & statics
+
+Place these inside slots — or, for `Route`, at the top level — to build custom layouts. Unlike slots, primitives are not matched by reference into a region; they render wherever you put them.
+
+| Primitive | Role |
+|-----------|------|
+| `AgentInterface.SidebarContent` | Scrollable body region of the sidebar. |
+| `AgentInterface.SidebarSeparator` | Styled divider between sidebar groups. |
+| `AgentInterface.SidebarItem` | Clickable nav row, optionally path-bound. |
+| `AgentInterface.ArtifactNav` | Sidebar nav into the global artifact browser. |
+| `AgentInterface.Route` | Top-level exact-path view that replaces the thread region. |
+| `AgentInterface.NewChatButton` | Button that starts a fresh thread. |
+| `AgentInterface.ThreadList` | List of the user's threads from `storage.thread`. |
+| `AgentInterface.Messages` | The active thread's messages + streaming message. |
+| `AgentInterface.MessageLoading` | Default "assistant is thinking" indicator. |
+| `AgentInterface.ScrollArea` | Bottom-pinned scroll container for thread content. |
+
+### `AgentInterface.SidebarContent`
+
+The scrollable body region of the sidebar — where nav items and the thread list live. Place it inside `<AgentInterface.Sidebar>` to wrap your sidebar content.
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `children` | `ReactNode` | The content to render. |
+| `className` | `string` | |
+
+### `AgentInterface.SidebarSeparator`
+
+A styled divider rule for visually grouping sidebar sections. Takes no props; drop it between groups inside the sidebar.
+
+```tsx
+<AgentInterface.SidebarItem path="reports">Reports</AgentInterface.SidebarItem>
+<AgentInterface.SidebarSeparator />
+<AgentInterface.ThreadList />
+```
+
+### `AgentInterface.SidebarItem`
+
+A styled clickable row for use inside the sidebar. Visually matches `ThreadList` rows so custom nav blends in with the thread list. Spreads remaining props onto the underlying `<button>`.
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `icon` | `ReactNode` | Leading icon. |
+| `trailing` | `ReactNode` | Right-aligned trailing content (badges, counts). |
+| `path` | `string` | When set, clicking calls `navigate(path)`; the item auto-selects when the current path matches. Works in controlled and uncontrolled `<AgentInterface>`. |
+| `selected` | `boolean` | Active state. Defaults to `currentPath === path` when `path` is set; pass explicitly to override. |
+| `children` | `ReactNode` | The label. (Required.) |
+| `...buttonProps` | `ComponentPropsWithoutRef<"button">` | `onClick`, `disabled`, `aria-*`, etc. |
+
+**Click order with `path`:** your `onClick` fires first (call `preventDefault()` to suppress navigation) → then `navigate(path)` → then the mobile sidebar closes.
+
+```tsx
+<AgentInterface.SidebarItem
+  path="settings"
+  icon={<GearIcon />}
+  trailing={<Badge>3</Badge>}
+>
+  Settings
+</AgentInterface.SidebarItem>
+```
+
+Pair with [`AgentInterface.Route`](#agentinterfaceroute) to render a view at that path. See [Sidebar](/docs/agent/customize/sidebar).
+
+### `AgentInterface.ArtifactNav`
+
+Sidebar navigation for the global artifact browser. Renders one `SidebarItem` per configured `artifactCategories` entry — or a single "Artifacts" item when no categories are configured. Each item navigates to the reserved `artifacts/{category}` path, which `AgentInterface` renders as the searchable artifact browser in the thread region.
+
+- **Included automatically** in the default sidebar when `storage.artifact` is configured.
+- **Renders nothing** when `storage.artifact` is not configured.
+- When you build a custom `<AgentInterface.Sidebar>`, add it back manually where you want it.
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `icon` | `ReactNode` | Leading icon for every category item. Defaults to a boxes icon. |
+| `className` | `string` | |
+
+```tsx
+<AgentInterface.Sidebar>
+  <AgentInterface.SidebarHeader />
+  <AgentInterface.SidebarContent>
+    <AgentInterface.ArtifactNav />
+    <AgentInterface.SidebarSeparator />
+    <AgentInterface.ThreadList />
+  </AgentInterface.SidebarContent>
+</AgentInterface.Sidebar>
+```
+
+See [Artifacts](/docs/agent/core-concepts/artifacts).
+
+### `AgentInterface.Route`
+
+Declares a routable view. Placed at the **top level** of `<AgentInterface>` (not inside a slot). When the current nav path **exactly matches** `path`, the Route's children **replace the entire thread region** — `MobileHeader`, `ThreadHeader`, the message scroll area, and `Composer` are all hidden. When no Route matches, the thread region renders normally.
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `path` | `string` | Exact string match — **no wildcards or params**. |
+| `children` | `ReactNode` | Content shown in the thread region when active. |
+
+```tsx
+<AgentInterface llm={llm}>
+  <AgentInterface.SidebarItem path="settings">Settings</AgentInterface.SidebarItem>
+  <AgentInterface.Route path="settings">
+    <SettingsPanel />
+  </AgentInterface.Route>
+</AgentInterface>
+```
+
+Use multiple `<AgentInterface.Route>` siblings to define separate views. The paths `artifacts/{category}` and `artifacts/{category}/{id}` are reserved by the artifact browser and matched before your Routes.
+
+### `AgentInterface.NewChatButton`
+
+A styled button that starts a fresh thread (clears the active thread and returns to the empty/welcome state). Drop it anywhere inside the sidebar or a custom header.
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `className` | `string` | |
+
+```tsx
+<AgentInterface.SidebarHeader />
+<AgentInterface.NewChatButton />
+```
+
+### `AgentInterface.ThreadList`
+
+Renders the list of the user's threads from `storage.thread` (one row per thread). Clicking a row opens that thread and **auto-clears the current path** (returning to the thread view from any Route or the artifact browser).
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `className` | `string` | |
+
+```tsx
+<AgentInterface.SidebarContent>
+  <AgentInterface.ThreadList />
+</AgentInterface.SidebarContent>
+```
+
+### `AgentInterface.Messages`
+
+Renders the active thread's messages, including the in-flight streaming message and the loading indicator. Used inside a custom thread region (typically wrapped in `ScrollArea`).
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `loader` | `ReactNode` | Custom loading indicator shown while a response is pending. Defaults to `MessageLoading`. |
+| `assistantMessage` | component | Override for rendering assistant messages. Mirrors `components.AssistantMessage` on `<AgentInterface>`. |
+| `userMessage` | component | Override for rendering user messages. Mirrors `components.UserMessage`. |
+| `className` | `string` | |
+
+```tsx
+<AgentInterface.ScrollArea>
+  <AgentInterface.Messages loader={<MyLoader />} />
+</AgentInterface.ScrollArea>
+```
+
+For full control over per-message rendering, see [Message rendering](/docs/agent/customize/message-rendering).
+
+### `AgentInterface.MessageLoading`
+
+The default "assistant is thinking" indicator. Render it standalone, or pass it (or your own) to `Messages` via the `loader` prop. Takes no props.
+
+```tsx
+<AgentInterface.Messages loader={<AgentInterface.MessageLoading />} />
+```
+
+### `AgentInterface.ScrollArea`
+
+A scroll container that keeps the conversation pinned to the bottom as messages stream in. Wrap `Messages` (or any thread content) in it when composing a custom thread region.
+
+| Prop | Type | Notes |
+|------|------|-------|
+| `scrollVariant` | `ScrollVariant` | Controls the scroll-to-bottom behavior when the last message is added. |
+| `userMessageSelector` | `string` | CSS selector identifying the user message element (used to anchor scrolling). |
+| `children` | `ReactNode` | Scrollable content. |
+| `className` | `string` | |
+
+```tsx
+<AgentInterface.ScrollArea>
+  <AgentInterface.Messages />
+</AgentInterface.ScrollArea>
+```
+
+## See also
+
+- [Sidebar](/docs/agent/customize/sidebar) — building custom sidebars with `SidebarItem`, `ArtifactNav`, and `ThreadList`.
+- [`<AgentInterface>` props](/docs/agent/reference/agentinterface-props) — the top-level props (`logoUrl`, `agentName`, `starters`, `path`/`onNavigate`, …) that these components inherit from.

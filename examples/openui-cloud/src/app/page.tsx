@@ -62,6 +62,8 @@ export default function Page() {
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
         agentName="OpenUI Cloud"
+        scrollVariant="always"
+        scrollOnLoad={false}
         theme={{ mode }}
         starters={[
           {
