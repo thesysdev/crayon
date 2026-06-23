@@ -5,6 +5,12 @@ import type { ChatCompletionMessageParam } from "openai/resources/chat/completio
 
 const MODEL = process.env.OPENROUTER_MODEL ?? "openai/gpt-5.5";
 
+// OpenAI-compatible provider configuration. Defaults to OpenRouter, but you can
+// point this at any OpenAI-compatible gateway (e.g. Requesty —
+// https://router.requesty.ai/v1) by setting LLM_BASE_URL and LLM_API_KEY.
+const LLM_BASE_URL = process.env.LLM_BASE_URL ?? "https://openrouter.ai/api/v1";
+const LLM_API_KEY = process.env.LLM_API_KEY ?? process.env.OPENROUTER_API_KEY;
+
 /**
  * POST /api/chat
  *
@@ -24,8 +30,8 @@ export async function POST(req: NextRequest) {
   const supabase = await createSupabaseServer();
 
   const client = new OpenAI({
-    apiKey: process.env.OPENROUTER_API_KEY,
-    baseURL: "https://openrouter.ai/api/v1",
+    apiKey: LLM_API_KEY,
+    baseURL: LLM_BASE_URL,
   });
 
   const stream = await client.chat.completions.create({

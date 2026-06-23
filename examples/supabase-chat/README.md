@@ -14,7 +14,7 @@ Demonstrates:
 
 - Node.js 18+ and [pnpm](https://pnpm.io)
 - A [Supabase](https://supabase.com) project (free tier is fine)
-- An [OpenRouter](https://openrouter.ai) API key, or any OpenAI-compatible LLM provider
+- An [OpenRouter](https://openrouter.ai) API key, or any OpenAI-compatible LLM provider (e.g. [Requesty](https://requesty.ai) — see [Using a different OpenAI-compatible provider](#using-a-different-openai-compatible-provider))
 
 ## Setup
 
@@ -68,6 +68,29 @@ cp .env.local.example .env.local
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase dashboard → Settings → API → anon/public key |
 | `OPENROUTER_API_KEY` | [openrouter.ai/keys](https://openrouter.ai/keys) |
 | `OPENROUTER_MODEL` _(optional)_ | Defaults to `openai/gpt-5.5` |
+
+### Using a different OpenAI-compatible provider
+
+The chat route talks to an OpenAI-compatible endpoint, so any OpenAI-compatible
+gateway works. By default it uses OpenRouter, but you can point it at another
+provider without editing any code by setting two optional environment variables:
+
+| Variable | Where to find it |
+|---|---|
+| `LLM_BASE_URL` _(optional)_ | The provider's OpenAI-compatible base URL. Defaults to `https://openrouter.ai/api/v1`. |
+| `LLM_API_KEY` _(optional)_ | The provider's API key. Defaults to `OPENROUTER_API_KEY`. |
+
+For example, to use [Requesty](https://requesty.ai) (an OpenAI-compatible LLM
+gateway with the same `provider/model` naming):
+
+```bash
+LLM_BASE_URL=https://router.requesty.ai/v1
+LLM_API_KEY=your-requesty-key   # create one at https://app.requesty.ai/api-keys
+OPENROUTER_MODEL=openai/gpt-4o-mini   # any provider/model the gateway supports
+```
+
+When `LLM_BASE_URL` / `LLM_API_KEY` are unset, the example behaves exactly as
+before and uses OpenRouter.
 
 ### 5. Install and run
 

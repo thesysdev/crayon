@@ -38,7 +38,7 @@ OPENAI_BASE_URL=https://openrouter.ai/api/v1
 OPENAI_MODEL=openai/gpt-5.5
 ```
 
-This also works with other OpenAI-compatible providers.
+This also works with other OpenAI-compatible providers, such as [Requesty](https://requesty.ai) (base URL `https://router.requesty.ai/v1`).
 
 ## Learn More
 

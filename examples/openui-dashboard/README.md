@@ -19,6 +19,7 @@ export OPENAI_API_KEY=sk-...
 # export LLM_API_KEY=your-key
 # export LLM_BASE_URL=https://openrouter.ai/api/v1
 # export LLM_MODEL=your-model
+# (e.g. Requesty (https://requesty.ai), base URL https://router.requesty.ai/v1)
 
 # Install dependencies
 pnpm install
