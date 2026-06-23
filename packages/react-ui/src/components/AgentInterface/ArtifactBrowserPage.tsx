@@ -1,24 +1,18 @@
 import {
+  lookupArtifactRendererByType,
   useArtifactCategories,
+  useArtifactRendererRegistry,
   useArtifactStorage,
   type ArtifactSummary,
 } from "@openuidev/react-headless";
-import { Search, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Boxes, Search, X } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "../Button";
 import { IconButton } from "../IconButton";
 import { artifactListPath, artifactViewPath } from "./_shared/artifactPaths";
 import { useNav } from "./_shared/navContext";
 
 const SEARCH_DEBOUNCE_MS = 300;
-
-export type ArtifactPreviewKind = "app" | "report" | "slide";
-
-const ARTIFACT_PREVIEW_KIND_BY_TYPE: Record<string, ArtifactPreviewKind> = {
-  th_dashboard: "app",
-  th_report: "report",
-  th_presentation: "slide",
-};
 
 const ARTIFACT_TYPE_LABEL_BY_TYPE: Record<string, string> = {
   th_dashboard: "App",
@@ -35,91 +29,19 @@ export const formatArtifactUpdatedAt = (updatedAt: ArtifactSummary["updatedAt"])
   }).format(date);
 };
 
-export const getArtifactPreviewKind = (artifact: { type: string }): ArtifactPreviewKind => {
-  const exactKind = ARTIFACT_PREVIEW_KIND_BY_TYPE[artifact.type];
-  if (exactKind) return exactKind;
-
-  const normalizedType = artifact.type.toLowerCase();
-  if (normalizedType.includes("presentation") || normalizedType.includes("slide")) {
-    return "slide";
-  }
-  if (normalizedType.includes("report") || normalizedType.includes("document")) {
-    return "report";
-  }
-  return "app";
+/**
+ * Resolves the visual for an artifact type: the icon declared on its renderer
+ * (`defineArtifactRenderer({ icon })`) — any ReactNode the consumer chose — or a
+ * generic default. The framework is agnostic about what that node is.
+ */
+export const useArtifactIcon = (type: string): ReactNode => {
+  const registry = useArtifactRendererRegistry();
+  const rendererIcon = registry ? lookupArtifactRendererByType(registry, type)?.icon : undefined;
+  return rendererIcon ?? <Boxes size="1em" />;
 };
 
 export const getArtifactTypeLabel = (artifact: { type: string }) =>
   ARTIFACT_TYPE_LABEL_BY_TYPE[artifact.type] ?? artifact.type;
-
-export const ArtifactPreviewIllustration = ({
-  className,
-  kind,
-}: {
-  className?: string;
-  kind: ArtifactPreviewKind;
-}) => {
-  const illustrationClassName = [
-    "openui-agent-artifact-browser__preview-illustration",
-    `openui-agent-artifact-browser__preview-illustration--${kind}`,
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  if (kind === "report") {
-    return (
-      <div className={illustrationClassName} aria-hidden="true">
-        <div className="openui-agent-artifact-browser__preview-canvas">
-          <div className="openui-agent-artifact-browser__report-paper">
-            <div className="openui-agent-artifact-browser__report-lines">
-              <span />
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (kind === "slide") {
-    return (
-      <div className={illustrationClassName} aria-hidden="true">
-        <div className="openui-agent-artifact-browser__preview-canvas">
-          <div className="openui-agent-artifact-browser__slide-lines">
-            <span />
-            <span />
-            <span />
-          </div>
-          <div className="openui-agent-artifact-browser__slide-visual">
-            <span />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className={illustrationClassName} aria-hidden="true">
-      <div className="openui-agent-artifact-browser__preview-canvas">
-        <div className="openui-agent-artifact-browser__app-lines">
-          <span />
-          <span />
-        </div>
-        <div className="openui-agent-artifact-browser__app-panels">
-          <div className="openui-agent-artifact-browser__app-panel">
-            <span />
-            <span />
-            <span />
-          </div>
-          <div className="openui-agent-artifact-browser__app-panel openui-agent-artifact-browser__app-panel--bleed" />
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const ArtifactBrowserCard = ({
   artifact,
@@ -130,17 +52,13 @@ const ArtifactBrowserCard = ({
   updatedAt?: string;
   onClick: () => void;
 }) => {
-  const previewKind = getArtifactPreviewKind(artifact);
+  const icon = useArtifactIcon(artifact.type);
   const typeLabel = getArtifactTypeLabel(artifact);
   const metadata = [typeLabel, updatedAt].filter(Boolean).join(" · ");
 
   return (
-    <button
-      type="button"
-      className={`openui-agent-artifact-browser__item openui-agent-artifact-browser__item--${previewKind}`}
-      onClick={onClick}
-    >
-      <ArtifactPreviewIllustration kind={previewKind} />
+    <button type="button" className="openui-agent-artifact-browser__item" onClick={onClick}>
+      <span className="openui-agent-artifact-browser__item-icon">{icon}</span>
       <div className="openui-agent-artifact-browser__item-meta">
         <span className="openui-agent-artifact-browser__item-title">{artifact.title}</span>
         {metadata && (
@@ -188,7 +106,6 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
   }, [search]);
 
   const typeKey = typeFilter?.join(" ");
-  const emptyPreviewKind = categoryName === "Apps" ? "app" : "report";
   const emptyItemLabel = categoryName === "Apps" ? "apps" : "artifacts";
   const emptyMessage = debouncedSearch
     ? `No ${emptyItemLabel} match your search`
@@ -252,10 +169,9 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
           </div>
           <div className="openui-agent-artifact-browser__list">
             <div className="openui-agent-artifact-browser__empty">
-              <ArtifactPreviewIllustration
-                className="openui-agent-artifact-browser__empty-illustration"
-                kind="report"
-              />
+              <span className="openui-agent-artifact-browser__empty-illustration">
+                <Boxes size="1em" />
+              </span>
               <span className="openui-agent-artifact-browser__empty-text">
                 No category named “{categoryName}”
               </span>
@@ -304,10 +220,9 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
           )}
           {!error && artifacts.length === 0 && !isLoading && (
             <div className="openui-agent-artifact-browser__empty">
-              <ArtifactPreviewIllustration
-                className="openui-agent-artifact-browser__empty-illustration"
-                kind={emptyPreviewKind}
-              />
+              <span className="openui-agent-artifact-browser__empty-illustration">
+                <Boxes size="1em" />
+              </span>
               <span className="openui-agent-artifact-browser__empty-text">{emptyMessage}</span>
             </div>
           )}

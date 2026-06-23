@@ -12,10 +12,9 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "re
 import { useLayoutContext } from "../../context/LayoutContext";
 import { IconButton } from "../IconButton";
 import {
-  ArtifactPreviewIllustration,
   formatArtifactUpdatedAt,
-  getArtifactPreviewKind,
   getArtifactTypeLabel,
+  useArtifactIcon,
 } from "./ArtifactBrowserPage";
 import { useAgentInterfaceStore } from "./_shared/store";
 
@@ -260,7 +259,7 @@ const WorkspaceItem = ({ entry }: { entry: ArtifactEntry }) => {
   const { isActive } = useDetailedView(viewId);
   const store = useDetailedViewStore();
   const onClick = () => store.getState().setActiveDetailedView(viewId);
-  const previewKind = getArtifactPreviewKind(entry);
+  const icon = useArtifactIcon(entry.type);
   const updatedAt = formatArtifactUpdatedAt(entry.updatedAt);
   const metadata = [getArtifactTypeLabel(entry), updatedAt].filter(Boolean).join(" · ");
 
@@ -274,7 +273,7 @@ const WorkspaceItem = ({ entry }: { entry: ArtifactEntry }) => {
           "openui-agent-workspace-sidebar__item--active": isActive,
         })}
       >
-        <ArtifactPreviewIllustration kind={previewKind} />
+        <span className="openui-agent-workspace-sidebar__item-icon">{icon}</span>
         <span className="openui-agent-workspace-sidebar__item-body">
           <span className="openui-agent-workspace-sidebar__item-label">{entry.heading}</span>
           {metadata && (

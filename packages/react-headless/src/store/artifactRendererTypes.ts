@@ -92,6 +92,13 @@ export interface ArtifactRendererConfig<Props = unknown> {
   preview: (props: Props, controls: ArtifactRendererControls) => ReactNode;
   /** Renders the full artifact view (side panel in-thread, full page in the artifact browser). */
   actual: (props: Props, controls: ArtifactRendererControls) => ReactNode;
+  /**
+   * Icon for this artifact type, used by the artifact nav for the category this
+   * type belongs to. A platform-neutral node (a web element or a React Native
+   * element). When a category groups several types, the nav uses the first
+   * member type's icon; if none is set the UI falls back to a generic default.
+   */
+  icon?: ReactNode;
 }
 
 /**
