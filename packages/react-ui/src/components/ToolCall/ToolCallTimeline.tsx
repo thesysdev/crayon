@@ -1,4 +1,4 @@
-import type { ToolActivity } from "@openuidev/react-headless";
+import { useThread, type ToolActivity } from "@openuidev/react-headless";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TimelineEntry } from "../_shared/tool-renderer/TimelineEntry";
@@ -33,9 +33,15 @@ export function ToolCallTimeline({
    *  request/response stay inspectable here while their rich preview renders elsewhere). */
   forceDefault?: boolean;
 }) {
-  // The timeline is "thinking" while its own last activity is still running and
-  // it's the live message.
-  const thinking = isLast && activities.length > 0 && isRunning(activities[activities.length - 1]!);
+  // The timeline is "thinking" while its own last activity is still running, it's
+  // the live message, AND the thread is actually running — so a closed-args call
+  // that never received a result stops showing "Working..." once the run ends.
+  const isThreadRunning = useThread((s) => s.isRunning);
+  const thinking =
+    isThreadRunning &&
+    isLast &&
+    activities.length > 0 &&
+    isRunning(activities[activities.length - 1]!);
 
   const [expanded, setExpanded] = useState(false);
   // Live message → reveal one-by-one from the first; historical (not live) →

@@ -1,4 +1,4 @@
-import { useArtifactRenderer, type ToolActivity } from "@openuidev/react-headless";
+import { useArtifactRenderer, useThread, type ToolActivity } from "@openuidev/react-headless";
 import { memo } from "react";
 import { TimelineToolCard } from "../../ToolCall/TimelineToolCard";
 import { ToolActivityRenderer, type ToolDetailedViewPanel } from "./ToolActivityRenderer";
@@ -47,7 +47,12 @@ export const TimelineEntry = memo(function TimelineEntry({
   fallbackToDefault = true,
 }: TimelineEntryProps) {
   const renderer = useArtifactRenderer(activity.toolName); // exact → RegExp → "*"
-  const defaultCard = <TimelineToolCard activity={activity} isLast={isLast} />;
+  // Run-gate the in-progress animation: a closed-args call with no result must
+  // not shimmer forever after the run ends (the status stays streaming/executing).
+  const isRunning = useThread((s) => s.isRunning);
+  const defaultCard = (
+    <TimelineToolCard activity={activity} isLast={isLast} isRunning={isRunning} />
+  );
   if (forceDefault || !renderer) return defaultCard;
   // Matched renderer; if its parser returns null (skips), fall back to the raw
   // card so a tool call is never invisible mid-stream — unless a separate raw

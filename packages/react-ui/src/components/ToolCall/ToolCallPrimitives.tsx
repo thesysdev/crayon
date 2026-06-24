@@ -22,6 +22,13 @@ import { createContext, createElement, useContext, useId, useState, type ReactNo
 interface ToolCallContextValue {
   activity: ToolActivity;
   isLast: boolean;
+  /**
+   * Whether the owning thread is still running. The in-progress affordances
+   * (icon spin, name shimmer) require this so a tool call that closed its args
+   * but never received a result does NOT animate forever after the run ends.
+   * Defaults to `true` for standalone (thread-less) primitive use.
+   */
+  running: boolean;
   isOpen: boolean;
   setOpen: (value: boolean) => void;
   panelId: string;
@@ -137,12 +144,15 @@ interface PartProps<State> {
 function Root({
   activity,
   isLast = false,
+  running = true,
   defaultOpen = false,
   className,
   children,
 }: {
   activity: ToolActivity;
   isLast?: boolean;
+  /** Whether the owning thread is still running (gates the in-progress animations). */
+  running?: boolean;
   defaultOpen?: boolean;
   className?: string;
   children: ReactNode;
@@ -150,7 +160,7 @@ function Root({
   const [isOpen, setOpen] = useState(defaultOpen);
   const panelId = useId();
   return (
-    <ToolCallContext.Provider value={{ activity, isLast, isOpen, setOpen, panelId }}>
+    <ToolCallContext.Provider value={{ activity, isLast, running, isOpen, setOpen, panelId }}>
       <div
         className={clsx("openui-tool-call", `openui-tool-call--${activity.status}`, className)}
         data-status={activity.status}
@@ -162,8 +172,8 @@ function Root({
 }
 
 const StatusIcon = ({ render, className }: PartProps<{ status: ToolCallStatus }>) => {
-  const { activity, isLast } = useToolCall();
-  const spin = isRunning(activity.status) && isLast;
+  const { activity, isLast, running } = useToolCall();
+  const spin = isRunning(activity.status) && isLast && running;
   const Icon = STATUS_ICON[activity.status];
   return renderPart(
     render,
@@ -199,9 +209,9 @@ const StatusText = ({
   render,
   className,
 }: PartProps<{ status: ToolCallStatus; label: string }>) => {
-  const { activity, isLast } = useToolCall();
+  const { activity, isLast, running } = useToolCall();
   const label = activity.statusMessage ?? defaultLabel(activity.status, activity.toolName);
-  const shimmer = isRunning(activity.status) && isLast;
+  const shimmer = isRunning(activity.status) && isLast && running;
   return renderPart(
     render,
     "span",

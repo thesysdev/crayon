@@ -1,5 +1,11 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { EventType, type AGUIEvent, type Message, type StreamProtocolAdapter } from "../../types";
+import {
+  EventType,
+  type AGUIEvent,
+  type AssistantMessage,
+  type Message,
+  type StreamProtocolAdapter,
+} from "../../types";
 import { processStreamedMessage } from "../processStreamedMessage";
 
 beforeAll(() => {
@@ -132,5 +138,54 @@ describe("processStreamedMessage — tool status + errors", () => {
     expect(toolMessage).toBeDefined();
     expect((toolMessage as { content?: string }).content).toBe("the result");
     expect((toolMessage as { error?: string }).error).toBeUndefined();
+  });
+
+  it("handles TOOL_CALL_CHUNK: lazily starts the call and accumulates streamed args", async () => {
+    const created: Message[] = [];
+    const updated: Message[] = [];
+
+    const result = await processStreamedMessage({
+      response: new Response(""),
+      createMessage: (m) => created.push(m),
+      updateMessage: (m) => updated.push(m),
+      adapter: adapterFromEvents([
+        // First chunk carries the id + name (acts as START) plus an args fragment.
+        {
+          type: EventType.TOOL_CALL_CHUNK,
+          toolCallId: "tc-1",
+          toolCallName: "search",
+          delta: '{"q":',
+        },
+        // Subsequent chunks carry only the delta (act as ARGS).
+        { type: EventType.TOOL_CALL_CHUNK, toolCallId: "tc-1", delta: '"hi"}' },
+      ] as unknown as AGUIEvent[]),
+    });
+    await flush();
+
+    const assistant = result as AssistantMessage;
+    expect(assistant?.toolCalls).toHaveLength(1);
+    const tc = assistant.toolCalls![0]!;
+    expect(tc.id).toBe("tc-1");
+    expect(tc.function.name).toBe("search");
+    expect(tc.function.arguments).toBe('{"q":"hi"}');
+  });
+
+  it("fills a TOOL_CALL_CHUNK tool name that arrives on a later chunk than the id", async () => {
+    const result = await processStreamedMessage({
+      response: new Response(""),
+      createMessage: () => {},
+      updateMessage: () => {},
+      adapter: adapterFromEvents([
+        { type: EventType.TOOL_CALL_CHUNK, toolCallId: "tc-2", delta: "" },
+        { type: EventType.TOOL_CALL_CHUNK, toolCallId: "tc-2", toolCallName: "lookup" },
+        { type: EventType.TOOL_CALL_CHUNK, toolCallId: "tc-2", delta: "{}" },
+      ] as unknown as AGUIEvent[]),
+    });
+    await flush();
+
+    const tc = (result as AssistantMessage).toolCalls?.[0];
+    expect(tc?.id).toBe("tc-2");
+    expect(tc?.function.name).toBe("lookup");
+    expect(tc?.function.arguments).toBe("{}");
   });
 });

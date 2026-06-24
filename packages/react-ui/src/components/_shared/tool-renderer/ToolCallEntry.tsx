@@ -1,4 +1,4 @@
-import { useArtifactRenderer, type ToolActivity } from "@openuidev/react-headless";
+import { useArtifactRenderer, useThread, type ToolActivity } from "@openuidev/react-headless";
 import { memo } from "react";
 import { DefaultToolCard } from "../../ToolCall/DefaultToolCard";
 import { ToolActivityRenderer, type ToolDetailedViewPanel } from "./ToolActivityRenderer";
@@ -34,7 +34,9 @@ export const ToolCallEntry = memo(function ToolCallEntry({
   detailedViewPanel,
 }: ToolCallEntryProps) {
   const renderer = useArtifactRenderer(activity.toolName);
-  const defaultCard = <DefaultToolCard activity={activity} isLast={isLast} />;
+  // Run-gate the in-progress animation (see TimelineEntry).
+  const isRunning = useThread((s) => s.isRunning);
+  const defaultCard = <DefaultToolCard activity={activity} isLast={isLast} isRunning={isRunning} />;
   if (!renderer) return defaultCard;
   // Matched renderer; fall back to the default card if its parser returns null.
   return (

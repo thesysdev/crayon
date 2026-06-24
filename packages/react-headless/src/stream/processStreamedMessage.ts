@@ -119,6 +119,41 @@ export const processStreamedMessage = async ({
         }
         break;
 
+      case EventType.TOOL_CALL_CHUNK: {
+        // Combined convenience form of START + ARGS (AG-UI). Some servers emit
+        // only chunks instead of the explicit START/ARGS/END triad; without
+        // this case their tool calls would be silently dropped. Lazily START on
+        // the first chunk carrying an id, fill the name if it arrives on a later
+        // chunk, and append any `delta` as ARGS. (No END is implied — a
+        // chunk-only call stays "streaming" until its result lands.)
+        const id = event.toolCallId;
+        if (!id) break;
+        const toolCalls = [...(currentMessage.toolCalls || [])];
+        let index = toolCalls.findIndex((tc) => tc.id === id);
+        if (index === -1) {
+          inFlightToolCallIds.add(id);
+          toolCalls.push({
+            id,
+            type: "function",
+            function: { name: event.toolCallName ?? "", arguments: "" },
+          });
+          index = toolCalls.length - 1;
+        }
+        const existing = toolCalls[index];
+        if (existing) {
+          toolCalls[index] = {
+            id: existing.id,
+            type: "function",
+            function: {
+              name: existing.function.name || event.toolCallName || "",
+              arguments: existing.function.arguments + (event.delta ?? ""),
+            },
+          };
+          currentMessage = { ...currentMessage, toolCalls };
+        }
+        break;
+      }
+
       case EventType.TEXT_MESSAGE_START:
         // The optimistic id is kept regardless of `event.messageId` — swapping
         // ids mid-stream by deleting + re-creating the assistant message

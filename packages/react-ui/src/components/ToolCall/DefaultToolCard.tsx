@@ -14,12 +14,20 @@ import { ToolCall } from "./ToolCallPrimitives";
 export const DefaultToolCard = memo(function DefaultToolCard({
   activity,
   isLast,
+  isRunning = true,
 }: {
   activity: ToolActivity;
   isLast: boolean;
+  /** Whether the owning thread is still running — gates the running spin/shimmer. */
+  isRunning?: boolean;
 }) {
   return (
-    <ToolCall.Root activity={activity} isLast={isLast} className="openui-tool-call--card">
+    <ToolCall.Root
+      activity={activity}
+      isLast={isLast}
+      running={isRunning}
+      className="openui-tool-call--card"
+    >
       <ToolCall.Trigger className="openui-tool-call__header">
         <ToolCall.StatusIcon />
         <ToolCall.StatusText />

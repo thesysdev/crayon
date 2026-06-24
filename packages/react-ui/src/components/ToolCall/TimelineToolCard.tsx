@@ -16,12 +16,16 @@ import { ToolCall } from "./ToolCallPrimitives";
 export const TimelineToolCard = memo(function TimelineToolCard({
   activity,
   isLast,
+  isRunning = true,
 }: {
   activity: ToolActivity;
   isLast: boolean;
+  /** Whether the owning thread is still running — gates the running shimmer/spin
+   *  so a closed-args call with no result doesn't animate forever after the run ends. */
+  isRunning?: boolean;
 }) {
   return (
-    <ToolCall.Root activity={activity} isLast={isLast}>
+    <ToolCall.Root activity={activity} isLast={isLast} running={isRunning}>
       <div className="openui-tool-call__title-row">
         <ToolCall.StatusIcon
           render={(_state, props) => (
@@ -39,7 +43,9 @@ export const TimelineToolCard = memo(function TimelineToolCard({
           render={(state, props) => (
             <span
               className={`openui-tool-call__name${
-                (state.status === "streaming" || state.status === "executing") && isLast
+                (state.status === "streaming" || state.status === "executing") &&
+                isLast &&
+                isRunning
                   ? " openui-tool-call__name--shimmer"
                   : ""
               }`}
@@ -60,7 +66,7 @@ export const TimelineToolCard = memo(function TimelineToolCard({
           <Collapsible
             label="Tool Request"
             labelLoading={`Sending request to ${activity.toolName}...`}
-            loading={activity.status === "streaming"}
+            loading={isRunning && activity.status === "streaming"}
           >
             <ToolCall.Parameters
               render={(_s, p) => (
@@ -75,7 +81,7 @@ export const TimelineToolCard = memo(function TimelineToolCard({
               <Collapsible
                 label="Tool Response"
                 labelLoading={`Awaiting response from ${activity.toolName}...`}
-                loading={activity.status === "executing"}
+                loading={isRunning && activity.status === "executing"}
               >
                 <pre
                   className={`openui-tool-code-block__code${
