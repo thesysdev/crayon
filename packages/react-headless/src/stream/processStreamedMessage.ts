@@ -33,8 +33,7 @@ export const processStreamedMessage = async ({
   let isFirst = true;
 
   // Tool messages by toolCallId, so repeated TOOL_CALL_RESULTs for the same
-  // call (e.g. streamed artifact_call.delta snapshots, each re-delivering the
-  // growing program) UPDATE one message in place instead of duplicating it.
+  // call UPDATE one message in place instead of duplicating it.
   const toolMessagesByCallId = new Map<string, ToolMessage>();
 
   let rafId: number | null = null;
@@ -107,8 +106,8 @@ export const processStreamedMessage = async ({
 
       case EventType.TOOL_CALL_RESULT: {
         // Upsert the tool message for this toolCallId. First result → create;
-        // subsequent results for the same call (streamed artifact_call.delta
-        // snapshots) → update the same message in place (no duplicates).
+        // any subsequent result for the same call → update the same message in
+        // place (no duplicates).
         const existing = toolMessagesByCallId.get(event.toolCallId);
         if (existing) {
           const updated: ToolMessage = { ...existing, content: event.content };

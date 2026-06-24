@@ -227,22 +227,39 @@ const AssistantMessageContent = ({
           className="openui-agent-thread-message-assistant__text"
         />
       )}
-      {message.toolCalls?.map((toolCall) => (
-        <ToolCallComponent key={toolCall.id} toolCall={toolCall} />
-      ))}
-      {toolMessages.map((tm) => {
-        const toolCall = message.toolCalls?.find((tc) => tc.id === tm.toolCallId);
-        const fallback = <ToolResult message={tm} toolName={toolCall?.function.name} />;
-        if (!toolCall) return <span key={tm.id}>{fallback}</span>;
+      {message.toolCalls?.map((toolCall) => {
+        // Render each tool call ONCE, passing its matching tool-role ToolMessage
+        // if one has arrived. While the call is still streaming (no ToolMessage
+        // yet), a matched artifact renderer renders IN-FLIGHT from the tool-call
+        // args — Option A streams the openui-lang program as the openui_artifact
+        // tool-call args, so the morph builds before any result lands. A
+        // non-artifact tool shows the default chip until its result arrives. The
+        // SAME instance is reused across the streaming → settled transition (key
+        // is the stable toolCall.id), avoiding a remount.
+        const tm = toolMessages.find((m) => m.toolCallId === toolCall.id) ?? null;
         return (
           <ToolMessageRenderer
-            key={tm.id}
+            key={toolCall.id}
             toolMessage={tm}
             toolCall={toolCall}
-            fallback={fallback}
+            fallback={
+              tm ? (
+                <ToolResult message={tm} toolName={toolCall.function.name} />
+              ) : (
+                <ToolCallComponent toolCall={toolCall} />
+              )
+            }
           />
         );
       })}
+      {/* Orphan tool-role messages with no matching tool call (rare). */}
+      {toolMessages
+        .filter((tm) => !message.toolCalls?.some((tc) => tc.id === tm.toolCallId))
+        .map((tm) => (
+          <span key={tm.id}>
+            <ToolResult message={tm} />
+          </span>
+        ))}
     </>
   );
 };

@@ -6,13 +6,19 @@ export const agUIAdapter = (): StreamProtocolAdapter => ({
     if (!reader) throw new Error("No response body");
 
     const decoder = new TextDecoder();
+    let buffer = "";
 
     while (true) {
       const { done, value } = await reader.read();
-      if (done) break;
 
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split("\n");
+      // Accumulate across reads: a single SSE `data:` line (e.g. a multi-KB
+      // artifact function_call_arguments payload) can span several network
+      // reads. Splitting each chunk independently tears that line in two and
+      // drops it on JSON.parse. Hold the trailing partial line until the next
+      // read; on done, flush whatever remains.
+      buffer += done ? decoder.decode() : decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = done ? "" : (lines.pop() ?? "");
 
       for (const line of lines) {
         if (!line.startsWith("data: ")) continue;
@@ -26,6 +32,8 @@ export const agUIAdapter = (): StreamProtocolAdapter => ({
           console.error("Failed to parse SSE event", e);
         }
       }
+
+      if (done) break;
     }
   },
 });
