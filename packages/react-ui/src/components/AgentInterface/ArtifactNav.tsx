@@ -53,17 +53,6 @@ export const ArtifactNav = ({ className, icon }: ArtifactNavProps) => {
   const getItemIcon = (categoryIcon: ReactNode): ReactNode =>
     categoryIcon ?? icon ?? <Boxes size="1em" />;
 
-  // NOTE: category styling hooks are still name-based (a separate concern from the
-  // icon; these classes drive per-category icon backgrounds in sidebar.scss).
-  const getItemClassName = (label: string) => {
-    const normalizedLabel = label.toLowerCase();
-    if (normalizedLabel === "apps") return "openui-agent-sidebar-item--apps";
-    if (normalizedLabel === "reports" || normalizedLabel === "artifacts") {
-      return "openui-agent-sidebar-item--artifacts";
-    }
-    return undefined;
-  };
-
   return (
     <div className={className}>
       {items.map((item) => (
@@ -71,7 +60,6 @@ export const ArtifactNav = ({ className, icon }: ArtifactNavProps) => {
           key={item.path}
           path={item.path}
           icon={getItemIcon(item.categoryIcon)}
-          className={getItemClassName(item.label)}
           // Highlight on the list page AND while viewing an artifact within it.
           selected={nav?.path === item.path || nav?.path?.startsWith(`${item.path}/`) === true}
         >

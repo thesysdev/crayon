@@ -14,11 +14,12 @@ import { useNav } from "./_shared/navContext";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
-const ARTIFACT_TYPE_LABEL_BY_TYPE: Record<string, string> = {
-  th_dashboard: "App",
-  th_report: "Report",
-  th_presentation: "Presentation",
-};
+/** Last-resort label: `"chart_v2"` → `"Chart V2"` (never the raw machine id). */
+const prettifyType = (type: string): string =>
+  type
+    .replace(/[_-]+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase()) || type;
 
 export const formatArtifactUpdatedAt = (updatedAt: ArtifactSummary["updatedAt"]) => {
   if (updatedAt === undefined) return undefined;
@@ -40,8 +41,16 @@ export const useArtifactIcon = (type: string): ReactNode => {
   return rendererIcon ?? <Boxes size="1em" />;
 };
 
-export const getArtifactTypeLabel = (artifact: { type: string }) =>
-  ARTIFACT_TYPE_LABEL_BY_TYPE[artifact.type] ?? artifact.type;
+/**
+ * Resolves the display label for an artifact type: the label declared on its
+ * renderer (`defineArtifactRenderer({ label })`), else a prettified `type`.
+ * Mirrors {@link useArtifactIcon} — never shows the raw machine id.
+ */
+export const useArtifactTypeLabel = (type: string): string => {
+  const registry = useArtifactRendererRegistry();
+  const label = registry ? lookupArtifactRendererByType(registry, type)?.label : undefined;
+  return label ?? prettifyType(type);
+};
 
 const ArtifactBrowserCard = ({
   artifact,
@@ -53,7 +62,7 @@ const ArtifactBrowserCard = ({
   onClick: () => void;
 }) => {
   const icon = useArtifactIcon(artifact.type);
-  const typeLabel = getArtifactTypeLabel(artifact);
+  const typeLabel = useArtifactTypeLabel(artifact.type);
   const metadata = [typeLabel, updatedAt].filter(Boolean).join(" · ");
 
   return (
@@ -106,7 +115,8 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
   }, [search]);
 
   const typeKey = typeFilter?.join(" ");
-  const emptyItemLabel = categoryName === "Apps" ? "apps" : "artifacts";
+  // Noun derived from the category name (not a hardcoded "Apps" match).
+  const emptyItemLabel = categoryName ? categoryName.toLowerCase() : "artifacts";
   const emptyMessage = debouncedSearch
     ? `No ${emptyItemLabel} match your search`
     : `No ${emptyItemLabel} yet`;
