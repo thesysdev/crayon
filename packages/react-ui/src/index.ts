@@ -5,7 +5,14 @@ export * from "./components/AgentInterface";
 
 // Adapter factories + types — paired with AgentInterface's `storage` / `llm` props,
 // re-exported so consumers can build adapters without reaching into react-headless.
-export { fetchLLM, restStorage } from "@openuidev/react-headless";
+export {
+  defineArtifactRenderer,
+  fetchLLM,
+  pairToolActivity,
+  partialJSONParse,
+  restStorage,
+  useToolActivities,
+} from "@openuidev/react-headless";
 export type {
   Artifact,
   ArtifactCategory,
@@ -19,18 +26,31 @@ export type {
   FetchLLMOptions,
   RestStorageOptions,
   ThreadStorage,
+  ToolActivity,
+  ToolCallStatus,
 } from "@openuidev/react-headless";
-export { defineArtifactRenderer } from "@openuidev/react-headless";
 
 // DetailedView() factory — generates a ComponentRenderer with detailed-view wiring
 export { DetailedView } from "./detailed-view";
 export type { DetailedViewConfig, DetailedViewControls } from "./detailed-view";
 
-// ToolMessageRenderer — dispatches tool results to matching AppRenderers
+// Tool-call rendering: the typed-activity dispatchers (matched renderer xor
+// default) + the legacy ToolMessageRenderer wrapper.
 export {
+  TimelineEntry,
+  ToolActivityRenderer,
+  ToolCallEntry,
+  ToolCallErrorFallback,
   ToolMessageRenderer,
+  type TimelineEntryProps,
+  type ToolCallEntryProps,
+  type ToolDetailedViewPanel,
   type ToolMessageRendererProps,
 } from "./components/_shared/tool-renderer";
+
+// Shared Collapsible primitive + built-in web-search renderer.
+export { Collapsible } from "./components/_shared/Collapsible";
+export { webSearchRenderer, type WebSearchSource } from "./renderers/webSearchRenderer";
 
 // Detailed-view exports (DetailedViewPanel/DetailedViewPortalTarget also available as Shell.*)
 export { useActiveDetailedView, useDetailedView } from "@openuidev/react-headless";

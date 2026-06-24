@@ -33,6 +33,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
       isRunning: false,
       isLoadingMessages: false,
       threadError: null,
+      executingToolCallIds: new Set<string>(),
       _abortController: null,
 
       // ── Thread List Actions ──
@@ -73,7 +74,12 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
 
       switchToNewThread: () => {
         get().cancelMessage();
-        set({ selectedThreadId: null, messages: [], threadError: null });
+        set({
+          selectedThreadId: null,
+          messages: [],
+          threadError: null,
+          executingToolCallIds: new Set<string>(),
+        });
       },
 
       createThread: async (firstMessage: UserMessage) => {
@@ -89,6 +95,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
           messages: [],
           isLoadingMessages: true,
           threadError: null,
+          executingToolCallIds: new Set<string>(),
         });
         threadStorage
           .getMessages(threadId)
@@ -139,7 +146,12 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
           role: "user",
         };
 
-        set({ _abortController: abortController, isRunning: true, threadError: null });
+        set({
+          _abortController: abortController,
+          isRunning: true,
+          threadError: null,
+          executingToolCallIds: new Set<string>(),
+        });
         set((s) => ({ messages: [...s.messages, optimisticMessage] }));
 
         abortController.signal.addEventListener("abort", () => {
@@ -172,6 +184,21 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
               set((s) => ({
                 messages: s.messages.map((m) => (m.id === msg.id ? msg : m)),
               })),
+            // A tool's args have closed (TOOL_CALL_END) → it is now executing.
+            markToolExecuting: (id) =>
+              set((s) =>
+                s.executingToolCallIds.has(id)
+                  ? s
+                  : { executingToolCallIds: new Set(s.executingToolCallIds).add(id) },
+              ),
+            // Its result landed (or it errored) → no longer executing.
+            clearToolExecuting: (id) =>
+              set((s) => {
+                if (!s.executingToolCallIds.has(id)) return s;
+                const next = new Set(s.executingToolCallIds);
+                next.delete(id);
+                return { executingToolCallIds: next };
+              }),
             adapter: llm.streamProtocol,
           });
         } catch (e) {
@@ -179,7 +206,15 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             set({ threadError: e instanceof Error ? e : new Error(String(e)) });
           }
         } finally {
-          set({ _abortController: null, isRunning: false });
+          // Clear any tool calls still flagged "executing" — adapters that emit
+          // TOOL_CALL_END without a matching TOOL_CALL_RESULT (e.g. client-side
+          // tool calls in the OpenAI adapters) would otherwise leave them stuck
+          // in the executing set after the run ends.
+          set({
+            _abortController: null,
+            isRunning: false,
+            executingToolCallIds: new Set<string>(),
+          });
         }
       },
 

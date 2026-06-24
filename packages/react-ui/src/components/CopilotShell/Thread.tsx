@@ -1,16 +1,14 @@
-import type { AssistantMessage, Message, ToolMessage } from "@openuidev/react-headless";
-import { MessageProvider, useThread } from "@openuidev/react-headless";
+import type { AssistantMessage, Message } from "@openuidev/react-headless";
+import { MessageProvider, useThread, useToolActivities } from "@openuidev/react-headless";
 import clsx from "clsx";
 import React, { memo, useRef } from "react";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { DetailedViewOverlay } from "../_shared/detailed-view";
 import { useShellStore } from "../_shared/store";
-import { ToolMessageRenderer } from "../_shared/tool-renderer";
+import { TimelineEntry } from "../_shared/tool-renderer";
 import type { AssistantMessageComponent, UserMessageComponent } from "../_shared/types";
 import { MarkDownRenderer } from "../MarkDownRenderer";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
-import { ToolCallComponent } from "../ToolCall";
-import { ToolResult } from "../ToolResult";
 
 export const ThreadContainer = ({
   children,
@@ -128,22 +126,13 @@ export const UserMessageContainer = ({
 const AssistantMessageContent = ({
   message,
   allMessages,
+  isLast,
 }: {
   message: AssistantMessage;
   allMessages: Message[];
+  isLast: boolean;
 }) => {
-  const toolMessages: ToolMessage[] = [];
-  const msgIndex = allMessages.findIndex((m) => m.id === message.id);
-  if (msgIndex !== -1) {
-    for (let i = msgIndex + 1; i < allMessages.length; i++) {
-      const m = allMessages[i];
-      if (m && m.role === "tool") {
-        toolMessages.push(m as ToolMessage);
-      } else {
-        break;
-      }
-    }
-  }
+  const activities = useToolActivities(message, allMessages);
 
   return (
     <>
@@ -153,22 +142,13 @@ const AssistantMessageContent = ({
           className="openui-copilot-shell-thread-message-assistant__text"
         />
       )}
-      {message.toolCalls?.map((toolCall) => (
-        <ToolCallComponent key={toolCall.id} toolCall={toolCall} />
+      {activities.map((activity, idx) => (
+        <TimelineEntry
+          key={activity.id}
+          activity={activity}
+          isLast={isLast && idx === activities.length - 1}
+        />
       ))}
-      {toolMessages.map((tm) => {
-        const toolCall = message.toolCalls?.find((tc) => tc.id === tm.toolCallId);
-        const fallback = <ToolResult message={tm} toolName={toolCall?.function.name} />;
-        if (!toolCall) return <span key={tm.id}>{fallback}</span>;
-        return (
-          <ToolMessageRenderer
-            key={tm.id}
-            toolMessage={tm}
-            toolCall={toolCall}
-            fallback={fallback}
-          />
-        );
-      })}
     </>
   );
 };
@@ -209,6 +189,7 @@ export const RenderMessage = memo(
     assistantMessage: CustomAssistantMessage,
     userMessage: CustomUserMessage,
     isStreaming,
+    isLast,
   }: {
     message: Message;
     className?: string;
@@ -216,6 +197,8 @@ export const RenderMessage = memo(
     assistantMessage?: AssistantMessageComponent;
     userMessage?: UserMessageComponent;
     isStreaming: boolean;
+    /** Whether this is the last *assistant* message (drives the running shimmer). */
+    isLast: boolean;
   }) => {
     if (message.role === "tool") {
       return null;
@@ -227,7 +210,7 @@ export const RenderMessage = memo(
       }
       return (
         <AssistantMessageContainer className={className}>
-          <AssistantMessageContent message={message} allMessages={allMessages} />
+          <AssistantMessageContent message={message} allMessages={allMessages} isLast={isLast} />
         </AssistantMessageContainer>
       );
     }
@@ -269,6 +252,14 @@ export const Messages = ({
   const messages = useThread((s) => s.messages);
   const isRunning = useThread((s) => s.isRunning);
 
+  let lastAssistantIndex = -1;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i]?.role === "assistant") {
+      lastAssistantIndex = i;
+      break;
+    }
+  }
+
   return (
     <div className={clsx("openui-copilot-shell-thread-messages", className)}>
       {messages.map((message, i) => {
@@ -279,7 +270,8 @@ export const Messages = ({
               allMessages={messages}
               assistantMessage={assistantMessage}
               userMessage={userMessage}
-              isStreaming={isRunning && i === messages.length - 1}
+              isStreaming={isRunning && i === lastAssistantIndex}
+              isLast={i === lastAssistantIndex}
             />
           </MessageProvider>
         );

@@ -6,6 +6,7 @@ export { useDetailedView } from "./hooks/useDetailedView";
 export { useDetailedViewPortalTarget } from "./hooks/useDetailedViewPortalTarget";
 export { MessageContext, MessageProvider, useMessage } from "./hooks/useMessage";
 export { useThread, useThreadList } from "./hooks/useThread";
+export { useToolActivities } from "./hooks/useToolActivities";
 
 export { useArtifactCategories } from "./store/ArtifactCategoriesContext";
 export {
@@ -19,6 +20,7 @@ export { useArtifactStorage } from "./store/ArtifactStorageContext";
 export { ChatProvider } from "./store/ChatProvider";
 export { DetailedViewContext, useDetailedViewStore } from "./store/DetailedViewContext";
 export { ThreadContextContext, useThreadContextStore } from "./store/ThreadContextContext";
+export { pairToolActivity, partialJSONParse } from "./store/toolActivity";
 export {
   agUIAdapter,
   langGraphAdapter,
@@ -34,6 +36,7 @@ export {
 export { processStreamedMessage } from "./stream/processStreamedMessage";
 
 // ── Adapter interfaces + factories ──
+export { fetchLLM, restStorage } from "./adapters";
 export type {
   Artifact,
   ArtifactCategory,
@@ -46,13 +49,14 @@ export type {
   RestStorageOptions,
   ThreadStorage,
 } from "./adapters";
-export { fetchLLM, restStorage } from "./adapters";
 
 export type {
   ArtifactRendererConfig,
   ArtifactRendererControls,
   ParsedArtifact,
 } from "./store/artifactRendererTypes";
+
+export type { ToolActivity, ToolCallStatus } from "./store/toolActivity";
 
 export type { DetailedViewActions, DetailedViewState } from "./store/detailedViewTypes";
 

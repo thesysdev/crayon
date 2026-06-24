@@ -42,6 +42,22 @@
     align-items: flex-start;
     width: 100%;
   }
+
+  // Compact staggered reveal (CSS fade-in; remounted per step via React key).
+  &__reveal-item {
+    animation: openui-behind-the-scenes-reveal 0.2s ease;
+  }
+}
+
+@keyframes openui-behind-the-scenes-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // ── Timeline item (each tool call) ──
@@ -110,6 +126,7 @@
     padding: cssUtils.$space-s-m cssUtils.$space-s;
     padding-right: 0;
     min-height: 20px;
+    width: calc(100% - 6px);
 
     // 6px offset = half of 14px icon - half of 1px border
     margin-left: 6px;
@@ -126,6 +143,121 @@
     gap: cssUtils.$space-xs;
     padding-left: cssUtils.$space-m;
     width: 100%;
+  }
+
+  // ── Web-search presentation (reasoning line + sources list) ──
+
+  &__reasoning {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-neutral-secondary;
+    font-style: italic;
+    margin: 0;
+  }
+
+  &__sources {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border: 1px solid cssUtils.$border-default;
+    border-radius: cssUtils.$radius-l;
+    background-color: cssUtils.$foreground;
+    padding: cssUtils.$space-2xs;
+  }
+
+  &__source {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: cssUtils.$space-2xs cssUtils.$space-s;
+    padding-left: cssUtils.$space-2xs;
+    border-radius: cssUtils.$radius-m;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: cssUtils.$sunk;
+    }
+  }
+
+  &__source-left {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-s;
+    min-width: 0;
+  }
+
+  &__source-logo {
+    width: 24px;
+    height: 24px;
+    border-radius: cssUtils.$radius-xs;
+    flex-shrink: 0;
+  }
+
+  &__source-title {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-neutral-primary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__source-desc {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-neutral-secondary;
+    flex-shrink: 0;
+  }
+
+  // ── Chevron "card" composition (DefaultToolCard) ──
+
+  &--card {
+    padding-left: 0;
+  }
+
+  &__header {
+    @include cssUtils.button-reset;
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-m;
+    width: 100%;
+    padding: cssUtils.$space-2xs cssUtils.$space-s;
+    border-radius: cssUtils.$radius-m;
+    cursor: pointer;
+    background-color: transparent;
+    color: cssUtils.$text-neutral-secondary;
+
+    &:not(:disabled):hover {
+      background-color: cssUtils.$sunk;
+    }
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    margin-left: auto;
+    color: cssUtils.$text-neutral-secondary;
+    transition: transform 0.2s ease;
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-xs;
+    padding: cssUtils.$space-s cssUtils.$space-m;
+    width: 100%;
+  }
+
+  &__request,
+  &__response {
+    @include cssUtils.typography(code, small);
+    color: cssUtils.$text-neutral-secondary;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  &__result--error {
+    color: cssUtils.$text-danger-primary;
   }
 }
 
@@ -205,6 +337,39 @@
     margin: 0;
     white-space: pre-wrap;
     word-break: break-all;
+  }
+
+  &__code--error {
+    color: cssUtils.$text-danger-primary;
+  }
+}
+
+// ── Web-search detailed view (renderer `actual`) ──
+
+.openui-web-search__detailed {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-m;
+  list-style: none;
+  margin: 0;
+  padding: cssUtils.$space-m;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: cssUtils.$space-s;
+    color: cssUtils.$text-neutral-primary;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  p {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-neutral-secondary;
+    margin: cssUtils.$space-2xs 0 0;
   }
 }
 

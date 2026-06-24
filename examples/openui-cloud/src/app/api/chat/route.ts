@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         // A bare provider/model id (versioned managed ids are mutually
         // exclusive with the instructions config block).
-        model: "anthropic/claude-sonnet-4-5-20250929",
+        model: "openai/gpt-5.2",
         conversation: threadId,
         input,
         stream: true,
