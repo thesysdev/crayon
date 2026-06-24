@@ -13,8 +13,8 @@ import { useLayoutContext } from "../../context/LayoutContext";
 import { IconButton } from "../IconButton";
 import {
   formatArtifactUpdatedAt,
-  getArtifactTypeLabel,
   useArtifactIcon,
+  useArtifactTypeLabel,
 } from "./ArtifactBrowserPage";
 import { useAgentInterfaceStore } from "./_shared/store";
 
@@ -261,7 +261,7 @@ const WorkspaceItem = ({ entry }: { entry: ArtifactEntry }) => {
   const onClick = () => store.getState().setActiveDetailedView(viewId);
   const icon = useArtifactIcon(entry.type);
   const updatedAt = formatArtifactUpdatedAt(entry.updatedAt);
-  const metadata = [getArtifactTypeLabel(entry), updatedAt].filter(Boolean).join(" · ");
+  const metadata = [useArtifactTypeLabel(entry.type), updatedAt].filter(Boolean).join(" · ");
 
   return (
     <li>

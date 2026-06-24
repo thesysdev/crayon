@@ -60,9 +60,8 @@ export interface ArtifactCategory {
   };
   /**
    * Icon for this category's sidebar nav item. A platform-neutral node (a web
-   * element or a React Native element). Takes precedence over the icon declared
-   * on this category's artifact renderers; when omitted, the nav falls back to
-   * the first member type's renderer icon, then a generic default.
+   * element or a React Native element). When omitted, the nav falls back to the
+   * `<ArtifactNav icon>` prop, then a generic default.
    */
   icon?: ReactNode;
 }
