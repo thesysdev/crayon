@@ -41,8 +41,9 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({
         // A bare provider/model id (versioned managed ids are mutually
-        // exclusive with the instructions config block).
-        model: "openai/gpt-5.2",
+        // exclusive with the instructions config block). Configurable via
+        // OPENUI_MODEL (.env.local); defaults to openai/gpt-5.
+        model: envOr("OPENUI_MODEL", "openai/gpt-5"),
         conversation: threadId,
         input,
         stream: true,
