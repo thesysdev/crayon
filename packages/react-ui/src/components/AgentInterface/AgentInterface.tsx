@@ -22,6 +22,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
+import type { ScrollVariant } from "../../hooks/useScrollToBottom";
 import type { ConversationStarterProps } from "../../types/ConversationStarter";
 import { IconButton } from "../IconButton";
 import { GenUIAssistantMessage } from "../OpenUIChat/GenUIAssistantMessage";
@@ -30,6 +31,11 @@ import { ThemeProvider, type ThemeProps } from "../ThemeProvider";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { artifactListPath, parseArtifactPath } from "./_shared/artifactPaths";
 import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
+import {
+  LabelsProvider,
+  useAgentInterfaceLabels,
+  type AgentInterfaceLabels,
+} from "./_shared/labelsContext";
 import { NavProvider, useNav } from "./_shared/navContext";
 import { StartersProvider } from "./_shared/startersContext";
 import { useAgentInterfaceStore } from "./_shared/store";
@@ -47,7 +53,6 @@ import { SidebarContainer, SidebarContent, SidebarHeader, SidebarSeparator } fro
 import { SidebarItem } from "./SidebarItem";
 import { SidebarSlot } from "./SidebarSlot";
 import { MessageLoading, Messages, ScrollArea, ThreadContainer, ThreadHeader } from "./Thread";
-import type { ScrollVariant } from "../../hooks/useScrollToBottom";
 import { ThreadList } from "./ThreadList";
 import { WelcomeScreen } from "./WelcomeScreen";
 import { Workspace } from "./Workspace";
@@ -70,6 +75,8 @@ export interface AgentInterfaceProps extends Omit<ChatProviderProps, "children">
   logoUrl?: string;
   /** Agent display name. */
   agentName?: string;
+  /** Consumer-overridable display strings for the artifact browser + workspace. */
+  labels?: AgentInterfaceLabels;
   /** Global starters inherited by Welcome (when active) or Composer. */
   starters?: ConversationStarterProps[];
   /** Layout variant for inherited starters. */
@@ -180,6 +187,7 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
     disableThemeProvider,
     logoUrl,
     agentName,
+    labels,
     starters,
     starterVariant,
     path,
@@ -233,15 +241,17 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
       >
         <NavProvider path={path} defaultPath={defaultPath} onNavigate={onNavigate}>
           <StartersProvider starters={starters} starterVariant={starterVariant}>
-            <AgentInterfaceBody
-              slots={slots}
-              logoUrl={logoUrl ?? ""}
-              agentName={agentName ?? ""}
-              resolvedAssistantMessage={resolvedAssistantMessage}
-              resolvedUserMessage={resolvedUserMessage}
-              scrollVariant={scrollVariant}
-              scrollOnLoad={scrollOnLoad}
-            />
+            <LabelsProvider labels={labels}>
+              <AgentInterfaceBody
+                slots={slots}
+                logoUrl={logoUrl ?? ""}
+                agentName={agentName ?? ""}
+                resolvedAssistantMessage={resolvedAssistantMessage}
+                resolvedUserMessage={resolvedUserMessage}
+                scrollVariant={scrollVariant}
+                scrollOnLoad={scrollOnLoad}
+              />
+            </LabelsProvider>
           </StartersProvider>
         </NavProvider>
       </ChatProvider>
@@ -332,6 +342,7 @@ const ArtifactViewMobileHeader = ({
 const MobileWorkspaceToggleButton = () => {
   const artifacts = useArtifactList();
   const { isDetailedViewActive } = useActiveDetailedView();
+  const { workspaceToggle } = useAgentInterfaceLabels();
   const { isWorkspaceOpen, setIsWorkspaceOpen } = useAgentInterfaceStore((state) => ({
     isWorkspaceOpen: state.isWorkspaceOpen,
     setIsWorkspaceOpen: state.setIsWorkspaceOpen,
@@ -341,7 +352,7 @@ const MobileWorkspaceToggleButton = () => {
   if (!hasArtifacts || isDetailedViewActive) return null;
 
   return (
-    <AgentInterfaceTooltip content="Apps & Artifacts" side="left">
+    <AgentInterfaceTooltip content={workspaceToggle} side="left">
       <IconButton
         size="medium"
         icon={<GalleryHorizontalEndIcon size="1em" />}

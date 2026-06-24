@@ -2,6 +2,7 @@ import { useArtifactCategories, useArtifactStorage } from "@openuidev/react-head
 import { Boxes } from "lucide-react";
 import type { ReactNode } from "react";
 import { artifactListPath } from "./_shared/artifactPaths";
+import { useAgentInterfaceLabels } from "./_shared/labelsContext";
 import { useOptionalNav } from "./_shared/navContext";
 import { SidebarItem } from "./SidebarItem";
 
@@ -37,6 +38,7 @@ export const ArtifactNav = ({ className, icon }: ArtifactNavProps) => {
   const storage = useArtifactStorage();
   const categories = useArtifactCategories();
   const nav = useOptionalNav();
+  const { defaultCategory } = useAgentInterfaceLabels();
 
   if (!storage) return null;
 
@@ -47,7 +49,13 @@ export const ArtifactNav = ({ className, icon }: ArtifactNavProps) => {
           path: artifactListPath(c.name),
           categoryIcon: c.icon,
         }))
-      : [{ label: "Artifacts", path: artifactListPath(), categoryIcon: undefined as ReactNode }];
+      : [
+          {
+            label: defaultCategory,
+            path: artifactListPath(),
+            categoryIcon: undefined as ReactNode,
+          },
+        ];
 
   // Category nav icon: the category's own icon → the `icon` prop → a generic default.
   const getItemIcon = (categoryIcon: ReactNode): ReactNode =>
