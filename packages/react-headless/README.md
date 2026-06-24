@@ -2,8 +2,8 @@
 
 Headless React state and streaming primitives for OpenUI chat experiences. Bring your own UI; this package handles threads, messages, adapters, and message format conversion.
 
-[![npm](https://img.shields.io/npm/v/@openuidev/react-headless)](https://www.npmjs.com/package/@openuidev/react-headless)
-[![npm downloads](https://img.shields.io/npm/dm/@openuidev/react-headless)](https://www.npmjs.com/package/@openuidev/react-headless)
+[![npm version](https://img.shields.io/npm/v/@openuidev/react-headless)](https://www.npmjs.com/package/@openuidev/react-headless)
+[![monthly downloads](https://img.shields.io/npm/dm/@openuidev/react-headless)](https://www.npmjs.com/package/@openuidev/react-headless)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
 
 **Links:** [Package docs](https://openui.com/docs/api-reference/react-headless) | [Chat docs](https://openui.com/docs/chat) | [GitHub repo](https://github.com/thesysdev/openui)

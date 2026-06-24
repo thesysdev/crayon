@@ -12,10 +12,6 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
     const decoder = new TextDecoder();
     // Map item_id → call_id so TOOL_CALL_ARGS can reference the correct toolCallId
     const itemIdToCallId: Record<string, string> = {};
-    // Accumulate the streamed artifact program per call_id. The backend emits
-    // the MERGED program progressively via `response.artifact_call.delta`; we
-    // hold the running text so each delta can re-deliver a coherent carrier.
-    const artifactProgramByCallId: Record<string, string> = {};
 
     let buffer = "";
     while (true) {
@@ -35,38 +31,7 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
         if (!data || data === "[DONE]") continue;
 
         try {
-          const parsed = JSON.parse(data) as { type?: string };
-
-          // Backend extension: the `artifact_call` channel is not part of the
-          // stock OpenAI ResponseStreamEvent union. Handle the program-delta
-          // here, before the typed switch, so we can read its non-OpenAI shape
-          // ({ item_id, call_id, delta }).
-          if (parsed.type === "response.artifact_call.delta") {
-            const e = parsed as {
-              item_id?: string;
-              call_id?: string;
-              delta?: string;
-            };
-            const callId = e.call_id ?? (e.item_id ? itemIdToCallId[e.item_id] : undefined);
-            if (callId && typeof e.delta === "string") {
-              // The backend streams the inline-sentinel carrier progressively:
-              // the FIRST delta is the header line
-              // (`]]>openui:artifact <header-json>\n`), then raw program chunks.
-              // Accumulate them verbatim — the running value IS the carrier
-              // string, identical to the final function_call_output. The client
-              // never merges ops; it always sees a coherent growing carrier.
-              artifactProgramByCallId[callId] = (artifactProgramByCallId[callId] ?? "") + e.delta;
-              yield {
-                type: EventType.TOOL_CALL_RESULT,
-                messageId: e.item_id ?? `artifact_call_${callId}`,
-                toolCallId: callId,
-                content: artifactProgramByCallId[callId],
-              };
-            }
-            continue;
-          }
-
-          const event = parsed as ResponseStreamEvent;
+          const event = JSON.parse(data) as ResponseStreamEvent;
 
           switch (event.type) {
             case "response.output_item.added": {

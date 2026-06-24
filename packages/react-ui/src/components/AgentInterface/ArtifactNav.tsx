@@ -1,13 +1,17 @@
 import { useArtifactCategories, useArtifactStorage } from "@openuidev/react-headless";
-import { Boxes, FileText, LayoutDashboard } from "lucide-react";
+import { Boxes } from "lucide-react";
 import type { ReactNode } from "react";
 import { artifactListPath } from "./_shared/artifactPaths";
+import { useAgentInterfaceLabels } from "./_shared/labelsContext";
 import { useOptionalNav } from "./_shared/navContext";
 import { SidebarItem } from "./SidebarItem";
 
 export interface ArtifactNavProps {
   className?: string;
-  /** Leading icon for every category item. Defaults to a boxes icon. */
+  /**
+   * Fallback icon for category items that don't set their own `icon`.
+   * Defaults to a boxes icon.
+   */
   icon?: ReactNode;
 }
 
@@ -18,6 +22,10 @@ export interface ArtifactNavProps {
  * (or a single "Artifacts" item when no categories are configured). Clicking
  * navigates to the reserved `artifacts/{category}` path, which AgentInterface
  * renders as the searchable artifact browser in the thread region.
+ *
+ * Each item's icon is the category's own `icon` (`artifactCategories: [{ icon }]`),
+ * else the `icon` prop, else a generic default — the library hardcodes no
+ * per-category icons.
  *
  * Renders nothing when `storage.artifact` is not configured.
  *
@@ -30,32 +38,28 @@ export const ArtifactNav = ({ className, icon }: ArtifactNavProps) => {
   const storage = useArtifactStorage();
   const categories = useArtifactCategories();
   const nav = useOptionalNav();
+  const { defaultCategory } = useAgentInterfaceLabels();
 
   if (!storage) return null;
 
   const items =
     categories.length > 0
-      ? categories.map((c) => ({ label: c.name, path: artifactListPath(c.name) }))
-      : [{ label: "Artifacts", path: artifactListPath() }];
+      ? categories.map((c) => ({
+          label: c.name,
+          path: artifactListPath(c.name),
+          categoryIcon: c.icon,
+        }))
+      : [
+          {
+            label: defaultCategory,
+            path: artifactListPath(),
+            categoryIcon: undefined as ReactNode,
+          },
+        ];
 
-  const getItemIcon = (label: string) => {
-    if (icon) return icon;
-    const normalizedLabel = label.toLowerCase();
-    if (normalizedLabel === "apps") return <LayoutDashboard size="1em" />;
-    if (normalizedLabel === "reports" || normalizedLabel === "artifacts") {
-      return <FileText size="1em" />;
-    }
-    return <Boxes size="1em" />;
-  };
-
-  const getItemClassName = (label: string) => {
-    const normalizedLabel = label.toLowerCase();
-    if (normalizedLabel === "apps") return "openui-agent-sidebar-item--apps";
-    if (normalizedLabel === "reports" || normalizedLabel === "artifacts") {
-      return "openui-agent-sidebar-item--artifacts";
-    }
-    return undefined;
-  };
+  // Category nav icon: the category's own icon → the `icon` prop → a generic default.
+  const getItemIcon = (categoryIcon: ReactNode): ReactNode =>
+    categoryIcon ?? icon ?? <Boxes size="1em" />;
 
   return (
     <div className={className}>
@@ -63,8 +67,7 @@ export const ArtifactNav = ({ className, icon }: ArtifactNavProps) => {
         <SidebarItem
           key={item.path}
           path={item.path}
-          icon={getItemIcon(item.label)}
-          className={getItemClassName(item.label)}
+          icon={getItemIcon(item.categoryIcon)}
           // Highlight on the list page AND while viewing an artifact within it.
           selected={nav?.path === item.path || nav?.path?.startsWith(`${item.path}/`) === true}
         >

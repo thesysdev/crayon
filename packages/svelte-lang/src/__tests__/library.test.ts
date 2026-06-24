@@ -66,8 +66,8 @@ describe("createLibrary", () => {
   it("creates a library with a components record", () => {
     const lib = createLibrary({ components: [TextContent, Container] });
 
-    expect(lib.components.TextContent).toBe(TextContent);
-    expect(lib.components.Container).toBe(Container);
+    expect(lib.components["TextContent"]).toBe(TextContent);
+    expect(lib.components["Container"]).toBe(Container);
     expect(Object.keys(lib.components)).toHaveLength(2);
   });
 
