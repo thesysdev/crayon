@@ -47,6 +47,7 @@ import { SidebarContainer, SidebarContent, SidebarHeader, SidebarSeparator } fro
 import { SidebarItem } from "./SidebarItem";
 import { SidebarSlot } from "./SidebarSlot";
 import { MessageLoading, Messages, ScrollArea, ThreadContainer, ThreadHeader } from "./Thread";
+import type { ScrollVariant } from "../../hooks/useScrollToBottom";
 import { ThreadList } from "./ThreadList";
 import { WelcomeScreen } from "./WelcomeScreen";
 import { Workspace } from "./Workspace";
@@ -79,6 +80,14 @@ export interface AgentInterfaceProps extends Omit<ChatProviderProps, "children">
   defaultPath?: string;
   /** Called when navigation occurs. Presence selects controlled mode. */
   onNavigate?: (next: string | undefined) => void;
+  /**
+   * How the thread scrolls as messages stream in.
+   * `"always"` follows the streaming response to the bottom (until the user scrolls up);
+   * `"user-message-anchor"` (default) pins the latest user message to the top.
+   */
+  scrollVariant?: ScrollVariant;
+  /** When false, the thread does not auto-scroll on load / conversation switch (auto-scroll only while generating). Default true. */
+  scrollOnLoad?: boolean;
   children?: ReactNode;
 }
 
@@ -176,6 +185,8 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
     path,
     defaultPath,
     onNavigate,
+    scrollVariant,
+    scrollOnLoad,
     children,
   } = props;
 
@@ -228,6 +239,8 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
               agentName={agentName ?? ""}
               resolvedAssistantMessage={resolvedAssistantMessage}
               resolvedUserMessage={resolvedUserMessage}
+              scrollVariant={scrollVariant}
+              scrollOnLoad={scrollOnLoad}
             />
           </StartersProvider>
         </NavProvider>
@@ -242,6 +255,8 @@ interface AgentInterfaceBodyProps {
   agentName: string;
   resolvedAssistantMessage: AssistantMessageComponent | undefined;
   resolvedUserMessage: UserMessageComponent | undefined;
+  scrollVariant?: ScrollVariant;
+  scrollOnLoad?: boolean;
 }
 
 const ArtifactViewMobileHeader = ({
@@ -344,6 +359,8 @@ const AgentInterfaceBody = ({
   agentName,
   resolvedAssistantMessage,
   resolvedUserMessage,
+  scrollVariant,
+  scrollOnLoad,
 }: AgentInterfaceBodyProps) => {
   const { path } = useNav();
 
@@ -405,7 +422,7 @@ const AgentInterfaceBody = ({
             {slots.mobileHeader ?? <MobileHeader actions={<MobileWorkspaceToggleButton />} />}
             {slots.threadHeader ?? <ThreadHeader />}
             {slots.welcome}
-            <ScrollArea>
+            <ScrollArea scrollVariant={scrollVariant} scrollOnLoad={scrollOnLoad}>
               <Messages
                 loader={<MessageLoading />}
                 assistantMessage={resolvedAssistantMessage}

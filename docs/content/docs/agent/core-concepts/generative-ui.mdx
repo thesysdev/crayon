@@ -1,0 +1,34 @@
+---
+title: Generative UI
+description: "Render interactive components inline in chat messages: tables, forms, charts, and cards, not just markdown."
+---
+
+An assistant message is normally markdown text. **Generative UI (GenUI)** lets the agent render real components instead: tables, forms, charts, and cards, inline in the message and streaming as the reply arrives.
+
+Turn it on with one prop. On OpenUI Cloud, the components and model instructions are managed for you. {/* ASSUMED: Cloud provides the GenUI component set and primes the model server-side; the developer only passes the library on the client */}
+
+```tsx
+import { AgentInterface } from "@openuidev/react-ui";
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
+
+<AgentInterface llm={llm} componentLibrary={openuiLibrary} />;
+```
+
+`openuiLibrary` covers layout, content, tables, charts, forms, and buttons, enough for most agents. To define your own components, see the [OpenUI Lang overview](/docs/openui-lang/overview).
+
+{/* add video: a user asks for a chart and the agent renders an interactive chart component inline in the message */}
+
+## Interactivity
+
+Generated components are interactive, and the runtime wires up the behavior. When a user fills a form or clicks a button, one of two things happens:
+
+- **It continues the conversation.** The interaction goes back to the agent as the next turn, carrying the current field values.
+- **It updates in place.** The component refreshes data, changes a value, or opens a link, with no round trip to the model.
+
+Form state is tracked automatically and saved with the thread, so a half-filled form survives a reload. See [Interactivity](/docs/openui-lang/interactivity) for the details.
+
+{/* add video: a user fills a generated form or clicks a follow-up, and the interaction either continues the conversation or updates the component in place */}
+
+## GenUI vs artifacts
+
+Use GenUI when the UI is the reply: a form to fill, a table to scan. Use [artifacts](/docs/agent/core-concepts/artifacts) when the output is a durable thing the user returns to on its own surface. An agent can do both in one thread.

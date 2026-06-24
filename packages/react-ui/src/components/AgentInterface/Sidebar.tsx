@@ -206,9 +206,9 @@ export const SidebarHeader = ({
     );
   }
 
-  const defaultLogo = (
+  const defaultLogo = logoUrl ? (
     <img src={logoUrl} alt={ctxAgentName} className="openui-agent-sidebar-header__logo" />
-  );
+  ) : null;
   const defaultAgentName = (
     <div className="openui-agent-sidebar-header__agent-name">{ctxAgentName}</div>
   );

@@ -6,10 +6,9 @@ import {
   useThread,
 } from "@openuidev/react-headless";
 import clsx from "clsx";
-import React, { memo, useRef } from "react";
+import React, { memo, useId, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
-import { separateContentAndContext } from "../../utils/sentinelParser";
 import { DetailedViewOverlay, DetailedViewPortalTarget } from "./_shared/detailed-view";
 import { useAgentInterfaceStore } from "./_shared/store";
 import { ToolMessageRenderer } from "./_shared/tool-renderer";
@@ -22,6 +21,7 @@ import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
 import { ToolCallComponent } from "../ToolCall";
 import { ToolResult } from "../ToolResult";
 import { ResizableSeparator } from "./ResizableSeparator";
+import { UserMessageContent } from "./UserMessageContent";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
 import { useDetailedViewResize } from "./useDetailedViewResize";
@@ -49,13 +49,18 @@ export const ThreadContainer = ({
     detailedViewPanelRef,
     isDragging,
     handleResize,
+    handleResizeStep,
     handleDragStart,
     handleDragEnd,
+    getResizeAria,
   } = useDetailedViewResize({
     isDetailedViewActive,
     isMobile,
     setIsSidebarOpen,
   });
+
+  const chatPanelId = useId();
+  const detailPanelId = useId();
 
   return (
     <div
@@ -70,6 +75,7 @@ export const ThreadContainer = ({
         {/* Chat panel - always visible */}
         <div
           ref={chatPanelRef}
+          id={chatPanelId}
           className={clsx("openui-agent-thread-chat-panel", {
             "openui-agent-thread-chat-panel--animating": !isDragging,
           })}
@@ -83,11 +89,16 @@ export const ThreadContainer = ({
           <>
             <ResizableSeparator
               onResize={handleResize}
+              onResizeStep={handleResizeStep}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              getAriaValues={getResizeAria}
+              controlsId={`${chatPanelId} ${detailPanelId}`}
+              ariaLabel="Resize chat panel"
             />
             <div
               ref={detailedViewPanelRef}
+              id={detailPanelId}
               className={clsx("openui-agent-thread-detailed-view-panel", {
                 "openui-agent-thread-detailed-view-panel--animating": !isDragging,
               })}
@@ -106,6 +117,7 @@ export const ScrollArea = ({
   className,
   scrollVariant = "user-message-anchor",
   userMessageSelector = ".openui-agent-thread-message-user",
+  scrollOnLoad = true,
 }: {
   children?: React.ReactNode;
   className?: string;
@@ -117,6 +129,11 @@ export const ScrollArea = ({
    * Selector for the user message
    */
   userMessageSelector?: string;
+  /**
+   * When false, do not auto-scroll on initial load / conversation switch
+   * (auto-scroll then only happens while a response is generating).
+   */
+  scrollOnLoad?: boolean;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -131,6 +148,7 @@ export const ScrollArea = ({
     userMessageSelector,
     isRunning,
     isLoadingMessages,
+    scrollOnLoad,
   });
 
   return (
@@ -224,38 +242,6 @@ const AssistantMessageContent = ({
             fallback={fallback}
           />
         );
-      })}
-    </>
-  );
-};
-
-const UserMessageContent = ({ message }: { message: Message }) => {
-  if (message.role !== "user") return null;
-  const content = message.content;
-  if (typeof content === "string") {
-    // Strip XML wrapper tags (<content>, <context>) so the bubble shows clean text
-    const { content: humanText } = separateContentAndContext(content);
-    return <>{humanText}</>;
-  }
-  // InputContent[] — render text parts
-  return (
-    <>
-      {content?.map((part, i) => {
-        if (part.type === "text") {
-          return <span key={i}>{part.text}</span>;
-        }
-        // Binary content — could be image, file, etc.
-        if (part.type === "binary" && part.url) {
-          return (
-            <img
-              key={i}
-              src={part.url}
-              alt=""
-              className="openui-agent-thread-message-user__image"
-            />
-          );
-        }
-        return null;
       })}
     </>
   );

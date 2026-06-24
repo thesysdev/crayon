@@ -1,8 +1,14 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   output: "standalone",
   turbopack: {
+    // Pin the Turbopack root to the openui monorepo root so it follows the
+    // symlinked workspace deps (@openuidev/react-ui, react-lang, lang-core,
+    // react-headless) that @openuidev/thesys imports — these live in
+    // openui/packages/* and are otherwise treated as outside the inferred root.
+    root: path.resolve(process.cwd(), "../.."),
     resolveAlias: {
       // @openuidev/thesys's icon wrapper imports lucide-react dynamic-icon
       // subpaths that the installed lucide-react no longer ships; alias them to
