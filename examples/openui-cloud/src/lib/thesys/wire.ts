@@ -35,7 +35,7 @@ export interface CloudArtifact {
   id: string;
   object: "openui.artifact";
   conversation_id: string;
-  kind: string; // 'presentation' | 'report'
+  kind: string; // 'slides' | 'report'
   name?: string;
   version?: string; // server bumps via String(Date.now()) when omitted
   content: string;

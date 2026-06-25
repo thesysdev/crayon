@@ -173,7 +173,7 @@ function parseLegacyXml(raw: string): { content: string; contextString: string |
 // ---------------------------------------------------------------------------
 const ARTIFACT_MARKER = `${OPENUI_INLINE_SENTINEL}artifact`;
 
-export type ArtifactKind = "presentation" | "report";
+export type ArtifactKind = "slides" | "report";
 
 export interface ArtifactSentinelHeader {
   artifact_id: string;
@@ -183,8 +183,8 @@ export interface ArtifactSentinelHeader {
 }
 
 const ARTIFACT_KIND_BY_TYPE: Record<string, ArtifactKind> = {
-  presentation: "presentation",
-  slides: "presentation",
+  slides: "slides",
+  presentation: "slides",
   report: "report",
 };
 
