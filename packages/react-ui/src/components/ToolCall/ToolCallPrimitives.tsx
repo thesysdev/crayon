@@ -217,6 +217,10 @@ const StatusText = ({
     "span",
     { status: activity.status, label },
     {
+      // Live region so status transitions (Calling → Running → Called/failed)
+      // are announced; only changes are spoken, so settled cards stay quiet.
+      role: "status",
+      "aria-live": "polite",
       className: clsx(
         "openui-tool-call__name",
         { "openui-tool-call__name--shimmer": shimmer },

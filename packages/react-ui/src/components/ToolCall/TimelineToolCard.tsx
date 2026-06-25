@@ -42,6 +42,11 @@ export const TimelineToolCard = memo(function TimelineToolCard({
         <ToolCall.StatusText
           render={(state, props) => (
             <span
+              // Announce tool-call status transitions (Calling → Running →
+              // Called/failed) to assistive tech; only changes are spoken, so
+              // settled/historical cards stay quiet.
+              role="status"
+              aria-live="polite"
               className={`openui-tool-call__name${
                 (state.status === "streaming" || state.status === "executing") &&
                 isLast &&
