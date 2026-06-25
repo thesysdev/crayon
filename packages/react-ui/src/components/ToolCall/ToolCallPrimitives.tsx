@@ -75,9 +75,19 @@ const LABELS: Record<ToolCallStatus, (name: string) => string> = {
   error: (n) => `${n} failed`,
 };
 
+// Used when the tool name is empty/blank — avoids the doubled-word "tool tool"
+// that an interpolated `${name || "tool"}` fallback would produce.
+const NAMELESS_LABELS: Record<ToolCallStatus, string> = {
+  streaming: "Calling the tool",
+  executing: "Running the tool",
+  complete: "Called the tool",
+  error: "Tool failed",
+};
+
 /** Default human label for a status + tool name. @category Functions */
 export function defaultLabel(status: ToolCallStatus, name: string): string {
-  return LABELS[status](name || "tool");
+  if (!name || !name.trim()) return NAMELESS_LABELS[status];
+  return LABELS[status](name);
 }
 
 /** Pretty-prints a JSON result string, falling back to the raw string. @category Functions */

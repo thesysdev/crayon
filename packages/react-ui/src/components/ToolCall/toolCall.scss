@@ -279,11 +279,39 @@
     color: cssUtils.$text-neutral-secondary;
     margin: 0;
     white-space: pre-wrap;
-    word-break: break-all;
+    // Wrap at spaces; only hard-break tokens too long to fit.
+    overflow-wrap: anywhere;
+    // Clamp a huge result in the chevron card (parity with the timeline path).
+    max-height: 250px;
+    overflow: auto;
   }
 
   &__result--error {
     color: cssUtils.$text-danger-primary;
+  }
+
+  // ── Status tints (subtle; driven by the Root `--{status}` modifier) ──
+  // Complete vs running look near-identical otherwise — tint the glyph only.
+  &--complete {
+    .openui-tool-call__icon {
+      color: cssUtils.$text-success-primary;
+    }
+  }
+
+  // A failed call should read as failed at a glance: tint the glyph + name and
+  // give the card a restrained danger left-border + faint background.
+  &--error {
+    border-inline-start: 2px solid cssUtils.$text-danger-primary;
+    background-color: cssUtils.$danger-background;
+    border-radius: cssUtils.$radius-m;
+
+    .openui-tool-call__icon {
+      color: cssUtils.$text-danger-primary;
+    }
+
+    .openui-tool-call__name {
+      color: cssUtils.$text-danger-primary;
+    }
   }
 }
 

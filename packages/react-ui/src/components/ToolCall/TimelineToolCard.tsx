@@ -71,7 +71,7 @@ export const TimelineToolCard = memo(function TimelineToolCard({
           <Collapsible
             label="Tool Request"
             labelLoading={`Sending request to ${activity.toolName}...`}
-            loading={isRunning && activity.status === "streaming"}
+            loading={isRunning && isLast && activity.status === "streaming"}
           >
             <ToolCall.Parameters
               render={(_s, p) => (
@@ -86,7 +86,7 @@ export const TimelineToolCard = memo(function TimelineToolCard({
               <Collapsible
                 label="Tool Response"
                 labelLoading={`Awaiting response from ${activity.toolName}...`}
-                loading={isRunning && activity.status === "executing"}
+                loading={isRunning && isLast && activity.status === "executing"}
               >
                 <pre
                   className={`openui-tool-code-block__code${

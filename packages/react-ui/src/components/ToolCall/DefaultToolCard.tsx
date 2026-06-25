@@ -26,6 +26,7 @@ export const DefaultToolCard = memo(function DefaultToolCard({
       activity={activity}
       isLast={isLast}
       running={isRunning}
+      defaultOpen={activity.isError}
       className="openui-tool-call--card"
     >
       <ToolCall.Trigger className="openui-tool-call__header">
