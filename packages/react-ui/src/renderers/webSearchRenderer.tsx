@@ -27,6 +27,19 @@ interface WebSearchProps {
 }
 
 /**
+ * Accessible name for a source link: prefer the title, fall back to the URL
+ * hostname, then the raw URL. Never throws on a malformed URL.
+ */
+const sourceLabel = (s: WebSearchSource): string => {
+  if (s.sourceTitle) return s.sourceTitle;
+  try {
+    return new URL(s.sourceUrl).hostname;
+  } catch {
+    return s.sourceUrl;
+  }
+};
+
+/**
  * Built-in renderer for a web-search tool, matched by tool name. Reads typed
  * `query` / `reasoning` / `sources` off the (pre-parsed) tool-call arguments —
  * no `_type` / `_query` / `_sources` magic keys — and exposes a `preview`
@@ -40,12 +53,20 @@ export const webSearchRenderer = defineArtifactRenderer<WebSearchProps>({
   toolName: ["web_search", "webSearch"],
   parser: ({ args, response }, { isStreaming }) => {
     const raw = typeof args === "string" ? args : (response ?? "");
-    const input = (typeof raw === "string" ? partialJSONParse(raw) : (raw ?? {})) as WebSearchInput;
+    const parsed = typeof raw === "string" ? partialJSONParse(raw) : raw;
+    // Only treat the parsed value as the typed object shape; null / arrays /
+    // primitives (malformed or half-streamed args) fall back to an empty object
+    // so the parser never throws into ToolCallErrorFallback.
+    const input: WebSearchInput =
+      parsed && typeof parsed === "object" && !Array.isArray(parsed)
+        ? (parsed as WebSearchInput)
+        : {};
+    const sources = Array.isArray(input.sources) ? input.sources : [];
     return {
       props: {
         query: input.query ?? "",
         reasoning: input.reasoning,
-        sources: input.sources ?? [],
+        sources,
         streaming: isStreaming,
       },
       meta: null, // inline-only, no artifact-browser registration
@@ -66,21 +87,24 @@ export const webSearchRenderer = defineArtifactRenderer<WebSearchProps>({
         <div className="openui-tool-call__args-block">
           {props.reasoning && <p className="openui-tool-call__reasoning">{props.reasoning}</p>}
           <div className="openui-tool-call__sources">
-            {props.sources.map((s) => (
-              <a
-                key={s.sourceUrl}
-                className="openui-tool-call__source"
-                href={s.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <div className="openui-tool-call__source-left">
-                  <SourceIcon src={s.sourceLogoSrc} />
-                  <span className="openui-tool-call__source-title">{s.sourceTitle}</span>
-                </div>
-                <span className="openui-tool-call__source-desc">{s.sourceDescription}</span>
-              </a>
-            ))}
+            {props.sources
+              .filter((s) => s.sourceUrl)
+              .map((s, i) => (
+                <a
+                  key={`${s.sourceUrl ?? ""}-${i}`}
+                  className="openui-tool-call__source"
+                  href={s.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={sourceLabel(s)}
+                >
+                  <div className="openui-tool-call__source-left">
+                    <SourceIcon src={s.sourceLogoSrc} />
+                    <span className="openui-tool-call__source-title">{sourceLabel(s)}</span>
+                  </div>
+                  <span className="openui-tool-call__source-desc">{s.sourceDescription}</span>
+                </a>
+              ))}
           </div>
         </div>
       </div>
@@ -88,14 +112,21 @@ export const webSearchRenderer = defineArtifactRenderer<WebSearchProps>({
   ),
   actual: (props) => (
     <ul className="openui-web-search__detailed">
-      {props.sources.map((s) => (
-        <li key={s.sourceUrl}>
-          <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer">
-            <SourceIcon src={s.sourceLogoSrc} /> {s.sourceTitle}
-          </a>
-          <p>{s.sourceDescription}</p>
-        </li>
-      ))}
+      {props.sources
+        .filter((s) => s.sourceUrl)
+        .map((s, i) => (
+          <li key={`${s.sourceUrl ?? ""}-${i}`}>
+            <a
+              href={s.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={sourceLabel(s)}
+            >
+              <SourceIcon src={s.sourceLogoSrc} /> {sourceLabel(s)}
+            </a>
+            <p>{s.sourceDescription}</p>
+          </li>
+        ))}
     </ul>
   ),
 });
