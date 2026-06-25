@@ -40,7 +40,14 @@ export interface ArtifactRendererControls {
  */
 export interface ParsedArtifact<Props> {
   props: Props;
-  meta: { id: string; version: number; heading: string } | null;
+  /**
+   * ThreadContext registration entry. `type`, when provided, is the artifact's
+   * actual kind (e.g. `"report"` vs `"slides"`) and overrides the matched
+   * renderer's static `type` for registration — so a single tool-owning renderer
+   * can still register each artifact under its real kind. Omit it to fall back to
+   * the renderer's `type`.
+   */
+  meta: { id: string; version: number; heading: string; type?: string } | null;
 }
 
 /**
