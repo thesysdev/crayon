@@ -10,6 +10,7 @@ import React, { memo, useId, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import { DetailedViewOverlay, DetailedViewPortalTarget } from "./_shared/detailed-view";
+import { useAgentInterfaceLabels } from "./_shared/labelsContext";
 import { useAgentInterfaceStore } from "./_shared/store";
 import { ToolMessageRenderer } from "./_shared/tool-renderer";
 import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
@@ -392,6 +393,7 @@ export const ThreadHeader = ({
 const WorkspaceToggleButton = () => {
   const artifacts = useArtifactList();
   const { isDetailedViewActive } = useActiveDetailedView();
+  const { workspaceToggle } = useAgentInterfaceLabels();
   const { isWorkspaceOpen, setIsWorkspaceOpen } = useAgentInterfaceStore((state) => ({
     isWorkspaceOpen: state.isWorkspaceOpen,
     setIsWorkspaceOpen: state.setIsWorkspaceOpen,
@@ -401,7 +403,7 @@ const WorkspaceToggleButton = () => {
   if (!hasArtifacts || isDetailedViewActive) return null;
 
   return (
-    <AgentInterfaceTooltip content="Apps & Artifacts" side="left">
+    <AgentInterfaceTooltip content={workspaceToggle} side="left">
       <IconButton
         icon={<GalleryHorizontalEndIcon size="1em" />}
         onClick={() => {

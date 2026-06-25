@@ -10,6 +10,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "../Button";
 import { IconButton } from "../IconButton";
 import { artifactListPath, artifactViewPath } from "./_shared/artifactPaths";
+import { useAgentInterfaceLabels } from "./_shared/labelsContext";
 import { useNav } from "./_shared/navContext";
 
 const SEARCH_DEBOUNCE_MS = 300;
@@ -92,6 +93,7 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
   const storage = useArtifactStorage();
   const categories = useArtifactCategories();
   const { navigate } = useNav();
+  const { defaultCategory } = useAgentInterfaceLabels();
 
   const category = categoryName ? categories.find((c) => c.name === categoryName) : undefined;
   // A named category that matches no configured category (stale/renamed path,
@@ -175,7 +177,7 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
       <div className="openui-agent-artifact-browser">
         <div className="openui-agent-artifact-browser__content">
           <div className="openui-agent-artifact-browser__header">
-            <h2 className="openui-agent-artifact-browser__title">Artifacts</h2>
+            <h2 className="openui-agent-artifact-browser__title">{defaultCategory}</h2>
           </div>
           <div className="openui-agent-artifact-browser__list">
             <div className="openui-agent-artifact-browser__empty">
@@ -199,7 +201,9 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
     <div className="openui-agent-artifact-browser">
       <div className="openui-agent-artifact-browser__content">
         <div className="openui-agent-artifact-browser__header">
-          <h2 className="openui-agent-artifact-browser__title">{categoryName ?? "Artifacts"}</h2>
+          <h2 className="openui-agent-artifact-browser__title">
+            {categoryName ?? defaultCategory}
+          </h2>
           <div className="openui-agent-artifact-browser__search">
             <Search size={14} className="openui-agent-artifact-browser__search-icon" />
             <input

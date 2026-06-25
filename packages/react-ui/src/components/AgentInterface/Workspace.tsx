@@ -16,6 +16,7 @@ import {
   useArtifactIcon,
   useArtifactTypeLabel,
 } from "./ArtifactBrowserPage";
+import { useAgentInterfaceLabels, type ResolvedLabels } from "./_shared/labelsContext";
 import { useAgentInterfaceStore } from "./_shared/store";
 
 export interface WorkspaceProps {
@@ -58,10 +59,11 @@ const DefaultWorkspace = ({ className }: { className?: string }) => {
   const { isDetailedViewActive } = useActiveDetailedView();
   const { layout } = useLayoutContext();
   const categories = useArtifactCategories();
+  const labels = useAgentInterfaceLabels();
   const all = useArtifactList();
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("all");
   const entries = latestPerId(all);
-  const availableTabs = getAvailableWorkspaceTabs(categories, entries);
+  const availableTabs = getAvailableWorkspaceTabs(categories, entries, labels.tabs);
   const selectedTab = availableTabs.some((tab) => tab.value === activeTab)
     ? activeTab
     : (availableTabs[0]?.value ?? "all");
@@ -123,11 +125,9 @@ const DefaultWorkspace = ({ className }: { className?: string }) => {
   );
 };
 
-const WORKSPACE_TABS: Array<{ value: WorkspaceTab; label: string }> = [
-  { value: "all", label: "All" },
-  { value: "artifacts", label: "Artifacts" },
-  { value: "apps", label: "Apps" },
-];
+// Tab order is fixed; the user-facing labels come from `labels.tabs` (defaults
+// All / Artifacts / Apps). Values stay internal filter keys.
+const WORKSPACE_TAB_ORDER: WorkspaceTab[] = ["all", "artifacts", "apps"];
 
 const WorkspaceTabs = ({
   activeTab,
@@ -299,6 +299,7 @@ type ArtifactCategory = ReturnType<typeof useArtifactCategories>[number];
 function getAvailableWorkspaceTabs(
   categories: ReturnType<typeof useArtifactCategories>,
   entries: ReadonlyArray<ArtifactEntry>,
+  tabLabels: ResolvedLabels["tabs"],
 ): Array<{ value: WorkspaceTab; label: string }> {
   const hasApps =
     categories.length > 0 &&
@@ -313,11 +314,11 @@ function getAvailableWorkspaceTabs(
         !isAppsCategory(category) && entries.some((entry) => entryMatchesCategory(entry, category)),
     );
 
-  return WORKSPACE_TABS.filter((tab) => {
-    if (tab.value === "all") return true;
-    if (tab.value === "apps") return hasApps;
+  return WORKSPACE_TAB_ORDER.filter((value) => {
+    if (value === "all") return true;
+    if (value === "apps") return hasApps;
     return hasArtifacts;
-  });
+  }).map((value) => ({ value, label: tabLabels[value] }));
 }
 
 function isAppsCategory(category: ArtifactCategory) {
