@@ -8,14 +8,10 @@ import {
   type ChatLLM,
 } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
-// All four come from the migrated SDK — the src/cloud + src/shared/artifact/renderers
-// that moved into @openuidev/thesys — instead of the local examples/openui-cloud/src/lib
-// copies (which stay on disk but are no longer imported here):
-//   chatLibrary           — component library the backend's generated programs target
-//   useOpenuiCloudStorage — hook: browser ChatStorage over the /v1 API, fct_-authenticated
-//   artifactRenderers     — defineArtifactRenderer configs (type 'presentation' | 'report',
-//                           toolName 'thesys_generate_artifact' / 'thesys_edit_artifact')
-//   artifactCategories
+// chatLibrary, useOpenuiCloudStorage, and the artifact renderers/categories all come
+// from the migrated SDK (@openuidev/thesys). Its artifact parser now reads the program
+// from the tool INPUT channel (args.artifact_content), so the rich preview renders
+// live during/after generation without a refresh.
 import { useTheme } from "@/hooks/use-system-theme";
 import {
   artifactCategories,
