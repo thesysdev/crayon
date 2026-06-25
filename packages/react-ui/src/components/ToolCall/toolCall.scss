@@ -72,13 +72,15 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding-left: cssUtils.$space-l;
+  padding-inline-start: cssUtils.$space-l;
 
   &__title-row {
     display: flex;
     align-items: center;
     gap: cssUtils.$space-m;
     color: cssUtils.$text-neutral-secondary;
+    // Allow the name to shrink/ellipsize instead of overflowing the row.
+    min-width: 0;
   }
 
   &__icon-wrapper {
@@ -104,6 +106,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    // Shrink + ellipsize so a long tool name never pushes the chevron offscreen.
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   &__name--shimmer {
@@ -130,17 +135,17 @@
     display: flex;
     gap: cssUtils.$space-m;
     padding: cssUtils.$space-s-m cssUtils.$space-s;
-    padding-right: 0;
+    padding-inline-end: 0;
     min-height: 20px;
     width: calc(100% - 6px);
 
     // 6px offset = half of 14px icon - half of 1px border
-    margin-left: 6px;
-    border-left: 1px solid cssUtils.$border-interactive;
+    margin-inline-start: 6px;
+    border-inline-start: 1px solid cssUtils.$border-interactive;
   }
 
   &__connector--last {
-    border-left-color: transparent;
+    border-inline-start-color: transparent;
   }
 
   &__args-block {
@@ -217,7 +222,11 @@
   &__source-desc {
     @include cssUtils.typography(label, small);
     color: cssUtils.$text-neutral-secondary;
-    flex-shrink: 0;
+    // Let the description shrink + truncate so it never squeezes the title.
+    min-width: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   // ── Chevron "card" composition (DefaultToolCard) ──
@@ -364,7 +373,8 @@
     color: cssUtils.$text-neutral-secondary;
     margin: 0;
     white-space: pre-wrap;
-    word-break: break-all;
+    // Wrap at spaces; only hard-break tokens too long to fit.
+    overflow-wrap: anywhere;
   }
 
   &__code--error {
