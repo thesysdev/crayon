@@ -28,6 +28,12 @@
     &:not(:disabled):active {
       background-color: cssUtils.$sunk;
     }
+
+    // button-reset strips chrome, so restore a visible keyboard focus ring.
+    &:focus-visible {
+      outline: 2px solid cssUtils.$border-interactive-emphasis;
+      outline-offset: cssUtils.$space-3xs;
+    }
   }
 
   &__toggle-icon {
@@ -179,6 +185,11 @@
     &:hover {
       background-color: cssUtils.$sunk;
     }
+
+    &:focus-visible {
+      outline: 2px solid cssUtils.$border-interactive-emphasis;
+      outline-offset: cssUtils.$space-3xs;
+    }
   }
 
   &__source-left {
@@ -230,11 +241,17 @@
     &:not(:disabled):hover {
       background-color: cssUtils.$sunk;
     }
+
+    // button-reset strips chrome, so restore a visible keyboard focus ring.
+    &:focus-visible {
+      outline: 2px solid cssUtils.$border-interactive-emphasis;
+      outline-offset: cssUtils.$space-3xs;
+    }
   }
 
   &__chevron {
     flex-shrink: 0;
-    margin-left: auto;
+    margin-inline-start: auto;
     color: cssUtils.$text-neutral-secondary;
     transition: transform 0.2s ease;
   }
@@ -280,16 +297,27 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: cssUtils.$space-s;
     width: 100%;
     padding: cssUtils.$space-s;
     cursor: pointer;
     background-color: transparent;
+
+    // button-reset strips chrome, so restore a visible keyboard focus ring.
+    &:focus-visible {
+      outline: 2px solid cssUtils.$border-interactive-emphasis;
+      outline-offset: cssUtils.$space-3xs;
+    }
   }
 
   &__label {
     @include cssUtils.typography(label, small);
     color: cssUtils.$text-neutral-secondary;
     -webkit-text-fill-color: currentColor;
+    // Truncate a grown/loading label instead of shoving the chevron offscreen.
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__label--loading {

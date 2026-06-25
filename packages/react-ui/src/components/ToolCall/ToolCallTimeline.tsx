@@ -3,8 +3,23 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TimelineEntry } from "../_shared/tool-renderer/TimelineEntry";
 import type { ToolDetailedViewPanel } from "../_shared/tool-renderer/ToolActivityRenderer";
+import { defaultLabel } from "./ToolCallPrimitives";
 
 const REVEAL_INTERVAL = 600;
+
+/** Visually hidden but available to screen readers; inline so we don't depend on
+ *  scss (a sibling agent owns the stylesheet). */
+const VISUALLY_HIDDEN = {
+  position: "absolute",
+  width: 1,
+  height: 1,
+  overflow: "hidden",
+  clipPath: "inset(50%)",
+  whiteSpace: "nowrap",
+  border: 0,
+  padding: 0,
+  margin: -1,
+} as const;
 
 const isRunning = (a: ToolActivity) => a.status === "streaming" || a.status === "executing";
 
@@ -85,8 +100,28 @@ export function ToolCallTimeline({
   const showCompact = (thinking || revealing) && !expanded;
   const current = activities[Math.min(revealedCount - 1, activities.length - 1)]!;
 
+  // Persistent live announcement reflecting the current step's status — driven by
+  // the same fallback the primitives use so SRs hear status changes as content
+  // updates (the keyed reveal wrapper remounts and never announces on its own).
+  const liveLabel = current.statusMessage ?? defaultLabel(current.status, current.toolName);
+
+  // Once settled, surface a failure count on the toggle so errors aren't hidden
+  // behind a collapsed "Behind the scenes".
+  const settled = !thinking && !revealing;
+  const failedCount = settled ? activities.filter((a) => a.status === "error").length : 0;
+  const toggleLabel =
+    thinking || revealing
+      ? "Working..."
+      : failedCount > 0
+        ? `Behind the scenes · ${failedCount} failed`
+        : "Behind the scenes";
+
   return (
     <div className="openui-behind-the-scenes">
+      <div role="status" aria-live="polite" style={VISUALLY_HIDDEN}>
+        {liveLabel}
+      </div>
+
       <button
         className="openui-behind-the-scenes__toggle"
         type="button"
@@ -98,7 +133,7 @@ export function ToolCallTimeline({
         ) : (
           <ChevronDown size={14} className="openui-behind-the-scenes__toggle-icon" />
         )}
-        {thinking || revealing ? "Working..." : "Behind the scenes"}
+        {toggleLabel}
       </button>
 
       {showCompact && (

@@ -32,6 +32,8 @@ interface ToolCallContextValue {
   isOpen: boolean;
   setOpen: (value: boolean) => void;
   panelId: string;
+  /** Stable id on the rendered Trigger button; names the Content region. */
+  triggerId: string;
 }
 
 const ToolCallContext = createContext<ToolCallContextValue | null>(null);
@@ -159,8 +161,11 @@ function Root({
 }) {
   const [isOpen, setOpen] = useState(defaultOpen);
   const panelId = useId();
+  const triggerId = useId();
   return (
-    <ToolCallContext.Provider value={{ activity, isLast, running, isOpen, setOpen, panelId }}>
+    <ToolCallContext.Provider
+      value={{ activity, isLast, running, isOpen, setOpen, panelId, triggerId }}
+    >
       <div
         className={clsx("openui-tool-call", `openui-tool-call--${activity.status}`, className)}
         data-status={activity.status}
@@ -272,13 +277,14 @@ const Result = ({
 };
 
 const Trigger = ({ render, className, children }: PartProps<{ state: "open" | "closed" }>) => {
-  const { isOpen, setOpen, panelId } = useToolCall();
+  const { isOpen, setOpen, panelId, triggerId } = useToolCall();
   return renderPart(
     render,
     "button",
     { state: isOpen ? "open" : "closed" },
     {
       type: "button",
+      id: triggerId,
       className,
       "aria-expanded": isOpen,
       "aria-controls": panelId,
@@ -289,7 +295,7 @@ const Trigger = ({ render, className, children }: PartProps<{ state: "open" | "c
 };
 
 const Content = ({ render, className, children }: PartProps<{ isOpen: boolean }>) => {
-  const { isOpen, panelId } = useToolCall();
+  const { isOpen, panelId, triggerId } = useToolCall();
   if (!isOpen) return null;
   return renderPart(
     render,
@@ -298,6 +304,7 @@ const Content = ({ render, className, children }: PartProps<{ isOpen: boolean }>
     {
       id: panelId,
       role: "region",
+      "aria-labelledby": triggerId,
       "data-state": "open",
       className,
       children,

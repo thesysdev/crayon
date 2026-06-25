@@ -25,6 +25,7 @@ export function Collapsible({
 }) {
   const [isExpanded, setIsExpanded] = useState(defaultOpen);
   const panelId = useId();
+  const labelId = useId();
   const shownLabel = loading && labelLoading ? labelLoading : label;
 
   return (
@@ -37,6 +38,7 @@ export function Collapsible({
         onClick={() => setIsExpanded((v) => !v)}
       >
         <span
+          id={labelId}
           className={clsx("openui-tool-code-block__label", {
             "openui-tool-code-block__label--loading": loading,
           })}
@@ -51,7 +53,12 @@ export function Collapsible({
         />
       </button>
       {isExpanded && (
-        <div className="openui-tool-code-block__content" id={panelId} role="region">
+        <div
+          className="openui-tool-code-block__content"
+          id={panelId}
+          role="region"
+          aria-labelledby={labelId}
+        >
           {children}
         </div>
       )}
