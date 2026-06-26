@@ -23,10 +23,23 @@ export interface MessageFormat {
 }
 
 /**
- * Default identity message format — no conversion.
- * Messages are sent and received as-is in AG-UI format.
+ * `reasoning` is a client-side display field colocated on the assistant turn,
+ * not part of the wire message shape. Strip it so the identity format doesn't
+ * echo accumulated thinking back to the backend on every subsequent turn.
+ */
+function stripReasoning(message: Message): Message {
+  if (message.role !== "assistant" || message.reasoning === undefined) return message;
+  const clone = { ...message };
+  delete clone.reasoning;
+  return clone;
+}
+
+/**
+ * Default identity message format — no conversion (aside from dropping the
+ * client-only `reasoning` field). Messages are sent and received as-is in
+ * AG-UI format.
  */
 export const identityMessageFormat: MessageFormat = {
-  toApi: (messages) => messages,
+  toApi: (messages) => messages.map(stripReasoning),
   fromApi: (data) => data as Message[],
 };

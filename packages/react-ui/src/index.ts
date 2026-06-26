@@ -49,6 +49,7 @@ export * from "./components/MessageLoading";
 export * from "./components/OpenUIChat";
 export * from "./components/RadioGroup";
 export * from "./components/RadioItem";
+export * from "./components/Reasoning";
 export * from "./components/SectionBlock";
 export * from "./components/Select";
 export * from "./components/Separator";

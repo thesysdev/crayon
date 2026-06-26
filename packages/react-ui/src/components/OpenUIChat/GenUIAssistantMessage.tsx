@@ -6,6 +6,7 @@ import type { ActionEvent, Library } from "@openuidev/react-lang";
 import { BuiltinActionType, Renderer } from "@openuidev/react-lang";
 import { useCallback, useMemo } from "react";
 import { separateContentAndContext, wrapContent, wrapContext } from "../../utils/contentParser";
+import { ReasoningContent } from "../Reasoning";
 import { AssistantMessageContainer } from "../Shell";
 import { BehindTheScenes, ToolCallComponent } from "../ToolCall";
 import { ToolResult } from "../ToolResult";
@@ -115,8 +116,9 @@ export const GenUIAssistantMessage = ({
 
   return (
     <AssistantMessageContainer>
-      {hasToolActivity && (
+      {(hasToolActivity || !!message.reasoning) && (
         <BehindTheScenes isStreaming={isStreaming} toolCallsComplete={!!message.content}>
+          {message.reasoning && <ReasoningContent reasoning={message.reasoning} />}
           {message.toolCalls?.map((toolCall, idx) => (
             <ToolCallComponent
               key={toolCall.id}
