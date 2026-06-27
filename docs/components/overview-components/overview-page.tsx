@@ -178,7 +178,6 @@ export function AssistantMessage({ content, isStreaming }) {
 
         <div className="mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row">
           <Button href="/docs/openui-lang" text="Get Started with OpenUI Lang" variant="primary" />
-          <Button href="/docs/chat" text="Usage with OpenUI Chat" variant="secondary" />
         </div>
       </div>
 
@@ -263,15 +262,6 @@ import { FullScreen, openuiLibrary } from "@openuidev/react-ui";
 />
 `}
           />
-        </div>
-
-        <div className="flex gap-3">
-          <Button
-            href="/docs/chat/quick-start"
-            text="Get Started with OpenUI Chat"
-            variant="primary"
-          />
-          <Button href="/docs/chat" text="View Components" variant="secondary" />
         </div>
       </div>
 
