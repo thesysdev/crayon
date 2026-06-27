@@ -16,6 +16,8 @@ export {
   useArtifactRendererRegistry,
 } from "./store/ArtifactRenderersContext";
 export { defineArtifactRenderer } from "./store/artifactRendererTypes";
+export { defineArtifactCategories } from "./store/artifactCategories";
+export type { ArtifactCategoryGroup } from "./store/artifactCategories";
 export { useArtifactStorage } from "./store/ArtifactStorageContext";
 export { ChatProvider } from "./store/ChatProvider";
 export { DetailedViewContext, useDetailedViewStore } from "./store/DetailedViewContext";
