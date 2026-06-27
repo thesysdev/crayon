@@ -30,6 +30,13 @@ export type {
   ToolCallStatus,
 } from "@openuidev/react-headless";
 
+// Re-export the full headless surface so apps import everything (adapters,
+// formats, hooks, storage, message types) from @openuidev/react-ui.
+export * from "@openuidev/react-headless";
+// `ToolCall` exists in both packages (a message type in react-headless, the
+// component here). Pin the component so the two star re-exports don't collide.
+export { ToolCall } from "./components/ToolCall";
+
 // DetailedView() factory — generates a ComponentRenderer with detailed-view wiring
 export { DetailedView } from "./detailed-view";
 export type { DetailedViewConfig, DetailedViewControls } from "./detailed-view";
