@@ -10,3 +10,6 @@ export function requiredEnv(name: string): string {
 export function envOr(name: string, fallback: string): string {
   return process.env[name] || fallback;
 }
+
+/** OpenUI Cloud API origin (master-key plane: /v1/embed/responses, /v1/frontend-tokens). */
+export const OPENUI_CLOUD_BASE_URL = "https://api.thesys.dev";

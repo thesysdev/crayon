@@ -1,4 +1,4 @@
-import { envOr, requiredEnv } from "@/lib/env";
+import { envOr, requiredEnv, OPENUI_CLOUD_BASE_URL } from "@/lib/env";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
 import type { ResponseInputItem } from "openai/resources/responses/responses";
 
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   }
   console.log("artifactTool", artifactTool());
   const upstream = await fetch(
-    `${envOr("OPENUI_CLOUD_BASE_URL", "http://localhost:3102")}/v1/embed/responses`,
+    `${OPENUI_CLOUD_BASE_URL}/v1/embed/responses`,
     {
       method: "POST",
       headers: {

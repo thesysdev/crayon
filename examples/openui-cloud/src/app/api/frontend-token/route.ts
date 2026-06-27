@@ -1,4 +1,4 @@
-import { envOr, requiredEnv } from "@/lib/env";
+import { envOr, requiredEnv, OPENUI_CLOUD_BASE_URL } from "@/lib/env";
 
 /**
  * Read-plane credential mint: proxies the OpenUI Cloud POST /v1/frontend-tokens
@@ -11,7 +11,7 @@ import { envOr, requiredEnv } from "@/lib/env";
  */
 export async function POST() {
   const upstream = await fetch(
-    `${envOr("OPENUI_CLOUD_BASE_URL", "http://localhost:3102")}/v1/frontend-tokens`,
+    `${OPENUI_CLOUD_BASE_URL}/v1/frontend-tokens`,
     {
       method: "POST",
       headers: {

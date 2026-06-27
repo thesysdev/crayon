@@ -41,8 +41,6 @@ export default function Page() {
   // hook the storage + its fct_ token manager are created on mount (not at module
   // load), so the token fetch follows this component's lifecycle.
   const storage = useOpenuiCloudStorage({
-    // Defaults to https://api.thesys.dev; set NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL to override (e.g. a local stack).
-    apiBaseUrl: process.env.NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL,
     // Backend mint proxy (POST → { token, expires_at }); the hook caches +
     // refreshes it and injects x-thesys-frontend-token on every /v1 call.
     token: "/api/frontend-token",
