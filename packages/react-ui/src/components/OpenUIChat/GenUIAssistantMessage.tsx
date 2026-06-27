@@ -16,9 +16,9 @@ import {
   wrapContentWithHeader,
   wrapContext,
 } from "../../utils/sentinelParser";
-import { AssistantMessageContainer } from "../Shell";
 import { ToolCallTimeline } from "../ToolCall";
 import { TimelineEntry } from "../_shared/tool-renderer";
+import { AssistantMessageContainer } from "./AssistantMessageContainer";
 
 export const GenUIAssistantMessage = ({
   message,

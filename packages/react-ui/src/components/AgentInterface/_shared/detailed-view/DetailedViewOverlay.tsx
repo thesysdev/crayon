@@ -16,7 +16,7 @@ export type DetailedViewOverlayProps = {
 
 /**
  * Shared overlay wrapper for the detailed-view portal target.
- * Used by CopilotShell, BottomTray, and Shell (mobile) layouts.
+ * Used by the AgentInterface chat surface.
  * Renders an absolute-positioned overlay with slide-in/slide-out animations.
  *
  * @category Components
