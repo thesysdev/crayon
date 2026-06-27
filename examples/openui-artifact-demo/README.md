@@ -48,5 +48,5 @@ export OPENAI_API_KEY=your-key-here
 - `src/components/ArtifactCodeBlock/InlinePreview.tsx` — Inline preview component (reused as the renderer's `preview`)
 - `src/components/ArtifactCodeBlock/ArtifactView.tsx` — Side-panel content (reused as the renderer's `actual`)
 - `src/library.ts` — Re-exports the standard chat library + adds prompt rules instructing the LLM to use the `create_code_block` tool
-- `src/app/page.tsx` — `FullScreen` layout wired with `appRenderers={[codeBlockRenderer]}` and the custom adapter
+- `src/app/page.tsx` — `AgentInterface` wired with `artifactRenderers={[codeBlockRenderer]}` and the custom stream adapter (passed via `llm`)
 - `src/app/api/chat/route.ts` — OpenAI route with `create_code_block` registered as a tool

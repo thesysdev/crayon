@@ -3,7 +3,7 @@ import {
   openAIAdapter,
   type AGUIEvent,
   type StreamProtocolAdapter,
-} from "@openuidev/react-headless";
+} from "@openuidev/react-ui";
 
 /**
  * Custom stream adapter for this example's backend.

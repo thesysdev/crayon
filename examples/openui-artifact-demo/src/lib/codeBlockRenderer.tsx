@@ -1,8 +1,8 @@
 "use client";
 
-import { defineArtifactRenderer } from "@openuidev/react-headless";
 import { ArtifactView } from "@/components/ArtifactCodeBlock/ArtifactView";
 import { InlinePreview } from "@/components/ArtifactCodeBlock/InlinePreview";
+import { defineArtifactRenderer } from "@openuidev/react-ui";
 
 type CodeBlockProps = {
   language: string;
@@ -61,10 +61,6 @@ export const codeBlockRenderer = defineArtifactRenderer({
   ),
 
   actual: (props) => (
-    <ArtifactView
-      language={props.language}
-      title={props.title}
-      codeString={props.codeString}
-    />
+    <ArtifactView language={props.language} title={props.title} codeString={props.codeString} />
   ),
 });
