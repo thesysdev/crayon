@@ -14,13 +14,12 @@ Building an agent UI from scratch is a lot of work before you ship a single feat
 Agent Interface gives you that in one component. Give it a component library and your agent renders those components inline, streaming their props as they arrive. Durable outputs like dashboards, slides, and reports become artifacts your users can open, revisit, and edit. Connect it to OpenUI Cloud and it handles conversations, generative UI, and artifacts for you. You can also run it on your own backend.
 
 ```tsx
-import { AgentInterface } from "@openuidev/react-ui";
-import { fetchLLM, openAIResponsesAdapter, openAIConversationMessageFormat } from "@openuidev/react-headless";
+import { AgentInterface, fetchLLM, openAIResponsesAdapter, openAIConversationMessageFormat } from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 
-// Point fetchLLM at your OpenUI Cloud route.
+// Point the llm adapter at your backend route.
 const llm = fetchLLM({
-  url: "/api/agent",
+  url: "/api/chat",
   streamAdapter: openAIResponsesAdapter(),
   messageFormat: openAIConversationMessageFormat,
 });
@@ -30,9 +29,7 @@ export default function App() {
 }
 ```
 
-{/* ASSUMED: exact OpenUI Cloud connect/endpoint shape; see the OpenUI Cloud page once confirmed */}
-
-That is a complete agent interface, all rendered by `AgentInterface`: a streaming chat with generative UI on, conversation history, and artifacts.
+That is the whole integration. `AgentInterface` renders the streaming chat with generative UI on. Point `storage` at OpenUI Cloud (or your own backend) to add conversation history and artifacts.
 
 ## What's included
 
