@@ -1,5 +1,5 @@
 import buttonDeps from "../Button/dependencies";
 import iconButtonDeps from "../IconButton/dependencies";
 
-const dependencies = ["Shell", ...iconButtonDeps, ...buttonDeps];
+const dependencies = ["AgentInterface", ...iconButtonDeps, ...buttonDeps];
 export default dependencies;
