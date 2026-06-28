@@ -2,7 +2,6 @@
 import "@openuidev/react-ui/components.css";
 
 import { useTheme } from "@/hooks/use-system-theme";
-import { langGraphAdapter, langGraphMessageFormat } from "@openuidev/react-headless";
 import { FullScreen } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 
@@ -12,21 +11,9 @@ export default function Page() {
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       <FullScreen
-        processMessage={async ({ messages, abortController }) => {
-          return fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              // Convert OpenUI messages to LangChain shape for the graph.
-              // The run is stateless: the full history is sent each turn.
-              messages: langGraphMessageFormat.toApi(messages),
-            }),
-            signal: abortController.signal,
-          });
-        }}
-        streamProtocol={langGraphAdapter()}
+        apiUrl="/api/chat"
         componentLibrary={openuiChatLibrary}
-        agentName="OpenUI + LangGraph Chat"
+        agentName="OpenUI + DeepAgents Chat"
         theme={{ mode }}
         conversationStarters={{
           variant: "short",
