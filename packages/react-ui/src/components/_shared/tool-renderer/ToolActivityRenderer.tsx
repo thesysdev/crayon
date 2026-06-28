@@ -87,6 +87,16 @@ export function ToolActivityRenderer<Props>({
 
   const meta = parsed?.meta ?? null;
 
+  // Retain the last successful parse. A per-call ERROR result (e.g. the model's
+  // tool call returns "Tool execution failed: …") is fed to the parser as
+  // `response`, which it can't read → null. Without this, an errored call would
+  // blank a preview the user was already watching (an artifact skeleton/deck),
+  // making the artifact "disappear" — even though the model usually retries.
+  const lastParsedRef = useRef<ParsedArtifact<Props> | null>(null);
+  useEffect(() => {
+    if (parsed !== null) lastParsedRef.current = parsed;
+  }, [parsed]);
+
   // viewId derives from meta when present, otherwise from React's useId so
   // `controls.open` still works for an inline-only renderer.
   const viewId = meta ? `${meta.id}:${meta.version}` : fallbackId;
@@ -139,7 +149,13 @@ export function ToolActivityRenderer<Props>({
   if (error) {
     return <ToolCallErrorFallback error={error} toolName={activity.toolName} />;
   }
-  if (parsed === null) return <>{fallback}</>;
+
+  // On a per-call error, keep the last in-flight parse so the artifact preview
+  // doesn't vanish (the model usually retries; the failed call shouldn't make
+  // the deck disappear). Calls that error before producing any parse still fall
+  // through to the fallback card.
+  const shownParsed = parsed ?? (activity.isError ? lastParsedRef.current : null);
+  if (shownParsed === null) return <>{fallback}</>;
 
   const controls: ArtifactRendererControls = {
     isActive,
@@ -151,9 +167,9 @@ export function ToolActivityRenderer<Props>({
 
   return (
     <>
-      {renderer.preview(parsed.props, controls)}
+      {renderer.preview(shownParsed.props, controls)}
       <DetailedViewPanel viewId={viewId} title={meta?.heading ?? "Detailed view"}>
-        {renderer.actual(parsed.props, controls)}
+        {renderer.actual(shownParsed.props, controls)}
       </DetailedViewPanel>
     </>
   );
