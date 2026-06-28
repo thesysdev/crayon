@@ -1,0 +1,64 @@
+@use "../../cssUtils" as cssUtils;
+
+// Assistant-message layout for the GenUI assistant message rendered by
+// `AgentInterface` (via `GenUIAssistantMessage` → `AssistantMessageContainer`).
+// Extracted from the retired Shell's `thread.scss` so the kept component keeps
+// its logo + content layout. The element class names are preserved
+// (`openui-shell-thread-message-assistant*` — the component still emits them);
+// the mobile / detailed-view ANCESTOR selectors were retargeted from the
+// deleted Shell's container to AgentInterface's (`openui-agent-container--mobile`,
+// `openui-agent-thread-container--detailed-view-active`).
+$center-align-spacing: calc(32px + cssUtils.$space-s);
+
+.openui-shell-thread-message-assistant {
+  width: 100%;
+  display: flex;
+  gap: cssUtils.$space-s;
+  padding-right: $center-align-spacing;
+  overflow: hidden;
+
+  &--without-logo {
+    padding-left: $center-align-spacing;
+  }
+
+  .openui-agent-container--mobile & {
+    padding: 0;
+  }
+
+  // When detailed view is active, minimize spacing and hide logo
+  .openui-agent-thread-container--detailed-view-active & {
+    gap: 0;
+    padding-right: 0;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-s;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    flex-grow: 1;
+  }
+
+  &__text {
+    @include cssUtils.typography(primary, default);
+    color: cssUtils.$text-neutral-primary;
+    &:first-child {
+      margin-top: cssUtils.$space-xs;
+    }
+  }
+
+  &__logo {
+    width: 32px;
+    height: 32px;
+    border-radius: cssUtils.$radius-m;
+
+    .openui-agent-container--mobile & {
+      display: none;
+    }
+
+    .openui-agent-thread-container--detailed-view-active & {
+      display: none;
+    }
+  }
+}

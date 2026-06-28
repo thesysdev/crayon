@@ -1,7 +1,6 @@
 "use client";
 
-import { defineArtifactRenderer } from "@openuidev/react-headless";
-import { CodeBlock } from "@openuidev/react-ui";
+import { CodeBlock, defineArtifactRenderer } from "@openuidev/react-ui";
 
 type CodeArtifactProps = {
   language: string;
@@ -54,9 +53,7 @@ export const codeArtifactRenderer = defineArtifactRenderer({
     if (!props) return null;
     return {
       props,
-      meta: props.title
-        ? { id: `code:${props.title}`, version: 1, heading: props.title }
-        : null,
+      meta: props.title ? { id: `code:${props.title}`, version: 1, heading: props.title } : null,
     };
   },
   preview: (props, { isStreaming, isActive, toggle }) => (

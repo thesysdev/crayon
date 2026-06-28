@@ -4,7 +4,7 @@ An [OpenUI](https://openui.com) example showing how to wire a [Mastra](https://m
 
 ## What this demonstrates
 
-- Using `agUIAdapter()` as the `streamProtocol` on OpenUI's `<FullScreen />` component
+- Using `agUIAdapter()` as the `streamProtocol` in the `llm` config of OpenUI's `<AgentInterface />` component
 - A Mastra `Agent` with `createTool` tools (weather and stock price) running in a Next.js API route
 - Streaming AG-UI protocol events from the server to the client via SSE
 
@@ -34,7 +34,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the chat interface.
 
 The server (`src/app/api/chat/route.ts`) wraps a Mastra `Agent` with `@ag-ui/mastra`'s `MastraAgent`, which emits AG-UI protocol events. These events are serialized as SSE and streamed to the client.
 
-The frontend (`src/app/page.tsx`) uses `agUIAdapter()` from `@openuidev/react-headless` as the `streamProtocol` for the `<FullScreen />` component. The adapter parses the SSE stream into internal chat events that drive the UI.
+The frontend (`src/app/page.tsx`) renders OpenUI's `<AgentInterface />` (the artifact chat interface with thread history), passing it an `llm` whose `streamProtocol` is `agUIAdapter()` from `@openuidev/react-ui`. Storage is optional — `AgentInterface` defaults to in-memory storage (wiped on reload) — so no `storage` prop is needed. The adapter parses the SSE stream into internal chat events that drive the UI.
 
 To add more tools, define them with `createTool` in `src/app/api/chat/route.ts` and pass them to the `Agent`.
 

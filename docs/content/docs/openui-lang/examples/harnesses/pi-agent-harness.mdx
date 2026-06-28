@@ -3,7 +3,7 @@ title: pi Agent Harness
 description: Chat with the pi coding agent (a real read/bash/edit/write agent) and get its answers as live generative UI, bridged through the pi SDK over an OpenAI-compatible stream.
 ---
 
-Anything that can stream text can drive OpenUI's renderer, including a full **coding agent**. This example connects [pi](https://www.npmjs.com/package/@earendil-works/pi-coding-agent) (`@earendil-works/pi-coding-agent`), running its default `read` / `bash` / `edit` / `write` tools, to `<FullScreen>`. pi's [OpenUI Lang](/docs/openui-lang/overview) instructions are appended to its system prompt, so it emits component markup instead of markdown and its streamed answers render live as generative UI.
+Anything that can stream text can drive OpenUI's renderer, including a full **coding agent**. This example connects [pi](https://www.npmjs.com/package/@earendil-works/pi-coding-agent) (`@earendil-works/pi-coding-agent`), running its default `read` / `bash` / `edit` / `write` tools, to `<AgentInterface>`. pi's [OpenUI Lang](/docs/openui-lang/overview) instructions are appended to its system prompt, so it emits component markup instead of markdown and its streamed answers render live as generative UI.
 
 Its mid-turn activity (reasoning and tool runs) surfaces as cards too.
 
@@ -26,7 +26,7 @@ Its mid-turn activity (reasoning and tool runs) surfaces as cards too.
 
 | Piece | File | Role |
 | --- | --- | --- |
-| Frontend | `src/app/page.tsx` | A single `<FullScreen>` with `streamProtocol={openAIReadableStreamAdapter()}`. Generates the OpenUI Lang system prompt and sends it with each turn. |
+| Frontend | `src/app/page.tsx` | A single `<AgentInterface>` whose `llm.send` posts to the bridge with `streamProtocol: openAIReadableStreamAdapter()`. Generates the OpenUI Lang system prompt and sends it with each turn. |
 | Bridge route | `src/app/api/chat/route.ts` | Drives a pi `AgentSession` and re-emits its events as NDJSON OpenAI chunks (`delta.content` is OpenUI Lang). |
 | Session registry | `src/lib/pi-session.ts` | One persistent `AgentSession` per chat thread, keyed by the `x-conversation-id` header. |
 | Agent | `@earendil-works/pi-coding-agent` | The pi coding agent: `read` / `bash` / `edit` / `write` on the workspace you choose at launch. |
@@ -35,27 +35,33 @@ Everything runs in **one Next.js process**: the App-Router route _is_ the backen
 
 ## Connecting the frontend
 
-The client is a single `<FullScreen>`. It generates the OpenUI Lang system prompt from the component library, sends it with each turn, and parses the response with `openAIReadableStreamAdapter()` (NDJSON OpenAI chunks):
+The client is a single `<AgentInterface>` (the artifact chat surface with sidebar thread history). It generates the OpenUI Lang system prompt from the component library, sends it with each turn via its `llm.send`, and parses the response with `openAIReadableStreamAdapter()` (NDJSON OpenAI chunks):
 
 ```tsx
-import { openAIMessageFormat, openAIReadableStreamAdapter } from "@openuidev/react-headless";
-import { FullScreen } from "@openuidev/react-ui";
+import {
+  AgentInterface,
+  openAIMessageFormat,
+  openAIReadableStreamAdapter,
+  type ChatLLM,
+} from "@openuidev/react-ui";
 import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui/genui-lib";
 
 const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
 
-<FullScreen
-  // Each thread gets a stable id, so it maps to its own persistent pi AgentSession.
-  createThread={async () => ({ id: crypto.randomUUID(), title: "New chat", createdAt: Date.now() })}
-  processMessage={async ({ threadId, messages, abortController }) =>
+const llm: ChatLLM = {
+  // threadId is stable per thread, so each thread maps to its own persistent pi AgentSession.
+  send: ({ threadId, messages, signal }) =>
     fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-conversation-id": threadId },
       body: JSON.stringify({ systemPrompt, messages: openAIMessageFormat.toApi(messages) }),
-      signal: abortController.signal,
-    })
-  }
-  streamProtocol={openAIReadableStreamAdapter()}
+      signal,
+    }),
+  streamProtocol: openAIReadableStreamAdapter(),
+};
+
+<AgentInterface
+  llm={llm}
   componentLibrary={openuiLibrary}
   agentName="OpenUI Agent Harness"
 />;
@@ -137,7 +143,7 @@ The pi SDK resolves a model from either an environment API key (`ANTHROPIC_API_K
 
 ```
 examples/harnesses/pi-agent-harness/
-|- src/app/page.tsx           # <FullScreen> wired to openAIReadableStreamAdapter()
+|- src/app/page.tsx           # <AgentInterface> wired to openAIReadableStreamAdapter()
 |- src/app/api/chat/route.ts  # pi event stream into NDJSON OpenAI chunks
 |- src/lib/pi-session.ts      # one persistent pi AgentSession per conversation
 |- src/library.ts             # the OpenUI component library (re-exported)

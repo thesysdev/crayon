@@ -59,7 +59,7 @@ export {
 export { Collapsible } from "./components/_shared/Collapsible";
 export { webSearchRenderer, type WebSearchSource } from "./renderers/webSearchRenderer";
 
-// Detailed-view exports (DetailedViewPanel/DetailedViewPortalTarget also available as Shell.*)
+// Detailed-view exports (DetailedViewPanel/DetailedViewPortalTarget)
 export { useActiveDetailedView, useDetailedView } from "@openuidev/react-headless";
 export {
   DetailedViewOverlay,
@@ -84,7 +84,6 @@ export type { ExportChartData } from "./components/Charts/Charts";
 export * from "./components/CheckBoxGroup";
 export * from "./components/CheckBoxItem";
 export * from "./components/CodeBlock";
-export * as CopilotShell from "./components/CopilotShell";
 export * from "./components/DatePicker";
 export * from "./components/FollowUpBlock";
 export * from "./components/FollowUpItem";
@@ -105,7 +104,6 @@ export * from "./components/RadioItem";
 export * from "./components/SectionBlock";
 export * from "./components/Select";
 export * from "./components/Separator";
-export * as Shell from "./components/Shell";
 export * from "./components/Skeleton";
 export * from "./components/Slider";
 export * from "./components/Steps";
@@ -143,7 +141,7 @@ export * from "./context/LayoutContext";
 export * from "./context/PrintContext";
 
 // Types Export
-export type { ConversationStarterVariant } from "./components/BottomTray/ConversationStarter";
+export type { ConversationStarterVariant } from "./components/AgentInterface/ConversationStarter";
 export type {
   ConversationStarterIcon,
   ConversationStarterProps,

@@ -14,7 +14,7 @@ launch — see **Security** below.
 
 ```
  Browser (src/app/page.tsx)
-   FullScreen chat  ──POST /api/chat ({ systemPrompt, messages })──►  route.ts (runtime=nodejs)
+   AgentInterface   ──POST /api/chat ({ systemPrompt, messages })──►  route.ts (runtime=nodejs)
    + openuiLibrary       x-conversation-id: <threadId>                     │
    renderer  ◄──NDJSON OpenAI chunks (delta.content = OpenUI Lang)─────────┤
                                                                            ▼

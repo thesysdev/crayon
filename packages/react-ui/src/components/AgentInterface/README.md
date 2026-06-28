@@ -288,7 +288,7 @@ serve different consumers:
 | Store | File | Holds | Read with | Used by |
 | --- | --- | --- | --- | --- |
 | **AgentInterfaceStore** | `_shared/store/store.tsx` | `isSidebarOpen` (default **true**), `isWorkspaceOpen` (default **false**), `agentName`, `logoUrl` | `useAgentInterfaceStore` | All AgentInterface chrome (sidebar, workspace toggles, header) |
-| **ShellStore** | `../_shared/store/store.tsx` (library-wide, shared with `Shell`/`OpenUIChat`) | `isSidebarOpen`, `isWorkspaceOpen` (default **true**), `agentName`, `logoUrl`, `showAssistantLogo` | `useShellStore` | The GenUI assistant-message components, which read `agentName`/`logoUrl`/`showAssistantLogo` from here |
+| **ShellStore** | `../_shared/store/store.tsx` (library-wide, shared with `OpenUIChat`) | `isSidebarOpen`, `isWorkspaceOpen` (default **true**), `agentName`, `logoUrl`, `showAssistantLogo` | `useShellStore` | The GenUI assistant-message components, which read `agentName`/`logoUrl`/`showAssistantLogo` from here |
 
 Both are seeded from the same `logoUrl`/`agentName` and kept in sync to props via effects, but
 their `isWorkspaceOpen` defaults differ and they are **not** cross-synced. See
@@ -558,7 +558,7 @@ AgentInterface/
 ```
 
 > Note: `_shared/` here is **AgentInterface-local**. The sibling `components/_shared/` is a
-> **library-wide** shared dir (used by `Shell`/`OpenUIChat` too). Container pulls the `ShellStore`
+> **library-wide** shared dir (used by `OpenUIChat` too). Container pulls the `ShellStore`
 > from the library-wide one; everything else AgentInterface uses comes from its own local `_shared`.
 
 ---

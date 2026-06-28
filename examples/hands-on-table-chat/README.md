@@ -9,7 +9,7 @@ An AI-powered spreadsheet app that pairs a full-featured [Handsontable](https://
 ## Features
 
 - **Live spreadsheet** — Handsontable grid with Excel-like editing, 386+ formula functions (via HyperFormula), context menus, column resizing, and CSV export
-- **AI chat panel** — OpenUI Copilot sidebar that understands the spreadsheet context and responds with rich UI (charts, tables, markdown)
+- **AI chat panel** — OpenUI `AgentInterface` chat surface (artifact rendering + thread history) that understands the spreadsheet context and responds with rich UI (charts, tables, markdown)
 - **Bidirectional sync** — AI tool calls mutate the server-side table store, then push updates back to the grid via a `SpreadsheetTable` component
 - **Formula-aware row operations** — Adding or deleting rows automatically shifts cell references in formulas (mirrors Excel/Sheets behavior)
 - **Aggregate recalculation** — Total/Average/Sum/Count/Max/Min rows auto-update their formula ranges after structural changes
@@ -20,7 +20,7 @@ An AI-powered spreadsheet app that pairs a full-featured [Handsontable](https://
 ```
 ┌─────────────────────────────────┐  ┌──────────────────────────┐
 │         Spreadsheet Panel       │  │       Chat Panel          │
-│  PersistentSpreadsheet.tsx      │  │  OpenUI <Copilot />       │
+│  PersistentSpreadsheet.tsx      │  │  OpenUI <AgentInterface>  │
 │  (Handsontable + HyperFormula)  │  │  spreadsheet-library.tsx  │
 └──────────────┬──────────────────┘  └────────────┬─────────────┘
                │                                  │
@@ -128,7 +128,7 @@ hands-on-table-chat/
 | [`handsontable`](https://handsontable.com/) | Excel-like data grid |
 | [`@handsontable/react-wrapper`](https://www.npmjs.com/package/@handsontable/react-wrapper) | React bindings for Handsontable |
 | [`hyperformula`](https://hyperformula.handsontable.com/) | Formula engine (386+ Excel-compatible functions) |
-| [`@openuidev/react-ui`](https://openui.com/docs) | OpenUI chat Copilot component |
+| [`@openuidev/react-ui`](https://openui.com/docs) | OpenUI `AgentInterface` chat component |
 | [`@openuidev/react-headless`](https://openui.com/docs) | OpenUI adapter and message formatting |
 | [`@openuidev/react-lang`](https://openui.com/docs) | OpenUI Lang component library DSL |
 | [`openai`](https://www.npmjs.com/package/openai) | OpenAI SDK for chat completions with tool calling |

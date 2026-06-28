@@ -20,7 +20,7 @@ browser ──fetch /api/chat──▶ Next.js route ──@langchain/langgraph-
 
 | Piece | File | Role |
 | --- | --- | --- |
-| Frontend | `src/app/page.tsx` | `<FullScreen>` with `streamProtocol={langGraphAdapter()}`; converts messages with `langGraphMessageFormat.toApi`. |
+| Frontend | `src/app/page.tsx` | `<AgentInterface>` with `llm={{ send, streamProtocol: langGraphAdapter() }}`; converts messages with `langGraphMessageFormat.toApi`. |
 | Proxy | `src/app/api/chat/route.ts` | Opens a stateless run on the LangGraph server and forwards its SSE. Keeps the API key + deployment URL server-side. |
 | Graph | `src/agent/graph.ts` | Supervisor + specialist ReAct loops. Each specialist shares the generated OpenUI system prompt, so its output is OpenUI Lang. |
 | Tools | `src/agent/tools.ts` | Mock `get_weather` / `get_stock_price` / `search_web` (no external keys needed). |
