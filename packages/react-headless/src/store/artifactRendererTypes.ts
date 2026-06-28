@@ -40,7 +40,12 @@ export interface ArtifactRendererControls {
  */
 export interface ParsedArtifact<Props> {
   props: Props;
-  meta: { id: string; version: number; heading: string } | null;
+  // `type`, when a parser provides it, is the artifact's REAL kind. It lets the
+  // ThreadContext registration label/resolve the artifact by its own kind even
+  // when a single tool-owning renderer matched the tool name (e.g. one renderer
+  // owns the generate/edit tools but emits both presentations and reports).
+  // Optional: parsers that don't set it fall back to the matched renderer's type.
+  meta: { id: string; version: number; heading: string; type?: string } | null;
 }
 
 /**

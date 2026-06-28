@@ -94,10 +94,19 @@ export function ToolActivityRenderer<Props>({
   // Register entry on mount; unregister on unmount or when (id, version) changes.
   useEffect(() => {
     if (!meta) return;
-    tcStore.getState().registerArtifact({ ...meta, type: renderer.type, updatedAt: Date.now() });
+    // Prefer the artifact's REAL kind from the parser (meta.type) so a report
+    // lists as "Report" and a deck as "Slides" — even though a single
+    // tool-owning renderer (e.g. Presentation) matched the generate/edit tool
+    // names and would otherwise stamp its own static type on both. Fall back to
+    // the matched renderer's type for parsers that don't set meta.type.
+    tcStore.getState().registerArtifact({
+      ...meta,
+      type: meta.type ?? renderer.type,
+      updatedAt: Date.now(),
+    });
     return () => tcStore.getState().unregisterArtifact(meta.id, meta.version);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tcStore, renderer.type, meta?.id, meta?.version, meta?.heading]);
+  }, [tcStore, renderer.type, meta?.id, meta?.version, meta?.heading, meta?.type]);
 
   // Keep an OPEN side panel alive when this instance's viewId changes for the
   // same logical artifact (streamed artifact resolves its real id, or version
