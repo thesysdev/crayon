@@ -44,6 +44,8 @@ export default function Page() {
     // Backend mint proxy (POST → { token, expires_at }); the hook caches +
     // refreshes it and injects x-thesys-frontend-token on every /v1 call.
     token: "/api/frontend-token",
+    // Env-driven so a local stack can be targeted; defaults to prod when unset.
+    apiBaseUrl: process.env.NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL,
     features: { artifact: true },
   });
 

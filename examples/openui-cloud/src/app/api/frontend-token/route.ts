@@ -1,4 +1,4 @@
-import { envOr, requiredEnv, OPENUI_CLOUD_BASE_URL } from "@/lib/env";
+import { envOr, openuiCloudBaseUrl, requiredEnv } from "@/lib/env";
 
 /**
  * Read-plane credential mint: proxies the OpenUI Cloud POST /v1/frontend-tokens
@@ -10,17 +10,14 @@ import { envOr, requiredEnv, OPENUI_CLOUD_BASE_URL } from "@/lib/env";
  *    identity.
  */
 export async function POST() {
-  const upstream = await fetch(
-    `${OPENUI_CLOUD_BASE_URL}/v1/frontend-tokens`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${requiredEnv("THESYS_MASTER_API_KEY")}`,
-      },
-      body: JSON.stringify({ user_id: envOr("DEMO_USER_ID", "demo-user") }),
+  const upstream = await fetch(`${openuiCloudBaseUrl()}/v1/frontend-tokens`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${requiredEnv("THESYS_MASTER_API_KEY")}`,
     },
-  );
+    body: JSON.stringify({ user_id: envOr("DEMO_USER_ID", "demo-user") }),
+  });
 
   if (!upstream.ok) {
     // Never forward upstream auth-error bodies (they can embed key fragments).
