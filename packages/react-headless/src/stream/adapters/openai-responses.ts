@@ -62,9 +62,7 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                   messageId: item.id,
                   toolCallId: item.call_id,
                   content:
-                    typeof item.output === "string"
-                      ? item.output
-                      : JSON.stringify(item.output),
+                    typeof item.output === "string" ? item.output : JSON.stringify(item.output),
                 };
               }
               break;

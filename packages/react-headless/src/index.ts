@@ -8,6 +8,8 @@ export { MessageContext, MessageProvider, useMessage } from "./hooks/useMessage"
 export { useThread, useThreadList } from "./hooks/useThread";
 export { useToolActivities } from "./hooks/useToolActivities";
 
+export { defineArtifactCategories } from "./store/artifactCategories";
+export type { ArtifactCategoryGroup } from "./store/artifactCategories";
 export { useArtifactCategories } from "./store/ArtifactCategoriesContext";
 export {
   ArtifactRenderersContext,
@@ -16,8 +18,6 @@ export {
   useArtifactRendererRegistry,
 } from "./store/ArtifactRenderersContext";
 export { defineArtifactRenderer } from "./store/artifactRendererTypes";
-export { defineArtifactCategories } from "./store/artifactCategories";
-export type { ArtifactCategoryGroup } from "./store/artifactCategories";
 export { useArtifactStorage } from "./store/ArtifactStorageContext";
 export { ChatProvider } from "./store/ChatProvider";
 export { DetailedViewContext, useDetailedViewStore } from "./store/DetailedViewContext";

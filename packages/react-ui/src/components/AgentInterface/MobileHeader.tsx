@@ -25,12 +25,10 @@ export const MobileHeader = ({
   children,
 }: MobileHeaderProps) => {
   const switchToNewThread = useThreadList((s) => s.switchToNewThread);
-  const { agentName: ctxAgentName, setIsSidebarOpen } = useAgentInterfaceStore(
-    (state) => ({
-      agentName: state.agentName,
-      setIsSidebarOpen: state.setIsSidebarOpen,
-    }),
-  );
+  const { agentName: ctxAgentName, setIsSidebarOpen } = useAgentInterfaceStore((state) => ({
+    agentName: state.agentName,
+    setIsSidebarOpen: state.setIsSidebarOpen,
+  }));
 
   if (children != null) {
     if (

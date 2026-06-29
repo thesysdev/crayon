@@ -2,10 +2,10 @@ import { useThread } from "@openuidev/react-headless";
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import type { ConversationStarterProps } from "../../types/ConversationStarter";
-import { Composer as ComposerInput } from "./components/Composer";
-import { ConversationStarter, type ConversationStarterVariant } from "./ConversationStarter";
 import { useStartersFromContext } from "./_shared/startersContext";
 import { isChatEmpty } from "./_shared/utils";
+import { Composer as ComposerInput } from "./components/Composer";
+import { ConversationStarter, type ConversationStarterVariant } from "./ConversationStarter";
 
 export interface ComposerProps {
   className?: string;

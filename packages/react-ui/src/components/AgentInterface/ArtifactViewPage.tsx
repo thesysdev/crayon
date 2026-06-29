@@ -78,10 +78,7 @@ export const ArtifactViewPage = ({
 
   const parsed = useMemo(() => {
     if (!artifact || !renderer) return null;
-    return renderer.parser(
-      { args: undefined, response: artifact.content },
-      { isStreaming: false },
-    );
+    return renderer.parser({ args: undefined, response: artifact.content }, { isStreaming: false });
   }, [artifact, renderer]);
 
   const controls: ArtifactRendererControls = {

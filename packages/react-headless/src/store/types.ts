@@ -84,7 +84,7 @@ export interface ChatProviderProps {
    * ignored (dev warning). Order is priority: first registration wins on
    * duplicate `toolName`/`type`.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   artifactRenderers?: ReadonlyArray<ArtifactRendererConfig<any>>;
   /**
    * Global artifact categories. Drive the sidebar Artifacts split, the

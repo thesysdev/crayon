@@ -6,8 +6,7 @@ import { SidebarTooltip } from "./SidebarTooltip";
 import { useOptionalNav } from "./_shared/navContext";
 import { useAgentInterfaceStore } from "./_shared/store";
 
-export interface SidebarItemProps
-  extends Omit<ComponentPropsWithoutRef<"button">, "children"> {
+export interface SidebarItemProps extends Omit<ComponentPropsWithoutRef<"button">, "children"> {
   /** Leading icon. */
   icon?: ReactNode;
   /** Trailing content — badges, counts, etc. Rendered right-aligned. */
@@ -47,8 +46,7 @@ export const SidebarItem = ({
   const sidebarVisualState = useOptionalSidebarVisualState();
   const isCollapsedLayout = sidebarVisualState?.isCollapsedLayout ?? false;
 
-  const isActive =
-    selected !== undefined ? selected : path !== undefined && nav?.path === path;
+  const isActive = selected !== undefined ? selected : path !== undefined && nav?.path === path;
 
   const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
     onClick?.(e);

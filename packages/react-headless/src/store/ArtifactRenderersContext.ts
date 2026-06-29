@@ -17,8 +17,7 @@ export type ArtifactRendererRegistry = {
   byType: Map<string, ArtifactRendererConfig<unknown>>;
 };
 
-const isDev = () =>
-  typeof process !== "undefined" && process.env?.["NODE_ENV"] !== "production";
+const isDev = () => typeof process !== "undefined" && process.env?.["NODE_ENV"] !== "production";
 
 /**
  * Builds an {@link ArtifactRendererRegistry} from a list of configs.

@@ -1,6 +1,6 @@
-import { identityMessageFormat, type MessageFormat } from "../types/messageFormat";
-import type { Message } from "../types/message";
 import type { Thread, UserMessage } from "../store/types";
+import type { Message } from "../types/message";
+import { identityMessageFormat, type MessageFormat } from "../types/messageFormat";
 import type { ChatStorage } from "./types";
 
 export interface RestStorageOptions {
@@ -48,7 +48,9 @@ export function restStorage({
       },
     });
     if (!res.ok) {
-      throw new Error(`restStorage: ${init?.method ?? "GET"} ${url} failed: ${res.status} ${res.statusText}`);
+      throw new Error(
+        `restStorage: ${init?.method ?? "GET"} ${url} failed: ${res.status} ${res.statusText}`,
+      );
     }
     return res;
   };

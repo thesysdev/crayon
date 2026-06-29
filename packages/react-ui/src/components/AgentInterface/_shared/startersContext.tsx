@@ -14,7 +14,9 @@ export const StartersProvider = ({
   starterVariant,
   children,
 }: StartersContextValue & { children: ReactNode }) => (
-  <StartersContext.Provider value={{ starters, starterVariant }}>{children}</StartersContext.Provider>
+  <StartersContext.Provider value={{ starters, starterVariant }}>
+    {children}
+  </StartersContext.Provider>
 );
 
 export const useStartersFromContext = () => useContext(StartersContext);

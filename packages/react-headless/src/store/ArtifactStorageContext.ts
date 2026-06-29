@@ -13,5 +13,4 @@ export const ArtifactStorageContext = createContext<ArtifactStorage | null>(null
  *
  * @category Hooks
  */
-export const useArtifactStorage = (): ArtifactStorage | null =>
-  useContext(ArtifactStorageContext);
+export const useArtifactStorage = (): ArtifactStorage | null => useContext(ArtifactStorageContext);

@@ -1,8 +1,4 @@
-import type {
-  AssistantMessage,
-  ChatProviderProps,
-  UserMessage,
-} from "@openuidev/react-headless";
+import type { AssistantMessage, ChatProviderProps, UserMessage } from "@openuidev/react-headless";
 import { ChatProvider } from "@openuidev/react-headless";
 import type { Library } from "@openuidev/react-lang";
 import { useMemo } from "react";
@@ -64,7 +60,12 @@ export function withChatProvider<ExtraProps = {}>(WrappedComponent: React.Compon
 
     return (
       <ThemeProviderComponent {...theme}>
-        <ChatProvider storage={storage} llm={llm} artifactRenderers={artifactRenderers} artifactCategories={artifactCategories}>
+        <ChatProvider
+          storage={storage}
+          llm={llm}
+          artifactRenderers={artifactRenderers}
+          artifactCategories={artifactCategories}
+        >
           <WrappedComponent {...finalInnerProps} />
         </ChatProvider>
       </ThemeProviderComponent>

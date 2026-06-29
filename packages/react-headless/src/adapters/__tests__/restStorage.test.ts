@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { MessageFormat } from "../../types/messageFormat";
 import type { Thread, UserMessage } from "../../store/types";
+import type { MessageFormat } from "../../types/messageFormat";
 import { restStorage } from "../restStorage";
 
 const json = (body: unknown, ok = true, status = 200) =>
@@ -14,8 +14,11 @@ describe("restStorage", () => {
   });
 
   const make = (overrides?: { messageFormat?: MessageFormat; headers?: Record<string, string> }) =>
-    restStorage({ baseUrl: "/api/threads", fetch: fetchSpy as unknown as typeof fetch, ...overrides })
-      .thread;
+    restStorage({
+      baseUrl: "/api/threads",
+      fetch: fetchSpy as unknown as typeof fetch,
+      ...overrides,
+    }).thread;
 
   it("listThreads GETs {base}/get and returns the payload", async () => {
     const payload = { threads: [{ id: "t1", title: "A", createdAt: 0 }], nextCursor: "c2" };
@@ -83,7 +86,10 @@ describe("restStorage", () => {
   it("deleteThread DELETEs {base}/delete/:id", async () => {
     fetchSpy.mockResolvedValue(json({}, true));
     await make().deleteThread("t1");
-    expect(fetchSpy).toHaveBeenCalledWith("/api/threads/delete/t1", expect.objectContaining({ method: "DELETE" }));
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/api/threads/delete/t1",
+      expect.objectContaining({ method: "DELETE" }),
+    );
   });
 
   it("merges custom headers into requests", async () => {

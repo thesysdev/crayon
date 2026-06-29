@@ -18,12 +18,15 @@ describe("thread-context thread-switch cleanup", () => {
   };
 
   const populate = (store: ReturnType<typeof createThreadContextStore>) => {
-    store.getState().registerArtifact({ id: "app-1", version: 1, heading: "App", type: "th_dashboard" });
-    store.getState().registerArtifact({ id: "art-1", version: 1, heading: "Artifact", type: "th_presentation" });
+    store
+      .getState()
+      .registerArtifact({ id: "app-1", version: 1, heading: "App", type: "th_dashboard" });
+    store
+      .getState()
+      .registerArtifact({ id: "art-1", version: 1, heading: "Artifact", type: "th_presentation" });
   };
 
   const expectEmpty = (store: ReturnType<typeof createThreadContextStore>) => {
-    
     expect(store.getState().artifacts).toEqual({});
   };
 

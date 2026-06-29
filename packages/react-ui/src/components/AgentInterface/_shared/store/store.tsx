@@ -13,7 +13,13 @@ interface AgentInterfaceState {
   setLogoUrl: (url: string) => void;
 }
 
-export const createAgentInterfaceStore = ({ logoUrl, agentName }: { logoUrl: string; agentName: string }) =>
+export const createAgentInterfaceStore = ({
+  logoUrl,
+  agentName,
+}: {
+  logoUrl: string;
+  agentName: string;
+}) =>
   create<AgentInterfaceState>((set) => ({
     isSidebarOpen: true,
     isWorkspaceOpen: false,
@@ -25,7 +31,9 @@ export const createAgentInterfaceStore = ({ logoUrl, agentName }: { logoUrl: str
     setLogoUrl: (url: string) => set({ logoUrl: url }),
   }));
 
-export const AgentInterfaceStoreContext = createContext<ReturnType<typeof createAgentInterfaceStore> | null>(null);
+export const AgentInterfaceStoreContext = createContext<ReturnType<
+  typeof createAgentInterfaceStore
+> | null>(null);
 
 export const useAgentInterfaceStore = <T,>(selector: (state: AgentInterfaceState) => T): T => {
   const store = useContext(AgentInterfaceStoreContext);
@@ -53,5 +61,9 @@ export const AgentInterfaceStoreProvider = ({
     setLogoUrl(logoUrl);
   }, [agentName, logoUrl]);
 
-  return <AgentInterfaceStoreContext.Provider value={shellStore}>{children}</AgentInterfaceStoreContext.Provider>;
+  return (
+    <AgentInterfaceStoreContext.Provider value={shellStore}>
+      {children}
+    </AgentInterfaceStoreContext.Provider>
+  );
 };

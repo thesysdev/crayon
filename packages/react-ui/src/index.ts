@@ -37,7 +37,6 @@ export * from "@openuidev/react-headless";
 // component here). Pin the component so the two star re-exports don't collide.
 export { ToolCall } from "./components/ToolCall";
 
-
 // Tool-call rendering: the typed-activity dispatchers (matched renderer xor
 // default) + the legacy ToolMessageRenderer wrapper.
 export {
