@@ -139,7 +139,13 @@ export function ToolActivityRenderer<Props>({
   if (error) {
     return <ToolCallErrorFallback error={error} toolName={activity.toolName} />;
   }
-  if (parsed === null) return <>{fallback}</>;
+  // A failed tool call has no real artifact. The c1 parser still produces a
+  // preview from the streamed args (artifact_content), independent of the error
+  // result, so `parsed` is non-null — but that preview is never registered and
+  // vanishes on refresh. Suppress it on error and show the raw tool card
+  // (fallback) instead, so the UI only shows artifacts that actually succeeded
+  // — consistent live and after reload.
+  if (activity.isError || parsed === null) return <>{fallback}</>;
 
   const controls: ArtifactRendererControls = {
     isActive,
