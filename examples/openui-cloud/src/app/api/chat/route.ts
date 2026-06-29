@@ -1,5 +1,6 @@
-import { envOr, openuiCloudBaseUrl, requiredEnv } from "@/lib/env";
+import { envOr, requiredEnv } from "@/lib/env";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
+import OpenAI from "openai";
 import type { ResponseInputItem } from "openai/resources/responses/responses";
 
 /**
@@ -15,9 +16,6 @@ export async function POST(req: Request) {
     input?: ResponseInputItem[];
   };
 
-  // The conversation must already exist — the API replays history from it and
-  // stamps ownership on persist. The chat store creates the thread before the
-  // first send.
   if (!threadId) {
     return Response.json(
       { error: { message: "threadId is required — create the conversation first" } },
@@ -30,39 +28,60 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
-  console.log("artifactTool", artifactTool());
-  const upstream = await fetch(`${openuiCloudBaseUrl()}/v1/embed/responses`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${requiredEnv("THESYS_API_KEY")}`,
-    },
-    body: JSON.stringify({
-      // A bare provider/model id (versioned managed ids are mutually
-      // exclusive with the instructions config block). Configurable via
-      // OPENUI_MODEL (.env.local); defaults to openai/gpt-5.
-      model: envOr("OPENUI_MODEL", "openai/gpt-5"),
-      conversation: threadId,
-      input,
-      stream: true,
-      store: true,
-      tools: [artifactTool()],
-      instructions: createResponsesInstructions(),
-    }),
-    signal: req.signal, // propagate browser aborts (stop button / tab close)
+
+  const client = new OpenAI({
+    // responses.create() POSTs to `${baseURL}/responses` → /v1/embed/responses.
+    baseURL: `${envOr("OPENUI_CLOUD_BASE_URL", "http://localhost:3102")}/v1/embed`,
+    apiKey: requiredEnv("THESYS_API_KEY"), // sent as Authorization: Bearer …
   });
 
-  if (!upstream.ok || !upstream.body) {
-    // Forward the upstream error body verbatim (OpenAI-shaped JSON).
-    const detail = await upstream.text().catch(() => "");
-    return new Response(detail || JSON.stringify({ error: { message: "upstream error" } }), {
-      status: upstream.status || 502,
-      headers: { "Content-Type": "application/json" },
-    });
+  let stream: AsyncIterable<Record<string, unknown>>;
+  try {
+    stream = (await client.responses.create(
+      {
+        model: envOr("OPENUI_MODEL", "anthropic/claude-sonnet-4.6"),
+        conversation: threadId, // store:true persists to the conversation
+        input,
+        stream: true,
+        store: true,
+        // `artifacts` makes each entry carry library_version:'0.1.0' → openui-lang.
+        // Bare artifactTool() would fall back to the legacy <artifact> XML model.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        tools: [artifactTool({ artifacts: ["slides", "report"] }) as any],
+        instructions: createResponsesInstructions(),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+      { signal: req.signal }, // propagate browser aborts (stop button / tab close)
+    )) as unknown as AsyncIterable<Record<string, unknown>>;
+  } catch (err) {
+    // The SDK surfaces upstream HTTP errors (e.g. 403) as APIError.
+    const e = err as { status?: number; error?: unknown; message?: string };
+    return Response.json(
+      { error: e.error ?? { message: e.message ?? "upstream error" } },
+      { status: e.status ?? 502 },
+    );
   }
 
-  // Pipe the SSE byte stream through untouched.
-  return new Response(upstream.body, {
+  // Re-emit each SDK event as SSE for the browser adapter.
+  const encoder = new TextEncoder();
+  const body = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      try {
+        for await (const event of stream) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify({ type: "error", message })}\n\n`),
+        );
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(body, {
     headers: {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache, no-transform",
