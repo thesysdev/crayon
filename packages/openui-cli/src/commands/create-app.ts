@@ -1,5 +1,6 @@
 import { execSync } from "node:child_process";
 import * as fs from "node:fs";
+import * as os from "node:os";
 import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL, type CloudAuthMethod } from "../auth/mint";
@@ -88,8 +89,12 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     filter: (src) => shouldCopyTemplatePath(templateDir, src),
   });
 
-  // package.json: set the project name and de-vendor any monorepo-local deps
-  // (workspace:* / file: / link:) to the published "latest".
+  // package.json: set the project name and de-vendor monorepo-local deps
+  // (workspace:* / file: / catalog:) to the published "latest". link: deps are
+  // rewritten to an absolute file: path so locally-linked packages (e.g.
+  // @openuidev/thesys) keep resolving against the developer's checkout under any
+  // package manager — npm rejects link:, and ~ isn't expanded. Temporary, until
+  // these packages are published.
   const pkgPath = path.join(targetDir, "package.json");
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8")) as {
     name: string;
@@ -102,9 +107,18 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     if (!deps) continue;
     for (const key of Object.keys(deps)) {
       const v = deps[key];
-      // workspace:/file:/link:/catalog: are monorepo-only protocols npm/yarn/bun
+      if (!v) continue;
+      if (v.startsWith("link:")) {
+        const target = v.slice("link:".length);
+        const abs = target.startsWith("~")
+          ? path.join(os.homedir(), target.slice(1))
+          : path.resolve(target);
+        deps[key] = `file:${abs}`;
+        continue;
+      }
+      // workspace:/file:/catalog: are monorepo-only protocols npm/yarn/bun
       // can't resolve standalone — pin them to the published "latest".
-      if (v && /^(workspace:|file:|link:|catalog:)/.test(v)) deps[key] = "latest";
+      if (/^(workspace:|file:|catalog:)/.test(v)) deps[key] = "latest";
     }
   }
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
@@ -191,10 +205,10 @@ async function writeCloudEnv(
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error(`\n⚠ Could not obtain an API key: ${msg}`);
-    console.error(`  Add THESYS_MASTER_API_KEY to .env later (keys: ${THESYS_KEYS_URL}).\n`);
+    console.error(`  Add THESYS_API_KEY to .env later (keys: ${THESYS_KEYS_URL}).\n`);
   }
   const lines = [
-    `THESYS_MASTER_API_KEY=${apiKey ?? ""}`,
+    `THESYS_API_KEY=${apiKey ?? ""}`,
     `OPENUI_CLOUD_BASE_URL=${OPENUI_CLOUD_BASE_URL}`,
     `NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL=${OPENUI_CLOUD_BASE_URL}`,
   ];
@@ -217,7 +231,7 @@ function getStartedMessage(o: {
     o.template === "openui-cloud"
       ? o.envWritten
         ? "✅ .env created with your OpenUI Cloud API key + base URL."
-        : `⚠ .env created without a key. Add THESYS_MASTER_API_KEY=… (get one at ${THESYS_KEYS_URL}).`
+        : `⚠ .env created without a key. Add THESYS_API_KEY=… (get one at ${THESYS_KEYS_URL}).`
       : o.envWritten
         ? "✅ .env created with your API key."
         : "Add your API key to .env:\nOPENAI_API_KEY=sk-your-key-here";

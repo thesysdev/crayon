@@ -9,20 +9,20 @@ A Next.js app showing how an external app integrates with OpenUI Cloud using its
   `instructions: createResponsesInstructions()`) and pipes the SSE stream back
   unchanged. `/api/frontend-token` proxies `POST /v1/frontend-tokens` so the
   browser gets a short-lived `fct_` token **without ever seeing the master key**.
-- **Read/edit plane (fct_, browser-direct):** the client page wires
+- **Read/edit plane (fct\_, browser-direct):** the client page wires
   `<AgentInterface llm storage componentLibrary artifactRenderers />` against a
   `ChatStorage` from `openuiCloud()` (browser → `/v1/conversations` +
   `/v1/artifacts` via the `x-thesys-frontend-token` header, single-flight refresh
-  + 401 retry) and the presentation/report artifact renderers
-  (`Presentation`/`Report` from `@openuidev/thesys`).
+  - 401 retry) and the presentation/report artifact renderers
+    (`Presentation`/`Report` from `@openuidev/thesys`).
 
 ## Setup
 
 ```bash
-cp .env.example .env.local   # fill THESYS_MASTER_API_KEY and point the base URLs at your API
+cp .env.example .env.local   # fill THESYS_API_KEY and point the base URLs at your API
 ```
 
-Required env (see `.env.example`): `THESYS_MASTER_API_KEY`, `OPENUI_CLOUD_BASE_URL`,
+Required env (see `.env.example`): `THESYS_API_KEY`, `OPENUI_CLOUD_BASE_URL`,
 `OPENUI_MODEL` (bare `provider/model`, e.g. `openai/gpt-5`), `DEMO_USER_ID`,
 `NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL`.
 

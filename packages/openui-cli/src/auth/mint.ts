@@ -73,7 +73,7 @@ export async function resolveCloudApiKey(opts: {
       choices: [
         { name: "Sign in with Thesys (opens a browser, mints a key)", value: "oauth" },
         { name: "Paste an existing API key", value: "manual" },
-        { name: "Skip — add THESYS_MASTER_API_KEY to .env later", value: "skip" },
+        { name: "Skip — add THESYS_API_KEY to .env later", value: "skip" },
       ],
     })) as CloudAuthMethod;
   }
