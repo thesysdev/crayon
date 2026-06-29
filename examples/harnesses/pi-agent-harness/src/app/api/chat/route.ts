@@ -1,7 +1,7 @@
-import type { NextRequest } from "next/server";
 import { abortSession, getOrCreateSession } from "@/lib/pi-session";
+import type { NextRequest } from "next/server";
 
-// The pi SDK spawns bash, reads the filesystem, and talks to model providers —
+// The Pi SDK spawns bash, reads the filesystem, and talks to model providers —
 // none of which works on the edge runtime.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,10 +26,12 @@ function ndjsonChunk(delta: Record<string, unknown>, finishReason: string | null
 
 // pi's reasoning and tool executions are surfaced as OpenAI `tool_calls`, which
 // OpenUI renders as cards inside the collapsible "behind the scenes" section —
-// the web equivalent of the pi CLI's thinking/tool states. Both pieces of a
+// the web equivalent of the Pi CLI's thinking/tool states. Both pieces of a
 // tool_call (start = id+name, args = streamed arguments) reuse the same `index`.
 function toolStartChunk(index: number, id: string, name: string, args = ""): string {
-  return ndjsonChunk({ tool_calls: [{ index, id, type: "function", function: { name, arguments: args } }] });
+  return ndjsonChunk({
+    tool_calls: [{ index, id, type: "function", function: { name, arguments: args } }],
+  });
 }
 function toolArgsChunk(index: number, argsDelta: string): string {
   return ndjsonChunk({ tool_calls: [{ index, function: { arguments: argsDelta } }] });
@@ -47,7 +49,9 @@ function extractText(content: unknown): string {
   if (Array.isArray(content)) {
     return content
       .map((part) =>
-        part && typeof part === "object" && "text" in part ? String((part as { text: unknown }).text) : "",
+        part && typeof part === "object" && "text" in part
+          ? String((part as { text: unknown }).text)
+          : "",
       )
       .join("");
   }
@@ -59,7 +63,7 @@ export async function POST(req: NextRequest) {
   const conversationId = req.headers.get("x-conversation-id") || crypto.randomUUID();
   const cwd = process.env.PI_AGENT_CWD || process.cwd();
 
-  // The frontend re-sends the full thread, but pi keeps its own transcript, so
+  // The frontend re-sends the full thread, but Pi keeps its own transcript, so
   // we only feed it the newest user turn.
   const lastUser = [...(body.messages ?? [])].reverse().find((m) => m.role === "user");
   const userText = extractText(lastUser?.content);
@@ -67,7 +71,10 @@ export async function POST(req: NextRequest) {
   let session: Awaited<ReturnType<typeof getOrCreateSession>>["session"];
   let modelFallbackMessage: string | undefined;
   try {
-    const entry = await getOrCreateSession(conversationId, { cwd, systemPrompt: body.systemPrompt });
+    const entry = await getOrCreateSession(conversationId, {
+      cwd,
+      systemPrompt: body.systemPrompt,
+    });
     session = entry.session;
     modelFallbackMessage = entry.modelFallbackMessage;
   } catch (err) {
@@ -84,7 +91,9 @@ export async function POST(req: NextRequest) {
     // interleave token streams and throw "already processing", so refuse politely.
     const busy =
       ndjsonChunk({ role: "assistant" }) +
-      ndjsonChunk({ content: "_Still responding to your previous message — please wait for it to finish._" }) +
+      ndjsonChunk({
+        content: "_Still responding to your previous message — please wait for it to finish._",
+      }) +
       ndjsonChunk({}, "stop");
     return new Response(busy, {
       headers: {
@@ -156,7 +165,14 @@ export async function POST(req: NextRequest) {
           }
         } else if (event.type === "tool_execution_start") {
           // Show each tool run (read/bash/edit/write …) and its input.
-          enqueue(toolStartChunk(indexFor(event.toolCallId), event.toolCallId, event.toolName, safeArgs(event.args)));
+          enqueue(
+            toolStartChunk(
+              indexFor(event.toolCallId),
+              event.toolCallId,
+              event.toolName,
+              safeArgs(event.args),
+            ),
+          );
         }
       });
 
@@ -172,7 +188,7 @@ export async function POST(req: NextRequest) {
           await session.prompt(userText);
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
-          enqueue(ndjsonChunk({ content: `\n\n**pi error:** ${message}` }));
+          enqueue(ndjsonChunk({ content: `\n\n**Pi error:** ${message}` }));
         } finally {
           unsubscribe();
           req.signal.removeEventListener("abort", onAbort);

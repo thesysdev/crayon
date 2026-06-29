@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "OpenUI Agent Harness",
-  description: "Generative UI agent harness powered by the pi coding agent",
+  description: "Generative UI agent harness powered by the Pi coding agent",
 };
 
 export default function RootLayout({

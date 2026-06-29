@@ -50,10 +50,10 @@ follow the cross-repo symlink) and stubs `lucide-react/dynamic`.
 ## Setup (env)
 
 ```bash
-cp .env.example .env.local   # fill THESYS_MASTER_API_KEY and point the base URLs at your API
+cp .env.example .env.local   # fill THESYS_API_KEY and point the base URLs at your API
 ```
 
-Required env (see `.env.example`): `THESYS_MASTER_API_KEY`, `OPENUI_CLOUD_BASE_URL`,
+Required env (see `.env.example`): `THESYS_API_KEY`, `OPENUI_CLOUD_BASE_URL`,
 `OPENUI_MODEL` (bare `provider/model`, e.g. `openai/gpt-5`), `DEMO_USER_ID`,
 `NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL`.
 

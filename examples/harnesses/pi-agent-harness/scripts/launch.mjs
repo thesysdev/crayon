@@ -30,7 +30,9 @@ async function chooseWorkspace() {
   if (fromArg) {
     if (fromArg.startsWith("-")) {
       console.error(`launch.mjs: "${fromArg}" looks like a flag, not a path.`);
-      console.error('Pass the workspace after a space-separated "--", e.g.:  pnpm dev -- /absolute/path');
+      console.error(
+        'Pass the workspace after a space-separated "--", e.g.:  pnpm dev -- /absolute/path',
+      );
       process.exit(1);
     }
     return fromArg;
@@ -38,7 +40,9 @@ async function chooseWorkspace() {
   if (process.env.PI_AGENT_CWD) return process.env.PI_AGENT_CWD;
   if (stdin.isTTY) {
     const rl = createInterface({ input: stdin, output: stdout });
-    const answer = (await rl.question(`\nWorkspace the agent may read/run/edit in [${process.cwd()}]: `)).trim();
+    const answer = (
+      await rl.question(`\nWorkspace the agent may read/run/edit in [${process.cwd()}]: `)
+    ).trim();
     rl.close();
     return answer || process.cwd();
   }
@@ -52,8 +56,10 @@ if (!existsSync(workspace) || !statSync(workspace).isDirectory()) {
   process.exit(1);
 }
 
-console.log(`\n  🛠  pi agent workspace: ${workspace}`);
-console.log("     read / bash / edit / write act here, and bash can escape it (see README → Security)\n");
+console.log(`\n  🛠  Pi agent workspace: ${workspace}`);
+console.log(
+  "     read / bash / edit / write act here, and bash can escape it (see README → Security)\n",
+);
 
 const child = spawn("next", NEXT_ARGS[mode], {
   stdio: "inherit",

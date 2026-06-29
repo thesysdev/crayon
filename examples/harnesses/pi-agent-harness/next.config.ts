@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // The pi coding-agent SDK is a heavy Node-only chain: it spawns bash, reads
+  // The Pi coding-agent SDK is a heavy Node-only chain: it spawns bash, reads
   // the filesystem, loads native terminal helpers via dynamic require, uses
   // `import.meta`, and reads its own prompt/skill/theme files from disk. It must
   // run as a real Node module at runtime, never bundled.
