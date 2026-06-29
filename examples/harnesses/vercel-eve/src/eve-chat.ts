@@ -1,4 +1,9 @@
-import type { Message } from "@openuidev/react-headless";
+import {
+  agUIAdapter,
+  type ChatLLM,
+  type ChatStorage,
+  type Message,
+} from "@openuidev/react-headless";
 import type { HandleMessageStreamEvent, SessionState } from "eve/client";
 import { eveEventsToAGUI } from "./eve-stream";
 import {
@@ -147,73 +152,66 @@ async function* runTurn(
 
 /**
  * Wires OpenUI's chat surface to an Eve agent over Eve's native session
- * protocol. `processMessage` delivers the latest user turn, maps Eve's events to
- * AG-UI, and persists the session cursor + transcript per thread. Pair with
- * `streamProtocol={agUIAdapter()}`.
+ * protocol. Returns the `llm` + `storage` adapters `<AgentInterface>` expects:
+ * `llm.send` delivers the latest user turn and maps Eve's events to AG-UI, while
+ * `storage.thread` persists the session cursor + transcript per thread.
  */
 export function createEveChatProps(
   storage: KVStorage = getClientStorage(),
   store: ThreadStore = createThreadStore(storage),
-) {
-  return {
-    createThread: store.createThread,
-    fetchThreadList: store.fetchThreadList,
-    loadThread: store.loadThread,
-    deleteThread: store.deleteThread,
-    updateThread: store.updateThread,
-    processMessage: async ({
-      messages,
-      threadId,
-      abortController,
-    }: {
-      messages: Message[];
-      threadId: string;
-      abortController: AbortController;
-    }): Promise<Response> => {
-      store.saveMessages(threadId, messages);
+): { llm: ChatLLM; storage: ChatStorage } {
+  const send: ChatLLM["send"] = async ({ messages, threadId, signal }): Promise<Response> => {
+    store.saveMessages(threadId, messages);
 
-      let nextSession = loadSession(storage, threadId);
-      const turn = runTurn(
-        nextSession,
-        latestUserText(messages),
-        abortController.signal,
-        (state) => {
-          nextSession = state;
-        },
-      );
+    let nextSession = loadSession(storage, threadId);
+    const turn = runTurn(nextSession, latestUserText(messages), signal, (state) => {
+      nextSession = state;
+    });
 
-      const encoder = new TextEncoder();
-      let assistant = "";
+    const encoder = new TextEncoder();
+    let assistant = "";
 
-      const body = new ReadableStream<Uint8Array>({
-        async start(controller) {
-          try {
-            for await (const event of eveEventsToAGUI(turn)) {
-              if (event.type === "TEXT_MESSAGE_CONTENT") {
-                assistant += (event as { delta: string }).delta;
-              }
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+    const body = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        try {
+          for await (const event of eveEventsToAGUI(turn)) {
+            if (event.type === "TEXT_MESSAGE_CONTENT") {
+              assistant += (event as { delta: string }).delta;
             }
-          } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            controller.enqueue(
-              encoder.encode(`data: ${JSON.stringify({ type: "RUN_ERROR", message })}\n\n`),
-            );
-          } finally {
-            saveSession(storage, threadId, nextSession);
-            if (assistant) {
-              store.saveMessages(threadId, [
-                ...messages,
-                { id: crypto.randomUUID(), role: "assistant", content: assistant } as Message,
-              ]);
-            }
-            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-            controller.close();
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
           }
-        },
-      });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ type: "RUN_ERROR", message })}\n\n`),
+          );
+        } finally {
+          saveSession(storage, threadId, nextSession);
+          if (assistant) {
+            store.saveMessages(threadId, [
+              ...messages,
+              { id: crypto.randomUUID(), role: "assistant", content: assistant } as Message,
+            ]);
+          }
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          controller.close();
+        }
+      },
+    });
 
-      return new Response(body, { headers: { "content-type": "text/event-stream" } });
+    return new Response(body, { headers: { "content-type": "text/event-stream" } });
+  };
+
+  return {
+    llm: { send, streamProtocol: agUIAdapter() },
+    storage: {
+      thread: {
+        listThreads: () => store.fetchThreadList(),
+        createThread: (firstMessage) => store.createThread(firstMessage),
+        getMessages: (threadId) => store.loadThread(threadId),
+        updateThread: (thread) => store.updateThread(thread),
+        deleteThread: (id) => store.deleteThread(id),
+      },
     },
   };
 }
