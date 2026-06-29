@@ -717,10 +717,7 @@ const MOCK_ARTIFACTS = Array.from({ length: 12 }, (_, i) => {
 });
 
 const mockArtifactStorage = {
-  list: async ({
-    name,
-    type,
-  }: { name?: string; type?: string[]; cursor?: string } = {}) => {
+  list: async ({ name, type }: { name?: string; type?: string[]; cursor?: string } = {}) => {
     await new Promise((r) => setTimeout(r, 300));
     const filtered = MOCK_ARTIFACTS.filter(
       (a) =>
