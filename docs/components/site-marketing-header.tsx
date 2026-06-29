@@ -1,22 +1,16 @@
 "use client";
 
-import {
-  GitHubIcon,
-  GitHubStarButton,
-  StarCountBadge,
-  useGitHubStarCount,
-  type LogoVariant,
-} from "@/components/brand-logo";
+import { type LogoVariant } from "@/components/brand-logo";
+import { GitHubButton } from "@/app/(home)/components/GitHubButton/GitHubButton";
 import { SiteHeaderFrame } from "@/components/site-header";
 import { isNavDropdown, PRIMARY_SITE_NAV_ITEMS, SitePrimaryNav } from "@/components/site-primary-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ArrowRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import styles from "./site-marketing-header.module.css";
-
-const BUTTON_SHADOW = "0px 1px 3px 0px rgba(22,34,51,0.08), 0px 12px 24px 0px rgba(22,34,51,0.04)";
 
 type ThemeToggleConfig = {
   onToggle?: () => void;
@@ -58,11 +52,7 @@ function HamburgerIcon({ isOpen }: { isOpen: boolean }) {
   );
 }
 
-function MobileMenu({ starCount, onClose }: { starCount: number | null; onClose: () => void }) {
-  const mobileGithubStyle = {
-    "--mobile-github-button-shadow": BUTTON_SHADOW,
-  } as CSSProperties;
-
+function MobileMenu({ onClose }: { onClose: () => void }) {
   const leafItems = PRIMARY_SITE_NAV_ITEMS.filter(
     (item): item is Extract<(typeof PRIMARY_SITE_NAV_ITEMS)[number], { href: string }> =>
       !isNavDropdown(item),
@@ -89,6 +79,23 @@ function MobileMenu({ starCount, onClose }: { starCount: number | null; onClose:
     ],
   };
 
+  const renderTrayLink = (entry: {
+    title: string;
+    href: string;
+    newTab?: boolean;
+    badge?: string;
+  }) => (
+    <Link
+      key={entry.href}
+      className={styles.mobileTrayLink}
+      href={entry.href}
+      {...(entry.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+    >
+      <span>{entry.title}</span>
+      {entry.badge && <span className={styles.mobileTrayBadge}>{entry.badge}</span>}
+    </Link>
+  );
+
   return (
     <>
       <motion.div
@@ -110,72 +117,39 @@ function MobileMenu({ starCount, onClose }: { starCount: number | null; onClose:
           <div className={styles.mobileTrayInner}>
             <div className={styles.mobileTraySection}>
               <div className={styles.mobileTraySectionHeading}>{productSection.title}</div>
-              {productSection.items.map((entry) => (
-                <Link
-                  key={entry.href}
-                  className={styles.mobileTrayLink}
-                  href={entry.href}
-                  {...(entry.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                >
-                  <span>{entry.title}</span>
-                  {entry.badge && (
-                    <span className={styles.mobileTrayBadge}>{entry.badge}</span>
-                  )}
-                </Link>
-              ))}
+              {productSection.items.map(renderTrayLink)}
             </div>
 
             {otherLeafItems.length > 0 && (
               <div className={styles.mobileTraySection}>
                 <div className={styles.mobileTraySectionHeading}>Resources</div>
-                {otherLeafItems.map((entry) => (
-                  <Link
-                    key={entry.href}
-                    className={styles.mobileTrayLink}
-                    href={entry.href}
-                    {...(entry.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  >
-                    <span>{entry.title}</span>
-                    {entry.badge && (
-                      <span className={styles.mobileTrayBadge}>{entry.badge}</span>
-                    )}
-                  </Link>
-                ))}
+                {otherLeafItems.map(renderTrayLink)}
               </div>
             )}
 
             {dropdownSections.map((section) => (
               <div key={section.title} className={styles.mobileTraySection}>
                 <div className={styles.mobileTraySectionHeading}>{section.title}</div>
-                {section.children.map((child) => (
-                  <Link
-                    key={child.href}
-                    className={styles.mobileTrayLink}
-                    href={child.href}
-                    {...(child.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  >
-                    <span>{child.title}</span>
-                  </Link>
-                ))}
+                {section.children.map(renderTrayLink)}
               </div>
             ))}
+
+            <div className={styles.mobileTrayFooter}>
+              <GitHubButton
+                variant="desktopGlow"
+                compact
+                href="https://github.com/thesysdev/openui"
+                arrow={
+                  <ArrowRight
+                    className={styles.mobileTrayArrow}
+                    size={18}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
+                }
+              />
+            </div>
           </div>
-        </div>
-        <div className={styles.mobileGithubButtonWrap}>
-          <a
-            href="https://github.com/thesysdev/openui"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.mobileGithubButton}
-          >
-            <div
-              aria-hidden="true"
-              className={styles.mobileGithubButtonOverlay}
-              style={mobileGithubStyle}
-            />
-            <GitHubIcon />
-            <StarCountBadge count={starCount} isHighlighted={false} />
-          </a>
         </div>
       </motion.div>
     </>
@@ -190,9 +164,11 @@ export function SiteMarketingHeader({
 }: SiteMarketingHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(borderMode === "always");
-  const starCount = useGitHubStarCount("thesysdev/openui");
   const { resolvedTheme } = useTheme();
-  const resolvedBrandVariant = brandVariant ?? (resolvedTheme === "dark" ? "dark" : "light");
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const resolvedBrandVariant =
+    brandVariant ?? (mounted && resolvedTheme === "dark" ? "dark" : "light");
 
   useEffect(() => {
     if (borderMode === "always") {
@@ -234,21 +210,34 @@ export function SiteMarketingHeader({
               />
             )}
             {extraActions}
-            <GitHubStarButton repo="thesysdev/openui" isScrolled={isBordered} />
+            <GitHubButton
+              variant="desktopGlow"
+              compact
+              href="https://github.com/thesysdev/openui"
+            />
           </div>
         }
         mobileEnd={
-          <button
-            className={styles.mobileMenuButton}
-            onClick={toggleMobileMenu}
-            aria-label="Toggle menu"
-          >
-            <HamburgerIcon isOpen={isMobileMenuOpen} />
-          </button>
+          <div className={styles.mobileEndActions}>
+            {isMobileMenuOpen && themeToggle !== null && (
+              <ThemeToggle
+                onToggle={themeToggle?.onToggle}
+                title={themeToggle?.title}
+                ariaLabel={themeToggle?.ariaLabel}
+              />
+            )}
+            <button
+              className={styles.mobileMenuButton}
+              onClick={toggleMobileMenu}
+              aria-label="Toggle menu"
+            >
+              <HamburgerIcon isOpen={isMobileMenuOpen} />
+            </button>
+          </div>
         }
       />
       <AnimatePresence>
-        {isMobileMenuOpen && <MobileMenu starCount={starCount} onClose={toggleMobileMenu} />}
+        {isMobileMenuOpen && <MobileMenu onClose={toggleMobileMenu} />}
       </AnimatePresence>
     </nav>
   );

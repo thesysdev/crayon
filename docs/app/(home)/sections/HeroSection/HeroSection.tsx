@@ -1,10 +1,14 @@
 "use client";
 
-import { GitHubIcon } from "@/components/brand-logo";
 import { ArrowRight } from "lucide-react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ClipboardCommandButton, PillLink } from "../../components/Button/Button";
+import {
+  DEFAULT_GITHUB_REPO_URL,
+  GitHubButton,
+} from "../../components/GitHubButton/GitHubButton";
 import styles from "./HeroSection.module.css";
 
 export const heroStyles = styles;
@@ -14,16 +18,16 @@ const primaryCTA = "npx @openuidev/cli@latest create";
 const secondaryCTA = "Try Playground";
 const openclawOsHref = "/openclaw-os";
 const DESKTOP_HERO_IMAGE = {
-  light: "/homepage/hero-web.png",
-  dark: "/homepage/hero-web-dark.png",
-  width: 2040,
-  height: 704,
+  light: "/homepage/hero-web.svg",
+  dark: "/homepage/hero-web-dark.svg",
+  width: 768,
+  height: 454,
 } as const;
 const MOBILE_HERO_IMAGE = {
-  light: "/homepage/mobile-hero.png",
-  dark: "/homepage/mobile-hero-dark.png",
-  width: 804,
-  height: 880,
+  light: "/homepage/mobile-hero-light.svg",
+  dark: "/homepage/mobile-hero-dark.svg",
+  width: 333,
+  height: 440,
 } as const;
 
 type HeroTheme = "light" | "dark";
@@ -68,7 +72,7 @@ export function NpmButton({ className = "", command }: { className?: string; com
         command={command}
         className={`${styles.npmButton} ${className}`.trim()}
         iconContainerClassName={styles.npmIconBadge}
-        copyIconColor="white"
+        copyIconColor="currentColor"
         onCopyChange={handleCopyChange}
       >
         <span className={styles.npmDesktopLabel}>{command}</span>
@@ -192,18 +196,19 @@ export function DesktopGithubButton({
   className?: string;
 }) {
   return (
-    <PillLink
+    <GitHubButton
+      variant="desktopPill"
       href={href}
-      external
+      label={label}
       className={`${styles.desktopPlaygroundButton} ${className}`.trim()}
+      classes={{ icon: styles.heroBannerIcon }}
       arrow={<TrailingArrow />}
-    >
-      <span aria-hidden="true" className={styles.heroBannerIcon}>
-        <GitHubIcon />
-      </span>
-      <span>{label}</span>
-    </PillLink>
+    />
   );
+}
+
+function DesktopGithubStarButton({ href }: { href: string }) {
+  return <GitHubButton variant="desktopGlow" href={href} />;
 }
 
 function AnnouncementBanner({ className = "" }: { className?: string }) {
@@ -226,8 +231,8 @@ function AnnouncementBanner({ className = "" }: { className?: string }) {
 }
 
 export function GitHubBanner({
-  href = "https://github.com/thesysdev/openui",
-  label = "Star us on Github",
+  href = DEFAULT_GITHUB_REPO_URL,
+  label,
   className = "",
 }: {
   href?: string;
@@ -235,20 +240,19 @@ export function GitHubBanner({
   className?: string;
 }) {
   return (
-    <a
+    <GitHubButton
+      variant="mobileBanner"
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
+      label={label}
       className={`${styles.heroBanner} ${styles.mobileGithubButton} ${className}`.trim()}
-    >
-      <span className={styles.heroBannerLead}>
-        <span aria-hidden="true" className={styles.heroBannerIcon}>
-          <GitHubIcon />
-        </span>
-        <span>{label}</span>
-      </span>
-      <TrailingArrow />
-    </a>
+      classes={{
+        lead: styles.heroBannerLead,
+        icon: styles.heroBannerIcon,
+        count: styles.mobileGithubCount,
+        stars: styles.mobileGithubStars,
+      }}
+      arrow={<TrailingArrow />}
+    />
   );
 }
 
@@ -263,7 +267,10 @@ function DesktopHero({
   commandLabel,
   secondaryCommand,
   secondaryCommandLabel,
+  commandSlot,
   compact,
+  align,
+  smallSubtitle,
   showBanner,
   showPlaygroundButton,
   githubRepoUrl,
@@ -275,7 +282,10 @@ function DesktopHero({
   commandLabel?: string;
   secondaryCommand?: string;
   secondaryCommandLabel?: string;
+  commandSlot?: ReactNode;
   compact: boolean;
+  align: "center" | "left";
+  smallSubtitle: boolean;
   showBanner: boolean;
   showPlaygroundButton: boolean;
   githubRepoUrl?: string;
@@ -284,47 +294,54 @@ function DesktopHero({
   // The shadow-room class compensates for the absent secondary CTA — only
   // applied when both the playground button AND the GitHub button are off.
   const hasSecondaryCta = showPlaygroundButton || !!githubRepoUrl;
-  const [platform, setPlatform] = useState<CommandPlatform>("macos");
-  const activeCommand = platform === "windows" && secondaryCommand ? secondaryCommand : command;
+  const isLeft = align === "left";
 
   return (
-    <div className={styles.desktopHero}>
-      <div className={styles.desktopHeroInner}>
-        <div className={styles.desktopHeroLockup}>
+    <div className={`${styles.desktopHero} ${smallSubtitle ? styles.desktopHeroTight : ""}`.trim()}>
+      <div
+        className={`${styles.desktopHeroInner} ${isLeft ? styles.desktopHeroInnerLeft : ""}`.trim()}
+      >
+        <div
+          className={`${styles.desktopHeroLockup} ${
+            isLeft ? styles.desktopHeroLockupLeft : ""
+          }`.trim()}
+        >
           {showBanner && <AnnouncementBanner />}
           <h1
-            className={`${styles.desktopTitle} ${compact ? styles.desktopTitleCompact : ""}`.trim()}
+            className={`${styles.desktopTitle} ${compact ? styles.desktopTitleCompact : ""} ${
+              isLeft ? styles.desktopTitleLeft : ""
+            }`.trim()}
           >
             {title}
           </h1>
-          <p className={styles.desktopSubtitle}>{subtitle}</p>
+          <p
+            className={`${styles.desktopSubtitle} ${
+              isLeft ? styles.desktopSubtitleLeft : ""
+            } ${smallSubtitle ? styles.desktopSubtitleSmall : ""}`.trim()}
+          >
+            {subtitle}
+          </p>
         </div>
 
         <div
           className={`${styles.desktopCtaStack} ${
             !hasSecondaryCta ? styles.desktopCtaStackShadowRoom : ""
-          }`.trim()}
+          } ${isLeft ? styles.desktopCtaStackLeft : ""}`.trim()}
         >
+          {isLeft && githubRepoUrl && <DesktopGithubStarButton href={githubRepoUrl} />}
           <div className={styles.commandGroup}>
-            {secondaryCommand ? (
-              <div className={styles.commandUnit}>
-                <CommandTabs
-                  platform={platform}
-                  setPlatform={setPlatform}
-                  secondaryCommand={secondaryCommand}
-                />
-                <div className={styles.commandItem}>
-                  <NpmButton command={activeCommand} />
-                </div>
-              </div>
+            {commandSlot ? (
+              commandSlot
             ) : (
               <div className={styles.commandItem}>
-                <NpmButton command={activeCommand} />
+                <NpmButton command={command} />
               </div>
             )}
           </div>
           {showPlaygroundButton && <DesktopPlaygroundButton />}
-          {githubRepoUrl && <DesktopGithubButton href={githubRepoUrl} label={githubButtonLabel} />}
+          {!isLeft && githubRepoUrl && (
+            <DesktopGithubButton href={githubRepoUrl} label={githubButtonLabel} />
+          )}
         </div>
       </div>
     </div>
@@ -343,12 +360,15 @@ function MobileHero({
   commandLabel,
   secondaryCommand,
   secondaryCommandLabel,
+  commandSlot,
   compact,
+  smallSubtitle,
   showBanner,
   showPlaygroundButton,
   showGitHubBanner,
   githubRepoUrl,
   mobileImageOverride,
+  mobileImageOverrideDark,
   mobileImageAlt,
   mobileImageWidth,
   mobileImageHeight,
@@ -361,12 +381,15 @@ function MobileHero({
   commandLabel?: string;
   secondaryCommand?: string;
   secondaryCommandLabel?: string;
+  commandSlot?: ReactNode;
   compact: boolean;
+  smallSubtitle: boolean;
   showBanner: boolean;
   showPlaygroundButton: boolean;
   showGitHubBanner: boolean;
   githubRepoUrl?: string;
   mobileImageOverride?: string;
+  mobileImageOverrideDark?: string;
   mobileImageAlt?: string;
   mobileImageWidth?: number;
   mobileImageHeight?: number;
@@ -374,8 +397,13 @@ function MobileHero({
 }) {
   const [platform, setPlatform] = useState<CommandPlatform>("macos");
   const activeCommand = platform === "windows" && secondaryCommand ? secondaryCommand : command;
-  const mobileHeroImage =
-    mobileImageOverride ?? (theme === "dark" ? MOBILE_HERO_IMAGE.dark : MOBILE_HERO_IMAGE.light);
+  const mobileHeroImage = mobileImageOverride
+    ? theme === "dark"
+      ? (mobileImageOverrideDark ?? mobileImageOverride)
+      : mobileImageOverride
+    : theme === "dark"
+      ? MOBILE_HERO_IMAGE.dark
+      : MOBILE_HERO_IMAGE.light;
 
   const naturalWidth = mobileImageWidth ?? MOBILE_HERO_IMAGE.width;
   const naturalHeight = mobileImageHeight ?? MOBILE_HERO_IMAGE.height;
@@ -396,37 +424,56 @@ function MobileHero({
 
           <div className={styles.mobileBrandGroup}>
             <p
-              className={`${styles.mobileTitle} ${compact ? styles.mobileTitleCompact : ""}`.trim()}
+              className={`${styles.mobileTitle} ${
+                compact || smallSubtitle ? styles.mobileTitleCompact : ""
+              }`.trim()}
             >
               {title}
             </p>
           </div>
 
           {/* Subtitle */}
-          <p className={styles.mobileSubtitle}>{subtitle}</p>
+          <p
+            className={`${styles.mobileSubtitle} ${
+              smallSubtitle ? styles.mobileSubtitleSmall : ""
+            }`.trim()}
+          >
+            {subtitle}
+          </p>
         </div>
       </div>
 
       {/* CTA buttons */}
       <div className={styles.mobileCtaStack}>
-        <div className={styles.commandGroup}>
-          <CommandTabs
-            platform={platform}
-            setPlatform={setPlatform}
-            secondaryCommand={secondaryCommand}
-          />
-          <div className={styles.commandItem}>
-            <NpmButton className={styles.mobileCtaButtonWidth} command={activeCommand} />
-          </div>
-        </div>
-        {showPlaygroundButton && <MobilePlaygroundButton className={styles.mobileCtaButtonWidth} />}
         {showGitHubBanner && (
           <GitHubBanner href={githubRepoUrl} className={styles.mobileCtaButtonWidth} />
         )}
+        <div className={styles.commandGroup}>
+          {commandSlot ? (
+            commandSlot
+          ) : (
+            <>
+              <CommandTabs
+                platform={platform}
+                setPlatform={setPlatform}
+                secondaryCommand={secondaryCommand}
+              />
+              <div className={styles.commandItem}>
+                <NpmButton className={styles.mobileCtaButtonWidth} command={activeCommand} />
+              </div>
+            </>
+          )}
+        </div>
+        {showPlaygroundButton && <MobilePlaygroundButton className={styles.mobileCtaButtonWidth} />}
       </div>
 
       {/* Mobile hero image */}
-      <div className={styles.mobileIllustrationViewport} style={viewportStyle}>
+      <div
+        className={`${styles.mobileIllustrationViewport} ${
+          mobileImageOverride ? styles.mobileIllustrationViewportFramed : ""
+        }`.trim()}
+        style={viewportStyle}
+      >
         <img
           src={mobileHeroImage}
           alt={mobileImageAlt ?? "OpenUI mobile hero preview"}
@@ -449,29 +496,42 @@ function MobileHero({
 
 function PreviewImage({
   theme,
+  align,
   desktopImageOverride,
+  desktopImageOverrideDark,
   desktopImageAlt,
   desktopImageWidth,
   desktopImageHeight,
   widePreview,
 }: {
   theme: HeroTheme;
+  align: "center" | "left";
   desktopImageOverride?: string;
+  desktopImageOverrideDark?: string;
   desktopImageAlt?: string;
   desktopImageWidth?: number;
   desktopImageHeight?: number;
   widePreview?: boolean;
 }) {
-  const desktopHeroImage =
-    desktopImageOverride ?? (theme === "dark" ? DESKTOP_HERO_IMAGE.dark : DESKTOP_HERO_IMAGE.light);
+  const desktopHeroImage = desktopImageOverride
+    ? theme === "dark"
+      ? (desktopImageOverrideDark ?? desktopImageOverride)
+      : desktopImageOverride
+    : theme === "dark"
+      ? DESKTOP_HERO_IMAGE.dark
+      : DESKTOP_HERO_IMAGE.light;
 
   return (
     <div
-      className={`${styles.previewSection} ${widePreview ? styles.previewSectionTight : ""}`.trim()}
+      className={`${styles.previewSection} ${widePreview ? styles.previewSectionTight : ""} ${
+        align === "left" ? styles.previewSectionFlush : ""
+      }`.trim()}
     >
       <div className={styles.previewDesktopOnly}>
         <div
-          className={`${styles.previewFrame} ${widePreview ? styles.previewFrameWide : ""}`.trim()}
+          className={`${styles.previewFrame} ${widePreview ? styles.previewFrameWide : ""} ${
+            desktopImageOverride ? styles.previewFrameCustom : ""
+          }`.trim()}
         >
           <img
             src={desktopHeroImage}
@@ -521,10 +581,14 @@ export function HeroSection({
   commandLabel,
   secondaryCommand,
   secondaryCommandLabel,
+  commandSlot,
   compact = false,
+  align = "center",
+  smallSubtitle = false,
   showBanner = true,
   showPlaygroundButton = true,
   desktopPreviewImage,
+  desktopPreviewImageDark,
   desktopPreviewImageAlt,
   desktopPreviewImageWidth,
   desktopPreviewImageHeight,
@@ -536,6 +600,7 @@ export function HeroSection({
   githubRepoUrl,
   githubButtonLabel,
   mobilePreviewImage,
+  mobilePreviewImageDark,
   mobilePreviewImageAlt,
   mobilePreviewImageWidth,
   mobilePreviewImageHeight,
@@ -547,10 +612,18 @@ export function HeroSection({
   commandLabel?: string;
   secondaryCommand?: string;
   secondaryCommandLabel?: string;
+  /** Replaces the default command pill with a custom node (e.g. the OpenClaw split button). */
+  commandSlot?: ReactNode;
   compact?: boolean;
+  /** Horizontal alignment of the desktop hero content (default "center"). */
+  align?: "center" | "left";
+  /** Render the subtitle at a smaller size (sub-product pages like /openclaw-os). */
+  smallSubtitle?: boolean;
   showBanner?: boolean;
   showPlaygroundButton?: boolean;
   desktopPreviewImage?: string;
+  /** Dark-theme variant of the desktop preview image (falls back to the light one). */
+  desktopPreviewImageDark?: string;
   desktopPreviewImageAlt?: string;
   desktopPreviewImageWidth?: number;
   desktopPreviewImageHeight?: number;
@@ -566,12 +639,17 @@ export function HeroSection({
   /** Optional override for the desktop GitHub button label (default: "Star on GitHub"). */
   githubButtonLabel?: string;
   mobilePreviewImage?: string;
+  /** Dark-theme variant of the mobile hero image (falls back to the light one). */
+  mobilePreviewImageDark?: string;
   mobilePreviewImageAlt?: string;
   mobilePreviewImageWidth?: number;
   mobilePreviewImageHeight?: number;
   mobilePreviewImageCropTopPercent?: number;
 } = {}) {
-  const theme: HeroTheme = "light";
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const theme: HeroTheme = mounted && resolvedTheme === "dark" ? "dark" : "light";
 
   return (
     <section className={styles.section}>
@@ -582,7 +660,10 @@ export function HeroSection({
         commandLabel={commandLabel}
         secondaryCommand={secondaryCommand}
         secondaryCommandLabel={secondaryCommandLabel}
+        commandSlot={commandSlot}
         compact={compact}
+        align={align}
+        smallSubtitle={smallSubtitle}
         showBanner={showBanner}
         showPlaygroundButton={showPlaygroundButton}
         githubRepoUrl={githubRepoUrl}
@@ -596,12 +677,15 @@ export function HeroSection({
         commandLabel={commandLabel}
         secondaryCommand={secondaryCommand}
         secondaryCommandLabel={secondaryCommandLabel}
+        commandSlot={commandSlot}
         compact={compact}
+        smallSubtitle={smallSubtitle}
         showBanner={showBanner}
         showPlaygroundButton={showPlaygroundButton}
         showGitHubBanner={showGitHubBanner}
         githubRepoUrl={githubRepoUrl}
         mobileImageOverride={mobilePreviewImage}
+        mobileImageOverrideDark={mobilePreviewImageDark}
         mobileImageAlt={mobilePreviewImageAlt}
         mobileImageWidth={mobilePreviewImageWidth}
         mobileImageHeight={mobilePreviewImageHeight}
@@ -609,7 +693,9 @@ export function HeroSection({
       />
       <PreviewImage
         theme={theme}
+        align={align}
         desktopImageOverride={desktopPreviewImage}
+        desktopImageOverrideDark={desktopPreviewImageDark}
         desktopImageAlt={desktopPreviewImageAlt}
         desktopImageWidth={desktopPreviewImageWidth}
         desktopImageHeight={desktopPreviewImageHeight}

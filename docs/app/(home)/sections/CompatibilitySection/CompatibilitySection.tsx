@@ -1,6 +1,7 @@
 "use client";
 
 import svgPaths from "@/imports/svg-urruvoh2be";
+import { Stack } from "@phosphor-icons/react";
 import { useEffect, useRef, type ReactNode } from "react";
 import {
   StackChip,
@@ -161,7 +162,10 @@ const STACK_ROWS: StackRow[] = [
   },
 ];
 
-export function CompatibilitySection({ title }: { title?: ReactNode } = {}) {
+export function CompatibilitySection({
+  title,
+  embedded = false,
+}: { title?: ReactNode; embedded?: boolean } = {}) {
   const trackRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -207,16 +211,23 @@ export function CompatibilitySection({ title }: { title?: ReactNode } = {}) {
   }, []);
 
   return (
-    <section className={styles.section} aria-labelledby="favorite-stack-title">
+    <section
+      className={styles.section}
+      data-variant={embedded ? "embedded" : undefined}
+      aria-labelledby="favorite-stack-title"
+    >
       <div className={styles.container}>
         <div className={styles.stack}>
           <header className={styles.header}>
+            <span className={styles.titleIcon} aria-hidden="true">
+              <Stack size={18} weight="light" />
+            </span>
             <h2 id="favorite-stack-title" className={styles.title}>
               {title ?? (
                 <>
                   Works with your stack.
                   <br />
-                  Any LLM, UI library, and framework.
+                  <span className={styles.titleAccent}>Any LLM, UI library, and framework.</span>
                 </>
               )}
             </h2>
@@ -243,7 +254,7 @@ export function CompatibilitySection({ title }: { title?: ReactNode } = {}) {
                       className={styles.chips}
                     >
                       {loopedItems.map(({ item, key }) => (
-                        <StackChip key={key} item={item} />
+                        <StackChip key={key} item={item} dense={embedded} />
                       ))}
                     </div>
                   </div>

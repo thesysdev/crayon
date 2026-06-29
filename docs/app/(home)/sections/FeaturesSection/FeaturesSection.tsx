@@ -41,39 +41,29 @@ function SvgPathIcon({ path, index }: { path: string; index: number }) {
 
 const DEFAULT_FEATURES: FeatureListItem[] = [
   {
-    title: "Performance Optimized",
-    description: "3x faster rendering than json-render",
-    icon: <SvgPathIcon path={svgPaths.p7658f00} index={0} />,
-  },
-  {
-    title: "Token efficient",
-    description: "Up to 67.1% lesser tokens than json-render",
-    icon: <SvgPathIcon path={svgPaths.p2a8ddd80} index={1} />,
-  },
-  {
     title: "Live data",
     description: "Query your tools and MCP servers at runtime",
-    icon: <SvgPathIcon path={svgPaths.p10e86100} index={2} />,
+    icon: <SvgPathIcon path={svgPaths.p10e86100} index={0} />,
   },
   {
     title: "Works across platforms",
     description: "React, React Native, Vue, etc",
-    icon: <SvgPathIcon path={svgPaths.p2cbb5d00} index={3} />,
+    icon: <SvgPathIcon path={svgPaths.p2cbb5d00} index={1} />,
   },
   {
     title: "Native Streaming",
     description: "UI renders in real time",
-    icon: <SvgPathIcon path={svgPaths.p33780400} index={4} />,
+    icon: <SvgPathIcon path={svgPaths.p33780400} index={2} />,
   },
   {
     title: "Interactive",
     description: "Reactive state, inputs, and tool-connected actions",
-    icon: <SvgPathIcon path={svgPaths.p17c7f700} index={5} />,
+    icon: <SvgPathIcon path={svgPaths.p17c7f700} index={3} />,
   },
   {
     title: "Safe by Default",
     description: "No arbitrary code execution",
-    icon: <SvgPathIcon path={svgPaths.p16eec200} index={6} />,
+    icon: <SvgPathIcon path={svgPaths.p16eec200} index={4} />,
   },
 ];
 
@@ -125,21 +115,23 @@ export function FeaturesSection({
   return (
     <div className={styles.section}>
       <div className={styles.container}>
-        <FeatureList items={features} />
-
         {showCta && (
-          <div className={styles.ctaWrap}>
-            <PillLink
-              href="/docs/openui-lang/benchmarks"
-              className={`${styles.ctaLink} ${styles.ctaButton}`}
-            >
-              <span>
-                <span className={styles.mobileLabel}>Detailed comparison</span>
-                <span className={styles.desktopLabel}>View Comparison</span>
-              </span>
-            </PillLink>
+          <div className={styles.header}>
+            <h2 className={styles.title}>Renders 3 times faster</h2>
+            <p className={styles.subtitle}>With 67% fewer tokens</p>
+            <p className={styles.caption}>when compared to JSON-Render</p>
+            <div className={styles.ctaWrap}>
+              <PillLink
+                href="/docs/openui-lang/benchmarks"
+                className={`${styles.ctaLink} ${styles.ctaButton}`}
+              >
+                <span>View benchmarks</span>
+              </PillLink>
+            </div>
           </div>
         )}
+
+        <FeatureList items={features} />
       </div>
     </div>
   );

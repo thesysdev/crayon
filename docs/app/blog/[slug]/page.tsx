@@ -1,4 +1,4 @@
-import { PillLink } from "@/app/(home)/components/Button/Button";
+import { GitHubButton } from "@/app/(home)/components/GitHubButton/GitHubButton";
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
 import { blog } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
@@ -6,14 +6,6 @@ import { TOCItem, TOCItems } from "fumadocs-ui/components/toc/default";
 import { TOCProvider, TOCScrollArea } from "fumadocs-ui/components/toc";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-
-function BlogGithubIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-current">
-      <path d="M12 1.5a10.5 10.5 0 0 0-3.32 20.46c.53.1.72-.23.72-.51v-1.8c-2.92.64-3.53-1.24-3.53-1.24-.48-1.22-1.17-1.55-1.17-1.55-.95-.66.07-.65.07-.65 1.06.07 1.62 1.08 1.62 1.08.93 1.6 2.45 1.14 3.05.87.09-.68.36-1.14.66-1.4-2.33-.27-4.77-1.16-4.77-5.18 0-1.14.4-2.07 1.08-2.8-.11-.26-.47-1.35.1-2.81 0 0 .88-.28 2.89 1.07a10.08 10.08 0 0 1 5.27 0c2-1.35 2.88-1.07 2.88-1.07.58 1.46.22 2.55.11 2.81.68.73 1.08 1.66 1.08 2.8 0 4.03-2.45 4.91-4.79 5.17.38.33.71.97.71 1.96v2.91c0 .28.19.62.73.51A10.5 10.5 0 0 0 12 1.5Z" />
-    </svg>
-  );
-}
 
 export default async function BlogPostPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
@@ -24,9 +16,11 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
 
   return (
     <TOCProvider toc={page.data.toc}>
-      {/* Blend from the menu bar's surface color into the page background, then back into the footer's surface */}
-      <div className="min-h-screen bg-[linear-gradient(to_bottom,var(--openui-foreground),var(--openui-background)_10rem,var(--openui-background)_calc(100%_-_10rem),var(--openui-foreground))]">
-      <main className="mx-auto flex w-full max-w-[1200px] gap-4 px-4 pt-16 pb-40 lg:gap-28 lg:pr-8 min-[1249px]:pl-0 min-[1024px]:max-[1248px]:pl-8">
+      {/* Blend from the menu bar's surface color into a gray band, then back into the
+          footer's surface — matching the home content band (light: foreground->background->foreground;
+          dark: black -> neutral-950 -> black, so the edges meet the black menu + footer). */}
+      <div className="min-h-screen bg-[linear-gradient(to_bottom,var(--openui-foreground),var(--openui-background)_10rem,var(--openui-background)_calc(100%_-_10rem),var(--openui-foreground))] [[data-theme=dark]_&]:bg-[linear-gradient(to_bottom,#000,var(--swatch-neutral-950)_28rem,var(--swatch-neutral-950)_calc(100%_-_28rem),#000)]">
+      <main className="mx-auto flex w-full max-w-[var(--home-container-wide)] gap-4 px-4 pt-16 pb-40 lg:gap-28 lg:pr-8 min-[1249px]:pl-0 min-[1024px]:max-[1248px]:pl-8">
         <aside className="hidden w-56 shrink-0 lg:block">
           <div className="sticky top-24">
             <p className="mb-3 text-sm font-medium text-fd-foreground">On this page</p>
@@ -41,9 +35,13 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
         </aside>
 
         <div className="min-w-0 flex-1">
-          <h1 className="mb-2 text-3xl font-bold">{page.data.title}</h1>
-          <p className="mb-4 text-fd-muted-foreground">{page.data.description}</p>
-          <div className="flex items-center gap-3 border-b pb-6 text-sm text-fd-muted-foreground">
+          <h1 className="mb-2 text-[length:var(--home-title-size)] font-[family-name:var(--home-font-display)] font-medium leading-[var(--home-title-leading)] tracking-[var(--home-title-tracking)] text-[color:var(--openui-text-neutral-primary)]">
+            {page.data.title}
+          </h1>
+          <p className="mb-4 text-[length:var(--home-lead-size)] font-[family-name:var(--home-font-text)] leading-[var(--home-lead-leading)] text-[color:var(--openui-text-neutral-secondary)]">
+            {page.data.description}
+          </p>
+          <div className="flex items-center gap-3 border-b border-[color:var(--home-hairline)] pb-6 text-[length:var(--home-body-size)] font-[family-name:var(--home-font-text)] text-[color:var(--openui-text-neutral-tertiary)]">
             <span>{page.data.author}</span>
             <span>&middot;</span>
             <time>{new Date(page.data.date).toDateString()}</time>
@@ -51,15 +49,8 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
           <article className="prose mt-8 min-w-0">
             <Mdx components={getMDXComponents()} />
           </article>
-          <div className="mt-12 border-t pt-8">
-            <PillLink
-              href="https://github.com/thesysdev/openui"
-              external
-              className="inline-flex h-12 items-center gap-2 rounded-full bg-black px-5 text-[15px] font-medium text-white no-underline transition-colors duration-200 hover:bg-black/85 dark:bg-white dark:text-black dark:hover:bg-white/85"
-            >
-              <BlogGithubIcon />
-              <span>Star us on GitHub</span>
-            </PillLink>
+          <div className="mt-12 border-t border-[color:var(--home-hairline)] pt-8">
+            <GitHubButton variant="desktopGlow" />
           </div>
         </div>
       </main>

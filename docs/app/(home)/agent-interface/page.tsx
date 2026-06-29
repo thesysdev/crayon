@@ -3,26 +3,26 @@ import {
   FileText,
   LayoutDashboard,
   Puzzle,
-  Sparkles,
   SlidersHorizontal,
+  Sparkles,
 } from "lucide-react";
-import type { ComponentType, SVGProps } from "react";
 import type { Metadata } from "next";
+import type { ComponentType, SVGProps } from "react";
+import { SectionHeader } from "../components/SectionHeader/SectionHeader";
 import homeStyles from "../page.module.css";
-import { Footer } from "../sections/Footer/Footer";
-import { GradientDivider } from "../sections/GradientDivider/GradientDivider";
+import { AgentInterfaceBanner } from "../sections/AgentInterfaceBanner/AgentInterfaceBanner";
 import { CompatibilitySection } from "../sections/CompatibilitySection/CompatibilitySection";
+import { Footer } from "../sections/Footer/Footer";
 import {
   DesktopGithubButton,
   GitHubBanner,
+  HeroSection,
   NpmButton,
-  Tagline,
 } from "../sections/HeroSection/HeroSection";
 import heroStyles from "../sections/HeroSection/HeroSection.module.css";
-import { ShiroMascot } from "../sections/ShiroMascot/ShiroMascot";
 import { AgentFeatures } from "./AgentFeatures";
 import { AgentSteps } from "./AgentSteps";
-import { HeroPreview } from "./HeroPreview";
+import styles from "./page.module.css";
 
 const FEATURE_CARDS: { title: string; image?: string }[] = [
   { title: "Threads", image: "/agent-interface/Threads.png" },
@@ -64,13 +64,11 @@ const WIDE_FEATURES: WideFeature[] = [
   },
   {
     title: "Responsive by default",
-    description:
-      "Your AI workspace adjusts cleanly across devices, layouts, and screen sizes.",
+    description: "Your AI workspace adjusts cleanly across devices, layouts, and screen sizes.",
     Icon: Boxes,
     image: "/agent-interface/responsivebydefault.png",
   },
 ];
-import styles from "./page.module.css";
 
 const AGENT_INTERFACE_DESCRIPTION =
   "An open-source production-ready AI-native workspace where your users can ask, generate, create, and act.";
@@ -104,64 +102,57 @@ export const metadata: Metadata = {
 export default function AgentInterfacePage() {
   return (
     <main className={styles.page}>
-      <section className={styles.heroSection}>
-        <div className={styles.heroInner}>
-          <div className={styles.heroCopy}>
-            <h1 className={styles.title}>AI-native interface for your SaaS.</h1>
-            <p className={styles.subtitle}>
-              An open-source production-ready AI-native workspace
-              <br className={styles.responsiveBreak} />
-              where your users can ask, generate, create, and act.
-            </p>
-            <div className={styles.heroActions}>
-              <NpmButton
-                className={heroStyles.mobileCtaButtonWidth}
-                command={INSTALL_COMMAND}
-              />
-              <GitHubBanner
-                href={GITHUB_URL}
-                label="Star us on Github"
-                className={`${styles.heroGithubMobile} ${heroStyles.mobileCtaButtonWidth}`}
-              />
-              <DesktopGithubButton
-                href={GITHUB_URL}
-                label="Star us on Github"
-                className={styles.heroGithubDesktop}
-              />
-            </div>
-          </div>
-        </div>
-
-        <HeroPreview
-          desktopImage={DESKTOP_PREVIEW_IMAGE}
-          desktopWidth={DESKTOP_PREVIEW_WIDTH}
-          desktopHeight={DESKTOP_PREVIEW_HEIGHT}
-          mobileImage={MOBILE_PREVIEW_IMAGE}
-          mobileWidth={MOBILE_PREVIEW_WIDTH}
-          mobileHeight={MOBILE_PREVIEW_HEIGHT}
+      <div className={homeStyles.heroShell}>
+        <HeroSection
+          title="Agent interface"
+          subtitle={
+            <>
+              An open-source, production-ready workspace{" "}
+              <br className={heroStyles.taglineBreak} />
+              for your AI-native product.
+            </>
+          }
+          command={INSTALL_COMMAND}
+          align="left"
+          smallSubtitle
+          showBanner={false}
+          showPlaygroundButton={false}
+          showGitHubBanner={false}
+          desktopPreviewImage={DESKTOP_PREVIEW_IMAGE}
+          desktopPreviewImageAlt="Agent Interface workspace"
+          desktopPreviewImageWidth={DESKTOP_PREVIEW_WIDTH}
+          desktopPreviewImageHeight={DESKTOP_PREVIEW_HEIGHT}
+          mobilePreviewImage={MOBILE_PREVIEW_IMAGE}
+          mobilePreviewImageWidth={MOBILE_PREVIEW_WIDTH}
+          mobilePreviewImageHeight={MOBILE_PREVIEW_HEIGHT}
+          showTagline
+          tagline={
+            <>
+              SaaS 1.0 was built around static screens.{" "}
+              <br className={heroStyles.taglineBreak} />
+              SaaS 2.0 will be built around intent-based UI generation.{" "}
+              <br className={heroStyles.taglineBreak} />
+              Agent Interface is the surface built for this new age of software.
+            </>
+          }
         />
-
-        <Tagline compact>
-          SaaS 1.0 was built around static screens.{" "}
-          <br className={heroStyles.taglineBreak} />
-          SaaS 2.0 will be built around intent-based UI generation.{" "}
-          <br className={heroStyles.taglineBreak} />
-          Agent Interface is the surface built for this new age of software.
-        </Tagline>
-      </section>
-
-      <ShiroMascot />
+      </div>
 
       <div className={homeStyles.contentSection}>
         <div className={homeStyles.contentShell}>
+          <AgentInterfaceBanner />
           <section className={styles.featureCards}>
             <div className={styles.featureCardsHeader}>
-              <h2 className={styles.featureCardsTitle}>Complete interface, Batteries included.</h2>
-              <p className={styles.featureCardsDescription}>
-                All the interface primitives your AI product needs,
-                <br className={styles.responsiveBreak} />
-                packaged into one workspace your users love.
-              </p>
+              <SectionHeader
+                title="Complete interface, Batteries included."
+                subtitle={
+                  <>
+                    All the interface primitives your AI product needs,
+                    <br className={styles.responsiveBreak} />
+                    packaged into one workspace your users love.
+                  </>
+                }
+              />
             </div>
             <div className={styles.featureCardsGrid}>
               {FEATURE_CARDS.map(({ title, image }) => (
@@ -205,16 +196,18 @@ export default function AgentInterfacePage() {
 
           <section className={styles.agentSteps}>
             <div className={styles.agentStepsHeader}>
-              <h2 className={styles.agentStepsTitle}>Use cases across modern SaaS</h2>
-              <p className={styles.agentStepsDescription}>
-                Bring agent-led workflows without rebuilding your product experience.
-              </p>
+              <SectionHeader
+                title="Use cases across modern SaaS"
+                subtitle="Bring agent-led workflows without rebuilding your product experience."
+              />
             </div>
             <AgentSteps />
           </section>
 
           <section className={styles.ctaSection}>
-            <h2 className={styles.ctaTitle}>Make your product AI-native today</h2>
+            <div className={styles.ctaHeader}>
+              <SectionHeader title="Make your product AI-native today" />
+            </div>
             <div className={styles.ctaCardsWrap}>
               <article className={styles.ctaCard}>
                 <span className={styles.ctaCardIcon} aria-hidden="true">
@@ -239,10 +232,7 @@ export default function AgentInterfacePage() {
               </article>
             </div>
             <div className={styles.ctaActions}>
-              <NpmButton
-                className={heroStyles.mobileCtaButtonWidth}
-                command={INSTALL_COMMAND}
-              />
+              <NpmButton className={heroStyles.mobileCtaButtonWidth} command={INSTALL_COMMAND} />
               <GitHubBanner
                 href={GITHUB_URL}
                 label="Star us on Github"
@@ -256,7 +246,6 @@ export default function AgentInterfacePage() {
             </div>
           </section>
         </div>
-        <GradientDivider direction="up" compact />
       </div>
 
       <Footer />

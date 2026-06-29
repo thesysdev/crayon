@@ -17,11 +17,90 @@
   --home-shadow-panel: var(--shadow-xl);
   --home-radius-pill: 999px;
   --home-pill-padding-inline: 1.25rem;
+
+  /* Layout container */
+  --home-container-max: 75rem;
+  --home-container-wide: 90rem;
   --home-section-padding-inline: 1.25rem;
+
+  /* Marketing surfaces / borders / shadows */
+  --home-surface-ink: #0a0a0a;
+  --home-surface-raised: #f7f7f8;
+  --home-border-on-dark: rgba(255, 255, 255, 0.14);
+  --home-shadow-card: 0 1px 2px rgba(22, 34, 51, 0.06), 0 1px 1px rgba(22, 34, 51, 0.04);
+  /* Soft lifted shadow shared by the marketing cards (blog, projects, use-case
+     accordion, OpenClaw cards) — tune here to change all of them at once. */
+  --home-card-lift: 0 6px 24px rgba(22, 34, 51, 0.015);
+  --home-bevel: inset 0 2px 1px -0.5px rgba(255, 255, 255, 1), inset 0 -3px 6px -1px rgba(0, 0, 0, 0.04);
+  --home-bevel-on-dark: inset 0 7px 12px -6px rgba(255, 255, 255, 0.1), inset 0 -5px 8px -2px rgba(0, 0, 0, 0.6);
+  --home-hairline: rgba(0, 0, 0, 0.09);
+
+  /* Type families (role-based, not per-element) */
+  --home-font-display: "Inter Display", "Inter", sans-serif;
+  --home-font-text: "Inter", "Segoe UI", sans-serif;
+  --home-font-mono: var(--font-geist-mono), monospace;
+
+  /* Type scale — single source of truth. Each role redefines its size/weight/
+     tracking on mobile in the media query below, so the responsive type logic
+     lives here once instead of in every section. */
+
+  /* Section title (h2) */
+  --home-title-size: clamp(1.875rem, 4vw, 2.5rem);
+  --home-title-weight: 500;
+  --home-title-tracking: -1px;
+  --home-title-leading: 1.2;
+
+  /* Feature / step / card heading (h3) */
+  --home-heading-size: 1.375rem;
+  --home-heading-weight: 500;
+  --home-heading-tracking: -0.2px;
+  --home-heading-leading: 1.3;
+
+  /* Lead text (section subtitle / description under a title) */
+  --home-lead-size: 1.0625rem;
+  --home-lead-weight: 400;
+  --home-lead-leading: 1.5;
+
+  /* Body / caption */
+  --home-body-size: 0.9375rem;
+  --home-body-weight: 400;
+  --home-body-leading: 1.5;
+
+  /* Eyebrow / label / badge */
+  --home-label-size: 0.75rem;
+  --home-label-weight: 500;
+
+  /* Vertical rhythm: title block → section body */
+  --home-header-gap: clamp(2.5rem, 5vw, 3.5rem);
 }
 
 @media (min-width: 1024px) {
   .homeTheme {
     --home-section-padding-inline: 2rem;
   }
+}
+
+/* Mobile (phones): collapse to the 3-size scale (hero / title / content). The
+   only place the type breakpoint is declared. */
+@media (max-width: 767px) {
+  .homeTheme {
+    --home-title-size: 1.5rem;
+    --home-title-weight: 400;
+    --home-title-tracking: -0.5px;
+
+    --home-heading-size: 1rem;
+    --home-heading-weight: 400;
+    --home-heading-tracking: 0;
+
+    --home-lead-size: 1rem;
+    --home-body-size: 1rem;
+
+    --home-header-gap: 1.75rem;
+  }
+}
+
+/* Dark mode: flip the few hardcoded marketing surfaces/hairlines that don't ride
+   on the --openui-* / --text-* tokens (those adapt automatically). */
+[data-theme="dark"] .homeTheme {
+  --home-hairline: rgba(255, 255, 255, 0.07);
 }

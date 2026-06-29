@@ -1,7 +1,5 @@
 "use client";
 
-import mascotSvgPaths from "@/imports/svg-kl5jpwq8km";
-import mascotDarkSvgPaths from "@/imports/svg-mascot-dark";
 import svgPaths from "@/imports/svg-urruvoh2be";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
@@ -86,7 +84,6 @@ export function ThesysLogo({
 
 export function OpenUILogo({ variant = "light" }: { variant?: LogoVariant }) {
   const isDark = variant === "dark";
-  const color = isDark ? "white" : "black";
   const textClass = isDark
     ? "font-['Geist',sans-serif] font-semibold text-[15px] text-white leading-6"
     : "font-['Geist',sans-serif] font-semibold text-[15px] text-black leading-6";
@@ -95,66 +92,13 @@ export function OpenUILogo({ variant = "light" }: { variant?: LogoVariant }) {
     <Link href="/" className="flex items-center gap-0.5 no-underline">
       {/* Shiro mascot */}
       <div className="relative shrink-0 size-8">
-        {isDark ? (
-          <svg
-            className="absolute block"
-            style={{ inset: "0" }}
-            fill="none"
-            preserveAspectRatio="xMidYMid meet"
-            viewBox="0 0 33 32"
-          >
-            <path d={mascotDarkSvgPaths.pBody} fill="white" />
-            <path
-              d={mascotDarkSvgPaths.pOutline}
-              fill="#464646"
-              stroke="#464646"
-              strokeWidth="0.3"
-            />
-            <path d={mascotDarkSvgPaths.pMouth} fill="#464646" />
-            <path
-              d={mascotDarkSvgPaths.pEarLeft}
-              fill="#464646"
-              stroke="#464646"
-              strokeWidth="0.3"
-            />
-            <path
-              d={mascotDarkSvgPaths.pEarRight}
-              fill="#464646"
-              stroke="#464646"
-              strokeWidth="0.3"
-            />
-            <path d={mascotDarkSvgPaths.pEyeLeft} fill="#464646" />
-            <path d={mascotDarkSvgPaths.pEyeRight} fill="#464646" />
-            <path
-              d={mascotDarkSvgPaths.pHornLeft}
-              fill="#464646"
-              stroke="#464646"
-              strokeWidth="0.3"
-            />
-            <path
-              d={mascotDarkSvgPaths.pHornRight}
-              fill="#464646"
-              stroke="#464646"
-              strokeWidth="0.3"
-            />
-          </svg>
-        ) : (
-          <svg
-            className="absolute block"
-            style={{ inset: "9.29% 0 10% 0" }}
-            fill="none"
-            preserveAspectRatio="xMidYMid meet"
-            viewBox="0 0 32.6 26.43"
-          >
-            <path d={mascotSvgPaths.p30a6b580} fill={color} stroke={color} strokeWidth="0.3" />
-            <path d={mascotSvgPaths.p3c631dc0} fill={color} />
-            <path d={mascotSvgPaths.p310be380} fill={color} stroke={color} strokeWidth="0.3" />
-            <path d={mascotSvgPaths.p41b57c8} fill={color} stroke={color} strokeWidth="0.3" />
-            <path d={mascotSvgPaths.p13c7e180} fill={color} />
-            <path d={mascotSvgPaths.p2ab36c00} fill={color} />
-            <path d={mascotSvgPaths.p1c9f7d00} fill={color} stroke={color} strokeWidth="0.3" />
-          </svg>
-        )}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/shiro-logo.svg"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 block size-full object-contain"
+        />
       </div>
       <span className={textClass}>OpenUI</span>
     </Link>

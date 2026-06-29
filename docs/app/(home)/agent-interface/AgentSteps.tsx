@@ -18,6 +18,12 @@ function createVideoIllustration(src: string) {
       if (Number.isFinite(ratio) && ratio > 0) {
         parent.style.aspectRatio = String(ratio);
         parent.style.height = "auto";
+        // On mobile the scale wrapper sits inside a fixed-aspect frame; match the
+        // frame to the video's ratio so it hugs the video with no empty space.
+        if (parent.className.includes("mobileIllustrationScale")) {
+          const frame = parent.parentElement;
+          if (frame) frame.style.aspectRatio = String(ratio);
+        }
       }
     };
 
@@ -86,6 +92,9 @@ const AGENT_STEPS: StepsAccordionItem[] = [
   },
 ];
 
-export function AgentSteps() {
-  return <StepsAccordion steps={AGENT_STEPS} />;
+export function AgentSteps({
+  autoAdvance = false,
+  variant,
+}: { autoAdvance?: boolean; variant?: "useCases" } = {}) {
+  return <StepsAccordion steps={AGENT_STEPS} autoAdvance={autoAdvance} variant={variant} />;
 }

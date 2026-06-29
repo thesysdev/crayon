@@ -1,117 +1,110 @@
 .root {
-  --tweet-wall-height: 48rem;
   position: relative;
   width: 100%;
-  height: var(--tweet-wall-height);
-  min-height: var(--tweet-wall-height);
+  height: 40rem;
   overflow: hidden;
-  --tweet-wall-mask: linear-gradient(
+  /* Fade the top and bottom edges. */
+  -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0,
-    #000 4.5rem,
-    #000 calc(100% - 4.5rem),
+    #000 3.5rem,
+    #000 calc(100% - 3.5rem),
     transparent 100%
   );
-  -webkit-mask-image: var(--tweet-wall-mask);
-  mask-image: var(--tweet-wall-mask);
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 3.5rem,
+    #000 calc(100% - 3.5rem),
+    transparent 100%
+  );
+  /* Stay hidden until every embed resolves, so the load never flickers in view. */
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.ready {
+  opacity: 1;
 }
 
 .columns {
   display: flex;
-  gap: 1rem;
-  align-items: stretch;
   justify-content: center;
-  height: var(--tweet-wall-height);
-  padding-block: 0.25rem;
+  gap: 0.75rem;
+  height: 100%;
 }
 
-.columnViewport {
-  position: relative;
+/* Desktop columns fill the wall; mobile columns are a fixed width and overflow,
+   so the side columns peek in (more-tweets effect). */
+.column {
   flex: 1 1 0;
   min-width: 0;
+  height: 100%;
   overflow: hidden;
 }
 
-.columnTrack {
+/* Pure-CSS marquee: two identical copies, slide up by exactly one copy. No JS
+   measurement, so it cannot drift or jump as embeds load. */
+.track {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   width: 100%;
   will-change: transform;
-  transform: translate3d(0, var(--loop-start, 0px), 0);
-  animation-name: tweetWallLoop;
-  animation-duration: var(--loop-duration, 32s);
+  animation-name: tweetScroll;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  animation-fill-mode: both;
-  animation-play-state: paused;
 }
 
-.embedSlot {
+.slot {
   width: 100%;
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  min-height: 12rem;
-  border-radius: 16px;
+  margin-bottom: 0.75rem;
+  border-radius: 12px;
   overflow: hidden;
 }
 
-.embedSlot[data-embedded="pending"] {
-  background: var(--openui-foreground);
-  border: 1px solid var(--openui-border-default);
-  box-shadow: var(--openui-shadow-m);
-}
-
-.embedSlot[data-embedded="error"] {
-  min-height: 0;
-}
-
-.embedSlot :global(iframe) {
+.slot :global(iframe) {
   width: 100% !important;
   max-width: 100% !important;
+  margin: 0 !important;
   border-radius: 12px !important;
 }
 
-.rootReady .columnTrack {
-  animation-play-state: running;
-}
 
-/* --- Reduced motion --- */
-
-.staticGrid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: 1fr;
-  padding-block: 0.5rem;
-}
-
-.staticCell {
-  min-width: 0;
-}
-
-@media (min-width: 640px) {
-  .staticGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .columns {
-    gap: 1.25rem;
-  }
-
-  .staticGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@keyframes tweetWallLoop {
-  from {
-    transform: translate3d(0, var(--loop-start, 0px), 0);
-  }
-
+@keyframes tweetScroll {
   to {
-    transform: translate3d(0, calc(var(--loop-start, 0px) - var(--loop-distance, 0px)), 0);
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+}
+
+@media (max-width: 899px) {
+  /* Full-bleed: break out of the section's 1.25rem side padding so the wall
+     reaches both screen edges (the side columns peek right up to the edge). */
+  .root {
+    width: calc(100% + 2.5rem);
+    margin-inline: -1.25rem;
+  }
+
+  .columns {
+    gap: 0.5rem;
+  }
+
+  .column {
+    flex: 0 0 200px;
+  }
+
+  /* Twitter won't render an embed narrower than 250px, so render at 250 (no
+     cropping) and scale the whole card down with zoom. Unlike transform, zoom
+     shrinks the layout box too, so columns stay tight and the loop has no gaps.
+     250 * 0.8 = 200, matching the column width. */
+  .slot {
+    width: 250px;
+    zoom: 0.8;
+    margin-bottom: 0.625rem;
   }
 }

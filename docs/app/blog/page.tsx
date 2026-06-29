@@ -1,6 +1,36 @@
 import { blog } from "@/lib/source";
+import { ArrowUpRight, ImageIcon } from "lucide-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
+import { PageHero, PageHeroAccent } from "../(home)/components/PageHero/PageHero";
 import { Footer } from "../(home)/sections/Footer/Footer";
+import styles from "./page.module.css";
+
+type BlogCardData = {
+  href: string;
+  title: string;
+  description?: string;
+  author: string;
+  date: string | Date;
+  featured: boolean;
+  external: boolean;
+  tag?: string;
+  image?: string;
+};
+
+// Community / external posts that don't live in the local content source.
+const COMMUNITY_CARDS: BlogCardData[] = [
+  {
+    href: "https://azukiazusa.dev/blog/openui-framework-for-generative-ui/",
+    title: "Generative UI のためのフレームワーク OpenUI",
+    author: "azukiazusa1",
+    date: "2026-05-16",
+    featured: false,
+    external: true,
+    tag: "Community",
+    image: "/images/blog/community-japan.png",
+  },
+];
 
 function formatDate(date: string | Date) {
   return new Date(date).toLocaleDateString("en-US", {
@@ -10,58 +40,155 @@ function formatDate(date: string | Date) {
   });
 }
 
+// Matches the project card title: heading tokens for size/tracking/leading, plus a
+// fixed 500 weight (font-medium) so the title stays medium on mobile like desktop
+// instead of dropping to the token's 400.
+const TITLE_CLASS =
+  "text-[length:var(--home-heading-size)] font-[family-name:var(--home-font-display)] font-medium leading-[var(--home-heading-leading)] tracking-[var(--home-heading-tracking)] text-[color:var(--openui-text-neutral-primary)]";
+
+const CARD_CLASS = `group flex flex-col overflow-hidden rounded-[var(--openui-radius-4xl)] border border-[var(--home-hairline)] bg-[var(--openui-foreground)] p-2 no-underline shadow-[var(--home-card-lift)] ${styles.card}`;
+
+function TagChip({ children }: { children: ReactNode }) {
+  return (
+    <span className="inline-flex h-[1.625rem] shrink-0 items-center rounded-lg bg-[var(--openui-foreground)] px-2 font-[family-name:var(--home-font-mono)] text-[length:var(--home-label-size)] font-medium uppercase tracking-wide text-[color:var(--openui-text-neutral-secondary)] shadow-[var(--openui-shadow-s)]">
+      {children}
+    </span>
+  );
+}
+
+function Byline({ author, date }: { author: string; date: string | Date }) {
+  return (
+    <div className="mt-auto flex items-center gap-2 pt-5 text-[length:var(--home-body-size)] font-[family-name:var(--home-font-text)] text-[color:var(--openui-text-neutral-secondary)] max-md:flex-col max-md:items-start max-md:gap-1 max-md:pt-4 max-md:text-[0.75rem]">
+      <span className="font-medium text-[color:var(--openui-text-neutral-primary)]">{author}</span>
+      <span aria-hidden="true" className="max-md:hidden">
+        ·
+      </span>
+      <time>{formatDate(date)}</time>
+    </div>
+  );
+}
+
+function ImagePlaceholder({ size = "small" }: { size?: "small" | "large" }) {
+  return (
+    <ImageIcon
+      aria-hidden="true"
+      strokeWidth={1.5}
+      className={`${
+        size === "large" ? "h-10 w-10" : "h-8 w-8"
+      } text-[color:var(--openui-text-neutral-secondary)] opacity-40`}
+    />
+  );
+}
+
+// Featured: full width, image on one side (desktop), description shown.
+function FeaturedCard({ card }: { card: BlogCardData }) {
+  return (
+    <Link href={card.href} className={`${CARD_CLASS} md:min-h-[24rem] md:flex-row`}>
+      <div className="relative flex h-44 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--openui-highlight)] md:h-auto md:w-1/2">
+        {card.image ? (
+          <img src={card.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          <ImagePlaceholder size="large" />
+        )}
+        {card.tag && (
+          <span className="absolute left-4 top-4">
+            <TagChip>{card.tag}</TagChip>
+          </span>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col p-4 md:p-8">
+        <h2 className={TITLE_CLASS}>{card.title}</h2>
+        {card.description && (
+          <p className="mt-3 line-clamp-4 max-w-[42rem] text-[length:var(--home-body-size)] font-[family-name:var(--home-font-text)] leading-[1.65] text-[color:var(--openui-text-neutral-secondary)]">
+            {card.description}
+          </p>
+        )}
+        <Byline author={card.author} date={card.date} />
+      </div>
+    </Link>
+  );
+}
+
+// Regular: image on top, no description.
+function RegularCard({ card }: { card: BlogCardData }) {
+  const externalProps = card.external
+    ? { target: "_blank", rel: "noopener noreferrer" }
+    : {};
+  return (
+    <Link href={card.href} {...externalProps} className={`${CARD_CLASS} min-h-[15rem] max-md:min-h-0`}>
+      <div className="relative flex h-44 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--openui-highlight)] md:h-60">
+        {card.image ? (
+          <img src={card.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          <ImagePlaceholder />
+        )}
+        {card.tag && (
+          <span className="absolute left-4 top-4">
+            <TagChip>{card.tag}</TagChip>
+          </span>
+        )}
+        {card.external && (
+          <span className="absolute right-4 top-4 inline-flex h-[1.625rem] w-[1.625rem] items-center justify-center rounded-lg bg-[var(--openui-foreground)] text-[color:var(--openui-text-neutral-secondary)] shadow-[var(--openui-shadow-s)]">
+            <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
+          </span>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col p-4">
+        <h2 className={TITLE_CLASS}>{card.title}</h2>
+        <Byline author={card.author} date={card.date} />
+      </div>
+    </Link>
+  );
+}
+
 export default function BlogIndex() {
-  const byDate = blog.getPages().sort((a, b) => {
-    return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+  const localCards: BlogCardData[] = blog.getPages().map((post) => {
+    const slug = post.url.split("/").filter(Boolean).pop();
+    return {
+      href: post.url,
+      title: post.data.title,
+      description: post.data.description,
+      author: post.data.author,
+      date: post.data.date,
+      featured: Boolean(post.data.featured),
+      external: false,
+      tag: post.data.featured ? "Featured" : undefined,
+      image: slug ? `/images/blog/${slug}.png` : undefined,
+    };
   });
-  // Featured posts lead so their full-width cards sit on top of the grid
-  const posts = [
-    ...byDate.filter((post) => post.data.featured),
-    ...byDate.filter((post) => !post.data.featured),
-  ];
+
+  const allCards = [...localCards, ...COMMUNITY_CARDS].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  );
+  const featuredCards = allCards.filter((card) => card.featured);
+  const regularCards = allCards.filter((card) => !card.featured);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--blog-surface)] [--blog-surface:#fff] [[data-theme=dark]_&]:[--blog-surface:#171717]">
+    <div className="flex min-h-screen flex-col bg-[var(--openui-foreground)] [[data-theme=dark]_&]:bg-black">
       <main className="flex flex-1 flex-col">
-        <div className="mx-auto w-full max-w-[960px] px-4 pb-12 pt-16 md:px-8">
-          <h1 className="text-4xl font-bold text-[color:var(--openui-text-neutral-primary)]">
-            Blog
-          </h1>
+        <div className="mx-auto w-full max-w-[var(--home-container-max)] px-4 md:px-8">
+          <PageHero
+            title={
+              <>
+                OpenUI <PageHeroAccent>Library</PageHeroAccent>
+              </>
+            }
+            subtitle="Product updates, deep dives, and notes on building generative UI with OpenUI."
+            smallSubtitle
+          />
         </div>
 
-        <section className="bg-[linear-gradient(to_bottom,var(--blog-surface),var(--openui-background)_10rem,var(--openui-background)_calc(100%_-_10rem),var(--blog-surface))]">
-          <div className="mx-auto w-full max-w-[960px] px-4 py-24 md:px-8">
-            <div className="grid grid-cols-1 gap-5 md:auto-rows-fr md:grid-cols-2">
-              {posts.map((post) => (
-                <Link
-                  key={post.url}
-                  href={post.url}
-                  className={`group flex min-h-[15rem] flex-col rounded-[var(--openui-radius-4xl)] border border-[var(--openui-border-default)] bg-[var(--openui-foreground)] p-6 no-underline shadow-[var(--openui-shadow-m)] transition-[border-color,box-shadow] hover:border-[var(--openui-border-interactive-emphasis)] hover:shadow-[var(--openui-shadow-l)] ${
-                    post.data.featured ? "md:col-span-2" : ""
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <h2 className="text-lg font-semibold leading-snug text-[color:var(--openui-text-neutral-primary)]">
-                      {post.data.title}
-                    </h2>
-                    {post.data.featured && (
-                      <span className="inline-flex h-[1.625rem] shrink-0 items-center rounded-lg bg-[color-mix(in_srgb,#7c3aed_14%,transparent)] px-2 text-xs font-semibold uppercase tracking-wide text-[#7c3aed] [[data-theme=dark]_&]:text-[#a78bfa]">
-                        Featured
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-[color:var(--openui-text-neutral-secondary)]">
-                    {post.data.description}
-                  </p>
-                  <div className="mt-auto flex items-center gap-2 pt-5 text-sm text-[color:var(--openui-text-neutral-secondary)]">
-                    <span className="font-medium text-[color:var(--openui-text-neutral-primary)]">
-                      {post.data.author}
-                    </span>
-                    <span aria-hidden="true">·</span>
-                    <time>{formatDate(post.data.date)}</time>
-                  </div>
-                </Link>
+        <section className="bg-[linear-gradient(to_bottom,var(--openui-foreground),var(--openui-background)_10rem,var(--openui-background)_calc(100%_-_10rem),var(--openui-foreground))] [[data-theme=dark]_&]:bg-[linear-gradient(to_bottom,#000,var(--swatch-neutral-950)_28rem,var(--swatch-neutral-950)_calc(100%_-_28rem),#000)]">
+          <div className="mx-auto w-full max-w-[var(--home-container-max)] px-4 py-24 max-md:pt-8 md:px-8">
+            <div className="flex flex-col gap-5">
+              {featuredCards.map((card) => (
+                <FeaturedCard key={card.href} card={card} />
               ))}
+              <div className="grid grid-cols-1 gap-5 auto-rows-fr md:grid-cols-2">
+                {regularCards.map((card) => (
+                  <RegularCard key={card.href} card={card} />
+                ))}
+              </div>
             </div>
           </div>
         </section>

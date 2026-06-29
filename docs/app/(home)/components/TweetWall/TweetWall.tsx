@@ -1,192 +1,124 @@
 "use client";
 
+import { useTheme } from "next-themes";
 import Script from "next/script";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HOME_TWEETS, type HomeTweetEmbed } from "../../data/home-tweet-embeds";
 import styles from "./TweetWall.module.css";
 
-const MARQUEE_COPIES = 2;
-const DESKTOP_COLUMN_COUNT = 3;
-const MOBILE_COLUMN_COUNT = 1;
-const MOBILE_COLUMN_DURATION = 40;
-const COLUMN_DURATIONS = [30, 36, 30] as const;
-const COLUMN_PHASES = [0, 0.28, 0.14] as const;
-const EMBED_WIDTH = 360;
+const DESKTOP_COLUMNS = 4;
+const MOBILE_COLUMNS = 3;
+const DESKTOP_QUERY = "(min-width: 900px)";
+const DESKTOP_EMBED_WIDTH = 360;
+// Twitter clamps embeds to a 250px minimum; render at 250 (no cropping) and scale
+// the rendered card down with CSS on mobile.
+const MOBILE_EMBED_WIDTH = 250;
 
-function loadTwitterWidgets(root: HTMLElement | null) {
-  if (!root) return;
-  window.twttr?.widgets?.load(root);
-}
+// Per-column scroll duration (s), direction, and a starting phase offset so the
+// columns never line up. The marquee itself is pure CSS (translateY 0 -> -50% over
+// two duplicated copies), so there is no measurement to drift or flicker.
+const COLUMNS_META = [
+  { duration: 36, reverse: false, delay: -4 },
+  { duration: 30, reverse: true, delay: -13 },
+  { duration: 42, reverse: false, delay: -8 },
+  { duration: 33, reverse: true, delay: -19 },
+] as const;
 
-function splitIntoColumns(items: HomeTweetEmbed[], columnCount: number): HomeTweetEmbed[][] {
-  const cols: HomeTweetEmbed[][] = Array.from({ length: columnCount }, () => []);
-  items.forEach((item, i) => {
-    cols[i % columnCount]!.push(item);
-  });
-  return cols;
-}
-
-function TweetEmbed({
-  tweetId,
-  conversation = "none",
-}: {
-  tweetId: string;
-  conversation?: "all" | "none";
-}) {
-  return (
-    <div className={styles.embedSlot} data-tweet-id={tweetId} data-conversation={conversation} />
-  );
+function splitIntoColumns(items: HomeTweetEmbed[], count: number): HomeTweetEmbed[][] {
+  const columns = Array.from({ length: count }, () => [] as HomeTweetEmbed[]);
+  items.forEach((item, index) => columns[index % count]!.push(item));
+  return columns;
 }
 
 export function TweetWall() {
   const rootRef = useRef<HTMLDivElement>(null);
-  const columnTracksRef = useRef<(HTMLDivElement | null)[]>([]);
-
+  const { resolvedTheme } = useTheme();
   const [scriptReady, setScriptReady] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [columnCount, setColumnCount] = useState(DESKTOP_COLUMN_COUNT);
-  const [isWallReady, setIsWallReady] = useState(false);
-  const embedTheme = "light";
+  const [mounted, setMounted] = useState(false);
+  const [columnCount, setColumnCount] = useState(DESKTOP_COLUMNS);
+  const [ready, setReady] = useState(false);
+  // The last column count an embed pass ran for. Lets us tell a "fresh slots"
+  // pass (first mount / column-count change → empty slots) from a theme re-embed
+  // (slots already hold tweets), so a theme switch never blanks the wall.
+  const lastColumnCount = useRef<number | null>(null);
 
+  // Always a defined "light" | "dark" (resolvedTheme is undefined until next-themes
+  // resolves on the client), so the embed effect's dependency never changes shape.
+  const embedTheme = resolvedTheme === "dark" ? "dark" : "light";
+
+  // Resolve the column count on the client only. The columns render after mount
+  // (the outer root still server-renders to reserve height), so there is no
+  // SSR/hydration column-count swap and the embed pass runs exactly once.
   useEffect(() => {
-    const mqReduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const mqDesktop = window.matchMedia("(min-width: 900px)");
-
-    const updateReduce = () => setPrefersReducedMotion(mqReduce.matches);
-    const updateColumns = () => {
-      setColumnCount(mqDesktop.matches ? DESKTOP_COLUMN_COUNT : MOBILE_COLUMN_COUNT);
-    };
-
-    updateReduce();
-    updateColumns();
-
-    mqReduce.addEventListener("change", updateReduce);
-    mqDesktop.addEventListener("change", updateColumns);
-
-    return () => {
-      mqReduce.removeEventListener("change", updateReduce);
-      mqDesktop.removeEventListener("change", updateColumns);
-    };
+    const query = window.matchMedia(DESKTOP_QUERY);
+    const update = () => setColumnCount(query.matches ? DESKTOP_COLUMNS : MOBILE_COLUMNS);
+    update();
+    setMounted(true);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
   }, []);
 
-  const columns = splitIntoColumns(HOME_TWEETS, columnCount);
-
+  // Embed every slot once the columns are mounted and the widget script is ready.
+  // Re-runs if the column count changes (which swaps the slots and their target
+  // width). The wall stays hidden until all embeds resolve, so it never flickers in.
   useEffect(() => {
-    if (window.twttr?.widgets?.createTweet) {
-      setScriptReady(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!scriptReady || !rootRef.current) return;
+    if (!mounted || !scriptReady) return;
+    const root = rootRef.current;
+    const createTweet = window.twttr?.widgets?.createTweet;
+    if (!root || !createTweet) return;
 
     let cancelled = false;
-    const widgets = window.twttr?.widgets;
-    if (!widgets?.createTweet) return;
-    const createTweet = widgets.createTweet;
+    const width = columnCount >= DESKTOP_COLUMNS ? DESKTOP_EMBED_WIDTH : MOBILE_EMBED_WIDTH;
+    const slots = Array.from(root.querySelectorAll<HTMLElement>("[data-tweet-id]"));
 
-    const slots = Array.from(rootRef.current.querySelectorAll<HTMLElement>("[data-tweet-id]"));
-    const shouldRehydrate = slots.some(
-      (slot) => slot.dataset.embedded !== "true" || slot.dataset.theme !== embedTheme,
-    );
+    // Hide the wall only when the slots are empty — i.e. the first mount or a
+    // column-count change re-rendered fresh slots. A theme switch re-embeds into
+    // slots that already hold tweets, so keep those visible; otherwise a slow or
+    // Twitter-throttled re-embed would leave the whole opacity:0 wall hidden.
+    const slotsAreFresh = lastColumnCount.current !== columnCount;
+    lastColumnCount.current = columnCount;
+    if (slotsAreFresh) setReady(false);
 
-    if (!shouldRehydrate) {
-      setIsWallReady(true);
-      return;
-    }
+    // Twitter throttles bursts of embed creation (every theme toggle fires one),
+    // and a throttled createTweet can hang indefinitely. Cap each one so the
+    // readiness promise always settles and the wall can never get stuck hidden.
+    const EMBED_TIMEOUT_MS = 7000;
+    const withTimeout = <T,>(promise: Promise<T>) =>
+      Promise.race([promise, new Promise<void>((resolve) => setTimeout(resolve, EMBED_TIMEOUT_MS))]);
 
-    setIsWallReady(false);
-
-    async function hydrateEmbeds() {
-      await Promise.allSettled(
-        slots.map(async (slot) => {
-          const needsThemeRefresh = slot.dataset.theme !== embedTheme;
-          const alreadyEmbedded = slot.dataset.embedded === "true";
-          if (alreadyEmbedded && !needsThemeRefresh) return;
-
-          const tweetId = slot.dataset.tweetId;
-          if (!tweetId) return;
-
-          slot.dataset.embedded = "pending";
-          slot.dataset.theme = embedTheme;
-          slot.innerHTML = "";
-
-          try {
-            await createTweet(tweetId, slot, {
-              align: "center",
-              conversation: slot.dataset.conversation === "all" ? "all" : "none",
-              dnt: true,
-              theme: embedTheme,
-              width: EMBED_WIDTH,
-            });
-            slot.dataset.embedded = "true";
-          } catch {
-            slot.dataset.embedded = "error";
-          }
-        }),
-      );
-
-      if (cancelled) return;
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (!cancelled) {
-            loadTwitterWidgets(rootRef.current);
-            setIsWallReady(true);
-          }
-        });
-      });
-    }
-
-    void hydrateEmbeds();
+    void Promise.allSettled(
+      slots.map(async (slot) => {
+        const id = slot.dataset.tweetId;
+        if (!id) return;
+        // Build the new embed in a detached node and swap it in only once it
+        // resolves, so the currently-visible tweet isn't cleared mid-re-embed
+        // (no blank flash on theme switch). On timeout, the old tweet stays.
+        const staging = document.createElement("div");
+        await withTimeout(
+          createTweet(id, staging, {
+            align: "center",
+            conversation: slot.dataset.conversation === "all" ? "all" : "none",
+            dnt: true,
+            // White card in light mode; dark card in dark mode. Twitter's "dark"
+            // theme is a bluish near-black (#15202b) — a CSS filter on the iframe
+            // (see the [data-theme="dark"] .slot rule) neutralises the blue to gray.
+            theme: embedTheme,
+            width,
+          }),
+        );
+        if (cancelled || staging.childNodes.length === 0) return;
+        slot.replaceChildren(...staging.childNodes);
+      }),
+    ).then(() => {
+      if (!cancelled) setReady(true);
+    });
 
     return () => {
       cancelled = true;
     };
-  }, [columnCount, embedTheme, prefersReducedMotion, scriptReady]);
+  }, [mounted, scriptReady, columnCount, embedTheme]);
 
-  useLayoutEffect(() => {
-    if (prefersReducedMotion || !scriptReady) return;
-
-    const observers = columnTracksRef.current.slice(0, columnCount).map((track, index) => {
-      if (!track) return null;
-
-      const updateMetrics = () => {
-        const singleHeight = track.scrollHeight / MARQUEE_COPIES;
-        if (singleHeight <= 0) return;
-        const duration =
-          columnCount === MOBILE_COLUMN_COUNT
-            ? MOBILE_COLUMN_DURATION
-            : (COLUMN_DURATIONS[index] ?? 32);
-
-        track.style.setProperty("--loop-distance", `${singleHeight}px`);
-        track.style.setProperty("--loop-duration", `${duration}s`);
-        track.style.setProperty(
-          "--loop-start",
-          `${-(singleHeight * (COLUMN_PHASES[index] ?? 0))}px`,
-        );
-      };
-
-      updateMetrics();
-
-      const observer = new ResizeObserver(updateMetrics);
-      observer.observe(track);
-      return observer;
-    });
-
-    return () => {
-      observers.forEach((observer) => observer?.disconnect());
-    };
-  }, [columnCount, prefersReducedMotion, scriptReady]);
-
-  const staticGrid = (
-    <div className={styles.staticGrid} role="list" aria-label="What people are saying on X">
-      {HOME_TWEETS.map((tweet, index) => (
-        <div key={`static-${index}`} className={styles.staticCell} role="listitem">
-          <TweetEmbed tweetId={tweet.id} conversation={tweet.conversation} />
-        </div>
-      ))}
-    </div>
-  );
+  const columns = splitIntoColumns(HOME_TWEETS, columnCount);
 
   return (
     <>
@@ -197,32 +129,46 @@ export function TweetWall() {
         onLoad={() => setScriptReady(true)}
       />
 
-      <div ref={rootRef} className={`${styles.root} ${isWallReady ? styles.rootReady : ""}`}>
-        {prefersReducedMotion ? (
-          staticGrid
-        ) : (
-          <div className={styles.columns} role="region" aria-label="Scrolling posts from X">
-            {columns.map((colHtml, colIndex) => (
-              <div key={colIndex} className={styles.columnViewport}>
+      <div
+        ref={rootRef}
+        className={`${styles.root} ${ready ? styles.ready : ""}`.trim()}
+        role="region"
+        aria-label="What people are saying on X"
+      >
+        {mounted && (
+        <div className={styles.columns}>
+          {columns.map((column, columnIndex) => {
+            const meta = COLUMNS_META[columnIndex % COLUMNS_META.length]!;
+            // On mobile (3 columns) the centre column scrolls up and the outer
+            // columns scroll down; desktop keeps the COLUMNS_META directions.
+            const reverse =
+              columnCount === MOBILE_COLUMNS ? columnIndex !== 1 : meta.reverse;
+            return (
+              <div className={styles.column} key={columnIndex}>
                 <div
-                  ref={(el) => {
-                    columnTracksRef.current[colIndex] = el;
+                  className={styles.track}
+                  style={{
+                    animationDuration: `${meta.duration}s`,
+                    animationDelay: `${meta.delay}s`,
+                    animationDirection: reverse ? "reverse" : "normal",
                   }}
-                  className={styles.columnTrack}
                 >
-                  {Array.from({ length: MARQUEE_COPIES }).flatMap((_, copy) =>
-                    colHtml.map((tweet, rowIndex) => (
-                      <TweetEmbed
-                        key={`c${colIndex}-r${rowIndex}-copy${copy}`}
-                        tweetId={tweet.id}
-                        conversation={tweet.conversation}
+                  {[0, 1].map((copy) =>
+                    column.map((tweet, index) => (
+                      <div
+                        key={`${columnIndex}-${index}-${copy}`}
+                        className={styles.slot}
+                        data-tweet-id={tweet.id}
+                        data-conversation={tweet.conversation ?? "none"}
+                        aria-hidden={copy === 1 || undefined}
                       />
                     )),
                   )}
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
+        </div>
         )}
       </div>
     </>

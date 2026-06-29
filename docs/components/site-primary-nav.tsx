@@ -1,9 +1,8 @@
 "use client";
 
-import { BarChart3, Boxes, Sparkles, Users } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ComponentType } from "react";
 import styles from "./site-primary-nav.module.css";
 
 type NavLeaf = {
@@ -18,7 +17,6 @@ type NavDropdownChild = {
   href: string;
   description?: string;
   newTab?: boolean;
-  icon: ComponentType<{ className?: string; strokeWidth?: number; "aria-hidden"?: boolean }>;
 };
 
 type NavDropdown = {
@@ -35,16 +33,14 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
     children: [
       {
         title: "OpenUI Playground",
-        description: "Try OpenUI Lang live in the browser",
+        description: "Compare OpenUI Lang with raw code and JSON.",
         href: "/playground",
-        icon: Sparkles,
       },
       {
         title: "Dashboard Demo",
-        description: "See OpenUI rendered inside a real app",
+        description: "Testdrive a dashboard building experience.",
         href: "/demo/github",
         newTab: true,
-        icon: BarChart3,
       },
     ],
   },
@@ -53,19 +49,18 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
     children: [
       {
         title: "OpenClaw OS",
-        description: "Meet the OpenClaw operating system",
+        description: "Workspace for your OpenClaw agents.",
         href: "/openclaw-os",
-        icon: Boxes,
       },
       {
         title: "Community projects",
         description: "Tools, packages, plugins, and examples",
         href: "/projects",
-        icon: Users,
       },
     ],
   },
-  { title: "Agent Interface", href: "/agent-interface", newTab: false, badge: "New" },
+  // Temporarily hidden — Agent Interface isn't ready to share yet. Restore when ready:
+  // { title: "Agent Interface", href: "/agent-interface", newTab: false, badge: "New" },
   { title: "Blogs", href: "/blog", newTab: false },
 ];
 
@@ -95,7 +90,6 @@ export function SitePrimaryNav() {
               </button>
               <div className={styles.dropdownPanel} role="menu">
                 {item.children.map((child) => {
-                  const Icon = child.icon;
                   return (
                     <Link
                       className={styles.dropdownItem}
@@ -106,10 +100,17 @@ export function SitePrimaryNav() {
                         ? { target: "_blank", rel: "noopener noreferrer" }
                         : {})}
                     >
-                      <span className={styles.dropdownIconTile} aria-hidden="true">
-                        <Icon className={styles.dropdownIcon} strokeWidth={1.8} />
+                      <span className={styles.dropdownText}>
+                        <span className={styles.dropdownTitleRow}>
+                          <span className={styles.dropdownTitle}>{child.title}</span>
+                          <span className={styles.dropdownArrow} aria-hidden="true">
+                            <ArrowRight size={14} weight="bold" />
+                          </span>
+                        </span>
+                        {child.description && (
+                          <span className={styles.dropdownDescription}>{child.description}</span>
+                        )}
                       </span>
-                      <span className={styles.dropdownTitle}>{child.title}</span>
                     </Link>
                   );
                 })}

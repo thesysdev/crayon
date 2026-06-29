@@ -1,57 +1,84 @@
 "use client";
 
-import LlmRespondsInOpenUiLang from "@/imports/LlmRespondsInOpenUiLang";
-import OpenUiGeneratesSchema from "@/imports/OpenUiGeneratesSchema";
-import OpenUiRendererRendersIt from "@/imports/OpenUiRendererRendersIt-43-427";
-import YouRegisterComponents from "@/imports/YouRegisterComponents-43-365";
-import {
-  StepsAccordion,
-  type StepsAccordionItem,
-} from "../../components/StepsAccordion/StepsAccordion";
+import { ExpandChevron } from "../../components/ExpandChevron";
+import { useSingleOpenAccordion } from "../../components/MobileAccordion/useSingleOpenAccordion";
 import styles from "./StepsSection.module.css";
 
-// ---------------------------------------------------------------------------
-// Types & data
-// ---------------------------------------------------------------------------
-
-const STEPS: StepsAccordionItem[] = [
+const STEPS = [
   {
-    number: 1,
-    title: "You define your library",
-    description: "Register components with defineComponent and createLibrary.",
-    details: [],
-    Illustration: YouRegisterComponents,
+    title: (
+      <>
+        You define
+        {" "}
+        <br className={styles.titleBreak} />
+        your library
+      </>
+    ),
+    description: (
+      <>
+        Register components with <code className={styles.code}>defineComponent</code> &{" "}
+        <code className={styles.code}>createLibrary</code>.
+      </>
+    ),
   },
   {
-    number: 2,
-    title: "OpenUI generates system prompt",
-    description:
-      "Generate a system prompt from your library with the OpenUI CLI or library.prompt() and send it to the LLM.",
-    details: [],
-    Illustration: OpenUiGeneratesSchema,
+    title: (
+      <>
+        OpenUI generates
+        {" "}
+        <br className={styles.titleBreak} />
+        system prompt
+      </>
+    ),
+    description: "Generate a system prompt from your library and send it to LLM.",
   },
   {
-    number: 3,
-    title: "LLM responds in OpenUI Lang",
-    description: "The model returns token-efficient, line-oriented OpenUI Lang (not markdown).",
-    details: [],
-    Illustration: LlmRespondsInOpenUiLang,
+    title: (
+      <>
+        LLM responds
+        {" "}
+        <br className={styles.titleBreak} />
+        in OpenUI Lang
+      </>
+    ),
+    description: "The model returns token-efficient, line-oriented OpenUI Lang.",
   },
   {
-    number: 4,
-    title: "Renderer parses and renders UI",
-    description: "Renderer parses the output and renders interactive UI in real time.",
-    details: [],
-    Illustration: OpenUiRendererRendersIt,
+    title: (
+      <>
+        Renderer parses
+        {" "}
+        <br className={styles.titleBreak} />
+        and renders UI
+      </>
+    ),
+    description: "The renderer parses the output and renders UI in real time.",
   },
 ];
 
 export function StepsSection() {
+  // Mobile-only: all steps collapsed by default; one expands at a time and the
+  // open one can be tapped to collapse.
+  const accordion = useSingleOpenAccordion();
+
   return (
     <section className={styles.section}>
-      <div className={styles.container}>
-        <StepsAccordion steps={STEPS} />
-      </div>
+      <ol className={styles.container}>
+        {STEPS.map((step, index) => (
+          <li
+            className={styles.step}
+            key={index}
+            {...accordion.getToggleProps(index)}
+          >
+            <span className={styles.badge}>{index + 1}</span>
+            <h3 className={styles.stepTitle}>{step.title}</h3>
+            <ExpandChevron className={styles.chevron} />
+            <p className={styles.stepDescription}>
+              <span className={styles.stepDescriptionInner}>{step.description}</span>
+            </p>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }

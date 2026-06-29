@@ -1,0 +1,94 @@
+/* Beveled pill CTA with a circular badge. Light variant on white sections,
+   dark on the black cloud band. Values mirror the original per-section styles
+   so the desktop rendering is unchanged. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  height: 3rem;
+  padding-left: 1.25rem;
+  padding-right: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 9999px;
+  background: var(--home-surface-raised);
+  box-shadow: var(--home-bevel);
+  color: #0a0a0a;
+  font-family: "Inter Display", sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.button:hover {
+  transform: scale(0.99);
+}
+
+.label {
+  line-height: 1.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: var(--bevel-badge-bg, #0a0a0a);
+  color: var(--bevel-badge-fg, #fff);
+}
+
+/* Dark variant for the black cloud band. */
+.dark {
+  background: #0a0a0a;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: var(--home-bevel-on-dark);
+  color: #fff;
+  --bevel-badge-bg: #fff;
+  --bevel-badge-fg: #0a0a0a;
+}
+
+/* Primary (theme-adaptive, high contrast): black-on-white in light, white-on-black
+   in dark — the inverse of the page surface. */
+.primary {
+  background: #0a0a0a;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: var(--home-bevel-on-dark);
+  color: #fff;
+  --bevel-badge-bg: #fff;
+  --bevel-badge-fg: #0a0a0a;
+}
+
+[data-theme="dark"] .primary {
+  background: var(--home-surface-raised);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: var(--home-bevel);
+  color: #0a0a0a;
+  --bevel-badge-bg: #0a0a0a;
+  --bevel-badge-fg: #fff;
+}
+
+/* Secondary (theme-adaptive, low contrast): matches the surface — light bevel on
+   light pages (inherits the base .button), dark bevel on dark pages. */
+[data-theme="dark"] .secondary {
+  /* matches the homepage dark npx button (and the openclaw install button) */
+  background: var(--home-surface-ink);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: var(--home-bevel-on-dark);
+  color: var(--openui-text-neutral-primary);
+  --bevel-badge-bg: var(--openui-inverted-background);
+  --bevel-badge-fg: var(--openui-background);
+}
+
+/* Mobile: full-width pill so every CTA shares one footprint with the hero. */
+@media (max-width: 767px) {
+  .button {
+    width: 100%;
+    max-width: 320px;
+    justify-content: space-between;
+  }
+}
