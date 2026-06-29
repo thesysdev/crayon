@@ -4,11 +4,16 @@ import OpenAI from "openai";
 import type { ResponseInputItem } from "openai/resources/responses/responses";
 
 /**
- * Generation plane: browser → THIS route → OpenUI Cloud
- * POST /v1/embed/responses with the org MASTER key (server env only).
- * Reads/edits go browser → /v1/* with the fct_ token instead (see
- * /api/frontend-token + the storage adapter). The artifact tool runs
- * server-side, so this route is a pure pipe — no client-tool loop.
+ * Generation plane: browser → THIS route → OpenUI Cloud.
+ *
+ * Calls the hosted Responses API (`POST /v1/embed/responses`) with the stock
+ * OpenAI SDK — the endpoint speaks the Responses protocol — and proxies the SSE
+ * stream straight to the browser, where `openAIResponsesAdapter` parses it
+ * (including the custom `response.artifact_call.delta` events).
+ *
+ * The artifact tool runs **server-side** inside OpenUI Cloud, so this route is a
+ * pure pipe: there is no client-side tool loop. Reads/edits go browser → /v1/*
+ * with the fct_ token (see /api/frontend-token + the storage adapter).
  */
 export async function POST(req: Request) {
   const { threadId, input } = (await req.json()) as {
@@ -30,8 +35,7 @@ export async function POST(req: Request) {
   }
 
   const client = new OpenAI({
-    // responses.create() POSTs to `${baseURL}/responses` → /v1/embed/responses.
-    baseURL: `${envOr("OPENUI_CLOUD_BASE_URL", "http://localhost:3102")}/v1/embed`,
+    baseURL: `${requiredEnv("OPENUI_CLOUD_BASE_URL")}/v1/embed`,
     apiKey: requiredEnv("THESYS_API_KEY"), // sent as Authorization: Bearer …
   });
 
@@ -44,10 +48,15 @@ export async function POST(req: Request) {
         input,
         stream: true,
         store: true,
-        // `artifacts` makes each entry carry library_version:'0.1.0' → openui-lang.
-        // Bare artifactTool() would fall back to the legacy <artifact> XML model.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        tools: [artifactTool({ artifacts: ["slides", "report"] }) as any],
+        tools: [
+          artifactTool({ artifacts: ["slides", "report"] }),
+          {
+            type: "web_search",
+          },
+          {
+            type: "image_search",
+          },
+        ],
         instructions: createResponsesInstructions(),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
