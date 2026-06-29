@@ -109,6 +109,11 @@ const WorkspaceSections = ({
   const visibleCategories = categories.filter((category) =>
     entries.some((entry) => entryMatchesCategory(entry, category)),
   );
+  // Entries matching no configured category are still shown (never dropped),
+  // in a fallback section after the categorized ones.
+  const uncategorized = entries.filter(
+    (entry) => !categories.some((category) => entryMatchesCategory(entry, category)),
+  );
 
   return (
     <>
@@ -118,6 +123,9 @@ const WorkspaceSections = ({
           entries={entries.filter((entry) => entryMatchesCategory(entry, category))}
         />
       ))}
+      {uncategorized.length > 0 && (
+        <WorkspaceSection key="__uncategorized__" entries={uncategorized} />
+      )}
     </>
   );
 };
