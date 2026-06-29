@@ -8,7 +8,7 @@ import {
   type ToolActivity,
 } from "@openuidev/react-headless";
 import { useEffect, useId, useMemo, useRef, type ComponentType, type ReactNode } from "react";
-import { DetailedViewPanel as DefaultDetailedViewPanel } from "../detailed-view";
+import { DetailedViewPanel as DefaultDetailedViewPanel } from "../../AgentInterface/_shared/detailed-view";
 import { ToolCallErrorFallback } from "./ToolCallErrorFallback";
 
 /**

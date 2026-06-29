@@ -37,9 +37,6 @@ export * from "@openuidev/react-headless";
 // component here). Pin the component so the two star re-exports don't collide.
 export { ToolCall } from "./components/ToolCall";
 
-// DetailedView() factory — generates a ComponentRenderer with detailed-view wiring
-export { DetailedView } from "./detailed-view";
-export type { DetailedViewConfig, DetailedViewControls } from "./detailed-view";
 
 // Tool-call rendering: the typed-activity dispatchers (matched renderer xor
 // default) + the legacy ToolMessageRenderer wrapper.
@@ -57,20 +54,9 @@ export {
 
 // Shared Collapsible primitive + built-in web-search renderer.
 export { Collapsible } from "./components/_shared/Collapsible";
-export { webSearchRenderer, type WebSearchSource } from "./renderers/webSearchRenderer";
 
 // Detailed-view exports (DetailedViewPanel/DetailedViewPortalTarget)
 export { useActiveDetailedView, useDetailedView } from "@openuidev/react-headless";
-export {
-  DetailedViewOverlay,
-  DetailedViewPanel,
-  DetailedViewPortalTarget,
-} from "./components/_shared/detailed-view";
-export type {
-  DetailedViewOverlayProps,
-  DetailedViewPanelProps,
-  DetailedViewPortalTargetProps,
-} from "./components/_shared/detailed-view";
 
 export * from "./components/Button";
 export * from "./components/Buttons";
