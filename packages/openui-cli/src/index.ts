@@ -5,11 +5,11 @@ import * as path from "node:path";
 
 import { Command } from "commander";
 
-import type { CloudAuthMethod } from "./auth/mint";
-import { runCreateApp, type TemplateName } from "./commands/create-app";
+import { runCreateApp } from "./commands/create-app";
 import { runGenerate } from "./commands/generate";
 import { resolveArgs } from "./lib/resolve-args";
-import { CreateError, telemetry } from "./lib/telemetry";
+import { telemetry } from "./lib/telemetry";
+import { handleCliError, normalizeAuth, normalizeTemplate } from "./lib/utils"; // Ensure utils.ts is included for type declarations
 
 const program = new Command();
 
@@ -27,29 +27,6 @@ program.hook("preAction", (_thisCommand, actionCommand) => {
   telemetry.init({ cliVersion, flagEnabled: program.opts()["telemetry"] !== false });
   telemetry.capture("cli_invoked", { command: actionCommand.name() });
 });
-
-function handleCliError(e: unknown, event: string): void {
-  const known = e instanceof CreateError;
-  const message = e instanceof Error ? e.message : String(e);
-  console.error(known ? `Error: ${message}` : message);
-  telemetry.capture(event, { stage: known ? e.stage : "unknown", error: message.slice(0, 200) });
-  process.exitCode = 1;
-}
-
-function normalizeTemplate(t?: string): TemplateName | undefined {
-  if (!t) return undefined;
-  const v = t.toLowerCase();
-  if (v === "chat" || v === "openui-chat") return "openui-chat";
-  if (v === "cloud" || v === "openui-cloud") return "openui-cloud";
-  throw new CreateError("bad_args", `unknown template "${t}". Use: openui-chat | openui-cloud.`);
-}
-
-function normalizeAuth(a?: string): CloudAuthMethod | undefined {
-  if (!a) return undefined;
-  const v = a.toLowerCase();
-  if (v === "oauth" || v === "manual" || v === "skip") return v;
-  throw new CreateError("bad_args", `unknown --auth "${a}". Use: oauth | manual | skip.`);
-}
 
 program
   .command("create")
