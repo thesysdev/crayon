@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
@@ -18,24 +17,21 @@ const isCi = () => {
   return isTruthyEnv(e["CI"]) || !!e["GITHUB_ACTIONS"] || !!e["GITLAB_CI"] || !!e["BUILDKITE"];
 };
 
-type Stored = { distinctId: string; firstRunNoticeShown?: boolean };
+type Stored = { firstRunNoticeShown?: boolean };
 
 function loadOrCreateState() {
   const file = path.join(configDir(), "telemetry.json");
   try {
     const raw = JSON.parse(fs.readFileSync(file, "utf8")) as Stored;
-    if (raw.distinctId)
-      return {
-        distinctId: raw.distinctId,
-        isFirstRun: !raw.firstRunNoticeShown,
-        persist: () => writeState(file, { ...raw, firstRunNoticeShown: true }),
-      };
+    return {
+      isFirstRun: !raw.firstRunNoticeShown,
+      persist: () => writeState(file, { ...raw, firstRunNoticeShown: true }),
+    };
   } catch {
     /* missing/corrupt → create */
   }
-  const fresh: Stored = { distinctId: randomUUID(), firstRunNoticeShown: false };
+  const fresh: Stored = { firstRunNoticeShown: false };
   return {
-    distinctId: fresh.distinctId,
     isFirstRun: true,
     persist: () => writeState(file, { ...fresh, firstRunNoticeShown: true }),
   };
@@ -73,7 +69,6 @@ export class Telemetry {
       opts.flagEnabled === false;
     if (optedOut) return; // enabled stays false → all capture() are no-ops
     const state = loadOrCreateState();
-    this.distinctId = state.distinctId;
     this.superProps = {
       cli_version: opts.cliVersion,
       os: process.platform,
