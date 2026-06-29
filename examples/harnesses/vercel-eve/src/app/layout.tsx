@@ -1,9 +1,10 @@
+import { ThemeProvider } from "@/hooks/use-system-theme";
 import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "OpenUI Agent Harness",
-  description: "Generative UI agent harness powered by the Pi coding agent",
+  title: "Eve + OpenUI",
+  description: "Generative UI Chat powered by an Eve agent",
 };
 
 export default function RootLayout({
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }
