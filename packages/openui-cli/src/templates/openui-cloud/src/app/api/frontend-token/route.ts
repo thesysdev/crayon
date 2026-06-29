@@ -16,7 +16,7 @@ export async function POST() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${requiredEnv("THESYS_MASTER_API_KEY")}`,
+        Authorization: `Bearer ${requiredEnv("THESYS_API_KEY")}`,
       },
       body: JSON.stringify({ user_id: envOr("DEMO_USER_ID", "demo-user") }),
     },

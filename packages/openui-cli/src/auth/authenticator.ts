@@ -65,10 +65,11 @@ export class Authenticator {
     return new Promise<AuthResult>((resolve, reject) => {
       let settled = false;
       let actualPort = 0;
-
+      let timerId: null | NodeJS.Timeout = null
       const finish = (run: () => void) => {
         if (settled) return;
         settled = true;
+        if(timerId) clearTimeout(timerId);
         server.close();
         run();
       };
@@ -139,7 +140,7 @@ export class Authenticator {
         console.info("⏳ Waiting for you to finish signing in…");
       });
 
-      setTimeout(
+      timerId = setTimeout(
         () => finish(() => reject(new Error("Sign-in timed out after 5 minutes."))),
         5 * 60 * 1000,
       );
