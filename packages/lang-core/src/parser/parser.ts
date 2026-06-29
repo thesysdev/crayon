@@ -514,10 +514,16 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
         let peek = i + 1;
         while (
           peek < cleaned.length &&
-          (cleaned[peek] === " " || cleaned[peek] === "\t" || cleaned[peek] === "\r" || cleaned[peek] === "\n")
+          (cleaned[peek] === " " ||
+            cleaned[peek] === "\t" ||
+            cleaned[peek] === "\r" ||
+            cleaned[peek] === "\n")
         )
           peek++;
-        if (peek < cleaned.length && (cleaned[peek] === "?" || (cleaned[peek] === ":" && ternaryDepth > 0))) {
+        if (
+          peek < cleaned.length &&
+          (cleaned[peek] === "?" || (cleaned[peek] === ":" && ternaryDepth > 0))
+        ) {
           continue; // ternary continuation — don't split
         }
         // Depth-0 newline = end of a statement
