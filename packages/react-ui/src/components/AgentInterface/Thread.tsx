@@ -1,25 +1,29 @@
-import type { AssistantMessage, Message, ToolMessage } from "@openuidev/react-headless";
+import type { AssistantMessage, Message } from "@openuidev/react-headless";
 import {
   MessageProvider,
   useActiveDetailedView,
   useArtifactList,
   useThread,
+  useToolActivities,
 } from "@openuidev/react-headless";
 import clsx from "clsx";
 import React, { memo, useId, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
-import { DetailedViewOverlay, DetailedViewPortalTarget } from "./_shared/detailed-view";
+import {
+  DetailedViewOverlay,
+  DetailedViewPanel,
+  DetailedViewPortalTarget,
+} from "./_shared/detailed-view";
+import { useAgentInterfaceLabels } from "./_shared/labelsContext";
 import { useAgentInterfaceStore } from "./_shared/store";
-import { ToolMessageRenderer } from "./_shared/tool-renderer";
+import { TimelineEntry } from "./_shared/tool-renderer";
 import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
 
 import { Callout } from "../Callout";
 import { IconButton } from "../IconButton";
 import { MarkDownRenderer } from "../MarkDownRenderer";
 import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
-import { ToolCallComponent } from "../ToolCall";
-import { ToolResult } from "../ToolResult";
 import { ResizableSeparator } from "./ResizableSeparator";
 import { UserMessageContent } from "./UserMessageContent";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
@@ -117,6 +121,7 @@ export const ScrollArea = ({
   className,
   scrollVariant = "user-message-anchor",
   userMessageSelector = ".openui-agent-thread-message-user",
+  scrollOnLoad = true,
 }: {
   children?: React.ReactNode;
   className?: string;
@@ -128,6 +133,11 @@ export const ScrollArea = ({
    * Selector for the user message
    */
   userMessageSelector?: string;
+  /**
+   * When false, do not auto-scroll on initial load / conversation switch
+   * (auto-scroll then only happens while a response is generating).
+   */
+  scrollOnLoad?: boolean;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -142,6 +152,7 @@ export const ScrollArea = ({
     userMessageSelector,
     isRunning,
     isLoadingMessages,
+    scrollOnLoad,
   });
 
   return (
@@ -194,23 +205,15 @@ export const UserMessageContainer = ({
 const AssistantMessageContent = ({
   message,
   allMessages,
+  isLast,
 }: {
   message: AssistantMessage;
   allMessages: Message[];
+  isLast: boolean;
 }) => {
-  // Collect tool messages that follow this assistant message
-  const toolMessages: ToolMessage[] = [];
-  const msgIndex = allMessages.findIndex((m) => m.id === message.id);
-  if (msgIndex !== -1) {
-    for (let i = msgIndex + 1; i < allMessages.length; i++) {
-      const m = allMessages[i];
-      if (m && m.role === "tool") {
-        toolMessages.push(m as ToolMessage);
-      } else {
-        break;
-      }
-    }
-  }
+  // One id-keyed pairing of calls↔results with real status — no positional break,
+  // no grouped-not-paired flow, running state from the data.
+  const activities = useToolActivities(message, allMessages);
 
   return (
     <>
@@ -220,22 +223,14 @@ const AssistantMessageContent = ({
           className="openui-agent-thread-message-assistant__text"
         />
       )}
-      {message.toolCalls?.map((toolCall) => (
-        <ToolCallComponent key={toolCall.id} toolCall={toolCall} />
+      {activities.map((activity, idx) => (
+        <TimelineEntry
+          key={activity.id}
+          activity={activity}
+          isLast={isLast && idx === activities.length - 1}
+          detailedViewPanel={DetailedViewPanel}
+        />
       ))}
-      {toolMessages.map((tm) => {
-        const toolCall = message.toolCalls?.find((tc) => tc.id === tm.toolCallId);
-        const fallback = <ToolResult message={tm} toolName={toolCall?.function.name} />;
-        if (!toolCall) return <span key={tm.id}>{fallback}</span>;
-        return (
-          <ToolMessageRenderer
-            key={tm.id}
-            toolMessage={tm}
-            toolCall={toolCall}
-            fallback={fallback}
-          />
-        );
-      })}
     </>
   );
 };
@@ -248,6 +243,7 @@ export const RenderMessage = memo(
     assistantMessage: CustomAssistantMessage,
     userMessage: CustomUserMessage,
     isStreaming,
+    isLast,
   }: {
     message: Message;
     className?: string;
@@ -255,6 +251,8 @@ export const RenderMessage = memo(
     assistantMessage?: AssistantMessageComponent;
     userMessage?: UserMessageComponent;
     isStreaming: boolean;
+    /** Whether this is the last *assistant* message (drives the running shimmer). */
+    isLast: boolean;
   }) => {
     if (message.role === "tool") {
       // Tool messages are rendered inline with their parent assistant message
@@ -267,7 +265,7 @@ export const RenderMessage = memo(
       }
       return (
         <AssistantMessageContainer className={className}>
-          <AssistantMessageContent message={message} allMessages={allMessages} />
+          <AssistantMessageContent message={message} allMessages={allMessages} isLast={isLast} />
         </AssistantMessageContainer>
       );
     }
@@ -326,6 +324,16 @@ export const Messages = ({
   const isRunning = useThread((s) => s.isRunning);
   const threadError = useThread((s) => s.threadError);
 
+  // Scan for the last *assistant* message (not the last message index) so the
+  // running shimmer survives trailing tool messages.
+  let lastAssistantIndex = -1;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i]?.role === "assistant") {
+      lastAssistantIndex = i;
+      break;
+    }
+  }
+
   return (
     <div className={clsx("openui-agent-thread-messages", className)}>
       {messages.map((message, i) => {
@@ -336,7 +344,8 @@ export const Messages = ({
               allMessages={messages}
               assistantMessage={assistantMessage}
               userMessage={userMessage}
-              isStreaming={isRunning && i === messages.length - 1}
+              isStreaming={isRunning && i === lastAssistantIndex}
+              isLast={i === lastAssistantIndex}
             />
           </MessageProvider>
         );
@@ -368,6 +377,7 @@ export const ThreadHeader = ({
 const WorkspaceToggleButton = () => {
   const artifacts = useArtifactList();
   const { isDetailedViewActive } = useActiveDetailedView();
+  const { workspaceToggle } = useAgentInterfaceLabels();
   const { isWorkspaceOpen, setIsWorkspaceOpen } = useAgentInterfaceStore((state) => ({
     isWorkspaceOpen: state.isWorkspaceOpen,
     setIsWorkspaceOpen: state.setIsWorkspaceOpen,
@@ -377,7 +387,7 @@ const WorkspaceToggleButton = () => {
   if (!hasArtifacts || isDetailedViewActive) return null;
 
   return (
-    <AgentInterfaceTooltip content="Apps & Artifacts" side="left">
+    <AgentInterfaceTooltip content={workspaceToggle} side="left">
       <IconButton
         icon={<GalleryHorizontalEndIcon size="1em" />}
         onClick={() => {

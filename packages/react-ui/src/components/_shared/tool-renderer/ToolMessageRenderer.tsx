@@ -1,6 +1,12 @@
-import { useArtifactRenderer, type ToolCall, type ToolMessage } from "@openuidev/react-headless";
+import {
+  pairToolActivity,
+  useArtifactRenderer,
+  type AssistantMessage,
+  type ToolCall,
+  type ToolMessage,
+} from "@openuidev/react-headless";
 import type { ReactNode } from "react";
-import { RendererInstance } from "./RendererInstance";
+import { ToolActivityRenderer, type ToolDetailedViewPanel } from "./ToolActivityRenderer";
 
 /**
  * Props for {@link ToolMessageRenderer}.
@@ -10,30 +16,25 @@ import { RendererInstance } from "./RendererInstance";
 export type ToolMessageRendererProps = {
   /**
    * The tool message containing the response payload, or `null` while the tool
-   * call is still streaming (args have not finished arriving and no result yet).
-   * The matched renderer is rendered with `controls.isStreaming = true` in that case.
+   * call is still streaming. The matched renderer sees `controls.isStreaming = true`.
    */
   toolMessage: ToolMessage | null;
-  /** The matching tool call from the parent assistant message (provides `name` + `arguments`). */
+  /** The matching tool call from the parent assistant message. */
   toolCall: ToolCall;
-  /** Rendered when no AppRenderer matches `toolCall.function.name`. */
+  /** Rendered when no renderer matches `toolCall.function.name`. */
   fallback: ReactNode;
+  /** Optional detailed-view panel (defaults to the shared one). */
+  detailedViewPanel?: ToolDetailedViewPanel;
 };
 
 /**
- * Dispatches a tool call (streaming or completed) to a matching AppRenderer if
- * one is registered, otherwise renders `fallback` (typically the default
- * `<ToolResult>`).
+ * Dispatches a tool call to a matching renderer, else renders `fallback`.
  *
- * Looks up `toolCall.function.name` against the AppRenderer registry provided
- * by `<ChatProvider artifactRenderers={...}>`. On match, hands off to
- * {@link RendererInstance} which runs the parser, registers in ThreadContext,
- * and renders the inline preview + detailed-view panel.
- *
- * Tool args (`toolCall.function.arguments`) and response (`toolMessage.content`,
- * or `null` while streaming) are passed to the renderer's `parser` raw — the
- * SDK does not pre-parse JSON. The renderer's `parser` is responsible for
- * handling partial-JSON args during streaming.
+ * @deprecated Prefer `useToolActivities` + `<ToolCallEntry>` / `<ToolCallTimeline>`,
+ * which pair calls↔results by id, carry real status, and render the matched
+ * renderer xor the default card. This wrapper now builds a single
+ * {@link ToolActivity} from `toolCall`/`toolMessage` and delegates to
+ * {@link ToolActivityRenderer}, so existing imports keep working.
  *
  * @category Components
  */
@@ -41,17 +42,25 @@ export const ToolMessageRenderer = ({
   toolMessage,
   toolCall,
   fallback,
+  detailedViewPanel,
 }: ToolMessageRendererProps) => {
   const renderer = useArtifactRenderer(toolCall.function.name);
-
   if (!renderer) return <>{fallback}</>;
 
+  const syntheticAssistant: AssistantMessage = {
+    id: `__tool_message_renderer__${toolCall.id}`,
+    role: "assistant",
+    content: "",
+    toolCalls: [toolCall],
+  };
+  const [activity] = pairToolActivity(syntheticAssistant, toolMessage ? [toolMessage] : []);
+  if (!activity) return <>{fallback}</>;
+
   return (
-    <RendererInstance
+    <ToolActivityRenderer
       renderer={renderer}
-      args={toolCall.function.arguments}
-      response={toolMessage?.content ?? null}
-      isStreaming={toolMessage === null}
+      activity={activity}
+      detailedViewPanel={detailedViewPanel}
     />
   );
 };

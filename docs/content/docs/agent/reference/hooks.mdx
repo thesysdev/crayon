@@ -8,12 +8,11 @@ These hooks let your own components read and drive the state inside `<AgentInter
 Two rules apply to **all** of them:
 
 - **They only work inside `<AgentInterface>`.** Each reads from a context that the component provides. Call one outside that tree and you get either a thrown error or a `null`/empty result (noted per hook below). Renderer `preview`/`actual` functions, slot children, message components, and `Route` children are all inside the tree, so all of these are valid call sites.
-- **Import from the right package.** `useNav` is exported from `@openuidev/react-ui`. **Every other hook on this page** is exported from `@openuidev/react-headless`.
+- **Import from `@openuidev/react-ui`.** Every hook on this page is exported from `@openuidev/react-ui`.
 
 ```tsx
-import { useNav } from "@openuidev/react-ui";
-
 import {
+  useNav,
   useArtifactStorage,
   useArtifactCategories,
   useArtifactList,
@@ -27,7 +26,7 @@ import {
   useDetailedViewStore,
   useDetailedViewPortalTarget,
   useThreadContextStore,
-} from "@openuidev/react-headless";
+} from "@openuidev/react-ui";
 ```
 
 ---
@@ -43,7 +42,7 @@ function useNav(): {
 };
 ```
 
-**Imported from `@openuidev/react-ui`** (not `@openuidev/react-headless`, unlike every other hook here). Reads the current route and lets you change it. `path` is the current route string (or `undefined`, which means the thread view). `navigate(next)` moves to a route; `navigate(undefined)` returns to the thread view.
+**Imported from `@openuidev/react-ui`.** Reads the current route and lets you change it. `path` is the current route string (or `undefined`, which means the thread view). `navigate(next)` moves to a route; `navigate(undefined)` returns to the thread view.
 
 In controlled mode (when you pass `onNavigate` to `AgentInterface`), `navigate` ultimately calls back through your `onNavigate` handler — the hook respects whichever mode the component is in. **Throws if called outside `<AgentInterface>`.**
 

@@ -3,26 +3,33 @@ import "@openuidev/react-ui/components.css";
 import "@openuidev/thesys/styles.css";
 
 import {
+  defineArtifactCategories,
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
   type ChatLLM,
 } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
-// All four come from the migrated SDK — the src/cloud + src/shared/artifact/renderers
-// that moved into @openuidev/thesys — instead of the local examples/openui-cloud/src/lib
-// copies (which stay on disk but are no longer imported here):
-//   chatLibrary           — component library the backend's generated programs target
-//   useOpenuiCloudStorage — hook: browser ChatStorage over the /v1 API, fct_-authenticated
-//   artifactRenderers     — defineArtifactRenderer configs (type 'presentation' | 'report',
-//                           toolName 'thesys_generate_artifact' / 'thesys_edit_artifact')
-//   artifactCategories
+// chatLibrary, useOpenuiCloudStorage, and the artifact renderers all come from the
+// migrated SDK (@openuidev/thesys). Its artifact parser now reads the program from
+// the tool INPUT channel (args.artifact_content), so the rich preview renders live
+// during/after generation without a refresh.
 import { useTheme } from "@/hooks/use-system-theme";
 import {
-  artifactCategories,
-  artifactRenderers,
   chatLibrary,
+  presentationArtifactRenderer,
+  reportArtifactRenderer,
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
+
+// Categories are consumer-owned (the SDK exports each renderer separately). One
+// category per genui artifact kind; `defineArtifactCategories` returns both the
+// deduped `artifactRenderers` and the `artifactCategories` (each `filter.type`
+// derived from the renderers' types). Presentation is listed first — it owns the
+// artifact tool names (the renderer registry is first-wins per toolName).
+const { artifactRenderers, artifactCategories } = defineArtifactCategories([
+  { name: "Presentations", renderers: [presentationArtifactRenderer] },
+  { name: "Reports", renderers: [reportArtifactRenderer] },
+]);
 
 const llm: ChatLLM = {
   send: async ({ threadId, messages, signal }) => {
@@ -45,11 +52,11 @@ export default function Page() {
   // hook the storage + its fct_ token manager are created on mount (not at module
   // load), so the token fetch follows this component's lifecycle.
   const storage = useOpenuiCloudStorage({
-    // Defaults to https://api.thesys.dev; set NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL to override (e.g. a local stack).
-    apiBaseUrl: process.env.NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL,
     // Backend mint proxy (POST → { token, expires_at }); the hook caches +
     // refreshes it and injects x-thesys-frontend-token on every /v1 call.
     token: "/api/frontend-token",
+    // Env-driven so a local stack can be targeted; defaults to prod when unset.
+    apiBaseUrl: process.env.NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL,
     features: { artifact: true },
   });
 
@@ -62,6 +69,8 @@ export default function Page() {
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
         agentName="OpenUI Cloud"
+        scrollVariant="always"
+        scrollOnLoad={false}
         theme={{ mode }}
         starters={[
           {

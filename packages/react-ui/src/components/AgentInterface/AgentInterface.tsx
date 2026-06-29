@@ -22,6 +22,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
+import type { ScrollVariant } from "../../hooks/useScrollToBottom";
 import type { ConversationStarterProps } from "../../types/ConversationStarter";
 import { IconButton } from "../IconButton";
 import { GenUIAssistantMessage } from "../OpenUIChat/GenUIAssistantMessage";
@@ -30,6 +31,11 @@ import { ThemeProvider, type ThemeProps } from "../ThemeProvider";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { artifactListPath, parseArtifactPath } from "./_shared/artifactPaths";
 import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
+import {
+  LabelsProvider,
+  useAgentInterfaceLabels,
+  type AgentInterfaceLabels,
+} from "./_shared/labelsContext";
 import { NavProvider, useNav } from "./_shared/navContext";
 import { StartersProvider } from "./_shared/startersContext";
 import { useAgentInterfaceStore } from "./_shared/store";
@@ -69,6 +75,8 @@ export interface AgentInterfaceProps extends Omit<ChatProviderProps, "children">
   logoUrl?: string;
   /** Agent display name. */
   agentName?: string;
+  /** Consumer-overridable display strings for the artifact browser + workspace. */
+  labels?: AgentInterfaceLabels;
   /** Global starters inherited by Welcome (when active) or Composer. */
   starters?: ConversationStarterProps[];
   /** Layout variant for inherited starters. */
@@ -79,6 +87,14 @@ export interface AgentInterfaceProps extends Omit<ChatProviderProps, "children">
   defaultPath?: string;
   /** Called when navigation occurs. Presence selects controlled mode. */
   onNavigate?: (next: string | undefined) => void;
+  /**
+   * How the thread scrolls as messages stream in.
+   * `"always"` follows the streaming response to the bottom (until the user scrolls up);
+   * `"user-message-anchor"` (default) pins the latest user message to the top.
+   */
+  scrollVariant?: ScrollVariant;
+  /** When false, the thread does not auto-scroll on load / conversation switch (auto-scroll only while generating). Default true. */
+  scrollOnLoad?: boolean;
   children?: ReactNode;
 }
 
@@ -171,11 +187,14 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
     disableThemeProvider,
     logoUrl,
     agentName,
+    labels,
     starters,
     starterVariant,
     path,
     defaultPath,
     onNavigate,
+    scrollVariant,
+    scrollOnLoad,
     children,
   } = props;
 
@@ -222,13 +241,17 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
       >
         <NavProvider path={path} defaultPath={defaultPath} onNavigate={onNavigate}>
           <StartersProvider starters={starters} starterVariant={starterVariant}>
-            <AgentInterfaceBody
-              slots={slots}
-              logoUrl={logoUrl ?? ""}
-              agentName={agentName ?? ""}
-              resolvedAssistantMessage={resolvedAssistantMessage}
-              resolvedUserMessage={resolvedUserMessage}
-            />
+            <LabelsProvider labels={labels}>
+              <AgentInterfaceBody
+                slots={slots}
+                logoUrl={logoUrl ?? ""}
+                agentName={agentName ?? ""}
+                resolvedAssistantMessage={resolvedAssistantMessage}
+                resolvedUserMessage={resolvedUserMessage}
+                scrollVariant={scrollVariant}
+                scrollOnLoad={scrollOnLoad}
+              />
+            </LabelsProvider>
           </StartersProvider>
         </NavProvider>
       </ChatProvider>
@@ -242,6 +265,8 @@ interface AgentInterfaceBodyProps {
   agentName: string;
   resolvedAssistantMessage: AssistantMessageComponent | undefined;
   resolvedUserMessage: UserMessageComponent | undefined;
+  scrollVariant?: ScrollVariant;
+  scrollOnLoad?: boolean;
 }
 
 const ArtifactViewMobileHeader = ({
@@ -317,6 +342,7 @@ const ArtifactViewMobileHeader = ({
 const MobileWorkspaceToggleButton = () => {
   const artifacts = useArtifactList();
   const { isDetailedViewActive } = useActiveDetailedView();
+  const { workspaceToggle } = useAgentInterfaceLabels();
   const { isWorkspaceOpen, setIsWorkspaceOpen } = useAgentInterfaceStore((state) => ({
     isWorkspaceOpen: state.isWorkspaceOpen,
     setIsWorkspaceOpen: state.setIsWorkspaceOpen,
@@ -326,7 +352,7 @@ const MobileWorkspaceToggleButton = () => {
   if (!hasArtifacts || isDetailedViewActive) return null;
 
   return (
-    <AgentInterfaceTooltip content="Apps & Artifacts" side="left">
+    <AgentInterfaceTooltip content={workspaceToggle} side="left">
       <IconButton
         size="medium"
         icon={<GalleryHorizontalEndIcon size="1em" />}
@@ -344,6 +370,8 @@ const AgentInterfaceBody = ({
   agentName,
   resolvedAssistantMessage,
   resolvedUserMessage,
+  scrollVariant,
+  scrollOnLoad,
 }: AgentInterfaceBodyProps) => {
   const { path } = useNav();
 
@@ -405,7 +433,7 @@ const AgentInterfaceBody = ({
             {slots.mobileHeader ?? <MobileHeader actions={<MobileWorkspaceToggleButton />} />}
             {slots.threadHeader ?? <ThreadHeader />}
             {slots.welcome}
-            <ScrollArea>
+            <ScrollArea scrollVariant={scrollVariant} scrollOnLoad={scrollOnLoad}>
               <Messages
                 loader={<MessageLoading />}
                 assistantMessage={resolvedAssistantMessage}

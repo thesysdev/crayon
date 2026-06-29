@@ -2,6 +2,8 @@
 
 Svelte 5 bindings for OpenUI Lang. Define model-renderable Svelte components, generate prompts from those definitions, and render streamed OpenUI Lang in a Svelte app.
 
+[![npm version](https://img.shields.io/npm/v/@openuidev/svelte-lang)](https://www.npmjs.com/package/@openuidev/svelte-lang)
+[![monthly downloads](https://img.shields.io/npm/dm/@openuidev/svelte-lang)](https://www.npmjs.com/package/@openuidev/svelte-lang)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
 
 **Links:** [OpenUI Lang docs](https://openui.com/docs/openui-lang) | [GitHub repo](https://github.com/thesysdev/openui)

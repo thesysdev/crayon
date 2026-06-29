@@ -12,10 +12,10 @@ This page is the exhaustive reference for both channels, the factories that buil
 
 ## Import sources
 
-`AgentInterface` and `useNav` come from `@openuidev/react-ui`. The factories `fetchLLM` and `restStorage`, plus the adapter/storage **types**, are also re-exported from `@openuidev/react-ui` for convenience, but they live in `@openuidev/react-headless`. **Stream adapters and message formats are headless-only** — always import those from `@openuidev/react-headless`.
+Everything on this page imports from `@openuidev/react-ui`: `AgentInterface`, `useNav`, the `fetchLLM` and `restStorage` factories, the adapter and storage types, the stream adapters, and the message formats.
 
 ```ts
-// Factories + types (either import works)
+// Factories + types
 import {
   fetchLLM,
   restStorage,
@@ -26,9 +26,9 @@ import {
   type Thread,
   type MessageFormat,
   type StreamProtocolAdapter,
-} from "@openuidev/react-headless";
+} from "@openuidev/react-ui";
 
-// Stream adapters + message formats (headless-only — NOT re-exported)
+// Stream adapters + message formats
 import {
   agUIAdapter,
   openAIAdapter,
@@ -39,7 +39,7 @@ import {
   openAIConversationMessageFormat,
   langGraphMessageFormat,
   identityMessageFormat,
-} from "@openuidev/react-headless";
+} from "@openuidev/react-ui";
 ```
 
 <Callout type="warn">All five stream adapters are **factory functions** — always call them with `()`. `streamAdapter: openAIAdapter()` is correct; a bare `streamAdapter: openAIAdapter` is wrong.</Callout>
@@ -116,7 +116,7 @@ fetch(url, {
 Your route therefore always receives `{ threadId, messages }` and must return a streaming `Response`. `fetchLLM` runs that response through `streamAdapter`.
 
 ```tsx
-import { fetchLLM, openAIReadableStreamAdapter, openAIMessageFormat } from "@openuidev/react-headless";
+import { fetchLLM, openAIReadableStreamAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 
 const llm = fetchLLM({
   url: "/api/chat",
@@ -170,7 +170,7 @@ interface ThreadStorage {
 Implement these directly when your storage doesn't fit the REST shape `restStorage` expects — a different route layout, GraphQL, or a client-side store like IndexedDB:
 
 ```ts
-import type { ChatStorage } from "@openuidev/react-headless";
+import type { ChatStorage } from "@openuidev/react-ui";
 
 export const storage: ChatStorage = {
   thread: {
@@ -248,7 +248,7 @@ function restStorage(options: {
 | `fetch`         | `typeof fetch`             | No       | Override `fetch` (auth, instrumentation, tests).                                            |
 
 ```tsx
-import { restStorage, openAIMessageFormat } from "@openuidev/react-headless";
+import { restStorage, openAIMessageFormat } from "@openuidev/react-ui";
 
 const storage = restStorage({
   baseUrl: "/api/threads",
@@ -361,7 +361,7 @@ Wrapping Anthropic, or any provider with no bundled adapter? You have two paths:
 ### `agUIAdapter`
 
 ```ts
-import { agUIAdapter } from "@openuidev/react-headless";
+import { agUIAdapter } from "@openuidev/react-ui";
 
 const llm = fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() });
 ```
@@ -372,7 +372,7 @@ const llm = fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() });
 ### `openAIAdapter`
 
 ```ts
-import { openAIAdapter } from "@openuidev/react-headless";
+import { openAIAdapter } from "@openuidev/react-ui";
 
 const llm = fetchLLM({
   url: "/api/chat",
@@ -388,7 +388,7 @@ const llm = fetchLLM({
 ### `openAIReadableStreamAdapter`
 
 ```ts
-import { openAIReadableStreamAdapter } from "@openuidev/react-headless";
+import { openAIReadableStreamAdapter } from "@openuidev/react-ui";
 
 const llm = fetchLLM({
   url: "/api/chat",
@@ -405,7 +405,7 @@ const llm = fetchLLM({
 ### `openAIResponsesAdapter`
 
 ```ts
-import { openAIResponsesAdapter } from "@openuidev/react-headless";
+import { openAIResponsesAdapter } from "@openuidev/react-ui";
 
 const llm = fetchLLM({
   url: "/api/chat",
@@ -421,7 +421,7 @@ const llm = fetchLLM({
 ### `langGraphAdapter`
 
 ```ts
-import { langGraphAdapter } from "@openuidev/react-headless";
+import { langGraphAdapter } from "@openuidev/react-ui";
 
 const llm = fetchLLM({
   url: "/api/langgraph",
@@ -483,7 +483,7 @@ If you omit `messageFormat`, both default to `identityMessageFormat`.
 ### `identityMessageFormat` (default)
 
 ```ts
-import { identityMessageFormat } from "@openuidev/react-headless";
+import { identityMessageFormat } from "@openuidev/react-ui";
 ```
 
 - **Conversion:** none — messages pass through as-is in canonical AG-UI form (`toApi` returns the array unchanged; `fromApi` casts it back to `Message[]`).
@@ -492,7 +492,7 @@ import { identityMessageFormat } from "@openuidev/react-headless";
 ### `openAIMessageFormat`
 
 ```ts
-import { openAIMessageFormat } from "@openuidev/react-headless";
+import { openAIMessageFormat } from "@openuidev/react-ui";
 ```
 
 - **Shape:** OpenAI **Chat Completions** messages (`ChatCompletionMessageParam[]`). 1-to-1: each canonical message becomes exactly one Completions message and vice versa.
@@ -502,7 +502,7 @@ import { openAIMessageFormat } from "@openuidev/react-headless";
 ### `openAIConversationMessageFormat`
 
 ```ts
-import { openAIConversationMessageFormat } from "@openuidev/react-headless";
+import { openAIConversationMessageFormat } from "@openuidev/react-ui";
 ```
 
 - **Shape:** OpenAI's item-based format for the **Responses API** and **Conversations API**. `toApi` returns `ResponseInputItem[]` (accepted by both `responses.create({ input })` and `conversations.items.create({ items })`); `fromApi` reads `ConversationItem[]` / `ResponseItem[]`.
@@ -512,7 +512,7 @@ import { openAIConversationMessageFormat } from "@openuidev/react-headless";
 ### `langGraphMessageFormat`
 
 ```ts
-import { langGraphMessageFormat } from "@openuidev/react-headless";
+import { langGraphMessageFormat } from "@openuidev/react-ui";
 ```
 
 - **Shape:** LangChain-style messages as used by LangGraph's thread-state API — discriminated by `type` (`"human"`, `"ai"`, `"tool"`, `"system"`) rather than `role`, with snake_case fields.

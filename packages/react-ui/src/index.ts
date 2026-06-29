@@ -5,7 +5,14 @@ export * from "./components/AgentInterface";
 
 // Adapter factories + types — paired with AgentInterface's `storage` / `llm` props,
 // re-exported so consumers can build adapters without reaching into react-headless.
-export { fetchLLM, restStorage } from "@openuidev/react-headless";
+export {
+  defineArtifactRenderer,
+  fetchLLM,
+  pairToolActivity,
+  partialJSONParse,
+  restStorage,
+  useToolActivities,
+} from "@openuidev/react-headless";
 export type {
   Artifact,
   ArtifactCategory,
@@ -19,20 +26,40 @@ export type {
   FetchLLMOptions,
   RestStorageOptions,
   ThreadStorage,
+  ToolActivity,
+  ToolCallStatus,
 } from "@openuidev/react-headless";
-export { defineArtifactRenderer } from "@openuidev/react-headless";
+
+// Re-export the full headless surface so apps import everything (adapters,
+// formats, hooks, storage, message types) from @openuidev/react-ui.
+export * from "@openuidev/react-headless";
+// `ToolCall` exists in both packages (a message type in react-headless, the
+// component here). Pin the component so the two star re-exports don't collide.
+export { ToolCall } from "./components/ToolCall";
 
 // DetailedView() factory — generates a ComponentRenderer with detailed-view wiring
 export { DetailedView } from "./detailed-view";
 export type { DetailedViewConfig, DetailedViewControls } from "./detailed-view";
 
-// ToolMessageRenderer — dispatches tool results to matching AppRenderers
+// Tool-call rendering: the typed-activity dispatchers (matched renderer xor
+// default) + the legacy ToolMessageRenderer wrapper.
 export {
+  TimelineEntry,
+  ToolActivityRenderer,
+  ToolCallEntry,
+  ToolCallErrorFallback,
   ToolMessageRenderer,
+  type TimelineEntryProps,
+  type ToolCallEntryProps,
+  type ToolDetailedViewPanel,
   type ToolMessageRendererProps,
 } from "./components/_shared/tool-renderer";
 
-// Detailed-view exports (DetailedViewPanel/DetailedViewPortalTarget also available as Shell.*)
+// Shared Collapsible primitive + built-in web-search renderer.
+export { Collapsible } from "./components/_shared/Collapsible";
+export { webSearchRenderer, type WebSearchSource } from "./renderers/webSearchRenderer";
+
+// Detailed-view exports (DetailedViewPanel/DetailedViewPortalTarget)
 export { useActiveDetailedView, useDetailedView } from "@openuidev/react-headless";
 export {
   DetailedViewOverlay,
@@ -57,7 +84,6 @@ export type { ExportChartData } from "./components/Charts/Charts";
 export * from "./components/CheckBoxGroup";
 export * from "./components/CheckBoxItem";
 export * from "./components/CodeBlock";
-export * as CopilotShell from "./components/CopilotShell";
 export * from "./components/DatePicker";
 export * from "./components/FollowUpBlock";
 export * from "./components/FollowUpItem";
@@ -78,7 +104,6 @@ export * from "./components/RadioItem";
 export * from "./components/SectionBlock";
 export * from "./components/Select";
 export * from "./components/Separator";
-export * as Shell from "./components/Shell";
 export * from "./components/Skeleton";
 export * from "./components/Slider";
 export * from "./components/Steps";
@@ -116,7 +141,7 @@ export * from "./context/LayoutContext";
 export * from "./context/PrintContext";
 
 // Types Export
-export type { ConversationStarterVariant } from "./components/BottomTray/ConversationStarter";
+export type { ConversationStarterVariant } from "./components/AgentInterface/ConversationStarter";
 export type {
   ConversationStarterIcon,
   ConversationStarterProps,

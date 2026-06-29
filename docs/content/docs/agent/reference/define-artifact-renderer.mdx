@@ -6,8 +6,7 @@ description: Full reference for the artifact-renderer config — type, toolName,
 A **renderer** describes how one kind of artifact — a dashboard, a report, a slide deck, a code file — turns into UI: an inline preview inside the chat message and a full view in a side panel or page. You build one with `defineArtifactRenderer(config)` and pass the results to `<AgentInterface>` through the [`artifactRenderers`](/docs/agent/reference/agentinterface-props#artifactrenderers) prop.
 
 ```tsx
-import { defineArtifactRenderer } from "@openuidev/react-headless";
-// also re-exported from "@openuidev/react-ui"
+import { defineArtifactRenderer } from "@openuidev/react-ui";
 
 const codeArtifactRenderer = defineArtifactRenderer({
   type: "code_artifact",
@@ -225,7 +224,7 @@ The registry is built once and stays stable for the provider's lifetime; later c
 Resolve the matched renderer for a tool name with [`useArtifactRenderer`](/docs/agent/reference/hooks#useartifactrenderer):
 
 ```ts
-import { useArtifactRenderer } from "@openuidev/react-headless";
+import { useArtifactRenderer } from "@openuidev/react-ui";
 
 const renderer = useArtifactRenderer("create_code_artifact"); // ArtifactRendererConfig | null
 ```
@@ -237,7 +236,7 @@ It returns `null` on a miss (and when no `artifactRenderers` were provided). Thi
 For custom dispatching — when you need to iterate every registered renderer, or do your own matching rather than looking up a single tool name — [`useArtifactRendererRegistry`](/docs/agent/reference/hooks#useartifactrendererregistry) is the escape hatch. It returns the whole `ArtifactRendererRegistry` (or `null` when no `artifactRenderers` were provided):
 
 ```ts
-import { useArtifactRendererRegistry } from "@openuidev/react-headless";
+import { useArtifactRendererRegistry } from "@openuidev/react-ui";
 
 const registry = useArtifactRendererRegistry();
 // registry: { byToolName: Map<string, ArtifactRendererConfig>;
@@ -249,7 +248,7 @@ The two indexes mirror the [two-way indexing](#registry-behavior) above: `byTool
 ## Full example
 
 ```tsx
-import { defineArtifactRenderer } from "@openuidev/react-headless";
+import { defineArtifactRenderer } from "@openuidev/react-ui";
 
 type CodeBlockProps = { language: string; title: string; codeString: string };
 

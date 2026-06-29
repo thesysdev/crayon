@@ -7,7 +7,7 @@ The legacy chat component took its backend wiring as a flat bag of props — `ap
 
 The whole migration, in one idea: the flat backend props are **removed** (not deprecated), and their values move into `fetchLLM({ ... })` for the LLM and `restStorage({ ... })` for threads.
 
-<Callout type="info">`AgentInterface` and the `fetchLLM` / `restStorage` / `defineArtifactRenderer` factories import from `@openuidev/react-ui`. Stream adapters, message formats, and hooks like `useArtifactList` live in `@openuidev/react-headless` — import those from there.</Callout>
+<Callout type="info">Everything imports from `@openuidev/react-ui`: `AgentInterface`, the `fetchLLM` / `restStorage` / `defineArtifactRenderer` factories, the stream adapters, the message formats, and hooks like `useArtifactList`.</Callout>
 
 ## The whole diff
 
@@ -28,8 +28,7 @@ If you were on the common setup — POST to a route, REST-backed threads — the
 **After:**
 
 ```tsx
-import { AgentInterface, fetchLLM, restStorage } from "@openuidev/react-ui";
-import { openAIAdapter, openAIMessageFormat } from "@openuidev/react-headless";
+import { AgentInterface, fetchLLM, restStorage, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 
 const llm = fetchLLM({
   url: "/api/chat",
@@ -96,8 +95,7 @@ If `processMessage` did something `fetchLLM` can't express — a non-`fetch` tra
 **After** — `send` receives the `signal` directly, and the parser moves onto the object as `streamProtocol`:
 
 ```tsx
-import { AgentInterface, type ChatLLM } from "@openuidev/react-ui";
-import { openAIAdapter } from "@openuidev/react-headless";
+import { AgentInterface, type ChatLLM, openAIAdapter } from "@openuidev/react-ui";
 
 const llm: ChatLLM = {
   streamProtocol: openAIAdapter(),
@@ -192,10 +190,10 @@ The behavior changes inside the renderer:
 
 ## Hooks and panel APIs
 
-`useAppList()` → **`useArtifactList(filter?)`**, imported from `@openuidev/react-headless`. It returns the per-thread artifact registry, optionally filtered by `type`:
+`useAppList()` → **`useArtifactList(filter?)`**, imported from `@openuidev/react-ui`. It returns the per-thread artifact registry, optionally filtered by `type`:
 
 ```tsx
-import { useArtifactList } from "@openuidev/react-headless";
+import { useArtifactList } from "@openuidev/react-ui";
 
 const artifacts = useArtifactList();
 const codeArtifacts = useArtifactList({ type: ["code_artifact"] });

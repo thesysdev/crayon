@@ -1,4 +1,4 @@
-import { envOr, requiredEnv } from "@/lib/env";
+import { envOr, openuiCloudBaseUrl, requiredEnv } from "@/lib/env";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
 import type { ResponseInputItem } from "openai/resources/responses/responses";
 
@@ -31,28 +31,26 @@ export async function POST(req: Request) {
     );
   }
   console.log("artifactTool", artifactTool());
-  const upstream = await fetch(
-    `${envOr("OPENUI_CLOUD_BASE_URL", "http://localhost:3102")}/v1/embed/responses`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${requiredEnv("THESYS_MASTER_API_KEY")}`,
-      },
-      body: JSON.stringify({
-        // A bare provider/model id (versioned managed ids are mutually
-        // exclusive with the instructions config block).
-        model: "anthropic/claude-sonnet-4-5-20250929",
-        conversation: threadId,
-        input,
-        stream: true,
-        store: true,
-        tools: [artifactTool()],
-        instructions: createResponsesInstructions(),
-      }),
-      signal: req.signal, // propagate browser aborts (stop button / tab close)
+  const upstream = await fetch(`${openuiCloudBaseUrl()}/v1/embed/responses`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${requiredEnv("THESYS_API_KEY")}`,
     },
-  );
+    body: JSON.stringify({
+      // A bare provider/model id (versioned managed ids are mutually
+      // exclusive with the instructions config block). Configurable via
+      // OPENUI_MODEL (.env.local); defaults to openai/gpt-5.
+      model: envOr("OPENUI_MODEL", "openai/gpt-5"),
+      conversation: threadId,
+      input,
+      stream: true,
+      store: true,
+      tools: [artifactTool()],
+      instructions: createResponsesInstructions(),
+    }),
+    signal: req.signal, // propagate browser aborts (stop button / tab close)
+  });
 
   if (!upstream.ok || !upstream.body) {
     // Forward the upstream error body verbatim (OpenAI-shaped JSON).

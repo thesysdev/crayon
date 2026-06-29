@@ -21,13 +21,18 @@ user: "What's the weather in Tokyo?"
 
 The trust boundary stays in your code. The model only proposes which tool to call and with what arguments. Execution, provider keys, and the tool implementations live on the server and never reach the browser.
 
-{/* add video: the agent calls a tool mid-response (e.g. image_search), runs it, and folds the result into its answer in the chat */}
+<video
+  src="/videos/agent/tool-call-web-search.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  className="w-full rounded-lg border"
+/>
 
 ## Integrate your own tool
 
 A tool is a **name**, a **description**, and a **JSON Schema** for its arguments. The model uses the description and schema to decide when and how to call it, so write them like prompts.
-
-{/* ASSUMED: OpenUI Cloud accepts tool definitions in OpenAI Responses `tools` shape, registered per-request alongside the conversation. Exact registration surface (request field vs dashboard config) to be confirmed. */}
 
 ```ts
 const tools = [
@@ -49,20 +54,13 @@ const tools = [
 
 That declaration is what the model sees. The implementation, the code that actually fetches the weather, stays private and runs only when the agent calls the tool.
 
-On **OpenUI Cloud**, register the declaration and Cloud drives the call loop for you. {/* ASSUMED: Cloud invokes a webhook/handler you register for each custom tool and feeds the result back automatically. Registration and execution wiring to be detailed. */}
+This declaration is the same on OpenUI Cloud and self-hosted. Your code always runs your own tools. Only the built-in tools below run inside Cloud.
 
 <Callout type="info">**Self-hosted:** you run the loop in your own route. Call the provider, execute any tool it asks for, append the result, and call again until the model returns text with no more tool calls. See [Self-hosting](/docs/agent/reference/self-hosting).</Callout>
 
 ## Built-in tools (OpenUI Cloud)
 
 OpenUI Cloud ships tools you enable without writing any implementation. Cloud holds the keys and runs them. For example, `image_search` lets the agent pull in relevant images.
-
-{/* ASSUMED: full built-in tool list (e.g. image_search, web_search) and the enable mechanism (dashboard toggle vs a flag on the Cloud request), to be detailed once the Cloud tool contract is confirmed. */}
-
-```ts
-{/* ASSUMED: enabling a built-in tool, shape to be confirmed */}
-const tools = ["image_search"];
-```
 
 ## Tools and artifacts
 

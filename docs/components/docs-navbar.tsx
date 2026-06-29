@@ -15,7 +15,6 @@ import { ThemeToggle } from "./theme-toggle";
 const tabs: { title: string; url: string; match?: string }[] = [
   { title: "OpenUI", url: "/docs/openui-lang" },
   { title: "Agent Interface", url: "/docs/agent/getting-started/introduction", match: "/docs/agent" },
-  { title: "Chat", url: "/docs/chat" },
   { title: "API Reference", url: "/docs/api-reference" },
 ];
 

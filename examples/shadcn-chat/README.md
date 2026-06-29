@@ -30,7 +30,7 @@ Card([
 ])
 ```
 
-On the client, the `<FullScreen />` component from `@openuidev/react-ui` handles everything — conversation state, streaming, input, and rendering. It parses the incoming SSE stream with `openAIAdapter()` and renders each OpenUI Lang node using `shadcnChatLibrary` — the custom 45-component library defined in `src/lib/shadcn-genui/`.
+On the client, the `<AgentInterface />` component from `@openuidev/react-ui` handles everything — thread history, conversation state, streaming, input, and rendering. You give it an `llm` describing how to call your backend and parse its stream, and a `componentLibrary`. It parses the incoming SSE stream with `openAIAdapter()` and renders each OpenUI Lang node using `shadcnChatLibrary` — the custom 45-component library defined in `src/lib/shadcn-genui/`.
 
 ---
 
@@ -40,7 +40,7 @@ On the client, the `<FullScreen />` component from `@openuidev/react-ui` handles
 ┌────────────────────────────────────┐        ┌────────────────────────────────────┐
 │   Browser                          │  HTTP  │   Next.js API Route                │
 │                                    │ ──────►│                                    │
-│  • <FullScreen /> manages UI       │        │  • Loads system-prompt.txt         │
+│  • <AgentInterface /> manages UI   │        │  • Loads system-prompt.txt         │
 │  • openAIAdapter() parses SSE      │◄────── │  • Calls LLM with runTools         │
 │  • shadcnChatLibrary renders nodes │  SSE   │  • Executes tools server-side      │
 │  • Conversation starters included  │        │  • Streams response as SSE events  │
@@ -49,11 +49,11 @@ On the client, the `<FullScreen />` component from `@openuidev/react-ui` handles
 
 ### Request / Response Flow
 
-1. User types a message. `<FullScreen />` calls `processMessage`, which sends `POST /api/chat` with the conversation history formatted via `openAIMessageFormat.toApi()`.
+1. User types a message. `<AgentInterface />` calls `llm.send`, which sends `POST /api/chat` with the conversation history formatted via `openAIMessageFormat.toApi()`.
 2. The API route reads `system-prompt.txt`, instantiates an OpenAI client, and calls `runTools` — the OpenAI SDK's built-in multi-step tool execution loop.
 3. If the LLM calls a tool, `runTools` executes it server-side and feeds the result back into the model automatically, emitting SSE events for the tool call and result.
 4. The LLM generates a final OpenUI Lang response. Text deltas are streamed as SSE `chunk` events. The stream ends with `data: [DONE]`.
-5. On the client, `openAIAdapter()` parses the SSE events and hands the accumulated text to `<FullScreen />`'s internal renderer.
+5. On the client, `openAIAdapter()` parses the SSE events and hands the accumulated text to `<AgentInterface />`'s internal renderer.
 6. The renderer passes the text to `<Renderer response={text} library={shadcnChatLibrary} />`, which parses the OpenUI Lang markup and renders each node as a shadcn/ui component in real time.
 
 ---
@@ -65,7 +65,7 @@ shadcn-chat/
 ├── src/
 │   ├── app/
 │   │   ├── api/chat/route.ts      # Streaming chat endpoint (OpenAI SDK + SSE)
-│   │   ├── page.tsx               # Single page — mounts <FullScreen />
+│   │   ├── page.tsx               # Single page — mounts <AgentInterface />
 │   │   └── layout.tsx             # Root layout with ThemeProvider
 │   ├── components/ui/             # Base shadcn/ui primitives (accordion, card, table, etc.)
 │   ├── hooks/
@@ -146,17 +146,36 @@ Messages are cleaned before sending to the API: `tool` role messages are strippe
 
 ### `src/app/page.tsx` — Frontend
 
-The entire chat interface is the `<FullScreen />` component from `@openuidev/react-ui`. You configure it with three things:
+The entire chat interface is the `<AgentInterface />` component from `@openuidev/react-ui`. You configure it with two core props:
 
 | Prop | Value | Purpose |
 | ---- | ----- | ------- |
-| `processMessage` | `fetch("/api/chat", ...)` | How to call your backend |
-| `streamProtocol` | `openAIAdapter()` | How to parse the SSE stream |
+| `llm` | `{ send, streamProtocol }` | How to call your backend (`send`) and parse its stream (`streamProtocol`) |
 | `componentLibrary` | `shadcnChatLibrary` | Which components to render OpenUI Lang nodes with |
 
-`openAIAdapter()` is imported from `@openuidev/react-headless`. It knows how to parse the OpenAI-style SSE format emitted by this route. `openAIMessageFormat.toApi()` converts the internal message objects into the format the OpenAI API expects.
+`storage` is optional — omit it for the built-in in-memory default (wiped on reload). Pass a `ChatStorage` adapter to persist the thread list.
 
-The page also includes 7 built-in conversation starters to showcase the component library:
+`llm.send` calls `fetch("/api/chat", ...)` with the conversation history formatted via `openAIMessageFormat.toApi()`, and `llm.streamProtocol` is set to `openAIAdapter()`:
+
+```tsx
+<AgentInterface
+  llm={{
+    send: ({ messages, signal }) =>
+      fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: openAIMessageFormat.toApi(messages) }),
+        signal,
+      }),
+    streamProtocol: openAIAdapter(),
+  }}
+  componentLibrary={shadcnChatLibrary}
+/>
+```
+
+`openAIAdapter()` and `openAIMessageFormat` are imported from `@openuidev/react-ui`. `openAIAdapter()` knows how to parse the OpenAI-style SSE format emitted by this route, and `openAIMessageFormat.toApi()` converts the internal message objects into the format the OpenAI API expects.
+
+The page also passes 7 built-in `starters` (each a `{ displayText, prompt }` pair) to showcase the component library:
 
 | Starter | What it demonstrates |
 | ------- | -------------------- |

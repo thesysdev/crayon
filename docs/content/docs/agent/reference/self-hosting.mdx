@@ -22,8 +22,7 @@ The `llm` channel is two halves of one loop:
 - **Server half** — a route handler that receives `{ threadId, messages }`, calls your provider with streaming on, and returns the stream.
 
 ```tsx
-import { AgentInterface, fetchLLM } from "@openuidev/react-ui";
-import { openAIReadableStreamAdapter, openAIMessageFormat } from "@openuidev/react-headless";
+import { AgentInterface, fetchLLM, openAIReadableStreamAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 
 const llm = fetchLLM({
   url: "/api/chat",                            // your route handler
@@ -164,7 +163,7 @@ export async function POST(req: Request) {
 Paired client — `agUIAdapter()` because the route emits AG-UI events; `openAIMessageFormat` shapes the outgoing `role` / `content` turns:
 
 ```tsx
-import { agUIAdapter, openAIMessageFormat } from "@openuidev/react-headless";
+import { agUIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 
 const llm = fetchLLM({
   url: "/api/chat",
@@ -193,8 +192,7 @@ Every run is backed by an `AbortController`. `fetchLLM` threads the UI's `AbortS
 Add a `storage` adapter and the default sidebar's thread list, "New chat" button, thread switching, and deletion all operate against your backend — conversations survive reloads. The fastest path is `restStorage`, which maps each `ChatStorage` operation to one HTTP call under a `baseUrl`:
 
 ```tsx
-import { AgentInterface, fetchLLM, restStorage } from "@openuidev/react-ui";
-import { agUIAdapter } from "@openuidev/react-headless";
+import { AgentInterface, fetchLLM, restStorage, agUIAdapter } from "@openuidev/react-ui";
 
 const llm = fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() });
 const storage = restStorage({ baseUrl: "/api/threads" });
@@ -217,7 +215,7 @@ That's the whole frontend change — one prop. You implement the five endpoints 
 `restStorage` throws a descriptive error on any non-`ok` response. The `Thread` shape at the boundary is `{ id, title, createdAt: string | number, isPending? }`. By default `restStorage` uses the identity message format; pass `messageFormat` (and optional `headers` / `fetch`) if your backend stores a provider-specific shape — it is applied to the `create` body (`toApi`) and the `get/{threadId}` response (`fromApi`).
 
 ```tsx
-import { openAIMessageFormat } from "@openuidev/react-headless";
+import { openAIMessageFormat } from "@openuidev/react-ui";
 
 const storage = restStorage({
   baseUrl: "/api/threads",
@@ -474,8 +472,7 @@ The handler is identical across all four — the framework only routes the reque
 On the client, a fully custom `llm` is an object with `send` (returns a streaming `Response`, **forwards the `signal`**) and `streamProtocol` (the adapter matching your body's wire format):
 
 ```tsx
-import type { ChatLLM, ChatStorage } from "@openuidev/react-ui";
-import { openAIReadableStreamAdapter } from "@openuidev/react-headless";
+import { type ChatLLM, type ChatStorage, openAIReadableStreamAdapter } from "@openuidev/react-ui";
 
 const llm: ChatLLM = {
   async send({ threadId, messages, signal }) {

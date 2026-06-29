@@ -7,15 +7,12 @@ import {
   type ArtifactEntry,
 } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { X } from "lucide-react";
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
-import { IconButton } from "../IconButton";
 import {
-  ArtifactPreviewIllustration,
   formatArtifactUpdatedAt,
-  getArtifactPreviewKind,
-  getArtifactTypeLabel,
+  useArtifactIcon,
+  useArtifactTypeLabel,
 } from "./ArtifactBrowserPage";
 import { useAgentInterfaceStore } from "./_shared/store";
 
@@ -32,9 +29,10 @@ export interface WorkspaceProps {
  * - Renders nothing while the registry is empty — drop-in users without
  *   artifact renderers never see it. Visibility is controlled by the header
  *   workspace toggle.
- * - Sections are driven by the `artifactCategories` configured on
- *   `<AgentInterface>`; a single "Artifacts" section lists everything when no
- *   categories are configured.
+ * - Lists every registered artifact, grouped into one section per
+ *   `artifactCategories` entry configured on `<AgentInterface>`; a single
+ *   "Artifacts" section lists everything when no categories are configured.
+ *   There are no tabs or filtering — the rail shows it all.
  * - Item click activates the corresponding DetailedView; the rail closes while
  *   a DetailedView is open.
  * - Rendered only in the thread view — hidden on Route pages and the
@@ -49,8 +47,6 @@ export const Workspace = ({ className, children }: WorkspaceProps) => {
   return <DefaultWorkspace className={className} />;
 };
 
-type WorkspaceTab = "all" | "artifacts" | "apps";
-
 const DefaultWorkspace = ({ className }: { className?: string }) => {
   const { isWorkspaceOpen, setIsWorkspaceOpen } = useAgentInterfaceStore((state) => ({
     isWorkspaceOpen: state.isWorkspaceOpen,
@@ -60,19 +56,8 @@ const DefaultWorkspace = ({ className }: { className?: string }) => {
   const { layout } = useLayoutContext();
   const categories = useArtifactCategories();
   const all = useArtifactList();
-  const [activeTab, setActiveTab] = useState<WorkspaceTab>("all");
   const entries = latestPerId(all);
-  const availableTabs = getAvailableWorkspaceTabs(categories, entries);
-  const selectedTab = availableTabs.some((tab) => tab.value === activeTab)
-    ? activeTab
-    : (availableTabs[0]?.value ?? "all");
   const shouldShowWorkspace = isWorkspaceOpen && !isDetailedViewActive;
-
-  useEffect(() => {
-    if (selectedTab !== activeTab) {
-      setActiveTab(selectedTab);
-    }
-  }, [activeTab, selectedTab]);
 
   useEffect(() => {
     if (isDetailedViewActive && isWorkspaceOpen) {
@@ -100,21 +85,10 @@ const DefaultWorkspace = ({ className }: { className?: string }) => {
           className,
         )}
       >
-        <div className="openui-agent-workspace-sidebar__header">
-          <WorkspaceTabs activeTab={selectedTab} tabs={availableTabs} onChange={setActiveTab} />
-          <IconButton
-            icon={<X size="1em" />}
-            onClick={() => setIsWorkspaceOpen(false)}
-            size="small"
-            variant="tertiary"
-            aria-label="Close workspace"
-            className="openui-agent-workspace-sidebar__close-button"
-          />
-        </div>
-
+        {/* No top bar / tabs for now — the rail shows every section. */}
         <div className="openui-agent-workspace-sidebar__content">
           {categories.length > 0 ? (
-            <WorkspaceSections categories={categories} entries={entries} activeTab={selectedTab} />
+            <WorkspaceSections categories={categories} entries={entries} />
           ) : (
             <WorkspaceSection entries={entries} />
           )}
@@ -124,103 +98,22 @@ const DefaultWorkspace = ({ className }: { className?: string }) => {
   );
 };
 
-const WORKSPACE_TABS: Array<{ value: WorkspaceTab; label: string }> = [
-  { value: "all", label: "All" },
-  { value: "artifacts", label: "Artifacts" },
-  { value: "apps", label: "Apps" },
-];
-
-const WorkspaceTabs = ({
-  activeTab,
-  tabs,
-  onChange,
-}: {
-  activeTab: WorkspaceTab;
-  tabs: ReadonlyArray<{ value: WorkspaceTab; label: string }>;
-  onChange: (tab: WorkspaceTab) => void;
-}) => {
-  const tabsRef = useRef<HTMLDivElement>(null);
-  const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({
-    opacity: 0,
-  });
-
-  useLayoutEffect(() => {
-    const tabsEl = tabsRef.current;
-    const activeButton = tabsEl?.querySelector<HTMLButtonElement>(
-      `[data-workspace-tab="${activeTab}"]`,
-    );
-    if (!tabsEl || !activeButton) return;
-
-    const updateIndicator = () => {
-      const tabsRect = tabsEl.getBoundingClientRect();
-      const activeButtonRect = activeButton.getBoundingClientRect();
-
-      setIndicatorStyle({
-        height: activeButtonRect.height,
-        opacity: 1,
-        width: activeButtonRect.width,
-        transform: `translate(${activeButtonRect.left - tabsRect.left}px, ${
-          activeButtonRect.top - tabsRect.top
-        }px)`,
-      });
-    };
-
-    updateIndicator();
-
-    if (typeof ResizeObserver === "undefined") return;
-
-    const resizeObserver = new ResizeObserver(updateIndicator);
-    resizeObserver.observe(tabsEl);
-    resizeObserver.observe(activeButton);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [activeTab]);
-
-  return (
-    <div
-      ref={tabsRef}
-      className="openui-agent-workspace-sidebar__tabs"
-      role="tablist"
-      aria-label="Workspace sections"
-    >
-      <span className="openui-agent-workspace-sidebar__tab-indicator" style={indicatorStyle} />
-      {tabs.map((tab) => (
-        <button
-          key={tab.value}
-          type="button"
-          role="tab"
-          aria-selected={activeTab === tab.value}
-          data-workspace-tab={tab.value}
-          className={clsx("openui-agent-workspace-sidebar__tab", {
-            "openui-agent-workspace-sidebar__tab--active": activeTab === tab.value,
-          })}
-          onClick={() => onChange(tab.value)}
-        >
-          {tab.label}
-        </button>
-      ))}
-    </div>
-  );
-};
-
 const WorkspaceSections = ({
   categories,
   entries,
-  activeTab,
 }: {
   categories: ReturnType<typeof useArtifactCategories>;
   entries: ReadonlyArray<ArtifactEntry>;
-  activeTab: WorkspaceTab;
 }) => {
-  const visibleCategories = categories
-    .filter((category) => entries.some((entry) => entryMatchesCategory(entry, category)))
-    .filter((category) => {
-      if (activeTab === "all") return true;
-      if (activeTab === "apps") return isAppsCategory(category);
-      return !isAppsCategory(category);
-    });
+  // Show every category that has registered entries — no tab filtering.
+  const visibleCategories = categories.filter((category) =>
+    entries.some((entry) => entryMatchesCategory(entry, category)),
+  );
+  // Entries matching no configured category are still shown (never dropped),
+  // in a fallback section after the categorized ones.
+  const uncategorized = entries.filter(
+    (entry) => !categories.some((category) => entryMatchesCategory(entry, category)),
+  );
 
   return (
     <>
@@ -230,6 +123,9 @@ const WorkspaceSections = ({
           entries={entries.filter((entry) => entryMatchesCategory(entry, category))}
         />
       ))}
+      {uncategorized.length > 0 && (
+        <WorkspaceSection key="__uncategorized__" entries={uncategorized} />
+      )}
     </>
   );
 };
@@ -260,9 +156,9 @@ const WorkspaceItem = ({ entry }: { entry: ArtifactEntry }) => {
   const { isActive } = useDetailedView(viewId);
   const store = useDetailedViewStore();
   const onClick = () => store.getState().setActiveDetailedView(viewId);
-  const previewKind = getArtifactPreviewKind(entry);
+  const icon = useArtifactIcon(entry.type);
   const updatedAt = formatArtifactUpdatedAt(entry.updatedAt);
-  const metadata = [getArtifactTypeLabel(entry), updatedAt].filter(Boolean).join(" · ");
+  const metadata = [useArtifactTypeLabel(entry.type), updatedAt].filter(Boolean).join(" · ");
 
   return (
     <li>
@@ -274,7 +170,7 @@ const WorkspaceItem = ({ entry }: { entry: ArtifactEntry }) => {
           "openui-agent-workspace-sidebar__item--active": isActive,
         })}
       >
-        <ArtifactPreviewIllustration kind={previewKind} />
+        <span className="openui-agent-workspace-sidebar__item-icon">{icon}</span>
         <span className="openui-agent-workspace-sidebar__item-body">
           <span className="openui-agent-workspace-sidebar__item-label">{entry.heading}</span>
           {metadata && (
@@ -296,34 +192,6 @@ function latestPerId<T extends { id: string; version: number }>(
 }
 
 type ArtifactCategory = ReturnType<typeof useArtifactCategories>[number];
-
-function getAvailableWorkspaceTabs(
-  categories: ReturnType<typeof useArtifactCategories>,
-  entries: ReadonlyArray<ArtifactEntry>,
-): Array<{ value: WorkspaceTab; label: string }> {
-  const hasApps =
-    categories.length > 0 &&
-    categories.some(
-      (category) =>
-        isAppsCategory(category) && entries.some((entry) => entryMatchesCategory(entry, category)),
-    );
-  const hasArtifacts =
-    categories.length === 0 ||
-    categories.some(
-      (category) =>
-        !isAppsCategory(category) && entries.some((entry) => entryMatchesCategory(entry, category)),
-    );
-
-  return WORKSPACE_TABS.filter((tab) => {
-    if (tab.value === "all") return true;
-    if (tab.value === "apps") return hasApps;
-    return hasArtifacts;
-  });
-}
-
-function isAppsCategory(category: ArtifactCategory) {
-  return category.name.toLowerCase() === "apps";
-}
 
 function entryMatchesCategory(entry: ArtifactEntry, category: ArtifactCategory) {
   return category.filter.type.includes(entry.type);

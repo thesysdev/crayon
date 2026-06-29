@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { Thread } from "../store/types";
 import type { Message, UserMessage } from "../types/message";
 import type { StreamProtocolAdapter } from "../types/stream";
@@ -57,6 +58,12 @@ export interface ArtifactCategory {
     /** Artifact types belonging to this category. */
     type: string[];
   };
+  /**
+   * Icon for this category's sidebar nav item. A platform-neutral node (a web
+   * element or a React Native element). When omitted, the nav falls back to the
+   * `<ArtifactNav icon>` prop, then a generic default.
+   */
+  icon?: ReactNode;
 }
 
 export interface ChatStorage {
@@ -69,11 +76,7 @@ export interface ChatStorage {
 // ── LLM adapter interface ──
 
 export interface ChatLLM {
-  send(params: {
-    threadId: string;
-    messages: Message[];
-    signal: AbortSignal;
-  }): Promise<Response>;
+  send(params: { threadId: string; messages: Message[]; signal: AbortSignal }): Promise<Response>;
   streamProtocol: StreamProtocolAdapter;
 }
 

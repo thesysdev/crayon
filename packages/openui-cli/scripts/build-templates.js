@@ -1,5 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const { rimrafSync } = require("rimraf");
 
 const TEMPLATES = ["openui-chat", "openui-cloud"];
 

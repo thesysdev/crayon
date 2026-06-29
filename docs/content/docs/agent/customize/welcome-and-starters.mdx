@@ -10,8 +10,7 @@ When a thread has no messages, `AgentInterface` shows an empty state: a **Welcom
 A starter is a clickable chip with display text and the prompt it sends. Pass an array via the `starters` prop:
 
 ```tsx
-import { AgentInterface } from "@openuidev/react-ui";
-import { fetchLLM, agUIAdapter } from "@openuidev/react-headless";
+import { AgentInterface, fetchLLM, agUIAdapter } from "@openuidev/react-ui";
 
 const llm = fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() });
 
@@ -58,8 +57,7 @@ The `image` prop takes `{ url: string }` or any React node. `starters` set here 
 Pass children to take over the whole welcome area. `title`, `description`, `image`, `starters`, and `starterVariant` are then ignored. A custom Welcome does not render starters for you, so to send a message from your own button, call `processMessage` from `useThread`:
 
 ```tsx
-import { AgentInterface } from "@openuidev/react-ui";
-import { useThread } from "@openuidev/react-headless";
+import { AgentInterface, useThread } from "@openuidev/react-ui";
 
 function Starter({ label, prompt }: { label: string; prompt: string }) {
   const processMessage = useThread((s) => s.processMessage);
@@ -82,4 +80,8 @@ function Starter({ label, prompt }: { label: string; prompt: string }) {
 
 `processMessage({ role: "user", content })` sends a user message and starts the run, the same as typing in the composer.
 
-{/* add image: the empty state showing the Welcome title and image above starter chips, short vs long variants side by side */}
+<img
+  src="/images/agent/welcome-and-starters.png"
+  alt="The empty state showing the Welcome title and logo above starter chips"
+  className="w-full rounded-lg border"
+/>

@@ -63,13 +63,16 @@ export const FoldableSectionTrigger = forwardRef<
         <Separator className="openui-foldable-section-trigger-content-separator" />
         <div className="openui-foldable-section-trigger-content-icon-button-wrapper">
           <IconButton
+            asChild
             icon={
               <ChevronRight className="openui-foldable-section-trigger-content-icon-button-icon" />
             }
             size="3-extra-small"
             variant="secondary"
             className="openui-foldable-section-trigger-content-icon-button"
-          />
+          >
+            <span aria-hidden="true" />
+          </IconButton>
           <div className="openui-foldable-section-trigger-content-text">{text}</div>
         </div>
       </div>

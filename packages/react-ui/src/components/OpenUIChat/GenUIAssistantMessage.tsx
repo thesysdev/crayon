@@ -1,7 +1,12 @@
 "use client";
 
-import type { AssistantMessage, ToolMessage } from "@openuidev/react-headless";
-import { useThread } from "@openuidev/react-headless";
+import type { AssistantMessage, ToolActivity } from "@openuidev/react-headless";
+import {
+  lookupArtifactRenderer,
+  useArtifactRendererRegistry,
+  useThread,
+  useToolActivities,
+} from "@openuidev/react-headless";
 import type { ActionEvent, Library } from "@openuidev/react-lang";
 import { BuiltinActionType, Renderer } from "@openuidev/react-lang";
 import { useCallback, useMemo } from "react";
@@ -11,10 +16,9 @@ import {
   wrapContentWithHeader,
   wrapContext,
 } from "../../utils/sentinelParser";
-import { ToolMessageRenderer } from "../_shared/tool-renderer";
-import { AssistantMessageContainer } from "../Shell";
-import { BehindTheScenes, ToolCallComponent } from "../ToolCall";
-import { ToolResult } from "../ToolResult";
+import { ToolCallTimeline } from "../ToolCall";
+import { TimelineEntry } from "../_shared/tool-renderer";
+import { AssistantMessageContainer } from "./AssistantMessageContainer";
 
 export const GenUIAssistantMessage = ({
   message,
@@ -60,26 +64,19 @@ export const GenUIAssistantMessage = ({
     }
   }, [contextString]);
 
-  const toolMessages = useMemo(() => {
-    const result: ToolMessage[] = [];
-    const msgIndex = messages.findIndex((m) => m.id === message.id);
-    if (msgIndex !== -1) {
-      for (let i = msgIndex + 1; i < messages.length; i++) {
-        const m = messages[i];
-        if (m && m.role === "tool") {
-          result.push(m as ToolMessage);
-        } else {
-          break;
-        }
-      }
-    }
-    return result;
-  }, [messages, message.id]);
+  // One id-keyed pairing of calls↔results with real status (streaming /
+  // executing / complete / error).
+  const activities = useToolActivities(message, messages);
 
-  const getToolName = (toolCallId: string) => {
-    const toolCall = message.toolCalls?.find((tc) => tc.id === toolCallId);
-    return toolCall?.function.name;
-  };
+  // The "Behind the scenes" timeline shows the RAW request/response for EVERY
+  // tool call (forceDefault), so matched tools (artifacts, web search) stay
+  // inspectable there. Matched renderers additionally render their rich preview
+  // OUTSIDE the timeline so it's always visible and its detailed-view panel
+  // stays mounted even after the message completes.
+  const registry = useArtifactRendererRegistry();
+  const isMatched = (a: ToolActivity) =>
+    !!(registry && lookupArtifactRenderer(registry, a.toolName));
+  const matchedActivities = activities.filter(isMatched);
 
   // Persist form state into the inline-wrapped message content. The original
   // header line (which may include `libraryVersion` and telemetry tags emitted
@@ -125,49 +122,21 @@ export const GenUIAssistantMessage = ({
     [processMessage],
   );
 
-  // Iterate every tool call from the assistant message and pair it with its
-  // tool message if one has arrived yet. Streaming-in-progress tool calls
-  // (no paired tool message) are dispatched too — the matched AppRenderer
-  // sees `controls.isStreaming = true` and partial args. The same component
-  // instance is reused when the tool message arrives, so the lifecycle is
-  // smooth (no remount, no ThreadContext re-register).
-  const dispatchableEntries = (message.toolCalls ?? []).map((toolCall) => {
-    const tm = toolMessages.find((m) => m.toolCallId === toolCall.id) ?? null;
-    return { toolCall, tm };
-  });
-
-  const hasToolActivity =
-    (message.toolCalls && message.toolCalls.length > 0) || toolMessages.length > 0;
-
   return (
     <AssistantMessageContainer>
-      {hasToolActivity && (
-        <BehindTheScenes isStreaming={isStreaming} toolCallsComplete={!!message.content}>
-          {message.toolCalls?.map((toolCall, idx) => (
-            <ToolCallComponent
-              key={toolCall.id}
-              toolCall={toolCall}
-              isStreaming={isStreaming}
-              toolsDone={!!message.content}
-              isLast={idx === (message.toolCalls?.length ?? 0) - 1 && toolMessages.length === 0}
-            />
-          ))}
-          {toolMessages.map((tm) => (
-            <ToolResult key={tm.id} message={tm} toolName={getToolName(tm.toolCallId)} />
-          ))}
-        </BehindTheScenes>
+      {activities.length > 0 && (
+        // Raw request/response for ALL tool calls, collapsed by default.
+        <ToolCallTimeline activities={activities} isLast={isStreaming} forceDefault />
       )}
-      {dispatchableEntries.map(({ tm, toolCall }) => (
-        <ToolMessageRenderer
-          // Key by toolCall id (stable from the start of the call) so the
-          // component instance persists across the streaming → completed
-          // transition.
-          key={toolCall.id}
-          toolMessage={tm}
-          toolCall={toolCall}
-          // No fallback — when the renderer doesn't match, render nothing here;
-          // the default ToolResult is still shown inside BehindTheScenes above.
-          fallback={null}
+      {matchedActivities.map((activity) => (
+        // Matched renderers (artifact previews, web search) — always visible.
+        // No raw fallback here: the forceDefault timeline above already shows the
+        // raw card, so a null-parser renderer shouldn't double it.
+        <TimelineEntry
+          key={activity.id}
+          activity={activity}
+          isLast={isStreaming}
+          fallbackToDefault={false}
         />
       ))}
       <Renderer
