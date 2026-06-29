@@ -52,7 +52,15 @@ export async function POST(req: Request) {
         // `artifacts` makes each entry carry library_version:'0.1.0' → openui-lang.
         // Bare artifactTool() would fall back to the legacy <artifact> XML model.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        tools: [artifactTool({ artifacts: ["slides", "report"] }) as any],
+        tools: [
+          artifactTool({ artifacts: ["slides", "report"] }),
+          {
+            type: "web_search",
+          },
+          {
+            type: "image_search",
+          },
+        ],
         instructions: createResponsesInstructions(),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
