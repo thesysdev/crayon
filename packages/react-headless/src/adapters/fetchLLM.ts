@@ -1,4 +1,3 @@
-import type { Context, Tool } from "@ag-ui/core";
 import { identityMessageFormat, type MessageFormat } from "../types/messageFormat";
 import type { StreamProtocolAdapter } from "../types/stream";
 import type { ChatLLM } from "./types";
@@ -10,10 +9,6 @@ export interface FetchLLMOptions {
   streamAdapter: StreamProtocolAdapter;
   /** Wire-format conversion for outgoing messages. Defaults to identity (canonical Message). */
   messageFormat?: MessageFormat;
-  /** Frontend tool definitions advertised to the agent (AG-UI `RunAgentInput.tools`). Defaults to `[]`. */
-  tools?: Tool[];
-  /** Contextual data passed to the agent (AG-UI `RunAgentInput.context`). Defaults to `[]`. */
-  context?: Context[];
   /** Extra headers merged into the request. */
   headers?: Record<string, string>;
   /** Override fetch implementation (for tests, custom auth wrappers, etc.). */
@@ -33,8 +28,6 @@ export function fetchLLM({
   url,
   streamAdapter,
   messageFormat = identityMessageFormat,
-  tools = [],
-  context = [],
   headers,
   fetch: customFetch,
 }: FetchLLMOptions): ChatLLM {
@@ -52,8 +45,8 @@ export function fetchLLM({
           threadId,
           runId: crypto.randomUUID(),
           messages: wire,
-          tools,
-          context,
+          tools: [],
+          context: [],
         }),
         signal,
       });
