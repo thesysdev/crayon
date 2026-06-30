@@ -178,7 +178,6 @@ export function AssistantMessage({ content, isStreaming }) {
 
         <div className="mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row">
           <Button href="/docs/openui-lang" text="Get Started with OpenUI Lang" variant="primary" />
-          <Button href="/docs/chat" text="Usage with OpenUI Chat" variant="secondary" />
         </div>
       </div>
 
@@ -199,25 +198,26 @@ export function AssistantMessage({ content, isStreaming }) {
         </div>
 
         <p className="mb-4 text-sm text-slate-600 sm:mb-6 sm:text-base dark:text-slate-400">
-          Pre-built chat layouts (Copilot, Fullscreen, Bottom Tray) or build custom UIs with
-          headless hooks. Fully themeable and accessible out of the box.
+          Drop in <code>AgentInterface</code> — a production-ready artifact chat surface with thread
+          history, conversation starters, and streaming — or build custom UIs with headless hooks.
+          Fully themeable and accessible out of the box.
         </p>
 
         <FeatureCards direction="horizontal" cols={3} className="mb-6">
           <FeatureCard
             direction="horizontal"
-            title="Copilot"
-            description="Floating widget for AI assistants"
+            title="Artifact Interface"
+            description="Drop-in chat surface with artifacts"
           />
           <FeatureCard
             direction="horizontal"
-            title="Fullscreen"
-            description="Full-page chat interface"
+            title="Thread History"
+            description="Persisted sidebar via pluggable storage"
           />
           <FeatureCard
             direction="horizontal"
-            title="Bottom Tray"
-            description="Slide-up mobile tray"
+            title="Headless Hooks"
+            description="Build a fully custom UI"
           />
         </FeatureCards>
 
@@ -254,24 +254,30 @@ export function AssistantMessage({ content, isStreaming }) {
           <CodeBlock
             title="Quick example"
             code={`import "@openuidev/react-ui/components.css";
-import "@openuidev/react-ui/styles/index.css";
-import { FullScreen, openuiLibrary } from "@openuidev/react-ui";
+import {
+  AgentInterface,
+  openAIAdapter,
+  openAIMessageFormat,
+} from "@openuidev/react-ui";
+import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 
-<FullScreen
-  apiUrl="/api/chat"
-  componentLibrary={openuiLibrary}
+const llm = {
+  send: ({ messages, signal }) =>
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: openAIMessageFormat.toApi(messages) }),
+      signal,
+    }),
+  streamProtocol: openAIAdapter(),
+};
+
+<AgentInterface
+  llm={llm}
+  componentLibrary={openuiChatLibrary}
 />
 `}
           />
-        </div>
-
-        <div className="flex gap-3">
-          <Button
-            href="/docs/chat/quick-start"
-            text="Get Started with OpenUI Chat"
-            variant="primary"
-          />
-          <Button href="/docs/chat" text="View Components" variant="secondary" />
         </div>
       </div>
 
@@ -349,12 +355,28 @@ const customLibrary = createLibrary({
             <TabsContent value="usage-with-chat" className="mt-4">
               <CodeBlock
                 title="Using with Chat UI"
-                code={`import { Copilot, openuiLibrary } from '@openuidev/react-ui';
+                code={`import {
+  AgentInterface,
+  openuiLibrary,
+  openAIAdapter,
+  openAIMessageFormat,
+} from '@openuidev/react-ui';
+
+const llm = {
+  send: ({ messages, signal }) =>
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: openAIMessageFormat.toApi(messages) }),
+      signal,
+    }),
+  streamProtocol: openAIAdapter(),
+};
 
 function App() {
   return (
-    <Copilot
-      apiUrl="/api/chat"
+    <AgentInterface
+      llm={llm}
       componentLibrary={openuiLibrary}
     />
   );

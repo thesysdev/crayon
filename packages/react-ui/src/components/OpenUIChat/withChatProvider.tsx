@@ -17,45 +17,24 @@ export type ChatLayoutProps<Extra = {}> = Omit<ChatProviderProps, "children"> &
   ThemeWrapperProps &
   Extra;
 
-const DummyThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  return children;
-};
-
-const CHAT_PROVIDER_PROP_KEYS: Set<keyof Omit<ChatProviderProps, "children">> = new Set([
-  "apiUrl",
-  "processMessage",
-  "threadApiUrl",
-  "fetchThreadList",
-  "createThread",
-  "deleteThread",
-  "updateThread",
-  "loadThread",
-  "streamProtocol",
-  "messageFormat",
-]);
+const DummyThemeProvider = ({ children }: { children: React.ReactNode }) => children;
 
 export function withChatProvider<ExtraProps = {}>(WrappedComponent: React.ComponentType<any>) {
   const WithChatProvider = (props: ChatLayoutProps<ExtraProps>) => {
-    const innerProps: Record<string, unknown> = {};
-    const chatProviderProps: Record<string, unknown> = {};
-    let theme: ThemeProps | undefined;
-    let disableThemeProvider = false;
+    const {
+      storage,
+      llm,
+      artifactRenderers,
+      artifactCategories,
+      theme,
+      disableThemeProvider,
+      ...innerProps
+    } = props as ChatLayoutProps<ExtraProps>;
 
-    for (const [key, value] of Object.entries(props)) {
-      if (key === "theme") {
-        theme = value as ThemeProps;
-      } else if (key === "disableThemeProvider") {
-        disableThemeProvider = value as boolean;
-      } else if (CHAT_PROVIDER_PROP_KEYS.has(key as keyof Omit<ChatProviderProps, "children">)) {
-        chatProviderProps[key] = value;
-      } else {
-        innerProps[key] = value;
-      }
-    }
-
-    const componentLibrary = innerProps["componentLibrary"] as Library | undefined;
-    const customAssistantMessage = innerProps["assistantMessage"];
-    const customUserMessage = innerProps["userMessage"];
+    const sharedUIProps = innerProps as SharedChatUIProps;
+    const componentLibrary = sharedUIProps.componentLibrary as Library | undefined;
+    const customAssistantMessage = sharedUIProps.assistantMessage;
+    const customUserMessage = sharedUIProps.userMessage;
 
     const genUIAssistantMessage = useMemo(() => {
       if (customAssistantMessage || !componentLibrary) return undefined;
@@ -69,19 +48,25 @@ export function withChatProvider<ExtraProps = {}>(WrappedComponent: React.Compon
       return ({ message }: { message: UserMessage }) => <GenUIUserMessage message={message} />;
     }, [customUserMessage, componentLibrary]);
 
+    const finalInnerProps: Record<string, unknown> = { ...innerProps };
     if (genUIAssistantMessage && !customAssistantMessage) {
-      innerProps["assistantMessage"] = genUIAssistantMessage;
+      finalInnerProps["assistantMessage"] = genUIAssistantMessage;
     }
     if (genUIUserMessage && !customUserMessage) {
-      innerProps["userMessage"] = genUIUserMessage;
+      finalInnerProps["userMessage"] = genUIUserMessage;
     }
 
     const ThemeProviderComponent = disableThemeProvider ? DummyThemeProvider : ThemeProvider;
 
     return (
       <ThemeProviderComponent {...theme}>
-        <ChatProvider {...(chatProviderProps as any)}>
-          <WrappedComponent {...innerProps} />
+        <ChatProvider
+          storage={storage}
+          llm={llm}
+          artifactRenderers={artifactRenderers}
+          artifactCategories={artifactCategories}
+        >
+          <WrappedComponent {...finalInnerProps} />
         </ChatProvider>
       </ThemeProviderComponent>
     );

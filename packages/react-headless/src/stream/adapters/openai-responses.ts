@@ -1,4 +1,7 @@
-import type { ResponseStreamEvent } from "openai/resources/responses/responses";
+import type {
+  ResponseFunctionToolCallOutputItem,
+  ResponseStreamEvent,
+} from "openai/resources/responses/responses";
 import { AGUIEvent, EventType, StreamProtocolAdapter } from "../../types";
 
 export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
@@ -10,12 +13,17 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
     // Map item_id → call_id so TOOL_CALL_ARGS can reference the correct toolCallId
     const itemIdToCallId: Record<string, string> = {};
 
+    let buffer = "";
     while (true) {
       const { done, value } = await reader.read();
-      if (done) break;
-
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split("\n");
+      // Accumulate across reads: a single SSE `data:` line (e.g. a multi-KB
+      // artifact function_call_output payload) can span several network
+      // chunks. Splitting each chunk independently tears that line in two and
+      // drops it on JSON.parse. Hold the trailing partial line until the next
+      // read; on done, flush whatever remains.
+      buffer += done ? decoder.decode() : decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = done ? "" : (lines.pop() ?? "");
 
       for (const line of lines) {
         if (!line.startsWith("data: ")) continue;
@@ -27,7 +35,10 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
 
           switch (event.type) {
             case "response.output_item.added": {
-              const item = event.item;
+              // OpenAI's Conversations API surfaces function_call_output as an
+              // output item even though the SDK's ResponseOutputItem union does
+              // not declare it. Widen the type so we can branch on it below.
+              const item = event.item as typeof event.item | ResponseFunctionToolCallOutputItem;
               if (item.type === "message" && item.role === "assistant") {
                 yield {
                   type: EventType.TEXT_MESSAGE_START,
@@ -41,6 +52,17 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                   type: EventType.TOOL_CALL_START,
                   toolCallId: item.call_id,
                   toolCallName: item.name,
+                };
+              } else if (item.type === "function_call_output") {
+                // Fired when a function_call_output we submitted as input is
+                // integrated into a conversation-linked response — surfaces
+                // server-side tool execution to the SDK store.
+                yield {
+                  type: EventType.TOOL_CALL_RESULT,
+                  messageId: item.id,
+                  toolCallId: item.call_id,
+                  content:
+                    typeof item.output === "string" ? item.output : JSON.stringify(item.output),
                 };
               }
               break;
@@ -107,6 +129,7 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
           console.error("Failed to parse OpenAI Responses SSE event", e);
         }
       }
+      if (done) break;
     }
   },
 });

@@ -2,7 +2,8 @@
 
 Framework-agnostic core for OpenUI Lang. This is the parser, prompt-generation, runtime-evaluation, and type layer used by the framework packages.
 
-[![npm](https://img.shields.io/npm/v/@openuidev/lang-core)](https://www.npmjs.com/package/@openuidev/lang-core)
+[![npm version](https://img.shields.io/npm/v/@openuidev/lang-core)](https://www.npmjs.com/package/@openuidev/lang-core)
+[![monthly downloads](https://img.shields.io/npm/dm/@openuidev/lang-core)](https://www.npmjs.com/package/@openuidev/lang-core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
 
 **Links:** [OpenUI Lang docs](https://openui.com/docs/openui-lang) | [GitHub repo](https://github.com/thesysdev/openui)

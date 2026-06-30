@@ -2,6 +2,7 @@ import fs from "fs";
 import { camelCase } from "lodash-es";
 import path from "path";
 import { fileURLToPath } from "url";
+import { mirrorStylesWithLayer, stripBom, writeLayeredCopy } from "./css-layer-utils.mjs";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -9,29 +10,6 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 function ensureDirectoryExists(dirPath) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
-  }
-}
-
-// Wrap a CSS file's contents in @layer openui { ... } if not already wrapped.
-// Idempotency check protects watch-mode and back-to-back builds.
-function wrapInLayer(content) {
-  if (content.trim() === "") return content;
-  if (/^\s*@layer\s+openui\b/.test(content)) return content;
-  return `@layer openui{${content}}`;
-}
-
-// Walk dist/components and wrap every emitted .css file in @layer openui.
-// *.module.css are Storybook CSS Modules — locally scoped, not shipped, not wrapped.
-function wrapComponentCssInPlace(dir) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      wrapComponentCssInPlace(full);
-    } else if (entry.name.endsWith(".css") && !entry.name.endsWith(".module.css")) {
-      const content = fs.readFileSync(full, "utf8");
-      const wrapped = wrapInLayer(content);
-      if (wrapped !== content) fs.writeFileSync(full, wrapped, "utf8");
-    }
   }
 }
 
@@ -55,19 +33,40 @@ function fixScssImportsInJs(dir) {
   });
 }
 
+// Strip Sass's leading UTF-8 BOM (compressed-mode output for non-ASCII) from
+// every *.css under dir, in place — so the unlayered default exports
+// (./components.css, ./styles/*) ship BOM-free. The layered mirror strips it
+// separately via wrapInLayer.
+function stripBomFromCssInDir(dir) {
+  for (const entry of fs.readdirSync(dir)) {
+    const full = path.join(dir, entry);
+    if (fs.statSync(full).isDirectory()) {
+      stripBomFromCssInDir(full);
+    } else if (entry.endsWith(".css")) {
+      const content = fs.readFileSync(full, "utf8");
+      const stripped = stripBom(content);
+      if (stripped !== content) fs.writeFileSync(full, stripped, "utf8");
+    }
+  }
+}
+
 // Copy CSS files from src to dist
 function copyCssFiles() {
   const srcDir = path.join(dirname, "dist", "components");
   const distDir = path.join(dirname, "dist", "styles");
 
-  // Wrap every emitted component CSS in @layer openui before copying.
-  // dist/openui-defaults.css lives outside dist/components and stays unwrapped
-  // so the defaults.css export remains in the unlayered cascade — matching the
-  // ThemeProvider runtime injection contract.
-  wrapComponentCssInPlace(srcDir);
-
   // Ensure the dist/styles directory exists
   ensureDirectoryExists(distDir);
+
+  // Strip Sass's leading BOM from the unlayered sass output before copying, so
+  // the default exports (./components.css, ./styles/*) ship BOM-free.
+  stripBomFromCssInDir(srcDir);
+  const defaultsCssSrc = path.join(dirname, "dist", "openui-defaults.css");
+  if (fs.existsSync(defaultsCssSrc)) {
+    const content = fs.readFileSync(defaultsCssSrc, "utf8");
+    const stripped = stripBom(content);
+    if (stripped !== content) fs.writeFileSync(defaultsCssSrc, stripped, "utf8");
+  }
 
   // Read all component directories
   const components = fs.readdirSync(srcDir);
@@ -100,6 +99,15 @@ function copyCssFiles() {
   if (fs.existsSync(defaultsCssPath)) {
     fs.copyFileSync(defaultsCssPath, path.join(distDir, "openui-defaults.css"));
   }
+
+  // Emit the opt-in layered mirror (./layered-components.css and
+  // ./layered/styles/*). The default exports above stay unlayered — see
+  // README "Styling integration".
+  writeLayeredCopy(
+    path.join(srcDir, "index.css"),
+    path.join(dirname, "dist", "layered", "components", "index.css"),
+  );
+  mirrorStylesWithLayer(distDir, path.join(dirname, "dist", "layered", "styles"));
 
   // Fix .scss imports in compiled JS to point to .css files instead
   fixScssImportsInJs(path.join(dirname, "dist"));

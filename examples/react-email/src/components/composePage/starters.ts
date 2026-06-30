@@ -23,7 +23,7 @@ Include these sections in order:
     - (https://react.dev/favicon-32x32.png, "React", "React Components", "40+ production-ready components with defineComponent and Zod-powered type safety.")
     - (https://openai.com/favicon.ico, "AI", "Any LLM Provider", "OpenAI, Anthropic, Gemini, Mistral — works with any OpenAI-compatible API.")
     - (https://www.typescriptlang.org/favicon-32x32.png, "TypeScript", "OpenUI Lang", "A specialized format that LLMs generate natively — no JSON parsing, no prompt hacks.")
-    - (https://vercel.com/favicon.ico, "Deploy", "Chat SDK Included", "Drop-in Copilot, FullScreen, and BottomTray layouts with streaming and persistence.")
+    - (https://vercel.com/favicon.ico, "Deploy", "Chat SDK Included", "Drop-in AgentInterface artifact UI with streaming and persistence.")
 14. EmailDivider
 15. EmailCodeBlock with this code:
     "import { defineComponent } from '@openuidev/react-lang';\\nimport { z } from 'zod';\\n\\nexport const WeatherCard = defineComponent({\\n  name: 'WeatherCard',\\n  props: z.object({\\n    city: z.string(),\\n    temp: z.number(),\\n    condition: z.string(),\\n  }),\\n  description: 'Shows current weather for a city',\\n  component: ({ props }) => (\\n    <div>\\n      <h3>{props.city}</h3>\\n      <p>{props.temp}° — {props.condition}</p>\\n    </div>\\n  ),\\n});"

@@ -73,15 +73,17 @@ export const langGraphAdapter = (options?: LangGraphAdapterOptions): StreamProto
 
     while (true) {
       const { done, value } = await reader.read();
-      if (done) break;
 
-      buffer += decoder.decode(value, { stream: true });
+      // Accumulate across reads: an SSE event block (e.g. a multi-KB artifact
+      // function_call_arguments payload) can span several network reads. Hold the
+      // trailing partial block until the next read; on done, flush what remains
+      // (the old early `if (done) break` dropped the final un-terminated block).
+      buffer += done ? decoder.decode() : decoder.decode(value, { stream: true });
 
-      // SSE events are separated by double newlines.
-      // Split on \n\n to get complete event blocks, keeping the last
-      // (possibly incomplete) block in the buffer.
+      // SSE events are separated by double newlines; keep the last (possibly
+      // incomplete) block in the buffer until more arrives.
       const blocks = buffer.split("\n\n");
-      buffer = blocks.pop() ?? "";
+      buffer = done ? "" : (blocks.pop() ?? "");
 
       for (const block of blocks) {
         const trimmed = block.trim();
@@ -249,6 +251,8 @@ export const langGraphAdapter = (options?: LangGraphAdapterOptions): StreamProto
             break;
         }
       }
+
+      if (done) break;
     }
 
     // If stream ended without an explicit "end" event, close out.

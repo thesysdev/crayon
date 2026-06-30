@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 export interface BehindTheScenesProps {
   /** True while the overall message is still streaming */
@@ -42,9 +42,17 @@ export const BehindTheScenes = ({
     setUserOverride((prev) => (prev !== null ? !prev : !isExpanded));
   };
 
+  const panelId = useId();
+
   return (
     <div className="openui-behind-the-scenes">
-      <button className="openui-behind-the-scenes__toggle" onClick={toggle} type="button">
+      <button
+        className="openui-behind-the-scenes__toggle"
+        onClick={toggle}
+        type="button"
+        aria-expanded={isExpanded}
+        aria-controls={panelId}
+      >
         {isExpanded ? (
           <ChevronUp size={14} className="openui-behind-the-scenes__toggle-icon" />
         ) : (
@@ -52,7 +60,11 @@ export const BehindTheScenes = ({
         )}
         {toolsActive ? "Working..." : "Behind the scenes"}
       </button>
-      {isExpanded && <div className="openui-behind-the-scenes__items">{children}</div>}
+      {isExpanded && (
+        <div className="openui-behind-the-scenes__items" id={panelId}>
+          {children}
+        </div>
+      )}
     </div>
   );
 };

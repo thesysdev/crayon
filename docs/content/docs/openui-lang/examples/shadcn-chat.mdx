@@ -64,8 +64,8 @@ See [Defining Components](/docs/openui-lang/defining-components) for the full `d
 ## Architecture
 
 ```
-Browser (FullScreen) -- POST /api/chat --> Next.js route --> OpenAI
-                     <-- SSE stream --                       (OpenUI Lang + tool calls)
+Browser (AgentInterface) -- POST /api/chat --> Next.js route --> OpenAI
+                         <-- SSE stream --                       (OpenUI Lang + tool calls)
 ```
 
 The client sends a conversation to `/api/chat`. The API route loads a generated `system-prompt.txt`, forwards the messages to the LLM with streaming and tool definitions, and returns SSE events. On the client, `openAIAdapter()` parses the SSE stream and `shadcnChatLibrary` maps each OpenUI Lang node to a shadcn/ui component that renders progressively as tokens arrive.

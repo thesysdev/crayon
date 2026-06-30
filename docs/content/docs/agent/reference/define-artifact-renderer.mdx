@@ -1,0 +1,294 @@
+---
+title: defineArtifactRenderer
+description: Full reference for the artifact-renderer config — type, toolName, the parser contract, preview/actual, controls, and registry matching.
+---
+
+A **renderer** describes how one kind of artifact — a dashboard, a report, a slide deck, a code file — turns into UI: an inline preview inside the chat message and a full view in a side panel or page. You build one with `defineArtifactRenderer(config)` and pass the results to `<AgentInterface>` through the [`artifactRenderers`](/docs/agent/reference/agentinterface-props#artifactrenderers) prop.
+
+```tsx
+import { defineArtifactRenderer } from "@openuidev/react-ui";
+
+const codeArtifactRenderer = defineArtifactRenderer({
+  type: "code_artifact",
+  toolName: "create_code_artifact",
+  parser: ({ response }) => {
+    const data = response as CodeArtifact | null;
+    if (!data) return null;
+    return { props: data, meta: { id: `code:${data.title}`, version: 1, heading: data.title } };
+  },
+  preview: (props, controls) => <CodeCard title={props.title} onOpen={controls.open} />,
+  actual: (props) => <CodeBlock language={props.language} codeString={props.code} />,
+});
+```
+
+`defineArtifactRenderer` returns its argument unchanged. Its only job is type inference: it infers the `Props` type from the `parser`'s return value, so `preview` and `actual` receive a fully-typed `props` without you annotating anything by hand. (Without it you'd have to write `const r: ArtifactRendererConfig<CodeArtifact> = { ... }`.)
+
+For a walkthrough of building a renderer end to end, see [Custom artifacts](/docs/agent/guides/custom-artifacts). This page is the precise contract.
+
+## Config type
+
+```ts
+function defineArtifactRenderer<Props>(
+  config: ArtifactRendererConfig<Props>,
+): ArtifactRendererConfig<Props>;
+
+interface ArtifactRendererConfig<Props = unknown> {
+  type: string;
+  toolName: string | string[];
+  parser: (
+    raw: { args: unknown; response: unknown },
+    ctx: { isStreaming: boolean },
+  ) => ParsedArtifact<Props> | null;
+  preview: (props: Props, controls: ArtifactRendererControls) => ReactNode;
+  actual: (props: Props, controls: ArtifactRendererControls) => ReactNode;
+}
+
+interface ParsedArtifact<Props> {
+  props: Props;
+  meta: { id: string; version: number; heading: string } | null;
+}
+
+interface ArtifactRendererControls {
+  isActive: boolean;
+  isStreaming: boolean;
+  open: () => void;
+  close: () => void;
+  toggle: () => void;
+}
+```
+
+All five fields (`type`, `toolName`, `parser`, `preview`, `actual`) are required.
+
+| Field | Type | Purpose |
+| --- | --- | --- |
+| `type` | `string` | The artifact kind — the key for the storage path and for category filters. |
+| `toolName` | `string \| string[]` | The tool call(s) this renderer matches on the tool-call path. |
+| `parser` | `(raw, ctx) => ParsedArtifact \| null` | Converts the raw envelope into typed `props` plus an optional `meta` registry entry. |
+| `preview` | `(props, controls) => ReactNode` | The compact inline view rendered in the chat message. |
+| `actual` | `(props, controls) => ReactNode` | The full view rendered in the detailed-view panel or full-page browser. |
+
+## `type`
+
+```ts
+type: string;
+```
+
+The artifact kind — a literal string like `"code_artifact"` or `"code_block"`. It links three things together:
+
+- **this renderer**, for the storage path (the artifact browser looks up a renderer by `type`);
+- any [`artifactCategories`](/docs/agent/reference/agentinterface-props#artifactcategories) whose `filter.type` includes it;
+- **stored artifacts**, whose `ArtifactSummary.type` is matched against it.
+
+`type` is orthogonal to the static/live distinction — it is just an identifier you choose. On a duplicate `type` across renderers, the first registration wins (see [Registry behavior](#registry-behavior)).
+
+## `toolName`
+
+```ts
+toolName: string | string[];
+```
+
+The tool call(s) this renderer matches on the tool-call path. Literal strings only — **no `RegExp`, no wildcards, no patterns**. A single string matches one tool; an array registers the *same* renderer for several tool names (e.g. a create and an edit tool that both yield the same artifact):
+
+```ts
+toolName: ["presentation:create", "presentation:edit"],
+```
+
+On a duplicate `toolName` across renderers, the first registration wins.
+
+## `parser`
+
+```ts
+parser: (
+  raw: { args: unknown; response: unknown },
+  ctx: { isStreaming: boolean },
+) => { props: Props; meta: { id; version; heading } | null } | null;
+```
+
+The parser converts the raw envelope into typed `props` plus an optional `meta` registry entry. The SDK **does not pre-parse JSON** — `args` and `response` arrive exactly as the backend emitted them (typically a JSON *string* for `args`, the raw deserialized value for `response`, depending on your stream adapter). Your parser owns deserialization and validation.
+
+### Two invocation paths
+
+The same parser is called on both paths, with different inputs:
+
+| | `args` | `response` | `ctx.isStreaming` |
+| --- | --- | --- | --- |
+| **Tool-call path** (matched by `toolName`) | the call's arguments, as emitted | the tool result, or `null` until it arrives | `true` while args stream in; `false` once the result lands |
+| **Storage path** (matched by `type`) | `undefined` | `artifact.content` | always `false` |
+
+Concretely, the storage path always calls:
+
+```ts
+parser({ args: undefined, response: artifact.content }, { isStreaming: false });
+```
+
+Two consequences your parser must respect:
+
+1. **It is called on every update during streaming.** While `ctx.isStreaming` is `true`, `args` may be a *partial* JSON string (the LLM is still emitting it) and `response` may be `null` (the tool result hasn't paired in yet). Tolerate both — wrap JSON parsing in `try/catch`, and bail with `return null` until you have enough to render.
+2. **Read everything you need out of `response`, not `args`.** Only the tool-call path populates `args`, and only the storage path guarantees a complete `response`. Treat `args` as a streaming nicety (useful for an early preview) and `response` as the source of truth. To make one renderer work on both paths, ensure whatever your tool *returns* has the same shape as whatever you *persist* as `artifact.content`.
+
+### Return value
+
+| Return | Effect |
+| --- | --- |
+| `null` (outer) | Skip rendering this call entirely — no preview, no actual, no registry entry. |
+| `{ props, meta: { id, version, heading } }` | Render `preview`/`actual` with `props`, **and** register an entry in the per-thread ThreadContext. |
+| `{ props, meta: null }` | Render `preview`/`actual` with `props`, but do **not** register in ThreadContext. |
+
+`meta` controls the [per-thread artifact registry](/docs/agent/reference/hooks#useartifactlist) — the list backing `useArtifactList` and the [Workspace](/docs/agent/reference/components#agentinterfaceworkspace) rail:
+
+- **`meta.id`** — a stable identifier for this logical entry. It should not change across re-runs of the same artifact.
+- **`meta.version`** — bump it when the content changes. When the `(id, version)` pair changes, the entry is re-registered.
+- **`meta.heading`** — the display label shown in workspace/registry lists.
+
+A common pattern is to return `meta: null` while `ctx.isStreaming` is `true`, then a real `meta` once the result arrives — so the entry only appears in the registry after the artifact is complete:
+
+```ts
+parser: ({ args, response }, { isStreaming }) => {
+  const partial = safeParse(args);          // tolerate partial JSON
+  if (!partial) return null;                // not enough to draw yet
+  if (isStreaming || !response) {
+    return { props: partial, meta: null };  // render a skeleton, don't register
+  }
+  const data = response as CodeArtifact;
+  return { props: data, meta: { id: `code:${data.title}`, version: 1, heading: data.title } };
+},
+```
+
+## `preview`
+
+```ts
+preview: (props: Props, controls: ArtifactRendererControls) => ReactNode;
+```
+
+The compact view rendered **inline in the chat message** — typically a card or chip with a button that opens the full view via `controls.open()`. Receives the `props` your parser produced and the [`controls`](#controls).
+
+## `actual`
+
+```ts
+actual: (props: Props, controls: ArtifactRendererControls) => ReactNode;
+```
+
+The **full view** of the artifact. It renders in one of two places depending on how the artifact was opened:
+
+- the in-thread **detailed-view panel** (the side panel opened by `controls.open()`), or
+- the **full-page artifact view** in the artifact browser (`artifacts/{category}/{id}`).
+
+Same `props`, same `controls` signature as `preview`.
+
+## `controls`
+
+Both `preview` and `actual` receive a `controls` object:
+
+```ts
+interface ArtifactRendererControls {
+  isActive: boolean;    // this renderer's detailed view is the currently active one
+  isStreaming: boolean; // true while the tool call is still streaming; always false for storage-opened artifacts
+  open: () => void;     // activate this renderer's detailed view
+  close: () => void;    // close this renderer's detailed view if active
+  toggle: () => void;   // toggle this renderer's detailed view
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `isActive` | `true` when this renderer's detailed view is the currently active one. Lets a preview reflect that its panel is already open (e.g. highlight the card). |
+| `isStreaming` | Mirrors the `ctx.isStreaming` your parser saw — `true` while arguments arrive incrementally and no tool result has paired in, then `false` once the result lands. Always `false` for storage-opened artifacts. |
+| `open` | Activate this renderer's detailed view. |
+| `close` | Close this renderer's detailed view if active. |
+| `toggle` | Toggle this renderer's detailed view. |
+
+The **same component instance is reused** across the streaming → completed transition (no remount), so you can swap UI states off `isStreaming` — a skeleton or "streaming…" badge during partial args, then the final view once the result lands.
+
+## Registry behavior
+
+Pass an array of configs to `<AgentInterface artifactRenderers={[...]}>`. The interface builds a registry once at mount and indexes each renderer **two ways**:
+
+- **by `toolName`** — used on the tool-call path. A renderer with an array of tool names is indexed once per name.
+- **by `type`** — used on the storage path (the artifact browser rendering stored artifacts).
+
+```tsx
+<AgentInterface
+  llm={llm}
+  artifactRenderers={[codeArtifactRenderer, presentationRenderer, codeBlockRenderer]}
+/>
+```
+
+**First-wins on duplicates.** If two renderers register the same `toolName`, the first one in the array wins and the later one is ignored (with a dev-mode `console.warn`). The same rule applies independently to `type`. Because the rules are independent, a renderer whose `type` collides with an earlier one is still indexed under its own (non-colliding) `toolName`s — only the type-based lookup is deduped. **Put your custom renderers before any SDK defaults** so yours win.
+
+<Callout type="warn">
+The registry is built once and stays stable for the provider's lifetime; later changes to the `artifactRenderers` prop are ignored (with a dev-mode warning). Pass a stable array — don't construct a fresh `artifactRenderers` value on every render expecting it to swap renderers in.
+</Callout>
+
+### Looking renderers up at runtime
+
+Resolve the matched renderer for a tool name with [`useArtifactRenderer`](/docs/agent/reference/hooks#useartifactrenderer):
+
+```ts
+import { useArtifactRenderer } from "@openuidev/react-ui";
+
+const renderer = useArtifactRenderer("create_code_artifact"); // ArtifactRendererConfig | null
+```
+
+It returns `null` on a miss (and when no `artifactRenderers` were provided). This is the normal way to resolve a renderer.
+
+#### Advanced: the raw registry
+
+For custom dispatching — when you need to iterate every registered renderer, or do your own matching rather than looking up a single tool name — [`useArtifactRendererRegistry`](/docs/agent/reference/hooks#useartifactrendererregistry) is the escape hatch. It returns the whole `ArtifactRendererRegistry` (or `null` when no `artifactRenderers` were provided):
+
+```ts
+import { useArtifactRendererRegistry } from "@openuidev/react-ui";
+
+const registry = useArtifactRendererRegistry();
+// registry: { byToolName: Map<string, ArtifactRendererConfig>;
+//             byType: Map<string, ArtifactRendererConfig> } | null
+```
+
+The two indexes mirror the [two-way indexing](#registry-behavior) above: `byToolName` is keyed on every registered tool name (a renderer with an array of tool names appears once per name) and `byType` is keyed on each renderer's `type`. The `lookupArtifactRenderer` (by tool name) and `lookupArtifactRendererByType` (by type) helpers do a single lookup against a registry object directly, without a hook. Reach for the registry only when the single-tool `useArtifactRenderer` lookup isn't enough.
+
+## Full example
+
+```tsx
+import { defineArtifactRenderer } from "@openuidev/react-ui";
+
+type CodeBlockProps = { language: string; title: string; codeString: string };
+
+const isCodeBlockProps = (v: unknown): v is CodeBlockProps =>
+  !!v &&
+  typeof v === "object" &&
+  typeof (v as CodeBlockProps).language === "string" &&
+  typeof (v as CodeBlockProps).title === "string" &&
+  typeof (v as CodeBlockProps).codeString === "string";
+
+export const codeBlockRenderer = defineArtifactRenderer({
+  type: "code_block",
+  toolName: "create_code_block",
+
+  parser: ({ args }) => {
+    if (typeof args !== "string") return null; // tolerate non-string / partial args
+    try {
+      const parsed = JSON.parse(args);
+      if (!isCodeBlockProps(parsed)) return null;
+      return {
+        props: parsed,
+        meta: { id: parsed.title, version: 1, heading: parsed.title },
+      };
+    } catch {
+      return null; // partial JSON mid-stream
+    }
+  },
+
+  preview: (props, { open, isActive }) => (
+    <InlinePreview {...props} open={open} isActive={isActive} />
+  ),
+
+  actual: (props) => <ArtifactView {...props} />,
+});
+```
+
+## See also
+
+- [Custom artifacts](/docs/agent/guides/custom-artifacts) — the build-it walkthrough, including the storage path and `artifactCategories`.
+- [Artifacts](/docs/agent/core-concepts/artifacts) — what artifacts are and where they show up.
+- [Hooks](/docs/agent/reference/hooks) — `useArtifactRenderer`, `useArtifactRendererRegistry`, `useArtifactList`.
+- [`<AgentInterface>` props](/docs/agent/reference/agentinterface-props) — `artifactRenderers`, `artifactCategories`.
+- [Components](/docs/agent/reference/components#agentinterfaceworkspace) — the Workspace rail backed by the registry.

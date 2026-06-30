@@ -2,7 +2,6 @@
 
 import type { Starter } from "@/starters";
 import type { Library } from "@openuidev/react-lang";
-import "@openuidev/react-ui/components.css";
 import { useRef, useState } from "react";
 import { DashboardProvider, useDashboard } from "./context";
 import { ConversationPanel } from "./ConversationPanel";

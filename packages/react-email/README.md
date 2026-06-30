@@ -2,8 +2,8 @@
 
 React Email component definitions for OpenUI Lang. Use this package when a model should generate email layouts that can be previewed, rendered, and converted to HTML.
 
-[![npm](https://img.shields.io/npm/v/@openuidev/react-email)](https://www.npmjs.com/package/@openuidev/react-email)
-[![npm downloads](https://img.shields.io/npm/dm/@openuidev/react-email)](https://www.npmjs.com/package/@openuidev/react-email)
+[![npm version](https://img.shields.io/npm/v/@openuidev/react-email)](https://www.npmjs.com/package/@openuidev/react-email)
+[![monthly downloads](https://img.shields.io/npm/dm/@openuidev/react-email)](https://www.npmjs.com/package/@openuidev/react-email)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
 
 **Links:** [Package docs](https://openui.com/docs/api-reference/react-email) | [OpenUI Lang guide](https://openui.com/docs/openui-lang) | [GitHub repo](https://github.com/thesysdev/openui)

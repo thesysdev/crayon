@@ -1,5 +1,6 @@
-import shellDeps from "../Shell/dependencies";
+import buttonDeps from "../Button/dependencies";
+import iconButtonDeps from "../IconButton/dependencies";
 
-const dependencies = ["OpenUIChat", ...shellDeps];
+const dependencies = ["OpenUIChat", ...iconButtonDeps, ...buttonDeps];
 
 export default dependencies;

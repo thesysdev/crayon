@@ -1,3 +1,4 @@
+import { Slot, Slottable } from "@radix-ui/react-slot";
 import clsx from "clsx";
 import { ButtonHTMLAttributes, forwardRef, ReactNode } from "react";
 
@@ -19,6 +20,12 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
   shape?: IconButtonShape;
   className?: string;
   appearance?: IconButtonAppearance;
+  /**
+   * Render as the provided child element instead of a `<button>`. Useful when the
+   * icon button is nested inside another interactive element (e.g. an accordion
+   * trigger) where a nested `<button>` would be invalid HTML.
+   */
+  asChild?: boolean;
 }
 
 const normalIconButtonVariants = {
@@ -55,14 +62,18 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>((props,
     size = "medium",
     shape = "square",
     appearance = "normal",
+    asChild = false,
+    children,
     ...rest
   } = props;
 
   const iconButtonVariants =
     appearance === "normal" ? normalIconButtonVariants : destructiveIconButtonVariants;
 
+  const Comp = asChild ? Slot : "button";
+
   return (
-    <button
+    <Comp
       ref={ref}
       className={clsx(
         "openui-icon-button",
@@ -73,8 +84,9 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>((props,
       )}
       {...rest}
     >
+      <Slottable>{children}</Slottable>
       {icon && <span className="openui-icon-button-icon">{icon}</span>}
-    </button>
+    </Comp>
   );
 });
 

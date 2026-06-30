@@ -82,21 +82,16 @@ export default function Page() {
 
       const assistantId = crypto.randomUUID();
 
+      const applyContent = (msg: Message) => {
+        draftContent = typeof msg.content === "string" ? msg.content : "";
+        setStreamingCode(draftContent);
+      };
+
       await processStreamedMessage({
         response,
         adapter: openAIAdapter(),
-        createMessage: (msg) => {
-          draftContent = msg.content ?? "";
-          setStreamingCode(draftContent);
-        },
-        updateMessage: (msg) => {
-          draftContent = msg.content ?? "";
-          setStreamingCode(draftContent);
-        },
-        deleteMessage: () => {
-          draftContent = "";
-          setStreamingCode("");
-        },
+        createMessage: applyContent,
+        updateMessage: applyContent,
       });
 
       const assistantMsg: Message = {
