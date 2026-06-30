@@ -3,7 +3,7 @@ title: LangGraph Chat
 description: A multi-agent LangGraph supervisor that routes each message to a weather, finance, or research specialist and streams OpenUI Lang into live generative UI.
 ---
 
-OpenUI's renderer is transport-agnostic: it turns a stream of OpenUI Lang markup into interactive React components no matter how that stream is produced. This example produces it with a **multi-agent [LangGraph](https://langchain-ai.github.io/langgraphjs/) graph**: a supervisor routes each user message to one of three specialists (**weather**, **finance**, or **research**), and the chosen agent streams its answer as OpenUI Lang, which `<FullScreen>` renders into cards, tables, and charts as the tokens arrive.
+OpenUI's renderer is transport-agnostic: it turns a stream of OpenUI Lang markup into interactive React components no matter how that stream is produced. This example produces it with a **multi-agent [LangGraph](https://langchain-ai.github.io/langgraphjs/) graph**: a supervisor routes each user message to one of three specialists (**weather**, **finance**, or **research**), and the chosen agent streams its answer as OpenUI Lang, which `<AgentInterface>` renders into cards, tables, and charts as the tokens arrive.
 
 Because every specialist shares the same OpenUI system prompt (generated from the component library), any agent you add automatically speaks generative UI.
 
@@ -35,32 +35,39 @@ The example runs **two processes**: the LangGraph server runs the graph (and the
 
 ## Connecting the frontend
 
-The client is a single `<FullScreen>`. `processMessage` posts the conversation to the proxy, and `langGraphAdapter()` parses the LangGraph SSE stream that comes back:
+The client is a single `<AgentInterface>` — the artifact chat interface. Its `llm.send` posts the conversation to the proxy, and `langGraphAdapter()` parses the LangGraph SSE stream that comes back:
 
 ```tsx
-import { langGraphAdapter, langGraphMessageFormat } from "@openuidev/react-headless";
-import { FullScreen } from "@openuidev/react-ui";
+import {
+  AgentInterface,
+  langGraphAdapter,
+  langGraphMessageFormat,
+  type ChatLLM,
+} from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 
-<FullScreen
-  processMessage={async ({ messages, abortController }) =>
+const llm: ChatLLM = {
+  send: ({ messages, signal }) =>
     fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       // Convert OpenUI messages to LangChain shape. The run is stateless,
       // so the full history is sent each turn.
       body: JSON.stringify({ messages: langGraphMessageFormat.toApi(messages) }),
-      signal: abortController.signal,
-    })
-  }
-  streamProtocol={langGraphAdapter()}
+      signal,
+    }),
+  streamProtocol: langGraphAdapter(),
+};
+
+<AgentInterface
+  llm={llm}
   componentLibrary={openuiChatLibrary}
   agentName="OpenUI + LangGraph Chat"
 />;
 ```
 
-- `processMessage`: posts the conversation to the proxy; `langGraphMessageFormat.toApi` converts OpenUI messages into the LangChain message shape the graph expects
-- `streamProtocol={langGraphAdapter()}`: parses LangGraph's `messages` SSE events back into streaming assistant text
+- `llm.send`: posts the conversation to the proxy; `langGraphMessageFormat.toApi` converts OpenUI messages into the LangChain message shape the graph expects
+- `llm.streamProtocol={langGraphAdapter()}`: parses LangGraph's `messages` SSE events back into streaming assistant text
 - `componentLibrary={openuiChatLibrary}`: maps OpenUI Lang nodes to the built-in component set (cards, tables, charts, forms)
 
 ## The proxy route
@@ -136,7 +143,7 @@ Add a specialist by extending the `SPECIALISTS` map and wiring a matching `*_age
 
 ```
 examples/langgraph-chat/
-|- src/app/page.tsx           # <FullScreen> wired to langGraphAdapter()
+|- src/app/page.tsx           # <AgentInterface> wired to langGraphAdapter()
 |- src/app/api/chat/route.ts  # Stateless proxy to the LangGraph server (SSE)
 |- src/agent/graph.ts         # Supervisor + specialist ReAct loops
 |- src/agent/tools.ts         # Mock weather / finance / research tools
@@ -184,5 +191,3 @@ LANGSMITH_API_KEY=lsv2-...          # auth for the deployment
 ```
 
 The SDK sends `LANGSMITH_API_KEY` as `x-api-key` from the server side only. Restart `pnpm dev` after changing `.env`.
-
-For the configuration-level decision between `apiUrl` and `processMessage` when wiring any LangGraph backend, see the [Providers guide](/docs/chat/providers#langgraph).

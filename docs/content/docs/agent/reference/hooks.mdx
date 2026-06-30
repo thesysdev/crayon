@@ -1,0 +1,313 @@
+---
+title: Hooks
+description: Reference for every AgentInterface hook — navigation, artifact storage and registry, threads and messages, and the detailed-view system.
+---
+
+These hooks let your own components read and drive the state inside `<AgentInterface>` — the current route, the artifact storage adapter, the per-thread artifact registry, the active thread and message, and the detailed-view panel system. They're the same hooks the built-in UI uses, so anything the default chrome does, your components can do too.
+
+Two rules apply to **all** of them:
+
+- **They only work inside `<AgentInterface>`.** Each reads from a context that the component provides. Call one outside that tree and you get either a thrown error or a `null`/empty result (noted per hook below). Renderer `preview`/`actual` functions, slot children, message components, and `Route` children are all inside the tree, so all of these are valid call sites.
+- **Import from `@openuidev/react-ui`.** Every hook on this page is exported from `@openuidev/react-ui`.
+
+```tsx
+import {
+  useNav,
+  useArtifactStorage,
+  useArtifactCategories,
+  useArtifactList,
+  useArtifactRenderer,
+  useArtifactRendererRegistry,
+  useThread,
+  useThreadList,
+  useMessage,
+  useActiveDetailedView,
+  useDetailedView,
+  useDetailedViewStore,
+  useDetailedViewPortalTarget,
+  useThreadContextStore,
+} from "@openuidev/react-ui";
+```
+
+---
+
+## Navigation
+
+### `useNav`
+
+```ts
+function useNav(): {
+  path: string | undefined;
+  navigate: (next: string | undefined) => void;
+};
+```
+
+**Imported from `@openuidev/react-ui`.** Reads the current route and lets you change it. `path` is the current route string (or `undefined`, which means the thread view). `navigate(next)` moves to a route; `navigate(undefined)` returns to the thread view.
+
+In controlled mode (when you pass `onNavigate` to `AgentInterface`), `navigate` ultimately calls back through your `onNavigate` handler — the hook respects whichever mode the component is in. **Throws if called outside `<AgentInterface>`.**
+
+```tsx
+function GoToSettings() {
+  const { path, navigate } = useNav();
+  return <button onClick={() => navigate("settings")}>Settings</button>;
+}
+```
+
+Reserved `artifacts/…` paths are matched before your own Routes.
+
+---
+
+## Artifact storage & registry
+
+These cover the two distinct artifact surfaces: the **storage adapter** (the global, cross-thread browser backed by `storage.artifact`) and the **per-thread registry** (the artifacts a renderer registered while rendering the current thread). See [Artifacts](/docs/agent/core-concepts/artifacts) for how the two relate.
+
+### `useArtifactStorage`
+
+```ts
+function useArtifactStorage(): ArtifactStorage | null;
+```
+
+Returns the `ArtifactStorage` adapter you configured via `storage.artifact`, or `null` when no artifact storage is configured. Use it to `list`/`get`/`update` artifacts from your own components — most commonly to **save an edited artifact** from a renderer's `actual` view. Always guard for `null` before calling.
+
+```tsx
+function SaveButton({ id, content }: { id: string; content: unknown }) {
+  const storage = useArtifactStorage();
+  if (!storage) return null;
+  return <button onClick={() => storage.update({ id, content })}>Save</button>;
+}
+```
+
+For the full `ArtifactStorage` shape see [Adapters & formats](/docs/agent/reference/adapters-and-formats).
+
+### `useArtifactCategories`
+
+```ts
+function useArtifactCategories(): ArtifactCategory[];
+```
+
+Returns the `artifactCategories` you passed to `AgentInterface` (each `{ name, filter: { type: string[] } }`), or an empty array if you passed none. Use it to render your own category-aware UI — a custom artifact nav, a filtered picker, grouping logic — instead of relying on the built-in `ArtifactNav`.
+
+```tsx
+function CategoryTabs() {
+  const categories = useArtifactCategories();
+  return categories.map((c) => <Tab key={c.name}>{c.name}</Tab>);
+}
+```
+
+### `useArtifactList`
+
+```ts
+function useArtifactList(filter?: { type?: string[] }): Record<
+  string,
+  ArtifactEntry[]
+>;
+// ArtifactEntry = { id: string; version: number; heading: string; type: string }
+```
+
+Returns the **per-thread artifact registry** — the artifacts a renderer registered while rendering the *current* thread, keyed for grouping (the same data that powers the per-thread Workspace rail). Pass `filter.type` to limit to specific artifact types. This is the in-thread registry, **not** the global storage browser — it reflects what the open conversation produced and works even with ephemeral storage.
+
+```tsx
+function ThreadArtifacts() {
+  const groups = useArtifactList({ type: ["code_artifact"] });
+  return Object.values(groups)
+    .flat()
+    .map((a) => <li key={a.id}>{a.heading}</li>);
+}
+```
+
+### `useArtifactRenderer`
+
+```ts
+function useArtifactRenderer(toolName: string): ArtifactRendererConfig | null;
+```
+
+Looks up a registered artifact renderer by its `toolName`, or `null` if none is registered for that name. Use it when you need to reach a renderer's config directly — for example, to render an artifact's `preview`/`actual` in a custom surface outside the default flow.
+
+```tsx
+// `controls` is the same { isActive, isStreaming, open, close, toggle }
+// object the framework passes to a renderer's preview/actual.
+function CustomPreview({ toolName, props, controls }) {
+  const renderer = useArtifactRenderer(toolName);
+  if (!renderer) return null;
+  return renderer.preview(props, controls);
+}
+```
+
+The registry indexes renderers by both `toolName` and `type`; see [defineArtifactRenderer](/docs/agent/reference/define-artifact-renderer).
+
+### `useArtifactRendererRegistry`
+
+```ts
+function useArtifactRendererRegistry(): ArtifactRendererRegistry | null;
+// ArtifactRendererRegistry = {
+//   byToolName: Map<string, ArtifactRendererConfig>;
+//   byType: Map<string, ArtifactRendererConfig>;
+// }
+```
+
+An **advanced escape hatch** that returns the whole renderer registry, indexed both by `toolName` and by artifact `type`, or `null` when none is configured. Normal lookups should use `useArtifactRenderer(toolName)` above — reach for the registry only when you need custom dispatching (for example, resolving a renderer by `type` rather than by `toolName`). The standalone helpers `lookupArtifactRenderer` and `lookupArtifactRendererByType` resolve a single config against the same registry.
+
+```tsx
+function RendererByType({ type }: { type: string }) {
+  const registry = useArtifactRendererRegistry();
+  const renderer = registry?.byType.get(type);
+  if (!renderer) return null;
+  return <span>{renderer.toolName}</span>;
+}
+```
+
+---
+
+## Threads & messages
+
+### `useThread`
+
+```ts
+function useThread<T>(selector: (state: ThreadState) => T): T;
+```
+
+A selector hook scoped to the **current thread** inside `<AgentInterface>`. Pass a function that picks the slice you need; the component only re-renders when that slice changes. The thread state exposes the running state — most notably `isRunning` (a reply is in flight) — along with a way to cancel the in-flight message. Select narrowly.
+
+```tsx
+function StopButton() {
+  const isRunning = useThread((s) => s.isRunning);
+  const cancelMessage = useThread((s) => s.cancelMessage);
+  if (!isRunning) return null;
+  return <button onClick={cancelMessage}>Stop</button>;
+}
+```
+
+See [Conversations](/docs/agent/core-concepts/conversations) for the run lifecycle, `isRunning`, and cancellation.
+
+### `useThreadList`
+
+```ts
+function useThreadList<T>(selector: (state: ThreadListState) => T): T;
+```
+
+A selector hook for the **list of threads** (the data behind `AgentInterface.ThreadList`) — loaded threads, pending state, and the actions for creating, selecting, and deleting threads. Like `useThread`, pass a selector so you only re-render on the slice you read. Use it to build a custom thread switcher or sidebar.
+
+```tsx
+function ThreadCount() {
+  const count = useThreadList((s) => s.threads.length);
+  return <span>{count} chats</span>;
+}
+```
+
+### `useMessage`
+
+```ts
+function useMessage(): Message;
+```
+
+Returns the canonical `Message` for the **current message row** — the same hook the built-in message renderer uses, so you never thread the message through props. Because it returns the live message, your component re-renders as the reply streams in (`content` grows token by token). **Throws if called outside a message component** — it only works inside the components you pass via the `components` prop or inside `AgentInterface.Messages`.
+
+```tsx
+function AssistantMessage() {
+  const message = useMessage();
+  return <div className="bubble">{message.content}</div>;
+}
+```
+
+See [Message rendering](/docs/agent/customize/message-rendering) for custom message components.
+
+---
+
+## Detailed views
+
+The **detailed view** is the in-thread panel that opens when a user expands an artifact (the renderer's `actual` rendered in a side panel rather than inline). These hooks drive that system — they're for advanced custom surfaces; most apps never touch them directly because the renderer `controls` (`open`/`close`/`toggle`) and the Workspace rail handle the common cases.
+
+### `useActiveDetailedView`
+
+```ts
+function useActiveDetailedView(): /* the currently open detailed view, or null */;
+```
+
+Returns the detailed view that's currently open, or a null/empty value when none is open. Use it to react to whichever view is active — e.g. a header that reflects the open artifact.
+
+```tsx
+const active = useActiveDetailedView();
+```
+
+### `useDetailedView`
+
+```ts
+function useDetailedView(viewId: string): /* the detailed view for that id */;
+```
+
+Looks up a specific detailed view by its id. Use it when you hold a known view id and need its state.
+
+```tsx
+const view = useDetailedView(viewId);
+```
+
+### `useDetailedViewStore`
+
+```ts
+function useDetailedViewStore(): /* the detailed-view store */;
+```
+
+Returns the underlying store backing the detailed-view system — the registry of views plus the actions to open and close them. Use it to drive the panel programmatically from a custom surface.
+
+```tsx
+const store = useDetailedViewStore();
+```
+
+### `useDetailedViewPortalTarget`
+
+```ts
+function useDetailedViewPortalTarget(): /* the portal mount target */;
+```
+
+Returns the DOM target the detailed-view panel portals into. Use it when you render custom panel content that must mount into the same target as the built-in detailed view.
+
+```tsx
+const target = useDetailedViewPortalTarget();
+```
+
+### `useThreadContextStore`
+
+```ts
+function useThreadContextStore(): /* the thread-context store */;
+```
+
+Returns the store holding the **thread context** — the per-thread registry of artifacts a renderer registered (via its `parser` returning non-null `meta`). This is the source the Workspace rail and `useArtifactList` read from. Use it directly only when you need lower-level access than `useArtifactList` provides.
+
+```tsx
+const ctx = useThreadContextStore();
+```
+
+<Callout type="info">The exact return shapes of the detailed-view hooks and `useThreadContextStore` are internal store/view objects. For the common cases — opening the full view, listing a thread's artifacts — prefer the renderer `controls` ([defineArtifactRenderer](/docs/agent/reference/define-artifact-renderer)) and `useArtifactList` over reaching into these stores.</Callout>
+
+---
+
+## Where each hook can be called
+
+| Hook | Call site | Outside `<AgentInterface>` |
+|------|-----------|----------------------------|
+| `useNav` | anywhere in the tree | throws |
+| `useArtifactStorage` | anywhere in the tree | returns `null` |
+| `useArtifactCategories` | anywhere in the tree | empty array |
+| `useArtifactList` | inside a thread | empty / per-thread |
+| `useArtifactRenderer` | anywhere in the tree | `null` |
+| `useArtifactRendererRegistry` | anywhere in the tree | `null` |
+| `useThread` | inside a thread | n/a |
+| `useThreadList` | anywhere in the tree | n/a |
+| `useMessage` | inside a message component only | throws |
+| `useActiveDetailedView` · `useDetailedView` · `useDetailedViewStore` · `useDetailedViewPortalTarget` | inside a thread | n/a |
+| `useThreadContextStore` | inside a thread | n/a |
+
+<Cards>
+  <Card title="<AgentInterface> props" href="/docs/agent/reference/agentinterface-props">
+    Every prop AgentInterface accepts.
+  </Card>
+  <Card title="Adapters & formats" href="/docs/agent/reference/adapters-and-formats">
+    The storage and LLM adapter shapes hooks read from.
+  </Card>
+  <Card title="defineArtifactRenderer" href="/docs/agent/reference/define-artifact-renderer">
+    Register renderers and their preview/actual controls.
+  </Card>
+  <Card title="Components" href="/docs/agent/reference/components">
+    The composable subcomponents of AgentInterface.
+  </Card>
+</Cards>

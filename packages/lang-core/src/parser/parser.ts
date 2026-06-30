@@ -436,24 +436,45 @@ export interface StreamParser {
 }
 
 export function createStreamParser(cat: ParamMap, rootName?: string): StreamParser {
-  let buf = "";
-  let completedEnd = 0;
+  let buf = ""; // raw accumulated input (kept for set() diffing)
+  // Preprocessed view of `buf` (fences + comments stripped, same as parse()'s
+  // preprocess). The completed-statement scan runs over THIS, never the raw
+  // buffer — so leading markdown prose / ```fences``` (e.g. an apostrophe in
+  // "You're …" before the program) can't corrupt statement-boundary detection.
+  let cleaned = "";
+  let completedEnd = 0; // watermark: how far into `cleaned` is already completed
   const completedStmtMap = new Map<string, Statement>();
 
   let completedCount = 0;
   let firstId = "";
 
   function addStmt(text: string) {
-    // Strip comments and skip fence markers
-    const cleaned = stripComments(text).trim();
-    if (!cleaned || /^```/.test(cleaned)) return;
-    for (const s of split(tokenize(cleaned))) {
+    // `text` is sliced from `cleaned`, so it's already fence/comment-free.
+    const t = text.trim();
+    if (!t) return;
+    for (const s of split(tokenize(t))) {
       const expr = parseExpression(s.tokens);
       const stmt = classifyStatement(s, expr);
       completedStmtMap.set(s.id, stmt);
       completedCount++;
       if (!firstId) firstId = s.id;
     }
+  }
+
+  // Recompute `cleaned` from `buf`. If the already-completed prefix is no longer
+  // a prefix of the new cleaned text (e.g. an opening ```fence``` just appeared
+  // and shifted the stripped output), the watermark + cache are stale, so reset
+  // and re-scan. When the prefix is stable (the common streaming case) the cache
+  // is kept, so a partial trailing statement never blanks already-completed ones.
+  function refreshCleaned() {
+    const next = preprocess(buf);
+    if (!next.startsWith(cleaned.slice(0, completedEnd))) {
+      completedEnd = 0;
+      completedStmtMap.clear();
+      completedCount = 0;
+      firstId = "";
+    }
+    cleaned = next;
   }
 
   function scanNewCompleted(): number {
@@ -463,8 +484,8 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
       esc = false;
     let stmtStart = completedEnd;
 
-    for (let i = completedEnd; i < buf.length; i++) {
-      const c = buf[i];
+    for (let i = completedEnd; i < cleaned.length; i++) {
+      const c = cleaned[i];
       if (esc) {
         esc = false;
         continue;
@@ -492,15 +513,21 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
         // meaningful character is `?` or `:` — ternary continuation.
         let peek = i + 1;
         while (
-          peek < buf.length &&
-          (buf[peek] === " " || buf[peek] === "\t" || buf[peek] === "\r" || buf[peek] === "\n")
+          peek < cleaned.length &&
+          (cleaned[peek] === " " ||
+            cleaned[peek] === "\t" ||
+            cleaned[peek] === "\r" ||
+            cleaned[peek] === "\n")
         )
           peek++;
-        if (peek < buf.length && (buf[peek] === "?" || (buf[peek] === ":" && ternaryDepth > 0))) {
+        if (
+          peek < cleaned.length &&
+          (cleaned[peek] === "?" || (cleaned[peek] === ":" && ternaryDepth > 0))
+        ) {
           continue; // ternary continuation — don't split
         }
         // Depth-0 newline = end of a statement
-        const t = buf.slice(stmtStart, i).trim();
+        const t = cleaned.slice(stmtStart, i).trim();
         if (t) addStmt(t);
         stmtStart = i + 1; // next statement begins after this newline
         completedEnd = i + 1; // advance the "already processed" watermark
@@ -511,8 +538,9 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
   }
 
   function currentResult(): ParseResult {
+    refreshCleaned();
     const pendingStart = scanNewCompleted();
-    const pendingText = buf.slice(pendingStart).trim();
+    const pendingText = cleaned.slice(pendingStart).trim();
 
     // No pending text — all statements are complete
     if (!pendingText) {
@@ -528,22 +556,9 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
       );
     }
 
-    // Apply same cleanup as parse() — strip fences, comments, whitespace
-    const cleaned = stripComments(stripFences(pendingText)).trim();
-    if (!cleaned) {
-      if (completedCount === 0) return emptyResult();
-      return buildResult(
-        completedStmtMap,
-        [...completedStmtMap.values()],
-        firstId,
-        false,
-        completedCount,
-        cat,
-        rootName,
-      );
-    }
-    // Autoclose the incomplete last statement so it's syntactically valid
-    const { text: closed, wasIncomplete } = autoClose(cleaned);
+    // `cleaned` is already preprocessed (fences + comments stripped); just
+    // autoclose the incomplete trailing statement so it's syntactically valid.
+    const { text: closed, wasIncomplete } = autoClose(pendingText);
     const stmts = split(tokenize(closed));
 
     if (!stmts.length) {
@@ -587,6 +602,7 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
 
   function reset() {
     buf = "";
+    cleaned = "";
     completedEnd = 0;
     completedStmtMap.clear();
     completedCount = 0;

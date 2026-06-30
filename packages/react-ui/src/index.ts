@@ -1,23 +1,61 @@
 "use client";
 
 export * from "./components/Accordion";
+export * from "./components/AgentInterface";
 
-// Artifact() factory — generates a ComponentRenderer with artifact wiring
-export { Artifact } from "./artifact";
-export type { ArtifactConfig, ArtifactControls } from "./artifact";
-
-// Artifact exports (ArtifactPanel/ArtifactPortalTarget also available as Shell.*)
-export { useActiveArtifact, useArtifact } from "@openuidev/react-headless";
+// Adapter factories + types — paired with AgentInterface's `storage` / `llm` props,
+// re-exported so consumers can build adapters without reaching into react-headless.
 export {
-  ArtifactOverlay,
-  ArtifactPanel,
-  ArtifactPortalTarget,
-} from "./components/_shared/artifact";
+  defineArtifactRenderer,
+  fetchLLM,
+  pairToolActivity,
+  partialJSONParse,
+  restStorage,
+  useToolActivities,
+} from "@openuidev/react-headless";
 export type {
-  ArtifactOverlayProps,
-  ArtifactPanelProps,
-  ArtifactPortalTargetProps,
-} from "./components/_shared/artifact";
+  Artifact,
+  ArtifactCategory,
+  ArtifactListParams,
+  ArtifactRendererConfig,
+  ArtifactRendererControls,
+  ArtifactStorage,
+  ArtifactSummary,
+  ChatLLM,
+  ChatStorage,
+  FetchLLMOptions,
+  RestStorageOptions,
+  ThreadStorage,
+  ToolActivity,
+  ToolCallStatus,
+} from "@openuidev/react-headless";
+
+// Re-export the full headless surface so apps import everything (adapters,
+// formats, hooks, storage, message types) from @openuidev/react-ui.
+export * from "@openuidev/react-headless";
+// `ToolCall` exists in both packages (a message type in react-headless, the
+// component here). Pin the component so the two star re-exports don't collide.
+export { ToolCall } from "./components/ToolCall";
+
+// Tool-call rendering: the typed-activity dispatchers (matched renderer xor
+// default) + the legacy ToolMessageRenderer wrapper.
+export {
+  TimelineEntry,
+  ToolActivityRenderer,
+  ToolCallEntry,
+  ToolCallErrorFallback,
+  ToolMessageRenderer,
+  type TimelineEntryProps,
+  type ToolCallEntryProps,
+  type ToolDetailedViewPanel,
+  type ToolMessageRendererProps,
+} from "./components/_shared/tool-renderer";
+
+// Shared Collapsible primitive + built-in web-search renderer.
+export { Collapsible } from "./components/_shared/Collapsible";
+
+// Detailed-view exports (DetailedViewPanel/DetailedViewPortalTarget)
+export { useActiveDetailedView, useDetailedView } from "@openuidev/react-headless";
 
 export * from "./components/Button";
 export * from "./components/Buttons";
@@ -31,7 +69,6 @@ export type { ExportChartData } from "./components/Charts/Charts";
 export * from "./components/CheckBoxGroup";
 export * from "./components/CheckBoxItem";
 export * from "./components/CodeBlock";
-export * as CopilotShell from "./components/CopilotShell";
 export * from "./components/DatePicker";
 export * from "./components/FollowUpBlock";
 export * from "./components/FollowUpItem";
@@ -52,7 +89,6 @@ export * from "./components/RadioItem";
 export * from "./components/SectionBlock";
 export * from "./components/Select";
 export * from "./components/Separator";
-export * as Shell from "./components/Shell";
 export * from "./components/Skeleton";
 export * from "./components/Slider";
 export * from "./components/Steps";
@@ -90,7 +126,7 @@ export * from "./context/LayoutContext";
 export * from "./context/PrintContext";
 
 // Types Export
-export type { ConversationStarterVariant } from "./components/BottomTray/ConversationStarter";
+export type { ConversationStarterVariant } from "./components/AgentInterface/ConversationStarter";
 export type {
   ConversationStarterIcon,
   ConversationStarterProps,

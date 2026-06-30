@@ -1,0 +1,109 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-agent-thread-list {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-2xs;
+  overflow: auto;
+
+  .openui-agent-container--mobile & {
+    gap: cssUtils.$space-s;
+  }
+}
+
+.openui-agent-thread-list-group {
+  display: flex;
+  padding-left: cssUtils.$space-s-m;
+  padding-bottom: cssUtils.$space-xs;
+  color: cssUtils.$text-neutral-tertiary;
+  @include cssUtils.typography(label, small);
+
+  .openui-agent-container--mobile & {
+    @include cssUtils.typography(label, default);
+
+    padding-left: cssUtils.$space-xs;
+  }
+}
+
+.openui-agent-thread-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-radius: calc(cssUtils.$radius-s + 1px);
+
+  &--selected {
+    background-color: cssUtils.$sunk;
+  }
+
+  &--actions-open {
+    background-color: cssUtils.$highlight-subtle;
+  }
+
+  &:hover {
+    background-color: cssUtils.$highlight-subtle;
+
+    .openui-agent-thread-button-dropdown-trigger {
+      opacity: 1;
+    }
+  }
+
+  &--selected:hover {
+    background-color: cssUtils.$sunk;
+  }
+
+  &--selected.openui-agent-thread-button--actions-open {
+    background-color: cssUtils.$sunk;
+  }
+}
+
+.openui-agent-thread-button-title {
+  @include cssUtils.button-reset;
+  @include cssUtils.typography(label, small);
+  color: cssUtils.$text-neutral-primary;
+  padding: calc(cssUtils.$space-s - 0.75px) cssUtils.$space-s-m;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  .openui-agent-container--mobile & {
+    @include cssUtils.typography(label, default);
+
+    padding: cssUtils.$space-s-m;
+  }
+}
+
+.openui-agent-thread-button-dropdown-trigger {
+  margin-right: cssUtils.$space-2xs;
+  opacity: 0;
+
+  .openui-agent-container--mobile & {
+    opacity: 1;
+  }
+
+  &[data-state="open"] {
+    opacity: 1;
+    background-color: cssUtils.$highlight;
+    border-color: cssUtils.$border-interactive;
+  }
+}
+
+.openui-agent-thread-button-dropdown-menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  padding: cssUtils.$space-xs;
+  border: 1px solid cssUtils.$border-default;
+  border-radius: cssUtils.$radius-l;
+  background-color: cssUtils.$foreground;
+  transform: translateX(-4px);
+  z-index: 9999;
+}
+
+.openui-agent-thread-button-dropdown-menu-item {
+  outline: none;
+  width: 100%;
+}

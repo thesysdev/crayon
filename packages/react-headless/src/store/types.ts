@@ -1,6 +1,6 @@
+import type { ArtifactCategory, ChatLLM, ChatStorage } from "../adapters/types";
 import type { Message, UserMessage } from "../types/message";
-import type { MessageFormat } from "../types/messageFormat";
-import type { StreamProtocolAdapter } from "../types/stream";
+import type { ArtifactRendererConfig } from "./artifactRendererTypes";
 
 export type { Message, UserMessage } from "../types/message";
 export type CreateMessage = Omit<UserMessage, "id">;
@@ -39,6 +39,15 @@ export type ThreadState = {
   isRunning: boolean;
   isLoadingMessages: boolean;
   threadError: Error | null;
+  /**
+   * Tool calls whose arguments have closed (`TOOL_CALL_END` seen) but whose
+   * result message has not yet arrived — i.e. the tool is currently executing.
+   * Drives the `"executing"` status in {@link ToolActivity}; reset to an empty
+   * set when a new message run starts or the thread switches. The reference is
+   * stable across unrelated store updates (a new `Set` is created only when the
+   * membership changes), so selector consumers don't re-render needlessly.
+   */
+  executingToolCallIds: Set<string>;
 };
 
 export type ThreadActions = {
@@ -57,48 +66,30 @@ export type ChatStore = ThreadListState &
   ThreadState &
   ThreadActions & {
     /** @internal */
-    _nextCursor?: any;
+    _nextCursor?: string | undefined;
     /** @internal */
     _abortController: AbortController | null;
   };
 
 // ── Provider props ──
 
-type ThreadApiConfig =
-  | {
-      threadApiUrl: string;
-      fetchThreadList?: never;
-      createThread?: never;
-      deleteThread?: never;
-      updateThread?: never;
-      loadThread?: never;
-    }
-  | {
-      threadApiUrl?: never;
-      fetchThreadList?: (cursor?: any) => Promise<{ threads: Thread[]; nextCursor?: any }>;
-      createThread?: (firstMessage: UserMessage) => Promise<Thread>;
-      deleteThread?: (id: string) => Promise<void>;
-      updateThread?: (updated: Thread) => Promise<Thread>;
-      loadThread?: (threadId: string) => Promise<Message[]>;
-    };
+export interface ChatProviderProps {
+  /** Optional — defaults to an internal in-memory storage (no persistence). */
+  storage?: ChatStorage;
+  /** Required — drives message sending and stream parsing. */
+  llm: ChatLLM;
+  /**
+   * Artifact renderers matched against tool calls (by `toolName`) and stored
+   * artifacts (by `type`). Captured at mount; subsequent prop changes are
+   * ignored (dev warning). Order is priority: first registration wins on
+   * duplicate `toolName`/`type`.
+   */
 
-type ChatApiConfig =
-  | {
-      apiUrl: string;
-      processMessage?: never;
-    }
-  | {
-      apiUrl?: never;
-      processMessage: (params: {
-        threadId: string;
-        messages: Message[];
-        abortController: AbortController;
-      }) => Promise<Response>;
-    };
-
-export type ChatProviderProps = ThreadApiConfig &
-  ChatApiConfig & {
-    streamProtocol?: StreamProtocolAdapter;
-    messageFormat?: MessageFormat;
-    children: React.ReactNode;
-  };
+  artifactRenderers?: ReadonlyArray<ArtifactRendererConfig<any>>;
+  /**
+   * Global artifact categories. Drive the sidebar Artifacts split, the
+   * artifact browser's pre-applied filters, and workspace section grouping.
+   */
+  artifactCategories?: ArtifactCategory[];
+  children: React.ReactNode;
+}

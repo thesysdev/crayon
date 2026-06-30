@@ -1,6 +1,6 @@
 # @openuidev/react-ui
 
-React components and chat layouts for OpenUI. Use the ready-made chat surfaces, the built-in model-renderable component library, or the individual UI primitives in your own layout.
+React components and a ready-made chat surface for OpenUI. Use the `AgentInterface` chat surface, the built-in model-renderable component library, or the individual UI primitives in your own layout.
 
 [![npm version](https://img.shields.io/npm/v/@openuidev/react-ui)](https://www.npmjs.com/package/@openuidev/react-ui)
 [![monthly downloads](https://img.shields.io/npm/dm/@openuidev/react-ui)](https://www.npmjs.com/package/@openuidev/react-ui)
@@ -28,47 +28,61 @@ import "@openuidev/react-ui/styles/index.css";
 
 This package provides three layers:
 
-1. **Chat layouts** for full-screen chat, copilots, and bottom-tray experiences.
+1. **A ready-made chat surface** — `AgentInterface`, a complete chat experience with thread history, streaming, and a model-renderable message area.
 2. **Model-renderable components** for charts, tables, forms, cards, and other OpenUI Lang output.
-3. **Standalone UI primitives** such as `Button`, `Card`, `Table`, `Charts`, and the chat shell pieces.
+3. **Standalone UI primitives** such as `Button`, `Card`, `Table`, and `Charts`.
 
 ## Quick Start
 
-The fastest way to get a working chat app:
+The fastest way to get a working chat app is `AgentInterface`. Give it an `llm` transport that talks to your backend. Storage is optional — without it, threads live in memory and are wiped on reload:
 
 ```tsx
-import { FullScreen } from "@openuidev/react-ui";
+import {
+  AgentInterface,
+  openAIAdapter,
+  openAIMessageFormat,
+  type ChatLLM,
+} from "@openuidev/react-ui";
+import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 import "@openuidev/react-ui/styles/index.css";
 
-function App() {
-  return <FullScreen apiUrl="/api/chat" threadApiUrl="/api/threads" />;
-}
-```
-
-### Chat Layouts
-
-| Component    | Description                          |
-| :----------- | :----------------------------------- |
-| `FullScreen` | Full-page chat with a thread sidebar |
-| `Copilot`    | Side-panel copilot overlay           |
-| `BottomTray` | Collapsible bottom tray chat         |
-
-All chat layouts accept `apiUrl`, `threadApiUrl`, and theming props. See the [chat docs](https://openui.com/docs/chat) for full configuration.
-
-### Copilot example
-
-```tsx
-import { Copilot } from "@openuidev/react-ui";
+const llm: ChatLLM = {
+  send: ({ messages, signal }) =>
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: openAIMessageFormat.toApi(messages) }),
+      signal,
+    }),
+  streamProtocol: openAIAdapter(),
+};
 
 function App() {
   return (
-    <div>
-      <main>Your app content</main>
-      <Copilot apiUrl="/api/chat" threadApiUrl="/api/threads" />
-    </div>
+    <AgentInterface
+      llm={llm}
+      componentLibrary={openuiChatLibrary}
+      agentName="My Assistant"
+      theme={{ mode: "light" }}
+    />
   );
 }
 ```
+
+### The chat surface
+
+`AgentInterface` is the single chat surface. It adapts its layout responsively and accepts:
+
+| Prop               | Description                                                                                  |
+| :----------------- | :------------------------------------------------------------------------------------------- |
+| `storage`          | Optional persistence adapter for thread history; defaults to in-memory (wiped on reload). Use `restStorage` from `@openuidev/react-ui` to back it with your own REST API |
+| `llm`              | Chat transport: `{ send({ messages, signal }), streamProtocol }`                             |
+| `componentLibrary` | OpenUI Lang library used to render assistant messages (e.g. `openuiChatLibrary`)             |
+| `theme`            | Theme configuration, e.g. `{ mode: "light" }`                                                |
+| `agentName`        | Name displayed in the header                                                                 |
+| `starters`         | Conversation-starter prompts shown on the welcome screen                                     |
+
+See the [chat docs](https://openui.com/docs/chat) for full configuration.
 
 ## Built-in Component Libraries
 
@@ -184,7 +198,7 @@ All components are available as individual imports:
 | **Actions**      | `Button`, `Buttons`, `IconButton`, `FollowUpBlock`, `FollowUpItem`                                                                                                     |
 | **Feedback**     | `Callout`, `TextCallout`, `MessageLoading`                                                                                                                             |
 | **Content**      | `TextContent`, `MarkDownRenderer`                                                                                                                                      |
-| **Chat**         | `FullScreen`, `Copilot`, `BottomTray`, `Shell.*`, `CopilotShell.*`, `ToolCall`, `ToolResult`                                                                           |
+| **Chat**         | `AgentInterface`, `ToolCall`, `ToolResult`                                                                                                                             |
 
 ### Per-component imports
 

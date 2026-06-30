@@ -1,0 +1,532 @@
+---
+title: Adapters & formats
+description: Complete reference for AgentInterface's backend channels — the ChatLLM/ChatStorage/ThreadStorage/ArtifactStorage interfaces, the fetchLLM and restStorage factories, the Thread type, the bundled stream adapters, and the message formats.
+---
+
+`AgentInterface` talks to your backend through two independent channels, each an *adapter* you supply:
+
+- **`llm`** — a `ChatLLM` that produces replies. **Required.**
+- **`storage`** — a `ChatStorage` that persists threads, messages, and (optionally) artifacts. Optional; defaults to an internal in-memory store that's wiped on reload.
+
+This page is the exhaustive reference for both channels, the factories that build them (`fetchLLM`, `restStorage`), the `Thread` record, the bundled **stream adapters** that parse provider wire formats, and the **message formats** that translate message shapes. For the task-oriented walkthroughs, see [Conversations](/docs/agent/core-concepts/conversations) and [Self-hosting](/docs/agent/reference/self-hosting).
+
+## Import sources
+
+Everything on this page imports from `@openuidev/react-ui`: `AgentInterface`, `useNav`, the `fetchLLM` and `restStorage` factories, the adapter and storage types, the stream adapters, and the message formats.
+
+```ts
+// Factories + types
+import {
+  fetchLLM,
+  restStorage,
+  type ChatLLM,
+  type ChatStorage,
+  type ThreadStorage,
+  type ArtifactStorage,
+  type Thread,
+  type MessageFormat,
+  type StreamProtocolAdapter,
+} from "@openuidev/react-ui";
+
+// Stream adapters + message formats
+import {
+  agUIAdapter,
+  openAIAdapter,
+  openAIReadableStreamAdapter,
+  openAIResponsesAdapter,
+  langGraphAdapter,
+  openAIMessageFormat,
+  openAIConversationMessageFormat,
+  langGraphMessageFormat,
+  identityMessageFormat,
+} from "@openuidev/react-ui";
+```
+
+<Callout type="warn">All five stream adapters are **factory functions** — always call them with `()`. `streamAdapter: openAIAdapter()` is correct; a bare `streamAdapter: openAIAdapter` is wrong.</Callout>
+
+## The two channels
+
+```tsx
+import { AgentInterface } from "@openuidev/react-ui";
+
+<AgentInterface
+  llm={chatLLM}         // required — ChatLLM
+  storage={chatStorage} // optional — ChatStorage
+/>;
+```
+
+`llm` and `storage` are wholly separate. You can run a real LLM with ephemeral storage, or persistent storage with a placeholder LLM — they're configured and resolved independently.
+
+---
+
+## `ChatLLM`
+
+The object `AgentInterface` calls when the user sends a message.
+
+```ts
+interface ChatLLM {
+  send(params: {
+    threadId: string;
+    messages: Message[];
+    signal: AbortSignal;
+  }): Promise<Response>;
+  streamProtocol: StreamProtocolAdapter;
+}
+```
+
+- **`send`** receives the current `threadId`, the full `messages` array, and an `AbortSignal` wired to the UI's stop/cancel control. It returns a streaming `Response` (a standard `fetch` `Response` whose body is a readable stream).
+- **`streamProtocol`** is the [stream adapter](#stream-adapters) that parses the returned `Response` body into the canonical AG-UI events the UI renders (`TEXT_MESSAGE_*`, `TOOL_CALL_START` / `TOOL_CALL_ARGS` / `TOOL_CALL_END`, `TOOL_CALL_RESULT`, `RUN_ERROR`).
+
+Most apps never construct a `ChatLLM` by hand — `fetchLLM` builds one for the common "POST to my route, parse the stream" case. Implement the interface directly only when you need to call `send` in a way `fetchLLM` doesn't cover (e.g. a non-`fetch` transport).
+
+### `fetchLLM`
+
+Builds a `ChatLLM` that POSTs a JSON body to a URL and parses the streamed reply.
+
+```ts
+function fetchLLM(options: {
+  url: string;
+  streamAdapter: StreamProtocolAdapter;
+  messageFormat?: MessageFormat;
+  headers?: Record<string, string>;
+  fetch?: typeof fetch;
+}): ChatLLM;
+```
+
+| Option          | Type                       | Required | What it does                                                                            |
+|-----------------|----------------------------|----------|-----------------------------------------------------------------------------------------|
+| `url`           | `string`                   | Yes      | The endpoint `fetchLLM` POSTs to (your own route — never the provider directly).         |
+| `streamAdapter` | `StreamProtocolAdapter`    | Yes      | Parses the streamed response into UI events. Becomes the `ChatLLM`'s `streamProtocol`.   |
+| `messageFormat` | `MessageFormat`            | No       | Converts outgoing `messages` to your provider's shape. Defaults to `identityMessageFormat`. |
+| `headers`       | `Record<string, string>`   | No       | Extra headers merged into every request (e.g. a session token). **Browser-visible.**     |
+| `fetch`         | `typeof fetch`             | No       | Override `fetch` (auth wrappers, instrumentation, tests).                                 |
+
+**Request body.** `fetchLLM` POSTs JSON `{ threadId, messages }`, where `messages` is run through `messageFormat.toApi`, and threads the `AbortSignal` from the UI:
+
+```ts
+// Inside fetchLLM — shown for reference; you don't write this.
+fetch(url, {
+  method: "POST",
+  headers: { "Content-Type": "application/json", ...headers },
+  body: JSON.stringify({ threadId, messages: messageFormat.toApi(messages) }),
+  signal, // wired to the UI's cancel/stop control
+});
+```
+
+Your route therefore always receives `{ threadId, messages }` and must return a streaming `Response`. `fetchLLM` runs that response through `streamAdapter`.
+
+```tsx
+import { fetchLLM, openAIReadableStreamAdapter, openAIMessageFormat } from "@openuidev/react-ui";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIReadableStreamAdapter(),
+  messageFormat: openAIMessageFormat,
+});
+```
+
+<Callout type="warn">`headers` are headers on the browser's request to *your* route. Use them for things like a session token or CSRF token — never a provider API key. The provider key lives only in your server-side route handler.</Callout>
+
+---
+
+## `ChatStorage`
+
+The persistence channel. A `ChatStorage` is an object with a required `thread` member and an optional `artifact` member:
+
+```ts
+interface ChatStorage {
+  thread: ThreadStorage;
+  artifact?: ArtifactStorage;
+}
+```
+
+- **`thread`** persists conversations — the thread list, message history, renames, and deletes.
+- **`artifact`** persists durable artifacts (dashboards, reports, presentations, apps) and powers the artifact browser. Optional and independent of `thread`. See [`ArtifactStorage`](#artifactstorage-optional) below and [Artifacts](/docs/agent/core-concepts/artifacts).
+
+Omit `storage` entirely and `AgentInterface` uses an internal in-memory store — fine for prototyping, but ephemeral.
+
+### `ThreadStorage`
+
+The five methods that back thread management. Implement these and the default sidebar's thread list, "New chat" button, thread switching, and deletion all operate against your backend.
+
+```ts
+interface ThreadStorage {
+  listThreads(cursor?: string): Promise<{ threads: Thread[]; nextCursor?: string }>;
+  createThread(firstMessage: UserMessage): Promise<Thread>;
+  getMessages(threadId: string): Promise<Message[]>;
+  updateThread(thread: Thread): Promise<Thread>;
+  deleteThread(id: string): Promise<void>;
+}
+```
+
+| Method | Returns | When `AgentInterface` calls it |
+|--------|---------|--------------------------------|
+| `listThreads(cursor?)` | `{ threads, nextCursor? }` | Populating the thread list; loading more when `nextCursor` exists and the user scrolls. |
+| `createThread(firstMessage)` | the new `Thread` | The user sends the first message of a new chat. |
+| `getMessages(threadId)` | `Message[]` | The user opens a thread. |
+| `updateThread(thread)` | the updated `Thread` | A thread changes (e.g. a rename). |
+| `deleteThread(id)` | `void` | The user deletes a thread. |
+
+Implement these directly when your storage doesn't fit the REST shape `restStorage` expects — a different route layout, GraphQL, or a client-side store like IndexedDB:
+
+```ts
+import type { ChatStorage } from "@openuidev/react-ui";
+
+export const storage: ChatStorage = {
+  thread: {
+    async listThreads(cursor) {
+      const res = await fetch(`/threads?cursor=${cursor ?? ""}`);
+      return res.json(); // { threads, nextCursor? }
+    },
+    async createThread(firstMessage) {
+      const res = await fetch("/threads", {
+        method: "POST",
+        body: JSON.stringify({ firstMessage }),
+      });
+      return res.json(); // a Thread
+    },
+    async getMessages(threadId) {
+      const res = await fetch(`/threads/${threadId}/messages`);
+      return res.json(); // Message[]
+    },
+    async updateThread(thread) {
+      const res = await fetch(`/threads/${thread.id}`, {
+        method: "PUT",
+        body: JSON.stringify(thread),
+      });
+      return res.json(); // the updated Thread
+    },
+    async deleteThread(id) {
+      await fetch(`/threads/${id}`, { method: "DELETE" });
+    },
+  },
+};
+```
+
+`restStorage` is itself just a `ChatStorage` built this way for the common REST case.
+
+### `Thread`
+
+The thread record at the storage boundary.
+
+```ts
+type Thread = {
+  id: string;
+  title: string;
+  createdAt: string | number;
+  isPending?: boolean;
+};
+```
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | `string` | Stable thread identifier. |
+| `title` | `string` | Shown in the sidebar thread list. |
+| `createdAt` | `string \| number` | ISO string or epoch — used for ordering/display. |
+| `isPending` | `boolean` (optional) | Marks a thread that's being created (e.g. optimistic insert before the create call resolves). |
+
+---
+
+## `restStorage`
+
+Builds a `ChatStorage` wired to a fixed set of REST endpoints under one `baseUrl`. The fastest path to durable history — you implement the endpoints, the factory does the wiring.
+
+```ts
+function restStorage(options: {
+  baseUrl: string;
+  messageFormat?: MessageFormat;
+  headers?: Record<string, string>;
+  fetch?: typeof fetch;
+}): ChatStorage;
+```
+
+| Option          | Type                       | Required | What it does                                                                              |
+|-----------------|----------------------------|----------|-------------------------------------------------------------------------------------------|
+| `baseUrl`       | `string`                   | Yes      | Root path for the endpoints below (e.g. `/api/threads`).                                   |
+| `messageFormat` | `MessageFormat`            | No       | Converts messages to/from your stored shape. Defaults to `identityMessageFormat`.          |
+| `headers`       | `Record<string, string>`   | No       | Sent on every request (e.g. a tenant or session header).                                   |
+| `fetch`         | `typeof fetch`             | No       | Override `fetch` (auth, instrumentation, tests).                                            |
+
+```tsx
+import { restStorage, openAIMessageFormat } from "@openuidev/react-ui";
+
+const storage = restStorage({
+  baseUrl: "/api/threads",
+  messageFormat: openAIMessageFormat, // optional
+  headers: { "x-tenant": "acme" },    // optional, sent on every request
+});
+```
+
+### Endpoint contract
+
+Each `ThreadStorage` operation maps to exactly one HTTP call under `baseUrl`. The paths are literal — these are the exact five endpoints you implement.
+
+| Operation | Method | Path | Request body | Response |
+|-----------|--------|------|--------------|----------|
+| List threads | `GET` | `{baseUrl}/get` — or `{baseUrl}/get?cursor={cursor}` when paginating | — | `{ threads: Thread[]; nextCursor?: string }` |
+| Create thread | `POST` | `{baseUrl}/create` | `{ messages: messageFormat.toApi([firstMessage]) }` | the new `Thread` |
+| Get messages | `GET` | `{baseUrl}/get/{threadId}` | — | `Message[]` (run through `messageFormat.fromApi`) |
+| Update thread | `PATCH` | `{baseUrl}/update/{thread.id}` | the `Thread` | the updated `Thread` |
+| Delete thread | `DELETE` | `{baseUrl}/delete/{id}` | — | — |
+
+With `baseUrl: "/api/threads"` the concrete paths are `/api/threads/get`, `/api/threads/create`, `/api/threads/get/{threadId}`, `/api/threads/update/{thread.id}`, and `/api/threads/delete/{id}`.
+
+### Message format application
+
+`messageFormat` applies at exactly two points:
+
+- **Create** — the request body's `messages` is `messageFormat.toApi([firstMessage])`.
+- **Get messages** — the `{baseUrl}/get/{threadId}` response is run through `messageFormat.fromApi` on the way back.
+
+With the default `identityMessageFormat`, messages cross the wire as the canonical `Message` type unchanged. Pass a provider-specific format (e.g. `openAIMessageFormat`) when your backend stores messages in that provider's shape.
+
+### Error behavior
+
+`restStorage` throws a **descriptive error on any non-`ok` response** (HTTP status outside 200–299). A failing endpoint surfaces clearly rather than being silently swallowed, so a misconfigured route or a backend error propagates to your error boundary instead of leaving the UI in a stuck state.
+
+---
+
+## `ArtifactStorage` (optional)
+
+The optional `artifact` member of `ChatStorage`. Configure it to store durable artifacts and enable the artifact browser. Summarized here for completeness — the task-oriented coverage is in [Artifacts](/docs/agent/core-concepts/artifacts).
+
+```ts
+interface ArtifactStorage {
+  list(params?: {
+    name?: string;
+    type?: string[];
+    cursor?: string;
+    limit?: number;
+  }): Promise<{ artifacts: ArtifactSummary[]; nextCursor?: string }>;
+  get(id: string): Promise<Artifact>;
+  update(patch: { id: string; content: unknown }): Promise<ArtifactSummary>;
+}
+
+interface ArtifactSummary {
+  id: string;
+  title: string;
+  type: string;
+  threadId: string;        // required — every artifact belongs to a thread
+  updatedAt?: string | number;
+}
+
+interface Artifact extends ArtifactSummary {
+  content: unknown;
+}
+```
+
+- **`list`** — `name` and `type` filtering is **server-side**; the factory passes them through so your backend does the filtering. Paginated via `cursor` / `nextCursor`.
+- **`get`** — returns the full `Artifact`, including `content`.
+- **`update`** — persists an edit to an editable artifact's `content`; returns the updated summary.
+
+Attach it alongside `thread`:
+
+```ts
+const storage: ChatStorage = {
+  thread: threadStorage,
+  artifact: artifactStorage, // optional
+};
+```
+
+---
+
+## Stream adapters
+
+A **stream adapter** parses the streamed `Response` your route returns into the AG-UI events the UI renders. There is one per response *wire format*. It's a factory returning a `StreamProtocolAdapter`:
+
+```ts
+interface StreamProtocolAdapter {
+  parse(response: Response): AsyncIterable<AGUIEvent>;
+}
+```
+
+`fetchLLM` calls `parse` on the `Response` your route returns and consumes the yielded AG-UI events. All five bundled adapters are factories you call to get an instance — `agUIAdapter()`, `openAIAdapter()`, `openAIReadableStreamAdapter()`, `openAIResponsesAdapter()`, `langGraphAdapter()`; only `langGraphAdapter()` accepts options.
+
+<Callout type="info">A malformed line in the stream is logged to the console and skipped — it does not abort the whole stream. Provider-level failures should be surfaced as a `RUN_ERROR` event (the OpenAI Responses and LangGraph adapters do this for their error events).</Callout>
+
+### Selection guide
+
+Start from your provider and how the route streams its reply. The stream adapter and message format are independent knobs — pick the adapter to match how your backend *streams*, and the format to match how it represents *stored* messages — but they typically pair up as below.
+
+| Your backend streams…                                                  | Stream adapter                  | Pair with message format             |
+|------------------------------------------------------------------------|---------------------------------|--------------------------------------|
+| OpenAI **Chat Completions** SSE (`data: {…}` lines)                     | `openAIAdapter()`               | `openAIMessageFormat`                |
+| OpenAI SDK `stream.toReadableStream()` (NDJSON, no `data:` prefix)      | `openAIReadableStreamAdapter()` | `openAIMessageFormat`                |
+| OpenAI **Responses / Conversations** API SSE                           | `openAIResponsesAdapter()`      | `openAIConversationMessageFormat`    |
+| **LangGraph** named-event SSE (`event: messages\ndata: …`)             | `langGraphAdapter()`            | `langGraphMessageFormat`             |
+| Already AG-UI events (your route emits AG-UI SSE directly)             | `agUIAdapter()`                 | `identityMessageFormat` (default)    |
+
+Wrapping Anthropic, or any provider with no bundled adapter? You have two paths: translate to AG-UI events server-side and use `agUIAdapter()`, or re-emit your provider's stream as OpenAI Completions SSE and use `openAIAdapter()`. See [Migrating](/docs/agent/guides/migrating).
+
+### `agUIAdapter`
+
+```ts
+import { agUIAdapter } from "@openuidev/react-ui";
+
+const llm = fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() });
+```
+
+- **Wire shape:** Server-Sent Events whose `data:` payload is already a serialized AG-UI event (`data: {"type":"TEXT_MESSAGE_CONTENT",…}`). `[DONE]` sentinels and blank lines are ignored.
+- **When to use:** Your route does the provider translation itself and emits AG-UI events directly. This is the lowest-overhead option when you control the backend — no per-provider parsing in the browser. It pairs naturally with `identityMessageFormat`, since both sides already speak AG-UI.
+
+### `openAIAdapter`
+
+```ts
+import { openAIAdapter } from "@openuidev/react-ui";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIAdapter(),
+  messageFormat: openAIMessageFormat,
+});
+```
+
+- **Wire shape:** OpenAI **Chat Completions** streaming SSE — the raw `data: {…}` chunk format from `chat.completions.create({ stream: true })` (each line is a `ChatCompletionChunk`).
+- **What it emits:** `TEXT_MESSAGE_START` on the first content/role delta, `TEXT_MESSAGE_CONTENT` per content delta, `TOOL_CALL_START` / `TOOL_CALL_ARGS` for streamed tool calls (indexed by `tool_calls[].index`), and end events driven by `finish_reason` (`stop` → `TEXT_MESSAGE_END`, `tool_calls` → `TOOL_CALL_END` for each open call).
+- **When to use:** Your route forwards the OpenAI Completions stream as-is (the most common OpenAI setup). Pair with `openAIMessageFormat`.
+
+### `openAIReadableStreamAdapter`
+
+```ts
+import { openAIReadableStreamAdapter } from "@openuidev/react-ui";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIReadableStreamAdapter(),
+  messageFormat: openAIMessageFormat,
+});
+```
+
+- **Wire shape:** **NDJSON** — one JSON object per line with no `data:` SSE prefix. This is exactly what the OpenAI SDK's `Stream.toReadableStream()` produces.
+- **When to use:** Your route returns `stream.toReadableStream()` from the OpenAI SDK directly, instead of re-serializing it as SSE. Same Completions chunk semantics as `openAIAdapter()` (same emitted events), only the line framing differs — it buffers partial lines across chunks rather than splitting on `data: `. Pair with `openAIMessageFormat`.
+
+<Callout type="info">`openAIAdapter()` and `openAIReadableStreamAdapter()` read the same OpenAI chunk objects — they differ only in framing (`data:` SSE vs. bare NDJSON lines). Match the one your route actually writes; using the wrong one will fail to parse every line.</Callout>
+
+### `openAIResponsesAdapter`
+
+```ts
+import { openAIResponsesAdapter } from "@openuidev/react-ui";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIResponsesAdapter(),
+  messageFormat: openAIConversationMessageFormat,
+});
+```
+
+- **Wire shape:** OpenAI **Responses API** (and Conversations API) streaming SSE — the item-based `ResponseStreamEvent` stream from `responses.create({ stream: true })`.
+- **What it handles:** `response.output_item.added` (assistant message start, `function_call` start, and server-side `function_call_output` → `TOOL_CALL_RESULT`), `response.output_text.delta` / `.done` for text, `response.function_call_arguments.delta` / `.done` for tool-call arguments (mapping `item_id` → `call_id`), and `error` / `response.failed` → `RUN_ERROR`. Lifecycle/metadata events (`response.created`, `response.completed`, etc.) are ignored.
+- **When to use:** You call the newer Responses or Conversations API rather than Chat Completions. Pair with `openAIConversationMessageFormat`.
+
+### `langGraphAdapter`
+
+```ts
+import { langGraphAdapter } from "@openuidev/react-ui";
+
+const llm = fetchLLM({
+  url: "/api/langgraph",
+  streamAdapter: langGraphAdapter({
+    onInterrupt: (payload) => {
+      // Called when a LangGraph __interrupt__ appears in an `updates` event.
+      console.log("interrupt", payload);
+    },
+  }),
+  messageFormat: langGraphMessageFormat,
+});
+```
+
+- **Wire shape:** LangGraph **named-event** SSE — `event: <type>\ndata: <json>\n\n` blocks, in the `messages` stream mode. Handles the `messages`, `metadata`, `updates`, `error`, and `end` event types; other event types (`values`, `debug`, `tasks`, `checkpoints`, `custom`) are ignored.
+- **What it handles:** AI message chunks → `TEXT_MESSAGE_*`; both streamed (`tool_call_chunks`) and complete (`tool_calls`) tool calls → `TOOL_CALL_*`; `error` events → `RUN_ERROR`. It closes out any open message/tool calls on the `end` event (or at stream end if no `end` arrives).
+- **Options** (`LangGraphAdapterOptions`):
+  - `onInterrupt?: (interrupt: unknown) => void` — invoked with the `__interrupt__` payload when a LangGraph interrupt surfaces in an `updates` event. This is the only adapter that takes options.
+- **When to use:** Your backend streams from a LangGraph deployment. Pair with `langGraphMessageFormat`.
+
+### AG-UI event vocabulary
+
+Every stream adapter normalizes its provider's stream into the same set of **AG-UI events** — the agent↔UI event protocol OpenUI streams internally (from the `@ag-ui/core` package). These events progressively build the assistant message as they arrive.
+
+| Event | Role |
+|-------|------|
+| `TEXT_MESSAGE_START` | Begins an assistant text message. |
+| `TEXT_MESSAGE_CONTENT` | Appends a chunk of text to the in-progress message. |
+| `TEXT_MESSAGE_END` | Closes the assistant text message. |
+| `TOOL_CALL_START` | Begins a tool call (carries the tool name / call id). |
+| `TOOL_CALL_ARGS` | Appends a chunk of the tool call's streamed arguments. |
+| `TOOL_CALL_END` | Closes the tool call's arguments. |
+| `TOOL_CALL_RESULT` | Carries the result of a server-executed tool call. |
+| `RUN_ERROR` | Signals a provider/run-level failure; surfaces as an error in the UI. |
+
+---
+
+## Message formats
+
+A **message format** converts between the canonical `Message` type at the boundary and your provider's message shape, in both directions. There is one per provider *message shape*:
+
+```ts
+interface MessageFormat {
+  /** Canonical Message[] → your provider's shape (outbound). */
+  toApi(messages: Message[]): unknown;
+  /** Your provider/storage shape → canonical Message[] (inbound). */
+  fromApi(data: unknown): Message[];
+}
+```
+
+Both methods operate on **arrays**, so formats where one canonical message maps to several provider items (e.g. the Responses API, where tool calls are sibling items of the assistant message) work the same as 1-to-1 formats.
+
+Where formats are used:
+
+- **`fetchLLM`** runs `messageFormat.toApi(messages)` on the outgoing request body. (The reply is parsed by the *stream adapter*, not the message format.)
+- **`restStorage`** uses `toApi` when creating a thread and `fromApi` when loading a thread's messages — so the same format keeps your stored history and your live requests consistent.
+
+If you omit `messageFormat`, both default to `identityMessageFormat`.
+
+### `identityMessageFormat` (default)
+
+```ts
+import { identityMessageFormat } from "@openuidev/react-ui";
+```
+
+- **Conversion:** none — messages pass through as-is in canonical AG-UI form (`toApi` returns the array unchanged; `fromApi` casts it back to `Message[]`).
+- **When to use:** Your backend already speaks the canonical `Message` shape. This is the default, so you can simply omit `messageFormat`. Natural partner for `agUIAdapter()`.
+
+### `openAIMessageFormat`
+
+```ts
+import { openAIMessageFormat } from "@openuidev/react-ui";
+```
+
+- **Shape:** OpenAI **Chat Completions** messages (`ChatCompletionMessageParam[]`). 1-to-1: each canonical message becomes exactly one Completions message and vice versa.
+- **Conversions:** strips/regenerates `id`; `toolCalls` ↔ `tool_calls`; `toolCallId` ↔ `tool_call_id`; multipart user `content` ↔ OpenAI content parts (binary parts become `image_url`). `reasoning`/`activity` messages have no Completions equivalent and map to an empty `system` message outbound.
+- **When to use:** Pair with `openAIAdapter()` or `openAIReadableStreamAdapter()`.
+
+### `openAIConversationMessageFormat`
+
+```ts
+import { openAIConversationMessageFormat } from "@openuidev/react-ui";
+```
+
+- **Shape:** OpenAI's item-based format for the **Responses API** and **Conversations API**. `toApi` returns `ResponseInputItem[]` (accepted by both `responses.create({ input })` and `conversations.items.create({ items })`); `fromApi` reads `ConversationItem[]` / `ResponseItem[]`.
+- **Conversions:** assistant messages are *flattened* into sibling items — a text `message` plus one `function_call` item per tool call; tool results become `function_call_output` items. Inbound, adjacent assistant `message` + `function_call` items are regrouped into one `AssistantMessage`, and Conversations-specific content parts (`reasoning_text`, `summary_text`, `refusal`, …) are folded into text.
+- **When to use:** Pair with `openAIResponsesAdapter()`.
+
+### `langGraphMessageFormat`
+
+```ts
+import { langGraphMessageFormat } from "@openuidev/react-ui";
+```
+
+- **Shape:** LangChain-style messages as used by LangGraph's thread-state API — discriminated by `type` (`"human"`, `"ai"`, `"tool"`, `"system"`) rather than `role`, with snake_case fields.
+- **Conversions:** `role` ↔ `type` (`user` ↔ `human`, `assistant` ↔ `ai`); tool-call `arguments` JSON string ↔ args object; `toolCallId` ↔ `tool_call_id`; missing `id` is generated inbound. (`developer` maps to `system`.)
+- **When to use:** Pair with `langGraphAdapter()`.
+
+---
+
+## Related
+
+<Cards>
+  <Card title="AgentInterface props" href="/docs/agent/reference/agentinterface-props">Where llm and storage are passed.</Card>
+  <Card title="Conversations" href="/docs/agent/core-concepts/conversations">How threads, messages, and persistence fit together.</Card>
+  <Card title="Artifacts" href="/docs/agent/core-concepts/artifacts">Persisting durable artifacts and the browser.</Card>
+  <Card title="Migrating" href="/docs/agent/guides/migrating">Choosing an adapter for a provider without a bundled one.</Card>
+  <Card title="Self-hosting" href="/docs/agent/reference/self-hosting">Implementing the adapters against your own backend.</Card>
+</Cards>
