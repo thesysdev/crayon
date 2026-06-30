@@ -6,20 +6,20 @@ with [OpenUI](https://openui.com).
 
 The agent has mock **weather**, **finance**, and **research** tools. Its
 LangGraph protocol stream is transformed locally into AG-UI events on a custom
-`openui` channel, so the browser can use OpenUI's default stream adapter.
+`openui` channel, so the browser can use OpenUI's AG-UI stream adapter.
 
 ```
 browser ──fetch /api/chat──▶ Next.js route ──protocol v2──▶ LangGraph server
    ▲                              │                          (deepagent + tools
    └────── SSE (AG-UI) ◀──────────┘                           + custom:openui)
-        parsed by default adapter
+        parsed by agUIAdapter()
 ```
 
 ## How it connects
 
 | Piece | File | Role |
 | --- | --- | --- |
-| Frontend | `src/app/page.tsx` | `<FullScreen apiUrl="/api/chat">` using the default AG-UI stream protocol. |
+| Frontend | `src/app/page.tsx` | `<AgentInterface llm={fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() })}>` using the AG-UI stream protocol. |
 | Proxy | `src/app/api/chat/route.ts` | Converts AG-UI messages to LangChain messages, starts a protocol-v2 run, and relays `custom:openui` as AG-UI SSE. Keeps the API key + deployment URL server-side. |
 | Graph | `src/agent/agent.ts` | `createDeepAgent` with the generated OpenUI system prompt, the mock tools, and the local stream transformer. |
 | Transformer | `src/agent/openui-transformer.ts` | Maps root LangGraph protocol `messages` events into AG-UI events and emits them as `custom:openui`. |
@@ -98,5 +98,5 @@ Restart `pnpm dev` after changing `.env`.
 
 ## Learn more
 
-- [OpenUI docs](https://openui.com/docs) and the [LangGraph provider guide](https://www.openui.com/docs/chat/providers)
+- [OpenUI docs](https://openui.com/docs) and the [Agent Interface adapters guide](https://www.openui.com/docs/agent/reference/adapters-and-formats)
 - [DeepAgents](https://www.npmjs.com/package/deepagents) and [LangGraph.js docs](https://langchain-ai.github.io/langgraphjs/)
