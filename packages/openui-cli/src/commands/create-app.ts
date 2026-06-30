@@ -22,9 +22,6 @@ export interface CreateAppOptions {
   auth?: CloudAuthMethod;
 }
 
-// The hosted OpenUI Cloud /v1 host the scaffolded cloud app talks to.
-const OPENUI_CLOUD_BASE_URL = "https://api.thesys.dev";
-
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
   if (!rel) return true;

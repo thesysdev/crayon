@@ -65,11 +65,11 @@ export class Authenticator {
     return new Promise<AuthResult>((resolve, reject) => {
       let settled = false;
       let actualPort = 0;
-      let timerId: null | NodeJS.Timeout = null
+      let timerId: null | NodeJS.Timeout = null;
       const finish = (run: () => void) => {
         if (settled) return;
         settled = true;
-        if(timerId) clearTimeout(timerId);
+        if (timerId) clearTimeout(timerId);
         server.close();
         run();
       };
