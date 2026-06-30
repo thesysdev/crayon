@@ -115,7 +115,6 @@ export default function AgentInterfacePage() {
           command={INSTALL_COMMAND}
           align="left"
           smallSubtitle
-          showBanner={false}
           showPlaygroundButton={false}
           showGitHubBanner={false}
           desktopPreviewImage={DESKTOP_PREVIEW_IMAGE}

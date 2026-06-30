@@ -54,6 +54,10 @@ export function TweetWall() {
     const update = () => setColumnCount(query.matches ? DESKTOP_COLUMNS : MOBILE_COLUMNS);
     update();
     setMounted(true);
+    // If widgets.js is already loaded (e.g. a client-side navigation back to this
+    // page, where next/script won't re-fire onLoad), mark it ready now. Otherwise
+    // scriptReady stays false on return and the wall renders permanently blank.
+    if (window.twttr?.widgets?.createTweet) setScriptReady(true);
     query.addEventListener("change", update);
     return () => query.removeEventListener("change", update);
   }, []);

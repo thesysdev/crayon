@@ -1,20 +1,9 @@
 "use client";
 
 import svgPaths from "@/imports/svg-urruvoh2be";
-import {
-  BellIcon,
-  BrowserIcon,
-  EyeIcon,
-  MagicWandIcon,
-  PushPinIcon,
-  SlidersHorizontalIcon,
-  SquaresFourIcon,
-} from "@phosphor-icons/react";
 import { PillLink } from "../../components/Button/Button";
 import { FeatureList, type FeatureListItem } from "../../components/FeatureList/FeatureList";
 import styles from "./FeaturesSection.module.css";
-
-const PHOSPHOR_ICON_SIZE = 18;
 
 function SvgPathIcon({ path, index }: { path: string; index: number }) {
   const clipId = `clip_feat_${index}`;
@@ -64,44 +53,6 @@ const DEFAULT_FEATURES: FeatureListItem[] = [
     title: "Safe by Default",
     description: "No arbitrary code execution",
     icon: <SvgPathIcon path={svgPaths.p16eec200} index={4} />,
-  },
-];
-
-export const OPENCLAW_FEATURES: FeatureListItem[] = [
-  {
-    title: "Generative UI",
-    description: "Build apps, dashboards, and artifacts on demand",
-    icon: <MagicWandIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
-  },
-  {
-    title: "Persistent apps",
-    description: "Apps stay in place and refresh with live data automatically",
-    icon: <PushPinIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
-  },
-  {
-    title: "Structured workspace",
-    description: "Agents, sessions, artifacts, and apps in one organized space",
-    icon: <SquaresFourIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
-  },
-  {
-    title: "Full visibility",
-    description: "Inspect tool calls, context, and agent actions in real time",
-    icon: <EyeIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
-  },
-  {
-    title: "Direct control",
-    description: "Permissions, schedules, and execution from one interface",
-    icon: <SlidersHorizontalIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
-  },
-  {
-    title: "Live notifications",
-    description: "Cron jobs notifications",
-    icon: <BellIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
-  },
-  {
-    title: "Elegant interface",
-    description: "Built for clarity with responsive layouts and themes",
-    icon: <BrowserIcon size={PHOSPHOR_ICON_SIZE} weight="fill" />,
   },
 ];
 

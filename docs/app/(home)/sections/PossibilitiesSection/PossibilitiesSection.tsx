@@ -152,14 +152,20 @@ export function PossibilitiesSection({
     const track = mobileTrackRef.current;
     if (!track) return;
 
+    // Respect reduced-motion: leave the carousel static (no marquee) for users
+    // who asked the OS to reduce motion.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     let frameId = 0;
     let offset = 0;
+    // Cache the loop width (one copy's worth) and recompute only on resize, rather
+    // than reading scrollWidth (which forces a layout reflow) on every frame.
+    let loopWidth = track.scrollWidth / MOBILE_CAROUSEL_COPIES;
+    const measure = () => {
+      loopWidth = track.scrollWidth / MOBILE_CAROUSEL_COPIES;
+    };
 
-    // Auto-scroll the carousel at every breakpoint (loopWidth is recomputed each
-    // frame, so it adapts to resize and the per-breakpoint card width).
     const tick = () => {
-      const loopWidth = track.scrollWidth / MOBILE_CAROUSEL_COPIES;
-
       if (loopWidth > 0) {
         offset -= MOBILE_SCROLL_SPEED;
         if (offset <= -loopWidth) {
@@ -172,10 +178,12 @@ export function PossibilitiesSection({
       frameId = window.requestAnimationFrame(tick);
     };
 
+    window.addEventListener("resize", measure);
     frameId = window.requestAnimationFrame(tick);
 
     return () => {
       window.cancelAnimationFrame(frameId);
+      window.removeEventListener("resize", measure);
       track.style.transform = "";
     };
   }, []);

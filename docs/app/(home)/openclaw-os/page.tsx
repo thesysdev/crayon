@@ -70,7 +70,6 @@ export default function OpenClawOSPage() {
           mobilePreviewImageWidth={1568}
           mobilePreviewImageHeight={940}
           smallSubtitle
-          showBanner={false}
           showPlaygroundButton={false}
           showGitHubBanner={false}
           showTagline={false}

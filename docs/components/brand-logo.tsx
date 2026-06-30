@@ -109,44 +109,63 @@ export function OpenUILogo({ variant = "light" }: { variant?: LogoVariant }) {
 // GitHub Star Button
 // ---------------------------------------------------------------------------
 
+// Module-level cache + in-flight dedup for the star count, keyed by repo. Every
+// star button on the page (header, hero, tweet-wall stats) shares one request
+// instead of each firing its own. Without this the home page made ~5 identical
+// calls per load and exhausted GitHub's 60-req/hr unauthenticated limit, after
+// which every counter fell back to the default. The cache also survives client-
+// side navigation, so returning to a page doesn't refetch.
+const starCountCache = new Map<string, number>();
+const starCountInflight = new Map<string, Promise<number | null>>();
+
+function fetchGitHubStarCount(repo: string): Promise<number | null> {
+  const cached = starCountCache.get(repo);
+  if (cached !== undefined) return Promise.resolve(cached);
+
+  let inflight = starCountInflight.get(repo);
+  if (!inflight) {
+    inflight = fetch(`https://api.github.com/repos/${repo}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`GitHub star count fetch failed: ${res.status}`);
+        return res.json();
+      })
+      .then((data): number | null => {
+        const target: unknown = data.stargazers_count;
+        if (typeof target !== "number") return null;
+        starCountCache.set(repo, target);
+        return target;
+      })
+      .catch(() => null)
+      .finally(() => {
+        starCountInflight.delete(repo);
+      });
+    starCountInflight.set(repo, inflight);
+  }
+  return inflight;
+}
+
 export function useGitHubStarCount(repo: string) {
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    fetch(`https://api.github.com/repos/${repo}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`GitHub star count fetch failed: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        const target: unknown = data.stargazers_count;
-        if (typeof target !== "number") return;
-        if (!cancelled) {
-          const startCount = Math.max(target - 50, 0);
-          const startTime = performance.now();
+    void fetchGitHubStarCount(repo).then((target) => {
+      if (cancelled || target === null) return;
+      const startCount = Math.max(target - 50, 0);
+      const startTime = performance.now();
 
-          setCount(startCount);
+      setCount(startCount);
 
-          const tick = () => {
-            if (cancelled) return;
+      const tick = () => {
+        if (cancelled) return;
+        const progress = Math.min((performance.now() - startTime) / COUNT_UP_DURATION, 1);
+        setCount(Math.round(startCount + (target - startCount) * progress));
+        if (progress < 1) requestAnimationFrame(tick);
+      };
 
-            const progress = Math.min((performance.now() - startTime) / COUNT_UP_DURATION, 1);
-            const nextCount = Math.round(startCount + (target - startCount) * progress);
-            setCount(nextCount);
-
-            if (progress < 1) {
-              requestAnimationFrame(tick);
-            }
-          };
-
-          requestAnimationFrame(tick);
-        }
-      })
-      .catch(() => {});
+      requestAnimationFrame(tick);
+    });
 
     return () => {
       cancelled = true;

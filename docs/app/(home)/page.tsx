@@ -16,7 +16,6 @@ export default function HomePage() {
         <HeroSection
           align="left"
           subtitle="Open Standard for Generative UI"
-          showBanner={false}
           showPlaygroundButton={false}
           githubRepoUrl="https://github.com/thesysdev/openui"
           githubButtonLabel="Star us on GitHub"
