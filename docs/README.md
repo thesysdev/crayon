@@ -28,9 +28,11 @@ docs/
 │   ├── robots.ts                           # Robots.txt generation
 │   ├── sitemap.ts                          # Sitemap generation
 │   │
-│   ├── (home)/                             # Landing page (no docs layout)
-│   │   ├── layout.tsx                      # Web theme provider + home Navbar
-│   │   └── page.tsx
+│   ├── (home)/                             # Marketing homepage
+│   │   ├── layout.tsx                      # SiteMarketingHeader (own Navbar, NOT DocsNavbar)
+│   │   ├── page.tsx                        # Landing page
+│   │   ├── sections/                       # Hero, Features, Steps, Footer, Navbar, etc.
+│   │   └── components/                     # Accordion, Button, StackChip, TweetWall, etc.
 │   │
 │   ├── docs/                               # Fumadocs documentation pages
 │   │   ├── layout.tsx                      # DocsLayout (sidebar, nav)
@@ -50,10 +52,10 @@ docs/
 │   ├── playground/                         # Interactive playground
 │   │
 │   ├── api/                                # API routes
-│   │   ├── search/                         # Search endpoint
-│   │   ├── chat/                           # Chat API
-│   │   ├── demo/                           # Demo API
-│   │   └── playground/                     # Playground API
+│   │   ├── search/route.ts                 # Search endpoint
+│   │   ├── chat/route.ts                   # Chat API
+│   │   ├── demo/github/stream/route.ts     # GitHub demo stream
+│   │   └── playground/stream/route.ts      # Playground stream
 │   ├── og/docs/[...slug]/route.tsx         # OG image generation
 │   └── llms.txt/, llms-full.txt/, llms.mdx/  # LLM-friendly content endpoints
 │
@@ -67,8 +69,8 @@ docs/
 ├── content/
 │   ├── docs/                               # MDX content (Fumadocs source)
 │   │   ├── meta.json                       # Root sidebar config
-│   │   ├── openui-lang/                    # OpenUI Core language docs
-│   │   ├── chat/                           # Chat SDK docs
+│   │   ├── openui-lang/                    # OpenUI Lang docs
+│   │   ├── agent/                          # Agent Interface docs
 │   │   ├── api-reference/                  # API reference
 │   │   └── mcp/                            # MCP docs
 │   └── blog/                               # Blog MDX content
@@ -123,7 +125,7 @@ Active component-preview specific modules are located under `app/components/` an
 
 ### Navigation
 
-A custom `DocsNavbar` component (`components/docs-navbar.tsx`) provides top-level horizontal tabs: OpenUI, Chat, API Reference. It replaces Fumadocs' default nav and is used across the docs pages.
+A custom `DocsNavbar` component (`components/docs-navbar.tsx`) provides top-level horizontal tabs: OpenUI, Agent Interface, API Reference. It replaces Fumadocs' default nav and is used across the docs pages.
 
 ## Path aliases
 
