@@ -207,7 +207,7 @@ async function writeCloudEnv(
     console.error(`\n⚠ Could not obtain an API key: ${msg}`);
     console.error(`  Add THESYS_API_KEY to .env later (keys: ${THESYS_KEYS_URL}).\n`);
   }
-  const lines = [`THESYS_API_KEY=${apiKey ?? ""}`];
+  const lines = [`THESYS_API_KEY=${apiKey ?? ""}`, `DEMO_USER_ID=demo-user`];
   fs.writeFileSync(path.join(targetDir, ".env"), lines.join("\n") + "\n");
   return apiKey != null;
 }
