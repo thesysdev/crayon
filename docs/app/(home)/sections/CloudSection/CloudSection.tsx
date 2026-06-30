@@ -113,7 +113,7 @@ export function CloudSection() {
           >
             <BevelButton
               className={styles.headerCta}
-              href="/docs"
+              href="/docs/agent/getting-started/openui-cloud"
               label="View Documentation"
               badge={<ArrowUpRight size={16} weight="bold" />}
             />

@@ -37,6 +37,24 @@
   color: var(--openui-text-neutral-secondary);
 }
 
+.headerText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.description {
+  margin: 0;
+  max-width: 40rem;
+  text-align: center;
+  font-family: var(--home-font-text);
+  font-size: var(--home-body-size);
+  line-height: 1.6;
+  color: var(--openui-text-neutral-secondary);
+  text-wrap: pretty;
+}
+
 /* Icon tile shown beside the title on mobile only. */
 .titleIcon {
   display: none;
@@ -153,40 +171,36 @@
     align-items: stretch;
   }
 
+  /* Standalone centered section on mobile (not a feature-style row): centered
+     title + description, icon tile removed. */
   .section[data-variant="embedded"] .header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 0.75rem;
-  }
-
-  /* Icon tile beside the title, matching the feature/stepper tiles. */
-  .section[data-variant="embedded"] .titleIcon {
-    display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    width: 1.375rem;
-    height: 1.375rem;
-    border: 1px solid var(--openui-border-default);
-    border-radius: 0.4rem;
-    background: var(--openui-foreground);
-    box-shadow: var(--home-shadow-card);
-    color: var(--openui-text-neutral-secondary);
   }
 
-  .section[data-variant="embedded"] .titleIcon svg {
-    width: 0.875rem;
-    height: 0.875rem;
+  .section[data-variant="embedded"] .titleIcon {
+    display: none;
+  }
+
+  .section[data-variant="embedded"] .headerText {
+    align-items: center;
+    width: 100%;
+    gap: 0.5rem;
   }
 
   .section[data-variant="embedded"] .title {
-    font-family: var(--home-font-text);
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.3;
-    letter-spacing: -0.2px;
-    text-align: left;
+    /* Match the section's "Renders 3x faster" heading on mobile: use the home
+       title token instead of the smaller embedded size. */
+    font-size: var(--home-title-size);
+    letter-spacing: var(--home-title-tracking);
+    text-align: center;
+  }
+
+  .section[data-variant="embedded"] .description {
+    max-width: none;
+    text-align: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
   }
 
   /* Chips span edge to edge; rows break out of the section padding. */

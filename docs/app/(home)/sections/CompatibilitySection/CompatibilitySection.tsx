@@ -164,8 +164,9 @@ const STACK_ROWS: StackRow[] = [
 
 export function CompatibilitySection({
   title,
+  description,
   embedded = false,
-}: { title?: ReactNode; embedded?: boolean } = {}) {
+}: { title?: ReactNode; description?: ReactNode; embedded?: boolean } = {}) {
   const trackRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -222,15 +223,18 @@ export function CompatibilitySection({
             <span className={styles.titleIcon} aria-hidden="true">
               <Stack size={18} weight="light" />
             </span>
-            <h2 id="favorite-stack-title" className={styles.title}>
-              {title ?? (
-                <>
-                  Works with your stack.
-                  <br />
-                  <span className={styles.titleAccent}>Any LLM, UI library, and framework.</span>
-                </>
-              )}
-            </h2>
+            <div className={styles.headerText}>
+              <h2 id="favorite-stack-title" className={styles.title}>
+                {title ?? (
+                  <>
+                    Works with your stack.
+                    <br />
+                    <span className={styles.titleAccent}>Any LLM, UI library, and framework.</span>
+                  </>
+                )}
+              </h2>
+              {description && <p className={styles.description}>{description}</p>}
+            </div>
           </header>
 
           <div className={styles.rows}>

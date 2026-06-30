@@ -505,7 +505,7 @@ export function Tagline({ children, compact }: { children?: ReactNode; compact?:
           {children ?? (
             <>
               An open source toolkit to make your <br className={styles.taglineBreak} />
-              AI apps respond with your UI.
+              AI agents respond with your UI.
             </>
           )}
         </p>

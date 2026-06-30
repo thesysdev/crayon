@@ -135,14 +135,8 @@ export function FeatureGridSection({
           <div className={styles.compat}>
             <CompatibilitySection
               embedded
-              title={
-                <>
-                  <span className={styles.compatTitleShort}>Works with your stack.</span>
-                  <span className={styles.compatTitleLong}>
-                    Works with any LLM, UI library and framework.
-                  </span>
-                </>
-              }
+              title="OpenUI works with any stack"
+              description="OpenUI works with any LLM, UI library, and agent framework. Add generative UI without changing your stack."
             />
           </div>
         </>
