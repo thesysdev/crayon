@@ -1,61 +1,54 @@
 # openui-cloud — OpenUI Cloud integration example
 
-A Next.js app showing how an external app integrates with OpenUI Cloud using its
-**two-plane** model:
+A minimal **Next.js (App Router)** app that hosts OpenUI Cloud: a generative-UI chat that streams and persists them to your OpenUI Cloud org.
 
-- **Generation plane (master key, server-side):** `/api/chat` forwards
-  `{ threadId, input }` to `POST /v1/embed/responses` with the org master key
-  (`conversation: threadId`, `store:true`, `stream:true`, `tools:[artifactTool()]`,
-  `instructions: createResponsesInstructions()`) and pipes the SSE stream back
-  unchanged. `/api/frontend-token` proxies `POST /v1/frontend-tokens` so the
-  browser gets a short-lived `fct_` token **without ever seeing the master key**.
-- **Read/edit plane (fct_, browser-direct):** the client page wires
-  `<AgentInterface llm storage componentLibrary artifactRenderers artifactCategories />`
-  against a `ChatStorage` from the **`useOpenuiCloudStorage()`** hook (browser →
-  `/v1/conversations` + `/v1/artifacts` via the `x-thesys-frontend-token` header,
-  single-flight refresh + 401 retry) and the presentation/report artifact
-  renderers (`artifactRenderers` / `artifactCategories` from `@openuidev/thesys`).
+It demonstrates the **two-plane** integration model:
 
-## Local dependency wiring (do this first)
+- **Generation plane** — server-side, master key. `/api/chat` forwards the latest
+  message to OpenUI Cloud (`POST /v1/embed/responses`) using your org master key and
+  pipes the SSE stream straight back to the browser. The master key never leaves the
+  server.
+- **Read/edit plane** — browser-direct, short-lived token. The page reads and edits
+  conversations and artifacts directly against `/v1/*` using a `fct_` frontend token
+  minted server-side by `/api/frontend-token`.
 
-`@openuidev/thesys` is **not published** — this app consumes it from a sibling
-**genui-sdk** checkout via a vendored tarball, and `@openuidev/thesys-server` via a
-vendored build. **Both `vendor/` artifacts are gitignored**, so after cloning you
-must produce them yourself.
+## Project structure
 
-Prereq: `genui-sdk` cloned as a **sibling of `openui`** (so `../../../genui-sdk`
-resolves from this dir), on branch **`ap-server`**.
-
-```bash
-# 1. Build the SDK packages in genui-sdk (on ap-server).
-cd /path/to/genui-sdk
-git checkout ap-server && git pull && pnpm install
-pnpm --filter @openuidev/thesys build
-pnpm --filter @openuidev/thesys-server build
-
-# 2. Vendor both into openui-cloud.
-VENDOR=/path/to/openui/examples/openui-cloud/vendor
-( cd packages/c1 && pnpm pack --pack-destination "$VENDOR" )   # → openuidev-thesys-0.1.0.tgz
-mkdir -p "$VENDOR/c1-server" && cp packages/c1-server/dist/index.* "$VENDOR/c1-server/"
-
-# 3. Install this app (force — the tgz filename is stable, so pnpm caches it).
-cd /path/to/openui/examples/openui-cloud
-pnpm install --force
+```
+src/
+  app/
+    api/
+      chat/route.ts            # generation plane: proxies POST /v1/embed/responses (master key)
+      frontend-token/route.ts  # mints a short-lived fct_ token for the browser (master key)
+    page.tsx                   # client: <AgentInterface> wired to the LLM + OpenUI Cloud storage
+    layout.tsx                 # root layout + theme provider
+    globals.css
+  hooks/
+    use-system-theme.tsx       # light/dark following the OS
+  lib/
+    env.ts                     # request-time env helpers (requiredEnv / envOr)
+.env.example                   # copy to .env.local
 ```
 
-Re-run these whenever you change `c1` / `c1-server` in genui-sdk. `next.config.ts`
-aliases `@openuidev/thesys-server` → `vendor/c1-server/index.mjs` (Turbopack won't
-follow the cross-repo symlink) and stubs `lucide-react/dynamic`.
+## Prerequisites
 
-## Setup (env)
+- Node + `pnpm`.
+- An **OpenUI Cloud org master key** (`THESYS_API_KEY`).
+
+## Setup
 
 ```bash
-cp .env.example .env.local   # fill THESYS_API_KEY and point the base URLs at your API
+pnpm install
+cp .env.example .env.local   # then fill THESYS_API_KEY
 ```
 
-Required env (see `.env.example`): `THESYS_API_KEY`, `OPENUI_CLOUD_BASE_URL`,
-`OPENUI_MODEL` (bare `provider/model`, e.g. `openai/gpt-5`), `DEMO_USER_ID`,
-`NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL`.
+| Var              | Required | Default                       | Purpose                                                          |
+| ---------------- | -------- | ----------------------------- | ---------------------------------------------------------------- |
+| `THESYS_API_KEY` | yes      | —                             | Org master key. **Server-side only**; never reaches the browser. |
+| `OPENUI_MODEL`   | no       | `anthropic/claude-sonnet-4.6` | Bare `provider/model` id for generation.                         |
+| `DEMO_USER_ID`   | no       | `demo-user`                   | End-user identity stamped into the frontend token.               |
+
+`.env.local` is gitignored. Restart `pnpm dev` after editing env.
 
 ## Run
 
@@ -63,22 +56,15 @@ Required env (see `.env.example`): `THESYS_API_KEY`, `OPENUI_CLOUD_BASE_URL`,
 pnpm dev      # http://localhost:3300
 ```
 
-Point `OPENUI_CLOUD_BASE_URL` / `NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL` at your OpenUI
-Cloud API origin.
+Open the app, pick a starter prompt ("Quarterly deck" / "Market report"), and watch the artifact render live as it streams.
 
-## Typecheck
+## Scripts
 
 ```bash
-pnpm exec tsc --noEmit
+pnpm dev        # dev server on :3300
+pnpm build      # production build (output: standalone)
+pnpm start      # serve the production build on :3300
+pnpm typecheck  # tsc --noEmit
+pnpm lint       # eslint
+pnpm test       # vitest run
 ```
-
-## SDK packages
-
-- `@openuidev/thesys-server` — the server SDK (`artifactTool`,
-  `createResponsesInstructions`) used by the `/api/chat` route.
-- `@openuidev/thesys` — the React SDK: `useOpenuiCloudStorage` (browser storage
-  hook), `artifactRenderers` / `artifactCategories`, `chatLibrary`, and the
-  `Presentation` / `Report` viewers, used by the client page. **Not published** —
-  vendored from genui-sdk (see "Local dependency wiring").
-- `@openuidev/react-headless` / `@openuidev/react-ui` — the chat UI runtime
-  (`AgentInterface`, storage/stream contracts, `defineArtifactRenderer`).

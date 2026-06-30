@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
   const client = new OpenAI({
     // responses.create() POSTs to `${baseURL}/responses` → /v1/embed/responses.
-    baseURL: `${envOr("OPENUI_CLOUD_BASE_URL", "http://localhost:3102")}/v1/embed`,
+    baseURL: `https://api.thesys.dev/v1/embed`,
     apiKey: requiredEnv("THESYS_API_KEY"), // sent as Authorization: Bearer …
   });
 
@@ -47,7 +47,15 @@ export async function POST(req: Request) {
         // `artifacts` makes each entry carry library_version:'0.1.0' → openui-lang.
         // Bare artifactTool() would fall back to the legacy <artifact> XML model.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        tools: [artifactTool({ artifacts: ["slides", "report"] }) as any],
+        tools: [
+          artifactTool({ artifacts: ["slides", "report"] }),
+          {
+            type: "web_search",
+          },
+          {
+            type: "image_search",
+          },
+        ],
         instructions: createResponsesInstructions(),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,

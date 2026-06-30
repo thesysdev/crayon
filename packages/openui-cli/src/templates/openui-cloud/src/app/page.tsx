@@ -2,38 +2,28 @@
 import "@openuidev/react-ui/components.css";
 import "@openuidev/thesys/styles.css";
 
+import { useTheme } from "@/hooks/use-system-theme";
 import {
+  defineArtifactCategories,
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
   type ChatLLM,
-  type ChatStorage,
 } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
-// The chat component library the backend's generated programs target.
-import { chatLibrary } from "@openuidev/thesys";
-import { useTheme } from "@/hooks/use-system-theme";
+import {
+  chatLibrary,
+  presentationArtifactRenderer,
+  reportArtifactRenderer,
+  useOpenuiCloudStorage,
+} from "@openuidev/thesys";
 
-// openuiCloud: one-call browser wiring — a ChatStorage over the /v1 API,
-// authenticated per-request with an fct_ token. The browser hits the API
-// directly; `token` names the backend mint endpoint that issues the fct_.
-import { openuiCloud } from "@/lib/thesys";
-// Artifact renderers: defineArtifactRenderer configs. type 'presentation' |
-// 'report', toolName 'thesys_generate_artifact' (+ 'thesys_edit_artifact').
-import { artifactCategories, artifactRenderers } from "@/lib/artifactRenderers";
-
-const storage: ChatStorage = openuiCloud({
-  // Defaults to https://api.thesys.dev; set NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL to override (e.g. a local stack).
-  apiBaseUrl: process.env.NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL,
-  // Backend mint proxy (POST → { token, expires_at }); openuiCloud caches +
-  // refreshes it and injects x-thesys-frontend-token on every /v1 call.
-  token: "/api/frontend-token",
-  features: { artifact: true },
-});
+const { artifactRenderers, artifactCategories } = defineArtifactCategories([
+  { name: "Presentations", renderers: [presentationArtifactRenderer] },
+  { name: "Reports", renderers: [reportArtifactRenderer] },
+]);
 
 const llm: ChatLLM = {
   send: async ({ threadId, messages, signal }) => {
-    // The API replays full history via the conversation linkage — send only
-    // the latest message.
     const latest = messages.slice(-1);
     return fetch("/api/chat", {
       method: "POST",
@@ -47,6 +37,11 @@ const llm: ChatLLM = {
 
 export default function Page() {
   const mode = useTheme();
+  const storage = useOpenuiCloudStorage({
+    token: "/api/frontend-token",
+    apiBaseUrl: "https://api.thesys.dev",
+    features: { artifact: true },
+  });
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
@@ -57,6 +52,8 @@ export default function Page() {
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
         agentName="OpenUI Cloud"
+        scrollVariant="always"
+        scrollOnLoad={false}
         theme={{ mode }}
         starters={[
           {
