@@ -1,0 +1,106 @@
+@use "../../../cssUtils" as cssUtils;
+
+$thread-content-inline-padding: cssUtils.$space-m-l;
+$thread-content-max-width: calc(
+  880px + #{$thread-content-inline-padding} + #{$thread-content-inline-padding}
+);
+
+.openui-agent-thread-composer {
+  max-width: $thread-content-max-width;
+  width: 100%;
+  margin: 0 auto cssUtils.$space-l;
+  padding: 0 $thread-content-inline-padding;
+
+  .openui-agent-container--mobile & {
+    margin: 0;
+    padding: cssUtils.$space-m cssUtils.$space-m cssUtils.$space-m-l;
+  }
+
+  .openui-agent-thread-container--detailed-view-active & {
+    padding: 0 $thread-content-inline-padding;
+  }
+
+  &__input-wrapper {
+    background-color: cssUtils.$foreground;
+    border: 1px solid cssUtils.$border-interactive;
+    border-radius: cssUtils.$radius-3xl;
+    box-shadow: cssUtils.$shadow-l;
+    overflow: clip;
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-s;
+    padding: cssUtils.$space-m;
+
+    &[data-overflow-top],
+    &[data-overflow-bottom] {
+      --openui-agent-thread-composer-mask-top: 0px;
+      --openui-agent-thread-composer-mask-bottom: 0px;
+
+      .openui-agent-thread-composer__input {
+        mask-image: linear-gradient(
+          to bottom,
+          transparent 0,
+          black var(--openui-agent-thread-composer-mask-top),
+          black calc(100% - var(--openui-agent-thread-composer-mask-bottom)),
+          transparent 100%
+        );
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          transparent 0,
+          black var(--openui-agent-thread-composer-mask-top),
+          black calc(100% - var(--openui-agent-thread-composer-mask-bottom)),
+          transparent 100%
+        );
+      }
+    }
+
+    &[data-overflow-top] {
+      --openui-agent-thread-composer-mask-top: #{cssUtils.$space-xl};
+    }
+
+    &[data-overflow-bottom] {
+      --openui-agent-thread-composer-mask-bottom: #{cssUtils.$space-xl};
+    }
+  }
+
+  &__input {
+    scrollbar-width: thin;
+    scrollbar-color: cssUtils.$elevated transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: cssUtils.$elevated;
+      border-radius: cssUtils.$radius-full;
+    }
+
+    padding: 0 cssUtils.$space-3xs;
+    resize: none;
+    max-height: 200px;
+    outline: none;
+    border: none;
+    background: transparent;
+    overflow-y: auto;
+    @include cssUtils.typography(body, default);
+    color: cssUtils.$text-neutral-primary;
+
+    &::placeholder {
+      color: cssUtils.$text-neutral-secondary;
+    }
+  }
+
+  &__action-bar {
+    display: flex;
+    align-items: center;
+  }
+
+  &__submit-button {
+    margin-left: auto;
+  }
+}

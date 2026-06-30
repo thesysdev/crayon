@@ -9,7 +9,9 @@ Command-line tools for starting OpenUI projects and generating model instruction
 
 It currently supports two workflows:
 
-- scaffolding a new OpenUI Chat app
+- scaffolding a new OpenUI app from one of two templates:
+  - **OpenUI Chat** — a Next.js app where you bring your own model key (OpenAI)
+  - **OpenUI Cloud** — a Next.js app backed by OpenUI Cloud for managed conversations, artifacts, and streaming
 - generating a system prompt or JSON Schema from a `createLibrary()` export
 
 ## Install
@@ -24,10 +26,17 @@ bunx @openuidev/cli@latest --help
 
 ## Quick Start
 
-Create a new chat app:
+Create a new app (you'll be prompted to pick a template):
 
 ```bash
 npx @openuidev/cli@latest create
+```
+
+Skip the prompt and pick a template directly:
+
+```bash
+npx @openuidev/cli@latest create --template openui-chat
+npx @openuidev/cli@latest create --template openui-cloud
 ```
 
 Generate a prompt from a library file:
@@ -46,7 +55,7 @@ npx @openuidev/cli@latest generate ./src/library.ts --json-schema
 
 ### `openui create`
 
-Scaffolds a new Next.js app with OpenUI Chat.
+Scaffolds a new Next.js app from the **OpenUI Chat** or **OpenUI Cloud** template.
 
 ```bash
 openui create [options]
@@ -55,26 +64,44 @@ openui create [options]
 Options:
 
 - `-n, --name <string>`: Project name
+- `-t, --template <template>`: Template to scaffold — `openui-chat` or `openui-cloud`
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
+- `--no-install`: Scaffold without running the package install
 - `--no-interactive`: Fail instead of prompting for missing required input
+- `--api-key <key>`: (cloud template) OpenUI Cloud API key; skips sign-in
+- `--auth <method>`: (cloud template) How to obtain the key — `oauth`, `manual`, or `skip`
 
 What it does:
 
 - prompts for the project name if you do not pass `--name`
-- copies the bundled `openui-chat` template into a new directory
-- rewrites `workspace:*` dependencies in the generated `package.json` to `latest`
-- installs dependencies automatically using the detected package manager
+- prompts for the template if you do not pass `--template`
+- copies the bundled template into a new directory
+- rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
+- installs dependencies automatically using the detected package manager (unless `--no-install`)
 - optionally installs the OpenUI agent skill for AI coding assistants
-- prompts for your OpenAI API key and writes it to `.env` (interactive mode only)
+- writes a `.env` file tailored to the template (see below)
+
+#### Template-specific `.env`
+
+- **OpenUI Chat** — prompts for your OpenAI API key and writes `OPENAI_API_KEY` to `.env` (interactive mode only). Leave blank to skip.
+- **OpenUI Cloud** — obtains an OpenUI Cloud API key and writes `THESYS_API_KEY` plus `DEMO_USER_ID=demo-user` to `.env`. The key is resolved by, in order:
+  - `--api-key <key>` if provided
+  - the `--auth` method, otherwise an interactive prompt offering:
+    - `oauth` — sign in with Thesys in the browser and mint a key for your org
+    - `manual` — paste an existing key
+    - `skip` — leave `THESYS_API_KEY` empty and add it later (get one at <https://console.thesys.dev/keys>)
+  - in non-interactive mode without `--api-key`, the cloud template fails because a key is required
 
 Examples:
 
 ```bash
 openui create
-openui create --name my-app
-openui create --name my-app --no-skill
-openui create --no-interactive --name my-app
+openui create --name my-app --template openui-chat
+openui create --name my-app --template openui-cloud --auth oauth
+openui create --name my-app --template openui-cloud --api-key tk_your_key
+openui create --name my-app --no-skill --no-install
+openui create --no-interactive --name my-app --template openui-cloud --api-key tk_your_key
 ```
 
 ### `openui generate`
@@ -153,10 +180,18 @@ node dist/index.js create --help
 node dist/index.js generate --help
 ```
 
+## Telemetry
+
+The CLI sends anonymous usage analytics. Disable it with the global `--no-telemetry` flag or by setting `DO_NOT_TRACK=1` in the environment.
+
+```bash
+openui create --no-telemetry
+```
+
 ## Notes
 
 - interactive prompts can be cancelled without creating output
-- `create` requires the template files to be present in the built package
+- `create` requires the selected template's files to be present in the built package
 - `generate` exits with a non-zero code if the file is missing or no valid library export is found
 
 ## Documentation

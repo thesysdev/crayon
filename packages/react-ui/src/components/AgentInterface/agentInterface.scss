@@ -1,0 +1,142 @@
+@use "../../cssUtils" as cssUtils;
+@use "./sidebar.scss";
+@use "./threadlist.scss";
+@use "./thread.scss";
+@use "./mobileHeader.scss";
+@use "./resizableSeparator.scss";
+@use "./conversationStarter.scss";
+@use "./welcomeScreen.scss";
+@use "./components/desktopWelcomeComposer.scss";
+@use "./components/composer.scss";
+@use "./artifactBrowser.scss";
+@use "./workspaceSidebar.scss";
+@use "./_shared/shared.scss";
+
+.openui-agent-container {
+  display: flex;
+  position: relative;
+  height: 100dvh;
+  width: 100dvw;
+  overflow: hidden;
+
+  background: cssUtils.$foreground;
+  box-sizing: border-box;
+  & * {
+    box-sizing: border-box;
+  }
+
+  &.openui-agent-container--mobile {
+    padding: 0;
+  }
+}
+
+.openui-agent-sidebar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-xl;
+
+  .openui-agent-container--mobile & {
+    gap: 0;
+  }
+}
+
+.openui-agent-sidebar-primary-actions,
+.openui-agent-sidebar-artifact-nav {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-s-m;
+
+  .openui-agent-container--mobile & {
+    gap: cssUtils.$space-xl;
+  }
+}
+
+.openui-agent-container--mobile .openui-agent-sidebar-artifact-nav {
+  margin-top: cssUtils.$space-2xl;
+  padding: 0 cssUtils.$space-m-l;
+}
+
+.openui-agent-new-chat-button {
+  @include cssUtils.button-reset;
+  @include cssUtils.typography(label, small);
+
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: cssUtils.$space-xs;
+  justify-content: flex-start;
+  color: cssUtils.$text-neutral-primary;
+  border-radius: calc(cssUtils.$radius-s + 1px);
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color 90ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  &:not(&--collapsed):hover {
+    background-color: cssUtils.$highlight;
+  }
+
+  &--collapsed:hover {
+    background-color: transparent;
+
+    .openui-agent-new-chat-button__icon {
+      background-color: cssUtils.$highlight;
+    }
+  }
+
+  &__icon {
+    width: 28px;
+    height: 28px;
+    margin: cssUtils.$space-3xs;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid cssUtils.$border-default;
+    border-radius: cssUtils.$radius-s;
+    background-color: cssUtils.$foreground;
+    color: cssUtils.$text-neutral-primary;
+    font-size: 16px;
+    transition:
+      background-color 90ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 90ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 90ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 90ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  &__label {
+    opacity: 1;
+    white-space: nowrap;
+    transition: opacity 90ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  &--collapsed {
+    width: 32px;
+    gap: 0;
+
+    .openui-agent-new-chat-button__label {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+}
+
+.openui-agent-new-chat-floating-button {
+  position: absolute;
+  left: cssUtils.$space-m-l;
+  bottom: cssUtils.$space-l;
+  z-index: 1;
+}
+
+.openui-agent-tooltip,
+.openui-agent-sidebar-tooltip {
+  @include cssUtils.typography(label, extra-small);
+
+  z-index: 10000;
+  padding: cssUtils.$space-xs cssUtils.$space-s;
+  border: 1px solid cssUtils.$border-default;
+  border-radius: cssUtils.$radius-m;
+  background-color: cssUtils.$inverted-background;
+  color: cssUtils.$text-accent-primary;
+  box-shadow: cssUtils.$shadow-m;
+}

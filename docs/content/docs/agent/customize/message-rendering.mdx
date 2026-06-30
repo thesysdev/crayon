@@ -1,0 +1,78 @@
+---
+title: Message rendering
+description: Replace how user and assistant messages render with your own React components, the escape hatch beyond Generative UI.
+---
+
+By default, `AgentInterface` renders each message for you: markdown for assistant text, the user's text as sent, tool calls inline. [Generative UI](/docs/agent/core-concepts/generative-ui) goes further, letting the model emit rich components inside an assistant message. In both, `AgentInterface` owns the rendering.
+
+The `components` prop is the escape hatch past both. Hand `AgentInterface` your own `AssistantMessage` and `UserMessage` and they render every assistant and user message: markdown, layout, avatars, all of it.
+
+```tsx
+import { AgentInterface } from "@openuidev/react-ui";
+
+<AgentInterface
+  llm={llm}
+  components={{ AssistantMessage: MyAssistantMessage, UserMessage: MyUserMessage }}
+/>;
+```
+
+Both keys are optional and independent. Override just one and the other keeps its default rendering.
+
+## What a component receives
+
+A message component renders once per message it handles and receives that message as a `message` prop. An `AssistantMessage` also gets an `isStreaming` boolean, `true` while it is the in-flight reply. Assistant `content` is empty until the first token arrives, so guard it.
+
+```tsx
+import type { AssistantMessage } from "@openuidev/react-ui";
+
+function MyAssistantMessage({
+  message,
+  isStreaming,
+}: {
+  message: AssistantMessage;
+  isStreaming: boolean;
+}) {
+  return <div className="assistant">{message.content ?? ""}</div>;
+}
+```
+
+The component re-renders as the reply streams in, with `content` growing token by token. A `UserMessage` works the same way without `isStreaming`. Its `content` may be a string or, for multimodal input, an array.
+
+## A custom AssistantMessage
+
+A complete renderer that adds a copy button while still rendering markdown:
+
+```tsx
+import { AgentInterface, type AssistantMessage } from "@openuidev/react-ui";
+import ReactMarkdown from "react-markdown";
+
+function CustomAssistantMessage({ message }: { message: AssistantMessage }) {
+  const text = message.content ?? "";
+  return (
+    <div className="prose">
+      <ReactMarkdown>{text}</ReactMarkdown>
+      <button onClick={() => navigator.clipboard.writeText(text)}>Copy</button>
+    </div>
+  );
+}
+
+<AgentInterface llm={llm} components={{ AssistantMessage: CustomAssistantMessage }} />;
+```
+
+The markdown library is your choice; nothing is imposed once you have taken over.
+
+<img
+  src="/images/agent/custom-assistant-message.png"
+  alt="A custom assistant message bubble with a Copy button, beside the default rendering of the same reply"
+  className="w-full rounded-lg border"
+/>
+
+## Precedence
+
+When a message renders, `AgentInterface` picks the first matching renderer:
+
+1. **`components`:** your explicit override, when set for that message.
+2. **`componentLibrary` (GenUI):** rich rendering so the model can emit components inline.
+3. **Built-in default:** markdown for assistant, plain text for user, tool calls inline.
+
+The props compose. Set `components.AssistantMessage` and your component wins for assistant messages, while user messages still flow through GenUI or the default.

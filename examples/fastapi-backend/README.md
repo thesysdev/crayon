@@ -11,7 +11,7 @@ This is the first example in the repo using a non-Node.js backend — the same f
 │  Vite + React          │  POST   │  FastAPI (Python)       │
 │  (port 5173)           │ ──────► │  (port 8000)            │
 │                        │         │                         │
-│  • FullScreen UI       │         │  • POST /api/chat       │
+│  • AgentInterface UI   │         │  • POST /api/chat       │
 │  • openAIReadable-     │  NDJSON │  • OpenAI streaming     │
 │    StreamAdapter()     │ ◄────── │  • AsyncOpenAI client   │
 └────────────────────────┘         └─────────────────────────┘

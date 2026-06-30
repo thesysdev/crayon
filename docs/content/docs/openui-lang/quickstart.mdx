@@ -40,7 +40,7 @@ The CLI generates a Next.js app with everything wired up:
 ```
 src/
   app/
-    page.tsx          # FullScreen chat layout with the built-in component library
+    page.tsx          # AgentInterface chat (thread history) with the built-in component library
     api/chat/
       route.ts        # Backend route with OpenAI streaming + example tools
   library.ts          # Re-exports openuiChatLibrary and openuiChatPromptOptions
@@ -48,7 +48,7 @@ src/
     system-prompt.txt  # Auto-generated at build time via `openui generate`
 ```
 
-- **`page.tsx`**: Renders the `FullScreen` chat layout with `openuiChatLibrary` for Generative UI rendering and `openAIAdapter()` for streaming.
+- **`page.tsx`**: Renders the `AgentInterface` chat (an artifact chat surface with thread history) with `openuiChatLibrary` for Generative UI rendering. It provides an `llm` whose `send` posts messages to the route and whose `streamProtocol` is `openAIAdapter()`. Storage is optional — omit it and threads are kept in memory (wiped on reload).
 - **`route.ts`**: A backend API route that sends the system prompt to the LLM and streams the response back.
 - **`library.ts`**: Your component library entrypoint. The `openui generate` CLI reads this file to produce the system prompt.
 

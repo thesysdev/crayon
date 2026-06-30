@@ -1,0 +1,509 @@
+---
+title: Self-hosting
+description: Run your own backend instead of OpenUI Cloud — connect your LLM with a streaming route, persist threads and artifacts against your own storage, on any server framework.
+---
+
+OpenUI Cloud handles the backend for you: the provider call, streaming, conversation history, and artifact storage all run behind a single managed endpoint, and `<AgentInterface>` just points at it (see [OpenUI Cloud](/docs/agent/getting-started/openui-cloud)). This page is for the **self-hosted** variant — you run the backend yourself, against your own provider keys, database, and server framework.
+
+Everything `<AgentInterface>` needs from a backend flows through two independent interfaces:
+
+- **`llm`** — a `ChatLLM` that produces replies. The browser-side [`fetchLLM`](/docs/agent/reference/adapters-and-formats) factory builds one for you.
+- **`storage`** — a `ChatStorage` that persists threads (and optionally artifacts). The [`restStorage`](/docs/agent/reference/adapters-and-formats) factory builds one for you.
+
+They are configured separately. You can run a real `llm` with ephemeral (in-memory) storage, or persistent storage with a placeholder `llm`. For the full type signatures of every interface and factory named here, see [Adapters & formats](/docs/agent/reference/adapters-and-formats); this page is the worked-example home for wiring them against your own backend.
+
+<Callout type="info">The provider key **always** lives server-side. `fetchLLM` only ever talks to your own origin (e.g. `/api/chat`), never directly to `api.openai.com`. The key is read from `process.env` inside your route and is never bundled into the browser.</Callout>
+
+## 1. Connect your LLM
+
+The `llm` channel is two halves of one loop:
+
+- **Browser half** — `fetchLLM({ url, streamAdapter, messageFormat })` POSTs `{ threadId, messages }` to your route and parses the streamed reply.
+- **Server half** — a route handler that receives `{ threadId, messages }`, calls your provider with streaming on, and returns the stream.
+
+```tsx
+import { AgentInterface, fetchLLM, openAIReadableStreamAdapter, openAIMessageFormat } from "@openuidev/react-ui";
+
+const llm = fetchLLM({
+  url: "/api/chat",                            // your route handler
+  streamAdapter: openAIReadableStreamAdapter(), // how to parse the streamed response
+  messageFormat: openAIMessageFormat,           // how to shape outgoing messages
+});
+
+export default function App() {
+  return <AgentInterface llm={llm} agentName="Acme Assistant" />;
+}
+```
+
+Your route always receives a JSON body of `{ threadId, messages }` and returns a streaming `Response`. `fetchLLM` runs that response through `streamAdapter` to turn the bytes into the AG-UI events the UI renders.
+
+`threadId` is in the body so your route can scope context, log, or attach per-thread state. The minimal route can ignore it.
+
+### Choosing `streamAdapter` and `messageFormat`
+
+`streamAdapter` governs the **response** (how the streamed bytes are decoded); `messageFormat` governs the **request** (how outgoing `messages` are shaped). They are chosen independently but pair up by provider. Each adapter is a factory — **call it**: `openAIAdapter()`, not the bare reference.
+
+| Provider / route output | `streamAdapter` | `messageFormat` |
+|---|---|---|
+| OpenAI Chat Completions, NDJSON from `stream.toReadableStream()` | `openAIReadableStreamAdapter()` | `openAIMessageFormat` |
+| OpenAI Chat Completions, raw SSE (`data: {…}\n\n`, `data: [DONE]`) | `openAIAdapter()` | `openAIMessageFormat` |
+| OpenAI **Responses / Conversations** API stream | `openAIResponsesAdapter()` | `openAIConversationMessageFormat` |
+| LangGraph stream (named SSE events) | `langGraphAdapter()` | `langGraphMessageFormat` |
+| A backend that already emits AG-UI events | `agUIAdapter()` | depends on what your route expects |
+
+The full catalogue and the precise wire format each adapter expects are in [Adapters & formats](/docs/agent/reference/adapters-and-formats).
+
+### Recipe: OpenAI
+
+With `openAIMessageFormat` on the client, `messages` already arrives in OpenAI's chat shape, so you forward it straight to the SDK. `stream.toReadableStream()` emits NDJSON, which `openAIReadableStreamAdapter()` parses on the client.
+
+```ts
+// app/api/chat/route.ts
+import OpenAI from "openai";
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY }); // server-side only
+
+export async function POST(req: Request) {
+  const { threadId, messages } = await req.json();
+
+  const stream = await openai.chat.completions.create({
+    model: "gpt-4o",
+    stream: true,                 // ← the part that makes it stream
+    messages,                     // already OpenAI-shaped via openAIMessageFormat
+  });
+
+  // openAIReadableStreamAdapter() parses exactly this NDJSON output.
+  return new Response(stream.toReadableStream(), {
+    headers: { "Content-Type": "text/event-stream" },
+  });
+}
+```
+
+**Variant — forward raw SSE.** If you proxy another OpenAI-compatible service that emits SSE, return the SSE bytes unchanged and switch the client to `openAIAdapter()`:
+
+```ts
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+  const upstream = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({ model: "gpt-4o", stream: true, messages }),
+  });
+  return new Response(upstream.body, { headers: { "Content-Type": "text/event-stream" } });
+}
+```
+
+### Recipe: Anthropic (translate to AG-UI)
+
+Anthropic streams its own format, and OpenUI has **no built-in adapter for it**. Rather than invent one, the route translates Anthropic's stream into **AG-UI events** as it goes, and the client uses `agUIAdapter()`. AG-UI events are emitted as Server-Sent Events: each event is a line `data: {json}\n\n`, and the JSON's `type` field names the event. This is the general pattern for any provider OpenUI lacks a native adapter for.
+
+The events a text reply needs:
+
+| Event `type` | Fields | Meaning |
+|---|---|---|
+| `TEXT_MESSAGE_START` | `messageId` | An assistant text message begins. |
+| `TEXT_MESSAGE_CONTENT` | `messageId`, `delta` | A chunk of assistant text. |
+| `TEXT_MESSAGE_END` | `messageId` | The text message is complete. |
+| `RUN_ERROR` | `message` | The turn failed; surfaces as an error in the UI. |
+
+```ts
+// app/api/chat/route.ts
+import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }); // server-side only
+
+export async function POST(req: Request) {
+  const { messages } = await req.json(); // { threadId, messages } from fetchLLM
+
+  // Anthropic takes `system` as a top-level field, not a message role.
+  const system = messages
+    .filter((m: any) => m.role === "system")
+    .map((m: any) => m.content)
+    .join("\n");
+  const turns = messages.filter((m: any) => m.role !== "system");
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const sse = (event: object) =>
+        controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(event)}\n\n`));
+      const messageId = crypto.randomUUID();
+
+      try {
+        const anthropicStream = anthropic.messages.stream({
+          model: "claude-3-5-sonnet-latest",
+          max_tokens: 1024,
+          system: system || undefined,
+          messages: turns,
+        });
+
+        sse({ type: "TEXT_MESSAGE_START", messageId });
+        for await (const chunk of anthropicStream) {
+          if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
+            sse({ type: "TEXT_MESSAGE_CONTENT", messageId, delta: chunk.delta.text });
+          }
+        }
+        sse({ type: "TEXT_MESSAGE_END", messageId });
+      } catch (err) {
+        sse({ type: "RUN_ERROR", message: err instanceof Error ? err.message : "Anthropic call failed" });
+      } finally {
+        controller.close(); // flips the UI loading state off — leave it open and the loader never disappears
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" },
+  });
+}
+```
+
+Paired client — `agUIAdapter()` because the route emits AG-UI events; `openAIMessageFormat` shapes the outgoing `role` / `content` turns:
+
+```tsx
+import { agUIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: agUIAdapter(),
+  messageFormat: openAIMessageFormat,
+});
+```
+
+To let the model call tools, declare provider-format tools on the request, run the ones it asks for, and emit the matching `TOOL_CALL_START` / `TOOL_CALL_ARGS` / `TOOL_CALL_END` / `TOOL_CALL_RESULT` events between the text events, looping back to the provider with each result until it returns a turn with no tool calls. (`TOOL_CALL_RESULT.content` is always a string.) See [Tools](/docs/agent/core-concepts/tools).
+
+## 2. Stream — your route must stream
+
+Streaming is a property of your **backend route**, not of `<AgentInterface>`. The frontend reads whatever the route sends; if the route buffers the full answer and returns it in one shot, the UI has nothing to stream. Two rules:
+
+1. **Enable the provider's streaming mode** (`stream: true` for OpenAI, `messages.stream(...)` for Anthropic) and return the streamed body — never an `await`-ed full completion sent as JSON.
+2. **Close the stream when generation finishes.** The client's `isRunning` flips back to `false` only when the stream **closes**. A stream left open hangs the loader forever.
+
+If responses arrive all-at-once, the cause is almost always one of two things: the route isn't actually streaming, or `streamAdapter` doesn't match the route's wire format (an adapter that can't decode the bytes can't render them incrementally). Check the network tab: if the response body trickles in gradually, the route streams and the problem is the adapter; if it completes in one shot after a pause, the problem is the route.
+
+### Honor the abort signal
+
+Every run is backed by an `AbortController`. `fetchLLM` threads the UI's `AbortSignal` into its `fetch`, so when the user hits stop, the HTTP request to your route is aborted. To stop the **upstream provider call** too, pass that request's signal into the provider SDK. Without it, the UI stops consuming the stream but the provider may keep generating server-side. A cancelled run is treated as intentional — it does not surface a thread error.
+
+## 3. Persist conversations
+
+Add a `storage` adapter and the default sidebar's thread list, "New chat" button, thread switching, and deletion all operate against your backend — conversations survive reloads. The fastest path is `restStorage`, which maps each `ChatStorage` operation to one HTTP call under a `baseUrl`:
+
+```tsx
+import { AgentInterface, fetchLLM, restStorage, agUIAdapter } from "@openuidev/react-ui";
+
+const llm = fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() });
+const storage = restStorage({ baseUrl: "/api/threads" });
+
+export default function App() {
+  return <AgentInterface storage={storage} llm={llm} agentName="Acme Assistant" />;
+}
+```
+
+That's the whole frontend change — one prop. You implement the five endpoints `restStorage` calls; the sidebar's thread lifecycle comes for free. With `baseUrl: "/api/threads"`:
+
+| Operation | Method | Path | Request body | Returns |
+|---|---|---|---|---|
+| List threads | `GET` | `/api/threads/get` | — (append `?cursor={cursor}` to paginate) | `{ threads, nextCursor? }` |
+| Create thread | `POST` | `/api/threads/create` | `{ messages: [...] }` (first user message via the message format) | the new `Thread` |
+| Get messages | `GET` | `/api/threads/get/{threadId}` | — | the thread's `Message[]` |
+| Update thread | `PATCH` | `/api/threads/update/{threadId}` | the full `Thread` | the updated `Thread` |
+| Delete thread | `DELETE` | `/api/threads/delete/{threadId}` | — | nothing |
+
+`restStorage` throws a descriptive error on any non-`ok` response. The `Thread` shape at the boundary is `{ id, title, createdAt: string | number, isPending? }`. By default `restStorage` uses the identity message format; pass `messageFormat` (and optional `headers` / `fetch`) if your backend stores a provider-specific shape — it is applied to the `create` body (`toApi`) and the `get/{threadId}` response (`fromApi`).
+
+```tsx
+import { openAIMessageFormat } from "@openuidev/react-ui";
+
+const storage = restStorage({
+  baseUrl: "/api/threads",
+  messageFormat: openAIMessageFormat,
+  headers: { "x-tenant": "acme" }, // sent on every request
+});
+```
+
+A minimal Next.js App Router implementation, lining up exactly with the table:
+
+```ts
+// app/api/threads/get/route.ts — list threads (and paginate)
+export async function GET(req: NextRequest) {
+  const cursor = req.nextUrl.searchParams.get("cursor") ?? undefined;
+  const { threads, nextCursor } = await db.listThreads({ cursor, limit: 20 });
+  return NextResponse.json({ threads, nextCursor });
+}
+
+// app/api/threads/create/route.ts — create from the first message
+export async function POST(req: NextRequest) {
+  const { messages } = await req.json();
+  const thread = await db.createThread({
+    title: deriveTitle(messages[0]), // e.g. first ~40 chars of user text
+    createdAt: Date.now(),
+    messages,
+  });
+  return NextResponse.json(thread); // the new Thread
+}
+
+// app/api/threads/get/[threadId]/route.ts — load one thread's messages
+export async function GET(_req: NextRequest, { params }: { params: { threadId: string } }) {
+  return NextResponse.json(await db.getMessages(params.threadId)); // Message[]
+}
+
+// app/api/threads/update/[threadId]/route.ts — update (e.g. rename)
+export async function PATCH(req: NextRequest, { params }: { params: { threadId: string } }) {
+  const thread = await req.json(); // the full Thread
+  return NextResponse.json(await db.updateThread(params.threadId, thread));
+}
+
+// app/api/threads/delete/[threadId]/route.ts — delete
+export async function DELETE(_req: NextRequest, { params }: { params: { threadId: string } }) {
+  await db.deleteThread(params.threadId);
+  return new NextResponse(null, { status: 204 });
+}
+```
+
+`db` is a stand-in for your persistence layer — Postgres, SQLite, Redis, a cloud KV store, anything. The endpoints are thin: read/write threads and messages, return the shapes the table describes.
+
+### Custom `ChatStorage` instead
+
+If the REST endpoint shape doesn't fit your backend — GraphQL, a client-side store like IndexedDB, a SaaS SDK, or just a different URL layout — implement `ChatStorage` directly. It's an object with a `thread` member satisfying `ThreadStorage` (five methods) plus an optional `artifact` member. `restStorage` is itself just a `ChatStorage` built this way for the common REST case.
+
+```ts
+import type { ChatStorage } from "@openuidev/react-ui";
+import { gql } from "@/lib/graphql";
+
+export const storage: ChatStorage = {
+  thread: {
+    async listThreads(cursor) {
+      const { threads, nextCursor } = await gql(LIST_THREADS, { cursor });
+      return { threads, nextCursor };
+    },
+    async createThread(firstMessage) {
+      const { thread } = await gql(CREATE_THREAD, { firstMessage });
+      return thread; // a Thread: { id, title, createdAt }
+    },
+    async getMessages(threadId) {
+      const { messages } = await gql(GET_MESSAGES, { threadId });
+      return messages; // Message[]
+    },
+    async updateThread(thread) {
+      const { updated } = await gql(UPDATE_THREAD, { thread });
+      return updated; // the updated Thread
+    },
+    async deleteThread(id) {
+      await gql(DELETE_THREAD, { id });
+    },
+  },
+};
+```
+
+The five methods map one-to-one onto the sidebar:
+
+| Method | When it runs |
+|---|---|
+| `listThreads(cursor?)` | Populating the thread list; loading more on scroll. |
+| `createThread(firstMessage)` | User sends the first message of a new chat. Receives the `UserMessage`. |
+| `getMessages(threadId)` | User opens a thread. Returns its `Message[]`. |
+| `updateThread(thread)` | A thread changes (e.g. rename). Returns the updated `Thread`. |
+| `deleteThread(id)` | User deletes a thread. |
+
+## 4. Store artifacts
+
+Adding an optional `artifact` channel to your storage makes every dashboard, report, and presentation the agent produces a durable, searchable, cross-thread record — and `<AgentInterface>` renders the entire artifact browser (sidebar entry → searchable list → full-page view) for you. `ArtifactStorage` is three methods:
+
+```ts
+interface ArtifactStorage {
+  // name/type filtering is SERVER-SIDE; cursor-paginated
+  list(params?: { name?: string; type?: string[]; cursor?: string; limit?: number }):
+    Promise<{ artifacts: ArtifactSummary[]; nextCursor?: string }>;
+  get(id: string): Promise<Artifact>;
+  update(patch: { id: string; content: unknown }): Promise<ArtifactSummary>; // for editable artifacts
+}
+```
+
+```ts
+import type { ChatStorage, ArtifactStorage } from "@openuidev/react-ui";
+
+const artifact: ArtifactStorage = {
+  async list({ name, type, cursor, limit } = {}) {
+    const params = new URLSearchParams();
+    if (name) params.set("name", name);
+    if (type) type.forEach((t) => params.append("type", t));
+    if (cursor) params.set("cursor", cursor);
+    if (limit) params.set("limit", String(limit));
+    const res = await fetch(`/api/artifacts?${params}`);
+    if (!res.ok) throw new Error(`list artifacts failed: ${res.status}`);
+    return res.json(); // { artifacts: ArtifactSummary[], nextCursor?: string }
+  },
+  async get(id) {
+    const res = await fetch(`/api/artifacts/${id}`);
+    if (!res.ok) throw new Error(`get artifact failed: ${res.status}`);
+    return res.json(); // Artifact (includes content)
+  },
+  async update({ id, content }) {
+    const res = await fetch(`/api/artifacts/${id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ content }),
+    });
+    if (!res.ok) throw new Error(`update artifact failed: ${res.status}`);
+    return res.json(); // ArtifactSummary
+  },
+};
+
+const storage: ChatStorage = {
+  thread: restStorage({ baseUrl: "/api/threads" }).thread, // reuse the REST thread channel
+  artifact,
+};
+```
+
+Four things to keep right (full contract in [Adapters & formats](/docs/agent/reference/adapters-and-formats)):
+
+- **`list` filters on the server.** `name` (partial-match search on `title`) and `type` go to your backend, not applied client-side — the browser's search box and category tabs become these params, paginated via `cursor` / `nextCursor`.
+- **`get` returns the full record** including `content`, which the renderer needs to draw the full view. On the storage path a renderer's `parser` is called as `parser({ args: undefined, response: artifact.content }, { isStreaming: false })`, so make your parser tolerate `args` being `undefined` and read the artifact's data from `response`.
+- **`update` is for editable artifacts.** A renderer reaches storage via the `useArtifactStorage()` hook (returns `ArtifactStorage | null` — guard for `null`) and calls `update({ id, content })` to persist.
+- **`threadId` is required on every `ArtifactSummary`.** It powers the "go to thread" jump from the artifact view back to the conversation that produced it.
+
+The matching Next.js backend — filtering and pagination live on the server:
+
+```ts
+// app/api/artifacts/route.ts — list (search + type filter + paginate)
+export async function GET(req: NextRequest) {
+  const sp = req.nextUrl.searchParams;
+  const name = sp.get("name") ?? undefined;     // search box
+  const type = sp.getAll("type");               // category filter (repeatable)
+  const cursor = sp.get("cursor") ?? undefined; // pagination
+  const limit = Number(sp.get("limit") ?? 20);
+  const { artifacts, nextCursor } = await db.listArtifacts({
+    name, type: type.length ? type : undefined, cursor, limit,
+  });
+  // each artifact MUST include threadId
+  return NextResponse.json({ artifacts, nextCursor });
+}
+
+// app/api/artifacts/[id]/route.ts — get (full content) + update
+export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+  return NextResponse.json(await db.getArtifact(params.id)); // Artifact (with content)
+}
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  const { content } = await req.json();
+  return NextResponse.json(await db.updateArtifact(params.id, content)); // ArtifactSummary
+}
+```
+
+The artifact `type` you store must match the `type` a registered renderer declares — it's the contract linking a stored artifact to the renderer that draws it. How artifacts get *written* (a tool call, a background job, a direct write) is up to your agent; the browser only reads, gets, and updates. For organizing the browser into groups and the per-thread Workspace rail (which does **not** require storage), see [Artifacts](/docs/agent/core-concepts/artifacts) and [`<AgentInterface>` props](/docs/agent/reference/agentinterface-props).
+
+## 5. Framework-agnostic (plain Web `Request`/`Response`)
+
+None of the above is Next.js-specific. The only thing `ChatLLM.send` must return is a standard **Web `Response`** with a streaming body — the primitive that Next.js route handlers, Hono, Bun, Deno, and Cloudflare Workers all speak natively, and that Express can be adapted to in a few lines. Write the handler once, mount it anywhere.
+
+```ts
+// chat-handler.ts — pure Web platform, no framework imports
+import OpenAI from "openai";
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY }); // server-side only
+
+export async function handleChat(req: Request): Promise<Response> {
+  const { threadId, messages } = await req.json();
+  const stream = await openai.chat.completions.create({
+    model: "gpt-4o",
+    stream: true,
+    messages,
+  });
+  return new Response(stream.toReadableStream(), {
+    headers: { "Content-Type": "text/event-stream" },
+  });
+}
+```
+
+Mounting it differs only at the edges:
+
+```ts
+// Next.js App Router — app/api/chat/route.ts
+import { handleChat } from "@/chat-handler";
+export const POST = (req: Request) => handleChat(req);
+```
+
+```ts
+// Hono
+import { Hono } from "hono";
+import { handleChat } from "./chat-handler";
+const app = new Hono();
+app.post("/api/chat", (c) => handleChat(c.req.raw)); // c.req.raw is a Web Request
+export default app;
+```
+
+```ts
+// Bun / Deno / Cloudflare Workers — the runtime hands you a Request directly
+export default {
+  fetch(req: Request) {
+    const url = new URL(req.url);
+    if (req.method === "POST" && url.pathname === "/api/chat") return handleChat(req);
+    return new Response("Not found", { status: 404 });
+  },
+};
+```
+
+```ts
+// Express — bridge req/res to Web Request/Response
+import express from "express";
+import { handleChat } from "./chat-handler";
+const app = express();
+app.post("/api/chat", express.json(), async (req, res) => {
+  const webReq = new Request("http://local/api/chat", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(req.body),
+  });
+  const webRes = await handleChat(webReq);
+  res.status(webRes.status);
+  webRes.headers.forEach((v, k) => res.setHeader(k, v));
+  const reader = webRes.body!.getReader();
+  for (let chunk = await reader.read(); !chunk.done; chunk = await reader.read()) {
+    res.write(chunk.value);
+  }
+  res.end();
+});
+```
+
+The handler is identical across all four — the framework only routes the request to it.
+
+On the client, a fully custom `llm` is an object with `send` (returns a streaming `Response`, **forwards the `signal`**) and `streamProtocol` (the adapter matching your body's wire format):
+
+```tsx
+import { type ChatLLM, type ChatStorage, openAIReadableStreamAdapter } from "@openuidev/react-ui";
+
+const llm: ChatLLM = {
+  async send({ threadId, messages, signal }) {
+    return fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId, messages }),
+      signal, // forward it so the stop button actually aborts the request
+    });
+  },
+  streamProtocol: openAIReadableStreamAdapter(),
+};
+```
+
+Because `send` is just a function returning a `Response`, you can layer logic around the request — a retry on 503, a fresh auth token per attempt, telemetry — without a proxy. It still runs in the browser, so it must call your **own** origin, never a provider API directly. The factory path and the custom path are the same two interfaces; they mix freely (e.g. `restStorage` for threads plus a custom `llm`), and `<AgentInterface>` can't tell the difference.
+
+## What you have now
+
+A self-hosted `<AgentInterface>`: a model reply that streams (key server-side), durable threads and artifacts against your own storage, on any server framework — because the contract is two small interfaces over plain Web `Request`/`Response`.
+
+<Cards>
+  <Card title="Adapters & formats" href="/docs/agent/reference/adapters-and-formats">
+    The full `ChatLLM`, `ChatStorage`, `ThreadStorage`, `ArtifactStorage` interfaces and the `fetchLLM` / `restStorage` factories, plus every stream adapter and message format.
+  </Card>
+  <Card title="<AgentInterface> props" href="/docs/agent/reference/agentinterface-props">
+    The `llm`, `storage`, `artifactRenderers`, and `artifactCategories` props in full.
+  </Card>
+  <Card title="Conversations" href="/docs/agent/core-concepts/conversations">
+    How threads, messages, and streaming fit together.
+  </Card>
+  <Card title="Artifacts" href="/docs/agent/core-concepts/artifacts">
+    The artifact browser, Workspace rail, and how stored artifacts render.
+  </Card>
+</Cards>
