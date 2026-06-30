@@ -2,36 +2,19 @@
 import "@openuidev/react-ui/components.css";
 
 import { useTheme } from "@/hooks/use-system-theme";
-import {
-  AgentInterface,
-  langGraphAdapter,
-  langGraphMessageFormat,
-  type ChatLLM,
-} from "@openuidev/react-ui";
+import { AgentInterface, agUIAdapter, fetchLLM } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 import { useMemo } from "react";
 
 export default function Page() {
   const mode = useTheme();
 
-  // Storage is optional; AgentInterface uses an in-memory default (wiped on
-  // reload). The backend call is unchanged — only the chat surface moved from
-  // FullScreen to AgentInterface.
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: ({ messages, signal }) =>
-        fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            // Convert OpenUI messages to LangChain shape for the graph.
-            // The run is stateless: the full history is sent each turn.
-            messages: langGraphMessageFormat.toApi(messages),
-          }),
-          signal,
-        }),
-      streamProtocol: langGraphAdapter(),
-    }),
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: agUIAdapter(),
+      }),
     [],
   );
 
@@ -40,7 +23,7 @@ export default function Page() {
       <AgentInterface
         llm={llm}
         componentLibrary={openuiChatLibrary}
-        agentName="OpenUI + LangGraph Chat"
+        agentName="OpenUI + DeepAgents Chat"
         theme={{ mode }}
         starterVariant="short"
         starters={[
