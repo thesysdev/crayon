@@ -2,34 +2,6 @@
 
 A minimal **Next.js (App Router)** app that hosts OpenUI Cloud: a generative-UI chat that streams and persists them to your OpenUI Cloud org.
 
-It demonstrates the **two-plane** integration model:
-
-- **Generation plane** — server-side, master key. `/api/chat` forwards the latest
-  message to OpenUI Cloud (`POST /v1/embed/responses`) using your org master key and
-  pipes the SSE stream straight back to the browser. The master key never leaves the
-  server.
-- **Read/edit plane** — browser-direct, short-lived token. The page reads and edits
-  conversations and artifacts directly against `/v1/*` using a `fct_` frontend token
-  minted server-side by `/api/frontend-token`.
-
-## Project structure
-
-```
-src/
-  app/
-    api/
-      chat/route.ts            # generation plane: proxies POST /v1/embed/responses (master key)
-      frontend-token/route.ts  # mints a short-lived fct_ token for the browser (master key)
-    page.tsx                   # client: <AgentInterface> wired to the LLM + OpenUI Cloud storage
-    layout.tsx                 # root layout + theme provider
-    globals.css
-  hooks/
-    use-system-theme.tsx       # light/dark following the OS
-  lib/
-    env.ts                     # request-time env helpers (requiredEnv / envOr)
-.env.example                   # copy to .env.local
-```
-
 ## Prerequisites
 
 - Node + `pnpm`.

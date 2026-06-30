@@ -1,14 +1,5 @@
 import { envOr, requiredEnv } from "@/lib/env";
 
-/**
- * Read-plane credential mint: proxies the OpenUI Cloud POST /v1/frontend-tokens
- * (master-key plane) and returns ONLY { token, expires_at }.
- *
- *  - The master key never reaches the browser (server env; the response is
- *    field-picked, never passed through).
- *  - user_id comes from server config — the browser must not choose its own
- *    identity.
- */
 export async function POST() {
   const upstream = await fetch(`https://api.thesys.dev/v1/frontend-tokens`, {
     method: "POST",
@@ -20,13 +11,11 @@ export async function POST() {
   });
 
   if (!upstream.ok) {
-    // Never forward upstream auth-error bodies (they can embed key fragments).
-    console.error(
-      "[frontend-token] mint failed:",
-      upstream.status,
-      await upstream.text().catch(() => ""),
-    );
-    return Response.json({ error: { message: "token mint failed" } }, { status: 502 });
+    const errText = await upstream
+      .text()
+      .catch(() => "There was an error in the response from the upstream service.");
+    console.error("[frontend-token] mint failed:", upstream.status, errText);
+    return Response.json({ error: { message: errText } }, { status: 502 });
   }
 
   const { token, expires_at } = (await upstream.json()) as { token: string; expires_at: number };
