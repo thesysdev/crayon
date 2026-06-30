@@ -1,4 +1,4 @@
-import { envOr, openuiCloudBaseUrl, requiredEnv } from "@/lib/env";
+import { envOr, requiredEnv } from "@/lib/env";
 
 /**
  * Read-plane credential mint: proxies the OpenUI Cloud POST /v1/frontend-tokens
@@ -10,7 +10,7 @@ import { envOr, openuiCloudBaseUrl, requiredEnv } from "@/lib/env";
  *    identity.
  */
 export async function POST() {
-  const upstream = await fetch(`${openuiCloudBaseUrl()}/v1/frontend-tokens`, {
+  const upstream = await fetch(`https://api.thesys.dev/v1/frontend-tokens`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

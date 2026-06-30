@@ -10,7 +10,7 @@ import { envOr, requiredEnv } from "@/lib/env";
  *    identity.
  */
 export async function POST() {
-  const upstream = await fetch(`${requiredEnv("OPENUI_CLOUD_BASE_URL")}/v1/frontend-tokens`, {
+  const upstream = await fetch(`https://api.thesys.dev/v1/frontend-tokens`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
