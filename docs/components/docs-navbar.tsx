@@ -78,7 +78,12 @@ function SearchBar() {
 export function DocsNavbar({ showSidebarToggle = false }: { showSidebarToggle?: boolean }) {
   const pathname = usePathname();
   const { resolvedTheme } = useTheme();
-  const logoVariant = resolvedTheme === "dark" ? "dark" : "light";
+  // resolvedTheme is undefined during SSR and the first client render, so gate the
+  // theme-derived variant behind a mount flag (matching SiteMarketingHeader) to
+  // avoid a hydration mismatch on the brand text color.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const logoVariant = mounted && resolvedTheme === "dark" ? "dark" : "light";
 
   const tabValue = useMemo(() => activeTabUrl(pathname), [pathname]);
 

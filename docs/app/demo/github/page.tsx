@@ -275,15 +275,23 @@ export default function GitHubDemoPage() {
       ? Math.round(((jsonTokens - rawTokens) / jsonTokens) * 100)
       : null;
 
-  // Theme
+  // Theme. next-themes reports undefined theme/resolvedTheme during SSR and the
+  // first client render, so gate the theme-derived render output behind a mount
+  // flag. mounted is false on both the server and the first client render, so
+  // both paint the same fallback (no hydration mismatch on the toggle label or
+  // the editor/dashboard mode); the real theme is applied after mount.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const currentTheme = useMemo<Theme>(() => {
+    if (!mounted) return "system";
     if (theme === "light" || theme === "dark" || theme === "system") {
       return theme;
     }
     return "system";
-  }, [theme]);
+  }, [mounted, theme]);
 
-  const resolvedMode = resolvedTheme === "dark" ? "dark" : "light";
+  const resolvedMode = mounted && resolvedTheme === "dark" ? "dark" : "light";
 
   const cycleTheme = () =>
     setTheme(currentTheme === "system" ? "light" : currentTheme === "light" ? "dark" : "system");
