@@ -57,6 +57,14 @@ export default function Page() {
         theme={{ mode }}
         starters={[
           {
+            displayText: "Summarize EV trends",
+            prompt: "In a few sentences, summarize the biggest EV market trends this quarter.",
+          },
+          {
+            displayText: "Pricing strategy tips",
+            prompt: "List five quick tips for pricing a new electric vehicle competitively.",
+          },
+          {
             displayText: "Quarterly deck",
             prompt: "Create a short presentation about our Q2 results with three slides.",
           },
