@@ -47,11 +47,11 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
               type: "select",
               message: "Which template?",
               choices: [
-                { value: "openui-chat", name: "OpenUI Chat — bring your own model key (OpenAI)" },
                 {
                   value: "openui-cloud",
                   name: "OpenUI Cloud — managed conversations, artifacts & streaming",
                 },
+                { value: "openui-chat", name: "OpenUI Chat — bring your own model key (OpenAI)" },
               ],
             },
             required: true,
@@ -204,7 +204,7 @@ async function writeCloudEnv(
     console.error(`\n⚠ Could not obtain an API key: ${msg}`);
     console.error(`  Add THESYS_API_KEY to .env later (keys: ${THESYS_KEYS_URL}).\n`);
   }
-  const lines = [`THESYS_API_KEY=${apiKey ?? ""}`, `DEMO_USER_ID=demo-user`];
+  const lines = [`THESYS_API_KEY=${apiKey ?? ""}`, `DEMO_USER_ID=demo-user`, `OPENUI_MODEL=`];
   fs.writeFileSync(path.join(targetDir, ".env"), lines.join("\n") + "\n");
   return apiKey != null;
 }

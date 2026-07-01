@@ -43,7 +43,7 @@ export async function POST(req: Request) {
   try {
     stream = (await client.responses.create(
       {
-        model: envOr("OPENUI_MODEL", "anthropic/claude-sonnet-4.6"),
+        model: envOr("OPENUI_MODEL", "google/gemini-3.1-pro"),
         conversation: threadId, // store:true persists to the conversation
         input,
         stream: true,
