@@ -2,9 +2,9 @@ name: Build JS
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -20,15 +20,36 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
-          cache-dependency-path: 'pnpm-lock.yaml'
+          cache-dependency-path: "pnpm-lock.yaml"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build affected projects
-        run: pnpm -r --workspace-concurrency=1 build
+      - name: Build packages
+        run: pnpm --filter "./packages/**" --workspace-concurrency=1 run build
         env:
           NODE_OPTIONS: --max-old-space-size=6144
 
-      - name: Check affected projects
-        run: pnpm -r run ci
+      - name: Run Packages CI
+        run: pnpm --filter "./packages/**" --workspace-concurrency=1 run ci
+
+  build-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.0.6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: "pnpm-lock.yaml"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build examples
+        run: pnpm --filter "./examples/**" --workspace-concurrency=1 run build
