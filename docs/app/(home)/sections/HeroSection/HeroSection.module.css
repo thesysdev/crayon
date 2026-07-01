@@ -310,6 +310,230 @@
   color: var(--openui-text-neutral-primary);
 }
 
+/* ── Command dropdown button (isolated pill + sliding-highlight dropdown) ── */
+
+/* Isolated wrapper + trigger, so restyling never affects other buttons. The
+   width/padding tokens keep the trigger, the rows, and the sliding highlight in
+   exact lockstep. */
+.commandDropdown {
+  --cmd-width: 26.75rem;
+  --cmd-pad: 0.375rem;
+  --cmd-stride: 3.125rem;
+  position: relative;
+  z-index: 20;
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
+}
+
+.commandTrigger {
+  display: flex;
+  height: 3rem;
+  /* Row width, so the first row overlaps the trigger exactly. */
+  min-width: var(--cmd-width);
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.625rem;
+  padding-left: 1.25rem;
+  padding-right: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--openui-radius-full);
+  background: var(--home-surface-raised);
+  box-shadow: var(--home-bevel);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 0.18s ease;
+}
+
+[data-theme="dark"] .commandTrigger {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--home-surface-ink);
+  box-shadow: var(--home-bevel-on-dark);
+}
+
+/* While open the first row sits exactly on the trigger; hide the trigger so the
+   two never ghost and the button appears to become the menu. */
+.commandDropdownOpen .commandTrigger {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.commandTriggerLabel {
+  font-family: var(--font-geist-mono);
+  font-size: 1rem;
+  white-space: nowrap;
+  color: var(--openui-text-neutral-primary);
+}
+
+.commandTriggerRunner {
+  font-weight: 600;
+}
+
+/* Filled copy chip on the trigger. */
+.commandTriggerBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--openui-radius-full);
+  background: var(--openui-inverted-background);
+  color: var(--openui-background);
+}
+
+/* Dropdown. Shifted up + left by the padding + border, so the first row lands
+   exactly on the trigger while the card's padding sits outside it. Fades only
+   (no slide/scale), so the overlap holds and the text never re-rasterises. */
+.commandMenu {
+  position: absolute;
+  top: calc(-1 * (var(--cmd-pad) + 1px));
+  left: calc(-1 * (var(--cmd-pad) + 1px));
+  width: calc(var(--cmd-width) + 2 * var(--cmd-pad) + 2px);
+  z-index: 60;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    visibility 0s linear 0.18s;
+}
+
+.commandMenuOpen {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 0.18s ease,
+    visibility 0s;
+}
+
+/* White container; its padding sits outside the rows. Positioned so the sliding
+   highlight can be placed against it. */
+.commandMenuCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  width: 100%;
+  padding: var(--cmd-pad);
+  border: 1px solid var(--openui-border-default);
+  /* Row-pill radius (1.5rem) + the padding, so the container's corners run
+     concentric with the rows inside. */
+  border-radius: 1.875rem;
+  background: var(--openui-foreground);
+  box-shadow: var(--openui-shadow-l);
+}
+
+/* A single highlight pill that slides between rows, so the hover glides instead
+   of popping. It sits behind the rows, so their text and chip never move. */
+.commandMenuHighlight {
+  position: absolute;
+  top: var(--cmd-pad);
+  left: var(--cmd-pad);
+  z-index: 0;
+  width: var(--cmd-width);
+  height: 3rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--openui-radius-full);
+  background: var(--home-surface-raised);
+  box-shadow: var(--home-bevel);
+  opacity: 0;
+  transition:
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.15s ease;
+}
+
+[data-theme="dark"] .commandMenuHighlight {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--home-surface-ink);
+  box-shadow: var(--home-bevel-on-dark);
+}
+
+.commandMenuCard:has(.commandMenuItem:nth-of-type(1):hover) .commandMenuHighlight {
+  opacity: 1;
+  transform: translateY(0);
+}
+.commandMenuCard:has(.commandMenuItem:nth-of-type(2):hover) .commandMenuHighlight {
+  opacity: 1;
+  transform: translateY(var(--cmd-stride));
+}
+.commandMenuCard:has(.commandMenuItem:nth-of-type(3):hover) .commandMenuHighlight {
+  opacity: 1;
+  transform: translateY(calc(2 * var(--cmd-stride)));
+}
+.commandMenuCard:has(.commandMenuItem:nth-of-type(4):hover) .commandMenuHighlight {
+  opacity: 1;
+  transform: translateY(calc(3 * var(--cmd-stride)));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .commandMenuHighlight {
+    transition: opacity 0.15s ease;
+  }
+}
+
+/* Rows share the trigger's exact insets, so every copy chip lines up with the
+   trigger's badge. Transparent + above the highlight, which glides behind. */
+.commandMenuItem {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  height: 3rem;
+  padding: 0 0.5rem 0 1.25rem;
+  /* Transparent border matching the trigger's, so the text + chip sit at the
+     exact same inset and don't shift a pixel when the menu opens. */
+  border: 1px solid transparent;
+  border-radius: var(--openui-radius-full);
+  background: transparent;
+  color: var(--openui-text-neutral-primary);
+  font-family: var(--font-geist-mono);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.commandMenuItemLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Own layer, so the highlight gliding behind never re-rasterises the text. */
+  transform: translateZ(0);
+}
+
+.commandMenuItemRunner {
+  font-weight: 600;
+  color: var(--openui-text-neutral-primary);
+}
+
+/* Copy chip: hidden until the row is hovered (space reserved so nothing shifts),
+   then filled like the trigger's badge. */
+.commandMenuItemIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--openui-radius-full);
+  background: transparent;
+  color: var(--openui-text-neutral-secondary);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  /* Own compositing layer so fading in doesn't nudge the chip a sub-pixel. */
+  transform: translateZ(0);
+}
+
+.commandMenuItem:hover .commandMenuItemIcon {
+  opacity: 1;
+  background: var(--openui-inverted-background);
+  color: var(--openui-background);
+}
+
 /* ── CTA pill buttons (shared base) ── */
 
 .desktopPlaygroundButton,

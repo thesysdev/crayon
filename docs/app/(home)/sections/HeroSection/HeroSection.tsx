@@ -14,9 +14,32 @@ import styles from "./HeroSection.module.css";
 export const heroStyles = styles;
 
 // CTAs
-const primaryCTA = "npx @openuidev/cli@latest create";
+const primaryCTA = "pnpx @openuidev/cli@latest create";
 const secondaryCTA = "Try Playground";
 const openclawOsHref = "/openclaw-os";
+
+// Package-manager runners for the desktop install-command dropdown. The pill
+// copies pnpm (pnpx) by default; hovering reveals the same command for bun,
+// yarn, and npm. Order matches the menu (pnpm, bun, yarn, npm).
+const COMMAND_RUNNERS = [
+  { id: "pnpm", prefix: "pnpx" },
+  { id: "bun", prefix: "bunx" },
+  { id: "yarn", prefix: "yarn dlx" },
+  { id: "npm", prefix: "npx" },
+] as const;
+
+type CommandVariant = { id: string; command: string; runner: string };
+
+// Rewrites a runner command (`pnpx <spec>`, `npx <spec>`, ...) into one row per
+// package-manager runner. Returns [] when no known runner prefix matches, so the
+// dropdown only appears where it fits. `runner` is the prefix rendered in bold.
+function commandVariants(command: string): CommandVariant[] {
+  const runner = COMMAND_RUNNERS.find(({ prefix }) => command.startsWith(`${prefix} `));
+  if (!runner) return [];
+  const spec = command.slice(runner.prefix.length + 1);
+  return COMMAND_RUNNERS.map(({ id, prefix }) => ({ id, command: `${prefix} ${spec}`, runner: prefix }));
+}
+
 const DESKTOP_HERO_IMAGE = {
   light: "/homepage/hero-web.svg",
   dark: "/homepage/hero-web-dark.svg",
@@ -91,6 +114,73 @@ export function NpmButton({ className = "", command }: { className?: string; com
         aria-live="polite"
       >
         Copied. Paste in your terminal to install.
+      </div>
+    </div>
+  );
+}
+
+// A command pill that reveals a dropdown of package-manager variants on hover or
+// focus. Clicking the trigger or any row copies that command and closes the
+// menu. Fully isolated (`.command*` classes), so it affects no other button.
+function CommandDropdownButton({
+  command,
+  variants,
+}: {
+  command: string;
+  variants: CommandVariant[];
+}) {
+  const [open, setOpen] = useState(false);
+  const runner =
+    COMMAND_RUNNERS.find(({ prefix }) => command.startsWith(`${prefix} `))?.prefix ?? "";
+  const closeOnCopy = (copied: boolean) => {
+    if (copied) setOpen(false);
+  };
+
+  return (
+    <div
+      className={`${styles.commandDropdown} ${open ? styles.commandDropdownOpen : ""}`.trim()}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+      }}
+    >
+      <ClipboardCommandButton
+        command={command}
+        className={styles.commandTrigger}
+        iconContainerClassName={styles.commandTriggerBadge}
+        copyIconColor="currentColor"
+        onCopyChange={closeOnCopy}
+      >
+        <span className={styles.commandTriggerLabel}>
+          <span className={styles.commandTriggerRunner}>{runner}</span>
+          {command.slice(runner.length)}
+        </span>
+      </ClipboardCommandButton>
+      <div className={`${styles.commandMenu} ${open ? styles.commandMenuOpen : ""}`.trim()}>
+        <div
+          className={styles.commandMenuCard}
+          role="menu"
+          aria-label="Copy the install command for another package manager"
+        >
+          <div className={styles.commandMenuHighlight} aria-hidden="true" />
+          {variants.map((variant) => (
+            <ClipboardCommandButton
+              key={variant.id}
+              command={variant.command}
+              className={styles.commandMenuItem}
+              iconContainerClassName={styles.commandMenuItemIcon}
+              copyIconColor="currentColor"
+              onCopyChange={closeOnCopy}
+            >
+              <span className={styles.commandMenuItemLabel}>
+                <span className={styles.commandMenuItemRunner}>{variant.runner}</span>
+                {variant.command.slice(variant.runner.length)}
+              </span>
+            </ClipboardCommandButton>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -282,7 +372,11 @@ function DesktopHero({
               commandSlot
             ) : (
               <div className={styles.commandItem}>
-                <NpmButton command={command} />
+                {commandVariants(command).length > 0 ? (
+                  <CommandDropdownButton command={command} variants={commandVariants(command)} />
+                ) : (
+                  <NpmButton command={command} />
+                )}
               </div>
             )}
           </div>
