@@ -132,26 +132,20 @@ function CommandDropdownButton({
   const [open, setOpen] = useState(false);
   const runner =
     COMMAND_RUNNERS.find(({ prefix }) => command.startsWith(`${prefix} `))?.prefix ?? "";
-  const closeOnCopy = (copied: boolean) => {
-    if (copied) setOpen(false);
-  };
 
   return (
     <div
       className={`${styles.commandDropdown} ${open ? styles.commandDropdownOpen : ""}`.trim()}
+      // Hover-controlled only: copying can briefly move focus, so a focus/blur
+      // close would shut the menu on click. Mouse-leave is the sole close.
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
-      }}
     >
       <ClipboardCommandButton
         command={command}
         className={styles.commandTrigger}
         iconContainerClassName={styles.commandTriggerBadge}
         copyIconColor="currentColor"
-        onCopyChange={closeOnCopy}
       >
         <span className={styles.commandTriggerLabel}>
           <span className={styles.commandTriggerRunner}>{runner}</span>
@@ -172,7 +166,6 @@ function CommandDropdownButton({
               className={styles.commandMenuItem}
               iconContainerClassName={styles.commandMenuItemIcon}
               copyIconColor="currentColor"
-              onCopyChange={closeOnCopy}
             >
               <span className={styles.commandMenuItemLabel}>
                 <span className={styles.commandMenuItemRunner}>{variant.runner}</span>
