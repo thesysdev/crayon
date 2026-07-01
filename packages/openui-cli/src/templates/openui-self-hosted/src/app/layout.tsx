@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "OpenUI Chat",
+  title: "OpenUI Self Hosted",
   description: "Generative UI Chat with OpenAI SDK",
 };
 
