@@ -1,7 +1,7 @@
 .root {
   position: relative;
   width: 100%;
-  height: 40rem;
+  height: 50rem;
   overflow: hidden;
   /* Fade the top and bottom edges. */
   -webkit-mask-image: linear-gradient(
@@ -18,13 +18,6 @@
     #000 calc(100% - 3.5rem),
     transparent 100%
   );
-  /* Stay hidden until every embed resolves, so the load never flickers in view. */
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.ready {
-  opacity: 1;
 }
 
 .columns {
@@ -44,7 +37,7 @@
 }
 
 /* Pure-CSS marquee: two identical copies, slide up by exactly one copy. No JS
-   measurement, so it cannot drift or jump as embeds load. */
+   measurement, so it cannot drift or jump. */
 .track {
   display: flex;
   flex-direction: column;
@@ -58,17 +51,7 @@
 .slot {
   width: 100%;
   margin-bottom: 0.75rem;
-  border-radius: 12px;
-  overflow: hidden;
 }
-
-.slot :global(iframe) {
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-  border-radius: 12px !important;
-}
-
 
 @keyframes tweetScroll {
   to {
@@ -98,10 +81,8 @@
     flex: 0 0 200px;
   }
 
-  /* Twitter won't render an embed narrower than 250px, so render at 250 (no
-     cropping) and scale the whole card down with zoom. Unlike transform, zoom
-     shrinks the layout box too, so columns stay tight and the loop has no gaps.
-     250 * 0.8 = 200, matching the column width. */
+  /* Render the card at 250px then scale the whole box down with zoom (shrinks the
+     layout box too, so columns stay tight and the loop has no gaps). 250 * 0.8 = 200. */
   .slot {
     width: 250px;
     zoom: 0.8;
