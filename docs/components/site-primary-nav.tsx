@@ -40,7 +40,6 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         title: "Dashboard Demo",
         description: "Testdrive a dashboard building experience.",
         href: "/demo/github",
-        newTab: true,
       },
     ],
   },
