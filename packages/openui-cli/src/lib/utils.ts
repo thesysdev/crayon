@@ -17,9 +17,12 @@ export function handleCliError(e: unknown, event: string, telemetry?: Telemetry)
 export function normalizeTemplate(t?: string): TemplateName | undefined {
   if (!t) return undefined;
   const v = t.toLowerCase();
-  if (v === "chat" || v === "openui-chat") return "openui-chat";
+  if (v === "self-hosted" || v === "openui-self-hosted") return "openui-self-hosted";
   if (v === "cloud" || v === "openui-cloud") return "openui-cloud";
-  throw new CreateError("bad_args", `unknown template "${t}". Use: openui-chat | openui-cloud.`);
+  throw new CreateError(
+    "bad_args",
+    `unknown template "${t}". Use: openui-self-hosted | openui-cloud.`,
+  );
 }
 
 export function normalizeAuth(a?: string): CloudAuthMethod | undefined {

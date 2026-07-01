@@ -4,12 +4,12 @@ import * as os from "node:os";
 import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL, type CloudAuthMethod } from "../auth/mint";
-import { detectPackageManager } from "../lib/detect-package-manager";
+import { resolveInstallPackageManager } from "../lib/detect-package-manager";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { resolveArgs } from "../lib/resolve-args";
 import { CreateError, telemetry } from "../lib/telemetry";
 
-export type TemplateName = "openui-chat" | "openui-cloud";
+export type TemplateName = "openui-self-hosted" | "openui-cloud";
 
 export interface CreateAppOptions {
   name?: string;
@@ -51,7 +51,10 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
                   value: "openui-cloud",
                   name: "OpenUI Cloud — managed conversations, artifacts & streaming",
                 },
-                { value: "openui-chat", name: "OpenUI Chat — bring your own model key (OpenAI)" },
+                {
+                  value: "openui-self-hosted",
+                  name: "OpenUI Self Hosted — bring your own model key (OpenAI)",
+                },
               ],
             },
             required: true,
@@ -70,8 +73,8 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     throw new CreateError("dir_exists", `Directory "${name}" already exists.`);
   }
 
-  const runner = detectPackageManager();
-  telemetry.register({ package_manager: runner });
+  const packageManager = resolveInstallPackageManager();
+  telemetry.register({ package_manager: packageManager.name });
   const templateDir = path.join(__dirname, "..", "templates", template);
   if (!fs.existsSync(templateDir)) {
     throw new CreateError(
@@ -120,14 +123,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   }
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 
-  const installCmd =
-    runner === "pnpm dlx"
-      ? "pnpm install"
-      : runner === "yarn dlx"
-        ? "yarn"
-        : runner === "bunx"
-          ? "bun install"
-          : "npm install";
+  const installCmd = packageManager.installCmd;
 
   if (options.noInstall) {
     console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.\n`);
@@ -149,14 +145,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       ? await writeCloudEnv(targetDir, name, options, interactive)
       : await writeChatEnv(targetDir, interactive);
 
-  const devCmd =
-    runner === "pnpm dlx"
-      ? "pnpm"
-      : runner === "yarn dlx"
-        ? "yarn"
-        : runner === "bunx"
-          ? "bun"
-          : "npm";
+  const devCmd = packageManager.runCmd;
 
   telemetry.capture("cli_create_succeeded", {
     template,
