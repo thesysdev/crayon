@@ -1,79 +1,35 @@
 "use client";
 import "@openuidev/react-ui/components.css";
-import "@openuidev/thesys/styles.css";
+import "@openuidev/react-ui/styles/index.css";
 
-import { useTheme } from "@/hooks/use-system-theme";
 import {
-  defineArtifactCategories,
-  openAIConversationMessageFormat,
-  openAIResponsesAdapter,
+  openAIMessageFormat,
+  openAIReadableStreamAdapter,
   type ChatLLM,
 } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
-import {
-  chatLibrary,
-  presentationArtifactRenderer,
-  reportArtifactRenderer,
-  useOpenuiCloudStorage,
-} from "@openuidev/thesys";
+import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui/genui-lib";
 
-const { artifactRenderers, artifactCategories } = defineArtifactCategories([
-  { name: "Presentations", renderers: [presentationArtifactRenderer] },
-  { name: "Reports", renderers: [reportArtifactRenderer] },
-]);
+const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
 
 const llm: ChatLLM = {
-  send: async ({ threadId, messages, signal }) => {
-    const latest = messages.slice(-1);
-    return fetch("/api/chat", {
+  send: async ({ messages, signal }) =>
+    fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ threadId, input: openAIConversationMessageFormat.toApi(latest) }),
+      body: JSON.stringify({
+        systemPrompt,
+        messages: openAIMessageFormat.toApi(messages),
+      }),
       signal,
-    });
-  },
-  streamProtocol: openAIResponsesAdapter(),
+    }),
+  streamProtocol: openAIReadableStreamAdapter(),
 };
 
-export default function Page() {
-  const mode = useTheme();
-  const storage = useOpenuiCloudStorage({
-    token: "/api/frontend-token",
-    apiBaseUrl: "https://api.thesys.dev",
-    features: { artifact: true },
-  });
-
+export default function Home() {
   return (
-    <div className="h-screen w-screen overflow-hidden relative">
-      <AgentInterface
-        storage={storage}
-        llm={llm}
-        componentLibrary={chatLibrary}
-        artifactRenderers={artifactRenderers}
-        artifactCategories={artifactCategories}
-        agentName="OpenUI Cloud"
-        scrollVariant="always"
-        scrollOnLoad={false}
-        theme={{ mode }}
-        starters={[
-          {
-            displayText: "Summarize EV trends",
-            prompt: "In a few sentences, summarize the biggest EV market trends this quarter.",
-          },
-          {
-            displayText: "Pricing strategy tips",
-            prompt: "List five quick tips for pricing a new electric vehicle competitively.",
-          },
-          {
-            displayText: "Quarterly deck",
-            prompt: "Create a short presentation about our Q2 results with three slides.",
-          },
-          {
-            displayText: "Market report",
-            prompt: "Write a brief market-analysis report on the EV sector.",
-          },
-        ]}
-      />
+    <div className="h-screen w-screen overflow-hidden">
+      <AgentInterface llm={llm} componentLibrary={openuiLibrary} agentName="OpenUI Chat" />
     </div>
   );
 }

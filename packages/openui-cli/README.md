@@ -35,7 +35,7 @@ npx @openuidev/cli@latest create
 Skip the prompt and pick a template directly:
 
 ```bash
-npx @openuidev/cli@latest create --template openui-chat
+npx @openuidev/cli@latest create --template openui-self-hosted
 npx @openuidev/cli@latest create --template openui-cloud
 ```
 
@@ -64,7 +64,7 @@ openui create [options]
 Options:
 
 - `-n, --name <string>`: Project name
-- `-t, --template <template>`: Template to scaffold — `openui-chat` or `openui-cloud`
+- `-t, --template <template>`: Template to scaffold — `openui-self-hosted` or `openui-cloud`
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
@@ -97,7 +97,7 @@ Examples:
 
 ```bash
 openui create
-openui create --name my-app --template openui-chat
+openui create --name my-app --template openui-self-hosted
 openui create --name my-app --template openui-cloud --auth oauth
 openui create --name my-app --template openui-cloud --api-key tk_your_key
 openui create --name my-app --no-skill --no-install

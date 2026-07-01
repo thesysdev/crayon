@@ -2,14 +2,11 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { rimrafSync } = require("rimraf");
 
-const TEMPLATES_MAP = [
-  { src: "openui-chat", dest: "openui-self-hosted" },
-  { src: "openui-cloud", dest: "openui-cloud" },
-];
+const TEMPLATES_MAP = ["openui-self-hosted", "openui-cloud"];
 
-for (const { src, dest } of TEMPLATES_MAP) {
-  const srcDir = path.resolve(__dirname, "../src/templates", src);
-  const destDir = path.resolve(__dirname, "../dist/templates", dest);
+for (const template of TEMPLATES_MAP) {
+  const srcDir = path.resolve(__dirname, "../src/templates", template);
+  const destDir = path.resolve(__dirname, "../dist/templates", template);
 
   if (!fs.existsSync(srcDir)) {
     throw new Error(`Template source directory not found: ${srcDir}`);
