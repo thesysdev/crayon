@@ -141,7 +141,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   if (installSkill) runSkillInstall(targetDir);
 
   const envWritten =
-    template === "openui-cloud"
+    template === "openui-self-hosted"
       ? await writeCloudEnv(targetDir, name, options, interactive)
       : await writeChatEnv(targetDir, interactive);
 
