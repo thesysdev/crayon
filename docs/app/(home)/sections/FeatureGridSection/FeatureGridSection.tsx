@@ -136,7 +136,13 @@ export function FeatureGridSection({
             <CompatibilitySection
               embedded
               title="OpenUI works with any stack"
-              description="OpenUI works with any LLM, UI library, and agent framework. Add generative UI without changing your stack."
+              description={
+                <>
+                  OpenUI works with any LLM, UI library, and agent framework.{" "}
+                  <br className={styles.compatDescBreak} />
+                  Add generative UI without changing your stack.
+                </>
+              }
             />
           </div>
         </>

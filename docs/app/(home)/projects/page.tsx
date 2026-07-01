@@ -118,6 +118,11 @@ const projects: ProjectItem[] = [
         href: "https://dev.to/shogun444/i-tested-openui-with-ollama-models-heres-what-actually-worked-45m7",
         external: true,
       },
+      {
+        label: "GitHub",
+        href: "https://github.com/shogun444/openui-ollama-localsetup",
+        external: true,
+      },
       { label: "Ollama", href: "https://ollama.com", external: true },
     ],
   },
