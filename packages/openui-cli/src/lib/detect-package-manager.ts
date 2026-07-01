@@ -4,9 +4,7 @@ export type PackageManagerName = "pnpm" | "yarn" | "bun" | "npm";
 
 export interface PackageManager {
   name: PackageManagerName;
-  /** Installs all dependencies; run from the project directory. */
   installCmd: string;
-  /** Runs a package script, e.g. `${runCmd} run dev`. */
   runCmd: string;
 }
 
@@ -17,11 +15,6 @@ const PACKAGE_MANAGERS: Record<PackageManagerName, PackageManager> = {
   npm: { name: "npm", installCmd: "npm install", runCmd: "npm" },
 };
 
-/**
- * The package manager the CLI was invoked with, read from the user-agent that
- * npm/pnpm/yarn/bun set on the processes they spawn. Returns null when nothing
- * recognizable is set (e.g. the binary was run directly).
- */
 function detectInvokingPackageManager(): PackageManagerName | null {
   const userAgent = process.env["npm_config_user_agent"] ?? "";
   if (userAgent.startsWith("pnpm/")) return "pnpm";
@@ -40,14 +33,6 @@ function isPnpmAvailable(): boolean {
   }
 }
 
-/**
- * Resolve which package manager installs the scaffolded project.
- *
- * An explicit pnpm, yarn, or bun invocation is honored as-is. The npm/npx
- * default — and the case where no package manager is detected — is upgraded to
- * pnpm when it's installed, because pnpm's linked global store installs this
- * template far faster; it falls back to npm when pnpm is absent.
- */
 export function resolveInstallPackageManager(): PackageManager {
   const invoking = detectInvokingPackageManager();
   if (invoking === "pnpm" || invoking === "yarn" || invoking === "bun") {
