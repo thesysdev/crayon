@@ -142,8 +142,8 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
 
   const envWritten =
     template === "openui-self-hosted"
-      ? await writeCloudEnv(targetDir, name, options, interactive)
-      : await writeChatEnv(targetDir, interactive);
+      ? await writeChatEnv(targetDir, interactive)
+      : await writeCloudEnv(targetDir, name, options, interactive);
 
   const devCmd = packageManager.runCmd;
 

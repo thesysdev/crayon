@@ -29,7 +29,7 @@ const llm: ChatLLM = {
 export default function Home() {
   return (
     <div className="h-screen w-screen overflow-hidden">
-      <AgentInterface llm={llm} componentLibrary={openuiLibrary} agentName="OpenUI Chat" />
+      <AgentInterface llm={llm} componentLibrary={openuiLibrary} agentName="OpenUI Self Hosted" />
     </div>
   );
 }
