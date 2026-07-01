@@ -53,7 +53,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
                 },
                 {
                   value: "openui-self-hosted",
-                  name: "OpenUI Self Hosted — bring your own model key (OpenAI)",
+                  name: "OpenUI Self Hosted — starter setup with OpenAI Client",
                 },
               ],
             },
