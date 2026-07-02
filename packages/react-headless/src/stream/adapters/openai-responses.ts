@@ -102,6 +102,33 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
               break;
             }
 
+            case "response.web_search_call.in_progress":
+              const callId = itemIdToCallId[event.item_id] ?? event.item_id;
+              yield {
+                type: EventType.TOOL_CALL_START,
+                toolCallName: "web_search",
+                toolCallId: callId,
+              };
+              break;
+
+            case "response.web_search_call.searching": {
+              const callId = itemIdToCallId[event.item_id] ?? event.item_id;
+              yield {
+                type: EventType.TOOL_CALL_CHUNK,
+                toolCallId: callId,
+              };
+              break;
+            }
+
+            case "response.web_search_call.completed": {
+              const callId = itemIdToCallId[event.item_id] ?? event.item_id;
+              yield {
+                type: EventType.TOOL_CALL_END,
+                toolCallId: callId,
+              };
+              break;
+            }
+
             case "error":
               yield {
                 type: EventType.RUN_ERROR,
