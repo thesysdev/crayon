@@ -6,7 +6,7 @@ React components and a ready-made chat surface for OpenUI. Use the `AgentInterfa
 [![monthly downloads](https://img.shields.io/npm/dm/@openuidev/react-ui)](https://www.npmjs.com/package/@openuidev/react-ui)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
 
-**Links:** [Package docs](https://openui.com/docs/api-reference/react-ui) | [Chat docs](https://openui.com/docs/chat) | [GitHub repo](https://github.com/thesysdev/openui)
+**Links:** [Package docs](https://openui.com/docs/api-reference/react-ui) | [Agent Interface docs](https://openui.com/docs/agent/getting-started/introduction) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -16,12 +16,12 @@ npm install @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless
 pnpm add @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless
 ```
 
-**Peer dependencies:** `react >=19.0.0`, `react-dom >=19.0.0`, `zustand ^4.5.5`, `@openuidev/react-lang`, `@openuidev/react-headless`
+**Peer dependencies:** `react ^18.3.1 || ^19.0.0`, `react-dom ^18.0.0 || ^19.0.0`, `zustand ^4.5.5`, `zod ^3.25.0 || ^4.0.0`, `@openuidev/react-lang`, `@openuidev/react-headless`
 
-Don't forget to import the component styles:
+Don't forget to import the component styles (once, app-wide):
 
 ```ts
-import "@openuidev/react-ui/styles/index.css";
+import "@openuidev/react-ui/components.css";
 ```
 
 ## Overview
@@ -34,28 +34,21 @@ This package provides three layers:
 
 ## Quick Start
 
-The fastest way to get a working chat app is `AgentInterface`. Give it an `llm` transport that talks to your backend. Storage is optional — without it, threads live in memory and are wiped on reload:
+The fastest way to get a working chat app is `AgentInterface`. Give it an `llm` transport built with `fetchLLM`: point it at your streaming endpoint, pick the stream adapter that matches what the endpoint emits (adapters are factories — call them), and optionally a message format for the wire shape. Storage is optional — without it, threads live in memory and are wiped on reload:
 
 ```tsx
-import {
-  AgentInterface,
-  openAIAdapter,
-  openAIMessageFormat,
-  type ChatLLM,
-} from "@openuidev/react-ui";
-import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
-import "@openuidev/react-ui/styles/index.css";
+import "@openuidev/react-ui/components.css";
 
-const llm: ChatLLM = {
-  send: ({ messages, signal }) =>
-    fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: openAIMessageFormat.toApi(messages) }),
-      signal,
-    }),
-  streamProtocol: openAIAdapter(),
-};
+import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
+import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
+
+// POSTs { threadId, runId, messages, tools, context } to /api/chat and parses
+// the streamed response — here an OpenAI Chat Completions stream.
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIAdapter(),
+  messageFormat: openAIMessageFormat,
+});
 
 function App() {
   return (
@@ -69,20 +62,22 @@ function App() {
 }
 ```
 
+If your endpoint streams AG-UI events, use `agUIAdapter()` and drop `messageFormat` (messages are sent as-is). For backends that don't fit `fetchLLM`'s conventions, implement the `ChatLLM` interface directly — see the [react-headless README](https://github.com/thesysdev/openui/tree/main/packages/react-headless).
+
 ### The chat surface
 
 `AgentInterface` is the single chat surface. It adapts its layout responsively and accepts:
 
 | Prop               | Description                                                                                  |
 | :----------------- | :------------------------------------------------------------------------------------------- |
-| `storage`          | Optional persistence adapter for thread history; defaults to in-memory (wiped on reload). Use `restStorage` from `@openuidev/react-ui` to back it with your own REST API |
-| `llm`              | Chat transport: `{ send({ messages, signal }), streamProtocol }`                             |
+| `storage`          | Optional persistence adapter for thread history; defaults to in-memory (wiped on reload). Use `restStorage({ baseUrl })` from `@openuidev/react-ui` to back it with your own REST API |
+| `llm`              | Chat transport, usually built with `fetchLLM`; any `ChatLLM` (`{ send({ threadId, messages, signal }), streamProtocol }`) works |
 | `componentLibrary` | OpenUI Lang library used to render assistant messages (e.g. `openuiChatLibrary`)             |
 | `theme`            | Theme configuration, e.g. `{ mode: "light" }`                                                |
 | `agentName`        | Name displayed in the header                                                                 |
 | `starters`         | Conversation-starter prompts shown on the welcome screen                                     |
 
-See the [chat docs](https://openui.com/docs/chat) for full configuration.
+See the [AgentInterface props reference](https://openui.com/docs/agent/reference/agentinterface-props) for full configuration.
 
 ## Built-in Component Libraries
 
@@ -148,8 +143,10 @@ OpenUI ships its component styles in two variants:
 
 | Import                                                  | Cascade behavior                                                          |
 | ------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `@openuidev/react-ui/styles/index.css` (default)        | Unlayered — override via normal CSS specificity, as in 0.11.x and earlier |
+| `@openuidev/react-ui/components.css` (default)          | Unlayered — override via normal CSS specificity, as in 0.11.x and earlier |
 | `@openuidev/react-ui/layered/styles/index.css` (opt-in) | Wrapped in `@layer openui` — any unlayered consumer CSS wins              |
+
+`@openuidev/react-ui/styles/index.css` is an identical alias of `components.css` — import one or the other, never both.
 
 Need a single component's CSS? Import it per component: `./styles/<Component>.css` (unlayered) or `./layered/styles/<Component>.css` (layered).
 
@@ -215,7 +212,8 @@ import { Charts } from "@openuidev/react-ui/Charts";
 | Import path                                    | Description                                          |
 | :--------------------------------------------- | :--------------------------------------------------- |
 | `@openuidev/react-ui`                          | All components and libraries                         |
-| `@openuidev/react-ui/styles/index.css`         | Full compiled stylesheet, unlayered (default import) |
+| `@openuidev/react-ui/components.css`           | Full compiled stylesheet, unlayered (default import) |
+| `@openuidev/react-ui/styles/index.css`         | Identical alias of `components.css`                  |
 | `@openuidev/react-ui/layered/styles/index.css` | Full stylesheet wrapped in `@layer openui` (opt-in)  |
 | `@openuidev/react-ui/defaults.css`             | Theme tokens, always unlayered                       |
 | `@openuidev/react-ui/genui-lib`                | OpenUI Lang libraries and prompt options             |
@@ -227,7 +225,7 @@ import { Charts } from "@openuidev/react-ui/Charts";
 ## Documentation
 
 - [React UI API reference](https://openui.com/docs/api-reference/react-ui)
-- [Chat guides](https://openui.com/docs/chat)
+- [Agent Interface guides](https://openui.com/docs/agent/getting-started/introduction)
 - [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/react-ui)
 
 ## License

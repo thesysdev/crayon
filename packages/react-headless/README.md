@@ -1,12 +1,12 @@
 # @openuidev/react-headless
 
-Headless React state and streaming primitives for OpenUI chat experiences. Bring your own UI; this package handles threads, messages, adapters, and message format conversion.
+Headless React state and streaming primitives for OpenUI chat experiences. Bring your own UI; this package handles threads, messages, LLM/storage adapters, and message format conversion.
 
 [![npm version](https://img.shields.io/npm/v/@openuidev/react-headless)](https://www.npmjs.com/package/@openuidev/react-headless)
 [![monthly downloads](https://img.shields.io/npm/dm/@openuidev/react-headless)](https://www.npmjs.com/package/@openuidev/react-headless)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
 
-**Links:** [Package docs](https://openui.com/docs/api-reference/react-headless) | [Chat docs](https://openui.com/docs/chat) | [GitHub repo](https://github.com/thesysdev/openui)
+**Links:** [Package docs](https://openui.com/docs/api-reference/react-headless) | [Agent Interface docs](https://openui.com/docs/agent/getting-started/introduction) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -16,65 +16,99 @@ npm install @openuidev/react-headless
 pnpm add @openuidev/react-headless
 ```
 
-**Peer dependencies:** `react >=19.0.0`, `react-dom >=19.0.0`, `zustand ^4.5.5`
+**Peer dependencies:** `react ^18.3.1 || ^19.0.0`, `zustand ^4.5.5`
 
 ## Overview
 
 Use `@openuidev/react-headless` when you want OpenUI's chat behavior without OpenUI's visual components:
 
-- **`ChatProvider`** manages threads, messages, and streaming state through a Zustand store.
+- **`ChatProvider`** manages threads, messages, and streaming state through a Zustand store. It is configured with two adapters: a required **`llm`** (how messages are sent and streamed back) and an optional **`storage`** (where threads persist).
+- **`fetchLLM`** builds a `ChatLLM` for any HTTP endpoint that returns a streaming response; **`restStorage`** builds a `ChatStorage` over a REST thread API.
 - **Selector hooks** expose thread and thread-list state without coupling you to a layout.
-- **Streaming adapters** parse SSE or SDK responses from OpenAI, AG-UI, or custom backends.
-- **Message formats** convert between your API shape and OpenUI's internal AG-UI shape.
+- **Streaming adapters** parse SSE or SDK responses from AG-UI, OpenAI, LangGraph, or custom backends.
+- **Message formats** convert between your API's wire shape and OpenUI's internal AG-UI shape.
 
 ## Quick Start
 
-### URL-based setup
-
-The simplest configuration points to your API and lets the provider handle REST calls and streaming automatically:
+`fetchLLM` is the standard transport. Point it at your streaming endpoint, pick a stream adapter that matches what the endpoint emits, and pass the resulting `ChatLLM` to `ChatProvider`:
 
 ```tsx
-import { ChatProvider } from "@openuidev/react-headless";
+import { agUIAdapter, ChatProvider, fetchLLM } from "@openuidev/react-headless";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: agUIAdapter(),
+});
 
 function App() {
   return (
-    <ChatProvider
-      apiUrl="/api/chat"
-      threadApiUrl="/api/threads"
-    >
+    <ChatProvider llm={llm}>
       <YourChatUI />
     </ChatProvider>
   );
 }
 ```
 
-### Custom functions
+On each send, `fetchLLM` POSTs `{ threadId, runId, messages, tools: [], context: [] }` (an AG-UI `RunAgentInput`-shaped body) to `url` and hands the streaming `Response` to `streamAdapter` for parsing.
 
-For full control, provide your own functions instead of URLs:
+| Option | Description |
+| :--- | :--- |
+| `url` | Endpoint that accepts the POSTed body and returns a streaming `Response` |
+| `streamAdapter` | Stream protocol adapter for the response body, e.g. `agUIAdapter()` — see [Streaming Adapters](#streaming-adapters) |
+| `messageFormat` | Optional wire-format conversion for outgoing messages; defaults to identity (canonical AG-UI messages) |
+| `headers` | Optional extra headers merged into the request |
+| `fetch` | Optional `fetch` override (tests, custom auth wrappers) |
+
+Without `storage`, threads live in memory and are wiped on reload.
+
+### Persistence with `restStorage`
+
+To persist threads, add a `storage` adapter. `restStorage` covers the common REST case:
 
 ```tsx
-<ChatProvider
-  processMessage={async ({ threadId, messages, abortController }) => {
-    return fetch("/api/chat", {
+import { agUIAdapter, ChatProvider, fetchLLM, restStorage } from "@openuidev/react-headless";
+
+const llm = fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() });
+const storage = restStorage({ baseUrl: "/api/threads" });
+
+function App() {
+  return (
+    <ChatProvider llm={llm} storage={storage}>
+      <YourChatUI />
+    </ChatProvider>
+  );
+}
+```
+
+`restStorage` implements the thread channel over these conventions:
+
+| Operation | Request |
+| :--- | :--- |
+| List threads | `GET {baseUrl}/get` (paginate with `?cursor=`) |
+| Create thread | `POST {baseUrl}/create` |
+| Get messages | `GET {baseUrl}/get/{threadId}` |
+| Update thread | `PATCH {baseUrl}/update/{threadId}` |
+| Delete thread | `DELETE {baseUrl}/delete/{threadId}` |
+
+Like `fetchLLM`, it accepts optional `messageFormat`, `headers`, and `fetch` options.
+
+### Custom adapters
+
+When those conventions don't fit your backend, implement the `ChatLLM` (and/or `ChatStorage`) interface directly:
+
+```tsx
+import { openAIAdapter, openAIMessageFormat, type ChatLLM } from "@openuidev/react-headless";
+
+const llm: ChatLLM = {
+  send: ({ threadId, messages, signal }) =>
+    fetch("/api/chat", {
       method: "POST",
-      body: JSON.stringify({ threadId, messages }),
-      signal: abortController.signal,
-    });
-  }}
-  fetchThreadList={async () => {
-    const res = await fetch("/api/threads");
-    return res.json();
-  }}
-  createThread={async (firstMessage) => {
-    const res = await fetch("/api/threads", {
-      method: "POST",
-      body: JSON.stringify({ message: firstMessage }),
-    });
-    return res.json();
-  }}
->
-  <YourChatUI />
-</ChatProvider>
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId, messages: openAIMessageFormat.toApi(messages) }),
+      signal,
+    }),
+  streamProtocol: openAIAdapter(),
+};
 ```
 
 ## Hooks
@@ -104,7 +138,7 @@ function ChatMessages() {
 }
 ```
 
-**Returns:** `ThreadState & ThreadActions`
+**Returns:** `ThreadState & ThreadActions`. Pass an optional selector to subscribe to a slice, e.g. `useThread((s) => s.processMessage)`.
 
 | Field | Type | Description |
 | :--- | :--- | :--- |
@@ -112,6 +146,7 @@ function ChatMessages() {
 | `isRunning` | `boolean` | Whether the model is currently streaming |
 | `isLoadingMessages` | `boolean` | Whether messages are being fetched |
 | `threadError` | `Error \| null` | Error from the last operation |
+| `executingToolCallIds` | `Set<string>` | Tool calls whose arguments have closed but whose result hasn't arrived yet |
 | `processMessage(msg)` | `(msg) => Promise<void>` | Send a message and stream the response |
 | `cancelMessage()` | `() => void` | Abort the current stream |
 | `appendMessages(...msgs)` | `(...msgs) => void` | Append messages locally |
@@ -144,13 +179,14 @@ function ThreadSidebar() {
 }
 ```
 
-**Returns:** `ThreadListState & ThreadListActions`
+**Returns:** `ThreadListState & ThreadListActions`. Also accepts an optional selector, like `useThread`.
 
 | Field | Type | Description |
 | :--- | :--- | :--- |
 | `threads` | `Thread[]` | All loaded threads |
 | `selectedThreadId` | `string \| null` | Currently selected thread |
 | `isLoadingThreads` | `boolean` | Whether the thread list is loading |
+| `threadListError` | `Error \| null` | Error from the last thread-list operation |
 | `hasMoreThreads` | `boolean` | Whether more threads can be loaded |
 | `loadThreads()` | `() => void` | Fetch the thread list |
 | `loadMoreThreads()` | `() => void` | Load the next page of threads |
@@ -173,24 +209,27 @@ function MessageBubble() {
 }
 ```
 
+### Other hooks
+
+The package also exports hooks for tool calls, artifacts, and detailed views: `useToolActivities`, `useArtifactList`, `useArtifactRenderer`, `useArtifactStorage`, `useDetailedView`, `useActiveDetailedView`, and `useDetailedViewPortalTarget`. See the [hooks reference](https://openui.com/docs/agent/reference/hooks).
+
 ## Streaming Adapters
 
-Adapters transform HTTP responses into the internal event stream. Pass one to `ChatProvider` via `streamProtocol`:
+Adapters transform HTTP responses into the internal AG-UI event stream. They are **factories — call them** and pass the result to `fetchLLM` via `streamAdapter` (or set it as `streamProtocol` on a hand-written `ChatLLM`):
 
 ```tsx
-import { ChatProvider, openAIAdapter } from "@openuidev/react-headless";
+import { fetchLLM, openAIAdapter } from "@openuidev/react-headless";
 
-<ChatProvider apiUrl="/api/chat" streamProtocol={openAIAdapter}>
-  {children}
-</ChatProvider>
+const llm = fetchLLM({ url: "/api/chat", streamAdapter: openAIAdapter() });
 ```
 
 | Adapter | Description |
 | :--- | :--- |
-| `agUIAdapter` | Default adapter for AG-UI SSE events (`data: {json}\n`) |
-| `openAIAdapter` | Parses OpenAI Chat Completions streaming (`ChatCompletionChunk`) |
-| `openAIResponsesAdapter` | Parses OpenAI Responses API streaming (`ResponseStreamEvent`) |
-| `openAIReadableStreamAdapter` | Parses OpenAI SDK's `Stream.toReadableStream()` NDJSON output |
+| `agUIAdapter()` | Parses AG-UI SSE events (`data: {json}\n`) |
+| `openAIAdapter()` | Parses OpenAI Chat Completions streaming (`ChatCompletionChunk`) |
+| `openAIResponsesAdapter()` | Parses OpenAI Responses API streaming (`ResponseStreamEvent`) |
+| `openAIReadableStreamAdapter()` | Parses OpenAI SDK's `Stream.toReadableStream()` NDJSON output |
+| `langGraphAdapter(options?)` | Parses LangGraph named SSE events (`messages`, `updates`, `error`); `options.onInterrupt` handles interrupts |
 
 ### Custom adapter
 
@@ -208,14 +247,16 @@ const myAdapter: StreamProtocolAdapter = {
 
 ## Message Formats
 
-Message formats convert between your API's message shape and the internal AG-UI format. Pass one to `ChatProvider` via `messageFormat`:
+Message formats convert between your API's message shape and the internal AG-UI format. Unlike stream adapters they are plain objects, not factories. Pass one to `fetchLLM` or `restStorage` via the `messageFormat` option:
 
 ```tsx
-import { ChatProvider, openAIMessageFormat } from "@openuidev/react-headless";
+import { fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-headless";
 
-<ChatProvider apiUrl="/api/chat" messageFormat={openAIMessageFormat}>
-  {children}
-</ChatProvider>
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIAdapter(),
+  messageFormat: openAIMessageFormat,
+});
 ```
 
 | Format | Description |
@@ -223,6 +264,7 @@ import { ChatProvider, openAIMessageFormat } from "@openuidev/react-headless";
 | `identityMessageFormat` | Default format when messages are already AG-UI shaped |
 | `openAIMessageFormat` | Converts to/from OpenAI `ChatCompletionMessageParam[]` |
 | `openAIConversationMessageFormat` | Converts to/from OpenAI Responses API `ResponseInputItem[]` |
+| `langGraphMessageFormat` | Converts to/from LangChain/LangGraph message dicts |
 
 ### Custom format
 
@@ -242,6 +284,11 @@ const myFormat: MessageFormat = {
 ```ts
 import type {
   ChatProviderProps,
+  ChatLLM,
+  ChatStorage,
+  ThreadStorage,
+  FetchLLMOptions,
+  RestStorageOptions,
   ChatStore,
   Thread,
   ThreadState,
@@ -266,7 +313,8 @@ import type {
 ## Documentation
 
 - [React Headless API reference](https://openui.com/docs/api-reference/react-headless)
-- [Chat guides](https://openui.com/docs/chat)
+- [Agent Interface guides](https://openui.com/docs/agent/getting-started/introduction)
+- [Adapters and formats reference](https://openui.com/docs/agent/reference/adapters-and-formats)
 - [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/react-headless)
 
 ## License

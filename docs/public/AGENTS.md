@@ -20,12 +20,13 @@ Everything imports from `@openuidev/react-ui`. Read the Rules first.
   `openAIReadableStreamAdapter()` with `openAIMessageFormat`; `agUIAdapter()` with
   `identityMessageFormat` (the default); `langGraphAdapter()` with
   `langGraphMessageFormat`.
-- **OpenUI Cloud is two planes.** `llm` is a `ChatLLM` whose `send` posts to your
-  own `/api/chat` route, which proxies to Cloud with `THESYS_API_KEY`. `storage`
+- **OpenUI Cloud is two planes.** `llm` is `fetchLLM({ url: "/api/chat", ... })`,
+  and your own `/api/chat` route proxies to Cloud with `THESYS_API_KEY`. `storage`
   is `useOpenuiCloudStorage({ token: "/api/frontend-token" })`. `THESYS_API_KEY`
   is server-side only, never in the browser.
 - **On Cloud, send only the latest message.** The Responses API replays history
-  from the conversation: `input: openAIConversationMessageFormat.toApi(messages.slice(-1))`.
+  from the conversation, so wrap the message format:
+  `toApi: (msgs) => openAIConversationMessageFormat.toApi(msgs.slice(-1))`.
 - **For Cloud, the component set, storage hook, and artifacts come from
   `@openuidev/thesys`** (`chatLibrary`, `useOpenuiCloudStorage`,
   `artifactRenderers`, `artifactCategories`); the server route uses
@@ -66,9 +67,9 @@ import "@openuidev/thesys/styles.css";
 
 import {
   AgentInterface,
+  fetchLLM,
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
-  type ChatLLM,
 } from "@openuidev/react-ui";
 import {
   chatLibrary,
@@ -77,20 +78,15 @@ import {
   artifactCategories,
 } from "@openuidev/thesys";
 
-const llm: ChatLLM = {
-  // Cloud replays history from the conversation, so send only the latest message.
-  send: ({ threadId, messages, signal }) =>
-    fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        threadId,
-        input: openAIConversationMessageFormat.toApi(messages.slice(-1)),
-      }),
-      signal,
-    }),
-  streamProtocol: openAIResponsesAdapter(),
-};
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIResponsesAdapter(),
+  // Cloud replays history from the conversation, so this wrapper sends only the latest message.
+  messageFormat: {
+    toApi: (msgs) => openAIConversationMessageFormat.toApi(msgs.slice(-1)),
+    fromApi: openAIConversationMessageFormat.fromApi,
+  },
+});
 
 export default function App() {
   const storage = useOpenuiCloudStorage({
@@ -116,7 +112,9 @@ export default function App() {
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
 
 export async function POST(req: Request) {
-  const { threadId, input } = await req.json();
+  // fetchLLM POSTs { threadId, runId, messages, tools, context }; here messages
+  // is the latest message only (the client's messageFormat slices).
+  const { threadId, messages } = await req.json();
   const upstream = await fetch("https://api.thesys.dev/v1/embed/responses", {
     method: "POST",
     headers: {
@@ -126,7 +124,7 @@ export async function POST(req: Request) {
     body: JSON.stringify({
       model: "openai/gpt-5",
       conversation: threadId, // Cloud stores and replays the conversation
-      input,
+      input: messages,
       stream: true,
       store: true,
       tools: [artifactTool()], // managed slides/report tool
@@ -211,12 +209,14 @@ export async function POST(req: Request) {
 }
 ```
 
-`fetchLLM` POSTs `{ threadId, messages: messageFormat.toApi(messages) }` to `url`
-and forwards the abort signal. Here `messages` is the **full thread history** (the
-SDK loads it from `storage` and holds it client-side), so forward all of it to your
-provider. (Contrast Cloud, where you send only the latest because Cloud replays the
-conversation.) Your route must **stream** and **close the stream when done** (the
-client's `isRunning` flips back to `false` only on close).
+`fetchLLM` POSTs an AG-UI `RunAgentInput`-shaped body to `url` — `{ threadId,
+runId, messages: messageFormat.toApi(messages), tools: [], context: [] }`, with a
+fresh `runId` per send — and forwards the abort signal. Routes may destructure
+just `{ messages }`. Here `messages` is the **full thread history** (the SDK loads
+it from `storage` and holds it client-side), so forward all of it to your
+provider. (Contrast Cloud, where the wrapped message format sends only the latest
+because Cloud replays the conversation.) Your route must **stream** and **close
+the stream when done** (the client's `isRunning` flips back to `false` only on close).
 
 ## `<AgentInterface>` props
 
@@ -241,8 +241,10 @@ Children are slot overrides (see Customization).
 
 ## Backends: `ChatLLM` and adapters
 
-The `llm` is a `ChatLLM`. `fetchLLM` builds one for the common case; for full
-control, write the object directly (this is what the Cloud quickstart does).
+The `llm` is a `ChatLLM`. `fetchLLM` builds one for anything that POSTs to an
+HTTP endpoint and streams the response back (both quickstarts use it). Write the
+object directly only for genuinely custom cases — e.g. synthesizing the stream
+client-side when there is no HTTP endpoint at all.
 
 ```ts
 interface ChatLLM {
