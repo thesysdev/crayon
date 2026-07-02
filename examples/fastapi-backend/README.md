@@ -27,14 +27,17 @@ fastapi-backend/
 │   ├── .env.example         # Environment template
 │   ├── pyproject.toml       # Python dependencies
 │   └── app/
-│       └── main.py          # Streaming chat endpoint
+│       ├── main.py          # Streaming chat endpoint
+│       └── system_prompt.txt # Generated OpenUI system prompt (see below)
 └── frontend/
     ├── package.json
     ├── vite.config.js       # Vite + proxy to localhost:8000
     ├── index.html
+    ├── scripts/
+    │   └── generate-prompt.mjs # Writes backend/app/system_prompt.txt
     └── src/
         ├── main.jsx
-        ├── App.jsx          # Identical to genui-chat-app
+        ├── App.jsx          # fetchLLM + AgentInterface
         └── index.css
 ```
 
@@ -60,7 +63,17 @@ Add your key to `backend/.env`:
 OPENAI_API_KEY=sk-...
 ```
 
-### 2. Start the backend
+### 2. Generate the system prompt (first run only)
+
+The backend reads the OpenUI system prompt from `backend/app/system_prompt.txt` at startup. A generated copy is checked in, so this step is only needed if the file is missing or after upgrading `@openuidev/react-ui`:
+
+```bash
+cd frontend
+npm install
+npm run generate:prompt
+```
+
+### 3. Start the backend
 
 ```bash
 cd backend
@@ -76,7 +89,7 @@ uvicorn app.main:app --reload
 
 The API will be available at `http://localhost:8000`.
 
-### 3. Start the frontend
+### 4. Start the frontend
 
 ```bash
 cd frontend
@@ -92,13 +105,18 @@ Open [http://localhost:5173](http://localhost:5173).
 
 A FastAPI endpoint that:
 
-1. Receives `{ systemPrompt, messages }` as JSON
-2. Forwards the conversation to the OpenAI streaming API
-3. Yields each chunk as a NDJSON line — the same format the JavaScript SDK's `toReadableStream()` produces
+1. Loads the OpenUI system prompt from `app/system_prompt.txt` at startup (fails fast with a pointer to `npm run generate:prompt` if the file is missing)
+2. Receives `{ threadId, runId, messages, tools, context }` as JSON — the body `fetchLLM` sends; `systemPrompt` may optionally be included to override the server-side default
+3. Forwards the conversation to the OpenAI streaming API
+4. Yields each chunk as a NDJSON line — the same format the JavaScript SDK's `toReadableStream()` produces
 
 ### `frontend/src/App.jsx`
 
-Identical to the one scaffolded by `npx @openuidev/cli create`. Uses `openAIReadableStreamAdapter()` to parse the NDJSON stream from the backend — no frontend changes were needed to switch from Next.js to FastAPI.
+Wires `AgentInterface` to the backend with `fetchLLM({ url: "/api/chat", streamAdapter: openAIReadableStreamAdapter(), messageFormat: openAIMessageFormat })`. The system prompt is owned by the backend, so the client sends only the conversation — no frontend changes were needed to switch from Next.js to FastAPI.
+
+### `frontend/scripts/generate-prompt.mjs`
+
+A small Node script that imports `openuiLibrary` and `openuiPromptOptions` from `@openuidev/react-ui/genui-lib` and writes the generated prompt to `backend/app/system_prompt.txt`. Run it via `npm run generate:prompt` after upgrading `@openuidev/react-ui`.
 
 ## Learn More
 
