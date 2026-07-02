@@ -4,38 +4,26 @@ import "@openuidev/react-ui/styles/index.css";
 
 import {
   AgentInterface,
+  fetchLLM,
   openAIMessageFormat,
   openAIReadableStreamAdapter,
-  type ChatLLM,
 } from "@openuidev/react-ui";
-import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui/genui-lib";
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 import { useMemo } from "react";
-
-const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
 
 export default function Home() {
   // AgentInterface uses its built-in in-memory storage default (wiped on reload).
-  // Each new thread gets a stable client-generated id, so the per-thread
-  // x-conversation-id maps to an isolated pi AgentSession. The backend call is
-  // unchanged; only the chat surface moved from FullScreen to AgentInterface.
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: ({ threadId, messages, signal }) =>
-        fetch("/api/chat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // Map each chat thread to its own persistent pi AgentSession.
-            "x-conversation-id": threadId,
-          },
-          body: JSON.stringify({
-            systemPrompt,
-            messages: openAIMessageFormat.toApi(messages),
-          }),
-          signal,
-        }),
-      streamProtocol: openAIReadableStreamAdapter(),
-    }),
+  // fetchLLM sends each thread's stable client-generated id as `threadId` in the
+  // request body, which the route maps to an isolated, persistent pi
+  // AgentSession. The OpenUI system prompt is computed server-side in the route
+  // from the same `openuiLibrary` this page renders with.
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: openAIReadableStreamAdapter(),
+        messageFormat: openAIMessageFormat,
+      }),
     [],
   );
 

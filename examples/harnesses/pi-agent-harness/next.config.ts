@@ -14,8 +14,8 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["@earendil-works/pi-coding-agent"],
   webpack: (config, { isServer }) => {
     if (isServer) {
-      const externalizePi = (
-        { request }: { request?: string },
+      const externalize = (
+        { context, request }: { context?: string; request?: string },
         callback: (err?: null, result?: string) => void,
       ) => {
         if (request && /^@earendil-works\/pi-coding-agent(\/|$)/.test(request)) {
@@ -25,11 +25,26 @@ const nextConfig: NextConfig = {
           // bundler never sees them once this entry point is external).
           return callback(null, `import ${request}`);
         }
+        // The chat route computes the OpenUI system prompt server-side from
+        // genui-lib. That module imports React hooks without a "use client"
+        // directive, which Next's route-handler (react-server) graph rejects at
+        // build time even though the route only calls the pure
+        // `openuiLibrary.prompt()`, never a renderer. Loading it as a runtime
+        // external skips that bundler check. Scoped to imports issued from the
+        // API routes so the page's SSR graph still bundles genui-lib against
+        // Next's own React copy.
+        if (
+          request === "@openuidev/react-ui/genui-lib" &&
+          context &&
+          /[\\/]src[\\/]app[\\/]api[\\/]/.test(context)
+        ) {
+          return callback(null, `import ${request}`);
+        }
         return callback();
       };
       config.externals = Array.isArray(config.externals)
-        ? [externalizePi, ...config.externals]
-        : [externalizePi];
+        ? [externalize, ...config.externals]
+        : [externalize];
     }
     return config;
   },

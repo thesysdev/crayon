@@ -41,7 +41,7 @@ export interface PiSessionEntry {
 interface GetOrCreateOptions {
   /** Workspace the coding agent operates in. */
   cwd: string;
-  /** OpenUI Lang system prompt (generated client-side from the component library). */
+  /** OpenUI Lang system prompt (generated from the component library in the route). */
   systemPrompt?: string;
 }
 
