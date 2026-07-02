@@ -187,7 +187,6 @@ b3 = Button("Delete", { type: "continue_conversation" }, "destructive")`,
 ];
 
 export const muiAdditionalRules: string[] = [
-  "When asked about data, generate realistic/plausible data",
   "Every response is a single Card(children) — children stack vertically automatically.",
   "Card is the only top-level layout container. Use Tabs to switch between sections, Accordion for collapsible sections.",
   "Use FollowUpBlock at the END of a Card to suggest what the user can do or ask next.",

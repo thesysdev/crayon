@@ -108,10 +108,6 @@ export const promptOptions: PromptOptions = {
   preamble:
     "You are a helpful assistant. Always respond using OpenUI Lang — never plain markdown or JSON.",
   additionalRules: [
-    // Do not regenerate src/system-prompt.txt until this example's pinned
-    // @openuidev/react-lang (^0.1.3) is bumped to a core that no longer emits this
-    // line from importantRules — otherwise the old core + this entry duplicate it. (issue #698)
-    "When asked about data, generate realistic/plausible data",
     "Always wrap your entire response inside a single root Card.",
     "Use Text components for all textual content.",
     'Use variant="heading" for the main topic, variant="caption" for secondary info, and the default body variant for regular text.',

@@ -246,6 +246,7 @@ vueContent = [TextContent("Vue is a progressive framework by Evan You."), Callou
 ];
 
 export const openuiAdditionalRules: string[] = [
+  "When asked about data, generate realistic/plausible data",
   'For grid-like layouts, use Stack with direction "row" and wrap=true. Avoid justify="between" unless you specifically want large gutters.',
   "For forms, define one FormControl reference per field so controls can stream progressively.",
   "For forms, always provide the second Form argument with Buttons(...) actions: Form(name, buttons, fields).",
@@ -256,15 +257,9 @@ export const openuiAdditionalRules: string[] = [
   "Use existing components (Tabs, Accordion, Modal) before inventing ternary show/hide patterns",
 ];
 
-// Demo/product stance (issue #698): fabricate illustrative data only on surfaces
-// with no real data backend. Real-data consumers (e.g. a coding agent) build their
-// own promptOptions from openuiAdditionalRules to opt out of this line.
 export const openuiPromptOptions: PromptOptions = {
   examples: openuiExamples,
-  additionalRules: [
-    "When asked about data, generate realistic/plausible data",
-    ...openuiAdditionalRules,
-  ],
+  additionalRules: openuiAdditionalRules,
 };
 
 // ── Library ──
