@@ -3,6 +3,7 @@
 import { herouiChatLibrary } from "@/lib/heroui-genui";
 import type { Message } from "@openuidev/react-headless";
 import {
+  fetchLLM,
   openAIAdapter,
   openAIMessageFormat,
   processStreamedMessage,
@@ -33,6 +34,11 @@ const STARTERS = [
   },
 ];
 
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIAdapter(),
+  messageFormat: openAIMessageFormat,
+});
 
 export default function Page() {
   const [instruction, setInstruction] = useState("");
@@ -44,73 +50,72 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  const handleSubmit = useCallback(async (overrideText?: string) => {
-    const text = (overrideText ?? instruction).trim();
-    if (!text || isStreaming) return;
+  const handleSubmit = useCallback(
+    async (overrideText?: string) => {
+      const text = (overrideText ?? instruction).trim();
+      if (!text || isStreaming) return;
 
-    setError(null);
-    setInstruction("");
+      setError(null);
+      setInstruction("");
 
-    let userContent = text;
-    if (Object.keys(formFieldSnapshot).length > 0) {
-      userContent = `Current form values (JSON): ${JSON.stringify(formFieldSnapshot)}\n\n${text}`;
-    }
-
-    const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: userContent };
-    const nextMessages = [...messages, userMsg];
-    setMessages(nextMessages);
-
-    const abortController = new AbortController();
-    abortRef.current = abortController;
-    setIsStreaming(true);
-    setStreamingCode("");
-
-    let draftContent = "";
-
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          messages: openAIMessageFormat.toApi(nextMessages as any),
-        }),
-        signal: abortController.signal,
-      });
-
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-      const assistantId = crypto.randomUUID();
-
-      const applyContent = (msg: Message) => {
-        draftContent = typeof msg.content === "string" ? msg.content : "";
-        setStreamingCode(draftContent);
-      };
-
-      await processStreamedMessage({
-        response,
-        adapter: openAIAdapter(),
-        createMessage: applyContent,
-        updateMessage: applyContent,
-      });
-
-      const assistantMsg: Message = {
-        id: assistantId,
-        role: "assistant",
-        content: draftContent,
-      };
-      setMessages((prev) => [...prev, assistantMsg]);
-      setLatestCode(draftContent);
-      setStreamingCode(null);
-    } catch (err) {
-      if ((err as Error).name !== "AbortError") {
-        setError((err as Error).message ?? "Something went wrong.");
+      let userContent = text;
+      if (Object.keys(formFieldSnapshot).length > 0) {
+        userContent = `Current form values (JSON): ${JSON.stringify(formFieldSnapshot)}\n\n${text}`;
       }
-    } finally {
-      setIsStreaming(false);
-      abortRef.current = null;
-    }
-  }, [instruction, isStreaming, messages, formFieldSnapshot]);
+
+      const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: userContent };
+      const nextMessages = [...messages, userMsg];
+      setMessages(nextMessages);
+
+      const abortController = new AbortController();
+      abortRef.current = abortController;
+      setIsStreaming(true);
+      setStreamingCode("");
+
+      let draftContent = "";
+
+      try {
+        const response = await llm.send({
+          threadId: "form",
+          messages: nextMessages,
+          signal: abortController.signal,
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const assistantId = crypto.randomUUID();
+
+        const applyContent = (msg: Message) => {
+          draftContent = typeof msg.content === "string" ? msg.content : "";
+          setStreamingCode(draftContent);
+        };
+
+        await processStreamedMessage({
+          response,
+          adapter: llm.streamProtocol,
+          createMessage: applyContent,
+          updateMessage: applyContent,
+        });
+
+        const assistantMsg: Message = {
+          id: assistantId,
+          role: "assistant",
+          content: draftContent,
+        };
+        setMessages((prev) => [...prev, assistantMsg]);
+        setLatestCode(draftContent);
+        setStreamingCode(null);
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") {
+          setError((err as Error).message ?? "Something went wrong.");
+        }
+      } finally {
+        setIsStreaming(false);
+        abortRef.current = null;
+      }
+    },
+    [instruction, isStreaming, messages, formFieldSnapshot],
+  );
 
   const handleReset = useCallback(() => {
     abortRef.current?.abort();
@@ -149,9 +154,7 @@ export default function Page() {
         <div className="w-full max-w-lg flex flex-col gap-8">
           {/* Title */}
           <div className="text-center flex flex-col gap-2">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-              AI Form Generator
-            </h1>
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900">AI Form Generator</h1>
             <p className="text-gray-500 text-base">
               Describe a form and get a live, interactive preview instantly.
             </p>
@@ -187,15 +190,14 @@ export default function Page() {
             {STARTERS.map((s) => (
               <button
                 key={s.label}
-                onClick={() => { setInstruction(s.prompt); handleSubmit(s.prompt); }}
+                onClick={() => {
+                  setInstruction(s.prompt);
+                  handleSubmit(s.prompt);
+                }}
                 className="w-full text-left rounded-xl border border-gray-200 px-4 py-3 flex flex-col gap-0.5 hover:border-gray-400 hover:bg-white transition-colors"
               >
-                <span className="text-sm font-semibold text-gray-800">
-                  {s.label}
-                </span>
-                <span className="text-xs text-gray-500 line-clamp-1">
-                  {s.prompt}
-                </span>
+                <span className="text-sm font-semibold text-gray-800">{s.label}</span>
+                <span className="text-xs text-gray-500 line-clamp-1">{s.prompt}</span>
               </button>
             ))}
           </div>
@@ -226,9 +228,7 @@ export default function Page() {
         {/* Message history */}
         <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-2">
           {userMessages.slice(1).length === 0 && (
-            <p className="text-xs text-gray-400 text-center mt-4">
-              Refinements will appear here.
-            </p>
+            <p className="text-xs text-gray-400 text-center mt-4">Refinements will appear here.</p>
           )}
           {userMessages.slice(1).map((msg, i) => (
             <div key={i} className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5">
