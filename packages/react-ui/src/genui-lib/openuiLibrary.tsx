@@ -256,9 +256,15 @@ export const openuiAdditionalRules: string[] = [
   "Use existing components (Tabs, Accordion, Modal) before inventing ternary show/hide patterns",
 ];
 
+// Demo/product stance (issue #698): fabricate illustrative data only on surfaces
+// with no real data backend. Real-data consumers (e.g. a coding agent) build their
+// own promptOptions from openuiAdditionalRules to opt out of this line.
 export const openuiPromptOptions: PromptOptions = {
   examples: openuiExamples,
-  additionalRules: openuiAdditionalRules,
+  additionalRules: [
+    "When asked about data, generate realistic/plausible data",
+    ...openuiAdditionalRules,
+  ],
 };
 
 // ── Library ──

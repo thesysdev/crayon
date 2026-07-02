@@ -431,7 +431,6 @@ function importantRules(
   }
 
   return `## Important Rules
-- When asked about data, generate realistic/plausible data
 - Choose components that best represent the content (tables for comparisons, charts for trends, forms for input, etc.)
 
 ## Final Verification

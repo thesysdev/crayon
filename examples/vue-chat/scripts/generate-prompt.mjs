@@ -71,6 +71,7 @@ const library = createLibrary({
 
 const promptOptions = {
   additionalRules: [
+    "When asked about data, generate realistic/plausible data",
     "Always use Stack as the root component.",
     "Group related content in Card components with descriptive titles.",
     "Use TextContent for all text output. You can use markdown within the text string.",

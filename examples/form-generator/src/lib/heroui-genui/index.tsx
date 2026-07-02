@@ -51,6 +51,7 @@ export const herouiComponentGroups: ComponentGroup[] = [
 export const herouiFormExamples: string[] = [];
 
 export const herouiFormAdditionalRules: string[] = [
+  "When asked about data, generate realistic/plausible data",
   "Every response is a single Form(...) — Form is the root element.",
   "Always include explicit Buttons with at least one primary submit button.",
   "Define EACH FormControl as its own reference — do NOT inline all controls in one array. This allows progressive field-by-field streaming.",

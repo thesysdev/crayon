@@ -314,6 +314,7 @@ cal = CalendarBlock("range", "2025-06-01", 2)`,
 ];
 
 export const shadcnAdditionalRules: string[] = [
+  "When asked about data, generate realistic/plausible data",
   "Every response is a single Card(children) — children stack vertically automatically.",
   "Card is the only layout container. Do NOT use Stack. Use Tabs to switch between sections, Carousel for horizontal scroll.",
   "Use FollowUpBlock at the END of a Card to suggest what the user can do or ask next.",
