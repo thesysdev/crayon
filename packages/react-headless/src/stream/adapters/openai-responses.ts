@@ -67,22 +67,15 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                   toolCallId: item.call_id,
                   content: stringifyOutput(item.output),
                 };
-              } else if (typeof item.type === "string" && item.type.endsWith("_call")) {
-                // Native server-executed tools (currently web_search) open with a
-                // `<type>_call` item, not a plain function_call. Key on the item
-                // id (no separate call_id) and name it by the tool, falling back
-                // to the type minus `_call`. (MCP is a separate follow-up — see
-                // .claude/plans/mcp-tool-streaming.md.)
-                const toolItem = item as {
-                  id?: string;
-                  call_id?: string;
-                  name?: string;
-                  type: string;
-                };
+              } else if (item.type === "web_search_call") {
+                // web_search is a native OpenAI tool: it opens with a
+                // web_search_call item rather than a plain function_call and
+                // carries no separate call_id, so key the tool call on the item
+                // id (its result + query arrive on output_item.done below).
                 yield {
                   type: EventType.TOOL_CALL_START,
-                  toolCallId: toolItem.id ?? toolItem.call_id ?? toolItem.type,
-                  toolCallName: toolItem.name ?? toolItem.type.replace(/_call$/, ""),
+                  toolCallId: item.id,
+                  toolCallName: "web_search",
                 };
               }
               break;
@@ -123,23 +116,21 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
             }
 
             case "response.output_item.done": {
-              // Native server-executed tools (currently web_search) deliver their
-              // result on the done item — there's no function_call_output for
-              // them. function_call closes via function_call_arguments.done and
-              // message via output_text.done, so both are excluded here.
+              // web_search delivers its result on the done item — there's no
+              // function_call_output for it. Every other item type closes via its
+              // own event (function_call → function_call_arguments.done, message →
+              // output_text.done), so this case handles web_search only.
               const item = event.item as {
                 type?: string;
                 id?: string;
-                call_id?: string;
                 status?: string;
                 output?: unknown;
                 error?: unknown;
                 action?: unknown;
               };
-              const itemType = item.type ?? "";
-              if (!itemType.endsWith("_call") || itemType === "function_call") break;
+              if (item.type !== "web_search_call") break;
 
-              const toolCallId = item.id ?? item.call_id ?? itemType;
+              const toolCallId = item.id ?? "web_search_call";
 
               // web_search streams no argument deltas — its query lives in
               // `action`. Surface it as the tool-call args so the card shows the
@@ -184,9 +175,10 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
 
             // Intentionally unhandled — these are lifecycle/metadata events:
             // response.created, response.in_progress, response.completed,
-            // response.content_part.added, response.content_part.done, the
-            // per-tool *.in_progress/searching/completed status events (the
-            // generic output_item.added/.done handling above covers them), etc.
+            // response.content_part.added, response.content_part.done, and
+            // web_search's *.in_progress/searching/completed status events (the
+            // web_search_call output_item.added/.done handling above covers it),
+            // etc.
             default:
               break;
           }
