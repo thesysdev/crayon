@@ -58,9 +58,7 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                   toolCallName: item.name,
                 };
               } else if (item.type === "function_call_output") {
-                // Fired when a function_call_output we submitted as input is
-                // integrated into a conversation-linked response — surfaces
-                // server-side tool execution to the SDK store.
+                const isError = item.status === "incomplete";
                 yield {
                   type: EventType.TOOL_CALL_RESULT,
                   messageId: item.id,
@@ -68,10 +66,6 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                   content: stringifyOutput(item.output),
                 };
               } else if (item.type === "web_search_call") {
-                // web_search is a native OpenAI tool: it opens with a
-                // web_search_call item rather than a plain function_call and
-                // carries no separate call_id, so key the tool call on the item
-                // id (its result + query arrive on output_item.done below).
                 yield {
                   type: EventType.TOOL_CALL_START,
                   toolCallId: item.id,
@@ -144,15 +138,11 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
               }
 
               const content = stringifyOutput(item.output);
-              const isError = item.status === "failed" || item.error != null;
               yield {
                 type: EventType.TOOL_CALL_RESULT,
                 messageId: toolCallId,
                 toolCallId,
                 content,
-                ...(isError
-                  ? { isError: true, error: typeof item.error === "string" ? item.error : content }
-                  : {}),
               };
               break;
             }
