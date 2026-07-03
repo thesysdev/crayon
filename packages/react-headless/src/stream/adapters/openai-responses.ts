@@ -4,6 +4,10 @@ import type {
 } from "openai/resources/responses/responses";
 import { AGUIEvent, EventType, StreamProtocolAdapter } from "../../types";
 
+/** A tool result's `output` as a string (JSON-encoded if structured, "" if absent). */
+const stringifyOutput = (output: unknown): string =>
+  typeof output === "string" ? output : output != null ? JSON.stringify(output) : "";
+
 export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
   async *parse(response: Response): AsyncIterable<AGUIEvent> {
     const reader = response.body?.getReader();
@@ -61,8 +65,24 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                   type: EventType.TOOL_CALL_RESULT,
                   messageId: item.id,
                   toolCallId: item.call_id,
-                  content:
-                    typeof item.output === "string" ? item.output : JSON.stringify(item.output),
+                  content: stringifyOutput(item.output),
+                };
+              } else if (typeof item.type === "string" && item.type.endsWith("_call")) {
+                // Native server-executed tools (currently web_search) open with a
+                // `<type>_call` item, not a plain function_call. Key on the item
+                // id (no separate call_id) and name it by the tool, falling back
+                // to the type minus `_call`. (MCP is a separate follow-up — see
+                // .claude/plans/mcp-tool-streaming.md.)
+                const toolItem = item as {
+                  id?: string;
+                  call_id?: string;
+                  name?: string;
+                  type: string;
+                };
+                yield {
+                  type: EventType.TOOL_CALL_START,
+                  toolCallId: toolItem.id ?? toolItem.call_id ?? toolItem.type,
+                  toolCallName: toolItem.name ?? toolItem.type.replace(/_call$/, ""),
                 };
               }
               break;
@@ -102,29 +122,46 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
               break;
             }
 
-            case "response.web_search_call.in_progress":
-              const callId = itemIdToCallId[event.item_id] ?? event.item_id;
-              yield {
-                type: EventType.TOOL_CALL_START,
-                toolCallName: "web_search",
-                toolCallId: callId,
+            case "response.output_item.done": {
+              // Native server-executed tools (currently web_search) deliver their
+              // result on the done item — there's no function_call_output for
+              // them. function_call closes via function_call_arguments.done and
+              // message via output_text.done, so both are excluded here.
+              const item = event.item as {
+                type?: string;
+                id?: string;
+                call_id?: string;
+                status?: string;
+                output?: unknown;
+                error?: unknown;
+                action?: unknown;
               };
-              break;
+              const itemType = item.type ?? "";
+              if (!itemType.endsWith("_call") || itemType === "function_call") break;
 
-            case "response.web_search_call.searching": {
-              const callId = itemIdToCallId[event.item_id] ?? event.item_id;
-              yield {
-                type: EventType.TOOL_CALL_CHUNK,
-                toolCallId: callId,
-              };
-              break;
-            }
+              const toolCallId = item.id ?? item.call_id ?? itemType;
 
-            case "response.web_search_call.completed": {
-              const callId = itemIdToCallId[event.item_id] ?? event.item_id;
+              // web_search streams no argument deltas — its query lives in
+              // `action`. Surface it as the tool-call args so the card shows the
+              // query live, matching a reload's persisted function_call args.
+              if (item.action && typeof item.action === "object") {
+                yield {
+                  type: EventType.TOOL_CALL_ARGS,
+                  toolCallId,
+                  delta: JSON.stringify(item.action),
+                };
+              }
+
+              const content = stringifyOutput(item.output);
+              const isError = item.status === "failed" || item.error != null;
               yield {
-                type: EventType.TOOL_CALL_END,
-                toolCallId: callId,
+                type: EventType.TOOL_CALL_RESULT,
+                messageId: toolCallId,
+                toolCallId,
+                content,
+                ...(isError
+                  ? { isError: true, error: typeof item.error === "string" ? item.error : content }
+                  : {}),
               };
               break;
             }
@@ -147,8 +184,9 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
 
             // Intentionally unhandled — these are lifecycle/metadata events:
             // response.created, response.in_progress, response.completed,
-            // response.content_part.added, response.content_part.done,
-            // response.output_item.done, etc.
+            // response.content_part.added, response.content_part.done, the
+            // per-tool *.in_progress/searching/completed status events (the
+            // generic output_item.added/.done handling above covers them), etc.
             default:
               break;
           }
