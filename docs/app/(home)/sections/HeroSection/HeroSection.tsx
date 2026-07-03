@@ -41,14 +41,14 @@ function commandVariants(command: string): CommandVariant[] {
 }
 
 const DESKTOP_HERO_IMAGE = {
-  light: "/homepage/hero-web.svg",
-  dark: "/homepage/hero-web-dark.svg",
+  light: "/homepage/hero-web.webp",
+  dark: "/homepage/hero-web-dark.webp",
   width: 768,
   height: 454,
 } as const;
 const MOBILE_HERO_IMAGE = {
-  light: "/homepage/mobile-hero-light.svg",
-  dark: "/homepage/mobile-hero-dark.svg",
+  light: "/homepage/mobile-hero-light.webp",
+  dark: "/homepage/mobile-hero-dark.webp",
   width: 333,
   height: 440,
 } as const;
