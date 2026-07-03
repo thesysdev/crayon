@@ -69,7 +69,7 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                 yield {
                   type: EventType.TOOL_CALL_START,
                   toolCallId: item.id,
-                  toolCallName: "web_search",
+                  toolCallName: "thesys_web_search",
                 };
               }
               break;
