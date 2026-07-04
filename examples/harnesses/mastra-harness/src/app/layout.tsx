@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Mastra Harness + OpenUI",
-  description: "Generative UI chat powered by Mastra Harness",
+  title: "Mastra Harness Chat",
+  description: "Persistent OpenUI chat backed by Mastra Harness tools and AG-UI streaming",
 };
 
 export default function RootLayout({

@@ -1,8 +1,8 @@
-# OpenUI + Mastra Harness
+# Mastra Harness Chat
 
-A generative-UI chat application backed by Mastra's new `Harness` API. The app keeps the normal
-OpenUI `<FullScreen />` chat surface, while the backend runs a persistent Mastra Harness session
-with LibSQL-backed threads/state and tool activity streamed into OpenUI as AG-UI events.
+An OpenUI chat example backed by Mastra's new `Harness` API. The app keeps the normal
+OpenUI `<FullScreen />` surface, while the backend runs a persistent Mastra Harness session with
+LibSQL-backed threads/state and tool activity streamed into OpenUI as AG-UI events.
 
 ## How it works
 

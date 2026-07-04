@@ -17,7 +17,7 @@ export default function Page() {
         {...chatProps}
         streamProtocol={agUIAdapter()}
         componentLibrary={openuiChatLibrary}
-        agentName="Mastra Harness + OpenUI"
+        agentName="Mastra Harness Chat"
         theme={{ mode: themeMode }}
         conversationStarters={{
           variant: "short",
