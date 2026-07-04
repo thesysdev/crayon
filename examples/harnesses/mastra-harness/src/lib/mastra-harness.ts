@@ -11,7 +11,7 @@ const systemPrompt = readFileSync(
   "utf-8",
 );
 
-const HARNESS_CONFIG_VERSION = "2026-06-24.3";
+const HARNESS_CONFIG_VERSION = "2026-07-04.1";
 
 const getWeather = createTool({
   id: "get_weather",
@@ -90,40 +90,19 @@ function createHarness() {
       url: process.env.MASTRA_HARNESS_DB_URL || "file:./.mastra-harness/openui-harness.db",
     }),
     agent,
-    defaultModeId: "assist",
+    defaultModeId: "default",
     modes: [
       {
-        id: "assist",
-        name: "Assist",
+        id: "default",
+        name: "Default",
         description: "Use tools and render complete OpenUI responses.",
         metadata: { default: true },
         instructions:
           [
-            "You are in Assist mode.",
-            "Make this mode visibly different from Brief mode.",
             "Optimize for useful depth, exploration, and rich generated UI.",
             "When the prompt asks for analysis, planning, comparison, status, or data, prefer structured UI such as SectionBlock, Table, TagBlock, ListBlock, charts, and FollowUpBlock.",
             "Use tools when relevant and include the tool-derived facts in the rendered UI.",
             "Default shape: root = Card([header, overview, details, actions, followups]) or a richer equivalent.",
-            "Do not compress the answer into an executive-summary-only card unless the user explicitly asks for a brief.",
-          ].join("\n"),
-      },
-      {
-        id: "brief",
-        name: "Brief",
-        description: "Summarize the conversation into a tiny executive brief.",
-        instructions:
-          [
-            "You are in Brief mode.",
-            "Make this mode visibly different from Assist mode.",
-            "Optimize for speed, scanability, and minimal UI.",
-            "Produce a tiny executive brief, not a dashboard, report, or full analysis.",
-            "Even if the user asks for a dashboard, table, chart, plan, or detailed comparison, Brief mode should summarize the answer as a brief.",
-            "Use exactly two rendered child components inside root: a header and one body text component.",
-            "Required shape: root = Card([header, brief]) where header is CardHeader(\"Brief\", \"...\") and brief is MarkDownRenderer(...) or TextContent(...).",
-            "Keep prose under 90 words unless the user explicitly requests more.",
-            "Use short bullets. Include only: key takeaway, blocker/risk if any, and next action.",
-            "Never use charts, tables, forms, carousels, tabs, SectionBlock, FollowUpBlock, ListBlock, or extra rendered components in Brief mode.",
           ].join("\n"),
       },
     ],

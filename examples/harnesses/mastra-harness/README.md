@@ -2,14 +2,14 @@
 
 A generative-UI chat application backed by Mastra's new `Harness` API. The app keeps the normal
 OpenUI `<FullScreen />` chat surface, while the backend runs a persistent Mastra Harness session
-with modes, LibSQL-backed threads/state, and tool activity streamed into OpenUI as AG-UI events.
+with LibSQL-backed threads/state and tool activity streamed into OpenUI as AG-UI events.
 
 ## How it works
 
 ```text
 Browser / OpenUI FullScreen
   |  localStorage thread list + transcript
-  |  POST /api/chat { threadId, modeId, messages }
+  |  POST /api/chat { threadId, messages }
   v
 Next.js route (nodejs runtime)
   |  threadId -> Mastra resourceId
@@ -17,7 +17,7 @@ Next.js route (nodejs runtime)
   |  session.sendMessage(latest user turn)
   v
 Mastra Harness
-  |  modes + storage + safe mock tools
+  |  storage + safe mock tools
   |  message/tool events
   v
 Harness-to-AG-UI adapter
@@ -31,8 +31,8 @@ OpenUI renderer
 - Mastra `Harness` from `@mastra/core/harness`, with one shared Harness and one Session per OpenUI
   chat thread.
 - LibSQL persistence for Harness threads and state, keyed by each OpenUI thread id.
-- Harness modes (`Assist` and `Brief`) configured on the same backing agent, with a composer
-  picker that switches the active Harness mode before the next user turn.
+- A single default Harness mode that keeps the example focused on session persistence, tools, and
+  OpenUI streaming rather than mode-switching UX.
 - Safe mock Mastra tools (`get_weather`, `get_stock_price`) surfaced in OpenUI's behind-the-scenes
   tool panel.
 - A small adapter that maps Harness events (`message_update`, `tool_start`, `tool_input_delta`,

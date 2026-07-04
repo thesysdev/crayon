@@ -6,12 +6,6 @@ import {
   type ThreadStore,
 } from "./thread-store";
 
-export type HarnessModeId = "assist" | "brief";
-
-interface ChatPropsOptions {
-  getModeId?: () => HarnessModeId;
-}
-
 function sseLinesToEvents(chunk: string): AGUIEvent[] {
   return chunk
     .split("\n")
@@ -72,7 +66,6 @@ async function persistAssistantFromStream(
 }
 
 export function createMastraHarnessChatProps(
-  options: ChatPropsOptions = {},
   storage: KVStorage = getClientStorage(),
   store: ThreadStore = createThreadStore(storage),
 ) {
@@ -96,7 +89,7 @@ export function createMastraHarnessChatProps(
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages, modeId: options.getModeId?.(), threadId }),
+        body: JSON.stringify({ messages, threadId }),
         signal: abortController.signal,
       });
 

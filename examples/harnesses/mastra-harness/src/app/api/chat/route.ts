@@ -14,15 +14,8 @@ const AGUI = {
 } as const;
 
 interface ChatBody {
-  modeId?: string;
   threadId?: string;
   messages?: Message[];
-}
-
-const VALID_MODE_IDS = new Set(["assist", "brief"]);
-
-function normalizeModeId(modeId: string | undefined): "assist" | "brief" | undefined {
-  return VALID_MODE_IDS.has(modeId ?? "") ? (modeId as "assist" | "brief") : undefined;
 }
 
 function messageText(message: Pick<Message, "content">): string {
@@ -80,7 +73,6 @@ function textStreamResponse(content: string): Response {
 export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => ({}))) as ChatBody;
   const conversationId = body.threadId || crypto.randomUUID();
-  const modeId = normalizeModeId(body.modeId);
   const userText = latestUserText(body.messages);
 
   if (!userText) {
@@ -100,10 +92,6 @@ export async function POST(req: NextRequest) {
 
   if (entry.session.run.isRunning()) {
     return textStreamResponse("_Still responding to your previous message. Please wait._");
-  }
-
-  if (modeId && entry.session.mode.get() !== modeId) {
-    await entry.session.mode.switch({ modeId });
   }
 
   const bridge = new HarnessAGUIBridge();
