@@ -58,7 +58,6 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                   toolCallName: item.name,
                 };
               } else if (item.type === "function_call_output") {
-                const isError = item.status === "incomplete";
                 yield {
                   type: EventType.TOOL_CALL_RESULT,
                   messageId: item.id,
