@@ -49,7 +49,7 @@ pnpm install
 Create an env file in this example:
 
 ```bash
-cd examples/harnesses/mastra-harness
+cd examples/harnesses/mastra-harness-chat
 cp .env.example .env.local
 ```
 
@@ -68,7 +68,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `OPENAI_API_KEY`       | unset                                        | API key for the configured model       |
 | `OPENAI_MODEL`         | `openai/gpt-5.5`                             | Mastra model id                        |
 | `OPENAI_BASE_URL`      | `https://api.openai.com/v1`                  | OpenAI-compatible endpoint             |
-| `MASTRA_HARNESS_DB_URL` | `file:./.mastra-harness/openui-harness.db` | LibSQL database for Harness state      |
+| `MASTRA_HARNESS_DB_URL` | `file:./.mastra-harness-chat/openui-harness.db` | LibSQL database for Harness state      |
 
 The `dev` and `build` scripts regenerate `src/generated/system-prompt.txt` from `src/library.ts`
 before starting Next, so the backend prompt and frontend OpenUI renderer stay aligned.

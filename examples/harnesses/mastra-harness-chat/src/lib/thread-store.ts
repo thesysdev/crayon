@@ -8,8 +8,8 @@ export interface KVStorage {
   removeItem(key: string): void;
 }
 
-const THREADS_KEY = "mastra-harness-openui:threads";
-const messagesKey = (threadId: string) => `mastra-harness-openui:messages:${threadId}`;
+const THREADS_KEY = "mastra-harness-chat-openui:threads";
+const messagesKey = (threadId: string) => `mastra-harness-chat-openui:messages:${threadId}`;
 
 function readJson<T>(storage: KVStorage, key: string, fallback: T): T {
   try {

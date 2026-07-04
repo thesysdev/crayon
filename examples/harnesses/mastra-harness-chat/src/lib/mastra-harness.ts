@@ -71,7 +71,7 @@ function toolCategoryResolver(toolName: string): ToolCategory {
 }
 
 function createHarness() {
-  mkdirSync(join(process.cwd(), ".mastra-harness"), { recursive: true });
+  mkdirSync(join(process.cwd(), ".mastra-harness-chat"), { recursive: true });
 
   const agent = new Agent({
     id: "openui-mastra-harness-agent",
@@ -87,7 +87,7 @@ function createHarness() {
     id: "openui-mastra-harness",
     storage: new LibSQLStore({
       id: "openui-mastra-harness-storage",
-      url: process.env.MASTRA_HARNESS_DB_URL || "file:./.mastra-harness/openui-harness.db",
+      url: process.env.MASTRA_HARNESS_DB_URL || "file:./.mastra-harness-chat/openui-harness.db",
     }),
     agent,
     defaultModeId: "default",
