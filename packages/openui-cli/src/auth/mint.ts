@@ -63,8 +63,8 @@ export async function resolveCloudApiKey(opts: {
   if (!method) {
     if (!opts.interactive) {
       throw new Error(
-        `An API key is required in non-interactive mode. Pass --api-key <key> ` +
-          `(get one at ${THESYS_KEYS_URL}).`,
+        `OpenUI Cloud requires auth in non-interactive mode. Pass --api-key <key> ` +
+          `or --auth skip (keys: ${THESYS_KEYS_URL}).`,
       );
     }
     const { select } = await import("@inquirer/prompts");
@@ -81,6 +81,9 @@ export async function resolveCloudApiKey(opts: {
   if (method === "skip") return { key: null, method: "skip" };
 
   if (method === "manual") {
+    if (!opts.interactive) {
+      throw new Error("`--auth manual` requires an interactive prompt. Pass --api-key <key>.");
+    }
     const { password } = await import("@inquirer/prompts");
     const key = (
       await password({ message: "Paste your OpenUI Cloud API key:", mask: true })

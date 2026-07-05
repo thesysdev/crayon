@@ -32,6 +32,13 @@ Create a new app (you'll be prompted to pick a template):
 npx @openuidev/cli@latest create
 ```
 
+Create a new app without prompts, using defaults for optional choices:
+
+```bash
+npx @openuidev/cli@latest create --project-name my-app
+npx @openuidev/cli@latest create --project-name my-app --no-install
+```
+
 Skip the prompt and pick a template directly:
 
 ```bash
@@ -64,7 +71,9 @@ openui create [options]
 Options:
 
 - `-n, --name <string>`: Project name
+- `--project-name <string>`: Project name for agent/scripted runs; accepts defaults for optional prompts
 - `-t, --template <template>`: Template to scaffold — `openui-self-hosted` or `openui-cloud`
+- `-y, --yes`: Accept defaults for optional prompts and do not prompt
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
@@ -74,8 +83,9 @@ Options:
 
 What it does:
 
-- prompts for the project name if you do not pass `--name`
-- prompts for the template if you do not pass `--template`
+- prompts for the project name if you do not pass `--name` or `--project-name`
+- prompts for the template if you do not pass `--template` in interactive mode
+- defaults to `openui-self-hosted` for scripted runs when `--template` is omitted
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
@@ -91,17 +101,22 @@ What it does:
     - `oauth` — sign in with Thesys in the browser and mint a key for your org
     - `manual` — paste an existing key
     - `skip` — leave `THESYS_API_KEY` empty and add it later (get one at <https://console.thesys.dev/keys>)
-  - in non-interactive mode without `--api-key`, the cloud template fails because a key is required
+  - `--yes` or `--project-name` defaults cloud auth to `skip` when no key/auth flag is supplied
+  - `--no-interactive` with `--template openui-cloud` fails unless you pass `--api-key` or `--auth skip`
 
 Examples:
 
 ```bash
 openui create
+openui create --project-name my-app
+openui create --project-name my-app --no-install
 openui create --name my-app --template openui-self-hosted
 openui create --name my-app --template openui-cloud --auth oauth
 openui create --name my-app --template openui-cloud --api-key tk_your_key
 openui create --name my-app --no-skill --no-install
+openui create --yes --name my-app --no-install
 openui create --no-interactive --name my-app --template openui-cloud --api-key tk_your_key
+openui create --no-interactive --name my-app --template openui-cloud --auth skip
 ```
 
 ### `openui generate`

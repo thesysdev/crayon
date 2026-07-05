@@ -45,7 +45,7 @@ npm install -g @openuidev/cli
 
 ## `openui create`
 
-Scaffolds a new Next.js app pre-configured with OpenUI Chat.
+Scaffolds a new Next.js app from the OpenUI Self Hosted or OpenUI Cloud template.
 
 ```
 openui create [options]
@@ -53,22 +53,30 @@ openui create [options]
 
 **Options**
 
-| Flag                  | Description                                             |
-| --------------------- | ------------------------------------------------------- |
-| `-n, --name <string>` | Project name (directory to create)                      |
-| `--skill`             | Install the OpenUI agent skill for AI coding assistants |
-| `--no-skill`          | Skip installing the OpenUI agent skill                  |
-| `--no-interactive`    | Fail instead of prompting for missing input             |
+| Flag                        | Description                                                                 |
+| --------------------------- | --------------------------------------------------------------------------- |
+| `-n, --name <string>`       | Project name (directory to create)                                          |
+| `--project-name <string>`   | Project name for agent/scripted runs; accepts defaults for optional prompts |
+| `-t, --template <template>` | Template to scaffold: `openui-self-hosted` or `openui-cloud`                |
+| `--api-key <key>`           | OpenUI Cloud API key for the cloud template; skips sign-in                  |
+| `--auth <method>`           | Cloud auth method: `oauth`, `manual`, or `skip`                             |
+| `-y, --yes`                 | Accept defaults for optional prompts and do not prompt                      |
+| `--skill`                   | Install the OpenUI agent skill for AI coding assistants                     |
+| `--no-skill`                | Skip installing the OpenUI agent skill                                      |
+| `--no-install`              | Scaffold without running the package install                                |
+| `--no-interactive`          | Do not prompt; fail if required args are missing                            |
 
-When run interactively (default), the CLI prompts for any missing options. Pass `--no-interactive` in CI or scripted environments to surface missing required flags as errors instead.
+When run interactively (default), the CLI prompts for any missing options. In CI or scripted environments, pass `--project-name <name>` to use defaults for optional prompts, or pass `--no-interactive` with all required flags.
 
 **What it does**
 
-1. Copies the bundled `openui-chat` Next.js template into `<name>/`
+1. Copies the selected bundled Next.js template into `<name>/`
 2. Rewrites `workspace:*` dependency versions to `latest`
 3. Auto-detects your package manager (npm, pnpm, yarn, bun)
 4. Installs dependencies
 5. Optionally installs the [OpenUI agent skill](/docs/openui-lang/agent-skill) for AI coding assistants (e.g. Claude, Cursor, Copilot)
+
+If `--template` is omitted in a scripted run, the CLI defaults to `openui-self-hosted`.
 
 The generated project includes a `generate:prompt` script that runs `openui generate` as part of `dev` and `build`.
 
@@ -76,17 +84,28 @@ The generated project includes a `generate:prompt` script that runs `openui gene
 
 When run interactively, `openui create` asks whether to install the OpenUI agent skill. The skill teaches AI coding assistants how to build with OpenUI Lang — covering component definitions, system prompts, the Renderer, and debugging.
 
-Pass `--skill` or `--no-skill` to skip the prompt. In `--no-interactive` mode the skill is skipped unless `--skill` is explicitly passed.
+Pass `--skill` or `--no-skill` to skip the prompt. In non-interactive runs the skill is skipped unless `--skill` is explicitly passed.
+
+**Cloud auth**
+
+For the `openui-cloud` template, pass `--api-key <key>` to write `THESYS_API_KEY` without a sign-in flow. You can also pass `--auth oauth`, `--auth manual`, or `--auth skip`.
+
+With `--yes` or `--project-name`, cloud auth defaults to `skip` when no key or auth method is supplied. With `--no-interactive --template openui-cloud`, missing cloud auth fails with an actionable error unless you pass `--api-key` or `--auth skip`.
 
 **Examples**
 
 ```bash
-# Interactive — prompts for project name and skill installation
+# Interactive — prompts for project name, template, and optional setup
 openui create
 
-# Non-interactive
-openui create --name my-app
-openui create --no-interactive --name my-app
+# Agent/scripted — no prompts
+openui create --project-name my-app
+openui create --project-name my-app --no-install
+openui create --yes --name my-app --no-install
+
+# Explicit template and cloud auth
+openui create --project-name my-app --template openui-cloud --api-key tk_your_key
+openui create --no-interactive --name my-app --template openui-cloud --auth skip
 
 # Explicitly install or skip the agent skill
 openui create --name my-app --skill

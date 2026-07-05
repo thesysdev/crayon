@@ -8,7 +8,7 @@ import { Command } from "commander";
 import { runCreateApp } from "./commands/create-app";
 import { runGenerate } from "./commands/generate";
 import { resolveArgs } from "./lib/resolve-args";
-import { telemetry } from "./lib/telemetry";
+import { CreateError, telemetry } from "./lib/telemetry";
 import { handleCliError, normalizeAuth, normalizeTemplate } from "./lib/utils"; // Ensure utils.ts is included for type declarations
 
 const program = new Command();
@@ -18,6 +18,20 @@ const cliVersion = (
     version: string;
   }
 ).version;
+
+function canPrompt(): boolean {
+  return Boolean(process.stdin.isTTY && process.stdout.isTTY);
+}
+
+function resolveProjectName(name?: string, projectName?: string): string | undefined {
+  if (name && projectName && name !== projectName) {
+    throw new CreateError(
+      "bad_args",
+      `conflicting project names: --name "${name}" and --project-name "${projectName}".`,
+    );
+  }
+  return projectName ?? name;
+}
 
 program.name("openui").description("CLI for OpenUI").version(cliVersion);
 program.option("--no-telemetry", "Disable anonymous usage analytics");
@@ -32,31 +46,46 @@ program
   .command("create")
   .description("Scaffold a new Next.js app (OpenUI Self Hosted or OpenUI Cloud)")
   .option("-n, --name <string>", "Project name")
-  .option("-t, --template <template>", "Template: openui-self-hosted | openui-cloud")
+  .option(
+    "--project-name <string>",
+    "Project name for agent/scripted runs; accepts defaults for optional prompts",
+  )
+  .option(
+    "-t, --template <template>",
+    "Template: openui-self-hosted | openui-cloud (defaults to openui-self-hosted without prompts)",
+  )
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | manual | skip")
+  .option("-y, --yes", "Accept defaults for optional prompts and do not prompt")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
   .option("--no-skill", "Skip installing the OpenUI agent skill")
-  .option("--no-interactive", "Fail with error if required args are missing")
+  .option("--no-interactive", "Do not prompt; fail if required args are missing")
   .option("--no-install", "Scaffold without running the package install")
   .action(
     async (options: {
       name?: string;
+      projectName?: string;
       template?: string;
       apiKey?: string;
       auth?: string;
+      yes?: boolean;
       skill?: boolean;
       interactive: boolean;
       install: boolean;
     }) => {
       try {
+        const projectName = resolveProjectName(options.name, options.projectName);
+        const acceptsDefaults = Boolean(options.yes || options.projectName);
+        const interactive = options.interactive && !acceptsDefaults && canPrompt();
+
         await runCreateApp({
-          name: options.name,
+          name: projectName,
           template: normalizeTemplate(options.template),
           apiKey: options.apiKey,
           auth: normalizeAuth(options.auth),
           skill: options.skill,
-          noInteractive: !options.interactive,
+          noInteractive: !interactive,
+          acceptDefaults: acceptsDefaults,
           noInstall: !options.install,
         });
       } catch (e) {
