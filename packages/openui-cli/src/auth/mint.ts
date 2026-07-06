@@ -1,3 +1,4 @@
+import { telemetry } from "../lib/telemetry";
 import { Authenticator } from "./authenticator";
 
 // Thesys console OAuth + key mint (same flow as create-c1-app). The OpenUI Cloud
@@ -43,6 +44,11 @@ export async function mintCloudApiKey(projectName: string): Promise<string> {
   }
   const data = (await res.json()) as { apiKey?: string };
   if (!data.apiKey) throw new Error("The server did not return an API key.");
+
+  const oidcSub =
+    (profile["sub"] as string | undefined) ?? (userInfo?.["sub"] as string | undefined);
+  if (oidcSub) telemetry.aliasOidcSubject(oidcSub);
+
   return data.apiKey;
 }
 
