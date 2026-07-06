@@ -17,10 +17,9 @@ To add your organization to this list, [open a PR](https://github.com/thesysdev/
 | Organization                                    | Contact                                       | Description of Use                                                                                                  |
 | :---------------------------------------------- | :-------------------------------------------- | :------------------------------------------------------------------------------------------------------------------ |
 | [Standard Metrics](https://standardmetrics.io/) | [Elias Tounzal](https://github.com/eliasinho) | Standard Metrics combines institutional-grade infrastructure with cutting-edge AI to transform portfolio management |
-| [openui-forge](https://github.com/OthmanAdi/openui-forge) | [OthmanAdi](https://github.com/OthmanAdi)   | Cross-IDE agent skill for OpenUI. Templates for OpenAI, Anthropic, LangChain, Vercel AI SDK, plus FastAPI / Go / Rust backends. Mirrors to 11 agent platforms.                  |
 | [Entelligence.AI](https://entelligence.ai) | [Aiswarya Sankar](https://www.linkedin.com/in/sankaraiswarya/)   | AI platform that gives developers noise-free, self-verifying code reviews to catch bugs before they ship, while providing engineering leaders with the analytics needed to measure the true ROI of their AI coding tools.            |
 | [GAIA](https://heygaia.io) | [Aryan Randeriya](https://github.com/aryanranderiya) | GAIA is a proactive personal AI assistant that uses OpenUI Lang to let its backend LLM emit rich, interactive React components inline in chat responses — rendering cards, lists, and other generative UI directly in the conversation instead of plain text. |
-| [openui-ollama-localsetup](https://github.com/shogun444/openui-ollama-localsetup) | [Sayandip Roy (shogun444)](https://github.com/shogun444) | Companion repo for OpenUI + Ollama local LLM setup guide with complete step-by-step tutorial, environment configuration, and working chat application. |
+| [&facts](https://www.andfacts.com) | [Sohaib Ahmed](https://www.linkedin.com/in/sohaibacma/) | A market insights platform to help eCommerce brands better understand their customers. |
 
 <!--
 Example row, copy and edit:
