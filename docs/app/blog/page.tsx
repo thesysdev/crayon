@@ -21,6 +21,38 @@ type BlogCardData = {
 // Community / external posts that don't live in the local content source.
 const COMMUNITY_CARDS: BlogCardData[] = [
   {
+    href: "https://zenn.dev/sc30gsw/articles/d7320f1247b785",
+    title: "Generative UIにJSONは最適なのか？ OpenUIという選択肢",
+    author: "kaito",
+    date: "2026-06-26",
+    featured: false,
+    external: true,
+    tag: "Community",
+    image:
+      "https://res.cloudinary.com/zenn/image/upload/s--EEtEjmlu--/c_fit%2Cg_north_west%2Cl_text:notosansjp-medium.otf_55:Generative%2520UI%25E3%2581%25ABJSON%25E3%2581%25AF%25E6%259C%2580%25E9%2581%25A9%25E3%2581%25AA%25E3%2581%25AE%25E3%2581%258B%25EF%25BC%259F%2520OpenUI%25E3%2581%25A8%25E3%2581%2584%25E3%2581%2586%25E9%2581%25B8%25E6%258A%259E%25E8%2582%25A2%2Cw_1010%2Cx_90%2Cy_100/g_south_west%2Cl_text:notosansjp-medium.otf_37:kaito%2Cx_203%2Cy_121/g_south_west%2Ch_90%2Cl_fetch:aHR0cHM6Ly9zdGF0aWMuemVubi5zdHVkaW8vdXNlci11cGxvYWQvYXZhdGFyL2VmZDZhMGM5YWUuanBlZw==%2Cr_max%2Cw_90%2Cx_87%2Cy_95/v1627283836/default/og-base-w1200-v2.png?_a=BACMTiAE",
+  },
+  {
+    href: "https://ai-heartland.com/tool/openui-generative-ui/",
+    title: "OpenUI徹底解説｜LLMがUIを生成する“オープン標準”OSS（OpenUI Lang・ストリーミング）",
+    author: "AI Heartland",
+    date: "2026-06-25",
+    featured: false,
+    external: true,
+    tag: "Community",
+    image: "https://ai-heartland.com/generated_images/cover_openui-generative-ui.webp",
+  },
+  {
+    href: "https://blog.oodle.ai/how-we-taught-our-ai-to-draw/",
+    title: "How we taught our AI to draw",
+    author: "Gaurav Maheshwari",
+    date: "2026-06-12",
+    featured: false,
+    external: true,
+    tag: "Community",
+    image:
+      "https://storage.ghost.io/c/b2/48/b2485d36-0dcd-4e46-b7bd-418ab6e38e18/content/images/size/w1200/2026/06/header-image.png",
+  },
+  {
     href: "https://azukiazusa.dev/blog/openui-framework-for-generative-ui/",
     title: "Generative UI のためのフレームワーク OpenUI",
     author: "azukiazusa1",
@@ -111,11 +143,13 @@ function FeaturedCard({ card }: { card: BlogCardData }) {
 
 // Regular: image on top, no description.
 function RegularCard({ card }: { card: BlogCardData }) {
-  const externalProps = card.external
-    ? { target: "_blank", rel: "noopener noreferrer" }
-    : {};
+  const externalProps = card.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
   return (
-    <Link href={card.href} {...externalProps} className={`${CARD_CLASS} min-h-[15rem] max-md:min-h-0`}>
+    <Link
+      href={card.href}
+      {...externalProps}
+      className={`${CARD_CLASS} min-h-[15rem] max-md:min-h-0`}
+    >
       <div className="relative flex h-44 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--openui-highlight)] md:h-60">
         {card.image ? (
           <img src={card.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
