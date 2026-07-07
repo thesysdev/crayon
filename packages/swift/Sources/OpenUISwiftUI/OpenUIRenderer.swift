@@ -24,6 +24,12 @@ public struct OpenUIRenderer: View {
     }
     
     private func renderNode(_ node: ElementNode) -> AnyView {
+        if let def = library.components[node.typeName], let renderer = def.renderer {
+            if let customView = renderer.render(props: node.props, children: node.props["children"] as? [Any] ?? []) as? AnyView {
+                return customView
+            }
+        }
+        
         switch node.typeName {
         case "VStack":
             return AnyView(VStack {

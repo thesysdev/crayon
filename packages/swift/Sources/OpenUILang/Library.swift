@@ -5,11 +5,13 @@ public struct ComponentDef {
     public let description: String
     public let signature: String
     public let params: [String]
+    public let renderer: AnyComponentRenderer?
     
-    public init(name: String, description: String, signature: String) {
+    public init(name: String, description: String, signature: String, renderer: AnyComponentRenderer? = nil) {
         self.name = name
         self.description = description
         self.signature = signature
+        self.renderer = renderer
         
         // Extract parameter names from signature, e.g., "Button(label: String, action: String)" -> ["label", "action"]
         // "VStack(children: [Any])" -> ["children"]
@@ -37,6 +39,16 @@ public struct ComponentDef {
 public protocol AnyComponentRenderer {
     // In OpenUISwiftUI we will cast this to AnyView
     func render(props: [String: Any], children: [Any]) -> Any
+}
+
+public struct ClosureComponentRenderer: AnyComponentRenderer {
+    public let closure: ([String: Any], [Any]) -> Any
+    public init(_ closure: @escaping ([String: Any], [Any]) -> Any) {
+        self.closure = closure
+    }
+    public func render(props: [String: Any], children: [Any]) -> Any {
+        return closure(props, children)
+    }
 }
 
 public class ComponentLibrary {

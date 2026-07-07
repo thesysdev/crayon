@@ -17,11 +17,14 @@ public class Parser {
         
         var statements: [Statement] = []
         var context: [String: ASTNode] = [:]
+        var queryStatements: [QueryStatementInfo] = []
+        var mutationStatements: [MutationStatementInfo] = []
         
         while index < input.endIndex {
             skipWhitespace()
             guard index < input.endIndex else { break }
             
+            let startIdx = index
             if input[index] == "$" {
                 advance()
                 if let id = parseIdentifier() {
@@ -31,6 +34,7 @@ public class Parser {
                         if let expr = parseExpression() {
                             statements.append(.state(id: id, initExpr: expr))
                             context[id] = expr
+                            continue
                         }
                     }
                 }
@@ -39,19 +43,43 @@ public class Parser {
                 if match("=") {
                     skipWhitespace()
                     if let expr = parseExpression() {
-                        if case let .comp(name, _, _) = expr, name == "Query" {
-                            statements.append(.query(id: id, call: CallNode(callee: name, args: []), expr: expr, deps: nil))
-                        } else if case let .comp(name, _, _) = expr, name == "Mutation" {
-                            statements.append(.mutation(id: id, call: CallNode(callee: name, args: []), expr: expr))
+                        if case let .comp(name, args, _) = expr, name == "Query" {
+                            let deps = collectQueryDeps(expr)
+                            let call = CallNode(callee: name, args: args)
+                            statements.append(.query(id: id, call: call, expr: expr, deps: deps.isEmpty ? nil : deps))
+                            
+                            let info = QueryStatementInfo(
+                                statementId: id,
+                                toolAST: args.count > 0 ? args[0] : nil,
+                                argsAST: args.count > 1 ? args[1] : nil,
+                                defaultsAST: args.count > 2 ? args[2] : nil,
+                                refreshAST: args.count > 3 ? args[3] : nil,
+                                deps: deps.isEmpty ? nil : deps,
+                                complete: true
+                            )
+                            queryStatements.append(info)
+                        } else if case let .comp(name, args, _) = expr, name == "Mutation" {
+                            let call = CallNode(callee: name, args: args)
+                            statements.append(.mutation(id: id, call: call, expr: expr))
+                            
+                            let info = MutationStatementInfo(
+                                statementId: id,
+                                toolAST: args.count > 0 ? args[0] : nil,
+                                argsAST: args.count > 1 ? args[1] : nil
+                            )
+                            mutationStatements.append(info)
                         } else {
                             statements.append(.value(id: id, expr: expr))
                             context[id] = expr
                         }
+                        continue
                     }
                 }
-            } else {
-                // Skip unparseable tokens
-                index = input.index(after: index)
+            }
+            
+            // If we failed to parse a statement, skip one character to avoid infinite loops
+            if index == startIdx {
+                advance()
             }
         }
         
@@ -67,12 +95,52 @@ public class Parser {
             return nil
         }
         
+        var errors: [ValidationError] = []
+        var visited: Set<String> = []
+        
         if let entryId = entryId, let rootExpr = context[entryId] {
-            rootNode = materialize(rootExpr, context: context, statementId: entryId)
+            rootNode = materialize(rootExpr, context: context, statementId: entryId, visited: &visited, errors: &errors)
         }
         
-        let meta = ParseResultMeta(incomplete: false, unresolved: [], orphaned: [], statementCount: statements.count, errors: [])
-        return ParseResult(root: rootNode, meta: meta, stateDeclarations: [:], queryStatements: [], mutationStatements: [])
+        let meta = ParseResultMeta(incomplete: false, unresolved: [], orphaned: [], statementCount: statements.count, errors: errors)
+        return ParseResult(root: rootNode, meta: meta, stateDeclarations: [:], queryStatements: queryStatements, mutationStatements: mutationStatements)
+    }
+    
+    private func collectQueryDeps(_ node: ASTNode) -> [String] {
+        var deps: [String] = []
+        func walk(_ current: ASTNode) {
+            if case let .stateRef(id) = current {
+                deps.append(id)
+            }
+            switch current {
+            case let .comp(_, args, mappedProps):
+                args.forEach(walk)
+                mappedProps?.values.forEach(walk)
+            case let .arr(arr):
+                arr.forEach(walk)
+            case let .obj(dict):
+                dict.forEach { walk($0.1) }
+            case let .binOp(_, left, right):
+                walk(left)
+                walk(right)
+            case let .unaryOp(_, operand):
+                walk(operand)
+            case let .ternary(cond, then, els):
+                walk(cond)
+                walk(then)
+                walk(els)
+            case let .member(obj, _):
+                walk(obj)
+            case let .index(obj, index):
+                walk(obj)
+                walk(index)
+            case let .assign(_, value):
+                walk(value)
+            default: break
+            }
+        }
+        walk(node)
+        return deps
     }
     
     private func parseExpression() -> ASTNode? {
@@ -100,6 +168,8 @@ public class Parser {
         let c = input[index]
         if c == "\"" {
             return .str(parseString())
+        } else if c == "{" {
+            return .obj(parseObject())
         } else if c == "[" {
             return .arr(parseArray())
         } else if c == "$" {
@@ -108,8 +178,22 @@ public class Parser {
                 return .stateRef(ident)
             }
             return nil
-        } else if c.isNumber {
+        } else if c == "@" {
+            advance()
+            if let ident = parseIdentifier() {
+                skipWhitespace()
+                if match("(") {
+                    let args = parseArguments()
+                    return .comp(name: "@" + ident, args: args.0, mappedProps: args.1)
+                } else {
+                    return .ref("@" + ident)
+                }
+            }
+            return nil
+        } else if c == "-" || c.isNumber {
             return .num(parseNumber())
+        } else if input[index...].hasPrefix("null") {
+            advance(by: 4); return .null
         } else if input[index...].hasPrefix("true") {
             advance(by: 4); return .bool(true)
         } else if input[index...].hasPrefix("false") {
@@ -120,18 +204,44 @@ public class Parser {
                 let args = parseArguments()
                 return .comp(name: ident, args: args.0, mappedProps: args.1)
             } else {
-                return .ref(ident)
+                return parseMemberAccess(base: .ref(ident))
             }
         }
         return nil
+    }
+    
+    private func parseMemberAccess(base: ASTNode) -> ASTNode {
+        var current = base
+        while index < input.endIndex {
+            skipWhitespace()
+            if match(".") {
+                skipWhitespace()
+                if let field = parseIdentifier() {
+                    current = .member(obj: current, field: field)
+                } else {
+                    break
+                }
+            } else {
+                break
+            }
+        }
+        return current
     }
     
     private func parseString() -> String {
         advance() // skip "
         var result = ""
         while index < input.endIndex && input[index] != "\"" {
-            result.append(input[index])
-            advance()
+            if input[index] == "\\" {
+                advance()
+                if index < input.endIndex {
+                    result.append(input[index])
+                    advance()
+                }
+            } else {
+                result.append(input[index])
+                advance()
+            }
         }
         if index < input.endIndex { advance() } // skip "
         return result
@@ -139,11 +249,45 @@ public class Parser {
     
     private func parseNumber() -> Double {
         var result = ""
+        if index < input.endIndex && input[index] == "-" {
+            result.append("-")
+            advance()
+        }
         while index < input.endIndex && (input[index].isNumber || input[index] == ".") {
             result.append(input[index])
             advance()
         }
         return Double(result) ?? 0
+    }
+    
+    private func parseObject() -> [(String, ASTNode)] {
+        advance() // skip {
+        var properties: [(String, ASTNode)] = []
+        while index < input.endIndex {
+            skipWhitespace()
+            if match("}") { break }
+            let startIdx = index
+            if let key = parseIdentifier() ?? parseStringKey() {
+                skipWhitespace()
+                if match(":") {
+                    skipWhitespace()
+                    if let expr = parseExpression() {
+                        properties.append((key, expr))
+                    }
+                }
+            }
+            if index == startIdx { advance() } // avoid infinite loop
+            skipWhitespace()
+            _ = match(",")
+        }
+        return properties
+    }
+    
+    private func parseStringKey() -> String? {
+        if index < input.endIndex && input[index] == "\"" {
+            return parseString()
+        }
+        return nil
     }
     
     private func parseArray() -> [ASTNode] {
@@ -152,9 +296,11 @@ public class Parser {
         while index < input.endIndex {
             skipWhitespace()
             if match("]") { break }
+            let startIdx = index
             if let expr = parseExpression() {
                 elements.append(expr)
             }
+            if index == startIdx { advance() } // avoid infinite loop
             skipWhitespace()
             _ = match(",")
         }
@@ -188,6 +334,7 @@ public class Parser {
                     args.append(expr)
                 }
             }
+            if index == startIdx { advance() } // avoid infinite loop
             
             skipWhitespace()
             _ = match(",")
@@ -224,16 +371,22 @@ public class Parser {
         index = input.index(index, offsetBy: count, limitedBy: input.endIndex) ?? input.endIndex
     }
     
-    private func materialize(_ node: ASTNode, context: [String: ASTNode], statementId: String? = nil) -> ElementNode? {
+    private func materialize(_ node: ASTNode, context: [String: ASTNode], statementId: String? = nil, visited: inout Set<String>, errors: inout [ValidationError]) -> ElementNode? {
         switch node {
         case let .ref(ident):
+            if visited.contains(ident) { return nil } // cycle detection
+            visited.insert(ident)
+            defer { visited.remove(ident) }
+            
             if let refNode = context[ident] {
-                return materialize(refNode, context: context, statementId: ident)
+                return materialize(refNode, context: context, statementId: ident, visited: &visited, errors: &errors)
             }
             return nil
         case let .comp(name, args, mappedProps):
             var propsMap: [String: Any] = [:]
             var finalMappedProps = mappedProps ?? [:]
+            
+            var hasDynamicProps = false
             
             if let library = self.library, let compDef = library.components[name] {
                 for (i, arg) in args.enumerated() {
@@ -249,45 +402,57 @@ public class Parser {
                 if args.count > 0 && finalMappedProps["children"] == nil {
                     finalMappedProps["children"] = args[0]
                 }
+                
+                errors.append(ValidationError(code: .unknownComponent, component: name, path: "", message: "Unknown component \(name)", statementId: statementId))
             }
             
             for (k, v) in finalMappedProps {
-                if let val = materializeValue(v, context: context) {
+                if v.isRuntimeExpr {
+                    propsMap[k] = v // retain AST
+                    hasDynamicProps = true
+                } else if let val = materializeValue(v, context: context, visited: &visited, errors: &errors) {
                     propsMap[k] = val
                 }
             }
-            return ElementNode(statementId: statementId, typeName: name, props: propsMap, partial: false)
+            return ElementNode(statementId: statementId, typeName: name, props: propsMap, partial: false, hasDynamicProps: hasDynamicProps)
         default:
             return nil
         }
     }
     
-    private func materializeValue(_ node: ASTNode, context: [String: ASTNode]) -> Any? {
+    private func materializeValue(_ node: ASTNode, context: [String: ASTNode], visited: inout Set<String>, errors: inout [ValidationError]) -> Any? {
         switch node {
         case let .str(s): return s
         case let .num(n): return n
         case let .bool(b): return b
+        case .null: return nil
         case let .arr(arr): 
-            return arr.compactMap { materializeValue($0, context: context) }
+            return arr.compactMap { materializeValue($0, context: context, visited: &visited, errors: &errors) }
+        case let .obj(dict):
+            var res: [String: Any] = [:]
+            for (k, v) in dict {
+                res[k] = materializeValue(v, context: context, visited: &visited, errors: &errors)
+            }
+            return res
         case .comp: 
-            if let el = materialize(node, context: context) {
-                // For OpenUI Lang, children components are usually wrapped in arrays, but if not we might need it.
-                // Just return the element node itself.
+            if let el = materialize(node, context: context, visited: &visited, errors: &errors) {
                 return el
             }
             return nil
         case let .ref(ident):
+            if visited.contains(ident) { return nil } // cycle detection
+            visited.insert(ident)
+            defer { visited.remove(ident) }
+            
             if let resolved = context[ident] {
                 if case .comp = resolved {
-                    return materialize(resolved, context: context, statementId: ident)
+                    return materialize(resolved, context: context, statementId: ident, visited: &visited, errors: &errors)
                 }
-                return materializeValue(resolved, context: context)
+                return materializeValue(resolved, context: context, visited: &visited, errors: &errors)
             }
             return nil
-        case let .stateRef(ident):
-            return "$\(ident)" // Simplified placeholder for dynamic state
-        case .ternary:
-            return "$ternary" // Simplified placeholder
+        case .stateRef, .ternary, .binOp, .unaryOp, .member, .index, .assign:
+            return node // Retain ASTNode for dynamic expressions
         default: return nil
         }
     }

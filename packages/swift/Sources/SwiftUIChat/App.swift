@@ -48,11 +48,6 @@ struct ContentView: View {
                         let result = parser.parse(newValue)
                         self.parsedRoot = result.root
                     }
-                
-                Button("Simulate Stream") {
-                    simulateStream()
-                }
-                .padding()
             }
             .frame(maxWidth: .infinity)
             
@@ -83,36 +78,20 @@ struct ContentView: View {
         .alert(isPresented: $showingAlert) {
             Alert(title: Text("Action Executed"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
         }
-    }
-    
-    private func simulateStream() {
-        let text = """
-        $isLoading = false
-        
-        root = VStack([
-            Text($isLoading ? "Please wait..." : "Hello from OpenUI Lang"),
-            HStack([
-                Button("Cancel", "submit:cancel"),
-                Button("Submit", "submit:signup")
+        .onAppear {
+            self.openUIText = """
+            $isLoading = false
+            
+            root = VStack([
+                Text($isLoading ? "Please wait..." : "Hello from OpenUI Lang"),
+                HStack([
+                    Button("Cancel", "submit:cancel"),
+                    Button("Submit", "submit:signup")
+                ])
             ])
-        ])
-        """
-        
-        openUIText = ""
-        parsedRoot = nil
-        
-        // Simulating streaming tokens
-        var delay = 0.0
-        let chars = Array(text)
-        for char in chars {
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                self.openUIText.append(char)
-                let result = parser.parse(self.openUIText)
-                if let root = result.root {
-                    self.parsedRoot = root
-                }
-            }
-            delay += 0.01
+            """
+            let result = parser.parse(self.openUIText)
+            self.parsedRoot = result.root
         }
     }
 }
