@@ -1,6 +1,6 @@
 ---
 name: openui
-description: "Build, scaffold, debug, or document OpenUI and OpenUI Lang applications. Use when working with @openuidev packages, OpenUI Lang syntax, generative UI, streaming component rendering, OpenUI's built-in component libraries, custom component libraries, prompt generation, Query/Mutation tools, reactive state, OpenUI chat surfaces, Agent Interface, OpenUI Cloud, fetchLLM/restStorage adapters, artifact renderers, or migrations from JSON UI formats. Covers framework-agnostic lang-core plus React, Vue, Svelte, browser-bundle, CLI, React UI imports, and Cloud-backed or self-hosted Agent Interface apps."
+description: "Build, scaffold, debug, or document OpenUI and OpenUI Lang applications. Use when working with @openuidev packages, OpenUI Lang syntax, generative UI, streaming component rendering, OpenUI's built-in component libraries, custom component libraries, prompt generation, Query/Mutation tools, reactive state, OpenUI chat surfaces, Agent Interface, OpenUI Cloud, fetchLLM/restStorage adapters, artifact renderers, or migrations from JSON UI formats. Covers framework-agnostic lang-core plus React, Vue, Svelte, browser-bundle, CLI, React UI/headless packages, and Cloud-backed or self-hosted Agent Interface apps."
 ---
 
 # OpenUI
@@ -17,7 +17,8 @@ Use the local repository checkout as the source of truth when available. If this
 | `@openuidev/react-lang` | React `defineComponent`, `createLibrary`, `<Renderer />`, hooks, parser/prompt re-exports |
 | `@openuidev/vue-lang` | Vue 3 `defineComponent`, `createLibrary`, `<Renderer />`, composables, parser re-exports |
 | `@openuidev/svelte-lang` | Svelte 5 `defineComponent`, `createLibrary`, `<Renderer />`, context helpers, parser re-exports |
-| `@openuidev/react-ui` | OpenUI's default React component libraries (`openuiLibrary`, `openuiChatLibrary`), `AgentInterface`, chat layouts, headless chat hooks/state, `fetchLLM`/`restStorage`, stream adapters, message formats, standalone UI primitives, styles, theming |
+| `@openuidev/react-ui` | OpenUI's default React component libraries (`openuiLibrary`, `openuiChatLibrary`), `AgentInterface`, chat layouts, standalone UI primitives, styles, theming, and re-exports of `@openuidev/react-headless` APIs |
+| `@openuidev/react-headless` | Bring-your-own React chat state, hooks, storage/LLM adapter primitives, streaming adapters, message converters, and artifact primitives without OpenUI's visual components |
 | `@openuidev/react-email` | React Email component library and prompt options for generated email |
 | `@openuidev/browser-bundle` | CDN/iframe/no-build React renderer bundle exposed as `window.__OpenUI` |
 | `@openuidev/cli` | `openui create` scaffolding and `openui generate` prompt/schema generation from a library export |
@@ -26,7 +27,7 @@ Use the local repository checkout as the source of truth when available. If this
 
 Choose the package for the target runtime. For backend-only parsing or prompt/schema generation, prefer `@openuidev/lang-core` or the CLI instead of pulling in a UI framework.
 
-For React UI apps, import chat/headless APIs from `@openuidev/react-ui`; it re-exports the `@openuidev/react-headless` surface. Reach for `@openuidev/react-headless` directly only when working on that lower-level package or intentionally avoiding the React UI package.
+`@openuidev/react-ui` re-exports the `@openuidev/react-headless` surface, so React UI apps can import adapters, message formats, storage helpers, hooks, and message types from `@openuidev/react-ui`. Keep `@openuidev/react-headless` as the direct import when building a custom/headless chat UI without OpenUI's visual components.
 
 ## Common Workflows
 
