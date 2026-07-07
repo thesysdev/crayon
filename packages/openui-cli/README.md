@@ -182,7 +182,7 @@ node dist/index.js generate --help
 
 ## Telemetry
 
-The CLI sends anonymous usage analytics. Disable it with the global `--no-telemetry` flag or by setting `DO_NOT_TRACK=1` in the environment.
+The CLI sends usage analytics; OAuth sign-ins may link usage to your OIDC account ID. It does not send code, prompts, API keys, email, or name. Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
 
 ```bash
 openui create --no-telemetry

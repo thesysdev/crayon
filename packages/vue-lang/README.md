@@ -119,6 +119,9 @@ import { Renderer } from "@openuidev/vue-lang";
 | `onStateUpdate` | `(state: Record<string, any>) => void`  | Callback when form field values change                            |
 | `initialState`  | `Record<string, any>`                   | Initial form state for hydration                                  |
 | `onParseResult` | `(result: ParseResult \| null) => void` | Callback when the parse result changes                            |
+| `toolProvider`  | `Record<string, Function> \| McpClientLike \| null` | Tool provider for executing `Query()` and `Mutation()` tool calls |
+| `queryLoader`   | `Component \| VNode \| null`            | Custom loading spinner / loader component shown during query loading |
+| `onError`       | `(errors: OpenUIError[]) => void`       | Callback triggered with structured, LLM-friendly errors |
 
 #### Errors
 
@@ -150,15 +153,16 @@ if (result.meta.unresolved.length > 0) {
 
 Use these inside component renderers to interact with the rendering context:
 
-| Composable             | Description                          |
-| :--------------------- | :----------------------------------- |
-| `useIsStreaming()`     | Whether the model is still streaming |
-| `useRenderNode()`      | Render child element nodes           |
-| `useTriggerAction()`   | Trigger an action event              |
-| `useGetFieldValue()`   | Get a form field's current value     |
-| `useSetFieldValue()`   | Set a form field's value             |
-| `useSetDefaultValue()` | Set a field's default value          |
-| `useFormName()`        | Get the current form's name          |
+| Composable             | Description                                  |
+| :--------------------- | :------------------------------------------- |
+| `useIsStreaming()`     | Whether the model is still streaming         |
+| `useIsQueryLoading()`  | Whether any Query is currently fetching data |
+| `useRenderNode()`      | Render child element nodes                   |
+| `useTriggerAction()`   | Trigger an action event                      |
+| `useGetFieldValue()`   | Get a form field's current value             |
+| `useSetFieldValue()`   | Set a form field's value                     |
+| `useSetDefaultValue()` | Set a field's default value                  |
+| `useFormName()`        | Get the current form's name                  |
 
 ### Form Validation
 
@@ -188,6 +192,45 @@ import type {
   ParseResult,
   LibraryJSONSchema,
 } from "@openuidev/vue-lang";
+```
+
+## Tool Provider Support (Queries & Mutations)
+
+OpenUI Lang connects to your backend through tools. You can register a `toolProvider` to handle data fetching (`Query()`) and updates (`Mutation()`) natively in Vue:
+
+```vue
+<template>
+  <Renderer
+    :response="response"
+    :library="library"
+    :tool-provider="toolProvider"
+    :query-loader="SpinnerComponent"
+    :on-error="handleErrors"
+  />
+</template>
+
+<script setup lang="ts">
+import { Renderer } from "@openuidev/vue-lang";
+import SpinnerComponent from "./Spinner.vue";
+
+const toolProvider = {
+  async get_server_health(args: Record<string, unknown>) {
+    const res = await fetch(`/api/health`);
+    return res.json();
+  },
+  async create_ticket(args: Record<string, unknown>) {
+    const res = await fetch(`/api/tickets`, {
+      method: "POST",
+      body: JSON.stringify(args)
+    });
+    return res.json();
+  }
+};
+
+function handleErrors(errors: any[]) {
+  console.error("OpenUI Errors:", errors);
+}
+</script>
 ```
 
 ## JSON Schema Output
