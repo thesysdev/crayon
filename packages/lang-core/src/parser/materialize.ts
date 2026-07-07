@@ -46,17 +46,19 @@ interface ScalarTypeInfo {
 /**
  * Check a materialized value against a scalar leaf's declared type/enum.
  * Returns a human-readable {expected, actual} on mismatch, or null when it
- * passes or isn't checkable. Only concrete scalar literals are checked.
+ * passes or isn't checkable. Values reaching this point are concrete literals
+ * (dynamic/element/null values are filtered out by validateSchemaValue), so a
+ * declared scalar type also flags compound values (object/array). Enum
+ * membership is only checked for scalar literals — `includes` compares
+ * non-scalar enum members by reference, which could never match.
  */
 function describeTypeMismatch(
   value: unknown,
   info: ScalarTypeInfo,
 ): { expected: string; actual: string } | null {
   const actual = typeof value;
-  if (!["string", "number", "boolean"].includes(actual)) {
-    return null;
-  }
   if (info.enumValues) {
+    if (!["string", "number", "boolean"].includes(actual)) return null;
     if (info.enumValues.includes(value)) return null;
     return {
       expected: `one of [${info.enumValues.map((v) => JSON.stringify(v)).join(", ")}]`,
@@ -64,7 +66,7 @@ function describeTypeMismatch(
     };
   }
   if (info.expectedType && info.expectedType !== actual) {
-    return { expected: info.expectedType, actual };
+    return { expected: info.expectedType, actual: Array.isArray(value) ? "array" : actual };
   }
   return null;
 }
