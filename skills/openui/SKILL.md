@@ -29,6 +29,13 @@ Choose the package for the target runtime. For backend-only parsing or prompt/sc
 
 `@openuidev/react-ui` re-exports the `@openuidev/react-headless` surface, so React UI apps can import adapters, message formats, storage helpers, hooks, and message types from `@openuidev/react-ui`. Keep `@openuidev/react-headless` as the direct import when building a custom/headless chat UI without OpenUI's visual components.
 
+## Choose The Starting Point
+
+- If the user wants a new OpenUI/GenUI app, use `@openuidev/cli`; it is the easiest scaffolding path.
+- If the user wants to integrate OpenUI into an existing React/Next agent or chat app and wants an out-of-box component library, use `@openuidev/react-ui` with `AgentInterface`, `openuiLibrary`, or `openuiChatLibrary`.
+- If the user wants OpenUI Lang rendering in an existing React project without the full React UI surface, use `@openuidev/react-lang`.
+- If the host app is Vue or Svelte, use `@openuidev/vue-lang` or `@openuidev/svelte-lang`. Use `@openuidev/lang-core` for framework-agnostic parsing, prompt generation, schemas, or backend/runtime work.
+
 ## Common Workflows
 
 ### Scaffold
@@ -40,7 +47,7 @@ echo "OPENAI_API_KEY=sk-your-key-here" > .env
 npm run dev
 ```
 
-The CLI prompts for an OpenUI Cloud or self-hosted Agent Interface app when no template is passed. Use `--template openui-cloud` for the managed Cloud starter and `--template openui-self-hosted` for the app-owned model/storage starter. Use framework examples in this repo for Vue, Svelte, React Native, LangGraph, Mastra, Supabase, Vercel AI SDK, and other integrations.
+The CLI is the easiest way to scaffold a new OpenUI/GenUI app. It prompts for an OpenUI Cloud or self-hosted Agent Interface app when no template is passed. Use `--template openui-cloud` for the managed Cloud starter and `--template openui-self-hosted` for the app-owned model/storage starter. Use framework examples in this repo for Vue, Svelte, React Native, LangGraph, Mastra, Supabase, Vercel AI SDK, and other integrations.
 
 ### Choose OpenUI Cloud or self-hosted
 
