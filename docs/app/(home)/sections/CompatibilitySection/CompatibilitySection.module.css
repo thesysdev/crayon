@@ -1,6 +1,6 @@
 .section {
   width: 100%;
-  padding-inline: 1.25rem;
+  padding-inline: var(--home-section-padding-inline);
 }
 
 .container {
@@ -24,19 +24,50 @@
 .title {
   margin: 0;
   text-align: center;
-  font-size: 2.5rem;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -2px;
+  font-family: var(--home-font-display);
+  font-size: var(--home-title-size);
+  font-weight: var(--home-title-weight);
+  line-height: var(--home-title-leading);
+  letter-spacing: var(--home-title-tracking);
+  text-wrap: balance;
   color: var(--openui-text-neutral-primary);
+}
+
+.titleAccent {
+  color: var(--openui-text-neutral-secondary);
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.description {
+  margin: 0;
+  max-width: 40rem;
+  text-align: center;
+  font-family: var(--home-font-text);
+  font-size: var(--home-body-size);
+  line-height: 1.6;
+  color: var(--openui-text-neutral-secondary);
+  text-wrap: pretty;
+}
+
+/* Icon tile shown beside the title on mobile only. */
+.titleIcon {
+  display: none;
 }
 
 .rows {
   display: flex;
   width: 100%;
-  max-width: 100%;
+  max-width: 56rem;
+  margin-inline: auto;
   flex-direction: column;
-  gap: 2rem;
+  gap: 0.5rem;
+  padding-block: 1rem;
   align-items: stretch;
 }
 
@@ -44,37 +75,74 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: 1.125rem;
+  justify-content: center;
+  gap: 0.375rem;
 }
 
 .label {
-  flex-shrink: 0;
-  font-family: "Inter", sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.1;
-  color: var(--openui-text-neutral-primary);
+  display: none;
 }
 
 .chipsViewport {
+  position: relative;
   width: 100%;
   overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
 }
 
 .chips {
   display: flex;
   width: max-content;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem;
+  will-change: transform;
 }
 
 .chipRow {
   display: flex;
-  width: max-content;
   flex-wrap: nowrap;
   align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Embedded variant (opt-in via `embedded` prop): tuned for FeatureGridSection. */
+.section[data-variant="embedded"] .title {
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  letter-spacing: -0.4px;
+}
+
+.section[data-variant="embedded"] .stack {
+  gap: 2.5rem;
+}
+
+.section[data-variant="embedded"] .chips {
   gap: 1rem;
+}
+
+.section[data-variant="embedded"] .rows {
+  gap: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chips {
+    transform: none !important;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -87,37 +155,81 @@
   }
 
   .rows {
-    gap: 1.5rem;
+    padding-block: 1.5rem;
+  }
+}
+
+/* Embedded variant (opt-in via `embedded` prop): mobile layout for FeatureGridSection. */
+@media (max-width: 767px) {
+  /* The only `__section`-suffixed class is the root itself, so target it directly. */
+  .section[data-variant="embedded"] {
+    padding-inline: 0;
   }
 
-  .row {
-    flex-direction: row;
+  .section[data-variant="embedded"] .stack {
+    gap: 2rem;
+    align-items: stretch;
+  }
+
+  /* Standalone centered section on mobile (not a feature-style row): centered
+     title + description, icon tile removed. */
+  .section[data-variant="embedded"] .header {
     align-items: center;
     justify-content: center;
-    gap: 1.5rem;
   }
 
-  .row:nth-child(2) {
-    flex-direction: row-reverse;
+  .section[data-variant="embedded"] .titleIcon {
+    display: none;
   }
 
-  .label {
-    font-size: 1.125rem;
-    white-space: nowrap;
-  }
-
-  .chipsViewport {
-    width: auto;
-    overflow: visible;
-  }
-
-  .chips {
-    width: auto;
-    flex-direction: row;
+  .section[data-variant="embedded"] .headerText {
     align-items: center;
+    width: 100%;
+    gap: 0.5rem;
   }
 
-  .chipRow {
-    display: contents;
+  .section[data-variant="embedded"] .title {
+    /* Match the section's "Renders 3x faster" heading on mobile: use the home
+       title token instead of the smaller embedded size. */
+    font-size: var(--home-title-size);
+    letter-spacing: var(--home-title-tracking);
+    text-align: center;
+  }
+
+  .section[data-variant="embedded"] .description {
+    max-width: none;
+    text-align: center;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  /* Chips span edge to edge; rows break out of the section padding. */
+  .section[data-variant="embedded"] .rows {
+    gap: 0.375rem;
+    width: auto;
+    max-width: none;
+    margin-inline: -1.25rem;
+  }
+
+  .section[data-variant="embedded"] .chips {
+    gap: 0.375rem;
+  }
+
+  /* Fade the chips towards the screen edges. */
+  .section[data-variant="embedded"] .chipsViewport {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
   }
 }

@@ -25,8 +25,57 @@
   outline-offset: 2px;
 }
 
-.icon {
+.iconStack {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 1.25rem;
   height: 1.25rem;
   flex-shrink: 0;
+}
+
+.icon {
+  position: absolute;
+  inset: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+/* Show the icon for the CURRENT theme: Sun in light, Moon in dark. */
+.iconSun {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.iconMoon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.6);
+}
+
+.button[data-theme-state="dark"] .iconSun {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.6);
+}
+
+.button[data-theme-state="dark"] .iconMoon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    transition: opacity 0.25s ease;
+  }
+
+  .iconSun,
+  .iconMoon,
+  .button[data-theme-state="dark"] .iconSun,
+  .button[data-theme-state="dark"] .iconMoon {
+    transform: none;
+  }
 }

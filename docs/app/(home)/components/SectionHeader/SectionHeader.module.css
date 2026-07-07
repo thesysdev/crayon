@@ -1,0 +1,71 @@
+/*
+ * SectionHeader typography. Copied VERBATIM from the four home section
+ * .module.css files it consolidates (all token-based, so the responsive
+ * scale is inherited automatically from globals.css .homeTheme tokens):
+ *   .title    <- FeatureGridSection.module.css L12-21 / CloudSection L25-34 / TweetWallSection L14-23 / UseCasesSection L20-30
+ *   .subtitle <- FeatureGridSection.module.css L23-32 (light) / CloudSection L51-60 (dark)
+ *   .caption  <- FeatureGridSection.module.css L34-39
+ *
+ * SectionHeader owns ONLY this typography. The outer .header wrapper,
+ * .titleTag, .ctaWrap, .headerCta, .description and .stats* all stay in
+ * their own sections.
+ *
+ * `text-align: center` is added to the base .title: it is a no-op for all
+ * four consumers (UseCases centers via its own explicit rule, while
+ * FeatureGrid/TweetWall/Cloud center via the .header wrapper's
+ * text-align:center which the h2 inherits identically).
+ */
+
+.title {
+  margin: 0;
+  font-family: var(--home-font-display);
+  font-size: var(--home-title-size);
+  font-weight: var(--home-title-weight);
+  line-height: var(--home-title-leading);
+  letter-spacing: var(--home-title-tracking);
+  text-align: center;
+  text-wrap: balance;
+  color: var(--openui-text-neutral-primary);
+}
+
+/* Cloud .title L33: dark tone => white title. */
+.title[data-tone="dark"] {
+  color: #fff;
+}
+
+/* FeatureGrid .subtitle L23-32 (light, margin:0). */
+.subtitle {
+  margin: 0;
+  font-family: var(--home-font-display);
+  font-size: var(--home-title-size);
+  font-weight: var(--home-title-weight);
+  line-height: var(--home-title-leading);
+  letter-spacing: var(--home-title-tracking);
+  text-wrap: balance;
+  color: var(--openui-text-neutral-secondary);
+}
+
+/* Cloud .subtitle L51-60: dark tone => margin-top + dimmed white. */
+.subtitle[data-tone="dark"] {
+  margin: 0.5rem 0 0;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Dark mode: the only dark-tone header is the OpenUI Cloud band, which inverts
+   to a LIGHT background in dark mode. Flip its title/subtitle back to dark so
+   they stay legible on the inverted light surface. */
+[data-theme="dark"] .title[data-tone="dark"] {
+  color: #0a0a0a;
+}
+
+[data-theme="dark"] .subtitle[data-tone="dark"] {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* FeatureGrid .caption L34-39. */
+.caption {
+  margin: 0.85rem 0 0;
+  font-size: var(--home-body-size);
+  line-height: var(--home-body-leading);
+  color: var(--openui-text-neutral-secondary);
+}

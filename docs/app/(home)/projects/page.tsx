@@ -3,7 +3,6 @@ import {
   BookOpen,
   Bot,
   Code2,
-  Github,
   MonitorSmartphone,
   Package,
   PlugZap,
@@ -14,7 +13,8 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import type { ComponentType } from "react";
-import { PillLink } from "../components/Button/Button";
+import { BevelButton } from "../components/Button/BevelButton";
+import { PageHero, PageHeroAccent } from "../components/PageHero/PageHero";
 import { Footer } from "../sections/Footer/Footer";
 import styles from "./page.module.css";
 
@@ -101,7 +101,7 @@ const projects: ProjectItem[] = [
         href: "https://openwebui.com/posts/generative_ui_plugin_for_open_webui_6c017d62",
         external: true,
       },
-      { label: "Open WebUI", href: "https://github.com/open-webui/open-webui", external: true },
+      { label: "Open", href: "https://github.com/open-webui/open-webui", external: true },
     ],
   },
   {
@@ -116,6 +116,11 @@ const projects: ProjectItem[] = [
       {
         label: "Article",
         href: "https://dev.to/shogun444/i-tested-openui-with-ollama-models-heres-what-actually-worked-45m7",
+        external: true,
+      },
+      {
+        label: "GitHub",
+        href: "https://github.com/shogun444/openui-ollama-localsetup",
         external: true,
       },
       { label: "Ollama", href: "https://ollama.com", external: true },
@@ -302,42 +307,42 @@ function DiscordIcon({ className }: { className?: string }) {
 export default function ProjectsPage() {
   return (
     <main className={styles.page}>
-      <section className={styles.heroSection}>
-        <div className={styles.heroInner}>
-          <div className={styles.heroCopy}>
-            <h1 className={styles.title}>OpenUI Projects</h1>
-            <p className={styles.subtitle}>
-              Tools, packages, plugins, and examples
-              <br />
-              for building with OpenUI across the stack.
-            </p>
-            <div className={styles.heroActions}>
-              <PillLink
-                className={styles.primaryAction}
-                href="https://github.com/thesysdev/openui/issues"
-                external
-              >
-                <Plus className={styles.actionIcon} strokeWidth={2} aria-hidden="true" />
-                Submit a project
-              </PillLink>
-              <PillLink className={styles.secondaryAction} href={DISCORD_URL} external>
-                <DiscordIcon className={styles.actionIcon} />
-                Share on Discord
-              </PillLink>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        smallSubtitle
+        title={
+          <>
+            OpenUI <PageHeroAccent>Projects</PageHeroAccent>
+          </>
+        }
+        subtitle={
+          <>
+            Tools, packages, plugins, and examples
+            <br />
+            for building with OpenUI across the stack.
+          </>
+        }
+        actions={
+          <>
+            <BevelButton
+              variant="primary"
+              href="https://github.com/thesysdev/openui/issues"
+              external
+              label="Submit a project"
+              badge={<Plus className={styles.actionIcon} strokeWidth={2.25} aria-hidden="true" />}
+            />
+            <BevelButton
+              variant="secondary"
+              href={DISCORD_URL}
+              external
+              label="Share on Discord"
+              badge={<DiscordIcon className={styles.actionIcon} />}
+            />
+          </>
+        }
+      />
 
       <div className={styles.contentSection}>
         <section className={styles.directorySection} id="directory">
-          <div className={styles.sectionHeader}>
-            <div>
-              <h2 className={styles.sectionTitle}>Featured projects</h2>
-            </div>
-            <p className={styles.sectionDescription}>{projects.length} projects</p>
-          </div>
-
           <div className={styles.grid}>
             {projects.map((item) => {
               return (
@@ -364,13 +369,6 @@ export default function ProjectsPage() {
                         key={`${item.name}-${link.label}`}
                         {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                       >
-                        {link.label === "GitHub" && (
-                          <Github
-                            className={styles.linkIcon}
-                            strokeWidth={1.8}
-                            aria-hidden="true"
-                          />
-                        )}
                         {link.label}
                         <ArrowUpRight
                           className={styles.cardLinkArrow}
@@ -404,18 +402,20 @@ export default function ProjectsPage() {
           </ol>
         </div>
         <div className={styles.submitActions}>
-          <PillLink
-            className={styles.primaryAction}
+          <BevelButton
+            variant="primary"
             href="https://github.com/thesysdev/openui/issues"
             external
-          >
-            <Plus className={styles.actionIcon} strokeWidth={2} aria-hidden="true" />
-            Submit a project
-          </PillLink>
-          <PillLink className={styles.secondaryAction} href={DISCORD_URL} external>
-            <DiscordIcon className={styles.actionIcon} />
-            Share on Discord
-          </PillLink>
+            label="Submit a project"
+            badge={<Plus className={styles.actionIcon} strokeWidth={2.25} aria-hidden="true" />}
+          />
+          <BevelButton
+            variant="secondary"
+            href={DISCORD_URL}
+            external
+            label="Share on Discord"
+            badge={<DiscordIcon className={styles.actionIcon} />}
+          />
         </div>
       </section>
 

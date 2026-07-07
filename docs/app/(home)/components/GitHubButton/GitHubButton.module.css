@@ -1,0 +1,127 @@
+/* Glow GitHub star button — copied VERBATIM from
+   sections/HeroSection/GithubGlowButton.module.css, with selectors renamed
+   (.btn -> .glowBtn, .svg -> .glowSvg, .count -> .glowCount,
+   .stars -> .glowStars). Declarations are unchanged.
+
+   Black pill with a beveled top highlight and a glowing GitHub star count.
+   Page-agnostic and self-contained, so it lives here for reuse. */
+
+.glowBtn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 48px;
+  padding-inline: 1.1rem;
+  border: 1px solid var(--home-border-on-dark);
+  border-radius: 24px;
+  background: var(--home-surface-ink);
+  color: #fff;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow:
+    var(--home-bevel-on-dark),
+    inset 0 8px 12px -6px var(--home-border-on-dark);
+  transition: transform 0.2s ease;
+}
+
+.glowBtn:hover {
+  transform: scale(0.99);
+}
+
+.glowSvg {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  fill: #fff;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+}
+
+/* Fixed-width tabular slot: the icon (left) and "stars" (right) stay put while
+   only the digits change as the count ramps up. */
+.glowCount {
+  min-width: 4ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.55);
+}
+
+.glowStars {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Compact size for the site header — the same glow design at the nav button's
+   ~40px height (it replaces the brand-logo pill, so it keeps that footprint).
+   The header renders OUTSIDE `.homeTheme`, so re-declare the surface tokens the
+   base .glowBtn reads (they'd otherwise be undefined here and the pill would lose
+   its background, border, and bevel). Values mirror the .homeTheme definitions. */
+.glowBtnCompact {
+  --home-surface-ink: #0a0a0a;
+  --home-surface-raised: #f7f7f8;
+  --home-border-on-dark: rgba(255, 255, 255, 0.14);
+  --home-bevel-on-dark:
+    inset 0 7px 12px -6px rgba(255, 255, 255, 0.16),
+    inset 0 -5px 8px -2px rgba(0, 0, 0, 0.6);
+  --home-bevel:
+    inset 0 2px 1px -0.5px rgba(255, 255, 255, 1),
+    inset 0 -3px 6px -1px rgba(0, 0, 0, 0.1);
+  height: 2.5rem;
+  padding-inline: 0.875rem;
+  border-radius: 999px;
+  gap: 0.375rem;
+  font-size: 0.9375rem;
+}
+
+.glowBtnCompact .glowSvg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Dark mode: the GH stars button flips to a white-bevel primary (dark content,
+   no glow), matching the other primary buttons. */
+[data-theme="dark"] .glowBtn {
+  background: var(--home-surface-raised);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: var(--home-surface-ink);
+  box-shadow: var(--home-bevel);
+}
+
+[data-theme="dark"] .glowSvg {
+  fill: var(--home-surface-ink);
+  filter: none;
+}
+
+[data-theme="dark"] .glowCount {
+  text-shadow: none;
+}
+
+[data-theme="dark"] .glowStars {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+/* keepBlack: retain the light-mode black pill (and glow) on a dark page, undoing
+   the white flip above (used by the StuckInChat CTA). Higher specificity wins. */
+[data-theme="dark"] .glowBtn.glowBtnKeepBlack {
+  background: var(--home-surface-ink);
+  border-color: var(--home-border-on-dark);
+  color: #fff;
+  box-shadow:
+    var(--home-bevel-on-dark),
+    inset 0 8px 12px -6px var(--home-border-on-dark);
+}
+
+[data-theme="dark"] .glowBtnKeepBlack .glowSvg {
+  fill: #fff;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+}
+
+[data-theme="dark"] .glowBtnKeepBlack .glowCount {
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.55);
+}
+
+[data-theme="dark"] .glowBtnKeepBlack .glowStars {
+  color: rgba(255, 255, 255, 0.55);
+}

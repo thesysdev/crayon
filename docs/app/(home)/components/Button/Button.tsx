@@ -49,7 +49,7 @@ function CopyStatusIcon({
   );
 }
 
-async function copyText(text: string): Promise<boolean> {
+export async function copyText(text: string): Promise<boolean> {
   if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
     try {
       await navigator.clipboard.writeText(text);
@@ -150,13 +150,23 @@ export function ClipboardCommandButton({
   );
 }
 
+export type PillVariant = "primary" | "secondary" | "ghost";
+
 interface PillLinkProps {
   href: string;
   children: ReactNode;
   className?: string;
   arrow?: ReactNode;
   external?: boolean;
+  variant?: PillVariant;
+  fullWidthMobile?: boolean;
 }
+
+const VARIANT_CLASS_MAP: Record<PillVariant, string> = {
+  primary: styles.pillPrimary,
+  secondary: styles.pillSecondary,
+  ghost: styles.pillGhost,
+};
 
 export function PillLink({
   href,
@@ -164,7 +174,18 @@ export function PillLink({
   className = "",
   arrow,
   external = false,
+  variant,
+  fullWidthMobile = false,
 }: PillLinkProps) {
+  const composedClassName = [
+    variant ? styles.pillBase : "",
+    variant ? VARIANT_CLASS_MAP[variant] : "",
+    fullWidthMobile ? styles.pillFullWidthMobile : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   const content = (
     <>
       {children}
@@ -174,14 +195,14 @@ export function PillLink({
 
   if (external) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+      <a href={href} target="_blank" rel="noopener noreferrer" className={composedClassName}>
         {content}
       </a>
     );
   }
 
   return (
-    <Link href={href} className={className}>
+    <Link href={href} className={composedClassName}>
       {content}
     </Link>
   );

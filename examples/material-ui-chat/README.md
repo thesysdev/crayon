@@ -14,7 +14,14 @@ header = CardHeader("Q1 Sales")
 tbl = Table([Col("Product"), Col("Revenue", "number")], [["Widget", 1200]])
 ```
 
-On the client, `<FullScreen />` from `@openuidev/react-ui` manages conversation state, streaming, input, and rendering. It parses the incoming SSE stream with `openAIAdapter()` and renders each OpenUI Lang node using `muiChatLibrary` — the custom component library defined in `src/lib/mui-genui/`.
+On the client, `<AgentInterface />` from `@openuidev/react-ui` provides the artifact chat interface — thread history, streaming, input, and rendering. It requires an `llm` object whose `send()` calls the backend and whose `streamProtocol` parses the incoming SSE stream with `openAIAdapter()`, and a `componentLibrary` (`muiChatLibrary` — the custom component library defined in `src/lib/mui-genui/`) used to render each OpenUI Lang node. `storage` is optional — threads live in memory by default and reset on reload.
+
+```tsx
+<AgentInterface
+  llm={{ send, streamProtocol: openAIAdapter() }}
+  componentLibrary={muiChatLibrary}
+/>
+```
 
 ## Architecture
 
@@ -22,14 +29,14 @@ On the client, `<FullScreen />` from `@openuidev/react-ui` manages conversation 
 ┌────────────────────────────────────┐        ┌────────────────────────────────────┐
 │   Browser                          │  HTTP  │   Next.js API Route                │
 │                                    │ ──────►│                                    │
-│  • <FullScreen /> manages UI       │        │  • Loads system-prompt.txt         │
+│  • <AgentInterface /> manages UI   │        │  • Loads system-prompt.txt         │
 │  • openAIAdapter() parses SSE      │◄────── │  • Calls LLM with runTools         │
 │  • muiChatLibrary renders nodes    │  SSE   │  • Executes tools server-side      │
 │  • MUI ThemeProvider + CssBaseline │        │  • Streams response as SSE events  │
 └────────────────────────────────────┘        └────────────────────────────────────┘
 ```
 
-1. The user types a message. `<FullScreen />` calls `processMessage`, which `POST`s to `/api/chat` with the conversation history formatted via `openAIMessageFormat.toApi()`.
+1. The user types a message. `<AgentInterface />` invokes the `llm.send()` callback, which `POST`s to `/api/chat` with the conversation history formatted via `openAIMessageFormat.toApi()`.
 2. The API route reads `src/generated/system-prompt.txt`, instantiates an OpenAI client, and calls `runTools` — the OpenAI SDK's multi-step tool-execution loop.
 3. Tool calls run server-side; results are fed back to the model automatically and emitted as SSE events.
 4. The LLM streams a final OpenUI Lang response. The stream ends with `data: [DONE]`.
@@ -43,7 +50,7 @@ material-ui-chat/
 │   ├── library.ts                 # Entry the OpenUI CLI reads to generate the prompt
 │   ├── app/
 │   │   ├── api/chat/route.ts      # Streaming chat endpoint (OpenAI SDK + SSE)
-│   │   ├── page.tsx               # Mounts <FullScreen /> + color-mode toggle
+│   │   ├── page.tsx               # Mounts <AgentInterface /> + color-mode toggle
 │   │   ├── layout.tsx             # Root layout with ColorModeProvider
 │   │   └── globals.css            # Minimal full-height reset
 │   ├── hooks/

@@ -1,0 +1,165 @@
+/* Floating announcement pill (a button that scrolls to the OpenUI Cloud
+   section). Enter and exit are pure transitions, so the exit is the reverse
+   of the entrance. */
+
+.banner {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  z-index: 50;
+  box-sizing: border-box;
+  max-width: calc(100vw - 1.5rem);
+  padding: 0.7rem 1.25rem;
+  border: 1px solid var(--home-border-on-dark);
+  border-radius: 1.25rem;
+  background: #0a0a0a;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: center;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.22),
+    inset 0 8px 12px -6px rgba(255, 255, 255, 0.12),
+    0 10px 30px rgba(0, 0, 0, 0.35);
+  /* hidden state */
+  opacity: 0;
+  transform: translateX(-50%) scale(0.9);
+  transition:
+    transform 0.45s cubic-bezier(0.34, 1.45, 0.64, 1),
+    opacity 0.3s ease,
+    max-width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.open {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.open:hover {
+  transform: translateX(-50%) scale(1.04);
+}
+
+.content {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem 0.5rem;
+}
+
+.text {
+  min-width: 0;
+}
+
+.lead {
+  color: #fff;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  margin-inline: 0.12em;
+  font-size: 0.85em;
+  line-height: 1;
+  padding: 0.16em 0.34em;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 0.45em;
+  /* Nudge up so the box reads as centered on the caps of "OpenUI" */
+  vertical-align: middle;
+  position: relative;
+  top: -0.05em;
+}
+
+.rest {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.7);
+  animation: chevronBounce 1.4s ease-in-out infinite;
+}
+
+@keyframes chevronBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+/* Desktop: collapse to a circle and expand outward (reverses on exit) */
+@media (min-width: 640px) {
+  .banner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.75rem;
+    padding: 0 1.5rem;
+    overflow: hidden;
+    white-space: nowrap;
+    border-radius: 9999px;
+    max-width: 2.75rem;
+  }
+
+  .open {
+    max-width: 46rem;
+  }
+
+  .content {
+    flex-wrap: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .open .content {
+    opacity: 1;
+    transition: opacity 0.3s ease 0.12s;
+  }
+}
+
+/* Mobile: slim single-line pill so it doesn't crowd content. */
+@media (max-width: 639px) {
+  .banner {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+
+  .content {
+    flex-wrap: nowrap;
+  }
+
+  .colon,
+  .rest {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner {
+    max-width: 46rem;
+    transform: translateX(-50%);
+    transition: opacity 0.2s ease;
+  }
+
+  .open,
+  .open:hover {
+    transform: translateX(-50%);
+  }
+
+  .content,
+  .open .content {
+    opacity: 1;
+  }
+
+  .chevron {
+    animation: none;
+  }
+}

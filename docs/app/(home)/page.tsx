@@ -1,34 +1,40 @@
 import styles from "./page.module.css";
-import { CompatibilitySection } from "./sections/CompatibilitySection/CompatibilitySection";
-import { FeaturesSection } from "./sections/FeaturesSection/FeaturesSection";
+import { CloudBanner } from "./sections/CloudBanner/CloudBanner";
+import { CloudSection } from "./sections/CloudSection/CloudSection";
+import { FeatureGridSection } from "./sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "./sections/Footer/Footer";
 import { HeroSection } from "./sections/HeroSection/HeroSection";
-import { PossibilitiesSection } from "./sections/PossibilitiesSection/PossibilitiesSection";
-import { ShiroMascot } from "./sections/ShiroMascot/ShiroMascot";
+import { ShiroPeek } from "./sections/ShiroPeek/ShiroPeek";
 import { StepsSection } from "./sections/StepsSection/StepsSection";
 import { TweetWallSection } from "./sections/TweetWallSection/TweetWallSection";
+import { UseCasesSection } from "./sections/UseCasesSection/UseCasesSection";
 
 export default function HomePage() {
   return (
     <div className={styles.page}>
       <div className={styles.heroShell}>
         <HeroSection
+          align="left"
+          subtitle="Open Standard for Generative UI"
           showPlaygroundButton={false}
           githubRepoUrl="https://github.com/thesysdev/openui"
           githubButtonLabel="Star us on GitHub"
         />
-        <ShiroMascot />
         <StepsSection />
       </div>
       <div className={styles.contentSection}>
         <div className={styles.contentShell}>
-          <PossibilitiesSection />
-          <CompatibilitySection />
-          <FeaturesSection />
+          <UseCasesSection />
+          <FeatureGridSection />
+          <div className={styles.cloudGroup}>
+            <ShiroPeek />
+            <CloudSection />
+          </div>
           <TweetWallSection />
         </div>
       </div>
       <Footer />
+      <CloudBanner />
     </div>
   );
 }

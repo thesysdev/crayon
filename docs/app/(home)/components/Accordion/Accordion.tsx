@@ -18,6 +18,7 @@ interface AccordionItemProps {
   zIndexClosed?: number;
   transition?: Transition;
   onActivate?: () => void;
+  activateOnHover?: boolean;
   children: ReactNode;
 }
 
@@ -31,6 +32,7 @@ export function AccordionItem({
   zIndexClosed = 1,
   transition,
   onActivate,
+  activateOnHover = true,
   children,
 }: AccordionItemProps) {
   return (
@@ -43,7 +45,7 @@ export function AccordionItem({
       }}
       transition={transition}
       onClick={onActivate}
-      onMouseEnter={onActivate}
+      onMouseEnter={activateOnHover ? onActivate : undefined}
     >
       {children}
     </motion.div>

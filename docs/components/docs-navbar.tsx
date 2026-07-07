@@ -12,16 +12,19 @@ import styles from "./docs-navbar.module.css";
 import { SiteHeaderFrame } from "./site-header";
 import { ThemeToggle } from "./theme-toggle";
 
-const tabs = [
+const tabs: { title: string; url: string; match?: string }[] = [
   { title: "OpenUI", url: "/docs/openui-lang" },
-  { title: "Chat", url: "/docs/chat" },
+  { title: "Agent Interface", url: "/docs/agent/getting-started/introduction", match: "/docs/agent" },
   { title: "API Reference", url: "/docs/api-reference" },
-] as const;
+];
 
 function activeTabUrl(pathname: string): string {
-  const sorted = [...tabs].sort((a, b) => b.url.length - a.url.length);
+  const sorted = [...tabs].sort((a, b) => (b.match ?? b.url).length - (a.match ?? a.url).length);
   return (
-    sorted.find((t) => pathname === t.url || pathname.startsWith(`${t.url}/`))?.url ?? tabs[0].url
+    sorted.find((t) => {
+      const prefix = t.match ?? t.url;
+      return pathname === prefix || pathname.startsWith(`${prefix}/`);
+    })?.url ?? tabs[0].url
   );
 }
 
@@ -75,7 +78,12 @@ function SearchBar() {
 export function DocsNavbar({ showSidebarToggle = false }: { showSidebarToggle?: boolean }) {
   const pathname = usePathname();
   const { resolvedTheme } = useTheme();
-  const logoVariant = resolvedTheme === "dark" ? "dark" : "light";
+  // resolvedTheme is undefined during SSR and the first client render, so gate the
+  // theme-derived variant behind a mount flag (matching SiteMarketingHeader) to
+  // avoid a hydration mismatch on the brand text color.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const logoVariant = mounted && resolvedTheme === "dark" ? "dark" : "light";
 
   const tabValue = useMemo(() => activeTabUrl(pathname), [pathname]);
 

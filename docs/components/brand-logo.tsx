@@ -1,7 +1,5 @@
 "use client";
 
-import mascotSvgPaths from "@/imports/svg-kl5jpwq8km";
-import mascotDarkSvgPaths from "@/imports/svg-mascot-dark";
 import svgPaths from "@/imports/svg-urruvoh2be";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
@@ -86,7 +84,6 @@ export function ThesysLogo({
 
 export function OpenUILogo({ variant = "light" }: { variant?: LogoVariant }) {
   const isDark = variant === "dark";
-  const color = isDark ? "white" : "black";
   const textClass = isDark
     ? "font-['Geist',sans-serif] font-semibold text-[15px] text-white leading-6"
     : "font-['Geist',sans-serif] font-semibold text-[15px] text-black leading-6";
@@ -95,66 +92,13 @@ export function OpenUILogo({ variant = "light" }: { variant?: LogoVariant }) {
     <Link href="/" className="flex items-center gap-0.5 no-underline">
       {/* Shiro mascot */}
       <div className="relative shrink-0 size-8">
-        {isDark ? (
-          <svg
-            className="absolute block"
-            style={{ inset: "0" }}
-            fill="none"
-            preserveAspectRatio="xMidYMid meet"
-            viewBox="0 0 33 32"
-          >
-            <path d={mascotDarkSvgPaths.pBody} fill="white" />
-            <path
-              d={mascotDarkSvgPaths.pOutline}
-              fill="#464646"
-              stroke="#464646"
-              strokeWidth="0.3"
-            />
-            <path d={mascotDarkSvgPaths.pMouth} fill="#464646" />
-            <path
-              d={mascotDarkSvgPaths.pEarLeft}
-              fill="#464646"
-              stroke="#464646"
-              strokeWidth="0.3"
-            />
-            <path
-              d={mascotDarkSvgPaths.pEarRight}
-              fill="#464646"
-              stroke="#464646"
-              strokeWidth="0.3"
-            />
-            <path d={mascotDarkSvgPaths.pEyeLeft} fill="#464646" />
-            <path d={mascotDarkSvgPaths.pEyeRight} fill="#464646" />
-            <path
-              d={mascotDarkSvgPaths.pHornLeft}
-              fill="#464646"
-              stroke="#464646"
-              strokeWidth="0.3"
-            />
-            <path
-              d={mascotDarkSvgPaths.pHornRight}
-              fill="#464646"
-              stroke="#464646"
-              strokeWidth="0.3"
-            />
-          </svg>
-        ) : (
-          <svg
-            className="absolute block"
-            style={{ inset: "9.29% 0 10% 0" }}
-            fill="none"
-            preserveAspectRatio="xMidYMid meet"
-            viewBox="0 0 32.6 26.43"
-          >
-            <path d={mascotSvgPaths.p30a6b580} fill={color} stroke={color} strokeWidth="0.3" />
-            <path d={mascotSvgPaths.p3c631dc0} fill={color} />
-            <path d={mascotSvgPaths.p310be380} fill={color} stroke={color} strokeWidth="0.3" />
-            <path d={mascotSvgPaths.p41b57c8} fill={color} stroke={color} strokeWidth="0.3" />
-            <path d={mascotSvgPaths.p13c7e180} fill={color} />
-            <path d={mascotSvgPaths.p2ab36c00} fill={color} />
-            <path d={mascotSvgPaths.p1c9f7d00} fill={color} stroke={color} strokeWidth="0.3" />
-          </svg>
-        )}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/shiro-logo.svg"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 block size-full object-contain"
+        />
       </div>
       <span className={textClass}>OpenUI</span>
     </Link>
@@ -165,44 +109,63 @@ export function OpenUILogo({ variant = "light" }: { variant?: LogoVariant }) {
 // GitHub Star Button
 // ---------------------------------------------------------------------------
 
+// Module-level cache + in-flight dedup for the star count, keyed by repo. Every
+// star button on the page (header, hero, tweet-wall stats) shares one request
+// instead of each firing its own. Without this the home page made ~5 identical
+// calls per load and exhausted GitHub's 60-req/hr unauthenticated limit, after
+// which every counter fell back to the default. The cache also survives client-
+// side navigation, so returning to a page doesn't refetch.
+const starCountCache = new Map<string, number>();
+const starCountInflight = new Map<string, Promise<number | null>>();
+
+function fetchGitHubStarCount(repo: string): Promise<number | null> {
+  const cached = starCountCache.get(repo);
+  if (cached !== undefined) return Promise.resolve(cached);
+
+  let inflight = starCountInflight.get(repo);
+  if (!inflight) {
+    inflight = fetch(`https://api.github.com/repos/${repo}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`GitHub star count fetch failed: ${res.status}`);
+        return res.json();
+      })
+      .then((data): number | null => {
+        const target: unknown = data.stargazers_count;
+        if (typeof target !== "number") return null;
+        starCountCache.set(repo, target);
+        return target;
+      })
+      .catch(() => null)
+      .finally(() => {
+        starCountInflight.delete(repo);
+      });
+    starCountInflight.set(repo, inflight);
+  }
+  return inflight;
+}
+
 export function useGitHubStarCount(repo: string) {
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    fetch(`https://api.github.com/repos/${repo}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`GitHub star count fetch failed: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        const target: unknown = data.stargazers_count;
-        if (typeof target !== "number") return;
-        if (!cancelled) {
-          const startCount = Math.max(target - 50, 0);
-          const startTime = performance.now();
+    void fetchGitHubStarCount(repo).then((target) => {
+      if (cancelled || target === null) return;
+      const startCount = Math.max(target - 50, 0);
+      const startTime = performance.now();
 
-          setCount(startCount);
+      setCount(startCount);
 
-          const tick = () => {
-            if (cancelled) return;
+      const tick = () => {
+        if (cancelled) return;
+        const progress = Math.min((performance.now() - startTime) / COUNT_UP_DURATION, 1);
+        setCount(Math.round(startCount + (target - startCount) * progress));
+        if (progress < 1) requestAnimationFrame(tick);
+      };
 
-            const progress = Math.min((performance.now() - startTime) / COUNT_UP_DURATION, 1);
-            const nextCount = Math.round(startCount + (target - startCount) * progress);
-            setCount(nextCount);
-
-            if (progress < 1) {
-              requestAnimationFrame(tick);
-            }
-          };
-
-          requestAnimationFrame(tick);
-        }
-      })
-      .catch(() => {});
+      requestAnimationFrame(tick);
+    });
 
     return () => {
       cancelled = true;

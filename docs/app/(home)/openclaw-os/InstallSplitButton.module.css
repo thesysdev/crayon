@@ -1,0 +1,250 @@
+/* Dedicated install split button for /openclaw-os.
+
+   One pill with the white-button bevel (identical to BevelButton .button:
+   --home-surface-raised fill, the same hairline border, --home-bevel shadow,
+   and the scale(0.99) press). Split by a separator into:
+     - left  : platform chips (own hover + select states)
+     - right : the command + a copy badge (no hover of their own)
+   Only the whole unit reacts to hover. It is modeless (stays the light white
+   pill in both themes) because it renders inside `.homeTheme`, whose --home-*
+   surface tokens are theme-independent literals. */
+
+.unit {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  height: 3rem;
+  max-width: 600px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 9999px;
+  background: var(--home-surface-raised);
+  box-shadow: var(--home-bevel);
+  color: #0a0a0a;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* The one and only hover: the entire button presses together. */
+.unit:hover {
+  transform: scale(0.99);
+}
+
+/* ---- Left segment: platform selection ---- */
+.platforms {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  flex-shrink: 0;
+  padding: 0.375rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: rgba(10, 10, 10, 0.4);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+/* Chips carry their own hover (on the non-selected ones)... */
+.chip:not(.chipActive):hover {
+  background: rgba(10, 10, 10, 0.05);
+  color: rgba(10, 10, 10, 0.7);
+}
+
+/* ...and their own select state. */
+.chipActive {
+  background: rgba(10, 10, 10, 0.08);
+  color: #0a0a0a;
+}
+
+.chipIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ---- Separator ---- */
+.separator {
+  align-self: center;
+  flex-shrink: 0;
+  width: 1px;
+  height: 1.5rem;
+  background: rgba(10, 10, 10, 0.12);
+}
+
+/* ---- Right segment: command + copy ---- */
+/* One clickable region that copies; deliberately has NO :hover of its own. */
+.command {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  padding: 0 0.375rem 0 0.875rem;
+  border: 0;
+  background: transparent;
+  color: #0a0a0a;
+  cursor: pointer;
+  font-family: var(--home-font-mono);
+  font-size: 1.125rem;
+  font-weight: 400;
+  text-align: left;
+}
+
+.commandText {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  /* Fade both sides as the command marquees past. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 1.25rem,
+    #000 calc(100% - 1.25rem),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 1.25rem,
+    #000 calc(100% - 1.25rem),
+    transparent
+  );
+}
+
+/* Two identical copies scroll left; translateX(-50%) lands copy 2 where copy 1
+   started, so the loop is seamless. */
+.commandTicker {
+  display: inline-flex;
+  width: max-content;
+  white-space: nowrap;
+  animation: commandMarquee 22s linear infinite;
+}
+
+.commandTickerText {
+  flex-shrink: 0;
+  padding-right: 3rem;
+}
+
+@keyframes commandMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .commandTicker {
+    animation: none;
+  }
+}
+
+.copyBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: #0a0a0a;
+  color: #fff;
+}
+
+.copyIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Copy confirmation toast (mirrors the home npx button): a small pill below the
+   unit that fades in when the command is copied. It sits on the themed page below
+   the modeless pill, so its colours adapt to light/dark. */
+.copyToast {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  z-index: 50;
+  margin-top: 0.5rem;
+  padding: 0.3125rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(10, 10, 10, 0.06);
+  color: rgba(10, 10, 10, 0.6);
+  font-family: var(--home-font-text);
+  font-size: 0.75rem;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -6px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+[data-theme="dark"] .copyToast {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.copyToastVisible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Dark mode variant: matches the homepage dark npx button stylewise
+   (--home-surface-ink fill, thin white border, --home-bevel-on-dark, theme-adaptive
+   text + inverted copy badge). Composition (chips / command / separator) is kept. */
+[data-theme="dark"] .unit {
+  background: var(--home-surface-ink);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: var(--home-bevel-on-dark);
+  color: var(--openui-text-neutral-primary);
+}
+
+[data-theme="dark"] .chip {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="dark"] .chip:not(.chipActive):hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="dark"] .chipActive {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+[data-theme="dark"] .separator {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .command {
+  color: var(--openui-text-neutral-primary);
+}
+
+[data-theme="dark"] .copyBadge {
+  background: var(--openui-inverted-background);
+  color: var(--openui-background);
+}
+
+/* Mobile: fill the CTA footprint. */
+@media (max-width: 767px) {
+  .unit {
+    width: 100%;
+    max-width: 360px;
+  }
+}

@@ -1,12 +1,31 @@
 .chip {
   display: inline-flex;
-  min-height: 2.875rem;
+  min-height: 0;
+  flex-shrink: 0;
   align-items: center;
-  gap: 0.625rem;
-  padding: 12px 24px 12px 12px;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem 0.5rem 0.5rem;
   border: 1px solid var(--openui-border-default);
   border-radius: var(--openui-radius-full);
   background: var(--openui-foreground);
+}
+
+/* Denser chip for the embedded compatibility band (mobile). */
+@media (max-width: 767px) {
+  .chipDense {
+    padding: 0.3125rem 0.625rem 0.3125rem 0.3125rem;
+    gap: 0.375rem;
+  }
+
+  .chipDense .badge {
+    width: 20px;
+    height: 20px;
+  }
+
+  .chipDense .chipLabel {
+    font-size: 0.8125rem;
+    line-height: 20px;
+  }
 }
 
 .chipBlurred {
@@ -94,6 +113,13 @@
   object-fit: contain;
 }
 
+/* The xAI mark is a small wordmark; shrink + invert it to read on the dark badge. */
+.badgeImage[src*="xai"] {
+  width: 12px;
+  height: 12px;
+  filter: invert(1) brightness(2);
+}
+
 .mascotSvg {
   display: block;
   height: 1rem;
@@ -121,14 +147,7 @@
   font-family: "Inter", sans-serif;
   font-size: 0.95rem;
   font-weight: 500;
-  line-height: 1;
+  line-height: 26px;
   white-space: nowrap;
   color: var(--openui-text-neutral-primary);
-}
-
-@media (min-width: 1024px) {
-  .chip {
-    min-height: 3rem;
-    padding-inline: 1rem;
-  }
 }

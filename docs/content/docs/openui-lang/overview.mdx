@@ -38,15 +38,14 @@ const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
 
 Root component is `Card` (vertical container, no layout params). Adds chat-specific components like `FollowUpBlock`, `ListBlock`, and `SectionBlock`. Does not include `Stack`; responses are always single-card, vertically stacked.
 
-```ts
-import { openuiChatLibrary, openuiChatPromptOptions } from "@openuidev/react-ui/genui-lib";
-import { FullScreen } from "@openuidev/react-ui";
+```tsx
+import { AgentInterface, openAIAdapter } from "@openuidev/react-ui";
+import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 
-// Use with a chat layout
-<FullScreen
+// Use with AgentInterface, the artifact chat interface with thread history
+<AgentInterface
+  llm={{ send, streamProtocol: openAIAdapter() }}
   componentLibrary={openuiChatLibrary}
-  processMessage={...}
-  streamProtocol={openAIAdapter()}
 />
 ```
 

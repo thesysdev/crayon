@@ -37,7 +37,7 @@
 }
 
 .stepBadgeLabel {
-  font-family: "Inter", sans-serif;
+  font-family: var(--home-font-text);
   font-size: 15px;
   font-weight: 500;
   line-height: 1.25rem;
@@ -46,7 +46,50 @@
 .divider {
   height: 1px;
   width: 100%;
-  background: var(--openui-highlight-strong);
+  background: var(--home-hairline);
+}
+
+/* Auto-advance progress bar, pinned to the bottom edge of the active card. */
+.progressTrack {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform-origin: left center;
+  background: #0a0a0a;
+  animation-name: progressGrow;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+/* Dark mode: the near-black fill is invisible on the dark card, so use a light
+   gray bar instead. */
+[data-theme="dark"] .progressFill {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes progressGrow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progressFill {
+    animation: none;
+    transform: scaleX(1);
+  }
 }
 
 .stepDetails {
@@ -56,7 +99,7 @@
 }
 
 .stepDescription {
-  font-family: "Inter Display", sans-serif;
+  font-family: var(--home-font-display);
   font-size: 18px;
   line-height: 1.2;
   color: var(--openui-text-neutral-secondary);
@@ -84,12 +127,20 @@
   background: #f1f1f1;
 }
 
+/* Dark mode: the light placeholder fill would glare on the dark card; use a
+   subtle translucent white that matches the framed-illustration matting. */
+[data-theme="dark"] .illustrationFallback {
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .desktopIllustrationFrame {
   height: 100%;
 }
 
 .mobileIllustrationFrame {
   aspect-ratio: 610 / 432;
+  /* Mobile-only frame; smaller corner radius than desktop. */
+  border-radius: 10px;
 }
 
 .mobileIllustrationScale {
@@ -127,7 +178,7 @@
 
 .desktopStepTitle {
   padding-block: 0.25rem;
-  font-family: "Inter Display", sans-serif;
+  font-family: var(--home-font-display);
   font-size: 24px;
   font-weight: 500;
   line-height: 1.25;
@@ -154,11 +205,15 @@
 .mobileStepTitle {
   flex: 1;
   text-align: left;
-  font-family: "Inter", sans-serif;
+  font-family: var(--home-font-text);
   font-size: 16px;
   font-weight: 500;
   line-height: 1.25;
   color: var(--openui-text-neutral-primary);
+}
+
+.mobileStepWrap {
+  position: relative;
 }
 
 .mobileStepPanel {
@@ -174,6 +229,7 @@
   margin-left: 42px;
   flex-direction: column;
   gap: 1.5rem;
+  text-align: left;
 }
 
 .mobileStepIllustrationWrap {
@@ -181,7 +237,7 @@
   width: 100%;
   overflow: hidden;
   margin-top: 1.5rem;
-  border-radius: 16px;
+  border-radius: 10px;
 }
 
 @media (min-width: 1024px) {
@@ -201,5 +257,108 @@
   .stepBadgeLabel {
     font-size: 18px;
     line-height: 1.5rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   variant="useCases" — opt-in styling for the home use-cases stepper.
+   Declarations moved verbatim from UseCasesSection.module.css; the consumer no
+   longer reaches into these generated class names via :global(). Scoped under
+   the root card's data-variant so the default (agent-interface) rendering is
+   untouched.
+--------------------------------------------------------------------------- */
+.card[data-variant="useCases"] {
+  width: 100%;
+  box-shadow: var(--home-card-lift);
+  border-color: var(--home-hairline);
+}
+
+.card[data-variant="useCases"] .stepBadge {
+  display: none;
+}
+
+.card[data-variant="useCases"] .mobileStepDetails {
+  margin-left: 0;
+}
+
+.card[data-variant="useCases"] .desktopSteps {
+  height: 816px;
+}
+
+.card[data-variant="useCases"] .stepDescription {
+  max-width: 26rem;
+}
+
+.card[data-variant="useCases"] .desktopStepLead {
+  width: 32%;
+}
+
+.card[data-variant="useCases"] .desktopStepCopy {
+  max-width: 18rem;
+  padding-right: 0;
+}
+
+.card[data-variant="useCases"] .desktopStep {
+  padding: 1.5rem 2rem 2rem;
+}
+
+.card[data-variant="useCases"] .desktopStepPreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2rem;
+}
+
+.card[data-variant="useCases"] .desktopIllustrationFrame,
+.card[data-variant="useCases"] .mobileIllustrationFrame {
+  box-sizing: border-box;
+  padding: 0.5rem;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+/* Dark mode: dark matting instead of white so the framed illustration sits on
+   the dark card. */
+[data-theme="dark"] .card[data-variant="useCases"] .desktopIllustrationFrame,
+[data-theme="dark"] .card[data-variant="useCases"] .mobileIllustrationFrame {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--home-border-on-dark);
+}
+
+.card[data-variant="useCases"] .desktopIllustrationFrame video,
+.card[data-variant="useCases"] .mobileIllustrationFrame video {
+  border-radius: 8px !important;
+}
+
+/* Mobile illustration: pin a fixed aspect (matching the videos) so the frame does
+   not resize on load or step change (no layout shift), and let the video fill the
+   frame's content box so the white matting + border show like the desktop frame. */
+.card[data-variant="useCases"] .mobileIllustrationFrame {
+  aspect-ratio: 1.648 / 1 !important;
+}
+
+.card[data-variant="useCases"] .mobileIllustrationScale {
+  position: static !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: none !important;
+  aspect-ratio: auto !important;
+}
+
+/* Mobile-only: clean type scale (section title + content) and tighter layout. */
+@media (max-width: 767px) {
+  /* Use-case accordion labels drop to content size (home instance only). */
+  .card[data-variant="useCases"] .desktopStepTitle {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  /* Smaller corner radius + tighter matting on the mobile illustration frame. */
+  .card[data-variant="useCases"] .mobileIllustrationFrame {
+    padding: 0.25rem;
+    border-radius: 10px;
   }
 }

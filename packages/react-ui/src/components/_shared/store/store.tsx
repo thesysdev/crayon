@@ -4,10 +4,12 @@ import { useShallow } from "zustand/react/shallow";
 
 interface ShellState {
   isSidebarOpen: boolean;
+  isWorkspaceOpen: boolean;
   agentName: string;
   logoUrl: string;
   showAssistantLogo: boolean;
   setIsSidebarOpen: (isOpen: boolean) => void;
+  setIsWorkspaceOpen: (isOpen: boolean) => void;
   setAgentName: (name: string) => void;
   setLogoUrl: (url: string) => void;
   setShowAssistantLogo: (show: boolean) => void;
@@ -24,10 +26,12 @@ export const createShellStore = ({
 }) =>
   create<ShellState>((set) => ({
     isSidebarOpen: true,
+    isWorkspaceOpen: true,
     agentName: agentName,
     logoUrl: logoUrl,
     showAssistantLogo,
     setIsSidebarOpen: (isOpen: boolean) => set({ isSidebarOpen: isOpen }),
+    setIsWorkspaceOpen: (isOpen: boolean) => set({ isWorkspaceOpen: isOpen }),
     setAgentName: (name: string) => set({ agentName: name }),
     setLogoUrl: (url: string) => set({ logoUrl: url }),
     setShowAssistantLogo: (show: boolean) => set({ showAssistantLogo: show }),
@@ -38,9 +42,8 @@ export const ShellStoreContext = createContext<ReturnType<typeof createShellStor
 export const useShellStore = <T,>(selector: (state: ShellState) => T): T => {
   const store = useContext(ShellStoreContext);
   if (!store) {
-    throw new Error("useShellStore must be used within ShellStoreProvider");
+    throw new Error("useShellStore must be used within a ShellStoreProvider");
   }
-
   return store(useShallow(selector));
 };
 

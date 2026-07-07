@@ -1,230 +1,84 @@
 "use client";
 
-import Script from "next/script";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { HOME_TWEETS, type HomeTweetEmbed } from "../../data/home-tweet-embeds";
+import { useEffect, useState } from "react";
+import { STATIC_TWEETS, type StaticTweet } from "../../data/home-tweets-static";
+import { StaticTweetCard } from "../StaticTweetCard/StaticTweetCard";
 import styles from "./TweetWall.module.css";
 
-const MARQUEE_COPIES = 2;
-const DESKTOP_COLUMN_COUNT = 3;
-const MOBILE_COLUMN_COUNT = 1;
-const MOBILE_COLUMN_DURATION = 40;
-const COLUMN_DURATIONS = [30, 36, 30] as const;
-const COLUMN_PHASES = [0, 0.28, 0.14] as const;
-const EMBED_WIDTH = 360;
+const DESKTOP_COLUMNS = 4;
+const MOBILE_COLUMNS = 3;
+const DESKTOP_QUERY = "(min-width: 900px)";
 
-function loadTwitterWidgets(root: HTMLElement | null) {
-  if (!root) return;
-  window.twttr?.widgets?.load(root);
-}
+// Per-column scroll duration (s), direction, and a starting phase offset so the
+// columns never line up. The marquee is pure CSS (translateY 0 -> -50% over two
+// duplicated copies), so there is nothing to measure and it cannot drift.
+const COLUMNS_META = [
+  { duration: 36, reverse: false, delay: -4 },
+  { duration: 30, reverse: true, delay: -13 },
+  { duration: 42, reverse: false, delay: -8 },
+  { duration: 33, reverse: true, delay: -19 },
+] as const;
 
-function splitIntoColumns(items: HomeTweetEmbed[], columnCount: number): HomeTweetEmbed[][] {
-  const cols: HomeTweetEmbed[][] = Array.from({ length: columnCount }, () => []);
-  items.forEach((item, i) => {
-    cols[i % columnCount]!.push(item);
-  });
-  return cols;
-}
-
-function TweetEmbed({
-  tweetId,
-  conversation = "none",
-}: {
-  tweetId: string;
-  conversation?: "all" | "none";
-}) {
-  return (
-    <div className={styles.embedSlot} data-tweet-id={tweetId} data-conversation={conversation} />
-  );
+function splitIntoColumns(items: StaticTweet[], count: number): StaticTweet[][] {
+  const columns = Array.from({ length: count }, () => [] as StaticTweet[]);
+  items.forEach((item, index) => columns[index % count]!.push(item));
+  return columns;
 }
 
 export function TweetWall() {
-  const rootRef = useRef<HTMLDivElement>(null);
-  const columnTracksRef = useRef<(HTMLDivElement | null)[]>([]);
+  const [mounted, setMounted] = useState(false);
+  const [columnCount, setColumnCount] = useState(DESKTOP_COLUMNS);
 
-  const [scriptReady, setScriptReady] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [columnCount, setColumnCount] = useState(DESKTOP_COLUMN_COUNT);
-  const [isWallReady, setIsWallReady] = useState(false);
-  const embedTheme = "light";
-
+  // Resolve the column count on the client only. The columns render after mount
+  // (the outer root still server-renders to reserve height), so there is no
+  // SSR/hydration column-count swap.
   useEffect(() => {
-    const mqReduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const mqDesktop = window.matchMedia("(min-width: 900px)");
-
-    const updateReduce = () => setPrefersReducedMotion(mqReduce.matches);
-    const updateColumns = () => {
-      setColumnCount(mqDesktop.matches ? DESKTOP_COLUMN_COUNT : MOBILE_COLUMN_COUNT);
-    };
-
-    updateReduce();
-    updateColumns();
-
-    mqReduce.addEventListener("change", updateReduce);
-    mqDesktop.addEventListener("change", updateColumns);
-
-    return () => {
-      mqReduce.removeEventListener("change", updateReduce);
-      mqDesktop.removeEventListener("change", updateColumns);
-    };
+    const query = window.matchMedia(DESKTOP_QUERY);
+    const update = () => setColumnCount(query.matches ? DESKTOP_COLUMNS : MOBILE_COLUMNS);
+    update();
+    setMounted(true);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
   }, []);
 
-  const columns = splitIntoColumns(HOME_TWEETS, columnCount);
-
-  useEffect(() => {
-    if (window.twttr?.widgets?.createTweet) {
-      setScriptReady(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!scriptReady || !rootRef.current) return;
-
-    let cancelled = false;
-    const widgets = window.twttr?.widgets;
-    if (!widgets?.createTweet) return;
-    const createTweet = widgets.createTweet;
-
-    const slots = Array.from(rootRef.current.querySelectorAll<HTMLElement>("[data-tweet-id]"));
-    const shouldRehydrate = slots.some(
-      (slot) => slot.dataset.embedded !== "true" || slot.dataset.theme !== embedTheme,
-    );
-
-    if (!shouldRehydrate) {
-      setIsWallReady(true);
-      return;
-    }
-
-    setIsWallReady(false);
-
-    async function hydrateEmbeds() {
-      await Promise.allSettled(
-        slots.map(async (slot) => {
-          const needsThemeRefresh = slot.dataset.theme !== embedTheme;
-          const alreadyEmbedded = slot.dataset.embedded === "true";
-          if (alreadyEmbedded && !needsThemeRefresh) return;
-
-          const tweetId = slot.dataset.tweetId;
-          if (!tweetId) return;
-
-          slot.dataset.embedded = "pending";
-          slot.dataset.theme = embedTheme;
-          slot.innerHTML = "";
-
-          try {
-            await createTweet(tweetId, slot, {
-              align: "center",
-              conversation: slot.dataset.conversation === "all" ? "all" : "none",
-              dnt: true,
-              theme: embedTheme,
-              width: EMBED_WIDTH,
-            });
-            slot.dataset.embedded = "true";
-          } catch {
-            slot.dataset.embedded = "error";
-          }
-        }),
-      );
-
-      if (cancelled) return;
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (!cancelled) {
-            loadTwitterWidgets(rootRef.current);
-            setIsWallReady(true);
-          }
-        });
-      });
-    }
-
-    void hydrateEmbeds();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [columnCount, embedTheme, prefersReducedMotion, scriptReady]);
-
-  useLayoutEffect(() => {
-    if (prefersReducedMotion || !scriptReady) return;
-
-    const observers = columnTracksRef.current.slice(0, columnCount).map((track, index) => {
-      if (!track) return null;
-
-      const updateMetrics = () => {
-        const singleHeight = track.scrollHeight / MARQUEE_COPIES;
-        if (singleHeight <= 0) return;
-        const duration =
-          columnCount === MOBILE_COLUMN_COUNT
-            ? MOBILE_COLUMN_DURATION
-            : (COLUMN_DURATIONS[index] ?? 32);
-
-        track.style.setProperty("--loop-distance", `${singleHeight}px`);
-        track.style.setProperty("--loop-duration", `${duration}s`);
-        track.style.setProperty(
-          "--loop-start",
-          `${-(singleHeight * (COLUMN_PHASES[index] ?? 0))}px`,
-        );
-      };
-
-      updateMetrics();
-
-      const observer = new ResizeObserver(updateMetrics);
-      observer.observe(track);
-      return observer;
-    });
-
-    return () => {
-      observers.forEach((observer) => observer?.disconnect());
-    };
-  }, [columnCount, prefersReducedMotion, scriptReady]);
-
-  const staticGrid = (
-    <div className={styles.staticGrid} role="list" aria-label="What people are saying on X">
-      {HOME_TWEETS.map((tweet, index) => (
-        <div key={`static-${index}`} className={styles.staticCell} role="listitem">
-          <TweetEmbed tweetId={tweet.id} conversation={tweet.conversation} />
-        </div>
-      ))}
-    </div>
-  );
+  const columns = splitIntoColumns(STATIC_TWEETS, columnCount);
 
   return (
-    <>
-      <Script
-        id="twitter-widgets-js"
-        src="https://platform.twitter.com/widgets.js"
-        strategy="lazyOnload"
-        onLoad={() => setScriptReady(true)}
-      />
-
-      <div ref={rootRef} className={`${styles.root} ${isWallReady ? styles.rootReady : ""}`}>
-        {prefersReducedMotion ? (
-          staticGrid
-        ) : (
-          <div className={styles.columns} role="region" aria-label="Scrolling posts from X">
-            {columns.map((colHtml, colIndex) => (
-              <div key={colIndex} className={styles.columnViewport}>
+    <div className={styles.root} role="region" aria-label="What people are saying on X">
+      {mounted && (
+        <div className={styles.columns}>
+          {columns.map((column, columnIndex) => {
+            const meta = COLUMNS_META[columnIndex % COLUMNS_META.length]!;
+            // On mobile (3 columns) the centre column scrolls up and the outer
+            // columns scroll down; desktop keeps the COLUMNS_META directions.
+            const reverse = columnCount === MOBILE_COLUMNS ? columnIndex !== 1 : meta.reverse;
+            return (
+              <div className={styles.column} key={columnIndex}>
                 <div
-                  ref={(el) => {
-                    columnTracksRef.current[colIndex] = el;
+                  className={styles.track}
+                  style={{
+                    animationDuration: `${meta.duration}s`,
+                    animationDelay: `${meta.delay}s`,
+                    animationDirection: reverse ? "reverse" : "normal",
                   }}
-                  className={styles.columnTrack}
                 >
-                  {Array.from({ length: MARQUEE_COPIES }).flatMap((_, copy) =>
-                    colHtml.map((tweet, rowIndex) => (
-                      <TweetEmbed
-                        key={`c${colIndex}-r${rowIndex}-copy${copy}`}
-                        tweetId={tweet.id}
-                        conversation={tweet.conversation}
-                      />
+                  {[0, 1].map((copy) =>
+                    column.map((tweet, index) => (
+                      <div
+                        key={`${columnIndex}-${index}-${copy}`}
+                        className={styles.slot}
+                        aria-hidden={copy === 1 || undefined}
+                      >
+                        <StaticTweetCard tweet={tweet} />
+                      </div>
                     )),
                   )}
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }

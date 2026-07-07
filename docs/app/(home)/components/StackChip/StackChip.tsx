@@ -1,4 +1,3 @@
-import mascotSvgPaths from "@/imports/svg-10waxq0xyc";
 import { useId } from "react";
 import styles from "./StackChip.module.css";
 
@@ -77,46 +76,14 @@ function ChipIcon({ item }: { item: StackChipItem }) {
     }
     case "mascot":
       return (
-        <svg
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
           className={styles.mascotSvg}
-          fill="none"
-          viewBox="0 0 37.6937 30.558"
+          src="/shiro-logo.svg"
+          alt=""
           aria-hidden="true"
-        >
-          <path
-            d={mascotSvgPaths.p581fa00}
-            fill="currentColor"
-            stroke="currentColor"
-            strokeWidth="0.346875"
-          />
-          <path d={mascotSvgPaths.p3ea20780} fill="currentColor" />
-          <path
-            d={mascotSvgPaths.pf52e280}
-            fill="currentColor"
-            stroke="currentColor"
-            strokeWidth="0.346875"
-          />
-          <path
-            d={mascotSvgPaths.pa685a00}
-            fill="currentColor"
-            stroke="currentColor"
-            strokeWidth="0.346875"
-          />
-          <path d={mascotSvgPaths.p371d6000} fill="currentColor" />
-          <path d={mascotSvgPaths.p1cace000} fill="currentColor" />
-          <path
-            d={mascotSvgPaths.p1d3dca00}
-            fill="currentColor"
-            stroke="currentColor"
-            strokeWidth="0.346875"
-          />
-          <path
-            d={mascotSvgPaths.p11103600}
-            fill="currentColor"
-            stroke="currentColor"
-            strokeWidth="0.346875"
-          />
-        </svg>
+          style={{ objectFit: "contain" }}
+        />
       );
     case "text":
       return (
@@ -133,8 +100,14 @@ function ChipIcon({ item }: { item: StackChipItem }) {
   }
 }
 
-export function StackChip({ item }: { item: StackChipItem }) {
-  const chipClassName = item.isBlurred ? `${styles.chip} ${styles.chipBlurred}` : styles.chip;
+export function StackChip({ item, dense = false }: { item: StackChipItem; dense?: boolean }) {
+  const chipClassName = [
+    styles.chip,
+    dense ? styles.chipDense : "",
+    item.isBlurred ? styles.chipBlurred : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className={chipClassName} aria-hidden={item.isBlurred || undefined}>

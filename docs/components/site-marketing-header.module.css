@@ -16,6 +16,13 @@
   height: 1.25rem;
 }
 
+/* Header end on mobile: theme toggle sits beside the menu/close button. */
+.mobileEndActions {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
 .mobileMenuButton {
   display: flex;
   width: 2.5rem;
@@ -59,10 +66,20 @@
 .mobileTray {
   pointer-events: auto;
   border-top: 1px solid var(--openui-border-default);
-  border-bottom-left-radius: 18px;
-  border-bottom-right-radius: 18px;
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
   background: var(--openui-foreground);
   box-shadow: var(--openui-shadow-xl);
+}
+
+/* Match the top bar: pure black in dark mode (the foreground token is only dark gray). */
+[data-theme="dark"] .mobileTray {
+  background: #000;
+}
+
+/* Brighter, less-muddy blurred backdrop in dark mode. */
+[data-theme="dark"] .mobileBackdrop {
+  background: rgb(255 255 255 / 0.1);
 }
 
 .mobileTrayInner {
@@ -70,8 +87,40 @@
   max-width: 75rem;
   margin-inline: auto;
   flex-direction: column;
-  gap: 0;
-  padding: 0.75rem 1.75rem 1.25rem;
+  gap: 1.5rem;
+  padding: 0.5rem 1.25rem 1rem;
+}
+
+.mobileTraySection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding-block: 0.5rem;
+}
+
+.mobileTraySectionHeading {
+  position: relative;
+  padding: 0.25rem 0.625rem 0.375rem;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: none;
+  color: var(--openui-text-neutral-tertiary, var(--openui-text-neutral-secondary));
+}
+
+/* Separator below each section title: runs to the right edge, fades left. Sits
+   centered in the gap (same -1.5px offset as the inter-tab separators) so the first
+   tab in each section has the same spacing above it as the tabs below. */
+.mobileTraySectionHeading::after {
+  content: "";
+  position: absolute;
+  bottom: calc(-0.0625rem - 0.5px);
+  left: 0.625rem;
+  right: -1.25rem;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--openui-border-default) 14%);
 }
 
 .mobileTrayDivider {
@@ -81,19 +130,45 @@
 }
 
 .mobileTrayLink {
+  position: relative;
   display: flex;
   width: 100%;
-  height: 3.5rem;
+  min-height: 2.25rem;
   align-items: center;
   gap: 0.5rem;
-  padding-inline: 0.75rem;
+  padding: 0.375rem 0.625rem;
   border-radius: 0.375rem;
   color: var(--openui-text-neutral-primary);
   text-align: left;
   text-decoration: none;
   transition: background-color 0.2s ease;
-  font: var(--openui-text-body-lg);
-  letter-spacing: var(--openui-text-body-lg-letter-spacing);
+  font-family: "Inter Display", sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* Separator between every tab within a section: runs to the right edge, fades left. */
+.mobileTrayLink + .mobileTrayLink::before {
+  content: "";
+  position: absolute;
+  top: calc(-0.0625rem - 0.5px);
+  left: 0.625rem;
+  right: -1.25rem;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--openui-border-default) 14%);
+}
+
+/* Separator below the last tab in each section too (mirrors the inter-tab one). */
+.mobileTrayLink:last-child::after {
+  content: "";
+  position: absolute;
+  bottom: calc(-0.0625rem - 0.5px);
+  left: 0.625rem;
+  right: -1.25rem;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--openui-border-default) 14%);
 }
 
 .mobileTrayBadge {
@@ -101,47 +176,32 @@
   border-radius: 4px;
   background: rgba(124, 58, 237, 0.12);
   color: #7c3aed;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
-.mobileGithubButtonWrap {
+/* GitHub button pinned to the bottom of the mobile tray, separated like a section. */
+.mobileTrayFooter {
   display: flex;
-  justify-content: center;
-  padding-top: 80px;
-  pointer-events: auto;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding-top: 1.5rem;
 }
 
-.mobileGithubButton {
-  position: relative;
-  display: flex;
-  height: 38px;
-  align-items: center;
-  gap: 0.375rem;
-  padding-left: 0.75rem;
-  padding-right: 0.5rem;
-  border: 0;
-  border-radius: 999px;
-  background: var(--openui-foreground);
-  cursor: pointer;
-  transform: scale(1.17);
+/* Full-width GitHub button with the trailing arrow pushed to the right edge. */
+.mobileTrayFooter a {
+  width: 100%;
+  justify-content: flex-start;
 }
 
-.mobileGithubButton:hover .mobileGithubButtonOverlay {
-  box-shadow: none;
-}
-
-.mobileGithubButtonOverlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border: 1px solid var(--openui-border-interactive);
-  border-radius: 999px;
-  box-shadow: var(--mobile-github-button-shadow, none);
-  transition: box-shadow 0.2s ease;
+/* Trailing arrow: same lucide ArrowRight as the homepage mobile CTA. */
+.mobileTrayArrow {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: currentColor;
 }
 
 @media (min-width: 1024px) {
@@ -149,7 +209,7 @@
     display: flex;
   }
 
-  .mobileMenuButton,
+  .mobileEndActions,
   .mobileBackdrop,
   .mobileTrayWrap {
     display: none;

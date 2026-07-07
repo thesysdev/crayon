@@ -15,6 +15,16 @@ export interface StepsAccordionItem {
 
 interface StepsAccordionProps {
   steps: StepsAccordionItem[];
+  /** Carousel mode: click-only activation, timed auto-advance, and a progress bar. */
+  autoAdvance?: boolean;
+  /** Time each step stays active before advancing, in ms. */
+  advanceMs?: number;
+  /**
+   * Opt-in styling variant. When omitted the component renders with its default
+   * (agent-interface) styling. "useCases" applies the home use-cases layout
+   * (taller desktop steps, hidden step badges, framed illustrations, etc.).
+   */
+  variant?: "useCases";
 }
 
 const EXPANDED_HEIGHT = 480;
@@ -109,14 +119,31 @@ function StepIllustration({ step, mobile }: { step: StepsAccordionItem; mobile?:
   );
 }
 
+function ProgressBar({ durationMs }: { durationMs: number }) {
+  return (
+    <span className={styles.progressTrack} aria-hidden="true">
+      <span
+        className={styles.progressFill}
+        style={{ animationDuration: `${durationMs}ms` }}
+      />
+    </span>
+  );
+}
+
 function DesktopStep({
   step,
   isActive,
   onActivate,
+  activateOnHover,
+  showProgress,
+  progressMs,
 }: {
   step: StepsAccordionItem;
   isActive: boolean;
   onActivate: () => void;
+  activateOnHover: boolean;
+  showProgress: boolean;
+  progressMs: number;
 }) {
   return (
     <AccordionItem
@@ -127,6 +154,7 @@ function DesktopStep({
       activeShadow={ACTIVE_STEP_SHADOW}
       transition={TRANSITION.expand}
       onActivate={onActivate}
+      activateOnHover={activateOnHover}
     >
       <div className={styles.desktopStepLead}>
         <StepBadge num={step.number} isActive={isActive} />
@@ -156,6 +184,8 @@ function DesktopStep({
       >
         <StepIllustration step={step} />
       </AccordionPanel>
+
+      {showProgress && isActive && <ProgressBar durationMs={progressMs} />}
     </AccordionItem>
   );
 }
@@ -164,13 +194,17 @@ function MobileStep({
   step,
   isActive,
   onToggle,
+  showProgress,
+  progressMs,
 }: {
   step: StepsAccordionItem;
   isActive: boolean;
   onToggle: () => void;
+  showProgress: boolean;
+  progressMs: number;
 }) {
   return (
-    <div>
+    <div className={styles.mobileStepWrap}>
       <button className={styles.mobileStepButton} onClick={onToggle}>
         <StepBadge num={step.number} isActive={isActive} />
         <span className={styles.mobileStepTitle}>{step.title}</span>
@@ -190,17 +224,34 @@ function MobileStep({
           </div>
         </div>
       </AccordionPanel>
+
+      {showProgress && isActive && <ProgressBar durationMs={progressMs} />}
     </div>
   );
 }
 
-export function StepsAccordion({ steps }: StepsAccordionProps) {
+export function StepsAccordion({
+  steps,
+  autoAdvance = false,
+  advanceMs = 6000,
+  variant,
+}: StepsAccordionProps) {
   const [activeStep, setActiveStep] = useState(1);
   const lastStepIndex = steps.length - 1;
   const activate = useCallback((stepNumber: number) => setActiveStep(stepNumber), []);
 
+  // Carousel mode: advance to the next step on a timer. Re-running whenever
+  // activeStep changes also resets the timer after a manual click.
+  useEffect(() => {
+    if (!autoAdvance) return;
+    const id = window.setTimeout(() => {
+      setActiveStep((prev) => (prev >= steps.length ? 1 : prev + 1));
+    }, advanceMs);
+    return () => window.clearTimeout(id);
+  }, [autoAdvance, advanceMs, activeStep, steps.length]);
+
   return (
-    <div className={styles.card}>
+    <div className={styles.card} data-variant={variant}>
       <div className={styles.desktopSteps}>
         {steps.map((step, index) => (
           <div key={step.number}>
@@ -208,6 +259,9 @@ export function StepsAccordion({ steps }: StepsAccordionProps) {
               step={step}
               isActive={activeStep === step.number}
               onActivate={() => activate(step.number)}
+              activateOnHover={!autoAdvance}
+              showProgress={autoAdvance}
+              progressMs={advanceMs}
             />
             {index < lastStepIndex && <Divider />}
           </div>
@@ -221,6 +275,8 @@ export function StepsAccordion({ steps }: StepsAccordionProps) {
               step={step}
               isActive={activeStep === step.number}
               onToggle={() => activate(step.number)}
+              showProgress={autoAdvance}
+              progressMs={advanceMs}
             />
             {index < lastStepIndex && <Divider />}
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
+import { SectionHeader } from "../../components/SectionHeader/SectionHeader";
 import styles from "./PossibilitiesSection.module.css";
 
 const bottomTraysLightImg = "/homepage/tray-light.png";
@@ -18,7 +19,7 @@ type CardImageSet = {
 };
 
 const MOBILE_CAROUSEL_COPIES = 3;
-const MOBILE_SCROLL_SPEED = 0.35;
+const MOBILE_SCROLL_SPEED = 0.7;
 
 const CARDS: readonly CardImageSet[] = [
   {
@@ -49,25 +50,48 @@ const CARDS: readonly CardImageSet[] = [
 // Sub-components
 // ---------------------------------------------------------------------------
 
-type CardProps = { title: string; titlePrefix?: string; image?: string; href?: string };
+type CardProps = {
+  title: string;
+  titlePrefix?: string;
+  image?: string;
+  lightImage?: string;
+  darkImage?: string;
+  href?: string;
+};
 
-function Card({ title, titlePrefix, image, href }: CardProps) {
+function Card({ title, titlePrefix, image, lightImage, darkImage, href }: CardProps) {
+  const artwork =
+    lightImage && darkImage ? (
+      <>
+        <img
+          src={lightImage}
+          alt={`${title} illustration`}
+          className={`${styles.cardImage} ${styles.cardImageLight}`}
+          draggable={false}
+        />
+        <img
+          src={darkImage}
+          alt=""
+          aria-hidden="true"
+          className={`${styles.cardImage} ${styles.cardImageDark}`}
+          draggable={false}
+        />
+      </>
+    ) : image ? (
+      <img
+        src={image}
+        alt={`${title} illustration`}
+        className={styles.cardImage}
+        draggable={false}
+      />
+    ) : (
+      <div className={`${styles.cardImage} ${styles.cardImagePlaceholder}`} aria-hidden="true" />
+    );
+
   const content = (
     <>
       <div className={styles.cardInner}>
-        {image ? (
-          <img
-            src={image}
-            alt={`${title} illustration`}
-            className={styles.cardImage}
-            draggable={false}
-          />
-        ) : (
-          <div
-            className={`${styles.cardImage} ${styles.cardImagePlaceholder}`}
-            aria-hidden="true"
-          />
-        )}
+        <div className={styles.cardMedia}>{artwork}</div>
         <div className={styles.cardBody}>
           <p className={styles.cardTitle}>
             {titlePrefix && <span className={styles.cardTitlePrefix}>{titlePrefix}</span>}
@@ -128,44 +152,38 @@ export function PossibilitiesSection({
     const track = mobileTrackRef.current;
     if (!track) return;
 
-    const mobileMediaQuery = window.matchMedia("(max-width: 1023px)");
+    // Respect reduced-motion: leave the carousel static (no marquee) for users
+    // who asked the OS to reduce motion.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     let frameId = 0;
     let offset = 0;
-
-    const resetTrack = () => {
-      offset = 0;
-      track.style.transform = "translateX(0px)";
+    // Cache the loop width (one copy's worth) and recompute only on resize, rather
+    // than reading scrollWidth (which forces a layout reflow) on every frame.
+    let loopWidth = track.scrollWidth / MOBILE_CAROUSEL_COPIES;
+    const measure = () => {
+      loopWidth = track.scrollWidth / MOBILE_CAROUSEL_COPIES;
     };
 
     const tick = () => {
-      if (mobileMediaQuery.matches) {
-        const loopWidth = track.scrollWidth / MOBILE_CAROUSEL_COPIES;
-
-        if (loopWidth > 0) {
-          offset -= MOBILE_SCROLL_SPEED;
-          if (offset <= -loopWidth) {
-            offset += loopWidth;
-          }
-
-          track.style.transform = `translateX(${offset}px)`;
+      if (loopWidth > 0) {
+        offset -= MOBILE_SCROLL_SPEED;
+        if (offset <= -loopWidth) {
+          offset += loopWidth;
         }
-      } else if (offset !== 0) {
-        resetTrack();
+
+        track.style.transform = `translateX(${offset}px)`;
       }
 
       frameId = window.requestAnimationFrame(tick);
     };
 
-    const handleViewportChange = () => {
-      resetTrack();
-    };
-
-    mobileMediaQuery.addEventListener("change", handleViewportChange);
+    window.addEventListener("resize", measure);
     frameId = window.requestAnimationFrame(tick);
 
     return () => {
       window.cancelAnimationFrame(frameId);
-      mobileMediaQuery.removeEventListener("change", handleViewportChange);
+      window.removeEventListener("resize", measure);
       track.style.transform = "";
     };
   }, []);
@@ -174,8 +192,9 @@ export function PossibilitiesSection({
     <section className={styles.section}>
       <div className={styles.headerContainer}>
         <div className={styles.header}>
-          <h2 className={styles.title}>{title}</h2>
-          {tagline && <p className={styles.subtitle}>{tagline}</p>}
+          <SectionHeader title={title}>
+            {tagline && <p className={styles.subtitle}>{tagline}</p>}
+          </SectionHeader>
         </div>
       </div>
 
@@ -188,22 +207,12 @@ export function PossibilitiesSection({
                 title={card.title}
                 titlePrefix={card.titlePrefix}
                 image={card.image}
+                lightImage={card.lightImage}
+                darkImage={card.darkImage}
                 href={card.href}
               />
             ))}
           </div>
-        </div>
-
-        <div className={styles.cardsGrid}>
-          {cards.map((card, index) => (
-            <Card
-              key={`${card.title}-${index}`}
-              title={card.title}
-              titlePrefix={card.titlePrefix}
-              image={card.image}
-              href={card.href}
-            />
-          ))}
         </div>
       </div>
     </section>

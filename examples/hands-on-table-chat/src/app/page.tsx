@@ -1,20 +1,41 @@
 "use client";
 
-import { openAIMessageFormat, openAIAdapter } from "@openuidev/react-headless";
-import { Copilot } from "@openuidev/react-ui";
 import { spreadsheetLibrary } from "@/lib/spreadsheet-library";
-import { TableProvider, useTableContext } from "./TableContext";
-import { useState, useEffect, useCallback } from "react";
+import {
+  AgentInterface,
+  openAIAdapter,
+  openAIMessageFormat,
+  type ChatLLM,
+} from "@openuidev/react-ui";
 import { MessageSquare, PanelRightClose } from "lucide-react";
 import dynamic from "next/dynamic";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { TableProvider, useTableContext } from "./TableContext";
 
-const PersistentSpreadsheet = dynamic(
-  () => import("./PersistentSpreadsheet"),
-  { ssr: false }
-);
+const PersistentSpreadsheet = dynamic(() => import("./PersistentSpreadsheet"), { ssr: false });
 
 function ChatPanel({ onClose }: { onClose: () => void }) {
   const { threadId } = useTableContext();
+
+  // AgentInterface uses its built-in in-memory storage default (wiped on reload).
+  // The backend call is unchanged — only the chat surface moved from Copilot to
+  // AgentInterface.
+  const llm = useMemo<ChatLLM>(
+    () => ({
+      send: ({ messages, signal }) =>
+        fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: openAIMessageFormat.toApi(messages),
+            threadId,
+          }),
+          signal,
+        }),
+      streamProtocol: openAIAdapter(),
+    }),
+    [threadId],
+  );
 
   return (
     <div className="chat-panel">
@@ -24,57 +45,43 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
         </button>
       </div>
       <div className="chat-panel__body">
-        <Copilot
-          processMessage={async ({ messages, abortController }) => {
-            return fetch("/api/chat", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                messages: openAIMessageFormat.toApi(messages),
-                threadId,
-              }),
-              signal: abortController.signal,
-            });
-          }}
-          streamProtocol={openAIAdapter()}
+        <AgentInterface
+          llm={llm}
           componentLibrary={spreadsheetLibrary}
           agentName="Spreadsheet AI"
-          welcomeMessage={{
-            title: "Spreadsheet AI",
-            description:
-              "I can help you analyze, visualize, and modify your product revenue data.",
-          }}
-          conversationStarters={{
-            variant: "long",
-            options: [
-              {
-                displayText: "Chart revenue by quarter",
-                prompt:
-                  "Show me a bar chart comparing Q1 through Q4 revenue for all products.",
-              },
-              {
-                displayText: "Add Vision Pro to the lineup",
-                prompt:
-                  "Add a new product 'Vision Pro' in category 'Headsets' with Q1=8200, Q2=11500, Q3=14800, Q4=22000, Units Sold=450, Unit Price=3499, and a SUM formula for Annual Revenue.",
-              },
-              {
-                displayText: "Add a profit margin column",
-                prompt:
-                  "Add a new column called 'Profit Margin' that calculates 35% of the Annual Revenue for each product.",
-              },
-              {
-                displayText: "Revenue breakdown by category",
-                prompt:
-                  "Show me a pie chart of total annual revenue broken down by category (Laptops, Phones, Audio, etc.).",
-              },
-              {
-                displayText: "Compare Q1 vs Q4 growth",
-                prompt:
-                  "Show me a table comparing Q1 and Q4 revenue for each product with the percentage growth.",
-              },
-            ],
-          }}
-        />
+          starterVariant="long"
+          starters={[
+            {
+              displayText: "Chart revenue by quarter",
+              prompt: "Show me a bar chart comparing Q1 through Q4 revenue for all products.",
+            },
+            {
+              displayText: "Add Vision Pro to the lineup",
+              prompt:
+                "Add a new product 'Vision Pro' in category 'Headsets' with Q1=8200, Q2=11500, Q3=14800, Q4=22000, Units Sold=450, Unit Price=3499, and a SUM formula for Annual Revenue.",
+            },
+            {
+              displayText: "Add a profit margin column",
+              prompt:
+                "Add a new column called 'Profit Margin' that calculates 35% of the Annual Revenue for each product.",
+            },
+            {
+              displayText: "Revenue breakdown by category",
+              prompt:
+                "Show me a pie chart of total annual revenue broken down by category (Laptops, Phones, Audio, etc.).",
+            },
+            {
+              displayText: "Compare Q1 vs Q4 growth",
+              prompt:
+                "Show me a table comparing Q1 and Q4 revenue for each product with the percentage growth.",
+            },
+          ]}
+        >
+          <AgentInterface.Welcome
+            title="Spreadsheet AI"
+            description="I can help you analyze, visualize, and modify your product revenue data."
+          />
+        </AgentInterface>
       </div>
     </div>
   );
@@ -101,11 +108,7 @@ export default function Home() {
         {chatOpen && <ChatPanel onClose={closeChat} />}
 
         {!chatOpen && (
-          <button
-            onClick={() => setChatOpen(true)}
-            className="chat-fab"
-            aria-label="Open chat"
-          >
+          <button onClick={() => setChatOpen(true)} className="chat-fab" aria-label="Open chat">
             <MessageSquare size={22} />
             <span className="chat-fab__label">AI Chat</span>
           </button>

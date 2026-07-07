@@ -24,7 +24,7 @@
 }
 
 .titleAccent {
-  color: #9ca3af;
+  color: inherit;
 }
 
 .mobileTitle {
@@ -33,7 +33,8 @@
   letter-spacing: -2px;
 }
 
-.mobileTitleCompact {
+/* Compound selector so it wins over the @media (max-width:767px) .mobileTitle rule. */
+.mobileTitle.mobileTitleCompact {
   font-size: clamp(40px, 10vw, 52px);
   letter-spacing: -1px;
 }
@@ -56,7 +57,7 @@
 }
 
 .mobileSubtitle {
-  margin-top: 20px;
+  margin-top: 8px;
   text-align: center;
   font-size: 22px;
   line-height: 1.2;
@@ -65,8 +66,10 @@
 
 .tagline {
   text-align: center;
-  font-size: 22px;
-  line-height: 1.4;
+  font-size: clamp(1.875rem, 4vw, 2.5rem);
+  line-height: 1.2;
+  letter-spacing: var(--home-title-tracking);
+  color: var(--openui-text-neutral-primary);
 }
 
 .taglineCompact {
@@ -80,8 +83,14 @@
 
 /* ── Shared label typography ── */
 
+/* Command pill text (npx / install commands): regular weight, mono. */
 .npmDesktopLabel,
-.npmTickerText,
+.npmTickerText {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.5rem;
+}
+
 .desktopPlaygroundButton,
 .mobilePlaygroundLabel {
   font-size: 18px;
@@ -110,6 +119,9 @@
   height: 2rem;
   border-radius: var(--openui-radius-full);
   background: var(--openui-inverted-background);
+  /* Icon (currentColor) must contrast with the inverted-background chip, which
+     flips dark<->light by theme; --openui-background is its paired opposite. */
+  color: var(--openui-background);
 }
 
 .mobileCtaArrow {
@@ -153,46 +165,89 @@
   transform: translate(-50%, 0);
 }
 
+/* Dark page: the default rgba(0,0,0,.06) tint is invisible, so give the toast a
+   visible light background. */
+[data-theme="dark"] .copyToast {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .commandGroup {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 0.875rem;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .commandTabs {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem;
-  border: 1px solid var(--openui-border-default);
-  border-radius: var(--openui-radius-full);
-  background: var(--openui-highlight);
+  gap: 0.125rem;
+  padding: 0.375rem;
+  flex-shrink: 0;
+}
+
+.commandTabs::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 1px;
+  height: 1.25rem;
+  background: var(--openui-border-default);
+  transform: translateY(-50%);
 }
 
 .commandTab {
-  height: 2rem;
-  padding-inline: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
   border: 0;
   border-radius: var(--openui-radius-full);
+  overflow: hidden;
   background: transparent;
   color: var(--openui-text-neutral-secondary);
+  opacity: 0.5;
   cursor: pointer;
-  font-family: "Inter", sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  line-height: 1;
-  text-align: center;
   transition:
     background-color 0.2s ease,
     color 0.2s ease,
-    box-shadow 0.2s ease;
+    opacity 0.2s ease;
+}
+
+.commandTab:hover {
+  opacity: 0.8;
+}
+
+.commandTab[aria-label="Linux"] .commandTabIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.commandTab[aria-label="Windows"] .commandTabIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.commandTabIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
 }
 
 .commandTabActive {
-  background: var(--openui-foreground);
+  border: 1px solid var(--openui-border-default);
+  background: var(--openui-highlight);
   color: var(--openui-text-neutral-primary);
-  box-shadow: var(--openui-shadow-s);
+  opacity: 1;
+}
+
+.commandTabActive:hover {
+  opacity: 1;
 }
 
 .commandItem {
@@ -255,6 +310,230 @@
   color: var(--openui-text-neutral-primary);
 }
 
+/* ── Command dropdown button (isolated pill + sliding-highlight dropdown) ── */
+
+/* Isolated wrapper + trigger, so restyling never affects other buttons. The
+   width/padding tokens keep the trigger, the rows, and the sliding highlight in
+   exact lockstep. */
+.commandDropdown {
+  --cmd-width: 26.75rem;
+  --cmd-pad: 0.375rem;
+  --cmd-stride: 3.125rem;
+  position: relative;
+  z-index: 20;
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
+}
+
+.commandTrigger {
+  display: flex;
+  height: 3rem;
+  /* Row width, so the first row overlaps the trigger exactly. */
+  min-width: var(--cmd-width);
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.625rem;
+  padding-left: 1.25rem;
+  padding-right: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--openui-radius-full);
+  background: var(--home-surface-raised);
+  box-shadow: var(--home-bevel);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 0.18s ease;
+}
+
+[data-theme="dark"] .commandTrigger {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--home-surface-ink);
+  box-shadow: var(--home-bevel-on-dark);
+}
+
+/* While open the first row sits exactly on the trigger; hide the trigger so the
+   two never ghost and the button appears to become the menu. */
+.commandDropdownOpen .commandTrigger {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.commandTriggerLabel {
+  font-family: var(--font-geist-mono);
+  font-size: 1rem;
+  white-space: nowrap;
+  color: var(--openui-text-neutral-primary);
+}
+
+.commandTriggerRunner {
+  font-weight: 600;
+}
+
+/* Filled copy chip on the trigger. */
+.commandTriggerBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--openui-radius-full);
+  background: var(--openui-inverted-background);
+  color: var(--openui-background);
+}
+
+/* Dropdown. Shifted up + left by the padding + border, so the first row lands
+   exactly on the trigger while the card's padding sits outside it. Fades only
+   (no slide/scale), so the overlap holds and the text never re-rasterises. */
+.commandMenu {
+  position: absolute;
+  top: calc(-1 * (var(--cmd-pad) + 1px));
+  left: calc(-1 * (var(--cmd-pad) + 1px));
+  width: calc(var(--cmd-width) + 2 * var(--cmd-pad) + 2px);
+  z-index: 60;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    visibility 0s linear 0.18s;
+}
+
+.commandMenuOpen {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 0.18s ease,
+    visibility 0s;
+}
+
+/* White container; its padding sits outside the rows. Positioned so the sliding
+   highlight can be placed against it. */
+.commandMenuCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  width: 100%;
+  padding: var(--cmd-pad);
+  border: 1px solid var(--openui-border-default);
+  /* Row-pill radius (1.5rem) + the padding, so the container's corners run
+     concentric with the rows inside. */
+  border-radius: 1.875rem;
+  background: var(--openui-foreground);
+  box-shadow: var(--openui-shadow-l);
+}
+
+/* A single highlight pill that slides between rows, so the hover glides instead
+   of popping. It sits behind the rows, so their text and chip never move. */
+.commandMenuHighlight {
+  position: absolute;
+  top: var(--cmd-pad);
+  left: var(--cmd-pad);
+  z-index: 0;
+  width: var(--cmd-width);
+  height: 3rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--openui-radius-full);
+  background: var(--home-surface-raised);
+  box-shadow: var(--home-bevel);
+  opacity: 0;
+  transition:
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.15s ease;
+}
+
+[data-theme="dark"] .commandMenuHighlight {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--home-surface-ink);
+  box-shadow: var(--home-bevel-on-dark);
+}
+
+.commandMenuCard:has(.commandMenuItem:nth-of-type(1):hover) .commandMenuHighlight {
+  opacity: 1;
+  transform: translateY(0);
+}
+.commandMenuCard:has(.commandMenuItem:nth-of-type(2):hover) .commandMenuHighlight {
+  opacity: 1;
+  transform: translateY(var(--cmd-stride));
+}
+.commandMenuCard:has(.commandMenuItem:nth-of-type(3):hover) .commandMenuHighlight {
+  opacity: 1;
+  transform: translateY(calc(2 * var(--cmd-stride)));
+}
+.commandMenuCard:has(.commandMenuItem:nth-of-type(4):hover) .commandMenuHighlight {
+  opacity: 1;
+  transform: translateY(calc(3 * var(--cmd-stride)));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .commandMenuHighlight {
+    transition: opacity 0.15s ease;
+  }
+}
+
+/* Rows share the trigger's exact insets, so every copy chip lines up with the
+   trigger's badge. Transparent + above the highlight, which glides behind. */
+.commandMenuItem {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  height: 3rem;
+  padding: 0 0.5rem 0 1.25rem;
+  /* Transparent border matching the trigger's, so the text + chip sit at the
+     exact same inset and don't shift a pixel when the menu opens. */
+  border: 1px solid transparent;
+  border-radius: var(--openui-radius-full);
+  background: transparent;
+  color: var(--openui-text-neutral-primary);
+  font-family: var(--font-geist-mono);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.commandMenuItemLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Own layer, so the highlight gliding behind never re-rasterises the text. */
+  transform: translateZ(0);
+}
+
+.commandMenuItemRunner {
+  font-weight: 600;
+  color: var(--openui-text-neutral-primary);
+}
+
+/* Copy chip: hidden until the row is hovered (space reserved so nothing shifts),
+   then filled like the trigger's badge. */
+.commandMenuItemIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--openui-radius-full);
+  background: transparent;
+  color: var(--openui-text-neutral-secondary);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  /* Own compositing layer so fading in doesn't nudge the chip a sub-pixel. */
+  transform: translateZ(0);
+}
+
+.commandMenuItem:hover .commandMenuItemIcon {
+  opacity: 1;
+  background: var(--openui-inverted-background);
+  color: var(--openui-background);
+}
+
 /* ── CTA pill buttons (shared base) ── */
 
 .desktopPlaygroundButton,
@@ -299,23 +578,25 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  min-height: 2.75rem;
-  padding: 0.875rem 1rem;
+  gap: 0.5rem;
+  min-height: 0;
+  padding: 0.375rem 0.375rem 0.375rem 1rem;
+  border: 0;
   border-radius: var(--openui-radius-full);
-  background: var(--openui-highlight-strong);
+  background: #f3eeff;
   color: var(--openui-text-neutral-primary);
   font-family: "Inter Display", sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
-  line-height: 1.5rem;
+  line-height: 1.25rem;
   text-align: center;
+  text-decoration: none;
   margin-bottom: 24px;
   transition: background-color 0.2s ease;
 }
 
 .heroBanner:hover {
-  background: var(--openui-highlight-strong);
+  background: #ede5ff;
 }
 
 .heroBannerDesktop {
@@ -363,15 +644,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2rem;
-  padding-inline: 1rem;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: var(--openui-radius-full);
   background: var(--openui-foreground);
   color: var(--openui-text-neutral-primary);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  line-height: 1.25rem;
+  line-height: 1;
   border: 1px solid var(--openui-border-default);
   transition: border-color 0.2s ease;
 }
@@ -398,19 +680,67 @@
 
 /* ── Mobile GitHub button ── */
 
+/* Match the desktop GitHub CTA: glowing black pill with a beveled top highlight. */
 .mobileGithubButton {
   min-height: 3rem;
+  margin-bottom: 0;
   padding-inline: 1.25rem;
+  border: 1px solid var(--home-border-on-dark);
   border-radius: var(--openui-radius-full);
-  background: var(--openui-inverted-background);
+  background: var(--home-surface-ink);
   color: var(--openui-text-accent-primary);
   font-size: 18px;
   line-height: 1.5rem;
-  transition: background-color 0.2s ease;
+  box-shadow: var(--home-bevel-on-dark);
+  transition: transform 0.2s ease;
 }
 
+/* Keep it black on hover (the .heroBanner base would otherwise turn it purple). */
 .mobileGithubButton:hover {
-  background: rgb(0 0 0 / 85%);
+  background: var(--home-surface-ink);
+  transform: scale(0.99);
+}
+
+.mobileGithubButton .heroBannerIcon {
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.45));
+}
+
+/* Live star count shown before the label, glowing like the desktop CTA. */
+.mobileGithubCount {
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.55);
+}
+
+/* Faded "stars" label matching the desktop star button. */
+.mobileGithubStars {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Dark mode: the mobile GH stars banner flips to a white-bevel primary (dark
+   content, no glow), matching the desktop GH stars button. */
+[data-theme="dark"] .mobileGithubButton {
+  background: var(--home-surface-raised);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: var(--home-surface-ink);
+  box-shadow: var(--home-bevel);
+}
+
+[data-theme="dark"] .mobileGithubButton:hover {
+  background: var(--home-surface-raised);
+}
+
+[data-theme="dark"] .mobileGithubButton .heroBannerIcon {
+  filter: none;
+}
+
+[data-theme="dark"] .mobileGithubCount {
+  color: var(--home-surface-ink);
+  text-shadow: none;
+}
+
+[data-theme="dark"] .mobileGithubStars {
+  color: rgba(0, 0, 0, 0.55);
 }
 
 /* ── Desktop hero layout ── */
@@ -449,6 +779,68 @@
   padding-bottom: 0.75rem;
 }
 
+/* ── Left-aligned desktop hero variant ── */
+
+/* Hero text component: groups the headline, subheadline, and CTAs into one
+   left-aligned frame with padding on both sides. */
+.desktopHeroInnerLeft {
+  align-items: flex-start;
+  padding-block: 5rem 3rem;
+  padding-inline: 2rem;
+}
+
+.desktopHeroLockupLeft {
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.5rem;
+}
+
+.desktopTitleLeft {
+  font-size: 3.75rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.desktopSubtitleLeft {
+  text-align: left;
+  font-size: 3.75rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  margin-top: 0;
+  white-space: normal;
+}
+
+/* Sub-product pages reuse the left hero but want a smaller secondary headline
+   than the home page's 3.75rem (the one intended difference from home). */
+.desktopSubtitleSmall {
+  font-size: 2.25rem;
+  letter-spacing: -0.5px;
+}
+
+.mobileSubtitleSmall {
+  font-size: 18px;
+}
+
+.desktopCtaStackLeft {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Secondary hero CTA — white pill mirroring the primary button's bevel, subtler. */
+.desktopCtaStackLeft .npmButton {
+  --npm-bevel: var(--home-bevel);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--home-surface-raised);
+  box-shadow: var(--npm-bevel);
+}
+
+.desktopCtaStackLeft .npmButton:hover {
+  transform: scale(0.99);
+  box-shadow: var(--npm-bevel);
+}
+
 .subtitleLogo {
   display: block;
   margin: 0.75rem auto 0;
@@ -460,8 +852,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.3em;
-  height: 1.3em;
+  width: 1.15em;
+  height: 1.15em;
   margin: 0 0.3em 0 0.15em;
   padding: 0.2em;
   border-radius: 0.35em;
@@ -475,6 +867,14 @@
   top: -0.15em;
 }
 
+[data-theme="dark"] .subtitleLogoTile {
+  background: var(--openui-foreground);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
 .subtitleLogoTile img {
   width: 100%;
   height: 100%;
@@ -485,8 +885,10 @@
 
 .mobileHero {
   position: relative;
-  overflow: hidden;
-  padding-top: 2rem;
+  /* clip the horizontal bleed at the screen edge, but let the framed image's
+     shadow show vertically (overflow-y stays visible). */
+  overflow-x: clip;
+  padding-top: 5.5rem;
 }
 
 .mobileHeroIntro {
@@ -517,8 +919,17 @@
   flex-direction: column;
   align-items: center;
   margin-top: 40px;
-  gap: 1rem;
-  padding: 0.5rem 2.5rem 1rem;
+  gap: 0.625rem;
+  padding: 0.5rem 1.5rem 6rem;
+}
+
+.mobileCtaStack .commandGroup {
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobileCtaStack .commandTabs::after {
+  display: none;
 }
 
 .mobileCtaButtonWidth {
@@ -527,7 +938,26 @@
   justify-content: space-between;
 }
 
-/* ── Illustration / preview ── */
+/* Match the desktop npm CTA: light bevel pill rather than the drop-shadow pill. */
+.mobileCtaStack .npmButton {
+  --npm-bevel: var(--home-bevel);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--home-surface-raised);
+  box-shadow: var(--npm-bevel);
+}
+
+.mobileCtaStack .npmButton:hover {
+  box-shadow: var(--npm-bevel);
+}
+
+/* Dark mode: the npm command pill is a black-bevel secondary (matching the dark
+   BevelButton), so the theme's light command text stays readable. */
+[data-theme="dark"] .desktopCtaStackLeft .npmButton,
+[data-theme="dark"] .mobileCtaStack .npmButton {
+  --npm-bevel: var(--home-bevel-on-dark);
+  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--home-surface-ink);
+}
 
 .mobileIllustrationViewport,
 .previewFrame {
@@ -543,12 +973,73 @@
   max-width: 402px;
 }
 
+/* Homepage mobile hero: inset the illustration from the screen edges (the framed
+   directory variant manages its own bleed/padding, so it's excluded). */
+.mobileIllustrationViewport:not(.mobileIllustrationViewportFramed) {
+  box-sizing: border-box;
+  padding-inline: 1.25rem;
+}
+
 .previewFrame {
   max-width: 75rem;
 }
 
 .previewFrameWide {
   max-width: 130rem;
+}
+
+/* Custom screenshot override (e.g. OpenClaw OS): a thin padded surface with a soft,
+   wide-blur shadow; the screenshot itself carries the gray stroke. No bottom fade. */
+.previewFrameCustom {
+  -webkit-mask-image: none;
+  mask-image: none;
+  padding: clamp(0.375rem, 0.8vw, 0.625rem);
+  border: 1px solid var(--openui-border-default);
+  border-radius: 16px;
+  background: var(--openui-foreground);
+  box-shadow: 0 16px 56px -12px rgba(0, 0, 0, 0.16);
+}
+
+[data-theme="dark"] .previewFrameCustom {
+  box-shadow: 0 16px 56px -12px rgba(0, 0, 0, 0.6);
+}
+
+.previewFrameCustom .previewImage {
+  border: 1px solid var(--openui-border-default);
+  border-radius: 12px;
+}
+
+/* Mobile: frame a custom hero screenshot like the desktop .previewFrameCustom,
+   but with less padding. Only applied when a mobile image override is set. */
+.mobileIllustrationViewportFramed {
+  /* No mask on the frame itself, so its drop shadow stays visible (a mask would
+     clip the box-shadow). The right-fade lives on the image below instead. */
+  -webkit-mask-image: none;
+  mask-image: none;
+  /* 50% bigger, anchored left with outer padding, bleeding off the right edge
+     (clipped by .mobileHero's overflow:hidden at the screen edge). */
+  width: 150%;
+  max-width: none;
+  margin-inline: 1.25rem 0;
+  padding: 0.25rem;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 16px;
+  background: var(--openui-foreground);
+  box-shadow: 0 16px 56px -12px rgba(0, 0, 0, 0.16);
+}
+
+[data-theme="dark"] .mobileIllustrationViewportFramed {
+  box-shadow: 0 16px 56px -12px rgba(0, 0, 0, 0.6);
+}
+
+.mobileIllustrationViewportFramed .mobileIllustrationImage {
+  border: 1px solid var(--openui-border-default);
+  border-radius: 12px;
+  /* Right-fade on the image (not the frame) so the frame's drop shadow survives.
+     The shot dissolves toward the right where it bleeds off the screen edge; it's
+     only ~63% visible before the edge clips it, so it's gone by then. */
+  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 40%, transparent 64%);
+  mask-image: linear-gradient(to right, #000 0%, #000 40%, transparent 64%);
 }
 
 .mobileIllustrationImage,
@@ -566,7 +1057,10 @@
 
 .previewSection {
   width: 100%;
-  overflow: hidden;
+  /* Clip horizontal overflow (the wide home preview spills sideways) but let the
+     custom frame's drop shadow extend below without being cropped. */
+  overflow-x: clip;
+  overflow-y: visible;
   margin-top: 2rem;
   padding-inline: 1rem;
 }
@@ -584,8 +1078,9 @@
 /* ── Tagline section ── */
 
 .taglineSection {
-  margin-top: 1.25rem;
+  margin-top: 4rem;
   padding-inline: 1.25rem;
+  padding-bottom: 2.5rem;
 }
 
 .taglineContainer {
@@ -616,7 +1111,8 @@
 
 @media (min-width: 1024px) {
   .npmDesktopLabel {
-    display: inline;
+    display: inline-block;
+    vertical-align: middle;
   }
 
   .npmMobileLabel,
@@ -631,17 +1127,14 @@
     padding: 8rem 2rem 0;
   }
 
+  /* Directory heroes (openclaw-os, agent-interface) sit closer to the top:
+     2rem here + 5rem from .desktopHeroInnerLeft = 7rem, matching PageHero. */
+  .desktopHero.desktopHeroTight {
+    padding-top: 2rem;
+  }
+
   .heroBanner {
-    gap: 1.5rem;
-    padding: 0.6rem 0.75rem 0.6rem 1rem;
-  }
-
-  .heroBannerDesktop {
-    display: inline-flex;
-  }
-
-  .heroBannerMobile {
-    display: none;
+    gap: 0.75rem;
   }
 
   .heroBannerActions {
@@ -654,17 +1147,17 @@
     padding-inline: 1rem;
   }
 
+  .previewSectionFlush {
+    padding-inline: 0;
+  }
+
   .previewDesktopOnly {
     display: flex;
   }
 
   .taglineSection {
-    margin-top: 2.5rem;
-    padding: 2.5rem 2rem 0;
-  }
-
-  .tagline {
-    font-size: 28px;
+    margin-top: 8rem;
+    padding: 0 2rem 4rem;
   }
 
   .taglineCompact {
@@ -673,5 +1166,24 @@
 
   .taglineBreak {
     display: inline;
+  }
+}
+
+/* Mobile-only (phones): smaller hero wordmark so it isn't edge-to-edge. */
+@media (max-width: 767px) {
+  .mobileTitle {
+    font-size: clamp(72px, 21vw, 88px);
+    font-weight: 700;
+  }
+
+  /* Tagline matches the section-title size and uses more width. */
+  .tagline {
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+  }
+
+  .taglineSection {
+    padding-inline: 0.75rem;
   }
 }

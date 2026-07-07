@@ -1,9 +1,6 @@
 "use client";
-import mascotDarkSvgPaths from "@/imports/svg-mascot-dark";
 import svgPaths from "@/imports/svg-urruvoh2be";
-import mascotSvgPaths from "@/imports/svg-xeurqn3j1r";
-import { useTheme } from "next-themes";
-import { useEffect, useId, useState } from "react";
+import { useId } from "react";
 import styles from "./Footer.module.css";
 
 // ---------------------------------------------------------------------------
@@ -123,69 +120,15 @@ function ThesysLogo() {
   );
 }
 
-function HandcraftedMascot({ isDark }: { isDark: boolean }) {
-  if (isDark) {
-    return (
-      <svg
-        className={`${styles.handcraftedMascot} ${styles.handcraftedMascotDark}`.trim()}
-        fill="none"
-        preserveAspectRatio="xMidYMid meet"
-        viewBox="0 0 33 32"
-      >
-        <path d={mascotDarkSvgPaths.pBody} fill="white" />
-        <path d={mascotDarkSvgPaths.pOutline} fill="#464646" stroke="#464646" strokeWidth="0.3" />
-        <path d={mascotDarkSvgPaths.pMouth} fill="#464646" />
-        <path d={mascotDarkSvgPaths.pEarLeft} fill="#464646" stroke="#464646" strokeWidth="0.3" />
-        <path d={mascotDarkSvgPaths.pEarRight} fill="#464646" stroke="#464646" strokeWidth="0.3" />
-        <path d={mascotDarkSvgPaths.pEyeLeft} fill="#464646" />
-        <path d={mascotDarkSvgPaths.pEyeRight} fill="#464646" />
-        <path d={mascotDarkSvgPaths.pHornLeft} fill="#464646" stroke="#464646" strokeWidth="0.3" />
-        <path d={mascotDarkSvgPaths.pHornRight} fill="#464646" stroke="#464646" strokeWidth="0.3" />
-      </svg>
-    );
-  }
-
+function HandcraftedMascot() {
   return (
-    <svg
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       className={styles.handcraftedMascot}
-      fill="none"
-      preserveAspectRatio="xMidYMid meet"
-      viewBox="0 0 141.2 114.2"
-    >
-      <path
-        d={mascotSvgPaths.p395b3c00}
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth="0.6"
-      />
-      <path d={mascotSvgPaths.p3b251e80} fill="currentColor" />
-      <path
-        d={mascotSvgPaths.p2718bc80}
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth="0.6"
-      />
-      <path
-        d={mascotSvgPaths.p37ab5b0}
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth="0.6"
-      />
-      <path d={mascotSvgPaths.p2ac89300} fill="currentColor" />
-      <path d={mascotSvgPaths.p2b8b4380} fill="currentColor" />
-      <path
-        d={mascotSvgPaths.p15c14e00}
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth="0.6"
-      />
-      <path
-        d={mascotSvgPaths.p4076200}
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth="0.6"
-      />
-    </svg>
+      src="/shiro-logo.svg"
+      alt=""
+      aria-hidden="true"
+    />
   );
 }
 
@@ -194,19 +137,13 @@ function HandcraftedMascot({ isDark }: { isDark: boolean }) {
 // ---------------------------------------------------------------------------
 
 export function Footer() {
-  const { resolvedTheme } = useTheme();
-  // Resolve the theme only after mount so the server and first client render match
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const isDark = mounted && resolvedTheme === "dark";
-
   return (
     <footer className={styles.footer}>
       {/* Handcrafted */}
       <div className={styles.handcraftedSection}>
         <div className={styles.handcraftedContainer}>
           <div className={styles.mascotWrap}>
-            <HandcraftedMascot isDark={isDark} />
+            <HandcraftedMascot />
           </div>
           <p className={styles.handcraftedCopy}>
             Handcrafted with a lot of love

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import { InstallSplitButton } from "./InstallSplitButton";
+import { OpenClawFeatures } from "./OpenClawFeatures";
 import styles from "../page.module.css";
-import { FeaturesSection, OPENCLAW_FEATURES } from "../sections/FeaturesSection/FeaturesSection";
 import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
 import heroStyles from "../sections/HeroSection/HeroSection.module.css";
@@ -51,37 +52,32 @@ export default function OpenClawOSPage() {
             </>
           }
           command={INSTALL_COMMAND}
-          commandLabel="macOS / Linux"
-          secondaryCommand={WINDOWS_INSTALL_COMMAND}
-          secondaryCommandLabel="Windows PowerShell"
-          compact
-          showBanner={false}
-          showPlaygroundButton={false}
-          desktopPreviewImage="/OpenclawOS-hero1.png"
-          desktopPreviewImageAlt="OpenClaw OS desktop preview"
-          desktopPreviewImageWidth={3200}
-          desktopPreviewImageHeight={1036}
-          mobilePreviewImage="/openclaw-os-mobile-hero.png"
-          mobilePreviewImageAlt="OpenClaw OS mobile preview"
-          mobilePreviewImageWidth={804}
-          mobilePreviewImageHeight={880}
-          mobilePreviewImageCropTopPercent={20}
-          githubRepoUrl="https://github.com/thesysdev/openclaw-os"
-          githubButtonLabel="Star us on GitHub"
-          widePreview
-          showTagline
-          taglineCompact
-          tagline={
-            <>
-              OpenClaw OS is a workspace for managing and operating your OpenClaw agent.{" "}
-              <br className={heroStyles.taglineBreak} />
-              Generate interactive apps and artifacts, instantly for any use case.
-            </>
+          commandSlot={
+            <InstallSplitButton
+              macCommand={INSTALL_COMMAND}
+              winCommand={WINDOWS_INSTALL_COMMAND}
+            />
           }
+          align="left"
+          desktopPreviewImage="/openclaw-os/hero-light.svg"
+          desktopPreviewImageDark="/openclaw-os/hero-dark.svg"
+          desktopPreviewImageAlt="OpenClaw OS workspace"
+          desktopPreviewImageWidth={1568}
+          desktopPreviewImageHeight={940}
+          mobilePreviewImage="/openclaw-os/hero-light.svg"
+          mobilePreviewImageDark="/openclaw-os/hero-dark.svg"
+          mobilePreviewImageAlt="OpenClaw OS workspace"
+          mobilePreviewImageWidth={1568}
+          mobilePreviewImageHeight={940}
+          smallSubtitle
+          showPlaygroundButton={false}
+          showGitHubBanner={false}
+          showTagline={false}
         />
       </div>
       <div className={styles.contentSection}>
-        <div className={`${styles.contentShell} ${styles.contentShellTight}`}>
+        <div className={styles.contentShell}>
+          <OpenClawFeatures />
           <PossibilitiesSection
             title="Generate an app for that..."
             tagline="With OpenClaw OS, any use case becomes a working app, instantly generated and always updated with live data."
@@ -89,26 +85,29 @@ export default function OpenClawOSPage() {
               {
                 titlePrefix: "An app to",
                 title: "track company sales.",
-                image: "/business-health.png",
+                lightImage: "/business-health-light.png",
+                darkImage: "/business-health-dark.png",
               },
               {
                 titlePrefix: "An app to",
                 title: "monitor sprint progress.",
-                image: "/engineering-board.png",
+                lightImage: "/engineering-board-light.png",
+                darkImage: "/engineering-board-dark.png",
               },
               {
                 titlePrefix: "An app to",
                 title: "observe social media.",
-                image: "/marketing-dashboard.png",
+                lightImage: "/marketing-dashboard-light.png",
+                darkImage: "/marketing-dashboard-dark.png",
               },
               {
                 titlePrefix: "An app to",
                 title: "track stock market.",
-                image: "/stocks-tracker.png",
+                lightImage: "/stocks-tracker-light.png",
+                darkImage: "/stocks-tracker-dark.png",
               },
             ]}
           />
-          <FeaturesSection features={OPENCLAW_FEATURES} showCta={false} />
           <StuckInChatSection
             installCommand={INSTALL_COMMAND}
             windowsInstallCommand={WINDOWS_INSTALL_COMMAND}

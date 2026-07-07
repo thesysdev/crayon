@@ -423,9 +423,6 @@ export default function OpenUiRendererRendersIt() {
       className="overflow-clip relative rounded-[16px] size-full"
       data-name="OpenUI renderer renders it"
     >
-      <p className="absolute font-['Geist_Mono:Medium',sans-serif] font-medium leading-none left-[58px] text-[12px] text-[rgba(0,0,0,0.4)] top-[366px]">
-        CAROUSAL OF HOTEL CARDS
-      </p>
       <Frame13 />
     </div>
   );

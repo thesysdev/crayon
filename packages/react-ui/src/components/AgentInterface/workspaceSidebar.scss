@@ -1,0 +1,269 @@
+@use "../../cssUtils" as cssUtils;
+
+$workspace-sidebar-width: 280px;
+$workspace-sidebar-mobile-width: 294px;
+$workspace-sidebar-padding: cssUtils.$space-m;
+$workspace-sidebar-mobile-slide-duration: 400ms;
+$workspace-sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+.openui-agent-workspace-sidebar {
+  border-left: 1px solid cssUtils.$border-default;
+  height: 100%;
+  width: $workspace-sidebar-width;
+  flex-shrink: 0;
+  padding: $workspace-sidebar-padding;
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-m;
+  background-color: cssUtils.$foreground;
+  overflow: hidden;
+  transition:
+    width 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform $workspace-sidebar-mobile-slide-duration $workspace-sidebar-motion-ease;
+
+  .openui-agent-container--mobile & {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    height: 100%;
+    width: $workspace-sidebar-mobile-width;
+    padding-top: cssUtils.$space-m-l;
+    transform: translateX(0);
+  }
+
+  &--collapsed {
+    width: 0;
+    padding: 0;
+    border-left: 0;
+    transition:
+      width 300ms cubic-bezier(0.22, 1, 0.36, 1) 140ms,
+      padding 300ms cubic-bezier(0.22, 1, 0.36, 1) 140ms,
+      border-color 300ms cubic-bezier(0.22, 1, 0.36, 1) 140ms;
+
+    .openui-agent-container--mobile & {
+      width: $workspace-sidebar-mobile-width;
+      padding: cssUtils.$space-m-l $workspace-sidebar-padding $workspace-sidebar-padding;
+      border-left: 1px solid cssUtils.$border-default;
+      transform: translateX(100%);
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-s;
+    flex-shrink: 0;
+    opacity: 1;
+    transition: opacity 160ms ease-out 220ms;
+
+    .openui-agent-workspace-sidebar--collapsed & {
+      opacity: 0;
+      transition: opacity 120ms ease-out;
+    }
+  }
+
+  &__tabs {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-3xs;
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    opacity: 1;
+    transition: opacity 160ms ease-out 220ms;
+
+    .openui-agent-workspace-sidebar--collapsed & {
+      opacity: 0;
+      transition: opacity 120ms ease-out;
+    }
+  }
+
+  &__tab-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: cssUtils.$radius-s;
+    background-color: cssUtils.$highlight;
+    pointer-events: none;
+    transition:
+      transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      width 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      height 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 120ms ease;
+
+    .openui-agent-workspace-sidebar--collapsed & {
+      opacity: 0 !important;
+      transition: opacity 120ms ease-out;
+    }
+  }
+
+  &__tab {
+    @include cssUtils.button-reset;
+    @include cssUtils.typography(label, small);
+
+    position: relative;
+    height: 32px;
+    z-index: 1;
+    flex: 0 0 auto;
+    padding: cssUtils.$space-xs cssUtils.$space-s-m;
+    border-radius: cssUtils.$radius-m;
+    color: cssUtils.$text-neutral-secondary;
+    cursor: pointer;
+
+    .openui-agent-container--mobile & {
+      @include cssUtils.typography(label, default);
+      border-radius: cssUtils.$radius-l;
+    }
+
+    &:hover {
+      color: cssUtils.$text-neutral-primary;
+    }
+
+    &--active {
+      color: cssUtils.$text-neutral-primary;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-l;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    min-height: 0;
+    opacity: 1;
+    transition: opacity 180ms ease-out 220ms;
+
+    scrollbar-width: thin;
+    scrollbar-color: cssUtils.$highlight-strong transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: cssUtils.$highlight-strong;
+      border-radius: cssUtils.$radius-full;
+    }
+
+    .openui-agent-workspace-sidebar--collapsed & {
+      opacity: 0;
+      transition: opacity 120ms ease-out;
+    }
+  }
+
+  &__empty {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-neutral-tertiary;
+    padding: cssUtils.$space-s cssUtils.$space-2xs;
+  }
+
+  &__section-empty {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-neutral-tertiary;
+    padding: cssUtils.$space-2xs;
+    font-style: italic;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-xs;
+  }
+
+  &__item {
+    @include cssUtils.button-reset;
+
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: cssUtils.$space-m;
+    padding: cssUtils.$space-s cssUtils.$space-s;
+    border-radius: cssUtils.$radius-xl;
+    color: cssUtils.$text-neutral-primary;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    text-align: left;
+
+    &:hover {
+      background-color: cssUtils.$highlight;
+    }
+
+    &:active {
+      background-color: cssUtils.$highlight;
+    }
+
+    &--active {
+      background-color: cssUtils.$highlight;
+    }
+  }
+
+  &__item-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+    color: cssUtils.$text-neutral-secondary;
+
+    .openui-agent-workspace-sidebar__item--active & {
+      color: cssUtils.$text-accent-primary;
+    }
+  }
+
+  &__item-label {
+    @include cssUtils.typography(label, default);
+
+    width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  &__item-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: cssUtils.$space-xs;
+    width: 100%;
+    min-width: 0;
+    padding-left: cssUtils.$space-2xs;
+    padding-bottom: cssUtils.$space-2xs;
+    overflow: hidden;
+  }
+
+  &__item-meta {
+    @include cssUtils.typography(label, small);
+
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    color: cssUtils.$text-neutral-secondary;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.openui-agent-workspace-sidebar__overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: cssUtils.$overlay;
+  transition: opacity $workspace-sidebar-mobile-slide-duration $workspace-sidebar-motion-ease;
+  z-index: 99;
+
+  &--collapsed {
+    opacity: 0;
+    pointer-events: none;
+  }
+}

@@ -2,47 +2,46 @@
 import "@openuidev/react-ui/components.css";
 import "@openuidev/react-ui/styles/index.css";
 
-import { openAIMessageFormat, openAIReadableStreamAdapter } from "@openuidev/react-headless";
-import { FullScreen } from "@openuidev/react-ui";
+import {
+  AgentInterface,
+  openAIMessageFormat,
+  openAIReadableStreamAdapter,
+  type ChatLLM,
+} from "@openuidev/react-ui";
 import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui/genui-lib";
+import { useMemo } from "react";
 
 const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
 
 export default function Home() {
+  // AgentInterface uses its built-in in-memory storage default (wiped on reload).
+  // Each new thread gets a stable client-generated id, so the per-thread
+  // x-conversation-id maps to an isolated pi AgentSession. The backend call is
+  // unchanged; only the chat surface moved from FullScreen to AgentInterface.
+  const llm = useMemo<ChatLLM>(
+    () => ({
+      send: ({ threadId, messages, signal }) =>
+        fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Map each chat thread to its own persistent pi AgentSession.
+            "x-conversation-id": threadId,
+          },
+          body: JSON.stringify({
+            systemPrompt,
+            messages: openAIMessageFormat.toApi(messages),
+          }),
+          signal,
+        }),
+      streamProtocol: openAIReadableStreamAdapter(),
+    }),
+    [],
+  );
+
   return (
     <div className="h-screen w-screen overflow-hidden">
-      <FullScreen
-        // Without a thread backend, OpenUI sends a constant "ephemeral" id for
-        // every chat, collapsing them onto one Pi session. Assign each new thread
-        // a stable client-generated id so threads get isolated sessions and
-        // "new chat" forks a fresh one.
-        createThread={async (firstMessage) => {
-          const content = (firstMessage as { content?: unknown }).content;
-          const title =
-            typeof content === "string" && content.trim()
-              ? content.trim().slice(0, 50)
-              : "New chat";
-          return { id: crypto.randomUUID(), title, createdAt: Date.now() };
-        }}
-        processMessage={async ({ threadId, messages, abortController }) => {
-          return fetch("/api/chat", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              // Map each chat thread to its own persistent Pi AgentSession.
-              "x-conversation-id": threadId,
-            },
-            body: JSON.stringify({
-              systemPrompt,
-              messages: openAIMessageFormat.toApi(messages),
-            }),
-            signal: abortController.signal,
-          });
-        }}
-        streamProtocol={openAIReadableStreamAdapter()}
-        componentLibrary={openuiLibrary}
-        agentName="OpenUI Agent Harness"
-      />
+      <AgentInterface llm={llm} componentLibrary={openuiLibrary} agentName="OpenUI Agent Harness" />
     </div>
   );
 }

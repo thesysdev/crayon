@@ -28,6 +28,12 @@
     &:not(:disabled):active {
       background-color: cssUtils.$sunk;
     }
+
+    // button-reset strips chrome, so restore a visible keyboard focus ring.
+    &:focus-visible {
+      outline: 2px solid cssUtils.$border-interactive-emphasis;
+      outline-offset: cssUtils.$space-3xs;
+    }
   }
 
   &__toggle-icon {
@@ -42,6 +48,22 @@
     align-items: flex-start;
     width: 100%;
   }
+
+  // Compact staggered reveal (CSS fade-in; remounted per step via React key).
+  &__reveal-item {
+    animation: openui-behind-the-scenes-reveal 0.2s ease;
+  }
+}
+
+@keyframes openui-behind-the-scenes-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // ── Timeline item (each tool call) ──
@@ -50,13 +72,15 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding-left: cssUtils.$space-l;
+  padding-inline-start: cssUtils.$space-l;
 
   &__title-row {
     display: flex;
     align-items: center;
     gap: cssUtils.$space-m;
     color: cssUtils.$text-neutral-secondary;
+    // Allow the name to shrink/ellipsize instead of overflowing the row.
+    min-width: 0;
   }
 
   &__icon-wrapper {
@@ -82,6 +106,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    // Shrink + ellipsize so a long tool name never pushes the chevron offscreen.
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   &__name--shimmer {
@@ -108,16 +135,17 @@
     display: flex;
     gap: cssUtils.$space-m;
     padding: cssUtils.$space-s-m cssUtils.$space-s;
-    padding-right: 0;
+    padding-inline-end: 0;
     min-height: 20px;
+    width: calc(100% - 6px);
 
     // 6px offset = half of 14px icon - half of 1px border
-    margin-left: 6px;
-    border-left: 1px solid cssUtils.$border-interactive;
+    margin-inline-start: 6px;
+    border-inline-start: 1px solid cssUtils.$border-interactive;
   }
 
   &__connector--last {
-    border-left-color: transparent;
+    border-inline-start-color: transparent;
   }
 
   &__args-block {
@@ -126,6 +154,164 @@
     gap: cssUtils.$space-xs;
     padding-left: cssUtils.$space-m;
     width: 100%;
+  }
+
+  // ── Web-search presentation (reasoning line + sources list) ──
+
+  &__reasoning {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-neutral-secondary;
+    font-style: italic;
+    margin: 0;
+  }
+
+  &__sources {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border: 1px solid cssUtils.$border-default;
+    border-radius: cssUtils.$radius-l;
+    background-color: cssUtils.$foreground;
+    padding: cssUtils.$space-2xs;
+  }
+
+  &__source {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: cssUtils.$space-2xs cssUtils.$space-s;
+    padding-left: cssUtils.$space-2xs;
+    border-radius: cssUtils.$radius-m;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: cssUtils.$sunk;
+    }
+
+    &:focus-visible {
+      outline: 2px solid cssUtils.$border-interactive-emphasis;
+      outline-offset: cssUtils.$space-3xs;
+    }
+  }
+
+  &__source-left {
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-s;
+    min-width: 0;
+  }
+
+  &__source-logo {
+    width: 24px;
+    height: 24px;
+    border-radius: cssUtils.$radius-xs;
+    flex-shrink: 0;
+  }
+
+  &__source-title {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-neutral-primary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__source-desc {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-neutral-secondary;
+    // Let the description shrink + truncate so it never squeezes the title.
+    min-width: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // ── Chevron "card" composition (DefaultToolCard) ──
+
+  &--card {
+    padding-left: 0;
+  }
+
+  &__header {
+    @include cssUtils.button-reset;
+    display: flex;
+    align-items: center;
+    gap: cssUtils.$space-m;
+    width: 100%;
+    padding: cssUtils.$space-2xs cssUtils.$space-s;
+    border-radius: cssUtils.$radius-m;
+    cursor: pointer;
+    background-color: transparent;
+    color: cssUtils.$text-neutral-secondary;
+
+    &:not(:disabled):hover {
+      background-color: cssUtils.$sunk;
+    }
+
+    // button-reset strips chrome, so restore a visible keyboard focus ring.
+    &:focus-visible {
+      outline: 2px solid cssUtils.$border-interactive-emphasis;
+      outline-offset: cssUtils.$space-3xs;
+    }
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    margin-inline-start: auto;
+    color: cssUtils.$text-neutral-secondary;
+    transition: transform 0.2s ease;
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-xs;
+    padding: cssUtils.$space-s cssUtils.$space-m;
+    width: 100%;
+  }
+
+  &__request,
+  &__response {
+    @include cssUtils.typography(code, small);
+    color: cssUtils.$text-neutral-secondary;
+    margin: 0;
+    white-space: pre-wrap;
+    // Wrap at spaces; only hard-break tokens too long to fit.
+    overflow-wrap: anywhere;
+    // Clamp a huge result in the chevron card (parity with the timeline path).
+    max-height: 250px;
+    overflow: auto;
+  }
+
+  &__result--error {
+    color: cssUtils.$text-danger-primary;
+  }
+
+  // ── Status tints (subtle; driven by the Root `--{status}` modifier) ──
+  // Complete vs running look near-identical otherwise — tint the glyph only.
+  &--complete {
+    .openui-tool-call__icon {
+      color: cssUtils.$text-success-primary;
+    }
+  }
+
+  // A failed call should read as failed at a glance: tint the glyph + name and
+  // give the card a restrained danger left-border + faint background.
+  &--error {
+    border-inline-start: 2px solid cssUtils.$text-danger-primary;
+    background-color: cssUtils.$danger-background;
+    border-radius: cssUtils.$radius-m;
+
+    .openui-tool-call__icon {
+      color: cssUtils.$text-danger-primary;
+    }
+
+    .openui-tool-call__name {
+      color: cssUtils.$text-danger-primary;
+    }
   }
 }
 
@@ -148,16 +334,27 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: cssUtils.$space-s;
     width: 100%;
     padding: cssUtils.$space-s;
     cursor: pointer;
     background-color: transparent;
+
+    // button-reset strips chrome, so restore a visible keyboard focus ring.
+    &:focus-visible {
+      outline: 2px solid cssUtils.$border-interactive-emphasis;
+      outline-offset: cssUtils.$space-3xs;
+    }
   }
 
   &__label {
     @include cssUtils.typography(label, small);
     color: cssUtils.$text-neutral-secondary;
     -webkit-text-fill-color: currentColor;
+    // Truncate a grown/loading label instead of shoving the chevron offscreen.
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__label--loading {
@@ -204,7 +401,41 @@
     color: cssUtils.$text-neutral-secondary;
     margin: 0;
     white-space: pre-wrap;
-    word-break: break-all;
+    // Wrap at spaces; only hard-break tokens too long to fit.
+    overflow-wrap: anywhere;
+  }
+
+  &__code--error {
+    color: cssUtils.$text-danger-primary;
+  }
+}
+
+// ── Web-search detailed view (renderer `actual`) ──
+
+.openui-web-search__detailed {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-m;
+  list-style: none;
+  margin: 0;
+  padding: cssUtils.$space-m;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: cssUtils.$space-s;
+    color: cssUtils.$text-neutral-primary;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  p {
+    @include cssUtils.typography(label, small);
+    color: cssUtils.$text-neutral-secondary;
+    margin: cssUtils.$space-2xs 0 0;
   }
 }
 
@@ -224,5 +455,36 @@
   }
   100% {
     background-position: 0% center;
+  }
+}
+
+// ── Reduced motion ──
+// Honor `prefers-reduced-motion: reduce`: stop the infinite icon blink + text
+// shimmer (the shimmer also paints text via a clipped gradient, so reset it to a
+// solid fill or it would freeze half-transparent), drop the staggered reveal
+// fade, and disable the decorative chevron/hover transitions.
+@media (prefers-reduced-motion: reduce) {
+  .openui-behind-the-scenes__reveal-item,
+  .openui-tool-call__icon--blinking {
+    animation: none;
+  }
+
+  .openui-tool-call__name--shimmer,
+  .openui-tool-code-block__label--loading {
+    animation: none;
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+  }
+
+  .openui-tool-code-block__label--loading {
+    color: cssUtils.$text-neutral-secondary;
+  }
+
+  .openui-behind-the-scenes__toggle-icon,
+  .openui-tool-call__chevron,
+  .openui-tool-call__source,
+  .openui-tool-code-block,
+  .openui-tool-code-block__chevron {
+    transition: none;
   }
 }
