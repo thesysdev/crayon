@@ -12,7 +12,7 @@ type SelectPromptConfig = {
 
 type PromptConfig = InputPromptConfig | SelectPromptConfig;
 
-export type ArgDef<T> = { value: T } | { prompt: PromptConfig; required: true };
+export type ArgDef<T> = { value: T } | { prompt: PromptConfig; required: true; flagName?: string };
 
 type ResolvedArgs<T extends Record<string, ArgDef<unknown>>> = {
   [K in keyof T]: T[K] extends { value: infer V } ? V : string;
@@ -39,7 +39,7 @@ export async function resolveArgs<T extends Record<string, ArgDef<unknown>>>(
     }
 
     if (!interactive) {
-      console.error(`Error: Missing required argument --${key}`);
+      console.error(`Error: Missing required argument ${def.flagName ?? `--${key}`}`);
       process.exit(1);
     }
 

@@ -10,12 +10,14 @@ import { resolveArgs } from "../lib/resolve-args";
 import { CreateError, telemetry } from "../lib/telemetry";
 
 export type TemplateName = "openui-self-hosted" | "openui-cloud";
+const DEFAULT_CREATE_TEMPLATE: TemplateName = "openui-self-hosted";
 
 export interface CreateAppOptions {
   name?: string;
   template?: TemplateName;
   skill?: boolean;
   noInteractive?: boolean;
+  acceptDefaults?: boolean;
   noInstall?: boolean;
   // cloud-only
   apiKey?: string;
@@ -32,6 +34,7 @@ function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
 
 export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   const interactive = !options.noInteractive;
+  const useDefaults = options.acceptDefaults || !interactive;
   const t0 = Date.now();
   telemetry.register({ is_interactive: interactive });
 
@@ -39,31 +42,50 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     {
       name: options.name
         ? { value: options.name }
-        : { prompt: { type: "input", message: "Project name?" }, required: true },
+        : {
+            prompt: { type: "input", message: "Project name?" },
+            required: true,
+            flagName: "--project-name <name> (or --name <name>)",
+          },
       template: options.template
         ? { value: options.template }
-        : {
-            prompt: {
-              type: "select",
-              message: "Which template?",
-              choices: [
-                {
-                  value: "openui-cloud",
-                  name: "OpenUI Cloud — managed conversations, artifacts & streaming",
-                },
-                {
-                  value: "openui-self-hosted",
-                  name: "OpenUI Self Hosted — starter setup with OpenAI SDK",
-                },
-              ],
+        : useDefaults
+          ? { value: DEFAULT_CREATE_TEMPLATE }
+          : {
+              prompt: {
+                type: "select",
+                message: "Which template?",
+                choices: [
+                  {
+                    value: "openui-cloud",
+                    name: "OpenUI Cloud — managed conversations, artifacts & streaming",
+                  },
+                  {
+                    value: "openui-self-hosted",
+                    name: "OpenUI Self Hosted — starter setup with OpenAI SDK",
+                  },
+                ],
+              },
+              required: true,
             },
-            required: true,
-          },
     },
     interactive,
   );
 
   const { name, template } = args as { name: string; template: TemplateName };
+  if (
+    template === "openui-cloud" &&
+    !interactive &&
+    !options.acceptDefaults &&
+    !options.apiKey &&
+    !options.auth
+  ) {
+    throw new CreateError(
+      "cloud_auth",
+      "OpenUI Cloud requires auth in non-interactive mode. Pass --api-key <key> or --auth skip.",
+    );
+  }
+
   telemetry.register({ template });
   telemetry.capture("cli_create_started", { interactive });
   telemetry.capture("cli_template_selected", { template });
@@ -179,7 +201,7 @@ async function writeCloudEnv(
   try {
     const resolved = await resolveCloudApiKey({
       apiKey: options.apiKey,
-      auth: options.auth,
+      auth: options.acceptDefaults && !options.apiKey && !options.auth ? "skip" : options.auth,
       projectName: name,
       interactive,
     });
@@ -190,6 +212,9 @@ async function writeCloudEnv(
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
+    if (!interactive) {
+      throw new CreateError("cloud_auth", msg);
+    }
     console.error(`\n⚠ Could not obtain an API key: ${msg}`);
     console.error(`  Add THESYS_API_KEY to .env later (keys: ${THESYS_KEYS_URL}).\n`);
   }
