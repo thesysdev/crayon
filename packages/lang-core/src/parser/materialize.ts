@@ -5,7 +5,7 @@
 import type { ASTNode } from "./ast";
 import { isASTNode, isRuntimeExpr } from "./ast";
 import { isBuiltin, isReservedCall, LAZY_BUILTINS, RESERVED_CALLS } from "./builtins";
-import { isElementNode, type ParamMap, type ValidationError } from "./types";
+import { isElementNode, type ParamMap, type ScalarParamType, type ValidationError } from "./types";
 
 /**
  * Recursively check if a prop value contains any AST nodes that need runtime
@@ -33,6 +33,170 @@ export interface MaterializeCtx {
   currentStatementId?: string;
   /** Statement IDs not yet reached — delete as they're touched. Remaining = orphaned. */
   unreached?: Set<string>;
+}
+
+/** Scalar type/enum info extracted from a JSON Schema leaf, for describeTypeMismatch. */
+interface ScalarTypeInfo {
+  /** Scalar leaf type, when the property is a plain string/number/boolean. */
+  expectedType?: ScalarParamType;
+  /** Allowed literal values from `enum`/`const`. */
+  enumValues?: readonly unknown[];
+}
+
+/**
+ * Check a materialized value against a scalar leaf's declared type/enum.
+ * Returns a human-readable {expected, actual} on mismatch, or null when it
+ * passes or isn't checkable. Only concrete scalar literals are checked.
+ */
+function describeTypeMismatch(
+  value: unknown,
+  info: ScalarTypeInfo,
+): { expected: string; actual: string } | null {
+  const actual = typeof value;
+  if (!["string", "number", "boolean"].includes(actual)) {
+    return null;
+  }
+  if (info.enumValues) {
+    if (info.enumValues.includes(value)) return null;
+    return {
+      expected: `one of [${info.enumValues.map((v) => JSON.stringify(v)).join(", ")}]`,
+      actual: JSON.stringify(value),
+    };
+  }
+  if (info.expectedType && info.expectedType !== actual) {
+    return { expected: info.expectedType, actual };
+  }
+  return null;
+}
+
+/** Extract the scalar leaf type/enum from an already-narrowed JSON Schema object. */
+function getScalarTypeInfo(s: Record<string, unknown>): ScalarTypeInfo {
+  if (Array.isArray(s["enum"])) return { enumValues: s["enum"] };
+  if ("const" in s) return { enumValues: [s["const"]] };
+  switch (s["type"]) {
+    case "string":
+      return { expectedType: "string" };
+    case "number":
+    case "integer":
+      return { expectedType: "number" };
+    case "boolean":
+      return { expectedType: "boolean" };
+    default:
+      return {};
+  }
+}
+
+function pushValidationError(
+  ctx: MaterializeCtx,
+  error: Omit<ValidationError, "statementId">,
+): void {
+  ctx.errors.push({ ...error, statementId: ctx.currentStatementId });
+}
+
+/**
+ * Recursively validate a materialized value against a JSON Schema fragment.
+ *
+ * Descends into `type: object` (checking required keys and each declared
+ * property) and `type: array` (checking every element against `items`),
+ * reporting nested errors with JSON-pointer paths. Leaf scalars are checked
+ * for type/enum mismatches.
+ *
+ * Conservative — silently skips anything it can't reliably check:
+ *   - composite shapes ($ref / anyOf / oneOf / allOf)
+ *   - dynamic values (runtime AST nodes) and child components (ElementNodes,
+ *     which are validated separately as their own elements)
+ *   - required-key checks while streaming is in progress
+ */
+export function validateSchemaValue(
+  value: unknown,
+  schema: unknown,
+  component: string,
+  path: string,
+  ctx: MaterializeCtx,
+): void {
+  if (!schema || typeof schema !== "object" || Array.isArray(schema)) return;
+  const s = schema as Record<string, unknown>;
+  // Composite shapes can't be reliably matched to a single value — skip.
+  if ("$ref" in s || "anyOf" in s || "oneOf" in s || "allOf" in s) return;
+  // Absence is handled by required checks on the parent; skip null/undefined.
+  if (value == null) return;
+  // Dynamic runtime expressions ($var, builtins) resolve later — don't flag.
+  if (isASTNode(value)) return;
+  // Child components validate themselves when materialized as elements.
+  if (isElementNode(value)) return;
+
+  const type = s["type"];
+
+  if (type === "object") {
+    if (typeof value !== "object" || Array.isArray(value)) {
+      pushValidationError(ctx, {
+        code: "type-mismatch",
+        component,
+        path,
+        message: `field "${path}" expects object but got ${Array.isArray(value) ? "array" : typeof value}`,
+      });
+      return;
+    }
+    const obj = value as Record<string, unknown>;
+    const props =
+      s["properties"] && typeof s["properties"] === "object"
+        ? (s["properties"] as Record<string, unknown>)
+        : {};
+    // Structural checks are streaming-sensitive — only run on complete input.
+    if (!ctx.partial) {
+      const required = Array.isArray(s["required"]) ? (s["required"] as string[]) : [];
+      for (const key of required) {
+        if (!(key in obj) || obj[key] == null) {
+          const isNull = key in obj;
+          pushValidationError(ctx, {
+            code: isNull ? "null-required" : "missing-required",
+            component,
+            path: `${path}/${key}`,
+            message: isNull
+              ? `required field "${path}/${key}" cannot be null`
+              : `missing required field "${path}/${key}"`,
+          });
+        }
+      }
+    }
+    for (const [key, sub] of Object.entries(props)) {
+      if (key in obj) {
+        validateSchemaValue(obj[key], sub, component, `${path}/${key}`, ctx);
+      }
+    }
+    return;
+  }
+
+  if (type === "array") {
+    if (!Array.isArray(value)) {
+      pushValidationError(ctx, {
+        code: "type-mismatch",
+        component,
+        path,
+        message: `field "${path}" expects array but got ${typeof value}`,
+      });
+      return;
+    }
+    const items = s["items"];
+    // Only single-schema `items` (not tuple form) is checked.
+    if (items && typeof items === "object" && !Array.isArray(items)) {
+      value.forEach((el, i) => validateSchemaValue(el, items, component, `${path}/${i}`, ctx));
+    }
+    return;
+  }
+
+  // Leaf scalar — reuse the scalar/enum mismatch logic.
+  const leaf = getScalarTypeInfo(s);
+  if (leaf.expectedType == null && leaf.enumValues == null) return;
+  const mismatch = describeTypeMismatch(value, leaf);
+  if (mismatch) {
+    pushValidationError(ctx, {
+      code: "type-mismatch",
+      component,
+      path,
+      message: `field "${path}" expects ${mismatch.expected} but got ${mismatch.actual}`,
+    });
+  }
 }
 
 /**
@@ -126,12 +290,11 @@ function materializeExprInternal(
         return { ...node, args: recursedArgs, mappedProps };
       }
       // Unknown component in expression: push error (same as value path)
-      ctx.errors.push({
+      pushValidationError(ctx, {
         code: "unknown-component",
         component: node.name,
         path: "",
         message: `Unknown component "${node.name}" — not found in catalog or builtins`,
-        statementId: ctx.currentStatementId,
       });
       return { ...node, args: recursedArgs };
     }
@@ -248,12 +411,11 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
 
       // Inline Query/Mutation (not from a statement-level declaration) → validation error
       if (isReservedCall(name)) {
-        ctx.errors.push({
+        pushValidationError(ctx, {
           code: "inline-reserved",
           component: name,
           path: "",
           message: `${name}() must be declared as a top-level statement, not used inline as a value`,
-          statementId: ctx.currentStatementId,
         });
         return null;
       }
@@ -264,18 +426,24 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
       if (def) {
         // Catalog component: map positional args → named props
         for (let i = 0; i < def.params.length && i < args.length; i++) {
-          props[def.params[i].name] = materializeValue(args[i], ctx);
+          const param = def.params[i];
+          const value = materializeValue(args[i], ctx);
+          props[param.name] = value;
+          // Single validation entry point: scalar leaf type/enum for simple
+          // props, recursive key/type checks for nested object/array shapes.
+          if (param.schema !== undefined) {
+            validateSchemaValue(value, param.schema, name, `/${param.name}`, ctx);
+          }
         }
 
         // Report excess positional args (extra args are silently dropped)
         if (args.length > def.params.length) {
           const excessCount = args.length - def.params.length;
-          ctx.errors.push({
+          pushValidationError(ctx, {
             code: "excess-args",
             component: name,
             path: "",
             message: `${name} takes ${def.params.length} arg(s), got ${args.length} (${excessCount} excess dropped)`,
-            statementId: ctx.currentStatementId,
           });
         }
 
@@ -294,14 +462,13 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
           if (stillInvalid.length) {
             for (const p of stillInvalid) {
               const isNull = p.name in props;
-              ctx.errors.push({
+              pushValidationError(ctx, {
                 code: isNull ? "null-required" : "missing-required",
                 component: name,
                 path: `/${p.name}`,
                 message: isNull
                   ? `required field "${p.name}" cannot be null`
                   : `missing required field "${p.name}"`,
-                statementId: ctx.currentStatementId,
               });
             }
             return null;
@@ -309,12 +476,11 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
         }
       } else if (!isBuiltin(name) && !isReservedCall(name)) {
         // Unknown component: error and drop from tree
-        ctx.errors.push({
+        pushValidationError(ctx, {
           code: "unknown-component",
           component: name,
           path: "",
           message: `Unknown component "${name}" — not found in catalog or builtins`,
-          statementId: ctx.currentStatementId,
         });
         return null;
       }

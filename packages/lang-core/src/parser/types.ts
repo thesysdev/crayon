@@ -14,6 +14,9 @@ export interface LibraryJSONSchema {
   >;
 }
 
+/** Scalar JSON Schema types we can reliably check a positional literal against. */
+export type ScalarParamType = "string" | "number" | "boolean";
+
 export interface ParamDef {
   /** Parameter name, e.g. "title", "columns". */
   name: string;
@@ -21,6 +24,8 @@ export interface ParamDef {
   required: boolean;
   /** Default value from JSON Schema — used when the required field is missing/null. */
   defaultValue?: unknown;
+  /** The raw JSON Schema fragment for this param. */
+  schema?: unknown;
 }
 
 /** Internal parameter map for positional-arg to named-prop mapping. */
@@ -73,7 +78,8 @@ export type ValidationErrorCode =
   | "null-required"
   | "unknown-component"
   | "inline-reserved"
-  | "excess-args";
+  | "excess-args"
+  | "type-mismatch";
 
 /**
  * A prop validation error. Components with missing required props are

@@ -648,6 +648,7 @@ export function compileSchema(schema: LibraryJSONSchema): ParamMap {
       name: key,
       required: required.includes(key),
       defaultValue: getSchemaDefaultValue(properties[key]),
+      schema: properties[key],
     }));
     map.set(name, { params });
   }
