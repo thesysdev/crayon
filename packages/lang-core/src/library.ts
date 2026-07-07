@@ -131,6 +131,21 @@ export interface PromptOptions {
   toolCalls?: boolean;
   /** Enable $variables, @Set, @Reset, interactive filters. Default: true if toolCalls. */
   bindings?: boolean;
+  /**
+   * Restrict the prompt to a subset of the library. When set, only these
+   * components appear (plus the library root and, by default, the sub-component
+   * dependencies they render). Omit for today's behavior (all components).
+   */
+  componentAllowlist?: {
+    /** Component names to keep. Unknown names throw with an "Available: ..." message. */
+    components: string[];
+    /**
+     * Automatically pull in the sub-components that the listed components
+     * reference, so the prompt never shows a signature that references a
+     * component it doesn't include. Default: true.
+     */
+    includeDependencies?: boolean;
+  };
 }
 
 // ─── Zod introspection ──────────────────────────────────────────────────────
@@ -330,6 +345,116 @@ function buildComponentSpecs(
   return specs;
 }
 
+// ─── Component subsetting ─────────────────────────────────────────────────────
+
+/**
+ * Walk a single field schema and collect the names of any tagged schemas it
+ * references (component refs, e.g. `z.array(Card.ref)`). Descends through
+ * optional/array/union/record/anonymous-object wrappers but stops at the first
+ * named schema — its own dependencies are resolved separately during closure.
+ */
+function collectSchemaRefs(
+  schema: unknown,
+  reg: SchemaRegistry,
+  acc: Set<string>,
+  seen: Set<unknown>,
+): void {
+  const inner = unwrap(schema);
+  if (inner == null || seen.has(inner)) return;
+  seen.add(inner);
+
+  const id = getSchemaId(inner, reg);
+  if (id) {
+    acc.add(id);
+    return; // named ref — descend no further; its deps are handled via the closure
+  }
+
+  const unionOpts = getUnionOptions(inner);
+  if (unionOpts) {
+    for (const opt of unionOpts) collectSchemaRefs(opt, reg, acc, seen);
+    return;
+  }
+
+  if (isArrayType(inner)) {
+    const el = getArrayInnerType(inner);
+    if (el) collectSchemaRefs(el, reg, acc, seen);
+    return;
+  }
+
+  const def = getZodDef(inner);
+  if (def?.type === "record") {
+    collectSchemaRefs(def.keyType, reg, acc, seen);
+    collectSchemaRefs(def.valueType, reg, acc, seen);
+    return;
+  }
+
+  const shape = getObjectShape(inner);
+  if (shape) {
+    for (const field of Object.values(shape)) collectSchemaRefs(field, reg, acc, seen);
+  }
+}
+
+/** Component names directly referenced by a component's props (one hop). */
+function directDependencies(comp: DefinedComponent<any, any>, reg: SchemaRegistry): Set<string> {
+  const acc = new Set<string>();
+  const shape = getObjectShape(comp.props);
+  if (shape) {
+    for (const field of Object.values(shape)) collectSchemaRefs(field, reg, acc, new Set());
+  }
+  return acc;
+}
+
+/**
+ * Resolve the set of component names to keep for a prompt subset: the requested
+ * allow-list, always the root, and (unless disabled) the transitive closure of
+ * sub-component dependencies. Unknown requested names throw.
+ */
+function resolveComponentSubset(
+  components: Record<string, DefinedComponent<any, any>>,
+  reg: SchemaRegistry,
+  requested: string[],
+  root: string | undefined,
+  includeDependencies: boolean,
+): Set<string> {
+  for (const name of requested) {
+    if (!components[name]) {
+      const available = Object.keys(components).join(", ");
+      throw new Error(
+        `[prompt] Component "${name}" was not found in components. Available components: ${available}`,
+      );
+    }
+  }
+
+  const kept = new Set<string>(requested);
+
+  // Walk the dependency closure of the *listed* components only. The root is
+  // intentionally not a seed here: roots typically render every component as a
+  // child, so expanding the root's deps would pull the whole library back in
+  // and defeat the subset.
+  if (includeDependencies) {
+    const queue = [...requested];
+    while (queue.length > 0) {
+      const name = queue.shift() as string;
+      const comp = components[name];
+      if (!comp) continue;
+      for (const dep of directDependencies(comp, reg)) {
+        // Only library components are kept; non-component tags (e.g. ActionExpression)
+        // already resolve in signatures and don't need to be in the kept set.
+        if (components[dep] && !kept.has(dep)) {
+          kept.add(dep);
+          queue.push(dep);
+        }
+      }
+    }
+  }
+
+  // The root is always kept so the prompt stays self-consistent, but its own
+  // dependencies are not expanded (see above).
+  if (root) kept.add(root);
+
+  return kept;
+}
+
 // ─── Library ────────────────────────────────────────────────────────────────
 
 export interface Library<C = unknown> {
@@ -373,11 +498,34 @@ export function createLibrary<C = unknown>(input: LibraryDefinition<C>): Library
     root: input.root,
 
     prompt(options?: PromptOptions): string {
+      // `componentAllowlist` is a subset control, not a prompt field — pull it
+      // out so it never leaks into the PromptSpec via the spread below.
+      const { componentAllowlist, ...promptFields } = options ?? {};
+
+      let activeComponents = componentsRecord;
+      let activeGroups = input.componentGroups;
+
+      if (componentAllowlist) {
+        const kept = resolveComponentSubset(
+          componentsRecord,
+          reg,
+          componentAllowlist.components,
+          input.root,
+          componentAllowlist.includeDependencies !== false,
+        );
+        activeComponents = Object.fromEntries(
+          Object.entries(componentsRecord).filter(([name]) => kept.has(name)),
+        );
+        activeGroups = input.componentGroups
+          ?.map((g) => ({ ...g, components: g.components.filter((c) => kept.has(c)) }))
+          .filter((g) => g.components.length > 0);
+      }
+
       const spec: PromptSpec = {
         root: input.root,
-        components: buildComponentSpecs(componentsRecord, reg),
-        componentGroups: input.componentGroups,
-        ...options,
+        components: buildComponentSpecs(activeComponents, reg),
+        componentGroups: activeGroups,
+        ...promptFields,
       };
       return generatePrompt(spec);
     },
