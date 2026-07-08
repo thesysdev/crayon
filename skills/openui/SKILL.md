@@ -7,7 +7,7 @@ description: "Build, scaffold, debug, or document OpenUI and OpenUI Lang applica
 
 OpenUI is a full-stack Generative UI framework centered on **OpenUI Lang**, a compact, streaming-first language for model-generated UI. Do not treat OpenUI as React-only: the core language, parser, prompt generation, runtime evaluation, and types live in `@openuidev/lang-core`; React, Vue, Svelte, and no-build browser integrations sit on top of that core.
 
-Use the local repository checkout as the source of truth when available. If this skill is installed outside the repo, use only first-party OpenUI sources: the GitHub repo at `https://github.com/thesysdev/openui` and docs at `https://www.openui.com`.
+Use the local repository checkout as the source of truth when it matches the package version the user is actually using. If the task installs `latest` or works in a generated app, compare local source against installed package exports, generated CLI templates, and first-party docs before assuming the checkout is newer. If this skill is installed outside the repo, use only first-party OpenUI sources: the GitHub repo at `https://github.com/thesysdev/openui` and docs at `https://www.openui.com`.
 
 ## Current Package Map
 
@@ -107,6 +107,26 @@ export function Chat() {
 
 `fetchLLM` talks only to the app's own route and posts `{ threadId, messages }`; the provider API key stays server-side in that route. The route must return a streaming `Response` that the selected adapter can parse. Call adapter factories, for example `agUIAdapter()`, `openAIAdapter()`, `openAIReadableStreamAdapter()`, `openAIResponsesAdapter()`, or `langGraphAdapter()`, and pair them with the matching message format when one is needed.
 
+There are two valid `llm` wiring patterns:
+
+- Use `fetchLLM({ url, streamAdapter, messageFormat })` for ordinary POST-to-route integrations. The option is named `streamAdapter`.
+- Implement `ChatLLM` directly when the scaffold or app needs custom transport. Direct `ChatLLM` objects use `streamProtocol`, not `streamAdapter`.
+
+```ts
+import { type ChatLLM, openAIAdapter } from "@openuidev/react-ui";
+
+const llm: ChatLLM = {
+  streamProtocol: openAIAdapter(),
+  send: ({ threadId, messages, signal }) =>
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId, messages }),
+      signal,
+    }),
+};
+```
+
 ### Integrate into existing apps
 
 - When adding React UI to an existing React app, install peers explicitly and keep `zustand` on the current supported major: `npm install @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless zod "zustand@^4.5.5"`.
@@ -114,6 +134,32 @@ export function Chat() {
 - Vite or strict TypeScript: before side-effect CSS imports, ensure the app has `/// <reference types="vite/client" />` or a declaration such as `declare module "*.css";`.
 - Import React UI CSS once, normally `@openuidev/react-ui/components.css` plus `@openuidev/react-ui/styles/index.css`; use `@openuidev/react-ui/layered/styles/index.css` when the app needs cascade-layered overrides.
 - Examples/docs may import adapters from `@openuidev/react-headless`; React UI apps can also import those adapters from `@openuidev/react-ui` because it re-exports headless APIs.
+
+For an existing chat app that already owns message state, render only assistant GenUI responses with `Renderer` and `openuiChatLibrary`:
+
+```tsx
+import { Renderer } from "@openuidev/react-lang";
+import { openuiChatLibrary } from "@openuidev/react-ui";
+import "@openuidev/react-ui/components.css";
+import "@openuidev/react-ui/styles/index.css";
+
+export function AssistantGenUI({
+  response,
+  isStreaming,
+}: {
+  response: string;
+  isStreaming?: boolean;
+}) {
+  return (
+    <Renderer
+      response={response}
+      library={openuiChatLibrary}
+      isStreaming={isStreaming}
+      onError={(error) => console.error(error)}
+    />
+  );
+}
+```
 
 ### Start from examples
 
@@ -168,6 +214,7 @@ Use the runtime package that matches the app when adding custom components or bu
 
 - Install `zod` if the host project does not already have it.
 - Use `.tsx` for React library files that contain JSX; reserve `.ts` for non-JSX libraries.
+- To integrate third-party React component libraries such as Material UI, wrap their components in `defineComponent`; the OpenUI schema still comes from `zod/v4`, and the renderer can return any valid React element.
 
 ```tsx
 import { createLibrary, defineComponent } from "@openuidev/react-lang";
@@ -287,7 +334,22 @@ There is no current `nodePlaceholder` renderer prop.
 
 - Run `openui generate` against the library file before using a custom library in an app.
 - Run the host app's TypeScript/build checks after existing-app integrations, especially when adding React UI CSS imports or Next client components.
+- Validate canned OpenUI Lang with `createParser(...).parse(...)` and inspect `result.meta.errors`; do not look for top-level `result.errors`.
 - Treat parse/runtime errors surfaced through `Renderer` `onError` or parser results as LLM-correctable feedback: unknown components, missing required props, excess positional args, inline `Query`/`Mutation`, runtime errors, or unresolved refs should be fed back into the next model turn.
+- Vite large chunk warnings from default React UI/chat libraries are not automatically failures; chart/UI dependencies can be substantial.
+- For scoped agent tests, keep caches/stores inside the assigned workspace when needed, for example `npm_config_cache=$PWD/.npm-cache npm install` or `pnpm install --store-dir .pnpm-store`.
+
+```ts
+import { createParser } from "@openuidev/react-lang";
+import { openuiChatLibrary } from "@openuidev/react-ui";
+
+const parser = createParser(openuiChatLibrary.toJSONSchema(), "Card");
+const result = parser.parse(response);
+const errors = result.meta?.errors ?? [];
+if (errors.length > 0) throw new Error(JSON.stringify(errors, null, 2));
+```
+
+Use root `"Card"` for `openuiChatLibrary`, `"Stack"` for `openuiLibrary`, and the configured custom root for custom libraries.
 
 ## Built-in Libraries and Styles
 
@@ -296,6 +358,7 @@ For the default React component library, use `@openuidev/react-ui`:
 ```ts
 import { Renderer } from "@openuidev/react-lang";
 import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui";
+import "@openuidev/react-ui/components.css";
 import "@openuidev/react-ui/styles/index.css";
 
 const prompt = openuiLibrary.prompt(openuiPromptOptions);
@@ -309,12 +372,56 @@ Useful React UI exports:
 - `fetchLLM`, `restStorage`, stream adapters, and message formats: self-hosted Agent Interface backend wiring.
 - `FullScreen`, `Copilot`, `BottomTray`: prebuilt chat surfaces.
 - `ThemeProvider`, `createTheme`: theming.
+- `@openuidev/react-ui/components.css`: component-level CSS used by React UI components.
 - `@openuidev/react-ui/styles/index.css`: default unlayered styles.
 - `@openuidev/react-ui/layered/styles/index.css`: cascade-layered styles for easier CSS overrides.
 
+## Theme Agent Interface
+
+Map host-company design tokens into `AgentInterface` with a `ThemeProps` object. Prefer `lightTheme`/`darkTheme` with `createTheme`; the old `theme` prop on `ThemeProvider` is a deprecated alias for `lightTheme`.
+
+```tsx
+import { AgentInterface, createTheme, type ThemeProps } from "@openuidev/react-ui";
+
+const companyChatTheme: ThemeProps = {
+  lightTheme: createTheme({
+    background: "oklch(0.98 0.01 250)",
+    interactiveAccentDefault: "oklch(0.55 0.18 255)",
+    chatUserResponseBg: "oklch(0.55 0.18 255)",
+    chatUserResponseText: "oklch(0.99 0 0)",
+    radiusM: "10px",
+    fontBody: "Inter, system-ui, sans-serif",
+    defaultChartPalette: ["#2557d6", "#00a67d", "#f4a261"],
+  }),
+  darkTheme: createTheme({
+    background: "oklch(0.16 0.02 255)",
+    interactiveAccentDefault: "oklch(0.72 0.14 255)",
+    chatUserResponseBg: "oklch(0.72 0.14 255)",
+    chatUserResponseText: "oklch(0.12 0.01 255)",
+  }),
+};
+
+const starters = [
+  { displayText: "Summarize pipeline", prompt: "Summarize the current sales pipeline." },
+];
+
+<AgentInterface
+  llm={llm}
+  theme={companyChatTheme}
+  logoUrl="/brand/logo.svg"
+  agentName="Acme Assistant"
+  starters={starters}
+  starterVariant="long"
+/>;
+```
+
+Use `disableThemeProvider` only when the app already wraps the chatbot in a compatible OpenUI `ThemeProvider`; otherwise leave the built-in provider enabled.
+
 ## First-Party Sources
 
-Use both source code and docs when useful. Prefer the local checkout when it exists because it matches the user's working version. Use docs for conceptual guidance, workflows, and narrative API explanations. For exact exports, generated signatures, package behavior, and examples, prefer source files, package READMEs, and generated prompts. If sources conflict, trust the local checkout for work in this repo; otherwise compare the GitHub repo and hosted docs. Some paths exist only in newer checkouts; if a local path is absent, use the matching first-party remote source.
+Use both source code and docs when useful. Prefer the local checkout only when it matches the user's working version. Use docs for conceptual guidance, workflows, and narrative API explanations. For exact exports, generated signatures, package behavior, and examples, prefer source files, package READMEs, generated prompts, generated CLI templates, and installed package `.d.ts` files. If sources conflict, trust the package or generated template actually being used; otherwise compare the GitHub repo and hosted docs. Some paths exist only in newer checkouts; if a local path is absent, use the matching first-party remote source.
+
+Before trusting a local checkout, compare it against the task target: inspect the app's `package.json`/lockfile, run `npm view @openuidev/react-ui version` when using public `latest`, and check installed exports under `node_modules/@openuidev/*`. An older local checkout can lack APIs exported by the installed package.
 
 Local checkout paths to inspect:
 
