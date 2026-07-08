@@ -12,10 +12,20 @@ export type CloudAuthMethod = "oauth" | "manual" | "skip";
 /** How the cloud key was obtained (for telemetry) — auth method + the `--api-key` flag case. */
 export type ResolvedAuthMethod = CloudAuthMethod | "apikey-flag";
 
+const cloudAuthStartedFunnelProps = {
+  funnel: "cli_create",
+  funnel_version: "frontloaded_cloud_setup_v1",
+  step_rank: "0410",
+  step_key: "cloud_auth_started",
+} as const;
+
 /** Sign in via the browser and mint an OpenUI Cloud API key for the user's org. */
 export async function mintCloudApiKey(projectName: string): Promise<string> {
   const auth = new Authenticator({ issuerUrl: THESYS_ISSUER_URL, clientId: THESYS_CLIENT_ID });
-  telemetry.capture("cli_cloud_oidc_started");
+  telemetry.capture("cli_cloud_oidc_started", {
+    ...cloudAuthStartedFunnelProps,
+    auth_method: "oauth",
+  });
   await auth.initialize();
   const { accessToken, userInfo } = await auth.authenticate();
 
@@ -76,11 +86,14 @@ export async function resolveCloudApiKey(opts: {
     }
     const { select } = await import("@inquirer/prompts");
     method = (await select({
-      message: "Connect to OpenUI Cloud:",
+      message: "Connect OpenUI Cloud",
       choices: [
-        { name: "Sign in with Thesys (opens a browser, mints a key)", value: "oauth" },
-        { name: "Paste an existing API key", value: "manual" },
-        { name: "Skip — add THESYS_API_KEY to .env later", value: "skip" },
+        {
+          name: "Sign in to Thesys — creates an API key and saves it to .env (recommended)",
+          value: "oauth",
+        },
+        { name: "Paste existing Thesys API key", value: "manual" },
+        { name: "Set up later", value: "skip" },
       ],
     })) as CloudAuthMethod;
   }

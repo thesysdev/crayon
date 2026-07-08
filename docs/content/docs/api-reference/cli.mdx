@@ -53,22 +53,28 @@ openui create [options]
 
 **Options**
 
-| Flag                  | Description                                             |
-| --------------------- | ------------------------------------------------------- |
-| `-n, --name <string>` | Project name (directory to create)                      |
-| `--skill`             | Install the OpenUI agent skill for AI coding assistants |
-| `--no-skill`          | Skip installing the OpenUI agent skill                  |
-| `--no-interactive`    | Fail instead of prompting for missing input             |
+| Flag                        | Description                                               |
+| --------------------------- | --------------------------------------------------------- |
+| `-n, --name <string>`       | Project name (directory to create)                        |
+| `-t, --template <template>` | AI setup/template: `openui-cloud` or `openui-self-hosted` |
+| `--api-key <key>`           | OpenUI Cloud API key; skips sign-in for the Cloud setup   |
+| `--auth <method>`           | Cloud auth method: `oauth`, `manual`, or `skip`           |
+| `--skill`                   | Install the OpenUI agent skill for AI coding assistants   |
+| `--no-skill`                | Skip installing the OpenUI agent skill                    |
+| `--no-install`              | Scaffold without running dependency installation          |
+| `--no-interactive`          | Fail instead of prompting for missing input               |
 
-When run interactively (default), the CLI prompts for any missing options. Pass `--no-interactive` in CI or scripted environments to surface missing required flags as errors instead.
+When run interactively (default), the CLI prompts for any missing options. It asks you to choose your AI setup: **OpenUI Cloud** is the fastest setup with free hosted models, while **OpenAI-compatible provider** uses your own key and self-hosts the AI route in the generated app. Pass `--no-interactive` in CI or scripted environments to surface missing required flags as errors instead.
 
 **What it does**
 
-1. Copies the bundled `openui-chat` Next.js template into `<name>/`
-2. Rewrites `workspace:*` dependency versions to `latest`
-3. Auto-detects your package manager (npm, pnpm, yarn, bun)
-4. Installs dependencies
+1. Resolves the project name and AI setup
+2. Copies the selected Next.js template into `<name>/`
+3. Rewrites `workspace:*` dependency versions to `latest`
+4. Writes the relevant `.env` values, including Thesys sign-in/API-key setup for OpenUI Cloud
 5. Optionally installs the [OpenUI agent skill](/docs/openui-lang/agent-skill) for AI coding assistants (e.g. Claude, Cursor, Copilot)
+6. Auto-detects your package manager (npm, pnpm, yarn, bun)
+7. Installs dependencies
 
 The generated project includes a `generate:prompt` script that runs `openui generate` as part of `dev` and `build`.
 
@@ -81,12 +87,15 @@ Pass `--skill` or `--no-skill` to skip the prompt. In `--no-interactive` mode th
 **Examples**
 
 ```bash
-# Interactive — prompts for project name and skill installation
+# Interactive — prompts for project name, AI setup, env setup, and skill installation
 openui create
 
+# Select an AI setup explicitly
+openui create --name my-app --template openui-cloud
+openui create --name my-app --template openui-self-hosted
+
 # Non-interactive
-openui create --name my-app
-openui create --no-interactive --name my-app
+openui create --no-interactive --name my-app --template openui-cloud --auth skip
 
 # Explicitly install or skip the agent skill
 openui create --name my-app --skill

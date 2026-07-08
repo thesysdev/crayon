@@ -7,7 +7,10 @@ The CLI scaffolds a complete Next.js app: a streaming chat with a sidebar, threa
 
 ## 1. Create
 
-Run the create command and answer the prompts. One prompt asks **OpenUI Cloud or self-hosted?** Your choice decides which backend the scaffold wires up.
+Run the create command and answer the prompts. One prompt asks you to choose your AI setup:
+**OpenUI Cloud** is the fastest setup with free hosted models, while
+**OpenAI-compatible provider** uses your own key and self-hosts the AI route in the
+generated app.
 
 ```bash tab="pnpm" tab-group="pkg"
 pnpx @openuidev/cli@latest create
@@ -36,7 +39,7 @@ cd my-agent
 <Tabs groupId="deploy" items={["OpenUI Cloud", "Self-hosted"]} persist>
   <Tab value="OpenUI Cloud">
 
-The CLI will prompt you to sign in to Thesys and generate an API Key in your browser, or you can generate your own on the [Thesys console](https://console.thesys.dev/keys) and add it to `.env.local`:
+The CLI will prompt you to sign in to Thesys and create an API key in your browser, or you can generate your own on the [Thesys console](https://console.thesys.dev/keys) and add it to `.env`:
 
 ```bash
 THESYS_API_KEY=sk-th-your-key-here
@@ -47,13 +50,18 @@ The scaffold's `/api/chat` route proxies to Cloud with this key, so it stays on 
   </Tab>
   <Tab value="Self-hosted">
 
-The scaffold generates an `/api/chat` route that calls OpenAI on the server. Add your key to `.env.local`:
+The scaffold generates an `/api/chat` route that calls an OpenAI-compatible provider on the server. Add your provider key to `.env`:
 
 ```bash
-OPENAI_API_KEY=sk-your-key-here
+OPENAI_API_KEY=your-provider-key-here
 ```
 
-The key stays on the server. The browser only ever talks to your route, never the provider.
+The key stays on the server. The browser only ever talks to your route, never the provider. For providers with custom OpenAI-compatible endpoints, also set:
+
+```bash
+OPENAI_BASE_URL=https://your-provider.example/v1
+OPENAI_MODEL=your-provider-model
+```
 
   </Tab>
 </Tabs>
@@ -99,4 +107,4 @@ A working agent out of the box:
 - **An example artifact:** the scaffold ships a slides/report artifact you can prompt for and open in the workspace. See [Artifacts](/docs/agent/core-concepts/artifacts).
 - **Generative UI, on by default:** the assistant renders interactive components inside messages. See [Generative UI](/docs/agent/core-concepts/generative-ui).
 
-The difference is only in the backing: **OpenUI Cloud** manages history, artifacts, and built-in tools for you, while **self-hosted** uses your own OpenAI route and a local store the scaffold generates.
+The difference is only in the backing: **OpenUI Cloud** manages history, artifacts, and built-in tools for you, while **self-hosted** uses your own OpenAI-compatible provider route and a local store the scaffold generates.

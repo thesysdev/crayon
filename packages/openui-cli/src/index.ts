@@ -30,9 +30,9 @@ program.hook("preAction", (_thisCommand, actionCommand) => {
 
 program
   .command("create")
-  .description("Scaffold a new Next.js app (OpenUI Self Hosted or OpenUI Cloud)")
+  .description("Scaffold a new Next.js app with OpenUI Cloud or your provider")
   .option("-n, --name <string>", "Project name")
-  .option("-t, --template <template>", "Template: openui-self-hosted | openui-cloud")
+  .option("-t, --template <template>", "AI setup: openui-cloud | openui-self-hosted")
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | manual | skip")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")

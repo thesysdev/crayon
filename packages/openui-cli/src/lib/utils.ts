@@ -1,14 +1,35 @@
 import { CloudAuthMethod } from "../auth/mint";
 import { TemplateName } from "../commands/create-app";
-import { CreateError, Telemetry } from "./telemetry";
+import { CreateError, telemetry as defaultTelemetry, type Telemetry } from "./telemetry";
 
-export function handleCliError(e: unknown, event: string, telemetry?: Telemetry): void {
+// `handleCliError` is shared by multiple commands, but only create failures
+// belong to the ranked create funnel. Keep these props separate so generate
+// failures do not get mislabeled as create-flow drop-offs.
+const CREATE_FAILURE_FUNNEL_PROPS = {
+  funnel: "cli_create",
+  funnel_version: "frontloaded_cloud_setup_v1",
+  step_rank: "9000",
+  step_key: "create_failed",
+} as const;
+
+export function handleCliError(
+  e: unknown,
+  event: string,
+  telemetry: Telemetry = defaultTelemetry,
+): void {
   const known = e instanceof CreateError;
   const message = e instanceof Error ? e.message : String(e);
   console.error(known ? `Error: ${message}` : message);
 
-  if (telemetry) {
-    telemetry.capture(event, { stage: known ? e.stage : "unknown", error: message.slice(0, 200) });
+  if (event === "cli_create_failed") {
+    // Do not send raw create error messages: they can include user-entered
+    // project names or paths. The funnel rank is enough to count this drop-off.
+    telemetry.capture(event, CREATE_FAILURE_FUNNEL_PROPS);
+  } else {
+    telemetry.capture(event, {
+      stage: known ? e.stage : "unknown",
+      error: message.slice(0, 200),
+    });
   }
 
   process.exitCode = 1;
