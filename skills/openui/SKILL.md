@@ -177,13 +177,13 @@ For compact side rails, prompt generated OpenUI output toward one-column `Card`/
 
 ### Start from examples
 
-OpenUI publishes first-party examples under the GitHub `examples/` directory. Use these examples as implementation references before inventing a new integration pattern:
+OpenUI publishes first-party examples at `https://github.com/thesysdev/openui/tree/main/examples`. Use these examples as implementation references before inventing a new integration pattern:
 
-- Starters and apps: `examples/openui-chat`, `examples/openui-dashboard`, `examples/openui-artifact-demo`.
-- Agent/chat integrations: `examples/vercel-ai-chat`, `examples/langgraph-chat`, `examples/mastra-chat`, `examples/multi-agent-chat`, `examples/supabase-chat`, `examples/fastapi-backend`.
-- Framework/runtime examples: `examples/vue-chat`, `examples/svelte-chat`, `examples/openui-react-native`, `examples/react-email`.
-- Third-party UI/component examples: `examples/material-ui-chat`, `examples/shadcn-chat`, `examples/form-generator`, `examples/hands-on-table-chat`.
-- Harnesses: `examples/harnesses/pi-agent-harness`, `examples/harnesses/vercel-eve`.
+- Starters and apps: `openui-chat`, `openui-dashboard`, `openui-artifact-demo`.
+- Agent/chat integrations: `vercel-ai-chat`, `langgraph-chat`, `mastra-chat`, `multi-agent-chat`, `supabase-chat`, `fastapi-backend`.
+- Framework/runtime examples: `vue-chat`, `svelte-chat`, `openui-react-native`, `react-email`.
+- Third-party UI/component examples: `material-ui-chat`, `shadcn-chat`, `form-generator`, `hands-on-table-chat`.
+- Harnesses: `harnesses/pi-agent-harness`, `harnesses/vercel-eve`.
 
 ### Generate a prompt or schema
 
@@ -380,7 +380,7 @@ Useful React UI exports:
 
 Map host-company design tokens into `AgentInterface` with a `ThemeProps` object. Prefer `lightTheme`/`darkTheme` with `createTheme`; the old `theme` prop on `ThemeProvider` is a deprecated alias for `lightTheme`.
 
-Treat `createTheme()` tokens as installed-version-specific. In development it validates keys against the runtime's default theme keys; unknown keys are warned and ignored. Verify custom keys against installed `node_modules/@openuidev/react-ui` or first-party `packages/react-ui/src/components/ThemeProvider/defaultTheme.ts` before using them, and do not rely on type-only fields such as chart palette options unless the installed runtime accepts them.
+Treat `createTheme()` tokens as installed-version-specific. In development it validates keys against the runtime's default theme keys; unknown keys are warned and ignored. Verify custom keys against installed `node_modules/@openuidev/react-ui`; if package source is unavailable, consult first-party GitHub source from `https://github.com/thesysdev/openui/tree/main/packages` rather than relying on type-only fields such as chart palette options.
 
 ```tsx
 import { AgentInterface, createTheme, type ThemeProps } from "@openuidev/react-ui";
