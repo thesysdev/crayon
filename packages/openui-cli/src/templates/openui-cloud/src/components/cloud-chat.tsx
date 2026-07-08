@@ -93,8 +93,10 @@ export function CloudChat() {
       >
         <AgentInterface.MobileHeader
           className="openui-cloud-mobile-header"
-          logo={<ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />}
           agentName=""
+          actions={
+            <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+          }
         />
         <AgentInterface.ThreadHeader className="openui-cloud-thread-header">
           <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
