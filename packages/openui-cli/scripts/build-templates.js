@@ -11,9 +11,7 @@ function shouldCopyTemplatePath(templateDir, src) {
   const basename = path.basename(src);
 
   if (
-    ["node_modules", ".next", ".turbo", "dist", "build", "out", "coverage", ".vercel"].includes(
-      top,
-    )
+    ["node_modules", ".next", ".turbo", "dist", "build", "out", "coverage", ".vercel"].includes(top)
   ) {
     return false;
   }

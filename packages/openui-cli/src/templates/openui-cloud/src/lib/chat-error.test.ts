@@ -1,14 +1,31 @@
 import { describe, expect, it } from "vitest";
 
-import { BILLING_CREDITS_ACTION_LABEL, BILLING_CREDITS_ERROR_MESSAGE, BILLING_URL } from "./billing";
+import {
+  BILLING_CREDITS_ACTION_LABEL,
+  BILLING_CREDITS_ERROR_MESSAGE,
+  BILLING_URL,
+  GENERIC_CHAT_ERROR_MESSAGE,
+} from "./billing";
 import { getChatErrorMessage } from "./chat-error";
 
 describe("getChatErrorMessage", () => {
-  it("shows a billing call-to-action for 429 responses", async () => {
-    const message = await getChatErrorMessage(new Response(null, { status: 429 }));
+  it("shows a billing call-to-action for 429 responses when enabled", async () => {
+    const message = await getChatErrorMessage(new Response(null, { status: 429 }), {
+      showBillingCreditsNotice: true,
+    });
 
     expect(message).toBe(BILLING_CREDITS_ERROR_MESSAGE);
     expect(message).toContain(BILLING_CREDITS_ACTION_LABEL);
+    expect(message).not.toContain(BILLING_URL);
+  });
+
+  it("uses neutral copy for 429 responses when billing notices are disabled", async () => {
+    const message = await getChatErrorMessage(new Response(null, { status: 429 }), {
+      showBillingCreditsNotice: false,
+    });
+
+    expect(message).toBe(GENERIC_CHAT_ERROR_MESSAGE);
+    expect(message).not.toContain(BILLING_CREDITS_ACTION_LABEL);
     expect(message).not.toContain(BILLING_URL);
   });
 

@@ -10,6 +10,7 @@ interface CloudChatLLMOptions {
   initialModel: string;
   onRequestStart?: () => void;
   onBillingCreditsRequired?: () => void;
+  showBillingCreditsNotice?: boolean;
 }
 
 export interface CloudChatLLM extends ChatLLM {
@@ -20,6 +21,7 @@ export function createCloudChatLLM({
   initialModel,
   onRequestStart,
   onBillingCreditsRequired,
+  showBillingCreditsNotice = false,
 }: CloudChatLLMOptions): CloudChatLLM {
   let selectedModel = initialModel;
 
@@ -44,11 +46,11 @@ export function createCloudChatLLM({
 
       if (response.ok) return response;
 
-      if (response.status === 429) {
+      if (response.status === 429 && showBillingCreditsNotice) {
         onBillingCreditsRequired?.();
       }
 
-      throw new Error(await getChatErrorMessage(response));
+      throw new Error(await getChatErrorMessage(response, { showBillingCreditsNotice }));
     },
     streamProtocol: openAIResponsesAdapter(),
   };

@@ -1,7 +1,20 @@
-import { BILLING_CREDITS_ERROR_MESSAGE } from "./billing";
+import {
+  BILLING_CREDITS_ERROR_MESSAGE,
+  GENERIC_CHAT_ERROR_MESSAGE,
+  shouldShowBillingCreditsNotice,
+} from "./billing";
 
-export async function getChatErrorMessage(response: Response): Promise<string> {
-  if (response.status === 429) return BILLING_CREDITS_ERROR_MESSAGE;
+interface ChatErrorMessageOptions {
+  showBillingCreditsNotice?: boolean;
+}
+
+export async function getChatErrorMessage(
+  response: Response,
+  { showBillingCreditsNotice = shouldShowBillingCreditsNotice() }: ChatErrorMessageOptions = {},
+): Promise<string> {
+  if (response.status === 429) {
+    return showBillingCreditsNotice ? BILLING_CREDITS_ERROR_MESSAGE : GENERIC_CHAT_ERROR_MESSAGE;
+  }
 
   try {
     const data = (await response.clone().json()) as { error?: { message?: unknown } };

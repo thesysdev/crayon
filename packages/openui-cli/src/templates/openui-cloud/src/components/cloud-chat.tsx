@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "@/hooks/use-system-theme";
+import { shouldShowBillingCreditsNotice } from "@/lib/billing";
 import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
 import { DEFAULT_MODEL, isKnownModelId, MODEL_STORAGE_KEY } from "@/lib/models";
 import { defineArtifactCategories } from "@openuidev/react-headless";
@@ -20,6 +21,8 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   { name: "Reports", renderers: [reportArtifactRenderer] },
 ]);
 
+const showBillingCreditsNotice = shouldShowBillingCreditsNotice();
+
 export function CloudChat() {
   const mode = useTheme();
   const [selectedModel, setSelectedModel] = useState(() => {
@@ -33,7 +36,10 @@ export function CloudChat() {
   const [llm] = useState(() =>
     createCloudChatLLM({
       initialModel: selectedModel,
-      onRequestStart: () => setBillingCreditsRequired(false),
+      showBillingCreditsNotice,
+      onRequestStart: () => {
+        if (showBillingCreditsNotice) setBillingCreditsRequired(false);
+      },
       onBillingCreditsRequired: () => {
         setBillingCreditsRequired(true);
         setBillingDialogOpen(true);
@@ -100,7 +106,9 @@ export function CloudChat() {
           <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
         </AgentInterface.ThreadHeader>
       </AgentInterface>
-      <BillingCreditsDialog open={billingDialogOpen} onOpenChange={setBillingDialogOpen} />
+      {showBillingCreditsNotice ? (
+        <BillingCreditsDialog open={billingDialogOpen} onOpenChange={setBillingDialogOpen} />
+      ) : null}
     </div>
   );
 }

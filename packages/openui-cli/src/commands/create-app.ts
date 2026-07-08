@@ -29,9 +29,7 @@ function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const basename = path.basename(src);
   // never copy install/build artifacts that may sit in a template dir
   if (
-    ["node_modules", ".next", ".turbo", "dist", "build", "out", "coverage", ".vercel"].includes(
-      top,
-    )
+    ["node_modules", ".next", ".turbo", "dist", "build", "out", "coverage", ".vercel"].includes(top)
   ) {
     return false;
   }

@@ -1,4 +1,4 @@
-import { BILLING_CREDITS_ERROR_CODE, BILLING_CREDITS_ERROR_MESSAGE } from "@/lib/billing";
+import { getBillingCreditsErrorDetails } from "@/lib/billing";
 import { envOr, requiredEnv } from "@/lib/env";
 import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
@@ -73,10 +73,7 @@ export async function POST(req: Request) {
     if (isRateLimitError(e)) {
       return Response.json(
         {
-          error: {
-            code: BILLING_CREDITS_ERROR_CODE,
-            message: BILLING_CREDITS_ERROR_MESSAGE,
-          },
+          error: getBillingCreditsErrorDetails(),
         },
         { status: 429 },
       );
@@ -97,17 +94,16 @@ export async function POST(req: Request) {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
         }
       } catch (err) {
-        const message = isRateLimitError(err)
-          ? BILLING_CREDITS_ERROR_MESSAGE
-          : err instanceof Error
-            ? err.message
-            : String(err);
+        const rateLimitErrorDetails = isRateLimitError(err)
+          ? getBillingCreditsErrorDetails()
+          : undefined;
+        const message = rateLimitErrorDetails?.message ?? (err instanceof Error ? err.message : String(err));
         controller.enqueue(
           encoder.encode(
             `data: ${JSON.stringify({
               type: "error",
               message,
-              ...(isRateLimitError(err) ? { code: BILLING_CREDITS_ERROR_CODE } : {}),
+              ...(rateLimitErrorDetails?.code ? { code: rateLimitErrorDetails.code } : {}),
             })}\n\n`,
           ),
         );
