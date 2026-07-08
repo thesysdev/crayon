@@ -41,13 +41,21 @@ Choose the package for the target runtime. For backend-only parsing or prompt/sc
 ### Scaffold
 
 ```bash
-npx @openuidev/cli@latest create --name my-openui-app --template openui-self-hosted
-cd my-openui-app
+npx @openuidev/cli@latest create --name genui-chat-app --template openui-self-hosted --no-skill --no-interactive
+cd genui-chat-app
 echo "OPENAI_API_KEY=sk-your-key-here" > .env
 npm run dev
 ```
 
-The CLI is the easiest way to scaffold a new OpenUI/GenUI app. It prompts for an OpenUI Cloud or self-hosted Agent Interface app when no template is passed. Use `--template openui-cloud` for the managed Cloud starter and `--template openui-self-hosted` for the app-owned model/storage starter. Use framework examples in this repo for Vue, Svelte, React Native, LangGraph, Mastra, Supabase, Vercel AI SDK, and other integrations.
+The CLI is the easiest way to scaffold a new OpenUI/GenUI app. It prompts for an OpenUI Cloud or self-hosted Agent Interface app when no template is passed. Use `--template openui-cloud` for the managed Cloud starter and `--template openui-self-hosted` for the app-owned model/storage starter. For unattended agent/CI use, pass `--template`, `--no-interactive`, and usually `--no-skill`.
+
+Use `--no-install` when the agent needs to control package-manager behavior explicitly:
+
+```bash
+npx @openuidev/cli@latest create --name genui-chat-app --template openui-self-hosted --no-skill --no-interactive --no-install
+```
+
+If scaffold install/build fails with `ERR_PNPM_IGNORED_BUILDS` for native packages such as `sharp` or `unrs-resolver`, do not treat the scaffold as broken. Approve the build scripts or rerun install/build in an environment where package build scripts are allowed. Use framework examples in this repo for Vue, Svelte, React Native, LangGraph, Mastra, Supabase, Vercel AI SDK, and other integrations.
 
 ### Choose OpenUI Cloud or self-hosted
 
@@ -96,6 +104,13 @@ export function Chat() {
 ```
 
 `fetchLLM` talks only to the app's own route and posts `{ threadId, messages }`; the provider API key stays server-side in that route. The route must return a streaming `Response` that the selected adapter can parse. Call adapter factories, for example `agUIAdapter()`, `openAIAdapter()`, `openAIReadableStreamAdapter()`, `openAIResponsesAdapter()`, or `langGraphAdapter()`, and pair them with the matching message format when one is needed.
+
+### Integrate into existing apps
+
+- Next.js App Router: render `Renderer` or `AgentInterface` from a client component; add `"use client"` at the top of the file that imports or renders them.
+- Vite or strict TypeScript: before side-effect CSS imports, ensure the app has `/// <reference types="vite/client" />` or a declaration such as `declare module "*.css";`.
+- Import React UI CSS once, normally `@openuidev/react-ui/components.css` plus `@openuidev/react-ui/styles/index.css`; use `@openuidev/react-ui/layered/styles/index.css` when the app needs cascade-layered overrides.
+- Examples/docs may import adapters from `@openuidev/react-headless`; React UI apps can also import those adapters from `@openuidev/react-ui` because it re-exports headless APIs.
 
 ### Start from examples
 
@@ -148,23 +163,28 @@ const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
 
 Use the runtime package that matches the app when adding custom components or building a runtime-specific library:
 
-```ts
+```tsx
 import { createLibrary, defineComponent } from "@openuidev/react-lang";
 import { z } from "zod/v4";
 
-const StatCard = defineComponent({
-  name: "StatCard",
-  description: "Displays a metric label and value.",
+const MetricCard = defineComponent({
+  name: "MetricCard",
+  description: "Shows a labeled metric.",
   props: z.object({
     label: z.string(),
     value: z.string(),
   }),
-  component: ({ props }) => null,
+  component: ({ props }) => (
+    <article>
+      <strong>{props.label}</strong>
+      <span>{props.value}</span>
+    </article>
+  ),
 });
 
 export const library = createLibrary({
-  root: "Stack",
-  components: [StatCard],
+  root: "MetricCard",
+  components: [MetricCard],
 });
 ```
 
@@ -256,6 +276,12 @@ Renderer props commonly include `response`, `library`, `isStreaming`, `onAction`
 During streaming, unresolved forward refs are expected. After the stream ends, inspect parser/renderer errors for unknown components, missing required props, excess args, inline `Query`/`Mutation`, runtime errors, or unresolved refs.
 
 There is no current `nodePlaceholder` renderer prop.
+
+## Verification
+
+- Run `openui generate` against the library file before using a custom library in an app.
+- Run the host app's TypeScript/build checks after existing-app integrations, especially when adding React UI CSS imports or Next client components.
+- Treat parse/runtime errors surfaced through `Renderer` `onError` or parser results as LLM-correctable feedback: unknown components, missing required props, excess positional args, inline `Query`/`Mutation`, runtime errors, or unresolved refs should be fed back into the next model turn.
 
 ## Built-in Libraries and Styles
 
