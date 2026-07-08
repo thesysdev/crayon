@@ -83,6 +83,8 @@ Use `AgentInterface` from `@openuidev/react-ui` for the full chat surface. It ow
 - `storage` is optional. Omit it for in-memory conversations; use `restStorage({ baseUrl })` or Cloud storage for persisted threads and artifacts.
 - Optional props include `artifactRenderers`, `artifactCategories`, `componentLibrary`, `components`, theme/branding, starters, routing, and children/slots.
 
+`AgentInterface` is a full app shell, not automatically a compact embedded widget. It measures its own container, switches to mobile layout below 768px, and still renders shell chrome unless slots override it. For a narrow assistant rail around 390px, prefer `Renderer` plus `openuiChatLibrary` when the host owns the chat layout; if using `AgentInterface`, replace slots such as `Sidebar`, `ThreadHeader`, `Composer`, or `Workspace` and scope CSS overrides to a host wrapper around `.openui-agent-*`.
+
 ```tsx
 import {
   AgentInterface,
@@ -106,6 +108,20 @@ export function Chat() {
 ```
 
 `fetchLLM` talks only to the app's own route and posts `{ threadId, messages }`; the provider API key stays server-side in that route. The route must return a streaming `Response` that the selected adapter can parse. Call adapter factories, for example `agUIAdapter()`, `openAIAdapter()`, `openAIReadableStreamAdapter()`, `openAIResponsesAdapter()`, or `langGraphAdapter()`, and pair them with the matching message format when one is needed.
+
+Match mock stream framing to the adapter. `openAIReadableStreamAdapter()` parses OpenAI SDK `toReadableStream()` NDJSON: one Chat Completions chunk JSON object per line, no `data:` prefix. `openAIAdapter()` is for SSE `data: {...}\n\n` chunks.
+
+```ts
+const chunks = [
+  { choices: [{ delta: { role: "assistant" }, finish_reason: null }] },
+  { choices: [{ delta: { content: "Hello" }, finish_reason: null }] },
+  { choices: [{ delta: {}, finish_reason: "stop" }] },
+];
+
+return new Response(chunks.map(JSON.stringify).join("\n") + "\n", {
+  headers: { "Content-Type": "application/x-ndjson" },
+});
+```
 
 There are two valid `llm` wiring patterns:
 
@@ -160,6 +176,8 @@ export function AssistantGenUI({
   );
 }
 ```
+
+For compact side rails, prompt generated OpenUI output toward one-column `Card`/`Stack` layouts, short lists, concise sections, and narrow-safe tables. Avoid row-wrapped metric cards, multi-column grids, wide tables, and dense charts inside a 390px rail unless the chosen component is explicitly responsive.
 
 ### Start from examples
 
@@ -380,6 +398,8 @@ Useful React UI exports:
 
 Map host-company design tokens into `AgentInterface` with a `ThemeProps` object. Prefer `lightTheme`/`darkTheme` with `createTheme`; the old `theme` prop on `ThemeProvider` is a deprecated alias for `lightTheme`.
 
+Treat `createTheme()` tokens as installed-version-specific. In development it validates keys against the runtime's default theme keys; unknown keys are warned and ignored. Verify custom keys against `node_modules/@openuidev/react-ui` or `packages/react-ui/src/components/ThemeProvider/defaultTheme.ts` before using them, and do not rely on type-only fields such as chart palette options unless the installed runtime accepts them.
+
 ```tsx
 import { AgentInterface, createTheme, type ThemeProps } from "@openuidev/react-ui";
 
@@ -391,7 +411,6 @@ const companyChatTheme: ThemeProps = {
     chatUserResponseText: "oklch(0.99 0 0)",
     radiusM: "10px",
     fontBody: "Inter, system-ui, sans-serif",
-    defaultChartPalette: ["#2557d6", "#00a67d", "#f4a261"],
   }),
   darkTheme: createTheme({
     background: "oklch(0.16 0.02 255)",
@@ -431,6 +450,7 @@ Local checkout paths to inspect:
 - `packages/react-headless/src` for the underlying chat state, hooks, storage/LLM adapter primitives, stream adapters, and message formats re-exported by `@openuidev/react-ui`.
 - `packages/react-ui/src/genui-lib` for OpenUI's built-in component libraries and generated prompt options.
 - `packages/react-ui/src/components/AgentInterface` for Agent Interface components and runtime behavior.
+- `packages/react-ui/src/components/ThemeProvider` for `createTheme()` validation and accepted runtime theme keys.
 - `packages/openui-cli/src/templates/openui-cloud` for the Cloud starter, server routes, env vars, and package wiring.
 - `docs/content/docs/openui-lang/specification-v05.mdx` for current language spec.
 - `docs/content/docs/openui-lang/syntax.mdx` for syntax.
