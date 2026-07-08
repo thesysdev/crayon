@@ -55,7 +55,9 @@ Use `--no-install` when the agent needs to control package-manager behavior expl
 npx @openuidev/cli@latest create --name genui-chat-app --template openui-self-hosted --no-skill --no-interactive --no-install
 ```
 
-If scaffold install/build fails with `ERR_PNPM_IGNORED_BUILDS` for native packages such as `sharp` or `unrs-resolver`, do not treat the scaffold as broken. Approve the build scripts or rerun install/build in an environment where package build scripts are allowed. Use framework examples in this repo for Vue, Svelte, React Native, LangGraph, Mastra, Supabase, Vercel AI SDK, and other integrations.
+If scaffold install/build fails with `ERR_PNPM_IGNORED_BUILDS` for native packages such as `sharp` or `unrs-resolver`, do not treat the scaffold as broken. Run `pnpm approve-builds` or `pnpm approve-builds --all`, then rerun install/build in an environment where package build scripts are allowed. Use framework examples in this repo for Vue, Svelte, React Native, LangGraph, Mastra, Supabase, Vercel AI SDK, and other integrations.
+
+For self-hosted template build checks, set `OPENAI_API_KEY` even if no real model call is made. The generated Next route creates the OpenAI client at module scope, so `OPENAI_API_KEY=sk-test pnpm run build` is a valid smoke test when no real request will be sent.
 
 ### Choose OpenUI Cloud or self-hosted
 
@@ -107,6 +109,7 @@ export function Chat() {
 
 ### Integrate into existing apps
 
+- When adding React UI to an existing React app, install peers explicitly and keep `zustand` on the current supported major: `npm install @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless zod "zustand@^4.5.5"`.
 - Next.js App Router: render `Renderer` or `AgentInterface` from a client component; add `"use client"` at the top of the file that imports or renders them.
 - Vite or strict TypeScript: before side-effect CSS imports, ensure the app has `/// <reference types="vite/client" />` or a declaration such as `declare module "*.css";`.
 - Import React UI CSS once, normally `@openuidev/react-ui/components.css` plus `@openuidev/react-ui/styles/index.css`; use `@openuidev/react-ui/layered/styles/index.css` when the app needs cascade-layered overrides.
@@ -139,8 +142,8 @@ OpenUI ships first-party examples in `examples/`. Use these actual repo examples
 ### Generate a prompt or schema
 
 ```bash
-npx @openuidev/cli@latest generate ./src/library.ts --out ./src/generated/system-prompt.txt
-npx @openuidev/cli@latest generate ./src/library.ts --json-schema --out ./src/generated/component-spec.json
+npx @openuidev/cli@latest generate ./src/library.tsx --out ./src/generated/system-prompt.txt
+npx @openuidev/cli@latest generate ./src/library.tsx --json-schema --out ./src/generated/component-spec.json
 ```
 
 The target module must export a library with `prompt()` and `toJSONSchema()`. By default the CLI looks for `library`, then `default`, then any matching export. It can also auto-detect prompt options from `promptOptions`, `options`, or an export ending in `PromptOptions`.
@@ -162,6 +165,9 @@ const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
 ### Define or extend a custom library
 
 Use the runtime package that matches the app when adding custom components or building a runtime-specific library:
+
+- Install `zod` if the host project does not already have it.
+- Use `.tsx` for React library files that contain JSX; reserve `.ts` for non-JSX libraries.
 
 ```tsx
 import { createLibrary, defineComponent } from "@openuidev/react-lang";
