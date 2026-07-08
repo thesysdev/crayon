@@ -119,20 +119,6 @@ export function Chat() {
 
 `fetchLLM` talks only to the app's own route and posts `{ threadId, messages }`; the provider API key stays server-side in that route. The route must return a streaming `Response` that the selected adapter can parse. Call adapter factories, for example `agUIAdapter()`, `openAIAdapter()`, `openAIReadableStreamAdapter()`, `openAIResponsesAdapter()`, or `langGraphAdapter()`, and pair them with the matching message format when one is needed.
 
-Match mock stream framing to the adapter. `openAIReadableStreamAdapter()` parses OpenAI SDK `toReadableStream()` NDJSON: one Chat Completions chunk JSON object per line, no `data:` prefix. `openAIAdapter()` is for SSE `data: {...}\n\n` chunks.
-
-```ts
-const chunks = [
-  { choices: [{ delta: { role: "assistant" }, finish_reason: null }] },
-  { choices: [{ delta: { content: "Hello" }, finish_reason: null }] },
-  { choices: [{ delta: {}, finish_reason: "stop" }] },
-];
-
-return new Response(chunks.map(JSON.stringify).join("\n") + "\n", {
-  headers: { "Content-Type": "application/x-ndjson" },
-});
-```
-
 There are two valid `llm` wiring patterns:
 
 - Use `fetchLLM({ url, streamAdapter, messageFormat })` for ordinary POST-to-route integrations. The option is named `streamAdapter`.
@@ -155,7 +141,7 @@ const llm: ChatLLM = {
 
 ### Integrate into existing apps
 
-- Version-sensitive: when adding React UI to an existing React app, inspect peer ranges and install peers explicitly, currently like `npm install @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless zod "zustand@^4.5.5"`.
+- Version-sensitive: when adding React UI to an existing React app, inspect installed `@openuidev/*` peer ranges and package-manager errors; add direct peers only when they are missing or incompatible.
 - Next.js App Router: render `Renderer` or `AgentInterface` from a client component; add `"use client"` at the top of the file that imports or renders them.
 - Vite or strict TypeScript: before side-effect CSS imports, ensure the app has `/// <reference types="vite/client" />` or a declaration such as `declare module "*.css";`.
 - Import React UI CSS once, normally `@openuidev/react-ui/components.css` plus `@openuidev/react-ui/styles/index.css`; use `@openuidev/react-ui/layered/styles/index.css` when the app needs cascade-layered overrides.
