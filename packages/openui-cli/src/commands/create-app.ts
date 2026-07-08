@@ -22,21 +22,6 @@ export interface CreateAppOptions {
   auth?: CloudAuthMethod;
 }
 
-function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
-  const rel = path.relative(templateDir, src);
-  if (!rel) return true;
-  const top = rel.split(path.sep)[0] ?? "";
-  const basename = path.basename(src);
-  // never copy install/build artifacts that may sit in a template dir
-  if (
-    ["node_modules", ".next", ".turbo", "dist", "build", "out", "coverage", ".vercel"].includes(top)
-  ) {
-    return false;
-  }
-  if (top === ".env" || top.startsWith(".env.")) return false;
-  return !["next-env.d.ts", "tsconfig.tsbuildinfo"].includes(basename);
-}
-
 export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   const interactive = !options.noInteractive;
   const t0 = Date.now();
@@ -91,10 +76,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   }
 
   console.info(`\nScaffolding ${template} into "${name}"...\n`);
-  fs.cpSync(templateDir, targetDir, {
-    recursive: true,
-    filter: (src) => shouldCopyTemplatePath(templateDir, src),
-  });
+  fs.cpSync(templateDir, targetDir, { recursive: true });
 
   // package.json: set the project name and de-vendor monorepo-local deps
   // (workspace:* / file: / catalog:) to the published "latest". link: deps are
