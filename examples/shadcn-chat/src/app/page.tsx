@@ -92,14 +92,6 @@ export default function Page() {
             prompt:
               "Build a 'Global Tech Industry Report 2025' with tags and Tabs containing six chart types: a grouped BarChart (quarterly revenue, 3 series), a LineChart (monthly trends, 2 series), an AreaChart (yearly adoption, 2 series), a donut PieChart (market share, 6 slices), a RadarChart (developer skills, 2 series), and a ScatterChart (funding vs revenue, 2 series with labeled points). Below add a summary table, a RadialChart for industry goals, and follow-ups.",
           },
-          {
-            displayText: "Quarterly deck",
-            prompt: "Create a short presentation about our Q2 results with three slides.",
-          },
-          {
-            displayText: "Market report",
-            prompt: "Write a brief market-analysis report on the EV sector.",
-          },
         ]}
       />
     </div>
