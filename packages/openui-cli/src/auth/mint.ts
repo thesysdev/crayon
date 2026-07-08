@@ -86,14 +86,11 @@ export async function resolveCloudApiKey(opts: {
     }
     const { select } = await import("@inquirer/prompts");
     method = (await select({
-      message: "Connect OpenUI Cloud",
+      message: "Connect to OpenUI Cloud:",
       choices: [
-        {
-          name: "Sign in to Thesys — creates an API key and saves it to .env (recommended)",
-          value: "oauth",
-        },
-        { name: "Paste existing Thesys API key", value: "manual" },
-        { name: "Set up later", value: "skip" },
+        { name: "Sign in with Thesys (opens a browser, mints a key)", value: "oauth" },
+        { name: "Paste an existing API key", value: "manual" },
+        { name: "Skip — add THESYS_API_KEY to .env later", value: "skip" },
       ],
     })) as CloudAuthMethod;
   }

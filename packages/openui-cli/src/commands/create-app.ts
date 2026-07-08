@@ -31,8 +31,6 @@ type EnvResult = {
   authSucceeded?: boolean;
 };
 
-type ScaffoldStageResult = { ok: true; stagedDir: string } | { ok: false; error: unknown };
-
 const createFunnel = {
   funnel: "cli_create",
   funnel_version: "frontloaded_cloud_setup_v1",
@@ -80,44 +78,7 @@ function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   return !["node_modules", ".next", ".turbo", "dist"].includes(top);
 }
 
-function scaffoldTempPrefix(targetDir: string): string {
-  const safeName = path.basename(targetDir).replace(/[^a-zA-Z0-9._-]/g, "-") || "app";
-  return path.join(path.dirname(targetDir), `.openui-${safeName}-`);
-}
-
-async function stageScaffold(
-  templateDir: string,
-  targetDir: string,
-  name: string,
-): Promise<string> {
-  let stagedDir: string | undefined;
-  try {
-    stagedDir = await fs.promises.mkdtemp(scaffoldTempPrefix(targetDir));
-    await fs.promises.cp(templateDir, stagedDir, {
-      recursive: true,
-      filter: (src) => shouldCopyTemplatePath(templateDir, src),
-    });
-    await rewritePackageJson(stagedDir, name);
-    return stagedDir;
-  } catch (err) {
-    if (stagedDir) await fs.promises.rm(stagedDir, { recursive: true, force: true });
-    throw err;
-  }
-}
-
-async function cleanupStagedScaffold(scaffoldPromise: Promise<ScaffoldStageResult>) {
-  const result = await scaffoldPromise;
-  if (result.ok) await fs.promises.rm(result.stagedDir, { recursive: true, force: true });
-}
-
-async function moveStagedScaffold(stagedDir: string, targetDir: string, name: string) {
-  if (fs.existsSync(targetDir)) {
-    throw new CreateError("dir_exists", `Directory "${name}" already exists.`);
-  }
-  await fs.promises.rename(stagedDir, targetDir);
-}
-
-async function rewritePackageJson(projectDir: string, name: string) {
+function rewritePackageJson(projectDir: string, name: string) {
   // package.json: set the project name and de-vendor monorepo-local deps
   // (workspace:* / file: / catalog:) to the published "latest". link: deps are
   // rewritten to an absolute file: path so locally-linked packages (e.g.
@@ -125,7 +86,7 @@ async function rewritePackageJson(projectDir: string, name: string) {
   // package manager — npm rejects link:, and ~ isn't expanded. Temporary, until
   // these packages are published.
   const pkgPath = path.join(projectDir, "package.json");
-  const pkg = JSON.parse(await fs.promises.readFile(pkgPath, "utf8")) as {
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8")) as {
     name: string;
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
@@ -150,7 +111,7 @@ async function rewritePackageJson(projectDir: string, name: string) {
       if (/^(workspace:|file:|catalog:)/.test(v)) deps[key] = "latest";
     }
   }
-  await fs.promises.writeFile(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 }
 
 export async function runCreateApp(options: CreateAppOptions): Promise<void> {
@@ -218,75 +179,55 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     );
   }
 
-  telemetry.capture("cli_scaffold_started", {
-    ...createFunnelProps("scaffold_started"),
-    template,
-    ai_setup: aiSetup,
-  });
-  let scaffoldFailureCaptured = false;
   const captureScaffoldFailed = () => {
-    if (scaffoldFailureCaptured) return;
-    scaffoldFailureCaptured = true;
     telemetry.capture("cli_scaffold_failed", {
       ...createFunnelProps("scaffold_failed"),
       template,
       ai_setup: aiSetup,
     });
   };
-  const scaffoldPromise: Promise<ScaffoldStageResult> = stageScaffold(
-    templateDir,
-    targetDir,
-    name,
-  ).then(
-    (stagedDir) => ({ ok: true, stagedDir }) as const,
-    (error) => {
-      captureScaffoldFailed();
-      return { ok: false, error } as const;
-    },
-  );
 
-  let scaffoldCommitted = false;
-  let envResult: EnvResult;
+  telemetry.capture("cli_env_resolution_started", {
+    ...createFunnelProps("env_resolution_started"),
+    template,
+    ai_setup: aiSetup,
+  });
+  const envResult =
+    template === "openui-self-hosted"
+      ? await resolveChatEnv(interactive)
+      : await resolveCloudEnv(name, options, interactive);
+
+  console.info(`\nScaffolding ${template} into "${name}"...\n`);
+  telemetry.capture("cli_scaffold_started", {
+    ...createFunnelProps("scaffold_started"),
+    template,
+    ai_setup: aiSetup,
+  });
   try {
-    telemetry.capture("cli_env_resolution_started", {
-      ...createFunnelProps("env_resolution_started"),
-      template,
-      ai_setup: aiSetup,
+    fs.cpSync(templateDir, targetDir, {
+      recursive: true,
+      filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
-    envResult =
-      template === "openui-self-hosted"
-        ? await resolveChatEnv(interactive)
-        : await resolveCloudEnv(name, options, interactive);
-
-    console.info(`\nScaffolding ${template} into "${name}"...\n`);
-    try {
-      const scaffoldResult = await scaffoldPromise;
-      if (!scaffoldResult.ok) throw scaffoldResult.error;
-      await moveStagedScaffold(scaffoldResult.stagedDir, targetDir, name);
-      scaffoldCommitted = true;
-    } catch (err) {
-      captureScaffoldFailed();
-      throw err;
-    }
-    telemetry.capture("cli_scaffold_succeeded", {
-      ...createFunnelProps("scaffold_succeeded"),
-      template,
-      ai_setup: aiSetup,
-    });
-
-    await writeEnv(targetDir, envResult);
-    telemetry.capture("cli_env_resolved", {
-      ...createFunnelProps("env_written"),
-      template,
-      ai_setup: aiSetup,
-      env_written: envResult.envWritten,
-      auth_method: envResult.authMethod,
-      auth_succeeded: envResult.authSucceeded,
-    });
+    rewritePackageJson(targetDir, name);
   } catch (err) {
-    if (!scaffoldCommitted) await cleanupStagedScaffold(scaffoldPromise);
+    captureScaffoldFailed();
     throw err;
   }
+  telemetry.capture("cli_scaffold_succeeded", {
+    ...createFunnelProps("scaffold_succeeded"),
+    template,
+    ai_setup: aiSetup,
+  });
+
+  await writeEnv(targetDir, envResult);
+  telemetry.capture("cli_env_resolved", {
+    ...createFunnelProps("env_written"),
+    template,
+    ai_setup: aiSetup,
+    env_written: envResult.envWritten,
+    auth_method: envResult.authMethod,
+    auth_succeeded: envResult.authSucceeded,
+  });
 
   const installSkill = await shouldInstallSkill(options.skill, interactive);
   telemetry.capture("cli_skill_installed", {
