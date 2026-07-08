@@ -49,4 +49,18 @@ describe("mirrorStylesWithLayer", () => {
     expect(fs.readFileSync(path.join(dest, "openui-defaults.css"), "utf8")).toBe(":root{--x:1}");
     expect(fs.existsSync(path.join(dest, "cssUtils.scss"))).toBe(false);
   });
+
+  it("copies the scheme-pinned defaults verbatim by default", () => {
+    const src = fs.mkdtempSync(path.join(os.tmpdir(), "css-layer-src-"));
+    const dest = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "css-layer-dest-")), "layered");
+    fs.writeFileSync(path.join(src, "openui-defaults-dark.css"), ":root{--x:dark}");
+    fs.writeFileSync(path.join(src, "openui-defaults-light.css"), ":root{--x:light}");
+    mirrorStylesWithLayer(src, dest);
+    expect(fs.readFileSync(path.join(dest, "openui-defaults-dark.css"), "utf8")).toBe(
+      ":root{--x:dark}",
+    );
+    expect(fs.readFileSync(path.join(dest, "openui-defaults-light.css"), "utf8")).toBe(
+      ":root{--x:light}",
+    );
+  });
 });

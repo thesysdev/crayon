@@ -7,6 +7,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { DEFAULTS_CSS_FILES } from "./css-layer-utils.mjs";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(dirname, "dist");
@@ -26,13 +27,33 @@ assert(
   read("layered/components/index.css").startsWith("@layer openui{"),
   "layered/components/index.css must start with @layer openui{",
 );
+for (const name of DEFAULTS_CSS_FILES) {
+  assert(!/^\s*@layer/.test(read(`styles/${name}`)), `styles/${name} must stay unlayered`);
+  assert(
+    !/^\s*@layer/.test(read(`layered/styles/${name}`)),
+    `layered/styles/${name} must stay unlayered`,
+  );
+}
+
+// The scheme-pinned defaults exist to pin one scheme statically — a
+// prefers-color-scheme gate (or any media query) sneaking back in silently
+// recreates the wrong-scheme fallback they were added to fix. Token-count
+// parity guards against one scheme's set drifting from the other, and against
+// the combined file diverging from the pinned pair.
+const countTokens = (css) => (css.match(/--openui-/g) || []).length;
+const darkPinned = read("styles/openui-defaults-dark.css");
+const lightPinned = read("styles/openui-defaults-light.css");
+assert(!darkPinned.includes("@media"), "openui-defaults-dark.css must not contain a media query");
+assert(!lightPinned.includes("@media"), "openui-defaults-light.css must not contain a media query");
+assert(countTokens(darkPinned) > 0, "openui-defaults-dark.css has no --openui- tokens");
 assert(
-  !/^\s*@layer/.test(read("styles/openui-defaults.css")),
-  "styles/openui-defaults.css must stay unlayered",
+  countTokens(darkPinned) === countTokens(lightPinned),
+  "dark and light pinned defaults declare different token counts",
 );
 assert(
-  !/^\s*@layer/.test(read("layered/styles/openui-defaults.css")),
-  "layered/styles/openui-defaults.css must stay unlayered",
+  countTokens(darkPinned) + countTokens(lightPinned) ===
+    countTokens(read("styles/openui-defaults.css")),
+  "pinned defaults token counts do not add up to openui-defaults.css",
 );
 
 const unlayered = fs.readdirSync(path.join(dist, "styles")).filter((f) => f.endsWith(".css"));
@@ -49,9 +70,9 @@ assert(
 // dist/styles/*.css in place (the `wrapComponentCssInPlace` behavior this
 // contract intentionally removed); since consumers can import individual
 // ./styles/<component>.css, an index-only check would miss it.
-// openui-defaults.css is asserted unlayered separately above.
+// The defaults files are asserted unlayered separately above.
 for (const name of unlayered) {
-  if (name === "openui-defaults.css") continue;
+  if (DEFAULTS_CSS_FILES.includes(name)) continue;
   assert(!/^\s*@layer/.test(read(path.join("styles", name))), `styles/${name} must stay unlayered`);
 }
 
@@ -70,7 +91,7 @@ for (const f of [
   const content = read(f);
   assert(!content.includes("\uFEFF"), `${f} contains a BOM`);
   const base = path.basename(f);
-  if (base !== "openui-defaults.css" && content.trim() !== "") {
+  if (!DEFAULTS_CSS_FILES.includes(base) && content.trim() !== "") {
     assert(content.startsWith("@layer openui{"), `${f} is not wrapped in @layer openui`);
   }
 }

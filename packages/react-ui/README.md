@@ -182,6 +182,21 @@ This places Tailwind's Preflight (in `base`) below OpenUI components so its elem
 - Wrap app-wide resets in a layer below `openui` (e.g. `@layer base { * { margin: 0; } }`) — unlayered resets beat all layered styles regardless of specificity.
 - `./defaults.css` and the `ThemeProvider` runtime style injection stay unlayered in both modes so runtime theming always overrides component defaults.
 
+### Single-scheme apps
+
+The default token stylesheets follow the device's `prefers-color-scheme`: dark tokens only apply on dark-scheme devices. An app that forces one scheme (`<ThemeProvider mode="dark">`) would otherwise render the stock light theme on light-scheme devices wherever the runtime style injection isn't in effect — static first paint, server-rendered HTML before hydration, or with JavaScript disabled.
+
+To pin the scheme statically, import the matching scheme-pinned defaults after the component styles (and before your own token overrides, which win by source order):
+
+```css
+@layer theme, base, openui, components, utilities;
+@import "tailwindcss";
+@import "@openuidev/react-ui/layered/styles/index.css";
+@import "@openuidev/react-ui/defaults-dark.css"; /* unlayered — pins dark statically */
+```
+
+Light-only apps use `@openuidev/react-ui/defaults-light.css` the same way. Both files are plain unlayered `:root` blocks with the full token set and no media query, in both the default and layered trees.
+
 ### Browser support
 
 The layered variant requires CSS cascade layers: Chrome 99+, Firefox 97+, Safari 15.4+, Edge 99+ (all baseline from March 2022). On older browsers the `@layer { ... }` block is dropped entirely and components render unstyled. The default unlayered styles have no such floor.
@@ -218,6 +233,8 @@ import { Charts } from "@openuidev/react-ui/Charts";
 | `@openuidev/react-ui/styles/index.css`         | Full compiled stylesheet, unlayered (default import) |
 | `@openuidev/react-ui/layered/styles/index.css` | Full stylesheet wrapped in `@layer openui` (opt-in)  |
 | `@openuidev/react-ui/defaults.css`             | Theme tokens, always unlayered                       |
+| `@openuidev/react-ui/defaults-dark.css`        | Dark tokens pinned, no media query, unlayered        |
+| `@openuidev/react-ui/defaults-light.css`       | Light tokens pinned, no media query, unlayered       |
 | `@openuidev/react-ui/genui-lib`                | OpenUI Lang libraries and prompt options             |
 | `@openuidev/react-ui/styles/*`                 | Per-component compiled styles (unlayered)            |
 | `@openuidev/react-ui/layered/styles/*`         | Per-component styles wrapped in `@layer openui`      |

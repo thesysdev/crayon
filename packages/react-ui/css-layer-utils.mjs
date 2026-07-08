@@ -28,11 +28,22 @@ export function writeLayeredCopy(srcFile, destFile) {
   fs.writeFileSync(destFile, wrapInLayer(content), "utf8");
 }
 
+// The generated theme-token defaults. All three must stay in the unlayered
+// cascade in both style trees: openui-defaults.css backs the runtime theming
+// override contract, and the scheme-pinned variants (./defaults-dark.css,
+// ./defaults-light.css) exist precisely to beat the layered, media-gated
+// tokens for single-scheme apps.
+export const DEFAULTS_CSS_FILES = [
+  "openui-defaults.css",
+  "openui-defaults-dark.css",
+  "openui-defaults-light.css",
+];
+
 // Mirror every top-level *.css file in srcDir into destDir wrapped in
 // @layer openui. Files named in `unwrapped` are copied verbatim — they must
 // stay in the unlayered cascade (openui-defaults.css backs the runtime
 // theming override contract). Non-CSS files (e.g. cssUtils.scss) are skipped.
-export function mirrorStylesWithLayer(srcDir, destDir, unwrapped = ["openui-defaults.css"]) {
+export function mirrorStylesWithLayer(srcDir, destDir, unwrapped = DEFAULTS_CSS_FILES) {
   fs.mkdirSync(destDir, { recursive: true });
   for (const name of fs.readdirSync(srcDir)) {
     if (!name.endsWith(".css")) continue;
