@@ -1,6 +1,5 @@
 import {
-  BILLING_CREDITS_ERROR_MESSAGE,
-  GENERIC_CHAT_ERROR_MESSAGE,
+  getBillingCreditsErrorMessage,
   shouldShowBillingCreditsNotice,
 } from "./billing";
 
@@ -13,7 +12,7 @@ export async function getChatErrorMessage(
   { showBillingCreditsNotice = shouldShowBillingCreditsNotice() }: ChatErrorMessageOptions = {},
 ): Promise<string> {
   if (response.status === 429) {
-    return showBillingCreditsNotice ? BILLING_CREDITS_ERROR_MESSAGE : GENERIC_CHAT_ERROR_MESSAGE;
+    return getBillingCreditsErrorMessage(showBillingCreditsNotice);
   }
 
   try {

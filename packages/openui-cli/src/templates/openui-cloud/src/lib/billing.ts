@@ -5,8 +5,6 @@ export const BILLING_CREDITS_ERROR_TITLE = "Add credits to keep going";
 export const BILLING_CREDITS_ERROR_MESSAGE =
   "Looks like this workspace is out of OpenUI Cloud credits. Purchase credits to keep testing, then try your request again. This notice is only shown in development.";
 
-export const BILLING_CREDITS_ERROR_CODE = "billing_credits_required";
-
 export const BILLING_CREDITS_ACTION_LABEL = "Purchase credits";
 
 export const GENERIC_CHAT_ERROR_MESSAGE =
@@ -16,15 +14,8 @@ export function shouldShowBillingCreditsNotice(nodeEnv = process.env.NODE_ENV): 
   return nodeEnv === "development";
 }
 
-export function getBillingCreditsErrorDetails(
+export function getBillingCreditsErrorMessage(
   showBillingCreditsNotice = shouldShowBillingCreditsNotice(),
-) {
-  if (!showBillingCreditsNotice) {
-    return { message: GENERIC_CHAT_ERROR_MESSAGE };
-  }
-
-  return {
-    code: BILLING_CREDITS_ERROR_CODE,
-    message: BILLING_CREDITS_ERROR_MESSAGE,
-  };
+): string {
+  return showBillingCreditsNotice ? BILLING_CREDITS_ERROR_MESSAGE : GENERIC_CHAT_ERROR_MESSAGE;
 }

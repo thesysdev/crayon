@@ -34,8 +34,6 @@ export const MODEL_OPTIONS: ModelOption[] = [
   { provider: "Anthropic", id: "anthropic/claude-opus-4-7", name: "Claude Opus 4.7" },
 ];
 
-const MODEL_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]*(\/[A-Za-z0-9][A-Za-z0-9._:-]*)+$/;
-
 export function resolveRequestedModel(model: unknown, fallback = DEFAULT_MODEL): string {
-  return typeof model === "string" && MODEL_ID_PATTERN.test(model) ? model : fallback;
+  return typeof model === "string" && model.trim() ? model : fallback;
 }

@@ -1,4 +1,4 @@
-import { getBillingCreditsErrorDetails } from "@/lib/billing";
+import { getBillingCreditsErrorMessage } from "@/lib/billing";
 import { envOr, requiredEnv } from "@/lib/env";
 import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     if (isRateLimitError(e)) {
       return Response.json(
         {
-          error: getBillingCreditsErrorDetails(),
+          error: { message: getBillingCreditsErrorMessage() },
         },
         { status: 429 },
       );
@@ -94,18 +94,13 @@ export async function POST(req: Request) {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
         }
       } catch (err) {
-        const rateLimitErrorDetails = isRateLimitError(err)
-          ? getBillingCreditsErrorDetails()
-          : undefined;
-        const message = rateLimitErrorDetails?.message ?? (err instanceof Error ? err.message : String(err));
+        const message = isRateLimitError(err)
+          ? getBillingCreditsErrorMessage()
+          : err instanceof Error
+            ? err.message
+            : String(err);
         controller.enqueue(
-          encoder.encode(
-            `data: ${JSON.stringify({
-              type: "error",
-              message,
-              ...(rateLimitErrorDetails?.code ? { code: rateLimitErrorDetails.code } : {}),
-            })}\n\n`,
-          ),
+          encoder.encode(`data: ${JSON.stringify({ type: "error", message })}\n\n`),
         );
       } finally {
         controller.close();
