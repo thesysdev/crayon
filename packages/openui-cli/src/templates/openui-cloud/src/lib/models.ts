@@ -23,11 +23,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
   modelOption("google/gemini-3.5-flash-free", "Gemini 3.5 Flash", { badge: "Free" }),
   modelOption("google/gemini-3.5-flash", "Gemini 3.5 Flash"),
   modelOption("google/gemini-3.1-pro-preview", "Gemini 3.1 Pro Preview"),
-  modelOption("google/gemini-flash-latest", "Gemini Flash Latest"),
-  modelOption("google/gemini-flash-lite-latest", "Gemini Flash-Lite Latest"),
   modelOption("openai/gpt-5.5", "GPT-5.5"),
-  modelOption("openai/gpt-5.5-instant", "GPT-5.5 Instant"),
-  modelOption("openai/gpt-5.5-pro", "GPT-5.5 Pro"),
   modelOption("openai/gpt-5.4", "GPT-5.4"),
   modelOption("openai/gpt-5.4-mini", "GPT-5.4 mini"),
   modelOption("openai/gpt-5.2", "GPT-5.2"),
@@ -35,7 +31,6 @@ export const MODEL_OPTIONS: ModelOption[] = [
   modelOption("openai/gpt-5", "GPT-5"),
   modelOption("anthropic/claude-sonnet-5", "Claude Sonnet 5"),
   modelOption("anthropic/claude-sonnet-4.6", "Claude Sonnet 4.6"),
-  modelOption("anthropic/claude-opus-4-8", "Claude Opus 4.8"),
   modelOption("anthropic/claude-opus-4-7", "Claude Opus 4.7"),
 ];
 

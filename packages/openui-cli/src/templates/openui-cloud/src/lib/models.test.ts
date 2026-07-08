@@ -9,24 +9,19 @@ import {
 } from "./models";
 
 describe("model catalog helpers", () => {
-  it("keeps a curated frontend-only model list", () => {
+  it("keeps a curated model list", () => {
     expect(MODEL_OPTIONS.map((model) => model.providerName)).toEqual([
       "Google",
       "Google",
       "Google",
       "Google",
       "Google",
-      "Google",
-      "Google",
       "OpenAI",
       "OpenAI",
       "OpenAI",
       "OpenAI",
       "OpenAI",
       "OpenAI",
-      "OpenAI",
-      "OpenAI",
-      "Anthropic",
       "Anthropic",
       "Anthropic",
       "Anthropic",
@@ -39,9 +34,10 @@ describe("model catalog helpers", () => {
     expect(getModelOption("google/gemini-3.5-flash")?.badge).toBeUndefined();
   });
 
-  it("recognizes only hardcoded frontend model ids", () => {
+  it("recognizes only hardcoded switcher model ids", () => {
     expect(isKnownModelId("openai/gpt-5.5")).toBe(true);
     expect(isKnownModelId("anthropic/claude-sonnet-5")).toBe(true);
+    expect(isKnownModelId("google/gemini-flash-latest")).toBe(false);
     expect(isKnownModelId("meta/llama")).toBe(false);
   });
 

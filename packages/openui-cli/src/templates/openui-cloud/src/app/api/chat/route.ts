@@ -45,7 +45,6 @@ export async function POST(req: Request) {
   try {
     const model = resolveRequestedModel(requestedModel, envOr("OPENUI_MODEL", DEFAULT_MODEL));
 
-    console.log(model)
     stream = (await client.responses.create(
       {
         model,
