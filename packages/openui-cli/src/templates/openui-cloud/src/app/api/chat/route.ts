@@ -1,4 +1,6 @@
+import { getBillingCreditsErrorMessage } from "@/lib/billing";
 import { envOr, requiredEnv } from "@/lib/env";
+import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
 import OpenAI from "openai";
 import type { ResponseInputItem } from "openai/resources/responses/responses";
@@ -16,9 +18,10 @@ import type { ResponseInputItem } from "openai/resources/responses/responses";
  * with the fct_ token (see /api/frontend-token + the storage adapter).
  */
 export async function POST(req: Request) {
-  const { threadId, input } = (await req.json()) as {
+  const { threadId, input, model: requestedModel } = (await req.json()) as {
     threadId?: string;
     input?: ResponseInputItem[];
+    model?: unknown;
   };
 
   if (!threadId) {
@@ -41,9 +44,11 @@ export async function POST(req: Request) {
 
   let stream: AsyncIterable<Record<string, unknown>>;
   try {
+    const model = resolveRequestedModel(requestedModel, envOr("OPENUI_MODEL", DEFAULT_MODEL));
+
     stream = (await client.responses.create(
       {
-        model: envOr("OPENUI_MODEL", "google/gemini-3.1-pro-free"),
+        model,
         conversation: threadId, // store:true persists to the conversation
         input,
         stream: true,
@@ -65,6 +70,15 @@ export async function POST(req: Request) {
   } catch (err) {
     // The SDK surfaces upstream HTTP errors (e.g. 403) as APIError.
     const e = err as { status?: number; error?: unknown; message?: string };
+    if (isRateLimitError(e)) {
+      return Response.json(
+        {
+          error: { message: getBillingCreditsErrorMessage() },
+        },
+        { status: 429 },
+      );
+    }
+
     return Response.json(
       { error: e.error ?? { message: e.message ?? "upstream error" } },
       { status: e.status ?? 502 },
@@ -80,7 +94,11 @@ export async function POST(req: Request) {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
         }
       } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
+        const message = isRateLimitError(err)
+          ? getBillingCreditsErrorMessage()
+          : err instanceof Error
+            ? err.message
+            : String(err);
         controller.enqueue(
           encoder.encode(`data: ${JSON.stringify({ type: "error", message })}\n\n`),
         );
@@ -97,4 +115,8 @@ export async function POST(req: Request) {
       Connection: "keep-alive",
     },
   });
+}
+
+function isRateLimitError(err: unknown): boolean {
+  return typeof err === "object" && err !== null && "status" in err && err.status === 429;
 }
