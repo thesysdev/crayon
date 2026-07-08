@@ -4,6 +4,7 @@ import { CloudSection } from "./sections/CloudSection/CloudSection";
 import { FeatureGridSection } from "./sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "./sections/Footer/Footer";
 import { HeroSection } from "./sections/HeroSection/HeroSection";
+import { LogoStrip } from "./sections/LogoStrip/LogoStrip";
 import { ShiroPeek } from "./sections/ShiroPeek/ShiroPeek";
 import { StepsSection } from "./sections/StepsSection/StepsSection";
 import { TweetWallSection } from "./sections/TweetWallSection/TweetWallSection";
@@ -21,6 +22,7 @@ export default function HomePage() {
           githubButtonLabel="Star us on GitHub"
         />
         <StepsSection />
+        <LogoStrip />
       </div>
       <div className={styles.contentSection}>
         <div className={styles.contentShell}>
