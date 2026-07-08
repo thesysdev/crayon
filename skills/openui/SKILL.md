@@ -7,15 +7,15 @@ description: "Use for building, debugging, integrating, or documenting OpenUI, O
 
 OpenUI is a full-stack Generative UI framework centered on **OpenUI Lang**, a compact, streaming-first language for model-generated UI. Do not treat OpenUI as React-only: the core language, parser, prompt generation, runtime evaluation, and types live in `@openuidev/lang-core`; React, Vue, Svelte, and no-build browser integrations sit on top of that core.
 
-Use the local repository checkout as the source of truth when it matches the package version the user is actually using. If the task installs `latest` or works in a generated app, compare local source against installed package exports, generated CLI templates, and first-party docs before assuming the checkout is newer. If this skill is installed outside the repo, use only first-party OpenUI sources: the GitHub repo at `https://github.com/thesysdev/openui` and docs at `https://www.openui.com`.
+Work from the user's app or project first. Inspect installed packages, generated templates, and lockfiles before giving API advice. When installed source is missing or the task targets `latest`, use only first-party OpenUI sources: the GitHub repo at `https://github.com/thesysdev/openui` and docs at `https://www.openui.com`.
 
 ## First Checks Before Answering
 
-1. Inspect the user's `package.json` and lockfile when available.
+1. Inspect the user's project `package.json` and lockfile when available.
 2. Identify which `@openuidev/*` packages and versions are installed.
 3. Prefer installed package exports and generated templates over assumptions.
-4. Use the local checkout only if it matches the installed or requested version.
-5. If no local app exists, use first-party docs and repo sources.
+4. Use installed `node_modules/@openuidev/*`, `.d.ts` files, and generated files as the source of truth when available.
+5. If no app or installed package exists, use first-party docs and GitHub source.
 
 Do not use this skill for general React UI questions, generic design system advice, unrelated AI agent harnesses, or general frontend debugging unless OpenUI or `@openuidev` packages are involved.
 
@@ -65,7 +65,7 @@ Use `--no-install` when the agent needs to control package-manager behavior expl
 npx @openuidev/cli@latest create --name genui-chat-app --template openui-self-hosted --no-skill --no-interactive --no-install
 ```
 
-If scaffold install/build fails with `ERR_PNPM_IGNORED_BUILDS` for native packages such as `sharp` or `unrs-resolver`, do not treat the scaffold as broken. Run `pnpm approve-builds` or `pnpm approve-builds --all`, then rerun install/build in an environment where package build scripts are allowed. Use framework examples in this repo for Vue, Svelte, React Native, LangGraph, Mastra, Supabase, Vercel AI SDK, and other integrations.
+If scaffold install/build fails with `ERR_PNPM_IGNORED_BUILDS` for native packages such as `sharp` or `unrs-resolver`, do not treat the scaffold as broken. Run `pnpm approve-builds` or `pnpm approve-builds --all`, then rerun install/build in an environment where package build scripts are allowed. Use first-party GitHub examples for Vue, Svelte, React Native, LangGraph, Mastra, Supabase, Vercel AI SDK, and other integrations.
 
 For self-hosted template build checks, set `OPENAI_API_KEY` even if no real model call is made. The generated Next route creates the OpenAI client at module scope, so `OPENAI_API_KEY=sk-test pnpm run build` is a valid smoke test when no real request will be sent.
 
@@ -177,7 +177,7 @@ For compact side rails, prompt generated OpenUI output toward one-column `Card`/
 
 ### Start from examples
 
-OpenUI ships first-party examples in `examples/`. Use these actual repo examples as implementation references before inventing a new integration pattern:
+OpenUI publishes first-party examples under the GitHub `examples/` directory. Use these examples as implementation references before inventing a new integration pattern:
 
 - Starters and apps: `examples/openui-chat`, `examples/openui-dashboard`, `examples/openui-artifact-demo`.
 - Agent/chat integrations: `examples/vercel-ai-chat`, `examples/langgraph-chat`, `examples/mastra-chat`, `examples/multi-agent-chat`, `examples/supabase-chat`, `examples/fastapi-backend`.
@@ -328,7 +328,7 @@ Renderer props commonly include `response`, `library`, `isStreaming`, `onAction`
 
 During streaming, unresolved forward refs are expected. After the stream ends, inspect parser/renderer errors for unknown components, missing required props, excess args, inline `Query`/`Mutation`, runtime errors, or unresolved refs.
 
-Version-sensitive: verify renderer props against installed exports; there is no current `nodePlaceholder` renderer prop in the checked source.
+Version-sensitive: verify renderer props against installed exports; there is no current `nodePlaceholder` renderer prop in the inspected source.
 
 ## Verification
 
@@ -380,7 +380,7 @@ Useful React UI exports:
 
 Map host-company design tokens into `AgentInterface` with a `ThemeProps` object. Prefer `lightTheme`/`darkTheme` with `createTheme`; the old `theme` prop on `ThemeProvider` is a deprecated alias for `lightTheme`.
 
-Treat `createTheme()` tokens as installed-version-specific. In development it validates keys against the runtime's default theme keys; unknown keys are warned and ignored. Verify custom keys against `node_modules/@openuidev/react-ui` or `packages/react-ui/src/components/ThemeProvider/defaultTheme.ts` before using them, and do not rely on type-only fields such as chart palette options unless the installed runtime accepts them.
+Treat `createTheme()` tokens as installed-version-specific. In development it validates keys against the runtime's default theme keys; unknown keys are warned and ignored. Verify custom keys against installed `node_modules/@openuidev/react-ui` or first-party `packages/react-ui/src/components/ThemeProvider/defaultTheme.ts` before using them, and do not rely on type-only fields such as chart palette options unless the installed runtime accepts them.
 
 ```tsx
 import { AgentInterface, createTheme, type ThemeProps } from "@openuidev/react-ui";
@@ -420,11 +420,11 @@ Use `disableThemeProvider` only when the app already wraps the chatbot in a comp
 
 ## First-Party Sources
 
-Use both source code and docs when useful. Prefer the local checkout only when it matches the user's working version. Use docs for conceptual guidance, workflows, and narrative API explanations. For exact exports, generated signatures, package behavior, and examples, prefer source files, package READMEs, generated prompts, generated CLI templates, and installed package `.d.ts` files. If sources conflict, trust the package or generated template actually being used; otherwise compare the GitHub repo and hosted docs. Some paths exist only in newer checkouts; if a local path is absent, use the matching first-party remote source.
+Use installed package code and first-party docs/source when useful. Use docs for conceptual guidance, workflows, and narrative API explanations. For exact exports, generated signatures, package behavior, and examples, prefer installed source files, package READMEs, generated prompts, generated CLI templates, and installed package `.d.ts` files. If sources conflict, trust the package or generated template actually being used; otherwise compare the GitHub source and hosted docs. Some paths exist only in newer releases; match docs/source to the user's installed or requested version.
 
-Before trusting a local checkout, compare it against the task target: inspect the app's `package.json`/lockfile, run `npm view @openuidev/react-ui version` when using public `latest`, and check installed exports under `node_modules/@openuidev/*`. An older local checkout can lack APIs exported by the installed package.
+Before relying on remote GitHub source, compare it against the task target: inspect the app's `package.json`/lockfile, run `npm view @openuidev/react-ui version` when using public `latest`, and check installed exports under `node_modules/@openuidev/*`. Remote source can differ from the installed package.
 
-Local checkout paths to inspect:
+First-party GitHub source paths to inspect:
 
 - `README.md` for package map and examples.
 - `packages/*/README.md` for package-specific APIs.
@@ -446,7 +446,7 @@ Local checkout paths to inspect:
 - `docs/content/docs/agent/reference/self-hosting.mdx` for self-hosted LLM/storage route patterns and server-side key handling.
 - `docs/content/docs/agent/reference/define-artifact-renderer.mdx` and `docs/content/docs/agent/guides/custom-artifacts.mdx` for artifact renderers.
 - `docs/content/docs/api-reference/cli.mdx` for CLI behavior.
-- `examples/vue-chat`, `examples/svelte-chat`, and React examples for end-to-end framework integrations.
+- GitHub `examples/vue-chat`, `examples/svelte-chat`, and React examples for end-to-end framework integrations.
 
 Remote first-party OpenUI sources:
 
