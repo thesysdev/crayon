@@ -3,72 +3,13 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 
-import { resolveCloudApiKey, THESYS_KEYS_URL, type CloudAuthMethod } from "../auth/mint";
+import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
+import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
+import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
 import { resolveInstallPackageManager } from "../lib/detect-package-manager";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { resolveArgs } from "../lib/resolve-args";
 import { CreateError, telemetry } from "../lib/telemetry";
-
-export type TemplateName = "openui-self-hosted" | "openui-cloud";
-
-export interface CreateAppOptions {
-  name?: string;
-  template?: TemplateName;
-  skill?: boolean;
-  noInteractive?: boolean;
-  noInstall?: boolean;
-  // cloud-only
-  apiKey?: string;
-  auth?: CloudAuthMethod;
-}
-
-type AiSetup = "openui_cloud" | "openai_compatible_provider";
-
-type EnvResult = {
-  envWritten: boolean;
-  envContent?: string;
-  authMethod?: CloudAuthMethod | "apikey-flag";
-  authSucceeded?: boolean;
-};
-
-const createFunnel = {
-  funnel: "cli_create",
-  funnel_version: "frontloaded_cloud_setup_v1",
-} as const;
-
-const createFunnelSteps = {
-  create_started: "0100",
-  ai_setup_selected: "0200",
-  scaffold_started: "0300",
-  scaffold_succeeded: "0310",
-  scaffold_failed: "0320",
-  env_resolution_started: "0400",
-  cloud_auth_started: "0410",
-  cloud_auth_resolved: "0420",
-  env_written: "0430",
-  skill_prompt_resolved: "0500",
-  skill_install_started: "0510",
-  skill_install_finished: "0520",
-  dependency_install_started: "0600",
-  dependency_install_succeeded: "0610",
-  dependency_install_failed: "0620",
-  create_succeeded: "0700",
-  create_failed: "9000",
-} as const;
-
-type CreateFunnelStep = keyof typeof createFunnelSteps;
-
-function createFunnelProps(stepKey: CreateFunnelStep): Record<string, string> {
-  return {
-    ...createFunnel,
-    step_rank: createFunnelSteps[stepKey],
-    step_key: stepKey,
-  };
-}
-
-function aiSetupFromTemplate(template: TemplateName): AiSetup {
-  return template === "openui-cloud" ? "openui_cloud" : "openai_compatible_provider";
-}
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
@@ -323,7 +264,7 @@ async function resolveCloudEnv(
   interactive: boolean,
 ): Promise<EnvResult> {
   let apiKey: string | null = null;
-  let authMethod: CloudAuthMethod | "apikey-flag" | undefined;
+  let authMethod: EnvResult["authMethod"];
   try {
     telemetry.capture("cli_cloud_auth_started", {
       ...createFunnelProps("cloud_auth_started"),

@@ -1,3 +1,4 @@
+import { createFunnelProps } from "../lib/create-telemetry";
 import { telemetry } from "../lib/telemetry";
 import { Authenticator } from "./authenticator";
 
@@ -12,18 +13,11 @@ export type CloudAuthMethod = "oauth" | "manual" | "skip";
 /** How the cloud key was obtained (for telemetry) — auth method + the `--api-key` flag case. */
 export type ResolvedAuthMethod = CloudAuthMethod | "apikey-flag";
 
-const cloudAuthStartedFunnelProps = {
-  funnel: "cli_create",
-  funnel_version: "frontloaded_cloud_setup_v1",
-  step_rank: "0410",
-  step_key: "cloud_auth_started",
-} as const;
-
 /** Sign in via the browser and mint an OpenUI Cloud API key for the user's org. */
 export async function mintCloudApiKey(projectName: string): Promise<string> {
   const auth = new Authenticator({ issuerUrl: THESYS_ISSUER_URL, clientId: THESYS_CLIENT_ID });
   telemetry.capture("cli_cloud_oidc_started", {
-    ...cloudAuthStartedFunnelProps,
+    ...createFunnelProps("cloud_auth_started"),
     auth_method: "oauth",
   });
   await auth.initialize();
