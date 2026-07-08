@@ -3,7 +3,7 @@
 import { useTheme } from "@/hooks/use-system-theme";
 import { shouldShowBillingCreditsNotice } from "@/lib/billing";
 import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
-import { DEFAULT_MODEL, isKnownModelId, MODEL_STORAGE_KEY } from "@/lib/models";
+import { DEFAULT_MODEL } from "@/lib/models";
 import { defineArtifactCategories } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
 import {
@@ -25,12 +25,7 @@ const showBillingCreditsNotice = shouldShowBillingCreditsNotice();
 
 export function CloudChat() {
   const mode = useTheme();
-  const [selectedModel, setSelectedModel] = useState(() => {
-    if (typeof window === "undefined") return DEFAULT_MODEL;
-
-    const storedModel = window.localStorage.getItem(MODEL_STORAGE_KEY);
-    return isKnownModelId(storedModel) ? storedModel : DEFAULT_MODEL;
-  });
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const [billingDialogOpen, setBillingDialogOpen] = useState(false);
   const [billingCreditsRequired, setBillingCreditsRequired] = useState(false);
   const [llm] = useState(() =>
@@ -59,7 +54,6 @@ export function CloudChat() {
   const handleModelChange = useCallback((model: string) => {
     llm.setSelectedModel(model);
     setSelectedModel(model);
-    window.localStorage.setItem(MODEL_STORAGE_KEY, model);
   }, [llm]);
 
   return (

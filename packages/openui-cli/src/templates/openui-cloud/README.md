@@ -33,9 +33,9 @@ by adding system prompts or tools.
 ## Switching Models
 
 Use the model switcher in the chat header to choose a model for new messages. The starter keeps a
-small curated model list in the frontend, stores your selection locally, and sends the selected
-`provider/model` id to `/api/chat`. The built-in list includes Gemini, GPT, Claude Sonnet, and
-Claude Opus options; free Gemini variants are marked with a `Free` badge.
+small curated model list in the frontend and sends the selected `provider/model` id to `/api/chat`.
+The built-in list includes Gemini, GPT, Claude Sonnet, and Claude Opus options; free Gemini
+variants are marked with a `Free` badge.
 
 The built-in model ids are available on [models.dev's OpenRouter provider
 list](https://models.dev/providers/openrouter/).

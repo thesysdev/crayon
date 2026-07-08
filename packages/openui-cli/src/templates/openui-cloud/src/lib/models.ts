@@ -1,5 +1,4 @@
 export const DEFAULT_MODEL = "google/gemini-3.1-pro-free";
-export const MODEL_STORAGE_KEY = "openui-cloud:model";
 
 export interface ModelOption {
   id: string;
@@ -35,12 +34,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
   { provider: "Anthropic", id: "anthropic/claude-opus-4-7", name: "Claude Opus 4.7" },
 ];
 
-const MODEL_IDS = new Set(MODEL_OPTIONS.map((model) => model.id));
 const MODEL_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]*(\/[A-Za-z0-9][A-Za-z0-9._:-]*)+$/;
-
-export function isKnownModelId(model: unknown): model is string {
-  return typeof model === "string" && MODEL_IDS.has(model);
-}
 
 export function resolveRequestedModel(model: unknown, fallback = DEFAULT_MODEL): string {
   return typeof model === "string" && MODEL_ID_PATTERN.test(model) ? model : fallback;
