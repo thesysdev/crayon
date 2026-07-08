@@ -43,6 +43,7 @@ const createFunnelSteps = {
   ai_setup_selected: "0200",
   scaffold_started: "0300",
   scaffold_succeeded: "0310",
+  scaffold_failed: "0320",
   env_resolution_started: "0400",
   cloud_auth_started: "0410",
   cloud_auth_resolved: "0420",
@@ -222,13 +223,26 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     template,
     ai_setup: aiSetup,
   });
+  let scaffoldFailureCaptured = false;
+  const captureScaffoldFailed = () => {
+    if (scaffoldFailureCaptured) return;
+    scaffoldFailureCaptured = true;
+    telemetry.capture("cli_scaffold_failed", {
+      ...createFunnelProps("scaffold_failed"),
+      template,
+      ai_setup: aiSetup,
+    });
+  };
   const scaffoldPromise: Promise<ScaffoldStageResult> = stageScaffold(
     templateDir,
     targetDir,
     name,
   ).then(
     (stagedDir) => ({ ok: true, stagedDir }) as const,
-    (error) => ({ ok: false, error }) as const,
+    (error) => {
+      captureScaffoldFailed();
+      return { ok: false, error } as const;
+    },
   );
 
   let scaffoldCommitted = false;
@@ -245,10 +259,15 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
         : await resolveCloudEnv(name, options, interactive);
 
     console.info(`\nScaffolding ${template} into "${name}"...\n`);
-    const scaffoldResult = await scaffoldPromise;
-    if (!scaffoldResult.ok) throw scaffoldResult.error;
-    await moveStagedScaffold(scaffoldResult.stagedDir, targetDir, name);
-    scaffoldCommitted = true;
+    try {
+      const scaffoldResult = await scaffoldPromise;
+      if (!scaffoldResult.ok) throw scaffoldResult.error;
+      await moveStagedScaffold(scaffoldResult.stagedDir, targetDir, name);
+      scaffoldCommitted = true;
+    } catch (err) {
+      captureScaffoldFailed();
+      throw err;
+    }
     telemetry.capture("cli_scaffold_succeeded", {
       ...createFunnelProps("scaffold_succeeded"),
       template,
@@ -415,11 +434,11 @@ function getStartedMessage(o: {
   const envNote =
     o.template === "openui-cloud"
       ? o.envWritten
-        ? "✅ .env created with your OpenUI Cloud API key."
+        ? "✅ .env created with your OpenUI Cloud API key + base URL."
         : `⚠ .env created without a key. Add THESYS_API_KEY=… (get one at ${THESYS_KEYS_URL}).`
       : o.envWritten
-        ? "✅ .env created with your provider API key."
-        : "Add your provider API key to .env:\nOPENAI_API_KEY=your-provider-key-here";
+        ? "✅ .env created with your API key."
+        : "Add your API key to .env:\nOPENAI_API_KEY=sk-your-key-here";
 
   return `${skillMessage}
 Done!
