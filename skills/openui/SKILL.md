@@ -1,6 +1,6 @@
 ---
 name: openui
-description: "Build, scaffold, debug, or document OpenUI and OpenUI Lang applications. Use when working with @openuidev packages, OpenUI Lang syntax, generative UI, streaming component rendering, OpenUI's built-in component libraries, custom component libraries, prompt generation, Query/Mutation tools, reactive state, OpenUI chat surfaces, Agent Interface, OpenUI Cloud, fetchLLM/restStorage adapters, artifact renderers, or migrations from JSON UI formats. Covers framework-agnostic lang-core plus React, Vue, Svelte, browser-bundle, CLI, React UI/headless packages, and Cloud-backed or self-hosted Agent Interface apps."
+description: "Use for building, debugging, integrating, or documenting OpenUI, OpenUI Lang, Agent Interface, OpenUI Cloud, @openuidev packages, streaming generative UI rendering, component libraries, and migrations from JSON UI formats."
 ---
 
 # OpenUI
@@ -8,6 +8,16 @@ description: "Build, scaffold, debug, or document OpenUI and OpenUI Lang applica
 OpenUI is a full-stack Generative UI framework centered on **OpenUI Lang**, a compact, streaming-first language for model-generated UI. Do not treat OpenUI as React-only: the core language, parser, prompt generation, runtime evaluation, and types live in `@openuidev/lang-core`; React, Vue, Svelte, and no-build browser integrations sit on top of that core.
 
 Use the local repository checkout as the source of truth when it matches the package version the user is actually using. If the task installs `latest` or works in a generated app, compare local source against installed package exports, generated CLI templates, and first-party docs before assuming the checkout is newer. If this skill is installed outside the repo, use only first-party OpenUI sources: the GitHub repo at `https://github.com/thesysdev/openui` and docs at `https://www.openui.com`.
+
+## First Checks Before Answering
+
+1. Inspect the user's `package.json` and lockfile when available.
+2. Identify which `@openuidev/*` packages and versions are installed.
+3. Prefer installed package exports and generated templates over assumptions.
+4. Use the local checkout only if it matches the installed or requested version.
+5. If no local app exists, use first-party docs and repo sources.
+
+Do not use this skill for general React UI questions, generic design system advice, unrelated AI agent harnesses, or general frontend debugging unless OpenUI or `@openuidev` packages are involved.
 
 ## Current Package Map
 
@@ -22,8 +32,8 @@ Use the local repository checkout as the source of truth when it matches the pac
 | `@openuidev/react-email` | React Email component library and prompt options for generated email |
 | `@openuidev/browser-bundle` | CDN/iframe/no-build React renderer bundle exposed as `window.__OpenUI` |
 | `@openuidev/cli` | `openui create` scaffolding and `openui generate` prompt/schema generation from a library export |
-| `@openuidev/thesys` | Client-side OpenUI Cloud helpers such as `useOpenuiCloudStorage()`, Cloud component sets such as `chatLibrary`, and Cloud artifact components/renderers/categories; verify current exports in Agent Interface docs |
-| `@openuidev/thesys-server` | Server-side OpenUI Cloud SDK helpers such as `artifactTool` and `createResponsesInstructions` for Cloud-backed `/api/chat` routes |
+| `@openuidev/thesys` | Version-sensitive client-side OpenUI Cloud helpers such as `useOpenuiCloudStorage()`, Cloud component sets, and Cloud artifact components/renderers/categories; verify current exports |
+| `@openuidev/thesys-server` | Version-sensitive server-side OpenUI Cloud helpers such as `artifactTool` and `createResponsesInstructions` for Cloud-backed `/api/chat` routes |
 
 Choose the package for the target runtime. For backend-only parsing or prompt/schema generation, prefer `@openuidev/lang-core` or the CLI instead of pulling in a UI framework.
 
@@ -47,7 +57,7 @@ echo "OPENAI_API_KEY=sk-your-key-here" > .env
 npm run dev
 ```
 
-The CLI is the easiest way to scaffold a new OpenUI/GenUI app. It prompts for an OpenUI Cloud or self-hosted Agent Interface app when no template is passed. Use `--template openui-cloud` for the managed Cloud starter and `--template openui-self-hosted` for the app-owned model/storage starter. For unattended agent/CI use, pass `--template`, `--no-interactive`, and usually `--no-skill`.
+The CLI is the easiest way to scaffold a new OpenUI/GenUI app. Version-sensitive: verify current CLI flags/template names before relying on them. It prompts for an OpenUI Cloud or self-hosted Agent Interface app when no template is passed. Use `--template openui-cloud` for the managed Cloud starter and `--template openui-self-hosted` for the app-owned model/storage starter. For unattended agent/CI use, pass `--template`, `--no-interactive`, and usually `--no-skill`.
 
 Use `--no-install` when the agent needs to control package-manager behavior explicitly:
 
@@ -65,7 +75,7 @@ OpenUI Cloud is the managed backend for Agent Interface. It uses the open-source
 
 Use Cloud when the user wants managed production infrastructure for an Agent Interface app. Use self-hosted OpenUI when the user wants to own the model route, storage, tools, component library, and runtime behavior.
 
-The CLI quickstart prompts for **OpenUI Cloud or self-hosted**. For Cloud:
+Version-sensitive: verify exact Cloud template env vars, `@openuidev/thesys*` exports, and route helpers against the installed package/template. The CLI quickstart prompts for **OpenUI Cloud or self-hosted**. For Cloud:
 
 - Store `THESYS_API_KEY` server-side only, typically in `.env.local`.
 - The Cloud CLI template also uses `OPENUI_MODEL` in `provider/model` form and `DEMO_USER_ID` for the demo user identity.
@@ -145,7 +155,7 @@ const llm: ChatLLM = {
 
 ### Integrate into existing apps
 
-- When adding React UI to an existing React app, install peers explicitly and keep `zustand` on the current supported major: `npm install @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless zod "zustand@^4.5.5"`.
+- Version-sensitive: when adding React UI to an existing React app, inspect peer ranges and install peers explicitly, currently like `npm install @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless zod "zustand@^4.5.5"`.
 - Next.js App Router: render `Renderer` or `AgentInterface` from a client component; add `"use client"` at the top of the file that imports or renders them.
 - Vite or strict TypeScript: before side-effect CSS imports, ensure the app has `/// <reference types="vite/client" />` or a declaration such as `declare module "*.css";`.
 - Import React UI CSS once, normally `@openuidev/react-ui/components.css` plus `@openuidev/react-ui/styles/index.css`; use `@openuidev/react-ui/layered/styles/index.css` when the app needs cascade-layered overrides.
@@ -183,25 +193,11 @@ For compact side rails, prompt generated OpenUI output toward one-column `Card`/
 
 OpenUI ships first-party examples in `examples/`. Use these actual repo examples as implementation references before inventing a new integration pattern:
 
-- `examples/openui-chat`: OpenUI Agent Chat app bootstrapped with `openui-cli`.
-- `examples/vercel-ai-chat`: Vercel AI Chat Example.
-- `examples/langgraph-chat`: OpenUI + LangGraph Chat.
-- `examples/mastra-chat`: `mastra-chat`.
-- `examples/multi-agent-chat`: Multi-Agent Chat Example.
-- `examples/supabase-chat`: OpenUI x Supabase Chat.
-- `examples/fastapi-backend`: OpenUI x FastAPI Example.
-- `examples/vue-chat`: OpenUI Vue Chat.
-- `examples/svelte-chat`: OpenUI Svelte Chat.
-- `examples/openui-dashboard`: OpenUI Dashboard Example.
-- `examples/openui-artifact-demo`: OpenUI Artifact Demo.
-- `examples/openui-react-native`: OpenUI React Native Example.
-- `examples/react-email`: React Email.
-- `examples/material-ui-chat`: Material UI Chat Example.
-- `examples/shadcn-chat`: Shadcn Chat Example.
-- `examples/form-generator`: HeroUI Form Generator Example.
-- `examples/hands-on-table-chat`: Handsontable + OpenUI Chat.
-- `examples/harnesses/pi-agent-harness`: OpenUI + Pi Agent Harness.
-- `examples/harnesses/vercel-eve`: OpenUI + Vercel Eve Harness.
+- Starters and apps: `examples/openui-chat`, `examples/openui-dashboard`, `examples/openui-artifact-demo`.
+- Agent/chat integrations: `examples/vercel-ai-chat`, `examples/langgraph-chat`, `examples/mastra-chat`, `examples/multi-agent-chat`, `examples/supabase-chat`, `examples/fastapi-backend`.
+- Framework/runtime examples: `examples/vue-chat`, `examples/svelte-chat`, `examples/openui-react-native`, `examples/react-email`.
+- Third-party UI/component examples: `examples/material-ui-chat`, `examples/shadcn-chat`, `examples/form-generator`, `examples/hands-on-table-chat`.
+- Harnesses: `examples/harnesses/pi-agent-harness`, `examples/harnesses/vercel-eve`.
 
 ### Generate a prompt or schema
 
@@ -270,7 +266,7 @@ Use `zod/v4` for component schemas. Zod object key order defines OpenUI Lang pos
 
 ## OpenUI Lang Rules
 
-OpenUI Lang v0.5 is assignment-based and line-oriented:
+Version-sensitive: verify the current OpenUI Lang spec before relying on syntax details. OpenUI Lang v0.5 is assignment-based and line-oriented:
 
 ```text
 identifier = Expression
@@ -346,7 +342,7 @@ Renderer props commonly include `response`, `library`, `isStreaming`, `onAction`
 
 During streaming, unresolved forward refs are expected. After the stream ends, inspect parser/renderer errors for unknown components, missing required props, excess args, inline `Query`/`Mutation`, runtime errors, or unresolved refs.
 
-There is no current `nodePlaceholder` renderer prop.
+Version-sensitive: verify renderer props against installed exports; there is no current `nodePlaceholder` renderer prop in the checked source.
 
 ## Verification
 
