@@ -1,20 +1,20 @@
 import { z } from "zod";
 
-import { Alert } from "./alert";
-import { AlertDialogBlock } from "./alert-dialog-block";
-import { ShadcnBadgeComponent } from "./badge";
-import { CalendarBlock } from "./calendar-block";
-import { CodeBlock } from "./code-block";
-import { DialogBlock } from "./dialog-block";
-import { DrawerBlock } from "./drawer-block";
-import { FollowUpBlock } from "./follow-up-block";
-import { Image, ImageBlock } from "./image";
-import { MarkDownRenderer } from "./markdown-renderer";
-import { PaginationBlock } from "./pagination-block";
-import { Progress } from "./progress";
-import { Separator } from "./separator";
-import { TextContent } from "./text-content";
-import { Blockquote, Heading, InlineCode } from "./typography";
+import { Alert } from "./components/alert";
+import { AlertDialogBlock } from "./components/alert-dialog-block";
+import { ShadcnBadgeComponent } from "./components/badge";
+import { CalendarBlock } from "./components/calendar-block";
+import { CodeBlock } from "./components/code-block";
+import { DialogBlock } from "./components/dialog-block";
+import { DrawerBlock } from "./components/drawer-block";
+import { FollowUpBlock } from "./components/follow-up-block";
+import { Image, ImageBlock } from "./components/image";
+import { MarkDownRenderer } from "./components/markdown-renderer";
+import { PaginationBlock } from "./components/pagination-block";
+import { Progress } from "./components/progress";
+import { Separator } from "./components/separator";
+import { TextContent } from "./components/text-content";
+import { Blockquote, Heading, InlineCode } from "./components/typography";
 
 import {
   AreaChartCondensed,
@@ -24,15 +24,15 @@ import {
   RadarChartComponent,
   RadialChartComponent,
   ScatterChartComponent,
-} from "./charts";
+} from "./components/charts";
 
-import { Table } from "./table";
-import { TagBlock } from "./tag";
+import { Table } from "./components/table";
+import { TagBlock } from "./components/tag";
 
-import { Avatar } from "./avatar";
-import { Buttons } from "./buttons";
-import { CardHeader } from "./card-header";
-import { Form } from "./form";
+import { Avatar } from "./components/avatar";
+import { Buttons } from "./components/buttons";
+import { CardHeader } from "./components/card-header";
+import { Form } from "./components/form";
 
 export const ContentChildUnion = z.union([
   TextContent.ref,

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/accordion";
 import { defineComponent } from "@openuidev/react-lang";
 import { z } from "zod";
-import { ContentChildUnion } from "./unions";
+import { ContentChildUnion } from "../unions";
 
 const AccordionItemSchema = z.object({
   value: z.string(),

@@ -1,6 +1,6 @@
 "use client";
 
-import { Textarea as ShadcnTextarea } from "@/components/ui/textarea";
+import { Input as ShadcnInput } from "@/components/ui/input";
 import {
   defineComponent,
   parseStructuredRules,
@@ -12,19 +12,20 @@ import {
 } from "@openuidev/react-lang";
 import React from "react";
 import { z } from "zod";
-import { rulesSchema } from "./rules";
+import { rulesSchema } from "../rules";
 
-const TextareaSchema = z.object({
+const InputSchema = z.object({
   name: z.string(),
   placeholder: z.string().optional(),
-  rows: z.number().optional(),
+  type: z.enum(["text", "email", "password", "number", "url"]).optional(),
   rules: rulesSchema,
 });
 
-export const TextArea = defineComponent({
-  name: "TextArea",
-  props: TextareaSchema,
-  description: "Multi-line text input. rows sets visible height. rules for validation.",
+export const Input = defineComponent({
+  name: "Input",
+  props: InputSchema,
+  description:
+    'Text input field. type: "text" | "email" | "password" | "number" | "url". rules for validation.',
   component: ({ props }) => {
     const formName = useFormName();
     const getFieldValue = useGetFieldValue();
@@ -46,14 +47,14 @@ export const TextArea = defineComponent({
     }, [isStreaming, rules.length > 0]);
 
     return (
-      <ShadcnTextarea
+      <ShadcnInput
         name={fieldName}
         placeholder={props.placeholder}
-        rows={props.rows ?? 3}
+        type={props.type ?? "text"}
         defaultValue={savedValue as string}
         onBlur={(e) => {
           const val = e.target.value;
-          if (val !== savedValue) setFieldValue(formName, "TextArea", fieldName, val, true);
+          if (val !== savedValue) setFieldValue(formName, "Input", fieldName, val, true);
           if (rules.length > 0 && formValidation)
             formValidation.validateField(fieldName, val, rules);
         }}

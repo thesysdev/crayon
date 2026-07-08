@@ -6,16 +6,16 @@ import { z } from "zod";
 import { Card, CardContent } from "@/components/ui/card";
 
 // Content
-import { Alert } from "./alert";
-import { Avatar } from "./avatar";
-import { ShadcnBadgeComponent } from "./badge";
-import { CardHeader } from "./card-header";
-import { CodeBlock } from "./code-block";
-import { Image, ImageBlock } from "./image";
-import { MarkDownRenderer } from "./markdown-renderer";
-import { Progress } from "./progress";
-import { Separator } from "./separator";
-import { TextContent } from "./text-content";
+import { Alert } from "./components/alert";
+import { Avatar } from "./components/avatar";
+import { ShadcnBadgeComponent } from "./components/badge";
+import { CardHeader } from "./components/card-header";
+import { CodeBlock } from "./components/code-block";
+import { Image, ImageBlock } from "./components/image";
+import { MarkDownRenderer } from "./components/markdown-renderer";
+import { Progress } from "./components/progress";
+import { Separator } from "./components/separator";
+import { TextContent } from "./components/text-content";
 
 // Charts
 import {
@@ -30,44 +30,44 @@ import {
   ScatterSeries,
   Series,
   Slice,
-} from "./charts";
+} from "./components/charts";
 
 // Forms
-import { CheckBoxGroup, CheckBoxItem } from "./checkbox-group";
-import { DatePicker } from "./date-picker";
-import { Form } from "./form";
-import { FormControl } from "./form-control";
-import { Input } from "./input";
-import { Label } from "./label";
-import { RadioGroup, RadioItem } from "./radio-group";
-import { Select, SelectItem } from "./select";
-import { Slider } from "./slider";
-import { SwitchGroup, SwitchItem } from "./switch-group";
-import { TextArea } from "./textarea";
+import { CheckBoxGroup, CheckBoxItem } from "./components/checkbox-group";
+import { DatePicker } from "./components/date-picker";
+import { Form } from "./components/form";
+import { FormControl } from "./components/form-control";
+import { Input } from "./components/input";
+import { Label } from "./components/label";
+import { RadioGroup, RadioItem } from "./components/radio-group";
+import { Select, SelectItem } from "./components/select";
+import { Slider } from "./components/slider";
+import { SwitchGroup, SwitchItem } from "./components/switch-group";
+import { TextArea } from "./components/textarea";
 
 // Buttons
-import { Button } from "./button";
-import { Buttons } from "./buttons";
+import { Button } from "./components/button";
+import { Buttons } from "./components/buttons";
 
 // Layout
-import { Accordion, AccordionItemDef } from "./accordion";
-import { Carousel } from "./carousel";
-import { TabItem, Tabs } from "./tabs";
+import { Accordion, AccordionItemDef } from "./components/accordion";
+import { Carousel } from "./components/carousel";
+import { TabItem, Tabs } from "./components/tabs";
 
 // Data Display
-import { Col, Table } from "./table";
-import { Tag, TagBlock } from "./tag";
+import { Col, Table } from "./components/table";
+import { Tag, TagBlock } from "./components/tag";
 
 // Chat-specific
-import { FollowUpBlock, FollowUpItem } from "./follow-up-block";
+import { FollowUpBlock, FollowUpItem } from "./components/follow-up-block";
 
 // New components
-import { AlertDialogBlock } from "./alert-dialog-block";
-import { CalendarBlock } from "./calendar-block";
-import { DialogBlock } from "./dialog-block";
-import { DrawerBlock } from "./drawer-block";
-import { PaginationBlock } from "./pagination-block";
-import { Blockquote, Heading, InlineCode } from "./typography";
+import { AlertDialogBlock } from "./components/alert-dialog-block";
+import { CalendarBlock } from "./components/calendar-block";
+import { DialogBlock } from "./components/dialog-block";
+import { DrawerBlock } from "./components/drawer-block";
+import { PaginationBlock } from "./components/pagination-block";
+import { Blockquote, Heading, InlineCode } from "./components/typography";
 
 import { ChatContentChildUnion } from "./unions";
 import {

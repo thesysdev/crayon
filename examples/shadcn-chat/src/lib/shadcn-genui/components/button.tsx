@@ -10,7 +10,7 @@ import {
   useTriggerAction,
 } from "@openuidev/react-lang";
 import { z } from "zod";
-import { actionSchema, type ActionSchema } from "./action";
+import { actionSchema, type ActionSchema } from "../action";
 
 const ButtonSchema = z.object({
   label: z.string(),

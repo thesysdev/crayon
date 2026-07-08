@@ -18,7 +18,7 @@ import {
 } from "@openuidev/react-lang";
 import React from "react";
 import { z } from "zod";
-import { rulesSchema } from "./rules";
+import { rulesSchema } from "../rules";
 
 const SelectItemSchema = z.object({
   value: z.string(),
