@@ -1,36 +1,108 @@
 .section {
-  padding-inline: 1.25rem;
-  padding-block: 3rem 1rem;
+  margin-top: 2.5rem;
 }
 
-.row {
-  margin-inline: auto;
+.marquee {
   max-width: 75rem;
+  margin-inline: auto;
+  overflow: hidden;
+  /* Room for the "Website" chip that pokes above the hovered card. */
+  padding-block: 1.25rem 0.25rem;
+  mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
+}
+
+.track {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  width: max-content;
+  animation: scroll 35s linear infinite;
+}
+
+.marquee:hover .track,
+.marquee:focus-within .track {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+}
+
+.card {
+  position: relative;
+  display: flex;
   align-items: center;
   justify-content: center;
-  column-gap: 2.5rem;
-  row-gap: 1.5rem;
+  padding: 1rem 1.5rem;
+  margin-inline: 0.625rem;
+  border: 1px solid transparent;
+  border-radius: 1.25rem;
+  transition: border-color 0.15s ease;
+}
+
+.card:hover,
+.card:focus-visible {
+  border-color: var(--openui-border-default);
 }
 
 .logo {
-  height: 2rem;
+  height: 2.5rem;
   width: auto;
   flex: 0 0 auto;
 }
 
+.chip {
+  position: absolute;
+  top: -0.875rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(0.25rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3125rem 0.75rem;
+  border-radius: 999px;
+  background: #0a0a0a;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.card:hover .chip,
+.card:focus-visible .chip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.chipArrow {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
 @media (min-width: 768px) {
   .section {
-    padding-block: 4rem 1.5rem;
-  }
-
-  .row {
-    justify-content: space-between;
-    column-gap: 3rem;
+    margin-top: 3rem;
   }
 
   .logo {
-    height: 2.5rem;
+    height: 3rem;
   }
 }
