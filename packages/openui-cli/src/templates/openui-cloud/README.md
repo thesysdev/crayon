@@ -43,7 +43,7 @@ list](https://models.dev/providers/openrouter/).
 To set the initial server fallback, add `OPENUI_MODEL` to your `.env` file:
 
 ```bash
-OPENUI_MODEL=openai/gpt-5
+OPENUI_MODEL=google/gemini-3.1-pro-free
 ```
 
 ## SDK packages

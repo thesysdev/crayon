@@ -10,7 +10,7 @@ import {
 } from "@openuidev/react-ui";
 import { useMemo } from "react";
 
-import { getModelOption, MODEL_OPTIONS, type ModelOption } from "@/lib/models";
+import { MODEL_OPTIONS, type ModelOption } from "@/lib/models";
 
 interface ModelSwitcherProps {
   selectedModel: string;
@@ -18,7 +18,8 @@ interface ModelSwitcherProps {
 }
 
 export function ModelSwitcher({ selectedModel, onModelChange }: ModelSwitcherProps) {
-  const selectedOption = getModelOption(selectedModel) ?? MODEL_OPTIONS[0];
+  const selectedOption =
+    MODEL_OPTIONS.find((model) => model.id === selectedModel) ?? MODEL_OPTIONS[0];
   const groupedModels = useMemo(() => groupByProvider(MODEL_OPTIONS), []);
 
   return (
@@ -33,9 +34,7 @@ export function ModelSwitcher({ selectedModel, onModelChange }: ModelSwitcherPro
             {selectedOption?.name ?? selectedModel}
           </span>
           {selectedOption?.badge ? (
-            <span className="openui-cloud-model-switcher__model-badge">
-              {selectedOption.badge}
-            </span>
+            <span className="openui-cloud-model-switcher__model-badge">{selectedOption.badge}</span>
           ) : null}
         </SelectTrigger>
         <SelectContent align="start" className="openui-cloud-model-switcher__content">
@@ -46,9 +45,7 @@ export function ModelSwitcher({ selectedModel, onModelChange }: ModelSwitcherPro
                 <SelectItem key={model.id} value={model.id}>
                   <span className="openui-cloud-model-switcher__option">
                     <span className="openui-cloud-model-switcher__option-heading">
-                      <span className="openui-cloud-model-switcher__option-name">
-                        {model.name}
-                      </span>
+                      <span className="openui-cloud-model-switcher__option-name">{model.name}</span>
                       {model.badge ? (
                         <span className="openui-cloud-model-switcher__model-badge">
                           {model.badge}
@@ -71,9 +68,9 @@ function groupByProvider(models: ModelOption[]): [string, ModelOption[]][] {
   const grouped = new Map<string, ModelOption[]>();
 
   for (const model of models) {
-    const group = grouped.get(model.providerName) ?? [];
+    const group = grouped.get(model.provider) ?? [];
     group.push(model);
-    grouped.set(model.providerName, group);
+    grouped.set(model.provider, group);
   }
 
   return [...grouped.entries()];
