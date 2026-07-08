@@ -83,6 +83,16 @@ export default function Page() {
               "Generate a team standup board with a sprint progress bar, a task table (5 members), a warning alert for blockers, an Accordion (Yesterday, Today, Blockers), and a DialogBlock that opens sprint metrics with a PieChart and summary table. Add follow-ups.",
           },
           {
+            displayText: "Recipe card",
+            prompt:
+              "Build a recipe card for Spicy Thai Basil Chicken with tags, Tabs (Ingredients table, Instructions accordion with 5 steps, Nutrition donut PieChart + table), a blockquote chef's tip, and buttons with a DialogBlock for the full recipe. Add follow-ups.",
+          },
+          {
+            displayText: "Chart showcase",
+            prompt:
+              "Build a 'Global Tech Industry Report 2025' with tags and Tabs containing six chart types: a grouped BarChart (quarterly revenue, 3 series), a LineChart (monthly trends, 2 series), an AreaChart (yearly adoption, 2 series), a donut PieChart (market share, 6 slices), a RadarChart (developer skills, 2 series), and a ScatterChart (funding vs revenue, 2 series with labeled points). Below add a summary table, a RadialChart for industry goals, and follow-ups.",
+          },
+          {
             displayText: "Quarterly deck",
             prompt: "Create a short presentation about our Q2 results with three slides.",
           },
