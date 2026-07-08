@@ -1,13 +1,9 @@
 "use client";
 
 import { useTheme } from "@/hooks/use-system-theme";
+import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
 import { DEFAULT_MODEL, isKnownModelId, MODEL_STORAGE_KEY } from "@/lib/models";
-import {
-  defineArtifactCategories,
-  openAIConversationMessageFormat,
-  openAIResponsesAdapter,
-  type ChatLLM,
-} from "@openuidev/react-headless";
+import { defineArtifactCategories } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
 import {
   chatLibrary,
@@ -15,7 +11,8 @@ import {
   reportArtifactRenderer,
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { BillingCreditsDialog } from "./billing-credits-dialog";
 import { ModelSwitcher } from "./model-switcher";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
@@ -25,7 +22,24 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
 
 export function CloudChat() {
   const mode = useTheme();
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
+  const [selectedModel, setSelectedModel] = useState(() => {
+    if (typeof window === "undefined") return DEFAULT_MODEL;
+
+    const storedModel = window.localStorage.getItem(MODEL_STORAGE_KEY);
+    return isKnownModelId(storedModel) ? storedModel : DEFAULT_MODEL;
+  });
+  const [billingDialogOpen, setBillingDialogOpen] = useState(false);
+  const [billingCreditsRequired, setBillingCreditsRequired] = useState(false);
+  const [llm] = useState(() =>
+    createCloudChatLLM({
+      initialModel: selectedModel,
+      onRequestStart: () => setBillingCreditsRequired(false),
+      onBillingCreditsRequired: () => {
+        setBillingCreditsRequired(true);
+        setBillingDialogOpen(true);
+      },
+    }),
+  );
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",
@@ -33,37 +47,21 @@ export function CloudChat() {
   });
 
   useEffect(() => {
-    const storedModel = window.localStorage.getItem(MODEL_STORAGE_KEY);
-    if (isKnownModelId(storedModel)) setSelectedModel(storedModel);
-  }, []);
+    llm.setSelectedModel(selectedModel);
+  }, [llm, selectedModel]);
 
   const handleModelChange = useCallback((model: string) => {
+    llm.setSelectedModel(model);
     setSelectedModel(model);
     window.localStorage.setItem(MODEL_STORAGE_KEY, model);
-  }, []);
-
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: async ({ threadId, messages, signal }) => {
-        const latest = messages.slice(-1);
-        return fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            threadId,
-            input: openAIConversationMessageFormat.toApi(latest),
-            model: selectedModel,
-          }),
-          signal,
-        });
-      },
-      streamProtocol: openAIResponsesAdapter(),
-    }),
-    [selectedModel],
-  );
+  }, [llm]);
 
   return (
-    <div className="h-screen w-screen overflow-hidden relative">
+    <div
+      className={`h-screen w-screen overflow-hidden relative${
+        billingCreditsRequired ? " openui-cloud-root--billing-credits-required" : ""
+      }`}
+    >
       <AgentInterface
         storage={storage}
         llm={llm}
@@ -102,6 +100,7 @@ export function CloudChat() {
           <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
         </AgentInterface.ThreadHeader>
       </AgentInterface>
+      <BillingCreditsDialog open={billingDialogOpen} onOpenChange={setBillingDialogOpen} />
     </div>
   );
 }
