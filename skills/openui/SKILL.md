@@ -424,30 +424,6 @@ Use installed package code and first-party docs/source when useful. Use docs for
 
 Before relying on remote GitHub source, compare it against the task target: inspect the app's `package.json`/lockfile, run `npm view @openuidev/react-ui version` when using public `latest`, and check installed exports under `node_modules/@openuidev/*`. Remote source can differ from the installed package.
 
-First-party GitHub source paths to inspect:
-
-- `README.md` for package map and examples.
-- `packages/*/README.md` for package-specific APIs.
-- `packages/*/src` for exact exports and runtime behavior.
-- `packages/react-headless/src` for the underlying chat state, hooks, storage/LLM adapter primitives, stream adapters, and message formats re-exported by `@openuidev/react-ui`.
-- `packages/react-ui/src/genui-lib` for OpenUI's built-in component libraries and generated prompt options.
-- `packages/react-ui/src/components/AgentInterface` for Agent Interface components and runtime behavior.
-- `packages/react-ui/src/components/ThemeProvider` for `createTheme()` validation and accepted runtime theme keys.
-- `packages/openui-cli/src/templates/openui-cloud` for the Cloud starter, server routes, env vars, and package wiring.
-- `docs/content/docs/openui-lang/specification-v05.mdx` for current language spec.
-- `docs/content/docs/openui-lang/syntax.mdx` for syntax.
-- `docs/content/docs/openui-lang/defining-components.mdx` for component libraries.
-- `docs/content/docs/openui-lang/renderer.mdx` for renderer behavior.
-- `docs/content/docs/openui-lang/reactive-state.mdx`, `queries-mutations.mdx`, `builtins.mdx`, and `incremental-editing.mdx` for v0.5 runtime features.
-- `docs/content/docs/agent/getting-started/quickstart.mdx` and `openui-cloud.mdx` for Agent Interface and OpenUI Cloud setup.
-- `docs/content/docs/agent/core-concepts/conversations.mdx`, `tools.mdx`, and `artifacts.mdx` for Cloud-backed persistence, tools, and artifacts.
-- `docs/content/docs/agent/reference/agentinterface-props.mdx` for `AgentInterface` prop behavior.
-- `docs/content/docs/agent/reference/adapters-and-formats.mdx` for `fetchLLM`, `restStorage`, stream adapters, and message formats.
-- `docs/content/docs/agent/reference/self-hosting.mdx` for self-hosted LLM/storage route patterns and server-side key handling.
-- `docs/content/docs/agent/reference/define-artifact-renderer.mdx` and `docs/content/docs/agent/guides/custom-artifacts.mdx` for artifact renderers.
-- `docs/content/docs/api-reference/cli.mdx` for CLI behavior.
-- GitHub `examples/vue-chat`, `examples/svelte-chat`, and React examples for end-to-end framework integrations.
-
 Remote first-party OpenUI sources:
 
 - `https://github.com/thesysdev/openui`
