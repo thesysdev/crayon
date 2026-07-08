@@ -20,6 +20,7 @@ To add your organization to this list, [open a PR](https://github.com/thesysdev/
 | [Entelligence.AI](https://entelligence.ai) | [Aiswarya Sankar](https://www.linkedin.com/in/sankaraiswarya/)   | AI platform that gives developers noise-free, self-verifying code reviews to catch bugs before they ship, while providing engineering leaders with the analytics needed to measure the true ROI of their AI coding tools.            |
 | [GAIA](https://heygaia.io) | [Aryan Randeriya](https://github.com/aryanranderiya) | GAIA is a proactive personal AI assistant that uses OpenUI Lang to let its backend LLM emit rich, interactive React components inline in chat responses — rendering cards, lists, and other generative UI directly in the conversation instead of plain text. |
 | [&facts](https://www.andfacts.com) | [Sohaib Ahmed](https://www.linkedin.com/in/sohaibacma/) | A market insights platform to help eCommerce brands better understand their customers. |
+| [Oodle](https://www.oodle.ai/) | [Gaurav Maheshwari](https://blog.oodle.ai/how-we-taught-our-ai-to-draw/) | Oodle uses OpenUI Lang to let its AI assistant render streaming, composable observability UI for metrics, logs, traces, charts, timelines, and incident investigations. |
 
 <!--
 Example row, copy and edit:
