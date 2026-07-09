@@ -1,5 +1,5 @@
 // ── Library (framework-generic) ──
-export { createLibrary, defineComponent, tagSchemaId } from "./library";
+export { buildSignature, createLibrary, defineComponent, tagSchemaId } from "./library";
 export type {
   ComponentGroup,
   ComponentRenderProps,

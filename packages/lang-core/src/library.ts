@@ -302,7 +302,7 @@ function analyzeFields(shape: Record<string, z.$ZodType>, reg: SchemaRegistry): 
   }));
 }
 
-function buildSignature(componentName: string, fields: FieldInfo[]): string {
+export function buildSignature(componentName: string, fields: FieldInfo[]): string {
   const params = fields.map((f) => {
     if (f.typeAnnotation) {
       return f.isOptional ? `${f.name}?: ${f.typeAnnotation}` : `${f.name}: ${f.typeAnnotation}`;
