@@ -492,6 +492,15 @@ describe("validateSchemaValue — malformed and composite schemas (direct)", () 
     expect(errors).toHaveLength(1);
     expect(errors[0]).toMatchObject({ code: "type-mismatch" });
   });
+
+  it("defers enum membership in a partial ctx but checks it when complete", () => {
+    const enumSchema = { enum: ["active", "inactive"] };
+    // Mid-stream the literal may still be completing toward a valid member.
+    expect(directErrors("act", enumSchema, true)).toEqual([]);
+    const errors = directErrors("act", enumSchema, false);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toMatchObject({ code: "type-mismatch" });
+  });
 });
 
 describe("validateSchemaValue — attribution and interplay with other checks", () => {
@@ -547,5 +556,85 @@ describe("validateSchemaValue — streaming", () => {
     expect(done.meta.incomplete).toBe(false);
     const missing = done.meta.errors.find((e) => e.code === "missing-required");
     expect(missing).toMatchObject({ path: "/info/author", statementId: "root" });
+  });
+});
+
+describe("validateSchemaValue — dropping the component on nested failure", () => {
+  it("drops the parent when a nested required key is missing (like a top-level required)", () => {
+    const result = parser.parse("root = ObjBox({ views: 3 })");
+    expect(result.root).toBeNull();
+    expect(result.meta.errors).toHaveLength(1);
+    expect(result.meta.errors[0]).toMatchObject({
+      code: "missing-required",
+      component: "ObjBox",
+      path: "/info/author",
+    });
+  });
+
+  it("drops the parent when a nested required key is null", () => {
+    const result = parser.parse("root = ObjBox({ author: null, views: 3 })");
+    expect(result.root).toBeNull();
+    expect(result.meta.errors[0]).toMatchObject({ code: "null-required", path: "/info/author" });
+  });
+
+  it("drops the parent when a required key is missing deep inside an array item", () => {
+    const result = parser.parse("root = ArrBox([{ value: 2 }])");
+    expect(result.root).toBeNull();
+    expect(
+      result.meta.errors.some(
+        (e) => e.code === "missing-required" && e.path === "/rows/0/label",
+      ),
+    ).toBe(true);
+  });
+
+  it("keeps the parent rendered on a nested type mismatch (report-only, like a top-level scalar)", () => {
+    const result = parser.parse('root = ObjBox({ author: "ann", views: "lots" })');
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props.info).toMatchObject({ author: "ann", views: "lots" });
+    expect(result.meta.errors).toHaveLength(1);
+    expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/info/views" });
+  });
+
+  it("keeps a top-level scalar type mismatch rendered (unchanged behavior)", () => {
+    const result = parser.parse("root = ScalarBox(5)");
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props.title).toBe(5);
+    expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/title" });
+  });
+
+  it("renders a valid nested object with no errors", () => {
+    const result = parser.parse('root = ObjBox({ author: "ann", views: 3 })');
+    expect(result.root).not.toBeNull();
+    expect(result.meta.errors).toEqual([]);
+  });
+});
+
+describe("validateSchemaValue — enum leaves while streaming", () => {
+  it("does not flag an out-of-enum leaf while the stream is incomplete", () => {
+    const sp = createStreamingParser(schema);
+    // Trailing, unterminated call → parse is marked incomplete (partial).
+    const res = sp.push('root = EnumBox("bogus" ');
+    expect(res.meta.incomplete).toBe(true);
+    expect(res.meta.errors.some((e) => e.code === "type-mismatch")).toBe(false);
+  });
+
+  it("flags the out-of-enum value once the stream completes", () => {
+    const sp = createStreamingParser(schema);
+    const mid = sp.push('root = EnumBox("bogus" ');
+    expect(mid.meta.errors.some((e) => e.code === "type-mismatch")).toBe(false);
+    const done = sp.push(")\n");
+    expect(done.meta.incomplete).toBe(false);
+    expect(done.meta.errors.find((e) => e.code === "type-mismatch")).toMatchObject({
+      path: "/status",
+    });
+  });
+
+  it("still flags a nested scalar type mismatch while streaming (only enums defer)", () => {
+    const sp = createStreamingParser(schema);
+    const res = sp.push('root = ObjBox({ author: "a", views: "lots" ');
+    expect(res.meta.incomplete).toBe(true);
+    expect(res.meta.errors.find((e) => e.code === "type-mismatch")).toMatchObject({
+      path: "/info/views",
+    });
   });
 });

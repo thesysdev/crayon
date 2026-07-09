@@ -248,6 +248,9 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
       const props: Record<string, unknown> = {};
 
       if (def) {
+        // A nested required-field violation (any depth) drops the whole
+        // component, matching how a missing top-level required prop does below.
+        let hasNestedRequiredViolation = false;
         // Catalog component: map positional args → named props
         for (let i = 0; i < def.params.length && i < args.length; i++) {
           const param = def.params[i];
@@ -256,7 +259,9 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
           // Single validation entry point: scalar leaf type/enum for simple
           // props, recursive key/type checks for nested object/array shapes.
           if (param.schema !== undefined) {
-            validateSchemaValue(value, param.schema, name, `/${param.name}`, ctx);
+            if (validateSchemaValue(value, param.schema, name, `/${param.name}`, ctx)) {
+              hasNestedRequiredViolation = true;
+            }
           }
         }
 
@@ -298,6 +303,10 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
             return null;
           }
         }
+
+        // Nested required-field violations drop the component too — same as a
+        // missing top-level required prop. Errors were already reported above.
+        if (hasNestedRequiredViolation) return null;
       } else if (!isBuiltin(name) && !isReservedCall(name)) {
         // Unknown component: error and drop from tree
         pushValidationError(ctx, {

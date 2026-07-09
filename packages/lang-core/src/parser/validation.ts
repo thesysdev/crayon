@@ -79,6 +79,8 @@ export function pushValidationError(
  *   - dynamic values (runtime AST nodes) and child components (ElementNodes,
  *     which are validated separately as their own elements)
  *   - required-key checks while streaming is in progress
+ *   - enum membership while streaming (a partial literal may still be
+ *     completing toward a valid member)
  */
 export function validateSchemaValue(
   value: unknown,
@@ -86,17 +88,17 @@ export function validateSchemaValue(
   component: string,
   path: string,
   ctx: MaterializeCtx,
-): void {
-  if (!schema || typeof schema !== "object" || Array.isArray(schema)) return;
+): boolean {
+  if (!schema || typeof schema !== "object" || Array.isArray(schema)) return false;
   const s = schema as Record<string, unknown>;
   // Composite shapes can't be reliably matched to a single value — skip.
-  if ("$ref" in s || "anyOf" in s || "oneOf" in s || "allOf" in s) return;
+  if ("$ref" in s || "anyOf" in s || "oneOf" in s || "allOf" in s) return false;
   // Absence is handled by required checks on the parent; skip null/undefined.
-  if (value == null) return;
+  if (value == null) return false;
   // Dynamic runtime expressions ($var, builtins) resolve later — don't flag.
-  if (isASTNode(value)) return;
+  if (isASTNode(value)) return false;
   // Child components validate themselves when materialized as elements.
-  if (isElementNode(value)) return;
+  if (isElementNode(value)) return false;
 
   const type = s["type"];
 
@@ -108,13 +110,14 @@ export function validateSchemaValue(
         path,
         message: `field "${path}" expects object but got ${Array.isArray(value) ? "array" : typeof value}`,
       });
-      return;
+      return false;
     }
     const obj = value as Record<string, unknown>;
     const props =
       s["properties"] && typeof s["properties"] === "object"
         ? (s["properties"] as Record<string, unknown>)
         : {};
+    let hasRequiredViolation = false;
     // Structural checks are streaming-sensitive — only run on complete input.
     if (!ctx.partial) {
       const required = Array.isArray(s["required"]) ? (s["required"] as string[]) : [];
@@ -129,15 +132,18 @@ export function validateSchemaValue(
               ? `required field "${path}/${key}" cannot be null`
               : `missing required field "${path}/${key}"`,
           });
+          hasRequiredViolation = true;
         }
       }
     }
     for (const [key, sub] of Object.entries(props)) {
       if (key in obj) {
-        validateSchemaValue(obj[key], sub, component, `${path}/${key}`, ctx);
+        if (validateSchemaValue(obj[key], sub, component, `${path}/${key}`, ctx)) {
+          hasRequiredViolation = true;
+        }
       }
     }
-    return;
+    return hasRequiredViolation;
   }
 
   if (type === "array") {
@@ -148,19 +154,28 @@ export function validateSchemaValue(
         path,
         message: `field "${path}" expects array but got ${typeof value}`,
       });
-      return;
+      return false;
     }
     const items = s["items"];
+    let hasRequiredViolation = false;
     // Only single-schema `items` (not tuple form) is checked.
     if (items && typeof items === "object" && !Array.isArray(items)) {
-      value.forEach((el, i) => validateSchemaValue(el, items, component, `${path}/${i}`, ctx));
+      value.forEach((el, i) => {
+        if (validateSchemaValue(el, items, component, `${path}/${i}`, ctx)) {
+          hasRequiredViolation = true;
+        }
+      });
     }
-    return;
+    return hasRequiredViolation;
   }
 
   // Leaf scalar — reuse the scalar/enum mismatch logic.
   const leaf = getScalarTypeInfo(s);
-  if (leaf.expectedType == null && leaf.enumValues == null) return;
+  if (leaf.expectedType == null && leaf.enumValues == null) return false;
+  // Enum membership can't be judged mid-stream — a partial literal may still be
+  // completing toward a valid member. Scalar type checks stay: a wrong scalar
+  // type won't become the right type by streaming more.
+  if (leaf.enumValues && ctx.partial) return false;
   const mismatch = describeTypeMismatch(value, leaf);
   if (mismatch) {
     pushValidationError(ctx, {
@@ -170,4 +185,6 @@ export function validateSchemaValue(
       message: `field "${path}" expects ${mismatch.expected} but got ${mismatch.actual}`,
     });
   }
+  // A type/enum mismatch is reported but never drops the component.
+  return false;
 }
