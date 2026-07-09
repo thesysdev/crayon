@@ -15,8 +15,14 @@ export type {
 // ── Parser ──
 export { createParser, createStreamingParser, parse } from "./parser";
 export type { Parser, StreamParser } from "./parser";
-export { isASTNode, isRuntimeExpr } from "./parser/ast";
+export { isASTNode, isRuntimeExpr, walkAST } from "./parser/ast";
 export type { ASTNode, CallNode, RuntimeExprNode, Statement } from "./parser/ast";
+// Low-level parsing pipeline (tokenize → split → parseExpression) for consumers
+// that walk partial/streaming openui-lang source without a full parser.
+export { parseExpression } from "./parser/expressions";
+export { tokenize } from "./parser/lexer";
+export type { Token } from "./parser/tokens";
+export { autoClose, split } from "./parser/statements";
 export {
   ACTION_NAMES,
   ACTION_STEPS,
