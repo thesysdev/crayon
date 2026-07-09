@@ -46,6 +46,42 @@ Choose the package for the target runtime. For backend-only parsing or prompt/sc
 - If the user wants OpenUI Lang rendering in an existing React project without the full React UI surface, use `@openuidev/react-lang`.
 - If the host app is Vue or Svelte, use `@openuidev/vue-lang` or `@openuidev/svelte-lang`. Use `@openuidev/lang-core` for framework-agnostic parsing, prompt generation, schemas, or backend/runtime work.
 
+## Discover The Installed Component Contract
+
+Never infer component names or positional signatures from prose, memory, or an example written for a custom library. Inspect the selected installed library before writing prompts or OpenUI Lang. The schema is the authoritative catalog:
+
+```js
+const { openuiChatLibrary } = require("@openuidev/react-ui");
+
+const schema = openuiChatLibrary.toJSONSchema();
+console.log(Object.keys(schema.$defs ?? {}));
+```
+
+Inspect a component's ordered arguments and required fields from the same schema:
+
+```js
+const name = "Callout";
+const definition = schema.$defs?.[name];
+
+console.dir(
+  Object.entries(definition?.properties ?? {}).map(([argument, argumentSchema]) => ({
+    argument,
+    required: (definition?.required ?? []).includes(argument),
+    schema: argumentSchema,
+  })),
+  { depth: null },
+);
+```
+
+JSON Schema property order is OpenUI Lang positional argument order. For the complete model-facing contract, including signatures, rules, and examples, generate the exact prompt used by the app:
+
+```js
+const { openuiChatPromptOptions } = require("@openuidev/react-ui");
+console.log(openuiChatLibrary.prompt(openuiChatPromptOptions));
+```
+
+Repeat with `openuiLibrary` and `openuiPromptOptions`, or the app's custom library/options, as appropriate. A component absent from `$defs` does not ship in that library version.
+
 ## Common Workflows
 
 ### Scaffold
@@ -173,6 +209,34 @@ export function AssistantGenUI({
 }
 ```
 
+Rendering is only the client half. A bring-your-own `/api/chat` route must also place the **same library prompt** in the model's system instructions. To keep `@openuidev/react-ui` out of the server bundle, generate a TypeScript string at build/development time:
+
+```js
+// scripts/generate-openui-prompt.mjs
+import { mkdir, writeFile } from "node:fs/promises";
+import { openuiChatLibrary, openuiChatPromptOptions } from "@openuidev/react-ui";
+
+const prompt = openuiChatLibrary.prompt(openuiChatPromptOptions);
+await mkdir("src/generated", { recursive: true });
+await writeFile(
+  "src/generated/openui-system-prompt.ts",
+  `export const OPENUI_SYSTEM_PROMPT = ${JSON.stringify(prompt)};\n`,
+);
+```
+
+Run this script whenever the OpenUI package version, library, or prompt options change, then import only the generated constant in the route:
+
+```ts
+import { OPENUI_SYSTEM_PROMPT } from "@/generated/openui-system-prompt";
+
+const modelMessages = [
+  { role: "system", content: OPENUI_SYSTEM_PROMPT },
+  ...messages,
+];
+```
+
+Pass `modelMessages` to the chosen model SDK and return its stream in the framing expected by the client adapter. For custom libraries, `openui generate` is the equivalent precompute path. The server prompt library/options and client renderer library must match.
+
 For compact side rails, prompt generated OpenUI output toward one-column `Card`/`Stack` layouts, short lists, concise sections, and narrow-safe tables. Avoid row-wrapped metric cards, multi-column grids, wide tables, and dense charts inside a 390px rail unless the chosen component is explicitly responsive.
 
 ### Start from examples
@@ -198,9 +262,11 @@ The target module must export a library with `prompt()` and `toJSONSchema()`. By
 
 OpenUI ships its own default component libraries. Do not tell users they need a separate third-party component library just to get started.
 
-- Use `openuiLibrary` for the general-purpose default library: charts, tables, forms, cards, images, layout, modals, tabs, and related UI.
-- Use `openuiChatLibrary` for chat responses: a `Card` root plus chat-oriented components like follow-ups, steps, callouts, list blocks, and section blocks.
+- Both `openuiLibrary` and `openuiChatLibrary` include broad content, table, chart, form, and data-display components; do not frame the chat library as data-poor.
+- Use `openuiLibrary` when the model should compose a general-purpose `Stack` root with flexible application layouts.
+- Use `openuiChatLibrary` when each response should use a `Card` root and chat-oriented composition, including follow-ups, list blocks, and section blocks.
 - Define a custom library only when the app needs domain-specific components or a non-React runtime that cannot use the React UI package directly.
+- Treat the installed schema as authoritative because the shared and library-specific component sets can change by version.
 
 ```ts
 import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui";
@@ -241,6 +307,8 @@ export const library = createLibrary({
 });
 ```
 
+`MetricCard` above is an intentionally custom example; it is not a claim that the built-in libraries ship that component.
+
 Adapt `component` to the target runtime:
 
 - React: render a React component/function from `@openuidev/react-lang`.
@@ -272,12 +340,11 @@ Core rules:
 Example:
 
 ```text
-root = Stack([title, metrics, table])
-title = TextContent("Q4 dashboard", "large-heavy")
-metrics = Stack([rev, users], "row", "m")
-rev = StatCard("Revenue", "$1.2M")
-users = StatCard("Users", "450k")
-table = Table([Col("Region", ["NA", "EU"]), Col("Revenue", [720000, 480000], "currency")])
+root = Stack([title, table], "column", "m")
+title = TextContent("Q4 revenue", "large-heavy")
+table = Table([regions, revenue])
+regions = Col("Region", ["NA", "EU"])
+revenue = Col("Revenue", ["$720k", "$480k"])
 ```
 
 ## v0.5 Runtime Features
@@ -350,31 +417,6 @@ if (errors.length > 0) throw new Error(JSON.stringify(errors, null, 2));
 ```
 
 Use root `"Card"` for `openuiChatLibrary`, `"Stack"` for `openuiLibrary`, and the configured custom root for custom libraries.
-
-## Built-in Libraries and Styles
-
-For the default React component library, use `@openuidev/react-ui`:
-
-```ts
-import { Renderer } from "@openuidev/react-lang";
-import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui";
-import "@openuidev/react-ui/components.css";
-import "@openuidev/react-ui/styles/index.css";
-
-const prompt = openuiLibrary.prompt(openuiPromptOptions);
-```
-
-Useful React UI exports:
-
-- `openuiLibrary`: OpenUI's full built-in library for charts, tables, forms, cards, images, layout, and other app UI.
-- `openuiChatLibrary`: OpenUI's chat-optimized built-in library with follow-ups, steps, and callouts.
-- `AgentInterface`: full chat app shell with backend `llm` and optional `storage` channels.
-- `fetchLLM`, `restStorage`, stream adapters, and message formats: self-hosted Agent Interface backend wiring.
-- `FullScreen`, `Copilot`, `BottomTray`: prebuilt chat surfaces.
-- `ThemeProvider`, `createTheme`: theming.
-- `@openuidev/react-ui/components.css`: component-level CSS used by React UI components.
-- `@openuidev/react-ui/styles/index.css`: default unlayered styles.
-- `@openuidev/react-ui/layered/styles/index.css`: cascade-layered styles for easier CSS overrides.
 
 ## Theme Agent Interface
 
