@@ -1,4 +1,5 @@
 import type { LibraryJSONSchema, OpenUIError, ValidationError } from "./types";
+import { getScalarTypeInfo } from "./validation";
 
 /** Render a property's type for a signature hint, e.g. "string", "'a'|'b'", "Header". */
 function describeSchemaType(property: unknown): string | undefined {
@@ -6,11 +7,18 @@ function describeSchemaType(property: unknown): string | undefined {
     return undefined;
   }
   const p = property as Record<string, unknown>;
-  if (Array.isArray(p.enum)) {
-    return p.enum.map((v) => JSON.stringify(v)).join("|");
-  }
+  // $refs and compound types aren't validator-checkable but still make useful hints.
   if (typeof p.$ref === "string") {
     return p.$ref.split("/").pop();
+  }
+  // Scalar/enum leaves: share the validator's schema-leaf interpretation so
+  // hints and type-mismatch messages never disagree.
+  const leaf = getScalarTypeInfo(p);
+  if (leaf.enumValues) {
+    return leaf.enumValues.map((v) => JSON.stringify(v)).join("|");
+  }
+  if (leaf.expectedType) {
+    return leaf.expectedType;
   }
   return typeof p.type === "string" ? p.type : undefined;
 }

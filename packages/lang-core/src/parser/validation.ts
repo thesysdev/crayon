@@ -38,7 +38,7 @@ function describeTypeMismatch(
 }
 
 /** Extract the scalar leaf type/enum from an already-narrowed JSON Schema object. */
-function getScalarTypeInfo(s: Record<string, unknown>): ScalarTypeInfo {
+export function getScalarTypeInfo(s: Record<string, unknown>): ScalarTypeInfo {
   if (Array.isArray(s["enum"])) return { enumValues: s["enum"] };
   if ("const" in s) return { enumValues: [s["const"]] };
   switch (s["type"]) {
