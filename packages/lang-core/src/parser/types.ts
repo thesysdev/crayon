@@ -98,6 +98,19 @@ export interface ValidationError {
   statementId?: string;
 }
 
+export interface MaterializeCtx {
+  syms: Map<string, ASTNode>;
+  cat: ParamMap | undefined;
+  errors: ValidationError[];
+  unres: string[];
+  visited: Set<string>;
+  partial: boolean;
+  /** Tracks which statement is currently being materialized (for error attribution). */
+  currentStatementId?: string;
+  /** Statement IDs not yet reached — delete as they're touched. Remaining = orphaned. */
+  unreached?: Set<string>;
+}
+
 /**
  * Error sources across the openui-lang pipeline.
  */
