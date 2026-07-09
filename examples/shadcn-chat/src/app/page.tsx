@@ -39,7 +39,7 @@ export default function Page() {
   const mode = useTheme();
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
-    apiBaseUrl: "http://localhost:3102",
+    apiBaseUrl: "https://api.thesys.dev",
     features: { artifact: true },
   });
 

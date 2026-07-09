@@ -1,7 +1,7 @@
 import { envOr, requiredEnv } from "@/lib/env";
 
 export async function POST() {
-  const upstream = await fetch(`http://localhost:3102/v1/frontend-tokens`, {
+  const upstream = await fetch(`https://api.thesys.dev/v1/frontend-tokens`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

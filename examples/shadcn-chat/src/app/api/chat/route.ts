@@ -146,9 +146,7 @@ interface PendingFunctionCall {
 }
 
 /** Run every requested function and build the follow-up input items. */
-async function executeFunctionCalls(
-  calls: PendingFunctionCall[],
-): Promise<ResponseInputItem[]> {
+async function executeFunctionCalls(calls: PendingFunctionCall[]): Promise<ResponseInputItem[]> {
   return Promise.all(
     calls.map(async (call): Promise<ResponseInputItem> => {
       let output: string;
@@ -191,7 +189,7 @@ export async function POST(req: Request) {
   }
 
   const client = new OpenAI({
-    baseURL: "http://localhost:3102/v1/embed",
+    baseURL: "https://api.thesys.dev/v1/embed",
     apiKey: requiredEnv("THESYS_API_KEY"),
   });
 
