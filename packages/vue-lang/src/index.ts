@@ -16,7 +16,7 @@ export type {
 
 // ─── Renderer ───
 
-import type { ActionEvent, ParseResult } from "@openuidev/lang-core";
+import type { ActionEvent, McpClientLike, OpenUIError, ParseResult } from "@openuidev/lang-core";
 import type { Library } from "./library.js";
 
 export { default as Renderer } from "./Renderer.vue";
@@ -30,6 +30,12 @@ export interface RendererProps {
   onStateUpdate?: (state: Record<string, any>) => void;
   initialState?: Record<string, any>;
   onParseResult?: (result: ParseResult | null) => void;
+  toolProvider?:
+    | Record<string, (args: Record<string, unknown>) => Promise<unknown>>
+    | McpClientLike
+    | null;
+  queryLoader?: any;
+  onError?: (errors: OpenUIError[]) => void;
 }
 
 // ─── Context (composables for use inside component renderers) ───
@@ -39,6 +45,7 @@ export {
   provideOpenUIContext,
   useFormName,
   useGetFieldValue,
+  useIsQueryLoading,
   useIsStreaming,
   useOpenUI,
   useRenderNode,
@@ -58,7 +65,15 @@ export type { ParsedRule, ValidatorFn } from "./validation.js";
 
 // ─── Re-exports from lang-core (parser, types) ───
 
-export { BuiltinActionType } from "@openuidev/lang-core";
-export type { ActionEvent, ElementNode, ParseResult } from "@openuidev/lang-core";
+export { BuiltinActionType, extractToolResult, ToolNotFoundError } from "@openuidev/lang-core";
+export type {
+  ActionEvent,
+  ElementNode,
+  EvaluationContext,
+  McpClientLike,
+  OpenUIError,
+  ParseResult,
+  ToolProvider,
+} from "@openuidev/lang-core";
 
 export { createParser, createStreamingParser, type LibraryJSONSchema } from "@openuidev/lang-core";

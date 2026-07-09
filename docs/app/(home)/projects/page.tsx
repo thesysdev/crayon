@@ -76,6 +76,22 @@ const projects: ProjectItem[] = [
     ],
   },
   {
+    name: "Noetic",
+    description:
+      "An agent framework integration for returning OpenUI interfaces through a streaming output codec, durable surface layer, and transport.",
+    type: "Framework",
+    status: "Community",
+    accent: "orange",
+    icon: Sparkles,
+    links: [
+      {
+        label: "Docs",
+        href: "https://noetic.tools/docs/framework/generative-ui",
+        external: true,
+      },
+    ],
+  },
+  {
     name: "Field Theory UI",
     description:
       "A local-first web interface for exploring X/Twitter bookmarks with OpenUI-powered interactive dashboards.",

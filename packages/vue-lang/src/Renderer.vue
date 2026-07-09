@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import type { ActionEvent, ElementNode, ParseResult } from "@openuidev/lang-core";
-import { BuiltinActionType, createParser } from "@openuidev/lang-core";
-import { computed, h, ref, toRef, watch } from "vue";
-import type { ActionConfig } from "./context.js";
+import type {
+  ActionEvent,
+  ElementNode,
+  ParseResult,
+  OpenUIError,
+  McpClientLike,
+  ToolProvider,
+} from "@openuidev/lang-core";
+import { BuiltinActionType, extractToolResult, ToolNotFoundError } from "@openuidev/lang-core";
+import { computed, h, toRef, watch, type Component, type VNode } from "vue";
 import { provideOpenUIContext } from "./context.js";
 import type { Library, RenderNodeResult } from "./library.js";
 import RenderNode from "./RenderNode.vue";
+import { useOpenUIState } from "./state.js";
 
 interface RendererProps {
   /** Raw response text (openui-lang code). */
@@ -28,101 +35,47 @@ interface RendererProps {
   initialState?: Record<string, any>;
   /** Called whenever the parse result changes. */
   onParseResult?: (result: ParseResult | null) => void;
+  /** Tool provider for Query()/Mutation() calls. */
+  toolProvider?:
+    | Record<string, (args: Record<string, unknown>) => Promise<unknown>>
+    | McpClientLike
+    | null;
+  /** Custom loading indicator shown while queries are fetching. */
+  queryLoader?: Component | VNode | null;
+  /** Called with structured errors. */
+  onError?: (errors: OpenUIError[]) => void;
 }
 
 const props = withDefaults(defineProps<RendererProps>(), {
   isStreaming: false,
 });
 
-// ─── Parser (created once from the library's JSON schema) ───
-// Intentional: parser is created once, not reactive on library changes (matches react-lang).
-const parser = createParser(props.library.toJSONSchema());
+// Stable ToolProvider wrapper — identity never changes. callTool() reads the
+// latest input from props.toolProvider on every call, so function map updates
+// are always observed without triggering re-creation.
+const stableToolProvider: ToolProvider = {
+  async callTool(toolName: string, args: Record<string, unknown>): Promise<unknown> {
+    const current = props.toolProvider;
+    if (current == null) throw new Error("[openui] toolProvider is null");
+    if (typeof (current as any).callTool === "function") {
+      const result = await (current as any).callTool({
+        name: toolName,
+        arguments: args,
+      });
+      return extractToolResult(result);
+    }
+    const map = current as Record<string, (a: Record<string, unknown>) => Promise<unknown>>;
+    const fn = map[toolName];
+    if (!fn) throw new ToolNotFoundError(toolName, Object.keys(map));
+    return fn(args);
+  },
+};
 
-// ─── Parse result (derived from response) ───
-const result = computed<ParseResult | null>(() => {
-  if (!props.response) return null;
-  try {
-    return parser.parse(props.response);
-  } catch (e) {
-    console.error("[openui] Parse error:", e);
-    return null;
-  }
+const resolvedToolProvider = computed<ToolProvider | null>(() => {
+  return props.toolProvider != null ? stableToolProvider : null;
 });
 
-// ─── Form state ───
-const formState = ref<Record<string, any>>(props.initialState ?? {});
-
-// Sync if initialState changes (e.g. loading a different message)
-watch(
-  () => props.initialState,
-  (newVal, oldVal) => {
-    if (newVal !== oldVal) {
-      formState.value = newVal ?? {};
-    }
-  },
-);
-
-// ─── Notify on parse result change ───
-watch(
-  result,
-  (r) => {
-    props.onParseResult?.(r);
-  },
-  { immediate: true },
-);
-
-// ─── Form state functions ───
-
-function getFieldValue(formName: string | undefined, name: string): any {
-  return formName ? formState.value[formName]?.[name]?.value : formState.value[name]?.value;
-}
-
-function setFieldValue(
-  formName: string | undefined,
-  componentType: string | undefined,
-  name: string,
-  value: any,
-  shouldTriggerSaveCallback: boolean = true,
-): void {
-  if (formName) {
-    formState.value[formName] = {
-      ...formState.value[formName],
-      [name]: { value, componentType },
-    };
-  } else {
-    formState.value[name] = { value, componentType };
-  }
-
-  if (shouldTriggerSaveCallback && props.onStateUpdate) {
-    props.onStateUpdate({ ...formState.value });
-  }
-}
-
-function triggerAction(userMessage: string, formName?: string, action?: ActionConfig): void {
-  const actionType = action?.type || BuiltinActionType.ContinueConversation;
-  const actionParams = action?.params;
-
-  // Collect relevant form state
-  let relevantState: Record<string, any> | undefined;
-  if (formName && formState.value[formName]) {
-    relevantState = { [formName]: formState.value[formName] };
-  } else if (Object.keys(formState.value).length > 0) {
-    relevantState = formState.value;
-  }
-
-  if (!props.onAction) return;
-
-  props.onAction({
-    type: actionType,
-    params: actionParams || {},
-    humanFriendlyMessage: userMessage,
-    formState: relevantState,
-    formName,
-  });
-}
-
 // ─── Render node function ───
-
 function renderNode(value: unknown): RenderNodeResult {
   if (value == null) return null;
   if (typeof value === "string") return value;
@@ -139,17 +92,62 @@ function renderNode(value: unknown): RenderNodeResult {
   return null;
 }
 
-// ─── Provide context ───
-provideOpenUIContext({
-  library: props.library,
+const { result, parseResult, contextValue, isQueryLoading } = useOpenUIState(
+  {
+    response: toRef(props, "response"),
+    library: props.library,
+    isStreaming: toRef(props, "isStreaming"),
+    onAction: (e) => props.onAction?.(e),
+    onStateUpdate: (s) => props.onStateUpdate?.(s),
+    initialState: props.initialState,
+    toolProvider: resolvedToolProvider,
+    onError: (errs) => props.onError?.(errs),
+  },
   renderNode,
-  triggerAction,
-  isStreaming: toRef(props, "isStreaming"),
-  getFieldValue,
-  setFieldValue,
-});
+);
+
+// ─── Notify on parse result change ───
+watch(
+  parseResult,
+  (r) => {
+    props.onParseResult?.(r);
+  },
+  { immediate: true },
+);
+
+// ─── Provide context ───
+provideOpenUIContext(contextValue.value);
 </script>
 
 <template>
-  <RenderNode v-if="result?.root" :node="result.root" />
+  <div style="position: relative">
+    <div v-if="isQueryLoading" style="position: absolute; top: 8px; right: 8px; z-index: 10">
+      <component v-if="props.queryLoader" :is="props.queryLoader" />
+      <div
+        v-else
+        style="
+          width: 16px;
+          height: 16px;
+          border: 2px solid #e5e7eb;
+          border-top-color: #3b82f6;
+          border-radius: 50%;
+          animation: openui-spin 0.6s linear infinite;
+        "
+      />
+    </div>
+    <div :style="{ opacity: isQueryLoading ? 0.7 : 1, transition: 'opacity 0.2s ease' }">
+      <RenderNode v-if="result?.root" :node="result.root" />
+    </div>
+  </div>
 </template>
+
+<style>
+@keyframes openui-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
