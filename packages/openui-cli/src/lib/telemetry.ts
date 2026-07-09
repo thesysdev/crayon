@@ -145,6 +145,12 @@ export class Telemetry {
     if (!distinctId || !alias || distinctId === alias) return;
     try {
       this.client.alias({ distinctId, alias });
+      this.client.setPersonProperties({
+        distinctId,
+        propertiesOnce: {
+          first_cli_auth_ts: new Date().toISOString(),
+        },
+      });
     } catch (error) {
       debugLogPostHogFailure("alias", error);
     }
