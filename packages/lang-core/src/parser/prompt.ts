@@ -429,6 +429,9 @@ function importantRules(
       `${flags.toolCalls ? "4" : "3"}. Every $binding appears in at least one component or expression.`,
     );
   }
+  if (flags.toolCalls && flags.bindings) {
+    verifyLines.push("5. Every visible filter $binding appears in at least one Query args object.");
+  }
 
   return `## Important Rules
 - When asked about data, generate realistic/plausible data

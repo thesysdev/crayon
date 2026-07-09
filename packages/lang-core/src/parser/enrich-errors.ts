@@ -1,14 +1,37 @@
 import type { LibraryJSONSchema, OpenUIError, ValidationError } from "./types";
 
-/** Build a signature hint like "Header(title*, subtitle, icon)" from JSON schema. */
+/** Render a property's type for a signature hint, e.g. "string", "'a'|'b'", "Header". */
+function describeSchemaType(property: unknown): string | undefined {
+  if (!property || typeof property !== "object" || Array.isArray(property)) {
+    return undefined;
+  }
+  const p = property as Record<string, unknown>;
+  if (Array.isArray(p.enum)) {
+    return p.enum.map((v) => JSON.stringify(v)).join("|");
+  }
+  if (typeof p.$ref === "string") {
+    return p.$ref.split("/").pop();
+  }
+  return typeof p.type === "string" ? p.type : undefined;
+}
+
+/**
+ * Build a typed signature hint like
+ * "Header(title*: string, variant: 'a'|'b')" from JSON schema.
+ * Positional order is preserved so the LLM can fix swapped args.
+ */
 function buildSignatureHint(
   componentName: string,
   schema: { properties?: Record<string, unknown>; required?: string[] } | undefined,
 ): string | undefined {
   if (!schema?.properties) return undefined;
   const required = new Set(schema.required ?? []);
-  const params = Object.keys(schema.properties)
-    .map((k) => (required.has(k) ? `${k}*` : k))
+  const params = Object.entries(schema.properties)
+    .map(([k, prop]) => {
+      const type = describeSchemaType(prop);
+      const marked = required.has(k) ? `${k}*` : k;
+      return type ? `${marked}: ${type}` : marked;
+    })
     .join(", ");
   return `Signature: ${componentName}(${params}) — * marks required`;
 }
@@ -34,7 +57,11 @@ export function enrichErrors(
     };
     if (ve.code === "unknown-component" && componentNames.length) {
       error.hint = `Available components: ${componentNames.join(", ")}`;
-    } else if (ve.code === "missing-required" || ve.code === "null-required") {
+    } else if (
+      ve.code === "missing-required" ||
+      ve.code === "null-required" ||
+      ve.code === "type-mismatch"
+    ) {
       error.hint = buildSignatureHint(ve.component, schema.$defs?.[ve.component]);
     } else if (ve.code === "inline-reserved") {
       error.hint = `Declare as a top-level statement: myVar = ${ve.component}(...)`;
