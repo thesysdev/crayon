@@ -1,4 +1,5 @@
 import { BUILTINS, LAZY_BUILTIN_DEFS } from "./builtins";
+import type { LibraryJSONSchema } from "./types";
 
 // ─── PromptSpec types (JSON-serializable, no Zod deps) ──────────────────────
 
@@ -25,10 +26,13 @@ export interface ComponentGroup {
   notes?: string[];
 }
 
-export interface PromptSpec {
+export interface BaseSpec {
   root?: string;
   components: Record<string, ComponentPromptSpec>;
   componentGroups?: ComponentGroup[];
+}
+
+export interface PromptSpec extends BaseSpec {
   tools?: (string | ToolSpec)[];
   editMode?: boolean;
   inlineMode?: boolean;
@@ -42,6 +46,10 @@ export interface PromptSpec {
   /** Tool-specific examples (Query/Mutation patterns). Both `examples` and `toolExamples` are included when present. */
   toolExamples?: string[];
   additionalRules?: string[];
+}
+
+export interface LibrarySpec extends BaseSpec {
+  schema?: LibraryJSONSchema;
 }
 
 // ─── JSON Schema → type string helper ───────────────────────────────────────

@@ -115,4 +115,42 @@ program
     },
   );
 
+program
+  .command("generate-spec")
+  .description("Generate a serialized library spec JSON (signatures, groups, JSON schema)")
+  .argument("[entry]", "Path to a file that exports a createLibrary() result")
+  .option("-o, --out <file>", "Write output to a file instead of stdout")
+  .option("--export <name>", "Name of the export to use (auto-detected by default)")
+  .option("--no-interactive", "Fail with error if required args are missing")
+  .action(
+    async (
+      entry: string | undefined,
+      options: {
+        out?: string;
+        export?: string;
+        interactive: boolean;
+      },
+    ) => {
+      try {
+        const args = await resolveArgs(
+          {
+            entry: entry
+              ? { value: entry }
+              : {
+                  prompt: { type: "input", message: "Entry file path?" },
+                  required: true,
+                },
+          },
+          options.interactive,
+        );
+
+        await runGenerate((args as { entry: string }).entry, { ...options, spec: true });
+      } catch (e) {
+        handleCliError(e, "cli_generate_spec_failed");
+      } finally {
+        await telemetry.shutdown();
+      }
+    },
+  );
+
 program.parse();
