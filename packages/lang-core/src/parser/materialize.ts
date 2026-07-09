@@ -5,7 +5,7 @@
 import type { ASTNode } from "./ast";
 import { isASTNode, isRuntimeExpr } from "./ast";
 import { isBuiltin, isReservedCall, LAZY_BUILTINS, RESERVED_CALLS } from "./builtins";
-import { isElementNode, type MaterializeCtx, type ParamMap } from "./types";
+import { isElementNode, type MaterializeCtx } from "./types";
 import { pushValidationError, validateSchemaValue } from "./validation";
 
 /**

@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { MaterializeCtx } from "../types";
-import { validateSchemaValue } from "../validation";
 import { createParser, createStreamingParser } from "../parser";
-import type { LibraryJSONSchema, ValidationError } from "../types";
+import type { LibraryJSONSchema, MaterializeCtx, ValidationError } from "../types";
+import { validateSchemaValue } from "../validation";
 
 /**
  * Exercises the recursive nested validator (validateSchemaValue): objects,

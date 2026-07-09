@@ -1,5 +1,10 @@
 import { isASTNode } from "./ast";
-import { isElementNode, type MaterializeCtx, type ScalarParamType, type ValidationError } from "./types";
+import {
+  isElementNode,
+  type MaterializeCtx,
+  type ScalarParamType,
+  type ValidationError,
+} from "./types";
 
 /** Scalar type/enum info extracted from a JSON Schema leaf, for describeTypeMismatch. */
 interface ScalarTypeInfo {
