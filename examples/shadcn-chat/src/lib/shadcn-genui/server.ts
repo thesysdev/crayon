@@ -1,5 +1,5 @@
 import { createLibrary, defineComponent } from "@openuidev/lang-core";
-import type { ComponentLibrary } from "@openuidev/thesys-server";
+import type { ChatLibrary } from "@openuidev/thesys-server";
 import { z } from "zod";
 import { shadcnComponentGroups, shadcnPromptOptions } from "./metadata";
 
@@ -723,7 +723,7 @@ const lib = createLibrary({
   ],
 });
 
-export const shadcnLibraryConfig: ComponentLibrary = {
+export const shadcnLibraryConfig: ChatLibrary = {
   root: "Card",
   schema: lib.toJSONSchema(),
   componentGroups: shadcnComponentGroups,

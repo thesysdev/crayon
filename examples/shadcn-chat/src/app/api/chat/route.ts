@@ -207,7 +207,7 @@ export async function POST(req: Request) {
           { type: "image_search" },
           ...functionTools,
         ],
-        instructions: createResponsesInstructions({ componentLibrary: shadcnLibraryConfig }),
+        instructions: createResponsesInstructions({ chatLibrary: shadcnLibraryConfig }),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
       { signal: req.signal },
