@@ -13,9 +13,10 @@ Work from the user's app or project first. Inspect installed packages, generated
 
 1. Inspect the user's project `package.json` and lockfile when available.
 2. Identify which `@openuidev/*` packages and versions are installed.
-3. Prefer installed package exports and generated templates over assumptions.
-4. Use installed `node_modules/@openuidev/*`, `.d.ts` files, and generated files as the source of truth when available.
-5. If no app or installed package exists, use first-party docs and GitHub source.
+3. Prefer installed package exports, source, `.d.ts` files, and generated templates/files over assumptions.
+4. If no app or installed package exists, use first-party docs and GitHub source.
+5. Before finishing code that adds or changes OpenUI Lang strings, parse every static, canned, fixture, fallback, and mock response against the exact selected library and root.
+6. Reject completion when any full response has no root, is incomplete, or reports errors, unresolved references, or orphaned statements.
 
 Do not use this skill for general React UI questions, generic design system advice, unrelated AI agent harnesses, or general frontend debugging unless OpenUI or `@openuidev` packages are involved.
 
@@ -80,7 +81,7 @@ const { openuiChatPromptOptions } = require("@openuidev/react-ui");
 console.log(openuiChatLibrary.prompt(openuiChatPromptOptions));
 ```
 
-Repeat with `openuiLibrary` and `openuiPromptOptions`, or the app's custom library/options, as appropriate. A component absent from `$defs` does not ship in that library version.
+Repeat with `openuiLibrary` and `openuiPromptOptions`, or the app's custom library/options, as appropriate. Treat each library as an independent contract: before writing prompts, examples, mocks, or canned responses, verify every component and positional signature against the schema for the library actually passed to `Renderer`. A component absent from `$defs` does not ship in that library version. When comparing libraries, compute exact `$defs` set differences; do not infer subset relationships or component categories from names alone.
 
 ## Common Workflows
 
@@ -209,7 +210,7 @@ export function AssistantGenUI({
 }
 ```
 
-Rendering is only the client half. A bring-your-own `/api/chat` route must also place the **same library prompt** in the model's system instructions. To keep `@openuidev/react-ui` out of the server bundle, generate a TypeScript string at build/development time:
+Before wiring an app-owned mock, fixture, fallback, or canned response into `Renderer`, apply the completion gate in **First Checks Before Answering**; a successful build does not validate the response. Rendering is only the client half. A bring-your-own `/api/chat` route must also place the **same library prompt** in the model's system instructions. To keep `@openuidev/react-ui` out of the server bundle, generate a TypeScript string at build/development time:
 
 ```js
 // scripts/generate-openui-prompt.mjs
@@ -266,7 +267,6 @@ OpenUI ships its own default component libraries. Do not tell users they need a 
 - Use `openuiLibrary` when the model should compose a general-purpose `Stack` root with flexible application layouts.
 - Use `openuiChatLibrary` when each response should use a `Card` root and chat-oriented composition, including follow-ups, list blocks, and section blocks.
 - Define a custom library only when the app needs domain-specific components or a non-React runtime that cannot use the React UI package directly.
-- Treat the installed schema as authoritative because the shared and library-specific component sets can change by version.
 
 ```ts
 import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui";
@@ -307,7 +307,7 @@ export const library = createLibrary({
 });
 ```
 
-`MetricCard` above is an intentionally custom example; it is not a claim that the built-in libraries ship that component.
+`MetricCard` above is an intentionally custom example; it is not a claim that the built-in libraries ship that component. The configured root is the only rendered entry point; to compose multiple domain components, define a container root with a children/items prop and reference every component from it instead of emitting disconnected sibling statements.
 
 Adapt `component` to the target runtime:
 
@@ -331,6 +331,7 @@ Core rules:
 - Write one statement per line.
 - Always define `root = <RootComponent>(...)`; no `root` means nothing renders.
 - Put the `root` statement first for streaming, then define children/data below it.
+- Make every non-root component statement reachable from `root`; unreferenced statements appear in `result.meta.orphaned` and are not rendered.
 - Use positional arguments only: `Stack([title], "row", "l")`, not named arguments.
 - Forward references are allowed: `root = Stack([chart])` can appear before `chart = ...`.
 - Component arguments map to props by Zod schema key order.
@@ -400,20 +401,22 @@ Version-sensitive: verify renderer props against installed exports; there is no 
 ## Verification
 
 - Run `openui generate` against the library file before using a custom library in an app.
-- Run the host app's TypeScript/build checks after existing-app integrations, especially when adding React UI CSS imports or Next client components.
-- Validate canned OpenUI Lang with `createParser(...).parse(...)` and inspect `result.meta.errors`; do not look for top-level `result.errors`.
+- Run the host app's TypeScript/build checks, but do not treat a successful build as proof that OpenUI Lang is valid; after streaming ends, parse every static, canned, fixture, fallback, and mock response against the exact selected library.
+- Do not declare the integration complete when parsing produces no root, an incomplete result, errors, unresolved references, or orphaned statements. Inspect `result.meta`; do not look for top-level `result.errors`.
 - Treat parse/runtime errors surfaced through `Renderer` `onError` or parser results as LLM-correctable feedback: unknown components, missing required props, excess positional args, inline `Query`/`Mutation`, runtime errors, or unresolved refs should be fed back into the next model turn.
 - Vite large chunk warnings from default React UI/chat libraries are not automatically failures; chart/UI dependencies can be substantial.
-- For scoped agent tests, keep caches/stores inside the assigned workspace when needed, for example `npm_config_cache=$PWD/.npm-cache npm install` or `pnpm install --store-dir .pnpm-store`.
+- For isolated agent tests, keep caches inside the test sandbox but outside the app root when possible; if they must live in the app, add them to `.gitignore` and lint/typecheck exclusions.
 
 ```ts
 import { createParser } from "@openuidev/react-lang";
 import { openuiChatLibrary } from "@openuidev/react-ui";
-
 const parser = createParser(openuiChatLibrary.toJSONSchema(), "Card");
 const result = parser.parse(response);
-const errors = result.meta?.errors ?? [];
-if (errors.length > 0) throw new Error(JSON.stringify(errors, null, 2));
+const meta = result.meta ?? {};
+const invalid =
+  !result.root || meta.incomplete || (meta.errors?.length ?? 0) > 0 ||
+  (meta.unresolved?.length ?? 0) > 0 || (meta.orphaned?.length ?? 0) > 0;
+if (invalid) throw new Error(JSON.stringify({ ...meta, missingRoot: !result.root }, null, 2));
 ```
 
 Use root `"Card"` for `openuiChatLibrary`, `"Stack"` for `openuiLibrary`, and the configured custom root for custom libraries.
