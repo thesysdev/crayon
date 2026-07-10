@@ -10,6 +10,7 @@ export interface LibraryJSONSchema {
     {
       properties?: Record<string, unknown>;
       required?: string[];
+      description?: string;
     }
   >;
 }

@@ -3,24 +3,13 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 
-import { resolveCloudApiKey, THESYS_KEYS_URL, type CloudAuthMethod } from "../auth/mint";
+import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
+import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
+import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
 import { resolveInstallPackageManager } from "../lib/detect-package-manager";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { resolveArgs } from "../lib/resolve-args";
 import { CreateError, telemetry } from "../lib/telemetry";
-
-export type TemplateName = "openui-self-hosted" | "openui-cloud";
-
-export interface CreateAppOptions {
-  name?: string;
-  template?: TemplateName;
-  skill?: boolean;
-  noInteractive?: boolean;
-  noInstall?: boolean;
-  // cloud-only
-  apiKey?: string;
-  auth?: CloudAuthMethod;
-}
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
@@ -30,72 +19,14 @@ function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   return !["node_modules", ".next", ".turbo", "dist"].includes(top);
 }
 
-export async function runCreateApp(options: CreateAppOptions): Promise<void> {
-  const interactive = !options.noInteractive;
-  const t0 = Date.now();
-  telemetry.register({ is_interactive: interactive });
-
-  const args = await resolveArgs(
-    {
-      name: options.name
-        ? { value: options.name }
-        : { prompt: { type: "input", message: "Project name?" }, required: true },
-      template: options.template
-        ? { value: options.template }
-        : {
-            prompt: {
-              type: "select",
-              message: "Which template?",
-              choices: [
-                {
-                  value: "openui-cloud",
-                  name: "OpenUI Cloud — managed conversations, artifacts & streaming",
-                },
-                {
-                  value: "openui-self-hosted",
-                  name: "OpenUI Self Hosted — starter setup with OpenAI SDK",
-                },
-              ],
-            },
-            required: true,
-          },
-    },
-    interactive,
-  );
-
-  const { name, template } = args as { name: string; template: TemplateName };
-  telemetry.register({ template });
-  telemetry.capture("cli_create_started", { interactive });
-  telemetry.capture("cli_template_selected", { template });
-
-  const targetDir = path.resolve(process.cwd(), name);
-  if (fs.existsSync(targetDir)) {
-    throw new CreateError("dir_exists", `Directory "${name}" already exists.`);
-  }
-
-  const packageManager = resolveInstallPackageManager();
-  telemetry.register({ package_manager: packageManager.name });
-  const templateDir = path.join(__dirname, "..", "templates", template);
-  if (!fs.existsSync(templateDir)) {
-    throw new CreateError(
-      "template_missing",
-      `Template "${template}" not found. Rebuild the CLI with \`pnpm build\`.`,
-    );
-  }
-
-  console.info(`\nScaffolding ${template} into "${name}"...\n`);
-  fs.cpSync(templateDir, targetDir, {
-    recursive: true,
-    filter: (src) => shouldCopyTemplatePath(templateDir, src),
-  });
-
+function rewritePackageJson(projectDir: string, name: string) {
   // package.json: set the project name and de-vendor monorepo-local deps
   // (workspace:* / file: / catalog:) to the published "latest". link: deps are
   // rewritten to an absolute file: path so locally-linked packages (e.g.
   // @openuidev/thesys) keep resolving against the developer's checkout under any
   // package manager — npm rejects link:, and ~ isn't expanded. Temporary, until
   // these packages are published.
-  const pkgPath = path.join(targetDir, "package.json");
+  const pkgPath = path.join(projectDir, "package.json");
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8")) as {
     name: string;
     dependencies?: Record<string, string>;
@@ -122,61 +53,223 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     }
   }
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+}
+
+export async function runCreateApp(options: CreateAppOptions): Promise<void> {
+  const interactive = !options.noInteractive;
+  const t0 = Date.now();
+  telemetry.register({ interactive });
+  telemetry.capture("cli_create_started", {
+    ...createFunnelProps("create_started"),
+    interactive,
+    has_name_arg: Boolean(options.name),
+    has_template_arg: Boolean(options.template),
+    has_api_key_arg: Boolean(options.apiKey),
+    has_auth_arg: Boolean(options.auth),
+    no_install: Boolean(options.noInstall),
+  });
+
+  const args = await resolveArgs(
+    {
+      name: options.name
+        ? { value: options.name }
+        : { prompt: { type: "input", message: "Project name?" }, required: true },
+      template: options.template
+        ? { value: options.template }
+        : {
+            prompt: {
+              type: "select",
+              message: "Choose your AI setup",
+              choices: [
+                {
+                  value: "openui-cloud",
+                  name: "OpenUI Cloud — fastest setup with free hosted models (recommended)",
+                },
+                {
+                  value: "openui-self-hosted",
+                  name: "OpenAI-compatible provider — use your own key and self-host the AI route",
+                },
+              ],
+            },
+            required: true,
+          },
+    },
+    interactive,
+  );
+
+  const { name, template } = args as { name: string; template: TemplateName };
+  const aiSetup = aiSetupFromTemplate(template);
+  telemetry.register({ template, ai_setup: aiSetup });
+  telemetry.capture("cli_ai_setup_selected", {
+    ...createFunnelProps("ai_setup_selected"),
+    template,
+    ai_setup: aiSetup,
+  });
+
+  const targetDir = path.resolve(process.cwd(), name);
+  if (fs.existsSync(targetDir)) {
+    throw new CreateError("dir_exists", `Directory "${name}" already exists.`);
+  }
+
+  const packageManager = resolveInstallPackageManager();
+  const templateDir = path.join(__dirname, "..", "templates", template);
+  if (!fs.existsSync(templateDir)) {
+    throw new CreateError(
+      "template_missing",
+      `Template "${template}" not found. Rebuild the CLI with \`pnpm build\`.`,
+    );
+  }
+
+  const captureScaffoldFailed = () => {
+    telemetry.capture("cli_scaffold_failed", {
+      ...createFunnelProps("scaffold_failed"),
+      template,
+      ai_setup: aiSetup,
+    });
+  };
+
+  telemetry.capture("cli_env_resolution_started", {
+    ...createFunnelProps("env_resolution_started"),
+    template,
+    ai_setup: aiSetup,
+  });
+  const envResult =
+    template === "openui-self-hosted"
+      ? await resolveChatEnv(interactive)
+      : await resolveCloudEnv(name, options, interactive);
+
+  console.info(`\nScaffolding ${template} into "${name}"...\n`);
+  telemetry.capture("cli_scaffold_started", {
+    ...createFunnelProps("scaffold_started"),
+    template,
+    ai_setup: aiSetup,
+  });
+  try {
+    fs.cpSync(templateDir, targetDir, {
+      recursive: true,
+      filter: (src) => shouldCopyTemplatePath(templateDir, src),
+    });
+    rewritePackageJson(targetDir, name);
+  } catch (err) {
+    captureScaffoldFailed();
+    throw err;
+  }
+  telemetry.capture("cli_scaffold_succeeded", {
+    ...createFunnelProps("scaffold_succeeded"),
+    template,
+    ai_setup: aiSetup,
+  });
+
+  await writeEnv(targetDir, envResult);
+  telemetry.capture("cli_env_resolved", {
+    ...createFunnelProps("env_written"),
+    template,
+    ai_setup: aiSetup,
+    env_written: envResult.envWritten,
+    auth_method: envResult.authMethod,
+    auth_succeeded: envResult.authSucceeded,
+  });
+
+  const installSkill = await shouldInstallSkill(options.skill, interactive);
+  telemetry.capture("cli_skill_installed", {
+    ...createFunnelProps("skill_prompt_resolved"),
+    skill_installed: installSkill,
+  });
+  if (installSkill) {
+    telemetry.capture("cli_skill_install_started", {
+      ...createFunnelProps("skill_install_started"),
+      skill_installed: installSkill,
+    });
+    runSkillInstall(targetDir);
+    telemetry.capture("cli_skill_install_finished", {
+      ...createFunnelProps("skill_install_finished"),
+      skill_installed: installSkill,
+    });
+  }
 
   const installCmd = packageManager.installCmd;
+  let dependencyInstalled = false;
 
   if (options.noInstall) {
     console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.\n`);
   } else {
     console.info(`Installing dependencies with: ${installCmd}\n`);
+    telemetry.capture("cli_dependency_install_started", {
+      ...createFunnelProps("dependency_install_started"),
+      template,
+      ai_setup: aiSetup,
+    });
     try {
       execSync(installCmd, { stdio: "inherit", cwd: targetDir });
+      dependencyInstalled = true;
+      telemetry.capture("cli_dependency_install_succeeded", {
+        ...createFunnelProps("dependency_install_succeeded"),
+        template,
+        ai_setup: aiSetup,
+        dependency_installed: dependencyInstalled,
+      });
     } catch {
+      telemetry.capture("cli_dependency_install_failed", {
+        ...createFunnelProps("dependency_install_failed"),
+        template,
+        ai_setup: aiSetup,
+        dependency_installed: dependencyInstalled,
+      });
       throw new CreateError("install_deps", "dependency install failed");
     }
   }
 
-  const installSkill = await shouldInstallSkill(options.skill, interactive);
-  telemetry.capture("cli_skill_installed", { installed: installSkill });
-  if (installSkill) runSkillInstall(targetDir);
-
-  const envWritten =
-    template === "openui-self-hosted"
-      ? await writeChatEnv(targetDir, interactive)
-      : await writeCloudEnv(targetDir, name, options, interactive);
-
   const devCmd = packageManager.runCmd;
 
   telemetry.capture("cli_create_succeeded", {
+    ...createFunnelProps("create_succeeded"),
     template,
+    ai_setup: aiSetup,
     duration_ms: Date.now() - t0,
     skill_installed: installSkill,
-    env_written: envWritten,
+    env_written: envResult.envWritten,
+    dependency_installed: dependencyInstalled,
   });
   console.info(
-    getStartedMessage({ name, devCmd, template, skillInstalled: installSkill, envWritten }),
+    getStartedMessage({
+      name,
+      devCmd,
+      template,
+      skillInstalled: installSkill,
+      envWritten: envResult.envWritten,
+    }),
   );
 }
 
-async function writeChatEnv(targetDir: string, interactive: boolean): Promise<boolean> {
-  if (!interactive) return false;
-  const { input } = await import("@inquirer/prompts");
-  const apiKey = (
-    await input({ message: "Enter your OpenAI API key (leave blank to skip):" })
-  ).trim();
-  if (!apiKey) return false;
-  fs.writeFileSync(path.join(targetDir, ".env"), `OPENAI_API_KEY=${apiKey}\n`);
-  return true;
+async function writeEnv(targetDir: string, result: EnvResult): Promise<void> {
+  if (!result.envContent) return;
+  await fs.promises.writeFile(path.join(targetDir, ".env"), result.envContent);
 }
 
-async function writeCloudEnv(
-  targetDir: string,
+async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
+  if (!interactive) return { envWritten: false };
+  const { input } = await import("@inquirer/prompts");
+  const apiKey = (
+    await input({
+      message: "Enter your OpenAI-compatible provider API key (leave blank to skip):",
+    })
+  ).trim();
+  if (!apiKey) return { envWritten: false };
+  return { envWritten: true, envContent: `OPENAI_API_KEY=${apiKey}\n` };
+}
+
+async function resolveCloudEnv(
   name: string,
   options: CreateAppOptions,
   interactive: boolean,
-): Promise<boolean> {
+): Promise<EnvResult> {
   let apiKey: string | null = null;
+  let authMethod: EnvResult["authMethod"];
   try {
+    telemetry.capture("cli_cloud_auth_started", {
+      ...createFunnelProps("cloud_auth_started"),
+      auth_method: options.auth ?? (options.apiKey ? "apikey-flag" : undefined),
+    });
     const resolved = await resolveCloudApiKey({
       apiKey: options.apiKey,
       auth: options.auth,
@@ -184,18 +277,29 @@ async function writeCloudEnv(
       interactive,
     });
     apiKey = resolved.key;
+    authMethod = resolved.method;
     telemetry.capture("cli_cloud_auth_method", {
-      method: resolved.method,
-      succeeded: apiKey != null,
+      ...createFunnelProps("cloud_auth_resolved"),
+      auth_method: resolved.method,
+      auth_succeeded: apiKey != null,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
+    telemetry.capture("cli_cloud_auth_failed", {
+      ...createFunnelProps("cloud_auth_resolved"),
+      auth_method: options.auth ?? (options.apiKey ? "apikey-flag" : undefined),
+      auth_succeeded: false,
+    });
     console.error(`\n⚠ Could not obtain an API key: ${msg}`);
     console.error(`  Add THESYS_API_KEY to .env later (keys: ${THESYS_KEYS_URL}).\n`);
   }
   const lines = [`THESYS_API_KEY=${apiKey ?? ""}`, `DEMO_USER_ID=demo-user`];
-  fs.writeFileSync(path.join(targetDir, ".env"), lines.join("\n") + "\n");
-  return apiKey != null;
+  return {
+    envWritten: apiKey != null,
+    envContent: lines.join("\n") + "\n",
+    authMethod,
+    authSucceeded: apiKey != null,
+  };
 }
 
 function getStartedMessage(o: {

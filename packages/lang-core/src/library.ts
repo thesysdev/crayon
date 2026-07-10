@@ -1,6 +1,6 @@
 import { object as zObject } from "zod/v4";
 import * as z from "zod/v4/core";
-import type { ComponentPromptSpec, PromptSpec, ToolSpec } from "./parser/prompt";
+import type { ComponentPromptSpec, LibrarySpec, PromptSpec, ToolSpec } from "./parser/prompt";
 import { generatePrompt } from "./parser/prompt";
 import type { LibraryJSONSchema } from "./parser/types";
 import { isReactiveSchema } from "./reactive";
@@ -302,7 +302,7 @@ function analyzeFields(shape: Record<string, z.$ZodType>, reg: SchemaRegistry): 
   }));
 }
 
-function buildSignature(componentName: string, fields: FieldInfo[]): string {
+export function buildSignature(componentName: string, fields: FieldInfo[]): string {
   const params = fields.map((f) => {
     if (f.typeAnnotation) {
       return f.isOptional ? `${f.name}?: ${f.typeAnnotation}` : `${f.name}: ${f.typeAnnotation}`;
@@ -382,21 +382,34 @@ export function createLibrary<C = unknown>(input: LibraryDefinition<C>): Library
       return generatePrompt(spec);
     },
 
-    toSpec(): PromptSpec {
+    toSpec(): LibrarySpec {
       return {
         root: input.root,
         components: buildComponentSpecs(componentsRecord, reg),
         componentGroups: input.componentGroups,
+        schema: buildJSONSchema(),
       };
     },
 
     toJSONSchema(): LibraryJSONSchema {
-      const combinedSchema = zObject(
-        Object.fromEntries(Object.entries(componentsRecord).map(([k, v]) => [k, v.props])) as any,
-      );
-      return z.toJSONSchema(combinedSchema, { metadata: reg }) as LibraryJSONSchema;
+      return buildJSONSchema();
     },
   };
+
+  function buildJSONSchema(): LibraryJSONSchema {
+    const combinedSchema = zObject(
+      Object.fromEntries(Object.entries(componentsRecord).map(([k, v]) => [k, v.props])) as any,
+    );
+    const schema = z.toJSONSchema(combinedSchema, { metadata: reg }) as LibraryJSONSchema;
+    // zod only serializes what lives on the zod schemas / the metadata
+    // registry, so component descriptions (a defineComponent field) must be
+    // merged in explicitly — without this the serialized library loses them.
+    for (const [name, comp] of Object.entries(componentsRecord)) {
+      const def = schema.$defs?.[name];
+      if (def && comp.description) def.description = comp.description;
+    }
+    return schema;
+  }
 
   return library;
 }

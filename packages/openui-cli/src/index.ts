@@ -30,9 +30,9 @@ program.hook("preAction", (_thisCommand, actionCommand) => {
 
 program
   .command("create")
-  .description("Scaffold a new Next.js app (OpenUI Self Hosted or OpenUI Cloud)")
+  .description("Scaffold a new Next.js app with OpenUI Cloud or your provider")
   .option("-n, --name <string>", "Project name")
-  .option("-t, --template <template>", "Template: openui-self-hosted | openui-cloud")
+  .option("-t, --template <template>", "AI setup: openui-cloud | openui-self-hosted")
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | manual | skip")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
@@ -109,6 +109,44 @@ program
         await runGenerate((args as { entry: string }).entry, options);
       } catch (e) {
         handleCliError(e, "cli_generate_failed");
+      } finally {
+        await telemetry.shutdown();
+      }
+    },
+  );
+
+program
+  .command("generate-spec")
+  .description("Generate a serialized library spec JSON (signatures, groups, JSON schema)")
+  .argument("[entry]", "Path to a file that exports a createLibrary() result")
+  .option("-o, --out <file>", "Write output to a file instead of stdout")
+  .option("--export <name>", "Name of the export to use (auto-detected by default)")
+  .option("--no-interactive", "Fail with error if required args are missing")
+  .action(
+    async (
+      entry: string | undefined,
+      options: {
+        out?: string;
+        export?: string;
+        interactive: boolean;
+      },
+    ) => {
+      try {
+        const args = await resolveArgs(
+          {
+            entry: entry
+              ? { value: entry }
+              : {
+                  prompt: { type: "input", message: "Entry file path?" },
+                  required: true,
+                },
+          },
+          options.interactive,
+        );
+
+        await runGenerate((args as { entry: string }).entry, { ...options, spec: true });
+      } catch (e) {
+        handleCliError(e, "cli_generate_spec_failed");
       } finally {
         await telemetry.shutdown();
       }
