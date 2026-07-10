@@ -27,6 +27,7 @@ export interface ComponentGroup {
 }
 
 export interface BaseSpec {
+  identifier?: string;
   root?: string;
   components: Record<string, ComponentPromptSpec>;
   componentGroups?: ComponentGroup[];

@@ -336,6 +336,7 @@ export interface Library<C = unknown> {
   readonly components: Record<string, DefinedComponent<any, C>>;
   readonly componentGroups: ComponentGroup[] | undefined;
   readonly root: string | undefined;
+  readonly identifier: string | undefined;
 
   prompt(options?: PromptOptions): string;
   toSpec(): PromptSpec;
@@ -346,6 +347,7 @@ export interface LibraryDefinition<C = unknown> {
   components: DefinedComponent<any, C>[];
   componentGroups?: ComponentGroup[];
   root?: string;
+  identifier?: string;
 }
 
 /**
@@ -371,6 +373,7 @@ export function createLibrary<C = unknown>(input: LibraryDefinition<C>): Library
     components: componentsRecord,
     componentGroups: input.componentGroups,
     root: input.root,
+    identifier: input.identifier,
 
     prompt(options?: PromptOptions): string {
       const spec: PromptSpec = {
@@ -388,6 +391,7 @@ export function createLibrary<C = unknown>(input: LibraryDefinition<C>): Library
         components: buildComponentSpecs(componentsRecord, reg),
         componentGroups: input.componentGroups,
         schema: buildJSONSchema(),
+        ...(input.identifier !== undefined ? { identifier: input.identifier } : {}),
       };
     },
 
