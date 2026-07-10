@@ -8,6 +8,7 @@ import {
 import { Boxes, Search, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "../Button";
+import { DotMatrixLoader } from "../DotMatrixLoader";
 import { IconButton } from "../IconButton";
 import { artifactListPath, artifactViewPath } from "./_shared/artifactPaths";
 import { useAgentInterfaceLabels } from "./_shared/labelsContext";
@@ -102,6 +103,7 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
   // is decided synchronously with no loading race.
   const notFound = categoryName !== undefined && category === undefined;
   const typeFilter = category?.filter.type;
+  const categoryIllustration = useArtifactIcon(typeFilter?.[0] ?? "");
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -120,7 +122,7 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
   // Noun derived from the category name (not a hardcoded "Apps" match).
   const emptyItemLabel = categoryName ? categoryName.toLowerCase() : "artifacts";
   const emptyMessage = debouncedSearch
-    ? `No ${emptyItemLabel} match your search`
+    ? `No results found for "${debouncedSearch}"`
     : `No ${emptyItemLabel} yet`;
 
   // Initial page + reload on search/category change.
@@ -235,7 +237,7 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
           {!error && artifacts.length === 0 && !isLoading && (
             <div className="openui-agent-artifact-browser__empty">
               <span className="openui-agent-artifact-browser__empty-illustration">
-                <Boxes size="1em" />
+                {debouncedSearch ? categoryIllustration : <Boxes size="1em" />}
               </span>
               <span className="openui-agent-artifact-browser__empty-text">{emptyMessage}</span>
             </div>
@@ -251,7 +253,11 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
               />
             );
           })}
-          {isLoading && <div className="openui-agent-artifact-browser__loading">Loading…</div>}
+          {isLoading && (
+            <div className="openui-agent-artifact-browser__loading">
+              <DotMatrixLoader />
+            </div>
+          )}
           {!isLoading && nextCursor !== undefined && (
             <div className="openui-agent-artifact-browser__load-more">
               <Button variant="secondary" size="small" onClick={loadMore}>

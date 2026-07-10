@@ -18,6 +18,11 @@ const DARK_SWATCHES: ThemeSwatchSelectors = {
   brandSwatch: "neutral",
 };
 
+const DEFAULT_ACCENT_SOLID: Record<ThemeMode, string> = {
+  light: "oklch(0.4765 0.286 268.94 / 1)",
+  dark: "oklch(0.5663 0.2409 276.24 / 1)",
+};
+
 const SEMANTIC_SWATCHES = {
   info: "blue",
   success: "green",
@@ -125,11 +130,7 @@ const createColorTheme = ({
   const neutral = neutralSwatch;
   const brandBase = getBrandBaseShade(brandSwatch);
   const brandSolid =
-    brandSwatch === "neutral"
-      ? isDark
-        ? swatch(neutral, 25)
-        : swatch(neutral, 1000)
-      : swatch(brandSwatch, brandBase);
+    brandSwatch === "neutral" ? DEFAULT_ACCENT_SOLID[mode] : swatch(brandSwatch, brandBase);
 
   const overlayBase = isDark ? swatch(neutral, 25) : swatch(neutral, 1000);
   const neutralPrimary = isDark ? swatch(neutral, 50) : swatch(neutral, 1000);

@@ -1,9 +1,8 @@
-import type { Thread } from "@openuidev/react-headless";
 import { useThreadList } from "@openuidev/react-headless";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import { EllipsisIcon, Trash2Icon } from "lucide-react";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { Button } from "../Button";
 import { IconButton } from "../IconButton";
@@ -104,73 +103,12 @@ export const ThreadList = ({ className }: { className?: string }) => {
     loadThreads();
   }, []);
 
-  const groupThreads = () => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const last7Days = new Date(today);
-    last7Days.setDate(last7Days.getDate() - 7);
-    const last30Days = new Date(today);
-    last30Days.setDate(last30Days.getDate() - 30);
-    const thisYear = new Date(today);
-    thisYear.setMonth(0, 1);
-
-    return threads.reduce(
-      (groups, thread) => {
-        const threadDate = new Date(thread.createdAt);
-
-        if (threadDate >= today) {
-          groups.today = [...(groups.today || []), thread];
-        } else if (threadDate >= yesterday) {
-          groups.yesterday = [...(groups.yesterday || []), thread];
-        } else if (threadDate >= last7Days) {
-          groups.last7Days = [...(groups.last7Days || []), thread];
-        } else if (threadDate >= last30Days) {
-          groups.last30Days = [...(groups.last30Days || []), thread];
-        } else if (threadDate >= thisYear) {
-          groups.thisYear = [...(groups.thisYear || []), thread];
-        } else {
-          groups.older = [...(groups.older || []), thread];
-        }
-
-        return groups;
-      },
-      {
-        today: [] as Thread[],
-        yesterday: [] as Thread[],
-        last7Days: [] as Thread[],
-        last30Days: [] as Thread[],
-        thisYear: [] as Thread[],
-        older: [] as Thread[],
-      },
-    );
-  };
-
-  const groupedThreads = groupThreads();
-  const groupLabels: { [key in keyof typeof groupedThreads]: string } = {
-    today: "Today",
-    yesterday: "Yesterday",
-    last7Days: "Previous 7 Days",
-    last30Days: "Previous 30 Days",
-    thisYear: "This Year",
-    older: "Older",
-  };
-
   return (
     <div className={clsx("openui-agent-thread-list", className)}>
-      {Object.entries(groupedThreads)
-        .filter(([_, groupThreads]) => groupThreads.length > 0)
-        .map(([group, groupThreads]) => (
-          <Fragment key={group}>
-            <div className="openui-agent-thread-list-group">
-              {groupLabels[group as keyof typeof groupLabels]}
-            </div>
-            {groupThreads.map((thread) => (
-              <ThreadButton key={thread.id} id={thread.id} title={thread.title} />
-            ))}
-          </Fragment>
-        ))}
+      {threads.length > 0 && <div className="openui-agent-thread-list-group">Threads</div>}
+      {threads.map((thread) => (
+        <ThreadButton key={thread.id} id={thread.id} title={thread.title} />
+      ))}
     </div>
   );
 };
