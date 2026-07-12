@@ -69,13 +69,13 @@ import { DrawerBlock } from "./components/drawer-block";
 import { PaginationBlock } from "./components/pagination-block";
 import { Blockquote, Heading, InlineCode } from "./components/typography";
 
-import { ChatContentChildUnion } from "./unions";
 import {
   shadcnAdditionalRules,
   shadcnComponentGroups,
   shadcnExamples,
   shadcnPromptOptions,
 } from "./metadata";
+import { ChatContentChildUnion } from "./unions";
 
 const ChatCardChildUnion = z.union([...ChatContentChildUnion.options, Tabs.ref, Carousel.ref]);
 
@@ -95,9 +95,10 @@ const ChatCard = defineComponent({
 
 // ── Library ──
 
-export { shadcnComponentGroups, shadcnExamples, shadcnAdditionalRules, shadcnPromptOptions };
+export { shadcnAdditionalRules, shadcnComponentGroups, shadcnExamples, shadcnPromptOptions };
 
 export const shadcnChatLibrary = createLibrary({
+  id: "shadcn-library",
   root: "Card",
   componentGroups: shadcnComponentGroups,
   components: [
