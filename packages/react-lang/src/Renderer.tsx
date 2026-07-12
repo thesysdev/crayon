@@ -10,7 +10,9 @@ import { ToolNotFoundError, extractToolResult } from "@openuidev/lang-core";
 import React, { Component, Fragment, useEffect, useInsertionEffect, useRef } from "react";
 import { OpenUIContext, useOpenUI, useRenderNode } from "./context";
 import { useOpenUIState } from "./hooks/useOpenUIState";
+import { useRevealedResponse } from "./hooks/useRevealedResponse";
 import type { ComponentRenderer, Library } from "./library";
+import type { RevealRate } from "./reveal";
 
 export interface RendererProps {
   /** Raw response text (openui-lang code). */
@@ -19,6 +21,15 @@ export interface RendererProps {
   library: Library;
   /** Whether the LLM is still streaming (form interactions disabled during streaming). */
   isStreaming?: boolean;
+  /**
+   * Pace the reveal of a streamed response so components assemble instead of
+   * popping in when the response arrives bursty or whole (a fast generation, or a
+   * transport that coalesces writes). `true` uses the defaults; an object tunes
+   * the timing; `false`/omitted keeps the current behavior (render as it arrives).
+   * Only active while `isStreaming`; settled content and prefers-reduced-motion
+   * render immediately. See RevealRateOptions.
+   */
+  revealRate?: RevealRate;
   /** Callback when a component triggers an action. */
   onAction?: (event: ActionEvent) => void;
   /**
@@ -202,6 +213,7 @@ export function Renderer({
   response,
   library,
   isStreaming = false,
+  revealRate,
   onAction,
   onStateUpdate,
   initialState,
@@ -213,6 +225,10 @@ export function Renderer({
   useInsertionEffect(() => {
     ensureLoadingStyle();
   }, []);
+
+  // Pace the reveal so components assemble instead of popping in on a bursty
+  // response. No-op unless revealRate is set; feeds the parser a growing prefix.
+  const revealedResponse = useRevealedResponse(response, isStreaming, revealRate);
 
   const onParseResultRef = useRef(onParseResult);
   onParseResultRef.current = onParseResult;
@@ -247,7 +263,7 @@ export function Renderer({
 
   const { result, parseResult, contextValue, isQueryLoading } = useOpenUIState(
     {
-      response,
+      response: revealedResponse,
       library,
       isStreaming,
       onAction,
