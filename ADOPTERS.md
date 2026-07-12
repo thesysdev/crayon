@@ -22,6 +22,7 @@ To add your organization to this list, [open a PR](https://github.com/thesysdev/
 | [&facts](https://www.andfacts.com) | [Sohaib Ahmed](https://www.linkedin.com/in/sohaibacma/) | A market insights platform to help eCommerce brands better understand their customers. |
 | [Oodle](https://www.oodle.ai/) | [Gaurav Maheshwari](https://blog.oodle.ai/how-we-taught-our-ai-to-draw/) | Oodle uses OpenUI Lang to let its AI assistant render streaming, composable observability UI for metrics, logs, traces, charts, timelines, and incident investigations. | 
 | [prox](https://useprox.com/) | [Gregory Makodzeba](https://www.linkedin.com/in/gregory-makodzeba/) | Prox is an AI product-support platform that turns manuals and product data into cited, interactive answers like troubleshooters, selectors, calculators, and guides. |
+| [Productboard](https://www.productboard.com/) | [Patrick Zachar](https://x.com/patrickzachar) | Productboard draws from your customer signals, codebase, and strategy to ensure every product decision is grounded, every spec is delivery-ready, and every launch informs your roadmap. |
 <!--
 Example row, copy and edit:
 
