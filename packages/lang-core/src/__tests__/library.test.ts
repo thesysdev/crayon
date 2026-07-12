@@ -136,6 +136,70 @@ describe("per-library registry", () => {
     const refs = JSON.stringify(childrenItems);
     expect(refs).toContain("#/$defs/TextContent");
   });
+
+  it("toSpec carries the library JSON schema alongside signatures", () => {
+    const Text = defineComponent({
+      name: "TextContent",
+      props: z.object({ text: z.string() }),
+      description: "text",
+      component: Dummy,
+    });
+
+    const Card = defineComponent({
+      name: "Card",
+      props: z.object({ title: z.string() }),
+      description: "card",
+      component: Dummy,
+    });
+
+    const lib = createLibrary({
+      components: [Text, Card],
+      componentGroups: [{ name: "Content", components: ["TextContent"] }],
+      root: "Card",
+    });
+    const spec = lib.toSpec();
+
+    // Spec is self-contained: signatures + groups + the parser schema.
+    expect(spec.root).toBe("Card");
+    expect(spec.components["Card"]?.signature).toContain("title");
+    expect(spec.componentGroups).toEqual([{ name: "Content", components: ["TextContent"] }]);
+    expect(spec.schema).toEqual(lib.toJSONSchema());
+  });
+
+  it("toSpec carries the createLibrary id, omitted when unset", () => {
+    const Text = defineComponent({
+      name: "TextContent",
+      props: z.object({ text: z.string() }),
+      description: "text",
+      component: Dummy,
+    });
+
+    const named = createLibrary({
+      components: [Text],
+      root: "TextContent",
+      id: "acme-support@3",
+    });
+    expect(named.id).toBe("acme-support@3");
+    expect(named.toSpec().id).toBe("acme-support@3");
+
+    const anonymous = createLibrary({ components: [Text], root: "TextContent" });
+    expect(anonymous.id).toBeUndefined();
+    expect("id" in anonymous.toSpec()).toBe(false);
+  });
+
+  it("toJSONSchema carries defineComponent descriptions on $defs entries", () => {
+    const Text = defineComponent({
+      name: "TextContent",
+      props: z.object({ text: z.string() }),
+      description: "Plain text content",
+      component: Dummy,
+    });
+
+    const lib = createLibrary({ components: [Text], root: "TextContent" });
+    const schema = lib.toJSONSchema();
+
+    expect(schema.$defs?.["TextContent"]?.description).toBe("Plain text content");
+  });
 });
 
 // ─── getSchemaId WeakMap fallback ────────────────────────────────────────────
