@@ -7,11 +7,6 @@ const SESSION_ID_BYTES = 32;
 const PRODUCTION_COOKIE_NAME = "__Host-openui-cloud-session";
 const LOCAL_COOKIE_NAME = "openui-cloud-session";
 
-interface VerifiedSession {
-  id: string;
-  signedWithCurrentSecret: boolean;
-}
-
 export interface CloudSessionIdentity {
   userId: string;
   setCookie?: string;
@@ -25,17 +20,11 @@ export function getExistingCloudSession(
   const value = readCookie(request.headers.get("cookie"), cookieName);
   if (!value) return null;
 
-  const verified = verifySessionToken(value, config);
-  if (!verified) return null;
+  const sessionId = verifySessionToken(value, config.sessionSecret);
+  if (!sessionId) return null;
 
   return {
-    userId: deriveCloudUserId(verified.id),
-    setCookie: verified.signedWithCurrentSecret
-      ? undefined
-      : serializeSessionCookie(
-          request,
-          signSessionToken(verified.id, config.sessionSecrets.current),
-        ),
+    userId: deriveCloudUserId(sessionId),
   };
 }
 
@@ -47,7 +36,7 @@ export function getOrCreateCloudSession(
   if (existing) return existing;
 
   const sessionId = randomBytes(SESSION_ID_BYTES).toString("base64url");
-  const value = signSessionToken(sessionId, config.sessionSecrets.current);
+  const value = signSessionToken(sessionId, config.sessionSecret);
 
   return {
     userId: deriveCloudUserId(sessionId),
@@ -61,7 +50,7 @@ function signSessionToken(id: string, secret: string): string {
   return `${payload}.${signature}`;
 }
 
-function verifySessionToken(value: string, config: OpenuiCloudConfig): VerifiedSession | null {
+function verifySessionToken(value: string, secret: string): string | null {
   const [version, id, suppliedSignature, extra] = value.split(".");
   if (
     version !== SESSION_VERSION ||
@@ -75,27 +64,16 @@ function verifySessionToken(value: string, config: OpenuiCloudConfig): VerifiedS
   }
 
   const payload = `${version}.${id}`;
-  const secrets = [
-    { secret: config.sessionSecrets.current, isCurrent: true },
-    { secret: config.sessionSecrets.previous, isCurrent: false },
-  ].filter((candidate): candidate is { secret: string; isCurrent: boolean } =>
-    Boolean(candidate.secret),
-  );
-
-  for (const { secret, isCurrent } of secrets) {
-    const expected = createHmac("sha256", secret).update(payload).digest();
-    let supplied: Buffer;
-    try {
-      supplied = Buffer.from(suppliedSignature, "base64url");
-    } catch {
-      continue;
-    }
-    if (supplied.length === expected.length && timingSafeEqual(supplied, expected)) {
-      return { id, signedWithCurrentSecret: isCurrent };
-    }
+  const expected = createHmac("sha256", secret).update(payload).digest();
+  let supplied: Buffer;
+  try {
+    supplied = Buffer.from(suppliedSignature, "base64url");
+  } catch {
+    return null;
   }
+  if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) return null;
 
-  return null;
+  return id;
 }
 
 function deriveCloudUserId(sessionId: string): string {

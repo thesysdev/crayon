@@ -32,8 +32,7 @@ THESYS_API_KEY=your-cloud-key
 OPENUI_CLOUD_SESSION_SECRET_CURRENT=at-least-32-bytes-of-random-secret-material
 ```
 
-`OPENUI_CLOUD_SESSION_SECRET_PREVIOUS` is optional during a signing-key rotation. Do not reuse
-`THESYS_API_KEY` as a session secret and do not expose either secret through a
+Do not reuse `THESYS_API_KEY` as a session secret and do not expose either secret through a
 `NEXT_PUBLIC_*` variable. Cloud creates a signed, HttpOnly session cookie and uses it to scope
 persisted conversations to one anonymous browser session.
 

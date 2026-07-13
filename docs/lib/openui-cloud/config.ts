@@ -4,16 +4,10 @@ const MINIMUM_SECRET_BYTES = 32;
 export interface OpenuiCloudConfig {
   apiKey: string;
   apiOrigin: string;
-  sessionSecrets: {
-    current: string;
-    previous?: string;
-  };
+  sessionSecret: string;
 }
 
-/**
- * Read Cloud configuration at request time so builds and OSS-only deployments do
- * not require Cloud secrets. A malformed optional rotation key fails closed too.
- */
+/** Read Cloud configuration at request time so OSS-only builds do not require Cloud secrets. */
 export function readOpenuiCloudConfig(): OpenuiCloudConfig | null {
   if (process.env.OPENUI_CLOUD_DEMO_ENABLED !== "true") return null;
 
@@ -21,20 +15,13 @@ export function readOpenuiCloudConfig(): OpenuiCloudConfig | null {
   const current = (
     process.env.OPENUI_CLOUD_SESSION_SECRET_CURRENT ?? process.env.OPENUI_CLOUD_SESSION_SECRET
   )?.trim();
-  const previous = process.env.OPENUI_CLOUD_SESSION_SECRET_PREVIOUS?.trim();
 
   if (!apiKey || !isStrongEnoughSecret(current)) return null;
-  if (previous !== undefined && (!isStrongEnoughSecret(previous) || previous === current)) {
-    return null;
-  }
 
   return {
     apiKey,
     apiOrigin: CLOUD_API_ORIGIN,
-    sessionSecrets: {
-      current,
-      ...(previous ? { previous } : {}),
-    },
+    sessionSecret: current,
   };
 }
 
