@@ -8,7 +8,7 @@ import { ArrowLeft, Check, SquareTerminal } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import styles from "../chat-page.module.css";
-import type { ChatMode, CloudAvailability } from "./chat-types";
+import type { ChatMode } from "./chat-types";
 
 const CREATE_COMMAND = "npx @openuidev/cli@latest create";
 const COPY_FEEDBACK_MS = 1800;
@@ -51,26 +51,13 @@ function StartLocallyButton() {
 
 interface ChatPageHeaderProps {
   mode: ChatMode;
-  availability: CloudAvailability;
   cloudFailed: boolean;
   onModeChange: (mode: ChatMode) => void;
 }
 
-export function ChatPageHeader({
-  mode,
-  availability,
-  cloudFailed,
-  onModeChange,
-}: ChatPageHeaderProps) {
-  const cloudUnavailable = availability === "unavailable" || cloudFailed;
-  const cloudDisabled = availability !== "available" || cloudFailed;
+export function ChatPageHeader({ mode, cloudFailed, onModeChange }: ChatPageHeaderProps) {
   const modeStatusId = "chat-mode-status";
-  const modeStatus =
-    availability === "checking"
-      ? "Checking OpenUI Cloud availability…"
-      : cloudUnavailable
-        ? OPENUI_CLOUD_UNAVAILABLE_MESSAGE
-        : "";
+  const modeStatus = cloudFailed ? OPENUI_CLOUD_UNAVAILABLE_MESSAGE : "";
 
   return (
     <header className={styles.header} aria-label="OpenUI chat controls">
@@ -98,8 +85,8 @@ export function ChatPageHeader({
             <ToggleItem
               id="chat-mode-cloud"
               value="cloud"
-              disabled={cloudDisabled}
-              aria-describedby={cloudDisabled ? modeStatusId : undefined}
+              disabled={cloudFailed}
+              aria-describedby={cloudFailed ? modeStatusId : undefined}
               className={styles.modeItem}
             >
               OpenUI Cloud
