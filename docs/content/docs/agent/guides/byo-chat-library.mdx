@@ -1,0 +1,101 @@
+---
+title: BYO Chat Library
+description: Replace the built-in component set with your own design system. OpenUI Cloud prompts, validates, and repairs against your components.
+---
+
+## With the built-in library
+
+Out of the box, Generative UI on OpenUI Cloud runs on the built-in chat library that ships in `@openuidev/thesys`: a general-purpose catalog (text, headers, tables, charts, forms, tabs, buttons, …) with renderers included. Your app touches it in exactly two places:
+
+```tsx
+// client: render with the built-in components
+import { chatLibrary } from "@openuidev/thesys";
+<AgentInterface llm={llm} componentLibrary={chatLibrary} />;
+```
+
+```ts
+// backend: pin the built-in library on every Responses call
+instructions: createResponsesInstructions({ instructions: "Optional prose for the model." });
+```
+
+OpenUI Cloud owns everything in between: the system prompt, output validation, and automatic repair all target the built-in catalog. You never define components, but you also can't change what the model may emit beyond prose instructions. When your product has its own design system, you migrate.
+
+## Migrating to your own library
+
+Three steps. Afterwards, OpenUI Cloud generates the prompt from **your** schema, validates and repairs against **your** catalog (it fully replaces the built-in set), and your renderers draw the result.
+
+**1. Define the library.** One [`defineComponent`](/docs/openui-lang/defining-components) per component, where your React components live. Prop schemas and descriptions are what the model sees; `id` is a free-form revision tag that shows up in logs:
+
+```tsx title="src/lib/chat-library.tsx"
+import { createLibrary, defineComponent } from "@openuidev/react-lang";
+import { z } from "zod";
+import { Metric, Panel } from "@/components";
+
+const MetricDef = defineComponent({
+  name: "Metric",
+  description: "A single KPI stat with an optional trend arrow.",
+  props: z.object({
+    label: z.string(),
+    value: z.string(),
+    trend: z.enum(["up", "down"]).optional(),
+  }),
+  component: Metric,
+});
+
+const PanelDef = defineComponent({
+  name: "Panel",
+  description: "Top-level container. Children stack vertically.",
+  props: z.object({ children: z.array(z.union([MetricDef.ref])) }),
+  component: Panel,
+});
+
+export const myLibrary = createLibrary({
+  id: "acme-chat@1",
+  root: "Panel",
+  components: [PanelDef, MetricDef],
+});
+```
+
+**2. Generate the spec handover file.** [`openui generate-spec`](/docs/api-reference/cli#openui-generate-spec) turns the library module into a self-contained JSON file for the backend:
+
+```bash tab="pnpm" tab-group="pkg"
+pnpx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generated/chat-library-spec.json
+```
+
+```bash tab="bun" tab-group="pkg"
+bunx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generated/chat-library-spec.json
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn dlx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generated/chat-library-spec.json
+```
+
+```bash tab="npm" tab-group="pkg"
+npx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generated/chat-library-spec.json
+```
+
+**3. Declare it in the backend call.** Import the generated spec. Any backend works, with no React or component code server-side.
+
+```diff
++ import chatLibrarySpec from "./generated/chat-library-spec.json";
+
+- instructions: createResponsesInstructions(),
++ instructions: createResponsesInstructions({
++   chatLibrary: chatLibrarySpec,
++   systemPromptOptions: { preamble: "You build dashboards for Acme operators." },
++ }),
+```
+
+`systemPromptOptions` (only valid alongside `chatLibrary`) tunes the generated prompt: `preamble`, `additionalRules`, `examples`, `toolExamples`, `tools`, `toolCalls`, `bindings`.
+
+**4. Swap the client library:**
+
+```diff
+- import { chatLibrary } from "@openuidev/thesys";
++ import { myLibrary } from "@/lib/chat-library";
+
+- <AgentInterface llm={llm} componentLibrary={chatLibrary} />;
++ <AgentInterface llm={llm} componentLibrary={myLibrary} />;
+```
+
+That's the whole migration. Regenerate the spec (and bump `id`) whenever components change.
