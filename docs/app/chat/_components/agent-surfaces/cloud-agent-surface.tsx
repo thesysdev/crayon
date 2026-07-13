@@ -1,5 +1,6 @@
 "use client";
 
+import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import { defineArtifactCategories, type ChatStorage } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
@@ -13,7 +14,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "../../chat-page.module.css";
 import type { ChatLifecycleState } from "../chat-types";
 import { ChatLifecycleBridge } from "./chat-lifecycle-bridge";
-import { CLOUD_UNAVAILABLE_MESSAGE, createCloudChatLLM } from "./cloud-chat-llm";
+import { createCloudChatLLM } from "./cloud-chat-llm";
 import { CloudModelSwitcher } from "./cloud-model-switcher";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
@@ -133,7 +134,7 @@ function guardCloudStorage(storage: ChatStorage, onUnavailable: () => void): Cha
       return await operation();
     } catch {
       onUnavailable();
-      throw new Error(CLOUD_UNAVAILABLE_MESSAGE);
+      throw new Error(OPENUI_CLOUD_UNAVAILABLE_MESSAGE);
     }
   }
 

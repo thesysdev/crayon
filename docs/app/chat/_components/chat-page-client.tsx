@@ -1,6 +1,7 @@
 "use client";
 
 import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
+import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { Component, useCallback, useEffect, useState, type ErrorInfo, type ReactNode } from "react";
@@ -209,7 +210,7 @@ function ChatLoadingState({ label }: { label: string }) {
 function CloudUnavailableState() {
   return (
     <div className={styles.centeredState} role="status">
-      <p>OpenUI Cloud is unavailable.</p>
+      <p>{OPENUI_CLOUD_UNAVAILABLE_MESSAGE}</p>
     </div>
   );
 }

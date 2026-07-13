@@ -1,5 +1,6 @@
 "use client";
 
+import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import { ToggleGroup } from "@openuidev/react-ui/ToggleGroup";
 import { ToggleItem } from "@openuidev/react-ui/ToggleItem";
 import { ArrowLeft } from "lucide-react";
@@ -30,7 +31,7 @@ export function ChatPageHeader({
     : availability === "checking"
       ? "Checking OpenUI Cloud availability…"
       : cloudUnavailable
-        ? "OpenUI Cloud is unavailable."
+        ? OPENUI_CLOUD_UNAVAILABLE_MESSAGE
         : "";
 
   return (

@@ -1,11 +1,10 @@
+import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import {
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
   type ChatLLM,
 } from "@openuidev/react-headless";
-
-export const CLOUD_UNAVAILABLE_MESSAGE = "OpenUI Cloud is unavailable.";
 
 interface CloudChatLLM extends ChatLLM {
   setSelectedModel: (model: string) => void;
@@ -31,12 +30,12 @@ export function createCloudChatLLM(onUnavailable: () => void): CloudChatLLM {
           signal,
         });
 
-        if (!response.ok) throw new Error(CLOUD_UNAVAILABLE_MESSAGE);
+        if (!response.ok) throw new Error(OPENUI_CLOUD_UNAVAILABLE_MESSAGE);
         return response;
       } catch (error) {
         if (error instanceof Error && error.name === "AbortError") throw error;
         onUnavailable();
-        throw new Error(CLOUD_UNAVAILABLE_MESSAGE);
+        throw new Error(OPENUI_CLOUD_UNAVAILABLE_MESSAGE);
       }
     },
     streamProtocol: openAIResponsesAdapter(),
