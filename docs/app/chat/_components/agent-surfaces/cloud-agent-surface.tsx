@@ -49,7 +49,7 @@ interface CloudAgentSurfaceProps {
 export function CloudAgentSurface({ themeMode, onUnavailable }: CloudAgentSurfaceProps) {
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const [userId] = useState(getOrCreateCloudUserId);
-  const [llm] = useState(() => createCloudChatLLM(userId, onUnavailable));
+  const [llm] = useState(() => createCloudChatLLM(onUnavailable));
   const cloudFetch = useMemo<typeof fetch>(() => {
     return async (input, init) => {
       if (typeof input !== "string" || input !== "/api/openui-cloud/frontend-token") {

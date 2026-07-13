@@ -1,9 +1,7 @@
-import { isConversationOwnedByUser } from "@/lib/openui-cloud/cloud-api";
 import { readOpenuiCloudConfig } from "@/lib/openui-cloud/config";
 import { unavailableResponse, unavailableStreamEvent } from "@/lib/openui-cloud/errors";
 import { resolveRequestedModel } from "@/lib/openui-cloud/models";
 import { hasAllowedOrigin, hasJsonContentType, readLimitedJson } from "@/lib/openui-cloud/request";
-import { readCloudUserId } from "@/lib/openui-cloud/user-id";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
 import OpenAI from "openai";
 import type { ResponseInputItem } from "openai/resources/responses/responses";
@@ -23,9 +21,6 @@ export async function POST(request: Request): Promise<Response> {
   if (!hasAllowedOrigin(request)) return unavailableResponse(403);
   if (!hasJsonContentType(request)) return unavailableResponse(415);
 
-  const userId = readCloudUserId(request);
-  if (!userId) return unavailableResponse(401);
-
   let body: CloudChatRequest;
   try {
     const payload = await readLimitedJson(request);
@@ -34,13 +29,6 @@ export async function POST(request: Request): Promise<Response> {
     body = parsed;
   } catch {
     return unavailableResponse(400);
-  }
-
-  try {
-    const isOwned = await isConversationOwnedByUser(config, userId, body.threadId, request.signal);
-    if (!isOwned) return unavailableResponse(403);
-  } catch {
-    return unavailableResponse();
   }
 
   const client = new OpenAI({
