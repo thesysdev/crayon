@@ -51,8 +51,11 @@
 
 .startLocallyButton {
   display: inline-flex;
+  box-sizing: border-box;
+  inline-size: 18.75rem;
   height: 2.5rem;
-  min-width: 18.75rem;
+  min-inline-size: 18.75rem;
+  flex: 0 0 18.75rem;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
@@ -71,12 +74,19 @@
   white-space: nowrap;
   cursor: pointer;
   transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
 }
 
-.startLocallyButton:hover {
-  transform: scale(0.99);
+.startLocallyButton:is(:hover, :focus-visible) {
+  border-color: rgba(10, 10, 10, 0.18);
+  background: #fff;
+  color: #0a0a0a;
+  box-shadow:
+    0 5px 14px rgba(0, 0, 0, 0.14),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.06);
 }
 
 .startLocallyButton:focus-visible {
@@ -86,6 +96,39 @@
 
 .startLocallyButton svg {
   flex-shrink: 0;
+}
+
+.startLocallyLabelGroup {
+  display: grid;
+  min-width: 0;
+  place-items: center;
+}
+
+.startLocallyLabel {
+  grid-area: 1 / 1;
+  transition: opacity 140ms ease;
+}
+
+.startLocallyCommand,
+.startLocallyCopied {
+  opacity: 0;
+}
+
+.startLocallyButton:not([data-copied="true"]):is(:hover, :focus-visible) .startLocallyDefault {
+  opacity: 0;
+}
+
+.startLocallyButton:not([data-copied="true"]):is(:hover, :focus-visible) .startLocallyCommand {
+  opacity: 1;
+}
+
+.startLocallyButton[data-copied="true"] .startLocallyDefault,
+.startLocallyButton[data-copied="true"] .startLocallyCommand {
+  opacity: 0;
+}
+
+.startLocallyButton[data-copied="true"] .startLocallyCopied {
+  opacity: 1;
 }
 
 .modeControl {
@@ -415,6 +458,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .startLocallyButton {
+    transition: none;
+  }
+
+  .startLocallyLabel {
     transition: none;
   }
 

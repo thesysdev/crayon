@@ -35,16 +35,27 @@ function StartLocallyButton() {
     <button
       type="button"
       className={styles.startLocallyButton}
+      data-copied={copied}
       onClick={handleCopy}
-      aria-label={copied ? `Copied: ${CREATE_COMMAND}` : `Copy command: ${CREATE_COMMAND}`}
-      title={`Copy command: ${CREATE_COMMAND}`}
+      aria-label={`Copy local setup command: ${CREATE_COMMAND}`}
     >
       {copied ? (
         <Check size={17} strokeWidth={2} aria-hidden="true" />
       ) : (
         <SquareTerminal size={17} strokeWidth={1.8} aria-hidden="true" />
       )}
-      <span aria-live="polite">{copied ? "Copied" : CREATE_COMMAND}</span>
+      <span className={styles.startLocallyLabelGroup} aria-hidden="true">
+        <span className={`${styles.startLocallyLabel} ${styles.startLocallyDefault}`}>
+          Run on your machine
+        </span>
+        <span className={`${styles.startLocallyLabel} ${styles.startLocallyCommand}`}>
+          {CREATE_COMMAND}
+        </span>
+        <span className={`${styles.startLocallyLabel} ${styles.startLocallyCopied}`}>Copied</span>
+      </span>
+      <span className={styles.srOnly} aria-live="polite">
+        {copied ? "Local setup command copied." : ""}
+      </span>
     </button>
   );
 }
