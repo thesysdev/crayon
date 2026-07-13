@@ -1,5 +1,5 @@
 import { createMDX } from "fumadocs-mdx/next";
-import { dirname, resolve } from "path";
+import { dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -11,11 +11,6 @@ const config = {
   serverExternalPackages: ["@takumi-rs/image-response"],
   turbopack: {
     root: dirname(dirname(__dirname)),
-    rules: {
-      "**/node_modules/@openuidev/thesys/dist/index.mjs": {
-        loaders: [resolve(__dirname, "loaders/thesys-zoom-minifier-workaround.cjs")],
-      },
-    },
   },
 
   reactStrictMode: true,
