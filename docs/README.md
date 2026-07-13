@@ -23,18 +23,17 @@ The standalone `/chat` page always starts in **OpenUI OSS** mode. Its selected m
 stored across reloads. Live OSS generation uses the existing server-side
 `OPENROUTER_API_KEY`.
 
-OpenUI Cloud stays visible but disabled unless all of the following server-side variables are
-configured:
+OpenUI Cloud requires the following server-side variables. If either is missing, Cloud requests
+show the unavailable state at runtime:
 
 ```bash
 OPENUI_CLOUD_DEMO_ENABLED=true
 THESYS_API_KEY=your-cloud-key
-OPENUI_CLOUD_SESSION_SECRET_CURRENT=at-least-32-bytes-of-random-secret-material
 ```
 
-Do not reuse `THESYS_API_KEY` as a session secret and do not expose either secret through a
-`NEXT_PUBLIC_*` variable. Cloud creates a signed, HttpOnly session cookie and uses it to scope
-persisted conversations to one anonymous browser session.
+Do not expose `THESYS_API_KEY` through a `NEXT_PUBLIC_*` variable. The browser generates an
+anonymous user ID, retains it in `sessionStorage`, and sends it with Cloud requests so persisted
+conversations remain scoped to that tab session.
 
 The Cloud feature flag is intentionally fail-closed. Keep it disabled on public deployments until
 a shared, cross-instance session-and-IP rate limiter, Cloud organization budgets/token scopes, and

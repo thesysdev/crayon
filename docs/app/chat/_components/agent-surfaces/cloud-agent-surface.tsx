@@ -2,6 +2,7 @@
 
 import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
+import { CLOUD_USER_ID_HEADER } from "@/lib/openui-cloud/user-id";
 import { defineArtifactCategories, type ChatStorage } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
 import {
@@ -14,6 +15,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "../../chat-page.module.css";
 import { createCloudChatLLM } from "./cloud-chat-llm";
 import { CloudModelSwitcher } from "./cloud-model-switcher";
+import { getOrCreateCloudUserId } from "./cloud-user-id";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   { name: "Presentations", renderers: [presentationArtifactRenderer] },
@@ -46,21 +48,19 @@ interface CloudAgentSurfaceProps {
 
 export function CloudAgentSurface({ themeMode, onUnavailable }: CloudAgentSurfaceProps) {
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
-  const [llm] = useState(() => createCloudChatLLM(onUnavailable));
+  const [userId] = useState(getOrCreateCloudUserId);
+  const [llm] = useState(() => createCloudChatLLM(userId, onUnavailable));
   const cloudFetch = useMemo<typeof fetch>(() => {
     return async (input, init) => {
       if (typeof input !== "string" || input !== "/api/openui-cloud/frontend-token") {
         return fetch(input, init);
       }
 
-      if (!navigator.locks) {
-        onUnavailable();
-        return new Response(null, { status: 503 });
-      }
-
-      return navigator.locks.request("openui-cloud-session-bootstrap", () => fetch(input, init));
+      const headers = new Headers(init?.headers);
+      headers.set(CLOUD_USER_ID_HEADER, userId);
+      return fetch(input, { ...init, headers });
     };
-  }, [onUnavailable]);
+  }, [userId]);
   const cloudStorage = useOpenuiCloudStorage({
     token: "/api/openui-cloud/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",

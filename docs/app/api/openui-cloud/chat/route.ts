@@ -3,13 +3,10 @@ import { readOpenuiCloudConfig } from "@/lib/openui-cloud/config";
 import { unavailableResponse, unavailableStreamEvent } from "@/lib/openui-cloud/errors";
 import { resolveRequestedModel } from "@/lib/openui-cloud/models";
 import { hasAllowedOrigin, hasJsonContentType, readLimitedJson } from "@/lib/openui-cloud/request";
-import { getExistingCloudSession } from "@/lib/openui-cloud/session";
+import { readCloudUserId } from "@/lib/openui-cloud/user-id";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
 import OpenAI from "openai";
 import type { ResponseInputItem } from "openai/resources/responses/responses";
-
-// Session verification uses node:crypto and Buffer, so this route cannot run on Edge.
-export const runtime = "nodejs";
 
 const MAX_INPUT_ITEMS = 16;
 const MAX_THREAD_ID_LENGTH = 256;
@@ -26,8 +23,8 @@ export async function POST(request: Request): Promise<Response> {
   if (!hasAllowedOrigin(request)) return unavailableResponse(403);
   if (!hasJsonContentType(request)) return unavailableResponse(415);
 
-  const session = getExistingCloudSession(request, config);
-  if (!session) return unavailableResponse(401);
+  const userId = readCloudUserId(request);
+  if (!userId) return unavailableResponse(401);
 
   let body: CloudChatRequest;
   try {
@@ -40,12 +37,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   try {
-    const isOwned = await isConversationOwnedByUser(
-      config,
-      session.userId,
-      body.threadId,
-      request.signal,
-    );
+    const isOwned = await isConversationOwnedByUser(config, userId, body.threadId, request.signal);
     if (!isOwned) return unavailableResponse(403);
   } catch {
     return unavailableResponse();
@@ -79,7 +71,7 @@ export async function POST(request: Request): Promise<Response> {
     return unavailableResponse();
   }
 
-  return createSseResponse(stream, request.signal, session.setCookie);
+  return createSseResponse(stream, request.signal);
 }
 
 function parseCloudChatRequest(value: unknown): CloudChatRequest | null {
@@ -114,7 +106,6 @@ function parseCloudChatRequest(value: unknown): CloudChatRequest | null {
 function createSseResponse(
   stream: AsyncIterable<Record<string, unknown>>,
   requestSignal: AbortSignal,
-  setCookie?: string,
 ): Response {
   const encoder = new TextEncoder();
   let cancelled = false;
@@ -148,16 +139,14 @@ function createSseResponse(
     },
   });
 
-  const headers = new Headers({
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache, no-transform",
-    Connection: "keep-alive",
-    "X-Accel-Buffering": "no",
-    Vary: "Cookie",
+  return new Response(body, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
+    },
   });
-  if (setCookie) headers.set("Set-Cookie", setCookie);
-
-  return new Response(body, { headers });
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
