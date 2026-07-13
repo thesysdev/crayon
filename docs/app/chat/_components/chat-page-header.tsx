@@ -1,12 +1,53 @@
 "use client";
 
+import { copyText } from "@/lib/copy-text";
 import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import { ToggleGroup } from "@openuidev/react-ui/ToggleGroup";
 import { ToggleItem } from "@openuidev/react-ui/ToggleItem";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, SquareTerminal } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import styles from "../chat-page.module.css";
 import type { ChatMode, CloudAvailability } from "./chat-types";
+
+const CREATE_COMMAND = "npx @openuidev/cli@latest create";
+const COPY_FEEDBACK_MS = 1800;
+
+function StartLocallyButton() {
+  const [copied, setCopied] = useState(false);
+  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimeoutRef.current) clearTimeout(resetTimeoutRef.current);
+    };
+  }, []);
+
+  const handleCopy = async () => {
+    if (!(await copyText(CREATE_COMMAND))) return;
+
+    setCopied(true);
+    if (resetTimeoutRef.current) clearTimeout(resetTimeoutRef.current);
+    resetTimeoutRef.current = setTimeout(() => setCopied(false), COPY_FEEDBACK_MS);
+  };
+
+  return (
+    <button
+      type="button"
+      className={styles.startLocallyButton}
+      onClick={handleCopy}
+      aria-label={copied ? `Copied: ${CREATE_COMMAND}` : `Copy command: ${CREATE_COMMAND}`}
+      title={`Copy command: ${CREATE_COMMAND}`}
+    >
+      {copied ? (
+        <Check size={17} strokeWidth={2} aria-hidden="true" />
+      ) : (
+        <SquareTerminal size={17} strokeWidth={1.8} aria-hidden="true" />
+      )}
+      <span aria-live="polite">{copied ? "Copied" : CREATE_COMMAND}</span>
+    </button>
+  );
+}
 
 interface ChatPageHeaderProps {
   mode: ChatMode;
@@ -41,6 +82,8 @@ export function ChatPageHeader({
           <ArrowLeft aria-hidden="true" size={17} />
           <span>Back to docs</span>
         </Link>
+
+        <StartLocallyButton />
 
         <div className={styles.modeControl}>
           <ToggleGroup
