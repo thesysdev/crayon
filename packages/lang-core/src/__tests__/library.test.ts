@@ -166,6 +166,27 @@ describe("per-library registry", () => {
     expect(spec.schema).toEqual(lib.toJSONSchema());
   });
 
+  it("toSpec carries the createLibrary id, omitted when unset", () => {
+    const Text = defineComponent({
+      name: "TextContent",
+      props: z.object({ text: z.string() }),
+      description: "text",
+      component: Dummy,
+    });
+
+    const named = createLibrary({
+      components: [Text],
+      root: "TextContent",
+      id: "acme-support@3",
+    });
+    expect(named.id).toBe("acme-support@3");
+    expect(named.toSpec().id).toBe("acme-support@3");
+
+    const anonymous = createLibrary({ components: [Text], root: "TextContent" });
+    expect(anonymous.id).toBeUndefined();
+    expect("id" in anonymous.toSpec()).toBe(false);
+  });
+
   it("toJSONSchema carries defineComponent descriptions on $defs entries", () => {
     const Text = defineComponent({
       name: "TextContent",
