@@ -8,6 +8,7 @@ import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-ser
 import OpenAI from "openai";
 import type { ResponseInputItem } from "openai/resources/responses/responses";
 
+// Session verification uses node:crypto and Buffer, so this route cannot run on Edge.
 export const runtime = "nodejs";
 
 const MAX_INPUT_ITEMS = 16;
