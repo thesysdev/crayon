@@ -9,12 +9,9 @@ import {
 } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 import { useMemo } from "react";
-import type { ChatLifecycleState } from "../chat-types";
-import { ChatLifecycleBridge } from "./chat-lifecycle-bridge";
 
 interface OssAgentSurfaceProps {
   themeMode: "light" | "dark";
-  onLifecycleChange: (state: ChatLifecycleState) => void;
   onCreditsExhausted: () => void;
 }
 
@@ -41,11 +38,7 @@ const OSS_STARTERS = [
   },
 ];
 
-export function OssAgentSurface({
-  themeMode,
-  onLifecycleChange,
-  onCreditsExhausted,
-}: OssAgentSurfaceProps) {
+export function OssAgentSurface({ themeMode, onCreditsExhausted }: OssAgentSurfaceProps) {
   const llm = useMemo<ChatLLM>(
     () => ({
       send: async ({ messages, signal }) => {
@@ -93,7 +86,6 @@ export function OssAgentSurface({
           title="Build with OpenUI OSS"
           description="Generate interactive interfaces with the open-source component library."
         />
-        <ChatLifecycleBridge onChange={onLifecycleChange} />
       </AgentInterface>
     </div>
   );

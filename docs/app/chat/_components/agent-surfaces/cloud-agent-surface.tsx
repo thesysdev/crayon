@@ -12,8 +12,6 @@ import {
 } from "@openuidev/thesys";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "../../chat-page.module.css";
-import type { ChatLifecycleState } from "../chat-types";
-import { ChatLifecycleBridge } from "./chat-lifecycle-bridge";
 import { createCloudChatLLM } from "./cloud-chat-llm";
 import { CloudModelSwitcher } from "./cloud-model-switcher";
 
@@ -43,15 +41,10 @@ const CLOUD_STARTERS = [
 
 interface CloudAgentSurfaceProps {
   themeMode: "light" | "dark";
-  onLifecycleChange: (state: ChatLifecycleState) => void;
   onUnavailable: () => void;
 }
 
-export function CloudAgentSurface({
-  themeMode,
-  onLifecycleChange,
-  onUnavailable,
-}: CloudAgentSurfaceProps) {
+export function CloudAgentSurface({ themeMode, onUnavailable }: CloudAgentSurfaceProps) {
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const [llm] = useState(() => createCloudChatLLM(onUnavailable));
   const cloudFetch = useMemo<typeof fetch>(() => {
@@ -120,7 +113,6 @@ export function CloudAgentSurface({
           title="Build with OpenUI Cloud"
           description="Create managed generative interfaces, reports, and presentations."
         />
-        <ChatLifecycleBridge onChange={onLifecycleChange} onError={onUnavailable} />
       </AgentInterface>
     </div>
   );

@@ -53,7 +53,6 @@ interface ChatPageHeaderProps {
   mode: ChatMode;
   availability: CloudAvailability;
   cloudFailed: boolean;
-  isRunning: boolean;
   onModeChange: (mode: ChatMode) => void;
 }
 
@@ -61,15 +60,13 @@ export function ChatPageHeader({
   mode,
   availability,
   cloudFailed,
-  isRunning,
   onModeChange,
 }: ChatPageHeaderProps) {
   const cloudUnavailable = availability === "unavailable" || cloudFailed;
-  const cloudDisabled = availability !== "available" || cloudFailed || isRunning;
+  const cloudDisabled = availability !== "available" || cloudFailed;
   const modeStatusId = "chat-mode-status";
-  const modeStatus = isRunning
-    ? "Stop the current response before switching modes."
-    : availability === "checking"
+  const modeStatus =
+    availability === "checking"
       ? "Checking OpenUI Cloud availability…"
       : cloudUnavailable
         ? OPENUI_CLOUD_UNAVAILABLE_MESSAGE
@@ -95,13 +92,7 @@ export function ChatPageHeader({
               if (value === "oss" || value === "cloud") onModeChange(value);
             }}
           >
-            <ToggleItem
-              id="chat-mode-oss"
-              value="oss"
-              disabled={isRunning}
-              aria-describedby={isRunning ? modeStatusId : undefined}
-              className={styles.modeItem}
-            >
+            <ToggleItem id="chat-mode-oss" value="oss" className={styles.modeItem}>
               OpenUI OSS
             </ToggleItem>
             <ToggleItem
