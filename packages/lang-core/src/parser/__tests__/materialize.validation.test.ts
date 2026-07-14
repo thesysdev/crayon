@@ -340,9 +340,7 @@ describe("components in data slots", () => {
   it("prunes an element on optional edges (enum leaf, data-array item)", () => {
     const enumSlot = parser.parse('root = ChartBox(["a"], CardBox("x"))');
     expect(enumSlot.root?.props).not.toHaveProperty("variant");
-    expect(enumSlot.meta.errors[0].message).toContain(
-      "expects a literal value but got component",
-    );
+    expect(enumSlot.meta.errors[0].message).toContain("expects a literal value but got component");
     const arrayItem = parser.parse('root = TagBox(["a", CardBox("x"), "b"])');
     expect(arrayItem.root?.props.tags).toEqual(["a", "b"]);
   });

@@ -5,7 +5,6 @@ import { parseExpression } from "./expressions";
 import { tokenize } from "./lexer";
 import { materializeValue } from "./materialize";
 import { autoClose, split, type RawStmt } from "./statements";
-import { getSchemaDefaultValue } from "./validation";
 import { T } from "./tokens";
 import {
   isElementNode,
@@ -17,6 +16,7 @@ import {
   type QueryStatementInfo,
   type ValidationError,
 } from "./types";
+import { getSchemaDefaultValue } from "./validation";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Result building
