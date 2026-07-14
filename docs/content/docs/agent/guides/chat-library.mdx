@@ -5,7 +5,7 @@ description: Use OpenUI Cloud with its built-in chat library, or bring your own 
 
 ## Using the built-in library
 
-Out of the box, OpenUI Cloud ships a general-purpose chat library: text, headers, tables, charts, forms, tabs, buttons, and more. The client renders with it:
+Out of the box, OpenUI Cloud ships a general-purpose chat library: text, headers, tables, charts, forms, tabs, buttons, and more.
 
 ```tsx
 import { chatLibrary } from "@openuidev/thesys";
@@ -25,9 +25,9 @@ OpenUI Cloud takes care of everything in between: the system prompt, output vali
 
 ## Using your own library
 
-There can be multiple reasons to use your library instead of the built-in one like if the domain calls for components the generic set can't express or when the app follows its own design system. To lift it, you can provide your own chat library. The migration is four steps.
+There can be multiple reasons to use your library instead of the built-in one like if the domain calls for components the generic set can't express or when the app follows its own design system. To lift it, you can provide your own chat library.
 
-**1. Define the library.** One [`defineComponent`](/docs/openui-lang/defining-components) per component, in the frontend where your React components live. Prop schemas and descriptions are what the model sees; `id` is an optional free-form revision tag:
+**Define the library.** One [`defineComponent`](/docs/openui-lang/defining-components) per component, in the frontend where your React components live. Prop schemas and descriptions are what the model sees; `id` is an optional free-form revision tag:
 
 ```tsx title="src/lib/chat-library.tsx"
 import { createLibrary, defineComponent } from "@openuidev/react-lang";
@@ -59,7 +59,7 @@ export const myLibrary = createLibrary({
 });
 ```
 
-**2. Generate the spec handover file.** [`openui generate-spec`](/docs/api-reference/cli#openui-generate-spec) turns the library module into a self-contained JSON file for the backend:
+**Generate the spec handover file.** [`openui generate-spec`](/docs/api-reference/cli#openui-generate-spec) turns the library module into a self-contained JSON file for the backend:
 
 ```bash tab="pnpm" tab-group="pkg"
 pnpx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generated/chat-library-spec.json
@@ -77,7 +77,7 @@ yarn dlx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./ge
 npx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generated/chat-library-spec.json
 ```
 
-**3. Declare it in the backend call.** Import the generated JSON and pass it as `chatLibrary`. Any TypeScript backend works; no React or component code runs server-side.
+**Declare it in the backend call.** Import the generated JSON and pass it as `chatLibrary`.
 
 ```diff
 + import chatLibrarySpec from "./generated/chat-library-spec.json";
@@ -91,7 +91,7 @@ npx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generat
 
 `systemPromptOptions` (only valid alongside `chatLibrary`) tunes the generated prompt: `preamble`, `additionalRules`, `examples`.
 
-**4. Swap the client library:**
+**Swap the client library:**
 
 ```diff
 - import { chatLibrary } from "@openuidev/thesys";
