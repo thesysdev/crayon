@@ -1,6 +1,7 @@
 import { isASTNode } from "./ast";
 import {
   isElementNode,
+  type ElementNode,
   type MaterializeCtx,
   type ScalarParamType,
   type ValidationError,
@@ -14,14 +15,14 @@ interface ScalarTypeInfo {
   enumValues?: readonly unknown[];
 }
 
+function jsType(value: unknown): string {
+  return Array.isArray(value) ? "array" : typeof value;
+}
+
 /**
  * Check a materialized value against a scalar leaf's declared type/enum.
  * Returns a human-readable {expected, actual} on mismatch, or null when it
- * passes or isn't checkable. Values reaching this point are concrete literals
- * (dynamic/element/null values are filtered out by validateSchemaValue), so a
- * declared scalar type also flags compound values (object/array). Enum
- * membership is only checked for scalar literals — `includes` compares
- * non-scalar enum members by reference, which could never match.
+ * passes or isn't checkable.
  */
 function describeTypeMismatch(
   value: unknown,
@@ -37,7 +38,7 @@ function describeTypeMismatch(
     };
   }
   if (info.expectedType && info.expectedType !== actual) {
-    return { expected: info.expectedType, actual: Array.isArray(value) ? "array" : actual };
+    return { expected: info.expectedType, actual: jsType(value) };
   }
   return null;
 }
@@ -74,46 +75,173 @@ export function pushValidationError(
   ctx.errors.push({ ...error, statementId: ctx.currentStatementId });
 }
 
+/** Report a type-mismatch in the shared `expects X but got Y` shape. */
+function pushTypeMismatch(
+  ctx: MaterializeCtx,
+  component: string,
+  path: string,
+  expected: string,
+  actual: string,
+): void {
+  pushValidationError(ctx, {
+    code: "type-mismatch",
+    component,
+    path,
+    message: `field "${path}" expects ${expected} but got ${actual}`,
+  });
+}
+
+export function resolveInvalidValue(
+  container: Record<string, unknown>,
+  key: string,
+  required: boolean,
+  defaultValue: unknown,
+): boolean {
+  if (defaultValue !== undefined) {
+    container[key] = defaultValue;
+    return false;
+  }
+  if (required) return true;
+  delete container[key];
+  return false;
+}
+
+/**
+ * Position check for a component element in a data slot.
+ */
+function validateElementPosition(
+  element: ElementNode,
+  s: Record<string, unknown>,
+  component: string,
+  path: string,
+  ctx: MaterializeCtx,
+): boolean {
+  if ("$ref" in s || "anyOf" in s || "oneOf" in s || "allOf" in s) return false;
+  if (typeof s["type"] === "string" || Array.isArray(s["enum"]) || "const" in s) {
+    pushTypeMismatch(
+      ctx,
+      component,
+      path,
+      typeof s["type"] === "string" ? s["type"] : "a literal value",
+      `component "${element.typeName}"`,
+    );
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Validate an object-shaped slot: container type, required keys
+ */
+function validateObjectValue(
+  value: unknown,
+  s: Record<string, unknown>,
+  component: string,
+  path: string,
+  ctx: MaterializeCtx,
+): boolean {
+  if (typeof value !== "object" || Array.isArray(value)) {
+    pushTypeMismatch(ctx, component, path, "object", jsType(value));
+    return true;
+  }
+  const obj = value as Record<string, unknown>;
+  const props =
+    s["properties"] && typeof s["properties"] === "object"
+      ? (s["properties"] as Record<string, unknown>)
+      : {};
+  const required = new Set(Array.isArray(s["required"]) ? (s["required"] as string[]) : []);
+  let invalid = false;
+  // Structural checks are streaming-sensitive — only run on complete input.
+  if (!ctx.partial) {
+    for (const key of required) {
+      if (!(key in obj) || obj[key] == null) {
+        const fallback = getSchemaDefaultValue(props[key]);
+        if (fallback !== undefined) {
+          obj[key] = fallback;
+          continue;
+        }
+        const isNull = key in obj;
+        pushValidationError(ctx, {
+          code: isNull ? "null-required" : "missing-required",
+          component,
+          path: `${path}/${key}`,
+          message: isNull
+            ? `required field "${path}/${key}" cannot be null`
+            : `missing required field "${path}/${key}"`,
+        });
+        invalid = true;
+      }
+    }
+  }
+  for (const [key, sub] of Object.entries(props)) {
+    if (key in obj && validateSchemaValue(obj[key], sub, component, `${path}/${key}`, ctx)) {
+      if (resolveInvalidValue(obj, key, required.has(key), getSchemaDefaultValue(sub))) {
+        invalid = true;
+      }
+    }
+  }
+  return invalid;
+}
+
+/**
+ * Validate an array slot: container type, then every element against `items`
+ * (single-schema form only — tuples are skipped). Invalid items are pruned.
+ */
+function validateArrayValue(
+  value: unknown,
+  s: Record<string, unknown>,
+  component: string,
+  path: string,
+  ctx: MaterializeCtx,
+): boolean {
+  if (!Array.isArray(value)) {
+    pushTypeMismatch(ctx, component, path, "array", jsType(value));
+    return true;
+  }
+  const items = s["items"];
+  if (items && typeof items === "object" && !Array.isArray(items)) {
+    const bad: number[] = [];
+    value.forEach((el, i) => {
+      if (validateSchemaValue(el, items, component, `${path}/${i}`, ctx)) bad.push(i);
+    });
+    for (let i = bad.length - 1; i >= 0; i--) value.splice(bad[i], 1);
+  }
+  return false;
+}
+
+/**
+ * Validate a scalar/enum leaf.
+ */
+function validateLeafValue(
+  value: unknown,
+  s: Record<string, unknown>,
+  component: string,
+  path: string,
+  ctx: MaterializeCtx,
+): boolean {
+  const leaf = getScalarTypeInfo(s);
+  if (leaf.expectedType == null && leaf.enumValues == null) return false;
+  if (leaf.enumValues && ctx.partial) return false;
+  const mismatch = describeTypeMismatch(value, leaf);
+  if (mismatch) {
+    pushTypeMismatch(ctx, component, path, mismatch.expected, mismatch.actual);
+    return true;
+  }
+  return false;
+}
+
 /**
  * Recursively validate a materialized value against a JSON Schema fragment,
- * pruning unsalvageable data along the way.
+ * pruning unsalvageable data along the way. Dispatches on the schema shape:
+ * objects and arrays descend recursively (reporting nested errors with
+ * JSON-pointer paths), leaf scalars check type/enum, and component elements
+ * get a position check only (their own args validate separately).
  *
- * Descends into `type: object` (checking required keys and each declared
- * property) and `type: array` (checking every element against `items`),
- * reporting nested errors with JSON-pointer paths. Leaf scalars are checked
- * for type/enum mismatches.
- *
- * Every violation is reported, then the same repair rule applies at each
- * recursion edge, in order:
- *   1. the child schema carries a `default` → substitute it (absent/null
- *      required keys are filled silently; reported violations keep their error)
- *   2. the edge is REQUIRED → the parent object is invalid, and the caller
- *      applies the same rule one level up
- *   3. the edge is OPTIONAL → prune (key deleted) and the parent stays valid
- * ARRAY ITEMS are always pruned (spliced out), never default-substituted —
- * substituting `items.default` would inject duplicate placeholder rows.
- *
- * Returns true when `value` itself is invalid: wrong container type, a
- * scalar/enum mismatch, a missing/null required key, or invalid data under a
- * required key. The caller decides its fate — materializeValue prunes optional
- * props, substitutes the schema default for required ones, and drops the
- * component only when a required prop is invalid with no default (see the Comp
- * branch there). Pruning mutates in place; materialized objects/arrays are
- * freshly built per parse, so cached AST is never touched.
- *
- * Child components (ElementNodes) validate their own args separately; here a
- * component sitting in a slot that declares a plain data shape (type/enum/
- * const, no component refs) is reported as a type-mismatch — a component can
- * never satisfy such a slot.
- *
- * Conservative — silently skips anything it can't reliably check:
- *   - composite shapes ($ref / anyOf / oneOf / allOf), including elements in
- *     component slots (membership isn't checked yet)
- *   - dynamic values (runtime AST nodes)
- *   - elements in unconstrained slots (no refs, no declared data shape)
- *   - required-key checks while streaming is in progress
- *   - enum membership while streaming (a partial literal may still be
- *     completing toward a valid member)
+ * Every violation is reported, then the same rule (resolveInvalidValue)
+ * applies at each recursion edge: schema default → substitute; REQUIRED edge →
+ * parent invalid, caller repeats one level up; OPTIONAL edge → prune. ARRAY
+ * ITEMS are always pruned. Absent/null required keys fill silently from their
+ * schema default; reported violations keep their error even when a default steps in.
  */
 export function validateSchemaValue(
   value: unknown,
@@ -128,128 +256,13 @@ export function validateSchemaValue(
   if (value == null) return false;
   // Dynamic runtime expressions ($var, builtins) resolve later — don't flag.
   if (isASTNode(value)) return false;
-  // Child components validate their own args when materialized. Slots that
-  // admit components ($ref / anyOf / oneOf members) are left unchecked here;
-  // but a slot declaring a plain-data shape can never be satisfied by a
-  // component — flag it. Unconstrained schemas stay unchecked.
-  if (isElementNode(value)) {
-    if ("$ref" in s || "anyOf" in s || "oneOf" in s || "allOf" in s) return false;
-    if (typeof s["type"] === "string" || Array.isArray(s["enum"]) || "const" in s) {
-      pushValidationError(ctx, {
-        code: "type-mismatch",
-        component,
-        path,
-        message: `field "${path}" expects ${typeof s["type"] === "string" ? s["type"] : "a literal value"} but got component "${value.typeName}"`,
-      });
-      return true;
-    }
-    return false;
-  }
+  // Child components: only their position is checked here.
+  if (isElementNode(value)) return validateElementPosition(value, s, component, path, ctx);
   // Composite shapes can't be reliably matched to a single plain value — skip.
   if ("$ref" in s || "anyOf" in s || "oneOf" in s || "allOf" in s) return false;
 
   const type = s["type"];
-
-  if (type === "object") {
-    if (typeof value !== "object" || Array.isArray(value)) {
-      pushValidationError(ctx, {
-        code: "type-mismatch",
-        component,
-        path,
-        message: `field "${path}" expects object but got ${Array.isArray(value) ? "array" : typeof value}`,
-      });
-      return true;
-    }
-    const obj = value as Record<string, unknown>;
-    const props =
-      s["properties"] && typeof s["properties"] === "object"
-        ? (s["properties"] as Record<string, unknown>)
-        : {};
-    const required = new Set(Array.isArray(s["required"]) ? (s["required"] as string[]) : []);
-    let invalid = false;
-    // Structural checks are streaming-sensitive — only run on complete input.
-    if (!ctx.partial) {
-      for (const key of required) {
-        if (!(key in obj) || obj[key] == null) {
-          // Absent/null required key with a schema default: fill silently,
-          // mirroring the top-level defaultValue rescue in materializeValue.
-          const fallback = getSchemaDefaultValue(props[key]);
-          if (fallback !== undefined) {
-            obj[key] = fallback;
-            continue;
-          }
-          const isNull = key in obj;
-          pushValidationError(ctx, {
-            code: isNull ? "null-required" : "missing-required",
-            component,
-            path: `${path}/${key}`,
-            message: isNull
-              ? `required field "${path}/${key}" cannot be null`
-              : `missing required field "${path}/${key}"`,
-          });
-          invalid = true;
-        }
-      }
-    }
-    for (const [key, sub] of Object.entries(props)) {
-      if (key in obj && validateSchemaValue(obj[key], sub, component, `${path}/${key}`, ctx)) {
-        // Invalid child (error already reported): schema default repairs it in
-        // place; otherwise propagate along a required edge or prune an optional one.
-        const fallback = getSchemaDefaultValue(sub);
-        if (fallback !== undefined) {
-          obj[key] = fallback;
-        } else if (required.has(key)) {
-          // Required key holds invalid data — the object can't be repaired locally.
-          invalid = true;
-        } else {
-          // Optional key — prune the invalid value; the object stays usable.
-          delete obj[key];
-        }
-      }
-    }
-    return invalid;
-  }
-
-  if (type === "array") {
-    if (!Array.isArray(value)) {
-      pushValidationError(ctx, {
-        code: "type-mismatch",
-        component,
-        path,
-        message: `field "${path}" expects array but got ${typeof value}`,
-      });
-      return true;
-    }
-    const items = s["items"];
-    // Only single-schema `items` (not tuple form) is checked.
-    if (items && typeof items === "object" && !Array.isArray(items)) {
-      // Validate every item first so error paths keep original indices, then prune.
-      const bad: number[] = [];
-      value.forEach((el, i) => {
-        if (validateSchemaValue(el, items, component, `${path}/${i}`, ctx)) bad.push(i);
-      });
-      for (let i = bad.length - 1; i >= 0; i--) value.splice(bad[i], 1);
-    }
-    // Items are individually prunable — a bad item never invalidates the array.
-    return false;
-  }
-
-  // Leaf scalar — reuse the scalar/enum mismatch logic.
-  const leaf = getScalarTypeInfo(s);
-  if (leaf.expectedType == null && leaf.enumValues == null) return false;
-  // Enum membership can't be judged mid-stream — a partial literal may still be
-  // completing toward a valid member. Scalar type checks stay: a wrong scalar
-  // type won't become the right type by streaming more.
-  if (leaf.enumValues && ctx.partial) return false;
-  const mismatch = describeTypeMismatch(value, leaf);
-  if (mismatch) {
-    pushValidationError(ctx, {
-      code: "type-mismatch",
-      component,
-      path,
-      message: `field "${path}" expects ${mismatch.expected} but got ${mismatch.actual}`,
-    });
-    return true;
-  }
-  return false;
+  if (type === "object") return validateObjectValue(value, s, component, path, ctx);
+  if (type === "array") return validateArrayValue(value, s, component, path, ctx);
+  return validateLeafValue(value, s, component, path, ctx);
 }

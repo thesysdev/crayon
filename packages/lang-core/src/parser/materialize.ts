@@ -6,7 +6,7 @@ import type { ASTNode } from "./ast";
 import { isASTNode, isRuntimeExpr } from "./ast";
 import { isBuiltin, isReservedCall, LAZY_BUILTINS, RESERVED_CALLS } from "./builtins";
 import { isElementNode, type MaterializeCtx } from "./types";
-import { pushValidationError, validateSchemaValue } from "./validation";
+import { pushValidationError, resolveInvalidValue, validateSchemaValue } from "./validation";
 
 /**
  * Recursively check if a prop value contains any AST nodes that need runtime
@@ -262,14 +262,9 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
             param.schema !== undefined &&
             validateSchemaValue(value, param.schema, name, `/${param.name}`, ctx)
           ) {
-            // Invalid prop value (error already reported). Same repair rule as
-            // every nested edge: schema default first, then propagate along a
-            // required edge (drop the component) or prune an optional prop.
-            if (param.defaultValue !== undefined) {
-              props[param.name] = param.defaultValue;
-            } else if (!param.required) {
-              delete props[param.name];
-            } else {
+            // Invalid prop value (error already reported). Same resolution rule as
+            // every nested edge; propagation here means dropping the component.
+            if (resolveInvalidValue(props, param.name, param.required, param.defaultValue)) {
               dropComponent = true;
             }
           }
