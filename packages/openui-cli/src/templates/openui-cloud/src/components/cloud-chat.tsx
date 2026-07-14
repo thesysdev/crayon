@@ -74,6 +74,11 @@ export function CloudChat() {
         theme={{ mode }}
         starters={[
           {
+            displayText: "Flagship store tour",
+            prompt:
+              "Put together retail design inspiration. Use photos of Apple Fifth Avenue, Nike House of Innovation, and Gentle Monster's Seoul flagship, with a visual card for each highlighting one design idea worth borrowing.",
+          },
+          {
             displayText: "Summarize EV trends",
             prompt: "In a few sentences, summarize the biggest EV market trends this quarter.",
           },
