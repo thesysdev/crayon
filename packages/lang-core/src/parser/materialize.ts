@@ -248,19 +248,29 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
       const props: Record<string, unknown> = {};
 
       if (def) {
-        // A nested required-field violation (any depth) drops the whole
-        // component, matching how a missing top-level required prop does below.
-        let hasNestedRequiredViolation = false;
+        // Set when a REQUIRED prop holds invalid data with no default to fall
+        // back on — the only case where invalidity reaches the component itself.
+        let dropComponent = false;
         // Catalog component: map positional args → named props
         for (let i = 0; i < def.params.length && i < args.length; i++) {
           const param = def.params[i];
           const value = materializeValue(args[i], ctx);
           props[param.name] = value;
           // Single validation entry point: scalar leaf type/enum for simple
-          // props, recursive key/type checks for nested object/array shapes.
-          if (param.schema !== undefined) {
-            if (validateSchemaValue(value, param.schema, name, `/${param.name}`, ctx)) {
-              hasNestedRequiredViolation = true;
+          // props, recursive key/type checks (with pruning) for nested shapes.
+          if (
+            param.schema !== undefined &&
+            validateSchemaValue(value, param.schema, name, `/${param.name}`, ctx)
+          ) {
+            // Invalid prop value (error already reported). Same repair rule as
+            // every nested edge: schema default first, then propagate along a
+            // required edge (drop the component) or prune an optional prop.
+            if (param.defaultValue !== undefined) {
+              props[param.name] = param.defaultValue;
+            } else if (!param.required) {
+              delete props[param.name];
+            } else {
+              dropComponent = true;
             }
           }
         }
@@ -304,9 +314,9 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
           }
         }
 
-        // Nested required-field violations drop the component too — same as a
-        // missing top-level required prop. Errors were already reported above.
-        if (hasNestedRequiredViolation) return null;
+        // A required prop with unsalvageable data (no default) drops the
+        // component — its error was already reported during validation.
+        if (dropComponent) return null;
       } else if (!isBuiltin(name) && !isReservedCall(name)) {
         // Unknown component: error and drop from tree
         pushValidationError(ctx, {

@@ -122,6 +122,56 @@ const schema: LibraryJSONSchema = {
       properties: { levels: { type: "array", items: { enum: [1, 2, 3] } } },
       required: [],
     },
+    // arg0 → `info`: REQUIRED object param — invalid nested data drops the component
+    ReqBox: {
+      properties: {
+        info: {
+          type: "object",
+          properties: { author: { type: "string" } },
+          required: ["author"],
+        },
+      },
+      required: ["info"],
+    },
+    // arg0 → `title`: REQUIRED scalar param — a type mismatch drops the component
+    ReqScalar: {
+      properties: { title: { type: "string" } },
+      required: ["title"],
+    },
+    // arg0 → `theme`: OPTIONAL param with a default — invalid values fall back to it
+    OptDefBox: {
+      properties: { theme: { type: "string", default: "dark" } },
+      required: [],
+    },
+    // arg0 → `children`: a component slot (anyOf of $refs) — membership unchecked
+    SlotBox: {
+      properties: {
+        children: { type: "array", items: { anyOf: [{ $ref: "#/$defs/CardBox" }] } },
+      },
+      required: [],
+    },
+    // args → `labels` (REQUIRED data array), `variant` (enum) — mirrors chart signatures
+    ChartBox: {
+      properties: {
+        labels: { type: "array", items: { type: "string" } },
+        variant: { enum: ["grouped", "stacked"] },
+      },
+      required: ["labels"],
+    },
+    // arg0 → `cfg`: nested keys with defaults at both required and optional edges
+    NestDefBox: {
+      properties: {
+        cfg: {
+          type: "object",
+          properties: {
+            mode: { enum: ["fast", "slow"], default: "fast" },
+            retries: { type: "number", default: 3 },
+          },
+          required: ["mode"],
+        },
+      },
+      required: [],
+    },
   },
 };
 
@@ -385,19 +435,23 @@ describe("validateSchemaValue — conservative skips on leaves and values", () =
     expect(errorsFor('root = ObjBox({ author: "a", views: Sum([1, 2]) })')).toEqual([]);
   });
 
-  it("skips a nested component element against a scalar leaf", () => {
-    expect(errorsFor('root = ObjBox({ author: CardBox("hi"), views: 1 })')).toEqual([]);
+  it("flags a component element sitting in a plain-data slot", () => {
+    const errors = errorsFor('root = ObjBox({ author: CardBox("hi"), views: 1 })');
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toMatchObject({ code: "type-mismatch", path: "/info/author" });
+    expect(errors[0].message).toContain('expects string but got component "CardBox"');
   });
 
-  it("still validates the nested component's own args", () => {
+  it("still validates the misplaced component's own args (both errors surface)", () => {
     const errors = errorsFor("root = ObjBox({ author: CardBox(9) })");
-    expect(errors).toHaveLength(1);
-    expect(errors[0]).toMatchObject({
+    expect(errors).toHaveLength(2);
+    expect(errors.find((e) => e.component === "CardBox")).toMatchObject({
       code: "type-mismatch",
-      component: "CardBox",
       path: "/text",
     });
-    expect(errors[0].message).toContain("expects string but got number");
+    expect(errors.find((e) => e.component === "ObjBox")).toMatchObject({
+      path: "/info/author",
+    });
   });
 });
 
@@ -559,10 +613,11 @@ describe("validateSchemaValue — streaming", () => {
   });
 });
 
-describe("validateSchemaValue — dropping the component on nested failure", () => {
-  it("drops the parent when a nested required key is missing (like a top-level required)", () => {
+describe("validateSchemaValue — required-edge propagation (prune vs drop)", () => {
+  it("prunes an OPTIONAL prop whose object is missing a required key — component survives", () => {
     const result = parser.parse("root = ObjBox({ views: 3 })");
-    expect(result.root).toBeNull();
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props).not.toHaveProperty("info");
     expect(result.meta.errors).toHaveLength(1);
     expect(result.meta.errors[0]).toMatchObject({
       code: "missing-required",
@@ -571,39 +626,159 @@ describe("validateSchemaValue — dropping the component on nested failure", () 
     });
   });
 
-  it("drops the parent when a nested required key is null", () => {
+  it("prunes an OPTIONAL prop whose object has a null required key — component survives", () => {
     const result = parser.parse("root = ObjBox({ author: null, views: 3 })");
-    expect(result.root).toBeNull();
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props).not.toHaveProperty("info");
     expect(result.meta.errors[0]).toMatchObject({ code: "null-required", path: "/info/author" });
   });
 
-  it("drops the parent when a required key is missing deep inside an array item", () => {
-    const result = parser.parse("root = ArrBox([{ value: 2 }])");
-    expect(result.root).toBeNull();
+  it("prunes the offending ARRAY ITEM, not the component — the array keeps valid items", () => {
+    const result = parser.parse('root = ArrBox([{ label: "a", value: 1 }, { value: 2 }])');
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props.rows).toEqual([{ label: "a", value: 1 }]);
     expect(
-      result.meta.errors.some((e) => e.code === "missing-required" && e.path === "/rows/0/label"),
+      result.meta.errors.some((e) => e.code === "missing-required" && e.path === "/rows/1/label"),
     ).toBe(true);
   });
 
-  it("keeps the parent rendered on a nested type mismatch (report-only, like a top-level scalar)", () => {
+  it("prunes a wrong-typed scalar item from a scalar array", () => {
+    const result = parser.parse('root = TagBox(["a", 2, "c"])');
+    expect(result.root?.props.tags).toEqual(["a", "c"]);
+    expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/tags/1" });
+  });
+
+  it("prunes an OPTIONAL nested key with a type mismatch — parent object survives", () => {
     const result = parser.parse('root = ObjBox({ author: "ann", views: "lots" })');
     expect(result.root).not.toBeNull();
-    expect(result.root?.props.info).toMatchObject({ author: "ann", views: "lots" });
+    expect(result.root?.props.info).toEqual({ author: "ann" });
     expect(result.meta.errors).toHaveLength(1);
     expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/info/views" });
   });
 
-  it("keeps a top-level scalar type mismatch rendered (unchanged behavior)", () => {
+  it("prunes an OPTIONAL top-level scalar prop on type mismatch", () => {
     const result = parser.parse("root = ScalarBox(5)");
     expect(result.root).not.toBeNull();
-    expect(result.root?.props.title).toBe(5);
+    expect(result.root?.props).not.toHaveProperty("title");
     expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/title" });
+  });
+
+  it("propagates through a REQUIRED nested key: wrong-typed required key prunes its parent", () => {
+    // info.author is required-and-invalid → info invalid → info is an optional
+    // param → info pruned, component survives.
+    const result = parser.parse('root = ObjBox({ author: { first: "a" }, views: 3 })');
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props).not.toHaveProperty("info");
+    expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/info/author" });
+  });
+
+  it("drops the component when a REQUIRED prop's object is missing a required key", () => {
+    const result = parser.parse("root = ReqBox({ other: 1 })");
+    expect(result.root).toBeNull();
+    expect(result.meta.errors).toHaveLength(1);
+    expect(result.meta.errors[0]).toMatchObject({
+      code: "missing-required",
+      path: "/info/author",
+    });
+  });
+
+  it("drops the component on a type mismatch of a REQUIRED scalar prop", () => {
+    const result = parser.parse("root = ReqScalar(5)");
+    expect(result.root).toBeNull();
+    expect(result.meta.errors).toHaveLength(1);
+    expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/title" });
+  });
+
+  it("substitutes the schema default when a REQUIRED prop's value is invalid", () => {
+    const result = parser.parse("root = DefBox(5)");
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props.theme).toBe("dark");
+    expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/theme" });
+  });
+
+  it("an ARRAY edge absorbs a required-required chain: bad item pruned, component survives", () => {
+    // ReqBox requires info; info requires author — but here the violation sits
+    // inside ArrBox's rows items, so the item edge absorbs it before any
+    // required edge is crossed.
+    const result = parser.parse('root = ArrBox([{ value: "x" }])');
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props.rows).toEqual([]);
   });
 
   it("renders a valid nested object with no errors", () => {
     const result = parser.parse('root = ObjBox({ author: "ann", views: 3 })');
     expect(result.root).not.toBeNull();
     expect(result.meta.errors).toEqual([]);
+  });
+});
+
+describe("validateSchemaValue — schema defaults repair invalid values at every edge", () => {
+  it("substitutes the default for an OPTIONAL param's invalid value (instead of pruning)", () => {
+    const result = parser.parse("root = OptDefBox(5)");
+    expect(result.root?.props.theme).toBe("dark");
+    expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/theme" });
+  });
+
+  it("substitutes the default for a REQUIRED nested enum key on mismatch — parent survives", () => {
+    const result = parser.parse('root = NestDefBox({ mode: "warp", retries: 1 })');
+    expect(result.root?.props.cfg).toEqual({ mode: "fast", retries: 1 });
+    expect(result.meta.errors).toHaveLength(1);
+    expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/cfg/mode" });
+  });
+
+  it("substitutes the default for an OPTIONAL nested key on mismatch (instead of pruning)", () => {
+    const result = parser.parse('root = NestDefBox({ mode: "slow", retries: "many" })');
+    expect(result.root?.props.cfg).toEqual({ mode: "slow", retries: 3 });
+    expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/cfg/retries" });
+  });
+
+  it("fills an absent REQUIRED nested key from its default silently (no error)", () => {
+    const result = parser.parse("root = NestDefBox({ retries: 2 })");
+    expect(result.root?.props.cfg).toEqual({ mode: "fast", retries: 2 });
+    expect(result.meta.errors).toEqual([]);
+  });
+
+  it("fills a null REQUIRED nested key from its default silently (no error)", () => {
+    const result = parser.parse("root = NestDefBox({ mode: null, retries: 2 })");
+    expect(result.root?.props.cfg).toEqual({ mode: "fast", retries: 2 });
+    expect(result.meta.errors).toEqual([]);
+  });
+
+  it("still prunes invalid ARRAY ITEMS — item defaults are never substituted", () => {
+    const result = parser.parse('root = TagBox(["a", 2])');
+    expect(result.root?.props.tags).toEqual(["a"]);
+    expect(result.meta.errors).toHaveLength(1);
+  });
+});
+
+describe("validateSchemaValue — components in data slots", () => {
+  it("leaves elements in component slots ($ref/anyOf) unchecked — membership comes later", () => {
+    const result = parser.parse('root = SlotBox([CardBox("hi"), EnumBox("active")])');
+    expect(result.meta.errors).toEqual([]);
+    expect((result.root?.props.children as unknown[]).length).toBe(2);
+  });
+
+  it("drops the component when a REQUIRED data param receives an element", () => {
+    // hbc = HorizontalBarChart(Card([]), [], "grouped") — the motivating case.
+    const result = parser.parse('root = ChartBox(CardBox("x"), "grouped")');
+    expect(result.root).toBeNull();
+    expect(result.meta.errors).toHaveLength(1);
+    expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/labels" });
+    expect(result.meta.errors[0].message).toContain('expects array but got component "CardBox"');
+  });
+
+  it("prunes an element sitting where an enum leaf is expected (optional edge)", () => {
+    const result = parser.parse('root = ChartBox(["a"], CardBox("x"))');
+    expect(result.root).not.toBeNull();
+    expect(result.root?.props).not.toHaveProperty("variant");
+    expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/variant" });
+    expect(result.meta.errors[0].message).toContain("expects a literal value but got component");
+  });
+
+  it("prunes an element from a data ARRAY's items — siblings survive", () => {
+    const result = parser.parse('root = TagBox(["a", CardBox("x"), "b"])');
+    expect(result.root?.props.tags).toEqual(["a", "b"]);
+    expect(result.meta.errors[0]).toMatchObject({ code: "type-mismatch", path: "/tags/1" });
   });
 });
 

@@ -5,6 +5,7 @@ import { parseExpression } from "./expressions";
 import { tokenize } from "./lexer";
 import { materializeValue } from "./materialize";
 import { autoClose, split, type RawStmt } from "./statements";
+import { getSchemaDefaultValue } from "./validation";
 import { T } from "./tokens";
 import {
   isElementNode,
@@ -629,13 +630,6 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
 
 export interface Parser {
   parse(input: string): ParseResult;
-}
-
-function getSchemaDefaultValue(property: unknown): unknown {
-  if (!property || typeof property !== "object" || Array.isArray(property)) {
-    return undefined;
-  }
-  return (property as { default?: unknown }).default;
 }
 
 export function compileSchema(schema: LibraryJSONSchema): ParamMap {
