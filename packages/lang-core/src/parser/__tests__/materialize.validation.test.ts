@@ -581,9 +581,7 @@ describe("validateSchemaValue — dropping the component on nested failure", () 
     const result = parser.parse("root = ArrBox([{ value: 2 }])");
     expect(result.root).toBeNull();
     expect(
-      result.meta.errors.some(
-        (e) => e.code === "missing-required" && e.path === "/rows/0/label",
-      ),
+      result.meta.errors.some((e) => e.code === "missing-required" && e.path === "/rows/0/label"),
     ).toBe(true);
   });
 
