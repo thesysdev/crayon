@@ -1,34 +1,35 @@
 ---
-title: OpenUI Cloud: BYO Chat Library
-description: Replace the built-in component set with your own design system. OpenUI Cloud prompts, validates, and repairs against your components.
+title: "OpenUI Cloud: Chat Library"
+description: Use OpenUI Cloud with its built-in chat library, or bring your own components.
 ---
 
-## With the built-in library
+## Using the built-in library
 
-Out of the box, Generative UI on OpenUI Cloud runs on the built-in chat library that ships in `@openuidev/thesys`: a general-purpose catalog (text, headers, tables, charts, forms, tabs, buttons, …) with renderers included. Your app touches it in exactly two places:
+Out of the box, OpenUI Cloud ships a general-purpose chat library: text, headers, tables, charts, forms, tabs, buttons, and more. The client renders with it:
 
 ```tsx
-// client: render with the built-in components
 import { chatLibrary } from "@openuidev/thesys";
+
 <AgentInterface llm={llm} componentLibrary={chatLibrary} />;
 ```
 
+And the backend pins it when building the request instructions:
+
 ```ts
-// backend: pin the built-in library on every Responses call
-instructions: createResponsesInstructions({ instructions: "Optional prose for the model." });
+instructions: createResponsesInstructions({ instructions: "Optional instructions for the model." });
 ```
 
-OpenUI Cloud owns everything in between: the system prompt, output validation, and automatic repair all target the built-in catalog. You never define components, but you also can't change what the model may emit beyond prose instructions. When your product has its own design system, you migrate.
+OpenUI Cloud takes care of everything in between: the system prompt, output validation, and automatic repair all target the built-in library.
 
-## Migrating to your own library
+## Using your own library
 
-Three steps. Afterwards, OpenUI Cloud generates the prompt from **your** schema, validates and repairs against **your** catalog (it fully replaces the built-in set), and your renderers draw the result.
+There can be multiple reasons to use your library instead of the built-in one like if the domain calls for components the generic set can't express or when the app follows its own design system. To lift it, you can provide your own chat library. The migration is four steps.
 
-**1. Define the library.** One [`defineComponent`](/docs/openui-lang/defining-components) per component, where your React components live. Prop schemas and descriptions are what the model sees; `id` is a free-form revision tag that shows up in logs:
+**1. Define the library.** One [`defineComponent`](/docs/openui-lang/defining-components) per component, in the frontend where your React components live. Prop schemas and descriptions are what the model sees; `id` is an optional free-form revision tag:
 
 ```tsx title="src/lib/chat-library.tsx"
 import { createLibrary, defineComponent } from "@openuidev/react-lang";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { Metric, Panel } from "@/components";
 
 const MetricDef = defineComponent({
@@ -39,14 +40,14 @@ const MetricDef = defineComponent({
     value: z.string(),
     trend: z.enum(["up", "down"]).optional(),
   }),
-  component: Metric,
+  component: ({ props }) => <Metric {...props} />,
 });
 
 const PanelDef = defineComponent({
   name: "Panel",
   description: "Top-level container. Children stack vertically.",
-  props: z.object({ children: z.array(z.union([MetricDef.ref])) }),
-  component: Panel,
+  props: z.object({ children: z.array(MetricDef.ref) }),
+  component: ({ props, renderNode }) => <Panel>{renderNode(props.children)}</Panel>,
 });
 
 export const myLibrary = createLibrary({
@@ -74,7 +75,7 @@ yarn dlx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./ge
 npx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generated/chat-library-spec.json
 ```
 
-**3. Declare it in the backend call.** Import the generated spec. Any backend works, with no React or component code server-side.
+**3. Declare it in the backend call.** Import the generated JSON and pass it as `chatLibrary`. Any TypeScript backend works; no React or component code runs server-side.
 
 ```diff
 + import chatLibrarySpec from "./generated/chat-library-spec.json";
@@ -97,5 +98,3 @@ npx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generat
 - <AgentInterface llm={llm} componentLibrary={chatLibrary} />;
 + <AgentInterface llm={llm} componentLibrary={myLibrary} />;
 ```
-
-That's the whole migration. Regenerate the spec (and bump `id`) whenever components change.
