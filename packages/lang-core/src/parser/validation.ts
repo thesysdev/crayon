@@ -6,6 +6,14 @@ import {
   type ScalarParamType,
 } from "./types";
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Schema & value introspection
+// ─────────────────────────────────────────────────────────────────────────────
+
+function jsType(value: unknown): string {
+  return Array.isArray(value) ? "array" : typeof value;
+}
+
 /** Scalar type/enum info extracted from a JSON Schema leaf, for describeTypeMismatch. */
 interface ScalarTypeInfo {
   /** Scalar leaf type, when the property is a plain string/number/boolean. */
@@ -14,8 +22,29 @@ interface ScalarTypeInfo {
   enumValues?: readonly unknown[];
 }
 
-function jsType(value: unknown): string {
-  return Array.isArray(value) ? "array" : typeof value;
+/** Extract the scalar leaf type/enum from an already-narrowed JSON Schema object. */
+export function getScalarTypeInfo(s: Record<string, unknown>): ScalarTypeInfo {
+  if (Array.isArray(s["enum"])) return { enumValues: s["enum"] };
+  if ("const" in s) return { enumValues: [s["const"]] };
+  switch (s["type"]) {
+    case "string":
+      return { expectedType: "string" };
+    case "number":
+    case "integer":
+      return { expectedType: "number" };
+    case "boolean":
+      return { expectedType: "boolean" };
+    default:
+      return {};
+  }
+}
+
+/** Read a JSON Schema fragment's `default`, if it carries one. */
+export function getSchemaDefaultValue(property: unknown): unknown {
+  if (!property || typeof property !== "object" || Array.isArray(property)) {
+    return undefined;
+  }
+  return (property as { default?: unknown }).default;
 }
 
 /**
@@ -42,30 +71,9 @@ function describeTypeMismatch(
   return null;
 }
 
-/** Read a JSON Schema fragment's `default`, if it carries one. */
-export function getSchemaDefaultValue(property: unknown): unknown {
-  if (!property || typeof property !== "object" || Array.isArray(property)) {
-    return undefined;
-  }
-  return (property as { default?: unknown }).default;
-}
-
-/** Extract the scalar leaf type/enum from an already-narrowed JSON Schema object. */
-export function getScalarTypeInfo(s: Record<string, unknown>): ScalarTypeInfo {
-  if (Array.isArray(s["enum"])) return { enumValues: s["enum"] };
-  if ("const" in s) return { enumValues: [s["const"]] };
-  switch (s["type"]) {
-    case "string":
-      return { expectedType: "string" };
-    case "number":
-    case "integer":
-      return { expectedType: "number" };
-    case "boolean":
-      return { expectedType: "boolean" };
-    default:
-      return {};
-  }
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// Errors
+// ─────────────────────────────────────────────────────────────────────────────
 
 /**
  * A structured validation issue. Every error of a kind reads identically
@@ -113,6 +121,15 @@ export function pushValidationIssue(
   });
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Invalid-value resolution — the edge rule
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Decide the fate of an invalid child value held at `container[key]`: a schema
+ * default substitutes it; otherwise a REQUIRED edge propagates invalidity to the
+ * caller (returns true) and an OPTIONAL edge prunes the value.
+ */
 export function resolveInvalidValue(
   container: Record<string, unknown>,
   key: string,
@@ -127,6 +144,10 @@ export function resolveInvalidValue(
   delete container[key];
   return false;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Validators — one per schema shape, dispatched by validateSchemaValue
+// ─────────────────────────────────────────────────────────────────────────────
 
 /**
  * Position check for a component element in a data slot.
@@ -161,7 +182,11 @@ function validateObjectValue(
   ctx: MaterializeCtx,
 ): boolean {
   if (typeof value !== "object" || Array.isArray(value)) {
-    pushValidationIssue(ctx, component, path, { code: "type-mismatch", expected: "object", actual: jsType(value) });
+    pushValidationIssue(ctx, component, path, {
+      code: "type-mismatch",
+      expected: "object",
+      actual: jsType(value),
+    });
     return true;
   }
   const obj = value as Record<string, unknown>;
@@ -209,7 +234,11 @@ function validateArrayValue(
   ctx: MaterializeCtx,
 ): boolean {
   if (!Array.isArray(value)) {
-    pushValidationIssue(ctx, component, path, { code: "type-mismatch", expected: "array", actual: jsType(value) });
+    pushValidationIssue(ctx, component, path, {
+      code: "type-mismatch",
+      expected: "array",
+      actual: jsType(value),
+    });
     return true;
   }
   const items = s["items"];
