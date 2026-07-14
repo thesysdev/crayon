@@ -6,7 +6,7 @@ import type { ASTNode } from "./ast";
 import { isASTNode, isRuntimeExpr } from "./ast";
 import { isBuiltin, isReservedCall, LAZY_BUILTINS, RESERVED_CALLS } from "./builtins";
 import { isElementNode, type MaterializeCtx } from "./types";
-import { pushValidationError, resolveInvalidValue, validateSchemaValue } from "./validation";
+import { pushValidationIssue, resolveInvalidValue, validateSchemaValue } from "./validation";
 
 /**
  * Recursively check if a prop value contains any AST nodes that need runtime
@@ -114,12 +114,7 @@ function materializeExprInternal(
         return { ...node, args: recursedArgs, mappedProps };
       }
       // Unknown component in expression: push error (same as value path)
-      pushValidationError(ctx, {
-        code: "unknown-component",
-        component: node.name,
-        path: "",
-        message: `Unknown component "${node.name}" — not found in catalog or builtins`,
-      });
+      pushValidationIssue(ctx, node.name, "", { code: "unknown-component" });
       return { ...node, args: recursedArgs };
     }
 
@@ -235,12 +230,7 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
 
       // Inline Query/Mutation (not from a statement-level declaration) → validation error
       if (isReservedCall(name)) {
-        pushValidationError(ctx, {
-          code: "inline-reserved",
-          component: name,
-          path: "",
-          message: `${name}() must be declared as a top-level statement, not used inline as a value`,
-        });
+        pushValidationIssue(ctx, name, "", { code: "inline-reserved" });
         return null;
       }
 
@@ -272,12 +262,10 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
 
         // Report excess positional args (extra args are silently dropped)
         if (args.length > def.params.length) {
-          const excessCount = args.length - def.params.length;
-          pushValidationError(ctx, {
+          pushValidationIssue(ctx, name, "", {
             code: "excess-args",
-            component: name,
-            path: "",
-            message: `${name} takes ${def.params.length} arg(s), got ${args.length} (${excessCount} excess dropped)`,
+            declared: def.params.length,
+            got: args.length,
           });
         }
 
@@ -295,14 +283,8 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
           });
           if (stillInvalid.length) {
             for (const p of stillInvalid) {
-              const isNull = p.name in props;
-              pushValidationError(ctx, {
-                code: isNull ? "null-required" : "missing-required",
-                component: name,
-                path: `/${p.name}`,
-                message: isNull
-                  ? `required field "${p.name}" cannot be null`
-                  : `missing required field "${p.name}"`,
+              pushValidationIssue(ctx, name, `/${p.name}`, {
+                code: p.name in props ? "null-required" : "missing-required",
               });
             }
             return null;
@@ -314,12 +296,7 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
         if (dropComponent) return null;
       } else if (!isBuiltin(name) && !isReservedCall(name)) {
         // Unknown component: error and drop from tree
-        pushValidationError(ctx, {
-          code: "unknown-component",
-          component: name,
-          path: "",
-          message: `Unknown component "${name}" — not found in catalog or builtins`,
-        });
+        pushValidationIssue(ctx, name, "", { code: "unknown-component" });
         return null;
       }
 

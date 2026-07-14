@@ -4,7 +4,6 @@ import {
   type ElementNode,
   type MaterializeCtx,
   type ScalarParamType,
-  type ValidationError,
 } from "./types";
 
 /** Scalar type/enum info extracted from a JSON Schema leaf, for describeTypeMismatch. */
@@ -68,26 +67,49 @@ export function getScalarTypeInfo(s: Record<string, unknown>): ScalarTypeInfo {
   }
 }
 
-export function pushValidationError(
-  ctx: MaterializeCtx,
-  error: Omit<ValidationError, "statementId">,
-): void {
-  ctx.errors.push({ ...error, statementId: ctx.currentStatementId });
+/**
+ * A structured validation issue. Every error of a kind reads identically
+ * because its message template lives in validationMessage — call sites only
+ * supply the varying parts.
+ */
+export type ValidationIssue =
+  | { code: "type-mismatch"; expected: string; actual: string }
+  | { code: "missing-required" }
+  | { code: "null-required" }
+  | { code: "unknown-component" }
+  | { code: "inline-reserved" }
+  | { code: "excess-args"; declared: number; got: number };
+
+function validationMessage(component: string, path: string, issue: ValidationIssue): string {
+  switch (issue.code) {
+    case "type-mismatch":
+      return `field "${path}" expects ${issue.expected} but got ${issue.actual}`;
+    case "missing-required":
+      return `missing required field "${path}"`;
+    case "null-required":
+      return `required field "${path}" cannot be null`;
+    case "unknown-component":
+      return `Unknown component "${component}" — not found in catalog or builtins`;
+    case "inline-reserved":
+      return `${component}() must be declared as a top-level statement, not used inline as a value`;
+    case "excess-args":
+      return `${component} takes ${issue.declared} arg(s), got ${issue.got} (${issue.got - issue.declared} excess dropped)`;
+  }
 }
 
-/** Report a type-mismatch in the shared `expects X but got Y` shape. */
-function pushTypeMismatch(
+/** Append a validation error, deriving its message from the structured issue. */
+export function pushValidationIssue(
   ctx: MaterializeCtx,
   component: string,
   path: string,
-  expected: string,
-  actual: string,
+  issue: ValidationIssue,
 ): void {
-  pushValidationError(ctx, {
-    code: "type-mismatch",
+  ctx.errors.push({
+    code: issue.code,
     component,
     path,
-    message: `field "${path}" expects ${expected} but got ${actual}`,
+    message: validationMessage(component, path, issue),
+    statementId: ctx.currentStatementId,
   });
 }
 
@@ -118,13 +140,11 @@ function validateElementPosition(
 ): boolean {
   if ("$ref" in s || "anyOf" in s || "oneOf" in s || "allOf" in s) return false;
   if (typeof s["type"] === "string" || Array.isArray(s["enum"]) || "const" in s) {
-    pushTypeMismatch(
-      ctx,
-      component,
-      path,
-      typeof s["type"] === "string" ? s["type"] : "a literal value",
-      `component "${element.typeName}"`,
-    );
+    pushValidationIssue(ctx, component, path, {
+      code: "type-mismatch",
+      expected: typeof s["type"] === "string" ? s["type"] : "a literal value",
+      actual: `component "${element.typeName}"`,
+    });
     return true;
   }
   return false;
@@ -141,7 +161,7 @@ function validateObjectValue(
   ctx: MaterializeCtx,
 ): boolean {
   if (typeof value !== "object" || Array.isArray(value)) {
-    pushTypeMismatch(ctx, component, path, "object", jsType(value));
+    pushValidationIssue(ctx, component, path, { code: "type-mismatch", expected: "object", actual: jsType(value) });
     return true;
   }
   const obj = value as Record<string, unknown>;
@@ -160,14 +180,8 @@ function validateObjectValue(
           obj[key] = fallback;
           continue;
         }
-        const isNull = key in obj;
-        pushValidationError(ctx, {
-          code: isNull ? "null-required" : "missing-required",
-          component,
-          path: `${path}/${key}`,
-          message: isNull
-            ? `required field "${path}/${key}" cannot be null`
-            : `missing required field "${path}/${key}"`,
+        pushValidationIssue(ctx, component, `${path}/${key}`, {
+          code: key in obj ? "null-required" : "missing-required",
         });
         invalid = true;
       }
@@ -195,7 +209,7 @@ function validateArrayValue(
   ctx: MaterializeCtx,
 ): boolean {
   if (!Array.isArray(value)) {
-    pushTypeMismatch(ctx, component, path, "array", jsType(value));
+    pushValidationIssue(ctx, component, path, { code: "type-mismatch", expected: "array", actual: jsType(value) });
     return true;
   }
   const items = s["items"];
@@ -224,7 +238,7 @@ function validateLeafValue(
   if (leaf.enumValues && ctx.partial) return false;
   const mismatch = describeTypeMismatch(value, leaf);
   if (mismatch) {
-    pushTypeMismatch(ctx, component, path, mismatch.expected, mismatch.actual);
+    pushValidationIssue(ctx, component, path, { code: "type-mismatch", ...mismatch });
     return true;
   }
   return false;
