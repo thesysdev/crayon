@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { normalizeResult } from "../parse";
 import type { LoadedLangCore, ParseResult, StreamParserLike } from "../versions/types";
 import { type ChunkStrategy, type StreamChunk, mulberry32, splitChunks } from "./chunker";
 
@@ -101,10 +102,12 @@ export function usePlayback(
       let fatal: string | null = null;
       let result: ParseResult | null = null;
       try {
-        result = s.getFinal();
-        const oneShot = l.mod.createParser!(schema, rootName).parse(s.source);
+        result = normalizeResult(s.getFinal());
+        const oneShot = normalizeResult(l.mod.createParser!(schema, rootName).parse(s.source));
         convergence =
-          JSON.stringify(result.root) === JSON.stringify(oneShot.root) ? "converged" : "diverged";
+          JSON.stringify(result?.root) === JSON.stringify(oneShot?.root)
+            ? "converged"
+            : "diverged";
       } catch (err) {
         fatal = err instanceof Error ? err.message : String(err);
       }
@@ -127,7 +130,7 @@ export function usePlayback(
       let result: ParseResult | null = null;
       let fatal: string | null = null;
       try {
-        result = s.push(chunk.text, s.prefix);
+        result = normalizeResult(s.push(chunk.text, s.prefix));
       } catch (err) {
         fatal = err instanceof Error ? err.message : String(err);
       }

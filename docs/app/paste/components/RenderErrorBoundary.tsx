@@ -4,8 +4,12 @@ import { Button } from "@openuidev/react-ui";
 import { Component, type ReactNode } from "react";
 
 interface Props {
-  /** Bump to clear the error state (e.g. when the code changes). */
+  /** Bump to clear the error state (e.g. when the code or version changes). */
   resetKey: string;
+  /** Card headline, e.g. "Renderer crashed" or "Output panel crashed". */
+  title?: string;
+  /** Extra context line shown under the error message. */
+  hint?: string;
   children: ReactNode;
 }
 
@@ -32,8 +36,9 @@ export class RenderErrorBoundary extends Component<Props, State> {
     if (this.state.error) {
       return (
         <div className="render-crash">
-          <strong>Renderer crashed</strong>
+          <strong>{this.props.title ?? "Renderer crashed"}</strong>
           <pre>{this.state.error.message}</pre>
+          {this.props.hint && <p>{this.props.hint}</p>}
           <Button variant="secondary" size="small" onClick={() => this.setState({ error: null })}>
             Try again
           </Button>

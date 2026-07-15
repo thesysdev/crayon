@@ -42,6 +42,11 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         href: "/chat",
       },
       {
+        title: "Paste",
+        description: "Validate and stream OpenUI Lang.",
+        href: "/paste",
+      },
+      {
         title: "Dashboard Demo",
         description: "Testdrive a dashboard building experience.",
         href: "/demo/github",

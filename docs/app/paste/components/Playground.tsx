@@ -11,6 +11,7 @@ import { usePlayback } from "@paste/lib/streaming/usePlayback";
 import { BUNDLED_LANG_CORE_VERSION } from "@paste/lib/versions/loader";
 import { Banner } from "./Banner";
 import { EditorPane } from "./EditorPane";
+import { RenderErrorBoundary } from "./RenderErrorBoundary";
 import { JsonPanel } from "./panels/JsonPanel";
 import { RenderPanel } from "./panels/RenderPanel";
 import { StreamTimeline } from "./panels/StreamTimeline";
@@ -125,7 +126,12 @@ export function Playground() {
         </Panel>
         <Separator className="resize-handle" />
         <Panel minSize="30%" className="split-panel">
-          <div className="output-pane">
+          <RenderErrorBoundary
+            resetKey={`${version}:${libraryId}:${code}`}
+            title="Output panel crashed"
+            hint="This is usually an incompatibility with the selected lang-core version — pick a different version or edit the code to recover."
+          >
+            <div className="output-pane">
             <Tabs
               value={tab}
               onValueChange={(v) => setTab(v as Tab)}
@@ -171,6 +177,7 @@ export function Playground() {
               </TabsContent>
             </Tabs>
           </div>
+          </RenderErrorBoundary>
         </Panel>
       </Group>
       <Toasts items={toasts} />

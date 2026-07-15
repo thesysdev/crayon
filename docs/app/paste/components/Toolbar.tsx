@@ -9,6 +9,9 @@ import {
   SelectValue,
   Tag,
 } from "@openuidev/react-ui";
+// DOCS-PORT DIVERGENCE: back-to-docs link (same pattern as /chat).
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import type { VersionListState } from "@paste/hooks/useVersionList";
 import { EXAMPLES } from "@paste/lib/examples";
 import { LIBRARIES, type LibraryId } from "@paste/lib/libraries";
@@ -43,12 +46,16 @@ export function Toolbar({
     playback.state.status === "playing" || playback.state.status === "paused";
 
   return (
-    <header className="toolbar">
-      <div className="toolbar-brand">
-        <span className="toolbar-logo">Paste</span>
-        <span className="toolbar-tagline">OpenUI Lang playground</span>
-      </div>
-      <div className="toolbar-controls">
+    <>
+      <header className="topbar">
+        <Link className="back-link" href="/" prefetch={false}>
+          <ArrowLeft aria-hidden size={16} />
+          <span>Back to docs</span>
+        </Link>
+        <span className="toolbar-logo">OpenUI Paste</span>
+      </header>
+      <div className="toolbar">
+        <div className="toolbar-controls">
         <StreamControls playback={playback} bigInput={bigInput} />
         <span className="toolbar-divider" aria-hidden />
         <div className="toolbar-field">
@@ -101,11 +108,12 @@ export function Toolbar({
             </SelectContent>
           </Select>
         </div>
-        {loaded && loaded.source !== "bundled" && (
-          <Tag size="sm" variant="info" text={`via ${loaded.source}`} />
-        )}
-        <HelpDialog />
+          {loaded && loaded.source !== "bundled" && (
+            <Tag size="sm" variant="info" text={`via ${loaded.source}`} />
+          )}
+          <HelpDialog />
+        </div>
       </div>
-    </header>
+    </>
   );
 }
