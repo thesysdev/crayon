@@ -1,7 +1,6 @@
 "use client";
 
 import { copyText } from "@/lib/copy-text";
-import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import { ToggleGroup } from "@openuidev/react-ui/ToggleGroup";
 import { ToggleItem } from "@openuidev/react-ui/ToggleItem";
 import { ArrowLeft, Check, SquareTerminal } from "lucide-react";
@@ -62,14 +61,10 @@ function StartLocallyButton() {
 
 interface ChatPageHeaderProps {
   mode: ChatMode;
-  cloudFailed: boolean;
   onModeChange: (mode: ChatMode) => void;
 }
 
-export function ChatPageHeader({ mode, cloudFailed, onModeChange }: ChatPageHeaderProps) {
-  const modeStatusId = "chat-mode-status";
-  const modeStatus = cloudFailed ? OPENUI_CLOUD_UNAVAILABLE_MESSAGE : "";
-
+export function ChatPageHeader({ mode, onModeChange }: ChatPageHeaderProps) {
   return (
     <header className={styles.header} aria-label="OpenUI chat controls">
       <div className={styles.headerRow}>
@@ -93,26 +88,12 @@ export function ChatPageHeader({ mode, cloudFailed, onModeChange }: ChatPageHead
             <ToggleItem id="chat-mode-oss" value="oss" className={styles.modeItem}>
               OpenUI OSS
             </ToggleItem>
-            <ToggleItem
-              id="chat-mode-cloud"
-              value="cloud"
-              disabled={cloudFailed}
-              aria-describedby={cloudFailed ? modeStatusId : undefined}
-              className={styles.modeItem}
-            >
+            <ToggleItem id="chat-mode-cloud" value="cloud" className={styles.modeItem}>
               OpenUI Cloud
             </ToggleItem>
           </ToggleGroup>
         </div>
       </div>
-
-      {modeStatus ? (
-        <div className={styles.modeDetails}>
-          <p id={modeStatusId} className={styles.modeStatus} aria-live="polite">
-            {modeStatus}
-          </p>
-        </div>
-      ) : null}
     </header>
   );
 }

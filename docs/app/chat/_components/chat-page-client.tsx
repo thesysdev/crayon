@@ -4,7 +4,7 @@ import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
 import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
-import { Component, useCallback, useState, type ErrorInfo, type ReactNode } from "react";
+import { Component, useCallback, useState, type ReactNode } from "react";
 import styles from "../chat-page.module.css";
 import { OssAgentSurface } from "./agent-surfaces/oss-agent-surface";
 import { ChatPageHeader } from "./chat-page-header";
@@ -20,7 +20,6 @@ const CloudAgentSurface = dynamic(
 
 interface CloudSurfaceErrorBoundaryProps {
   children: ReactNode;
-  onUnavailable: () => void;
 }
 
 class CloudSurfaceErrorBoundary extends Component<
@@ -33,10 +32,6 @@ class CloudSurfaceErrorBoundary extends Component<
     return { hasError: true };
   }
 
-  componentDidCatch(_error: Error, _errorInfo: ErrorInfo) {
-    this.props.onUnavailable();
-  }
-
   render() {
     if (this.state.hasError) return <CloudUnavailableState />;
     return this.props.children;
@@ -46,14 +41,9 @@ class CloudSurfaceErrorBoundary extends Component<
 export function ChatPageClient() {
   const { resolvedTheme } = useTheme();
   const [mode, setMode] = useState<ChatMode>("oss");
-  const [cloudFailed, setCloudFailed] = useState(false);
   const [announcement, setAnnouncement] = useState("");
   const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
   const themeMode = resolvedTheme === "dark" ? "dark" : "light";
-
-  const handleCloudUnavailable = useCallback(() => {
-    setCloudFailed(true);
-  }, []);
 
   const handleCreditsExhausted = useCallback(() => {
     setCreditsDialogOpen(true);
@@ -62,20 +52,19 @@ export function ChatPageClient() {
   const requestModeChange = useCallback(
     (nextMode: ChatMode) => {
       if (nextMode === mode) return;
-      if (nextMode === "cloud" && cloudFailed) return;
 
       setMode(nextMode);
       setAnnouncement(
         `${nextMode === "oss" ? "OpenUI OSS" : "OpenUI Cloud"} mode selected. New chat started.`,
       );
     },
-    [cloudFailed, mode],
+    [mode],
   );
 
   return (
     <main className={styles.page}>
       <h1 className={styles.srOnly}>OpenUI Chat</h1>
-      <ChatPageHeader mode={mode} cloudFailed={cloudFailed} onModeChange={requestModeChange} />
+      <ChatPageHeader mode={mode} onModeChange={requestModeChange} />
 
       <section
         className={styles.agentViewport}
@@ -83,11 +72,9 @@ export function ChatPageClient() {
       >
         {mode === "oss" ? (
           <OssAgentSurface themeMode={themeMode} onCreditsExhausted={handleCreditsExhausted} />
-        ) : cloudFailed ? (
-          <CloudUnavailableState />
         ) : (
-          <CloudSurfaceErrorBoundary onUnavailable={handleCloudUnavailable}>
-            <CloudAgentSurface themeMode={themeMode} onUnavailable={handleCloudUnavailable} />
+          <CloudSurfaceErrorBoundary>
+            <CloudAgentSurface themeMode={themeMode} />
           </CloudSurfaceErrorBoundary>
         )}
       </section>

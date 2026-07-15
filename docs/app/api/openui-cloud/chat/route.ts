@@ -1,5 +1,5 @@
 import { readOpenuiCloudConfig } from "@/lib/openui-cloud/config";
-import { unavailableResponse, unavailableStreamEvent } from "@/lib/openui-cloud/errors";
+import { unavailableResponse } from "@/lib/openui-cloud/errors";
 import { resolveRequestedModel } from "@/lib/openui-cloud/models";
 import { hasAllowedOrigin, hasJsonContentType, readLimitedJson } from "@/lib/openui-cloud/request";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
@@ -36,28 +36,23 @@ export async function POST(request: Request): Promise<Response> {
     apiKey: config.apiKey,
   });
 
-  let stream: AsyncIterable<Record<string, unknown>>;
-  try {
-    stream = (await client.responses.create(
-      {
-        model: body.model,
-        conversation: body.threadId,
-        input: body.input,
-        stream: true,
-        store: true,
-        tools: [
-          artifactTool({ artifacts: ["slides", "report"] }),
-          { type: "web_search" },
-          { type: "image_search" },
-        ],
-        instructions: createResponsesInstructions(),
-        // The Cloud Responses endpoint extends the stock OpenAI tool union.
-      } as any,
-      { signal: request.signal },
-    )) as unknown as AsyncIterable<Record<string, unknown>>;
-  } catch {
-    return unavailableResponse();
-  }
+  const stream = (await client.responses.create(
+    {
+      model: body.model,
+      conversation: body.threadId,
+      input: body.input,
+      stream: true,
+      store: true,
+      tools: [
+        artifactTool({ artifacts: ["slides", "report"] }),
+        { type: "web_search" },
+        { type: "image_search" },
+      ],
+      instructions: createResponsesInstructions(),
+      // The Cloud Responses endpoint extends the stock OpenAI tool union.
+    } as any,
+    { signal: request.signal },
+  )) as unknown as AsyncIterable<Record<string, unknown>>;
 
   return createSseResponse(stream, request.signal);
 }
@@ -102,24 +97,12 @@ function createSseResponse(
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
       iterator = stream[Symbol.asyncIterator]();
-      try {
-        while (!cancelled) {
-          const next = await iterator.next();
-          if (next.done || cancelled) break;
-          if (isUpstreamFailureEvent(next.value)) {
-            controller.enqueue(encoder.encode(unavailableStreamEvent()));
-            await iterator.return?.();
-            break;
-          }
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(next.value)}\n\n`));
-        }
-      } catch {
-        if (!cancelled && !requestSignal.aborted) {
-          controller.enqueue(encoder.encode(unavailableStreamEvent()));
-        }
-      } finally {
-        if (!cancelled) controller.close();
+      while (!cancelled) {
+        const next = await iterator.next();
+        if (next.done || cancelled) break;
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(next.value)}\n\n`));
       }
+      if (!cancelled && !requestSignal.aborted) controller.close();
     },
     async cancel() {
       cancelled = true;
@@ -139,12 +122,4 @@ function createSseResponse(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isUpstreamFailureEvent(event: Record<string, unknown>): boolean {
-  return (
-    event.type === "error" ||
-    event.type === "response.failed" ||
-    event.type === "response.incomplete"
-  );
 }

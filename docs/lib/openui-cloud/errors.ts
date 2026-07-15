@@ -12,10 +12,3 @@ export function unavailableResponse(status = 503, headers?: HeadersInit): Respon
     },
   );
 }
-
-export function unavailableStreamEvent(): string {
-  return `data: ${JSON.stringify({
-    type: "error",
-    message: OPENUI_CLOUD_UNAVAILABLE_MESSAGE,
-  })}\n\n`;
-}

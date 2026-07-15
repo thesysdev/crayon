@@ -1,9 +1,8 @@
 "use client";
 
-import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import { CLOUD_USER_ID_HEADER } from "@/lib/openui-cloud/user-id";
-import { defineArtifactCategories, type ChatStorage } from "@openuidev/react-headless";
+import { defineArtifactCategories } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
 import {
   chatLibrary,
@@ -43,13 +42,12 @@ const CLOUD_STARTERS = [
 
 interface CloudAgentSurfaceProps {
   themeMode: "light" | "dark";
-  onUnavailable: () => void;
 }
 
-export function CloudAgentSurface({ themeMode, onUnavailable }: CloudAgentSurfaceProps) {
+export function CloudAgentSurface({ themeMode }: CloudAgentSurfaceProps) {
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const [userId] = useState(getOrCreateCloudUserId);
-  const [llm] = useState(() => createCloudChatLLM(onUnavailable));
+  const [llm] = useState(createCloudChatLLM);
   const cloudFetch = useMemo<typeof fetch>(() => {
     return async (input, init) => {
       if (typeof input !== "string" || input !== "/api/openui-cloud/frontend-token") {
@@ -67,10 +65,6 @@ export function CloudAgentSurface({ themeMode, onUnavailable }: CloudAgentSurfac
     features: { artifact: true },
     fetch: cloudFetch,
   });
-  const storage = useMemo(
-    () => guardCloudStorage(cloudStorage, onUnavailable),
-    [cloudStorage, onUnavailable],
-  );
 
   useEffect(() => {
     llm.setSelectedModel(selectedModel);
@@ -87,7 +81,7 @@ export function CloudAgentSurface({ themeMode, onUnavailable }: CloudAgentSurfac
   return (
     <div className="chat-agent-surface" data-chat-mode="cloud">
       <AgentInterface
-        storage={storage}
+        storage={cloudStorage}
         llm={llm}
         componentLibrary={chatLibrary}
         artifactRenderers={artifactRenderers}
@@ -116,37 +110,4 @@ export function CloudAgentSurface({ themeMode, onUnavailable }: CloudAgentSurfac
       </AgentInterface>
     </div>
   );
-}
-
-function guardCloudStorage(storage: ChatStorage, onUnavailable: () => void): ChatStorage {
-  const artifact = storage.artifact;
-
-  async function guard<T>(operation: () => Promise<T>): Promise<T> {
-    try {
-      return await operation();
-    } catch {
-      onUnavailable();
-      throw new Error(OPENUI_CLOUD_UNAVAILABLE_MESSAGE);
-    }
-  }
-
-  return {
-    ...storage,
-    thread: {
-      listThreads: (cursor) => guard(() => storage.thread.listThreads(cursor)),
-      createThread: (firstMessage) => guard(() => storage.thread.createThread(firstMessage)),
-      getMessages: (threadId) => guard(() => storage.thread.getMessages(threadId)),
-      updateThread: (thread) => guard(() => storage.thread.updateThread(thread)),
-      deleteThread: (threadId) => guard(() => storage.thread.deleteThread(threadId)),
-    },
-    ...(artifact
-      ? {
-          artifact: {
-            list: (params) => guard(() => artifact.list(params)),
-            get: (id) => guard(() => artifact.get(id)),
-            update: (patch) => guard(() => artifact.update(patch)),
-          },
-        }
-      : {}),
-  };
 }
