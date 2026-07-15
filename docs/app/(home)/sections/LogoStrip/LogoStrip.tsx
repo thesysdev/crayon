@@ -10,6 +10,8 @@ const LOGOS = [
   { src: "/logos/entelligence.svg", alt: "Entelligence AI", href: "https://entelligence.ai/" },
   { src: "/logos/andfacts.svg", alt: "&facts", href: "https://www.andfacts.com/" },
   { src: "/logos/gaia.svg", alt: "GAIA", href: "https://heygaia.io/" },
+  { src: "/logos/prox.svg", alt: "Prox", href: "https://useprox.com/" },
+  { src: "/logos/productboard.svg", alt: "Productboard", href: "https://productboard.com/" },
 ];
 
 /* The track holds SETS copies of the logo list and animates by -50%, so the
