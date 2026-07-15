@@ -1,0 +1,640 @@
+/* paste playground — ported from the standalone app. Every rule is scoped
+   under .playground (same convention as app/playground/layout.css) so nothing
+   leaks into other docs routes after navigation. Colors/spacing come from the
+   --openui-* token sheet already loaded by app/global.css. */
+
+:where(.playground, .playground *, .playground *::before, .playground *::after) {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.playground {
+  --paste-border: 1px solid
+    var(--openui-border-default, rgba(128, 128, 128, 0.25));
+  --paste-mono: var(
+    --openui-font-code,
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace
+  );
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--openui-background, #fff);
+  color: var(--openui-text-neutral-primary, #171717);
+  font-size: 16px;
+}
+
+/* ── toolbar ───────────────────────────────────────────────────────────── */
+
+.playground .toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--openui-space-m, 16px);
+  padding: var(--openui-space-m, 16px);
+  border-bottom: var(--paste-border);
+  flex-wrap: wrap;
+}
+
+.playground .toolbar-brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--openui-space-s, 10px);
+}
+
+.playground .toolbar-logo {
+  font-weight: 700;
+  font-size: var(--openui-font-size-xl, 20px);
+}
+
+.playground .toolbar-tagline {
+  color: var(--openui-text-neutral-secondary, #666);
+  font-size: var(--openui-font-size-xl, 14px);
+}
+
+.playground .toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-m, 16px);
+  flex-wrap: wrap;
+}
+
+.playground .toolbar-field {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+}
+
+.playground .toolbar-label {
+  color: var(--openui-text-neutral-secondary, #666);
+  font-size: var(--openui-font-size-xs, 12px);
+}
+
+.playground .toolbar-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--openui-border-default, rgba(128, 128, 128, 0.25));
+}
+
+/* ── help dialog ───────────────────────────────────────────────────────── */
+
+.playground .help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: var(--openui-space-l, 24px);
+}
+
+.playground .help-dialog {
+  background: var(--openui-background, #fff);
+  border: var(--paste-border);
+  border-radius: var(--openui-radius-l, 12px);
+  box-shadow: var(--openui-shadow-2xl, 0 24px 64px rgba(0, 0, 0, 0.25));
+  max-width: 640px;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.playground .help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--openui-space-m, 16px) var(--openui-space-l, 24px);
+  border-bottom: var(--paste-border);
+}
+
+.playground .help-header h2 {
+  font-size: var(--openui-font-size-lg, 18px);
+  font-weight: 700;
+}
+
+.playground .help-body {
+  padding: var(--openui-space-l, 24px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--openui-space-s, 10px);
+  font-size: var(--openui-font-size-m, 14px);
+  line-height: 1.55;
+}
+
+.playground .help-body h3 {
+  font-size: var(--openui-font-size-m, 14px);
+  font-weight: 700;
+  margin-top: var(--openui-space-s, 10px);
+}
+
+.playground .help-body ol,
+.playground .help-body ul {
+  padding-left: var(--openui-space-l, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--openui-space-2xs, 6px);
+}
+
+.playground .help-body code {
+  font-family: var(--paste-mono);
+  font-size: 0.9em;
+  background: var(--openui-sunk, rgba(0, 0, 0, 0.05));
+  border-radius: var(--openui-radius-xs, 4px);
+  padding: 1px var(--openui-space-2xs, 6px);
+}
+
+/* ── stream controls ───────────────────────────────────────────────────── */
+
+.playground .stream-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-s, 10px);
+  flex-wrap: wrap;
+}
+
+.playground .seed-input {
+  width: 70px;
+}
+
+.playground .stream-progress {
+  color: var(--openui-text-neutral-secondary, #666);
+  font-size: var(--openui-font-size-xs, 12px);
+  font-family: var(--paste-mono);
+}
+
+/* ── split layout ──────────────────────────────────────────────────────── */
+
+.playground .main-split {
+  flex: 1;
+  min-height: 0;
+}
+
+.playground .resize-handle {
+  width: 5px;
+  background: transparent;
+  border-left: var(--paste-border);
+  transition: background 0.15s;
+}
+
+.playground .resize-handle:hover,
+.playground .resize-handle:active {
+  background: var(--openui-interactive-accent-default, #4467f6);
+}
+
+/* react-resizable-panels v4 applies Panel className to a nested div */
+.playground .split-panel {
+  height: 100%;
+  min-width: 0;
+}
+
+.playground .editor-pane {
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.playground .editor-pane .cm-editor {
+  height: 100%;
+}
+
+.playground .editor-lock {
+  position: absolute;
+  bottom: var(--openui-space-s, 10px);
+  right: var(--openui-space-s, 10px);
+  background: var(--openui-elevated, #f5f5f5);
+  border: var(--paste-border);
+  border-radius: var(--openui-radius-full, 999px);
+  padding: var(--openui-space-3xs, 2px) var(--openui-space-s, 10px);
+  font-size: var(--openui-font-size-2xs, 10px);
+  color: var(--openui-text-neutral-secondary, #666);
+}
+
+/* ── output tabs ───────────────────────────────────────────────────────── */
+
+.playground .output-pane {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.playground .output-tabs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.playground .tab-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--openui-space-s, 10px);
+  padding: var(--openui-space-2xs, 6px) var(--openui-space-s, 10px);
+  border-bottom: var(--paste-border);
+}
+
+/* Our .tab-strip border spans the full pane width — drop the library's own
+   list underline so there aren't two stacked horizontal rules. */
+.playground .tab-strip .openui-tabs-list-container::after {
+  display: none;
+}
+
+.playground .banner-slot {
+  padding: var(--openui-space-xs, 8px) var(--openui-space-m, 16px) 0;
+}
+
+.playground .tab-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Radix keeps inactive TabsContent in the DOM with [hidden]; display rules
+   would otherwise override it and stack every pane below the active one. */
+.playground .tab-body[hidden],
+.playground .tab-body[data-state="inactive"] {
+  display: none;
+}
+
+/* The library's TabsContent wraps children in .openui-tabs-content-inner,
+   which is height-unconstrained — without this, .panel-scroll grows to its
+   content and nothing ever scrolls. */
+.playground .tab-body > .openui-tabs-content-inner {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.playground .panel-scroll {
+  overflow: auto;
+  padding: var(--openui-space-m, 16px);
+  flex: 1;
+}
+
+.playground .panel-empty {
+  padding: var(--openui-space-xl, 32px);
+  color: var(--openui-text-neutral-tertiary, #999);
+  text-align: center;
+  margin: auto;
+}
+
+/* ── validation panel ──────────────────────────────────────────────────── */
+
+.playground .meta-strip {
+  display: flex;
+  gap: var(--openui-space-2xs, 6px);
+  flex-wrap: wrap;
+  margin-bottom: var(--openui-space-m, 16px);
+}
+
+.playground .all-clear {
+  color: var(--openui-text-success-primary, #171);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+}
+
+.playground .error-group {
+  margin-bottom: var(--openui-space-l, 24px);
+}
+
+.playground .error-group h3 {
+  font-size: var(--openui-font-size-s, 13px);
+  margin-bottom: var(--openui-space-xs, 8px);
+}
+
+.playground .error-group .count {
+  color: var(--openui-text-neutral-tertiary, #999);
+  font-weight: 400;
+}
+
+.playground .error-group ul {
+  list-style: none;
+}
+
+.playground .error-row {
+  padding: var(--openui-space-xs, 8px);
+  border: var(--paste-border);
+  border-radius: var(--openui-radius-s, 6px);
+  margin-bottom: var(--openui-space-xs, 8px);
+}
+
+.playground .err-head {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-xs, 8px);
+}
+
+.playground .err-component {
+  font-weight: 600;
+  font-family: var(--paste-mono);
+}
+
+.playground .err-path {
+  color: var(--openui-text-neutral-secondary, #666);
+  font-family: var(--paste-mono);
+}
+
+.playground .err-message {
+  margin-top: var(--openui-space-3xs, 2px);
+}
+
+.playground .err-hint {
+  margin-top: var(--openui-space-3xs, 2px);
+  color: var(--openui-text-info-primary, #147);
+  font-size: var(--openui-font-size-s, 13px);
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+}
+
+.playground .fatal-card {
+  border: 1px solid var(--openui-text-danger-primary, #a11);
+  border-radius: var(--openui-radius-m, 8px);
+  padding: var(--openui-space-m, 16px);
+  color: var(--openui-text-danger-primary, #a11);
+}
+
+.playground .fatal-card pre {
+  margin: var(--openui-space-xs, 8px) 0;
+  font-family: var(--paste-mono);
+  white-space: pre-wrap;
+}
+
+/* ── render panel ──────────────────────────────────────────────────────── */
+
+.playground .render-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.playground .render-seam {
+  padding: var(--openui-space-2xs, 6px) var(--openui-space-m, 16px);
+  color: var(--openui-text-neutral-tertiary, #999);
+  font-size: var(--openui-font-size-2xs, 10px);
+  border-bottom: var(--paste-border);
+}
+
+.playground .render-canvas {
+  padding: var(--openui-space-l, 24px);
+  flex: 1;
+}
+
+.playground .render-details {
+  border-top: var(--paste-border);
+  padding: var(--openui-space-xs, 8px) var(--openui-space-m, 16px);
+  font-size: var(--openui-font-size-s, 13px);
+}
+
+.playground .render-details summary {
+  cursor: pointer;
+  color: var(--openui-text-neutral-secondary, #666);
+}
+
+.playground .render-details ul {
+  list-style: none;
+  margin-top: var(--openui-space-xs, 8px);
+}
+
+.playground .render-crash {
+  border: 1px solid var(--openui-text-danger-primary, #a11);
+  border-radius: var(--openui-radius-m, 8px);
+  padding: var(--openui-space-m, 16px);
+  color: var(--openui-text-danger-primary, #a11);
+}
+
+.playground .render-crash pre {
+  margin: var(--openui-space-xs, 8px) 0;
+  white-space: pre-wrap;
+  font-family: var(--paste-mono);
+}
+
+/* ── tree panel ────────────────────────────────────────────────────────── */
+
+.playground .tree-node {
+  margin-bottom: var(--openui-space-3xs, 2px);
+}
+
+.playground .tree-header {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  padding: var(--openui-space-3xs, 2px) 0;
+}
+
+.playground .tree-caret {
+  color: var(--openui-text-neutral-tertiary, #999);
+  display: inline-flex;
+  width: 1em;
+}
+
+.playground .tree-type {
+  font-family: var(--paste-mono);
+  font-weight: 600;
+}
+
+.playground .tree-props {
+  margin-left: var(--openui-space-l, 24px);
+  border-left: var(--paste-border);
+  padding-left: var(--openui-space-s, 10px);
+}
+
+.playground .tree-prop {
+  display: flex;
+  gap: var(--openui-space-s, 10px);
+  align-items: baseline;
+  padding: 1px 0;
+}
+
+.playground .tree-prop dt {
+  color: var(--openui-text-neutral-secondary, #666);
+  font-family: var(--paste-mono);
+  font-size: var(--openui-font-size-xs, 12px);
+  min-width: 80px;
+}
+
+.playground .tree-children {
+  display: flex;
+  flex-direction: column;
+}
+
+.playground .tree-scalar {
+  font-family: var(--paste-mono);
+  font-size: var(--openui-font-size-xs, 12px);
+  word-break: break-word;
+}
+
+.playground .tree-expr {
+  font-family: var(--paste-mono);
+  font-size: var(--openui-font-size-xs, 12px);
+  color: var(--openui-text-info-primary, #147);
+}
+
+.playground .tree-extra {
+  margin-top: var(--openui-space-l, 24px);
+}
+
+.playground .tree-extra h3 {
+  font-size: var(--openui-font-size-s, 13px);
+  margin-bottom: var(--openui-space-xs, 8px);
+}
+
+.playground .tree-json {
+  font-family: var(--paste-mono);
+  font-size: var(--openui-font-size-xs, 12px);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── toasts ────────────────────────────────────────────────────────────── */
+
+.playground .toast-stack {
+  position: fixed;
+  bottom: var(--openui-space-l, 24px);
+  right: var(--openui-space-l, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--openui-space-xs, 8px);
+  z-index: 100;
+}
+
+.playground .toast-body {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--openui-space-xs, 8px);
+}
+
+.playground .toast-spinner {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--openui-border-default, #ccc);
+  border-top-color: var(--openui-interactive-accent-default, #4467f6);
+  animation: paste-toast-spin 0.8s linear infinite;
+}
+
+@keyframes paste-toast-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── stream timeline ───────────────────────────────────────────────────── */
+
+.playground .convergence {
+  padding: var(--openui-space-xs, 8px) var(--openui-space-m, 16px);
+  border-radius: var(--openui-radius-s, 6px);
+  margin-bottom: var(--openui-space-m, 16px);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+}
+
+.playground .convergence-converged {
+  background: var(--openui-success-background, #e7f7ea);
+  color: var(--openui-text-success-primary, #171);
+}
+
+.playground .convergence-diverged {
+  background: var(--openui-danger-background, #ffecec);
+  color: var(--openui-text-danger-primary, #a11);
+}
+
+.playground .trace-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--openui-font-size-xs, 12px);
+}
+
+.playground .trace-table th {
+  text-align: left;
+  color: var(--openui-text-neutral-secondary, #666);
+  font-weight: 500;
+  padding: var(--openui-space-3xs, 2px) var(--openui-space-xs, 8px);
+  border-bottom: var(--paste-border);
+  position: sticky;
+  top: calc(-1 * var(--openui-space-m, 16px));
+  background: var(--openui-background, #fff);
+}
+
+.playground .trace-table td {
+  padding: var(--openui-space-3xs, 2px) var(--openui-space-xs, 8px);
+  border-bottom: var(--paste-border);
+  font-family: var(--paste-mono);
+  content-visibility: auto;
+}
+
+.playground .root-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+}
+
+.playground .row-appeared td {
+  background: var(--openui-success-background, #e7f7ea);
+}
+
+.playground .row-dropped td {
+  background: var(--openui-danger-background, #ffecec);
+}
+
+.playground .chunk-preview {
+  white-space: pre;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+/* ── hover signature tooltip (VSCode-style) ────────────────────────────── */
+
+.playground .editor-pane .cm-tooltip {
+  border: none;
+  background: transparent;
+}
+
+.playground .cm-signature-tooltip {
+  /* popover token is fully opaque; --openui-elevated is a translucent tint */
+  background: var(--openui-popover-background, var(--openui-background, #fff));
+  border: var(--paste-border);
+  border-radius: var(--openui-radius-m, 8px);
+  box-shadow: var(--openui-shadow-l, 0 6px 24px rgba(0, 0, 0, 0.12));
+  padding: var(--openui-space-xs, 8px) var(--openui-space-s, 10px);
+  max-width: 480px;
+}
+
+.playground .cm-signature-code {
+  font-family: var(--paste-mono);
+  font-size: var(--openui-font-size-xs, 12px);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.playground .cm-signature-doc {
+  margin-top: var(--openui-space-2xs, 6px);
+  color: var(--openui-text-neutral-secondary, #666);
+  font-size: var(--openui-font-size-xs, 12px);
+}
