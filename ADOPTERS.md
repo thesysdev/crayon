@@ -39,7 +39,7 @@ Frameworks that integrate with, support, or generate OpenUI interfaces.
 - **Lynx** — Renders OpenUI Lang as cross-platform interfaces through the OpenUI renderer and component library in `@lynx-js/genui`.
 
   - Status: `Official integration`
-  - [Documentation](https://lynxjs.org/next/api/genui/index.html)
+  - [Documentation](https://lynxjs.org/next/react/genui/openui.html) · [Example](https://github.com/thesysdev/openui/tree/main/examples/openui-lynx)
 
 - **LangChain** — Generates and renders interactive OpenUI dashboards and reports in LangChain and LangGraph applications.
 

@@ -1,0 +1,118 @@
+---
+title: Lynx
+description: build a full native ReactLynx chat app that streams and renders OpenUI Lang.
+---
+
+Lynx officially renders OpenUI Lang through `@lynx-js/genui/openui`. The full-stack example pairs
+a native ReactLynx chat client with a small Next.js model route, giving you the same end-to-end
+shape as the React Native example without maintaining a second copy of the component schema.
+
+[View source on GitHub →](https://github.com/thesysdev/openui/tree/main/examples/openui-lynx)
+
+## Architecture
+
+```text
+ReactLynx chat app                       Next.js backend
+┌────────────────────────┐              ┌─────────────────────────┐
+│ Native List + composer │── messages ─▶│ POST /api/chat          │
+│ Conversation history   │              │ Lynx OpenUI prompt      │
+│ Cumulative stream      │◀─ raw text ──│ Streaming model call    │
+│ <OpenUiRenderer />     │              │ Server-side API key     │
+└────────────────────────┘              └─────────────────────────┘
+```
+
+The backend builds the exact instruction for Lynx's component set:
+
+```ts
+import { buildOpenUiSystemPrompt } from "@lynx-js/genui/openui/prompt";
+
+const systemPrompt = buildOpenUiSystemPrompt({
+  appendix: "Prefer compact native layouts that fit a phone screen.",
+});
+```
+
+The app creates the matching renderer library once and keeps each assistant response mounted in a
+non-recycling Lynx list item:
+
+```tsx
+const library = useMemo(() => createOpenUiLibrary(), []);
+
+<OpenUiRenderer
+  response={message.content}
+  library={library}
+  isStreaming={message.status !== "complete"}
+  onAction={handleAction}
+/>;
+```
+
+`response` is always the complete text received for that assistant turn, not only the newest
+delta. `isStreaming` stays true until the transport finishes, allowing incomplete forward
+references and statements to parse progressively.
+
+## Native streaming
+
+The client uses Lynx's response-body stream rather than browser-only APIs:
+
+```ts
+const response = await lynx.fetch(apiUrl, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ messages }),
+  lynxExtension: { useStreaming: true },
+});
+
+const reader = response.body.getReader();
+while (reader) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  accumulated += TextCodecHelper.decode(value);
+  updateAssistantMessage(accumulated);
+}
+```
+
+The checked-in implementation also handles web `Uint8Array` chunks, coalesces renderer updates to
+animation frames, and retains the reader so the user can stop generation.
+
+## Chat behavior
+
+The example includes:
+
+- native welcome starters and a Lynx composer
+- real multi-turn user and assistant history
+- per-message streaming, loading, stopped, and error states
+- stop and clear controls
+- automatic list following that yields when the user scrolls away from the bottom
+- `@ToAssistant(...)` actions that start another turn
+- an `@OpenUrl(...)` host boundary ready for the embedding app's navigation bridge
+
+The backend validates messages, keeps provider credentials server-side, streams raw `text/plain`,
+and enables CORS so the same bundle works in Rspeedy's web preview.
+
+## Run the example
+
+Use Node.js 22.12 or newer. From the repository root:
+
+```bash
+pnpm install
+cp examples/openui-lynx/backend/env.example examples/openui-lynx/backend/.env.local
+```
+
+Add `OPENAI_API_KEY` to the new file, then run both processes:
+
+```bash
+pnpm --filter openui-lynx dev
+```
+
+The backend listens on port `3001`; Rspeedy serves the web preview on port `8080` and prints a QR
+code for Lynx Explorer. Rspeedy automatically uses the development machine's LAN address for the
+device API URL. Set `PUBLIC_OPENUI_API_URL` in `app/.env` when using a tunnel or remote backend.
+
+Verify both packages with:
+
+```bash
+pnpm --filter openui-lynx check:all
+pnpm --filter openui-lynx build:all
+```
+
+See the [official Lynx OpenUI guide](https://lynxjs.org/next/react/genui/openui.html) for custom
+ReactLynx components, runtime tools, and the current host configuration requirements.
