@@ -44,7 +44,7 @@ jobs:
           version: 9.0.6
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: pnpm
           cache-dependency-path: "pnpm-lock.yaml"
 
@@ -52,4 +52,25 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build examples
-        run: pnpm --filter "./examples/**" --workspace-concurrency=1 run build
+        run: pnpm --filter "./examples/**" --filter "!./examples/openui-lynx/**" --workspace-concurrency=1 run build
+
+  build-openui-lynx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.0.6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: "pnpm-lock.yaml"
+
+      - name: Install OpenUI Lynx dependencies
+        run: pnpm install --frozen-lockfile --filter "./examples/openui-lynx/**"
+
+      - name: Build OpenUI Lynx example
+        run: pnpm --filter openui-lynx build:all
