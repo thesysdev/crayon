@@ -9,21 +9,8 @@ export type DetectedAgentName =
   | "ambiguous"
   | typeof UNKNOWN_AGENT_NAME;
 
-const DECLARED_AGENT_NAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const isTruthyEnv = (value?: string) => value === "1" || value?.toLowerCase() === "true";
 const isPresent = (value?: string) => Boolean(value?.trim());
-
-/**
- * Keep the declared telemetry dimension bounded and free of whitespace or opaque IDs.
- * Invalid values become `unknown`; the CLI's argument parser reports them to users first.
- */
-export function normalizeAgentName(value?: string): string {
-  const normalized = value?.trim().toLowerCase();
-  if (!normalized || normalized.length > 64 || !DECLARED_AGENT_NAME_PATTERN.test(normalized)) {
-    return UNKNOWN_AGENT_NAME;
-  }
-  return normalized;
-}
 
 /**
  * Best-effort detection from environment markers set by coding-agent products.
