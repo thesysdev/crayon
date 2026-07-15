@@ -3,10 +3,11 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { Command } from "commander";
+import { Command, InvalidArgumentError } from "commander";
 
 import { runCreateApp } from "./commands/create-app";
 import { runGenerate } from "./commands/generate";
+import { detectAgent, normalizeAgentName, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
 import { resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
 import { handleCliError, normalizeAuth, normalizeTemplate } from "./lib/utils"; // Ensure utils.ts is included for type declarations
@@ -22,9 +23,33 @@ const cliVersion = (
 program.name("openui").description("CLI for OpenUI").version(cliVersion);
 program.option("--no-telemetry", "Disable anonymous usage analytics");
 
+const parseAgentName = (value: string) => {
+  const normalized = normalizeAgentName(value);
+  if (normalized === UNKNOWN_AGENT_NAME && value.trim().toLowerCase() !== UNKNOWN_AGENT_NAME) {
+    throw new InvalidArgumentError(
+      "use a lowercase kebab-case product slug up to 64 characters (for example, codex or claude-code)",
+    );
+  }
+  return normalized;
+};
+
+program.option(
+  "--agent-name <name>",
+  "AI agents: declare your stable lowercase kebab-case product slug for telemetry (e.g. codex or claude-code); humans can omit",
+  parseAgentName,
+  UNKNOWN_AGENT_NAME,
+);
+program.configureHelp({ showGlobalOptions: true });
+
 // Init telemetry once, just before any command runs (honors --no-telemetry / DO_NOT_TRACK).
 program.hook("preAction", (_thisCommand, actionCommand) => {
   telemetry.init({ cliVersion, flagEnabled: program.opts()["telemetry"] !== false });
+  telemetry.register({
+    agent_name: normalizeAgentName(
+      actionCommand.optsWithGlobals()["agentName"] as string | undefined,
+    ),
+    detected_agent_name: detectAgent(),
+  });
   telemetry.capture("cli_invoked", { command: actionCommand.name() });
 });
 
