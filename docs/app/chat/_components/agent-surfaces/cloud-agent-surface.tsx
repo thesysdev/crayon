@@ -23,11 +23,6 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
 
 const CLOUD_STARTERS = [
   {
-    displayText: "Flagship store tour",
-    prompt:
-      "Put together retail design inspiration. Use photos of Apple Fifth Avenue, Nike House of Innovation, and Gentle Monster's Seoul flagship, with a visual card for each highlighting one design idea worth borrowing.",
-  },
-  {
     displayText: "Pricing strategy tips",
     prompt: "List five quick tips for pricing a new electric vehicle competitively.",
   },
