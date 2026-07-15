@@ -1,6 +1,6 @@
 import { BASE_URL, blog, source } from "@/lib/source";
 
-const STATIC_PATHS = ["/", "/playground", "/blog"];
+const STATIC_PATHS = ["/", "/playground", "/chat", "/blog"];
 
 export default async function sitemap() {
   const staticRoutes = STATIC_PATHS.map((path) => ({
