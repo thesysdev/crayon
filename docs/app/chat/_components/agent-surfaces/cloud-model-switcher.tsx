@@ -31,9 +31,6 @@ export function CloudModelSwitcher({ selectedModel, onModelChange }: CloudModelS
           title={selectedOption?.id ?? selectedModel}
         >
           <span className={styles.modelSwitcherValue}>{selectedOption?.name ?? selectedModel}</span>
-          {selectedOption?.badge ? (
-            <span className={styles.modelBadge}>{selectedOption.badge}</span>
-          ) : null}
         </SelectTrigger>
         <SelectContent align="start" className={styles.modelSwitcherContent}>
           {groupedModels.map(([provider, providerModels]) => (
@@ -44,9 +41,6 @@ export function CloudModelSwitcher({ selectedModel, onModelChange }: CloudModelS
                   <span className={styles.modelOption}>
                     <span className={styles.modelOptionHeading}>
                       <span className={styles.modelOptionName}>{model.name}</span>
-                      {model.badge ? (
-                        <span className={styles.modelBadge}>{model.badge}</span>
-                      ) : null}
                     </span>
                     <span className={styles.modelOptionId}>{model.id}</span>
                   </span>

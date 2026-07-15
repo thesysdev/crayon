@@ -79,10 +79,6 @@ export function CloudChat() {
               "Put together retail design inspiration. Use photos of Apple Fifth Avenue, Nike House of Innovation, and Gentle Monster's Seoul flagship, with a visual card for each highlighting one design idea worth borrowing.",
           },
           {
-            displayText: "Summarize EV trends",
-            prompt: "In a few sentences, summarize the biggest EV market trends this quarter.",
-          },
-          {
             displayText: "Pricing strategy tips",
             prompt: "List five quick tips for pricing a new electric vehicle competitively.",
           },
