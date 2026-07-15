@@ -17,29 +17,6 @@ pnpm --filter @openuidev/docs dev
 pnpm --filter @openuidev/docs build
 ```
 
-### `/chat` demo configuration
-
-The standalone `/chat` page always starts in **OpenUI OSS** mode. Its selected mode is not
-stored across reloads. Live OSS generation uses the existing server-side
-`OPENROUTER_API_KEY`.
-
-OpenUI Cloud requires the following server-side variables. If either is missing, Cloud requests
-show the unavailable state at runtime:
-
-```bash
-OPENUI_CLOUD_DEMO_ENABLED=true
-THESYS_API_KEY=your-cloud-key
-```
-
-Do not expose `THESYS_API_KEY` through a `NEXT_PUBLIC_*` variable. The browser generates an
-anonymous user ID, retains it in `sessionStorage`, and sends it with Cloud requests so persisted
-conversations remain scoped to that tab session.
-
-The Cloud feature flag is intentionally fail-closed. Keep it disabled on public deployments until
-a shared, cross-instance session-and-IP rate limiter, Cloud organization budgets/token scopes, and
-an approved conversation retention/deletion process are in place. Same-origin validation is an
-additional browser safeguard, not a substitute for those cost controls.
-
 ## Project structure
 
 ```

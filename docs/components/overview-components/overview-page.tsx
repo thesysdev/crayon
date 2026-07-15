@@ -13,10 +13,13 @@ import {
   TabsTrigger,
 } from "@/components/overview-components";
 import { ArrowUpRight, Code2, MessageSquare, Package } from "lucide-react";
-import Link from "next/link";
+import { useState } from "react";
+import { ChatModal } from "./chat-modal";
 import { genuiOutput } from "./genui";
 
 export function OverviewPage() {
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+
   return (
     <div className="mx-auto max-w-4xl px-3 py-8 font-sans text-slate-900 sm:px-4 sm:py-12 lg:px-8 dark:text-slate-100">
       {/* Introduction */}
@@ -219,15 +222,17 @@ export function AssistantMessage({ content, isStreaming }) {
         </FeatureCards>
 
         {/* Interactive Demo */}
-        <Link
-          href="/chat"
-          prefetch={false}
-          className="group mb-6 block cursor-pointer overflow-hidden rounded-xl border-2 border-slate-200 no-underline transition-all hover:border-blue-400 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 dark:border-slate-700 dark:hover:border-blue-500"
+        <div
+          className="group mb-6 cursor-pointer overflow-hidden rounded-xl border-2 border-slate-200 transition-all hover:border-blue-400 hover:shadow-lg dark:border-slate-700 dark:hover:border-blue-500"
+          onClick={() => setIsChatModalOpen(true)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === "Enter" && setIsChatModalOpen(true)}
         >
           <div className="relative">
             <img
               src="/images/openui-lang/compare.png"
-              alt="Preview of the OpenUI Chat live demo"
+              alt="OpenUI Chat Demo - Click to try it live"
               className="w-full"
             />
             <div className="absolute inset-0 bg-black/0 transition-all group-hover:bg-black/5" />
@@ -241,7 +246,9 @@ export function AssistantMessage({ content, isStreaming }) {
             </div>
             <ArrowUpRight className="mt-1 size-5 shrink-0 text-slate-400 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 dark:text-slate-500" />
           </div>
-        </Link>
+        </div>
+
+        {isChatModalOpen && <ChatModal onClose={() => setIsChatModalOpen(false)} />}
 
         <div className="mb-6">
           <CodeBlock

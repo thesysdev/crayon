@@ -37,11 +37,6 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         href: "/playground",
       },
       {
-        title: "OpenUI Chat",
-        description: "Try OpenUI OSS and Cloud in a live chat.",
-        href: "/chat",
-      },
-      {
         title: "Dashboard Demo",
         description: "Testdrive a dashboard building experience.",
         href: "/demo/github",

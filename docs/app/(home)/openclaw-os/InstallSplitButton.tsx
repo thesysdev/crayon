@@ -1,9 +1,9 @@
 "use client";
 
-import { copyText } from "@/lib/copy-text";
 import { useState } from "react";
-import { PLATFORMS, type Platform } from "../components/PlatformLogos";
+import { copyText } from "../components/Button/Button";
 import styles from "./InstallSplitButton.module.css";
+import { PLATFORMS, type Platform } from "../components/PlatformLogos";
 
 function CopyIcon({ className }: { className?: string }) {
   return (

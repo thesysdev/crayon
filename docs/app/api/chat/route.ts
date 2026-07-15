@@ -6,6 +6,39 @@ import { join } from "path";
 
 const systemPrompt = readFileSync(join(process.cwd(), "generated/chat-system-prompt.txt"), "utf-8");
 
+const conversationLog: Array<{ role: string; content: string }> = [];
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function extractText(msg: any): string {
+  const content = msg?.content;
+  if (typeof content === "string") {
+    try {
+      const parsed = JSON.parse(content);
+      if (parsed?.parts)
+        return parsed.parts
+          .filter((p: any) => p.type === "text")
+          .map((p: any) => p.text)
+          .join("");
+    } catch {
+      /* plain string */
+    }
+    return content;
+  }
+  if (Array.isArray(content))
+    return content
+      .filter((p: any) => p.type === "text")
+      .map((p: any) => p.text)
+      .join("");
+  if (Array.isArray(msg?.parts))
+    return msg.parts
+      .filter((p: any) => p.type === "text")
+      .map((p: any) => p.text)
+      .join("");
+  if (typeof msg?.text === "string") return msg.text;
+  return JSON.stringify(msg);
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 // ── Tool implementations ──
 
 function getWeather({ location }: { location: string }): Promise<string> {
@@ -100,6 +133,7 @@ function searchWeb({ query }: { query: string }): Promise<string> {
 
 // ── Tool definitions ──
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tools: any[] = [
   {
     type: "function",
@@ -211,6 +245,10 @@ function sseToolCallArgs(
 export async function POST(req: NextRequest) {
   const { messages } = await req.json();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const lastUserMsg = (messages as any[]).filter((m: any) => m.role === "user").pop();
+  if (lastUserMsg) conversationLog.push({ role: "user", content: extractText(lastUserMsg) });
+
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return Response.json(
@@ -225,11 +263,12 @@ export async function POST(req: NextRequest) {
   });
   const MODEL = "openai/gpt-5.4";
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cleanMessages = (messages as any[])
     .filter((m) => m.role !== "tool")
     .map((m) => {
       if (m.role === "assistant" && m.tool_calls?.length) {
-        const { tool_calls: _tc, ...rest } = m;
+        const { tool_calls: _tc, ...rest } = m; // eslint-disable-line @typescript-eslint/no-unused-vars
         return rest;
       }
       return m;
@@ -242,7 +281,6 @@ export async function POST(req: NextRequest) {
 
   const encoder = new TextEncoder();
   let controllerClosed = false;
-  let activeRunner: { abort: () => void } | undefined;
 
   const readable = new ReadableStream({
     start(controller) {
@@ -264,33 +302,20 @@ export async function POST(req: NextRequest) {
         }
       };
 
+      let fullResponse = "";
       const pendingCalls: Array<{ id: string; name: string; arguments: string }> = [];
       let callIdx = 0;
       let resultIdx = 0;
 
-      const runner = (client.chat.completions as any).runTools(
-        {
-          model: MODEL,
-          messages: chatMessages,
-          tools,
-          stream: true,
-        },
-        { signal: req.signal },
-      );
-      activeRunner = runner;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const runner = (client.chat.completions as any).runTools({
+        model: MODEL,
+        messages: chatMessages,
+        tools,
+        stream: true,
+      });
 
-      const handleAbort = () => {
-        runner.abort();
-        close();
-      };
-      req.signal.addEventListener("abort", handleAbort, { once: true });
-
-      const finish = () => {
-        req.signal.removeEventListener("abort", handleAbort);
-        activeRunner = undefined;
-        close();
-      };
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       runner.on("functionToolCall", (fc: any) => {
         const id = `tc-${callIdx}`;
         pendingCalls.push({ id, name: fc.name, arguments: fc.arguments });
@@ -313,6 +338,7 @@ export async function POST(req: NextRequest) {
         resultIdx++;
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       runner.on("chunk", (chunk: any) => {
         // Keep credit handling to non-2xx responses. Provider-specific mid-stream
         // chunks are intentionally ignored because they are harder to maintain
@@ -321,6 +347,7 @@ export async function POST(req: NextRequest) {
         const delta = choice?.delta;
         if (!delta) return;
         if (delta.content) {
+          fullResponse += delta.content;
           enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
         }
         if (choice?.finish_reason === "stop") {
@@ -331,24 +358,28 @@ export async function POST(req: NextRequest) {
       runner.on("end", () => {
         if (controllerClosed) return;
 
+        conversationLog.push({ role: "assistant", content: fullResponse });
+        console.info(
+          "[OpenUI Lang] Conversation:\n",
+          JSON.stringify(
+            conversationLog.map((m) => ({ ...m, content: m.content.replace(/\n/g, " ") })),
+            null,
+            2,
+          ),
+        );
         enqueue(encoder.encode("data: [DONE]\n\n"));
-        finish();
+        close();
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       runner.on("error", (err: any) => {
         if (controllerClosed) return;
 
         const msg = err instanceof Error ? err.message : "Stream error";
         console.error("Chat route error:", msg);
         enqueue(encoder.encode(`data: ${JSON.stringify({ error: msg })}\n\n`));
-        finish();
+        close();
       });
-
-      runner.on("abort", finish);
-    },
-    cancel() {
-      activeRunner?.abort();
-      activeRunner = undefined;
     },
   });
 
