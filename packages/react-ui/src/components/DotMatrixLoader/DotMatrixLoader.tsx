@@ -27,18 +27,26 @@ const INNER_RING: readonly (readonly [number, number])[] = [
  * ring. Driven by requestAnimationFrame with a fractional head position, so
  * the glow moves continuously instead of stepping dot to dot.
  */
+export type DotMatrixLoaderVariant = "default" | "compact";
+
 export const DotMatrixLoader = ({
   className,
-  size = 36,
+  size,
+  variant = "default",
 }: {
   className?: string;
-  /** Total width/height of the loader in px. */
+  /** Overrides the variant's total width/height in px. */
   size?: number;
+  variant?: DotMatrixLoaderVariant;
 }) => {
   const dotsRef = useRef<Map<string, HTMLSpanElement>>(new Map());
+  const resolvedSize = size ?? (variant === "compact" ? 24 : 36);
 
   useEffect(() => {
     const dots = dotsRef.current;
+    dots.forEach((dot) => {
+      dot.style.opacity = String(MIN_OPACITY);
+    });
 
     const paintRing = (
       ring: readonly (readonly [number, number])[],
@@ -90,7 +98,7 @@ export const DotMatrixLoader = ({
       role="status"
       aria-live="polite"
       aria-label="Loading"
-      style={{ "--openui-dot-matrix-loader-size": `${size}px` } as CSSProperties}
+      style={{ "--openui-dot-matrix-loader-size": `${resolvedSize}px` } as CSSProperties}
     >
       {dots}
     </div>

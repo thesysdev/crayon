@@ -27,7 +27,8 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
   flex-direction: column;
   gap: cssUtils.$space-2xl;
   background-color: cssUtils.$highlight-subtle;
-  box-shadow: inset -10px 0 18px -18px cssUtils.$elevated-strong;
+  box-shadow: inset -10px 0 18px -18px
+    var(--openui-agent-sidebar-shadow-color, cssUtils.$sunk-deep);
   z-index: 999;
   transition:
     width $sidebar-resize-duration $sidebar-motion-ease,
@@ -122,7 +123,11 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
   &__agent-name {
     @include cssUtils.typography(label, small);
     flex-grow: 1;
+    min-width: 0;
+    overflow: hidden;
     color: cssUtils.$text-neutral-primary;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     transition: opacity $sidebar-fade-duration $sidebar-motion-ease;
 
     .openui-agent-sidebar-container--collapsed & {

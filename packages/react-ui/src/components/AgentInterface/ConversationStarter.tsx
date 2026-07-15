@@ -9,7 +9,7 @@ import { isChatEmpty } from "./_shared/utils";
 export type ConversationStarterVariant = "short" | "long";
 
 interface ConversationStarterItemProps extends ConversationStarterProps {
-  onClick: (prompt: string) => void;
+  onClick: () => void;
   variant: ConversationStarterVariant;
 }
 
@@ -39,7 +39,6 @@ const hasRenderableIcon = (icon: ReactNode): boolean => {
 
 const ConversationStarterItem = ({
   displayText,
-  prompt,
   onClick,
   variant,
   icon,
@@ -52,7 +51,7 @@ const ConversationStarterItem = ({
       <button
         type="button"
         className="openui-agent-conversation-starter-item-short"
-        onClick={() => onClick(prompt)}
+        onClick={onClick}
       >
         {shouldRenderIcon && (
           <span className="openui-agent-conversation-starter-item-short__icon">{renderedIcon}</span>
@@ -67,7 +66,7 @@ const ConversationStarterItem = ({
     <button
       type="button"
       className="openui-agent-conversation-starter-item-long"
-      onClick={() => onClick(prompt)}
+    onClick={onClick}
     >
       <div className="openui-agent-conversation-starter-item-long__content">
         {shouldRenderIcon && (
@@ -86,6 +85,10 @@ export interface ConversationStarterContainerProps {
   starters: ConversationStarterProps[];
   className?: string;
   /**
+   * Overrides the default send behavior when a starter is selected.
+   */
+  onSelect?: (starter: ConversationStarterProps) => void;
+  /**
    * Variant of the conversation starter
    * - "short": Pill-style horizontal buttons (default)
    * - "long": Vertical list items with icons and hover arrow
@@ -96,6 +99,7 @@ export interface ConversationStarterContainerProps {
 export const ConversationStarter = ({
   starters,
   className,
+  onSelect,
   variant = "short",
 }: ConversationStarterContainerProps) => {
   const processMessage = useThread((s) => s.processMessage);
@@ -103,11 +107,15 @@ export const ConversationStarter = ({
   const messages = useThread((s) => s.messages);
   const isLoadingMessages = useThread((s) => s.isLoadingMessages);
 
-  const handleClick = (prompt: string) => {
+  const handleClick = (starter: ConversationStarterProps) => {
     if (isRunning) return;
+    if (onSelect) {
+      onSelect(starter);
+      return;
+    }
     processMessage({
       role: "user",
-      content: prompt,
+      content: starter.prompt,
     });
   };
 
@@ -137,7 +145,7 @@ export const ConversationStarter = ({
               displayText={item.displayText}
               prompt={item.prompt}
               icon={item.icon}
-              onClick={handleClick}
+              onClick={() => handleClick(item)}
               variant={variant}
             />
           ))}
@@ -163,7 +171,7 @@ export const ConversationStarter = ({
             displayText={item.displayText}
             prompt={item.prompt}
             icon={item.icon}
-            onClick={handleClick}
+            onClick={() => handleClick(item)}
             variant={variant}
           />
         </Fragment>

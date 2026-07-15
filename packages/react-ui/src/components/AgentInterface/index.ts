@@ -9,4 +9,7 @@ export type { ArtifactNavProps } from "./ArtifactNav";
 export type { RouteProps } from "./Route";
 export { SidebarItem } from "./SidebarItem";
 export type { SidebarItemProps } from "./SidebarItem";
+export { WelcomeGlow } from "./WelcomeGlow";
+export type { WelcomeGlowProps } from "./WelcomeGlow";
+export type { WelcomeScreenProps } from "./WelcomeScreen";
 export type { WorkspaceProps } from "./Workspace";

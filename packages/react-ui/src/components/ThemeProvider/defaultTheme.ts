@@ -10,12 +10,12 @@ type ThemeSwatchSelectors = {
 
 const LIGHT_SWATCHES: ThemeSwatchSelectors = {
   neutralSwatch: "neutral",
-  brandSwatch: "neutral",
+  brandSwatch: "blue",
 };
 
 const DARK_SWATCHES: ThemeSwatchSelectors = {
   neutralSwatch: "neutral",
-  brandSwatch: "neutral",
+  brandSwatch: "blue",
 };
 
 const DEFAULT_ACCENT_SOLID: Record<ThemeMode, string> = {
@@ -246,7 +246,7 @@ const createColorTheme = ({
     interactiveDestructiveAccentDisabled: withAlpha(swatch(dangerSwatch, 600), 0.4),
 
     // Chat
-    chatUserResponseBg: withAlpha(brandSolid, 0.08),
+    chatUserResponseBg: withAlpha(overlayBase, 0.08),
     chatUserResponseText: neutralPrimary,
 
     // Border
