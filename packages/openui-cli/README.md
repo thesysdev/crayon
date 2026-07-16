@@ -12,6 +12,7 @@ It currently supports two workflows:
 - scaffolding a new OpenUI app from one of two templates:
   - **OpenUI Cloud (recommended)** — hosted models with managed conversations, streaming, built-in tools, and ready-to-use report and presentation artifacts
   - **Self-hosted** — bring an OpenAI-compatible model key and own the AI route and persistence
+- choosing the direct OpenAI SDK route, LangGraph, or Vercel AI SDK for either template
 - generating a system prompt or JSON Schema from a `createLibrary()` export
 
 ## Install
@@ -37,6 +38,15 @@ Skip the prompt and pick a template directly:
 ```bash
 npx @openuidev/cli@latest create --template openui-cloud
 npx @openuidev/cli@latest create --template openui-self-hosted
+```
+
+Choose a backend framework directly (the default is `none`, which uses the OpenAI SDK):
+
+```bash
+npx @openuidev/cli@latest create --template openui-cloud --backend-framework langgraph
+npx @openuidev/cli@latest create --template openui-cloud --backend-framework vercel
+npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework langgraph
+npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel
 ```
 
 Generate a prompt from a library file:
@@ -65,6 +75,7 @@ Options:
 
 - `-n, --name <string>`: Project name (interactive default: `openui-agent`)
 - `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
+- `--backend-framework <framework>`: API route implementation — `none`, `langgraph`, or `vercel`
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
@@ -79,6 +90,7 @@ What it does:
 
 - prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
 - prompts for the template if you do not pass `--template`
+- prompts for a backend framework after the template; non-interactive usage defaults to `none`
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
 - asks whether to start the development server after dependency installation (default: yes); answering no preserves the install-and-exit behavior
@@ -91,6 +103,16 @@ What it does:
 
 - **OpenUI Cloud (recommended default)** — start here for prototypes and evaluations. You get hosted models, managed conversation history and streaming, built-in tools, and ready-to-use report and presentation artifacts without operating the model, storage, or artifact infrastructure.
 - **Self-hosted** — choose this when owning the OpenAI-compatible provider integration, AI route, and persistence is a requirement.
+
+#### Backend frameworks
+
+| Value       | OpenUI Cloud route                                | Self-hosted route                          |
+| ----------- | ------------------------------------------------- | ------------------------------------------ |
+| `none`      | Direct OpenAI SDK Responses proxy                 | Direct OpenAI SDK Chat Completions proxy   |
+| `langgraph` | LangGraph workflow calling OpenUI Cloud           | LangGraph `StateGraph` using your provider |
+| `vercel`    | Vercel AI SDK Responses transport to OpenUI Cloud | Vercel AI SDK `streamText()` route         |
+
+The CLI replaces `src/app/api/chat/route.ts` and adds the dependencies for the selected framework. Cloud combinations still call OpenUI Cloud and preserve its Responses SSE stream, conversation storage, artifacts, and built-in tools. Selecting a Cloud framework changes the orchestration layer; it does not configure a user-owned provider key. Choose `openui-self-hosted` when you want to bring your own provider.
 
 #### Template-specific `.env`
 
@@ -107,7 +129,12 @@ Examples:
 
 ```bash
 openui create
+openui create --name my-app --template openui-self-hosted
+openui create --name my-app --template openui-self-hosted --backend-framework langgraph
+openui create --name my-app --template openui-self-hosted --backend-framework vercel
 openui create --name my-app --template openui-cloud --auth oauth
+openui create --name my-app --template openui-cloud --backend-framework langgraph --auth oauth
+openui create --name my-app --template openui-cloud --backend-framework vercel --auth oauth
 openui create --name my-app --template openui-cloud --api-key tk_your_key
 openui create --name my-app --template openui-self-hosted
 openui create --name my-app --template openui-cloud --immediate

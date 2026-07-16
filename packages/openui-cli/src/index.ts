@@ -10,7 +10,12 @@ import { GenerateOptions, runGenerate } from "./commands/generate";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
 import { resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
-import { handleCliError, normalizeAuth, normalizeTemplate } from "./lib/utils"; // Ensure utils.ts is included for type declarations
+import {
+  handleCliError,
+  normalizeAuth,
+  normalizeBackendFramework,
+  normalizeTemplate,
+} from "./lib/utils"; // Ensure utils.ts is included for type declarations
 
 const program = new Command();
 
@@ -51,6 +56,7 @@ program
     "-t, --template <template>",
     "AI backend: openui-cloud (recommended default) | openui-self-hosted (infrastructure control)",
   )
+  .option("--backend-framework <framework>", "Backend route: none | langgraph | vercel")
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
@@ -69,12 +75,18 @@ Templates:
                       or artifact infrastructure to operate.
   openui-self-hosted  Choose when owning the OpenAI-compatible provider, AI route,
                       and persistence is a requirement.
+
+Backend frameworks:
+  none       Direct OpenAI SDK route (default).
+  langgraph  LangGraph orchestration around the selected backend.
+  vercel     Vercel AI SDK integration with the selected backend.
 `,
   )
   .action(
     async (options: {
       name?: string;
       template?: string;
+      backendFramework?: string;
       apiKey?: string;
       auth?: string;
       skill?: boolean;
@@ -86,6 +98,7 @@ Templates:
         await runCreateApp({
           name: options.name,
           template: normalizeTemplate(options.template),
+          backendFramework: normalizeBackendFramework(options.backendFramework),
           apiKey: options.apiKey,
           auth: normalizeAuth(options.auth),
           skill: options.skill,

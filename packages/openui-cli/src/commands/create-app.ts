@@ -5,7 +5,12 @@ import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
-import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
+import type {
+  BackendFramework,
+  CreateAppOptions,
+  EnvResult,
+  TemplateName,
+} from "../lib/create-types";
 import {
   resolveInstallPackageManager,
   type PackageManagerName,
@@ -22,6 +27,34 @@ function errorCode(error: Error): string {
   const code = (error as NodeJS.ErrnoException).code;
   return typeof code === "string" ? code : "UNKNOWN";
 }
+
+const backendDependencies: Record<
+  TemplateName,
+  Record<Exclude<BackendFramework, "none">, Record<string, string>>
+> = {
+  "openui-cloud": {
+    langgraph: {
+      "@langchain/core": "^1.2.1",
+      "@langchain/langgraph": "^1.4.5",
+    },
+    vercel: {
+      "@ai-sdk/openai": "^3.0.65",
+    },
+  },
+  "openui-self-hosted": {
+    langgraph: {
+      "@langchain/core": "^1.2.1",
+      "@langchain/langgraph": "^1.4.5",
+      "@langchain/openai": "^1.5.2",
+      zod: "^4.0.0",
+    },
+    vercel: {
+      "@ai-sdk/openai": "^3.0.65",
+      ai: "^6.0.191",
+      zod: "^4.3.6",
+    },
+  },
+};
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
@@ -50,7 +83,13 @@ function buildAppId(name: string): string {
   return `${slug}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function rewritePackageJson(projectDir: string, name: string, packageManager: PackageManagerName) {
+function rewritePackageJson(
+  projectDir: string,
+  name: string,
+  packageManager: PackageManagerName,
+  template: TemplateName,
+  backendFramework: BackendFramework,
+) {
   // package.json: set the project name and de-vendor monorepo-local deps
   // (workspace:* / file: / catalog:) to the published "latest". link: deps are
   // rewritten to an absolute file: path so locally-linked packages (e.g.
@@ -66,6 +105,11 @@ function rewritePackageJson(projectDir: string, name: string, packageManager: Pa
   };
   pkg.name = name;
   if (packageManager !== "pnpm") delete pkg.pnpm;
+  if (backendFramework !== "none") {
+    pkg.dependencies ??= {};
+    if (template === "openui-self-hosted") delete pkg.dependencies["openai"];
+    Object.assign(pkg.dependencies, backendDependencies[template][backendFramework]);
+  }
   for (const section of ["dependencies", "devDependencies"] as const) {
     const deps = pkg[section];
     if (!deps) continue;
@@ -113,6 +157,22 @@ function rewritePackageJson(projectDir: string, name: string, packageManager: Pa
   }
 }
 
+function applyBackendRoute(projectDir: string, backendFramework: BackendFramework) {
+  const routeOptionsDir = path.join(projectDir, "_backend-routes");
+  if (backendFramework !== "none") {
+    const source = path.join(routeOptionsDir, `${backendFramework}.ts`);
+    const destination = path.join(projectDir, "src", "app", "api", "chat", "route.ts");
+    if (!fs.existsSync(source)) {
+      throw new CreateError(
+        "template_missing",
+        `Backend route "${backendFramework}" not found. Rebuild the CLI with \`pnpm build\`.`,
+      );
+    }
+    fs.copyFileSync(source, destination);
+  }
+  fs.rmSync(routeOptionsDir, { recursive: true, force: true });
+}
+
 export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   const interactive = !options.noInteractive;
   const packageManager = resolveInstallPackageManager();
@@ -123,13 +183,14 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     interactive,
     has_name_arg: Boolean(options.name),
     has_template_arg: Boolean(options.template),
+    has_backend_framework_arg: Boolean(options.backendFramework),
     has_api_key_arg: Boolean(options.apiKey),
     has_auth_arg: Boolean(options.auth),
     no_install: Boolean(options.noInstall),
     immediate_arg: options.immediate,
   });
 
-  const args = await resolveArgs(
+  const baseArgs = await resolveArgs(
     {
       name: options.name
         ? { value: options.name }
@@ -150,7 +211,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
                 },
                 {
                   value: "openui-self-hosted",
-                  name: "Self-hosted — bring your own provider and self-manage the entire backend",
+                  name: "Self-hosted — bring your own provider and self-manage the backend",
                 },
               ],
             },
@@ -160,13 +221,49 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     interactive,
   );
 
-  const { name, template } = args as { name: string; template: TemplateName };
+  const { name, template } = baseArgs as { name: string; template: TemplateName };
+
+  const frameworkArgs = await resolveArgs(
+    {
+      backendFramework:
+        options.backendFramework || !interactive
+          ? { value: options.backendFramework ?? "none" }
+          : {
+              prompt: {
+                type: "select",
+                message: "Choose your backend framework",
+                choices: [
+                  {
+                    value: "none",
+                    name: "No framework — OpenAI SDK (default)",
+                  },
+                  { value: "langgraph", name: "LangGraph" },
+                  { value: "vercel", name: "Vercel AI SDK" },
+                ],
+              },
+              required: true,
+            },
+    },
+    interactive,
+  );
+  const backendFramework = (frameworkArgs as { backendFramework: BackendFramework })
+    .backendFramework;
+
   const aiSetup = aiSetupFromTemplate(template);
-  telemetry.register({ template, ai_setup: aiSetup });
+  telemetry.register({ template, ai_setup: aiSetup, backend_framework: backendFramework });
   telemetry.capture("cli_ai_setup_selected", {
     ...createFunnelProps("ai_setup_selected"),
     template,
     ai_setup: aiSetup,
+  });
+  telemetry.capture("cli_backend_framework_selected", {
+    ...createFunnelProps("backend_framework_selected"),
+    backend_framework: backendFramework,
+    backend_framework_source: options.backendFramework
+      ? "flag"
+      : interactive
+        ? "prompt"
+        : "default",
   });
 
   const targetDir = path.resolve(process.cwd(), name);
@@ -229,16 +326,21 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
     restoreDotfiles(targetDir);
-    rewritePackageJson(targetDir, name, packageManager.name);
+    applyBackendRoute(targetDir, backendFramework);
+    rewritePackageJson(targetDir, name, packageManager.name, template, backendFramework);
     // npm ci requires the copied package-lock; other managers resolve from package.json.
-    if (packageManager.name !== "npm") {
+    // Framework routes add dependencies at scaffold time, so their npm lock
+    // cannot remain frozen; npm install creates a fresh lock for that variant.
+    if (packageManager.name !== "npm" || backendFramework !== "none") {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
     }
     // The Cloud template ships pnpm's lock/workspace files for reproducible pnpm
-    // installs and native-build policy. They are irrelevant to npm/yarn/bun and
-    // can confuse workspace-root detection, so keep them only for pnpm scaffolds.
-    if (packageManager.name !== "pnpm") {
+    // installs and native-build policy. A framework changes dependencies, so
+    // regenerate its lock; non-pnpm scaffolds do not need either pnpm file.
+    if (packageManager.name !== "pnpm" || backendFramework !== "none") {
       fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
+    }
+    if (packageManager.name !== "pnpm") {
       fs.rmSync(path.join(targetDir, "pnpm-workspace.yaml"), { force: true });
     }
   } catch (err) {
@@ -273,7 +375,19 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     });
   }
 
-  const installCmd = packageManager.installCmd;
+  const frameworkInstall = backendFramework !== "none";
+  const installCmd =
+    frameworkInstall && packageManager.name === "npm"
+      ? "npm install --prefer-offline --no-audit --no-fund --progress=false"
+      : frameworkInstall && packageManager.name === "pnpm"
+        ? "pnpm install --no-frozen-lockfile"
+        : packageManager.installCmd;
+  const installArgs =
+    frameworkInstall && packageManager.name === "npm"
+      ? ["install", "--prefer-offline", "--no-audit", "--no-fund", "--progress=false"]
+      : frameworkInstall && packageManager.name === "pnpm"
+        ? ["install", "--no-frozen-lockfile"]
+        : packageManager.installArgs;
   let dependencyInstalled = false;
 
   if (!immediateResolution.installDependencies) {
@@ -288,7 +402,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       template,
       ai_setup: aiSetup,
     });
-    const installResult = runCommand(packageManager.runCmd, packageManager.installArgs, targetDir);
+    const installResult = runCommand(packageManager.runCmd, installArgs, targetDir);
     if (!installResult.error && installResult.status === 0) {
       dependencyInstalled = true;
       telemetry.capture("cli_dependency_install_succeeded", {
@@ -325,6 +439,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       name,
       devCmd,
       template,
+      backendFramework,
       skillInstalled: installSkill,
       envWritten: envResult.envWritten,
       startDev,
@@ -494,6 +609,7 @@ function getStartedMessage(o: {
   name: string;
   devCmd: string;
   template: TemplateName;
+  backendFramework: BackendFramework;
   skillInstalled: boolean;
   envWritten: boolean;
   startDev: boolean;
@@ -521,10 +637,18 @@ function getStartedMessage(o: {
         `> ${o.devCmd} run dev`,
       ].join("\n");
 
+  const frameworkNote =
+    o.backendFramework === "langgraph"
+      ? "The generated API route uses LangGraph."
+      : o.backendFramework === "vercel"
+        ? "The generated API route uses the Vercel AI SDK."
+        : "";
+
   return `${skillMessage}
 Done!
 
 ${envNote}
+${frameworkNote ? `\n${frameworkNote}\n` : ""}
 
 ${nextStep}
 `;
