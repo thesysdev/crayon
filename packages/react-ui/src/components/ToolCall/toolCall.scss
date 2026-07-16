@@ -49,20 +49,47 @@
     width: 100%;
   }
 
-  // Compact staggered reveal (CSS fade-in; remounted per step via React key).
-  &__reveal-item {
-    animation: openui-behind-the-scenes-reveal 0.2s ease;
+  // Compact reveal: overlap the outgoing and incoming rows so bursty tool
+  // events crossfade instead of replacing one frame with another.
+  &__transition {
+    display: grid;
+    width: 100%;
+  }
+
+  &__transition-item {
+    grid-area: 1 / 1;
+    width: 100%;
+  }
+
+  &__transition-item--enter {
+    animation: openui-behind-the-scenes-enter 0.22s ease both;
+  }
+
+  &__transition-item--exit {
+    animation: openui-behind-the-scenes-exit 0.22s ease both;
+    pointer-events: none;
   }
 }
 
-@keyframes openui-behind-the-scenes-reveal {
+@keyframes openui-behind-the-scenes-enter {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(5px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes openui-behind-the-scenes-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-5px);
   }
 }
 
@@ -464,9 +491,13 @@
 // solid fill or it would freeze half-transparent), drop the staggered reveal
 // fade, and disable the decorative chevron/hover transitions.
 @media (prefers-reduced-motion: reduce) {
-  .openui-behind-the-scenes__reveal-item,
+  .openui-behind-the-scenes__transition-item,
   .openui-tool-call__icon--blinking {
     animation: none;
+  }
+
+  .openui-behind-the-scenes__transition-item--exit {
+    display: none;
   }
 
   .openui-tool-call__name--shimmer,
