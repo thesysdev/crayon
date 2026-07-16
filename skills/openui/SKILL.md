@@ -56,7 +56,7 @@ Choose the matching path:
 | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Existing React app, add managed Cloud chat                                | Read [references/cloud-integration.md](references/cloud-integration.md) completely before editing                                                                         |
 | Existing non-React app, add managed Cloud chat                            | Read [references/cloud-integration.md](references/cloud-integration.md); require a current first-party client/runtime or report the verified React-only boundary          |
-| Existing self-hosted/open-source app, replace or supplement it with Cloud | Read both [references/cloud-migration.md](references/cloud-migration.md) and [references/cloud-integration.md](references/cloud-integration.md) completely before editing |
+| Existing self-hosted/open-source app, replace or supplement it with Cloud | Read both [references/oss-to-cloud-migration.md](references/oss-to-cloud-migration.md) and [references/cloud-integration.md](references/cloud-integration.md) completely before editing |
 
 If “migrate” does not establish whether Cloud should replace the self-hosted path or run beside it, infer the intent from the project and request. Ask only when the choice remains material and ambiguous; never silently delete a working backend. Treat code migration and historical-data import as separate tasks, and do not claim a data migration without a verified first-party import API.
 

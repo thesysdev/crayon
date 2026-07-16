@@ -1,6 +1,6 @@
-# Migrate Self-Hosted OpenUI to OpenUI Cloud
+# OSS to Cloud Migration
 
-Use this runbook for application-code migration from open-source/self-hosted OpenUI to the managed Cloud backend. Read [cloud-integration.md](cloud-integration.md) as well; it contains the canonical Cloud client and server contracts.
+Use this runbook for application-code migration from OSS (open-source or self-hosted) OpenUI to the managed Cloud backend. Read [cloud-integration.md](cloud-integration.md) as well; it contains the canonical Cloud client and server contracts.
 
 ## Contents
 
@@ -18,11 +18,13 @@ Use this runbook for application-code migration from open-source/self-hosted Ope
 Distinguish these goals before removing code:
 
 - **Replace:** Cloud becomes the only generation and storage backend.
-- **Dual mode:** Keep self-hosted behavior and add Cloud as a separately configured backend.
+- **Dual mode:** Keep the OSS path beside Cloud when a required capability lacks verified Cloud parity, or when the rollout needs a reversible comparison before replacement.
 - **Code migration:** Rewire the application to Cloud and start with Cloud-owned conversations.
 - **Data migration:** Import historical threads or artifacts into Cloud.
 
 If the request says only “migrate to Cloud,” default to code migration and preserve historical data in place. Do not claim data migration unless a current first-party import API is documented and verified.
+
+If the app uses OSS components, ask whether the user wants to keep them or switch to Cloud's `chatLibrary`. Treat backend, storage, and component-library migration as separate choices; moving to Cloud does not automatically authorize replacing the visible component set.
 
 ## Classify the Existing App
 
@@ -49,7 +51,7 @@ artifacts, custom slots/theme, and tests.
 | `openAIReadableStreamAdapter()` or `openAIAdapter()` | `openAIResponsesAdapter()`                                                                             |
 | `openAIMessageFormat`                                | `openAIConversationMessageFormat`                                                                      |
 | In-memory, `restStorage`, or custom `ChatStorage`    | `useOpenuiCloudStorage({ token: "/api/frontend-token" })`                                              |
-| `openuiLibrary`/`openuiChatLibrary`                  | `chatLibrary` from `@openuidev/thesys` for the stock Cloud path                                        |
+| `openuiLibrary`/`openuiChatLibrary`                  | `chatLibrary` from `@openuidev/thesys` when the user chooses Cloud components                          |
 | `library.prompt(...)` in the provider route          | `createResponsesInstructions()` in the Cloud route                                                     |
 | App-owned artifact loop/renderers                    | Managed `artifactTool({ artifacts: ["slides", "report"] })` plus managed renderers for stock artifacts |
 | No browser storage credential                        | Short-lived frontend token scoped to the authenticated `user_id`                                       |
@@ -58,13 +60,13 @@ Preserve branding, theme, starters, slots, navigation, route placement, error bo
 
 ## Migrate AgentInterface Apps
 
-1. Read the integration runbook and add the missing Cloud packages and server-only configuration.
+1. Read [cloud-integration.md](cloud-integration.md) and add the missing Cloud packages and server-only configuration.
 2. Replace the client `llm` with a direct `ChatLLM` that sends only the latest formatted message and parses Responses SSE.
 3. In Next.js, move the Cloud UI into a separate client component and match the
    installed first-party template's dynamic-rendering boundary. Add an
    `ssr: false` client loader only when the production build requires it.
 4. Replace self-hosted storage with `useOpenuiCloudStorage()` and add the frontend-token route.
-5. Replace the stock open-source component library with `chatLibrary` and register the managed report/presentation renderers.
+5. If the user chose Cloud components, replace the stock OSS library with `chatLibrary` and register the managed report/presentation renderers. If they chose OSS components, keep them and verify that managed generation receives compatible component instructions; otherwise retain that generation path in OSS or dual mode.
 6. Replace the provider `/api/chat` implementation with the Cloud proxy while preserving independent API authentication, conversation authorization, rate limiting, request validation, abort propagation, error handling, and the route URL expected by the client.
 7. Keep the previous provider/storage code until the Cloud path builds and passes tests. Remove it only for an explicitly confirmed replacement migration.
 8. Remove provider dependencies, environment variables, storage routes, and dead adapters only when no other application path uses them.
@@ -80,7 +82,7 @@ For a stock Cloud migration:
 
 1. Introduce `AgentInterface` at the requested route or surface.
 2. Move reusable branding and surrounding layout into `AgentInterface` props/slots.
-3. Add the two Cloud server routes and managed library/artifacts from the integration runbook.
+3. Add the two Cloud server routes and managed library/artifacts from [cloud-integration.md](cloud-integration.md).
 4. Retain the old Renderer surface until behavior parity is verified; then remove it only for replacement migrations.
 
 For a custom component library, separate two questions:
