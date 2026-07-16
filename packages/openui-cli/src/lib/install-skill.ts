@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
 
-const OPENUI_SKILL_SOURCE = "https://github.com/thesysdev/skills/tree/main/skills/openui";
+const OPENUI_SKILL_SOURCE = "thesysdev/skills";
 
 export async function shouldInstallSkill(
   option: boolean | undefined,
