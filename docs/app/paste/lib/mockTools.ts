@@ -1,8 +1,3 @@
-/**
- * Mock tool provider for the render window: any Query()/Mutation() tool name
- * resolves after a short delay with canned data, so interactive snippets
- * render instead of erroring on unregistered tools.
- */
 const CANNED_RESULT = {
   status: "ok",
   note: "Mock response from the paste playground — tools are not connected.",
@@ -13,9 +8,6 @@ const CANNED_RESULT = {
   ],
 };
 
-// react-lang treats anything with a callTool() method as an MCP client, and
-// the runtime may probe `then` (thenable checks) — the catch-all must not
-// answer to those, or the provider is misdetected.
 const RESERVED = new Set(["callTool", "then", "toJSON", "constructor"]);
 
 export const mockToolProvider = new Proxy(

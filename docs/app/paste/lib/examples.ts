@@ -1,8 +1,3 @@
-/**
- * Built-in example programs. Most are ported from lang-harness/samples so
- * playground behavior can be compared 1:1 with the CLI harness.
- */
-
 export interface Example {
   id: string;
   label: string;
@@ -44,22 +39,6 @@ chart = BarChart(["Q1", "Q2", "Q3"], [series`,
 
 intro = TextContent("Example:")
 outro = TextContent("Done.")
-`,
-  },
-  {
-    id: "root-drop",
-    label: "Streaming: root drop",
-    code: `root = ImageGallery([{"src": "https://x.test/a.jpg", "alt": "ok"}, {"alt": "missing required src"}])
-`,
-  },
-  {
-    id: "nested-drop",
-    label: "Streaming: nested drop",
-    code: `root = Stack([heading, gallery, footer])
-
-heading = TextContent("Team offsite photos")
-gallery = ImageGallery([{"src": "https://x.test/a.jpg", "alt": "day one"}, {"alt": "missing src — drops the WHOLE gallery"}])
-footer = TextContent("12 photos total")
 `,
   },
   {

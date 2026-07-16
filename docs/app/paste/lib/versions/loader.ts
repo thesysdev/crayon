@@ -1,17 +1,6 @@
 import * as bundled from "@openuidev/lang-core";
 import type { LangCoreModule, LoadedLangCore, ParseResult } from "./types";
 
-/**
- * Dynamic lang-core version loading, entirely client-side.
- *
- * Considered and rejected: a server API route that installs versions on
- * demand. Vercel cold-start installs are slow and flaky, /tmp caches are
- * per-lambda, and streaming mode parses per chunk — hundreds of calls per
- * playback — which rules out a network round-trip per parse. lang-core is
- * pure ESM with no Node built-ins on the parser path, so CDN ESM loading
- * works everywhere.
- */
-
 export const BUNDLED_LANG_CORE_VERSION = "0.2.9";
 
 // Both webpack and Turbopack rewrite `import(expr)`; magic comments differ
@@ -34,7 +23,11 @@ const CDN_SOURCES = [
 
 const cache = new Map<string, Promise<LoadedLangCore>>();
 
-function detect(mod: LangCoreModule, version: string, source: LoadedLangCore["source"]): LoadedLangCore {
+function detect(
+  mod: LangCoreModule,
+  version: string,
+  source: LoadedLangCore["source"],
+): LoadedLangCore {
   if (typeof mod.createParser !== "function") {
     return {
       version,
@@ -51,7 +44,12 @@ function detect(mod: LangCoreModule, version: string, source: LoadedLangCore["so
     const result: ParseResult = mod
       .createParser({ $defs: { Text: { type: "object", properties: {} } } })
       .parse('root = Text("hi")');
-    if (!result || typeof result !== "object" || !result.meta || !Array.isArray(result.meta.errors)) {
+    if (
+      !result ||
+      typeof result !== "object" ||
+      !result.meta ||
+      !Array.isArray(result.meta.errors)
+    ) {
       throw new Error("ParseResult has no meta.errors array");
     }
   } catch (err) {
@@ -78,7 +76,11 @@ function detect(mod: LangCoreModule, version: string, source: LoadedLangCore["so
         mod,
         source,
         compatible: true,
-        capabilities: { streaming: false, streamSet: false, enrich: typeof mod.enrichErrors === "function" },
+        capabilities: {
+          streaming: false,
+          streamSet: false,
+          enrich: typeof mod.enrichErrors === "function",
+        },
       };
     }
   }

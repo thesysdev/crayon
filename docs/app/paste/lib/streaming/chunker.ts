@@ -1,9 +1,3 @@
-/**
- * Chunking strategies for simulated streaming — ported from
- * lang-harness/src/cli.ts (splitChunks + mulberry32) so playground behavior
- * matches the harness exactly.
- */
-
 export interface StreamChunk {
   text: string;
   /** Wait before pushing this chunk — models inconsistent LLM/network arrival. */
@@ -31,11 +25,6 @@ export function mulberry32(seed: number): () => number {
   };
 }
 
-/**
- * `llm` replicates real LLM streaming: mostly token-sized 1–12 char deltas,
- * ~20% batched 13–60 char flushes, arriving at inconsistent intervals
- * (~15% same-batch 0ms, mostly 5–80ms jitter, ~10% stalls of 200–600ms).
- */
 export function splitChunks(source: string, spec: ChunkStrategy, rng: () => number): StreamChunk[] {
   if (spec === "llm") {
     const chunks: StreamChunk[] = [];
