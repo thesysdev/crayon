@@ -182,10 +182,19 @@ node dist/index.js generate --help
 
 ## Telemetry
 
-The CLI sends usage analytics; OAuth sign-ins may link usage to your OIDC account ID. It does not send code, prompts, API keys, email, or name. Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
+The CLI sends usage analytics; OAuth sign-ins may link CLI usage to your OIDC account ID. When
+telemetry is enabled, newly scaffolded OpenUI Cloud projects also receive a random pseudonymous
+project ID and report when Next.js production compilation completes. This compiler event occurs
+before type checking and static generation, so it is not reported as a successful build.
+
+Telemetry does not send code, prompts, API keys, email, name, project paths, repository metadata,
+or build output. Disable CLI and generated-project telemetry with `--no-telemetry` or
+`DO_NOT_TRACK=1`. Existing generated projects also honor `OPENUI_TELEMETRY_DISABLED=1` during
+builds.
 
 ```bash
 openui create --no-telemetry
+OPENUI_TELEMETRY_DISABLED=1 npm run build
 ```
 
 ## Notes

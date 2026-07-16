@@ -8,6 +8,7 @@ import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry"
 import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
 import { resolveInstallPackageManager } from "../lib/detect-package-manager";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
+import { createProjectTelemetryState, writeProjectTelemetryState } from "../lib/project-telemetry";
 import { resolveArgs } from "../lib/resolve-args";
 import { CreateError, telemetry } from "../lib/telemetry";
 
@@ -111,6 +112,11 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     throw new CreateError("dir_exists", `Directory "${name}" already exists.`);
   }
 
+  const projectTelemetryState = createProjectTelemetryState(template, telemetry.isEnabled());
+  if (projectTelemetryState) {
+    telemetry.register({ project_id: projectTelemetryState.projectId });
+  }
+
   const packageManager = resolveInstallPackageManager();
   const templateDir = path.join(__dirname, "..", "templates", template);
   if (!fs.existsSync(templateDir)) {
@@ -150,6 +156,9 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
     rewritePackageJson(targetDir, name);
+    if (projectTelemetryState) {
+      writeProjectTelemetryState(targetDir, projectTelemetryState);
+    }
   } catch (err) {
     captureScaffoldFailed();
     throw err;

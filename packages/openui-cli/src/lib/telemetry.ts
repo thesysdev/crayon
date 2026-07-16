@@ -76,7 +76,10 @@ export class Telemetry {
       isTruthyEnv(process.env["DO_NOT_TRACK"]) ||
       isTruthyEnv(process.env["OPENUI_TELEMETRY_DISABLED"]) ||
       opts.flagEnabled === false;
-    if (optedOut) return; // enabled stays false → all capture() are no-ops
+    if (optedOut) {
+      this.enabled = false;
+      return;
+    }
     const state = loadOrCreateState();
     this.distinctId = state.distinctId;
     const interactiveTerminal = isInteractiveTerminal();
@@ -116,8 +119,9 @@ export class Telemetry {
     if (isTelemetryDebug()) this.client.debug();
     if (state.isFirstRun) {
       process.stderr.write(
-        "\n◆ OpenUI CLI collects usage analytics; OAuth sign-ins may link usage to your OIDC account ID.\n" +
-          "  No code, prompts, API keys, email, or name are collected. Opt out: set DO_NOT_TRACK=1 or pass --no-telemetry.\n\n",
+        "\n◆ OpenUI collects anonymous CLI analytics; Cloud templates also report pseudonymous production compilation.\n" +
+          "  OAuth may link CLI usage to your OIDC account ID. No code, prompts, API keys, email, or name are collected.\n" +
+          "  Opt out: set DO_NOT_TRACK=1 or pass --no-telemetry. Later builds also honor OPENUI_TELEMETRY_DISABLED=1.\n\n",
       );
       state.persist();
     }
@@ -125,6 +129,10 @@ export class Telemetry {
 
   register(props: Record<string, unknown>) {
     if (this.enabled) Object.assign(this.superProps, props);
+  }
+
+  isEnabled() {
+    return this.enabled;
   }
 
   capture(event: string, properties: Record<string, unknown> = {}) {
