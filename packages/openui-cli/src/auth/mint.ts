@@ -1,3 +1,5 @@
+import { createFunnelProps } from "../lib/create-telemetry";
+import { telemetry } from "../lib/telemetry";
 import { Authenticator } from "./authenticator";
 
 // Thesys console OAuth + key mint (same flow as create-c1-app). The OpenUI Cloud
@@ -14,6 +16,10 @@ export type ResolvedAuthMethod = CloudAuthMethod | "apikey-flag";
 /** Sign in via the browser and mint an OpenUI Cloud API key for the user's org. */
 export async function mintCloudApiKey(projectName: string): Promise<string> {
   const auth = new Authenticator({ issuerUrl: THESYS_ISSUER_URL, clientId: THESYS_CLIENT_ID });
+  telemetry.capture("cli_cloud_oidc_started", {
+    ...createFunnelProps("cloud_auth_started"),
+    auth_method: "oauth",
+  });
   await auth.initialize();
   const { accessToken, userInfo } = await auth.authenticate();
 
@@ -43,6 +49,11 @@ export async function mintCloudApiKey(projectName: string): Promise<string> {
   }
   const data = (await res.json()) as { apiKey?: string };
   if (!data.apiKey) throw new Error("The server did not return an API key.");
+
+  const oidcSub =
+    (profile["sub"] as string | undefined) ?? (userInfo?.["sub"] as string | undefined);
+  if (oidcSub) telemetry.aliasOidcSubject(oidcSub);
+
   return data.apiKey;
 }
 

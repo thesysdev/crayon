@@ -7,6 +7,8 @@ import { CreateError, telemetry } from "../lib/telemetry";
 export interface GenerateOptions {
   out?: string;
   jsonSchema?: boolean;
+  /** Emit the serialized library spec JSON (toSpec + schema) — `generate-spec`. */
+  spec?: boolean;
   export?: string;
   promptOptions?: string;
 }
@@ -15,6 +17,7 @@ export async function runGenerate(entry: string, options: GenerateOptions): Prom
   const t0 = Date.now();
   telemetry.capture("cli_generate_started", {
     json_schema: !!options.jsonSchema,
+    spec: !!options.spec,
     out_to_file: !!options.out,
   });
   const entryPath = path.resolve(process.cwd(), entry);
@@ -28,6 +31,7 @@ export async function runGenerate(entry: string, options: GenerateOptions): Prom
   const workerArgs = [workerPath, entryPath];
   if (options.export) workerArgs.push(options.export);
   if (options.jsonSchema) workerArgs.push("--json-schema");
+  if (options.spec) workerArgs.push("--spec");
   if (options.promptOptions) workerArgs.push("--prompt-options", options.promptOptions);
 
   let output: string;
@@ -52,6 +56,7 @@ export async function runGenerate(entry: string, options: GenerateOptions): Prom
 
   telemetry.capture("cli_generate_succeeded", {
     json_schema: !!options.jsonSchema,
+    spec: !!options.spec,
     out_to_file: !!options.out,
     duration_ms: Date.now() - t0,
   });

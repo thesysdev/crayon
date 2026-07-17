@@ -1,14 +1,26 @@
-import { CloudAuthMethod } from "../auth/mint";
-import { TemplateName } from "../commands/create-app";
-import { CreateError, Telemetry } from "./telemetry";
+import type { CloudAuthMethod } from "../auth/mint";
+import { createFunnelProps } from "./create-telemetry";
+import type { TemplateName } from "./create-types";
+import { CreateError, telemetry as defaultTelemetry, type Telemetry } from "./telemetry";
 
-export function handleCliError(e: unknown, event: string, telemetry?: Telemetry): void {
+export function handleCliError(
+  e: unknown,
+  event: string,
+  telemetry: Telemetry = defaultTelemetry,
+): void {
   const known = e instanceof CreateError;
   const message = e instanceof Error ? e.message : String(e);
   console.error(known ? `Error: ${message}` : message);
 
-  if (telemetry) {
-    telemetry.capture(event, { stage: known ? e.stage : "unknown", error: message.slice(0, 200) });
+  if (event === "cli_create_failed") {
+    // Do not send raw create error messages: they can include user-entered
+    // project names or paths. The funnel rank is enough to count this drop-off.
+    telemetry.capture(event, createFunnelProps("create_failed"));
+  } else {
+    telemetry.capture(event, {
+      stage: known ? e.stage : "unknown",
+      error: message.slice(0, 200),
+    });
   }
 
   process.exitCode = 1;

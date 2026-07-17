@@ -4,6 +4,10 @@ import type {
 } from "openai/resources/responses/responses";
 import { AGUIEvent, EventType, StreamProtocolAdapter } from "../../types";
 
+/** A tool result's `output` as a string (JSON-encoded if structured, "" if absent). */
+const stringifyOutput = (output: unknown): string =>
+  typeof output === "string" ? output : output != null ? JSON.stringify(output) : "";
+
 export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
   async *parse(response: Response): AsyncIterable<AGUIEvent> {
     const reader = response.body?.getReader();
@@ -54,15 +58,17 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                   toolCallName: item.name,
                 };
               } else if (item.type === "function_call_output") {
-                // Fired when a function_call_output we submitted as input is
-                // integrated into a conversation-linked response — surfaces
-                // server-side tool execution to the SDK store.
                 yield {
                   type: EventType.TOOL_CALL_RESULT,
                   messageId: item.id,
                   toolCallId: item.call_id,
-                  content:
-                    typeof item.output === "string" ? item.output : JSON.stringify(item.output),
+                  content: stringifyOutput(item.output),
+                };
+              } else if (item.type === "web_search_call") {
+                yield {
+                  type: EventType.TOOL_CALL_START,
+                  toolCallId: item.id,
+                  toolCallName: "thesys_web_search",
                 };
               }
               break;
@@ -102,6 +108,44 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
               break;
             }
 
+            case "response.output_item.done": {
+              // web_search delivers its result on the done item — there's no
+              // function_call_output for it. Every other item type closes via its
+              // own event (function_call → function_call_arguments.done, message →
+              // output_text.done), so this case handles web_search only.
+              const item = event.item as {
+                type?: string;
+                id?: string;
+                status?: string;
+                output?: unknown;
+                error?: unknown;
+                action?: unknown;
+              };
+              if (item.type !== "web_search_call") break;
+
+              const toolCallId = item.id ?? "web_search_call";
+
+              // web_search streams no argument deltas — its query lives in
+              // `action`. Surface it as the tool-call args so the card shows the
+              // query live, matching a reload's persisted function_call args.
+              if (item.action && typeof item.action === "object") {
+                yield {
+                  type: EventType.TOOL_CALL_ARGS,
+                  toolCallId,
+                  delta: JSON.stringify(item.action),
+                };
+              }
+
+              const content = stringifyOutput(item.output);
+              yield {
+                type: EventType.TOOL_CALL_RESULT,
+                messageId: toolCallId,
+                toolCallId,
+                content,
+              };
+              break;
+            }
+
             case "error":
               yield {
                 type: EventType.RUN_ERROR,
@@ -120,8 +164,10 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
 
             // Intentionally unhandled — these are lifecycle/metadata events:
             // response.created, response.in_progress, response.completed,
-            // response.content_part.added, response.content_part.done,
-            // response.output_item.done, etc.
+            // response.content_part.added, response.content_part.done, and
+            // web_search's *.in_progress/searching/completed status events (the
+            // web_search_call output_item.added/.done handling above covers it),
+            // etc.
             default:
               break;
           }
