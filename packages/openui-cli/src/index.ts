@@ -7,6 +7,7 @@ import { Command } from "commander";
 
 import { runCreateApp } from "./commands/create-app";
 import { runGenerate } from "./commands/generate";
+import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
 import { resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
 import { handleCliError, normalizeAuth, normalizeTemplate } from "./lib/utils"; // Ensure utils.ts is included for type declarations
@@ -22,9 +23,21 @@ const cliVersion = (
 program.name("openui").description("CLI for OpenUI").version(cliVersion);
 program.option("--no-telemetry", "Disable anonymous usage analytics");
 
+program.option(
+  "--agent-name <name>",
+  "AI agents: declare your stable lowercase kebab-case product slug for telemetry (e.g. codex or claude-code); humans can omit",
+  UNKNOWN_AGENT_NAME,
+);
+program.configureHelp({ showGlobalOptions: true });
+
 // Init telemetry once, just before any command runs (honors --no-telemetry / DO_NOT_TRACK).
 program.hook("preAction", (_thisCommand, actionCommand) => {
-  telemetry.init({ cliVersion, flagEnabled: program.opts()["telemetry"] !== false });
+  const globalOptions = program.opts<{ agentName: string; telemetry?: boolean }>();
+  telemetry.init({ cliVersion, flagEnabled: globalOptions.telemetry !== false });
+  telemetry.register({
+    agent_name: globalOptions.agentName,
+    detected_agent_name: detectAgent(),
+  });
   telemetry.capture("cli_invoked", { command: actionCommand.name() });
 });
 

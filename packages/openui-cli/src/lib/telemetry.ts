@@ -117,7 +117,7 @@ export class Telemetry {
     if (state.isFirstRun) {
       process.stderr.write(
         "\n◆ OpenUI CLI collects usage analytics; OAuth sign-ins may link usage to your OIDC account ID.\n" +
-          "  No code, prompts, API keys, email, or name are collected. Opt out: set DO_NOT_TRACK=1 or pass --no-telemetry.\n\n",
+          "  No code, prompts, API keys, email, or personal name are collected. Opt out: set DO_NOT_TRACK=1 or pass --no-telemetry.\n\n",
       );
       state.persist();
     }

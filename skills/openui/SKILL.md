@@ -1,6 +1,6 @@
 ---
 name: openui
-description: "Use for building, debugging, integrating, or documenting OpenUI, OpenUI Lang, Agent Interface, OpenUI Cloud, @openuidev packages, streaming generative UI rendering, component libraries, and migrations from JSON UI formats."
+description: "Use for building, debugging, integrating, migrating, or documenting OpenUI, OpenUI Lang, Agent Interface, OpenUI Cloud, @openuidev packages, streaming generative UI rendering, component libraries, existing-project Cloud integration, self-hosted-to-Cloud migration, and migrations from JSON UI formats."
 ---
 
 # OpenUI
@@ -46,6 +46,20 @@ Choose the package for the target runtime. For backend-only parsing or prompt/sc
 - If the user wants OpenUI Lang rendering in an existing React project without the full React UI surface, use `@openuidev/react-lang`.
 - If the host app is Vue or Svelte, use `@openuidev/vue-lang` or `@openuidev/svelte-lang`. Use `@openuidev/lang-core` for framework-agnostic parsing, prompt generation, schemas, or backend/runtime work.
 
+## Route Cloud Integration and Migration Tasks
+
+Inspect the target project's framework and router, package manifest and lockfile, server runtime, authentication, existing OpenUI imports, chat transport, storage, component library, tools, and artifacts. Preserve its package manager, route conventions, auth boundary, design system, and working behavior.
+
+Choose the matching path:
+
+| Starting point and goal                                                   | Required runbook                                                                                                                                                          |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Existing React app, add managed Cloud chat                                | Read [references/cloud-integration.md](references/cloud-integration.md) completely before editing                                                                         |
+| Existing non-React app, add managed Cloud chat                            | Read [references/cloud-integration.md](references/cloud-integration.md); require a current first-party client/runtime or report the verified React-only boundary          |
+| Existing self-hosted/open-source app, replace or supplement it with Cloud | Read both [references/oss-to-cloud-migration.md](references/oss-to-cloud-migration.md) and [references/cloud-integration.md](references/cloud-integration.md) completely before editing |
+
+If “migrate” does not establish whether Cloud should replace the self-hosted path or run beside it, infer the intent from the project and request. Ask only when the choice remains material and ambiguous; never silently delete a working backend. Treat code migration and historical-data import as separate tasks, and do not claim a data migration without a verified first-party import API.
+
 ## Common Workflows
 
 ### Scaffold
@@ -84,6 +98,16 @@ Version-sensitive: verify exact Cloud template env vars, `@openuidev/thesys*` ex
 - `AgentInterface` connects to Cloud with `llm` and `storage` props. `llm` points to an app route that proxies Cloud's Responses endpoint, usually with `openAIResponsesAdapter()` and `openAIConversationMessageFormat`. `storage` uses `useOpenuiCloudStorage()` from `@openuidev/thesys` with a short-lived frontend token.
 - Cloud-provided component sets, artifact renderers, and categories come from `@openuidev/thesys`.
 - Generate keys in the Thesys console: `https://console.thesys.dev/keys`.
+
+For existing-project Cloud work, keep these invariants intact:
+
+- Keep the two Cloud planes separate: `ChatLLM` posts to the app's `/api/chat` proxy, while `useOpenuiCloudStorage()` accesses Cloud storage with a short-lived token minted by `/api/frontend-token`.
+- Send only the latest message with `openAIConversationMessageFormat.toApi(messages.slice(-1))`; Cloud replays history from `conversation: threadId`. Pair that format with `openAIResponsesAdapter()`.
+- Derive the frontend token's `user_id` from authenticated server state in production. Authenticate and rate-limit both routes independently, treat `threadId` as untrusted, and authorize it through a verified host mapping or documented Cloud membership check for the installed version. Do not assume the installed SDK exports an ownership helper.
+- Do not deploy a demo identity unchanged. Replace it with host authentication, rate limiting, and conversation authorization; disable both routes and report the blocker until those controls exist.
+- In Next.js, isolate `@openuidev/thesys` imports in a client component and follow the installed first-party template's dynamic-rendering boundary. If the production build still evaluates browser-only dependencies during prerender, add a small `dynamic(..., { ssr: false })` client loader.
+- Preserve abort propagation and close the SSE stream when the upstream stream ends.
+- Do not invent a Cloud history-import API, custom-tool execution loop, or custom-library instruction API. Verify current first-party support and preserve the self-hosted path when a required capability is unsupported.
 
 ### Wire Agent Interface
 
@@ -143,6 +167,7 @@ const llm: ChatLLM = {
 
 - Version-sensitive: when adding React UI to an existing React app, inspect installed `@openuidev/*` peer ranges and package-manager errors; add direct peers only when they are missing or incompatible.
 - Next.js App Router: render `Renderer` or `AgentInterface` from a client component; add `"use client"` at the top of the file that imports or renders them.
+- Next.js with OpenUI Cloud: keep Cloud imports in a separate client module, retain the existing server page/layout for host authentication and product shell concerns, and verify the installed template's dynamic-rendering pattern with a production build.
 - Vite or strict TypeScript: before side-effect CSS imports, ensure the app has `/// <reference types="vite/client" />` or a declaration such as `declare module "*.css";`.
 - Import React UI CSS once, normally `@openuidev/react-ui/components.css` plus `@openuidev/react-ui/styles/index.css`; use `@openuidev/react-ui/layered/styles/index.css` when the app needs cascade-layered overrides.
 - Examples/docs may import adapters from `@openuidev/react-headless`; React UI apps can also import those adapters from `@openuidev/react-ui` because it re-exports headless APIs.
@@ -336,6 +361,10 @@ Version-sensitive: verify renderer props against installed exports; there is no 
 - Run the host app's TypeScript/build checks after existing-app integrations, especially when adding React UI CSS imports or Next client components.
 - Validate canned OpenUI Lang with `createParser(...).parse(...)` and inspect `result.meta.errors`; do not look for top-level `result.errors`.
 - Treat parse/runtime errors surfaced through `Renderer` `onError` or parser results as LLM-correctable feedback: unknown components, missing required props, excess positional args, inline `Query`/`Mutation`, runtime errors, or unresolved refs should be fed back into the next model turn.
+- For Cloud, confirm the server key never appears in client code, the client sends only the latest message, the adapter/format pair matches, and the frontend token uses a scoped authenticated identity.
+- Test invalid request bodies and provider-item injection, missing configuration, upstream failures, abort handling, and stream closure without a real key when possible.
+- Verify logged-out requests cannot use either Cloud route and one authenticated user cannot address another user's conversation id.
+- With an authorized test key, smoke-test streaming, reload persistence, user isolation, and one managed report or presentation artifact.
 - Vite large chunk warnings from default React UI/chat libraries are not automatically failures; chart/UI dependencies can be substantial.
 - For scoped agent tests, keep caches/stores inside the assigned workspace when needed, for example `npm_config_cache=$PWD/.npm-cache npm install` or `pnpm install --store-dir .pnpm-store`.
 
