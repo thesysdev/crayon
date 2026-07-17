@@ -7,7 +7,7 @@ import { isASTNode, isRuntimeExpr } from "./ast";
 import { isBuiltin, isReservedCall, LAZY_BUILTINS, RESERVED_CALLS } from "./builtins";
 import { isElementNode, type MaterializeCtx } from "./types";
 import {
-  describeSignature,
+  buildParamsSignature,
   pushValidationIssue,
   resolveInvalidValue,
   validateSchemaValue,
@@ -293,7 +293,7 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
             for (const p of stillInvalid) {
               pushValidationIssue(ctx, name, `/${p.name}`, {
                 code: p.name in props ? "null-required" : "missing-required",
-                signature: describeSignature(name, def.params),
+                signature: buildParamsSignature(name, def.params),
               });
             }
             return null;
