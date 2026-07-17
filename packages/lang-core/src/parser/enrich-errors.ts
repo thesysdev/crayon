@@ -45,9 +45,11 @@ function buildSignatureHint(
 }
 
 /**
- * Convert parser ValidationErrors into enriched OpenUIErrors with hints.
- *
+ * @deprecated ValidationError.message is already humanized — read
+ * `result.meta.errors` directly (match on `.code`/`.path`, display `.message`).
+ * This extra enrichment pass will be removed in a future major release.
  * Framework-agnostic — usable by React, Svelte, Vue, or standalone.
+ * Convert parser ValidationErrors into enriched OpenUIErrors with hints.
  */
 export function enrichErrors(
   validationErrors: ValidationError[],

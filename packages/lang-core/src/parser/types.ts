@@ -1,18 +1,18 @@
 import type { ASTNode } from "./ast";
 
+export type JSONSchemaProperty = Record<string, unknown>;
+export type JSONSchemaDef = {
+  properties?: JSONSchemaProperty;
+  required?: string[];
+  description?: string;
+};
+
 /**
  * The JSON Schema document produced by `library.toJSONSchema()`.
  * All component schemas live in `$defs`, keyed by component name.
  */
 export interface LibraryJSONSchema {
-  $defs?: Record<
-    string,
-    {
-      properties?: Record<string, unknown>;
-      required?: string[];
-      description?: string;
-    }
-  >;
+  $defs?: Record<string, JSONSchemaDef>;
 }
 
 /** Scalar JSON Schema types we can reliably check a positional literal against. */
