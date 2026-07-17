@@ -253,6 +253,20 @@ describe("recursive descent & error reporting", () => {
     expect(codes).toEqual(["excess-args", "type-mismatch"]);
   });
 
+  it("messages are self-sufficient: signatures and available components are inlined", () => {
+    // top-level required violations carry the typed component signature
+    expect(errorsFor("root = ReqScalar()")[0].message).toBe(
+      'missing required field "/title" — signature: ReqScalar(title*: string)',
+    );
+    expect(errorsFor('root = ChartBox(null, "grouped")')[0].message).toBe(
+      'required field "/labels" cannot be null — signature: ChartBox(labels*: array, variant: "grouped"|"stacked")',
+    );
+    // unknown components list the catalog
+    const unknown = errorsFor("root = Nope()")[0];
+    expect(unknown.code).toBe("unknown-component");
+    expect(unknown.message).toContain("Available components: ObjBox, ArrBox");
+  });
+
   it("attributes errors to the statement that defines the component", () => {
     const errors = errorsFor(
       'root = ListBox([inner])\ninner = ObjBox({ author: "ann", views: "lots" })',

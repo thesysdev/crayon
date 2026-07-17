@@ -3,6 +3,7 @@ import {
   isElementNode,
   type ElementNode,
   type MaterializeCtx,
+  type ParamDef,
   type ScalarParamType,
 } from "./types";
 
@@ -47,6 +48,44 @@ export function getSchemaDefaultValue(property: unknown): unknown {
   return (property as { default?: unknown }).default;
 }
 
+/** Render a schema fragment's type for a signature, e.g. `string`, `"a"|"b"`, `Header`. */
+export function describeSchemaType(property: unknown): string | undefined {
+  if (!property || typeof property !== "object" || Array.isArray(property)) {
+    return undefined;
+  }
+  const p = property as Record<string, unknown>;
+  // $refs and compound types aren't validator-checkable but still make useful hints.
+  if (typeof p.$ref === "string") {
+    return p.$ref.split("/").pop();
+  }
+  // Scalar/enum leaves: share the validator's schema-leaf interpretation so
+  // signatures and type-mismatch messages never disagree.
+  const leaf = getScalarTypeInfo(p);
+  if (leaf.enumValues) {
+    return leaf.enumValues.map((v) => JSON.stringify(v)).join("|");
+  }
+  if (leaf.expectedType) {
+    return leaf.expectedType;
+  }
+  return typeof p.type === "string" ? p.type : undefined;
+}
+
+/**
+ * Build a typed signature like `Header(title*: string, variant: "a"|"b")` from
+ * compiled params — * marks required. Positional order is preserved so an LLM
+ * can fix swapped args.
+ */
+export function describeSignature(component: string, params: ParamDef[]): string {
+  const rendered = params
+    .map((p) => {
+      const type = describeSchemaType(p.schema);
+      const marked = p.required ? `${p.name}*` : p.name;
+      return type ? `${marked}: ${type}` : marked;
+    })
+    .join(", ");
+  return `${component}(${rendered})`;
+}
+
 /**
  * Check a materialized value against a scalar leaf's declared type/enum.
  * Returns a human-readable {expected, actual} on mismatch, or null when it
@@ -82,9 +121,9 @@ function describeTypeMismatch(
  */
 export type ValidationIssue =
   | { code: "type-mismatch"; expected: string; actual: string }
-  | { code: "missing-required" }
-  | { code: "null-required" }
-  | { code: "unknown-component" }
+  | { code: "missing-required"; signature?: string }
+  | { code: "null-required"; signature?: string }
+  | { code: "unknown-component"; available?: string[] }
   | { code: "inline-reserved" }
   | { code: "excess-args"; declared: number; got: number };
 
@@ -93,11 +132,11 @@ function validationMessage(component: string, path: string, issue: ValidationIss
     case "type-mismatch":
       return `field "${path}" expects ${issue.expected} but got ${issue.actual}`;
     case "missing-required":
-      return `missing required field "${path}"`;
+      return `missing required field "${path}"${issue.signature ? ` — signature: ${issue.signature}` : ""}`;
     case "null-required":
-      return `required field "${path}" cannot be null`;
+      return `required field "${path}" cannot be null${issue.signature ? ` — signature: ${issue.signature}` : ""}`;
     case "unknown-component":
-      return `Unknown component "${component}" — not found in catalog or builtins`;
+      return `Unknown component "${component}" — not found in catalog or builtins${issue.available?.length ? `. Available components: ${issue.available.join(", ")}` : ""}`;
     case "inline-reserved":
       return `${component}() must be declared as a top-level statement, not used inline as a value`;
     case "excess-args":

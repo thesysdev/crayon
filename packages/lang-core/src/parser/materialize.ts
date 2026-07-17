@@ -6,7 +6,12 @@ import type { ASTNode } from "./ast";
 import { isASTNode, isRuntimeExpr } from "./ast";
 import { isBuiltin, isReservedCall, LAZY_BUILTINS, RESERVED_CALLS } from "./builtins";
 import { isElementNode, type MaterializeCtx } from "./types";
-import { pushValidationIssue, resolveInvalidValue, validateSchemaValue } from "./validation";
+import {
+  describeSignature,
+  pushValidationIssue,
+  resolveInvalidValue,
+  validateSchemaValue,
+} from "./validation";
 
 /**
  * Recursively check if a prop value contains any AST nodes that need runtime
@@ -114,7 +119,10 @@ function materializeExprInternal(
         return { ...node, args: recursedArgs, mappedProps };
       }
       // Unknown component in expression: push error (same as value path)
-      pushValidationIssue(ctx, node.name, "", { code: "unknown-component" });
+      pushValidationIssue(ctx, node.name, "", {
+        code: "unknown-component",
+        available: ctx.cat && [...ctx.cat.keys()],
+      });
       return { ...node, args: recursedArgs };
     }
 
@@ -285,6 +293,7 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
             for (const p of stillInvalid) {
               pushValidationIssue(ctx, name, `/${p.name}`, {
                 code: p.name in props ? "null-required" : "missing-required",
+                signature: describeSignature(name, def.params),
               });
             }
             return null;
@@ -296,7 +305,10 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
         if (dropComponent) return null;
       } else if (!isBuiltin(name) && !isReservedCall(name)) {
         // Unknown component: error and drop from tree
-        pushValidationIssue(ctx, name, "", { code: "unknown-component" });
+        pushValidationIssue(ctx, name, "", {
+          code: "unknown-component",
+          available: ctx.cat && [...ctx.cat.keys()],
+        });
         return null;
       }
 
