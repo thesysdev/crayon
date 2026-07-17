@@ -211,9 +211,7 @@ describe("recursive descent & error reporting", () => {
       'required field "/labels" cannot be null — signature: ChartBox(labels*: array, variant: "grouped"|"stacked")',
     );
     // unknown components list the catalog
-    expect(errorsFor("root = Nope()")[0].message).toContain(
-      "Available components: ObjBox, ArrBox",
-    );
+    expect(errorsFor("root = Nope()")[0].message).toContain("Available components: ObjBox, ArrBox");
     // errors point at the statement that defines the component
     expect(
       errorsFor('root = ListBox([inner])\ninner = ObjBox({ author: "ann", views: "lots" })')[0],
@@ -224,9 +222,9 @@ describe("recursive descent & error reporting", () => {
 describe("resolveInvalidValue — the edge rule (default → required → prune)", () => {
   it("prunes invalid values on OPTIONAL edges and ARRAY ITEMS — component survives", () => {
     // nested optional key
-    expect(parser.parse('root = ObjBox({ author: "ann", views: "lots" })').root?.props.info).toEqual(
-      { author: "ann" },
-    );
+    expect(
+      parser.parse('root = ObjBox({ author: "ann", views: "lots" })').root?.props.info,
+    ).toEqual({ author: "ann" });
     // optional top-level param
     const top = parser.parse("root = ScalarBox(5)");
     expect(top.root).not.toBeNull();
