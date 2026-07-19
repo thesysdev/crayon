@@ -5,8 +5,7 @@ import { TimelineEntry } from "../_shared/tool-renderer/TimelineEntry";
 import type { ToolDetailedViewPanel } from "../_shared/tool-renderer/ToolActivityRenderer";
 import { defaultLabel } from "./ToolCallPrimitives";
 
-const REVEAL_INTERVAL = 280;
-const TRANSITION_DURATION = 220;
+const REVEAL_INTERVAL = 600;
 
 /** Visually hidden but available to screen readers; inline so we don't depend on
  *  scss (a sibling agent owns the stylesheet). */
@@ -53,7 +52,6 @@ export function ToolCallTimeline({
   // the live message, AND the thread is actually running — so a closed-args call
   // that never received a result stops showing "Working..." once the run ends.
   const isThreadRunning = useThread((s) => s.isRunning);
-  const superseded = isThreadRunning && !isLast;
   const thinking =
     isThreadRunning &&
     isLast &&
@@ -66,30 +64,19 @@ export function ToolCallTimeline({
   const [revealedCount, setRevealedCount] = useState(() =>
     isLast ? 1 : Math.max(activities.length, 1),
   );
-  const [outgoingIndex, setOutgoingIndex] = useState<number | null>(null);
   const prevThinking = useRef(thinking);
 
   useEffect(() => {
-    if (prevThinking.current && !thinking) {
+    if (!prevThinking.current && thinking) {
+      setRevealedCount(1);
       setExpanded(false);
     }
+    if (prevThinking.current && !thinking) {
+      setExpanded(false);
+      setRevealedCount(activities.length);
+    }
     prevThinking.current = thinking;
-  }, [thinking]);
-
-  useEffect(() => {
-    if (outgoingIndex === null) return undefined;
-    const timer = setTimeout(() => setOutgoingIndex(null), TRANSITION_DURATION);
-    return () => clearTimeout(timer);
-  }, [outgoingIndex]);
-
-  useEffect(() => {
-    // If a newer assistant message starts while this post-run queue is still
-    // draining, settle the old timeline so two messages never say "Working...".
-    if (!superseded) return;
-    setRevealedCount(Math.max(activities.length, 1));
-    setOutgoingIndex(null);
-    setExpanded(false);
-  }, [superseded, activities.length]);
+  }, [thinking, activities.length]);
 
   // Advance only when the current activity has left "streaming" (args closed) —
   // replaces the branch's `!!toolRequest || !!toolResponse` peek with the union.
@@ -99,30 +86,19 @@ export function ToolCallTimeline({
   })();
 
   useEffect(() => {
-    // Once a live reveal has started, let its queue drain even if the run ends.
-    // Otherwise a burst of terminal events jumps straight to the final item.
-    if (!superseded && revealedCount < activities.length && currentReady) {
-      const t = setTimeout(() => {
-        setOutgoingIndex(revealedCount - 1);
-        setRevealedCount((count) => Math.min(count + 1, activities.length));
-      }, REVEAL_INTERVAL);
+    // Only the live message reveals incrementally; historical messages show all.
+    if (isLast && revealedCount < activities.length && currentReady) {
+      const t = setTimeout(() => setRevealedCount((c) => c + 1), REVEAL_INTERVAL);
       return () => clearTimeout(t);
     }
     return undefined;
-  }, [activities.length, revealedCount, currentReady, superseded]);
+  }, [isLast, activities.length, revealedCount, currentReady]);
 
   if (activities.length === 0) return null;
 
-  const revealing = !superseded && revealedCount < activities.length;
-  const transitioning = !superseded && outgoingIndex !== null;
-  const working = thinking || revealing || transitioning;
-  const showCompact = working && !expanded;
-  const currentIndex = Math.min(revealedCount - 1, activities.length - 1);
-  const current = activities[currentIndex]!;
-  const outgoing =
-    outgoingIndex !== null && outgoingIndex !== currentIndex
-      ? activities[outgoingIndex]
-      : undefined;
+  const revealing = revealedCount < activities.length;
+  const showCompact = (thinking || revealing) && !expanded;
+  const current = activities[Math.min(revealedCount - 1, activities.length - 1)]!;
 
   // Persistent live announcement reflecting the current step's status — driven by
   // the same fallback the primitives use so SRs hear status changes as content
@@ -131,13 +107,14 @@ export function ToolCallTimeline({
 
   // Once settled, surface a failure count on the toggle so errors aren't hidden
   // behind a collapsed "Behind the scenes".
-  const settled = !working;
+  const settled = !thinking && !revealing;
   const failedCount = settled ? activities.filter((a) => a.status === "error").length : 0;
-  const toggleLabel = working
-    ? "Working..."
-    : failedCount > 0
-      ? `Behind the scenes · ${failedCount} failed`
-      : "Behind the scenes";
+  const toggleLabel =
+    thinking || revealing
+      ? "Working..."
+      : failedCount > 0
+        ? `Behind the scenes · ${failedCount} failed`
+        : "Behind the scenes";
 
   return (
     <div className="openui-behind-the-scenes">
@@ -161,33 +138,18 @@ export function ToolCallTimeline({
 
       {showCompact && (
         <div className="openui-behind-the-scenes__items">
-          <div className="openui-behind-the-scenes__transition">
-            {outgoing && (
-              <div
-                key={`outgoing-${outgoing.id}`}
-                aria-hidden="true"
-                inert
-                className="openui-behind-the-scenes__transition-item openui-behind-the-scenes__transition-item--exit"
-              >
-                <TimelineEntry
-                  activity={outgoing}
-                  isLast={false}
-                  detailedViewPanel={detailedViewPanel}
-                  forceDefault={forceDefault}
-                />
-              </div>
-            )}
-            <div
-              key={current.id}
-              className="openui-behind-the-scenes__transition-item openui-behind-the-scenes__transition-item--enter"
-            >
-              <TimelineEntry
-                activity={current}
-                isLast
-                detailedViewPanel={detailedViewPanel}
-                forceDefault={forceDefault}
-              />
-            </div>
+          {/* key changes per reveal → remounts → re-triggers the CSS fade-in */}
+          <div
+            key={revealedCount}
+            className="openui-behind-the-scenes__reveal-item"
+            style={{ width: "100%" }}
+          >
+            <TimelineEntry
+              activity={current}
+              isLast
+              detailedViewPanel={detailedViewPanel}
+              forceDefault={forceDefault}
+            />
           </div>
         </div>
       )}

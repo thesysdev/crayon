@@ -7,15 +7,11 @@ import { z } from "zod";
  */
 export const getWeather = new FunctionTool({
   name: "get_weather",
-  description:
-    "Get the current weather for one or more cities. Include every city the user asks about in one call.",
+  description: "Get the current weather for a given city.",
   parameters: z.object({
-    cities: z
-      .array(z.string())
-      .min(1)
-      .describe('Every city to get the weather for, e.g. ["Tokyo", "London"].'),
+    city: z.string().describe('The city to get the weather for, e.g. "Tokyo".'),
   }),
-  execute: ({ cities }) => {
+  execute: ({ city }) => {
     // Hard-coded so the demo runs without any external weather API.
     const table: Record<string, { condition: string; temperature_celsius: number }> = {
       tokyo: { condition: "Sunny", temperature_celsius: 24 },
@@ -25,20 +21,19 @@ export const getWeather = new FunctionTool({
       paris: { condition: "Clear", temperature_celsius: 19 },
       sydney: { condition: "Sunny", temperature_celsius: 27 },
     };
-
-    return {
-      weather: cities.map((city) => {
-        const data = table[city.toLowerCase()];
-        return data ? { city, ...data } : { city, error: "No weather data for this city." };
-      }),
-    };
+    const key = city.toLowerCase();
+    const data = table[key];
+    if (!data) {
+      return { city, error: "No weather data for this city." };
+    }
+    return { city, ...data };
   },
 });
 
 /**
- * Builds the weather assistant. Domain rules follow the generated OpenUI
- * system prompt so the model replies with OpenUI Lang while prioritizing the
- * user's actual weather request.
+ * Builds the weather assistant. The generated OpenUI system prompt is appended
+ * to the base instruction so the model replies with OpenUI Lang that the
+ * frontend renders as generative UI.
  */
 export function createAgent(genUISystemPrompt: string) {
   return new Agent({
@@ -46,16 +41,10 @@ export function createAgent(genUISystemPrompt: string) {
     model: process.env.GEMINI_MODEL || "gemini-flash-latest",
     description: "A helpful assistant that can report the weather.",
     instruction:
-      genUISystemPrompt +
-      "\n\n## Weather assistant behavior\n" +
-      "These application rules override any general UI guidance above. Answer the user's latest " +
-      "request directly and never show an onboarding screen. Never invent plausible weather data. " +
-      "For every weather request, call get_weather exactly once with every city mentioned, then " +
-      "present only the returned data. Use a table when comparing multiple cities. If a weather " +
-      "request has no city, ask which city in a brief response. Do not generate a form for weather " +
-      "requests or greetings; only generate a form when the user explicitly asks you to build one. " +
-      "For a greeting, return one short TextContent saying you can check weather. Do not add follow-up " +
-      "suggestions unless the user asks for them. Help with other requests too.",
+      "You are a friendly assistant. When the user asks about the weather, " +
+      "use the get_weather tool before answering. Help the user with any other " +
+      "requests too.\n\n" +
+      genUISystemPrompt,
     tools: [getWeather],
   });
 }
