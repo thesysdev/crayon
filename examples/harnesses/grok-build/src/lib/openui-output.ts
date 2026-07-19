@@ -1,10 +1,7 @@
-import componentSpec from "../generated/component-spec.json";
-import { createParser, type LibraryJSONSchema } from "@openuidev/lang-core";
+import { createParser } from "@openuidev/lang-core";
+import { componentSpec } from "../library";
 
-const parser = createParser(
-  (componentSpec as { schema: LibraryJSONSchema }).schema,
-  "Card",
-);
+const parser = createParser(componentSpec, "Card");
 const ROOT_CANDIDATE = /(?:^|[^A-Za-z0-9_$])root[\t ]*=/g;
 const MAX_STREAM_CHUNKS = 72;
 const MIN_STREAM_CHUNK_SIZE = 192;

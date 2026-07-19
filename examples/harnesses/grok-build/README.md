@@ -81,11 +81,11 @@ browser threads use `session/load`, so Grok's on-disk conversation state survive
 If a restored browser transcript no longer has a matching Grok session on disk, the route fails
 explicitly instead of silently continuing with empty model context.
 
-`src/generated/system-prompt.txt` and `src/generated/component-spec.json` are regenerated from
-`src/library.ts` before `dev` and `build`. The prompt is attached to `session/new` as ACP
-`_meta.rules`; it teaches Grok to produce the exact OpenUI Lang understood by the
-`openuiChatLibrary` passed to `AgentInterface`. The schema lets the server verify that the final
-candidate has a renderable `Card` root before any assistant text reaches the browser.
+The system prompt and validation schema are derived directly from `src/library.ts` in memory. The
+prompt is attached to `session/new` as ACP `_meta.rules`; it teaches Grok to produce the exact
+OpenUI Lang understood by the `openuiChatLibrary` passed to `AgentInterface`. The schema lets the
+server verify that the final candidate has a renderable `Card` root before any assistant text
+reaches the browser.
 
 The event bridge maps Grok ACP updates as follows:
 
@@ -106,7 +106,7 @@ parser-guided correction without tools. If that still fails, it renders a concis
 instead of exposing raw OpenUI or surfacing a renderer `parse-failed` warning.
 
 OpenUI delivery rules are attached when a Grok session is created. Start a new browser thread after
-changing the component library or generated prompt so the corresponding Grok session gets the new
+changing the component library or prompt options so the corresponding Grok session gets the new
 rules.
 
 The browser transcript persists user and assistant text, matching the lightweight Eve example.
@@ -139,9 +139,7 @@ examples/harnesses/grok-build/
 |- src/lib/openui-output.ts         # Retry-safe validation, fallback, and paced output chunks
 |- src/lib/grok-build-chat.ts       # AgentInterface LLM + storage adapters
 |- src/lib/thread-store.ts          # localStorage thread/transcript persistence
-|- src/library.ts                   # OpenUI component library used for prompt generation
-|- src/generated/system-prompt.txt  # Generated OpenUI Lang instructions
-`- src/generated/component-spec.json # Generated server-side validation schema
+`- src/library.ts                   # OpenUI library, prompt options, and validation schema
 ```
 
 ## Security

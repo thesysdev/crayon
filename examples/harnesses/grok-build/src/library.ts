@@ -12,3 +12,6 @@ Do not emit OpenUI Lang in reasoning, progress messages, tool arguments, or tool
 After all required work is complete, your final assistant response must consist entirely of valid openui-lang code with no markdown or explanatory prose.
 Before sending the final response, verify that root is a Card and every referenced identifier is defined.`,
 };
+
+export const systemPrompt = library.prompt(promptOptions);
+export const componentSpec = library.toJSONSchema();
