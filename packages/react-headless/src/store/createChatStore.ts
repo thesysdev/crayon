@@ -226,6 +226,12 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
         set((s) => ({
           messages: s.messages.map((m) => (m.id === message.id ? message : m)),
         }));
+        const threadId = get().selectedThreadId;
+        if (threadId !== null) {
+          threadStorage
+            .updateMessage(threadId, message)
+            .catch((e) => set((s) => ({ threadError: e })));
+        }
       },
 
       setMessages: (messages: Message[]) => {
