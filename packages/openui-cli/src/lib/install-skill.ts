@@ -1,5 +1,7 @@
 import { execSync } from "child_process";
 
+const OPENUI_SKILL_SOURCE = "thesysdev/skills";
+
 export async function shouldInstallSkill(
   option: boolean | undefined,
   interactive: boolean,
@@ -25,7 +27,7 @@ export async function shouldInstallSkill(
 export function runSkillInstall(targetDir: string): void {
   console.info("\nInstalling OpenUI agent skill...\n");
   try {
-    execSync("npx -y skills add thesysdev/openui --skill openui -y", {
+    execSync(`npx -y skills add ${OPENUI_SKILL_SOURCE} --skill openui -y`, {
       stdio: "inherit",
       cwd: targetDir,
     });
@@ -33,7 +35,7 @@ export function runSkillInstall(targetDir: string): void {
     console.warn(
       "\nCould not install the OpenUI agent skill automatically.\n" +
         "You can install it manually later with:\n\n" +
-        "  npx skills add thesysdev/openui --skill openui\n",
+        `  npx skills add ${OPENUI_SKILL_SOURCE} --skill openui\n`,
     );
   }
 }
