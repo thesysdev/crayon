@@ -11,6 +11,7 @@ import {
   type SessionUpdate,
 } from "@agentclientprotocol/sdk";
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { Readable, Writable } from "node:stream";
 
@@ -18,6 +19,7 @@ const OPENUI_RULES = readFileSync(
   new URL("../generated/system-prompt.txt", import.meta.url),
   "utf8",
 );
+const OPENUI_RULES_HASH = createHash("sha256").update(OPENUI_RULES).digest("hex");
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -31,15 +33,19 @@ interface GrokBuildConfig {
 
 interface GrokBuildRetryState {
   attempt?: number;
+  error_type?: string;
   max_retries?: number;
+  message?: string;
   reason?: string;
   sessionUpdate: "retry_state";
   type?: string;
 }
 
 interface GrokBuildTurnCompleted {
+  agent_result?: string;
   sessionUpdate: "turn_completed";
   stop_reason?: string;
+  usage?: Record<string, unknown>;
 }
 
 export type GrokBuildSessionUpdate =
@@ -95,7 +101,7 @@ function readConfig(): GrokBuildConfig {
 }
 
 function configSignature(config: GrokBuildConfig): string {
-  return JSON.stringify(config);
+  return JSON.stringify({ ...config, openUIRulesHash: OPENUI_RULES_HASH });
 }
 
 function recordValue(value: unknown): Record<string, unknown> | undefined {
@@ -107,21 +113,29 @@ function errorData(error: unknown): unknown {
   return recordValue(error)?.data;
 }
 
-function errorMessage(error: unknown): string {
+export function formatGrokBuildError(error: unknown): string {
   const errorRecord = recordValue(error);
   const message =
     error instanceof Error
-      ? error.message
+      ? error.message === "[object Object]"
+        ? "Grok Build request failed"
+        : error.message
       : typeof errorRecord?.message === "string"
         ? errorRecord.message
-        : String(error);
+        : errorRecord
+          ? issueSafeJson(errorRecord)
+          : String(error);
   const data = errorData(error);
   if (data === undefined) return message;
   if (typeof data === "string") return `${message}: ${data}`;
+  return `${message}: ${issueSafeJson(data)}`;
+}
+
+function issueSafeJson(value: unknown): string {
   try {
-    return `${message}: ${JSON.stringify(data)}`;
+    return JSON.stringify(value);
   } catch {
-    return message;
+    return String(value);
   }
 }
 
@@ -129,7 +143,7 @@ function looksMissing(error: unknown): boolean {
   const code = recordValue(errorData(error))?.code;
   if (code === "FS_NOT_FOUND") return true;
   return /not found|no such|unknown session|does not exist|failed to (read|load)/i.test(
-    errorMessage(error),
+    formatGrokBuildError(error),
   );
 }
 
@@ -264,7 +278,7 @@ class GrokBuildACPClient {
       const stderr = client.stderrTail.trim();
       const stderrDetail = stderr ? `\n\nGrok stderr:\n${stderr}` : "";
       throw new Error(
-        `Could not start Grok Build ACP.${processDetail} ${errorMessage(error)}${stderrDetail}\n\n` +
+        `Could not start Grok Build ACP.${processDetail} ${formatGrokBuildError(error)}${stderrDetail}\n\n` +
           "Install the `grok` CLI and run `grok login`, or set XAI_API_KEY.",
       );
     }
@@ -452,13 +466,24 @@ class GrokBuildACPClient {
     prompt: string;
     sessionId: string;
     signal: AbortSignal;
-  }): Promise<void> {
+  }): Promise<{ stopReason?: string }> {
     await this.ensureSession(sessionId, hasHistory);
     if (this.activeThreads.has(sessionId)) throw new GrokBuildBusyError();
     if (signal.aborted) throw new DOMException("The request was aborted.", "AbortError");
 
     this.activeThreads.add(sessionId);
-    const unsubscribe = this.subscribe(sessionId, onUpdate);
+    let terminalError: string | undefined;
+    const unsubscribe = this.subscribe(sessionId, (update) => {
+      if (update.sessionUpdate === "retry_state" && update.type === "failed") {
+        terminalError = update.message || update.reason || terminalError;
+      } else if (
+        update.sessionUpdate === "turn_completed" &&
+        update.stop_reason === "error"
+      ) {
+        terminalError = update.agent_result || terminalError;
+      }
+      onUpdate(update);
+    });
     const cancel = () => {
       void this.request("Cancelling the Grok Build turn", () =>
         this.connection.cancel({ sessionId }),
@@ -467,7 +492,7 @@ class GrokBuildACPClient {
     signal.addEventListener("abort", cancel, { once: true });
 
     try {
-      await this.request("Running the Grok Build turn", () =>
+      const response = await this.request("Running the Grok Build turn", () =>
         this.connection.prompt({
           sessionId,
           prompt: [{ type: "text", text: prompt }],
@@ -477,6 +502,16 @@ class GrokBuildACPClient {
           },
         }),
       );
+      const stopReason = response.stopReason ? String(response.stopReason) : undefined;
+      if (terminalError || stopReason === "error") {
+        throw new GrokBuildTurnError(
+          terminalError ?? "Grok Build completed the turn with an error.",
+        );
+      }
+      return { stopReason };
+    } catch (error) {
+      if (error instanceof GrokBuildTurnError) throw error;
+      throw new GrokBuildTurnError(terminalError ?? formatGrokBuildError(error), error);
     } finally {
       signal.removeEventListener("abort", cancel);
       unsubscribe();
@@ -489,6 +524,17 @@ export class GrokBuildBusyError extends Error {
   constructor() {
     super("Grok Build is still responding to the previous message in this thread.");
     this.name = "GrokBuildBusyError";
+  }
+}
+
+export class GrokBuildTurnError extends Error {
+  constructor(message: string, options?: { cause?: unknown } | unknown) {
+    const cause =
+      options && typeof options === "object" && "cause" in options
+        ? (options as { cause?: unknown }).cause
+        : options;
+    super(message, cause === undefined ? undefined : { cause });
+    this.name = "GrokBuildTurnError";
   }
 }
 
@@ -530,7 +576,7 @@ export async function runGrokBuildTurn(options: {
   prompt: string;
   sessionId: string;
   signal: AbortSignal;
-}): Promise<void> {
+}): Promise<{ stopReason?: string }> {
   const client = await getClient();
-  await client.runTurn(options);
+  return client.runTurn(options);
 }

@@ -6,7 +6,6 @@ const parser = createParser(
   "Card",
 );
 const ROOT_CANDIDATE = /(?:^|[^A-Za-z0-9_$])root[\t ]*=/g;
-const MAX_FALLBACK_LENGTH = 12_000;
 const MAX_STREAM_CHUNKS = 72;
 const MIN_STREAM_CHUNK_SIZE = 192;
 
@@ -229,14 +228,40 @@ export function createOpenUIStatus(
   ].join("\n");
 }
 
+function issueText(value: unknown): string {
+  if (typeof value === "string") return value;
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+}
+
+/** Parser feedback suitable for a bounded model correction turn. */
+export function describeOpenUIProblems(value: string): string[] {
+  if (!value.trim()) return ["The response was empty."];
+  try {
+    const result = parser.parse(value);
+    const issues = result.meta.errors.map(issueText);
+    issues.push(...result.meta.unresolved.map((name) => `Unresolved reference: ${name}`));
+    if (!result.root) issues.push("No renderable root component was produced.");
+    else if (result.root.typeName !== "Card") {
+      issues.push(`The root component must be Card, not ${result.root.typeName}.`);
+    }
+    if (result.meta.incomplete) issues.push("The OpenUI program is incomplete.");
+    return [...new Set(issues)];
+  } catch (error) {
+    return [error instanceof Error ? error.message : String(error)];
+  }
+}
+
 function fallbackOpenUI(value: string): string {
-  const suffix = value.length > MAX_FALLBACK_LENGTH ? "\n\n…output truncated…" : "";
-  const visibleText = `${value.slice(0, MAX_FALLBACK_LENGTH)}${suffix}`;
-  return [
-    "root = Card([notice, fallback])",
-    'notice = TextCallout("warning", "Response rendered safely", "Grok Build returned text that was not valid OpenUI Lang, so the harness preserved it in a text card.")',
-    `fallback = MarkDownRenderer(${JSON.stringify(visibleText)}, "sunk")`,
-  ].join("\n");
+  const detail = describeOpenUIProblems(value)[0] ?? "The final program was invalid.";
+  return createOpenUIStatus(
+    "warning",
+    "Unable to render Grok Build response",
+    `The final OpenUI response did not pass validation. ${detail}`,
+  );
 }
 
 interface RenderableCandidate {
@@ -310,6 +335,7 @@ function latestRenderableCandidate(value: string): string | undefined {
  * candidate boundaries are retained here and resolved by validation at finish.
  */
 export class OpenUIOutputAccumulator {
+  private lastRenderable = "";
   private value = "";
 
   push(delta: string): void {
@@ -317,14 +343,58 @@ export class OpenUIOutputAccumulator {
   }
 
   retry(): void {
+    const renderable = latestRenderableCandidate(normalizeCandidate(this.value));
+    if (renderable) this.lastRenderable = renderable;
     this.value = "";
+  }
+
+  /** Clear an invalid attempt before a model correction without promoting it. */
+  resetForCorrection(): void {
+    this.value = "";
+  }
+
+  hasRenderable(): boolean {
+    return Boolean(
+      latestRenderableCandidate(normalizeCandidate(this.value)) || this.lastRenderable,
+    );
+  }
+
+  hasOutput(): boolean {
+    return Boolean(this.value.trim() || this.lastRenderable);
+  }
+
+  needsCorrection(): boolean {
+    return Boolean(this.value.trim()) && !this.hasRenderable();
+  }
+
+  correctionPrompt(): string {
+    const candidate = normalizeCandidate(this.value);
+    const issues = describeOpenUIProblems(candidate);
+    return [
+      "Your previous final assistant response failed OpenUI validation.",
+      "Do not call tools. Return exactly one corrected OpenUI Lang program and nothing else.",
+      "Keep the same factual answer. Ensure every reference used by root and child components is defined.",
+      "Validation issues:",
+      ...issues.map((issue) => `- ${issue}`),
+      "Invalid OpenUI Lang:",
+      "```openui",
+      candidate.slice(0, 12_000),
+      "```",
+    ].join("\n");
   }
 
   finish(): string {
     const candidate = normalizeCandidate(this.value);
-    if (!candidate) return "";
     const renderable = latestRenderableCandidate(candidate);
     if (renderable) return renderable;
+    if (this.lastRenderable) return this.lastRenderable;
+    if (!candidate) {
+      return createOpenUIStatus(
+        "warning",
+        "No final response",
+        "Grok Build completed without producing an assistant response.",
+      );
+    }
     return fallbackOpenUI(candidate);
   }
 }

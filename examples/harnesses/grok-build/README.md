@@ -11,8 +11,10 @@ stdio mode for persistent coding sessions, live reasoning, tool activity, and ca
 - One long-lived `grok agent --no-leader stdio` process hosting an isolated Grok session for each
   OpenUI thread.
 - ACP text, reasoning, and tool-call updates translated to AG-UI SSE events.
-- Retry-safe OpenUI output buffering: failed Grok candidates are discarded, the final candidate is
-  validated against the generated component schema, then revealed in short paced chunks.
+- Retry-safe OpenUI output buffering: valid candidates are checkpointed across retries, the final
+  candidate is validated against the generated component schema, then revealed in paced chunks.
+- One bounded, parser-guided correction turn when Grok's final OpenUI has syntax errors or unresolved
+  references. Invalid source is never exposed as the main assistant response.
 - The generated OpenUI component-library prompt injected as Grok session `rules`, preserving Grok
   Build's native coding-agent instructions and tools.
 - Browser thread metadata and transcripts stored in `localStorage`, with the same UUID used for the
@@ -92,15 +94,20 @@ agent_thought_chunk  -> Thinking tool card
 tool_call            -> TOOL_CALL_START + TOOL_CALL_ARGS
 tool_call_update     -> TOOL_CALL_END + TOOL_CALL_RESULT
 agent_message_chunk  -> latest OpenUI candidate buffer
-retry_state          -> discard the failed candidate
-prompt response      -> validate + paced TEXT_MESSAGE_CONTENT + END + [DONE]
+retry_state          -> checkpoint valid output + rotate Thinking state
+prompt response      -> validate, optionally correct once, then paced TEXT_MESSAGE_CONTENT + END
 ```
 
 Grok Build may emit progress prose and multiple full answers during one ACP prompt when an xAI
 request is retried. AG-UI text deltas are append-only, so sending those candidates immediately
 would concatenate them into invalid OpenUI Lang. This harness keeps only the latest line-start
-`root = ...` candidate. If the final response is plain text, it is preserved inside a valid warning
-card instead of surfacing a renderer `parse-failed` warning.
+`root = ...` candidate. If no valid candidate can be recovered, the harness asks Grok for one
+parser-guided correction without tools. If that still fails, it renders a concise valid warning card
+instead of exposing raw OpenUI or surfacing a renderer `parse-failed` warning.
+
+OpenUI delivery rules are attached when a Grok session is created. Start a new browser thread after
+changing the component library or generated prompt so the corresponding Grok session gets the new
+rules.
 
 The browser transcript persists user and assistant text, matching the lightweight Eve example.
 Reasoning and tool cards are streamed live but are not restored after a page reload. Deleting an

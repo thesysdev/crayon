@@ -2,12 +2,14 @@ import { EventType, type AGUIEvent } from "@ag-ui/core";
 import { describe, expect, it } from "vitest";
 import {
   decodeGrokSessionNotification,
+  formatGrokBuildError,
   type GrokBuildSessionUpdate,
 } from "./grok-build-acp";
 import { GrokBuildAGUIBridge } from "./grok-build-stream";
 import {
   chunkOpenUIOutput,
   createOpenUIStatus,
+  describeOpenUIProblems,
   isRenderableOpenUI,
   OpenUIOutputAccumulator,
 } from "./openui-output";
@@ -66,10 +68,12 @@ describe("OpenUI output safety", () => {
 
     expect(notification).toBeDefined();
     bridge.consume(notification!.update);
-    bridge.consume(agentMessage("final plain-text answer"));
+    const final =
+      'root = Card([answer])\nanswer = TextContent("final retry-safe answer")';
+    bridge.consume(agentMessage(final));
 
     const text = emittedText(bridge.finish());
-    expect(text).toContain("final plain-text answer");
+    expect(text).toBe(final);
     expect(text).not.toContain("failed attempt prose");
     expect(isRenderableOpenUI(text)).toBe(true);
   });
@@ -87,6 +91,27 @@ describe("OpenUI output safety", () => {
     const text = emittedText(bridge.finish());
     expect(text).toBe(final);
     expect(isRenderableOpenUI(text)).toBe(true);
+  });
+
+  it("recovers the last valid retry candidate when the final candidate has an unresolved ref", () => {
+    const bridge = new GrokBuildAGUIBridge();
+    const valid = [
+      "root = Card([summary])",
+      'summary = TextContent("validated retry answer")',
+    ].join("\n");
+    const invalid = [
+      "root = Card([header, layout])",
+      'header = CardHeader("Project map")',
+      'sLayout = TextContent("layout was defined under the wrong identifier")',
+    ].join("\n");
+
+    bridge.consume(retry());
+    bridge.consume(agentMessage(valid));
+    bridge.consume(agentMessage(invalid));
+
+    const text = emittedText(bridge.finish());
+    expect(text).toBe(valid);
+    expect(text).not.toContain("sLayout");
   });
 
   it("recognizes a root statement split across ACP chunks", () => {
@@ -314,11 +339,45 @@ describe("OpenUI output safety", () => {
     output.push("A plain-text answer that would previously trigger parse-failed.");
 
     const result = output.finish();
-    expect(result).toContain("Response rendered safely");
+    expect(result).toContain("Unable to render Grok Build response");
+    expect(result).not.toContain("A plain-text answer that would previously trigger");
     expect(isRenderableOpenUI(result)).toBe(true);
   });
 
-  it("produces valid status cards for early route responses", () => {
+  it("describes unresolved references for a bounded correction turn", () => {
+    const invalid = [
+      "root = Card([header, layout])",
+      'header = CardHeader("Project map")',
+      'sLayout = TextContent("wrong identifier")',
+    ].join("\n");
+    const output = new OpenUIOutputAccumulator();
+    output.push(invalid);
+
+    expect(describeOpenUIProblems(invalid)).toContain("Unresolved reference: layout");
+    expect(output.needsCorrection()).toBe(true);
+    expect(output.correctionPrompt()).toContain("Unresolved reference: layout");
+    expect(output.correctionPrompt()).toContain("Do not call tools");
+  });
+
+  it("replaces an invalid attempt with a corrected final program", () => {
+    const bridge = new GrokBuildAGUIBridge();
+    bridge.consume(
+      agentMessage(
+        'root = Card([layout])\nsLayout = TextContent("wrong identifier")',
+      ),
+    );
+    expect(bridge.needsCorrection()).toBe(true);
+    expect(bridge.correctionPrompt()).toContain("Unresolved reference: layout");
+
+    bridge.beginCorrection();
+    const corrected =
+      'root = Card([layout])\nlayout = TextContent("corrected identifier")';
+    bridge.consume(agentMessage(corrected));
+
+    expect(emittedText(bridge.finish())).toBe(corrected);
+  });
+
+  it("produces renderable fallback status cards", () => {
     expect(
       isRenderableOpenUI(createOpenUIStatus("warning", "No message", "Nothing to send.")),
     ).toBe(true);
@@ -333,14 +392,133 @@ describe("OpenUI output safety", () => {
     expect(chunks.join("")).toBe(source);
   });
 
-  it("discards buffered output when the turn fails", () => {
+  it("preserves validated buffered output when the upstream turn fails", () => {
     const bridge = new GrokBuildAGUIBridge();
+    const valid = 'root = Card([answer])\nanswer = TextContent("keep the useful answer")';
     bridge.consume(
-      agentMessage('root = Card([answer])\nanswer = TextContent("must not persist")'),
+      agentMessage(valid),
     );
 
-    expect(emittedText(bridge.fail("Upstream failed."))).toBe("");
+    expect(emittedText(bridge.fail("Upstream failed."))).toBe(valid);
     expect(bridge.finish()).toEqual([]);
+  });
+
+  it("rotates the Thinking card when Grok retries", () => {
+    const bridge = new GrokBuildAGUIBridge();
+    const thought = (text: string): GrokBuildSessionUpdate => ({
+      sessionUpdate: "agent_thought_chunk",
+      content: { type: "text", text },
+    });
+    const first = bridge.consume(thought("First model attempt"));
+    const firstId = first.find((event) => event.type === EventType.TOOL_CALL_START);
+    const boundary = bridge.consume(retry());
+    const second = bridge.consume(thought("Second model attempt"));
+    const secondId = second.find((event) => event.type === EventType.TOOL_CALL_START);
+
+    expect(boundary.some((event) => event.type === EventType.TOOL_CALL_END)).toBe(true);
+    expect(firstId && "toolCallId" in firstId ? firstId.toolCallId : undefined).not.toBe(
+      secondId && "toolCallId" in secondId ? secondId.toolCallId : undefined,
+    );
+  });
+
+  it("uses Grok's terminal retry message instead of an object string", () => {
+    const bridge = new GrokBuildAGUIBridge();
+    bridge.consume({
+      sessionUpdate: "agent_thought_chunk",
+      content: { type: "text", text: "Trying the request" },
+    });
+    const terminal = bridge.consume({
+      sessionUpdate: "retry_state",
+      type: "failed",
+      error_type: "api",
+      message: "Service temporarily unavailable.",
+    });
+
+    const events = bridge.fail("[object Object]");
+    const result = terminal.find((event) => event.type === EventType.TOOL_CALL_RESULT) as
+      | (AGUIEvent & { content?: string })
+      | undefined;
+    expect(result?.content).toBe("Service temporarily unavailable.");
+    expect(emittedText(events)).toBe("");
+  });
+
+  it("does not invent a fallback assistant card when a turn fails before output", () => {
+    const bridge = new GrokBuildAGUIBridge();
+
+    expect(bridge.fail("Grok Build failed to start.")).toEqual([]);
+  });
+
+  it("uses the turn_completed agent result for terminal errors", () => {
+    const bridge = new GrokBuildAGUIBridge();
+    bridge.consume({
+      sessionUpdate: "agent_thought_chunk",
+      content: { type: "text", text: "Waiting for the model" },
+    });
+    const terminal = bridge.consume({
+      sessionUpdate: "turn_completed",
+      stop_reason: "error",
+      agent_result: "Provider unavailable.",
+    });
+    const result = terminal.find((event) => event.type === EventType.TOOL_CALL_RESULT) as
+      | (AGUIEvent & { content?: string; isError?: boolean })
+      | undefined;
+
+    expect(result?.content).toBe("Provider unavailable.");
+    expect(result?.isError).toBe(true);
+  });
+
+  it("serializes structured ACP failures without [object Object]", () => {
+    const message = formatGrokBuildError({
+      message: { error: "Service temporarily unavailable" },
+      data: { status: 500 },
+    });
+    expect(message).not.toContain("[object Object]");
+    expect(message).toContain("Service temporarily unavailable");
+    expect(message).toContain("500");
+  });
+
+  it("merges partial tool updates before closing the AG-UI tool call", () => {
+    const bridge = new GrokBuildAGUIBridge();
+    const events = [
+      ...bridge.consume({
+        sessionUpdate: "tool_call",
+        toolCallId: "partial",
+        title: "Run command",
+        kind: "execute",
+        status: "pending",
+      }),
+      ...bridge.consume({
+        sessionUpdate: "tool_call_update",
+        toolCallId: "partial",
+        status: "in_progress",
+      }),
+      ...bridge.consume({
+        sessionUpdate: "tool_call_update",
+        toolCallId: "partial",
+        rawInput: { command: "pwd" },
+      }),
+      ...bridge.consume({
+        sessionUpdate: "tool_call_update",
+        toolCallId: "partial",
+        rawOutput: { ok: true },
+      }),
+      ...bridge.consume({
+        sessionUpdate: "tool_call_update",
+        toolCallId: "partial",
+        status: "completed",
+      }),
+    ];
+
+    const argsIndex = events.findIndex((event) => event.type === EventType.TOOL_CALL_ARGS);
+    const endIndex = events.findIndex((event) => event.type === EventType.TOOL_CALL_END);
+    const result = events.find((event) => event.type === EventType.TOOL_CALL_RESULT) as
+      | (AGUIEvent & { content?: string })
+      | undefined;
+
+    expect(argsIndex).toBeGreaterThan(-1);
+    expect(endIndex).toBeGreaterThan(argsIndex);
+    expect(events.filter((event) => event.type === EventType.TOOL_CALL_END)).toHaveLength(1);
+    expect(result?.content).toBe('{"ok":true}');
   });
 
   it("marks an unfinished tool as failed instead of inventing success", () => {

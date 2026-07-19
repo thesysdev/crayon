@@ -1,6 +1,10 @@
-import { GrokBuildBusyError, isGrokBuildThreadBusy, runGrokBuildTurn } from "@/lib/grok-build-acp";
+import {
+  formatGrokBuildError,
+  GrokBuildBusyError,
+  isGrokBuildThreadBusy,
+  runGrokBuildTurn,
+} from "@/lib/grok-build-acp";
 import { GrokBuildAGUIBridge } from "@/lib/grok-build-stream";
-import { createOpenUIStatus } from "@/lib/openui-output";
 import { EventType, type AGUIEvent } from "@ag-ui/core";
 import type { Message } from "@openuidev/react-headless";
 import type { NextRequest } from "next/server";
@@ -15,6 +19,11 @@ interface ChatBody {
 
 const encoder = new TextEncoder();
 const STREAM_FRAME_MS = 16;
+const TOOL_TRANSITION_MS = 24;
+
+function pause(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
 
 function messageText(message: Pick<Message, "content">): string {
   const content = message.content as unknown;
@@ -42,30 +51,6 @@ function sse(event: AGUIEvent | "[DONE]"): Uint8Array {
   );
 }
 
-function textStreamResponse(content: string): Response {
-  const messageId = crypto.randomUUID();
-  const body = new ReadableStream<Uint8Array>({
-    start(controller) {
-      controller.enqueue(
-        sse({ type: EventType.TEXT_MESSAGE_START, messageId, role: "assistant" } as AGUIEvent),
-      );
-      controller.enqueue(
-        sse({ type: EventType.TEXT_MESSAGE_CONTENT, messageId, delta: content } as AGUIEvent),
-      );
-      controller.enqueue(sse({ type: EventType.TEXT_MESSAGE_END, messageId } as AGUIEvent));
-      controller.enqueue(sse("[DONE]"));
-      controller.close();
-    },
-  });
-  return new Response(body, {
-    headers: {
-      "Cache-Control": "no-cache, no-transform",
-      Connection: "keep-alive",
-      "Content-Type": "text/event-stream",
-    },
-  });
-}
-
 export async function POST(request: NextRequest) {
   const body = (await request.json().catch(() => ({}))) as ChatBody;
   const messages = body.messages ?? [];
@@ -73,17 +58,12 @@ export async function POST(request: NextRequest) {
   const prompt = latestUserText(messages);
 
   if (!prompt) {
-    return textStreamResponse(
-      createOpenUIStatus("warning", "No message", "No user message was provided."),
-    );
+    return Response.json({ error: "No user message was provided." }, { status: 400 });
   }
   if (isGrokBuildThreadBusy(conversationId)) {
-    return textStreamResponse(
-      createOpenUIStatus(
-        "info",
-        "Still working",
-        "Grok Build is still responding to your previous message. Please wait.",
-      ),
+    return Response.json(
+      { error: "Grok Build is still responding to your previous message." },
+      { status: 409 },
     );
   }
 
@@ -91,6 +71,7 @@ export async function POST(request: NextRequest) {
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
       let closed = false;
+      let pending = Promise.resolve();
       const enqueue = (event: AGUIEvent | "[DONE]") => {
         if (closed) return;
         try {
@@ -99,15 +80,25 @@ export async function POST(request: NextRequest) {
           closed = true;
         }
       };
+      const queueEvents = (events: AGUIEvent[]): Promise<void> => {
+        pending = pending.then(async () => {
+          for (const event of events) {
+            if (closed) return;
+            enqueue(event);
+            if (event.type === EventType.TEXT_MESSAGE_CONTENT) {
+              await pause(STREAM_FRAME_MS);
+            } else if (event.type === EventType.TOOL_CALL_RESULT) {
+              // Give the completed card a paint before the next lifecycle starts.
+              await pause(TOOL_TRANSITION_MS);
+            }
+          }
+        });
+        return pending;
+      };
       const finish = async () => {
         if (closed) return;
-        for (const event of bridge.finish()) {
-          enqueue(event);
-          if (closed) return;
-          if (event.type === EventType.TEXT_MESSAGE_CONTENT) {
-            await new Promise<void>((resolve) => setTimeout(resolve, STREAM_FRAME_MS));
-          }
-        }
+        await queueEvents(bridge.finish());
+        if (closed) return;
         enqueue("[DONE]");
         closed = true;
         try {
@@ -117,30 +108,48 @@ export async function POST(request: NextRequest) {
         }
       };
 
-      void runGrokBuildTurn({
-        sessionId: conversationId,
-        prompt,
-        hasHistory: messages.some((message) => message.role === "assistant"),
-        signal: request.signal,
-        onUpdate: (update) => {
-          for (const event of bridge.consume(update)) enqueue(event);
-        },
-      })
-        .catch((error: unknown) => {
+      const onUpdate: Parameters<typeof runGrokBuildTurn>[0]["onUpdate"] = (update) => {
+        void queueEvents(bridge.consume(update));
+      };
+
+      void (async () => {
+        try {
+          await runGrokBuildTurn({
+            sessionId: conversationId,
+            prompt,
+            hasHistory: messages.some((message) => message.role === "assistant"),
+            signal: request.signal,
+            onUpdate,
+          });
+
+          // One bounded parser-guided repair. It is an internal continuation of
+          // the same Grok session and explicitly forbids additional tool calls.
+          if (bridge.needsCorrection() && !request.signal.aborted) {
+            const correctionPrompt = bridge.correctionPrompt();
+            await queueEvents(bridge.beginCorrection());
+            await runGrokBuildTurn({
+              sessionId: conversationId,
+              prompt: correctionPrompt,
+              hasHistory: true,
+              signal: request.signal,
+              onUpdate,
+            });
+          }
+        } catch (error: unknown) {
           if (request.signal.aborted) {
-            bridge.fail("Turn cancelled.");
+            await queueEvents(bridge.fail("Turn cancelled."));
             return;
           }
           const message =
             error instanceof GrokBuildBusyError
               ? error.message
-              : error instanceof Error
-                ? error.message
-                : String(error);
-          for (const event of bridge.fail(message)) enqueue(event);
-          enqueue({ type: EventType.RUN_ERROR, message } as AGUIEvent);
-        })
-        .finally(finish);
+              : formatGrokBuildError(error);
+          await queueEvents(bridge.fail(message));
+          await queueEvents([{ type: EventType.RUN_ERROR, message } as AGUIEvent]);
+        } finally {
+          await finish();
+        }
+      })();
     },
   });
 

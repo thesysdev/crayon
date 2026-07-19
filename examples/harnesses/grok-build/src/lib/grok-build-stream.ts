@@ -2,6 +2,11 @@ import { EventType, type AGUIEvent } from "@ag-ui/core";
 import type { GrokBuildSessionUpdate } from "./grok-build-acp";
 import { chunkOpenUIOutput, OpenUIOutputAccumulator } from "./openui-output";
 
+type ToolUpdate = Extract<
+  GrokBuildSessionUpdate,
+  { sessionUpdate: "tool_call" | "tool_call_update" }
+>;
+
 function safeJson(value: unknown): string {
   try {
     return JSON.stringify(value ?? {});
@@ -33,9 +38,12 @@ export class GrokBuildAGUIBridge {
   private readonly resultedTools = new Set<string>();
   private readonly sentToolArgs = new Set<string>();
   private readonly startedTools = new Map<string, string>();
+  private readonly toolOutputs = new Map<string, unknown>();
+  private readonly toolStatuses = new Map<string, ToolUpdate["status"]>();
   private readonly output = new OpenUIOutputAccumulator();
   private messageEnded = false;
   private messageStarted = false;
+  private terminalError: string | undefined;
   private thinkingId: string | undefined;
 
   private startMessage(): AGUIEvent[] {
@@ -69,12 +77,10 @@ export class GrokBuildAGUIBridge {
     ];
   }
 
-  private endThinking(error?: string): AGUIEvent[] {
+  private endThinking(content = "Reasoning complete.", failed = false): AGUIEvent[] {
     const toolCallId = this.thinkingId;
     if (!toolCallId) return [];
     this.thinkingId = undefined;
-    const failed = Boolean(error);
-    const content = error ?? "Reasoning complete.";
     return [
       { type: EventType.TOOL_CALL_ARGS, toolCallId, delta: '"}' } as AGUIEvent,
       { type: EventType.TOOL_CALL_END, toolCallId } as AGUIEvent,
@@ -140,6 +146,61 @@ export class GrokBuildAGUIBridge {
     ];
   }
 
+  private closePendingTools(message: string): AGUIEvent[] {
+    const events: AGUIEvent[] = [];
+    for (const toolCallId of this.startedTools.keys()) {
+      if (this.resultedTools.has(toolCallId)) continue;
+      events.push(...this.endTool(toolCallId));
+      events.push(...this.toolResult(toolCallId, "failed", message));
+    }
+    return events;
+  }
+
+  private consumeToolUpdate(update: ToolUpdate): AGUIEvent[] {
+    const { toolCallId } = update;
+    const title = update.title || this.startedTools.get(toolCallId) || update.kind || "Tool";
+    const events = this.startTool(toolCallId, title);
+
+    if (update.status) this.toolStatuses.set(toolCallId, update.status);
+    if (Object.prototype.hasOwnProperty.call(update, "rawOutput")) {
+      this.toolOutputs.set(toolCallId, update.rawOutput);
+    } else if (Object.prototype.hasOwnProperty.call(update, "content")) {
+      this.toolOutputs.set(toolCallId, update.content);
+    }
+
+    events.push(...this.toolArgs(toolCallId, update.rawInput));
+
+    const status = this.toolStatuses.get(toolCallId);
+    const terminal = status === "completed" || status === "failed";
+    if (terminal || (status === "in_progress" && this.sentToolArgs.has(toolCallId))) {
+      events.push(...this.endTool(toolCallId));
+    }
+    if (terminal) {
+      events.push(
+        ...this.toolResult(
+          toolCallId,
+          status,
+          this.toolOutputs.has(toolCallId) ? this.toolOutputs.get(toolCallId) : undefined,
+        ),
+      );
+    }
+
+    return events;
+  }
+
+  private emitOutput(output: string): AGUIEvent[] {
+    if (!output) return [];
+    const events = this.startMessage();
+    for (const delta of chunkOpenUIOutput(output)) {
+      events.push({
+        type: EventType.TEXT_MESSAGE_CONTENT,
+        messageId: this.assistantMessageId,
+        delta,
+      } as AGUIEvent);
+    }
+    return events;
+  }
+
   consume(update: GrokBuildSessionUpdate): AGUIEvent[] {
     switch (update.sessionUpdate) {
       case "agent_message_chunk": {
@@ -165,45 +226,62 @@ export class GrokBuildAGUIBridge {
         ];
       }
 
-      case "tool_call": {
-        const title = update.title || update.kind || "Tool";
-        const terminal = update.status === "completed" || update.status === "failed";
-        const argsClosed = update.status === "in_progress" || terminal;
-        const output = update.rawOutput !== undefined ? update.rawOutput : update.content;
-        const terminalStatus = update.status === "failed" ? "failed" : "completed";
-        return [
-          ...this.startTool(update.toolCallId, title),
-          ...this.toolArgs(update.toolCallId, update.rawInput),
-          ...(argsClosed ? this.endTool(update.toolCallId) : []),
-          ...(terminal ? this.toolResult(update.toolCallId, terminalStatus, output) : []),
-        ];
-      }
-
-      case "tool_call_update": {
-        const title = update.title || this.startedTools.get(update.toolCallId) || "Tool";
-        const terminal = update.status === "completed" || update.status === "failed";
-        const argsClosed = update.status === "in_progress" || terminal;
-        const output = update.rawOutput !== undefined ? update.rawOutput : update.content;
-        const terminalStatus = update.status === "failed" ? "failed" : "completed";
-        return [
-          ...this.startTool(update.toolCallId, title),
-          ...this.toolArgs(update.toolCallId, update.rawInput),
-          ...(argsClosed ? this.endTool(update.toolCallId) : []),
-          ...(terminal ? this.toolResult(update.toolCallId, terminalStatus, output) : []),
-        ];
-      }
+      case "tool_call":
+      case "tool_call_update":
+        return this.consumeToolUpdate(update);
 
       case "retry_state": {
-        if (update.type === "retrying") this.output.retry();
+        if (update.type === "retrying") {
+          this.output.retry();
+          const attempt = update.attempt ? ` ${update.attempt}` : "";
+          const maximum = update.max_retries ? ` of ${update.max_retries}` : "";
+          const message = `Model attempt${attempt}${maximum} was retried.`;
+          return [
+            ...this.endThinking(message),
+            ...this.closePendingTools("Tool call was superseded by a model retry."),
+          ];
+        }
+        if (update.type === "failed") {
+          const message = update.message || update.reason || "Grok Build retries failed.";
+          this.terminalError = message;
+          return [
+            ...this.endThinking(message, true),
+            ...this.closePendingTools(message),
+          ];
+        }
         return [];
       }
 
-      case "turn_completed":
+      case "turn_completed": {
+        if (update.stop_reason === "error") {
+          const message =
+            update.agent_result || this.terminalError || "Grok Build completed with an error.";
+          this.terminalError = message;
+          return [
+            ...this.endThinking(message, true),
+            ...this.closePendingTools(message),
+          ];
+        }
         return [];
+      }
 
       default:
         return [];
     }
+  }
+
+  needsCorrection(): boolean {
+    return this.output.needsCorrection();
+  }
+
+  correctionPrompt(): string {
+    return this.output.correctionPrompt();
+  }
+
+  beginCorrection(): AGUIEvent[] {
+    const events = this.endThinking("Final UI validation failed; correcting the response.");
+    this.output.resetForCorrection();
+    return events;
   }
 
   finish(): AGUIEvent[] {
@@ -211,27 +289,9 @@ export class GrokBuildAGUIBridge {
     this.messageEnded = true;
 
     const events = this.endThinking();
-    for (const toolCallId of this.startedTools.keys()) {
-      events.push(...this.endTool(toolCallId));
-      events.push(
-        ...this.toolResult(
-          toolCallId,
-          "failed",
-          "Tool call ended without a terminal result.",
-        ),
-      );
-    }
+    events.push(...this.closePendingTools("Tool call ended without a terminal result."));
     const output = this.output.finish();
-    if (output) {
-      events.push(...this.startMessage());
-      for (const delta of chunkOpenUIOutput(output)) {
-        events.push({
-          type: EventType.TEXT_MESSAGE_CONTENT,
-          messageId: this.assistantMessageId,
-          delta,
-        } as AGUIEvent);
-      }
-    }
+    events.push(...this.emitOutput(output));
     if (this.messageStarted) {
       events.push({
         type: EventType.TEXT_MESSAGE_END,
@@ -244,13 +304,11 @@ export class GrokBuildAGUIBridge {
   fail(message: string): AGUIEvent[] {
     if (this.messageEnded) return [];
     this.messageEnded = true;
-    this.output.retry();
+    const failure = this.terminalError ?? message;
 
-    const events = this.endThinking(message);
-    for (const toolCallId of this.startedTools.keys()) {
-      events.push(...this.endTool(toolCallId));
-      events.push(...this.toolResult(toolCallId, "failed", message));
-    }
+    const events = this.endThinking(failure, true);
+    events.push(...this.closePendingTools(failure));
+    if (this.output.hasOutput()) events.push(...this.emitOutput(this.output.finish()));
     if (this.messageStarted) {
       events.push({
         type: EventType.TEXT_MESSAGE_END,
