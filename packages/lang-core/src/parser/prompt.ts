@@ -593,6 +593,7 @@ function generateComponentSignatures(
 
 // ─── Prompt assembly ────────────────────────────────────────────────────────
 
+/** @deprecated Use {@link generateSystemPrompt}. */
 export function generatePrompt(spec: PromptSpec): string {
   const rootName = spec.root ?? "Root";
   const hasTools = !!spec.tools?.length;
@@ -690,4 +691,42 @@ export function generatePrompt(spec: PromptSpec): string {
   }
 
   return parts.join("\n");
+}
+
+// ─── System prompt (library + options + instructions) ───────────────────────
+
+/**
+ * Prompt options for {@link generateSystemPrompt} — everything on
+ * {@link PromptSpec} that isn't the library itself. Structurally identical to
+ * the `PromptOptions` accepted by `Library.prompt()`.
+ */
+export type SystemPromptOptions = Omit<PromptSpec, keyof BaseSpec>;
+
+/** Object input for {@link generateSystemPrompt}. */
+export interface SystemPromptSpec {
+  library: LibrarySpec;
+  promptOptions?: SystemPromptOptions;
+}
+
+/**
+ * Render the full system prompt for a library.
+ *
+ * `library` is the serialized spec; a pre-rendered `components` map (from
+ * `generate-spec` handover JSON) is used as-is.
+ */
+export function generateSystemPrompt(spec: SystemPromptSpec): string;
+/** @deprecated Pass `{ library, promptOptions, instructions }` instead. Removed at the next major. */
+export function generateSystemPrompt(spec: PromptSpec): string;
+export function generateSystemPrompt(spec: SystemPromptSpec | PromptSpec): string {
+  if (!isSystemPromptSpec(spec)) {
+    return generatePrompt(spec);
+  }
+  const merged: PromptSpec = { ...spec.library, ...spec.promptOptions };
+  return generatePrompt(merged);
+}
+
+// `library` is not a key of PromptSpec/BaseSpec, so its presence discriminates
+// the object form from the deprecated bare-PromptSpec form.
+function isSystemPromptSpec(spec: SystemPromptSpec | PromptSpec): spec is SystemPromptSpec {
+  return "library" in spec && typeof (spec as SystemPromptSpec).library === "object";
 }
