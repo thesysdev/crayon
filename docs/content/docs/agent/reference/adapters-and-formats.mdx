@@ -147,7 +147,7 @@ Omit `storage` entirely and `AgentInterface` uses an internal in-memory store �
 
 ### `ThreadStorage`
 
-The five methods that back thread management. Implement these and the default sidebar's thread list, "New chat" button, thread switching, and deletion all operate against your backend.
+Five required methods that back thread management, plus one optional method for message write-back. Implement the required five and the default sidebar's thread list, "New chat" button, thread switching, and deletion all operate against your backend.
 
 ```ts
 interface ThreadStorage {
@@ -156,6 +156,7 @@ interface ThreadStorage {
   getMessages(threadId: string): Promise<Message[]>;
   updateThread(thread: Thread): Promise<Thread>;
   deleteThread(id: string): Promise<void>;
+  updateMessage?(threadId: string, message: Message): Promise<void>;
 }
 ```
 
@@ -166,6 +167,9 @@ interface ThreadStorage {
 | `getMessages(threadId)` | `Message[]` | The user opens a thread. |
 | `updateThread(thread)` | the updated `Thread` | A thread changes (e.g. a rename). |
 | `deleteThread(id)` | `void` | The user deletes a thread. |
+| `updateMessage?(threadId, message)` | `void` | *Optional.* A rendered message is rewritten client-side — today that's form state being folded into the message content. Called fire-and-forget after the in-memory update; failures are logged, never surfaced as a thread error. |
+
+Omit `updateMessage` and message edits stay in-memory only — form values are lost when the thread is re-fetched (reload, or switching threads and back). Implementations receive the whole latest message; built-in inputs commit on blur/click, so calls arrive at user-interaction rate, not per keystroke.
 
 Implement these directly when your storage doesn't fit the REST shape `restStorage` expects — a different route layout, GraphQL, or a client-side store like IndexedDB:
 
