@@ -1,13 +1,14 @@
 "use client";
 
 import { Tag } from "@openuidev/react-ui";
-import { CheckCircle2, Lightbulb } from "lucide-react";
 import { groupByCode } from "@paste/lib/groupErrors";
 import type { ValidationOutcome } from "@paste/lib/parse";
 import type { OpenUIError } from "@paste/lib/versions/types";
+import { CheckCircle2, Lightbulb } from "lucide-react";
 
 function hintFor(enriched: OpenUIError[] | null, code: string, path: string, component: string) {
-  return enriched?.find((e) => e.code === code && e.path === path && e.component === component)?.hint;
+  return enriched?.find((e) => e.code === code && e.path === path && e.component === component)
+    ?.hint;
 }
 
 export function ValidationPanel({ outcome }: { outcome: ValidationOutcome }) {
@@ -24,7 +25,8 @@ export function ValidationPanel({ outcome }: { outcome: ValidationOutcome }) {
       </div>
     );
   }
-  if (!result) return <div className="panel-empty">Paste some OpenUI Lang code to validate it.</div>;
+  if (!result)
+    return <div className="panel-empty">Paste some OpenUI Lang code to validate it.</div>;
 
   const { meta } = result;
   const groups = groupByCode(meta.errors);
@@ -32,16 +34,16 @@ export function ValidationPanel({ outcome }: { outcome: ValidationOutcome }) {
   return (
     <div className="panel-scroll">
       <div className="meta-strip">
-        <Tag size="sm" variant="neutral" text={`statements: ${meta.statementCount}`} />
+        <Tag size="sm" variant="neutral" text={`Statements: ${meta.statementCount}`} />
         <Tag
           size="sm"
           variant={meta.incomplete ? "warning" : "success"}
-          text={meta.incomplete ? "incomplete" : "complete"}
+          text={meta.incomplete ? "Incomplete" : "Complete"}
         />
         <Tag
           size="sm"
           variant={result.root ? "success" : "warning"}
-          text={`root: ${result.root ? result.root.typeName : "none"}`}
+          text={`Root: ${result.root ? result.root.typeName : "none"}`}
         />
         {meta.unresolved.map((u) => (
           <Tag key={u} size="sm" variant="warning" text={`unresolved: ${u}`} />

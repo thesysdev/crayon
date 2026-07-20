@@ -1,7 +1,7 @@
 "use client";
 
-import { CheckCircle2, Circle, CircleDot, CircleMinus, CirclePlus, XCircle } from "lucide-react";
 import type { PlaybackState } from "@paste/lib/streaming/usePlayback";
+import { CheckCircle2, Circle, CircleDot, CircleMinus, CirclePlus, XCircle } from "lucide-react";
 
 export function StreamTimeline({ state }: { state: PlaybackState }) {
   if (state.status === "idle") {

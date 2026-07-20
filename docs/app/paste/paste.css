@@ -10,15 +10,8 @@
 }
 
 .playground {
-  --paste-border: 1px solid
-    var(--openui-border-default, rgba(128, 128, 128, 0.25));
-  --paste-mono: var(
-    --openui-font-code,
-    ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    monospace
-  );
+  --paste-border: 1px solid var(--openui-border-default, rgba(128, 128, 128, 0.25));
+  --paste-mono: var(--openui-font-code, ui-monospace, SFMono-Regular, Menlo, monospace);
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -46,7 +39,7 @@
 }
 
 .playground .toolbar-logo {
-  font-weight: 700;
+  font-weight: 600;
   font-size: var(--openui-font-size-xl, 20px);
 }
 
@@ -301,7 +294,7 @@
 
 .playground .all-clear {
   color: var(--openui-text-success-primary, #171);
-  font-weight: 600;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: var(--openui-space-2xs, 6px);
@@ -386,9 +379,9 @@
 
 .playground .render-seam {
   padding: var(--openui-space-2xs, 6px) var(--openui-space-m, 16px);
-  color: var(--openui-text-neutral-tertiary, #999);
-  font-size: var(--openui-font-size-2xs, 10px);
-  border-bottom: var(--paste-border);
+  color: var(--openui-text-neutral, #999);
+  font-size: var(--openui-font-size-xs, 10px);
+  margin-bottom: var(--openui-space-xs);
 }
 
 .playground .render-canvas {
@@ -675,13 +668,27 @@
 .playground .trace-table {
   table-layout: fixed;
 }
-.playground .trace-table th:nth-child(1) { width: 36px; }
-.playground .trace-table th:nth-child(3) { width: 60px; }
-.playground .trace-table th:nth-child(4) { width: 96px; }
-.playground .trace-table th:nth-child(5) { width: 52px; }
-.playground .trace-table th:nth-child(6) { width: 88px; }
-.playground .trace-table th:nth-child(7) { width: 52px; }
-.playground .trace-table th:nth-child(8) { width: 46px; }
+.playground .trace-table th:nth-child(1) {
+  width: 36px;
+}
+.playground .trace-table th:nth-child(3) {
+  width: 60px;
+}
+.playground .trace-table th:nth-child(4) {
+  width: 96px;
+}
+.playground .trace-table th:nth-child(5) {
+  width: 52px;
+}
+.playground .trace-table th:nth-child(6) {
+  width: 88px;
+}
+.playground .trace-table th:nth-child(7) {
+  width: 52px;
+}
+.playground .trace-table th:nth-child(8) {
+  width: 46px;
+}
 .playground .trace-table td {
   content-visibility: visible;
   overflow: hidden;
@@ -689,4 +696,175 @@
 }
 .playground .chunk-preview {
   max-width: 100%;
+}
+
+/* ── mock tools note ───────────────────────────────────────────────────── */
+
+.playground .mock-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--openui-space-2xs, 6px);
+  padding: var(--openui-space-2xs, 6px) var(--openui-space-m, 16px);
+  color: var(--openui-text-info-primary, #147);
+  background: var(--openui-info-background, #e8f2ff);
+  font-size: var(--openui-font-size-xs, 12px);
+  border-radius: var(--openui-space-s);
+}
+
+.playground .mock-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── topbar right cluster (title + theme toggle) ───────────────────────── */
+
+.playground .topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-s, 10px);
+}
+
+/* ── playback button group (icon-only, joined) ─────────────────────────── */
+
+.playground .btn-group {
+  display: inline-flex;
+  align-items: stretch;
+}
+
+/* Collapse inner radii/borders so the three buttons read as one control. */
+.playground .btn-group > button {
+  padding-inline: var(--openui-space-s, 10px);
+}
+
+.playground .btn-group > button:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: -1px;
+}
+
+.playground .btn-group > button:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* ── responsive ────────────────────────────────────────────────────────── */
+
+.playground {
+  /* dvh keeps the layout inside the visible viewport under mobile browser chrome */
+  height: 100dvh;
+}
+
+@media (max-width: 860px) {
+  .playground .topbar,
+  .playground .toolbar {
+    padding: var(--openui-space-xs, 8px) var(--openui-space-s, 10px);
+  }
+
+  .playground .toolbar-controls {
+    gap: var(--openui-space-s, 10px);
+  }
+
+  /* Vertical split: the separator becomes a horizontal grab bar. */
+  .playground .resize-handle {
+    width: auto;
+    height: 5px;
+    border-left: none;
+    border-top: var(--paste-border);
+  }
+
+  .playground .split-panel {
+    height: 100%;
+    width: 100%;
+  }
+
+  .playground .help-dialog {
+    max-width: 100%;
+    max-height: 92dvh;
+  }
+
+  .playground .help-header,
+  .playground .help-body {
+    padding: var(--openui-space-s, 10px) var(--openui-space-m, 16px);
+  }
+
+  .playground .toast-stack {
+    left: var(--openui-space-s, 10px);
+    right: var(--openui-space-s, 10px);
+    bottom: var(--openui-space-s, 10px);
+  }
+
+  .playground .render-canvas {
+    padding: var(--openui-space-s, 10px);
+  }
+}
+
+/* ── mobile settings drawer ────────────────────────────────────────────── */
+
+.playground .drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: flex-end;
+  z-index: 200;
+}
+
+.playground .drawer {
+  background: var(--openui-background, #fff);
+  border-top: var(--paste-border);
+  border-radius: var(--openui-radius-l, 12px) var(--openui-radius-l, 12px) 0 0;
+  box-shadow: var(--openui-shadow-2xl, 0 -12px 48px rgba(0, 0, 0, 0.25));
+  width: 100%;
+  max-height: 80dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.playground .drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--openui-space-s, 10px) var(--openui-space-m, 16px);
+  border-bottom: var(--paste-border);
+}
+
+.playground .drawer-header h2 {
+  font-size: var(--openui-font-size-m, 14px);
+  font-weight: 700;
+}
+
+.playground .drawer-body {
+  padding: var(--openui-space-m, 16px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--openui-space-m, 16px);
+}
+
+/* Fields become full-width label/control rows inside the drawer. */
+.playground .drawer-body .toolbar-field {
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Empty states are prose, never flex. Guards against the docs bundle's own
+   unscoped .panel-empty rule (display:flex + height:100vh) that collides
+   with this class name and split the text into separate flex boxes. */
+.playground .panel-empty {
+  display: block;
+  height: auto;
+}
+
+/* Tailwind preflight (docs-global) strips list-style from ul/ol — restore
+   markers inside the help dialog's prose lists. */
+.playground .help-body ul {
+  list-style: disc;
+}
+
+.playground .help-body ol {
+  list-style: decimal;
+}
+
+.playground .help-body li {
+  display: list-item;
 }

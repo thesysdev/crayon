@@ -8,7 +8,7 @@ export const EXAMPLES: Example[] = [
   {
     id: "valid",
     label: "Valid: basic stack",
-    code: `root = Stack([title, body])
+    code: `root = Card([title, body])
 
 title = TextContent("Quarterly Overview")
 body = TextContent("Revenue up 12% QoQ; headcount at 128.")
@@ -33,12 +33,14 @@ body = TextContent("This program is truncated mid-statement to show partial pars
 chart = BarChart(["Q1", "Q2", "Q3"], [series`,
   },
   {
-    id: "two-required",
+    id: "missing-required",
     label: "Missing required props",
-    code: `root = Stack([intro, CodeBlock("typescript", "const x: number = 42;"), outro])
+    code: `root = Stack([title, code, chart, pic])
 
-intro = TextContent("Example:")
-outro = TextContent("Done.")
+title = TextContent()
+code = CodeBlock("typescript")
+chart = BarChart(["Q1", "Q2", "Q3"])
+pic = Image()
 `,
   },
   {
@@ -56,6 +58,17 @@ tbl = Table([Col("Language", langs), Col("Users (M)", users)])
 langs = ["Python", "JavaScript", "Go"]
 users = [15.7, 14.2, 5.2]
 chart = BarChart(["Q1", "Q2", "Q3"], [Series("Revenue", [120, 150, 180])], "grouped")
+`,
+  },
+  {
+    id: "mock-tools",
+    label: "Query() with mock tools",
+    code: `root = Stack([title, note, tickets])
+
+title = TextContent("Ticket dashboard", "large-heavy")
+note = TextContent("The Query() below hits the playground's mock tool provider: any tool name resolves with sample data.")
+data = Query("list_tickets", {}, {items: []})
+tickets = Table([Col("Ticket", data.items.label), Col("Priority", data.items.value)])
 `,
   },
 ];

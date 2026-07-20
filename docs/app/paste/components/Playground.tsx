@@ -3,6 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger, Tag } from "@openuidev/react-ui";
 import { useMemo, useState } from "react";
 import { Group, Panel, Separator } from "react-resizable-panels";
+import { useMediaQuery } from "@paste/hooks/useMediaQuery";
 import { useValidation } from "@paste/hooks/useValidation";
 import { useVersionList } from "@paste/hooks/useVersionList";
 import { DEFAULT_EXAMPLE } from "@paste/lib/examples";
@@ -54,6 +55,8 @@ export function Playground() {
 
   const playbackActive = playback.state.status === "playing" || playback.state.status === "paused";
   const isStreaming = playback.state.status === "playing";
+  // Editor stacks above the output on narrow screens (split flips vertical).
+  const narrow = useMediaQuery("(max-width: 860px)");
 
   // Streaming playback takes over all panels while it owns the parse state.
   const displayed = playbackActive || playback.state.status === "done"
@@ -114,7 +117,7 @@ export function Playground() {
         </Banner>
       )}
 
-      <Group orientation="horizontal" className="main-split">
+      <Group orientation={narrow ? "vertical" : "horizontal"} className="main-split">
         {/* v4: unitless strings are percentages; numbers would mean pixels */}
         <Panel defaultSize="45%" minSize="25%" className="split-panel">
           <EditorPane

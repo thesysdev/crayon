@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Button,
   Label,
   Select,
   SelectContent,
@@ -9,16 +10,21 @@ import {
   SelectValue,
   Tag,
 } from "@openuidev/react-ui";
-// DOCS-PORT DIVERGENCE: back-to-docs link (same pattern as /chat).
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, SlidersHorizontal, X } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useMediaQuery } from "@paste/hooks/useMediaQuery";
 import type { VersionListState } from "@paste/hooks/useVersionList";
 import { EXAMPLES } from "@paste/lib/examples";
 import { LIBRARIES, type LibraryId } from "@paste/lib/libraries";
+import type { ChunkStrategy } from "@paste/lib/streaming/chunker";
 import type { PlaybackControls } from "@paste/lib/streaming/usePlayback";
 import type { LoadedLangCore } from "@paste/lib/versions/types";
 import { HelpDialog } from "./HelpDialog";
-import { StreamControls } from "./StreamControls";
+import { PlaybackButtons, StreamSettingsFields } from "./StreamControls";
+// The docs site's own toggle (animated sun/moon, phosphor icons) — same one
+// as the homepage header, so /paste matches the rest of the site.
+import { ThemeToggle } from "@/components/theme-toggle";
 import { VersionPicker } from "./VersionPicker";
 
 export function Toolbar({
@@ -44,6 +50,83 @@ export function Toolbar({
 }) {
   const playbackActive =
     playback.state.status === "playing" || playback.state.status === "paused";
+  // strategy/seed live here (not in StreamControls) so the play button in the
+  // toolbar and the settings fields in the mobile drawer share them.
+  const [strategy, setStrategy] = useState<ChunkStrategy>("llm");
+  const [seed, setSeed] = useState(42);
+  const settings = {
+    strategy,
+    onStrategyChange: setStrategy,
+    seed,
+    onSeedChange: setSeed,
+  };
+
+  const narrow = useMediaQuery("(max-width: 860px)");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDrawerOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [drawerOpen]);
+
+  const libraryField = (
+    <div className="toolbar-field">
+      <Label className="toolbar-label">Library</Label>
+      <Select
+        value={libraryId}
+        onValueChange={(v) => onLibraryChange(v as LibraryId)}
+        disabled={playbackActive}
+        size="sm"
+      >
+        <SelectTrigger size="sm" aria-label="Component library">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {LIBRARIES.map((l) => (
+            <SelectItem key={l.id} value={l.id}>
+              {l.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
+  const examplesField = (
+    <div className="toolbar-field">
+      {!narrow && <Label className="toolbar-label">Examples</Label>}
+      {/* value stays "" so the same example can be re-selected */}
+      <Select
+        value=""
+        onValueChange={(id) => {
+          const ex = EXAMPLES.find((x) => x.id === id);
+          if (ex) onLoadExample(ex.code);
+        }}
+        disabled={playbackActive}
+        size="sm"
+      >
+        <SelectTrigger size="sm" aria-label="Load example">
+          <SelectValue placeholder={narrow ? "Examples" : "Select"} />
+        </SelectTrigger>
+        <SelectContent>
+          {EXAMPLES.map((ex) => (
+            <SelectItem key={ex.id} value={ex.id}>
+              {ex.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
+  const viaTag =
+    loaded && loaded.source !== "bundled" ? (
+      <Tag size="sm" variant="info" text={`via ${loaded.source}`} />
+    ) : null;
 
   return (
     <>
@@ -52,68 +135,80 @@ export function Toolbar({
           <ArrowLeft aria-hidden size={16} />
           <span>Back to docs</span>
         </Link>
-        <span className="toolbar-logo">OpenUI Paste</span>
+        <div className="topbar-right">
+          <span className="toolbar-logo">OpenUI Paste</span>
+          <ThemeToggle />
+        </div>
       </header>
       <div className="toolbar">
         <div className="toolbar-controls">
-        <StreamControls playback={playback} bigInput={bigInput} />
-        <span className="toolbar-divider" aria-hidden />
-        <div className="toolbar-field">
-          <Label className="toolbar-label">Library</Label>
-          <Select
-            value={libraryId}
-            onValueChange={(v) => onLibraryChange(v as LibraryId)}
-            disabled={playbackActive}
-            size="sm"
-          >
-            <SelectTrigger size="sm" aria-label="Component library">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {LIBRARIES.map((l) => (
-                <SelectItem key={l.id} value={l.id}>
-                  {l.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <VersionPicker
-          value={version}
-          onChange={onVersionChange}
-          versions={versions}
-          disabled={playbackActive}
-        />
-        <div className="toolbar-field">
-          <Label className="toolbar-label">Examples</Label>
-          {/* value stays "" so the same example can be re-selected */}
-          <Select
-            value=""
-            onValueChange={(id) => {
-              const ex = EXAMPLES.find((x) => x.id === id);
-              if (ex) onLoadExample(ex.code);
-            }}
-            disabled={playbackActive}
-            size="sm"
-          >
-            <SelectTrigger size="sm" aria-label="Load example">
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent>
-              {EXAMPLES.map((ex) => (
-                <SelectItem key={ex.id} value={ex.id}>
-                  {ex.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-          {loaded && loaded.source !== "bundled" && (
-            <Tag size="sm" variant="info" text={`via ${loaded.source}`} />
+          <PlaybackButtons playback={playback} settings={settings} />
+          {narrow ? (
+            <>
+              {examplesField}
+              <Button
+                variant="secondary"
+                size="small"
+                onClick={() => setDrawerOpen(true)}
+                aria-label="Playground settings"
+                title="Playground settings"
+                aria-haspopup="dialog"
+              >
+                <SlidersHorizontal size={16} />
+              </Button>
+            </>
+          ) : (
+            <>
+              <StreamSettingsFields playback={playback} bigInput={bigInput} settings={settings} />
+              <span className="toolbar-divider" aria-hidden />
+              {libraryField}
+              <VersionPicker
+                value={version}
+                onChange={onVersionChange}
+                versions={versions}
+                disabled={playbackActive}
+              />
+              {examplesField}
+              {viaTag}
+            </>
           )}
           <HelpDialog />
         </div>
       </div>
+      {narrow && drawerOpen && (
+        <div className="drawer-overlay" onClick={() => setDrawerOpen(false)}>
+          <div
+            className="drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Playground settings"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="drawer-header">
+              <h2>Settings</h2>
+              <Button
+                variant="tertiary"
+                size="small"
+                onClick={() => setDrawerOpen(false)}
+                aria-label="Close settings"
+              >
+                <X size={16} />
+              </Button>
+            </div>
+            <div className="drawer-body">
+              <StreamSettingsFields playback={playback} bigInput={bigInput} settings={settings} />
+              {libraryField}
+              <VersionPicker
+                value={version}
+                onChange={onVersionChange}
+                versions={versions}
+                disabled={playbackActive}
+              />
+              {viaTag}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -11,69 +11,111 @@ import {
   SelectValue,
 } from "@openuidev/react-ui";
 import { Pause, Play, RotateCcw, StepForward } from "lucide-react";
-import { useState } from "react";
 import { CHUNK_STRATEGIES, type ChunkStrategy } from "@paste/lib/streaming/chunker";
 import type { PlaybackControls } from "@paste/lib/streaming/usePlayback";
 
 const SPEEDS = ["0.25", "0.5", "1", "2", "4", "8"];
 const ICON = { size: 14 };
 
-export function StreamControls({
+/**
+ * Split so the toolbar can compose them differently per breakpoint: buttons
+ * stay inline on mobile while the settings fields move into the drawer.
+ * strategy/seed state lives in Toolbar for the same reason.
+ */
+export interface StreamSettings {
+  strategy: ChunkStrategy;
+  onStrategyChange: (s: ChunkStrategy) => void;
+  seed: number;
+  onSeedChange: (n: number) => void;
+}
+
+export function PlaybackButtons({
+  playback,
+  settings,
+}: {
+  playback: PlaybackControls;
+  settings: StreamSettings;
+}) {
+  const { state, start, pause, resume, step, reset } = playback;
+  return (
+    <>
+      <div className="btn-group" role="group" aria-label="Playback controls">
+        {state.status === "playing" ? (
+          <Button variant="primary" size="small" onClick={pause} aria-label="Pause" title="Pause">
+            <Pause {...ICON} />
+          </Button>
+        ) : state.status === "paused" ? (
+          <Button
+            variant="primary"
+            size="small"
+            onClick={resume}
+            aria-label="Resume"
+            title="Resume"
+          >
+            <Play {...ICON} />
+          </Button>
+        ) : (
+          <Button
+            variant="primary"
+            size="small"
+            onClick={() => start({ strategy: settings.strategy, seed: settings.seed })}
+            aria-label="Stream"
+            title="Stream (replay as simulated LLM output)"
+          >
+            <Play {...ICON} />
+          </Button>
+        )}
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={step}
+          disabled={state.status !== "paused"}
+          aria-label="Step one chunk"
+          title="Step one chunk"
+        >
+          <StepForward {...ICON} />
+        </Button>
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={reset}
+          disabled={state.status === "idle"}
+          aria-label="Reset playback"
+          title="Reset playback"
+        >
+          <RotateCcw {...ICON} />
+        </Button>
+      </div>
+      {state.totalChunks > 0 && (
+        <span className="stream-progress">
+          {state.chunkIndex}/{state.totalChunks}
+          {state.emulated && " · emulated"}
+        </span>
+      )}
+    </>
+  );
+}
+
+export function StreamSettingsFields({
   playback,
   bigInput,
+  settings,
 }: {
   playback: PlaybackControls;
   bigInput: boolean;
+  settings: StreamSettings;
 }) {
-  const [strategy, setStrategy] = useState<ChunkStrategy>("llm");
-  const [seed, setSeed] = useState(42);
-  const { state, start, pause, resume, step, reset, setSpeed, speed } = playback;
+  const { state, setSpeed, speed } = playback;
   const active = state.status === "playing" || state.status === "paused";
+  const { strategy, onStrategyChange, seed, onSeedChange } = settings;
 
   return (
-    <div className="stream-controls">
-      {state.status === "playing" ? (
-        <Button variant="primary" size="small" iconLeft={<Pause {...ICON} />} onClick={pause}>
-          Pause
-        </Button>
-      ) : state.status === "paused" ? (
-        <Button variant="primary" size="small" iconLeft={<Play {...ICON} />} onClick={resume}>
-          Resume
-        </Button>
-      ) : (
-        <Button
-          variant="primary"
-          size="small"
-          iconLeft={<Play {...ICON} />}
-          onClick={() => start({ strategy, seed })}
-        >
-          Stream
-        </Button>
-      )}
-      <Button
-        variant="secondary"
-        size="small"
-        iconLeft={<StepForward {...ICON} />}
-        onClick={step}
-        disabled={state.status !== "paused"}
-      >
-        Step
-      </Button>
-      <Button
-        variant="secondary"
-        size="small"
-        iconLeft={<RotateCcw {...ICON} />}
-        onClick={reset}
-        disabled={state.status === "idle"}
-      >
-        Reset
-      </Button>
-
+    <>
       <div className="toolbar-field">
         <Label className="toolbar-label">Chunks</Label>
         <Select
           value={strategy}
-          onValueChange={(v) => setStrategy(v as ChunkStrategy)}
+          onValueChange={(v) => onStrategyChange(v as ChunkStrategy)}
           disabled={active}
           size="sm"
         >
@@ -114,17 +156,10 @@ export function StreamControls({
           size="small"
           className="seed-input"
           value={seed}
-          onChange={(e) => setSeed(Number(e.target.value) || 0)}
+          onChange={(e) => onSeedChange(Number(e.target.value) || 0)}
           disabled={active || strategy !== "llm"}
         />
       </div>
-
-      {state.totalChunks > 0 && (
-        <span className="stream-progress">
-          {state.chunkIndex}/{state.totalChunks}
-          {state.emulated && " · emulated"}
-        </span>
-      )}
-    </div>
+    </>
   );
 }

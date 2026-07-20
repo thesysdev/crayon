@@ -21,11 +21,12 @@ export function HelpDialog() {
       <Button
         variant="secondary"
         size="small"
-        iconLeft={<HelpCircle size={14} />}
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
+        aria-label="How to use paste"
+        title="How to use paste"
       >
-        Help
+        <HelpCircle size={16} />
       </Button>
       {open && (
         <div className="help-overlay" onClick={() => setOpen(false)}>
@@ -37,7 +38,7 @@ export function HelpDialog() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="help-header">
-              <h2>How to use paste</h2>
+              <h2>How to use Paste</h2>
               <Button
                 variant="tertiary"
                 size="small"
@@ -49,23 +50,22 @@ export function HelpDialog() {
 
             <div className="help-body">
               <p>
-                paste is a playground for <strong>OpenUI Lang</strong>, the DSL that LLMs emit to
-                generate UI. Paste code on the left; the panels on the right show what the parser
-                and renderer make of it.
+                Paste is a playground for <strong>OpenUI Lang</strong>. Paste code on the left; the
+                panels on the right show what the parser and renderer make of it.
               </p>
 
               <h3>Quick start</h3>
               <ol>
                 <li>
                   Pick an example from <strong>Examples</strong>, or paste your own Lang code
-                  (statements look like <code>root = Stack([title])</code>).
                 </li>
                 <li>
                   Validation runs as you type against the selected <strong>lang-core</strong>{" "}
                   version. Every published npm version is available and loaded on demand.
                 </li>
                 <li>
-                  Switch the component <strong>Library</strong> (openui, openui chat) to validate and render against a different component set.
+                  Switch the component <strong>Library</strong> (openui, openui chat) to validate
+                  and render against a different component set.
                 </li>
               </ol>
 
@@ -73,8 +73,9 @@ export function HelpDialog() {
               <ul>
                 <li>
                   <strong>Render</strong>: live output. Interactive: forms hold state, and{" "}
-                  <code>Query()</code> calls resolve with mocked data. Always rendered with the
-                  bundled renderer; the selected lang-core version drives the other panels.
+                  <code>Query()</code> calls resolve with mocked data (any tool name returns sample
+                  data; calls are logged under the canvas). Always rendered with the bundled
+                  renderer; the selected lang-core version drives the other panels.
                 </li>
                 <li>
                   <strong>Validation</strong>: errors grouped by code, with fix hints, plus
