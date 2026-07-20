@@ -212,8 +212,6 @@ export const ThemeProvider = ({
 
   const activeTheme = mode === "light" ? resolvedLightTheme : resolvedDarkTheme;
   const cssVarsString = useMemo(() => themeToCssVars(activeTheme), [activeTheme]);
-  const sidebarShadowColor =
-    mode === "dark" ? activeTheme.overlay : activeTheme.sunkDeep;
 
   const portalClassName = `openui-theme-portal-${id}`;
   const scopedClassName = `openui-theme-${id}`;
@@ -245,11 +243,10 @@ export const ThemeProvider = ({
   useInsertionEffect(() => {
     const style = document.createElement("style");
     style.setAttribute("data-openui-theme", id);
-    style.textContent = `${styleSelector}, .${portalClassName} { ${cssVarsString}
-      --openui-agent-sidebar-shadow-color: ${sidebarShadowColor}; }`;
+    style.textContent = `${styleSelector}, .${portalClassName} { ${cssVarsString} }`;
     document.head.appendChild(style);
     return () => style.remove();
-  }, [cssVarsString, sidebarShadowColor, styleSelector, portalClassName, id]);
+  }, [cssVarsString, styleSelector, portalClassName, id]);
 
   // ---------------------------------------------------------------------------
   // Render

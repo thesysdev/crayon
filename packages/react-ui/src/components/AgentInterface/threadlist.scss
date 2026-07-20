@@ -1,13 +1,81 @@
 @use "../../cssUtils" as cssUtils;
 
+$thread-list-mask-height: cssUtils.$space-xl;
+
+@keyframes openui-agent-thread-list-appear {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .openui-agent-thread-list {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
   gap: cssUtils.$space-2xs;
   overflow: auto;
 
   .openui-agent-container--mobile & {
     gap: cssUtils.$space-s;
+  }
+
+  &--mask-top#{&}--mask-bottom {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black $thread-list-mask-height,
+      black calc(100% - #{$thread-list-mask-height}),
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black $thread-list-mask-height,
+      black calc(100% - #{$thread-list-mask-height}),
+      transparent
+    );
+  }
+
+  &--mask-top:not(&--mask-bottom) {
+    mask-image: linear-gradient(to bottom, transparent, black $thread-list-mask-height, black);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black $thread-list-mask-height,
+      black
+    );
+  }
+
+  &--mask-bottom:not(&--mask-top) {
+    mask-image: linear-gradient(to top, transparent, black $thread-list-mask-height, black);
+    -webkit-mask-image: linear-gradient(
+      to top,
+      transparent,
+      black $thread-list-mask-height,
+      black
+    );
+  }
+}
+
+.openui-agent-thread-list-content {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-2xs;
+  animation: openui-agent-thread-list-appear 180ms ease-out both;
+
+  .openui-agent-container--mobile & {
+    gap: cssUtils.$space-s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
 }
 
@@ -26,6 +94,30 @@
     @include cssUtils.typography(label, default);
 
     padding-left: cssUtils.$space-xs;
+  }
+}
+
+.openui-agent-thread-list-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-2xs;
+  width: 100%;
+
+  &__group {
+    padding: 0 0 cssUtils.$space-xs cssUtils.$space-xs;
+  }
+
+  &__row {
+    width: 100%;
+    padding: cssUtils.$space-xs;
+  }
+
+  .openui-agent-container--mobile & {
+    gap: cssUtils.$space-s;
+
+    &__row {
+      padding: cssUtils.$space-s-m;
+    }
   }
 }
 

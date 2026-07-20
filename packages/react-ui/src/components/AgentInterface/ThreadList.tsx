@@ -2,12 +2,37 @@ import { useThreadList } from "@openuidev/react-headless";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import { EllipsisIcon, Trash2Icon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { Button } from "../Button";
 import { IconButton } from "../IconButton";
+import { Skeleton } from "../Skeleton";
 import { useOptionalNav } from "./_shared/navContext";
 import { useAgentInterfaceStore } from "./_shared/store";
+
+const THREAD_SKELETON_WIDTHS = ["78%", "62%", "86%", "70%"];
+
+const ThreadListSkeleton = () => (
+  <div
+    className="openui-agent-thread-list-skeleton"
+    role="status"
+    aria-live="polite"
+    aria-label="Loading threads"
+  >
+    <div className="openui-agent-thread-list-skeleton__group" aria-hidden="true">
+      <Skeleton height="12px" width="48px" />
+    </div>
+    {THREAD_SKELETON_WIDTHS.map((width, index) => (
+      <div
+        key={`${width}-${index}`}
+        className="openui-agent-thread-list-skeleton__row"
+        aria-hidden="true"
+      >
+        <Skeleton height="14px" width={width} />
+      </div>
+    ))}
+  </div>
+);
 
 export const ThreadButton = ({
   id,
@@ -97,18 +122,75 @@ export const ThreadButton = ({
 
 export const ThreadList = ({ className }: { className?: string }) => {
   const threads = useThreadList((s) => s.threads);
+  const isLoadingThreads = useThreadList((s) => s.isLoadingThreads);
   const loadThreads = useThreadList((s) => s.loadThreads);
+  const [hasRequestedThreads, setHasRequestedThreads] = useState(false);
+  const [scrollMasks, setScrollMasks] = useState({ top: false, bottom: false });
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const updateScrollMasks = useCallback(() => {
+    const list = listRef.current;
+    if (!list) return;
+
+    const maxScrollTop = list.scrollHeight - list.clientHeight;
+    const nextMasks = {
+      top: maxScrollTop > 0 && list.scrollTop > 1,
+      bottom: maxScrollTop > 0 && list.scrollTop < maxScrollTop - 1,
+    };
+
+    setScrollMasks((current) =>
+      current.top === nextMasks.top && current.bottom === nextMasks.bottom ? current : nextMasks,
+    );
+  }, []);
 
   useEffect(() => {
+    setHasRequestedThreads(true);
     loadThreads();
   }, []);
 
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+
+    updateScrollMasks();
+
+    const resizeObserver = new ResizeObserver(updateScrollMasks);
+    resizeObserver.observe(list);
+    const mutationObserver = new MutationObserver(updateScrollMasks);
+    mutationObserver.observe(list, { childList: true, subtree: true });
+    list.addEventListener("scroll", updateScrollMasks, { passive: true });
+
+    return () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+      list.removeEventListener("scroll", updateScrollMasks);
+    };
+  }, [updateScrollMasks]);
+
+  const showSkeleton = !hasRequestedThreads || isLoadingThreads;
+
   return (
-    <div className={clsx("openui-agent-thread-list", className)}>
-      {threads.length > 0 && <div className="openui-agent-thread-list-group">Threads</div>}
-      {threads.map((thread) => (
-        <ThreadButton key={thread.id} id={thread.id} title={thread.title} />
-      ))}
+    <div
+      ref={listRef}
+      className={clsx(
+        "openui-agent-thread-list",
+        {
+          "openui-agent-thread-list--mask-top": scrollMasks.top,
+          "openui-agent-thread-list--mask-bottom": scrollMasks.bottom,
+        },
+        className,
+      )}
+    >
+      {showSkeleton ? (
+        <ThreadListSkeleton />
+      ) : (
+        <div className="openui-agent-thread-list-content">
+          {threads.length > 0 && <div className="openui-agent-thread-list-group">Threads</div>}
+          {threads.map((thread) => (
+            <ThreadButton key={thread.id} id={thread.id} title={thread.title} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -120,8 +120,7 @@ export const ScrollArea = ({
   children,
   className,
   scrollVariant = "user-message-anchor",
-  userMessageSelector =
-    ".openui-agent-thread-message-user, .openui-shell-thread-message-user",
+  userMessageSelector = ".openui-agent-thread-message-user, .openui-shell-thread-message-user",
   scrollOnLoad = true,
 }: {
   children?: React.ReactNode;
