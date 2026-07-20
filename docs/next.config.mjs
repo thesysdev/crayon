@@ -17,6 +17,16 @@ const config = {
   async redirects() {
     return [
       {
+        source: "/AGENTS.md",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/skills.md",
+        destination: "https://github.com/thesysdev/skills/blob/main/skills/openui/SKILL.md",
+        permanent: false,
+      },
+      {
         source: "/components/blocks/accordian",
         destination: "/components/blocks/accordion",
         permanent: true,
