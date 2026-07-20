@@ -167,9 +167,7 @@ interface ThreadStorage {
 | `getMessages(threadId)` | `Message[]` | The user opens a thread. |
 | `updateThread(thread)` | the updated `Thread` | A thread changes (e.g. a rename). |
 | `deleteThread(id)` | `void` | The user deletes a thread. |
-| `updateMessage?(threadId, message)` | `void` | *Optional.* A rendered message is rewritten client-side — today that's form state being folded into the message content. Called fire-and-forget after the in-memory update; failures are logged, never surfaced as a thread error. |
-
-Omit `updateMessage` and message edits stay in-memory only — form values are lost when the thread is re-fetched (reload, or switching threads and back). Implementations receive the whole latest message; built-in inputs commit on blur/click, so calls arrive at user-interaction rate, not per keystroke.
+| `updateMessage?(threadId, message)` | `void` | *Optional.* The user edits form state in a rendered message; called fire-and-forget. |
 
 Implement these directly when your storage doesn't fit the REST shape `restStorage` expects — a different route layout, GraphQL, or a client-side store like IndexedDB:
 
