@@ -230,7 +230,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
         if (threadId !== null) {
           threadStorage
             .updateMessage(threadId, message)
-            .catch((e) => set((s) => ({ threadError: e })));
+            .catch((e) => set(() => ({ threadError: e })));
         }
       },
 
