@@ -18,10 +18,10 @@ pnpm add @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless
 
 **Peer dependencies:** `react ^18.3.1 || ^19.0.0`, `react-dom ^18.0.0 || ^19.0.0`, `zustand ^4.5.5`, `zod ^3.25.0 || ^4.0.0`, `@openuidev/react-lang`, `@openuidev/react-headless`
 
-Don't forget to import the component styles (once, app-wide):
+Don't forget to import the component styles:
 
 ```ts
-import "@openuidev/react-ui/components.css";
+import "@openuidev/react-ui/styles/index.css";
 ```
 
 ## Overview
@@ -37,10 +37,9 @@ This package provides three layers:
 The fastest way to get a working chat app is `AgentInterface`. Give it an `llm` transport built with `fetchLLM`: point it at your streaming endpoint, pick the stream adapter that matches what the endpoint emits (adapters are factories — call them), and optionally a message format for the wire shape. Storage is optional — without it, threads live in memory and are wiped on reload:
 
 ```tsx
-import "@openuidev/react-ui/components.css";
-
 import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
+import "@openuidev/react-ui/styles/index.css";
 
 // POSTs { threadId, runId, messages, tools, context } to /api/chat and parses
 // the streamed response — here an OpenAI Chat Completions stream.
@@ -61,8 +60,6 @@ function App() {
   );
 }
 ```
-
-If your endpoint streams AG-UI events, use `agUIAdapter()` and drop `messageFormat` (messages are sent as-is). For backends that don't fit `fetchLLM`'s conventions, implement the `ChatLLM` interface directly — see the [react-headless README](https://github.com/thesysdev/openui/tree/main/packages/react-headless).
 
 ### The chat surface
 
@@ -143,10 +140,8 @@ OpenUI ships its component styles in two variants:
 
 | Import                                                  | Cascade behavior                                                          |
 | ------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `@openuidev/react-ui/components.css` (default)          | Unlayered — override via normal CSS specificity, as in 0.11.x and earlier |
+| `@openuidev/react-ui/styles/index.css` (default)        | Unlayered — override via normal CSS specificity, as in 0.11.x and earlier |
 | `@openuidev/react-ui/layered/styles/index.css` (opt-in) | Wrapped in `@layer openui` — any unlayered consumer CSS wins              |
-
-`@openuidev/react-ui/styles/index.css` is an identical alias of `components.css` — import one or the other, never both.
 
 Need a single component's CSS? Import it per component: `./styles/<Component>.css` (unlayered) or `./layered/styles/<Component>.css` (layered).
 
@@ -212,8 +207,7 @@ import { Charts } from "@openuidev/react-ui/Charts";
 | Import path                                    | Description                                          |
 | :--------------------------------------------- | :--------------------------------------------------- |
 | `@openuidev/react-ui`                          | All components and libraries                         |
-| `@openuidev/react-ui/components.css`           | Full compiled stylesheet, unlayered (default import) |
-| `@openuidev/react-ui/styles/index.css`         | Identical alias of `components.css`                  |
+| `@openuidev/react-ui/styles/index.css`         | Full compiled stylesheet, unlayered (default import) |
 | `@openuidev/react-ui/layered/styles/index.css` | Full stylesheet wrapped in `@layer openui` (opt-in)  |
 | `@openuidev/react-ui/defaults.css`             | Theme tokens, always unlayered                       |
 | `@openuidev/react-ui/genui-lib`                | OpenUI Lang libraries and prompt options             |

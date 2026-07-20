@@ -50,8 +50,6 @@ pnpm --filter @openuidev/react-lang build
 
 Use the package name that matches the area you are changing.
 
-If you are a coding agent (or working with one), read the `AGENTS.md` in the package you are changing before editing, for example `packages/react-headless/AGENTS.md`. For building apps on the Agent Interface SDK, the self-contained consumer guide is `docs/public/AGENTS.md`, served at `/AGENTS.md` on the docs site.
-
 ## Before Opening a Pull Request
 
 Before opening a pull request, please make sure that:
