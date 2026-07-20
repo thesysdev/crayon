@@ -44,10 +44,11 @@ Open [http://localhost:3000](http://localhost:3000) and try a starter such as
 ## How it works
 
 - `src/agent.ts` defines the `get_weather` tool and a `createAgent()` builder
-  that appends OpenUI's generated system prompt to the agent's instruction.
+  that combines OpenUI's generated system prompt with weather-specific behavior.
 - `src/app/api/chat/route.ts` runs the agent with a `Runner`, keys ADK sessions
-  by chat `threadId` (so multi-turn history is preserved), and streams the
-  assistant text as OpenAI chat-completion SSE chunks.
+  by chat `threadId` (so multi-turn history is preserved), normalizes OpenUI
+  actions and submitted form values, and streams the assistant text as OpenAI
+  chat-completion SSE chunks.
 - `src/app/page.tsx` renders `<AgentInterface />`, sending `{ messages, threadId }`
   to `/api/chat` and parsing the stream with `openAIAdapter()`.
 
