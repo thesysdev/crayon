@@ -6,7 +6,7 @@ React components and a ready-made chat surface for OpenUI. Use the `AgentInterfa
 [![monthly downloads](https://img.shields.io/npm/dm/@openuidev/react-ui)](https://www.npmjs.com/package/@openuidev/react-ui)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
 
-**Links:** [Package docs](https://openui.com/docs/api-reference/react-ui) | [Agent Interface docs](https://openui.com/docs/agent/getting-started/introduction) | [GitHub repo](https://github.com/thesysdev/openui)
+**Links:** [Package docs](https://openui.com/docs/api-reference/react-ui) | [Chat docs](https://openui.com/docs/chat) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -16,7 +16,7 @@ npm install @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless
 pnpm add @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless
 ```
 
-**Peer dependencies:** `react ^18.3.1 || ^19.0.0`, `react-dom ^18.0.0 || ^19.0.0`, `zustand ^4.5.5`, `zod ^3.25.0 || ^4.0.0`, `@openuidev/react-lang`, `@openuidev/react-headless`
+**Peer dependencies:** `react >=19.0.0`, `react-dom >=19.0.0`, `zustand ^4.5.5`, `@openuidev/react-lang`, `@openuidev/react-headless`
 
 Don't forget to import the component styles:
 
@@ -34,7 +34,7 @@ This package provides three layers:
 
 ## Quick Start
 
-The fastest way to get a working chat app is `AgentInterface`. Give it an `llm` transport built with `fetchLLM`: point it at your streaming endpoint, pick the stream adapter that matches what the endpoint emits (adapters are factories — call them), and optionally a message format for the wire shape. Storage is optional — without it, threads live in memory and are wiped on reload:
+The fastest way to get a working chat app is `AgentInterface`. Give it an `llm` transport that talks to your backend. Storage is optional — without it, threads live in memory and are wiped on reload:
 
 ```tsx
 import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
@@ -74,7 +74,7 @@ function App() {
 | `agentName`        | Name displayed in the header                                                                 |
 | `starters`         | Conversation-starter prompts shown on the welcome screen                                     |
 
-See the [AgentInterface props reference](https://openui.com/docs/agent/reference/agentinterface-props) for full configuration.
+See the [chat docs](https://openui.com/docs/chat) for full configuration.
 
 ## Built-in Component Libraries
 
@@ -219,7 +219,7 @@ import { Charts } from "@openuidev/react-ui/Charts";
 ## Documentation
 
 - [React UI API reference](https://openui.com/docs/api-reference/react-ui)
-- [Agent Interface guides](https://openui.com/docs/agent/getting-started/introduction)
+- [Chat guides](https://openui.com/docs/chat)
 - [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/react-ui)
 
 ## License

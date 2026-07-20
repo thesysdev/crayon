@@ -1,13 +1,13 @@
 import { readFileSync } from "fs";
+import { join } from "path";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
-import { join } from "path";
-import { setCurrentThreadId, tools } from "./tools";
+import { tools, setCurrentThreadId } from "./tools";
 
 const generatedPrompt = readFileSync(
   join(process.cwd(), "src/generated/system-prompt.txt"),
-  "utf-8",
+  "utf-8"
 );
 
 const SPREADSHEET_INSTRUCTIONS = `
@@ -83,7 +83,7 @@ function extractText(msg: any): string {
 function sseToolCallStart(
   encoder: TextEncoder,
   tc: { id: string; function: { name: string } },
-  index: number,
+  index: number
 ) {
   return encoder.encode(
     `data: ${JSON.stringify({
@@ -105,7 +105,7 @@ function sseToolCallStart(
           finish_reason: null,
         },
       ],
-    })}\n\n`,
+    })}\n\n`
   );
 }
 
@@ -113,7 +113,7 @@ function sseToolCallArgs(
   encoder: TextEncoder,
   tc: { id: string; function: { arguments: string } },
   result: string,
-  index: number,
+  index: number
 ) {
   let enrichedArgs: string;
   try {
@@ -137,7 +137,7 @@ function sseToolCallArgs(
           finish_reason: null,
         },
       ],
-    })}\n\n`,
+    })}\n\n`
   );
 }
 
@@ -145,12 +145,14 @@ export async function POST(req: NextRequest) {
   const { messages } = await req.json();
 
   // Single shared table store keyed on "default"; chat threads are ephemeral, so
-  // we deliberately ignore the client's per-thread id (it would desync the tools
+  // the client's per-thread id is deliberately ignored (it would desync the tools
   // from the one spreadsheet visible on screen).
   setCurrentThreadId("default");
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  const lastUserMsg = (messages as any[]).filter((m: any) => m.role === "user").pop();
+  const lastUserMsg = (messages as any[])
+    .filter((m: any) => m.role === "user")
+    .pop();
   if (lastUserMsg) extractText(lastUserMsg);
 
   const cleanMessages = (messages as any[])
@@ -213,7 +215,9 @@ export async function POST(req: NextRequest) {
       runner.on("functionToolCall", (fc: any) => {
         const id = `tc-${callIdx}`;
         pendingCalls.push({ id, name: fc.name, arguments: fc.arguments });
-        enqueue(sseToolCallStart(encoder, { id, function: { name: fc.name } }, callIdx));
+        enqueue(
+          sseToolCallStart(encoder, { id, function: { name: fc.name } }, callIdx)
+        );
         callIdx++;
       });
 
@@ -225,8 +229,8 @@ export async function POST(req: NextRequest) {
               encoder,
               { id: tc.id, function: { arguments: tc.arguments } },
               result,
-              resultIdx,
-            ),
+              resultIdx
+            )
           );
         }
         resultIdx++;
@@ -253,7 +257,9 @@ export async function POST(req: NextRequest) {
       runner.on("error", (err: any) => {
         const msg = err instanceof Error ? err.message : "Stream error";
         console.error("Chat route error:", msg);
-        enqueue(encoder.encode(`data: ${JSON.stringify({ error: msg })}\n\n`));
+        enqueue(
+          encoder.encode(`data: ${JSON.stringify({ error: msg })}\n\n`)
+        );
         close();
       });
       /* eslint-enable @typescript-eslint/no-explicit-any */

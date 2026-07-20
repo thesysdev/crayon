@@ -16,10 +16,8 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `src/app/api/chat/route.ts` and improving your agent
-by adding system prompts or tools. The OpenUI system prompt is generated into
-`src/generated/system-prompt.txt` before every `dev` and `build` (or on demand with
-`npm run generate:prompt`).
+You can start editing the page by modifying `src/app/api/route.ts` and improving your agent
+by adding system prompts or tools.
 
 ## Learn More
 

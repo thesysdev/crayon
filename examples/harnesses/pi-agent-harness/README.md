@@ -14,9 +14,8 @@ launch — see **Security** below.
 
 ```
  Browser (src/app/page.tsx)
-   AgentInterface   ──POST /api/chat ({ threadId, messages, … })──►  route.ts (runtime=nodejs)
-   + fetchLLM                                                              │
-   + openuiLibrary                                                         │
+   AgentInterface   ──POST /api/chat ({ systemPrompt, messages })──►  route.ts (runtime=nodejs)
+   + openuiLibrary       x-conversation-id: <threadId>                     │
    renderer  ◄──NDJSON OpenAI chunks (delta.content = OpenUI Lang)─────────┤
                                                                            ▼
                                                           src/lib/pi-session.ts
@@ -34,14 +33,12 @@ launch — see **Security** below.
 - **Transport:** the frontend's `openAIReadableStreamAdapter()` parses **NDJSON** OpenAI
   `chat.completion.chunk`s (one JSON object per line). The route translates pi's `text_delta`
   events into `delta.content`, and pi's reasoning + tool executions into `delta.tool_calls`.
-- **System prompt:** the route generates the OpenUI Lang prompt server-side
-  (`openuiLibrary.prompt(openuiPromptOptions)`) and injects it into Pi via
-  `DefaultResourceLoader({ appendSystemPrompt: [...] })`, so the backend prompt and the frontend
-  renderer always reference the same component library. A client may send `systemPrompt` in the
-  request body as an override.
-- **Sessions:** each chat thread (a stable id `fetchLLM` sends as `threadId` in the request body;
-  the legacy `x-conversation-id` header still works as a fallback) maps to one persistent Pi
-  `AgentSession`, so multi-turn context is preserved.
+- **System prompt:** `page.tsx` generates the OpenUI Lang prompt client-side
+  (`openuiLibrary.prompt(openuiPromptOptions)`) and sends it in the request body; the route
+  injects it into Pi via `DefaultResourceLoader({ appendSystemPrompt: [...] })`, so the backend
+  prompt and the frontend renderer always reference the same component library.
+- **Sessions:** each chat thread (a stable id sent as the `x-conversation-id` header) maps to
+  one persistent Pi `AgentSession`, so multi-turn context is preserved.
 
 ## Prerequisites
 

@@ -1,5 +1,4 @@
 import { abortSession, getOrCreateSession } from "@/lib/pi-session";
-import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui/genui-lib";
 import type { NextRequest } from "next/server";
 
 // The Pi SDK spawns bash, reads the filesystem, and talks to model providers —
@@ -7,14 +6,7 @@ import type { NextRequest } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// OpenUI Lang instructions for the same component library the page renders with,
-// computed server-side so the client doesn't have to ship the (large) prompt.
-const defaultSystemPrompt = openuiLibrary.prompt(openuiPromptOptions);
-
 interface ChatBody {
-  /** Per-thread id sent by fetchLLM; maps to a persistent pi AgentSession. */
-  threadId?: string;
-  /** Optional override for the server-computed OpenUI system prompt. */
   systemPrompt?: string;
   messages?: Array<{ role?: string; content?: unknown }>;
 }
@@ -68,10 +60,7 @@ function extractText(content: unknown): string {
 
 export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => ({}))) as ChatBody;
-  // fetchLLM sends the thread id in the body; the `x-conversation-id` header is
-  // kept as a fallback for older/custom clients.
-  const conversationId =
-    body.threadId || req.headers.get("x-conversation-id") || crypto.randomUUID();
+  const conversationId = req.headers.get("x-conversation-id") || crypto.randomUUID();
   const cwd = process.env.PI_AGENT_CWD || process.cwd();
 
   // The frontend re-sends the full thread, but Pi keeps its own transcript, so
@@ -84,7 +73,7 @@ export async function POST(req: NextRequest) {
   try {
     const entry = await getOrCreateSession(conversationId, {
       cwd,
-      systemPrompt: body.systemPrompt || defaultSystemPrompt,
+      systemPrompt: body.systemPrompt,
     });
     session = entry.session;
     modelFallbackMessage = entry.modelFallbackMessage;

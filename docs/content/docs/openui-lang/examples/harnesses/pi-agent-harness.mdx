@@ -26,32 +26,39 @@ Its mid-turn activity (reasoning and tool runs) surfaces as cards too.
 
 | Piece | File | Role |
 | --- | --- | --- |
-| Frontend | `src/app/page.tsx` | A single `<AgentInterface>` wired to `fetchLLM`, which posts each turn to the bridge and parses the reply with `openAIReadableStreamAdapter()`. |
-| Bridge route | `src/app/api/chat/route.ts` | Computes the OpenUI Lang system prompt server-side, drives a pi `AgentSession`, and re-emits its events as NDJSON OpenAI chunks (`delta.content` is OpenUI Lang). |
-| Session registry | `src/lib/pi-session.ts` | One persistent `AgentSession` per chat thread, keyed by the `threadId` that `fetchLLM` sends in the request body. |
+| Frontend | `src/app/page.tsx` | A single `<AgentInterface>` whose `llm.send` posts to the bridge with `streamProtocol: openAIReadableStreamAdapter()`. Generates the OpenUI Lang system prompt and sends it with each turn. |
+| Bridge route | `src/app/api/chat/route.ts` | Drives a pi `AgentSession` and re-emits its events as NDJSON OpenAI chunks (`delta.content` is OpenUI Lang). |
+| Session registry | `src/lib/pi-session.ts` | One persistent `AgentSession` per chat thread, keyed by the `x-conversation-id` header. |
 | Agent | `@earendil-works/pi-coding-agent` | The pi coding agent: `read` / `bash` / `edit` / `write` on the workspace you choose at launch. |
 
 Everything runs in **one Next.js process**: the App-Router route _is_ the backend. The pi SDK is embedded directly (no separate server), so there is no second service and no CORS. Each chat thread maps to one persistent pi `AgentSession`, so multi-turn context is preserved.
 
 ## Connecting the frontend
 
-The client is a single `<AgentInterface>` (the artifact chat surface with sidebar thread history) wired to `fetchLLM`. It posts each turn to the bridge — including the thread's stable client-generated id as `threadId` in the body — and parses the response with `openAIReadableStreamAdapter()` (NDJSON OpenAI chunks):
+The client is a single `<AgentInterface>` (the artifact chat surface with sidebar thread history). It generates the OpenUI Lang system prompt from the component library, sends it with each turn via its `llm.send`, and parses the response with `openAIReadableStreamAdapter()` (NDJSON OpenAI chunks):
 
 ```tsx
 import {
   AgentInterface,
-  fetchLLM,
   openAIMessageFormat,
   openAIReadableStreamAdapter,
+  type ChatLLM,
 } from "@openuidev/react-ui";
-import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
+import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui/genui-lib";
 
-// threadId is stable per thread, so each thread maps to its own persistent pi AgentSession.
-const llm = fetchLLM({
-  url: "/api/chat",
-  streamAdapter: openAIReadableStreamAdapter(),
-  messageFormat: openAIMessageFormat,
-});
+const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
+
+const llm: ChatLLM = {
+  // threadId is stable per thread, so each thread maps to its own persistent pi AgentSession.
+  send: ({ threadId, messages, signal }) =>
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-conversation-id": threadId },
+      body: JSON.stringify({ systemPrompt, messages: openAIMessageFormat.toApi(messages) }),
+      signal,
+    }),
+  streamProtocol: openAIReadableStreamAdapter(),
+};
 
 <AgentInterface
   llm={llm}
@@ -60,11 +67,11 @@ const llm = fetchLLM({
 />;
 ```
 
-The client does **not** generate the OpenUI Lang system prompt. The route computes it server-side from the **same** `openuiLibrary` this page renders with, so the model's markup always matches the component set the renderer knows — and the client doesn't have to ship the (large) prompt. A request can still pass `systemPrompt` in the body as an optional override.
+The `systemPrompt` generated here is the **same** string the backend injects into pi, so the model's markup always matches the component set the renderer knows.
 
 ## The bridge route
 
-The route keys a persistent `AgentSession` by the `threadId` that `fetchLLM` sends in the request body (an `x-conversation-id` header is kept only as a fallback for older/custom clients), computes the OpenUI Lang prompt server-side (`body.systemPrompt` can override it), injects it via `appendSystemPrompt`, subscribes to the session's events, and re-emits them as NDJSON OpenAI chunks. Because pi keeps its own transcript, only the newest user turn is sent to `session.prompt()`:
+The route keys a persistent `AgentSession` by the `x-conversation-id` header, injects the OpenUI Lang prompt via `appendSystemPrompt`, subscribes to the session's events, and re-emits them as NDJSON OpenAI chunks. Because pi keeps its own transcript, only the newest user turn is sent to `session.prompt()`:
 
 ```ts
 // lib/pi-session.ts: one AgentSession per conversation
@@ -82,12 +89,7 @@ const { session } = await createAgentSession({ cwd, agentDir, settingsManager, r
 ```
 
 ```ts
-// app/api/chat/route.ts: server-side OpenUI prompt, then pi events into OpenAI NDJSON
-const defaultSystemPrompt = openuiLibrary.prompt(openuiPromptOptions);
-
-const conversationId =
-  body.threadId || req.headers.get("x-conversation-id") || crypto.randomUUID();
-
+// app/api/chat/route.ts: translate pi events into OpenAI NDJSON
 const unsubscribe = session.subscribe((event) => {
   if (event.type === "message_update" && event.assistantMessageEvent.type === "text_delta") {
     enqueue(ndjsonChunk({ content: event.assistantMessageEvent.delta }));
@@ -97,7 +99,7 @@ await session.prompt(lastUserText);
 enqueue(ndjsonChunk({}, "stop"));
 ```
 
-The pi SDK is ESM-only, so it is loaded with a native dynamic `import()` and marked as a webpack external in `next.config.ts` (the example runs with `--webpack`). The same config also externalizes `@openuidev/react-ui/genui-lib` — scoped to imports issued from the API routes — because the route computes the OpenUI prompt from it server-side and Next's route-handler graph would otherwise reject its client-oriented React imports at build time.
+The pi SDK is ESM-only, so it is loaded with a native dynamic `import()` and marked as a webpack external in `next.config.ts` (the example runs with `--webpack`).
 
 ## Thinking states
 
@@ -141,12 +143,12 @@ The pi SDK resolves a model from either an environment API key (`ANTHROPIC_API_K
 
 ```
 examples/harnesses/pi-agent-harness/
-|- src/app/page.tsx           # <AgentInterface> wired to fetchLLM + openAIReadableStreamAdapter()
-|- src/app/api/chat/route.ts  # server-side OpenUI prompt; pi event stream into NDJSON OpenAI chunks
+|- src/app/page.tsx           # <AgentInterface> wired to openAIReadableStreamAdapter()
+|- src/app/api/chat/route.ts  # pi event stream into NDJSON OpenAI chunks
 |- src/lib/pi-session.ts      # one persistent pi AgentSession per conversation
 |- src/library.ts             # the OpenUI component library (re-exported)
 |- scripts/launch.mjs         # picks the agent workspace, then starts Next
-|- next.config.ts             # keeps the ESM-only pi SDK (and, for API routes, genui-lib) external
+|- next.config.ts             # keeps the ESM-only pi SDK external
 ```
 
 ## Run the example

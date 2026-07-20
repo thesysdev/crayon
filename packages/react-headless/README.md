@@ -6,7 +6,7 @@ Headless React state and streaming primitives for OpenUI chat experiences. Bring
 [![monthly downloads](https://img.shields.io/npm/dm/@openuidev/react-headless)](https://www.npmjs.com/package/@openuidev/react-headless)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
 
-**Links:** [Package docs](https://openui.com/docs/api-reference/react-headless) | [Agent Interface docs](https://openui.com/docs/agent/getting-started/introduction) | [GitHub repo](https://github.com/thesysdev/openui)
+**Links:** [Package docs](https://openui.com/docs/api-reference/react-headless) | [Chat docs](https://openui.com/docs/chat) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -16,7 +16,7 @@ npm install @openuidev/react-headless
 pnpm add @openuidev/react-headless
 ```
 
-**Peer dependencies:** `react ^18.3.1 || ^19.0.0`, `zustand ^4.5.5`
+**Peer dependencies:** `react >=19.0.0`, `react-dom >=19.0.0`, `zustand ^4.5.5`
 
 ## Overview
 
@@ -29,7 +29,7 @@ Use `@openuidev/react-headless` when you want OpenUI's chat behavior without Ope
 
 ## Quick Start
 
-`fetchLLM` is the standard transport. Point it at your streaming endpoint, pick a stream adapter that matches what the endpoint emits, and pass the resulting `ChatLLM` to `ChatProvider`:
+The simplest configuration builds the `llm` with `fetchLLM`, pointing it at your API and letting it handle the request and streaming automatically:
 
 ```tsx
 import { agUIAdapter, ChatProvider, fetchLLM } from "@openuidev/react-headless";
@@ -69,7 +69,7 @@ function App() {
 
 ### Custom adapters
 
-When these built-in adapters don't fit your backend, implement the `ChatLLM` (and/or `ChatStorage`) interface directly:
+For full control, implement the `ChatLLM` interface directly:
 
 ```tsx
 import { openAIAdapter, openAIMessageFormat, type ChatLLM } from "@openuidev/react-headless";
@@ -184,7 +184,7 @@ function MessageBubble() {
 
 ## Streaming Adapters
 
-Adapters transform HTTP responses into the internal AG-UI event stream. They are **factories — call them** and pass the result to `fetchLLM` via `streamAdapter` (or set it as `streamProtocol` on a hand-written `ChatLLM`):
+Adapters transform HTTP responses into the internal event stream. They are factories — call one and pass the result to `fetchLLM` via `streamAdapter`:
 
 ```tsx
 import { fetchLLM, openAIAdapter } from "@openuidev/react-headless";
@@ -215,7 +215,7 @@ const myAdapter: StreamProtocolAdapter = {
 
 ## Message Formats
 
-Message formats convert between your API's message shape and the internal AG-UI format. Pass one to `fetchLLM` or `restStorage` via the `messageFormat` option:
+Message formats convert between your API's message shape and the internal AG-UI format. Pass one to `fetchLLM` via the `messageFormat` option:
 
 ```tsx
 import { fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-headless";
@@ -275,7 +275,7 @@ import type {
 ## Documentation
 
 - [React Headless API reference](https://openui.com/docs/api-reference/react-headless)
-- [Agent Interface guides](https://openui.com/docs/agent/getting-started/introduction)
+- [Chat guides](https://openui.com/docs/chat)
 - [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/react-headless)
 
 ## License

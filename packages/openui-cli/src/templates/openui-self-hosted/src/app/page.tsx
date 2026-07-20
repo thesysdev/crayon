@@ -3,18 +3,28 @@ import "@openuidev/react-ui/components.css";
 import "@openuidev/react-ui/styles/index.css";
 
 import {
-  fetchLLM,
   openAIMessageFormat,
   openAIReadableStreamAdapter,
+  type ChatLLM,
 } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
-import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
+import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui/genui-lib";
 
-const llm = fetchLLM({
-  url: "/api/chat",
-  streamAdapter: openAIReadableStreamAdapter(),
-  messageFormat: openAIMessageFormat,
-});
+const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
+
+const llm: ChatLLM = {
+  send: async ({ messages, signal }) =>
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemPrompt,
+        messages: openAIMessageFormat.toApi(messages),
+      }),
+      signal,
+    }),
+  streamProtocol: openAIReadableStreamAdapter(),
+};
 
 export default function Home() {
   return (

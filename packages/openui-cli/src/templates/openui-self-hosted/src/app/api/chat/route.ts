@@ -1,16 +1,7 @@
-import { readFileSync } from "fs";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
-import { join } from "path";
 
 const client = new OpenAI();
-
-// Generated from the OpenUI component library by scripts/generate-prompt.mjs
-// (runs before `dev` and `build`); body.systemPrompt (optional) overrides it.
-const defaultSystemPrompt = readFileSync(
-  join(process.cwd(), "src/generated/system-prompt.txt"),
-  "utf-8",
-);
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,7 +9,7 @@ export async function POST(req: NextRequest) {
 
     const response = await client.chat.completions.create({
       model: "gpt-5.2",
-      messages: [{ role: "system", content: systemPrompt ?? defaultSystemPrompt }, ...messages],
+      messages: [{ role: "system", content: systemPrompt }, ...messages],
       stream: true,
     });
 
