@@ -18,54 +18,39 @@ const LOGOS = [
    second half must mirror the first exactly for a seamless loop. */
 const SETS = 4;
 
-function ArrowUpRight() {
+export function LogoStrip({ label }: { label?: string }) {
   return (
-    <svg
-      className={styles.chipArrow}
-      viewBox="0 0 12 12"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
+    <section
+      className={`${styles.section} ${label ? styles.sectionWithLabel : ""}`.trim()}
+      aria-label="Customers using OpenUI"
     >
-      <path d="M3 9L9 3M4.5 3H9v4.5" />
-    </svg>
-  );
-}
-
-export function LogoStrip() {
-  return (
-    <section className={styles.section} aria-label="Customers using OpenUI">
-      <div className={styles.marquee}>
-        <div className={styles.track}>
-          {Array.from({ length: SETS }, (_, set) =>
-            LOGOS.map((logo) => (
-              <a
-                key={`${set}-${logo.src}`}
-                className={styles.card}
-                href={logo.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-hidden={set > 0 || undefined}
-                tabIndex={set > 0 ? -1 : undefined}
-              >
-                <span className={styles.chip}>
-                  Website
-                  <ArrowUpRight />
-                </span>
-                <img
-                  className={styles.logo}
-                  src={logo.src}
-                  alt={set === 0 ? logo.alt : ""}
-                  width={160}
-                  height={48}
-                  loading="lazy"
-                />
-              </a>
-            )),
-          )}
+      <div className={styles.inner}>
+        {label && <p className={styles.label}>{label}</p>}
+        <div className={styles.marquee}>
+          <div className={styles.track}>
+            {Array.from({ length: SETS }, (_, set) =>
+              LOGOS.map((logo) => (
+                <a
+                  key={`${set}-${logo.src}`}
+                  className={styles.card}
+                  href={logo.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-hidden={set > 0 || undefined}
+                  tabIndex={set > 0 ? -1 : undefined}
+                >
+                  <img
+                    className={styles.logo}
+                    src={logo.src}
+                    alt={set === 0 ? logo.alt : ""}
+                    width={160}
+                    height={48}
+                    loading="lazy"
+                  />
+                </a>
+              )),
+            )}
+          </div>
         </div>
       </div>
     </section>

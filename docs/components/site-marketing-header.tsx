@@ -1,9 +1,13 @@
 "use client";
 
-import { type LogoVariant } from "@/components/brand-logo";
 import { GitHubButton } from "@/app/(home)/components/GitHubButton/GitHubButton";
+import { type LogoVariant } from "@/components/brand-logo";
 import { SiteHeaderFrame } from "@/components/site-header";
-import { isNavDropdown, PRIMARY_SITE_NAV_ITEMS, SitePrimaryNav } from "@/components/site-primary-nav";
+import {
+  isNavDropdown,
+  PRIMARY_SITE_NAV_ITEMS,
+  SitePrimaryNav,
+} from "@/components/site-primary-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ArrowRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -59,13 +63,26 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
   );
   const dropdownSections = PRIMARY_SITE_NAV_ITEMS.filter(isNavDropdown);
 
+  const openuiCloud = leafItems.find((item) => item.title === "OpenUI Cloud");
   const agentInterface = leafItems.find((item) => item.title === "Agent Interface");
-  const otherLeafItems = leafItems.filter((item) => item !== agentInterface);
+  const otherLeafItems = leafItems.filter(
+    (item) => item !== openuiCloud && item !== agentInterface,
+  );
 
   const productSection = {
     title: "Product",
     items: [
       { title: "OpenUI", href: "/", newTab: false, badge: undefined as string | undefined },
+      ...(openuiCloud
+        ? [
+            {
+              title: openuiCloud.title,
+              href: openuiCloud.href,
+              newTab: openuiCloud.newTab,
+              badge: openuiCloud.badge,
+            },
+          ]
+        : []),
       ...(agentInterface
         ? [
             {

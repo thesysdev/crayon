@@ -4,7 +4,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { PageHero, PageHeroAccent } from "../(home)/components/PageHero/PageHero";
 import { Footer } from "../(home)/sections/Footer/Footer";
-import styles from "./page.module.css";
 
 type BlogCardData = {
   href: string;
@@ -86,7 +85,8 @@ function formatDate(date: string | Date) {
 const TITLE_CLASS =
   "text-[length:var(--home-heading-size)] font-[family-name:var(--home-font-display)] font-medium leading-[var(--home-heading-leading)] tracking-[var(--home-heading-tracking)] text-[color:var(--openui-text-neutral-primary)]";
 
-const CARD_CLASS = `group flex flex-col overflow-hidden rounded-[var(--openui-radius-4xl)] border border-[var(--home-hairline)] bg-[var(--openui-foreground)] p-2 no-underline shadow-[var(--home-card-lift)] ${styles.card}`;
+const CARD_CLASS =
+  "group flex flex-col overflow-hidden rounded-[var(--openui-radius-4xl)] border border-[var(--home-hairline)] bg-[var(--openui-foreground)] p-2 no-underline shadow-[var(--home-card-lift)]";
 
 function TagChip({ children }: { children: ReactNode }) {
   return (
@@ -151,11 +151,13 @@ function FeaturedCard({ card }: { card: BlogCardData }) {
 
 // Regular: image on top, no description.
 function RegularCard({ card }: { card: BlogCardData }) {
-  const externalProps = card.external
-    ? { target: "_blank", rel: "noopener noreferrer" }
-    : {};
+  const externalProps = card.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
   return (
-    <Link href={card.href} {...externalProps} className={`${CARD_CLASS} min-h-[15rem] max-md:min-h-0`}>
+    <Link
+      href={card.href}
+      {...externalProps}
+      className={`${CARD_CLASS} min-h-[15rem] max-md:min-h-0`}
+    >
       <div className="relative flex h-44 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--openui-highlight)] md:h-60">
         {card.image ? (
           <img src={card.image} alt="" className="absolute inset-0 h-full w-full object-cover" />

@@ -27,6 +27,7 @@ type NavDropdown = {
 export type NavItem = NavLeaf | NavDropdown;
 
 export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
+  { title: "OpenUI Cloud", href: "/cloud", newTab: false },
   { title: "Docs", href: "/docs", newTab: false },
   {
     title: "Playground",
@@ -100,9 +101,7 @@ export function SitePrimaryNav() {
                       href={child.href}
                       key={child.href}
                       role="menuitem"
-                      {...(child.newTab
-                        ? { target: "_blank", rel: "noopener noreferrer" }
-                        : {})}
+                      {...(child.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                     >
                       <span className={styles.dropdownText}>
                         <span className={styles.dropdownTitleRow}>
