@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ChatProvider,
   fetchLLM,
@@ -7,11 +8,16 @@ import {
   openAIMessageFormat,
   useThread,
 } from "@openuidev/react-headless";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ComposePage } from "@/components/composePage";
 import { EmailEditor } from "@/components/emailEditor";
-import { clearSession, loadMessages, loadView, saveMessages, saveView } from "@/components/session";
+import {
+  saveView,
+  loadView,
+  saveMessages,
+  loadMessages,
+  clearSession,
+} from "@/components/session";
 
 // ── Main App (manages view state) ──
 
@@ -46,7 +52,7 @@ function EmailApp() {
       saveView("chat");
       processMessage({ role: "user", content: message });
     },
-    [processMessage],
+    [processMessage]
   );
 
   const handleNewEmail = useCallback(() => {
