@@ -4,7 +4,6 @@ import {
   createQueryManager,
   createStore,
   createStreamingParser,
-  enrichErrors,
   evaluate,
   evaluateElementProps,
   type ActionEvent,
@@ -17,6 +16,7 @@ import {
   type QuerySnapshot,
   type Store,
   type ToolProvider,
+  type ValidationError,
 } from "@openuidev/lang-core";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
@@ -467,14 +467,18 @@ export function useOpenUIState(
       });
     }
 
-    // Parser validation errors → enriched OpenUIError (with hints)
+    // Parser validation errors → tag source; ValidationError.message is already
+    // humanized (signatures/available components/expected types inlined).
     if (result?.meta?.errors?.length) {
       errors.push(
-        ...enrichErrors(
-          result.meta.errors,
-          library.toJSONSchema(),
-          Object.keys(library.components),
-        ),
+        ...result.meta.errors.map((e: ValidationError) => ({
+          source: "parser" as const,
+          code: e.code,
+          message: e.message,
+          component: e.component,
+          path: e.path || undefined,
+          statementId: e.statementId,
+        })),
       );
     }
 
