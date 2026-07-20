@@ -1,9 +1,9 @@
 "use client";
 
+import { usePersistedModel } from "@/hooks/use-persisted-model";
 import { useTheme } from "@/hooks/use-system-theme";
 import { shouldShowBillingCreditsNotice } from "@/lib/billing";
 import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
-import { DEFAULT_MODEL } from "@/lib/models";
 import { defineArtifactCategories } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
 import {
@@ -25,7 +25,7 @@ const showBillingCreditsNotice = shouldShowBillingCreditsNotice();
 
 export function CloudChat() {
   const mode = useTheme();
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
+  const [selectedModel, setSelectedModel] = usePersistedModel();
   const [billingDialogOpen, setBillingDialogOpen] = useState(false);
   const [billingCreditsRequired, setBillingCreditsRequired] = useState(false);
   const [llm] = useState(() =>
@@ -54,7 +54,7 @@ export function CloudChat() {
   const handleModelChange = useCallback((model: string) => {
     llm.setSelectedModel(model);
     setSelectedModel(model);
-  }, [llm]);
+  }, [llm, setSelectedModel]);
 
   return (
     <div
