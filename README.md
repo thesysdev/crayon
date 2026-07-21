@@ -21,7 +21,7 @@
 
 </div>
 
-OpenUI is a renderer-agnostic Generative UI framework built around a compact, streaming-first language. It offers official React support with built-in component libraries and ready-to-use chat interfaces, plus community-supported integrations for other frameworks. OpenUI Lang uses up to 67% fewer tokens than JSON.
+OpenUI is a full-stack, renderer-agnostic Generative UI framework built around a compact, streaming-first language. It offers official React support with built-in component libraries and ready-to-use chat interfaces, plus community-supported integrations for other frameworks. OpenUI Lang uses up to 67% fewer tokens than JSON.
 
 <div align="center">
 
