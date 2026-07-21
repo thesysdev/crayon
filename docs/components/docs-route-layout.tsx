@@ -50,7 +50,7 @@ export function DocsRouteLayout({ tree, children }: DocsRouteLayoutProps) {
         collapsible: false,
         banner: (
           <div className="flex flex-col mb-2">
-            <SidebarBannerLink href="/playground" label="Playground" external icon={<Play />} />
+            <SidebarBannerLink href="/demos" label="Demos" external icon={<Play />} />
             <SidebarBannerLink
               href={siteConfig.discordUrl}
               label="Discord"

@@ -17,6 +17,10 @@ type NavDropdownChild = {
   href: string;
   description?: string;
   newTab?: boolean;
+  /* Preview art shown above the label in the desktop mega-menu. Rendered at a
+     284x160 slot, so the sources live at 2x (568x320) under /public/nav.
+     Decorative — the adjacent title already names the destination. */
+  preview?: { light: string; dark: string };
 };
 
 type NavDropdown = {
@@ -29,37 +33,57 @@ export type NavItem = NavLeaf | NavDropdown;
 export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
   { title: "Docs", href: "/docs", newTab: false },
   {
-    title: "Playground",
+    title: "Demos",
     children: [
       {
         title: "OpenUI Playground",
         description: "Compare OpenUI Lang with raw code and JSON.",
-        href: "/playground",
+        href: "/demos",
+        preview: {
+          light: "/nav/playground-light.webp",
+          dark: "/nav/playground-dark.webp",
+        },
       },
       {
         title: "OpenUI Chat",
         description: "Try OpenUI OSS and Cloud in a live chat.",
         href: "/chat",
+        preview: {
+          light: "/nav/chat-light.webp",
+          dark: "/nav/chat-dark.webp",
+        },
       },
       {
         title: "Dashboard Demo",
         description: "Testdrive a dashboard building experience.",
         href: "/demo/github",
+        preview: {
+          light: "/nav/dashboard-light.webp",
+          dark: "/nav/dashboard-dark.webp",
+        },
       },
     ],
   },
   {
-    title: "Projects",
+    title: "Showcase",
     children: [
       {
         title: "OpenClaw OS",
         description: "Workspace for your OpenClaw agents.",
         href: "/openclaw-os",
+        preview: {
+          light: "/nav/openclaw-light.webp",
+          dark: "/nav/openclaw-dark.webp",
+        },
       },
       {
         title: "Community projects",
         description: "Tools, packages, plugins, and examples",
-        href: "/projects",
+        href: "/showcase",
+        preview: {
+          light: "/nav/community-light.webp",
+          dark: "/nav/community-dark.webp",
+        },
       },
     ],
   },
@@ -104,11 +128,37 @@ export function SitePrimaryNav() {
                         ? { target: "_blank", rel: "noopener noreferrer" }
                         : {})}
                     >
+                      {child.preview && (
+                        <span className={styles.dropdownPreview}>
+                          {/* Both variants render; CSS reveals the one matching the
+                              theme, so there's no hydration flash on first paint. */}
+                          <img
+                            src={child.preview.light}
+                            alt=""
+                            aria-hidden="true"
+                            width={568}
+                            height={320}
+                            loading="lazy"
+                            draggable={false}
+                            className={`${styles.dropdownPreviewImage} ${styles.dropdownPreviewLight}`}
+                          />
+                          <img
+                            src={child.preview.dark}
+                            alt=""
+                            aria-hidden="true"
+                            width={568}
+                            height={320}
+                            loading="lazy"
+                            draggable={false}
+                            className={`${styles.dropdownPreviewImage} ${styles.dropdownPreviewDark}`}
+                          />
+                        </span>
+                      )}
                       <span className={styles.dropdownText}>
                         <span className={styles.dropdownTitleRow}>
                           <span className={styles.dropdownTitle}>{child.title}</span>
                           <span className={styles.dropdownArrow} aria-hidden="true">
-                            <ArrowRight size={14} weight="bold" />
+                            <ArrowRight size={18} />
                           </span>
                         </span>
                         {child.description && (

@@ -230,7 +230,7 @@ function CommandTabs({
 function DesktopPlaygroundButton({ className = "" }: { className?: string }) {
   return (
     <PillLink
-      href="/playground"
+      href="/demos"
       className={`${styles.desktopPlaygroundButton} ${className}`.trim()}
       arrow={<TrailingArrow />}
     >
