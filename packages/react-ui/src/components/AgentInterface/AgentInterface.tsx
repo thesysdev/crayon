@@ -54,6 +54,7 @@ import { SidebarItem } from "./SidebarItem";
 import { SidebarSlot } from "./SidebarSlot";
 import { MessageLoading, Messages, ScrollArea, ThreadContainer, ThreadHeader } from "./Thread";
 import { ThreadList } from "./ThreadList";
+import { WelcomeGlow } from "./WelcomeGlow";
 import { WelcomeScreen } from "./WelcomeScreen";
 import { Workspace } from "./Workspace";
 
@@ -167,6 +168,7 @@ interface AgentInterfaceComponent extends FC<AgentInterfaceProps> {
   MobileHeader: typeof MobileHeader;
   ThreadHeader: typeof ThreadHeader;
   Welcome: typeof WelcomeScreen;
+  WelcomeGlow: typeof WelcomeGlow;
   Composer: typeof Composer;
   NewChatButton: typeof NewChatButton;
   ThreadList: typeof ThreadList;
@@ -462,6 +464,7 @@ AgentInterface.Route = Route;
 AgentInterface.MobileHeader = MobileHeader;
 AgentInterface.ThreadHeader = ThreadHeader;
 AgentInterface.Welcome = WelcomeScreen;
+AgentInterface.WelcomeGlow = WelcomeGlow;
 AgentInterface.Composer = Composer;
 AgentInterface.NewChatButton = NewChatButton;
 AgentInterface.ThreadList = ThreadList;

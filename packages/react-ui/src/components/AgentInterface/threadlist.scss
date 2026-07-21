@@ -1,22 +1,89 @@
 @use "../../cssUtils" as cssUtils;
 
+$thread-list-mask-height: cssUtils.$space-xl;
+
+@keyframes openui-agent-thread-list-appear {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .openui-agent-thread-list {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
   gap: cssUtils.$space-2xs;
   overflow: auto;
 
   .openui-agent-container--mobile & {
     gap: cssUtils.$space-s;
   }
+
+  &--mask-top#{&}--mask-bottom {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black $thread-list-mask-height,
+      black calc(100% - #{$thread-list-mask-height}),
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black $thread-list-mask-height,
+      black calc(100% - #{$thread-list-mask-height}),
+      transparent
+    );
+  }
+
+  &--mask-top:not(&--mask-bottom) {
+    mask-image: linear-gradient(to bottom, transparent, black $thread-list-mask-height, black);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black $thread-list-mask-height,
+      black
+    );
+  }
+
+  &--mask-bottom:not(&--mask-top) {
+    mask-image: linear-gradient(to top, transparent, black $thread-list-mask-height, black);
+    -webkit-mask-image: linear-gradient(to top, transparent, black $thread-list-mask-height, black);
+  }
+}
+
+.openui-agent-thread-list-content {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-2xs;
+  animation: openui-agent-thread-list-appear 180ms ease-out both;
+
+  .openui-agent-container--mobile & {
+    gap: cssUtils.$space-s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 }
 
 .openui-agent-thread-list-group {
   display: flex;
-  padding-left: cssUtils.$space-s-m;
+  padding-left: cssUtils.$space-xs;
   padding-bottom: cssUtils.$space-xs;
   color: cssUtils.$text-neutral-tertiary;
   @include cssUtils.typography(label, small);
+
+  &:not(:first-child) {
+    padding-top: cssUtils.$space-xs;
+  }
 
   .openui-agent-container--mobile & {
     @include cssUtils.typography(label, default);
@@ -25,7 +92,32 @@
   }
 }
 
+.openui-agent-thread-list-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-2xs;
+  width: 100%;
+
+  &__group {
+    padding: 0 0 cssUtils.$space-xs cssUtils.$space-xs;
+  }
+
+  &__row {
+    width: 100%;
+    padding: cssUtils.$space-xs;
+  }
+
+  .openui-agent-container--mobile & {
+    gap: cssUtils.$space-s;
+
+    &__row {
+      padding: cssUtils.$space-s-m;
+    }
+  }
+}
+
 .openui-agent-thread-button {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -40,11 +132,19 @@
     background-color: cssUtils.$highlight-subtle;
   }
 
-  &:hover {
+  &:hover,
+  &:focus-within,
+  &--actions-open {
     background-color: cssUtils.$highlight-subtle;
 
     .openui-agent-thread-button-dropdown-trigger {
       opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .openui-agent-thread-button-title {
+      padding-right: calc(24px + cssUtils.$space-s-m);
     }
   }
 
@@ -61,7 +161,7 @@
   @include cssUtils.button-reset;
   @include cssUtils.typography(label, small);
   color: cssUtils.$text-neutral-primary;
-  padding: calc(cssUtils.$space-s - 0.75px) cssUtils.$space-s-m;
+  padding: cssUtils.$space-xs;
   width: 100%;
   text-align: left;
   cursor: pointer;
@@ -73,19 +173,29 @@
     @include cssUtils.typography(label, default);
 
     padding: cssUtils.$space-s-m;
+    padding-right: calc(24px + cssUtils.$space-s-m);
   }
 }
 
 .openui-agent-thread-button-dropdown-trigger {
-  margin-right: cssUtils.$space-2xs;
+  position: absolute;
+  top: 50%;
+  right: cssUtils.$space-2xs;
+  transform: translateY(-50%);
   opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 
   .openui-agent-container--mobile & {
     opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
 
   &[data-state="open"] {
     opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
     background-color: cssUtils.$highlight;
     border-color: cssUtils.$border-interactive;
   }
