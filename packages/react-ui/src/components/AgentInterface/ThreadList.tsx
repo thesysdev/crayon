@@ -1,5 +1,5 @@
 import type { Thread } from "@openuidev/react-headless";
-import { useThreadList } from "@openuidev/react-headless";
+import { useThread, useThreadList } from "@openuidev/react-headless";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import { EllipsisIcon, Trash2Icon } from "lucide-react";
@@ -22,6 +22,8 @@ export const ThreadButton = ({
   const selectThread = useThreadList((s) => s.selectThread);
   const deleteThread = useThreadList((s) => s.deleteThread);
   const selectedThreadId = useThreadList((s) => s.selectedThreadId);
+  const isRunning = useThread((s) => s.isRunning);
+  const isStreaming = selectedThreadId === id && isRunning;
   const { isSidebarOpen, setIsSidebarOpen } = useAgentInterfaceStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
     setIsSidebarOpen: state.setIsSidebarOpen,
@@ -56,42 +58,54 @@ export const ThreadButton = ({
       >
         {title}
       </button>
-      <DropdownMenu.Root open={isActionsOpen} onOpenChange={setIsActionsOpen}>
-        <DropdownMenu.Trigger asChild>
-          <IconButton
-            className="openui-agent-thread-button-dropdown-trigger"
-            icon={<EllipsisIcon size="1em" />}
-            size="2-extra-small"
-            variant="tertiary"
-            aria-label="Thread actions"
-          />
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Portal>
-          <DropdownMenu.Content
-            className="openui-agent-thread-button-dropdown-menu"
-            side="bottom"
-            align="start"
-            sideOffset={4}
-          >
-            <DropdownMenu.Item
-              asChild
-              onSelect={() => {
-                deleteThread(id);
-              }}
+      {isStreaming && (
+        <span
+          className="openui-agent-thread-button-loader"
+          role="status"
+          aria-live="polite"
+          aria-label="Generating response"
+        >
+          <div className="openui-message-loading" />
+        </span>
+      )}
+      {!isStreaming && (
+        <DropdownMenu.Root open={isActionsOpen} onOpenChange={setIsActionsOpen}>
+          <DropdownMenu.Trigger asChild>
+            <IconButton
+              className="openui-agent-thread-button-dropdown-trigger"
+              icon={<EllipsisIcon size="1em" />}
+              size="2-extra-small"
+              variant="tertiary"
+              aria-label="Thread actions"
+            />
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              className="openui-agent-thread-button-dropdown-menu"
+              side="bottom"
+              align="start"
+              sideOffset={4}
             >
-              <Button
-                buttonType="destructive"
-                className="openui-agent-thread-button-dropdown-menu-item"
-                iconLeft={<Trash2Icon size="1em" />}
-                size="extra-small"
-                variant="tertiary"
+              <DropdownMenu.Item
+                asChild
+                onSelect={() => {
+                  deleteThread(id);
+                }}
               >
-                Delete
-              </Button>
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu.Portal>
-      </DropdownMenu.Root>
+                <Button
+                  buttonType="destructive"
+                  className="openui-agent-thread-button-dropdown-menu-item"
+                  iconLeft={<Trash2Icon size="1em" />}
+                  size="extra-small"
+                  variant="tertiary"
+                >
+                  Delete
+                </Button>
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+      )}
     </div>
   );
 };
