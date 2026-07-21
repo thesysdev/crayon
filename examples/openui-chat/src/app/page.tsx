@@ -1,32 +1,23 @@
 "use client";
 
 import { useTheme } from "@/hooks/use-system-theme";
-import {
-  AgentInterface,
-  openAIAdapter,
-  openAIMessageFormat,
-  type ChatLLM,
-} from "@openuidev/react-ui";
+import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 import { useMemo } from "react";
 
 export default function Page() {
   const mode = useTheme();
 
-  // AgentInterface uses its built-in in-memory storage (wiped on reload). The
-  // backend call is unchanged — only the chat surface moved from FullScreen to
-  // AgentInterface.
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: ({ messages, signal }) =>
-        fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: openAIMessageFormat.toApi(messages) }),
-          signal,
-        }),
-      streamProtocol: openAIAdapter(),
-    }),
+  // AgentInterface uses its built-in in-memory storage (wiped on reload).
+  // fetchLLM POSTs the run payload to /api/chat, sending messages in OpenAI
+  // format and parsing the OpenAI-style SSE response.
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: openAIAdapter(),
+        messageFormat: openAIMessageFormat,
+      }),
     [],
   );
 

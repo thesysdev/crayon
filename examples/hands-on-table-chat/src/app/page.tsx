@@ -1,40 +1,26 @@
 "use client";
 
 import { spreadsheetLibrary } from "@/lib/spreadsheet-library";
-import {
-  AgentInterface,
-  openAIAdapter,
-  openAIMessageFormat,
-  type ChatLLM,
-} from "@openuidev/react-ui";
+import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 import { MessageSquare, PanelRightClose } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { TableProvider, useTableContext } from "./TableContext";
+import { TableProvider } from "./TableContext";
 
 const PersistentSpreadsheet = dynamic(() => import("./PersistentSpreadsheet"), { ssr: false });
 
 function ChatPanel({ onClose }: { onClose: () => void }) {
-  const { threadId } = useTableContext();
-
   // AgentInterface uses its built-in in-memory storage default (wiped on reload).
-  // The backend call is unchanged — only the chat surface moved from Copilot to
-  // AgentInterface.
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: ({ messages, signal }) =>
-        fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: openAIMessageFormat.toApi(messages),
-            threadId,
-          }),
-          signal,
-        }),
-      streamProtocol: openAIAdapter(),
-    }),
-    [threadId],
+  // fetchLLM sends AgentInterface's per-thread id, but the server ignores it and
+  // keys the shared table store on "default" (see api/chat/route.ts).
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: openAIAdapter(),
+        messageFormat: openAIMessageFormat,
+      }),
+    [],
   );
 
   return (

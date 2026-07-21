@@ -7,6 +7,7 @@ import { Command } from "commander";
 
 import { runCreateApp } from "./commands/create-app";
 import { runGenerate } from "./commands/generate";
+import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
 import { resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
 import { handleCliError, normalizeAuth, normalizeTemplate } from "./lib/utils"; // Ensure utils.ts is included for type declarations
@@ -22,17 +23,29 @@ const cliVersion = (
 program.name("openui").description("CLI for OpenUI").version(cliVersion);
 program.option("--no-telemetry", "Disable anonymous usage analytics");
 
+program.option(
+  "--agent-name <name>",
+  "AI agents: declare your stable lowercase kebab-case product slug for telemetry (e.g. codex or claude-code); humans can omit",
+  UNKNOWN_AGENT_NAME,
+);
+program.configureHelp({ showGlobalOptions: true });
+
 // Init telemetry once, just before any command runs (honors --no-telemetry / DO_NOT_TRACK).
 program.hook("preAction", (_thisCommand, actionCommand) => {
-  telemetry.init({ cliVersion, flagEnabled: program.opts()["telemetry"] !== false });
+  const globalOptions = program.opts<{ agentName: string; telemetry?: boolean }>();
+  telemetry.init({ cliVersion, flagEnabled: globalOptions.telemetry !== false });
+  telemetry.register({
+    agent_name: globalOptions.agentName,
+    detected_agent_name: detectAgent(),
+  });
   telemetry.capture("cli_invoked", { command: actionCommand.name() });
 });
 
 program
   .command("create")
-  .description("Scaffold a new Next.js app (OpenUI Self Hosted or OpenUI Cloud)")
+  .description("Scaffold a new Next.js app with OpenUI Cloud or your provider")
   .option("-n, --name <string>", "Project name")
-  .option("-t, --template <template>", "Template: openui-self-hosted | openui-cloud")
+  .option("-t, --template <template>", "AI setup: openui-cloud | openui-self-hosted")
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | manual | skip")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
@@ -109,6 +122,44 @@ program
         await runGenerate((args as { entry: string }).entry, options);
       } catch (e) {
         handleCliError(e, "cli_generate_failed");
+      } finally {
+        await telemetry.shutdown();
+      }
+    },
+  );
+
+program
+  .command("generate-spec")
+  .description("Generate a serialized library spec JSON (signatures, groups, JSON schema)")
+  .argument("[entry]", "Path to a file that exports a createLibrary() result")
+  .option("-o, --out <file>", "Write output to a file instead of stdout")
+  .option("--export <name>", "Name of the export to use (auto-detected by default)")
+  .option("--no-interactive", "Fail with error if required args are missing")
+  .action(
+    async (
+      entry: string | undefined,
+      options: {
+        out?: string;
+        export?: string;
+        interactive: boolean;
+      },
+    ) => {
+      try {
+        const args = await resolveArgs(
+          {
+            entry: entry
+              ? { value: entry }
+              : {
+                  prompt: { type: "input", message: "Entry file path?" },
+                  required: true,
+                },
+          },
+          options.interactive,
+        );
+
+        await runGenerate((args as { entry: string }).entry, { ...options, spec: true });
+      } catch (e) {
+        handleCliError(e, "cli_generate_spec_failed");
       } finally {
         await telemetry.shutdown();
       }
