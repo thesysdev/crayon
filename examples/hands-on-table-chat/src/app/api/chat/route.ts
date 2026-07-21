@@ -144,9 +144,6 @@ function sseToolCallArgs(
 export async function POST(req: NextRequest) {
   const { messages } = await req.json();
 
-  // Single shared table store keyed on "default"; chat threads are ephemeral, so
-  // the client's per-thread id is deliberately ignored (it would desync the tools
-  // from the one spreadsheet visible on screen).
   setCurrentThreadId("default");
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
