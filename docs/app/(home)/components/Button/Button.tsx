@@ -1,6 +1,10 @@
 "use client";
 
 import { copyText } from "@/lib/copy-text";
+import {
+  captureCreateCliCommandCopied,
+  type CreateCliCopyAnalyticsContext,
+} from "@/lib/create-cli-copy-analytics";
 import { Check, Copy } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
@@ -60,6 +64,7 @@ interface ClipboardCommandButtonProps {
   copyIconColor?: string;
   type?: ButtonType;
   onCopyChange?: (copied: boolean) => void;
+  createCliCopyAnalytics?: CreateCliCopyAnalyticsContext;
 }
 
 export function ClipboardCommandButton({
@@ -72,6 +77,7 @@ export function ClipboardCommandButton({
   copyIconColor = "white",
   type = "button",
   onCopyChange,
+  createCliCopyAnalytics,
 }: ClipboardCommandButtonProps) {
   const [copied, setCopied] = useState(false);
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -92,6 +98,9 @@ export function ClipboardCommandButton({
     }
     setCopied(true);
     onCopyChange?.(true);
+    if (createCliCopyAnalytics) {
+      captureCreateCliCommandCopied(command, createCliCopyAnalytics);
+    }
     if (resetTimeoutRef.current) {
       clearTimeout(resetTimeoutRef.current);
     }

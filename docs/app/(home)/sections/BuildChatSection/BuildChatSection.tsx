@@ -16,6 +16,7 @@ function CtaButton() {
     <div className={styles.ctaWrap}>
       <ClipboardCommandButton
         command="npx @openuidev/cli@latest create"
+        createCliCopyAnalytics={{ source: "homepage_build_chat", interaction: "primary" }}
         className={styles.ctaButton}
         iconPosition="start"
       >

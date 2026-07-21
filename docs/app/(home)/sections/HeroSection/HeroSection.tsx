@@ -93,6 +93,7 @@ export function NpmButton({ className = "", command }: { className?: string; com
     <div className={styles.npmButtonWrapper}>
       <ClipboardCommandButton
         command={command}
+        createCliCopyAnalytics={{ source: "homepage_hero", interaction: "primary" }}
         className={`${styles.npmButton} ${className}`.trim()}
         iconContainerClassName={styles.npmIconBadge}
         copyIconColor="currentColor"
@@ -143,6 +144,7 @@ function CommandDropdownButton({
     >
       <ClipboardCommandButton
         command={command}
+        createCliCopyAnalytics={{ source: "homepage_hero", interaction: "primary" }}
         className={styles.commandTrigger}
         iconContainerClassName={styles.commandTriggerBadge}
         copyIconColor="currentColor"
@@ -163,6 +165,7 @@ function CommandDropdownButton({
             <ClipboardCommandButton
               key={variant.id}
               command={variant.command}
+              createCliCopyAnalytics={{ source: "homepage_hero", interaction: "dropdown" }}
               className={styles.commandMenuItem}
               iconContainerClassName={styles.commandMenuItemIcon}
               copyIconColor="currentColor"
