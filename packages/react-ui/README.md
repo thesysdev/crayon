@@ -65,14 +65,14 @@ function App() {
 
 `AgentInterface` is the single chat surface. It adapts its layout responsively and accepts:
 
-| Prop               | Description                                                                                  |
-| :----------------- | :------------------------------------------------------------------------------------------- |
+| Prop               | Description                                                                                                                                                                           |
+| :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `storage`          | Optional persistence adapter for thread history; defaults to in-memory (wiped on reload). Use `restStorage({ baseUrl })` from `@openuidev/react-ui` to back it with your own REST API |
-| `llm`              | Chat transport, usually built with `fetchLLM`; any `ChatLLM` (`{ send({ threadId, messages, signal }), streamProtocol }`) works |
-| `componentLibrary` | OpenUI Lang library used to render assistant messages (e.g. `openuiChatLibrary`)             |
-| `theme`            | Theme configuration, e.g. `{ mode: "light" }`                                                |
-| `agentName`        | Name displayed in the header                                                                 |
-| `starters`         | Conversation-starter prompts shown on the welcome screen                                     |
+| `llm`              | Chat transport, usually built with `fetchLLM`; any `ChatLLM` (`{ send({ threadId, messages, signal }), streamProtocol }`) works                                                       |
+| `componentLibrary` | OpenUI Lang library used to render assistant messages (e.g. `openuiChatLibrary`)                                                                                                      |
+| `theme`            | Theme configuration, e.g. `{ mode: "light" }`                                                                                                                                         |
+| `agentName`        | Name displayed in the header                                                                                                                                                          |
+| `starters`         | Conversation-starter prompts shown on the welcome screen                                                                                                                              |
 
 See the [chat docs](https://openui.com/docs/chat) for full configuration.
 
@@ -126,13 +126,14 @@ function App() {
 }
 ```
 
-| Export                   | Description                                 |
-| :----------------------- | :------------------------------------------ |
-| `ThemeProvider`          | Context provider for theming                |
-| `createTheme(overrides)` | Create a theme with validation and defaults |
-| `defaultLightTheme`      | Built-in light theme                        |
-| `defaultDarkTheme`       | Built-in dark theme                         |
-| `swatchTokens`           | Token palette for use in theme builders     |
+| Export                   | Description                                                          |
+| :----------------------- | :------------------------------------------------------------------- |
+| `ThemeProvider`          | Context provider for theming                                         |
+| `ThemeScript`            | Inline script applying a stored scheme preference before first paint |
+| `createTheme(overrides)` | Create a theme with validation and defaults                          |
+| `defaultLightTheme`      | Built-in light theme                                                 |
+| `defaultDarkTheme`       | Built-in dark theme                                                  |
+| `swatchTokens`           | Token palette for use in theme builders                              |
 
 ## Styling integration
 
@@ -172,11 +173,11 @@ This places Tailwind's Preflight (in `base`) below OpenUI components so its elem
 
 - Import OpenUI CSS from **exactly one place** — multiple import sites under chunk-splitting bundlers (e.g. Turbopack) can register `openui` before your layer-order statement and lock the wrong order.
 - Wrap app-wide resets in a layer below `openui` (e.g. `@layer base { * { margin: 0; } }`) — unlayered resets beat all layered styles regardless of specificity.
-- `./defaults.css` and the `ThemeProvider` runtime style injection stay unlayered in both modes so runtime theming always overrides component defaults.
+- `./defaults.css` and the `ThemeProvider` rendered style tag stay unlayered in both modes so runtime theming always overrides component defaults.
 
 ### Single-scheme apps
 
-The default token stylesheets follow the device's `prefers-color-scheme`: dark tokens only apply on dark-scheme devices. An app that forces one scheme (`<ThemeProvider mode="dark">`) would otherwise render the stock light theme on light-scheme devices wherever the runtime style injection isn't in effect — static first paint, server-rendered HTML before hydration, or with JavaScript disabled.
+The default token stylesheets follow the device's `prefers-color-scheme`: dark tokens only apply on dark-scheme devices. An app that forces one scheme (`<ThemeProvider mode="dark">`) would otherwise render the stock light theme on light-scheme devices wherever the provider's style tag isn't in the markup — client-only rendering before hydration, or content outside the provider.
 
 To pin the scheme statically, import the matching scheme-pinned defaults after the component styles (and before your own token overrides, which win by source order):
 
@@ -188,6 +189,35 @@ To pin the scheme statically, import the matching scheme-pinned defaults after t
 ```
 
 Light-only apps use `@openuidev/react-ui/defaults-light.css` the same way. Both files are plain unlayered `:root` blocks with the full token set and no media query, in both the default and layered trees.
+
+### System-scheme apps
+
+The theme follows the device's `prefers-color-scheme` by default; `<ThemeProvider mode="system">` does the same and exposes the resolved `"light"`/`"dark"` mode in context. To override the device scheme, set `data-openui-mode="light"` or `data-openui-mode="dark"` on `<html>` (whole document) or on any wrapper element (scopes that subtree) — both the default token stylesheets and `mode="system"` providers give the attribute precedence. The attribute works through pure CSS, so it applies before hydration and with JavaScript disabled.
+
+To honor a stored user preference without a first-paint flash, render `ThemeScript` in `<head>`: it reads localStorage (key `"openui-theme"` by default, configurable via `storageKey`) and sets the attribute on `<html>` before anything paints:
+
+```tsx
+import { ThemeScript } from "@openuidev/react-ui";
+
+<html lang="en">
+  <head>
+    <ThemeScript />
+  </head>
+  <body>
+    <ThemeProvider mode="system">{children}</ThemeProvider>
+  </body>
+</html>;
+```
+
+Prefer cookies? Read the preference on the server and render the attribute yourself — the HTML is correct from the first byte, no script needed:
+
+```tsx
+const mode = cookies().get("openui-theme")?.value; // "light" | "dark" | undefined
+
+<html lang="en" data-openui-mode={mode}>
+  …
+</html>;
+```
 
 ### Browser support
 

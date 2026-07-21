@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useId, useInsertionEffect, useMemo } from "react";
+import React, { createContext, useContext, useId, useMemo, useSyncExternalStore } from "react";
 import { defaultDarkTheme, defaultLightTheme } from "./defaultTheme";
 import { Theme, ThemeMode } from "./types";
 import { themeToCssVars } from "./utils";
@@ -7,7 +7,13 @@ import { themeToCssVars } from "./utils";
  * Props for the {@link ThemeProvider} component.
  */
 export type ThemeProps = {
-  /** Active color scheme. Defaults to the parent ThemeProvider mode when nested, otherwise `"light"`. */
+  /**
+   * Active color scheme. `"system"` follows the device scheme and honors a
+   * `data-openui-mode="light" | "dark"` attribute on `<html>` (or on the
+   * themed scope element) as an override — see {@link ThemeScript} for
+   * applying a stored preference before hydration. Defaults to the parent
+   * ThemeProvider mode when nested, otherwise `"light"`.
+   */
   mode?: ThemeMode;
   /** Application content rendered inside the theme context. */
   children?: React.ReactNode;
@@ -30,7 +36,7 @@ export type ThemeProps = {
    */
   theme?: Theme;
   /**
-   * CSS selector where `--openui-*` custom properties are injected.
+   * CSS selector where `--openui-*` custom properties are applied.
    * Change this when mounting multiple independent theme scopes.
    * @default "body"
    */
@@ -39,6 +45,10 @@ export type ThemeProps = {
 
 type ThemeContextType = {
   theme: Theme;
+  /**
+   * Resolved scheme — always `"light"` or `"dark"`, even when the provider's
+   * `mode` prop is `"system"`.
+   */
   mode: ThemeMode;
   portalThemeClassName: string;
 };
@@ -59,7 +69,9 @@ export const ThemeContext = createContext<ThemeContextType>({
  *
  * @returns An object with:
  *  - `theme` – the fully resolved {@link Theme} object
- *  - `mode` – `"light"` or `"dark"`
+ *  - `mode` – the resolved `"light"` or `"dark"` (never `"system"`; a
+ *     `mode="system"` provider resolves it from the `data-openui-mode`
+ *     attribute on `<html>`, falling back to the device scheme)
  *  - `portalThemeClassName` – a unique CSS class name to apply on portal
  *     containers so they inherit the same `--openui-*` custom properties
  *
@@ -85,11 +97,46 @@ const OPENUI_THEME_SENTINEL = Symbol("openui-theme-provider");
 type InternalContextType = {
   [OPENUI_THEME_SENTINEL]: true;
   theme: Theme;
+  /** Unresolved mode (may be `"system"`) so nested providers inherit it. */
   mode: ThemeMode;
   portalThemeClassName: string;
 };
 
 const InternalContext = createContext<InternalContextType | null>(null);
+
+// ---------------------------------------------------------------------------
+// System-mode resolution (useSyncExternalStore backing)
+// ---------------------------------------------------------------------------
+const DARK_SCHEME_QUERY = "(prefers-color-scheme: dark)";
+
+function subscribeToSystemMode(onChange: () => void): () => void {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return () => {};
+  }
+  const mql = window.matchMedia(DARK_SCHEME_QUERY);
+  mql.addEventListener("change", onChange);
+  return () => mql.removeEventListener("change", onChange);
+}
+
+// The html attribute (set by ThemeScript or the host app) wins over the device
+// scheme so the context agrees with the CSS attribute-block precedence.
+// Returns primitives so the snapshot is stable per value.
+function getSystemModeSnapshot(): "light" | "dark" {
+  if (typeof document !== "undefined") {
+    const pinned = document.documentElement.dataset["openuiMode"];
+    if (pinned === "light" || pinned === "dark") {
+      return pinned;
+    }
+  }
+  if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+    return window.matchMedia(DARK_SCHEME_QUERY).matches ? "dark" : "light";
+  }
+  return "light";
+}
+
+function getServerSystemModeSnapshot(): "light" | "dark" {
+  return "light";
+}
 
 // ---------------------------------------------------------------------------
 // Dev-mode warning deduplication
@@ -129,12 +176,14 @@ function validateThemeObject(themeObj: Theme, propName: string) {
 }
 
 /**
- * Injects the OpenUI design-token CSS custom properties (`--openui-*`) into the
- * DOM and provides theme context to all descendant components.
+ * Renders the OpenUI design-token CSS custom properties (`--openui-*`) as a
+ * `<style>` element and provides theme context to all descendant components.
+ * The style element is part of the server-rendered HTML, so SSR/streamed pages
+ * paint with the correct scheme before hydration.
  *
  * Supports automatic scoping when nested inside another ThemeProvider: the inner
- * provider wraps its children in a `<div>` with `display: contents` and injects
- * a scoped style rule instead of targeting `body`.
+ * provider wraps its children in a `<div>` with `display: contents` and scopes
+ * its style rules to a generated class instead of targeting `body`.
  *
  * @example
  * ```tsx
@@ -161,6 +210,13 @@ export const ThemeProvider = ({
   const mode = modeProp ?? parent?.mode ?? "light";
   const effectiveCssSelector = cssSelector || "body";
   const hasExplicitSelector = effectiveCssSelector !== "body";
+
+  const systemMode = useSyncExternalStore(
+    subscribeToSystemMode,
+    getSystemModeSnapshot,
+    getServerSystemModeSnapshot,
+  );
+  const resolvedMode = mode === "system" ? systemMode : mode;
 
   // Resolve the deprecated `theme` prop → `lightTheme` takes precedence
   const userLightTheme = lightTheme ?? deprecatedTheme ?? {};
@@ -210,15 +266,14 @@ export const ThemeProvider = ({
     return { ...themes.dark, ...overrides };
   }, [userDarkTheme, userLightTheme]);
 
-  const activeTheme = mode === "light" ? resolvedLightTheme : resolvedDarkTheme;
-  const cssVarsString = useMemo(() => themeToCssVars(activeTheme), [activeTheme]);
+  const activeTheme = resolvedMode === "light" ? resolvedLightTheme : resolvedDarkTheme;
 
   const portalClassName = `openui-theme-portal-${id}`;
   const scopedClassName = `openui-theme-${id}`;
 
   const contextValue = useMemo<ThemeContextType>(
-    () => ({ theme: activeTheme, mode, portalThemeClassName: portalClassName }),
-    [activeTheme, mode, portalClassName],
+    () => ({ theme: activeTheme, mode: resolvedMode, portalThemeClassName: portalClassName }),
+    [activeTheme, resolvedMode, portalClassName],
   );
 
   const internalValue = useMemo<InternalContextType>(
@@ -232,21 +287,36 @@ export const ThemeProvider = ({
   );
 
   // ---------------------------------------------------------------------------
-  // Style injection via useInsertionEffect (Step 4)
+  // Rendered style element
   // ---------------------------------------------------------------------------
   const useAutoScope = isNested && !hasExplicitSelector;
   const styleSelector = useAutoScope ? `.${scopedClassName}` : effectiveCssSelector;
 
-  // Intentionally unlayered — must override component styles in both modes,
-  // including when consumers opt into layered-components.css (@layer openui),
-  // so runtime theming always wins. See README "Styling integration" before changing.
-  useInsertionEffect(() => {
-    const style = document.createElement("style");
-    style.setAttribute("data-openui-theme", id);
-    style.textContent = `${styleSelector}, .${portalClassName} { ${cssVarsString} }`;
-    document.head.appendChild(style);
-    return () => style.remove();
-  }, [cssVarsString, styleSelector, portalClassName, id]);
+  // Intentionally unlayered — the rendered rules must override component styles
+  // in both modes, including when consumers opt into layered-components.css
+  // (@layer openui), so runtime theming always wins. See README "Styling
+  // integration" before changing.
+  const styleContent = useMemo(() => {
+    const portalSelector = `.${portalClassName}`;
+    if (mode !== "system") {
+      const vars = themeToCssVars(mode === "light" ? resolvedLightTheme : resolvedDarkTheme);
+      return `${styleSelector}, ${portalSelector} { ${vars} }`;
+    }
+    // For "system", the device scheme drives the default while an explicit
+    // data-openui-mode attribute (on an ancestor or the scope element itself)
+    // must beat the media query: [attr] descendant is (0,1,1) specificity vs
+    // the media-gated (0,0,1), and the attribute groups are emitted last.
+    const lightVars = themeToCssVars(resolvedLightTheme);
+    const darkVars = themeToCssVars(resolvedDarkTheme);
+    const attrGroup = (attrMode: "light" | "dark") =>
+      `[data-openui-mode="${attrMode}"] ${styleSelector}, ${styleSelector}[data-openui-mode="${attrMode}"], [data-openui-mode="${attrMode}"] ${portalSelector}, ${portalSelector}[data-openui-mode="${attrMode}"]`;
+    return [
+      `${styleSelector}, ${portalSelector} { ${lightVars} }`,
+      `@media (prefers-color-scheme: dark) { ${styleSelector}, ${portalSelector} { ${darkVars} } }`,
+      `${attrGroup("light")} { ${lightVars} }`,
+      `${attrGroup("dark")} { ${darkVars} }`,
+    ].join("\n");
+  }, [mode, resolvedLightTheme, resolvedDarkTheme, styleSelector, portalClassName]);
 
   // ---------------------------------------------------------------------------
   // Render
@@ -254,6 +324,8 @@ export const ThemeProvider = ({
   return (
     <InternalContext.Provider value={internalValue}>
       <ThemeContext.Provider value={contextValue}>
+        {/* Rendered before children so streamed CSS parses before content paints. */}
+        <style data-openui-theme={id} dangerouslySetInnerHTML={{ __html: styleContent }} />
         {useAutoScope ? (
           <div className={scopedClassName} style={{ display: "contents" }}>
             {children}

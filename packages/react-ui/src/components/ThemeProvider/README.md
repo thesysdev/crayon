@@ -1,9 +1,9 @@
 # ThemeProvider
 
-Wraps your application and injects `--openui-*` CSS custom properties into `<head>` via React 18's `useInsertionEffect`. These variables are consumed by `cssUtils.scss` SCSS variables and the `typography()` mixin, making every OpenUI component theme-aware with zero extra configuration.
+Wraps your application and renders the `--openui-*` CSS custom properties as a `<style>` element in its output, so server-rendered HTML carries the theme before hydration. These variables are consumed by `cssUtils.scss` SCSS variables and the `typography()` mixin, making every OpenUI component theme-aware with zero extra configuration.
 
 ```
-Theme object ──► ThemeProvider ──► useInsertionEffect ──► <style> in <head>
+Theme object ──► ThemeProvider ──► rendered <style> (SSR-safe, before children)
                                                               │
                                                   cssUtils.scss ($background, $text-neutral-primary, …)
                                                               │
@@ -34,16 +34,38 @@ Switch to dark mode by changing the `mode` prop:
 </ThemeProvider>
 ```
 
+## System Mode
+
+`mode="system"` follows the device color scheme with zero flicker: the rendered `<style>` carries light tokens, a `@media (prefers-color-scheme: dark)` block, and higher-specificity `[data-openui-mode="light"/"dark"]` blocks, so the correct scheme paints before hydration.
+
+```tsx
+<ThemeProvider mode="system">
+  <YourApp />
+</ThemeProvider>
+```
+
+Setting `data-openui-mode="light"` or `"dark"` on `<html>` (or on the themed scope element) overrides the device scheme. To apply a preference stored in `localStorage` before first paint, render `ThemeScript` in `<head>`:
+
+```tsx
+import { ThemeScript } from "@openuidev/react-ui";
+
+<head>
+  <ThemeScript /> {/* reads localStorage["openui-theme"]; storageKey prop to customize */}
+</head>;
+```
+
+Servers can do the same without JavaScript by reading a cookie and rendering the attribute on `<html>` directly. `useTheme().mode` always reports the resolved `"light"` or `"dark"` — never `"system"`.
+
 ## Props
 
-| Prop          | Type                | Default   | Description                                                                                                                     |
-| ------------- | ------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `mode`        | `"light" \| "dark"` | `"light"` | Active color scheme                                                                                                             |
-| `lightTheme`  | `Theme`             | `{}`      | Partial overrides merged onto the built-in light defaults. Recommended over the deprecated `theme` prop.                        |
-| `darkTheme`   | `Theme`             | —         | Partial overrides for dark mode. When omitted, `lightTheme` overrides are applied to both modes.                                |
-| `theme`       | `Theme`             | —         | **Deprecated.** Mapped to `lightTheme` internally. If both are provided, `lightTheme` wins.                                     |
-| `cssSelector` | `string`            | `"body"`  | CSS selector where `--openui-*` variables are injected. Automatically scoped when nested (see [Nested Themes](#nested-themes)). |
-| `children`    | `React.ReactNode`   | —         | Application content                                                                                                             |
+| Prop          | Type                            | Default   | Description                                                                                                                    |
+| ------------- | ------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `mode`        | `"light" \| "dark" \| "system"` | `"light"` | Active color scheme. `"system"` follows the device scheme (see [System Mode](#system-mode)).                                   |
+| `lightTheme`  | `Theme`                         | `{}`      | Partial overrides merged onto the built-in light defaults. Recommended over the deprecated `theme` prop.                       |
+| `darkTheme`   | `Theme`                         | —         | Partial overrides for dark mode. When omitted, `lightTheme` overrides are applied to both modes.                               |
+| `theme`       | `Theme`                         | —         | **Deprecated.** Mapped to `lightTheme` internally. If both are provided, `lightTheme` wins.                                    |
+| `cssSelector` | `string`                        | `"body"`  | CSS selector where `--openui-*` variables are applied. Automatically scoped when nested (see [Nested Themes](#nested-themes)). |
+| `children`    | `React.ReactNode`               | —         | Application content                                                                                                            |
 
 ## Theme Customization
 
@@ -79,7 +101,7 @@ When `darkTheme` is omitted, `lightTheme` overrides are applied to both modes so
 ThemeProvider supports nesting out of the box. When a ThemeProvider detects a parent provider above it:
 
 1. It wraps its children in a `<div style="display: contents">` with a generated scoped class.
-2. It injects CSS variables scoped to that class instead of targeting `body`.
+2. It scopes its style rules to that class instead of targeting `body`.
 3. The parent's theme is **not** inherited — each nested provider merges its own overrides onto the built-in defaults for the active mode.
 
 ```tsx
@@ -119,14 +141,14 @@ function MyComponent() {
 | Field                  | Type        | Description                                                                    |
 | ---------------------- | ----------- | ------------------------------------------------------------------------------ |
 | `theme`                | `Theme`     | Fully resolved theme object                                                    |
-| `mode`                 | `ThemeMode` | `"light"` or `"dark"`                                                          |
+| `mode`                 | `ThemeMode` | The resolved `"light"` or `"dark"` — never `"system"`                          |
 | `portalThemeClassName` | `string`    | CSS class name to add to portal containers so they inherit the theme variables |
 
 Falls back to `defaultLightTheme` when no provider is present — components and hooks always receive a valid theme.
 
 ## Portal Theming
 
-The `portalThemeClassName` is for floating elements (tooltips, dropdowns, modals) rendered via React portals outside the ThemeProvider's DOM subtree. The ThemeProvider's injected `<style>` already targets `.openui-theme-portal-{id}`, so add the class to your portal wrapper:
+The `portalThemeClassName` is for floating elements (tooltips, dropdowns, modals) rendered via React portals outside the ThemeProvider's DOM subtree. The ThemeProvider's rendered `<style>` already targets `.openui-theme-portal-{id}`, so add the class to your portal wrapper:
 
 ```tsx
 const { portalThemeClassName } = useTheme();

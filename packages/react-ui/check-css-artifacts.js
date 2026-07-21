@@ -2,6 +2,8 @@
 //   - default exports stay UNLAYERED (./components.css, ./styles/*)
 //   - the layered mirror is wrapped in @layer openui and BOM-free
 //   - openui-defaults.css is unlayered in both trees (runtime theming contract)
+//   - openui-defaults.css re-pins both schemes via [data-openui-mode] blocks
+//     emitted after the prefers-color-scheme block, with full token parity
 // Born out of the 2026-06 BOM incident: a U+FEFF pushed inside the layer
 // block silently killed the :root theme tokens in the packed tarball.
 import fs from "fs";
@@ -50,11 +52,44 @@ assert(
   countTokens(darkPinned) === countTokens(lightPinned),
   "dark and light pinned defaults declare different token counts",
 );
+// The combined file declares each scheme twice: media-gated and attribute-pinned.
 assert(
-  countTokens(darkPinned) + countTokens(lightPinned) ===
+  (countTokens(darkPinned) + countTokens(lightPinned)) * 2 ===
     countTokens(read("styles/openui-defaults.css")),
   "pinned defaults token counts do not add up to openui-defaults.css",
 );
+
+// The combined defaults must re-declare both schemes behind bare
+// [data-openui-mode] blocks AFTER the prefers-color-scheme block — the
+// attribute pin only beats the media-gated dark tokens through source order at
+// equal specificity. Compressed sass may drop the quotes around the attribute
+// value, so both forms are accepted.
+const attrSelector = (mode) => new RegExp(`\\[data-openui-mode="?${mode}"?\\]`);
+for (const tree of ["styles", "layered/styles"]) {
+  const file = `${tree}/openui-defaults.css`;
+  const css = read(file);
+  const mediaIdx = css.indexOf("prefers-color-scheme");
+  const lightIdx = css.search(attrSelector("light"));
+  const darkIdx = css.search(attrSelector("dark"));
+  assert(mediaIdx !== -1, `${file} is missing the prefers-color-scheme block`);
+  assert(lightIdx !== -1, `${file} is missing the [data-openui-mode="light"] block`);
+  assert(darkIdx !== -1, `${file} is missing the [data-openui-mode="dark"] block`);
+  if (mediaIdx !== -1 && lightIdx !== -1 && darkIdx !== -1) {
+    assert(
+      mediaIdx < lightIdx && lightIdx < darkIdx,
+      `${file}: attribute blocks must follow the prefers-color-scheme block (light, then dark)`,
+    );
+    const rootLightCount = countTokens(css.slice(0, mediaIdx));
+    assert(
+      countTokens(css.slice(lightIdx, darkIdx)) === rootLightCount,
+      `${file}: [data-openui-mode="light"] token count differs from the :root light block`,
+    );
+    assert(
+      countTokens(css.slice(darkIdx)) === rootLightCount,
+      `${file}: [data-openui-mode="dark"] token count differs from the :root light block`,
+    );
+  }
+}
 
 const unlayered = fs.readdirSync(path.join(dist, "styles")).filter((f) => f.endsWith(".css"));
 const layered = fs

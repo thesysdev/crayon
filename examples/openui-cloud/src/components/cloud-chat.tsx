@@ -11,7 +11,6 @@ import { AgentInterface } from "@openuidev/react-ui";
 // migrated SDK (@openuidev/thesys). Its artifact parser now reads the program from
 // the tool INPUT channel (args.artifact_content), so the rich preview renders live
 // during/after generation without a refresh.
-import { useTheme } from "@/hooks/use-system-theme";
 import {
   chatLibrary,
   presentationArtifactRenderer,
@@ -45,7 +44,6 @@ const llm: ChatLLM = {
 };
 
 export function CloudChat() {
-  const mode = useTheme();
   // useOpenuiCloudStorage: browser ChatStorage over /v1, fct_-authenticated. As a
   // hook the storage + its fct_ token manager are created on mount (not at module
   // load), so the token fetch follows this component's lifecycle.
@@ -69,7 +67,7 @@ export function CloudChat() {
         agentName="OpenUI Cloud"
         scrollVariant="always"
         scrollOnLoad={false}
-        theme={{ mode }}
+        theme={{ mode: "system" }}
         starters={[
           {
             displayText: "Quarterly deck",

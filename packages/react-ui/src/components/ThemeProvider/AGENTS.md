@@ -2,27 +2,31 @@
 
 ## File Map
 
-| File                | Purpose                                                                                                                                                    |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ThemeProvider.tsx` | React component, `ThemeContext`, `InternalContext` (nesting detection), `useTheme` hook. Injects `--openui-*` vars into `<head>` via `useInsertionEffect`. |
-| `types.ts`          | TypeScript interfaces: `Theme`, `ColorTheme`, `LayoutTheme`, `TypographyTheme`, `EffectTheme`, `ChartColorPalette`.                                        |
-| `defaultTheme.ts`   | Builds `defaultLightTheme` / `defaultDarkTheme` (frozen) from the swatch system. Contains `createColorTheme()` and all layout/typography/shadow defaults.  |
-| `swatches.ts`       | 18 oklch color families x 14 shades. Exports `swatch()`, `withAlpha()`, `swatchToken()`, `swatchTokens`.                                                   |
-| `utils.ts`          | Exports `camelToKebab`, `themeToCssVars`, `createTheme` (dev-mode typo detection with Levenshtein distance suggestions).                                   |
-| `index.ts`          | Barrel re-exports from all the above files.                                                                                                                |
+| File                | Purpose                                                                                                                                                                                                                      |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ThemeProvider.tsx` | React component, `ThemeContext`, `InternalContext` (nesting detection), `useTheme` hook. Renders a `<style data-openui-theme={id}>` element with the `--openui-*` vars as part of its output, so SSR HTML carries the theme. |
+| `ThemeScript.tsx`   | Inline `<script>` that applies a stored `localStorage` scheme preference as `data-openui-mode` on `<html>` before hydration. Pairs with `mode="system"`.                                                                     |
+| `types.ts`          | TypeScript interfaces: `Theme`, `ColorTheme`, `LayoutTheme`, `TypographyTheme`, `EffectTheme`, `ChartColorPalette`. `ThemeMode` (`"light" \| "dark" \| "system"`).                                                           |
+| `defaultTheme.ts`   | Builds `defaultLightTheme` / `defaultDarkTheme` (frozen) from the swatch system. Contains `createColorTheme()` and all layout/typography/shadow defaults.                                                                    |
+| `swatches.ts`       | 18 oklch color families x 14 shades. Exports `swatch()`, `withAlpha()`, `swatchToken()`, `swatchTokens`.                                                                                                                     |
+| `utils.ts`          | Exports `camelToKebab`, `themeToCssVars`, `createTheme` (dev-mode typo detection with Levenshtein distance suggestions).                                                                                                     |
+| `index.ts`          | Barrel re-exports from all the above files.                                                                                                                                                                                  |
 
 ## Architecture
 
 ```
-ThemeProvider mounts
+ThemeProvider renders
   │
   ├── Resolves active theme: { ...defaults[mode], ...userLightTheme } or { ...defaults[mode], ...userDarkTheme }
   │
   ├── themeToCssVars(theme) → "--openui-background: oklch(...);\n--openui-foreground: ..."
   │
-  ├── useInsertionEffect → creates <style data-openui-theme={id}> in <head>
+  ├── Renders <style data-openui-theme={id}> before children (SSR-safe, no client injection)
   │   └── Targets body (root) or .openui-theme-{id} (nested, auto-scoped)
   │   └── Also targets .openui-theme-portal-{id} for portaled components
+  │   └── mode="light"/"dark": one pinned rule. mode="system": light rule +
+  │       @media (prefers-color-scheme: dark) rule + [data-openui-mode="light"/"dark"]
+  │       attribute rules (higher specificity, emitted last, beat the media query)
   │
   └── Provides ThemeContext + InternalContext to children
 ```
@@ -60,6 +64,7 @@ All color values **must** use `oklch()` with explicit alpha: `oklch(L C H / alph
 
 ### Props
 
+- **`mode`** — `"light"`, `"dark"`, or `"system"`. `"system"` follows the device scheme; a `data-openui-mode` attribute (set by `ThemeScript` or the host app) overrides it. Context always exposes the resolved `"light"`/`"dark"` — never `"system"`. Nested providers inherit the parent's unresolved mode.
 - **`lightTheme` / `darkTheme`** — the current API for theme overrides.
 - **`theme`** — deprecated alias for `lightTheme`. Emits a dev-mode warning.
 - **`cssSelector`** — defaults to `"body"`. When set explicitly on a nested provider, bypasses auto-scoping.

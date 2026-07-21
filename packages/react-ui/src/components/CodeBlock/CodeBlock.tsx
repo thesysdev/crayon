@@ -2,12 +2,16 @@ import clsx from "clsx";
 import { CheckCheck, Copy } from "lucide-react";
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { IconButton } from "../IconButton";
 
 export interface CodeBlockProps {
   language: string;
   codeString: string;
+  /**
+   * Optional react-syntax-highlighter style object, applied as inline styles.
+   * When omitted, highlighting is class-based and themed by prismThemes.scss
+   * (light/dark follows the color scheme and `data-openui-mode`).
+   */
   theme?: {
     [key: string]: React.CSSProperties;
   };
@@ -35,7 +39,14 @@ export const CodeBlock = ({ language, codeString, theme }: CodeBlockProps) => {
         aria-label={copied ? "Copied to clipboard" : "Copy code"}
       />
       <SyntaxHighlighter
-        style={theme ?? vscDarkPlus}
+        {...(theme
+          ? { style: theme }
+          : {
+              useInlineStyles: false,
+              // Overrides the default codeTagProps, which bake theme styles
+              // inline on the code tag even with useInlineStyles={false}.
+              codeTagProps: { className: language ? `language-${language}` : undefined },
+            })}
         language={language}
         PreTag="div"
         className="openui-code-block-syntax-highlighter"

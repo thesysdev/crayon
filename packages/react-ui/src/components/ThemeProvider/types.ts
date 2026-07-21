@@ -1,5 +1,10 @@
-/** The active color scheme — determines which set of default tokens is used. */
-export type ThemeMode = "light" | "dark";
+/**
+ * The active color scheme — determines which set of default tokens is used.
+ * `"system"` follows the device scheme (and honors a `data-openui-mode`
+ * attribute override); the theme context always resolves it to `"light"` or
+ * `"dark"`.
+ */
+export type ThemeMode = "light" | "dark" | "system";
 
 /**
  * Optional color arrays used by chart components.
