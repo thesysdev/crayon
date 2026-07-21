@@ -125,7 +125,6 @@ export * from "./context/LayoutContext";
 export * from "./context/PrintContext";
 
 // Types Export
-export { ConversationStarter } from "./components/AgentInterface/ConversationStarter";
 export type { ConversationStarterVariant } from "./components/AgentInterface/ConversationStarter";
 export type {
   ConversationStarterIcon,
