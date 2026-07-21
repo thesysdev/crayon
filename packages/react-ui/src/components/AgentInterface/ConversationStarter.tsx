@@ -63,11 +63,7 @@ const ConversationStarterItem = ({
 
   // Long variant (detailed list style)
   return (
-    <button
-      type="button"
-      className="openui-agent-conversation-starter-item-long"
-    onClick={onClick}
-    >
+    <button type="button" className="openui-agent-conversation-starter-item-long" onClick={onClick}>
       <div className="openui-agent-conversation-starter-item-long__content">
         {shouldRenderIcon && (
           <span className="openui-agent-conversation-starter-item-long__icon">{renderedIcon}</span>

@@ -63,10 +63,7 @@ export const DotMatrixLoader = ({
       dot.style.opacity = String(MIN_OPACITY);
     });
 
-    const paintRing = (
-      ring: readonly (readonly [number, number])[],
-      head: number,
-    ) => {
+    const paintRing = (ring: readonly (readonly [number, number])[], head: number) => {
       const tail = ring.length * TRAIL_LENGTH;
       for (let i = 0; i < ring.length; i++) {
         const cell = ring[i];
