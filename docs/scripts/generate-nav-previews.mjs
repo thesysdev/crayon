@@ -6,131 +6,152 @@
  * These are vector on purpose: each preview is a few dozen shapes, so SVG is
  * both smaller than an equivalent 2x raster and sharp at any DPR.
  *
- * Composition: a soft pastel field with the accent blooming from the top-left,
- * and a bordered UI card entering from the bottom-right that runs off both the
- * bottom and right edges. Colours are the hues behind the site's own pastel
- * tokens (info / success / alert / purple / pink backgrounds), one per menu
- * entry. The mock UI is deliberately abstract — at 284x160 real text is
- * illegible, so shapes read cleaner than fake copy.
+ * Composition: a lightly tinted field with the accent blooming from the
+ * top-left, and a bordered product surface entering from the bottom-right that
+ * runs off both the bottom and right edges. Each scene draws a plausible slice
+ * of the thing it links to — real labels, real numbers, one accent affordance —
+ * rather than generic placeholder bars, which read as a loading skeleton.
+ * Colour is deliberately restrained: a wash in the corner, and exactly one
+ * saturated element per scene.
  */
 import fs from 'node:fs';
 
-const W = 568, H = 320;           // 2x the 284x160 slot
-const CARD_X = 238, CARD_Y = 110; // card origin; it runs off the right + bottom
-const R = 22;                     // card corner radius
-const PAD = 30;
+const W = 568, H = 320;
+const CARD_X = 216, CARD_Y = 100;   // surface origin; it runs off right + bottom
+const R = 20, PAD = 26;
+const X = CARD_X + PAD, Y = CARD_Y + PAD;
 
-// Accent hexes matching the site's own pastel tokens (info / success / alert /
-// purple / pink backgrounds in @openuidev/react-ui).
+// Hues behind the site's own pastel tokens, one per menu entry.
 const ACCENT = {
-  playground: '#a855f7', // purple  — code + compare
-  chat:       '#3b82f6', // info    — conversation
-  dashboard:  '#22c55e', // success — metrics
-  openclaw:   '#eab308', // alert   — workspace
-  community:  '#e5397f', // pink    — community
-};
-
-// Dark mode can't reuse the light accents: a saturated hue laid over near-black
-// reads as a dirty dark version of itself, not a pastel. These are the same hues
-// pre-mixed toward white so the glow stays soft.
-const ACCENT_SOFT = {
-  playground: '#d3aafb',
-  chat:       '#9dc0fa',
-  dashboard:  '#90e2ae',
-  openclaw:   '#f4d983',
-  community:  '#f29cbf',
+  playground: { light: '#7c3aed', dark: '#a78bfa', wash: '#a855f7', washDark: '#c4b5fd' },
+  chat:       { light: '#2563eb', dark: '#60a5fa', wash: '#3b82f6', washDark: '#93c5fd' },
+  dashboard:  { light: '#16a34a', dark: '#4ade80', wash: '#22c55e', washDark: '#86efac' },
+  openclaw:   { light: '#d97706', dark: '#fbbf24', wash: '#eab308', washDark: '#fcd34d' },
+  community:  { light: '#db2777', dark: '#f472b6', wash: '#e5397f', washDark: '#f9a8d4' },
 };
 
 const T = {
   light: {
-    page: '#fafafa', card: '#ffffff', border: 'rgba(9,9,9,0.09)',
-    ink: 'rgba(9,9,9,0.13)', inkSoft: 'rgba(9,9,9,0.07)',
-    // Flat wash + a soft accent bloom in the corner the card leaves empty.
-    tint: 0.13, bloom: 0.30, bloomR: 85, lift: 0.55, accentOnCard: 0.9, shadow: 0.10,
+    page: '#fbfbfb', card: '#ffffff', border: 'rgba(9,9,9,0.10)',
+    rule: 'rgba(9,9,9,0.07)', chip: 'rgba(9,9,9,0.045)',
+    ink: 'rgba(9,9,9,0.88)', ink2: 'rgba(9,9,9,0.46)', ink3: 'rgba(9,9,9,0.26)',
+    onAccent: '#ffffff', tint: 0.05, bloom: 0.16, bloomR: 78, lift: 0.5, shadow: 0.10,
   },
   dark: {
-    page: '#161616', card: '#212121', border: 'rgba(255,255,255,0.10)',
-    ink: 'rgba(255,255,255,0.16)', inkSoft: 'rgba(255,255,255,0.08)',
-    // A flat tint this dark goes muddy, so most of the colour comes from the
-    // bloom and the base stays near-black.
-    tint: 0.02, bloom: 0.34, bloomR: 52, lift: 0, accentOnCard: 0.85, shadow: 0.55,
+    page: '#161616', card: '#1f1f1f', border: 'rgba(255,255,255,0.11)',
+    rule: 'rgba(255,255,255,0.08)', chip: 'rgba(255,255,255,0.055)',
+    ink: 'rgba(255,255,255,0.90)', ink2: 'rgba(255,255,255,0.50)', ink3: 'rgba(255,255,255,0.28)',
+    onAccent: '#161616', tint: 0.02, bloom: 0.16, bloomR: 55, lift: 0, shadow: 0.55,
   },
 };
 
-const r = (x, y, w, h, rx, fill) =>
-  `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${fill}"/>`;
-const circle = (cx, cy, rad, fill) => `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${fill}"/>`;
+const FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, ui-sans-serif, sans-serif";
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-// Each scene draws only into the card's visible top-left wedge.
-function scene(name, t, rawAccent) {
-  const accent = rawAccent;
-  const x = CARD_X + PAD, y = CARD_Y + PAD;
+const r = (x, y, w, h, rx, fill, extra = '') =>
+  `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${fill}"${extra}/>`;
+const t = (x, y, size, weight, fill, str, anchor = 'start') =>
+  `<text x="${x}" y="${y}" font-family="${FONT}" font-size="${size}" font-weight="${weight}" ` +
+  `fill="${fill}" text-anchor="${anchor}" letter-spacing="-0.2">${esc(str)}</text>`;
+
+function scene(name, c, a) {
   const s = [];
   if (name === 'playground') {
-    // Left rail of blocks + a preview surface.
-    for (let i = 0; i < 3; i++) s.push(r(x, y + i * 30, 46, 20, 6, i === 0 ? accent : t.ink));
-    s.push(r(x + 60, y, 150, 80, 10, t.inkSoft));
-    s.push(r(x + 74, y + 16, 74, 8, 4, t.ink));
-    s.push(r(x + 74, y + 32, 108, 8, 4, t.inkSoft));
-    s.push(r(x + 74, y + 48, 92, 8, 4, t.inkSoft));
+    s.push(t(X, Y + 11, 13, 600, c.ink, 'Playground'));
+    s.push(r(X, Y + 26, 92, 108, 8, c.chip));
+    ['Button', 'Card', 'Chart', 'Table'].forEach((label, i) => {
+      const yy = Y + 38 + i * 22;
+      if (i === 0) s.push(r(X + 6, yy - 9, 80, 18, 5, c.rule));
+      s.push(t(X + 14, yy + 3, 10, i === 0 ? 550 : 400, i === 0 ? c.ink : c.ink2, label));
+    });
+    s.push(r(X + 104, Y + 26, 168, 108, 8, 'none', ` stroke="${c.border}" stroke-width="1"`));
+    s.push(t(X + 116, Y + 43, 9, 500, c.ink3, 'PREVIEW'));
+    s.push(t(X + 116, Y + 66, 12, 600, c.ink, 'Book a table'));
+    s.push(t(X + 116, Y + 82, 9.5, 400, c.ink2, 'Pick a time that suits you'));
+    s.push(r(X + 116, Y + 94, 74, 21, 6, a));
+    s.push(t(X + 153, Y + 108, 9.5, 550, c.onAccent, 'Reserve', 'middle'));
   } else if (name === 'chat') {
-    // Two bubbles, the reply tinted with the accent.
-    s.push(r(x, y, 132, 26, 13, t.ink));
-    s.push(r(x, y + 38, 176, 40, 14, t.inkSoft));
-    s.push(r(x + 40, y + 92, 148, 26, 13, accent));
+    s.push(r(X + 96, Y, 176, 24, 12, c.chip));
+    s.push(t(X + 108, Y + 16, 10, 400, c.ink2, 'How did Q3 revenue land?'));
+    s.push(r(X, Y + 36, 250, 100, 9, 'none', ` stroke="${c.border}" stroke-width="1"`));
+    s.push(t(X + 14, Y + 56, 12, 600, c.ink, 'Q3 Revenue'));
+    s.push(t(X + 14, Y + 78, 17, 600, c.ink, '$48,290'));
+    s.push(t(X + 84, Y + 78, 10, 550, a, '+12.4%'));
+    const pts = [0, 12, 7, 22, 17, 31, 26, 44];
+    s.push(`<polyline points="${pts.map((v, i) => (i % 2 ? Y + 122 - v : X + 14 + (i / 2) * 30)).reduce((acc, v, i) => (i % 2 ? acc + ',' + v : acc + ' ' + v), '')}" fill="none" stroke="${a}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`);
+    s.push(t(X + 14, Y + 132, 9, 400, c.ink3, 'Jul        Aug        Sep'));
   } else if (name === 'dashboard') {
-    // Stat row over a small bar chart.
-    for (let i = 0; i < 3; i++) s.push(r(x + i * 68, y, 56, 30, 8, t.inkSoft));
-    const bars = [30, 48, 38, 62, 52];
-    bars.forEach((b, i) => s.push(r(x + i * 34, y + 118 - b, 20, b, 5, i === 3 ? accent : t.ink)));
+    s.push(t(X, Y + 10, 12, 600, c.ink, 'Overview'));
+    [['Revenue', '$48.2k'], ['Orders', '1,204'], ['Churn', '2.1%']].forEach(([k, v], i) => {
+      const xx = X + i * 92;
+      s.push(r(xx, Y + 22, 82, 44, 7, c.chip));
+      s.push(t(xx + 11, Y + 39, 9, 400, c.ink2, k));
+      s.push(t(xx + 11, Y + 56, 13, 600, c.ink, v));
+    });
+    const bars = [26, 40, 33, 52, 44, 60];
+    bars.forEach((b, i) => s.push(r(X + i * 30, Y + 142 - b, 17, b, 4, i === bars.length - 1 ? a : c.rule)));
+    s.push(`<line x1="${X}" y1="${Y + 144}" x2="${X + 260}" y2="${Y + 144}" stroke="${c.rule}" stroke-width="1"/>`);
   } else if (name === 'openclaw') {
-    // Sidebar rail + two workspace cards.
-    s.push(r(x, y, 44, 122, 10, t.inkSoft));
-    for (let i = 0; i < 3; i++) s.push(circle(x + 22, y + 20 + i * 26, 5, i === 0 ? accent : t.ink));
-    s.push(r(x + 58, y, 152, 54, 10, t.inkSoft));
-    s.push(r(x + 58, y + 66, 152, 54, 10, t.inkSoft));
-    s.push(r(x + 72, y + 16, 68, 8, 4, t.ink));
-    s.push(r(x + 72, y + 82, 88, 8, 4, t.ink));
+    s.push(r(X, Y, 78, 132, 8, c.chip));
+    s.push(t(X + 12, Y + 18, 10, 600, c.ink, 'OpenClaw'));
+    ['Agents', 'Apps', 'Artifacts', 'Cron'].forEach((label, i) => {
+      const yy = Y + 40 + i * 21;
+      if (i === 0) s.push(r(X + 6, yy - 10, 66, 19, 5, c.rule));
+      s.push(circle(X + 16, yy - 1, 2.6, i === 0 ? a : c.ink3));
+      s.push(t(X + 24, yy + 2, 9.5, i === 0 ? 550 : 400, i === 0 ? c.ink : c.ink2, label));
+    });
+    s.push(t(X + 92, Y + 12, 13, 600, c.ink, 'Good evening'));
+    [['Research scout', 'ran 12m ago'], ['Sales follow-up', 'idle']].forEach(([n, m], i) => {
+      const yy = Y + 30 + i * 52;
+      s.push(r(X + 92, yy, 180, 44, 8, 'none', ` stroke="${c.border}" stroke-width="1"`));
+      s.push(r(X + 104, yy + 13, 18, 18, 5, i === 0 ? a : c.rule));
+      s.push(t(X + 130, yy + 21, 10, 550, c.ink, n));
+      s.push(t(X + 130, yy + 34, 9, 400, c.ink2, m));
+    });
   } else {
-    // community — a grid of tiles, one picked out in the accent.
-    for (let i = 0; i < 4; i++) {
-      const cx = x + (i % 2) * 84, cy = y + Math.floor(i / 2) * 66;
-      s.push(r(cx, cy, 70, 52, 10, i === 1 ? accent : t.inkSoft));
-      if (i !== 1) s.push(r(cx + 12, cy + 14, 34, 7, 3, t.ink));
-    }
+    s.push(t(X, Y + 10, 12, 600, c.ink, 'Community'));
+    [['openui-vue', '1.2k'], ['tanstack-ui', '840'], ['nuxt-openui', '512']].forEach(([n, stars], i) => {
+      const yy = Y + 24 + i * 40;
+      s.push(r(X, yy, 272, 34, 8, 'none', ` stroke="${c.border}" stroke-width="1"`));
+      s.push(r(X + 11, yy + 8, 18, 18, 5, i === 0 ? a : c.rule));
+      s.push(t(X + 38, yy + 15, 10, 550, c.ink, n));
+      s.push(t(X + 38, yy + 27, 9, 400, c.ink2, 'Renderer + tool bindings'));
+      s.push(t(X + 260, yy + 21, 9, 500, c.ink3, '★ ' + stars, 'end'));
+    });
   }
   return s.join('');
 }
+const circle = (cx, cy, rad, fill) => `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${fill}"/>`;
 
 function svg(name, mode) {
-  const t = T[mode], a = ACCENT[name];
-  // The wash uses the softened hue in dark mode; card elements keep the true one.
-  const wash = mode === 'dark' ? ACCENT_SOFT[name] : a;
+  const c = T[mode];
+  const a = ACCENT[name][mode];
+  const wash = mode === 'dark' ? ACCENT[name].washDark : ACCENT[name].wash;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
-    <radialGradient id="bloom" cx="12%" cy="7%" r="${t.bloomR}%">
-      <stop offset="0%" stop-color="${wash}" stop-opacity="${t.bloom}"/>
+    <radialGradient id="bloom" cx="12%" cy="7%" r="${c.bloomR}%">
+      <stop offset="0%" stop-color="${wash}" stop-opacity="${c.bloom}"/>
       <stop offset="100%" stop-color="${wash}" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="lift" cx="8%" cy="4%" r="60%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="${t.lift}"/>
+    <radialGradient id="lift" cx="8%" cy="4%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="${c.lift}"/>
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
     <filter id="sh" x="-40%" y="-40%" width="200%" height="200%">
-      <feDropShadow dx="-2" dy="6" stdDeviation="16" flood-color="#000" flood-opacity="${t.shadow}"/>
+      <feDropShadow dx="-2" dy="6" stdDeviation="16" flood-color="#000" flood-opacity="${c.shadow}"/>
     </filter>
     <clipPath id="frame"><rect x="0" y="0" width="${W}" height="${H}"/></clipPath>
   </defs>
   <g clip-path="url(#frame)">
-    <rect width="${W}" height="${H}" fill="${t.page}"/>
-    <rect width="${W}" height="${H}" fill="${wash}" opacity="${t.tint}"/>
+    <rect width="${W}" height="${H}" fill="${c.page}"/>
+    <rect width="${W}" height="${H}" fill="${wash}" opacity="${c.tint}"/>
     <rect width="${W}" height="${H}" fill="url(#bloom)"/>
     <rect width="${W}" height="${H}" fill="url(#lift)"/>
     <g filter="url(#sh)">
       <rect x="${CARD_X}" y="${CARD_Y}" width="${W - CARD_X + 90}" height="${H - CARD_Y + 90}"
-            rx="${R}" fill="${t.card}" stroke="${t.border}" stroke-width="1.5"/>
+            rx="${R}" fill="${c.card}" stroke="${c.border}" stroke-width="1.5"/>
     </g>
-    ${scene(name, t, a)}
+    ${scene(name, T[mode], a)}
   </g>
 </svg>`;
 }
