@@ -64,10 +64,14 @@
   color: inherit;
 }
 
-/* Mega-menu: one 284px card per child, laid out in a row (matches the design's
-   916px / 3-up panel: 16px padding, 16px gap, 284px columns). The track size is
-   definite on purpose — the panel is absolutely positioned, so it shrink-wraps
-   its content, and a flexible track (minmax(0, 284px)) collapses to zero there. */
+/* Mega-menu: one card per child in a row. Each card carries 4px of its own
+   padding so its hover fill can bleed 4px past the artwork without any layout
+   shift; the panel's padding and gap are reduced by that same 4px per edge, so
+   the rendered spacing is identical to the design (16px panel inset, 16px
+   between artwork edges, 916px total for the 3-up menu):
+     track  284 + 4*2 = 292      panel  12*2 + 292*3 + 8*2 = 916
+   The track size is definite on purpose — the panel is absolutely positioned,
+   so it shrink-wraps, and a flexible track (minmax(0, …)) collapses to zero. */
 .dropdownPanel {
   position: absolute;
   top: calc(100% + 0.5rem);
@@ -75,9 +79,9 @@
   z-index: 60;
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 284px;
-  gap: 1rem;
-  padding: 1rem;
+  grid-auto-columns: 292px;
+  gap: 0.5rem;
+  padding: 0.75rem;
   border: 1px solid var(--openui-border-default);
   border-radius: 20px;
   background: var(--openui-foreground);
@@ -105,18 +109,30 @@
 }
 
 .dropdownItem {
+  /* Design spec is 3% black; the token set only steps 2/4/8%, so it's declared
+     here. Dark mode needs a light overlay — 3% black is invisible on a dark
+     surface — so it flips to a white wash of equivalent weight. */
+  --nav-card-hover: rgb(0 0 0 / 0.03);
+
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 0;
-  border-radius: 12px;
+  /* Bleeds the hover fill 4px past the artwork. Compensated for in the panel's
+     padding/gap above, so this adds no visible spacing. */
+  padding: 4px;
+  /* Concentric with the 12px artwork radius inside it (12 + 4px padding). */
+  border-radius: 16px;
   color: var(--openui-text-neutral-primary);
   text-decoration: none;
   transition: background-color 0.15s ease;
 }
 
+[data-theme="dark"] .dropdownItem {
+  --nav-card-hover: rgb(255 255 255 / 0.04);
+}
+
 .dropdownItem:hover {
-  background: var(--openui-highlight);
+  background: var(--nav-card-hover);
 }
 
 /* 284x160 preview slot. The art is decorative, so it sits behind the label and
@@ -137,11 +153,6 @@
   height: 100%;
   object-fit: cover;
   object-position: top center;
-  transition: transform 0.25s ease;
-}
-
-.dropdownItem:hover .dropdownPreviewImage {
-  transform: scale(1.03);
 }
 
 /* Per-theme artwork: render both variants, reveal the one matching the theme. */
@@ -208,13 +219,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dropdownPreviewImage,
+  .dropdownItem,
   .dropdownArrow {
     transition: none;
-  }
-
-  .dropdownItem:hover .dropdownPreviewImage {
-    transform: none;
   }
 }
 
