@@ -4,7 +4,48 @@ import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
 import { join } from "path";
 
-const systemPrompt = readFileSync(join(process.cwd(), "generated/chat-system-prompt.txt"), "utf-8");
+const openUiSystemPrompt = readFileSync(
+  join(process.cwd(), "generated/chat-system-prompt.txt"),
+  "utf-8",
+);
+
+const markdownSystemPrompt = `You are a helpful assistant. Respond using clear, well-structured GitHub-Flavored Markdown.
+
+Use headings, lists, tables, links, block quotes, and fenced code blocks when they make the response easier to understand. Use the available tools when they are relevant, and incorporate their results into the answer.
+
+Return only Markdown content. Do not emit OpenUI Lang, component syntax, JSON UI descriptions, or instructions for a renderer.`;
+
+type ResponseMode = "markdown" | "openui";
+
+interface ChatRequestBody {
+  messages: unknown[];
+  responseMode?: ResponseMode;
+}
+
+function invalidRequest(message: string) {
+  return Response.json({ error: { message } }, { status: 400 });
+}
+
+function parseRequestBody(body: unknown): ChatRequestBody | Response {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return invalidRequest("Request body must be a JSON object");
+  }
+
+  const { messages, responseMode } = body as Record<string, unknown>;
+
+  if (!Array.isArray(messages)) {
+    return invalidRequest("messages must be an array");
+  }
+
+  if (responseMode !== undefined && responseMode !== "markdown" && responseMode !== "openui") {
+    return invalidRequest('responseMode must be either "markdown" or "openui"');
+  }
+
+  return {
+    messages,
+    responseMode: responseMode as ResponseMode | undefined,
+  };
+}
 
 // ── Tool implementations ──
 
@@ -209,7 +250,19 @@ function sseToolCallArgs(
 // ── Route handler ──
 
 export async function POST(req: NextRequest) {
-  const { messages } = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return invalidRequest("Request body must be valid JSON");
+  }
+
+  const parsedBody = parseRequestBody(body);
+  if (parsedBody instanceof Response) {
+    return parsedBody;
+  }
+
+  const { messages, responseMode = "openui" } = parsedBody;
 
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -226,7 +279,11 @@ export async function POST(req: NextRequest) {
   const MODEL = "openai/gpt-5.4";
 
   const cleanMessages = (messages as any[])
-    .filter((m) => m.role !== "tool")
+    .filter(
+      (m) =>
+        m.role !== "tool" &&
+        (responseMode === "openui" || (m.role !== "system" && m.role !== "developer")),
+    )
     .map((m) => {
       if (m.role === "assistant" && m.tool_calls?.length) {
         const { tool_calls: _tc, ...rest } = m;
@@ -236,7 +293,10 @@ export async function POST(req: NextRequest) {
     });
 
   const chatMessages: ChatCompletionMessageParam[] = [
-    { role: "system" as const, content: systemPrompt },
+    {
+      role: "system" as const,
+      content: responseMode === "markdown" ? markdownSystemPrompt : openUiSystemPrompt,
+    },
     ...cleanMessages,
   ];
 

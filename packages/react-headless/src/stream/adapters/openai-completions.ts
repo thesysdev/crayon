@@ -15,6 +15,32 @@ export const openAIAdapter = (): StreamProtocolAdapter => ({
 
       try {
         const json = JSON.parse(data) as ChatCompletionChunk;
+        const errorEvent = json as unknown as {
+          error?: unknown;
+          message?: unknown;
+          type?: unknown;
+        };
+
+        if (errorEvent.error !== undefined || errorEvent.type === "error") {
+          const nestedMessage =
+            typeof errorEvent.error === "object" && errorEvent.error !== null
+              ? (errorEvent.error as { message?: unknown }).message
+              : undefined;
+          const rawMessage = errorEvent.message ?? nestedMessage ?? errorEvent.error;
+          const message =
+            typeof rawMessage === "string"
+              ? rawMessage
+              : rawMessage === undefined
+                ? "Stream error"
+                : JSON.stringify(rawMessage);
+
+          yield {
+            type: EventType.RUN_ERROR,
+            message,
+          };
+          continue;
+        }
+
         const choice = json.choices?.[0];
         const delta = choice?.delta;
 

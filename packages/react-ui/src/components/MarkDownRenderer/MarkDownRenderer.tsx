@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { memo } from "react";
 import ReactMarkdown, { Components, type Options } from "react-markdown";
 import { oneLight, vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import remarkGfm from "remark-gfm";
 import { CodeBlock } from "../CodeBlock";
 import {
   Table,
@@ -85,6 +86,7 @@ export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
 
   const markdownProps = {
     ...props.options,
+    remarkPlugins: props.options?.remarkPlugins ?? [remarkGfm],
     components: { ...components, ...props.options?.components },
   };
 

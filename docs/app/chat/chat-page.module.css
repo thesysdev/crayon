@@ -15,7 +15,7 @@
   flex: none;
   border-bottom: 1px solid var(--openui-border-default);
   background: var(--openui-foreground);
-  padding: 12px 20px 10px;
+  padding: 10px 20px;
 }
 
 .headerRow {
@@ -44,16 +44,21 @@
   color: var(--openui-text-neutral-primary);
 }
 
-.backLink:focus-visible {
+.backLink:focus-visible,
+.modeItem:focus-visible,
+.mobilePanelTab:focus-visible,
+.suggestionButton:focus-visible,
+.composerSubmit:focus-visible,
+.resetButton:focus-visible {
   outline: 2px solid var(--openui-border-accent-emphasis);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
 .startLocallyButton {
   display: inline-flex;
   box-sizing: border-box;
   inline-size: 18.75rem;
-  height: 2.5rem;
+  height: 2.75rem;
   min-inline-size: 18.75rem;
   flex: 0 0 18.75rem;
   align-items: center;
@@ -149,11 +154,11 @@
 }
 
 .modeItem {
-  min-height: 38px !important;
+  min-height: 44px !important;
   border: 0 !important;
   border-radius: calc(var(--openui-radius-m) - 3px) !important;
   background: transparent !important;
-  padding: 7px 13px !important;
+  padding: 7px 12px !important;
   color: var(--openui-text-neutral-secondary) !important;
   font: var(--openui-text-label-sm) !important;
   white-space: nowrap;
@@ -170,66 +175,440 @@
   box-shadow: var(--openui-shadow-s);
 }
 
-.modeItem:focus-visible {
-  position: relative;
-  z-index: 1;
-  outline: 2px solid var(--openui-border-accent-emphasis);
-  outline-offset: 1px;
+.comparisonViewport {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--openui-foreground);
 }
 
-.agentViewport {
+.panelGrid {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+}
+
+.modePanel {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  order: var(--comparison-panel-order);
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--openui-foreground);
+}
+
+.modePanel[hidden] {
+  display: none !important;
+}
+
+.modePanel[data-position="second"] {
+  border-inline-start: 1px solid var(--openui-border-default);
+}
+
+.panelHeader {
+  display: flex;
+  min-height: 54px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--openui-border-default);
+  padding: 10px 20px;
+  background: var(--openui-foreground);
+}
+
+.panelHeader h2 {
+  margin: 0;
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-heading-sm);
+  font-weight: 500;
+}
+
+.panelStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--openui-text-neutral-tertiary);
+  font: var(--openui-text-label-xs);
+}
+
+.panelStatus > span,
+.mobilePanelStatus {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--openui-text-neutral-tertiary);
+}
+
+.panelStatus[data-status="ready"] > span,
+.mobilePanelStatus[data-status="ready"] {
+  background: #12b76a;
+}
+
+.panelStatus[data-status="generating"] > span,
+.mobilePanelStatus[data-status="generating"] {
+  background: #7f56d9;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #7f56d9 16%, transparent);
+}
+
+.panelStatus[data-status="error"] > span,
+.mobilePanelStatus[data-status="error"] {
+  background: #f04438;
+}
+
+.panelBody {
   position: relative;
   display: flex;
   min-width: 0;
   min-height: 0;
   flex: 1;
   overflow: hidden;
-  background: var(--openui-foreground);
 }
 
-.agentViewport > * {
+.panelBody > * {
   width: 100%;
   height: 100%;
   min-width: 0;
   min-height: 0;
 }
 
-.agentViewport :global(.chat-agent-surface) {
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.agentViewport :global(.openui-agent-container) {
+.panelBody :global(.chat-agent-surface),
+.panelBody :global(.openui-agent-container) {
   width: 100% !important;
   height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
 }
 
-/* AgentInterface normally swaps a collapsed sidebar logo for this control on
-   hover. The chat surfaces have no logo, so keep the only expand affordance
-   visible at rest. */
-.agentViewport
-  :global(.openui-agent-sidebar-header--collapsed .openui-agent-sidebar-header__toggle-button) {
-  opacity: 1;
-  pointer-events: auto;
+/* Comparison owns all navigation and input chrome. Both internal desktop and
+   mobile branches are suppressed because each pane measures its own width. */
+.panelBody :global(.openui-agent-sidebar-container),
+.panelBody :global(.openui-agent-sidebar-container__overlay),
+.panelBody :global(.openui-agent-mobile-header),
+.panelBody :global(.openui-agent-thread-header),
+.panelBody :global(.openui-agent-composer-slot),
+.panelBody :global(.openui-agent-workspace-sidebar),
+.panelBody :global(.openui-agent-workspace-sidebar__overlay) {
+  display: none !important;
 }
 
-.agentViewport :global([data-chat-mode="cloud"] .openui-agent-thread-error) {
+.panelBody :global(.openui-agent-thread-container),
+.panelBody :global(.openui-agent-thread-wrapper),
+.panelBody :global(.openui-agent-thread-chat-panel) {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  flex: 1 1 100% !important;
+}
+
+/* Cloud uses its injected body-level modal for artifact details. Suppress the
+   built-in mobile overlay and desktop split rail that share the same state. */
+.panelBody :global([data-chat-mode="cloud"] .openui-detailed-view-overlay),
+.panelBody :global([data-chat-mode="cloud"] .openui-agent-thread-detailed-view-panel),
+.panelBody :global([data-chat-mode="cloud"] .openui-agent-resizable-separator) {
+  display: none !important;
+}
+
+.panelBody :global(.openui-agent-thread-messages) {
+  max-width: none;
+  padding-inline: 24px;
+}
+
+.panelBody :global(.openui-agent-thread-message-assistant) {
+  min-width: 0;
+  padding-right: 0;
+}
+
+.panelBody :global(.openui-agent-thread-message-loading),
+.panelBody :global(.openui-agent-thread-error) {
+  padding-inline: 24px;
+}
+
+.panelBody :global(.openui-agent-thread-scroll-area) {
+  overscroll-behavior: contain;
+}
+
+.surfaceWelcome {
+  display: flex;
+  max-width: 560px;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  text-align: center;
+}
+
+.surfaceWelcomeIcon {
+  display: grid;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--openui-text-neutral-tertiary);
+  background: var(--openui-sunk);
+}
+
+.surfaceWelcome p {
+  margin: 0;
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-heading-xs);
+  font-weight: 500;
+}
+
+.comparisonControls {
+  position: relative;
+  z-index: 4;
+  flex: none;
+  border-top: 1px solid var(--openui-border-default);
+  background: var(--openui-foreground);
+  padding: 12px 24px max(14px, env(safe-area-inset-bottom));
+}
+
+.suggestionScroller {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.suggestionScroller::-webkit-scrollbar {
   display: none;
 }
 
-.agentViewport :global(.openui-detailed-view-panel) {
-  display: flex !important;
-  min-height: 0 !important;
-  flex: 1 1 0% !important;
-  flex-direction: column !important;
+.suggestionRow {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  justify-content: center;
+  gap: 10px;
+  padding-bottom: 10px;
 }
 
-.agentViewport :global(.openui-detailed-view-panel > .thesys-artifact-standalone) {
+.suggestionButton {
+  display: inline-flex;
+  min-height: 44px;
+  flex: none;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: var(--openui-sunk);
+  padding: 9px 16px;
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-label-sm);
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.suggestionButton:hover:not(:disabled) {
+  border-color: var(--openui-border-default);
+  background: var(--openui-highlight);
+}
+
+.suggestionButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.composerRow {
+  display: flex;
+  width: min(100%, 1240px);
+  align-items: flex-end;
+  gap: 10px;
+  margin: 0 auto;
+}
+
+.sharedComposer {
+  display: flex;
+  min-width: 0;
+  min-height: 54px;
+  flex: 1;
+  align-items: flex-end;
+  gap: 8px;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 16px;
+  background: var(--openui-foreground);
+  padding: 5px 5px 5px 16px;
+  box-shadow: var(--openui-shadow-s);
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.sharedComposer:focus-within {
+  border-color: var(--openui-border-interactive-emphasis);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--openui-border-accent-emphasis) 14%, transparent);
+}
+
+.sharedComposer[data-running="true"] {
+  border-color: var(--openui-border-interactive-emphasis);
+}
+
+.sharedComposerInput {
+  width: 100%;
+  min-width: 0;
+  min-height: 32px;
+  max-height: 154px;
+  flex: 1;
+  resize: none;
+  overflow-y: auto;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 5px 0 3px;
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-body-default);
+}
+
+.sharedComposerInput::placeholder {
+  color: var(--openui-text-neutral-tertiary);
+}
+
+.composerSubmit,
+.resetButton {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  place-items: center;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.composerSubmit {
+  border-color: var(--openui-text-black);
+  background: var(--openui-text-black);
+  color: var(--openui-text-white);
+}
+
+.composerSubmit:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.resetButton {
+  height: 54px;
+  background: var(--openui-foreground);
+  color: var(--openui-text-neutral-primary);
+}
+
+.resetButton:hover {
+  background: var(--openui-highlight);
+}
+
+.mobilePanelTabs {
+  display: none;
+}
+
+.degradedNotice {
+  margin: 8px 0 0;
+  color: var(--openui-text-neutral-tertiary);
+  font: var(--openui-text-label-xs);
+  text-align: center;
+}
+
+.cloudArtifactOverlay {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  background: color-mix(in srgb, var(--openui-text-black) 36%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+.cloudArtifactDialog {
+  position: fixed;
+  z-index: 1001;
+  display: flex;
+  width: 100vw;
+  height: 100dvh;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  inset: 0;
+  overflow: hidden;
+  outline: none;
+  color: var(--openui-text-neutral-primary);
+  background: var(--openui-foreground);
+}
+
+.cloudArtifactHeader {
+  display: flex;
+  min-height: 60px;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--openui-border-default);
+  padding: 8px 14px 8px 20px;
+  background: var(--openui-foreground);
+}
+
+.cloudArtifactTitle {
+  min-width: 0;
+  overflow: hidden;
+  margin: 0;
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-heading-sm);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cloudArtifactClose {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  place-items: center;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 12px;
+  background: var(--openui-foreground);
+  color: var(--openui-text-neutral-primary);
+  cursor: pointer;
+}
+
+.cloudArtifactClose:hover {
+  background: var(--openui-highlight);
+}
+
+.cloudArtifactClose:focus-visible {
+  outline: 2px solid var(--openui-border-accent-emphasis);
+  outline-offset: 2px;
+}
+
+.cloudArtifactBody {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cloudArtifactBody > :global(.thesys-artifact-standalone) {
   min-height: 0 !important;
   flex: 1 1 0% !important;
+}
+
+.cloudArtifactError {
+  display: grid;
+  min-height: 240px;
+  flex: 1;
+  place-items: center;
+  padding: 32px;
+  color: var(--openui-text-neutral-secondary);
+  font: var(--openui-text-body-default);
+  text-align: center;
 }
 
 .centeredState {
@@ -240,9 +619,11 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+  padding: 24px;
   color: var(--openui-text-neutral-secondary);
   background: var(--openui-foreground);
   font: var(--openui-text-body-default);
+  text-align: center;
 }
 
 .centeredState p {
@@ -252,6 +633,7 @@
 .loadingIndicator {
   width: 16px;
   height: 16px;
+  flex: none;
   border: 2px solid var(--openui-border-default);
   border-top-color: var(--openui-text-neutral-primary);
   border-radius: 999px;
@@ -262,101 +644,6 @@
   to {
     transform: rotate(360deg);
   }
-}
-
-.cloudThreadHeader :global(.openui-agent-thread-header__title) {
-  display: none;
-}
-
-.cloudThreadHeader :global(.openui-agent-thread-header__actions) {
-  min-width: 0;
-  flex: 1 1 auto;
-  justify-content: space-between;
-}
-
-.modelSwitcher {
-  min-width: 0;
-}
-
-.cloudThreadHeader .modelSwitcher {
-  flex: 0 1 auto;
-}
-
-.modelSwitcherTrigger {
-  width: auto !important;
-  min-width: 0 !important;
-  max-width: min(240px, calc(100vw - 32px));
-  height: 32px !important;
-  justify-content: flex-start !important;
-  gap: 6px !important;
-  border: 1px solid var(--openui-border-default) !important;
-  border-radius: var(--openui-radius-m) !important;
-  background: var(--openui-foreground) !important;
-  padding-inline: 10px !important;
-  color: var(--openui-text-neutral-primary) !important;
-  box-shadow: var(--openui-shadow-s);
-  font: var(--openui-text-body-sm) !important;
-}
-
-.modelSwitcherValue {
-  min-width: 0;
-  flex: 0 1 auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.modelSwitcherContent {
-  width: min(360px, calc(100vw - 32px));
-  max-height: 360px;
-  overflow: auto;
-}
-
-.modelOption {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.modelOptionHeading {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 6px;
-}
-
-.modelOptionName,
-.modelOptionId {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.modelOptionId {
-  color: var(--openui-text-neutral-tertiary);
-  font-size: 12px;
-}
-
-.cloudMobileHeader :global(.openui-agent-mobile-header-logo-container) {
-  display: none;
-}
-
-.cloudMobileHeader :global(.openui-agent-mobile-header-actions) {
-  min-width: 0;
-  flex: 1 1 auto;
-  justify-content: space-between;
-}
-
-.cloudMobileHeader .modelSwitcher {
-  order: -1;
-  min-width: 0;
-  flex: 0 1 auto;
-}
-
-.cloudMobileHeader .modelSwitcherTrigger {
-  width: min(220px, 100%) !important;
 }
 
 .srOnly {
@@ -371,13 +658,17 @@
   border: 0;
 }
 
-@media (max-width: 820px) {
+@media (max-width: 1180px) {
   .startLocallyButton {
     display: none;
   }
+
+  .suggestionRow {
+    justify-content: flex-start;
+  }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .header {
     padding: 8px 12px;
   }
@@ -388,17 +679,24 @@
   }
 
   .backLink {
-    min-height: 36px;
+    min-height: 44px;
   }
 
   .modeControl {
     width: 100%;
     margin-left: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .modeControl::-webkit-scrollbar {
+    display: none;
   }
 
   .modeGroup {
     display: flex !important;
     width: 100% !important;
+    min-width: 480px;
   }
 
   .modeItem {
@@ -408,20 +706,113 @@
     justify-content: center;
     padding-inline: 8px !important;
   }
+
+  .mobilePanelTabs {
+    display: flex;
+    min-height: 48px;
+    flex: none;
+    border-bottom: 1px solid var(--openui-border-default);
+    background: var(--openui-foreground);
+    padding: 4px 8px 0;
+  }
+
+  .mobilePanelTab {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 44px;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--openui-text-neutral-secondary);
+    font: var(--openui-text-label-sm);
+    cursor: pointer;
+  }
+
+  .mobilePanelTab[aria-selected="true"] {
+    border-bottom-color: var(--openui-text-neutral-primary);
+    color: var(--openui-text-neutral-primary);
+  }
+
+  .panelGrid {
+    display: flex;
+  }
+
+  .modePanel {
+    width: 100%;
+    flex: 1;
+  }
+
+  .modePanel[data-position="second"] {
+    border-inline-start: 0;
+  }
+
+  .panelHeader {
+    display: none;
+  }
+
+  .panelBody :global(.openui-agent-thread-messages),
+  .panelBody :global(.openui-agent-thread-message-loading),
+  .panelBody :global(.openui-agent-thread-error) {
+    padding-inline: 16px;
+  }
+
+  .comparisonControls {
+    padding: 10px 12px max(10px, env(safe-area-inset-bottom));
+  }
+
+  .suggestionRow {
+    padding-inline: 0;
+  }
 }
 
-@media (max-width: 380px) {
-  .cloudMobileHeader .modelSwitcherTrigger {
-    width: min(190px, 100%) !important;
+@media (max-width: 560px) {
+  .modeGroup {
+    min-width: 0;
+  }
+
+  .modeItem {
+    min-height: 48px !important;
+    padding-inline: 4px !important;
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+    white-space: normal;
+  }
+
+  .suggestionButton {
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+
+  .sharedComposer {
+    min-height: 50px;
+    padding-left: 13px;
+  }
+
+  .resetButton {
+    width: 44px;
+    height: 50px;
+  }
+
+  .surfaceWelcome {
+    gap: 16px;
+  }
+
+  .surfaceWelcomeIcon {
+    width: 48px;
+    height: 48px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .startLocallyButton {
-    transition: none;
-  }
-
-  .startLocallyLabel {
+  .startLocallyButton,
+  .startLocallyLabel,
+  .suggestionButton,
+  .sharedComposer {
     transition: none;
   }
 

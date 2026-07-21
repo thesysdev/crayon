@@ -155,14 +155,26 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
         set((s) => ({ messages: [...s.messages, optimisticMessage] }));
 
         abortController.signal.addEventListener("abort", () => {
-          set({ _abortController: null, isRunning: false });
+          if (get()._abortController === abortController) {
+            set({
+              _abortController: null,
+              isRunning: false,
+              executingToolCallIds: new Set<string>(),
+            });
+          }
         });
+
+        const isCurrentRun = () => get()._abortController === abortController;
 
         try {
           let threadId = get().selectedThreadId;
 
           if (!threadId) {
             const created = await get().createThread(optimisticMessage);
+            // Reset/thread-switch may have canceled the run while remote thread
+            // creation was pending. Never let that stale result reselect the
+            // canceled thread or start an LLM request for it.
+            if (abortController.signal.aborted || !isCurrentRun()) return;
             threadId = created.id;
             set({ selectedThreadId: threadId });
           }
@@ -179,30 +191,39 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
 
           await processStreamedMessage({
             response,
-            createMessage: (msg) => set((s) => ({ messages: [...s.messages, msg] })),
-            updateMessage: (msg) =>
+            createMessage: (msg) => {
+              if (!isCurrentRun()) return;
+              set((s) => ({ messages: [...s.messages, msg] }));
+            },
+            updateMessage: (msg) => {
+              if (!isCurrentRun()) return;
               set((s) => ({
                 messages: s.messages.map((m) => (m.id === msg.id ? msg : m)),
-              })),
+              }));
+            },
             // A tool's args have closed (TOOL_CALL_END) → it is now executing.
-            markToolExecuting: (id) =>
+            markToolExecuting: (id) => {
+              if (!isCurrentRun()) return;
               set((s) =>
                 s.executingToolCallIds.has(id)
                   ? s
                   : { executingToolCallIds: new Set(s.executingToolCallIds).add(id) },
-              ),
+              );
+            },
             // Its result landed (or it errored) → no longer executing.
-            clearToolExecuting: (id) =>
+            clearToolExecuting: (id) => {
+              if (!isCurrentRun()) return;
               set((s) => {
                 if (!s.executingToolCallIds.has(id)) return s;
                 const next = new Set(s.executingToolCallIds);
                 next.delete(id);
                 return { executingToolCallIds: next };
-              }),
+              });
+            },
             adapter: llm.streamProtocol,
           });
         } catch (e) {
-          if (!abortController.signal.aborted) {
+          if (!abortController.signal.aborted && isCurrentRun()) {
             set({ threadError: e instanceof Error ? e : new Error(String(e)) });
           }
         } finally {
@@ -210,11 +231,13 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
           // TOOL_CALL_END without a matching TOOL_CALL_RESULT (e.g. client-side
           // tool calls in the OpenAI adapters) would otherwise leave them stuck
           // in the executing set after the run ends.
-          set({
-            _abortController: null,
-            isRunning: false,
-            executingToolCallIds: new Set<string>(),
-          });
+          if (isCurrentRun()) {
+            set({
+              _abortController: null,
+              isRunning: false,
+              executingToolCallIds: new Set<string>(),
+            });
+          }
         }
       },
 

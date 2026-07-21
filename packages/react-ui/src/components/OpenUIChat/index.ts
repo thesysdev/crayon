@@ -1,3 +1,5 @@
+export { GenUIAssistantMessage } from "./GenUIAssistantMessage";
+export type { GenUIAssistantMessageProps, GenUIConversationAction } from "./GenUIAssistantMessage";
 export { GenUIUserMessage } from "./GenUIUserMessage";
 export { ShareThread } from "./ShareThread";
 export type { ShareThreadProps } from "./ShareThread";

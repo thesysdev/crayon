@@ -38,7 +38,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
       },
       {
         title: "OpenUI Chat",
-        description: "Try OpenUI OSS and Cloud in a live chat.",
+        description: "Compare Markdown, OpenUI OSS, and Cloud side by side.",
         href: "/chat",
       },
       {
@@ -100,9 +100,7 @@ export function SitePrimaryNav() {
                       href={child.href}
                       key={child.href}
                       role="menuitem"
-                      {...(child.newTab
-                        ? { target: "_blank", rel: "noopener noreferrer" }
-                        : {})}
+                      {...(child.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                     >
                       <span className={styles.dropdownText}>
                         <span className={styles.dropdownTitleRow}>

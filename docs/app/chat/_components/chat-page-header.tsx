@@ -7,7 +7,7 @@ import { ArrowLeft, Check, SquareTerminal } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import styles from "../chat-page.module.css";
-import type { ChatMode } from "./chat-types";
+import { COMPARISON_PAIRS, type ComparisonPair } from "./chat-types";
 
 const CREATE_COMMAND = "npx @openuidev/cli@latest create";
 const COPY_FEEDBACK_MS = 1800;
@@ -60,11 +60,11 @@ function StartLocallyButton() {
 }
 
 interface ChatPageHeaderProps {
-  mode: ChatMode;
-  onModeChange: (mode: ChatMode) => void;
+  pair: ComparisonPair;
+  onPairChange: (pair: ComparisonPair) => void;
 }
 
-export function ChatPageHeader({ mode, onModeChange }: ChatPageHeaderProps) {
+export function ChatPageHeader({ pair, onPairChange }: ChatPageHeaderProps) {
   return (
     <header className={styles.header} aria-label="OpenUI chat controls">
       <div className={styles.headerRow}>
@@ -78,19 +78,25 @@ export function ChatPageHeader({ mode, onModeChange }: ChatPageHeaderProps) {
         <div className={styles.modeControl}>
           <ToggleGroup
             type="single"
-            value={mode}
-            aria-label="OpenUI implementation"
+            value={pair}
+            aria-label="Comparison pair"
             className={styles.modeGroup}
             onValueChange={(value) => {
-              if (value === "oss" || value === "cloud") onModeChange(value);
+              if (COMPARISON_PAIRS.some((option) => option.id === value)) {
+                onPairChange(value as ComparisonPair);
+              }
             }}
           >
-            <ToggleItem id="chat-mode-oss" value="oss" className={styles.modeItem}>
-              OpenUI OSS
-            </ToggleItem>
-            <ToggleItem id="chat-mode-cloud" value="cloud" className={styles.modeItem}>
-              OpenUI Cloud
-            </ToggleItem>
+            {COMPARISON_PAIRS.map((option) => (
+              <ToggleItem
+                key={option.id}
+                id={`chat-pair-${option.id}`}
+                value={option.id}
+                className={styles.modeItem}
+              >
+                {option.label}
+              </ToggleItem>
+            ))}
           </ToggleGroup>
         </div>
       </div>

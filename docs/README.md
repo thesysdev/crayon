@@ -19,9 +19,11 @@ pnpm --filter @openuidev/docs build
 
 ### `/chat` demo configuration
 
-The standalone `/chat` page always starts in **OpenUI OSS** mode. Its selected mode is not
-stored across reloads. Live OSS generation uses the existing server-side
-`OPENROUTER_API_KEY`.
+The standalone `/chat` page compares two visible response modes at a time and defaults to
+**Rendered Markdown vs OpenUI OSS**. Use the page-level switcher to show **OSS vs Cloud** or
+**Markdown vs Cloud**. All three conversations remain mounted and receive each shared prompt;
+switching the visible pair does not reset them. Markdown and OSS generation use the existing
+server-side `OPENROUTER_API_KEY`.
 
 OpenUI Cloud requires the following server-side variables. If either is missing, Cloud requests
 show the unavailable state at runtime:

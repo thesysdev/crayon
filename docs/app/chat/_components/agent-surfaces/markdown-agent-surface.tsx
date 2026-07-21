@@ -3,32 +3,26 @@
 import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import {
   AgentInterface,
-  GenUIAssistantMessage,
   openAIAdapter,
   openAIMessageFormat,
-  type AssistantMessage,
   type ChatLLM,
-  type GenUIConversationAction,
 } from "@openuidev/react-ui";
-import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
 import { ComparisonModeControllerBridge } from "../comparison-mode-controller";
 import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
 
-interface OssAgentSurfaceProps {
+interface MarkdownAgentSurfaceProps {
   themeMode: "light" | "dark";
   onCreditsExhausted: () => void;
   registry: ComparisonControllerRegistry;
-  onConversationAction: (action: GenUIConversationAction) => void;
 }
 
-export function OssAgentSurface({
+export function MarkdownAgentSurface({
   themeMode,
   onCreditsExhausted,
   registry,
-  onConversationAction,
-}: OssAgentSurfaceProps) {
+}: MarkdownAgentSurfaceProps) {
   const llm = useMemo<ChatLLM>(
     () => ({
       send: async ({ messages, signal }) => {
@@ -37,7 +31,7 @@ export function OssAgentSurface({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: openAIMessageFormat.toApi(messages),
-            responseMode: "openui",
+            responseMode: "markdown",
           }),
           signal,
         });
@@ -60,38 +54,20 @@ export function OssAgentSurface({
     [onCreditsExhausted],
   );
 
-  const AssistantMessageRenderer = useCallback(
-    ({ message }: { message: AssistantMessage }) => (
-      <GenUIAssistantMessage
-        message={message}
-        library={openuiChatLibrary}
-        onConversationAction={onConversationAction}
-      />
-    ),
-    [onConversationAction],
-  );
-
-  const components = useMemo(
-    () => ({ AssistantMessage: AssistantMessageRenderer }),
-    [AssistantMessageRenderer],
-  );
-
   return (
-    <div className="chat-agent-surface" data-chat-mode="oss">
+    <div className="chat-agent-surface" data-chat-mode="markdown">
       <AgentInterface
         llm={llm}
-        componentLibrary={openuiChatLibrary}
-        components={components}
-        agentName="OpenUI OSS"
+        agentName="Rendered Markdown"
         scrollVariant="always"
         theme={{ mode: themeMode }}
       >
         <AgentInterface.Sidebar />
         <AgentInterface.Welcome>
-          <ComparisonSurfaceWelcome mode="oss" />
+          <ComparisonSurfaceWelcome mode="markdown" />
         </AgentInterface.Welcome>
         <AgentInterface.Composer>
-          <ComparisonModeControllerBridge mode="oss" registry={registry} />
+          <ComparisonModeControllerBridge mode="markdown" registry={registry} />
         </AgentInterface.Composer>
       </AgentInterface>
     </div>

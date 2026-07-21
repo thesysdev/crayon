@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { ChatPageClient } from "./_components/chat-page-client";
 
 export const metadata: Metadata = {
-  title: "OpenUI Chat",
-  description: "Try OpenUI OSS and OpenUI Cloud in a live generative UI chat.",
+  title: "Compare OpenUI",
+  description: "Compare rendered Markdown, OpenUI OSS, and OpenUI Cloud side by side.",
   alternates: {
     canonical: "/chat",
   },
