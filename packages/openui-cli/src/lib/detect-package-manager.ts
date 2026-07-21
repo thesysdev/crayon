@@ -12,7 +12,11 @@ const PACKAGE_MANAGERS: Record<PackageManagerName, PackageManager> = {
   pnpm: { name: "pnpm", installCmd: "pnpm install", runCmd: "pnpm" },
   yarn: { name: "yarn", installCmd: "yarn", runCmd: "yarn" },
   bun: { name: "bun", installCmd: "bun install", runCmd: "bun" },
-  npm: { name: "npm", installCmd: "npm install", runCmd: "npm" },
+  npm: {
+    name: "npm",
+    installCmd: "npm ci --prefer-offline --no-audit --no-fund --progress=false",
+    runCmd: "npm",
+  },
 };
 
 function detectInvokingPackageManager(): PackageManagerName | null {
