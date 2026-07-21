@@ -9,43 +9,256 @@
   background: var(--openui-background);
 }
 
+/* The --home-* surface tokens are re-declared locally because the chat page
+   renders outside .homeTheme (same trick as GitHubButton.module.css
+   .glowBtnCompact). Declared on the header so the back button, pair switcher,
+   and CTA dropdown all share them. */
 .header {
+  --home-surface-ink: #0a0a0a;
+  --home-surface-raised: #f7f7f8;
+  --home-bevel:
+    inset 0 2px 1px -0.5px rgba(255, 255, 255, 1),
+    inset 0 -3px 6px -1px rgba(0, 0, 0, 0.1);
+  --home-bevel-on-dark:
+    inset 0 7px 12px -6px rgba(255, 255, 255, 0.16),
+    inset 0 -5px 8px -2px rgba(0, 0, 0, 0.6);
   position: relative;
   z-index: 5;
   flex: none;
-  border-bottom: 1px solid var(--openui-border-default);
   background: var(--openui-foreground);
-  padding: 10px 20px;
+  padding: 4px;
+}
+
+/* "View comparison" tab hanging centered below the top bar. No z-index: a
+   stacking context would trap the negative-z .menuOverlay above the header's
+   siblings and blur the top bar itself. */
+.viewComparison {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  display: flex;
+  width: fit-content;
+  margin-inline: auto;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.viewComparisonChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--openui-border-default);
+  border-top: 0;
+  border-radius: 0 0 10px 10px;
+  background: var(--openui-foreground);
+  padding: 5px 14px 6px;
+  color: var(--openui-text-neutral-secondary);
+  font: var(--openui-text-label-xs);
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: color 120ms ease;
+}
+
+.viewComparisonChip:hover {
+  color: var(--openui-text-neutral-primary);
+}
+
+/* While the tray is open, the chip tucks over the card's bottom border so no
+   line runs across its top and it reads as part of the tray. */
+.comparisonTrayOpen + .viewComparisonChip {
+  margin-top: -1px;
+}
+
+.trayChevron {
+  transition: transform 160ms ease;
+}
+
+.trayChevron[data-open="true"] {
+  transform: rotate(180deg);
+}
+
+.viewComparisonChip:focus-visible {
+  outline: 2px solid var(--openui-border-accent-emphasis);
+  outline-offset: -2px;
+}
+
+/* Comparison tray: slides open above the chip, which rides at its bottom. */
+.comparisonTray {
+  display: grid;
+  width: 26rem;
+  max-width: calc(100vw - 24px);
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 260ms ease;
+}
+
+.comparisonTrayOpen {
+  grid-template-rows: 1fr;
+}
+
+/* Side/bottom padding pulled back with negative margins gives the card's
+   shadow room to render inside the overflow clip without shifting layout. */
+.comparisonTrayInner {
+  overflow: hidden;
+  min-height: 0;
+  /* Clip window sized to fully contain the card shadow (extent ≈ 24px below,
+     14px to the sides), so it never gets cropped. */
+  margin: 0 -36px -36px;
+  padding: 0 36px 36px;
+}
+
+.comparisonTrayCard {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--openui-border-default);
+  /* The header's bottom stroke acts as the tray's top edge. */
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  background: var(--openui-foreground);
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.08);
+  padding: 14px;
+  /* Hidden while closed so it can't peek through the shadow padding window or
+     swallow clicks meant for the page beneath. */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 200ms ease,
+    visibility 0s linear 200ms;
+}
+
+.comparisonTrayOpen .comparisonTrayCard {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 200ms ease,
+    visibility 0s;
+}
+
+.comparisonRow {
+  display: grid;
+  grid-template-columns: 6rem 1fr 6rem;
+  align-items: center;
+  padding-block: 9px;
+}
+
+.comparisonRow + .comparisonRow {
+  border-top: 1px solid var(--openui-border-default);
+}
+
+.comparisonHeaderRow {
+  padding-block: 11px;
+}
+
+.comparisonColumnLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-label-sm);
+  white-space: nowrap;
+}
+
+/* Centre column holds the features; the column sits centred in the tray while
+   the text inside stays left-aligned. */
+.comparisonFeature {
+  color: var(--openui-text-neutral-secondary);
+  font: var(--openui-text-body-sm);
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
+.comparisonIconCell {
+  display: inline-flex;
+  justify-content: center;
+}
+
+.comparisonTick {
+  color: #12b76a;
+}
+
+.comparisonCross {
+  color: var(--openui-text-neutral-tertiary);
+}
+
+/* Bottom stroke drawn as a child layer (not border-bottom) so it paints above
+   the negative-z .menuOverlay and stays sharp while the page blurs. */
+.header::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: var(--openui-border-default);
+  pointer-events: none;
 }
 
 .headerRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr 1fr auto;
   min-width: 0;
   align-items: center;
   gap: 16px;
 }
 
+/* Panel title + chip + status, hoisted into the top bar over each panel. */
+.headerPanelHeading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-self: center;
+  gap: 12px;
+}
+
+.headerPanelHeading h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-heading-sm);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.headerRow > .backLink {
+  justify-self: start;
+}
+
+.headerRow > .ctaWrap {
+  justify-self: end;
+}
+
+/* Icon-only text button. */
 .backLink {
   display: inline-flex;
-  min-height: 44px;
+  box-sizing: border-box;
+  width: 2.25rem;
+  height: 2.25rem;
   flex: none;
   align-items: center;
-  gap: 7px;
-  border-radius: var(--openui-radius-m);
-  color: var(--openui-text-neutral-secondary);
-  font: var(--openui-text-body-sm);
+  justify-content: center;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--openui-text-neutral-primary);
   text-decoration: none;
-  transition:
-    color 120ms ease,
-    background-color 120ms ease;
+  transition: background-color 120ms ease;
 }
 
 .backLink:hover {
-  color: var(--openui-text-neutral-primary);
+  background: var(--openui-highlight);
 }
 
 .backLink:focus-visible,
-.modeItem:focus-visible,
+.pairTrigger:focus-visible,
+.pairMenuItem:focus-visible,
 .mobilePanelTab:focus-visible,
 .suggestionButton:focus-visible,
 .composerSubmit:focus-visible,
@@ -54,125 +267,317 @@
   outline-offset: 2px;
 }
 
-.startLocallyButton {
-  display: inline-flex;
+/* "Build for free" dropdown — same component recipe as the homepage hero's
+   command dropdown (HeroSection.module.css .command*). The --home-* surface
+   tokens are re-declared locally because the chat page renders outside
+   .homeTheme (same trick as GitHubButton.module.css .glowBtnCompact). */
+.ctaWrap {
+  position: relative;
+  flex: none;
+}
+
+/* Text button. */
+.ctaButton {
+  display: flex;
   box-sizing: border-box;
-  inline-size: 18.75rem;
-  height: 2.75rem;
-  min-inline-size: 18.75rem;
-  flex: 0 0 18.75rem;
+  height: 2.25rem;
   align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  padding-inline: 0.875rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  background: #0a0a0a;
-  color: #fff;
-  box-shadow:
-    inset 0 7px 12px -6px rgba(255, 255, 255, 0.16),
-    inset 0 -5px 8px -2px rgba(0, 0, 0, 0.6);
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.75rem;
+  gap: 0.375rem;
+  padding-inline: 0.625rem;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--openui-text-neutral-primary);
+  font-family: "Inter", "Segoe UI", sans-serif;
+  font-size: 0.9375rem;
   font-weight: 500;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  transition:
-    border-color 160ms ease,
-    background-color 160ms ease,
-    color 160ms ease,
-    box-shadow 160ms ease;
+  transition: background-color 120ms ease;
 }
 
-.startLocallyButton:is(:hover, :focus-visible) {
-  border-color: rgba(10, 10, 10, 0.18);
-  background: #fff;
-  color: #0a0a0a;
-  box-shadow:
-    0 5px 14px rgba(0, 0, 0, 0.14),
-    inset 0 -3px 6px rgba(0, 0, 0, 0.06);
+.ctaButton:hover,
+.ctaButton[aria-expanded="true"] {
+  background: var(--openui-highlight);
 }
 
-.startLocallyButton:focus-visible {
+.ctaButton:focus-visible {
   outline: 2px solid var(--openui-text-neutral-primary);
   outline-offset: 2px;
 }
 
-.startLocallyButton svg {
-  flex-shrink: 0;
+.ctaChevron {
+  transition: transform 160ms ease;
 }
 
-.startLocallyLabelGroup {
-  display: grid;
-  min-width: 0;
-  place-items: center;
+/* Right arrow tips down while the menu is open. */
+.ctaChevron[data-open="true"] {
+  transform: rotate(90deg);
 }
 
-.startLocallyLabel {
-  grid-area: 1 / 1;
-  transition: opacity 140ms ease;
-}
-
-.startLocallyCommand,
-.startLocallyCopied {
+/* Blurs the page beneath the header while a menu is open. Negative z-index
+   keeps it under the header's own background (the top bar stays sharp), while
+   the header's stacking context keeps it above the page content. */
+.menuOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--openui-background) 25%, transparent);
+  backdrop-filter: blur(7px);
   opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    visibility 0s linear 0.18s;
 }
 
-.startLocallyButton:not([data-copied="true"]):is(:hover, :focus-visible) .startLocallyDefault {
-  opacity: 0;
-}
-
-.startLocallyButton:not([data-copied="true"]):is(:hover, :focus-visible) .startLocallyCommand {
+.menuOverlayOpen {
   opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.18s ease,
+    visibility 0s;
 }
 
-.startLocallyButton[data-copied="true"] .startLocallyDefault,
-.startLocallyButton[data-copied="true"] .startLocallyCommand {
+/* Fade-only reveal, as on the hero. */
+.ctaMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  width: 22.5rem;
   opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    visibility 0s linear 0.18s;
 }
 
-.startLocallyButton[data-copied="true"] .startLocallyCopied {
+.ctaMenuOpen {
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 0.18s ease,
+    visibility 0s;
 }
 
-.modeControl {
-  min-width: 0;
-  margin-left: auto;
-}
-
-.modeGroup {
-  display: inline-flex !important;
-  width: auto !important;
-  min-width: 0;
-  flex-wrap: nowrap !important;
-  gap: 0 !important;
+/* Same card recipe as the pair switcher's menu. */
+.ctaMenuCard {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0.375rem;
   border: 1px solid var(--openui-border-default);
-  border-radius: var(--openui-radius-m);
-  background: var(--openui-sunk);
-  padding: 3px;
+  border-radius: 12px;
+  background: var(--openui-foreground);
+  box-shadow: var(--openui-shadow-l);
 }
 
-.modeItem {
-  min-height: 44px !important;
-  border: 0 !important;
-  border-radius: calc(var(--openui-radius-m) - 3px) !important;
-  background: transparent !important;
-  padding: 7px 12px !important;
-  color: var(--openui-text-neutral-secondary) !important;
-  font: var(--openui-text-label-sm) !important;
+.ctaMenuItem {
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--openui-text-neutral-primary);
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
   white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 120ms ease;
 }
 
-.modeItem:hover:not(:disabled) {
-  color: var(--openui-text-neutral-primary) !important;
-  background: var(--openui-highlight) !important;
+.ctaMenuItem:hover {
+  background: var(--openui-highlight);
 }
 
-.modeItem[data-state="on"] {
-  color: var(--openui-text-white) !important;
-  background: var(--openui-text-black) !important;
-  box-shadow: var(--openui-shadow-s);
+.ctaMenuItem:focus-visible {
+  outline: 2px solid var(--openui-border-accent-emphasis);
+  outline-offset: -2px;
+}
+
+.ctaMenuItemLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ctaMenuItemRunner {
+  font-weight: 600;
+  color: var(--openui-text-neutral-primary);
+}
+
+/* Copy icon: space reserved, revealed on row hover. */
+.ctaMenuItemIcon {
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--openui-text-neutral-secondary);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.ctaMenuItem:hover .ctaMenuItemIcon,
+.ctaMenuItem:focus-visible .ctaMenuItemIcon {
+  opacity: 1;
+}
+
+/* Pair switcher dropdown: absolutely centered on the screen, out of the grid,
+   so the surrounding headings never push it off-center. Centered via auto
+   margins, NOT transform — a transformed ancestor would become the containing
+   block for the fixed-position .menuOverlay inside. */
+/* No z-index here: a stacking context would trap the negative-z overlay above
+   the header's siblings and blur the top bar itself. */
+.modeControl {
+  position: absolute;
+  inset: 0;
+  width: fit-content;
+  height: fit-content;
+  margin: auto;
+}
+
+/* Small sunken chip, matching .panelChip. */
+.pairTrigger {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 8px;
+  background: var(--openui-sunk);
+  padding: 4px 11px;
+  color: var(--openui-text-neutral-secondary);
+  font: var(--openui-text-label-xs);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 120ms ease,
+    border-color 120ms ease;
+}
+
+.pairTrigger:hover,
+.pairTrigger[aria-expanded="true"] {
+  border-color: var(--openui-text-neutral-secondary);
+  color: var(--openui-text-neutral-primary);
+}
+
+.pairMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 60;
+  width: 22rem;
+  transform: translateX(-50%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    visibility 0s linear 0.18s;
+}
+
+.pairMenuOpen {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 0.18s ease,
+    visibility 0s;
+}
+
+.pairMenuCard {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 12px;
+  background: var(--openui-foreground);
+  box-shadow: var(--openui-shadow-l);
+}
+
+.pairMenuItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 14px 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+/* End-to-end separators between options. */
+.pairMenuItem + .pairMenuItem {
+  border-top: 1px solid var(--openui-border-default);
+}
+
+
+.pairMenuItemTitle {
+  display: flex;
+  align-items: center;
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-label-sm);
+}
+
+/* Symmetric grid: "vs" occupies the exact center of every row. */
+.pairTitleGroup {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.pairTitleSide {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.pairTitleSideLeft {
+  justify-content: flex-end;
+}
+
+.pairTitleVs {
+  color: var(--openui-text-neutral-tertiary);
+}
+
+/* Description reveals on row hover/focus with a gentle height expansion. */
+.pairMenuItemDescWrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms ease;
+}
+
+.pairMenuItem:hover .pairMenuItemDescWrap,
+.pairMenuItem:focus-visible .pairMenuItemDescWrap {
+  grid-template-rows: 1fr;
+}
+
+.pairMenuItemDesc {
+  overflow: hidden;
+  min-height: 0;
+  padding-top: 5px;
+  color: var(--openui-text-neutral-secondary);
+  font: var(--openui-text-body-sm);
+  font-size: 0.75rem;
 }
 
 .comparisonViewport {
@@ -195,6 +600,7 @@
 }
 
 .modePanel {
+  position: relative;
   display: flex;
   min-width: 0;
   min-height: 0;
@@ -212,23 +618,34 @@
   border-inline-start: 1px solid var(--openui-border-default);
 }
 
-.panelHeader {
-  display: flex;
-  min-height: 54px;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  border-bottom: 1px solid var(--openui-border-default);
-  padding: 10px 20px;
-  background: var(--openui-foreground);
+/* Empty state: the divider fades out toward the bottom instead of running as
+   a hard stroke into the controls area. border-image (not a pseudo-element)
+   because the panel's overflow: hidden would clip anything drawn inside it. */
+.panelGrid[data-empty] .modePanel[data-position="second"] {
+  border-image: linear-gradient(
+      to bottom,
+      var(--openui-border-default) 30%,
+      color-mix(in srgb, var(--openui-border-default) 0%, transparent) 80%
+    )
+    1;
 }
 
-.panelHeader h2 {
-  margin: 0;
-  color: var(--openui-text-neutral-primary);
-  font: var(--openui-text-heading-sm);
-  font-weight: 500;
+.panelChip {
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: var(--openui-sunk);
+  padding: 3px 10px;
+  color: var(--openui-text-neutral-secondary);
+  font: var(--openui-text-label-xs);
+  white-space: nowrap;
+}
+
+/* Inverted chip (Cloud): ink-on-paper flips with the theme. */
+.panelChipInverted {
+  background: var(--openui-inverted-background);
+  color: var(--openui-background);
 }
 
 .panelStatus {
@@ -280,6 +697,18 @@
   min-height: 0;
 }
 
+/* Covers a panel while its surface initializes (e.g. right after switching
+   comparisons); the surface stays mounted beneath so controllers register. */
+.panelLoadingOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--openui-foreground);
+}
+
 .panelBody :global(.chat-agent-surface),
 .panelBody :global(.openui-agent-container) {
   width: 100% !important;
@@ -320,6 +749,7 @@
 
 .panelBody :global(.openui-agent-thread-messages) {
   max-width: none;
+  padding-top: 20px;
   padding-inline: 24px;
 }
 
@@ -358,16 +788,16 @@
 
 .surfaceWelcome p {
   margin: 0;
-  color: var(--openui-text-neutral-primary);
-  font: var(--openui-text-heading-xs);
-  font-weight: 500;
+  color: var(--openui-text-neutral-secondary);
+  font: var(--openui-text-body-md);
+  font-size: 0.9375rem;
+  font-weight: 400;
 }
 
 .comparisonControls {
   position: relative;
   z-index: 4;
   flex: none;
-  border-top: 1px solid var(--openui-border-default);
   background: var(--openui-foreground);
   padding: 12px 24px max(14px, env(safe-area-inset-bottom));
 }
@@ -382,36 +812,75 @@
   display: none;
 }
 
+/* Starters: one card with end-to-end separators between rows. Width matches
+   the composer input below it. */
 .suggestionRow {
   display: flex;
-  width: max-content;
-  min-width: 100%;
-  justify-content: center;
-  gap: 10px;
-  padding-bottom: 10px;
+  width: min(100%, 52rem);
+  margin-inline: auto;
+  margin-bottom: 10px;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 14px;
+  background: var(--openui-foreground);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .suggestionButton {
-  display: inline-flex;
+  display: flex;
+  width: 100%;
   min-height: 44px;
-  flex: none;
   align-items: center;
   gap: 9px;
-  border: 1px solid transparent;
-  border-radius: 14px;
-  background: var(--openui-sunk);
+  border: 0;
+  background: transparent;
   padding: 9px 16px;
   color: var(--openui-text-neutral-primary);
   font: var(--openui-text-label-sm);
+  text-align: left;
   cursor: pointer;
-  transition:
-    border-color 120ms ease,
-    background-color 120ms ease;
 }
 
-.suggestionButton:hover:not(:disabled) {
-  border-color: var(--openui-border-default);
-  background: var(--openui-highlight);
+.suggestionButton + .suggestionButton {
+  border-top: 1px solid var(--openui-border-default);
+}
+
+.suggestionLabel {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Arrow slides in next to the text on hover. */
+.suggestionArrow {
+  flex: none;
+  color: var(--openui-text-neutral-secondary);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+.suggestionButton:hover:not(:disabled) .suggestionArrow,
+.suggestionButton:focus-visible .suggestionArrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.suggestionTag {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  margin-left: auto;
+  border-radius: 7px;
+  background: var(--openui-sunk);
+  padding: 3px 10px;
+  color: var(--openui-text-neutral-secondary);
+  font: var(--openui-text-label-xs);
+  white-space: nowrap;
 }
 
 .suggestionButton:disabled {
@@ -419,9 +888,17 @@
   cursor: not-allowed;
 }
 
+/* Inactive rows lose their icon color too. */
+.suggestionButton:disabled svg {
+  stroke: var(--openui-text-neutral-tertiary);
+}
+
+/* The input field spans the full centered column; the reset button hangs
+   outside it so the field itself sits dead-centre on the screen. */
 .composerRow {
+  position: relative;
   display: flex;
-  width: min(100%, 1240px);
+  width: min(100%, 52rem);
   align-items: flex-end;
   gap: 10px;
   margin: 0 auto;
@@ -432,7 +909,7 @@
   min-width: 0;
   min-height: 54px;
   flex: 1;
-  align-items: flex-end;
+  align-items: center;
   gap: 8px;
   border: 1px solid var(--openui-border-default);
   border-radius: 16px;
@@ -496,9 +973,16 @@
   cursor: not-allowed;
 }
 
+/* Borderless square icon button, floated outside the centered column. */
 .resetButton {
-  height: 54px;
-  background: var(--openui-foreground);
+  position: absolute;
+  bottom: 5px;
+  left: calc(100% + 10px);
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
   color: var(--openui-text-neutral-primary);
 }
 
@@ -659,12 +1143,8 @@
 }
 
 @media (max-width: 1180px) {
-  .startLocallyButton {
+  .ctaWrap {
     display: none;
-  }
-
-  .suggestionRow {
-    justify-content: flex-start;
   }
 }
 
@@ -674,37 +1154,13 @@
   }
 
   .headerRow {
+    display: flex;
     flex-wrap: wrap;
     gap: 6px 12px;
   }
 
-  .backLink {
-    min-height: 44px;
-  }
-
-  .modeControl {
-    width: 100%;
-    margin-left: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .modeControl::-webkit-scrollbar {
-    display: none;
-  }
-
-  .modeGroup {
-    display: flex !important;
-    width: 100% !important;
-    min-width: 480px;
-  }
-
-  .modeItem {
-    min-width: 0;
-    min-height: 44px !important;
-    flex: 1;
-    justify-content: center;
-    padding-inline: 8px !important;
+  .pairMenu {
+    max-width: calc(100vw - 24px);
   }
 
   .mobilePanelTabs {
@@ -751,7 +1207,7 @@
     border-inline-start: 0;
   }
 
-  .panelHeader {
+  .headerPanelHeading {
     display: none;
   }
 
@@ -761,8 +1217,18 @@
     padding-inline: 16px;
   }
 
+  /* No floating panel header below 900px, so no clearance needed. */
+  .panelBody :global(.openui-agent-thread-messages) {
+    padding-top: 0;
+  }
+
   .comparisonControls {
     padding: 10px 12px max(10px, env(safe-area-inset-bottom));
+  }
+
+  /* Not enough room to float outside the column — back inline. */
+  .resetButton {
+    position: static;
   }
 
   .suggestionRow {
@@ -771,18 +1237,6 @@
 }
 
 @media (max-width: 560px) {
-  .modeGroup {
-    min-width: 0;
-  }
-
-  .modeItem {
-    min-height: 48px !important;
-    padding-inline: 4px !important;
-    font-size: 11px !important;
-    line-height: 1.15 !important;
-    white-space: normal;
-  }
-
   .suggestionButton {
     min-height: 44px;
     padding: 8px 12px;
@@ -795,7 +1249,7 @@
 
   .resetButton {
     width: 44px;
-    height: 50px;
+    height: 44px;
   }
 
   .surfaceWelcome {
@@ -809,11 +1263,23 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .startLocallyButton,
-  .startLocallyLabel,
+  .ctaButton,
+  .ctaChevron,
+  .ctaMenu,
+  .ctaMenuItem,
+  .menuOverlay,
+  .comparisonTray,
+  .comparisonTrayCard,
+  .trayChevron,
+  .viewComparisonChip,
+  .pairMenuItemDescWrap,
   .suggestionButton,
   .sharedComposer {
     transition: none;
+  }
+
+  .ctaMenuHighlight {
+    transition: opacity 0.15s ease;
   }
 
   .loadingIndicator {

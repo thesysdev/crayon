@@ -1,105 +1,362 @@
 "use client";
 
-import { copyText } from "@/lib/copy-text";
-import { ToggleGroup } from "@openuidev/react-ui/ToggleGroup";
-import { ToggleItem } from "@openuidev/react-ui/ToggleItem";
-import { ArrowLeft, Check, SquareTerminal } from "lucide-react";
+import { ClipboardCommandButton } from "@/app/(home)/components/Button/Button";
+import { ArrowLeft, ArrowLeftRight, ArrowRight, Check, ChevronDown, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import styles from "../chat-page.module.css";
-import { COMPARISON_PAIRS, type ComparisonPair } from "./chat-types";
+import { COMPARISON_PAIRS, getComparisonPair, type ComparisonPair } from "./chat-types";
+import type { ComparisonMode } from "./comparison-mode-controller";
 
-const CREATE_COMMAND = "npx @openuidev/cli@latest create";
-const COPY_FEEDBACK_MS = 1800;
+// Same runner set and order as the homepage hero's command dropdown.
+const CLI_COMMANDS = [
+  { id: "pnpm", runner: "pnpx", command: "pnpx @openuidev/cli@latest create" },
+  { id: "bun", runner: "bunx", command: "bunx @openuidev/cli@latest create" },
+  { id: "yarn", runner: "yarn dlx", command: "yarn dlx @openuidev/cli@latest create" },
+  { id: "npm", runner: "npx", command: "npx @openuidev/cli@latest create" },
+] as const;
 
-function StartLocallyButton() {
-  const [copied, setCopied] = useState(false);
-  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+const PAIR_DESCRIPTIONS: Record<ComparisonPair, string> = {
+  "markdown-oss": "Test an AI app with and without OpenUI",
+  "oss-cloud": "Compare open-source and Cloud responses",
+  "markdown-cloud": "Test an AI app with and without OpenUI Cloud",
+};
+
+// Display titles for the pair options, mirroring the panel headings: mode name
+// plus a chip for the OpenUI flavor. aria-labels keep the canonical names.
+type PairSide = { label: string; chip?: string; chipInverted?: boolean };
+const PAIR_TITLES: Record<ComparisonPair, { left: PairSide; right: PairSide }> = {
+  "markdown-oss": { left: { label: "Markdown" }, right: { label: "OpenUI", chip: "OSS" } },
+  "oss-cloud": {
+    left: { label: "OpenUI", chip: "OSS" },
+    right: { label: "OpenUI", chip: "Cloud", chipInverted: true },
+  },
+  "markdown-cloud": {
+    left: { label: "Markdown" },
+    right: { label: "OpenUI", chip: "Cloud", chipInverted: true },
+  },
+};
+
+function PairTitle({ pair }: { pair: ComparisonPair }) {
+  const { left, right } = PAIR_TITLES[pair];
+  const side = (part: PairSide) => (
+    <>
+      {part.label}
+      {part.chip ? (
+        <span
+          className={`${styles.panelChip} ${
+            part.chipInverted ? styles.panelChipInverted : ""
+          }`.trim()}
+        >
+          {part.chip}
+        </span>
+      ) : null}
+    </>
+  );
+
+  return (
+    <span className={styles.pairTitleGroup}>
+      <span className={`${styles.pairTitleSide} ${styles.pairTitleSideLeft}`}>{side(left)}</span>
+      <span className={styles.pairTitleVs}>vs</span>
+      <span className={styles.pairTitleSide}>{side(right)}</span>
+    </span>
+  );
+}
+
+// Shared open/close behavior for the header dropdowns: hover opens (mouse only,
+// with a grace delay so the pointer can cross into the menu), click toggles,
+// outside pointer-down and Escape close.
+function useHeaderDropdown() {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
-      if (resetTimeoutRef.current) clearTimeout(resetTimeoutRef.current);
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
     };
   }, []);
 
-  const handleCopy = async () => {
-    if (!(await copyText(CREATE_COMMAND))) return;
-
-    setCopied(true);
-    if (resetTimeoutRef.current) clearTimeout(resetTimeoutRef.current);
-    resetTimeoutRef.current = setTimeout(() => setCopied(false), COPY_FEEDBACK_MS);
+  const cancelScheduledClose = () => {
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    closeTimeoutRef.current = null;
   };
 
+  const handleHoverOpen = (event: React.PointerEvent) => {
+    if (event.pointerType !== "mouse") return;
+    cancelScheduledClose();
+    setOpen(true);
+  };
+
+  const handleHoverClose = (event: React.PointerEvent) => {
+    if (event.pointerType !== "mouse") return;
+    cancelScheduledClose();
+    closeTimeoutRef.current = setTimeout(() => setOpen(false), 160);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!wrapRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
+
+  return { open, setOpen, wrapRef, triggerRef, handleHoverOpen, handleHoverClose };
+}
+
+// Menu display order, independent of COMPARISON_PAIRS (whose first entry
+// remains the default selection).
+const PAIR_MENU_ORDER: readonly ComparisonPair[] = ["markdown-oss", "markdown-cloud", "oss-cloud"];
+
+function PairSwitcher({
+  pair,
+  onPairChange,
+}: {
+  pair: ComparisonPair;
+  onPairChange: (pair: ComparisonPair) => void;
+}) {
+  const { open, setOpen, wrapRef, triggerRef, handleHoverOpen, handleHoverClose } =
+    useHeaderDropdown();
+  const active = COMPARISON_PAIRS.find((option) => option.id === pair) ?? COMPARISON_PAIRS[0]!;
+
   return (
-    <button
-      type="button"
-      className={styles.startLocallyButton}
-      data-copied={copied}
-      onClick={handleCopy}
-      aria-label={`Copy local setup command: ${CREATE_COMMAND}`}
+    <div
+      className={styles.modeControl}
+      ref={wrapRef}
+      onPointerEnter={handleHoverOpen}
+      onPointerLeave={handleHoverClose}
     >
-      {copied ? (
-        <Check size={17} strokeWidth={2} aria-hidden="true" />
-      ) : (
-        <SquareTerminal size={17} strokeWidth={1.8} aria-hidden="true" />
-      )}
-      <span className={styles.startLocallyLabelGroup} aria-hidden="true">
-        <span className={`${styles.startLocallyLabel} ${styles.startLocallyDefault}`}>
-          Run on your machine
-        </span>
-        <span className={`${styles.startLocallyLabel} ${styles.startLocallyCommand}`}>
-          {CREATE_COMMAND}
-        </span>
-        <span className={`${styles.startLocallyLabel} ${styles.startLocallyCopied}`}>Copied</span>
-      </span>
-      <span className={styles.srOnly} aria-live="polite">
-        {copied ? "Local setup command copied." : ""}
-      </span>
-    </button>
+      <button
+        type="button"
+        ref={triggerRef}
+        className={styles.pairTrigger}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label={`Change comparison pair (current: ${active.label})`}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <span>Change</span>
+        <ArrowLeftRight size={13} strokeWidth={2} aria-hidden="true" />
+      </button>
+
+      <div
+        className={`${styles.menuOverlay} ${open ? styles.menuOverlayOpen : ""}`.trim()}
+        aria-hidden="true"
+      />
+
+      <div className={`${styles.pairMenu} ${open ? styles.pairMenuOpen : ""}`.trim()}>
+        <div className={styles.pairMenuCard} role="menu" aria-label="Comparison pair">
+          {PAIR_MENU_ORDER.map((id) => COMPARISON_PAIRS.find((option) => option.id === id)!).map(
+            (option) => (
+            <button
+              key={option.id}
+              type="button"
+              role="menuitemradio"
+              aria-checked={option.id === pair}
+              className={styles.pairMenuItem}
+              onClick={() => {
+                onPairChange(option.id);
+                setOpen(false);
+              }}
+            >
+              <span className={styles.pairMenuItemTitle}>
+                <PairTitle pair={option.id} />
+              </span>
+              <span className={styles.pairMenuItemDescWrap}>
+                <span className={styles.pairMenuItemDesc}>{PAIR_DESCRIPTIONS[option.id]}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BuildForFreeMenu() {
+  const { open, setOpen, wrapRef, triggerRef, handleHoverOpen, handleHoverClose } =
+    useHeaderDropdown();
+
+  return (
+    <div
+      className={styles.ctaWrap}
+      ref={wrapRef}
+      onPointerEnter={handleHoverOpen}
+      onPointerLeave={handleHoverClose}
+    >
+      <button
+        type="button"
+        ref={triggerRef}
+        className={styles.ctaButton}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <span>Build for free</span>
+        <ArrowRight
+          size={15}
+          strokeWidth={2}
+          aria-hidden="true"
+          className={styles.ctaChevron}
+          data-open={open}
+        />
+      </button>
+
+      <div className={`${styles.ctaMenu} ${open ? styles.ctaMenuOpen : ""}`.trim()}>
+        <div
+          className={styles.ctaMenuCard}
+          role="menu"
+          aria-label="Copy the setup command for a package manager"
+        >
+          {CLI_COMMANDS.map((item) => (
+            <ClipboardCommandButton
+              key={item.id}
+              command={item.command}
+              className={styles.ctaMenuItem}
+              iconContainerClassName={styles.ctaMenuItemIcon}
+              copyIconColor="currentColor"
+            >
+              <span className={styles.ctaMenuItemLabel}>
+                <span className={styles.ctaMenuItemRunner}>{item.runner}</span>
+                {item.command.slice(item.runner.length)}
+              </span>
+            </ClipboardCommandButton>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Feature support per response mode, shown in the "View comparison" tray for
+// whichever pair is currently selected.
+const COMPARISON_FEATURES: readonly {
+  label: string;
+  support: Record<ComparisonMode, boolean>;
+}[] = [
+  { label: "Markdown responses", support: { markdown: true, oss: true, cloud: true } },
+  { label: "Interactive generated UI", support: { markdown: false, oss: true, cloud: true } },
+  { label: "Charts and data visualizations", support: { markdown: false, oss: true, cloud: true } },
+  { label: "Forms and follow-up actions", support: { markdown: false, oss: true, cloud: true } },
+  { label: "Tools and full-page artifacts", support: { markdown: false, oss: false, cloud: true } },
+  { label: "Conversation persistence", support: { markdown: false, oss: false, cloud: true } },
+  { label: "Self-hostable and open source", support: { markdown: true, oss: true, cloud: false } },
+];
+
+function SupportIcon({ supported }: { supported: boolean }) {
+  return supported ? (
+    <Check
+      size={15}
+      strokeWidth={2.25}
+      aria-hidden="true"
+      className={styles.comparisonTick}
+    />
+  ) : (
+    <X size={15} strokeWidth={2} aria-hidden="true" className={styles.comparisonCross} />
+  );
+}
+
+function ViewComparisonTray({ pair }: { pair: ComparisonPair }) {
+  const { open, setOpen, wrapRef, triggerRef } = useHeaderDropdown();
+  const [leftMode, rightMode] = getComparisonPair(pair).modes;
+  const { left, right } = PAIR_TITLES[pair];
+
+  const columnLabel = (part: PairSide) => (
+    <span className={styles.comparisonColumnLabel}>
+      {part.chip ? `${part.label} ${part.chip}` : part.label}
+    </span>
+  );
+
+  return (
+    <div className={styles.viewComparison} ref={wrapRef}>
+      <div className={`${styles.comparisonTray} ${open ? styles.comparisonTrayOpen : ""}`.trim()}>
+        <div className={styles.comparisonTrayInner}>
+          <div className={styles.comparisonTrayCard} aria-label="Feature comparison">
+            <div className={`${styles.comparisonRow} ${styles.comparisonHeaderRow}`}>
+              {columnLabel(left)}
+              <span />
+              {columnLabel(right)}
+            </div>
+            {COMPARISON_FEATURES.map((feature) => (
+              <div key={feature.label} className={styles.comparisonRow}>
+                <span className={styles.comparisonIconCell}>
+                  <SupportIcon supported={feature.support[leftMode]} />
+                </span>
+                <span className={styles.comparisonFeature}>{feature.label}</span>
+                <span className={styles.comparisonIconCell}>
+                  <SupportIcon supported={feature.support[rightMode]} />
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        ref={triggerRef}
+        className={styles.viewComparisonChip}
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+      >
+        {open ? "Hide comparison" : "View comparison"}
+        <ChevronDown
+          size={13}
+          strokeWidth={2}
+          aria-hidden="true"
+          className={styles.trayChevron}
+          data-open={open}
+        />
+      </button>
+    </div>
   );
 }
 
 interface ChatPageHeaderProps {
   pair: ComparisonPair;
   onPairChange: (pair: ComparisonPair) => void;
+  leftHeading?: ReactNode;
+  rightHeading?: ReactNode;
 }
 
-export function ChatPageHeader({ pair, onPairChange }: ChatPageHeaderProps) {
+export function ChatPageHeader({
+  pair,
+  onPairChange,
+  leftHeading,
+  rightHeading,
+}: ChatPageHeaderProps) {
   return (
     <header className={styles.header} aria-label="OpenUI chat controls">
       <div className={styles.headerRow}>
-        <Link className={styles.backLink} href="/" prefetch={false}>
-          <ArrowLeft aria-hidden="true" size={17} />
-          <span>Back to docs</span>
+        <Link className={styles.backLink} href="/" prefetch={false} aria-label="Back to docs">
+          <ArrowLeft aria-hidden="true" size={15} strokeWidth={2} />
         </Link>
 
-        <StartLocallyButton />
+        {leftHeading}
 
-        <div className={styles.modeControl}>
-          <ToggleGroup
-            type="single"
-            value={pair}
-            aria-label="Comparison pair"
-            className={styles.modeGroup}
-            onValueChange={(value) => {
-              if (COMPARISON_PAIRS.some((option) => option.id === value)) {
-                onPairChange(value as ComparisonPair);
-              }
-            }}
-          >
-            {COMPARISON_PAIRS.map((option) => (
-              <ToggleItem
-                key={option.id}
-                id={`chat-pair-${option.id}`}
-                value={option.id}
-                className={styles.modeItem}
-              >
-                {option.label}
-              </ToggleItem>
-            ))}
-          </ToggleGroup>
-        </div>
+        <PairSwitcher pair={pair} onPairChange={onPairChange} />
+
+        {rightHeading}
+
+        <BuildForFreeMenu />
       </div>
+
+      <ViewComparisonTray pair={pair} />
     </header>
   );
 }

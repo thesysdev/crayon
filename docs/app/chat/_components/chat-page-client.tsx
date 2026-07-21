@@ -164,12 +164,22 @@ export function ChatPageClient() {
 
   const requestPairChange = useCallback(
     (nextPair: ComparisonPair) => {
+      if (nextPair === pair) return;
       const next = getComparisonPair(nextPair);
       setPair(nextPair);
       setMobileMode((current) => (next.modes.includes(current) ? current : next.modes[0]));
-      setAnnouncement(`${next.label} selected. Existing conversations were preserved.`);
+
+      // Switching comparisons starts from a clean slate: abort any streams and
+      // clear the demo conversations (no-op when nothing has started yet).
+      const controllers = getRegisteredControllers();
+      if ((hasStarted || anyRunning) && controllers.length > 0) {
+        controllers.forEach((controller) => controller.reset());
+        setAnnouncement(`${next.label} selected. The demo was reset.`);
+        return;
+      }
+      setAnnouncement(`${next.label} selected.`);
     },
-    [setAnnouncement, setMobileMode, setPair],
+    [pair, hasStarted, anyRunning, getRegisteredControllers, setAnnouncement, setMobileMode, setPair],
   );
 
   const selectAdjacentMobileMode = (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -181,10 +191,33 @@ export function ChatPageClient() {
     requestAnimationFrame(() => document.getElementById(`comparison-tab-${nextMode}`)?.focus());
   };
 
+  const renderPanelHeading = (mode: ComparisonMode) => (
+    <div className={styles.headerPanelHeading}>
+      <h2 id={`panel-heading-${mode}`}>
+        {MODE_PANEL_HEADINGS[mode].title}
+        {MODE_PANEL_HEADINGS[mode].chip ? (
+          <span
+            className={`${styles.panelChip} ${
+              MODE_PANEL_HEADINGS[mode].chipInverted ? styles.panelChipInverted : ""
+            }`.trim()}
+          >
+            {MODE_PANEL_HEADINGS[mode].chip}
+          </span>
+        ) : null}
+      </h2>
+      <ModeStatus snapshot={snapshots[mode]} unavailable={unavailableModes.has(mode)} />
+    </div>
+  );
+
   return (
     <main className={styles.page}>
       <h1 className={styles.srOnly}>Compare OpenUI response modes</h1>
-      <ChatPageHeader pair={pair} onPairChange={requestPairChange} />
+      <ChatPageHeader
+        pair={pair}
+        onPairChange={requestPairChange}
+        leftHeading={renderPanelHeading(selectedPair.modes[0]!)}
+        rightHeading={renderPanelHeading(selectedPair.modes[1]!)}
+      />
 
       <div className={styles.comparisonViewport}>
         <div
@@ -211,7 +244,7 @@ export function ChatPageClient() {
           ))}
         </div>
 
-        <div className={styles.panelGrid}>
+        <div className={styles.panelGrid} data-empty={!hasStarted || undefined}>
           {ALL_MODES.map((mode) => {
             const position = selectedPair.modes.indexOf(mode);
             const inPair = position !== -1;
@@ -230,10 +263,6 @@ export function ChatPageClient() {
                 data-position={position === 1 ? "second" : "first"}
                 style={{ "--comparison-panel-order": Math.max(0, position) } as CSSProperties}
               >
-                <header className={styles.panelHeader}>
-                  <h2 id={`panel-heading-${mode}`}>{COMPARISON_MODE_LABELS[mode]}</h2>
-                  <ModeStatus snapshot={snapshot} unavailable={unavailableModes.has(mode)} />
-                </header>
                 <div className={styles.panelBody}>
                   <SurfaceErrorBoundary
                     onError={() => markModeUnavailable(mode)}
@@ -266,6 +295,13 @@ export function ChatPageClient() {
                       />
                     )}
                   </SurfaceErrorBoundary>
+                  {!snapshot.isReady &&
+                  !snapshot.threadError &&
+                  !unavailableModes.has(mode) ? (
+                    <div className={styles.panelLoadingOverlay}>
+                      <ChatLoadingState label="Loading…" />
+                    </div>
+                  ) : null}
                 </div>
               </section>
             );
@@ -280,6 +316,7 @@ export function ChatPageClient() {
           onStop={stopAll}
           onReset={resetAll}
           isDegraded={unavailableModes.size > 0}
+          cloudEnabled={selectedPair.modes.includes("cloud")}
         />
       </div>
 
@@ -301,6 +338,17 @@ export function ChatPageClient() {
   );
 }
 
+// Panel heading text: shared product name plus a distinguishing chip. The chip
+// lives inside the h2 so the two "OpenUI" panels keep distinct accessible names.
+const MODE_PANEL_HEADINGS: Record<
+  ComparisonMode,
+  { title: string; chip?: string; chipInverted?: boolean }
+> = {
+  markdown: { title: "Markdown" },
+  oss: { title: "OpenUI", chip: "OSS" },
+  cloud: { title: "OpenUI", chip: "Cloud", chipInverted: true },
+};
+
 function getModeStatus(snapshot: ComparisonModeSnapshot, unavailable = false) {
   if (unavailable || snapshot.threadError) return "error";
   if (!snapshot.isReady) return "loading";
@@ -316,6 +364,9 @@ function ModeStatus({
   unavailable: boolean;
 }) {
   const status = getModeStatus(snapshot, unavailable);
+  // The idle "Ready" state is the default; only surface the exceptional ones.
+  if (status === "ready") return null;
+
   const label = `${status.charAt(0).toUpperCase()}${status.slice(1)}`;
 
   return (

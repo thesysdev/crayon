@@ -1,13 +1,14 @@
 "use client";
 
 import {
+  ArrowRight,
   ArrowUp,
-  Clapperboard,
+  FileText,
   Plane,
+  Presentation,
   RotateCcw,
   Square,
   TrendingUp,
-  Utensils,
 } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
 import styles from "../chat-page.module.css";
@@ -28,18 +29,22 @@ const COMPARISON_SUGGESTIONS = [
     color: "#dd517b",
   },
   {
-    label: "Greatest blockbusters of all time",
+    label: "Create a report on Electric vehicles",
     prompt:
-      "Show me a chart of the highest-grossing movies of all time with key milestones and release details.",
-    icon: Clapperboard,
+      "Create a report on electric vehicles covering adoption trends, key manufacturers, and market outlook.",
+    icon: FileText,
     color: "#6941c6",
+    tag: "On Cloud only",
+    cloudOnly: true,
   },
   {
-    label: "Tell me about global street food",
+    label: "Create a presentation on coffee culture",
     prompt:
-      "Give me a world map of street foods with charts of popularity and regional highlights.",
-    icon: Utensils,
+      "Create a presentation on global coffee culture covering regions, brewing styles, and cafe trends.",
+    icon: Presentation,
     color: "#cd8200",
+    tag: "On Cloud only",
+    cloudOnly: true,
   },
 ] as const;
 
@@ -51,6 +56,8 @@ interface ComparisonControlsProps {
   onStop: () => void;
   onReset: () => void;
   isDegraded: boolean;
+  /** Whether the currently selected comparison pair includes OpenUI Cloud. */
+  cloudEnabled: boolean;
 }
 
 export function ComparisonControls({
@@ -61,6 +68,7 @@ export function ComparisonControls({
   onStop,
   onReset,
   isDegraded,
+  cloudEnabled,
 }: ComparisonControlsProps) {
   const [text, setText] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -94,13 +102,19 @@ export function ComparisonControls({
           <div className={styles.suggestionRow}>
             {COMPARISON_SUGGESTIONS.map((suggestion) => {
               const SuggestionIcon = suggestion.icon;
+              const needsCloud = "cloudOnly" in suggestion && suggestion.cloudOnly;
               return (
                 <button
                   key={suggestion.label}
                   type="button"
                   className={styles.suggestionButton}
                   onClick={() => submit(suggestion.prompt)}
-                  disabled={!isReady || isRunning}
+                  disabled={!isReady || isRunning || (needsCloud && !cloudEnabled)}
+                  title={
+                    needsCloud && !cloudEnabled
+                      ? "Switch to a comparison that includes OpenUI Cloud to try this"
+                      : undefined
+                  }
                 >
                   <SuggestionIcon
                     size={15}
@@ -108,7 +122,18 @@ export function ComparisonControls({
                     color={suggestion.color}
                     aria-hidden="true"
                   />
-                  <span>{suggestion.label}</span>
+                  <span className={styles.suggestionLabel}>
+                    {suggestion.label}
+                    <ArrowRight
+                      size={14}
+                      strokeWidth={2}
+                      aria-hidden="true"
+                      className={styles.suggestionArrow}
+                    />
+                  </span>
+                  {"tag" in suggestion && suggestion.tag ? (
+                    <span className={styles.suggestionTag}>{suggestion.tag}</span>
+                  ) : null}
                 </button>
               );
             })}
