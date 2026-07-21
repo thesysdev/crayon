@@ -187,7 +187,16 @@ export const FullSidebarOverride = {
 
 /** Welcome screen with title, image, and inherited starters. */
 export const WithWelcome = {
-  render: () => (
+  args: {
+    glowAnimation: false,
+  },
+  argTypes: {
+    glowAnimation: {
+      control: "boolean",
+      description: "Play the one-shot welcome entrance and composer glow animation.",
+    },
+  },
+  render: ({ glowAnimation }: { glowAnimation: boolean }) => (
     <AgentInterface
       storage={emptyStorage}
       llm={echoLLM}
@@ -200,6 +209,7 @@ export const WithWelcome = {
         title="OpenUI Assistant"
         description="Everything you'll need, in one place"
         image={{ url: logoUrl }}
+        glowAnimation={glowAnimation}
       />
     </AgentInterface>
   ),

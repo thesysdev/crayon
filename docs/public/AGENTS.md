@@ -211,8 +211,8 @@ export async function POST(req: Request) {
 }
 ```
 
-`fetchLLM` POSTs `{ threadId, messages: messageFormat.toApi(messages) }` to `url`
-and forwards the abort signal. Here `messages` is the **full thread history** (the
+`fetchLLM` POSTs `{ threadId, runId, messages: messageFormat.toApi(messages), tools: [], context: [] }`
+to `url` and forwards the abort signal. Here `messages` is the **full thread history** (the
 SDK loads it from `storage` and holds it client-side), so forward all of it to your
 provider. (Contrast Cloud, where you send only the latest because Cloud replays the
 conversation.) Your route must **stream** and **close the stream when done** (the
