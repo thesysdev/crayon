@@ -59,14 +59,14 @@ export const ThreadButton = ({
         {title}
       </button>
       {isStreaming && (
-        <span
+        <div
           className="openui-agent-thread-button-loader"
           role="status"
           aria-live="polite"
           aria-label="Generating response"
         >
           <div className="openui-message-loading" />
-        </span>
+        </div>
       )}
       {!isStreaming && (
         <DropdownMenu.Root open={isActionsOpen} onOpenChange={setIsActionsOpen}>
