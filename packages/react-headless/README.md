@@ -29,28 +29,9 @@ Use `@openuidev/react-headless` when you want OpenUI's chat behavior without Ope
 
 ## Quick Start
 
-The simplest configuration builds the `llm` with `fetchLLM`, pointing it at your API and letting it handle the request and streaming automatically:
+### URL-based setup
 
-```tsx
-import { agUIAdapter, ChatProvider, fetchLLM } from "@openuidev/react-headless";
-
-const llm = fetchLLM({
-  url: "/api/chat",
-  streamAdapter: agUIAdapter(),
-});
-
-function App() {
-  return (
-    <ChatProvider llm={llm}>
-      <YourChatUI />
-    </ChatProvider>
-  );
-}
-```
-
-### Persistence with `restStorage`
-
-To persist threads, add a `storage` adapter. `restStorage` covers the common REST case:
+The simplest configuration points to your API and lets the provider handle the requests and streaming automatically:
 
 ```tsx
 import { agUIAdapter, ChatProvider, fetchLLM, restStorage } from "@openuidev/react-headless";
@@ -67,9 +48,9 @@ function App() {
 }
 ```
 
-### Custom adapters
+### Custom functions
 
-For full control, implement the `ChatLLM` interface directly:
+For full control, implement the `ChatLLM` interface instead:
 
 ```tsx
 import { openAIAdapter, openAIMessageFormat, type ChatLLM } from "@openuidev/react-headless";
