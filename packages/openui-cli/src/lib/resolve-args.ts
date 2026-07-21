@@ -1,3 +1,5 @@
+import { CreateError } from "./telemetry";
+
 type InputPromptConfig = {
   type: "input";
   message: string;
@@ -39,8 +41,7 @@ export async function resolveArgs<T extends Record<string, ArgDef<unknown>>>(
     }
 
     if (!interactive) {
-      console.error(`Error: Missing required argument --${key}`);
-      process.exit(1);
+      throw new CreateError("missing_required_arg", `Missing required argument --${key}`);
     }
 
     try {

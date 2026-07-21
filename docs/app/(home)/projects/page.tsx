@@ -1,6 +1,5 @@
 import {
   ArrowUpRight,
-  BookOpen,
   Bot,
   Code2,
   MonitorSmartphone,
@@ -73,6 +72,22 @@ const projects: ProjectItem[] = [
     links: [
       { label: "GitHub", href: "https://github.com/theexperiencecompany/gaia", external: true },
       { label: "Website", href: "https://heygaia.io/", external: true },
+    ],
+  },
+  {
+    name: "Noetic",
+    description:
+      "An agent framework integration for returning OpenUI interfaces through a streaming output codec, durable surface layer, and transport.",
+    type: "Framework",
+    status: "Community",
+    accent: "orange",
+    icon: Sparkles,
+    links: [
+      {
+        label: "Docs",
+        href: "https://noetic.tools/docs/framework/generative-ui",
+        external: true,
+      },
     ],
   },
   {
@@ -243,22 +258,6 @@ const projects: ProjectItem[] = [
       {
         label: "GitHub",
         href: "https://github.com/thesysdev/openui/tree/main/examples/fastapi-backend",
-        external: true,
-      },
-    ],
-  },
-  {
-    name: "Generative UI のためのフレームワーク OpenUI",
-    description:
-      "A Japanese deep-dive by azukiazusa exploring OpenUI Lang as a framework for safe, brand-consistent generative UI.",
-    type: "Article",
-    status: "Community",
-    accent: "purple",
-    icon: BookOpen,
-    links: [
-      {
-        label: "Article",
-        href: "https://azukiazusa.dev/blog/openui-framework-for-generative-ui/",
         external: true,
       },
     ],

@@ -212,23 +212,13 @@ OpenUI ships an [Agent Skill](https://agentskills.io) so AI coding assistants (C
 
 ```bash
 # With the skills CLI (works across all agents)
-npx skills add thesysdev/openui --skill openui
+npx skills add thesysdev/skills --skill openui
 
 # Manual - copy into your project
 cp -r skills/openui .claude/skills/openui
 ```
 
 The skill covers component library design, OpenUI Lang syntax, system prompt generation, the Renderer, SDK packages, and debugging malformed LLM output.
-
-## Star History
-
-<a href="https://www.star-history.com/?repos=thesysdev%2Fopenui&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=thesysdev/openui&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=thesysdev/openui&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=thesysdev/openui&type=date&legend=top-left" />
- </picture>
-</a>
 
 ## License
 

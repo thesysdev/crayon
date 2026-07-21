@@ -3,7 +3,8 @@ import { CloudBanner } from "./sections/CloudBanner/CloudBanner";
 import { CloudSection } from "./sections/CloudSection/CloudSection";
 import { FeatureGridSection } from "./sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "./sections/Footer/Footer";
-import { HeroSection } from "./sections/HeroSection/HeroSection";
+import { HeroSection, Tagline } from "./sections/HeroSection/HeroSection";
+import { LogoStrip } from "./sections/LogoStrip/LogoStrip";
 import { ShiroPeek } from "./sections/ShiroPeek/ShiroPeek";
 import { StepsSection } from "./sections/StepsSection/StepsSection";
 import { TweetWallSection } from "./sections/TweetWallSection/TweetWallSection";
@@ -19,7 +20,10 @@ export default function HomePage() {
           showPlaygroundButton={false}
           githubRepoUrl="https://github.com/thesysdev/openui"
           githubButtonLabel="Star us on GitHub"
+          showTagline={false}
         />
+        <LogoStrip />
+        <Tagline />
         <StepsSection />
       </div>
       <div className={styles.contentSection}>

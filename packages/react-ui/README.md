@@ -37,25 +37,17 @@ This package provides three layers:
 The fastest way to get a working chat app is `AgentInterface`. Give it an `llm` transport that talks to your backend. Storage is optional — without it, threads live in memory and are wiped on reload:
 
 ```tsx
-import {
-  AgentInterface,
-  openAIAdapter,
-  openAIMessageFormat,
-  type ChatLLM,
-} from "@openuidev/react-ui";
+import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 import "@openuidev/react-ui/styles/index.css";
 
-const llm: ChatLLM = {
-  send: ({ messages, signal }) =>
-    fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: openAIMessageFormat.toApi(messages) }),
-      signal,
-    }),
-  streamProtocol: openAIAdapter(),
-};
+// POSTs { threadId, runId, messages, tools, context } to /api/chat and parses
+// the streamed response — here an OpenAI Chat Completions stream.
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIAdapter(),
+  messageFormat: openAIMessageFormat,
+});
 
 function App() {
   return (
@@ -75,8 +67,8 @@ function App() {
 
 | Prop               | Description                                                                                  |
 | :----------------- | :------------------------------------------------------------------------------------------- |
-| `storage`          | Optional persistence adapter for thread history; defaults to in-memory (wiped on reload). Use `restStorage` from `@openuidev/react-ui` to back it with your own REST API |
-| `llm`              | Chat transport: `{ send({ messages, signal }), streamProtocol }`                             |
+| `storage`          | Optional persistence adapter for thread history; defaults to in-memory (wiped on reload). Use `restStorage({ baseUrl })` from `@openuidev/react-ui` to back it with your own REST API |
+| `llm`              | Chat transport, usually built with `fetchLLM`; any `ChatLLM` (`{ send({ threadId, messages, signal }), streamProtocol }`) works |
 | `componentLibrary` | OpenUI Lang library used to render assistant messages (e.g. `openuiChatLibrary`)             |
 | `theme`            | Theme configuration, e.g. `{ mode: "light" }`                                                |
 | `agentName`        | Name displayed in the header                                                                 |
