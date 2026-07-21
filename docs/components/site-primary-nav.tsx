@@ -3,6 +3,7 @@
 import { ArrowRight } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLayoutEffect, useRef, useState } from "react";
 import styles from "./site-primary-nav.module.css";
 
 type NavLeaf = {
@@ -96,79 +97,161 @@ export function isNavDropdown(item: NavItem): item is NavDropdown {
   return "children" in item;
 }
 
+function DropdownCard({ child }: { child: NavDropdownChild }) {
+  return (
+    <Link
+      className={styles.dropdownItem}
+      href={child.href}
+      role="menuitem"
+      {...(child.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+    >
+      {child.preview && (
+        <span className={styles.dropdownPreview}>
+          {/* Both variants render; CSS reveals the one matching the theme, so
+              there's no hydration flash on first paint. */}
+          <img
+            src={child.preview.light}
+            alt=""
+            aria-hidden="true"
+            width={568}
+            height={320}
+            loading="lazy"
+            draggable={false}
+            className={`${styles.dropdownPreviewImage} ${styles.dropdownPreviewLight}`}
+          />
+          <img
+            src={child.preview.dark}
+            alt=""
+            aria-hidden="true"
+            width={568}
+            height={320}
+            loading="lazy"
+            draggable={false}
+            className={`${styles.dropdownPreviewImage} ${styles.dropdownPreviewDark}`}
+          />
+        </span>
+      )}
+      <span className={styles.dropdownText}>
+        <span className={styles.dropdownTitleRow}>
+          <span className={styles.dropdownTitle}>{child.title}</span>
+          <span className={styles.dropdownArrow} aria-hidden="true">
+            <ArrowRight size={18} />
+          </span>
+        </span>
+        {child.description && (
+          <span className={styles.dropdownDescription}>{child.description}</span>
+        )}
+      </span>
+    </Link>
+  );
+}
+
+/**
+ * The dropdowns share a single panel ("viewport") so that moving between two
+ * menus morphs one box — it slides to the new trigger and resizes to the new
+ * content — instead of cross-fading two separate panels. Every menu's content
+ * is always mounted (inert when inactive) so the box can be measured before it
+ * animates, and so the artwork isn't re-fetched on each open.
+ *
+ * The box's geometry is written straight to the DOM rather than held in state:
+ * it's derived from measurements that only exist after layout, and round-tripping
+ * it through React would cost an extra render on every hover.
+ */
 export function SitePrimaryNav() {
   const pathname = usePathname();
+  const dropdowns = PRIMARY_SITE_NAV_ITEMS.filter(isNavDropdown);
+
+  const [active, setActive] = useState<string | null>(null);
+
+  const navRef = useRef<HTMLElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const triggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const contentRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const wasOpenRef = useRef(false);
+
+  useLayoutEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    if (!active) {
+      viewport.classList.remove(styles.viewportMorph);
+      wasOpenRef.current = false;
+      return;
+    }
+
+    const content = contentRefs.current[active];
+    const trigger = triggerRefs.current[active];
+    const nav = navRef.current;
+    if (!content || !trigger || !nav) return;
+
+    const navRect = nav.getBoundingClientRect();
+    const triggerRect = trigger.getBoundingClientRect();
+    const width = content.offsetWidth;
+    const height = content.offsetHeight;
+    // Centre the box on its trigger, in nav-relative coordinates.
+    const x = triggerRect.left + triggerRect.width / 2 - navRect.left - width / 2;
+
+    const openingFromClosed = !wasOpenRef.current;
+    // Opening from closed must not animate — the box would otherwise grow from
+    // whatever geometry the previously-open menu left behind.
+    if (openingFromClosed) viewport.classList.remove(styles.viewportMorph);
+
+    viewport.style.width = `${width}px`;
+    viewport.style.height = `${height}px`;
+    viewport.style.translate = `${x}px 0`;
+
+    if (openingFromClosed) {
+      // Flush the geometry above while transitions are still disarmed, then arm
+      // them for subsequent menu switches. Reading a layout property forces the
+      // style recalc synchronously, so this needs no rAF — which matters because
+      // rAF doesn't fire in a backgrounded tab and would leave the morph unarmed.
+      void viewport.offsetWidth;
+      viewport.classList.add(styles.viewportMorph);
+      wasOpenRef.current = true;
+    }
+  }, [active]);
+
+  const close = () => setActive(null);
 
   return (
-    <nav className={styles.nav}>
+    <nav
+      className={styles.nav}
+      ref={navRef}
+      onPointerLeave={close}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") close();
+      }}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) close();
+      }}
+    >
       {PRIMARY_SITE_NAV_ITEMS.map((item) => {
         if (isNavDropdown(item)) {
           const isActive = item.children.some((child) => pathname.startsWith(child.href));
+          const isOpen = active === item.title;
 
           return (
-            <div className={styles.dropdown} key={item.title}>
+            <div
+              className={styles.dropdown}
+              key={item.title}
+              onPointerEnter={() => setActive(item.title)}
+            >
               <button
                 type="button"
                 className={`${styles.link} ${styles.dropdownTrigger} ${
                   isActive ? styles.linkActive : ""
-                }`.trim()}
+                } ${isOpen ? styles.dropdownTriggerOpen : ""}`.trim()}
                 aria-haspopup="menu"
+                aria-expanded={isOpen}
+                ref={(node) => {
+                  triggerRefs.current[item.title] = node;
+                }}
+                onFocus={() => setActive(item.title)}
+                onClick={() => setActive(isOpen ? null : item.title)}
               >
                 {item.title}
               </button>
-              <div className={styles.dropdownPanel} role="menu">
-                {item.children.map((child) => {
-                  return (
-                    <Link
-                      className={styles.dropdownItem}
-                      href={child.href}
-                      key={child.href}
-                      role="menuitem"
-                      {...(child.newTab
-                        ? { target: "_blank", rel: "noopener noreferrer" }
-                        : {})}
-                    >
-                      {child.preview && (
-                        <span className={styles.dropdownPreview}>
-                          {/* Both variants render; CSS reveals the one matching the
-                              theme, so there's no hydration flash on first paint. */}
-                          <img
-                            src={child.preview.light}
-                            alt=""
-                            aria-hidden="true"
-                            width={568}
-                            height={320}
-                            loading="lazy"
-                            draggable={false}
-                            className={`${styles.dropdownPreviewImage} ${styles.dropdownPreviewLight}`}
-                          />
-                          <img
-                            src={child.preview.dark}
-                            alt=""
-                            aria-hidden="true"
-                            width={568}
-                            height={320}
-                            loading="lazy"
-                            draggable={false}
-                            className={`${styles.dropdownPreviewImage} ${styles.dropdownPreviewDark}`}
-                          />
-                        </span>
-                      )}
-                      <span className={styles.dropdownText}>
-                        <span className={styles.dropdownTitleRow}>
-                          <span className={styles.dropdownTitle}>{child.title}</span>
-                          <span className={styles.dropdownArrow} aria-hidden="true">
-                            <ArrowRight size={18} />
-                          </span>
-                        </span>
-                        {child.description && (
-                          <span className={styles.dropdownDescription}>{child.description}</span>
-                        )}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
             </div>
           );
         }
@@ -181,6 +264,7 @@ export function SitePrimaryNav() {
             className={`${styles.link} ${isActive ? styles.linkActive : ""}`.trim()}
             href={item.href}
             key={item.href}
+            onPointerEnter={close}
             {...(item.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
           >
             {item.title}
@@ -188,6 +272,28 @@ export function SitePrimaryNav() {
           </Link>
         );
       })}
+
+      <div className={styles.viewport} data-open={active ? "true" : "false"} ref={viewportRef}>
+        {dropdowns.map((item) => (
+          <div
+            className={styles.viewportContent}
+            key={item.title}
+            data-active={active === item.title ? "true" : "false"}
+            // Inactive menus stay mounted for measurement but must not be
+            // reachable by pointer, screen reader, or tab order.
+            inert={active !== item.title}
+            ref={(node) => {
+              contentRefs.current[item.title] = node;
+            }}
+            role="menu"
+            aria-label={item.title}
+          >
+            {item.children.map((child) => (
+              <DropdownCard child={child} key={child.href} />
+            ))}
+          </div>
+        ))}
+      </div>
     </nav>
   );
 }

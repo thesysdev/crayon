@@ -1,4 +1,6 @@
 .nav {
+  /* Positioning context for the shared dropdown viewport. */
+  position: relative;
   display: none;
   align-items: center;
   gap: 0.5rem;
@@ -64,47 +66,89 @@
   color: inherit;
 }
 
-/* Mega-menu: one card per child in a row. Each card carries 4px of its own
-   padding so its hover fill can bleed 4px past the artwork without any layout
-   shift; the panel's padding and gap are reduced by that same 4px per edge, so
-   the rendered spacing is identical to the design (16px panel inset, 16px
-   between artwork edges, 916px total for the 3-up menu):
-     track  284 + 4*2 = 292      panel  12*2 + 292*3 + 8*2 = 916
-   The track size is definite on purpose — the panel is absolutely positioned,
-   so it shrink-wraps, and a flexible track (minmax(0, …)) collapses to zero. */
-.dropdownPanel {
+/* The single shared panel. Its width/height/offset are set inline from the
+   measured content, so moving between menus morphs this one box rather than
+   swapping two. `left: 0` + `translate` keeps the animated offset independent
+   of the -50% centring a `transform` shorthand would otherwise fight over. */
+.viewport {
   position: absolute;
   top: calc(100% + 0.5rem);
-  left: 50%;
+  left: 0;
   z-index: 60;
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 292px;
-  gap: 0.5rem;
-  padding: 0.75rem;
+  overflow: hidden;
   border: 1px solid var(--openui-border-default);
   border-radius: 20px;
   background: var(--openui-foreground);
   box-shadow: var(--openui-shadow-l);
   opacity: 0;
   pointer-events: none;
-  transform: translate(-50%, -4px);
   transition:
     opacity 0.18s ease,
-    transform 0.18s ease;
+    visibility 0s linear 0.18s;
+  visibility: hidden;
 }
 
-.dropdown:hover .dropdownPanel,
-.dropdown:focus-within .dropdownPanel {
+/* Bridges the 0.5rem gap between the trigger row and the panel so the pointer
+   can travel down into the menu without leaving the nav and closing it. */
+.viewport::before {
+  content: "";
+  position: absolute;
+  top: -0.5rem;
+  right: 0;
+  left: 0;
+  height: 0.5rem;
+}
+
+.viewport[data-open="true"] {
   opacity: 1;
   pointer-events: auto;
-  transform: translate(-50%, 0);
+  transition:
+    opacity 0.18s ease,
+    visibility 0s,
+    width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  visibility: visible;
 }
 
-/* While the dropdown is open, keep its trigger tab in the hover state — even
-   once the pointer moves down into the panel. */
-.dropdown:hover .dropdownTrigger,
-.dropdown:focus-within .dropdownTrigger {
+/* Size/offset only animate once the box is already on screen — opening from
+   closed snaps straight to the right dimensions. */
+.viewport:not(.viewportMorph) {
+  transition:
+    opacity 0.18s ease,
+    visibility 0s;
+}
+
+.viewportContent {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: grid;
+  width: max-content;
+  grid-auto-flow: column;
+  /* Each card carries 4px of its own padding so its hover fill can bleed 4px
+     past the artwork without any layout shift; the panel's padding and gap are
+     reduced by that same 4px per edge, so rendered spacing matches the design
+     (16px panel inset, 16px between artwork edges, 916px for the 3-up menu):
+       track  284 + 4*2 = 292      panel  12*2 + 292*3 + 8*2 = 916
+     The track size is definite on purpose — the content is absolutely
+     positioned, so it shrink-wraps, and a flexible track collapses to zero. */
+  grid-auto-columns: 292px;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.16s ease;
+  translate: -50% 0;
+}
+
+.viewportContent[data-active="true"] {
+  opacity: 1;
+}
+
+/* While a dropdown is open, keep its trigger tab in the hover state — even once
+   the pointer moves down into the panel. */
+.dropdownTriggerOpen,
+.dropdown:hover .dropdownTrigger {
   background: var(--openui-highlight-strong);
 }
 
@@ -220,8 +264,17 @@
 
 @media (prefers-reduced-motion: reduce) {
   .dropdownItem,
-  .dropdownArrow {
+  .dropdownArrow,
+  .viewportContent {
     transition: none;
+  }
+
+  /* Keep the open/close fade, drop the morph. */
+  .viewport,
+  .viewport[data-open="true"] {
+    transition:
+      opacity 0.18s ease,
+      visibility 0s;
   }
 }
 
