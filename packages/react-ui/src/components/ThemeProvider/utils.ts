@@ -1,5 +1,5 @@
 import { defaultLightTheme } from "./defaultTheme";
-import { ChartColorPalette, Theme } from "./types";
+import { CHART_PALETTE_KEYS, Theme } from "./types";
 
 /**
  * Convert a camel case string to a kebab case string.
@@ -27,30 +27,13 @@ export function themeToCssVars(theme: Record<string, unknown>, prefix = "openui"
     .join("\n          ");
 }
 
-// Chart palettes are declared on the Theme type but intentionally have no
-// entries in the default themes (a default palette would override the
-// per-chart `theme` prop fallback in useChartPalette). The validators'
-// allow-list is derived from Object.keys(defaultLightTheme), so these keys
-// must be added explicitly. The `satisfies` map makes any drift between
-// ChartColorPalette and this list a compile error.
-const CHART_PALETTE_KEY_MAP = {
-  defaultChartPalette: true,
-  barChartPalette: true,
-  lineChartPalette: true,
-  areaChartPalette: true,
-  pieChartPalette: true,
-  radarChartPalette: true,
-  radialChartPalette: true,
-  horizontalBarChartPalette: true,
-} as const satisfies Record<keyof ChartColorPalette, true>;
-
-export const CHART_PALETTE_KEYS = Object.keys(CHART_PALETTE_KEY_MAP) as (keyof ChartColorPalette)[];
-
 /**
  * Every theme key accepted at runtime: all keys present in the default themes
- * plus the chart palette keys that exist only on the type. Shared by
- * `createTheme()` and the ThemeProvider prop validator so the two allow-lists
- * cannot drift apart.
+ * plus the chart palette keys, which are declared only on the type (a default
+ * palette would override the per-chart `theme` prop fallback in
+ * useChartPalette). `CHART_PALETTE_KEYS` in types.ts is the single source the
+ * `ChartColorPalette` type itself derives from. Shared by `createTheme()` and
+ * the ThemeProvider prop validator so the two allow-lists cannot drift apart.
  */
 export const KNOWN_THEME_KEYS: ReadonlySet<string> = new Set([
   ...Object.keys(defaultLightTheme),

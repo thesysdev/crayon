@@ -4,7 +4,8 @@ import { useChartPalette } from "../../Charts/utils/PalletUtils";
 import { defaultDarkTheme, defaultLightTheme } from "../defaultTheme";
 import { ThemeProvider, useTheme } from "../ThemeProvider";
 import type { ChartColorPalette, Theme } from "../types";
-import { CHART_PALETTE_KEYS, createTheme, KNOWN_THEME_KEYS } from "../utils";
+import { CHART_PALETTE_KEYS } from "../types";
+import { createTheme, KNOWN_THEME_KEYS } from "../utils";
 
 // Regression tests for the types-vs-runtime drift where every `*ChartPalette`
 // key (valid per the Theme type) was rejected as "unknown key" by both
