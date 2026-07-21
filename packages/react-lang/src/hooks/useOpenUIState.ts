@@ -19,9 +19,10 @@ import {
   type ToolProvider,
 } from "@openuidev/lang-core";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { OpenUIContextValue } from "../context";
 import type { Library } from "../library";
+import { useSyncExternalStoreCompat } from "../react-compat";
 
 /** Unwrap { value, componentType } wrapper from form field entries. Returns raw value. */
 function unwrapFieldValue(v: unknown): unknown {
@@ -139,8 +140,12 @@ export function useOpenUIState(
   }, [result?.stateDeclarations, store, initialState]);
 
   // ─── Subscribe to Store and QueryManager for re-renders ───
-  const storeSnapshot = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
-  const querySnapshot = useSyncExternalStore(
+  const storeSnapshot = useSyncExternalStoreCompat(
+    store.subscribe,
+    store.getSnapshot,
+    store.getSnapshot,
+  );
+  const querySnapshot = useSyncExternalStoreCompat(
     queryManager.subscribe,
     queryManager.getSnapshot,
     queryManager.getSnapshot,
