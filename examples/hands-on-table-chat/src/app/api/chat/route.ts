@@ -142,9 +142,9 @@ function sseToolCallArgs(
 }
 
 export async function POST(req: NextRequest) {
-  const { messages, threadId } = await req.json();
+  const { messages } = await req.json();
 
-  setCurrentThreadId(threadId ?? "default");
+  setCurrentThreadId("default");
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const lastUserMsg = (messages as any[])

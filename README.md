@@ -212,7 +212,7 @@ OpenUI ships an [Agent Skill](https://agentskills.io) so AI coding assistants (C
 
 ```bash
 # With the skills CLI (works across all agents)
-npx skills add thesysdev/openui --skill openui
+npx skills add thesysdev/skills --skill openui
 
 # Manual - copy into your project
 cp -r skills/openui .claude/skills/openui

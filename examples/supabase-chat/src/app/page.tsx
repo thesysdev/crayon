@@ -3,10 +3,10 @@
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import {
   AgentInterface,
+  fetchLLM,
   openAIAdapter,
   openAIMessageFormat,
   restStorage,
-  type ChatLLM,
 } from "@openuidev/react-ui";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useEffect, useMemo, useState } from "react";
@@ -24,21 +24,16 @@ export default function Page() {
     () => restStorage({ baseUrl: "/api/threads", messageFormat: openAIMessageFormat }),
     [],
   );
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: ({ threadId, messages, signal }) =>
-        fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            // Convert from OpenUI's internal format to OpenAI chat format
-            messages: openAIMessageFormat.toApi(messages),
-            threadId,
-          }),
-          signal,
-        }),
-      streamProtocol: openAIAdapter(),
-    }),
+  // fetchLLM POSTs { threadId, runId, messages, tools, context }; the route
+  // reads the top-level threadId and messages (OpenAI chat format via
+  // openAIMessageFormat) and ignores the rest.
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: openAIAdapter(),
+        messageFormat: openAIMessageFormat,
+      }),
     [],
   );
 

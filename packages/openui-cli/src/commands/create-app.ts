@@ -58,8 +58,9 @@ function rewritePackageJson(projectDir: string, name: string) {
 
 export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   const interactive = !options.noInteractive;
+  const packageManager = resolveInstallPackageManager();
   const t0 = Date.now();
-  telemetry.register({ interactive });
+  telemetry.register({ interactive, package_manager: packageManager.name });
   telemetry.capture("cli_create_started", {
     ...createFunnelProps("create_started"),
     interactive,
@@ -112,12 +113,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     throw new CreateError("dir_exists", `Directory "${name}" already exists.`);
   }
 
-  const projectTelemetryState = createProjectTelemetryState(template, telemetry.isEnabled());
-  if (projectTelemetryState) {
-    telemetry.register({ project_id: projectTelemetryState.projectId });
-  }
-
-  const packageManager = resolveInstallPackageManager();
   const templateDir = path.join(__dirname, "..", "templates", template);
   if (!fs.existsSync(templateDir)) {
     throw new CreateError(

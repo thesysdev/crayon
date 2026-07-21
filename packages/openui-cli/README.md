@@ -71,6 +71,7 @@ Options:
 - `--no-interactive`: Fail instead of prompting for missing required input
 - `--api-key <key>`: (cloud template) OpenUI Cloud API key; skips sign-in
 - `--auth <method>`: (cloud template) How to obtain the key — `oauth`, `manual`, or `skip`
+- `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
 What it does:
 
@@ -123,6 +124,7 @@ Options:
 - `--export <name>`: Use a specific export name instead of auto-detecting the library export
 - `--prompt-options <name>`: Use a specific `PromptOptions` export name (auto-detected by default)
 - `--no-interactive`: Fail instead of prompting for a missing `entry`
+- `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
 What it does:
 
@@ -182,15 +184,11 @@ node dist/index.js generate --help
 
 ## Telemetry
 
-The CLI sends usage analytics; OAuth sign-ins may link CLI usage to your OIDC account ID. When
-telemetry is enabled, newly scaffolded OpenUI Cloud projects also receive a random pseudonymous
-project ID and report when Next.js production compilation completes. This compiler event occurs
-before type checking and static generation, so it is not reported as a successful build.
+The CLI sends usage analytics; OAuth sign-ins may link usage to your OIDC account ID. It does not send code, prompts, API keys, email, or personal names.
 
-Telemetry does not send code, prompts, API keys, email, name, project paths, repository metadata,
-or build output. Disable CLI and generated-project telemetry with `--no-telemetry` or
-`DO_NOT_TRACK=1`. Existing generated projects also honor `OPENUI_TELEMETRY_DISABLED=1` during
-builds.
+When a coding agent invokes the CLI, it should pass `--agent-name` using its stable, lowercase kebab-case product slug—for example, `codex`, `claude-code`, `cline`, `factory-droid`, or `pi`. Do not pass a model/version, user name, session ID, or other unique value. Humans can omit the flag; it defaults to `unknown`.
+
+Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. For `create`, telemetry also includes `package_manager`, the manager selected for dependency installation (`npm`, `pnpm`, `yarn`, or `bun`). Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
 
 ```bash
 openui create --no-telemetry

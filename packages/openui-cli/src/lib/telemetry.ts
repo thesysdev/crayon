@@ -119,9 +119,8 @@ export class Telemetry {
     if (isTelemetryDebug()) this.client.debug();
     if (state.isFirstRun) {
       process.stderr.write(
-        "\n◆ OpenUI collects anonymous CLI analytics; Cloud templates also report pseudonymous production compilation.\n" +
-          "  OAuth may link CLI usage to your OIDC account ID. No code, prompts, API keys, email, or name are collected.\n" +
-          "  Opt out: set DO_NOT_TRACK=1 or pass --no-telemetry. Later builds also honor OPENUI_TELEMETRY_DISABLED=1.\n\n",
+        "\n◆ OpenUI CLI collects usage analytics; OAuth sign-ins may link usage to your OIDC account ID.\n" +
+          "  No code, prompts, API keys, email, or personal name are collected. Opt out: set DO_NOT_TRACK=1 or pass --no-telemetry.\n\n",
       );
       state.persist();
     }
