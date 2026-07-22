@@ -144,7 +144,7 @@ jobs:
           --no-skill
 
       # npm- and pnpm-installed node_modules can both satisfy either run command.
-      # Check manager-specific metadata so the E2E test also verifies CLI selection.
+      # Check manager metadata and lockfile retention to verify CLI selection.
       - name: Verify selected package manager
         working-directory: ${{ runner.temp }}/cli-e2e/generated-app
         shell: bash
@@ -158,6 +158,13 @@ jobs:
               ? path.join('node_modules', '.modules.yaml')
               : path.join('node_modules', '.package-lock.json');
             if (!fs.existsSync(marker)) throw new Error('Missing ' + process.env.PACKAGE_MANAGER + ' install marker: ' + marker);
+            const hasNpmLockfile = fs.existsSync('package-lock.json');
+            if (process.env.PACKAGE_MANAGER === 'npm' && !hasNpmLockfile) {
+              throw new Error('npm-generated project is missing package-lock.json');
+            }
+            if (process.env.PACKAGE_MANAGER !== 'npm' && hasNpmLockfile) {
+              throw new Error(process.env.PACKAGE_MANAGER + '-generated project retained package-lock.json');
+            }
           "
 
       - name: Build generated app
