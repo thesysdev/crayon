@@ -23,14 +23,36 @@ permissions:
 
 jobs:
   package-manager-parity:
-    name: ${{ matrix.template }} (npm + pnpm)
-    runs-on: ubuntu-latest
+    name: ${{ matrix.template }} (${{ matrix.os }}, Node ${{ matrix.node-version }}, npm + pnpm)
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         template:
           - openui-cloud
           - openui-self-hosted
+        environment:
+          - ubuntu-node20
+          - ubuntu-node22
+          - ubuntu-node24
+          - macos-node22
+          - windows-node22
+        include:
+          - environment: ubuntu-node20
+            os: ubuntu-latest
+            node-version: 20
+          - environment: ubuntu-node22
+            os: ubuntu-latest
+            node-version: 22
+          - environment: ubuntu-node24
+            os: ubuntu-latest
+            node-version: 24
+          - environment: macos-node22
+            os: macos-latest
+            node-version: 22
+          - environment: windows-node22
+            os: windows-latest
+            node-version: 22
 
     steps:
       - uses: actions/checkout@v6
@@ -41,14 +63,21 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
 
       - name: Prepare isolated template copies
         shell: bash
         run: |
-          cp -R "packages/openui-cli/src/templates/${{ matrix.template }}" "${RUNNER_TEMP}/npm-template"
-          cp -R "packages/openui-cli/src/templates/${{ matrix.template }}" "${RUNNER_TEMP}/pnpm-template"
-          rm "${RUNNER_TEMP}/pnpm-template/package-lock.json"
+          node --input-type=module -e "
+            import fs from 'node:fs';
+            import path from 'node:path';
+            const source = path.resolve('packages/openui-cli/src/templates/${{ matrix.template }}');
+            const npmTarget = path.join(process.env.RUNNER_TEMP, 'npm-template');
+            const pnpmTarget = path.join(process.env.RUNNER_TEMP, 'pnpm-template');
+            fs.cpSync(source, npmTarget, { recursive: true });
+            fs.cpSync(source, pnpmTarget, { recursive: true });
+            fs.rmSync(path.join(pnpmTarget, 'package-lock.json'));
+          "
 
       - name: Install with npm
         working-directory: ${{ runner.temp }}/npm-template
