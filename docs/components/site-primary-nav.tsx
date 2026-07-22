@@ -124,8 +124,8 @@ function DropdownCard({ child, onNavigate }: { child: NavDropdownChild; onNaviga
             src={child.preview.light}
             alt=""
             aria-hidden="true"
-            width={568}
-            height={320}
+            width={852}
+            height={480}
             loading="lazy"
             draggable={false}
             className={`${styles.dropdownPreviewImage} ${styles.dropdownPreviewLight}`}
@@ -134,8 +134,8 @@ function DropdownCard({ child, onNavigate }: { child: NavDropdownChild; onNaviga
             src={child.preview.dark}
             alt=""
             aria-hidden="true"
-            width={568}
-            height={320}
+            width={852}
+            height={480}
             loading="lazy"
             draggable={false}
             className={`${styles.dropdownPreviewImage} ${styles.dropdownPreviewDark}`}
