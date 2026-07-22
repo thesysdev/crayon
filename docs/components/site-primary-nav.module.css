@@ -124,21 +124,23 @@
    the offset on every frame of the width animation, which makes the labels
    visibly slide while the box morphs. The outgoing menu is wider and simply
    gets clipped on the right as it fades. */
+/* Width is written inline by the nav: the natural size at full width, or the
+   viewport minus a margin once that no longer fits. Columns then share whatever
+   that width is, so the cards shrink together rather than the panel clipping.
+   Each card carries 4px of its own padding so its hover fill can bleed 4px past
+   the artwork without any layout shift; the panel's padding and gap are reduced
+   by that same 4px per edge, so at full width the rendered spacing matches the
+   design (16px panel inset, 16px between artwork edges):
+     track  284 + 4*2 = 292      panel  12*2 + 292*4 + 8*3 = 1216
+   Only the artwork scales — it holds its aspect ratio — while the label and
+   description keep their size and re-wrap into the narrower column. */
 .viewportContent {
   position: absolute;
   top: 0;
   left: 0;
   display: grid;
-  width: max-content;
   grid-auto-flow: column;
-  /* Each card carries 4px of its own padding so its hover fill can bleed 4px
-     past the artwork without any layout shift; the panel's padding and gap are
-     reduced by that same 4px per edge, so rendered spacing matches the design
-     (16px panel inset, 16px between artwork edges, 916px for the 3-up menu):
-       track  284 + 4*2 = 292      panel  12*2 + 292*3 + 8*2 = 916
-     The track size is definite on purpose — the content is absolutely
-     positioned, so it shrink-wraps, and a flexible track collapses to zero. */
-  grid-auto-columns: 292px;
+  grid-auto-columns: minmax(0, 1fr);
   gap: 0.5rem;
   padding: 0.75rem;
   opacity: 0;

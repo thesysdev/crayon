@@ -107,6 +107,14 @@ export function isNavDropdown(item: NavItem): item is NavDropdown {
   return "children" in item;
 }
 
+/* Panel geometry, mirrored from .viewportContent in the stylesheet. Kept in
+   sync by hand because the natural width has to be known before layout. */
+const CARD_TRACK = 292;
+const PANEL_GAP = 8;
+const PANEL_PADDING = 12;
+/* Smallest gap left between the panel and either edge of the window. */
+const VIEWPORT_MARGIN = 16;
+
 function DropdownCard({ child, onNavigate }: { child: NavDropdownChild; onNavigate: () => void }) {
   return (
     <Link
@@ -207,21 +215,46 @@ export function SitePrimaryNav() {
     const nav = navRef.current;
     if (!content || !trigger || !nav) return;
 
-    const navRect = nav.getBoundingClientRect();
-    const triggerRect = trigger.getBoundingClientRect();
-    const width = content.offsetWidth;
-    const height = content.offsetHeight;
-    // Centre the box on its trigger, in nav-relative coordinates.
-    const x = triggerRect.left + triggerRect.width / 2 - navRect.left - width / 2;
+    const place = () => {
+      const navRect = nav.getBoundingClientRect();
+      const triggerRect = trigger.getBoundingClientRect();
+      const viewportWidth = document.documentElement.clientWidth;
+
+      // Natural width is arithmetic, not measured: measuring would need the
+      // content laid out unconstrained first, and it can't be — its columns are
+      // sized from the width set below.
+      const columns = content.children.length;
+      const natural = PANEL_PADDING * 2 + columns * CARD_TRACK + PANEL_GAP * (columns - 1);
+      const width = Math.min(natural, viewportWidth - VIEWPORT_MARGIN * 2);
+
+      // Set the width first so the cards reflow, then read the height they
+      // settled at — narrower columns wrap the descriptions onto more lines.
+      content.style.width = `${width}px`;
+      const height = content.offsetHeight;
+
+      // Centre on the trigger, then push back inside the viewport if that would
+      // hang the panel off either edge. Once the panel is as wide as the space
+      // allows, both clamps meet and it sits centred on screen.
+      const centredOnTrigger = triggerRect.left + triggerRect.width / 2 - width / 2;
+      const left = Math.min(
+        Math.max(centredOnTrigger, VIEWPORT_MARGIN),
+        viewportWidth - width - VIEWPORT_MARGIN,
+      );
+
+      viewport.style.width = `${width}px`;
+      viewport.style.height = `${height}px`;
+      viewport.style.translate = `${left - navRect.left}px 0`;
+    };
 
     const openingFromClosed = !wasOpenRef.current;
     // Opening from closed must not animate — the box would otherwise grow from
     // whatever geometry the previously-open menu left behind.
     if (openingFromClosed) viewport.classList.remove(styles.viewportMorph);
 
-    viewport.style.width = `${width}px`;
-    viewport.style.height = `${height}px`;
-    viewport.style.translate = `${x}px 0`;
+    place();
+
+    // Keep it inside the viewport if the window changes while the menu is open.
+    window.addEventListener("resize", place);
 
     if (openingFromClosed) {
       // Flush the geometry above while transitions are still disarmed, then arm
@@ -232,6 +265,8 @@ export function SitePrimaryNav() {
       viewport.classList.add(styles.viewportMorph);
       wasOpenRef.current = true;
     }
+
+    return () => window.removeEventListener("resize", place);
   }, [active]);
 
   const close = () => setActive(null);
