@@ -59,9 +59,18 @@ export class CreateError extends Error {
   constructor(
     public stage: string,
     message: string,
+    options?: { cause?: unknown },
   ) {
-    super(message);
+    super(message, options);
     this.name = "CreateError";
+  }
+}
+
+/** A deliberate prompt cancellation. It is reported separately and is not a CLI failure. */
+export class CliCancellation extends Error {
+  constructor(public stage: string) {
+    super("Cancelled by user.");
+    this.name = "CliCancellation";
   }
 }
 

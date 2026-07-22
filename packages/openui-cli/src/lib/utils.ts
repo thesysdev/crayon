@@ -1,21 +1,44 @@
 import type { CloudAuthMethod } from "../auth/mint";
 import { createFunnelProps } from "./create-telemetry";
 import type { TemplateName } from "./create-types";
-import { CreateError, telemetry as defaultTelemetry, type Telemetry } from "./telemetry";
+import { normalizeCliError } from "./error-reporting";
+import {
+  CliCancellation,
+  CreateError,
+  telemetry as defaultTelemetry,
+  type Telemetry,
+} from "./telemetry";
 
 export function handleCliError(
   e: unknown,
   event: string,
   telemetry: Telemetry = defaultTelemetry,
 ): void {
+  if (e instanceof CliCancellation) {
+    console.info("Cancelled.");
+    const cancellationEvent = event.replace(/_failed$/, "_cancelled");
+    telemetry.capture(cancellationEvent, {
+      ...(event === "cli_create_failed" ? createFunnelProps("create_cancelled") : {}),
+      cancel_stage: e.stage,
+      failure_code: "USER_CANCELLED",
+      failure_category: "user_cancelled",
+    });
+    process.exitCode = 0;
+    return;
+  }
+
   const known = e instanceof CreateError;
   const message = e instanceof Error ? e.message : String(e);
   console.error(known ? `Error: ${message}` : message);
 
   if (event === "cli_create_failed") {
     // Do not send raw create error messages: they can include user-entered
-    // project names or paths. The funnel rank is enough to count this drop-off.
-    telemetry.capture(event, createFunnelProps("create_failed"));
+    // project names or paths. Only normalized diagnostics leave the process.
+    telemetry.capture(event, {
+      ...createFunnelProps("create_failed"),
+      failure_stage: known ? e.stage : "unknown",
+      ...normalizeCliError(e),
+    });
   } else {
     telemetry.capture(event, {
       stage: known ? e.stage : "unknown",

@@ -1,4 +1,6 @@
-import { execSync } from "child_process";
+import { execSync } from "node:child_process";
+
+import { CliCancellation } from "./telemetry";
 
 export async function shouldInstallSkill(
   option: boolean | undefined,
@@ -16,7 +18,7 @@ export async function shouldInstallSkill(
   } catch (err) {
     const { ExitPromptError } = await import("@inquirer/core");
     if (err instanceof ExitPromptError) {
-      process.exit(0);
+      throw new CliCancellation("skill_prompt");
     }
     throw err;
   }
@@ -24,16 +26,16 @@ export async function shouldInstallSkill(
 
 export function runSkillInstall(targetDir: string): void {
   console.info("\nInstalling OpenUI agent skill...\n");
-  try {
-    execSync("npx -y skills add thesysdev/openui --skill openui -y", {
-      stdio: "inherit",
-      cwd: targetDir,
-    });
-  } catch {
-    console.warn(
-      "\nCould not install the OpenUI agent skill automatically.\n" +
-        "You can install it manually later with:\n\n" +
-        "  npx skills add thesysdev/openui --skill openui\n",
-    );
-  }
+  execSync("npx -y skills add thesysdev/openui --skill openui -y", {
+    stdio: "inherit",
+    cwd: targetDir,
+  });
+}
+
+export function printSkillInstallFailure(): void {
+  console.warn(
+    "\nCould not install the OpenUI agent skill automatically.\n" +
+      "You can install it manually later with:\n\n" +
+      "  npx skills add thesysdev/openui --skill openui\n",
+  );
 }

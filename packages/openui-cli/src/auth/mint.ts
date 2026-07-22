@@ -68,7 +68,10 @@ export async function resolveCloudApiKey(opts: {
   interactive: boolean;
 }): Promise<{ key: string | null; method: ResolvedAuthMethod }> {
   const provided = opts.apiKey?.trim();
-  if (provided) return { key: provided, method: "apikey-flag" };
+  if (provided) {
+    registerAuthMethod("apikey-flag");
+    return { key: provided, method: "apikey-flag" };
+  }
 
   let method = opts.auth;
   if (!method) {
@@ -89,6 +92,8 @@ export async function resolveCloudApiKey(opts: {
     })) as CloudAuthMethod;
   }
 
+  registerAuthMethod(method);
+
   if (method === "skip") return { key: null, method: "skip" };
 
   if (method === "manual") {
@@ -100,4 +105,12 @@ export async function resolveCloudApiKey(opts: {
   }
 
   return { key: await mintCloudApiKey(opts.projectName), method: "oauth" };
+}
+
+function registerAuthMethod(method: ResolvedAuthMethod): void {
+  telemetry.register({ auth_method: method });
+  telemetry.capture("cli_cloud_auth_method_selected", {
+    ...createFunnelProps("cloud_auth_started"),
+    auth_method: method,
+  });
 }

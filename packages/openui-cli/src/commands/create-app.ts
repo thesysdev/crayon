@@ -1,15 +1,29 @@
-import { execSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
-import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
+import {
+  aiSetupFromTemplate,
+  captureCreateStageSkipped,
+  createFunnelProps,
+  instrumentCreateStage,
+} from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
-import { resolveInstallPackageManager } from "../lib/detect-package-manager";
-import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
+import {
+  resolveInstallPackageManager,
+  resolvePackageManagerVersion,
+} from "../lib/detect-package-manager";
+import { normalizeCliError } from "../lib/error-reporting";
+import {
+  printSkillInstallFailure,
+  runSkillInstall,
+  shouldInstallSkill,
+} from "../lib/install-skill";
 import { resolveArgs } from "../lib/resolve-args";
-import { CreateError, telemetry } from "../lib/telemetry";
+import { runCommand } from "../lib/run-command";
+import { CliCancellation, CreateError, telemetry } from "../lib/telemetry";
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
@@ -58,7 +72,7 @@ function rewritePackageJson(projectDir: string, name: string) {
 export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   const interactive = !options.noInteractive;
   const t0 = Date.now();
-  telemetry.register({ interactive });
+  telemetry.register({ interactive, create_attempt_id: randomUUID() });
   telemetry.capture("cli_create_started", {
     ...createFunnelProps("create_started"),
     interactive,
@@ -69,36 +83,42 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     no_install: Boolean(options.noInstall),
   });
 
-  const args = await resolveArgs(
-    {
-      name: options.name
-        ? { value: options.name }
-        : { prompt: { type: "input", message: "Project name?" }, required: true },
-      template: options.template
-        ? { value: options.template }
-        : {
-            prompt: {
-              type: "select",
-              message: "Choose your AI setup",
-              choices: [
-                {
-                  value: "openui-cloud",
-                  name: "OpenUI Cloud — fastest setup with free hosted models (recommended)",
+  const args = await instrumentCreateStage(
+    "args_resolution",
+    () =>
+      resolveArgs(
+        {
+          name: options.name
+            ? { value: options.name }
+            : { prompt: { type: "input", message: "Project name?" }, required: true },
+          template: options.template
+            ? { value: options.template }
+            : {
+                prompt: {
+                  type: "select",
+                  message: "Choose your AI setup",
+                  choices: [
+                    {
+                      value: "openui-cloud",
+                      name: "OpenUI Cloud — fastest setup with free hosted models (recommended)",
+                    },
+                    {
+                      value: "openui-self-hosted",
+                      name: "OpenAI-compatible provider — use your own key and self-host the AI route",
+                    },
+                  ],
                 },
-                {
-                  value: "openui-self-hosted",
-                  name: "OpenAI-compatible provider — use your own key and self-host the AI route",
-                },
-              ],
-            },
-            required: true,
-          },
-    },
-    interactive,
+                required: true,
+              },
+        },
+        interactive,
+      ),
+    { properties: { interactive } },
   );
 
   const { name, template } = args as { name: string; template: TemplateName };
   const aiSetup = aiSetupFromTemplate(template);
+  const stageContext = { template, ai_setup: aiSetup };
   telemetry.register({ template, ai_setup: aiSetup });
   telemetry.capture("cli_ai_setup_selected", {
     ...createFunnelProps("ai_setup_selected"),
@@ -106,25 +126,53 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     ai_setup: aiSetup,
   });
 
-  const targetDir = path.resolve(process.cwd(), name);
-  if (fs.existsSync(targetDir)) {
-    throw new CreateError("dir_exists", `Directory "${name}" already exists.`);
-  }
+  const { targetDir, packageManager, packageManagerVersion, templateDir } =
+    await instrumentCreateStage(
+      "preflight",
+      () => {
+        const resolvedTargetDir = path.resolve(process.cwd(), name);
+        if (fs.existsSync(resolvedTargetDir)) {
+          throw new CreateError("dir_exists", `Directory "${name}" already exists.`);
+        }
 
-  const packageManager = resolveInstallPackageManager();
-  const templateDir = path.join(__dirname, "..", "templates", template);
-  if (!fs.existsSync(templateDir)) {
-    throw new CreateError(
-      "template_missing",
-      `Template "${template}" not found. Rebuild the CLI with \`pnpm build\`.`,
+        const resolvedPackageManager = resolveInstallPackageManager();
+        const resolvedPackageManagerVersion = resolvePackageManagerVersion(
+          resolvedPackageManager.name,
+        );
+        const resolvedTemplateDir = path.join(__dirname, "..", "templates", template);
+        if (!fs.existsSync(resolvedTemplateDir)) {
+          throw new CreateError(
+            "template_missing",
+            `Template "${template}" not found. Rebuild the CLI with \`pnpm build\`.`,
+          );
+        }
+        return {
+          targetDir: resolvedTargetDir,
+          packageManager: resolvedPackageManager,
+          packageManagerVersion: resolvedPackageManagerVersion,
+          templateDir: resolvedTemplateDir,
+        };
+      },
+      {
+        properties: stageContext,
+        resultProperties: (result) => ({
+          package_manager: result.packageManager.name,
+          ...(result.packageManagerVersion
+            ? { package_manager_version: result.packageManagerVersion }
+            : {}),
+        }),
+      },
     );
-  }
+  telemetry.register({
+    package_manager: packageManager.name,
+    ...(packageManagerVersion ? { package_manager_version: packageManagerVersion } : {}),
+  });
 
-  const captureScaffoldFailed = () => {
+  const captureScaffoldFailed = (error: unknown) => {
     telemetry.capture("cli_scaffold_failed", {
       ...createFunnelProps("scaffold_failed"),
-      template,
-      ai_setup: aiSetup,
+      ...stageContext,
+      ...normalizeCliError(error),
     });
   };
 
@@ -133,89 +181,138 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     template,
     ai_setup: aiSetup,
   });
-  const envResult =
-    template === "openui-self-hosted"
-      ? await resolveChatEnv(interactive)
-      : await resolveCloudEnv(name, options, interactive);
+  const envResult = await instrumentCreateStage(
+    "environment_resolution",
+    () =>
+      template === "openui-self-hosted"
+        ? resolveChatEnv(interactive)
+        : resolveCloudEnv(name, options, interactive),
+    {
+      properties: stageContext,
+      resultProperties: (result) => ({
+        env_written: result.envWritten,
+        auth_method: result.authMethod,
+        auth_succeeded: result.authSucceeded,
+      }),
+    },
+  );
 
   console.info(`\nScaffolding ${template} into "${name}"...\n`);
-  telemetry.capture("cli_scaffold_started", {
-    ...createFunnelProps("scaffold_started"),
-    template,
-    ai_setup: aiSetup,
-  });
-  try {
-    fs.cpSync(templateDir, targetDir, {
-      recursive: true,
-      filter: (src) => shouldCopyTemplatePath(templateDir, src),
-    });
-    rewritePackageJson(targetDir, name);
-  } catch (err) {
-    captureScaffoldFailed();
-    throw err;
-  }
-  telemetry.capture("cli_scaffold_succeeded", {
-    ...createFunnelProps("scaffold_succeeded"),
-    template,
-    ai_setup: aiSetup,
-  });
+  await instrumentCreateStage(
+    "scaffold",
+    () => {
+      telemetry.capture("cli_scaffold_started", {
+        ...createFunnelProps("scaffold_started"),
+        ...stageContext,
+      });
+      try {
+        fs.cpSync(templateDir, targetDir, {
+          recursive: true,
+          filter: (src) => shouldCopyTemplatePath(templateDir, src),
+        });
+        rewritePackageJson(targetDir, name);
+      } catch (error) {
+        captureScaffoldFailed(error);
+        throw error;
+      }
+      telemetry.capture("cli_scaffold_succeeded", {
+        ...createFunnelProps("scaffold_succeeded"),
+        ...stageContext,
+      });
+    },
+    { properties: stageContext },
+  );
 
-  await writeEnv(targetDir, envResult);
+  await instrumentCreateStage("environment_write", () => writeEnv(targetDir, envResult), {
+    properties: stageContext,
+    resultProperties: () => ({
+      env_written: envResult.envWritten,
+      auth_method: envResult.authMethod,
+      auth_succeeded: envResult.authSucceeded,
+    }),
+  });
   telemetry.capture("cli_env_resolved", {
     ...createFunnelProps("env_written"),
-    template,
-    ai_setup: aiSetup,
+    ...stageContext,
     env_written: envResult.envWritten,
     auth_method: envResult.authMethod,
     auth_succeeded: envResult.authSucceeded,
   });
 
-  const installSkill = await shouldInstallSkill(options.skill, interactive);
+  const installSkillRequested = await instrumentCreateStage(
+    "skill_prompt",
+    () => shouldInstallSkill(options.skill, interactive),
+    {
+      properties: stageContext,
+      resultProperties: (requested) => ({ skill_install_requested: requested }),
+    },
+  );
   telemetry.capture("cli_skill_installed", {
     ...createFunnelProps("skill_prompt_resolved"),
-    skill_installed: installSkill,
+    skill_installed: installSkillRequested,
+    skill_install_requested: installSkillRequested,
   });
-  if (installSkill) {
+
+  let skillInstalled = false;
+  if (installSkillRequested) {
     telemetry.capture("cli_skill_install_started", {
       ...createFunnelProps("skill_install_started"),
-      skill_installed: installSkill,
+      skill_install_requested: true,
     });
-    runSkillInstall(targetDir);
-    telemetry.capture("cli_skill_install_finished", {
-      ...createFunnelProps("skill_install_finished"),
-      skill_installed: installSkill,
-    });
+    try {
+      await instrumentCreateStage("skill_install", () => runSkillInstall(targetDir), {
+        properties: stageContext,
+      });
+      skillInstalled = true;
+      telemetry.capture("cli_skill_install_finished", {
+        ...createFunnelProps("skill_install_finished"),
+        skill_installed: true,
+      });
+    } catch (error) {
+      telemetry.capture("cli_skill_install_failed", {
+        ...createFunnelProps("skill_install_finished"),
+        skill_installed: false,
+        ...normalizeCliError(error),
+      });
+      printSkillInstallFailure();
+    }
+  } else {
+    captureCreateStageSkipped("skill_install", "not_requested", stageContext);
   }
 
   const installCmd = packageManager.installCmd;
   let dependencyInstalled = false;
 
   if (options.noInstall) {
+    captureCreateStageSkipped("dependency_install", "no_install_flag", stageContext);
     console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.\n`);
   } else {
     console.info(`Installing dependencies with: ${installCmd}\n`);
     telemetry.capture("cli_dependency_install_started", {
       ...createFunnelProps("dependency_install_started"),
-      template,
-      ai_setup: aiSetup,
+      ...stageContext,
     });
     try {
-      execSync(installCmd, { stdio: "inherit", cwd: targetDir });
+      await instrumentCreateStage(
+        "dependency_install",
+        () => runCommand(packageManager.name, packageManager.installArgs, targetDir),
+        { properties: stageContext },
+      );
       dependencyInstalled = true;
       telemetry.capture("cli_dependency_install_succeeded", {
         ...createFunnelProps("dependency_install_succeeded"),
-        template,
-        ai_setup: aiSetup,
+        ...stageContext,
         dependency_installed: dependencyInstalled,
       });
-    } catch {
+    } catch (error) {
       telemetry.capture("cli_dependency_install_failed", {
         ...createFunnelProps("dependency_install_failed"),
-        template,
-        ai_setup: aiSetup,
+        ...stageContext,
         dependency_installed: dependencyInstalled,
+        ...normalizeCliError(error),
       });
-      throw new CreateError("install_deps", "dependency install failed");
+      if (error instanceof CreateError) throw error;
+      throw new CreateError("dependency_install", "dependency install failed", { cause: error });
     }
   }
 
@@ -223,10 +320,9 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
 
   telemetry.capture("cli_create_succeeded", {
     ...createFunnelProps("create_succeeded"),
-    template,
-    ai_setup: aiSetup,
+    ...stageContext,
     duration_ms: Date.now() - t0,
-    skill_installed: installSkill,
+    skill_installed: skillInstalled,
     env_written: envResult.envWritten,
     dependency_installed: dependencyInstalled,
   });
@@ -235,7 +331,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       name,
       devCmd,
       template,
-      skillInstalled: installSkill,
+      skillInstalled,
       envWritten: envResult.envWritten,
     }),
   );
@@ -265,17 +361,30 @@ async function resolveCloudEnv(
 ): Promise<EnvResult> {
   let apiKey: string | null = null;
   let authMethod: EnvResult["authMethod"];
+  const requestedAuthMethod = options.auth ?? (options.apiKey ? "apikey-flag" : undefined);
   try {
     telemetry.capture("cli_cloud_auth_started", {
       ...createFunnelProps("cloud_auth_started"),
-      auth_method: options.auth ?? (options.apiKey ? "apikey-flag" : undefined),
+      ...(requestedAuthMethod ? { auth_method: requestedAuthMethod } : {}),
     });
-    const resolved = await resolveCloudApiKey({
-      apiKey: options.apiKey,
-      auth: options.auth,
-      projectName: name,
-      interactive,
-    });
+    const resolved = await instrumentCreateStage(
+      "cloud_auth",
+      () =>
+        resolveCloudApiKey({
+          apiKey: options.apiKey,
+          auth: options.auth,
+          projectName: name,
+          interactive,
+        }),
+      {
+        properties: { auth_method_requested: requestedAuthMethod },
+        resultStatus: (result) => (result.method === "skip" ? "skipped" : "succeeded"),
+        resultProperties: (result) => ({
+          auth_method: result.method,
+          auth_succeeded: result.key != null,
+        }),
+      },
+    );
     apiKey = resolved.key;
     authMethod = resolved.method;
     telemetry.capture("cli_cloud_auth_method", {
@@ -284,11 +393,14 @@ async function resolveCloudEnv(
       auth_succeeded: apiKey != null,
     });
   } catch (err) {
+    if (err instanceof CliCancellation) throw err;
     const msg = err instanceof Error ? err.message : String(err);
     telemetry.capture("cli_cloud_auth_failed", {
       ...createFunnelProps("cloud_auth_resolved"),
-      auth_method: options.auth ?? (options.apiKey ? "apikey-flag" : undefined),
+      ...(requestedAuthMethod ? { auth_method: requestedAuthMethod } : {}),
       auth_succeeded: false,
+      failure_stage: err instanceof CreateError ? err.stage : "cloud_auth",
+      ...normalizeCliError(err),
     });
     console.error(`\n⚠ Could not obtain an API key: ${msg}`);
     console.error(`  Add THESYS_API_KEY to .env later (keys: ${THESYS_KEYS_URL}).\n`);
