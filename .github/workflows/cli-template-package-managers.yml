@@ -1,0 +1,81 @@
+name: CLI Template Package Managers
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/cli-template-package-managers.yml"
+      - "packages/openui-cli/scripts/compare-template-installs.mjs"
+      - "packages/openui-cli/src/commands/create-app.ts"
+      - "packages/openui-cli/src/lib/detect-package-manager.ts"
+      - "packages/openui-cli/src/templates/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/cli-template-package-managers.yml"
+      - "packages/openui-cli/scripts/compare-template-installs.mjs"
+      - "packages/openui-cli/src/commands/create-app.ts"
+      - "packages/openui-cli/src/lib/detect-package-manager.ts"
+      - "packages/openui-cli/src/templates/**"
+
+permissions:
+  contents: read
+
+jobs:
+  package-manager-parity:
+    name: ${{ matrix.template }} (npm + pnpm)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        template:
+          - openui-cloud
+          - openui-self-hosted
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare isolated template copies
+        shell: bash
+        run: |
+          cp -R "packages/openui-cli/src/templates/${{ matrix.template }}" "${RUNNER_TEMP}/npm-template"
+          cp -R "packages/openui-cli/src/templates/${{ matrix.template }}" "${RUNNER_TEMP}/pnpm-template"
+          rm "${RUNNER_TEMP}/pnpm-template/package-lock.json"
+
+      - name: Install with npm
+        working-directory: ${{ runner.temp }}/npm-template
+        run: npm ci --prefer-offline --no-audit --no-fund --progress=false
+
+      - name: Install with pnpm
+        working-directory: ${{ runner.temp }}/pnpm-template
+        run: pnpm install
+
+      - name: Compare resolved direct dependencies
+        run: >-
+          node packages/openui-cli/scripts/compare-template-installs.mjs
+          "${RUNNER_TEMP}/npm-template"
+          "${RUNNER_TEMP}/pnpm-template"
+
+      - name: Build npm installation
+        working-directory: ${{ runner.temp }}/npm-template
+        run: npm run build
+        env:
+          OPENAI_API_KEY: sk-test
+          THESYS_API_KEY: sk-test
+          DEMO_USER_ID: test-user
+
+      - name: Build pnpm installation
+        working-directory: ${{ runner.temp }}/pnpm-template
+        run: pnpm run build
+        env:
+          OPENAI_API_KEY: sk-test
+          THESYS_API_KEY: sk-test
+          DEMO_USER_ID: test-user
