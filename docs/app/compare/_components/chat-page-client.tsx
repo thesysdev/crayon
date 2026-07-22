@@ -14,7 +14,6 @@ import {
   type ReactNode,
 } from "react";
 import styles from "../chat-page.module.css";
-import type { GenUIConversationAction } from "./agent-surfaces/comparison-genui-assistant-message";
 import { MarkdownAgentSurface } from "./agent-surfaces/markdown-agent-surface";
 import { OssAgentSurface } from "./agent-surfaces/oss-agent-surface";
 import { ChatPageHeader } from "./chat-page-header";
@@ -168,11 +167,6 @@ export function ChatPageClient({ initialPair = DEFAULT_COMPARISON_PAIR }: ChatPa
     setAnnouncement("Stopped all comparison responses.");
   }, [getRegisteredControllers, setAnnouncement]);
 
-  const handleConversationAction = useCallback(
-    (action: GenUIConversationAction) => submitToAll(action.content),
-    [submitToAll],
-  );
-
   const resetAll = useCallback(() => {
     const controllers = getRegisteredControllers();
     if (controllers.length === 0) return;
@@ -300,15 +294,10 @@ export function ChatPageClient({ initialPair = DEFAULT_COMPARISON_PAIR }: ChatPa
                         themeMode={themeMode}
                         onCreditsExhausted={handleCreditsExhausted}
                         registry={registry}
-                        onConversationAction={handleConversationAction}
                       />
                     )}
                     {mode === "cloud" && (
-                      <CloudAgentSurface
-                        themeMode={themeMode}
-                        registry={registry}
-                        onConversationAction={handleConversationAction}
-                      />
+                      <CloudAgentSurface themeMode={themeMode} registry={registry} />
                     )}
                   </SurfaceErrorBoundary>
                   {!snapshot.isReady && !snapshot.threadError && !unavailableModes.has(mode) ? (

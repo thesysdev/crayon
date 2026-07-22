@@ -9,17 +9,14 @@ import {
   reportArtifactRenderer,
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
 import { ComparisonModeControllerBridge } from "../comparison-mode-controller";
 import { createCloudChatLLM } from "./cloud-chat-llm";
 import { CloudFreshThreadBridge } from "./cloud-fresh-thread-bridge";
 import { CloudArtifactHistoryBridge, CloudFullPageArtifactPanel } from "./cloud-full-page-artifact";
 import { getOrCreateCloudUserId } from "./cloud-user-id";
-import {
-  ComparisonGenUIAssistantMessage,
-  type GenUIConversationAction,
-} from "./comparison-genui-assistant-message";
+import { ComparisonGenUIAssistantMessage } from "./comparison-genui-assistant-message";
 import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
@@ -30,14 +27,19 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
 interface CloudAgentSurfaceProps {
   themeMode: "light" | "dark";
   registry: ComparisonControllerRegistry;
-  onConversationAction: (action: GenUIConversationAction) => void;
 }
 
-export function CloudAgentSurface({
-  themeMode,
-  registry,
-  onConversationAction,
-}: CloudAgentSurfaceProps) {
+const CLOUD_COMPONENTS = {
+  AssistantMessage: ({ message }: { message: AssistantMessage }) => (
+    <ComparisonGenUIAssistantMessage
+      message={message}
+      library={chatLibrary}
+      detailedViewPanel={CloudFullPageArtifactPanel}
+    />
+  ),
+};
+
+export function CloudAgentSurface({ themeMode, registry }: CloudAgentSurfaceProps) {
   const [userId] = useState(getOrCreateCloudUserId);
   const [llm] = useState(() => createCloudChatLLM());
   const cloudFetch = useMemo<typeof fetch>(() => {
@@ -58,29 +60,13 @@ export function CloudAgentSurface({
     fetch: cloudFetch,
   });
 
-  const AssistantMessageRenderer = useCallback(
-    ({ message }: { message: AssistantMessage }) => (
-      <ComparisonGenUIAssistantMessage
-        message={message}
-        library={chatLibrary}
-        onConversationAction={onConversationAction}
-        detailedViewPanel={CloudFullPageArtifactPanel}
-      />
-    ),
-    [onConversationAction],
-  );
-  const components = useMemo(
-    () => ({ AssistantMessage: AssistantMessageRenderer }),
-    [AssistantMessageRenderer],
-  );
-
   return (
     <div className="chat-agent-surface" data-chat-mode="cloud">
       <AgentInterface
         storage={cloudStorage}
         llm={llm}
         componentLibrary={chatLibrary}
-        components={components}
+        components={CLOUD_COMPONENTS}
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
         agentName="OpenUI Cloud"

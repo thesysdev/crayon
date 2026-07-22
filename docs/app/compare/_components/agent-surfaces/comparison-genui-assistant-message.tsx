@@ -18,27 +18,20 @@ import {
   wrapContext,
 } from "./message-sentinel";
 
-export interface GenUIConversationAction {
-  content: string;
-  humanFriendlyMessage: string;
-  formState?: Record<string, unknown>;
-}
-
 interface ComparisonGenUIAssistantMessageProps {
   message: AssistantMessage;
   library: Library;
-  onConversationAction: (action: GenUIConversationAction) => void;
   detailedViewPanel?: ToolDetailedViewPanel;
 }
 
 export function ComparisonGenUIAssistantMessage({
   message,
   library,
-  onConversationAction,
   detailedViewPanel,
 }: ComparisonGenUIAssistantMessageProps) {
   const messages = useThread((state) => state.messages);
   const isRunning = useThread((state) => state.isRunning);
+  const processMessage = useThread((state) => state.processMessage);
   const updateMessage = useThread((state) => state.updateMessage);
 
   const isStreaming = useMemo(() => {
@@ -99,10 +92,9 @@ export function ComparisonGenUIAssistantMessage({
         const messageContext: (string | object)[] = [`User clicked: ${humanFriendlyMessage}`];
         if (event.formState) messageContext.push(event.formState);
 
-        onConversationAction({
+        void processMessage({
+          role: "user",
           content: `${contentPart}${wrapContext(JSON.stringify(messageContext))}`,
-          humanFriendlyMessage,
-          formState: event.formState,
         });
         return;
       }
@@ -112,7 +104,7 @@ export function ComparisonGenUIAssistantMessage({
         if (typeof url === "string") window.open(url, "_blank", "noopener,noreferrer");
       }
     },
-    [onConversationAction],
+    [processMessage],
   );
 
   return (
