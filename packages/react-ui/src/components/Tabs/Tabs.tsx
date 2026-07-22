@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { IconButton } from "../IconButton";
 
-type TabsVariant = "clear";
+type TabsVariant = "clear" | "segmented";
 
 export interface TabsProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root> {
   className?: string;
@@ -14,6 +14,7 @@ export interface TabsProps extends React.ComponentPropsWithoutRef<typeof TabsPri
 
 const tabsVariants: Record<TabsVariant, string> = {
   clear: "openui-tabs-clear",
+  segmented: "openui-tabs-segmented",
 };
 
 export const Tabs = forwardRef<React.ComponentRef<typeof TabsPrimitive.Root>, TabsProps>(
