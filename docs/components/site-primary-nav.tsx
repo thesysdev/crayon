@@ -116,6 +116,10 @@ const PANEL_PADDING = 10;
 const VIEWPORT_MARGIN = 16;
 /* Forgiveness around the nav+panel box before the menu counts as left. */
 const POINTER_SLACK = 12;
+/* How long the pointer must rest on a neighbouring nav link before an open menu
+   closes. Long enough that crossing one on the way to a card doesn't count,
+   short enough that settling on it closes right away. */
+const NEIGHBOUR_DWELL_MS = 150;
 
 function DropdownCard({ child, onNavigate }: { child: NavDropdownChild; onNavigate: () => void }) {
   return (
@@ -202,11 +206,13 @@ export function SitePrimaryNav() {
 
   const wasOpenRef = useRef(false);
   const watcherRef = useRef<((event: PointerEvent) => void) | null>(null);
+  const neighbourTimerRef = useRef<number | null>(null);
 
-  // The watcher must not outlive the component.
+  // Neither the watcher nor a pending close may outlive the component.
   useEffect(
     () => () => {
       if (watcherRef.current) document.removeEventListener("pointermove", watcherRef.current);
+      if (neighbourTimerRef.current !== null) window.clearTimeout(neighbourTimerRef.current);
     },
     [],
   );
@@ -287,9 +293,29 @@ export function SitePrimaryNav() {
     }
   };
 
+  const cancelNeighbourClose = () => {
+    if (neighbourTimerRef.current !== null) {
+      window.clearTimeout(neighbourTimerRef.current);
+      neighbourTimerRef.current = null;
+    }
+  };
+
   const close = () => {
     stopWatchingPointer();
+    cancelNeighbourClose();
     setActive(null);
+  };
+
+  /**
+   * Docs and Blogs flank the dropdowns, so the pointer crosses one whenever it
+   * reaches diagonally for a card at either end of an open panel. Closing on
+   * entry killed the menu mid-reach; not closing at all left it hanging while
+   * the pointer sat on a different nav item. So the close waits on dwell —
+   * crossing is over in a few frames, settling isn't.
+   */
+  const scheduleNeighbourClose = () => {
+    cancelNeighbourClose();
+    neighbourTimerRef.current = window.setTimeout(close, NEIGHBOUR_DWELL_MS);
   };
 
   /**
@@ -377,16 +403,13 @@ export function SitePrimaryNav() {
         const isActive = pathname.startsWith(item.href);
         const badge = "badge" in item ? item.badge : undefined;
 
-        // Deliberately no close on hover. These sit either side of the
-        // dropdowns, so reaching diagonally for a card at the far end of an open
-        // panel drags the pointer straight across one of them — and closing
-        // there killed the menu mid-reach regardless of speed. Leaving the
-        // nav+panel box closes it; passing over a neighbour is not leaving.
         return (
           <Link
             className={`${styles.link} ${isActive ? styles.linkActive : ""}`.trim()}
             href={item.href}
             key={item.href}
+            onPointerEnter={scheduleNeighbourClose}
+            onPointerLeave={cancelNeighbourClose}
             {...(item.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
           >
             {item.title}
