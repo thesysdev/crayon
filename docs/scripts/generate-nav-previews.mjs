@@ -76,11 +76,14 @@ function scene(name, c, a) {
     // A scaled-down slice of the Lab grid: four columns by three rows, inset
     // from the top-left the way the design insets its screenshots, and running
     // off the right and bottom so the set reads as bigger than the frame.
-    const CW = 150, CH = 110, G = 12, X0 = 46, Y0 = 46, COLS = 4;
+    const CW = 150, CH = 110, G = 12, COLS = 4, ROWS = 3;
+    // Centre the whole block so the overflow is symmetric on both sides and the
+    // bottom — the grid should read as the middle of a larger set, not a corner.
+    const X0 = Math.round((W - (COLS * CW + (COLS - 1) * G)) / 2);
+    const Y0 = Math.round((H - (ROWS * CH + (ROWS - 1) * G)) / 2);
     PROJECTS.forEach((p, i) => {
       const cx = X0 + (i % COLS) * (CW + G);
       const cy = Y0 + Math.floor(i / COLS) * (CH + G);
-      if (cy > H) return;
       s.push(r(cx, cy, CW, CH, 12, c.card, ` stroke="${c.border}" stroke-width="1"`));
       s.push(t(cx + 14, cy + 26, 10.5, 550, c.ink, p.name));
       // Type pill, tinted with the card accent exactly as the page does.

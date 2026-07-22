@@ -18,10 +18,9 @@ type NavDropdownChild = {
   href: string;
   description?: string;
   newTab?: boolean;
-  /* Preview art shown above the label in the desktop mega-menu. The .webp
-     entries are the design's own screenshots, framed to match the menu design;
-     the .svg ones are drawn by scripts/generate-nav-previews.mjs.
-     Decorative — the adjacent title already names the destination. */
+  /* Preview art shown above the label in the desktop mega-menu, exported at 2x
+     from the menu design's own frames. Decorative — the adjacent title already
+     names the destination. */
   preview?: { light: string; dark: string };
 };
 
@@ -70,8 +69,8 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         description: "See how OpenUI runs 3x faster on 67% fewer tokens.",
         href: "/demos",
         preview: {
-          light: "/nav/vsjson-light.svg",
-          dark: "/nav/vsjson-dark.svg",
+          light: "/nav/vsjson-light.webp",
+          dark: "/nav/vsjson-dark.webp",
         },
       },
     ],
@@ -93,8 +92,8 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         description: "Tools, packages, plugins, and examples",
         href: "/lab",
         preview: {
-          light: "/nav/community-light.svg",
-          dark: "/nav/community-dark.svg",
+          light: "/nav/community-light.webp",
+          dark: "/nav/community-dark.webp",
         },
       },
     ],
@@ -108,12 +107,13 @@ export function isNavDropdown(item: NavItem): item is NavDropdown {
   return "children" in item;
 }
 
-function DropdownCard({ child }: { child: NavDropdownChild }) {
+function DropdownCard({ child, onNavigate }: { child: NavDropdownChild; onNavigate: () => void }) {
   return (
     <Link
       className={styles.dropdownItem}
       href={child.href}
       role="menuitem"
+      onClick={onNavigate}
       {...(child.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
       {child.preview && (
@@ -173,6 +173,17 @@ export function SitePrimaryNav() {
   const dropdowns = PRIMARY_SITE_NAV_ITEMS.filter(isNavDropdown);
 
   const [active, setActive] = useState<string | null>(null);
+
+  // Close on navigation. The link's own onClick covers the common case, but a
+  // route change can also come from elsewhere (back/forward, a nested link), and
+  // the pointer often never leaves the nav, so nothing else would close it.
+  // Adjusting state during render is React's sanctioned pattern here — an effect
+  // would paint the stale open menu for a frame first.
+  const [navigatedFrom, setNavigatedFrom] = useState(pathname);
+  if (pathname !== navigatedFrom) {
+    setNavigatedFrom(pathname);
+    setActive(null);
+  }
 
   const navRef = useRef<HTMLElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -300,7 +311,7 @@ export function SitePrimaryNav() {
             aria-label={item.title}
           >
             {item.children.map((child) => (
-              <DropdownCard child={child} key={child.href} />
+              <DropdownCard child={child} key={child.href} onNavigate={close} />
             ))}
           </div>
         ))}
