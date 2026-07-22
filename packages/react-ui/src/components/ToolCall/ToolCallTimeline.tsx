@@ -1,4 +1,5 @@
 import { useThread, type ToolActivity } from "@openuidev/react-headless";
+import clsx from "clsx";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TimelineEntry } from "../_shared/tool-renderer/TimelineEntry";
@@ -6,6 +7,7 @@ import type { ToolDetailedViewPanel } from "../_shared/tool-renderer/ToolActivit
 import { defaultLabel } from "./ToolCallPrimitives";
 
 const REVEAL_INTERVAL = 600;
+const EXIT_DURATION = 200; // in sync with the __compact transition duration in toolCall.scss.
 
 /** Visually hidden but available to screen readers; inline so we don't depend on
  *  scss (a sibling agent owns the stylesheet). */
@@ -40,6 +42,7 @@ export function ToolCallTimeline({
   isLast = false,
   detailedViewPanel,
   forceDefault = false,
+  awaitingResponse = false,
 }: {
   activities: ToolActivity[];
   isLast?: boolean;
@@ -47,16 +50,21 @@ export function ToolCallTimeline({
   /** Render every row as the raw default card (e.g. so matched tools' raw
    *  request/response stay inspectable here while their rich preview renders elsewhere). */
   forceDefault?: boolean;
+  /** The run may still produce a response (no assistant text yet) — hold the
+   *  compact "Working…" tray open across the tool-result → first-token gap
+   *  instead of collapsing the instant the last result lands. */
+  awaitingResponse?: boolean;
 }) {
-  // The timeline is "thinking" while its own last activity is still running, it's
-  // the live message, AND the thread is actually running — so a closed-args call
-  // that never received a result stops showing "Working..." once the run ends.
+  // The timeline is "thinking" while its own last activity is still running (or
+  // the results are in but the response hasn't started), it's the live message,
+  // AND the thread is actually running — so a closed-args call that never
+  // received a result stops showing "Working..." once the run ends.
   const isThreadRunning = useThread((s) => s.isRunning);
   const thinking =
     isThreadRunning &&
     isLast &&
     activities.length > 0 &&
-    isRunning(activities[activities.length - 1]!);
+    (isRunning(activities[activities.length - 1]!) || awaitingResponse);
 
   const [expanded, setExpanded] = useState(false);
   // Live message → reveal one-by-one from the first; historical (not live) →
@@ -94,10 +102,25 @@ export function ToolCallTimeline({
     return undefined;
   }, [isLast, activities.length, revealedCount, currentReady]);
 
-  if (activities.length === 0) return null;
-
   const revealing = revealedCount < activities.length;
   const showCompact = (thinking || revealing) && !expanded;
+  const [exiting, setExiting] = useState(false);
+  const [prevShowCompact, setPrevShowCompact] = useState(showCompact);
+  if (prevShowCompact !== showCompact) {
+    setPrevShowCompact(showCompact);
+    if (!showCompact && !expanded) setExiting(true);
+    if (showCompact) setExiting(false); // reopened mid-exit → cancel the close
+  }
+
+  useEffect(() => {
+    // The timeout (not transitionend) drives the unmount
+    if (!exiting) return undefined;
+    const t = setTimeout(() => setExiting(false), EXIT_DURATION);
+    return () => clearTimeout(t);
+  }, [exiting]);
+
+  if (activities.length === 0) return null;
+
   const current = activities[Math.min(revealedCount - 1, activities.length - 1)]!;
 
   // Persistent live announcement reflecting the current step's status — driven by
@@ -136,20 +159,28 @@ export function ToolCallTimeline({
         {toggleLabel}
       </button>
 
-      {showCompact && (
-        <div className="openui-behind-the-scenes__items">
-          {/* key changes per reveal → remounts → re-triggers the CSS fade-in */}
-          <div
-            key={revealedCount}
-            className="openui-behind-the-scenes__reveal-item"
-            style={{ width: "100%" }}
-          >
-            <TimelineEntry
-              activity={current}
-              isLast
-              detailedViewPanel={detailedViewPanel}
-              forceDefault={forceDefault}
-            />
+      {(showCompact || (exiting && !expanded)) && (
+        <div
+          className={clsx("openui-behind-the-scenes__compact", {
+            "openui-behind-the-scenes__compact--closed": !showCompact,
+          })}
+        >
+          <div className="openui-behind-the-scenes__compact-inner">
+            <div className="openui-behind-the-scenes__items">
+              {/* key changes per reveal → remounts → re-triggers the CSS fade-in */}
+              <div
+                key={revealedCount}
+                className="openui-behind-the-scenes__reveal-item"
+                style={{ width: "100%" }}
+              >
+                <TimelineEntry
+                  activity={current}
+                  isLast
+                  detailedViewPanel={detailedViewPanel}
+                  forceDefault={forceDefault}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}

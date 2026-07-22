@@ -126,7 +126,12 @@ export const GenUIAssistantMessage = ({
     <AssistantMessageContainer>
       {activities.length > 0 && (
         // Raw request/response for ALL tool calls, collapsed by default.
-        <ToolCallTimeline activities={activities} isLast={isStreaming} forceDefault />
+        <ToolCallTimeline
+          activities={activities}
+          isLast={isStreaming}
+          forceDefault
+          awaitingResponse={isStreaming && !message.content}
+        />
       )}
       {matchedActivities.map((activity) => (
         // Matched renderers (artifact previews, web search) — always visible.
