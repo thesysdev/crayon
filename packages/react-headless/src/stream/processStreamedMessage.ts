@@ -45,6 +45,9 @@ export const processStreamedMessage = async ({
 
   let isFirst = true;
 
+  // First TEXT_MESSAGE_START wins — see that case below.
+  let serverIdAdopted = false;
+
   // Tool messages by toolCallId, so repeated TOOL_CALL_RESULTs for the same
   // call UPDATE one message in place instead of duplicating it.
   const toolMessagesByCallId = new Map<string, ToolMessage>();
@@ -165,9 +168,17 @@ export const processStreamedMessage = async ({
         // from TOOL_CALL_RESULT); relabeling keeps the position. If the
         // message isn't in the store yet (this is the first event), the
         // trailing isFirst createMessage below already carries the server id.
-        if (event.messageId && event.messageId !== currentMessage.id) {
-          replaceMessageId?.(currentMessage.id, event.messageId);
-          currentMessage = { ...currentMessage, id: event.messageId };
+        //
+        // First TEXT_MESSAGE_START wins: a multi-text-item run emits one per
+        // item, and re-relabeling would remount the message component (keyed
+        // by id) for each. Anchoring on the first item also matches the
+        // reload path, which splits a persisted turn on its first text item.
+        if (!serverIdAdopted && event.messageId) {
+          serverIdAdopted = true;
+          if (event.messageId !== currentMessage.id) {
+            replaceMessageId?.(currentMessage.id, event.messageId);
+            currentMessage = { ...currentMessage, id: event.messageId };
+          }
         }
         break;
 
