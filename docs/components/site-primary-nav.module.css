@@ -119,10 +119,15 @@
     visibility 0s;
 }
 
+/* Pinned to the left edge, not centred. The viewport is sized to exactly the
+   active menu's width, so left:0 lines them up — whereas centring re-resolves
+   the offset on every frame of the width animation, which makes the labels
+   visibly slide while the box morphs. The outgoing menu is wider and simply
+   gets clipped on the right as it fades. */
 .viewportContent {
   position: absolute;
   top: 0;
-  left: 50%;
+  left: 0;
   display: grid;
   width: max-content;
   grid-auto-flow: column;
@@ -138,7 +143,6 @@
   padding: 0.75rem;
   opacity: 0;
   transition: opacity 0.16s ease;
-  translate: -50% 0;
 }
 
 .viewportContent[data-active="true"] {
@@ -181,32 +185,24 @@
 
 /* 284x160 preview slot. The art is decorative, so it sits behind the label and
    is cropped to fill rather than letterboxed. */
-/* The artwork already carries the design's own surface fill and 1px stroke, so
-   this container adds neither — a border here double-draws the edge, and a
-   token background (white-based in dark mode) shows as a light plate behind the
-   lazily-loaded dark art. The background below only matches the artwork so that
-   gap is invisible. */
+/* Renders the artwork exactly as exported — no border, no background, no
+   radius of its own. The art carries its own surface fill, 1px stroke and 12px
+   corners, so anything added here double-draws the edge or shows through as a
+   plate behind it. Drop-in replacements need no CSS changes. */
 .dropdownPreview {
-  --nav-preview-surface: #f4f4f4;
-
   position: relative;
   display: block;
-  overflow: hidden;
   aspect-ratio: 284 / 160;
-  border-radius: 12px;
-  background: var(--nav-preview-surface);
 }
 
-[data-theme="dark"] .dropdownPreview {
-  --nav-preview-surface: #1a1a1a;
-}
-
+/* The art is authored at the slot's exact 284:160 ratio, so it is drawn whole
+   rather than cropped — object-fit: cover would silently trim a mismatched
+   export instead of making the mismatch obvious. */
 .dropdownPreviewImage {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top center;
+  object-fit: fill;
 }
 
 /* Per-theme artwork: render both variants, reveal the one matching the theme. */
