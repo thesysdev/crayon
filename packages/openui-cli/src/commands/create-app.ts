@@ -53,6 +53,31 @@ function rewritePackageJson(projectDir: string, name: string) {
     }
   }
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+
+  // Keep the copied npm lockfile's root package metadata aligned so npm ci can
+  // consume the template without having to rewrite or re-resolve it.
+  const lockPath = path.join(projectDir, "package-lock.json");
+  if (fs.existsSync(lockPath)) {
+    const lock = JSON.parse(fs.readFileSync(lockPath, "utf8")) as {
+      name?: string;
+      packages?: Record<
+        string,
+        {
+          name?: string;
+          dependencies?: Record<string, string>;
+          devDependencies?: Record<string, string>;
+        }
+      >;
+    };
+    lock.name = name;
+    const lockRoot = lock.packages?.[""];
+    if (lockRoot) {
+      lockRoot.name = name;
+      lockRoot.dependencies = pkg.dependencies;
+      lockRoot.devDependencies = pkg.devDependencies;
+    }
+    fs.writeFileSync(lockPath, JSON.stringify(lock, null, 2) + "\n");
+  }
 }
 
 export async function runCreateApp(options: CreateAppOptions): Promise<void> {
@@ -150,6 +175,10 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
     rewritePackageJson(targetDir, name);
+    // The template lockfile enables npm ci; other managers should resolve from package.json.
+    if (packageManager.name !== "npm") {
+      fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
+    }
   } catch (err) {
     captureScaffoldFailed();
     throw err;

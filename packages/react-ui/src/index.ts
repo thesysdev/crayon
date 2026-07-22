@@ -82,7 +82,6 @@ export * from "./components/Label";
 export * from "./components/ListBlock";
 export * from "./components/ListItem";
 export * from "./components/MarkDownRenderer";
-export * from "./components/MessageLoading";
 export * from "./components/OpenUIChat";
 export * from "./components/RadioGroup";
 export * from "./components/RadioItem";

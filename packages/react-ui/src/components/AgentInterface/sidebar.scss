@@ -2,7 +2,7 @@
 
 $sidebar-width: 272px;
 $sidebar-padding-y: cssUtils.$space-m-l;
-$sidebar-padding-x: cssUtils.$space-s-m;
+$sidebar-padding-x: cssUtils.$space-m;
 $sidebar-header-inline-offset: 0px;
 $sidebar-collapsed-control-size: 32px;
 $sidebar-logo-size: 30px;
@@ -17,6 +17,7 @@ $sidebar-fade-duration: 90ms;
 $sidebar-resize-duration: 160ms;
 $sidebar-mobile-slide-duration: 400ms;
 $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+$sidebar-shadow: inset -10px 0 18px -18px cssUtils.$sunk-deep;
 
 .openui-agent-sidebar-container {
   border-right: 1px solid cssUtils.$border-default;
@@ -27,12 +28,14 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
   flex-direction: column;
   gap: cssUtils.$space-2xl;
   background-color: cssUtils.$highlight-subtle;
+  box-shadow: $sidebar-shadow;
   z-index: 999;
   transition:
     width $sidebar-resize-duration $sidebar-motion-ease,
     height $sidebar-resize-duration $sidebar-motion-ease,
     transform $sidebar-resize-duration $sidebar-motion-ease,
-    background-color $sidebar-resize-duration $sidebar-motion-ease;
+    background-color $sidebar-resize-duration $sidebar-motion-ease,
+    box-shadow $sidebar-resize-duration $sidebar-motion-ease;
 
   .openui-agent-container--mobile & {
     width: $sidebar-mobile-width;
@@ -120,7 +123,11 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
   &__agent-name {
     @include cssUtils.typography(label, small);
     flex-grow: 1;
+    min-width: 0;
+    overflow: hidden;
     color: cssUtils.$text-neutral-primary;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     transition: opacity $sidebar-fade-duration $sidebar-motion-ease;
 
     .openui-agent-sidebar-container--collapsed & {
@@ -159,6 +166,8 @@ $sidebar-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
 .openui-agent-sidebar-content {
   width: calc(#{$sidebar-width} - (#{$sidebar-padding-x} * 2));
+  flex: 1;
+  min-height: 0;
 
   .openui-agent-container--mobile & {
     width: 100%;

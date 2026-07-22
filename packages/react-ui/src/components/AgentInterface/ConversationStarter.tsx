@@ -156,6 +156,9 @@ export const ConversationStarter = ({
     >
       {starters.map((item, index) => (
         <Fragment key={`${item.displayText}-${index}`}>
+          {index > 0 && (
+            <div className="openui-agent-conversation-starter__separator" aria-hidden="true" />
+          )}
           <ConversationStarterItem
             displayText={item.displayText}
             prompt={item.prompt}
