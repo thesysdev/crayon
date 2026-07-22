@@ -23,7 +23,7 @@ export function MarkdownAgentSurface({
     <div className="chat-agent-surface" data-chat-mode="markdown">
       <AgentInterface
         llm={llm}
-        agentName="Rendered Markdown"
+        agentName="Markdown"
         scrollVariant="always"
         theme={{ mode: themeMode }}
       >
