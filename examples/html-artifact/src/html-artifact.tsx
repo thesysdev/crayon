@@ -57,7 +57,6 @@ function HtmlArtifactRenderer({ props }: ComponentRenderProps<z.infer<typeof Htm
 
       <DetailedViewPanel viewId={viewId} title={props.title}>
         <Tabs
-          variant="segmented"
           value={selectedView}
           onValueChange={(value) => setSelectedView(value as "raw" | "rendered")}
           className="min-h-0 flex-1 gap-0"
