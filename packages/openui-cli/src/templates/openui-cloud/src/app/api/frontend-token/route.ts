@@ -1,4 +1,4 @@
-import { envOr } from "@/lib/env";
+import { apiKeyOrError, envOr } from "@/lib/env";
 
 /**
  * Mints the short-lived fct_ token the browser uses for the storage plane
@@ -15,19 +15,8 @@ import { envOr } from "@/lib/env";
  * request body) — see the OpenUI skill's cloud-integration reference.
  */
 export async function POST() {
-  const apiKey = process.env.THESYS_API_KEY;
-  if (!apiKey) {
-    return Response.json(
-      {
-        error: {
-          code: "missing_api_key",
-          message:
-            "THESYS_API_KEY is not set. Add it to .env (create a key in the Thesys console → API keys) and restart the dev server.",
-        },
-      },
-      { status: 500 },
-    );
-  }
+  const apiKey = apiKeyOrError();
+  if (apiKey instanceof Response) return apiKey;
 
   const appId = process.env.APP_ID;
   const upstream = await fetch(`https://api.thesys.dev/v1/frontend-tokens`, {

@@ -1,5 +1,5 @@
 import { getBillingCreditsErrorMessage } from "@/lib/billing";
-import { envOr } from "@/lib/env";
+import { apiKeyOrError, envOr } from "@/lib/env";
 import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
 import { runFunctionToolLoop } from "@/lib/tool-loop";
 import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
@@ -45,19 +45,8 @@ export async function POST(req: Request) {
     );
   }
 
-  const apiKey = process.env.THESYS_API_KEY;
-  if (!apiKey) {
-    return Response.json(
-      {
-        error: {
-          code: "missing_api_key",
-          message:
-            "THESYS_API_KEY is not set. Add it to .env (create a key in the Thesys console → API keys) and restart the dev server.",
-        },
-      },
-      { status: 500 },
-    );
-  }
+  const apiKey = apiKeyOrError();
+  if (apiKey instanceof Response) return apiKey;
 
   const client = new OpenAI({
     baseURL: "https://api.thesys.dev/v1/embed",
