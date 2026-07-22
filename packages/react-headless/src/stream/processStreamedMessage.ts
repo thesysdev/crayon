@@ -160,19 +160,16 @@ export const processStreamedMessage = async ({
       }
 
       case EventType.TEXT_MESSAGE_START:
-        // Adopt the server's message id so the message is addressable on the
-        // backend after the run (e.g. ThreadStorage.updateMessage). The swap is
-        // done IN PLACE via replaceMessageId — deleting + re-creating the
-        // assistant message would break ordering when tool messages were
-        // already appended between the original create and this event (e.g.
-        // from TOOL_CALL_RESULT); relabeling keeps the position. If the
-        // message isn't in the store yet (this is the first event), the
+        // Use the server id when available (usually available from 
+        // the TEXT_MESSAGE_START event. The swap is done IN PLACE
+        // — deleting + re-creating the assistant message would break 
+        // ordering when tool messages were already appended between the 
+        // If the message isn't in the store yet (this is the first event), the
         // trailing isFirst createMessage below already carries the server id.
         //
         // First TEXT_MESSAGE_START wins: a multi-text-item run emits one per
         // item, and re-relabeling would remount the message component (keyed
-        // by id) for each. Anchoring on the first item also matches the
-        // reload path, which splits a persisted turn on its first text item.
+        // by id) for each.
         if (!serverIdAdopted && event.messageId) {
           serverIdAdopted = true;
           if (event.messageId !== currentMessage.id) {
