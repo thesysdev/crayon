@@ -43,9 +43,6 @@ export const metadata: Metadata = {
   creator: "OpenUI",
   publisher: "OpenUI",
   category: "technology",
-  alternates: {
-    canonical: "/",
-  },
   icons: {
     icon: "/shiro-logo.svg",
     shortcut: "/shiro-logo.svg",
