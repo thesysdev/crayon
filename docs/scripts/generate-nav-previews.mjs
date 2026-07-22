@@ -23,13 +23,17 @@ const X = CARD_X + PAD, Y = CARD_Y + PAD;
 
 // Hues behind the site's own pastel tokens, one per menu entry.
 const ACCENT = {
-  compare:    { light: '#d97706', dark: '#fbbf24', wash: '#eab308', washDark: '#fcd34d' },
-  playground: { light: '#7c3aed', dark: '#a78bfa', wash: '#a855f7', washDark: '#c4b5fd' },
-  chat:       { light: '#2563eb', dark: '#60a5fa', wash: '#3b82f6', washDark: '#93c5fd' },
-  dashboard:  { light: '#16a34a', dark: '#4ade80', wash: '#22c55e', washDark: '#86efac' },
-  openclaw:   { light: '#d97706', dark: '#fbbf24', wash: '#eab308', washDark: '#fcd34d' },
-  community:  { light: '#db2777', dark: '#f472b6', wash: '#e5397f', washDark: '#f9a8d4' },
+  vsjson:    { light: '#7c3aed', dark: '#a78bfa', wash: '#a855f7', washDark: '#c4b5fd' },
+  community: { light: '#db2777', dark: '#f472b6', wash: '#e5397f', washDark: '#f9a8d4' },
 };
+
+// Real entries from the Lab page, so the preview reads as the actual grid.
+const PROJECTS = [
+  { name: 'OpenUI Forge', type: 'Tool', accent: '#7c3aed' },
+  { name: 'GAIA', type: 'App', accent: '#16a34a' },
+  { name: 'Noetic', type: 'Framework', accent: '#d97706' },
+  { name: 'Vue Lang', type: 'Framework', accent: '#2563eb' },
+];
 
 const T = {
   light: {
@@ -57,84 +61,65 @@ const t = (x, y, size, weight, fill, str, anchor = 'start') =>
 
 function scene(name, c, a) {
   const s = [];
-  if (name === 'compare') {
-    // The same prompt answered twice: prose on the left, generated UI on the right.
-    const box = ` stroke="${c.border}" stroke-width="1"`;
-    s.push(t(X, Y + 10, 12, 600, c.ink, 'Same prompt, two answers'));
-    s.push(r(X, Y + 24, 128, 116, 8, 'none', box));
-    s.push(t(X + 12, Y + 42, 8.5, 500, c.ink3, 'WITHOUT'));
-    for (let i = 0; i < 6; i++) s.push(r(X + 12, Y + 52 + i * 13, i === 5 ? 62 : 104, 6, 3, c.rule));
-    s.push(r(X + 144, Y + 24, 128, 116, 8, 'none', box));
-    s.push(t(X + 156, Y + 42, 8.5, 500, c.ink3, 'WITH OPENUI'));
-    s.push(r(X + 156, Y + 50, 104, 42, 5, c.chip));
-    s.push(t(X + 156, Y + 106, 10, 550, c.ink, 'Hotel Plaza Athenee'));
-    s.push(r(X + 156, Y + 114, 56, 17, 5, a));
-    s.push(t(X + 184, Y + 126, 8.5, 550, c.onAccent, 'Book', 'middle'));
-  } else if (name === 'playground') {
-    s.push(t(X, Y + 11, 13, 600, c.ink, 'Playground'));
-    s.push(r(X, Y + 26, 92, 108, 8, c.chip));
-    ['Button', 'Card', 'Chart', 'Table'].forEach((label, i) => {
-      const yy = Y + 38 + i * 22;
-      if (i === 0) s.push(r(X + 6, yy - 9, 80, 18, 5, c.rule));
-      s.push(t(X + 14, yy + 3, 10, i === 0 ? 550 : 400, i === 0 ? c.ink : c.ink2, label));
-    });
-    s.push(r(X + 104, Y + 26, 168, 108, 8, 'none', ` stroke="${c.border}" stroke-width="1"`));
-    s.push(t(X + 116, Y + 43, 9, 500, c.ink3, 'PREVIEW'));
-    s.push(t(X + 116, Y + 66, 12, 600, c.ink, 'Book a table'));
-    s.push(t(X + 116, Y + 82, 9.5, 400, c.ink2, 'Pick a time that suits you'));
-    s.push(r(X + 116, Y + 94, 74, 21, 6, a));
-    s.push(t(X + 153, Y + 108, 9.5, 550, c.onAccent, 'Reserve', 'middle'));
-  } else if (name === 'chat') {
-    s.push(r(X + 96, Y, 176, 24, 12, c.chip));
-    s.push(t(X + 108, Y + 16, 10, 400, c.ink2, 'How did Q3 revenue land?'));
-    s.push(r(X, Y + 36, 250, 100, 9, 'none', ` stroke="${c.border}" stroke-width="1"`));
-    s.push(t(X + 14, Y + 56, 12, 600, c.ink, 'Q3 Revenue'));
-    s.push(t(X + 14, Y + 78, 17, 600, c.ink, '$48,290'));
-    s.push(t(X + 84, Y + 78, 10, 550, a, '+12.4%'));
-    const pts = [0, 12, 7, 22, 17, 31, 26, 44];
-    s.push(`<polyline points="${pts.map((v, i) => (i % 2 ? Y + 122 - v : X + 14 + (i / 2) * 30)).reduce((acc, v, i) => (i % 2 ? acc + ',' + v : acc + ' ' + v), '')}" fill="none" stroke="${a}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`);
-    s.push(t(X + 14, Y + 132, 9, 400, c.ink3, 'Jul        Aug        Sep'));
-  } else if (name === 'dashboard') {
-    s.push(t(X, Y + 10, 12, 600, c.ink, 'Overview'));
-    [['Revenue', '$48.2k'], ['Orders', '1,204'], ['Churn', '2.1%']].forEach(([k, v], i) => {
-      const xx = X + i * 92;
-      s.push(r(xx, Y + 22, 82, 44, 7, c.chip));
-      s.push(t(xx + 11, Y + 39, 9, 400, c.ink2, k));
-      s.push(t(xx + 11, Y + 56, 13, 600, c.ink, v));
-    });
-    const bars = [26, 40, 33, 52, 44, 60];
-    bars.forEach((b, i) => s.push(r(X + i * 30, Y + 142 - b, 17, b, 4, i === bars.length - 1 ? a : c.rule)));
-    s.push(`<line x1="${X}" y1="${Y + 144}" x2="${X + 260}" y2="${Y + 144}" stroke="${c.rule}" stroke-width="1"/>`);
-  } else if (name === 'openclaw') {
-    s.push(r(X, Y, 78, 132, 8, c.chip));
-    s.push(t(X + 12, Y + 18, 10, 600, c.ink, 'OpenClaw'));
-    ['Agents', 'Apps', 'Artifacts', 'Cron'].forEach((label, i) => {
-      const yy = Y + 40 + i * 21;
-      if (i === 0) s.push(r(X + 6, yy - 10, 66, 19, 5, c.rule));
-      s.push(circle(X + 16, yy - 1, 2.6, i === 0 ? a : c.ink3));
-      s.push(t(X + 24, yy + 2, 9.5, i === 0 ? 550 : 400, i === 0 ? c.ink : c.ink2, label));
-    });
-    s.push(t(X + 92, Y + 12, 13, 600, c.ink, 'Good evening'));
-    [['Research scout', 'ran 12m ago'], ['Sales follow-up', 'idle']].forEach(([n, m], i) => {
-      const yy = Y + 30 + i * 52;
-      s.push(r(X + 92, yy, 180, 44, 8, 'none', ` stroke="${c.border}" stroke-width="1"`));
-      s.push(r(X + 104, yy + 13, 18, 18, 5, i === 0 ? a : c.rule));
-      s.push(t(X + 130, yy + 21, 10, 550, c.ink, n));
-      s.push(t(X + 130, yy + 34, 9, 400, c.ink2, m));
+  const box = ` stroke="${c.border}" stroke-width="1"`;
+
+  if (name === 'community') {
+    // The Lab project grid, at the density it actually renders on the page.
+    s.push(t(X, Y + 10, 12, 600, c.ink, 'Community projects'));
+    const CW = 146, CH = 62, G = 10;
+    PROJECTS.forEach((p, i) => {
+      const cx = X + (i % 2) * (CW + G);
+      const cy = Y + 24 + Math.floor(i / 2) * (CH + G);
+      s.push(r(cx, cy, CW, CH, 9, 'none', box));
+      s.push(r(cx + 11, cy + 11, 17, 17, 5, p.accent));
+      s.push(t(cx + 35, cy + 23, 9.5, 550, c.ink, p.name));
+      // Type pill
+      const pw = 8 + p.type.length * 4.4;
+      s.push(r(cx + 11, cy + 35, pw, 12, 6, c.chip));
+      s.push(t(cx + 11 + pw / 2, cy + 44, 7.5, 500, c.ink2, p.type, 'middle'));
+      s.push(r(cx + 17 + pw, cy + 39, CW - pw - 34, 5, 2.5, c.rule));
     });
   } else {
-    s.push(t(X, Y + 10, 12, 600, c.ink, 'Community'));
-    [['openui-vue', '1.2k'], ['tanstack-ui', '840'], ['nuxt-openui', '512']].forEach(([n, stars], i) => {
-      const yy = Y + 24 + i * 40;
-      s.push(r(X, yy, 272, 34, 8, 'none', ` stroke="${c.border}" stroke-width="1"`));
-      s.push(r(X + 11, yy + 8, 18, 18, 5, i === 0 ? a : c.rule));
-      s.push(t(X + 38, yy + 15, 10, 550, c.ink, n));
-      s.push(t(X + 38, yy + 27, 9, 400, c.ink2, 'Renderer + tool bindings'));
-      s.push(t(X + 260, yy + 21, 9, 500, c.ink3, '★ ' + stars, 'end'));
+    // OpenUI vs JSON: the schema on the left, what it renders on the right.
+    s.push(r(X, Y + 6, 150, 122, 8, '#101014'));
+    ['#ff7979', '#f5c451', '#4ac26b'].forEach((dot, i) =>
+      s.push(circle(X + 13 + i * 8, Y + 17, 2.6, dot)));
+    const CODE = [
+      [['export interface ', '#e6e6e6'], ['HotelCardProps', '#b3a0fd'], [' {', '#e6e6e6']],
+      [['  image: {', '#e6e6e6']],
+      [['    src: ', '#e6e6e6'], ['string', '#b3a0fd']],
+      [['    alt?: ', '#e6e6e6'], ['string', '#b3a0fd']],
+      [['  }', '#e6e6e6']],
+      [['  badge?: { label: ', '#e6e6e6'], ['string', '#b3a0fd'], [' }', '#e6e6e6']],
+      [['  title: ', '#e6e6e6'], ['string', '#b3a0fd']],
+      [['  cta: {', '#e6e6e6']],
+      [['    label: ', '#e6e6e6'], ['string', '#b3a0fd']],
+      [['    onClick?: () => ', '#e6e6e6'], ['void', '#ff7979']],
+      [['  }', '#e6e6e6']],
+      [['}', '#e6e6e6']],
+    ];
+    CODE.forEach((line, i) => {
+      let dx = 0;
+      line.forEach(([txt, fill]) => {
+        s.push(`<text x="${X + 13 + dx}" y="${Y + 32 + i * 8}" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="5.4" fill="${fill}" xml:space="preserve">${esc(txt)}</text>`);
+        dx += txt.length * 3.15;
+      });
     });
+
+    // The card that schema produces.
+    s.push(r(X + 162, Y + 14, 110, 106, 7, c.card, box));
+    s.push(r(X + 168, Y + 20, 98, 40, 5, '#f0c9c0'));
+    s.push(r(X + 168, Y + 65, 34, 11, 3, 'rgba(13,160,94,0.12)'));
+    s.push(t(X + 185, Y + 73, 6.5, 500, '#067647', 'Free Wifi', 'middle'));
+    s.push(t(X + 168, Y + 87, 7.5, 550, c.ink, 'Hotel Plaza Athenee'));
+    s.push(t(X + 168, Y + 96, 6.5, 400, c.ink2, 'Haute couture suites; Dior spa,'));
+    s.push(t(X + 168, Y + 104, 6.5, 400, c.ink2, 'near Champs-Elysees.'));
+    s.push(r(X + 168, Y + 108, 98, 12, 4, a));
+    s.push(t(X + 178, Y + 116, 7, 500, c.onAccent, 'Book'));
   }
   return s.join('');
 }
+
 const circle = (cx, cy, rad, fill) => `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${fill}"/>`;
 
 function svg(name, mode) {
