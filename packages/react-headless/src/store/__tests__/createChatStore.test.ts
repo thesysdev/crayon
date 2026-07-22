@@ -674,7 +674,11 @@ describe("createChatStore", () => {
     it("never evicts a running thread, even as the least-recently-used", async () => {
       const send = vi.fn().mockImplementation(() => new Promise(() => {})); // never resolves
       const getMessages = vi.fn().mockResolvedValue([]);
-      const store = makeStore({ send, getMessages, streamProtocol: { parse: async function* () {} } });
+      const store = makeStore({
+        send,
+        getMessages,
+        streamProtocol: { parse: async function* () {} },
+      });
 
       // Start a background run on "runner", then let it fall to the back of the LRU.
       store.getState().selectThread("runner");
