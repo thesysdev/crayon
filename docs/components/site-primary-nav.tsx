@@ -3,7 +3,7 @@
 import { ArrowRight } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "./site-primary-nav.module.css";
 
 type NavLeaf = {
@@ -114,6 +114,10 @@ const PANEL_GAP = 8;
 const PANEL_PADDING = 12;
 /* Smallest gap left between the panel and either edge of the window. */
 const VIEWPORT_MARGIN = 16;
+/* How long the pointer may be outside the nav before the menu closes. Long
+   enough to cross the dead corner beside the nav, short enough that leaving
+   still feels immediate. */
+const CLOSE_GRACE_MS = 220;
 
 function DropdownCard({ child, onNavigate }: { child: NavDropdownChild; onNavigate: () => void }) {
   return (
@@ -199,6 +203,16 @@ export function SitePrimaryNav() {
   const contentRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const wasOpenRef = useRef(false);
+  const closeTimerRef = useRef<number | null>(null);
+
+  // A pending close must not outlive the component, or fire after a navigation
+  // has already closed the menu.
+  useEffect(
+    () => () => {
+      if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
+    },
+    [],
+  );
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
@@ -269,13 +283,48 @@ export function SitePrimaryNav() {
     return () => window.removeEventListener("resize", place);
   }, [active]);
 
-  const close = () => setActive(null);
+  const cancelScheduledClose = () => {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const close = () => {
+    cancelScheduledClose();
+    setActive(null);
+  };
+
+  /**
+   * The panel is far wider than the nav and sits below it, so a diagonal move
+   * from a trigger towards a card at either end leaves the nav's box before it
+   * reaches the panel — and the pointer is over neither for those few frames.
+   * The hoverable area can't simply be extended upwards, because a bridge tall
+   * enough to cover that path would sit over the triggers and swallow their
+   * hovers. So the close is deferred instead, and cancelled the moment the
+   * pointer lands back on the nav or the panel.
+   *
+   * Only pointer-leave is deferred. Clicking through, Escape and tabbing away
+   * are deliberate, so those still close immediately.
+   */
+  const scheduleClose = () => {
+    cancelScheduledClose();
+    closeTimerRef.current = window.setTimeout(() => {
+      closeTimerRef.current = null;
+      setActive(null);
+    }, CLOSE_GRACE_MS);
+  };
 
   return (
     <nav
       className={styles.nav}
       ref={navRef}
-      onPointerLeave={close}
+      onPointerLeave={scheduleClose}
+      /* pointerover, not pointerenter: enter only fires crossing the nav's own
+         boundary, so coming back in over a trigger or the panel — both
+         descendants — would leave a pending close running. over bubbles from
+         any descendant, so every way back in cancels it. */
+      onPointerOver={cancelScheduledClose}
       onKeyDown={(event) => {
         if (event.key === "Escape") close();
       }}
