@@ -160,10 +160,10 @@ export const processStreamedMessage = async ({
       }
 
       case EventType.TEXT_MESSAGE_START:
-        // Use the server id when available (usually available from 
+        // Use the server id when available (usually available from
         // the TEXT_MESSAGE_START event. The swap is done IN PLACE
-        // — deleting + re-creating the assistant message would break 
-        // ordering when tool messages were already appended between the 
+        // — deleting + re-creating the assistant message would break
+        // ordering when tool messages were already appended between the
         // If the message isn't in the store yet (this is the first event), the
         // trailing isFirst createMessage below already carries the server id.
         //
