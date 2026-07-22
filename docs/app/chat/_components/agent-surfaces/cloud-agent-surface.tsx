@@ -2,7 +2,7 @@
 
 import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
-import { CLOUD_USER_ID_HEADER } from "@/lib/openui-cloud/user-id";
+import { CLOUD_USER_ID_HEADER, getOrCreateCloudUserId } from "@/lib/openui-cloud/user-id";
 import { defineArtifactCategories } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
 import {
@@ -14,7 +14,6 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "../../chat-page.module.css";
 import { CloudModelSwitcher } from "./cloud-model-switcher";
-import { getOrCreateCloudUserId } from "./cloud-user-id";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   { name: "Presentations", renderers: [presentationArtifactRenderer] },
