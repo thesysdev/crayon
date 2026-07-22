@@ -110,8 +110,8 @@ export function isNavDropdown(item: NavItem): item is NavDropdown {
 /* Panel geometry, mirrored from .viewportContent in the stylesheet. Kept in
    sync by hand because the natural width has to be known before layout. */
 const CARD_TRACK = 296;
-const PANEL_GAP = 4;
-const PANEL_PADDING = 10;
+const PANEL_GAP = 8;
+const PANEL_PADDING = 14;
 /* Smallest gap left between the panel and either edge of the window. */
 const VIEWPORT_MARGIN = 16;
 /* Forgiveness around the nav+panel box before the menu counts as left. */
