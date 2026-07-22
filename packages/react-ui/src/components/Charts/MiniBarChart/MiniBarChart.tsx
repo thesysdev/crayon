@@ -2,7 +2,6 @@ import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart, XAxis } from "recharts";
 import { usePrintContext } from "../../../context/PrintContext";
-import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer } from "../Charts";
 import { LineInBarShape } from "../shared";
 import { useChartPalette, type PaletteName } from "../utils/PalletUtils";
@@ -89,15 +88,6 @@ export const MiniBarChart = ({
     return get2dChartConfig([DATA_KEY], colors, transformedKeys);
   }, [colors, transformedKeys]);
 
-  const { mode } = useTheme();
-
-  const barInternalLineColor = useMemo(() => {
-    if (mode === "light") {
-      return "rgba(255, 255, 255, 0.3)";
-    }
-    return "rgba(0, 0, 0, 0.3)";
-  }, [mode]);
-
   return (
     <ChartContainer
       config={chartConfig}
@@ -124,12 +114,7 @@ export const MiniBarChart = ({
           isAnimationActive={isAnimationActive}
           maxBarSize={MINI_BAR_WIDTH}
           barSize={MINI_BAR_WIDTH}
-          shape={
-            <LineInBarShape
-              internalLineWidth={MINI_BAR_CHART_INNER_LINE_WIDTH}
-              internalLineColor={barInternalLineColor}
-            />
-          }
+          shape={<LineInBarShape internalLineWidth={MINI_BAR_CHART_INNER_LINE_WIDTH} />}
         />
       </BarChart>
     </ChartContainer>

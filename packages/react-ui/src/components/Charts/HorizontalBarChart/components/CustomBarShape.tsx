@@ -15,7 +15,6 @@ interface CustomBarShapeProps {
   categoryKey: string;
   effectiveWidth: number;
   labelHeight: number;
-  barInternalLineColor: string;
   internalLineWidth: number;
   hoveredCategory: string | number | null;
   variant: HorizontalBarChartVariant;
@@ -31,7 +30,6 @@ const CustomBarShapeComponent = (props: CustomBarShapeProps) => {
     categoryKey,
     effectiveWidth,
     labelHeight,
-    barInternalLineColor,
     internalLineWidth,
     hoveredCategory,
     variant,
@@ -72,7 +70,6 @@ const CustomBarShapeComponent = (props: CustomBarShapeProps) => {
         {...rest}
         payload={payload}
         y={y + labelHeight / 2}
-        internalLineColor={barInternalLineColor}
         internalLineWidth={internalLineWidth}
         isHovered={hoveredCategory !== null}
         hoveredCategory={hoveredCategory}

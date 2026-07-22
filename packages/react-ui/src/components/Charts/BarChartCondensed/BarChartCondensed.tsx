@@ -169,7 +169,7 @@ const BarChartCondensedComponent = <T extends BarChartData>({
     [showYAxis],
   );
 
-  const { mode, theme: userTheme } = useTheme();
+  const { theme: userTheme } = useTheme();
 
   const calculatedRadius = useMemo(() => {
     let radiusValue: number = BAR_RADIUS;
@@ -185,13 +185,6 @@ const BarChartCondensedComponent = <T extends BarChartData>({
 
     return radiusValue;
   }, [userTheme.radius2xs, radius]);
-
-  const barInternalLineColor = useMemo(() => {
-    if (mode === "light") {
-      return "rgba(255, 255, 255, 0.3)";
-    }
-    return "rgba(0, 0, 0, 0.3)";
-  }, [mode]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
@@ -402,7 +395,6 @@ const BarChartCondensedComponent = <T extends BarChartData>({
               <LineInBarShape
                 {...props}
                 radius={customRadius}
-                internalLineColor={barInternalLineColor}
                 internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
                 isHovered={hoveredCategory !== null}
                 hoveredCategory={hoveredCategory}
@@ -421,7 +413,6 @@ const BarChartCondensedComponent = <T extends BarChartData>({
     variant,
     calculatedRadius,
     isAnimationActive,
-    barInternalLineColor,
     hoveredCategory,
     categoryKey,
     calculatedBarWidth,

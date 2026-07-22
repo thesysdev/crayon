@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
 import { ThemeProvider } from "@/hooks/use-system-theme";
+import { ColorSchemeScript, openuiColorSchemeHtmlProps } from "@openuidev/react-ui";
+import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,7 +14,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" {...openuiColorSchemeHtmlProps}>
+      <head>
+        <ColorSchemeScript />
+      </head>
       <body>
         <ThemeProvider>{children}</ThemeProvider>
       </body>

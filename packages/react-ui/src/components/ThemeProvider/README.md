@@ -1,16 +1,14 @@
 # ThemeProvider
 
-Wraps your application and injects `--openui-*` CSS custom properties into `<head>` via React 18's `useInsertionEffect`. These variables are consumed by `cssUtils.scss` SCSS variables and the `typography()` mixin, making every OpenUI component theme-aware with zero extra configuration.
+OpenUI separates application color-scheme selection from theme tokens and local scopes:
 
 ```
-Theme object ──► ThemeProvider ──► useInsertionEffect ──► <style> in <head>
-                                                              │
-                                                  cssUtils.scss ($background, $text-neutral-primary, …)
-                                                              │
-                                                         Component SCSS
+ColorSchemeScript ──► selects light/dark on <html> before paint
+ColorSchemeProvider ──► persistence, system changes, runtime controls
+ThemeProvider ──► theme objects, custom properties, nested scopes, portals
 ```
 
-Components render correctly **without** a ThemeProvider because `cssUtils.scss` is auto-generated at build time with fallback values from `defaultLightTheme`. The provider overrides those fallbacks when mounted.
+The distributed CSS contains complete light and dark defaults, so components render correctly without a provider. `ThemeProvider` renders any required override rules during SSR; it no longer waits for a React effect to create the active variables.
 
 ## Quick Start
 
@@ -34,16 +32,110 @@ Switch to dark mode by changing the `mode` prop:
 </ThemeProvider>
 ```
 
+An explicit `mode` is server-known and remains the simplest controlled API. A root `ThemeProvider` without `mode` still falls back to light when no `ColorSchemeProvider` exists, preserving compatibility.
+
+## Persistent system-aware mode without first-paint flash
+
+Create one shared serializable configuration and use it for both the parser-time script and runtime provider:
+
+```tsx
+import {
+  ColorSchemeProvider,
+  ColorSchemeScript,
+  ThemeProvider,
+  createColorSchemeConfig,
+  getColorSchemeHtmlProps,
+  useColorScheme,
+} from "@openuidev/react-ui";
+
+const colorSchemeConfig = createColorSchemeConfig({
+  defaultMode: "system",
+  storageKey: "openui-color-scheme",
+});
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" {...getColorSchemeHtmlProps(colorSchemeConfig)}>
+      <head>
+        <ColorSchemeScript config={colorSchemeConfig} />
+      </head>
+      <body>
+        <ColorSchemeProvider config={colorSchemeConfig}>
+          <ThemeProvider>{children}</ThemeProvider>
+        </ColorSchemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+`ColorSchemeScript` must appear before paintable application content. It validates local storage, resolves `system` with `prefers-color-scheme`, and synchronously sets `data-openui-color-scheme` on `<html>`. The HTML helper adds `suppressHydrationWarning` because that attribute is intentionally changed before hydration. With JavaScript disabled, `system` uses the CSS media fallback; a saved client preference cannot be read without JavaScript.
+
+Use the runtime hook for controls:
+
+```tsx
+function SchemePicker() {
+  const { mode, resolvedMode, systemMode, forcedMode, setMode } = useColorScheme();
+
+  return (
+    <button disabled={forcedMode !== undefined} onClick={() => setMode("system")}>
+      {mode ?? "loading"} ({resolvedMode ?? systemMode ?? "unknown"})
+    </button>
+  );
+}
+```
+
+`mode`, `resolvedMode`, and `systemMode` are intentionally `undefined` during SSR when the preference exists only in browser storage. CSS is still correct before paint because both token sets are present. Server-rendered JSX cannot know browser storage: render both variants with CSS, wait until mounted, or mirror the preference to a cookie and pass `serverMode` (and optionally `serverSystemMode`) to the script/provider and `getColorSchemeHtmlProps`.
+
+When supplied, `serverMode` is authoritative during bootstrap and client startup. Keep it synchronized with the browser storage manager: the default manager updates local storage only, so cookie-backed applications should provide a custom manager that updates both sources. Pass `storageManager={null}` when the server-readable source is the only source of truth and mode changes are handled externally.
+
+```tsx
+const serverMode = readModeCookie();
+
+<html {...getColorSchemeHtmlProps(colorSchemeConfig, { mode: serverMode })}>
+  <head>
+    <ColorSchemeScript config={colorSchemeConfig} serverMode={serverMode} />
+  </head>
+  <body>
+    <ColorSchemeProvider config={colorSchemeConfig} serverMode={serverMode}>
+      <ThemeProvider>{children}</ThemeProvider>
+    </ColorSchemeProvider>
+  </body>
+</html>;
+```
+
+For strict CSP, pass the same request nonce to `ColorSchemeScript`, `ColorSchemeProvider` (when transition suppression is enabled), and every `ThemeProvider`:
+
+```tsx
+<ColorSchemeScript config={colorSchemeConfig} nonce={nonce} />
+<ColorSchemeProvider config={colorSchemeConfig} nonce={nonce}>
+  <ThemeProvider nonce={nonce}>{children}</ThemeProvider>
+</ColorSchemeProvider>
+```
+
+### Color-scheme configuration
+
+| Option                      | Type                            | Default                 | Description                                                       |
+| --------------------------- | ------------------------------- | ----------------------- | ----------------------------------------------------------------- |
+| `defaultMode`               | `"light" \| "dark" \| "system"` | `"system"`              | Selection used when storage is missing or cleared                 |
+| `storageKey`                | `string`                        | `"openui-color-scheme"` | Local-storage key and cross-tab synchronization key               |
+| `forcedMode`                | `"light" \| "dark"`             | —                       | Non-persistent page-level override                                |
+| `enableColorScheme`         | `boolean`                       | `true`                  | Synchronize the native CSS `color-scheme` property                |
+| `disableTransitionOnChange` | `boolean`                       | `false`                 | Temporarily suppress CSS transitions during coordinated switching |
+
+While `forcedMode` is active, `setMode` saves the preference for a later unforced page but does not change the forced appearance.
+
 ## Props
 
-| Prop          | Type                | Default   | Description                                                                                                                     |
-| ------------- | ------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `mode`        | `"light" \| "dark"` | `"light"` | Active color scheme                                                                                                             |
-| `lightTheme`  | `Theme`             | `{}`      | Partial overrides merged onto the built-in light defaults. Recommended over the deprecated `theme` prop.                        |
-| `darkTheme`   | `Theme`             | —         | Partial overrides for dark mode. When omitted, `lightTheme` overrides are applied to both modes.                                |
-| `theme`       | `Theme`             | —         | **Deprecated.** Mapped to `lightTheme` internally. If both are provided, `lightTheme` wins.                                     |
-| `cssSelector` | `string`            | `"body"`  | CSS selector where `--openui-*` variables are injected. Automatically scoped when nested (see [Nested Themes](#nested-themes)). |
-| `children`    | `React.ReactNode`   | —         | Application content                                                                                                             |
+| Prop          | Type                | Default               | Description                                                                                                                     |
+| ------------- | ------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `mode`        | `"light" \| "dark"` | inherited / `"light"` | Controlled resolved scheme. Omission inherits a parent/root color-scheme provider, then uses the legacy light fallback.         |
+| `lightTheme`  | `Theme`             | `{}`                  | Partial overrides merged onto the built-in light defaults. Recommended over the deprecated `theme` prop.                        |
+| `darkTheme`   | `Theme`             | —                     | Partial overrides for dark mode. When omitted, `lightTheme` overrides are applied to both modes.                                |
+| `theme`       | `Theme`             | —                     | **Deprecated.** Mapped to `lightTheme` internally. If both are provided, `lightTheme` wins.                                     |
+| `cssSelector` | `string`            | `"body"`              | CSS selector where `--openui-*` variables are injected. Automatically scoped when nested (see [Nested Themes](#nested-themes)). |
+| `nonce`       | `string`            | —                     | CSP nonce applied to the server-rendered theme style element                                                                    |
+| `children`    | `React.ReactNode`   | —                     | Application content                                                                                                             |
 
 ## Theme Customization
 
@@ -79,7 +171,7 @@ When `darkTheme` is omitted, `lightTheme` overrides are applied to both modes so
 ThemeProvider supports nesting out of the box. When a ThemeProvider detects a parent provider above it:
 
 1. It wraps its children in a `<div style="display: contents">` with a generated scoped class.
-2. It injects CSS variables scoped to that class instead of targeting `body`.
+2. It renders CSS variables scoped to that class instead of targeting `body`.
 3. The parent's theme is **not** inherited — each nested provider merges its own overrides onto the built-in defaults for the active mode.
 
 ```tsx
@@ -108,7 +200,7 @@ To bypass auto-scoping and target a specific selector, pass `cssSelector` explic
 import { useTheme } from "@openuidev/react-ui";
 
 function MyComponent() {
-  const { theme, mode, portalThemeClassName } = useTheme();
+  const { theme, mode, portalThemeClassName, isModeServerResolved } = useTheme();
 
   return <div style={{ color: theme.textNeutralPrimary }}>Current mode: {mode}</div>;
 }
@@ -121,12 +213,13 @@ function MyComponent() {
 | `theme`                | `Theme`     | Fully resolved theme object                                                    |
 | `mode`                 | `ThemeMode` | `"light"` or `"dark"`                                                          |
 | `portalThemeClassName` | `string`    | CSS class name to add to portal containers so they inherit the theme variables |
+| `isModeServerResolved` | `boolean`   | Whether `mode` was deterministic during server rendering                       |
 
 Falls back to `defaultLightTheme` when no provider is present — components and hooks always receive a valid theme.
 
 ## Portal Theming
 
-The `portalThemeClassName` is for floating elements (tooltips, dropdowns, modals) rendered via React portals outside the ThemeProvider's DOM subtree. The ThemeProvider's injected `<style>` already targets `.openui-theme-portal-{id}`, so add the class to your portal wrapper:
+The `portalThemeClassName` is for floating elements (tooltips, dropdowns, modals) rendered via React portals outside the ThemeProvider's DOM subtree. The ThemeProvider's rendered `<style>` already targets `.openui-theme-portal-{id}`, so add the class to your portal wrapper:
 
 ```tsx
 const { portalThemeClassName } = useTheme();
@@ -140,12 +233,12 @@ return createPortal(
 
 ## CSS Variable Consumption
 
-`cssUtils.scss` is auto-generated at build time by `generate-css-utils.ts`. Each SCSS variable includes a fallback value from `defaultLightTheme`:
+`cssUtils.scss` and the complete root defaults are auto-generated at build time by `generate-css-utils.ts`:
 
 ```scss
 // Auto-generated — do not edit manually
-$background: var(--openui-background, oklch(0.97 0 89.876 / 1));
-$space-m: var(--openui-space-m, 12px);
+$background: var(--openui-background);
+$space-m: var(--openui-space-m);
 ```
 
 Use it in component SCSS:

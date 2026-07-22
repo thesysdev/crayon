@@ -335,14 +335,7 @@ const BarChartComponent = <T extends BarChartData>({
     setHoveredCategory(null);
   }, []);
 
-  const { mode, theme: userTheme } = useTheme();
-
-  const barInternalLineColor = useMemo(() => {
-    if (mode === "light") {
-      return "rgba(255, 255, 255, 0.3)";
-    }
-    return "rgba(0, 0, 0, 0.3)";
-  }, [mode]);
+  const { theme: userTheme } = useTheme();
 
   const calculatedRadius = useMemo(() => {
     let radiusValue: number = BAR_RADIUS;
@@ -409,7 +402,6 @@ const BarChartComponent = <T extends BarChartData>({
               <LineInBarShape
                 {...props}
                 radius={customRadius}
-                internalLineColor={barInternalLineColor}
                 internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
                 isHovered={hoveredCategory !== null}
                 hoveredCategory={hoveredCategory}
@@ -428,7 +420,6 @@ const BarChartComponent = <T extends BarChartData>({
     variant,
     calculatedRadius,
     isAnimationActive,
-    barInternalLineColor,
     hoveredCategory,
     categoryKey,
   ]);

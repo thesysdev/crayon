@@ -29,6 +29,7 @@ const LINE_PADDING = 6;
 const MIN_GROUP_BAR_HEIGHT = 2; // For vertical bars
 const MIN_STACKED_BAR_HEIGHT = 4; // For vertical bars
 const MIN_BAR_WIDTH = 2; // For horizontal bars
+const INTERNAL_LINE_COLOR = "color-mix(in srgb, var(--openui-background) 30%, transparent)";
 
 const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props) => {
   const {
@@ -40,7 +41,7 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
     radius: r,
     stroke,
     strokeWidth,
-    internalLineColor: iLineColor,
+    internalLineColor: iLineColor = INTERNAL_LINE_COLOR,
     internalLineWidth: iLineWidth,
     isHovered,
     hoveredCategory,

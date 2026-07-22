@@ -20,10 +20,16 @@ export function camelToKebab(str: string): string {
  * @param prefix - The prefix to use for the CSS variables.
  * @returns A string of CSS variables.
  */
-export function themeToCssVars(theme: Record<string, unknown>, prefix = "openui"): string {
+export function themeToCssVars(theme: object, prefix = "openui"): string {
   return Object.entries(theme)
     .filter(([, v]) => typeof v === "string")
-    .map(([key, value]) => `--${prefix}-${camelToKebab(key)}: ${value as string};`)
+    .map(([key, value]) => {
+      // React 18 escapes quotes in style-element text as HTML entities, which
+      // are not decoded inside raw-text elements. Theme quotes are used by the
+      // font tokens and are optional in CSS font-family/font shorthands.
+      const react18SafeValue = (value as string).replace(/["']/g, "");
+      return `--${prefix}-${camelToKebab(key)}: ${react18SafeValue};`;
+    })
     .join("\n          ");
 }
 
