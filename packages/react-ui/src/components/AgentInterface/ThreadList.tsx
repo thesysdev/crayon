@@ -1,7 +1,7 @@
 import { useThreadList, useThreadState } from "@openuidev/react-headless";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
-import { EllipsisIcon, Trash2Icon } from "lucide-react";
+import { EllipsisIcon, Loader2, Trash2Icon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { Button } from "../Button";
@@ -63,6 +63,7 @@ export const ThreadButton = ({
         {
           "openui-agent-thread-button--selected": selectedThreadId === id,
           "openui-agent-thread-button--actions-open": isActionsOpen,
+          "openui-agent-thread-button--streaming": isStreaming,
         },
         className,
       )}
@@ -89,7 +90,7 @@ export const ThreadButton = ({
           aria-live="polite"
           aria-label="Generating response"
         >
-          <div className="openui-message-loading" />
+          <Loader2 className="openui-agent-thread-button-loader__icon" size="1em" />
         </div>
       )}
       {!isStreaming && (

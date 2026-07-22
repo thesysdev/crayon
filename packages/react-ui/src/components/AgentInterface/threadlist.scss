@@ -201,14 +201,41 @@ $thread-list-mask-height: cssUtils.$space-xl;
   }
 }
 
+// Streaming loader occupies the same trailing slot as the (absolute) dropdown
+// trigger, so the sidebar row shows exactly one control at a time.
 .openui-agent-thread-button-loader {
+  position: absolute;
+  top: 50%;
+  right: cssUtils.$space-2xs;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
-  margin-right: cssUtils.$space-2xs;
+  justify-content: center;
+  width: 24px;
+  pointer-events: none;
+}
+
+// Simple spinner (lucide Loader2). The SVG is inlined by the icon component; only
+// the spin keyframe needs to live here, so it always ships in this CSS bundle.
+.openui-agent-thread-button-loader__icon {
+  color: cssUtils.$text-neutral-tertiary;
+  animation: openui-agent-thread-button-spin 0.9s linear infinite;
+}
+
+@keyframes openui-agent-thread-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Match the hover behaviour: reserve room for the trailing loader so the title
+// ellipsis-truncates before it instead of running underneath.
+.openui-agent-thread-button--streaming .openui-agent-thread-button-title {
+  padding-right: calc(24px + cssUtils.$space-s-m);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .openui-agent-thread-button-loader .openui-message-loading {
+  .openui-agent-thread-button-loader__icon {
     animation: none;
   }
 }
