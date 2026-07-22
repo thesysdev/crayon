@@ -1,4 +1,4 @@
-export const DEFAULT_MODEL = "google/gemini-3.1-pro-free";
+export const DEFAULT_MODEL = "google/gemini-3.5-flash-free";
 
 export interface ModelOption {
   id: string;

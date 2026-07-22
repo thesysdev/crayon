@@ -1,6 +1,6 @@
 ---
 name: openui
-description: "Use for building, debugging, integrating, migrating, or documenting OpenUI, OpenUI Lang, Agent Interface, OpenUI Cloud, @openuidev packages, streaming generative UI rendering, component libraries, existing-project Cloud integration, self-hosted-to-Cloud migration, and migrations from JSON UI formats."
+description: "Use for building, debugging, integrating, migrating, or documenting OpenUI, OpenUI Lang, Agent Interface, OpenUI Cloud, @openuidev packages, streaming generative UI rendering, component libraries, existing-project Cloud integration, self-hosted-to-Cloud migration, migrations from JSON UI formats, Cloud tools (web/image search, artifacts), remote MCP servers, custom function tools and tool loops, and multi-user or multi-app identity (frontend tokens, app_id/user_id, conversation APIs, Responses metadata)."
 ---
 
 # OpenUI
@@ -45,6 +45,28 @@ Choose the package for the target runtime. For backend-only parsing or prompt/sc
 - If the user wants to integrate OpenUI into an existing React/Next agent or chat app and wants an out-of-box component library, use `@openuidev/react-ui` with `AgentInterface`, `openuiLibrary`, or `openuiChatLibrary`.
 - If the user wants OpenUI Lang rendering in an existing React project without the full React UI surface, use `@openuidev/react-lang`.
 - If the host app is Vue or Svelte, use `@openuidev/vue-lang` or `@openuidev/svelte-lang`. Use `@openuidev/lang-core` for framework-agnostic parsing, prompt generation, schemas, or backend/runtime work.
+
+## OpenUI Cloud Capabilities
+
+OpenUI Cloud speaks the OpenAI Responses API (`POST https://api.thesys.dev/v1/embed/responses`, stock `openai` SDK). Check this table before calling anything unsupported:
+
+| Capability | How |
+|---|---|
+| Generative UI (OpenUI Lang) | Default response format, streamed in Responses-compatible events |
+| Output validation & correction | Invalid model output detected and corrected in-stream; sanitized fallback — no broken UI reaches the renderer |
+| Managed model access | Leading providers behind one API (billed at cost), automatic model/provider fallbacks; models list endpoint |
+| Artifacts: slides + reports | `artifactTool({ artifacts: ["slides", "report"] })` — generated server-side; **editing is automatically enabled** (the model edits existing artifacts on follow-up asks, no extra config), rendered in the managed viewer |
+| Web search | `{ type: "web_search" }` — runs server-side |
+| Image search | `{ type: "image_search" }` — runs server-side |
+| Remote MCP servers | `{ type: "mcp", server_label, server_url }` — run server-side, declared per request |
+| App-owned function tools | `type: "function"` tools + the template's `runFunctionToolLoop` (`src/lib/tool-loop.ts`) — not published as a package: copy the file, or port its two safety rules when writing another language/stack |
+| Conversation + artifact persistence | `conversation` + `store: true` persists server-side; the browser reads/edits it DIRECTLY via `useOpenuiCloudStorage` + one fct_ mint route — no proxy routes for the conversation APIs needed. (Alternative: proxy `/v1/conversations*` yourself with the master key.) |
+| Multi-user / multi-app isolation | Mint the fct_ with `{ user_id, app_id }` — the token binds the scope, so every browser storage call is automatically limited to that user + app (first-class fields, not metadata) |
+| App metadata | `metadata` on conversations and on Responses calls |
+| Standard OpenAI Responses params | Being Responses-compatible, `previous_response_id`, `stream: false`, `instructions`, `tool_choice`, `parallel_tool_calls`, `safety_identifier` work as documented by OpenAI — production setups here use `conversation` + `store: true` + streaming |
+| Responsive managed UI | `AgentInterface` + `chatLibrary` |
+
+Tools/MCP and multi-user are steps 8-9 of [references/cloud-integration.md](references/cloud-integration.md).
 
 ## Route Cloud Integration and Migration Tasks
 
