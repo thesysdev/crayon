@@ -1,34 +1,22 @@
 "use client";
 
+import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
 import { CLOUD_USER_ID_HEADER } from "@/lib/openui-cloud/user-id";
-import { defineArtifactCategories } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
-import {
-  chatLibrary,
-  presentationArtifactRenderer,
-  reportArtifactRenderer,
-  useOpenuiCloudStorage,
-} from "@openuidev/thesys";
+import { artifactRenderers, chatLibrary, useOpenuiCloudStorage } from "@openuidev/thesys";
 import { useMemo, useState } from "react";
 import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
 import { ComparisonModeControllerBridge } from "../comparison-mode-controller";
-import { createCloudChatLLM } from "./cloud-chat-llm";
 import { getOrCreateCloudUserId } from "./cloud-user-id";
 import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
 
-const { artifactRenderers, artifactCategories } = defineArtifactCategories([
-  { name: "Presentations", renderers: [presentationArtifactRenderer] },
-  { name: "Reports", renderers: [reportArtifactRenderer] },
-]);
-
 interface CloudAgentSurfaceProps {
-  themeMode: "light" | "dark";
   registry: ComparisonControllerRegistry;
 }
 
-export function CloudAgentSurface({ themeMode, registry }: CloudAgentSurfaceProps) {
+export function CloudAgentSurface({ registry }: CloudAgentSurfaceProps) {
   const [userId] = useState(getOrCreateCloudUserId);
-  const [llm] = useState(() => createCloudChatLLM());
+  const [llm] = useState(createCloudChatLLM);
   const cloudFetch = useMemo<typeof fetch>(() => {
     return async (input, init) => {
       if (typeof input !== "string" || input !== "/api/openui-cloud/frontend-token") {
@@ -42,23 +30,17 @@ export function CloudAgentSurface({ themeMode, registry }: CloudAgentSurfaceProp
   }, [userId]);
   const cloudStorage = useOpenuiCloudStorage({
     token: "/api/openui-cloud/frontend-token",
-    apiBaseUrl: "https://api.thesys.dev",
-    features: { artifact: true },
     fetch: cloudFetch,
   });
 
   return (
-    <div className="chat-agent-surface" data-chat-mode="cloud">
+    <div className="chat-agent-surface">
       <AgentInterface
         storage={cloudStorage}
         llm={llm}
         componentLibrary={chatLibrary}
         artifactRenderers={artifactRenderers}
-        artifactCategories={artifactCategories}
-        agentName="OpenUI Cloud"
         scrollVariant="always"
-        scrollOnLoad={false}
-        theme={{ mode: themeMode }}
       >
         <AgentInterface.Sidebar />
         <AgentInterface.Welcome>

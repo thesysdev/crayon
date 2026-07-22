@@ -70,11 +70,13 @@ class SurfaceErrorBoundary extends Component<SurfaceErrorBoundaryProps, { hasErr
   }
 }
 
-interface ChatPageClientProps {
+interface ComparePageClientProps {
   initialPair?: ComparisonPair;
 }
 
-export function ChatPageClient({ initialPair = DEFAULT_COMPARISON_PAIR }: ChatPageClientProps) {
+export function ComparePageClient({
+  initialPair = DEFAULT_COMPARISON_PAIR,
+}: ComparePageClientProps) {
   const { resolvedTheme } = useTheme();
   const [pair, setPair] = useState<ComparisonPair>(initialPair);
   const selectedPair = getComparisonPair(pair);
@@ -296,9 +298,7 @@ export function ChatPageClient({ initialPair = DEFAULT_COMPARISON_PAIR }: ChatPa
                         registry={registry}
                       />
                     )}
-                    {mode === "cloud" && (
-                      <CloudAgentSurface themeMode={themeMode} registry={registry} />
-                    )}
+                    {mode === "cloud" && <CloudAgentSurface registry={registry} />}
                   </SurfaceErrorBoundary>
                   {!snapshot.isReady && !snapshot.threadError && !unavailableModes.has(mode) ? (
                     <div className={styles.panelLoadingOverlay}>

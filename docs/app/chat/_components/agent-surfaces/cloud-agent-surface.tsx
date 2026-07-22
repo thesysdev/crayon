@@ -1,5 +1,6 @@
 "use client";
 
+import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import { CLOUD_USER_ID_HEADER } from "@/lib/openui-cloud/user-id";
 import { defineArtifactCategories } from "@openuidev/react-headless";
@@ -12,7 +13,6 @@ import {
 } from "@openuidev/thesys";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "../../chat-page.module.css";
-import { createCloudChatLLM } from "./cloud-chat-llm";
 import { CloudModelSwitcher } from "./cloud-model-switcher";
 import { getOrCreateCloudUserId } from "./cloud-user-id";
 

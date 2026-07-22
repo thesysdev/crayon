@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { ChatPageClient } from "./_components/chat-page-client";
 import { parseComparisonPair } from "./_components/chat-types";
+import { ComparePageClient } from "./_components/compare-page-client";
 
 export const metadata: Metadata = {
   title: "Compare OpenUI",
@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 
 export default async function ComparePage(props: PageProps<"/compare">) {
   const searchParams = await props.searchParams;
-  return <ChatPageClient initialPair={parseComparisonPair(searchParams.pair)} />;
+  return <ComparePageClient initialPair={parseComparisonPair(searchParams.pair)} />;
 }
