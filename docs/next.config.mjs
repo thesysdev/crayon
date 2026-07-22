@@ -33,25 +33,25 @@ const config = {
       },
       {
         source: "/docs/add-ons",
-        destination: "/showcase",
+        destination: "/lab",
         permanent: false,
       },
       {
         source: "/add-ons",
-        destination: "/showcase",
+        destination: "/lab",
         permanent: false,
       },
       {
         source: "/ecosystem",
-        destination: "/showcase",
+        destination: "/lab",
         permanent: false,
       },
       {
         source: "/registry",
-        destination: "/showcase",
+        destination: "/lab",
         permanent: false,
       },
-      // Nav rename: Playground -> Demos, Projects -> Showcase. Keep the old
+      // Nav rename: Playground -> Demos, Projects -> Lab. Keep the old
       // paths working for external links and search results.
       {
         source: "/playground",
@@ -60,7 +60,12 @@ const config = {
       },
       {
         source: "/projects",
-        destination: "/showcase",
+        destination: "/lab",
+        permanent: true,
+      },
+      {
+        source: "/showcase",
+        destination: "/lab",
         permanent: true,
       },
       {

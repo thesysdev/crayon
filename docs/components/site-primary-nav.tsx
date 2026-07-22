@@ -34,20 +34,30 @@ export type NavItem = NavLeaf | NavDropdown;
 export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
   { title: "Docs", href: "/docs", newTab: false },
   {
+    // Order and titles follow the menu design (Figma node 756:545).
     title: "Demos",
     children: [
       {
-        title: "OpenUI Playground",
-        description: "Compare OpenUI Lang with raw code and JSON.",
-        href: "/demos",
+        title: "Compare",
+        description: "How AI apps look with and without OpenUI.",
+        href: "/compare",
         preview: {
-          light: "/nav/playground-light.svg",
-          dark: "/nav/playground-dark.svg",
+          light: "/nav/compare-light.svg",
+          dark: "/nav/compare-dark.svg",
+        },
+      },
+      {
+        title: "Dashboard example",
+        description: "A demo built on GitHub data that responds with a dashboard.",
+        href: "/demo/github",
+        preview: {
+          light: "/nav/dashboard-light.svg",
+          dark: "/nav/dashboard-dark.svg",
         },
       },
       {
         title: "OpenUI Chat",
-        description: "Try OpenUI OSS and Cloud in a live chat.",
+        description: "A ChatGPT-like assistant powered by OpenUI Cloud that responds with UI.",
         href: "/chat",
         preview: {
           light: "/nav/chat-light.svg",
@@ -55,18 +65,18 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         },
       },
       {
-        title: "Dashboard Demo",
-        description: "Testdrive a dashboard building experience.",
-        href: "/demo/github",
+        title: "OpenUI vs JSON",
+        description: "See how OpenUI runs 3x faster on 67% fewer tokens.",
+        href: "/demos",
         preview: {
-          light: "/nav/dashboard-light.svg",
-          dark: "/nav/dashboard-dark.svg",
+          light: "/nav/playground-light.svg",
+          dark: "/nav/playground-dark.svg",
         },
       },
     ],
   },
   {
-    title: "Showcase",
+    title: "Lab",
     children: [
       {
         title: "OpenClaw OS",
@@ -80,7 +90,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
       {
         title: "Community projects",
         description: "Tools, packages, plugins, and examples",
-        href: "/showcase",
+        href: "/lab",
         preview: {
           light: "/nav/community-light.svg",
           dark: "/nav/community-dark.svg",

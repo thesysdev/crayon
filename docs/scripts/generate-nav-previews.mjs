@@ -23,6 +23,7 @@ const X = CARD_X + PAD, Y = CARD_Y + PAD;
 
 // Hues behind the site's own pastel tokens, one per menu entry.
 const ACCENT = {
+  compare:    { light: '#d97706', dark: '#fbbf24', wash: '#eab308', washDark: '#fcd34d' },
   playground: { light: '#7c3aed', dark: '#a78bfa', wash: '#a855f7', washDark: '#c4b5fd' },
   chat:       { light: '#2563eb', dark: '#60a5fa', wash: '#3b82f6', washDark: '#93c5fd' },
   dashboard:  { light: '#16a34a', dark: '#4ade80', wash: '#22c55e', washDark: '#86efac' },
@@ -56,7 +57,20 @@ const t = (x, y, size, weight, fill, str, anchor = 'start') =>
 
 function scene(name, c, a) {
   const s = [];
-  if (name === 'playground') {
+  if (name === 'compare') {
+    // The same prompt answered twice: prose on the left, generated UI on the right.
+    const box = ` stroke="${c.border}" stroke-width="1"`;
+    s.push(t(X, Y + 10, 12, 600, c.ink, 'Same prompt, two answers'));
+    s.push(r(X, Y + 24, 128, 116, 8, 'none', box));
+    s.push(t(X + 12, Y + 42, 8.5, 500, c.ink3, 'WITHOUT'));
+    for (let i = 0; i < 6; i++) s.push(r(X + 12, Y + 52 + i * 13, i === 5 ? 62 : 104, 6, 3, c.rule));
+    s.push(r(X + 144, Y + 24, 128, 116, 8, 'none', box));
+    s.push(t(X + 156, Y + 42, 8.5, 500, c.ink3, 'WITH OPENUI'));
+    s.push(r(X + 156, Y + 50, 104, 42, 5, c.chip));
+    s.push(t(X + 156, Y + 106, 10, 550, c.ink, 'Hotel Plaza Athenee'));
+    s.push(r(X + 156, Y + 114, 56, 17, 5, a));
+    s.push(t(X + 184, Y + 126, 8.5, 550, c.onAccent, 'Book', 'middle'));
+  } else if (name === 'playground') {
     s.push(t(X, Y + 11, 13, 600, c.ink, 'Playground'));
     s.push(r(X, Y + 26, 92, 108, 8, c.chip));
     ['Button', 'Card', 'Chart', 'Table'].forEach((label, i) => {
@@ -165,4 +179,4 @@ for (const name of Object.keys(ACCENT)) {
     total += Buffer.byteLength(markup);
   }
 }
-console.log(`Wrote 10 nav previews to public/nav — ${(total / 1024).toFixed(1)} KB total`);
+console.log(`Wrote ${Object.keys(ACCENT).length * 2} nav previews to public/nav — ${(total / 1024).toFixed(1)} KB total`);
