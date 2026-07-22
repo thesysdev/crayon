@@ -105,7 +105,9 @@ export function SitePrimaryNav() {
                       href={child.href}
                       key={child.href}
                       role="menuitem"
-                      {...(child.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                      {...(child.newTab
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
                     >
                       <span className={styles.dropdownText}>
                         <span className={styles.dropdownTitleRow}>

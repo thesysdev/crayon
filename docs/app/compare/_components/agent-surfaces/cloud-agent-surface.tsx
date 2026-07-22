@@ -1,6 +1,5 @@
 "use client";
 
-import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import { CLOUD_USER_ID_HEADER } from "@/lib/openui-cloud/user-id";
 import { defineArtifactCategories } from "@openuidev/react-headless";
 import { AgentInterface, type AssistantMessage } from "@openuidev/react-ui";
@@ -40,11 +39,7 @@ export function CloudAgentSurface({
   onConversationAction,
 }: CloudAgentSurfaceProps) {
   const [userId] = useState(getOrCreateCloudUserId);
-  const [llm] = useState(() => {
-    const cloudLLM = createCloudChatLLM();
-    cloudLLM.setSelectedModel(DEFAULT_MODEL);
-    return cloudLLM;
-  });
+  const [llm] = useState(() => createCloudChatLLM());
   const cloudFetch = useMemo<typeof fetch>(() => {
     return async (input, init) => {
       if (typeof input !== "string" || input !== "/api/openui-cloud/frontend-token") {

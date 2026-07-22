@@ -17,6 +17,7 @@ import {
 import { useTheme } from "next-themes";
 import { useLayoutEffect, useRef, useState } from "react";
 import styles from "../chat-page.module.css";
+import type { ComparisonPair } from "./chat-types";
 import { useHasMounted } from "./use-has-mounted";
 
 const COMPARISON_SUGGESTIONS = [
@@ -42,11 +43,12 @@ const COMPARISON_SUGGESTIONS = [
     color: "#175cd3",
     tag: "Only on Cloud",
     cloudOnly: true,
+    pairOnly: "oss-cloud",
   },
   {
     label: "Create an executive dashboard",
     prompt:
-      "Create a mobile-friendly SaaS health dashboard using: MRR $1.28M, growth 8.4%, NRR 112%, churn 2.1%, CAC $740, and pipeline $3.6M. Highlight trends, risks, and the three actions leadership should take.",
+      "Visualize following SaaS metrics: MRR $1.28M, growth 8.4%, NRR 112%, churn 2.1%, CAC $740, and pipeline $3.6M. Highlight trends, risks, and the three actions leadership should take.",
     icon: LayoutDashboard,
     color: "#b54708",
   },
@@ -71,6 +73,7 @@ const COMPARISON_SUGGESTIONS = [
 ] as const;
 
 interface ComparisonControlsProps {
+  comparisonPair: ComparisonPair;
   isReady: boolean;
   isRunning: boolean;
   hasStarted: boolean;
@@ -83,6 +86,7 @@ interface ComparisonControlsProps {
 }
 
 export function ComparisonControls({
+  comparisonPair,
   isReady,
   isRunning,
   hasStarted,
@@ -143,7 +147,9 @@ export function ComparisonControls({
       {!hasStarted && (
         <div className={styles.suggestionScroller} aria-label="Try a comparison prompt">
           <div className={styles.suggestionRow}>
-            {COMPARISON_SUGGESTIONS.map((suggestion) => {
+            {COMPARISON_SUGGESTIONS.filter(
+              (suggestion) => !("pairOnly" in suggestion) || suggestion.pairOnly === comparisonPair,
+            ).map((suggestion) => {
               const SuggestionIcon = suggestion.icon;
               const needsCloud = "cloudOnly" in suggestion && suggestion.cloudOnly;
               return (

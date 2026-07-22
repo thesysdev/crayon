@@ -1,16 +1,10 @@
 "use client";
 
-import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
-import {
-  AgentInterface,
-  openAIAdapter,
-  openAIMessageFormat,
-  type ChatLLM,
-} from "@openuidev/react-ui";
-import { useMemo } from "react";
+import { AgentInterface } from "@openuidev/react-ui";
 import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
 import { ComparisonModeControllerBridge } from "../comparison-mode-controller";
 import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
+import { useComparisonChatLLM } from "./use-comparison-chat-llm";
 
 interface MarkdownAgentSurfaceProps {
   themeMode: "light" | "dark";
@@ -23,36 +17,7 @@ export function MarkdownAgentSurface({
   onCreditsExhausted,
   registry,
 }: MarkdownAgentSurfaceProps) {
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: async ({ messages, signal }) => {
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: openAIMessageFormat.toApi(messages),
-            responseMode: "markdown",
-          }),
-          signal,
-        });
-
-        if (!response.ok) {
-          const errorPayload = await response
-            .clone()
-            .json()
-            .catch(() => ({}));
-
-          if (isDemoCreditsErrorPayload((errorPayload as { error?: unknown }).error)) {
-            onCreditsExhausted();
-          }
-        }
-
-        return response;
-      },
-      streamProtocol: openAIAdapter(),
-    }),
-    [onCreditsExhausted],
-  );
+  const llm = useComparisonChatLLM("markdown", onCreditsExhausted);
 
   return (
     <div className="chat-agent-surface" data-chat-mode="markdown">

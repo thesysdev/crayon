@@ -323,6 +323,7 @@ export function ChatPageClient({ initialPair = DEFAULT_COMPARISON_PAIR }: ChatPa
         </div>
 
         <ComparisonControls
+          comparisonPair={selectedPair.id}
           isReady={allReady}
           isRunning={anyRunning}
           hasStarted={hasStarted}

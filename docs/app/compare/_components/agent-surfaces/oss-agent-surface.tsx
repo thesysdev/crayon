@@ -1,13 +1,6 @@
 "use client";
 
-import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
-import {
-  AgentInterface,
-  openAIAdapter,
-  openAIMessageFormat,
-  type AssistantMessage,
-  type ChatLLM,
-} from "@openuidev/react-ui";
+import { AgentInterface, type AssistantMessage } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 import { useCallback, useMemo } from "react";
 import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
@@ -17,6 +10,7 @@ import {
   type GenUIConversationAction,
 } from "./comparison-genui-assistant-message";
 import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
+import { useComparisonChatLLM } from "./use-comparison-chat-llm";
 
 interface OssAgentSurfaceProps {
   themeMode: "light" | "dark";
@@ -31,36 +25,7 @@ export function OssAgentSurface({
   registry,
   onConversationAction,
 }: OssAgentSurfaceProps) {
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: async ({ messages, signal }) => {
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: openAIMessageFormat.toApi(messages),
-            responseMode: "openui",
-          }),
-          signal,
-        });
-
-        if (!response.ok) {
-          const errorPayload = await response
-            .clone()
-            .json()
-            .catch(() => ({}));
-
-          if (isDemoCreditsErrorPayload((errorPayload as { error?: unknown }).error)) {
-            onCreditsExhausted();
-          }
-        }
-
-        return response;
-      },
-      streamProtocol: openAIAdapter(),
-    }),
-    [onCreditsExhausted],
-  );
+  const llm = useComparisonChatLLM("openui", onCreditsExhausted);
 
   const AssistantMessageRenderer = useCallback(
     ({ message }: { message: AssistantMessage }) => (

@@ -5,17 +5,8 @@ import {
   type ChatLLM,
 } from "@openuidev/react-headless";
 
-interface CloudChatLLM extends ChatLLM {
-  setSelectedModel: (model: string) => void;
-}
-
-export function createCloudChatLLM(): CloudChatLLM {
-  let selectedModel = DEFAULT_MODEL;
-
+export function createCloudChatLLM(): ChatLLM {
   return {
-    setSelectedModel(model) {
-      selectedModel = model;
-    },
     async send({ threadId, messages, signal }) {
       return fetch("/api/openui-cloud/chat", {
         method: "POST",
@@ -23,7 +14,7 @@ export function createCloudChatLLM(): CloudChatLLM {
         body: JSON.stringify({
           threadId,
           input: openAIConversationMessageFormat.toApi(messages.slice(-1)),
-          model: selectedModel,
+          model: DEFAULT_MODEL,
         }),
         signal,
       });

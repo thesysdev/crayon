@@ -81,7 +81,8 @@
   background: color-mix(in srgb, var(--openui-foreground) 96%, #fff);
 }
 
-.trayChevron {
+.trayChevron,
+.ctaChevron {
   transition: transform 160ms ease;
 }
 
@@ -89,7 +90,8 @@
   transform: rotate(180deg);
 }
 
-.viewComparisonChip:focus-visible {
+.viewComparisonChip:focus-visible,
+.ctaMenuItem:focus-visible {
   outline: 2px solid var(--openui-border-accent-emphasis);
   outline-offset: -2px;
 }
@@ -154,7 +156,10 @@
   padding-block: 9px;
 }
 
-.comparisonRow + .comparisonRow {
+/* End-to-end separators between repeated rows. */
+.comparisonRow + .comparisonRow,
+.pairMenuItem + .pairMenuItem,
+.suggestionButton + .suggestionButton {
   border-top: 1px solid var(--openui-border-default);
 }
 
@@ -202,13 +207,9 @@
   transition: opacity 120ms ease;
 }
 
-.comparisonCta:hover {
+.comparisonCta:hover,
+.ctaButton:hover {
   opacity: 0.88;
-}
-
-.comparisonCta:focus-visible {
-  outline: 2px solid var(--openui-border-accent-emphasis);
-  outline-offset: 2px;
 }
 
 .comparisonTick {
@@ -294,17 +295,28 @@
   transition: background-color 120ms ease;
 }
 
-.backLink:hover {
+/* Shared hover and keyboard-focus treatment for interactive controls. */
+.backLink:hover,
+.mobileMenuButton:hover,
+.mobileMenuButton[aria-expanded="true"],
+.ctaMenuItem:hover,
+.resetButton:hover,
+.themeToggle:hover,
+.cloudArtifactClose:hover {
   background: var(--openui-highlight);
 }
 
+.comparisonCta:focus-visible,
 .backLink:focus-visible,
 .pairTrigger:focus-visible,
 .pairMenuItem:focus-visible,
+.mobileMenuButton:focus-visible,
 .mobilePanelTab:focus-visible,
 .suggestionButton:focus-visible,
 .composerSubmit:focus-visible,
-.resetButton:focus-visible {
+.resetButton:focus-visible,
+.themeToggle:focus-visible,
+.cloudArtifactClose:focus-visible {
   outline: 2px solid var(--openui-border-accent-emphasis);
   outline-offset: 2px;
 }
@@ -340,17 +352,9 @@
   transition: opacity 120ms ease;
 }
 
-.ctaButton:hover {
-  opacity: 0.88;
-}
-
 .ctaButton:focus-visible {
   outline: 2px solid var(--openui-text-neutral-primary);
   outline-offset: 2px;
-}
-
-.ctaChevron {
-  transition: transform 160ms ease;
 }
 
 /* Right arrow tips down while the menu is open. */
@@ -385,13 +389,18 @@
 
 /* Darker variant used by the mobile tray; matches the homepage mobile menu's
    backdrop. Inert on desktop. */
-.menuOverlayMobileDark {
-  display: none;
+.menuOverlayMobileDark,
+.mobileMenuBackdrop {
   background: rgb(0 0 0 / 60%);
   backdrop-filter: blur(12px);
 }
 
-:global([data-theme="dark"]) .menuOverlayMobileDark {
+.menuOverlayMobileDark {
+  display: none;
+}
+
+:global([data-theme="dark"]) .menuOverlayMobileDark,
+:global([data-theme="dark"]) .mobileMenuBackdrop {
   background: rgb(255 255 255 / 0.1);
 }
 
@@ -415,38 +424,22 @@
   transition: background-color 120ms ease;
 }
 
-.mobileMenuButton:hover,
-.mobileMenuButton[aria-expanded="true"] {
-  background: var(--openui-highlight);
-}
-
-.mobileMenuButton:focus-visible {
-  outline: 2px solid var(--openui-border-accent-emphasis);
-  outline-offset: 2px;
-}
-
-.mobileMenuBackdrop {
-  position: fixed;
-  top: 53px;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 50;
-  cursor: pointer;
-  background: rgb(0 0 0 / 60%);
-  backdrop-filter: blur(12px);
-  animation: chatMobileMenuFade 0.2s ease;
-}
-
-:global([data-theme="dark"]) .mobileMenuBackdrop {
-  background: rgb(255 255 255 / 0.1);
-}
-
+.mobileMenuBackdrop,
 .mobileMenuSheet {
   position: fixed;
   top: 53px;
   right: 0;
   left: 0;
+}
+
+.mobileMenuBackdrop {
+  bottom: 0;
+  z-index: 50;
+  cursor: pointer;
+  animation: chatMobileMenuFade 0.2s ease;
+}
+
+.mobileMenuSheet {
   z-index: 60;
   animation: chatMobileMenuSlide 0.2s ease;
 }
@@ -494,25 +487,12 @@
   background: transparent;
 }
 
-/* Left-aligned pair rows in the menu: the centred "vs" grid flattens into a
-   natural inline flow. */
-.mobileMenuPairTitle .pairTitleGroup {
-  display: inline-flex;
-  width: auto;
-  gap: 6px;
-}
-
-.mobileMenuPairTitle .pairTitleSideLeft {
-  justify-content: flex-start;
-}
-
 /* Fade-only reveal, as on the hero. */
-.ctaMenu {
+.ctaMenu,
+.pairMenu {
   position: absolute;
   top: calc(100% + 8px);
-  right: 0;
   z-index: 60;
-  width: 22.5rem;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -521,25 +501,25 @@
     visibility 0s linear 0.18s;
 }
 
-.ctaMenuOpen {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transition:
-    opacity 0.18s ease,
-    visibility 0s;
+.ctaMenu {
+  right: 0;
+  width: 22.5rem;
 }
 
-/* Same card recipe as the pair switcher's menu. */
-.ctaMenuCard {
+/* Shared dropdown card recipe. */
+.ctaMenuCard,
+.pairMenuCard {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 0.375rem;
   border: 1px solid var(--openui-border-default);
   border-radius: 12px;
   background: var(--openui-foreground);
   box-shadow: var(--openui-shadow-l);
+}
+
+.ctaMenuCard {
+  gap: 2px;
+  padding: 0.375rem;
 }
 
 .ctaMenuItem {
@@ -559,15 +539,6 @@
   white-space: nowrap;
   cursor: pointer;
   transition: background-color 120ms ease;
-}
-
-.ctaMenuItem:hover {
-  background: var(--openui-highlight);
-}
-
-.ctaMenuItem:focus-visible {
-  outline: 2px solid var(--openui-border-accent-emphasis);
-  outline-offset: -2px;
 }
 
 .ctaMenuItemLabel {
@@ -638,20 +609,12 @@
 }
 
 .pairMenu {
-  position: absolute;
-  top: calc(100% + 8px);
   left: 50%;
-  z-index: 60;
   width: 22rem;
   transform: translateX(-50%);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition:
-    opacity 0.18s ease,
-    visibility 0s linear 0.18s;
 }
 
+.ctaMenuOpen,
 .pairMenuOpen {
   opacity: 1;
   visibility: visible;
@@ -662,13 +625,7 @@
 }
 
 .pairMenuCard {
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
-  border: 1px solid var(--openui-border-default);
-  border-radius: 12px;
-  background: var(--openui-foreground);
-  box-shadow: var(--openui-shadow-l);
 }
 
 .pairMenuItem {
@@ -684,11 +641,6 @@
   text-align: center;
   cursor: pointer;
   transition: background-color 120ms ease;
-}
-
-/* End-to-end separators between options. */
-.pairMenuItem + .pairMenuItem {
-  border-top: 1px solid var(--openui-border-default);
 }
 
 .pairMenuItemTitle {
@@ -708,7 +660,8 @@
   gap: 8px;
 }
 
-.pairTitleSide {
+.pairTitleSide,
+.suggestionLabel {
   display: inline-flex;
   min-width: 0;
   align-items: center;
@@ -990,17 +943,6 @@
   cursor: pointer;
 }
 
-.suggestionButton + .suggestionButton {
-  border-top: 1px solid var(--openui-border-default);
-}
-
-.suggestionLabel {
-  display: inline-flex;
-  min-width: 0;
-  align-items: center;
-  gap: 6px;
-}
-
 /* Arrow slides in next to the text on hover. */
 .suggestionArrow {
   flex: none;
@@ -1146,16 +1088,6 @@
   cursor: pointer;
 }
 
-.resetButton:hover,
-.themeToggle:hover {
-  background: var(--openui-highlight);
-}
-
-.themeToggle:focus-visible {
-  outline: 2px solid var(--openui-border-accent-emphasis);
-  outline-offset: 2px;
-}
-
 .mobilePanelTabs {
   display: none;
 }
@@ -1225,15 +1157,6 @@
   background: var(--openui-foreground);
   color: var(--openui-text-neutral-primary);
   cursor: pointer;
-}
-
-.cloudArtifactClose:hover {
-  background: var(--openui-highlight);
-}
-
-.cloudArtifactClose:focus-visible {
-  outline: 2px solid var(--openui-border-accent-emphasis);
-  outline-offset: 2px;
 }
 
 .cloudArtifactBody {
@@ -1509,10 +1432,6 @@
   .themeToggle {
     display: none;
   }
-
-  .suggestionRow {
-    padding-inline: 0;
-  }
 }
 
 @media (max-width: 560px) {
@@ -1523,11 +1442,6 @@
   .sharedComposer {
     min-height: 50px;
     padding-left: 13px;
-  }
-
-  .resetButton {
-    width: 44px;
-    height: 44px;
   }
 
   .surfaceWelcome {
@@ -1556,15 +1470,8 @@
     transition: none;
   }
 
-  .ctaMenuHighlight {
-    transition: opacity 0.15s ease;
-  }
-
   .mobileMenuBackdrop,
-  .mobileMenuSheet {
-    animation: none;
-  }
-
+  .mobileMenuSheet,
   .loadingIndicator {
     animation: none;
   }

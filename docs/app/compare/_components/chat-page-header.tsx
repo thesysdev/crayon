@@ -19,7 +19,7 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import styles from "../chat-page.module.css";
-import { COMPARISON_PAIRS, getComparisonPair, type ComparisonPair } from "./chat-types";
+import { getComparisonPair, type ComparisonPair } from "./chat-types";
 import type { ComparisonMode } from "./comparison-mode-controller";
 import { useHasMounted } from "./use-has-mounted";
 
@@ -31,29 +31,91 @@ const CLI_COMMANDS = [
   { id: "npm", runner: "npx", command: "npx @openuidev/cli@latest create" },
 ] as const;
 
-const PAIR_DESCRIPTIONS: Record<ComparisonPair, string> = {
-  "markdown-oss": "Test an AI app with and without OpenUI",
-  "oss-cloud": "Compare open-source and Cloud responses",
-  "markdown-cloud": "Test an AI app with and without OpenUI Cloud",
-};
-
 // Display titles for the pair options, mirroring the panel headings: mode name
 // plus a chip for the OpenUI flavor. aria-labels keep the canonical names.
-type PairSide = { label: string; chip?: string; chipInverted?: boolean };
-const PAIR_TITLES: Record<ComparisonPair, { left: PairSide; right: PairSide }> = {
-  "markdown-oss": { left: { label: "Markdown" }, right: { label: "OpenUI", chip: "OSS" } },
+interface PairSide {
+  label: string;
+  chip?: string;
+  chipInverted?: boolean;
+}
+
+interface PairTitleDefinition {
+  left: PairSide;
+  right: PairSide;
+}
+
+type FeatureSupport = Readonly<Record<ComparisonMode, boolean>>;
+
+interface ComparisonFeature {
+  label: string;
+  support: FeatureSupport;
+}
+
+interface ComparisonPairMetadata {
+  description: string;
+  title: PairTitleDefinition;
+  features: readonly ComparisonFeature[];
+}
+
+const ALL_MODES_SUPPORTED: FeatureSupport = { markdown: true, oss: true, cloud: true };
+const OSS_AND_CLOUD_SUPPORTED: FeatureSupport = { markdown: false, oss: true, cloud: true };
+const CLOUD_ONLY_SUPPORTED: FeatureSupport = { markdown: false, oss: false, cloud: true };
+const MARKDOWN_AND_OSS_SUPPORTED: FeatureSupport = { markdown: true, oss: true, cloud: false };
+
+function comparisonFeature(label: string, support: FeatureSupport): ComparisonFeature {
+  return { label, support };
+}
+
+const CHARTS_FEATURE = comparisonFeature("Charts and data visualizations", OSS_AND_CLOUD_SUPPORTED);
+const INTERACTIVE_FEATURE = comparisonFeature(
+  "Interactive forms and actions",
+  OSS_AND_CLOUD_SUPPORTED,
+);
+const STREAMING_FEATURE = comparisonFeature("Progressive streaming", ALL_MODES_SUPPORTED);
+const RESPONSIVE_OUTPUT_FEATURE = comparisonFeature("Responsive output", OSS_AND_CLOUD_SUPPORTED);
+const STYLING_FEATURE = comparisonFeature("Styling and theming", OSS_AND_CLOUD_SUPPORTED);
+const REPORTS_FEATURE = comparisonFeature("Reports and presentations", CLOUD_ONLY_SUPPORTED);
+
+const SHARED_OPENUI_FEATURES = [CHARTS_FEATURE, INTERACTIVE_FEATURE, STREAMING_FEATURE] as const;
+const MARKDOWN_OSS_FEATURES = [
+  ...SHARED_OPENUI_FEATURES,
+  RESPONSIVE_OUTPUT_FEATURE,
+  STYLING_FEATURE,
+] as const;
+
+const PAIR_METADATA: Record<ComparisonPair, ComparisonPairMetadata> = {
+  "markdown-oss": {
+    description: "Test an AI app with and without OpenUI",
+    title: { left: { label: "Markdown" }, right: { label: "OpenUI", chip: "OSS" } },
+    features: MARKDOWN_OSS_FEATURES,
+  },
   "oss-cloud": {
-    left: { label: "OpenUI", chip: "OSS" },
-    right: { label: "OpenUI", chip: "Cloud", chipInverted: true },
+    description: "Compare open-source and Cloud responses",
+    title: {
+      left: { label: "OpenUI", chip: "OSS" },
+      right: { label: "OpenUI", chip: "Cloud", chipInverted: true },
+    },
+    features: [
+      ...SHARED_OPENUI_FEATURES,
+      REPORTS_FEATURE,
+      { label: "Built-in tools", support: CLOUD_ONLY_SUPPORTED },
+      { label: "Responsive output by default", support: CLOUD_ONLY_SUPPORTED },
+      { label: "Automatic UI error correction", support: CLOUD_ONLY_SUPPORTED },
+      { label: "Self-hostable and open source", support: MARKDOWN_AND_OSS_SUPPORTED },
+    ],
   },
   "markdown-cloud": {
-    left: { label: "Markdown" },
-    right: { label: "OpenUI", chip: "Cloud", chipInverted: true },
+    description: "Test an AI app with and without OpenUI Cloud",
+    title: {
+      left: { label: "Markdown" },
+      right: { label: "OpenUI", chip: "Cloud", chipInverted: true },
+    },
+    features: [...MARKDOWN_OSS_FEATURES, REPORTS_FEATURE],
   },
 };
 
 function PairTitle({ pair }: { pair: ComparisonPair }) {
-  const { left, right } = PAIR_TITLES[pair];
+  const { left, right } = PAIR_METADATA[pair].title;
   const side = (part: PairSide) => (
     <>
       {part.label}
@@ -136,6 +198,7 @@ function useHeaderDropdown() {
 
 // Menu display order, independent of the default comparison pair.
 const PAIR_MENU_ORDER: readonly ComparisonPair[] = ["markdown-oss", "markdown-cloud", "oss-cloud"];
+const PAIR_MENU_OPTIONS = PAIR_MENU_ORDER.map((pair) => getComparisonPair(pair));
 
 function PairSwitcher({
   pair,
@@ -175,28 +238,28 @@ function PairSwitcher({
 
       <div className={`${styles.pairMenu} ${open ? styles.pairMenuOpen : ""}`.trim()}>
         <div className={styles.pairMenuCard} role="menu" aria-label="Comparison pair">
-          {PAIR_MENU_ORDER.map((id) => COMPARISON_PAIRS.find((option) => option.id === id)!).map(
-            (option) => (
-              <button
-                key={option.id}
-                type="button"
-                role="menuitemradio"
-                aria-checked={option.id === pair}
-                className={styles.pairMenuItem}
-                onClick={() => {
-                  onPairChange(option.id);
-                  setOpen(false);
-                }}
-              >
-                <span className={styles.pairMenuItemTitle}>
-                  <PairTitle pair={option.id} />
+          {PAIR_MENU_OPTIONS.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              role="menuitemradio"
+              aria-checked={option.id === pair}
+              className={styles.pairMenuItem}
+              onClick={() => {
+                onPairChange(option.id);
+                setOpen(false);
+              }}
+            >
+              <span className={styles.pairMenuItemTitle}>
+                <PairTitle pair={option.id} />
+              </span>
+              <span className={styles.pairMenuItemDescWrap}>
+                <span className={styles.pairMenuItemDesc}>
+                  {PAIR_METADATA[option.id].description}
                 </span>
-                <span className={styles.pairMenuItemDescWrap}>
-                  <span className={styles.pairMenuItemDesc}>{PAIR_DESCRIPTIONS[option.id]}</span>
-                </span>
-              </button>
-            ),
-          )}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
     </div>
@@ -258,106 +321,6 @@ function BuildForFreeMenu() {
   );
 }
 
-// Feature support per response mode, shown in the "View comparison" tray for
-// whichever pair is currently selected.
-const COMPARISON_FEATURES: readonly {
-  label: string;
-  support: Record<ComparisonMode, boolean>;
-}[] = [
-  { label: "Markdown responses", support: { markdown: true, oss: true, cloud: true } },
-  { label: "Interactive generated UI", support: { markdown: false, oss: true, cloud: true } },
-  { label: "Charts and data visualizations", support: { markdown: false, oss: true, cloud: true } },
-  { label: "Forms and follow-up actions", support: { markdown: false, oss: true, cloud: true } },
-  { label: "Tools and full-page artifacts", support: { markdown: false, oss: false, cloud: true } },
-  { label: "Conversation persistence", support: { markdown: false, oss: false, cloud: true } },
-  { label: "Self-hostable and open source", support: { markdown: true, oss: true, cloud: false } },
-];
-
-const MARKDOWN_OSS_COMPARISON_FEATURES: typeof COMPARISON_FEATURES = [
-  {
-    label: "Charts and data visualizations",
-    support: { markdown: false, oss: true, cloud: true },
-  },
-  {
-    label: "Interactive forms and actions",
-    support: { markdown: false, oss: true, cloud: true },
-  },
-  {
-    label: "Progressive streaming",
-    support: { markdown: true, oss: true, cloud: true },
-  },
-  {
-    label: "Responsive output",
-    support: { markdown: false, oss: true, cloud: true },
-  },
-  {
-    label: "Styling and theming",
-    support: { markdown: false, oss: true, cloud: true },
-  },
-];
-
-const MARKDOWN_CLOUD_COMPARISON_FEATURES: typeof COMPARISON_FEATURES = [
-  {
-    label: "Charts and data visualizations",
-    support: { markdown: false, oss: true, cloud: true },
-  },
-  {
-    label: "Interactive forms and actions",
-    support: { markdown: false, oss: true, cloud: true },
-  },
-  {
-    label: "Progressive streaming",
-    support: { markdown: true, oss: true, cloud: true },
-  },
-  {
-    label: "Responsive output",
-    support: { markdown: false, oss: true, cloud: true },
-  },
-  {
-    label: "Styling and theming",
-    support: { markdown: false, oss: true, cloud: true },
-  },
-  {
-    label: "Reports and presentations",
-    support: { markdown: false, oss: false, cloud: true },
-  },
-];
-
-const OSS_CLOUD_COMPARISON_FEATURES: typeof COMPARISON_FEATURES = [
-  {
-    label: "Charts and data visualizations",
-    support: { markdown: false, oss: true, cloud: true },
-  },
-  {
-    label: "Interactive forms and actions",
-    support: { markdown: false, oss: true, cloud: true },
-  },
-  {
-    label: "Progressive streaming",
-    support: { markdown: true, oss: true, cloud: true },
-  },
-  {
-    label: "Reports and presentations",
-    support: { markdown: false, oss: false, cloud: true },
-  },
-  {
-    label: "Built-in tools",
-    support: { markdown: false, oss: false, cloud: true },
-  },
-  {
-    label: "Responsive output by default",
-    support: { markdown: false, oss: false, cloud: true },
-  },
-  {
-    label: "Automatic UI error correction",
-    support: { markdown: false, oss: false, cloud: true },
-  },
-  {
-    label: "Self-hostable and open source",
-    support: { markdown: true, oss: true, cloud: false },
-  },
-];
-
 function SupportIcon({ supported }: { supported: boolean }) {
   return supported ? (
     <Check size={15} strokeWidth={2.25} aria-hidden="true" className={styles.comparisonTick} />
@@ -369,15 +332,8 @@ function SupportIcon({ supported }: { supported: boolean }) {
 function ViewComparisonTray({ pair }: { pair: ComparisonPair }) {
   const { open, setOpen, wrapRef, triggerRef } = useHeaderDropdown();
   const [leftMode, rightMode] = getComparisonPair(pair).modes;
-  const { left, right } = PAIR_TITLES[pair];
-  const features =
-    pair === "markdown-oss"
-      ? MARKDOWN_OSS_COMPARISON_FEATURES
-      : pair === "markdown-cloud"
-        ? MARKDOWN_CLOUD_COMPARISON_FEATURES
-        : pair === "oss-cloud"
-          ? OSS_CLOUD_COMPARISON_FEATURES
-          : COMPARISON_FEATURES;
+  const { title, features } = PAIR_METADATA[pair];
+  const { left, right } = title;
 
   const columnLabel = (part: PairSide) => (
     <span className={styles.comparisonColumnLabel}>
@@ -490,10 +446,8 @@ function MobileMenu({
               <div className={`${trayStyles.mobileTrayInner} ${styles.menuTrayPad}`}>
                 <div className={trayStyles.mobileTraySection} role="menu" aria-label="Comparison">
                   <div className={trayStyles.mobileTraySectionHeading}>Comparison</div>
-                  {PAIR_MENU_ORDER.map(
-                    (id) => COMPARISON_PAIRS.find((option) => option.id === id)!,
-                  ).map((option) => {
-                    const { left, right } = PAIR_TITLES[option.id];
+                  {PAIR_MENU_OPTIONS.map((option) => {
+                    const { left, right } = PAIR_METADATA[option.id].title;
                     const sideText = (part: PairSide) =>
                       part.chip ? `${part.label} ${part.chip}` : part.label;
                     return (
