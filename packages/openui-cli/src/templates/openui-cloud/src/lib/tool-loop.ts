@@ -1,5 +1,8 @@
 import type OpenAI from "openai";
-import type { ResponseInputItem } from "openai/resources/responses/responses";
+import type {
+  ResponseCreateParamsNonStreaming,
+  ResponseInputItem,
+} from "openai/resources/responses/responses";
 
 /**
  * Function-tool execution loop for the OpenUI Cloud Responses API.
@@ -20,6 +23,17 @@ import type { ResponseInputItem } from "openai/resources/responses/responses";
  * 2. Skip any call whose `call_id` already received a `function_call_output`
  *    on the same stream. The API never streams an output for a call it wants
  *    the client to execute, so an output's presence means "already settled".
+ *
+ * The loop mirrors the openai SDK's `runTools` invariant: the round cap limits
+ * additional model turns, never settlement — the last allowed round posts its
+ * outputs with `tool_choice: "none"`, and calls that a non-enforcing server
+ * still lets through are settled in one final forward-only turn, so a stored
+ * conversation is never left holding an unanswered `function_call`. Two
+ * deliberate deviations from
+ * `runTools`, both forced by server-side tools + stored conversations:
+ * undeclared names are ignored rather than answered with an "invalid tool"
+ * message (rule 1), and executor throws become error outputs rather than
+ * aborting the run (a mid-run abort would strand calls in the conversation).
  */
 
 export type FunctionToolExecutor = (
@@ -30,7 +44,7 @@ export type FunctionToolExecutor = (
 export interface RunFunctionToolLoopOptions {
   client: OpenAI;
   /** The params of the original request; reused verbatim for continuations. */
-  createParams: Record<string, unknown>;
+  createParams: ResponseCreateParamsNonStreaming;
   /** The already-open stream of the first response. */
   firstStream: AsyncIterable<Record<string, unknown>>;
   /** name → executor. The keys are the ONLY tool names this loop will run. */
@@ -52,16 +66,17 @@ interface PendingCall {
 /**
  * Drive the stream to completion, executing declared function tools between
  * model turns. Resolves when the model finishes without requesting any of the
- * caller's tools (or `maxRounds` is reached).
+ * caller's tools; if `maxRounds` is reached, the final round still posts its
+ * outputs but pins `tool_choice: "none"` so the model must answer in text.
  */
 export async function runFunctionToolLoop(options: RunFunctionToolLoopOptions): Promise<void> {
   const { client, createParams, tools, enqueue, signal, maxRounds = 5 } = options;
 
-  let pending = await consumeStream(options.firstStream, tools, enqueue);
-
-  for (let round = 0; round < maxRounds && pending.length > 0; round++) {
+  // Run every pending call and surface each result to the browser; a throwing
+  // executor settles as an error output rather than aborting the run.
+  const executeCalls = async (calls: PendingCall[]): Promise<ResponseInputItem[]> => {
     const outputs: ResponseInputItem[] = [];
-    for (const call of pending) {
+    for (const call of calls) {
       let output: string;
       try {
         output = await tools[call.name]!(call.argsJson, { callId: call.callId, signal });
@@ -70,20 +85,43 @@ export async function runFunctionToolLoop(options: RunFunctionToolLoopOptions): 
       }
       const item = { type: "function_call_output" as const, call_id: call.callId, output };
       outputs.push(item);
-      // Surface the result to the browser so the tool tray can render it.
       enqueue({
         type: "response.output_item.added",
         item: { ...item, id: `fc_out_${call.callId}` },
       });
     }
+    return outputs;
+  };
 
-    const stream = (await client.responses.create(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      { ...createParams, input: outputs, stream: true } as any,
+  const continueWith = (outputs: ResponseInputItem[], settleOnly: boolean) =>
+    client.responses.create(
+      {
+        ...createParams,
+        input: outputs,
+        stream: true,
+        ...(settleOnly ? { tool_choice: "none" as const } : {}),
+      },
       { signal },
-    )) as unknown as AsyncIterable<Record<string, unknown>>;
+    ) as unknown as Promise<AsyncIterable<Record<string, unknown>>>;
 
+  let pending = await consumeStream(options.firstStream, tools, enqueue);
+
+  for (let round = 0; pending.length > 0; round++) {
+    // Last allowed round: settlement still happens, but the model may not
+    // request more tools.
+    const settleOnly = round >= maxRounds - 1;
+    const stream = await continueWith(await executeCalls(pending), settleOnly);
     pending = await consumeStream(stream, tools, enqueue);
+    if (settleOnly) break;
+  }
+
+  // Non-empty only when the settle round produced NEW calls — i.e. the server
+  // did not enforce tool_choice:"none" (observed with some models). Settle
+  // them once more, forward-only: a stored conversation must never be left
+  // holding an unanswered function_call.
+  if (pending.length > 0) {
+    const stream = await continueWith(await executeCalls(pending), true);
+    for await (const event of stream) enqueue(event);
   }
 }
 
@@ -116,7 +154,7 @@ async function consumeStream(
           (item.id ? callsByItemId.get(item.id) : undefined) ?? callsByItemId.get(item.call_id);
         if (known) {
           if (item.arguments != null) known.argsJson = item.arguments;
-        } else if (item.name in tools) {
+        } else if (Object.hasOwn(tools, item.name)) {
           // Rule 1: track only declared tools — everything else (including
           // Cloud-internal thesys_* calls) is passed through untouched.
           const call: PendingCall = {

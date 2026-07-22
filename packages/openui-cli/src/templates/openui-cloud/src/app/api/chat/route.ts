@@ -5,7 +5,11 @@ import { runFunctionToolLoop } from "@/lib/tool-loop";
 import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
 import OpenAI from "openai";
-import type { ResponseInputItem } from "openai/resources/responses/responses";
+import type {
+  ResponseCreateParamsNonStreaming,
+  ResponseInputItem,
+  Tool,
+} from "openai/resources/responses/responses";
 
 /**
  * Generation plane: browser → THIS route → OpenUI Cloud.
@@ -67,19 +71,19 @@ export async function POST(req: Request) {
     [getWeatherTool.name]: executeGetWeather,
   };
 
-  const createParams = {
+  const createParams: ResponseCreateParamsNonStreaming = {
     model: resolveRequestedModel(requestedModel, envOr("OPENUI_MODEL", DEFAULT_MODEL)),
     conversation: threadId, // store:true persists to the conversation
     input,
     store: true,
     tools: [
-      artifactTool({ artifacts: ["slides", "report"] }),
+      // artifact/image_search are Cloud extensions of the Responses tools
+      // union — cast those entries only; the rest stays type-checked.
+      artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
       {
         type: "web_search",
       },
-      {
-        type: "image_search",
-      },
+      { type: "image_search" } as unknown as Tool,
       getWeatherTool,
       // Remote MCP servers run server-side inside OpenUI Cloud — no client
       // loop needed. Uncomment to let the model answer questions about any
@@ -96,8 +100,7 @@ export async function POST(req: Request) {
   let stream: AsyncIterable<Record<string, unknown>>;
   try {
     stream = (await client.responses.create(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      { ...createParams, stream: true } as any,
+      { ...createParams, stream: true },
       { signal: req.signal }, // propagate browser aborts (stop button / tab close)
     )) as unknown as AsyncIterable<Record<string, unknown>>;
   } catch (err) {
