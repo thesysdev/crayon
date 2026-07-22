@@ -80,7 +80,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
     children: [
       {
         title: "OpenClaw OS",
-        description: "Workspace for your OpenClaw agents.",
+        description: "A workspace for running and managing your OpenClaw agents.",
         href: "/openclaw-os",
         preview: {
           light: "/nav/openclaw-light.webp",
@@ -89,7 +89,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
       },
       {
         title: "Community projects",
-        description: "Tools, packages, plugins, and examples",
+        description: "Tools, packages, plugins, and examples built by the community.",
         href: "/lab",
         preview: {
           light: "/nav/community-light.webp",
@@ -109,9 +109,9 @@ export function isNavDropdown(item: NavItem): item is NavDropdown {
 
 /* Panel geometry, mirrored from .viewportContent in the stylesheet. Kept in
    sync by hand because the natural width has to be known before layout. */
-const CARD_TRACK = 292;
-const PANEL_GAP = 8;
-const PANEL_PADDING = 12;
+const CARD_TRACK = 296;
+const PANEL_GAP = 4;
+const PANEL_PADDING = 10;
 /* Smallest gap left between the panel and either edge of the window. */
 const VIEWPORT_MARGIN = 16;
 /* How long the pointer may be outside the nav before the menu closes. Long

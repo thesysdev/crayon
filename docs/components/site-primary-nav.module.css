@@ -81,8 +81,9 @@
   background: var(--openui-foreground);
   /* A wide, soft cast so the panel reads as floating clear of the page rather
      than pinned to it — shadow-l is only an 8px blur and disappears against
-     the hero. */
-  box-shadow: var(--openui-shadow-2xl);
+     the hero. One step down from 2xl: still clearly separates the panel from
+     the page, without the heavier cast reading as too much. */
+  box-shadow: var(--openui-shadow-xl);
   opacity: 0;
   pointer-events: none;
   transition:
@@ -130,11 +131,12 @@
 /* Width is written inline by the nav: the natural size at full width, or the
    viewport minus a margin once that no longer fits. Columns then share whatever
    that width is, so the cards shrink together rather than the panel clipping.
-   Each card carries 4px of its own padding so its hover fill can bleed 4px past
+   Each card carries 6px of its own padding so its hover fill can bleed 6px past
    the artwork without any layout shift; the panel's padding and gap are reduced
-   by that same 4px per edge, so at full width the rendered spacing matches the
-   design (16px panel inset, 16px between artwork edges):
-     track  284 + 4*2 = 292      panel  12*2 + 292*4 + 8*3 = 1216
+   by that same 6px per edge, so at full width the rendered spacing matches the
+   design (16px panel inset, 16px between artwork edges) regardless of the
+   card's own padding — a bigger bleed only trades panel/gap space for it:
+     track  284 + 6*2 = 296      panel  10*2 + 296*4 + 4*3 = 1216
    Only the artwork scales — it holds its aspect ratio — while the label and
    description keep their size and re-wrap into the narrower column. */
 .viewportContent {
@@ -144,8 +146,8 @@
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
-  gap: 0.5rem;
-  padding: 0.75rem;
+  gap: 4px;
+  padding: 10px;
   opacity: 0;
   transition: opacity 0.16s ease;
 }
@@ -170,11 +172,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  /* Bleeds the hover fill 4px past the artwork. Compensated for in the panel's
-     padding/gap above, so this adds no visible spacing. */
-  padding: 4px;
-  /* Concentric with the 12px artwork radius inside it (12 + 4px padding). */
-  border-radius: 16px;
+  /* Bleeds the hover fill 6px past the artwork. Compensated for in the panel's
+     padding/gap below, so this adds no visible spacing. */
+  padding: 6px;
+  /* Concentric with the 12px artwork radius inside it (12 + 6px padding). */
+  border-radius: 18px;
   color: var(--openui-text-neutral-primary);
   text-decoration: none;
   transition: background-color 0.15s ease;
