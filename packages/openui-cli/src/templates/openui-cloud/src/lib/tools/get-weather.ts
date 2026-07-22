@@ -11,8 +11,8 @@ export const getWeatherTool = {
   type: "function" as const,
   name: "get_weather",
   description:
-    "Get the current weather and a short daily forecast for a city or place name. " +
-    "Use whenever the user asks about weather, temperature, rain, or what to wear.",
+    "Get the current weather for a city or place name. Use whenever the user " +
+    "asks about weather, temperature, rain, or what to wear.",
   parameters: {
     type: "object",
     properties: {
@@ -27,30 +27,18 @@ export const getWeatherTool = {
   strict: false,
 };
 
-// https://open-meteo.com/en/docs — WMO weather interpretation codes.
-const WEATHER_CODES: Record<number, string> = {
-  0: "clear sky",
-  1: "mainly clear",
-  2: "partly cloudy",
-  3: "overcast",
-  45: "fog",
-  48: "depositing rime fog",
-  51: "light drizzle",
-  53: "drizzle",
-  55: "dense drizzle",
-  61: "light rain",
-  63: "rain",
-  65: "heavy rain",
-  71: "light snow",
-  73: "snow",
-  75: "heavy snow",
-  80: "rain showers",
-  81: "rain showers",
-  82: "violent rain showers",
-  95: "thunderstorm",
-  96: "thunderstorm with hail",
-  99: "thunderstorm with heavy hail",
-};
+// WMO weather codes (https://open-meteo.com/en/docs), collapsed to families.
+function describeWeather(code: number): string {
+  if (code === 0) return "clear sky";
+  if (code <= 3) return "partly cloudy";
+  if (code <= 48) return "fog";
+  if (code <= 57) return "drizzle";
+  if (code <= 67) return "rain";
+  if (code <= 77) return "snow";
+  if (code <= 82) return "rain showers";
+  if (code <= 86) return "snow showers";
+  return "thunderstorm";
+}
 
 export async function executeGetWeather(
   argsJson: string,
@@ -80,47 +68,17 @@ export async function executeGetWeather(
     const wxUrl = new URL("https://api.open-meteo.com/v1/forecast");
     wxUrl.searchParams.set("latitude", String(place.latitude));
     wxUrl.searchParams.set("longitude", String(place.longitude));
-    wxUrl.searchParams.set(
-      "current",
-      "temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m",
-    );
-    wxUrl.searchParams.set(
-      "daily",
-      "temperature_2m_max,temperature_2m_min,precipitation_probability_max",
-    );
-    wxUrl.searchParams.set("forecast_days", "3");
-    wxUrl.searchParams.set("timezone", "auto");
+    wxUrl.searchParams.set("current", "temperature_2m,weather_code,wind_speed_10m");
     const wx = (await (await fetch(wxUrl, { signal: ctx.signal })).json()) as {
-      current?: {
-        temperature_2m: number;
-        apparent_temperature: number;
-        relative_humidity_2m: number;
-        weather_code: number;
-        wind_speed_10m: number;
-      };
-      daily?: {
-        time: string[];
-        temperature_2m_max: number[];
-        temperature_2m_min: number[];
-        precipitation_probability_max: number[];
-      };
+      current?: { temperature_2m: number; weather_code: number; wind_speed_10m: number };
     };
+    if (!wx.current) return JSON.stringify({ error: "No weather data returned" });
 
     return JSON.stringify({
       place: `${place.name}${place.country ? `, ${place.country}` : ""}`,
-      current: wx.current && {
-        temperature_c: wx.current.temperature_2m,
-        feels_like_c: wx.current.apparent_temperature,
-        humidity_pct: wx.current.relative_humidity_2m,
-        wind_kmh: wx.current.wind_speed_10m,
-        conditions: WEATHER_CODES[wx.current.weather_code] ?? "unknown",
-      },
-      daily: wx.daily?.time.map((date, i) => ({
-        date,
-        high_c: wx.daily!.temperature_2m_max[i],
-        low_c: wx.daily!.temperature_2m_min[i],
-        precipitation_probability_pct: wx.daily!.precipitation_probability_max[i],
-      })),
+      temperature_c: wx.current.temperature_2m,
+      conditions: describeWeather(wx.current.weather_code),
+      wind_kmh: wx.current.wind_speed_10m,
     });
   } catch (err) {
     return JSON.stringify({
