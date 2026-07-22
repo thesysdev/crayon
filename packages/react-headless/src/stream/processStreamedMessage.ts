@@ -10,6 +10,8 @@ interface Parameters {
   createMessage: (message: Message) => void;
   /** A function that updates an existing message in the thread (matched by id). */
   updateMessage: (message: Message) => void;
+  /** Relabels an existing message in place (same position, new id) */
+  replaceMessageId?: (previousId: string, serverId: string) => void;
   /**
    * Marks a tool call as executing (args closed, awaiting result). Wired to the
    * store's `executingToolCallIds` set so `pairToolActivity` can report the
@@ -29,6 +31,7 @@ export const processStreamedMessage = async ({
   response,
   createMessage,
   updateMessage,
+  replaceMessageId,
   markToolExecuting = () => {},
   clearToolExecuting = () => {},
   adapter = agUIAdapter(),
@@ -154,11 +157,18 @@ export const processStreamedMessage = async ({
       }
 
       case EventType.TEXT_MESSAGE_START:
-        // The optimistic id is kept regardless of `event.messageId` — swapping
-        // ids mid-stream by deleting + re-creating the assistant message
-        // breaks ordering when tool messages have already been appended
-        // between the original create and this event (e.g. from
-        // TOOL_CALL_RESULT). Persistence layers should map ids on save.
+        // Adopt the server's message id so the message is addressable on the
+        // backend after the run (e.g. ThreadStorage.updateMessage). The swap is
+        // done IN PLACE via replaceMessageId — deleting + re-creating the
+        // assistant message would break ordering when tool messages were
+        // already appended between the original create and this event (e.g.
+        // from TOOL_CALL_RESULT); relabeling keeps the position. If the
+        // message isn't in the store yet (this is the first event), the
+        // trailing isFirst createMessage below already carries the server id.
+        if (event.messageId && event.messageId !== currentMessage.id) {
+          replaceMessageId?.(currentMessage.id, event.messageId);
+          currentMessage = { ...currentMessage, id: event.messageId };
+        }
         break;
 
       case EventType.TOOL_CALL_RESULT: {

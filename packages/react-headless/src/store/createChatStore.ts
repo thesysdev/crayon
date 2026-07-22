@@ -184,6 +184,10 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
               set((s) => ({
                 messages: s.messages.map((m) => (m.id === msg.id ? msg : m)),
               })),
+            replaceMessageId: (previousId, serverId) =>
+              set((s) => ({
+                messages: s.messages.map((m) => (m.id === previousId ? { ...m, id: serverId } : m)),
+              })),
             // A tool's args have closed (TOOL_CALL_END) → it is now executing.
             markToolExecuting: (id) =>
               set((s) =>
@@ -229,7 +233,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
         const threadId = get().selectedThreadId;
         if (threadId !== null) {
           threadStorage
-            .updateMessage(threadId, message)
+            .updateMessage?.(threadId, message)
             .catch((e) => set(() => ({ threadError: e })));
         }
       },
