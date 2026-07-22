@@ -631,4 +631,64 @@ describe("createChatStore", () => {
       expect(store.getState().isCreatingThread).toBe(false);
     });
   });
+
+  // ────────────────────────────────────────────
+  // Memory: LRU eviction of idle thread state
+  // ────────────────────────────────────────────
+
+  describe("idle thread eviction", () => {
+    // MAX_CACHED_THREADS is 20 (module constant in createChatStore).
+    it("evicts least-recently-used idle threads beyond the cap on navigation", async () => {
+      const getMessages = vi.fn().mockResolvedValue([]);
+      const store = makeStore({ getMessages });
+
+      // Visit 25 distinct threads. Each select creates + touches an entry.
+      for (let i = 0; i < 25; i++) store.getState().selectThread(`t${i}`);
+      await flushPromises();
+
+      // Selected (t24) + the 20 most-recently-used idle (t4..t23) survive; the 4
+      // oldest idle (t0..t3) are evicted.
+      expect(entryOf(store, "t0")).toBeUndefined();
+      expect(entryOf(store, "t3")).toBeUndefined();
+      expect(entryOf(store, "t4")).toBeDefined();
+      expect(entryOf(store, "t23")).toBeDefined();
+      expect(entryOf(store, "t24")).toBeDefined(); // selected
+      expect(Object.keys(store.getState().threadStates)).toHaveLength(21);
+    });
+
+    it("reloads an evicted thread from storage when re-selected", async () => {
+      const stored = [makeMessage("from-storage")];
+      const getMessages = vi.fn().mockResolvedValue(stored);
+      const store = makeStore({ getMessages });
+
+      for (let i = 0; i < 25; i++) store.getState().selectThread(`t${i}`);
+      await flushPromises();
+      expect(entryOf(store, "t0")).toBeUndefined(); // evicted
+
+      // Re-selecting a dropped thread reloads it (no in-memory entry to reuse).
+      store.getState().selectThread("t0");
+      await flushPromises();
+      expect(entryOf(store, "t0")?.messages).toEqual(stored);
+    });
+
+    it("never evicts a running thread, even as the least-recently-used", async () => {
+      const send = vi.fn().mockImplementation(() => new Promise(() => {})); // never resolves
+      const getMessages = vi.fn().mockResolvedValue([]);
+      const store = makeStore({ send, getMessages, streamProtocol: { parse: async function* () {} } });
+
+      // Start a background run on "runner", then let it fall to the back of the LRU.
+      store.getState().selectThread("runner");
+      await flushPromises();
+      store.getState().processMessage({ role: "user", content: "go" });
+      await flushPromises();
+      expect(entryOf(store, "runner")?.isRunning).toBe(true);
+
+      for (let i = 0; i < 25; i++) store.getState().selectThread(`o${i}`);
+      await flushPromises();
+
+      // Oldest entry, but protected because it's still running.
+      expect(entryOf(store, "runner")).toBeDefined();
+      expect(entryOf(store, "runner")?.isRunning).toBe(true);
+    });
+  });
 });
