@@ -36,7 +36,7 @@ Switch to dark mode by changing the `mode` prop:
 
 ## System Mode
 
-`mode="system"` follows the device color scheme with zero flicker: the rendered `<style>` carries light tokens, a `@media (prefers-color-scheme: dark)` block, and higher-specificity `[data-openui-mode="light"/"dark"]` blocks, so the correct scheme paints before hydration.
+`mode="system"` follows the device color scheme with zero flicker. The static defaults CSS (bundled in `components.css`) already ships the light tokens, a `@media (prefers-color-scheme: dark)` block, and `[data-openui-mode="light"/"dark"]` override blocks, so with no custom themes the provider renders no style tag at all. Custom `lightTheme`/`darkTheme` tokens are emitted in that same three-tier structure, carrying only the overridden values.
 
 ```tsx
 <ThemeProvider mode="system">
@@ -44,7 +44,7 @@ Switch to dark mode by changing the `mode` prop:
 </ThemeProvider>
 ```
 
-Setting `data-openui-mode="light"` or `"dark"` on `<html>` (or on the themed scope element) overrides the device scheme. To apply a preference stored in `localStorage` before first paint, render `ThemeScript` in `<head>`:
+Setting `data-openui-mode="light"` or `"dark"` on `<html>` (or any ancestor of the themed scope) overrides the device scheme. To apply a preference stored in `localStorage` before first paint, render `ThemeScript` in `<head>`:
 
 ```tsx
 import { ThemeScript } from "@openuidev/react-ui";

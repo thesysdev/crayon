@@ -7,14 +7,16 @@ describe("ThemeScript SSR", () => {
     const html = renderToString(<ThemeScript />);
 
     expect(html).toContain("<script>");
-    expect(html).toContain('localStorage.getItem("openui-theme")');
-    expect(html).toContain('setAttribute("data-openui-mode",v)');
+    // The serialized function receives the key as its argument.
+    expect(html).toContain("localStorage.getItem(");
+    expect(html).toContain('("openui-theme")');
+    expect(html).toContain('setAttribute("data-openui-mode"');
   });
 
   it("uses a custom storageKey", () => {
     const html = renderToString(<ThemeScript storageKey="my-key" />);
 
-    expect(html).toContain('localStorage.getItem("my-key")');
+    expect(html).toContain('("my-key")');
     expect(html).not.toContain("openui-theme");
   });
 

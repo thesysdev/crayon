@@ -20,7 +20,7 @@ export function camelToKebab(str: string): string {
  * @param prefix - The prefix to use for the CSS variables.
  * @returns A string of CSS variables.
  */
-export function themeToCssVars(theme: Record<string, unknown>, prefix = "openui"): string {
+export function themeToCssVars(theme: object, prefix = "openui"): string {
   return Object.entries(theme)
     .filter(([, v]) => typeof v === "string")
     .map(([key, value]) => `--${prefix}-${camelToKebab(key)}: ${value as string};`)

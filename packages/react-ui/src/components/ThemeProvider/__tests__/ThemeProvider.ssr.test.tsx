@@ -33,9 +33,26 @@ describe("ThemeProvider SSR", () => {
     expect(html).not.toContain("@media");
   });
 
-  it("emits all four rule groups for mode=system", () => {
+  it("renders no style tag for top-level mode=system without custom themes", () => {
+    // The static defaults CSS already implements system-following + the
+    // attribute override; the provider has nothing to add.
     const html = renderToString(
       <ThemeProvider mode="system">
+        <div>app</div>
+      </ThemeProvider>,
+    );
+
+    expect(html).not.toContain("data-openui-theme");
+    expect(html).toContain("app");
+  });
+
+  it("emits override-only rule groups for mode=system with custom themes", () => {
+    const html = renderToString(
+      <ThemeProvider
+        mode="system"
+        lightTheme={{ background: "oklch(0.9 0 0)" }}
+        darkTheme={{ background: "oklch(0.2 0 0)" }}
+      >
         <div>app</div>
       </ThemeProvider>,
     );
@@ -49,9 +66,10 @@ describe("ThemeProvider SSR", () => {
     expect(mediaStart).toBeGreaterThan(baseStart);
     expect(lightAttrStart).toBeGreaterThan(mediaStart);
     expect(darkAttrStart).toBeGreaterThan(lightAttrStart);
-    // Attribute groups also match the scope element carrying the attribute itself.
-    expect(html).toContain('body[data-openui-mode="light"]');
-    expect(html).toContain('body[data-openui-mode="dark"]');
+    // Only the overridden token is emitted — defaults stay in the static CSS.
+    expect(html).not.toContain("--openui-sunk");
+    // The attribute pin belongs on an ancestor, never the scope element itself.
+    expect(html).not.toContain("body[data-openui-mode");
   });
 
   it("includes custom lightTheme override values in the rendered tag", () => {
@@ -72,12 +90,13 @@ describe("ThemeProvider SSR", () => {
     );
 
     const mediaStart = html.indexOf("@media (prefers-color-scheme: dark)");
-    const mediaEnd = html.indexOf('[data-openui-mode="light"]');
+    const mediaEnd = html.indexOf('[data-openui-mode="dark"]');
     const mediaBlock = html.slice(mediaStart, mediaEnd);
 
     expect(mediaBlock).toContain("--openui-background: oklch(0.1 0 0)");
-    // The default (light) group before the media block keeps the light value.
-    expect(html.slice(0, mediaStart)).not.toContain("oklch(0.1 0 0)");
+    // No light-side groups: with only a darkTheme override there is nothing
+    // the static light defaults don't already provide.
+    expect(html).not.toContain('[data-openui-mode="light"]');
   });
 
   it("scopes a nested provider's style tag to the generated class, not body", () => {
@@ -111,7 +130,12 @@ describe("ThemeProvider SSR", () => {
     );
 
     const tags = [...html.matchAll(STYLE_TAG_RE)];
-    expect(tags).toHaveLength(2);
-    expect(tags[1]?.[2]).toContain("@media (prefers-color-scheme: dark)");
+    // Only the scoped inner tag renders: the top-level system parent has no
+    // custom tokens, while the nested scope re-emits full sets so its subtree
+    // can diverge from anything an ancestor pinned.
+    expect(tags).toHaveLength(1);
+    expect(tags[0]?.[2]).toMatch(/^\.openui-theme-/);
+    expect(tags[0]?.[2]).toContain("@media (prefers-color-scheme: dark)");
+    expect(tags[0]?.[2]).toContain(`--openui-background: ${defaultDarkTheme.background}`);
   });
 });

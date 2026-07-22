@@ -9,9 +9,9 @@ import { themeToCssVars } from "./utils";
 export type ThemeProps = {
   /**
    * Active color scheme. `"system"` follows the device scheme and honors a
-   * `data-openui-mode="light" | "dark"` attribute on `<html>` (or on the
-   * themed scope element) as an override — see {@link ThemeScript} for
-   * applying a stored preference before hydration. Defaults to the parent
+   * `data-openui-mode="light" | "dark"` attribute on `<html>` (or any
+   * ancestor of the themed scope) as an override — see {@link ThemeScript}
+   * for applying a stored preference before hydration. Defaults to the parent
    * ThemeProvider mode when nested, otherwise `"light"`.
    */
   mode?: ThemeMode;
@@ -297,26 +297,43 @@ export const ThemeProvider = ({
   // (@layer openui), so runtime theming always wins. See README "Styling
   // integration" before changing.
   const styleContent = useMemo(() => {
-    const portalSelector = `.${portalClassName}`;
+    const scopeSelectors = `${styleSelector}, .${portalClassName}`;
     if (mode !== "system") {
       const vars = themeToCssVars(mode === "light" ? resolvedLightTheme : resolvedDarkTheme);
-      return `${styleSelector}, ${portalSelector} { ${vars} }`;
+      return `${scopeSelectors} { ${vars} }`;
     }
-    // For "system", the device scheme drives the default while an explicit
-    // data-openui-mode attribute (on an ancestor or the scope element itself)
-    // must beat the media query: [attr] descendant is (0,1,1) specificity vs
-    // the media-gated (0,0,1), and the attribute groups are emitted last.
-    const lightVars = themeToCssVars(resolvedLightTheme);
-    const darkVars = themeToCssVars(resolvedDarkTheme);
+    // System mode: the static defaults CSS already ships the full light set,
+    // the media-gated dark set, and the [data-openui-mode] override blocks.
+    // The tag only carries what that CSS cannot know: custom tokens on a
+    // top-level provider, or full sets for a scoped provider whose subtree
+    // must out-cascade tokens an ancestor pinned on body. With nothing to
+    // add, no tag is rendered. The attribute groups are emitted last and use
+    // [attr] descendant selectors — (0,1,1) beats the media-gated (0,0,1) —
+    // so a data-openui-mode pin on <html>/an ancestor wins over the device
+    // scheme. Custom themes require the defaults stylesheet (always bundled
+    // in components.css) for their unset tokens.
+    const scoped = styleSelector !== "body";
+    const lightVars = themeToCssVars(scoped ? resolvedLightTheme : userLightTheme);
+    const darkVars = themeToCssVars(scoped ? resolvedDarkTheme : (userDarkTheme ?? userLightTheme));
     const attrGroup = (attrMode: "light" | "dark") =>
-      `[data-openui-mode="${attrMode}"] ${styleSelector}, ${styleSelector}[data-openui-mode="${attrMode}"], [data-openui-mode="${attrMode}"] ${portalSelector}, ${portalSelector}[data-openui-mode="${attrMode}"]`;
+      `[data-openui-mode="${attrMode}"] ${styleSelector}, [data-openui-mode="${attrMode}"] .${portalClassName}`;
     return [
-      `${styleSelector}, ${portalSelector} { ${lightVars} }`,
-      `@media (prefers-color-scheme: dark) { ${styleSelector}, ${portalSelector} { ${darkVars} } }`,
-      `${attrGroup("light")} { ${lightVars} }`,
-      `${attrGroup("dark")} { ${darkVars} }`,
-    ].join("\n");
-  }, [mode, resolvedLightTheme, resolvedDarkTheme, styleSelector, portalClassName]);
+      lightVars && `${scopeSelectors} { ${lightVars} }`,
+      darkVars && `@media (prefers-color-scheme: dark) { ${scopeSelectors} { ${darkVars} } }`,
+      lightVars && `${attrGroup("light")} { ${lightVars} }`,
+      darkVars && `${attrGroup("dark")} { ${darkVars} }`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+  }, [
+    mode,
+    resolvedLightTheme,
+    resolvedDarkTheme,
+    userLightTheme,
+    userDarkTheme,
+    styleSelector,
+    portalClassName,
+  ]);
 
   // ---------------------------------------------------------------------------
   // Render
@@ -325,7 +342,9 @@ export const ThemeProvider = ({
     <InternalContext.Provider value={internalValue}>
       <ThemeContext.Provider value={contextValue}>
         {/* Rendered before children so streamed CSS parses before content paints. */}
-        <style data-openui-theme={id} dangerouslySetInnerHTML={{ __html: styleContent }} />
+        {styleContent ? (
+          <style data-openui-theme={id} dangerouslySetInnerHTML={{ __html: styleContent }} />
+        ) : null}
         {useAutoScope ? (
           <div className={scopedClassName} style={{ display: "contents" }}>
             {children}
