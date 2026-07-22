@@ -196,7 +196,11 @@ describe("createChatStore", () => {
           }),
       );
       const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
-      const store = makeStore({ createThread, send, streamProtocol: { parse: async function* () {} } });
+      const store = makeStore({
+        createThread,
+        send,
+        streamProtocol: { parse: async function* () {} },
+      });
 
       // Brand-new chat: first message kicks off createThread (still pending).
       store.getState().processMessage({ role: "user", content: "hello" });
@@ -275,7 +279,11 @@ describe("createChatStore", () => {
         return new Promise(() => {}); // never resolves
       });
       const deleteThread = vi.fn().mockResolvedValue(undefined);
-      const store = makeStore({ send, deleteThread, streamProtocol: { parse: async function* () {} } });
+      const store = makeStore({
+        send,
+        deleteThread,
+        streamProtocol: { parse: async function* () {} },
+      });
 
       store.setState({ threads: [makeThread("t1")], selectedThreadId: "t1" });
       store.getState().processMessage({ role: "user", content: "hello" });
@@ -394,7 +402,11 @@ describe("createChatStore", () => {
       const createThread = vi.fn().mockResolvedValue(newThread);
       const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
 
-      const store = makeStore({ createThread, send, streamProtocol: { parse: async function* () {} } });
+      const store = makeStore({
+        createThread,
+        send,
+        streamProtocol: { parse: async function* () {} },
+      });
 
       await store.getState().processMessage({ role: "user", content: "hello" });
 
@@ -496,7 +508,11 @@ describe("createChatStore", () => {
       const newMessages = [makeMessage("new-m1")];
       const getMessages = vi.fn().mockResolvedValue(newMessages);
 
-      const store = makeStore({ send, getMessages, streamProtocol: { parse: async function* () {} } });
+      const store = makeStore({
+        send,
+        getMessages,
+        streamProtocol: { parse: async function* () {} },
+      });
       store.setState({ selectedThreadId: "t1" });
 
       // Start streaming on t1.
