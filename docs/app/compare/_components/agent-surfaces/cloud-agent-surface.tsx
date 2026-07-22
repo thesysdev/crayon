@@ -13,7 +13,6 @@ import { useMemo, useState } from "react";
 import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
 import { ComparisonModeControllerBridge } from "../comparison-mode-controller";
 import { createCloudChatLLM } from "./cloud-chat-llm";
-import { CloudFreshThreadBridge } from "./cloud-fresh-thread-bridge";
 import { CloudArtifactHistoryBridge, CloudFullPageArtifactPanel } from "./cloud-full-page-artifact";
 import { getOrCreateCloudUserId } from "./cloud-user-id";
 import { ComparisonGenUIAssistantMessage } from "./comparison-genui-assistant-message";
@@ -80,7 +79,6 @@ export function CloudAgentSurface({ themeMode, registry }: CloudAgentSurfaceProp
         </AgentInterface.Welcome>
         <AgentInterface.Composer>
           <ComparisonModeControllerBridge mode="cloud" registry={registry} />
-          <CloudFreshThreadBridge />
           <CloudArtifactHistoryBridge />
         </AgentInterface.Composer>
       </AgentInterface>
