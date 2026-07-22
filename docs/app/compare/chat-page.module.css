@@ -301,8 +301,7 @@
 .mobileMenuButton[aria-expanded="true"],
 .ctaMenuItem:hover,
 .resetButton:hover,
-.themeToggle:hover,
-.cloudArtifactClose:hover {
+.themeToggle:hover {
   background: var(--openui-highlight);
 }
 
@@ -315,8 +314,7 @@
 .suggestionButton:focus-visible,
 .composerSubmit:focus-visible,
 .resetButton:focus-visible,
-.themeToggle:focus-visible,
-.cloudArtifactClose:focus-visible {
+.themeToggle:focus-visible {
   outline: 2px solid var(--openui-border-accent-emphasis);
   outline-offset: 2px;
 }
@@ -832,20 +830,25 @@
 }
 
 .panelBody :global(.openui-agent-thread-container),
-.panelBody :global(.openui-agent-thread-wrapper),
-.panelBody :global(.openui-agent-thread-chat-panel) {
+.panelBody :global(.openui-agent-thread-wrapper) {
   width: 100% !important;
   min-width: 0 !important;
   min-height: 0 !important;
   flex: 1 1 100% !important;
 }
 
-/* Cloud uses its injected body-level modal for artifact details. Suppress the
-   built-in mobile overlay and desktop split rail that share the same state. */
-.panelBody :global([data-chat-mode="cloud"] .openui-detailed-view-overlay),
-.panelBody :global([data-chat-mode="cloud"] .openui-agent-thread-detailed-view-panel),
-.panelBody :global([data-chat-mode="cloud"] .openui-agent-resizable-separator) {
-  display: none !important;
+.panelBody :global(.openui-agent-thread-chat-panel) {
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+.panelBody
+  :global(
+    .openui-agent-thread-container:not(.openui-agent-thread-container--detailed-view-active)
+      .openui-agent-thread-chat-panel
+  ) {
+  width: 100% !important;
+  flex: 1 1 100% !important;
 }
 
 .panelBody :global(.openui-agent-thread-messages) {
@@ -1096,91 +1099,6 @@
   margin: 8px 0 0;
   color: var(--openui-text-neutral-tertiary);
   font: var(--openui-text-label-xs);
-  text-align: center;
-}
-
-.cloudArtifactOverlay {
-  position: fixed;
-  z-index: 1000;
-  inset: 0;
-  background: color-mix(in srgb, var(--openui-text-black) 36%, transparent);
-  backdrop-filter: blur(2px);
-}
-
-.cloudArtifactDialog {
-  position: fixed;
-  z-index: 1001;
-  display: flex;
-  width: 100vw;
-  height: 100dvh;
-  min-width: 0;
-  min-height: 0;
-  flex-direction: column;
-  inset: 0;
-  overflow: hidden;
-  outline: none;
-  color: var(--openui-text-neutral-primary);
-  background: var(--openui-foreground);
-}
-
-.cloudArtifactHeader {
-  display: flex;
-  min-height: 60px;
-  flex: none;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  border-bottom: 1px solid var(--openui-border-default);
-  padding: 8px 14px 8px 20px;
-  background: var(--openui-foreground);
-}
-
-.cloudArtifactTitle {
-  min-width: 0;
-  overflow: hidden;
-  margin: 0;
-  color: var(--openui-text-neutral-primary);
-  font: var(--openui-text-heading-sm);
-  font-weight: 500;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.cloudArtifactClose {
-  display: grid;
-  width: 44px;
-  height: 44px;
-  flex: none;
-  place-items: center;
-  border: 1px solid var(--openui-border-default);
-  border-radius: 12px;
-  background: var(--openui-foreground);
-  color: var(--openui-text-neutral-primary);
-  cursor: pointer;
-}
-
-.cloudArtifactBody {
-  display: flex;
-  min-width: 0;
-  min-height: 0;
-  flex: 1;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.cloudArtifactBody > :global(.thesys-artifact-standalone) {
-  min-height: 0 !important;
-  flex: 1 1 0% !important;
-}
-
-.cloudArtifactError {
-  display: grid;
-  min-height: 240px;
-  flex: 1;
-  place-items: center;
-  padding: 32px;
-  color: var(--openui-text-neutral-secondary);
-  font: var(--openui-text-body-default);
   text-align: center;
 }
 

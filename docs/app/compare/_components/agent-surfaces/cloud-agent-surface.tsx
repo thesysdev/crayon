@@ -2,7 +2,7 @@
 
 import { CLOUD_USER_ID_HEADER } from "@/lib/openui-cloud/user-id";
 import { defineArtifactCategories } from "@openuidev/react-headless";
-import { AgentInterface, type AssistantMessage } from "@openuidev/react-ui";
+import { AgentInterface } from "@openuidev/react-ui";
 import {
   chatLibrary,
   presentationArtifactRenderer,
@@ -13,9 +13,7 @@ import { useMemo, useState } from "react";
 import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
 import { ComparisonModeControllerBridge } from "../comparison-mode-controller";
 import { createCloudChatLLM } from "./cloud-chat-llm";
-import { CloudArtifactHistoryBridge, CloudFullPageArtifactPanel } from "./cloud-full-page-artifact";
 import { getOrCreateCloudUserId } from "./cloud-user-id";
-import { ComparisonGenUIAssistantMessage } from "./comparison-genui-assistant-message";
 import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
@@ -27,16 +25,6 @@ interface CloudAgentSurfaceProps {
   themeMode: "light" | "dark";
   registry: ComparisonControllerRegistry;
 }
-
-const CLOUD_COMPONENTS = {
-  AssistantMessage: ({ message }: { message: AssistantMessage }) => (
-    <ComparisonGenUIAssistantMessage
-      message={message}
-      library={chatLibrary}
-      detailedViewPanel={CloudFullPageArtifactPanel}
-    />
-  ),
-};
 
 export function CloudAgentSurface({ themeMode, registry }: CloudAgentSurfaceProps) {
   const [userId] = useState(getOrCreateCloudUserId);
@@ -65,7 +53,6 @@ export function CloudAgentSurface({ themeMode, registry }: CloudAgentSurfaceProp
         storage={cloudStorage}
         llm={llm}
         componentLibrary={chatLibrary}
-        components={CLOUD_COMPONENTS}
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
         agentName="OpenUI Cloud"
@@ -79,7 +66,6 @@ export function CloudAgentSurface({ themeMode, registry }: CloudAgentSurfaceProp
         </AgentInterface.Welcome>
         <AgentInterface.Composer>
           <ComparisonModeControllerBridge mode="cloud" registry={registry} />
-          <CloudArtifactHistoryBridge />
         </AgentInterface.Composer>
       </AgentInterface>
     </div>
