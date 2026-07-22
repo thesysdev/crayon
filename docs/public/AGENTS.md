@@ -29,7 +29,7 @@ Everything imports from `@openuidev/react-ui`. Read the Rules first.
 - **For Cloud, the component set, storage hook, and artifacts come from
   `@openuidev/thesys`** (`chatLibrary`, `useOpenuiCloudStorage`,
   `artifactRenderers`, `artifactCategories`); the server route uses
-  `@openuidev/thesys-server` (`artifactTool`, `createResponsesInstructions`).
+  `@openuidev/thesys-server` (`artifactTool`, `generateSystemPrompt`).
 - **Send a message programmatically** with `useThread`:
   `const send = useThread((s) => s.processMessage); send({ role: "user", content })`.
 - **An artifact `parser` must tolerate partial data.** While streaming, `args` is
@@ -50,7 +50,7 @@ npm install @openuidev/react-ui
 npm install @openuidev/thesys @openuidev/thesys-server
 # Authoring your own GenUI components:
 npm install @openuidev/react-lang zod
-# The `openui generate` CLI (build-time system-prompt generation):
+# The `openui generate` CLI (build-time system prompt + library spec generation):
 npm install -D @openuidev/cli
 ```
 
@@ -113,7 +113,7 @@ export default function App() {
 
 ```ts
 // app/api/chat/route.ts: proxies to OpenUI Cloud. THESYS_API_KEY stays server-side.
-import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
+import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
 
 export async function POST(req: Request) {
   const { threadId, input } = await req.json();
@@ -130,7 +130,7 @@ export async function POST(req: Request) {
       stream: true,
       store: true,
       tools: [artifactTool()], // managed slides/report tool
-      instructions: createResponsesInstructions(),
+      instructions: generateSystemPrompt(), // config envelope; pass { instructions } for custom guidance
     }),
     signal: req.signal, // forward browser aborts (stop button)
   });
@@ -381,7 +381,7 @@ library ships paired prompt options (`openuiPromptOptions`,
 
 The model must be told what components exist. Generate a system prompt from the
 library and send it to your provider (self-hosted): `library.prompt(promptOptions)`
-(see the self-hosted route above). On Cloud, `createResponsesInstructions()` does this.
+(see the self-hosted route above). On Cloud, `generateSystemPrompt()` does this — it returns a config envelope that the Cloud backend compiles into the real system prompt (`createResponsesInstructions` is its deprecated alias).
 
 ### Authoring your own components
 
@@ -454,7 +454,7 @@ interface PromptOptions {
 Generate the system prompt at build time with the CLI:
 
 ```bash
-openui generate src/library.tsx --out src/system-prompt.txt
+openui generate src/library.tsx --out src/system-prompt.txt   # also emits src/system-prompt.spec.json
 openui generate src/library.tsx --json-schema -o spec.json   # component signatures
 ```
 

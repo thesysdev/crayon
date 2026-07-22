@@ -43,7 +43,9 @@ yarn dlx @openuidev/cli@latest generate ./src/library.ts --out system-prompt.txt
 npx @openuidev/cli@latest generate ./src/library.ts --out system-prompt.txt
 ```
 
-Generate the component spec as JSON (for use with `generatePrompt`):
+This writes the prompt to `system-prompt.txt` and the serialized library spec alongside it as `system-prompt.spec.json`.
+
+Generate the component spec as JSON (for use with `generateSystemPrompt`):
 
 ```bash tab="pnpm" tab-group="pkg"
 pnpx @openuidev/cli@latest generate ./src/library.ts --json-schema
@@ -63,9 +65,9 @@ npx @openuidev/cli@latest generate ./src/library.ts --json-schema
 
 The CLI auto-detects exported `PromptOptions` (examples, rules) alongside your library. Use `--prompt-options <name>` to pick a specific export.
 
-## 2. `generatePrompt` (programmatic)
+## 2. `generateSystemPrompt` (programmatic)
 
-For backends that need dynamic prompts - different tools, preambles, or feature flags per request - use `generatePrompt` from `@openuidev/lang-core`. This has no React dependency, so it works in any Node/Edge/serverless backend.
+For backends that need dynamic prompts - different tools, preambles, or feature flags per request - use `generateSystemPrompt` from `@openuidev/lang-core`. This has no React dependency, so it works in any Node/Edge/serverless backend.
 
 First, generate the component spec JSON via the CLI:
 
@@ -88,27 +90,29 @@ npx @openuidev/cli generate ./src/library.ts --json-schema --out generated/compo
 Then build the prompt at runtime:
 
 ```ts
-import { generatePrompt, type PromptSpec } from "@openuidev/lang-core";
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
 import componentSpec from "./generated/component-spec.json";
 
-const systemPrompt = generatePrompt({
-  ...componentSpec,
+const systemPrompt = generateSystemPrompt({
+  library: componentSpec as LibrarySpec,
 
-  // Tool descriptions — so the LLM knows what tools exist
-  tools: myToolSpecs,
+  promptOptions: {
+    // Tool descriptions — so the LLM knows what tools exist
+    tools: myToolSpecs,
 
-  // Examples showing how to use your tools with Query/Mutation
-  toolExamples: [`tickets = Query("list_tickets", {}, {rows: []})\n...`],
+    // Examples showing how to use your tools with Query/Mutation
+    toolExamples: [`tickets = Query("list_tickets", {}, {rows: []})\n...`],
 
-  // Feature flags
-  toolCalls: true, // Enable Query(), Mutation(), @Run (default: true if tools provided)
-  bindings: true, // Enable $variables, @Set, @Reset (default: true if toolCalls)
-  editMode: true, // Enable incremental editing (LLM outputs patches, not full regen)
-  inlineMode: true, // Enable text + code responses (LLM can answer questions without code)
+    // Feature flags
+    toolCalls: true, // Enable Query(), Mutation(), @Run (default: true if tools provided)
+    bindings: true, // Enable $variables, @Set, @Reset (default: true if toolCalls)
+    editMode: true, // Enable incremental editing (LLM outputs patches, not full regen)
+    inlineMode: true, // Enable text + code responses (LLM can answer questions without code)
 
-  // Custom instructions
-  preamble: "You build dashboards using openui-lang.",
-  additionalRules: ['Use @Reset after form submit, not @Set($var, "")'],
+    // Custom instructions
+    preamble: "You build dashboards using openui-lang.",
+    additionalRules: ['Use @Reset after form submit, not @Set($var, "")'],
+  },
 });
 ```
 
@@ -131,7 +135,7 @@ import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui";
 const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
 ```
 
-This is convenient but imports React components - use `generatePrompt` for pure backend routes.
+This is convenient but imports React components - use `generateSystemPrompt` for pure backend routes.
 
 ## What gets generated
 
@@ -152,11 +156,14 @@ The generated prompt includes:
 
 ```ts
 import OpenAI from "openai";
-import { generatePrompt, type PromptSpec } from "@openuidev/lang-core";
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
 import componentSpec from "./generated/component-spec.json";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const systemPrompt = generatePrompt({ ...componentSpec, preamble: "You are a helpful assistant." });
+const systemPrompt = generateSystemPrompt({
+  library: componentSpec as LibrarySpec,
+  promptOptions: { preamble: "You are a helpful assistant." },
+});
 
 export async function POST(req: Request) {
   const { messages } = await req.json();

@@ -5,7 +5,8 @@
  * CSS/image/font loaders.
  *
  * argv: [entryPath, exportName?, "--json-schema"?, "--spec"?, "--prompt-options", name?]
- * stdout: the prompt string, JSON schema, or spec JSON
+ * stdout: one artifact for the mode flags; default emits BOTH the prompt and
+ * the spec JSON, joined by SEPARATION_DELIMITER (generate.ts splits them).
  */
 
 import * as fs from "fs";
@@ -198,7 +199,7 @@ async function main(): Promise<void> {
     output = [
       library.prompt(promptOptions),
       JSON.stringify({ ...library.toSpec(), schema: library.toJSONSchema() }, null, 2),
-    ].join(SEPARATION_DELIMITER); // NUL-joined so the parent (generate.ts) can split multi-artifact payloads
+    ].join(SEPARATION_DELIMITER); // record-separator-joined so generate.ts can split multi-artifact payloads
   }
 
   process.stdout.write(output);
