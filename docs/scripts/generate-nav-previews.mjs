@@ -27,13 +27,22 @@ const ACCENT = {
   community: { light: '#db2777', dark: '#f472b6', wash: '#e5397f', washDark: '#f9a8d4' },
 };
 
-// Real entries from the Lab page, so the preview reads as the actual grid.
+// The real Lab entries, with the same type -> accent mapping the page uses.
+// The grid runs past the right and bottom edges on purpose: the preview should
+// read as a corner of a much larger directory, not as four items.
+const TYPE_ACCENT = {
+  Tool: '#7c3aed', Package: '#7c3aed',
+  Plugin: '#2563eb', Extension: '#2563eb',
+  App: '#16a34a', Provider: '#16a34a',
+  Framework: '#d97706',
+  Example: '#64748b',
+};
 const PROJECTS = [
-  { name: 'OpenUI Forge', type: 'Tool', accent: '#7c3aed' },
-  { name: 'GAIA', type: 'App', accent: '#16a34a' },
-  { name: 'Noetic', type: 'Framework', accent: '#d97706' },
-  { name: 'Vue Lang', type: 'Framework', accent: '#2563eb' },
-];
+  ['OpenUI Forge', 'Tool'], ['GAIA', 'App'], ['Noetic', 'Framework'], ['Field Theory UI', 'App'],
+  ['Open WebUI Plugin', 'Plugin'], ['Ollama Integration', 'Provider'], ['Genui VS Code', 'Extension'],
+  ['OpenClaw OS Plugin', 'Plugin'], ['OpenUI Plotly', 'Package'], ['Vue Lang', 'Framework'],
+  ['Svelte Lang', 'Framework'], ['React Native', 'Example'],
+].map(([name, type]) => ({ name, type, accent: TYPE_ACCENT[type] }));
 
 const T = {
   light: {
@@ -64,20 +73,25 @@ function scene(name, c, a) {
   const box = ` stroke="${c.border}" stroke-width="1"`;
 
   if (name === 'community') {
-    // The Lab project grid, at the density it actually renders on the page.
-    s.push(t(X, Y + 10, 12, 600, c.ink, 'Community projects'));
-    const CW = 146, CH = 62, G = 10;
+    // A scaled-down slice of the Lab grid: four columns by three rows, inset
+    // from the top-left the way the design insets its screenshots, and running
+    // off the right and bottom so the set reads as bigger than the frame.
+    const CW = 150, CH = 110, G = 12, X0 = 46, Y0 = 46, COLS = 4;
     PROJECTS.forEach((p, i) => {
-      const cx = X + (i % 2) * (CW + G);
-      const cy = Y + 24 + Math.floor(i / 2) * (CH + G);
-      s.push(r(cx, cy, CW, CH, 9, 'none', box));
-      s.push(r(cx + 11, cy + 11, 17, 17, 5, p.accent));
-      s.push(t(cx + 35, cy + 23, 9.5, 550, c.ink, p.name));
-      // Type pill
-      const pw = 8 + p.type.length * 4.4;
-      s.push(r(cx + 11, cy + 35, pw, 12, 6, c.chip));
-      s.push(t(cx + 11 + pw / 2, cy + 44, 7.5, 500, c.ink2, p.type, 'middle'));
-      s.push(r(cx + 17 + pw, cy + 39, CW - pw - 34, 5, 2.5, c.rule));
+      const cx = X0 + (i % COLS) * (CW + G);
+      const cy = Y0 + Math.floor(i / COLS) * (CH + G);
+      if (cy > H) return;
+      s.push(r(cx, cy, CW, CH, 12, c.card, ` stroke="${c.border}" stroke-width="1"`));
+      s.push(t(cx + 14, cy + 26, 10.5, 550, c.ink, p.name));
+      // Type pill, tinted with the card accent exactly as the page does.
+      const pw = 10 + p.type.length * 4.6;
+      s.push(r(cx + 14, cy + 34, pw, 14, 5, p.accent, ' opacity="0.14"'));
+      s.push(t(cx + 14 + pw / 2, cy + 44, 7.5, 500, p.accent, p.type, 'middle'));
+      s.push(t(cx + 20 + pw, cy + 44, 7.5, 400, c.ink3, 'by Community'));
+      [CW - 28, CW - 28, CW - 54].forEach((lw, k) =>
+        s.push(r(cx + 14, cy + 58 + k * 10, lw, 5, 2.5, c.rule)));
+      s.push(r(cx + 14, cy + 90, 40, 10, 5, c.chip));
+      s.push(r(cx + 60, cy + 90, 40, 10, 5, c.chip));
     });
   } else {
     // OpenUI vs JSON: the schema on the left, what it renders on the right.

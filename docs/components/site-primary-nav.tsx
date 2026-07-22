@@ -40,7 +40,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
     children: [
       {
         title: "Compare",
-        description: "How AI apps look with and without OpenUI.",
+        description: "See how AI apps look with and without OpenUI.",
         href: "/compare",
         preview: {
           light: "/nav/compare-light.webp",
@@ -49,7 +49,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
       },
       {
         title: "Dashboard example",
-        description: "A demo built on GitHub data that responds with a dashboard.",
+        description: "A demo built on GitHub data that responds with dashboard.",
         href: "/demo/github",
         preview: {
           light: "/nav/dashboard-light.webp",
@@ -58,7 +58,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
       },
       {
         title: "OpenUI Chat",
-        description: "A ChatGPT-like assistant powered by OpenUI Cloud that responds with UI.",
+        description: "A ChatGPT-like assistant powered by OpenUI that responds with UI.",
         href: "/chat",
         preview: {
           light: "/nav/chat-light.webp",
