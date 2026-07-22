@@ -1,35 +1,46 @@
 /**
- * Generates the desktop mega-menu preview art in public/nav.
+ * Generates the Community projects preview in public/nav.
  *
  *   node scripts/generate-nav-previews.mjs
  *
- * These are vector on purpose: each preview is a few dozen shapes, so SVG is
- * both smaller than an equivalent 2x raster and sharp at any DPR.
+ * Every other preview is exported straight from the menu design. This one is
+ * drawn because the design has no artwork for it — it shows the Lab project
+ * grid itself, scaled down and centred so it overflows on every side and reads
+ * as a slice of a much larger directory.
  *
- * Composition: a lightly tinted field with the accent blooming from the
- * top-left, and a bordered product surface entering from the bottom-right that
- * runs off both the bottom and right edges. Each scene draws a plausible slice
- * of the thing it links to — real labels, real numbers, one accent affordance —
- * rather than generic placeholder bars, which read as a loading skeleton.
- * Colour is deliberately restrained: a wash in the corner, and exactly one
- * saturated element per scene.
+ * The frame matches the exported previews exactly, using values read off the
+ * design frames rather than eyeballed: fill #f4f4f4 / #1a1a1a, 1px stroke at
+ * #000 8% / #2c2c2c, 12px radius — doubled here because the art is authored at
+ * 2x. No wash, no gradient, no surface plate behind the cards.
  */
 import fs from 'node:fs';
 
-const W = 568, H = 320;
-const CARD_X = 216, CARD_Y = 100;   // surface origin; it runs off right + bottom
-const R = 20, PAD = 26;
-const X = CARD_X + PAD, Y = CARD_Y + PAD;
+const W = 568, H = 320, R = 24, STROKE = 2;
 
-// Hues behind the site's own pastel tokens, one per menu entry.
-const ACCENT = {
-  vsjson:    { light: '#7c3aed', dark: '#a78bfa', wash: '#a855f7', washDark: '#c4b5fd' },
-  community: { light: '#db2777', dark: '#f472b6', wash: '#e5397f', washDark: '#f9a8d4' },
+const THEME = {
+  light: {
+    surface: '#f4f4f4',
+    stroke: 'rgba(0,0,0,0.08)',
+    card: '#ffffff',
+    cardStroke: 'rgba(0,0,0,0.08)',
+    title: 'rgba(9,9,9,0.88)',
+    meta: 'rgba(9,9,9,0.32)',
+    line: 'rgba(9,9,9,0.06)',
+    chip: 'rgba(9,9,9,0.04)',
+  },
+  dark: {
+    surface: '#1a1a1a',
+    stroke: '#2c2c2c',
+    card: '#212121',
+    cardStroke: 'rgba(255,255,255,0.09)',
+    title: 'rgba(255,255,255,0.90)',
+    meta: 'rgba(255,255,255,0.34)',
+    line: 'rgba(255,255,255,0.07)',
+    chip: 'rgba(255,255,255,0.05)',
+  },
 };
 
-// The real Lab entries, with the same type -> accent mapping the page uses.
-// The grid runs past the right and bottom edges on purpose: the preview should
-// read as a corner of a much larger directory, not as four items.
+// The Lab page's own type -> accent mapping.
 const TYPE_ACCENT = {
   Tool: '#7c3aed', Package: '#7c3aed',
   Plugin: '#2563eb', Extension: '#2563eb',
@@ -44,141 +55,53 @@ const PROJECTS = [
   ['Svelte Lang', 'Framework'], ['React Native', 'Example'],
 ].map(([name, type]) => ({ name, type, accent: TYPE_ACCENT[type] }));
 
-const T = {
-  light: {
-    page: '#fbfbfb', card: '#ffffff', border: 'rgba(9,9,9,0.10)',
-    rule: 'rgba(9,9,9,0.07)', chip: 'rgba(9,9,9,0.045)',
-    ink: 'rgba(9,9,9,0.88)', ink2: 'rgba(9,9,9,0.46)', ink3: 'rgba(9,9,9,0.26)',
-    onAccent: '#ffffff', tint: 0.05, bloom: 0.16, bloomR: 78, lift: 0.5, shadow: 0.10,
-  },
-  dark: {
-    page: '#161616', card: '#1f1f1f', border: 'rgba(255,255,255,0.11)',
-    rule: 'rgba(255,255,255,0.08)', chip: 'rgba(255,255,255,0.055)',
-    ink: 'rgba(255,255,255,0.90)', ink2: 'rgba(255,255,255,0.50)', ink3: 'rgba(255,255,255,0.28)',
-    onAccent: '#161616', tint: 0.02, bloom: 0.16, bloomR: 55, lift: 0, shadow: 0.55,
-  },
-};
-
 const FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, ui-sans-serif, sans-serif";
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
 const r = (x, y, w, h, rx, fill, extra = '') =>
   `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${fill}"${extra}/>`;
 const t = (x, y, size, weight, fill, str, anchor = 'start') =>
   `<text x="${x}" y="${y}" font-family="${FONT}" font-size="${size}" font-weight="${weight}" ` +
   `fill="${fill}" text-anchor="${anchor}" letter-spacing="-0.2">${esc(str)}</text>`;
 
-function scene(name, c, a) {
-  const s = [];
-  const box = ` stroke="${c.border}" stroke-width="1"`;
+function svg(mode) {
+  const c = THEME[mode];
+  const CW = 150, CH = 108, G = 12, COLS = 4, ROWS = 3;
+  // Centre the block so it overflows evenly rather than hanging off one corner.
+  const X0 = Math.round((W - (COLS * CW + (COLS - 1) * G)) / 2);
+  const Y0 = Math.round((H - (ROWS * CH + (ROWS - 1) * G)) / 2);
 
-  if (name === 'community') {
-    // A scaled-down slice of the Lab grid: four columns by three rows, inset
-    // from the top-left the way the design insets its screenshots, and running
-    // off the right and bottom so the set reads as bigger than the frame.
-    const CW = 150, CH = 110, G = 12, COLS = 4, ROWS = 3;
-    // Centre the whole block so the overflow is symmetric on both sides and the
-    // bottom — the grid should read as the middle of a larger set, not a corner.
-    const X0 = Math.round((W - (COLS * CW + (COLS - 1) * G)) / 2);
-    const Y0 = Math.round((H - (ROWS * CH + (ROWS - 1) * G)) / 2);
-    PROJECTS.forEach((p, i) => {
-      const cx = X0 + (i % COLS) * (CW + G);
-      const cy = Y0 + Math.floor(i / COLS) * (CH + G);
-      s.push(r(cx, cy, CW, CH, 12, c.card, ` stroke="${c.border}" stroke-width="1"`));
-      s.push(t(cx + 14, cy + 26, 10.5, 550, c.ink, p.name));
-      // Type pill, tinted with the card accent exactly as the page does.
-      const pw = 10 + p.type.length * 4.6;
-      s.push(r(cx + 14, cy + 34, pw, 14, 5, p.accent, ' opacity="0.14"'));
-      s.push(t(cx + 14 + pw / 2, cy + 44, 7.5, 500, p.accent, p.type, 'middle'));
-      s.push(t(cx + 20 + pw, cy + 44, 7.5, 400, c.ink3, 'by Community'));
-      [CW - 28, CW - 28, CW - 54].forEach((lw, k) =>
-        s.push(r(cx + 14, cy + 58 + k * 10, lw, 5, 2.5, c.rule)));
-      s.push(r(cx + 14, cy + 90, 40, 10, 5, c.chip));
-      s.push(r(cx + 60, cy + 90, 40, 10, 5, c.chip));
-    });
-  } else {
-    // OpenUI vs JSON: the schema on the left, what it renders on the right.
-    s.push(r(X, Y + 6, 150, 122, 8, '#101014'));
-    ['#ff7979', '#f5c451', '#4ac26b'].forEach((dot, i) =>
-      s.push(circle(X + 13 + i * 8, Y + 17, 2.6, dot)));
-    const CODE = [
-      [['export interface ', '#e6e6e6'], ['HotelCardProps', '#b3a0fd'], [' {', '#e6e6e6']],
-      [['  image: {', '#e6e6e6']],
-      [['    src: ', '#e6e6e6'], ['string', '#b3a0fd']],
-      [['    alt?: ', '#e6e6e6'], ['string', '#b3a0fd']],
-      [['  }', '#e6e6e6']],
-      [['  badge?: { label: ', '#e6e6e6'], ['string', '#b3a0fd'], [' }', '#e6e6e6']],
-      [['  title: ', '#e6e6e6'], ['string', '#b3a0fd']],
-      [['  cta: {', '#e6e6e6']],
-      [['    label: ', '#e6e6e6'], ['string', '#b3a0fd']],
-      [['    onClick?: () => ', '#e6e6e6'], ['void', '#ff7979']],
-      [['  }', '#e6e6e6']],
-      [['}', '#e6e6e6']],
-    ];
-    CODE.forEach((line, i) => {
-      let dx = 0;
-      line.forEach(([txt, fill]) => {
-        s.push(`<text x="${X + 13 + dx}" y="${Y + 32 + i * 8}" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="5.4" fill="${fill}" xml:space="preserve">${esc(txt)}</text>`);
-        dx += txt.length * 3.15;
-      });
-    });
+  const cards = PROJECTS.map((p, i) => {
+    const x = X0 + (i % COLS) * (CW + G);
+    const y = Y0 + Math.floor(i / COLS) * (CH + G);
+    const pw = 11 + p.type.length * 4.7;
+    return [
+      r(x, y, CW, CH, 10, c.card, ` stroke="${c.cardStroke}" stroke-width="1"`),
+      t(x + 14, y + 26, 10.5, 550, c.title, p.name),
+      r(x + 14, y + 34, pw, 14, 5, p.accent, ' opacity="0.14"'),
+      t(x + 14 + pw / 2, y + 44, 7.5, 500, p.accent, p.type, 'middle'),
+      t(x + 21 + pw, y + 44, 7.5, 400, c.meta, 'by Community'),
+      [CW - 28, CW - 28, CW - 52].map((lw, k) => r(x + 14, y + 58 + k * 10, lw, 5, 2.5, c.line)).join(''),
+      r(x + 14, y + 88, 42, 11, 5.5, c.chip),
+      r(x + 62, y + 88, 42, 11, 5.5, c.chip),
+    ].join('');
+  }).join('');
 
-    // The card that schema produces.
-    s.push(r(X + 162, Y + 14, 110, 106, 7, c.card, box));
-    s.push(r(X + 168, Y + 20, 98, 40, 5, '#f0c9c0'));
-    s.push(r(X + 168, Y + 65, 34, 11, 3, 'rgba(13,160,94,0.12)'));
-    s.push(t(X + 185, Y + 73, 6.5, 500, '#067647', 'Free Wifi', 'middle'));
-    s.push(t(X + 168, Y + 87, 7.5, 550, c.ink, 'Hotel Plaza Athenee'));
-    s.push(t(X + 168, Y + 96, 6.5, 400, c.ink2, 'Haute couture suites; Dior spa,'));
-    s.push(t(X + 168, Y + 104, 6.5, 400, c.ink2, 'near Champs-Elysees.'));
-    s.push(r(X + 168, Y + 108, 98, 12, 4, a));
-    s.push(t(X + 178, Y + 116, 7, 500, c.onAccent, 'Book'));
-  }
-  return s.join('');
-}
-
-const circle = (cx, cy, rad, fill) => `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${fill}"/>`;
-
-function svg(name, mode) {
-  const c = T[mode];
-  const a = ACCENT[name][mode];
-  const wash = mode === 'dark' ? ACCENT[name].washDark : ACCENT[name].wash;
+  // Inset the stroke by half its weight so it isn't clipped at the frame edge.
+  const inset = STROKE / 2;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-  <defs>
-    <radialGradient id="bloom" cx="12%" cy="7%" r="${c.bloomR}%">
-      <stop offset="0%" stop-color="${wash}" stop-opacity="${c.bloom}"/>
-      <stop offset="100%" stop-color="${wash}" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="lift" cx="8%" cy="4%" r="55%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="${c.lift}"/>
-      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-    </radialGradient>
-    <filter id="sh" x="-40%" y="-40%" width="200%" height="200%">
-      <feDropShadow dx="-2" dy="6" stdDeviation="16" flood-color="#000" flood-opacity="${c.shadow}"/>
-    </filter>
-    <clipPath id="frame"><rect x="0" y="0" width="${W}" height="${H}"/></clipPath>
-  </defs>
+  <defs><clipPath id="frame"><rect x="0" y="0" width="${W}" height="${H}" rx="${R}"/></clipPath></defs>
   <g clip-path="url(#frame)">
-    <rect width="${W}" height="${H}" fill="${c.page}"/>
-    <rect width="${W}" height="${H}" fill="${wash}" opacity="${c.tint}"/>
-    <rect width="${W}" height="${H}" fill="url(#bloom)"/>
-    <rect width="${W}" height="${H}" fill="url(#lift)"/>
-    <g filter="url(#sh)">
-      <rect x="${CARD_X}" y="${CARD_Y}" width="${W - CARD_X + 90}" height="${H - CARD_Y + 90}"
-            rx="${R}" fill="${c.card}" stroke="${c.border}" stroke-width="1.5"/>
-    </g>
-    ${scene(name, T[mode], a)}
+    <rect width="${W}" height="${H}" fill="${c.surface}"/>
+    ${cards}
   </g>
+  <rect x="${inset}" y="${inset}" width="${W - STROKE}" height="${H - STROKE}" rx="${R - inset}"
+        fill="none" stroke="${c.stroke}" stroke-width="${STROKE}"/>
 </svg>`;
 }
 
 const OUT = new URL('../public/nav/', import.meta.url);
-let total = 0;
-for (const name of Object.keys(ACCENT)) {
-  for (const mode of ['light', 'dark']) {
-    const markup = svg(name, mode);
-    fs.writeFileSync(new URL(`${name}-${mode}.svg`, OUT), markup);
-    total += Buffer.byteLength(markup);
-  }
+for (const mode of ['light', 'dark']) {
+  const markup = svg(mode);
+  fs.writeFileSync(new URL(`community-${mode}.svg`, OUT), markup);
+  console.log(`  community-${mode}.svg  ${(Buffer.byteLength(markup) / 1024).toFixed(1)} KB`);
 }
-console.log(`Wrote ${Object.keys(ACCENT).length * 2} nav previews to public/nav — ${(total / 1024).toFixed(1)} KB total`);

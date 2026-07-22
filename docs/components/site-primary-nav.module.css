@@ -181,14 +181,24 @@
 
 /* 284x160 preview slot. The art is decorative, so it sits behind the label and
    is cropped to fill rather than letterboxed. */
+/* The artwork already carries the design's own surface fill and 1px stroke, so
+   this container adds neither — a border here double-draws the edge, and a
+   token background (white-based in dark mode) shows as a light plate behind the
+   lazily-loaded dark art. The background below only matches the artwork so that
+   gap is invisible. */
 .dropdownPreview {
+  --nav-preview-surface: #f4f4f4;
+
   position: relative;
   display: block;
   overflow: hidden;
   aspect-ratio: 284 / 160;
-  border: 1px solid var(--openui-border-default);
   border-radius: 12px;
-  background: var(--openui-highlight);
+  background: var(--nav-preview-surface);
+}
+
+[data-theme="dark"] .dropdownPreview {
+  --nav-preview-surface: #1a1a1a;
 }
 
 .dropdownPreviewImage {
