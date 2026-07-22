@@ -3,6 +3,8 @@ title: Architecture
 description: Build dashboards, CRUD interfaces, and monitoring tools. The LLM generates the UI once, then your app runs independently.
 ---
 
+import { CloudCard } from "./components/cloud-card";
+
 ## The problem today
 
 In most AI-powered applications, when a user interacts with a generated UI (filtering data, submitting a form, refreshing a view), the request goes back through the LLM. The model re-processes the context, calls tools, and regenerates the response. Every click costs tokens. Every interaction adds latency.
@@ -25,6 +27,12 @@ The user describes what they want. Your backend sends the request to an LLM alon
 The Renderer parses the generated code. When it encounters a `Query("list_tickets")`, the runtime calls your tool directly, no LLM roundtrip. When the user clicks a button that triggers `@Run(createResult)`, the runtime executes the mutation against your tool. When a `$variable` changes from a dropdown, all dependent queries re-fetch automatically.
 
 The LLM generated the wiring. The runtime executes it.
+
+<CloudCard
+  title="The production platform for generative UI"
+  description="Build responsive interfaces and editable presentations and reports, with output correction, model fallbacks, and monitoring built in."
+  cta="See how Cloud works"
+/>
 
 ## What this enables
 
