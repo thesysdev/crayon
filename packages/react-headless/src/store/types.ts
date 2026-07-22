@@ -40,14 +40,6 @@ export type ThreadState = {
   isRunning: boolean;
   isLoadingMessages: boolean;
   threadError: Error | null;
-  /**
-   * Tool calls whose arguments have closed (`TOOL_CALL_END` seen) but whose
-   * result message has not yet arrived — i.e. the tool is currently executing.
-   * Drives the `"executing"` status in {@link ToolActivity}; reset to an empty
-   * set when a new message run starts or the thread switches. The reference is
-   * stable across unrelated store updates (a new `Set` is created only when the
-   * membership changes), so selector consumers don't re-render needlessly.
-   */
   executingToolCallIds: Set<string>;
 };
 

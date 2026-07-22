@@ -115,10 +115,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
         },
 
         switchToNewThread: () => {
-          // A brand-new chat whose first message is still becoming a real thread
-          // owns DRAFT_KEY; resetting it now would collide with that run's re-key.
           if (get().isCreatingThread) return;
-          // No abort — a run on a saved thread keeps streaming in the background.
           set({ selectedThreadId: null });
           dropThreadState(DRAFT_KEY);
         },
@@ -177,8 +174,6 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             .deleteThread(threadId)
             .then(() => {
               const state = get();
-              // Stop any in-flight run on this thread, then drop its entry. Late
-              // stream callbacks for this key then no-op (withThreadState is guarded).
               state.threadStates[threadId]?.abortController?.abort();
               dropThreadState(threadId);
               set((s) => ({ threads: s.threads.filter((t) => t.id !== threadId) }));
@@ -195,11 +190,11 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
           const startState = get();
           // The run's key: the selected thread, or DRAFT_KEY for a brand-new chat.
           // A mutable local so post-re-key callbacks target the real threadId.
-          let runKey = startState.selectedThreadId ?? DRAFT_KEY;
+          let requestKey = startState.selectedThreadId ?? DRAFT_KEY;
 
           // Per-thread concurrency guard: only block if THIS thread is already
           // running. Different threads run concurrently.
-          if (startState.threadStates[runKey]?.isRunning) return;
+          if (startState.threadStates[requestKey]?.isRunning) return;
 
           const isNewChat = !startState.selectedThreadId;
           const abortController = new AbortController();
@@ -209,10 +204,10 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             role: "user",
           };
 
-          // Start the run on this thread's entry, preserving any already-loaded
+          // Start the request on this thread's entry, preserving any already-loaded
           // messages and appending the optimistic user message.
           if (isNewChat) set({ isCreatingThread: true });
-          upsertThreadState(runKey, (cur) => ({
+          upsertThreadState(requestKey, (cur) => ({
             messages: [...cur.messages, optimisticMessage],
             isRunning: true,
             threadError: null,
@@ -220,9 +215,9 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             abortController,
           }));
 
-          // On abort, flip the run off on its own entry.
+          // On abort, flip the request off on its own entry.
           abortController.signal.addEventListener("abort", () => {
-            patchThreadState(runKey, { isRunning: false, abortController: null });
+            patchThreadState(requestKey, { isRunning: false, abortController: null });
           });
 
           try {
@@ -247,15 +242,15 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
                     ...(follow ? { selectedThreadId: created.id } : null),
                   };
                 });
-                runKey = created.id;
+                requestKey = created.id;
               } finally {
                 set({ isCreatingThread: false });
               }
             }
 
             const response = await llm.send({
-              threadId: runKey,
-              messages: get().threadStates[runKey]?.messages ?? [],
+              threadId: requestKey,
+              messages: get().threadStates[requestKey]?.messages ?? [],
               signal: abortController.signal,
             });
 
@@ -266,23 +261,23 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             await processStreamedMessage({
               response,
               createMessage: (msg) =>
-                withThreadState(runKey, (cur) => ({ messages: [...cur.messages, msg] })),
+                withThreadState(requestKey, (cur) => ({ messages: [...cur.messages, msg] })),
               updateMessage: (msg) =>
-                withThreadState(runKey, (cur) => ({
+                withThreadState(requestKey, (cur) => ({
                   messages: cur.messages.map((m) => (m.id === msg.id ? msg : m)),
                 })),
               // A tool's args have closed (TOOL_CALL_END) → it is now executing.
               // The `null` no-op keeps the Set reference stable when membership is
               // unchanged so `useToolActivities` doesn't re-run needlessly.
               markToolExecuting: (id) =>
-                withThreadState(runKey, (cur) =>
+                withThreadState(requestKey, (cur) =>
                   cur.executingToolCallIds.has(id)
                     ? null
                     : { executingToolCallIds: new Set(cur.executingToolCallIds).add(id) },
                 ),
               // Its result landed (or it errored) → no longer executing.
               clearToolExecuting: (id) =>
-                withThreadState(runKey, (cur) => {
+                withThreadState(requestKey, (cur) => {
                   if (!cur.executingToolCallIds.has(id)) return null;
                   const next = new Set(cur.executingToolCallIds);
                   next.delete(id);
@@ -292,7 +287,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             });
           } catch (e) {
             if (!abortController.signal.aborted) {
-              patchThreadState(runKey, {
+              patchThreadState(requestKey, {
                 threadError: e instanceof Error ? e : new Error(String(e)),
               });
             }
@@ -301,7 +296,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             // that emit TOOL_CALL_END without a matching TOOL_CALL_RESULT (e.g.
             // client-side tool calls in the OpenAI adapters) would otherwise leave
             // them stuck.
-            patchThreadState(runKey, {
+            patchThreadState(requestKey, {
               isRunning: false,
               abortController: null,
               executingToolCallIds: new Set<string>(),
