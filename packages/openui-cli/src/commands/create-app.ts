@@ -261,11 +261,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   );
 }
 
-async function writeEnv(
-  targetDir: string,
-  result: EnvResult,
-  appId?: string,
-): Promise<void> {
+async function writeEnv(targetDir: string, result: EnvResult, appId?: string): Promise<void> {
   // APP_ID is the scaffold's stable identity: the frontend-token route sends
   // it as `app_id`, so every conversation this app creates is bound to it and
   // apps sharing one org API key stay isolated from each other. It must stay
