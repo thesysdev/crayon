@@ -36,6 +36,13 @@ const COMPARISON_SUGGESTIONS = [
     color: "#dd517b",
   },
   {
+    label: "Create an executive dashboard",
+    prompt:
+      "Visualize following SaaS metrics: MRR $1.28M, growth 8.4%, NRR 112%, churn 2.1%, CAC $740, and pipeline $3.6M. Highlight trends, risks, and the three actions leadership should take.",
+    icon: LayoutDashboard,
+    color: "#b54708",
+  },
+  {
     label: "Create an editable launch plan",
     prompt:
       "Create an editable launch plan for a developer tool. Include owner, phase, deadline, status, dependency, and risk. Let me update statuses and show the next three actions.",
@@ -44,13 +51,6 @@ const COMPARISON_SUGGESTIONS = [
     tag: "Only on Cloud",
     cloudOnly: true,
     pairOnly: "oss-cloud",
-  },
-  {
-    label: "Create an executive dashboard",
-    prompt:
-      "Visualize following SaaS metrics: MRR $1.28M, growth 8.4%, NRR 112%, churn 2.1%, CAC $740, and pipeline $3.6M. Highlight trends, risks, and the three actions leadership should take.",
-    icon: LayoutDashboard,
-    color: "#b54708",
   },
   {
     label: "Create a report on Electric vehicles",
