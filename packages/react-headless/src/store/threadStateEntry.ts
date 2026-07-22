@@ -37,7 +37,7 @@ export const EMPTY_THREAD_STATE: ThreadStateEntry = Object.freeze({
 });
 
 /** Build a fresh, independently-mutable entry, applying an optional patch. */
-export const makeThreadState = (patch?: Partial<ThreadStateEntry>): ThreadStateEntry => ({
+export const buildThreadState = (patch?: Partial<ThreadStateEntry>): ThreadStateEntry => ({
   messages: [],
   isRunning: false,
   isLoadingMessages: false,
