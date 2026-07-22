@@ -7,7 +7,6 @@ import type { ToolDetailedViewPanel } from "../_shared/tool-renderer/ToolActivit
 import { defaultLabel } from "./ToolCallPrimitives";
 
 const REVEAL_INTERVAL = 600;
-const EXIT_DURATION = 200; // in sync with the __compact transition duration in toolCall.scss.
 
 /** Visually hidden but available to screen readers; inline so we don't depend on
  *  scss (a sibling agent owns the stylesheet). */
@@ -27,13 +26,12 @@ const isRunning = (a: ToolActivity) => a.status === "streaming" || a.status === 
 
 /**
  * The "Working… / Behind the scenes" timeline wrapper, driven by
- * {@link ToolActivity}[] from `useToolActivities` instead of the branch's
- * `ThinkItem[]`. Keeps the staggered reveal + toggle; "running" is read from the
- * activity status (not an `isThinking` prop), and "current item ready" asks the
- * status union instead of peeking at magic `_request`/`_response` keys.
+ * {@link ToolActivity}[] from `useToolActivities`. Reveals the run's activities
+ * one-by-one, holds the compact card open across the tool-result → first-token
+ * gap (`awaitingResponse`), and lets a manual close stick for the rest of the
+ * run. "Running" is read from each activity's status, not an `isThinking` prop.
  *
- * (The compact reveal uses a CSS fade — framer-motion is intentionally not a
- * dependency of this package.)
+ * (Animations are CSS-only — framer-motion is intentionally not a dependency.)
  *
  * @category Components
  */
@@ -50,15 +48,14 @@ export function ToolCallTimeline({
   /** Render every row as the raw default card (e.g. so matched tools' raw
    *  request/response stay inspectable here while their rich preview renders elsewhere). */
   forceDefault?: boolean;
-  /** hold the compact "Working…" tray open across the
-   * tool-result → first-token gap instead of collapsing
-   * the instant the last result lands. */
+  /** Hold the compact "Working…" tray open across the tool-result → first-token
+   *  gap instead of collapsing the instant the last result lands. */
   awaitingResponse?: boolean;
 }) {
-  // The timeline is "thinking" while its own last activity is still running (or
-  // the results are in but the response hasn't started), it's the live message,
-  // AND the thread is actually running — so a closed-args call that never
-  // received a result stops showing "Working..." once the run ends.
+  // "Thinking" while the last activity is still running (or its results are in
+  // but the response hasn't started), on the live message, and the thread is
+  // actually running — so a closed-args call with no result stops showing
+  // "Working..." once the run ends.
   const isThreadRunning = useThread((s) => s.isRunning);
   const thinking =
     isThreadRunning &&
@@ -67,37 +64,34 @@ export function ToolCallTimeline({
     (isRunning(activities[activities.length - 1]!) || awaitingResponse);
 
   const [expanded, setExpanded] = useState(false);
-  // User explicitly closed the tray mid-run
+  // A user close mid-run sticks until the next run.
   const [userCollapsed, setUserCollapsed] = useState(false);
-  // Live message → reveal one-by-one from the first; historical (not live) →
-  // everything already revealed so it never animates "Working…" on mount.
+  // Live message reveals from the first activity; historical reveals them all so
+  // it never animates "Working…" on mount.
   const [revealedCount, setRevealedCount] = useState(() =>
     isLast ? 1 : Math.max(activities.length, 1),
   );
-  const prevThinking = useRef(thinking);
 
+  // Reset on each run edge: a rising `thinking` restarts the reveal and clears
+  // any prior expand/collapse; a falling `thinking` reveals everything.
+  const prevThinking = useRef(thinking);
   useEffect(() => {
     if (!prevThinking.current && thinking) {
       setRevealedCount(1);
       setExpanded(false);
       setUserCollapsed(false);
-    }
-    if (prevThinking.current && !thinking) {
+    } else if (prevThinking.current && !thinking) {
       setExpanded(false);
       setRevealedCount(activities.length);
     }
     prevThinking.current = thinking;
   }, [thinking, activities.length]);
 
-  // Advance only when the current activity has left "streaming" (args closed) —
-  // replaces the branch's `!!toolRequest || !!toolResponse` peek with the union.
-  const currentReady = (() => {
-    const a = activities[revealedCount - 1];
-    return a ? a.status !== "streaming" : true;
-  })();
-
+  // Advance the reveal once the current activity's args have closed (left
+  // "streaming"); only the live message reveals incrementally.
+  const revealingActivity = activities[revealedCount - 1];
+  const currentReady = revealingActivity ? revealingActivity.status !== "streaming" : true;
   useEffect(() => {
-    // Only the live message reveals incrementally; historical messages show all.
     if (isLast && revealedCount < activities.length && currentReady) {
       const t = setTimeout(() => setRevealedCount((c) => c + 1), REVEAL_INTERVAL);
       return () => clearTimeout(t);
@@ -105,25 +99,11 @@ export function ToolCallTimeline({
     return undefined;
   }, [isLast, activities.length, revealedCount, currentReady]);
 
-  const revealing = revealedCount < activities.length;
-  const showCompact = (thinking || revealing) && !expanded && !userCollapsed;
-  const [exiting, setExiting] = useState(false);
-  const [prevShowCompact, setPrevShowCompact] = useState(showCompact);
-  if (prevShowCompact !== showCompact) {
-    setPrevShowCompact(showCompact);
-    if (!showCompact && !expanded) setExiting(true);
-    if (showCompact) setExiting(false); // reopened mid-exit → cancel the close
-  }
-
-  useEffect(() => {
-    // The timeout (not transitionend) drives the unmount
-    if (!exiting) return undefined;
-    const t = setTimeout(() => setExiting(false), EXIT_DURATION);
-    return () => clearTimeout(t);
-  }, [exiting]);
-
   if (activities.length === 0) return null;
 
+  const revealing = revealedCount < activities.length;
+  const showCompact = (thinking || revealing) && !expanded && !userCollapsed;
+  const isOpen = expanded || showCompact;
   const current = activities[Math.min(revealedCount - 1, activities.length - 1)]!;
 
   // Persistent live announcement reflecting the current step's status — driven by
@@ -151,20 +131,19 @@ export function ToolCallTimeline({
       <button
         className="openui-behind-the-scenes__toggle"
         type="button"
-        aria-expanded={expanded || showCompact}
+        aria-expanded={isOpen}
         onClick={() => {
-          if (expanded || showCompact) {
-            // Anything open (full list or the live working card) → close it.
-            // The close sticks for the rest of the run via userCollapsed.
+          // Anything open → close it (sticky for the rest of the run via
+          // userCollapsed); otherwise reopen the full list.
+          if (isOpen) {
             setExpanded(false);
             setUserCollapsed(true);
           } else {
-            // Closed (settled or user-collapsed) → open the full list.
             setExpanded(true);
           }
         }}
       >
-        {expanded || showCompact ? (
+        {isOpen ? (
           <ChevronUp size={14} className="openui-behind-the-scenes__toggle-icon" />
         ) : (
           <ChevronDown size={14} className="openui-behind-the-scenes__toggle-icon" />
@@ -172,11 +151,12 @@ export function ToolCallTimeline({
         {toggleLabel}
       </button>
 
-      {(showCompact || (exiting && !expanded)) && (
+      {isLast && !expanded && (
         <div
           className={clsx("openui-behind-the-scenes__compact", {
             "openui-behind-the-scenes__compact--closed": !showCompact,
           })}
+          inert={!showCompact}
         >
           <div className="openui-behind-the-scenes__compact-inner">
             <div className="openui-behind-the-scenes__items">
