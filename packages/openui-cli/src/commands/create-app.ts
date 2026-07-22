@@ -175,6 +175,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
     rewritePackageJson(targetDir, name);
+    // The template lockfile enables npm ci; other managers should resolve from package.json.
     if (packageManager.name !== "npm") {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
     }
