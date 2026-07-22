@@ -1,14 +1,14 @@
 # OpenUI Chat Pairwise Comparison
 
-Status: implemented — kept in sync with the shipped `/chat` design
+Status: implemented — kept in sync with the shipped `/compare` design
 
-Target: `docs/app/chat` (`/chat`)
+Target: `docs/app/compare` (`/compare`); the original `docs/app/chat` (`/chat`) experience remains unchanged
 
 Reference: `/Users/zahle/github/composition/packages/chat/src/features/Crayon/layout/Compare`
 
 ## Goal
 
-Turn `/chat` into a product-capability comparison with exactly two visible panels and three available response modes:
+Use `/compare` for a product-capability comparison with exactly two visible panels and three available response modes:
 
 1. Rendered Markdown
 2. OpenUI OSS
@@ -190,7 +190,7 @@ Show suggestions only before the first submitted turn.
 - Reports and presentations open above the comparison as a true full-page overlay or route.
 - Opening an artifact preserves the selected pair, all transcripts, scroll positions, and active streams.
 - Closing returns focus to the invoking control and restores the unchanged comparison.
-- Browser Back closes the artifact before leaving `/chat`.
+- Browser Back closes the artifact before leaving the comparison route.
 
 ## Errors and accessibility
 

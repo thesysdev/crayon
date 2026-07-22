@@ -3,32 +3,42 @@
 import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import {
   AgentInterface,
-  GenUIAssistantMessage,
   openAIAdapter,
   openAIMessageFormat,
-  type AssistantMessage,
   type ChatLLM,
-  type GenUIConversationAction,
 } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
-import { useCallback, useMemo } from "react";
-import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
-import { ComparisonModeControllerBridge } from "../comparison-mode-controller";
-import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
+import { useMemo } from "react";
 
 interface OssAgentSurfaceProps {
   themeMode: "light" | "dark";
   onCreditsExhausted: () => void;
-  registry: ComparisonControllerRegistry;
-  onConversationAction: (action: GenUIConversationAction) => void;
 }
 
-export function OssAgentSurface({
-  themeMode,
-  onCreditsExhausted,
-  registry,
-  onConversationAction,
-}: OssAgentSurfaceProps) {
+const OSS_STARTERS = [
+  {
+    displayText: "Revenue dashboard",
+    prompt:
+      "Build a revenue dashboard with a bar chart showing monthly revenue for Q4, key metrics, and a summary table.",
+  },
+  {
+    displayText: "Signup form",
+    prompt:
+      "Create a user registration form with name, email, password, and country fields with validation.",
+  },
+  {
+    displayText: "Compare React vs Vue",
+    prompt:
+      "Show me a comparison of React and Vue frameworks using tabs with pros, cons, and a feature comparison table.",
+  },
+  {
+    displayText: "Travel destinations",
+    prompt:
+      "Show me a carousel of 3 popular travel destinations with images, descriptions, and best time to visit.",
+  },
+];
+
+export function OssAgentSurface({ themeMode, onCreditsExhausted }: OssAgentSurfaceProps) {
   const llm = useMemo<ChatLLM>(
     () => ({
       send: async ({ messages, signal }) => {
@@ -37,7 +47,6 @@ export function OssAgentSurface({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: openAIMessageFormat.toApi(messages),
-            responseMode: "openui",
           }),
           signal,
         });
@@ -50,6 +59,9 @@ export function OssAgentSurface({
 
           if (isDemoCreditsErrorPayload((errorPayload as { error?: unknown }).error)) {
             onCreditsExhausted();
+            return new Response("data: [DONE]\n\n", {
+              headers: { "Content-Type": "text/event-stream" },
+            });
           }
         }
 
@@ -60,39 +72,20 @@ export function OssAgentSurface({
     [onCreditsExhausted],
   );
 
-  const AssistantMessageRenderer = useCallback(
-    ({ message }: { message: AssistantMessage }) => (
-      <GenUIAssistantMessage
-        message={message}
-        library={openuiChatLibrary}
-        onConversationAction={onConversationAction}
-      />
-    ),
-    [onConversationAction],
-  );
-
-  const components = useMemo(
-    () => ({ AssistantMessage: AssistantMessageRenderer }),
-    [AssistantMessageRenderer],
-  );
-
   return (
     <div className="chat-agent-surface" data-chat-mode="oss">
       <AgentInterface
         llm={llm}
         componentLibrary={openuiChatLibrary}
-        components={components}
         agentName="OpenUI OSS"
-        scrollVariant="always"
         theme={{ mode: themeMode }}
+        starterVariant="short"
+        starters={OSS_STARTERS}
       >
-        <AgentInterface.Sidebar />
-        <AgentInterface.Welcome>
-          <ComparisonSurfaceWelcome mode="oss" />
-        </AgentInterface.Welcome>
-        <AgentInterface.Composer>
-          <ComparisonModeControllerBridge mode="oss" registry={registry} />
-        </AgentInterface.Composer>
+        <AgentInterface.Welcome
+          title="Build with OpenUI OSS"
+          description="Generate interactive interfaces with the open-source component library."
+        />
       </AgentInterface>
     </div>
   );

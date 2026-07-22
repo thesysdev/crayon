@@ -17,34 +17,16 @@ import {
   wrapContext,
 } from "../../utils/sentinelParser";
 import { ToolCallTimeline } from "../ToolCall";
-import { TimelineEntry, type ToolDetailedViewPanel } from "../_shared/tool-renderer";
+import { TimelineEntry } from "../_shared/tool-renderer";
 import { AssistantMessageContainer } from "./AssistantMessageContainer";
-
-export interface GenUIConversationAction {
-  content: string;
-  humanFriendlyMessage: string;
-  formState?: Record<string, unknown>;
-}
-
-export interface GenUIAssistantMessageProps {
-  message: AssistantMessage;
-  library: Library;
-  /**
-   * Overrides the default lane-local conversation continuation. This is useful
-   * for comparison surfaces that need one generated follow-up to reach several
-   * independent chat providers.
-   */
-  onConversationAction?: (action: GenUIConversationAction) => void;
-  /** Overrides where matched artifact/tool detailed views are rendered. */
-  detailedViewPanel?: ToolDetailedViewPanel;
-}
 
 export const GenUIAssistantMessage = ({
   message,
   library,
-  onConversationAction,
-  detailedViewPanel,
-}: GenUIAssistantMessageProps) => {
+}: {
+  message: AssistantMessage;
+  library: Library;
+}) => {
   const messages = useThread((s) => s.messages);
   const isRunning = useThread((s) => s.isRunning);
   const processMessage = useThread((s) => s.processMessage);
@@ -126,18 +108,10 @@ export const GenUIAssistantMessage = ({
         const contextPart = wrapContext(JSON.stringify(messageCtx));
         const llmMessage = `${contentPart}${contextPart}`;
 
-        if (onConversationAction) {
-          onConversationAction({
-            content: llmMessage,
-            humanFriendlyMessage: event.humanFriendlyMessage ?? "Continue",
-            formState: event.formState,
-          });
-        } else {
-          processMessage({
-            role: "user",
-            content: llmMessage,
-          });
-        }
+        processMessage({
+          role: "user",
+          content: llmMessage,
+        });
       } else if (event.type === BuiltinActionType.OpenUrl) {
         const url = event.params?.["url"] as string | undefined;
         if (typeof window !== "undefined" && url) {
@@ -145,7 +119,7 @@ export const GenUIAssistantMessage = ({
         }
       }
     },
-    [onConversationAction, processMessage],
+    [processMessage],
   );
 
   return (
@@ -163,7 +137,6 @@ export const GenUIAssistantMessage = ({
           activity={activity}
           isLast={isStreaming}
           fallbackToDefault={false}
-          detailedViewPanel={detailedViewPanel}
         />
       ))}
       <Renderer

@@ -220,7 +220,7 @@ export function AssistantMessage({ content, isStreaming }) {
 
         {/* Interactive Demo */}
         <Link
-          href="/chat"
+          href="/compare"
           prefetch={false}
           className="group mb-6 block cursor-pointer overflow-hidden rounded-xl border-2 border-slate-200 no-underline transition-all hover:border-blue-400 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 dark:border-slate-700 dark:hover:border-blue-500"
         >

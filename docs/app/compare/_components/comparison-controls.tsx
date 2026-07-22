@@ -4,6 +4,8 @@ import {
   ArrowRight,
   ArrowUp,
   FileText,
+  LayoutDashboard,
+  ListChecks,
   Moon,
   Plane,
   Presentation,
@@ -13,8 +15,9 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import styles from "../chat-page.module.css";
+import { useHasMounted } from "./use-has-mounted";
 
 const COMPARISON_SUGGESTIONS = [
   {
@@ -30,6 +33,22 @@ const COMPARISON_SUGGESTIONS = [
       "Give me travel ideas for underrated destinations with notable landmarks and cultural highlights.",
     icon: Plane,
     color: "#dd517b",
+  },
+  {
+    label: "Create an editable launch plan",
+    prompt:
+      "Create an editable launch plan for a developer tool. Include owner, phase, deadline, status, dependency, and risk. Let me update statuses and show the next three actions.",
+    icon: ListChecks,
+    color: "#175cd3",
+    tag: "Only on Cloud",
+    cloudOnly: true,
+  },
+  {
+    label: "Create an executive dashboard",
+    prompt:
+      "Create a mobile-friendly SaaS health dashboard using: MRR $1.28M, growth 8.4%, NRR 112%, churn 2.1%, CAC $740, and pipeline $3.6M. Highlight trends, risks, and the three actions leadership should take.",
+    icon: LayoutDashboard,
+    color: "#b54708",
   },
   {
     label: "Create a report on Electric vehicles",
@@ -77,8 +96,7 @@ export function ComparisonControls({
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { resolvedTheme, setTheme } = useTheme();
   // Theme is unknown until mounted; gate the icon to avoid hydration mismatch.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useHasMounted();
   const isDark = mounted && resolvedTheme === "dark";
 
   useLayoutEffect(() => {

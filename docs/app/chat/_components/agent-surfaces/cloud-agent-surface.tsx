@@ -3,49 +3,47 @@
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import { CLOUD_USER_ID_HEADER } from "@/lib/openui-cloud/user-id";
 import { defineArtifactCategories } from "@openuidev/react-headless";
-import {
-  AgentInterface,
-  GenUIAssistantMessage,
-  type AssistantMessage,
-  type GenUIConversationAction,
-} from "@openuidev/react-ui";
+import { AgentInterface } from "@openuidev/react-ui";
 import {
   chatLibrary,
   presentationArtifactRenderer,
   reportArtifactRenderer,
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
-import { useCallback, useMemo, useState } from "react";
-import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
-import { ComparisonModeControllerBridge } from "../comparison-mode-controller";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import styles from "../../chat-page.module.css";
 import { createCloudChatLLM } from "./cloud-chat-llm";
-import { CloudFreshThreadBridge } from "./cloud-fresh-thread-bridge";
-import { CloudArtifactHistoryBridge, CloudFullPageArtifactPanel } from "./cloud-full-page-artifact";
+import { CloudModelSwitcher } from "./cloud-model-switcher";
 import { getOrCreateCloudUserId } from "./cloud-user-id";
-import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   { name: "Presentations", renderers: [presentationArtifactRenderer] },
   { name: "Reports", renderers: [reportArtifactRenderer] },
 ]);
 
+const CLOUD_STARTERS = [
+  {
+    displayText: "Pricing strategy tips",
+    prompt: "List five quick tips for pricing a new electric vehicle competitively.",
+  },
+  {
+    displayText: "Quarterly deck",
+    prompt: "Create a short presentation about our Q2 results with three slides.",
+  },
+  {
+    displayText: "Market report",
+    prompt: "Write a brief market-analysis report on the EV sector.",
+  },
+];
+
 interface CloudAgentSurfaceProps {
   themeMode: "light" | "dark";
-  registry: ComparisonControllerRegistry;
-  onConversationAction: (action: GenUIConversationAction) => void;
 }
 
-export function CloudAgentSurface({
-  themeMode,
-  registry,
-  onConversationAction,
-}: CloudAgentSurfaceProps) {
+export function CloudAgentSurface({ themeMode }: CloudAgentSurfaceProps) {
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const [userId] = useState(getOrCreateCloudUserId);
-  const [llm] = useState(() => {
-    const cloudLLM = createCloudChatLLM();
-    cloudLLM.setSelectedModel(DEFAULT_MODEL);
-    return cloudLLM;
-  });
+  const [llm] = useState(createCloudChatLLM);
   const cloudFetch = useMemo<typeof fetch>(() => {
     return async (input, init) => {
       if (typeof input !== "string" || input !== "/api/openui-cloud/frontend-token") {
@@ -64,20 +62,16 @@ export function CloudAgentSurface({
     fetch: cloudFetch,
   });
 
-  const AssistantMessageRenderer = useCallback(
-    ({ message }: { message: AssistantMessage }) => (
-      <GenUIAssistantMessage
-        message={message}
-        library={chatLibrary}
-        onConversationAction={onConversationAction}
-        detailedViewPanel={CloudFullPageArtifactPanel}
-      />
-    ),
-    [onConversationAction],
-  );
-  const components = useMemo(
-    () => ({ AssistantMessage: AssistantMessageRenderer }),
-    [AssistantMessageRenderer],
+  useEffect(() => {
+    llm.setSelectedModel(selectedModel);
+  }, [llm, selectedModel]);
+
+  const handleModelChange = useCallback(
+    (model: string) => {
+      llm.setSelectedModel(model);
+      setSelectedModel(model);
+    },
+    [llm],
   );
 
   return (
@@ -86,23 +80,29 @@ export function CloudAgentSurface({
         storage={cloudStorage}
         llm={llm}
         componentLibrary={chatLibrary}
-        components={components}
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
         agentName="OpenUI Cloud"
         scrollVariant="always"
         scrollOnLoad={false}
         theme={{ mode: themeMode }}
+        starterVariant="short"
+        starters={CLOUD_STARTERS}
       >
-        <AgentInterface.Sidebar />
-        <AgentInterface.Welcome>
-          <ComparisonSurfaceWelcome mode="cloud" />
-        </AgentInterface.Welcome>
-        <AgentInterface.Composer>
-          <ComparisonModeControllerBridge mode="cloud" registry={registry} />
-          <CloudFreshThreadBridge />
-          <CloudArtifactHistoryBridge />
-        </AgentInterface.Composer>
+        <AgentInterface.MobileHeader
+          className={styles.cloudMobileHeader}
+          agentName=""
+          actions={
+            <CloudModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+          }
+        />
+        <AgentInterface.ThreadHeader className={styles.cloudThreadHeader}>
+          <CloudModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+        </AgentInterface.ThreadHeader>
+        <AgentInterface.Welcome
+          title="Build with OpenUI Cloud"
+          description="Create managed generative interfaces, reports, and presentations."
+        />
       </AgentInterface>
     </div>
   );

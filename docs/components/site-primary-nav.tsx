@@ -38,8 +38,13 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
       },
       {
         title: "OpenUI Chat",
-        description: "Compare Markdown, OpenUI OSS, and Cloud side by side.",
+        description: "Try OpenUI OSS and Cloud in a live chat.",
         href: "/chat",
+      },
+      {
+        title: "Compare OpenUI",
+        description: "Compare Markdown, OpenUI OSS, and Cloud side by side.",
+        href: "/compare",
       },
       {
         title: "Dashboard Demo",

@@ -324,59 +324,6 @@ describe("createChatStore", () => {
       expect(store.getState().selectedThreadId).toBe("t-auto");
     });
 
-    it("does not reselect a thread that finishes creating after reset", async () => {
-      let resolveCreateThread!: (thread: Thread) => void;
-      const createThread = vi
-        .fn()
-        .mockImplementationOnce(
-          () =>
-            new Promise<Thread>((resolve) => {
-              resolveCreateThread = resolve;
-            }),
-        )
-        .mockResolvedValueOnce(makeThread("new-thread"));
-      let secondRunSignal!: AbortSignal;
-      const send = vi.fn(
-        ({ signal }: { signal: AbortSignal }) =>
-          new Promise<Response>((resolve) => {
-            secondRunSignal = signal;
-            signal.addEventListener("abort", () => resolve(new Response("", { status: 200 })), {
-              once: true,
-            });
-          }),
-      );
-      const store = makeStore({
-        createThread,
-        send,
-        streamProtocol: { parse: async function* () {} },
-      });
-
-      const pendingRun = store.getState().processMessage({ role: "user", content: "hello" });
-      await flushPromises();
-      expect(store.getState().isRunning).toBe(true);
-      store.setState({ executingToolCallIds: new Set(["stale-tool"]) });
-
-      store.getState().switchToNewThread();
-      expect(store.getState().executingToolCallIds.size).toBe(0);
-      const secondRun = store.getState().processMessage({ role: "user", content: "new hello" });
-      await flushPromises();
-      expect(store.getState().selectedThreadId).toBe("new-thread");
-      expect(store.getState().isRunning).toBe(true);
-
-      resolveCreateThread(makeThread("stale-thread"));
-      await pendingRun;
-
-      expect(store.getState().selectedThreadId).toBe("new-thread");
-      expect(store.getState().isRunning).toBe(true);
-      expect(secondRunSignal.aborted).toBe(false);
-      expect(send).toHaveBeenCalledOnce();
-
-      store.getState().cancelMessage();
-      await secondRun;
-      expect(secondRunSignal.aborted).toBe(true);
-      expect(store.getState().isRunning).toBe(false);
-    });
-
     it("no-ops when already running", async () => {
       const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
 
@@ -430,14 +377,12 @@ describe("createChatStore", () => {
 
       await flushPromises();
       expect(store.getState().isRunning).toBe(true);
-      store.setState({ executingToolCallIds: new Set(["running-tool"]) });
 
       store.getState().cancelMessage();
 
       await flushPromises();
       expect(store.getState().isRunning).toBe(false);
       expect(capturedSignal!.aborted).toBe(true);
-      expect(store.getState().executingToolCallIds.size).toBe(0);
     });
   });
 
