@@ -31,14 +31,10 @@ function restoreDotfiles(projectDir: string) {
 }
 
 function buildAppId(name: string): string {
-  // Stable per-scaffold identity (see writeEnv). Random suffix keeps two
-  // same-named apps in one org from colliding.
-  const slug =
-    name
-      .toLowerCase()
-      .replace(/[^a-z0-9-]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 32) || "app";
+  // Stable per-scaffold identity (see writeEnv). Slugified because the name is
+  // free-form and APP_ID lands in .env and ?app_id= query params; the random
+  // suffix keeps two same-named apps in one org from colliding.
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   return `${slug}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
