@@ -160,6 +160,27 @@ Show suggestions only before the first submitted turn.
 - Expose each mode's generating and error state in panel/tab labelling.
 - Keep the pair switcher and shared composer reachable without scrolling the whole page.
 
+### Mobile top bar and menu (below 900px)
+
+- The top bar reduces to an icon-only back button, the centred "View
+  comparison" chip, and a hamburger menu button; the "Change" switcher chip
+  and panel titles are hidden.
+- The hamburger opens a full-width sheet built on the homepage mobile tray
+  component, with a "Comparison" section (the three pairs as plain-text rows
+  — no chips or active badge; `aria-checked` still marks the current pair),
+  a "Preferences" section (Reset chats, then a dark/light mode row), and the
+  GitHub star CTA as the footer. Selecting a pair closes the menu and resets
+  the demo, same as desktop.
+- Both the menu and the comparison tray open as edge-to-edge sheets directly
+  under the bar, over a darker blurred backdrop; the top bar and its bottom
+  stroke stay sharp, and only one stroke separates bar from sheet.
+- The composer spans the full width of the controls area; reset and the
+  theme toggle live in the hamburger menu instead of flanking it.
+- Starter rows share one uniform height with top-aligned content; the
+  "Only on Cloud" tag renders as plain grey text on its own line beneath a
+  full-width label, and the feature tray narrows its icon columns so feature
+  names fit on one line.
+
 ## Full-page Cloud artifacts
 
 - Reports and presentations open above the comparison as a true full-page overlay or route.
