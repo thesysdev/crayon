@@ -377,12 +377,16 @@ export function SitePrimaryNav() {
         const isActive = pathname.startsWith(item.href);
         const badge = "badge" in item ? item.badge : undefined;
 
+        // Deliberately no close on hover. These sit either side of the
+        // dropdowns, so reaching diagonally for a card at the far end of an open
+        // panel drags the pointer straight across one of them — and closing
+        // there killed the menu mid-reach regardless of speed. Leaving the
+        // nav+panel box closes it; passing over a neighbour is not leaving.
         return (
           <Link
             className={`${styles.link} ${isActive ? styles.linkActive : ""}`.trim()}
             href={item.href}
             key={item.href}
-            onPointerEnter={close}
             {...(item.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
           >
             {item.title}
