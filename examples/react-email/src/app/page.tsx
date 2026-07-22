@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ChatProvider,
+  fetchLLM,
   openAIAdapter,
   openAIMessageFormat,
   useThread,
@@ -70,21 +71,21 @@ function EmailApp() {
 // ── Page Root ──
 
 export default function Page() {
+  // fetchLLM POSTs the run payload to /api/chat, sending messages in OpenAI
+  // format and parsing the OpenAI-style SSE response.
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: openAIAdapter(),
+        messageFormat: openAIMessageFormat,
+      }),
+    [],
+  );
+
   return (
     <div style={{ height: "100vh", width: "100vw", overflow: "hidden" }}>
-      <ChatProvider
-        processMessage={async ({ messages, abortController }) => {
-          return fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              messages: openAIMessageFormat.toApi(messages),
-            }),
-            signal: abortController.signal,
-          });
-        }}
-        streamProtocol={openAIAdapter()}
-      >
+      <ChatProvider llm={llm}>
         <EmailApp />
       </ChatProvider>
     </div>

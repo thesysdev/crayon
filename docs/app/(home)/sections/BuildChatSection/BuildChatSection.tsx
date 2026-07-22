@@ -1,11 +1,19 @@
 "use client";
 
+import { captureCreateCliCommandCopied } from "@/lib/create-cli-copy-analytics";
 import { ClipboardCommandButton } from "../../components/Button/Button";
 import styles from "./BuildChatSection.module.css";
 
 // ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
+
+function captureBuildChatCliCopy(command: string) {
+  captureCreateCliCommandCopied(command, {
+    source: "homepage_build_chat",
+    interaction: "primary",
+  });
+}
 
 function SectionTitle() {
   return <p className={styles.title}>Build a Generative UI chat in minutes</p>;
@@ -16,6 +24,7 @@ function CtaButton() {
     <div className={styles.ctaWrap}>
       <ClipboardCommandButton
         command="npx @openuidev/cli@latest create"
+        onCopySuccess={captureBuildChatCliCopy}
         className={styles.ctaButton}
         iconPosition="start"
       >

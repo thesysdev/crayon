@@ -53,16 +53,17 @@ openui create [options]
 
 **Options**
 
-| Flag                        | Description                                               |
-| --------------------------- | --------------------------------------------------------- |
-| `-n, --name <string>`       | Project name (directory to create)                        |
-| `-t, --template <template>` | AI setup/template: `openui-cloud` or `openui-self-hosted` |
-| `--api-key <key>`           | OpenUI Cloud API key; skips sign-in for the Cloud setup   |
-| `--auth <method>`           | Cloud auth method: `oauth`, `manual`, or `skip`           |
-| `--skill`                   | Install the OpenUI agent skill for AI coding assistants   |
-| `--no-skill`                | Skip installing the OpenUI agent skill                    |
-| `--no-install`              | Scaffold without running dependency installation          |
-| `--no-interactive`          | Fail instead of prompting for missing input               |
+| Flag                        | Description                                                 |
+| --------------------------- | ----------------------------------------------------------- |
+| `-n, --name <string>`       | Project name (directory to create)                          |
+| `-t, --template <template>` | AI setup/template: `openui-cloud` or `openui-self-hosted`   |
+| `--api-key <key>`           | OpenUI Cloud API key; skips sign-in for the Cloud setup     |
+| `--auth <method>`           | Cloud auth method: `oauth`, `manual`, or `skip`             |
+| `--skill`                   | Install the OpenUI agent skill for AI coding assistants     |
+| `--no-skill`                | Skip installing the OpenUI agent skill                      |
+| `--no-install`              | Scaffold without running dependency installation            |
+| `--no-interactive`          | Fail instead of prompting for missing input                 |
+| `--agent-name <name>`       | Declare the invoking coding-agent slug (default: `unknown`) |
 
 When run interactively (default), the CLI prompts for any missing options. It asks you to choose your AI setup: **OpenUI Cloud** is the fastest setup with free hosted models, while **OpenAI-compatible provider** uses your own key and self-hosts the AI route in the generated app. Pass `--no-interactive` in CI or scripted environments to surface missing required flags as errors instead.
 
@@ -173,6 +174,7 @@ openui generate [entry] [options]
 | `--export <name>`         | Name of the export to use (auto-detected by default)                 |
 | `--prompt-options <name>` | Name of the `PromptOptions` export to use (auto-detected by default) |
 | `--no-interactive`        | Fail instead of prompting for missing `entry`                        |
+| `--agent-name <name>`     | Declare the invoking coding-agent slug (default: `unknown`)          |
 
 **Examples**
 
@@ -318,11 +320,12 @@ The spec is a handover artifact: the team that owns the component library genera
 
 **Options**
 
-| Flag               | Description                                          |
-| ------------------ | ---------------------------------------------------- |
-| `-o, --out <file>` | Write output to a file instead of stdout             |
-| `--export <name>`  | Name of the export to use (auto-detected by default) |
-| `--no-interactive` | Fail instead of prompting for missing `entry`        |
+| Flag                  | Description                                                 |
+| --------------------- | ----------------------------------------------------------- |
+| `-o, --out <file>`    | Write output to a file instead of stdout                    |
+| `--export <name>`     | Name of the export to use (auto-detected by default)        |
+| `--no-interactive`    | Fail instead of prompting for missing `entry`               |
+| `--agent-name <name>` | Declare the invoking coding-agent slug (default: `unknown`) |
 
 Entry bundling and library detection work the same as [`openui generate`](#export-auto-detection). `PromptOptions` exports are not folded into the spec — the spec is pure library data; consumers apply prompt customisation separately when they build the system prompt.
 
@@ -396,6 +399,20 @@ npx @openuidev/cli@latest generate-spec ./src/library.ts --out ./library-spec.js
 # Explicit export name
 npx @openuidev/cli@latest generate-spec ./src/library.ts --export myLibrary
 ```
+
+## Coding-agent attribution
+
+When a coding agent invokes any CLI command, it should pass `--agent-name` using its stable,
+lowercase kebab-case product slug. Examples include `codex`, `claude-code`, `cline`,
+`factory-droid`, and `pi`. Do not pass a model/version, user name, session ID, or another unique
+value. Humans can omit the option; its default is `unknown`.
+
+Usage analytics include two independent properties: `agent_name`, declared through the option,
+and `detected_agent_name`, inferred best-effort from known product environment markers. Either
+value can be spoofed, inherited, missing, or ambiguous, so neither should be treated as an
+authentication or security signal. For `create`, analytics also include `package_manager`, the
+manager selected for dependency installation (`npm`, `pnpm`, `yarn`, or `bun`). Use
+`--no-telemetry` or `DO_NOT_TRACK=1` to disable collection.
 
 ## See also
 
