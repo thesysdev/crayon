@@ -82,9 +82,12 @@ program
 
 program
   .command("generate")
-  .description("Generate system prompt or JSON schema from a library definition")
+  .description("Generate the system prompt + serialized spec from a library definition")
   .argument("[entry]", "Path to a file that exports a createLibrary() result")
-  .option("-o, --out <file>", "Write output to a file instead of stdout")
+  .option(
+    "-o, --out <file>",
+    "Write the prompt to a file; the spec JSON lands alongside as <file>.spec.json",
+  )
   .option(
     "--json-schema",
     "Output JSON schema with component signatures for standalone prompt generation",

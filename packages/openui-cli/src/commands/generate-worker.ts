@@ -13,6 +13,7 @@ import * as os from "os";
 import * as path from "path";
 
 import * as esbuild from "esbuild";
+import { SEPARATION_DELIMITER } from "../lib/utils";
 
 // ── Main ──
 
@@ -191,8 +192,13 @@ async function main(): Promise<void> {
     // Output a PromptSpec-compatible JSON with component signatures, groups, and JSON schema.
     output = JSON.stringify(library.toSpec(), null, 2);
   } else {
+    // This behaviour will be deprecated in next major release
+    // and only export standardised payloads
     const promptOptions = findPromptOptions(mod, promptOptionsName);
-    output = library.prompt(promptOptions);
+    output = [
+      library.prompt(promptOptions),
+      JSON.stringify({ ...library.toSpec(), schema: library.toJSONSchema() }, null, 2),
+    ].join(SEPARATION_DELIMITER); // NUL-joined so the parent (generate.ts) can split multi-artifact payloads
   }
 
   process.stdout.write(output);

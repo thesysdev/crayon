@@ -3,6 +3,8 @@ import { createFunnelProps } from "./create-telemetry";
 import type { TemplateName } from "./create-types";
 import { CreateError, telemetry as defaultTelemetry, type Telemetry } from "./telemetry";
 
+export const SEPARATION_DELIMITER = "\u0000";
+
 export function handleCliError(
   e: unknown,
   event: string,
