@@ -77,10 +77,6 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                   toolCallName: item.name,
                 };
               } else if (item.type === "mcp_list_tools") {
-                // Server connection + tool discovery can take seconds and is
-                // otherwise dead air — surface it as a live activity. Args
-                // carry the server label; START+ARGS+END puts it straight into
-                // "executing" (request sent, awaiting the server).
                 yield {
                   type: EventType.TOOL_CALL_START,
                   toolCallId: item.id,
@@ -142,8 +138,6 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
               break;
 
             case "response.mcp_call_arguments.done":
-              // Ignore the consolidated `arguments` — TOOL_CALL_ARGS appends,
-              // so re-emitting the full JSON after the deltas would double it.
               yield {
                 type: EventType.TOOL_CALL_END,
                 toolCallId: event.item_id,
@@ -172,8 +166,7 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
 
               if (event.item.type === "mcp_list_tools") {
                 const list = event.item;
-                // Summarize to names only — full schemas run to tens of KB and
-                // the card (and message store) only need the inventory.
+                // Summarize to names only
                 const toolNames = list.tools.map((t) => t.name);
                 const listError =
                   typeof list.error === "string" && list.error.length > 0 ? list.error : undefined;
