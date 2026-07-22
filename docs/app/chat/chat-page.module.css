@@ -17,11 +17,9 @@
   --home-surface-ink: #0a0a0a;
   --home-surface-raised: #f7f7f8;
   --home-bevel:
-    inset 0 2px 1px -0.5px rgba(255, 255, 255, 1),
-    inset 0 -3px 6px -1px rgba(0, 0, 0, 0.1);
+    inset 0 2px 1px -0.5px rgba(255, 255, 255, 1), inset 0 -3px 6px -1px rgba(0, 0, 0, 0.1);
   --home-bevel-on-dark:
-    inset 0 7px 12px -6px rgba(255, 255, 255, 0.16),
-    inset 0 -5px 8px -2px rgba(0, 0, 0, 0.6);
+    inset 0 7px 12px -6px rgba(255, 255, 255, 0.16), inset 0 -5px 8px -2px rgba(0, 0, 0, 0.6);
   position: relative;
   z-index: 5;
   flex: none;
@@ -234,12 +232,17 @@
   pointer-events: none;
 }
 
+/* Match the two title columns to the two panel columns. The edge controls are
+   positioned independently so their unequal widths cannot skew either title;
+   the full-bleed margin cancels the header padding at the panel boundary. */
 .headerRow {
+  position: relative;
   display: grid;
-  grid-template-columns: auto 1fr 1fr auto;
+  min-height: 2.25rem;
+  margin-inline: -8px;
   min-width: 0;
   align-items: center;
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 /* Panel title + chip + status, hoisted into the top bar over each panel. */
@@ -264,10 +267,14 @@
 }
 
 .headerRow > .backLink {
+  position: absolute;
+  left: 8px;
   justify-self: start;
 }
 
 .headerRow > .ctaWrap {
+  position: absolute;
+  right: 8px;
   justify-self: end;
 }
 
@@ -321,20 +328,20 @@
   padding-inline: 0.625rem;
   border: 0;
   border-radius: 10px;
-  background: transparent;
-  color: var(--openui-text-neutral-primary);
+  background: var(--home-surface-ink);
+  box-shadow: var(--home-bevel-on-dark);
+  color: #fff;
   font-family: "Inter", "Segoe UI", sans-serif;
   font-size: 0.9375rem;
   font-weight: 500;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color 120ms ease;
+  transition: opacity 120ms ease;
 }
 
-.ctaButton:hover,
-.ctaButton[aria-expanded="true"] {
-  background: var(--openui-highlight);
+.ctaButton:hover {
+  opacity: 0.88;
 }
 
 .ctaButton:focus-visible {
@@ -498,7 +505,6 @@
 .mobileMenuPairTitle .pairTitleSideLeft {
   justify-content: flex-start;
 }
-
 
 /* Fade-only reveal, as on the hero. */
 .ctaMenu {
@@ -685,7 +691,6 @@
   border-top: 1px solid var(--openui-border-default);
 }
 
-
 .pairMenuItemTitle {
   display: flex;
   align-items: center;
@@ -821,22 +826,6 @@
   height: 7px;
   flex: none;
   border-radius: 50%;
-  background: var(--openui-text-neutral-tertiary);
-}
-
-.panelStatus[data-status="ready"] > span,
-.mobilePanelStatus[data-status="ready"] {
-  background: #12b76a;
-}
-
-.panelStatus[data-status="generating"] > span,
-.mobilePanelStatus[data-status="generating"] {
-  background: #7f56d9;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #7f56d9 16%, transparent);
-}
-
-.panelStatus[data-status="error"] > span,
-.mobilePanelStatus[data-status="error"] {
   background: #f04438;
 }
 
@@ -1332,8 +1321,13 @@
 
   .headerRow {
     display: flex;
+    margin-inline: 0;
     flex-wrap: wrap;
     gap: 6px 12px;
+  }
+
+  .headerRow > .backLink {
+    position: static;
   }
 
   /* The Change chip moves into the hamburger menu; View comparison sits in

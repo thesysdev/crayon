@@ -18,7 +18,13 @@ import styles from "../chat-page.module.css";
 import { MarkdownAgentSurface } from "./agent-surfaces/markdown-agent-surface";
 import { OssAgentSurface } from "./agent-surfaces/oss-agent-surface";
 import { ChatPageHeader } from "./chat-page-header";
-import { COMPARISON_MODE_LABELS, getComparisonPair, type ComparisonPair } from "./chat-types";
+import {
+  COMPARISON_MODE_LABELS,
+  COMPARISON_PAIR_QUERY_PARAM,
+  DEFAULT_COMPARISON_PAIR,
+  getComparisonPair,
+  type ComparisonPair,
+} from "./chat-types";
 import { ComparisonControls } from "./comparison-controls";
 import type {
   ComparisonMode,
@@ -65,9 +71,13 @@ class SurfaceErrorBoundary extends Component<SurfaceErrorBoundaryProps, { hasErr
   }
 }
 
-export function ChatPageClient() {
+interface ChatPageClientProps {
+  initialPair?: ComparisonPair;
+}
+
+export function ChatPageClient({ initialPair = DEFAULT_COMPARISON_PAIR }: ChatPageClientProps) {
   const { resolvedTheme } = useTheme();
-  const [pair, setPair] = useState<ComparisonPair>("markdown-oss");
+  const [pair, setPair] = useState<ComparisonPair>(initialPair);
   const selectedPair = getComparisonPair(pair);
   const [mobileMode, setMobileMode] = useState<(typeof ALL_MODES)[number]>(selectedPair.modes[0]);
   const [isCompact, setIsCompact] = useState(false);
@@ -95,6 +105,14 @@ export function ChatPageClient() {
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get(COMPARISON_PAIR_QUERY_PARAM) === pair) return;
+
+    url.searchParams.set(COMPARISON_PAIR_QUERY_PARAM, pair);
+    window.history.replaceState(window.history.state, "", url);
+  }, [pair]);
 
   const handleCreditsExhausted = useCallback(() => {
     setCreditsDialogOpen(true);
@@ -179,7 +197,15 @@ export function ChatPageClient() {
       }
       setAnnouncement(`${next.label} selected.`);
     },
-    [pair, hasStarted, anyRunning, getRegisteredControllers, setAnnouncement, setMobileMode, setPair],
+    [
+      pair,
+      hasStarted,
+      anyRunning,
+      getRegisteredControllers,
+      setAnnouncement,
+      setMobileMode,
+      setPair,
+    ],
   );
 
   const selectAdjacentMobileMode = (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -296,9 +322,7 @@ export function ChatPageClient() {
                       />
                     )}
                   </SurfaceErrorBoundary>
-                  {!snapshot.isReady &&
-                  !snapshot.threadError &&
-                  !unavailableModes.has(mode) ? (
+                  {!snapshot.isReady && !snapshot.threadError && !unavailableModes.has(mode) ? (
                     <div className={styles.panelLoadingOverlay}>
                       <ChatLoadingState label="Loading…" />
                     </div>
@@ -365,15 +389,12 @@ function ModeStatus({
   unavailable: boolean;
 }) {
   const status = getModeStatus(snapshot, unavailable);
-  // The idle "Ready" state is the default; only surface the exceptional ones.
-  if (status === "ready") return null;
-
-  const label = `${status.charAt(0).toUpperCase()}${status.slice(1)}`;
+  if (status !== "error") return null;
 
   return (
     <span className={styles.panelStatus} data-status={status}>
       <span aria-hidden="true" />
-      {label}
+      Error
     </span>
   );
 }
@@ -386,6 +407,7 @@ function ModeStatusDot({
   unavailable: boolean;
 }) {
   const status = getModeStatus(snapshot, unavailable);
+  if (status !== "error") return null;
   return <span className={styles.mobilePanelStatus} data-status={status} aria-hidden="true" />;
 }
 

@@ -20,18 +20,18 @@ The page compares product experiences, not scientifically controlled model outpu
 
 | Topic                | Decision                                                         |
 | -------------------- | ---------------------------------------------------------------- |
-| Visible layout       | Exactly two panels                                                |
-| Pair selection       | A centred "Change" dropdown listing the three fixed pairs         |
-| Default pair         | Rendered Markdown vs OpenUI OSS                                   |
-| Switching pairs      | Resets the demo to its empty state                                |
-| Markdown             | Rendered Markdown, never raw source                               |
-| Prompt fanout        | Typed, suggested, and generated follow-ups go to all three modes  |
-| Cloud model selector | Hidden; use the configured fixed model                            |
-| Cloud artifacts      | Enabled in a full-page view                                       |
-| Cloud storage        | Existing persistence retained                                     |
-| Narrow screens       | Accessible tabs for the selected pair                             |
-| Turn limit           | No UI-enforced cap                                                |
-| Suggestions          | One stacked starter card; Cloud-only rows disabled without Cloud  |
+| Visible layout       | Exactly two panels                                               |
+| Pair selection       | A centred "Change" dropdown listing the three fixed pairs        |
+| Default pair         | Rendered Markdown vs OpenUI Cloud                                |
+| Switching pairs      | Resets the demo to its empty state                               |
+| Markdown             | Rendered Markdown, never raw source                              |
+| Prompt fanout        | Typed, suggested, and generated follow-ups go to all three modes |
+| Cloud model selector | Hidden; use the configured fixed model                           |
+| Cloud artifacts      | Enabled in a full-page view                                      |
+| Cloud storage        | Artifacts retained; active threads start fresh after refresh     |
+| Narrow screens       | Accessible tabs for the selected pair                            |
+| Turn limit           | No UI-enforced cap                                               |
+| Suggestions          | One stacked starter card; Cloud-only rows disabled without Cloud |
 
 ## Pair switcher
 
@@ -39,13 +39,13 @@ A compact "Change" chip sits centred in the top bar and opens a dropdown of the
 three presets, each shown as an "A vs B" title (mode names with chips) above a
 short description that reveals on hover. Menu order:
 
-1. **Markdown vs OpenUI OSS** (default)
-2. **Markdown vs OpenUI Cloud**
+1. **Markdown vs OpenUI OSS**
+2. **Markdown vs OpenUI Cloud** (default)
 3. **OpenUI OSS vs OpenUI Cloud**
 
 Requirements:
 
-- Default to **Markdown vs OSS**.
+- Default to **Markdown vs Cloud**.
 - Selecting a different pair resets the demo to its empty state: active streams
   are aborted, fresh threads are created, and the three comparison histories
   are cleared. It must not delete previously persisted Cloud conversations or
@@ -56,7 +56,10 @@ Requirements:
   pair.
 - While the dropdown is open, the page below the top bar is blurred; the top
   bar and its bottom stroke stay sharp.
-- Pair selection is session-local and does not need to survive reload.
+- Store pair selection in the `pair` query parameter using the pair IDs
+  `markdown-oss`, `markdown-cloud`, and `oss-cloud`. Missing or invalid values
+  fall back to `markdown-cloud`. Switcher changes preserve unrelated query
+  parameters, and the selected pair survives reload and can be shared by URL.
 
 ## Shared conversation
 
@@ -89,7 +92,8 @@ Requirements:
 
 - Keep Cloud `chatLibrary`, Responses streaming, existing Cloud storage, and report/presentation artifact renderers.
 - Hide the model selector and use the configured fixed Cloud model.
-- Retain Cloud conversation and artifact persistence.
+- Never load or restore a previously selected Cloud thread. Every page load starts with an empty active conversation.
+- Retain Cloud artifact persistence.
 - Keep Cloud available as a switcher option when unavailable, with an explicit mode-local error; Markdown and OSS must remain usable.
 
 ## Layout
@@ -100,8 +104,8 @@ Requirements:
   package-manager setup commands (pnpx / bunx / yarn dlx / npx).
 - Panel titles live in the top bar over their panels: **Markdown** (with a
   "Without OpenUI" chip), **OpenUI** with an "OSS" chip, and **OpenUI** with an
-  inverted "Cloud" chip. Status appears beside the title only for loading,
-  generating, and error states — the idle "Ready" state is not shown.
+  inverted "Cloud" chip. A status appears beside the title only for errors;
+  loading and generating states do not add status text to the header.
 - A "View comparison" chip hangs centred below the bar and expands a tray with
   a per-pair feature table: feature names in a centre column (left-aligned
   text), green ticks and grey crosses under each mode. The chip rides at the
@@ -212,14 +216,15 @@ Show suggestions only before the first submitted turn.
 
 ## Acceptance criteria
 
-- Desktop initially shows **Rendered Markdown vs OpenUI OSS** in two equal panels.
+- Desktop initially shows **Rendered Markdown vs OpenUI Cloud** in two equal panels.
+- Refreshing the page starts all three modes with fresh, empty active threads.
 - The "Change" dropdown switches cleanly among **Markdown vs OSS**, **Markdown vs Cloud**, and **OSS vs Cloud**.
 - Exactly two panels are visible while all three providers remain mounted.
 - Switching pairs resets the demo to its empty state (streams aborted, comparison histories cleared) without deleting persisted Cloud conversations or artifacts; re-selecting the current pair changes nothing.
 - One typed prompt or starter produces one aligned user turn and three independently streamed responses.
 - Generated assistant follow-ups reach all three modes exactly once.
 - Markdown is rendered; OSS and Cloud generated UI remains interactive.
-- The Cloud model selector is absent, while Cloud storage and artifact persistence continue working.
+- The Cloud model selector is absent, while Cloud artifact persistence continues working without restoring a previous active thread.
 - Cloud artifacts open full page and return to the intact comparison; Browser Back closes them first.
 - Stop and reset safely affect all three modes, including hidden streams.
 - There is no UI-enforced turn cap.

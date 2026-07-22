@@ -19,8 +19,8 @@ import { useCallback, useMemo, useState } from "react";
 import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
 import { ComparisonModeControllerBridge } from "../comparison-mode-controller";
 import { createCloudChatLLM } from "./cloud-chat-llm";
+import { CloudFreshThreadBridge } from "./cloud-fresh-thread-bridge";
 import { CloudArtifactHistoryBridge, CloudFullPageArtifactPanel } from "./cloud-full-page-artifact";
-import { CloudPersistedThreadBridge } from "./cloud-persisted-thread-bridge";
 import { getOrCreateCloudUserId } from "./cloud-user-id";
 import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
 
@@ -100,7 +100,7 @@ export function CloudAgentSurface({
         </AgentInterface.Welcome>
         <AgentInterface.Composer>
           <ComparisonModeControllerBridge mode="cloud" registry={registry} />
-          <CloudPersistedThreadBridge />
+          <CloudFreshThreadBridge />
           <CloudArtifactHistoryBridge />
         </AgentInterface.Composer>
       </AgentInterface>

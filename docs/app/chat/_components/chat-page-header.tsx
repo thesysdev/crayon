@@ -133,8 +133,7 @@ function useHeaderDropdown() {
   return { open, setOpen, wrapRef, triggerRef, handleHoverOpen, handleHoverClose };
 }
 
-// Menu display order, independent of COMPARISON_PAIRS (whose first entry
-// remains the default selection).
+// Menu display order, independent of the default comparison pair.
 const PAIR_MENU_ORDER: readonly ComparisonPair[] = ["markdown-oss", "markdown-cloud", "oss-cloud"];
 
 function PairSwitcher({
@@ -146,7 +145,7 @@ function PairSwitcher({
 }) {
   const { open, setOpen, wrapRef, triggerRef, handleHoverOpen, handleHoverClose } =
     useHeaderDropdown();
-  const active = COMPARISON_PAIRS.find((option) => option.id === pair) ?? COMPARISON_PAIRS[0]!;
+  const active = getComparisonPair(pair);
 
   return (
     <div
@@ -177,25 +176,26 @@ function PairSwitcher({
         <div className={styles.pairMenuCard} role="menu" aria-label="Comparison pair">
           {PAIR_MENU_ORDER.map((id) => COMPARISON_PAIRS.find((option) => option.id === id)!).map(
             (option) => (
-            <button
-              key={option.id}
-              type="button"
-              role="menuitemradio"
-              aria-checked={option.id === pair}
-              className={styles.pairMenuItem}
-              onClick={() => {
-                onPairChange(option.id);
-                setOpen(false);
-              }}
-            >
-              <span className={styles.pairMenuItemTitle}>
-                <PairTitle pair={option.id} />
-              </span>
-              <span className={styles.pairMenuItemDescWrap}>
-                <span className={styles.pairMenuItemDesc}>{PAIR_DESCRIPTIONS[option.id]}</span>
-              </span>
-            </button>
-          ))}
+              <button
+                key={option.id}
+                type="button"
+                role="menuitemradio"
+                aria-checked={option.id === pair}
+                className={styles.pairMenuItem}
+                onClick={() => {
+                  onPairChange(option.id);
+                  setOpen(false);
+                }}
+              >
+                <span className={styles.pairMenuItemTitle}>
+                  <PairTitle pair={option.id} />
+                </span>
+                <span className={styles.pairMenuItemDescWrap}>
+                  <span className={styles.pairMenuItemDesc}>{PAIR_DESCRIPTIONS[option.id]}</span>
+                </span>
+              </button>
+            ),
+          )}
         </div>
       </div>
     </div>
@@ -272,14 +272,94 @@ const COMPARISON_FEATURES: readonly {
   { label: "Self-hostable and open source", support: { markdown: true, oss: true, cloud: false } },
 ];
 
+const MARKDOWN_OSS_COMPARISON_FEATURES: typeof COMPARISON_FEATURES = [
+  {
+    label: "Charts and data visualizations",
+    support: { markdown: false, oss: true, cloud: true },
+  },
+  {
+    label: "Interactive forms and actions",
+    support: { markdown: false, oss: true, cloud: true },
+  },
+  {
+    label: "Progressive streaming",
+    support: { markdown: true, oss: true, cloud: true },
+  },
+  {
+    label: "Responsive output",
+    support: { markdown: false, oss: true, cloud: true },
+  },
+  {
+    label: "Styling and theming",
+    support: { markdown: false, oss: true, cloud: true },
+  },
+];
+
+const MARKDOWN_CLOUD_COMPARISON_FEATURES: typeof COMPARISON_FEATURES = [
+  {
+    label: "Charts and data visualizations",
+    support: { markdown: false, oss: true, cloud: true },
+  },
+  {
+    label: "Interactive forms and actions",
+    support: { markdown: false, oss: true, cloud: true },
+  },
+  {
+    label: "Progressive streaming",
+    support: { markdown: true, oss: true, cloud: true },
+  },
+  {
+    label: "Responsive output",
+    support: { markdown: false, oss: true, cloud: true },
+  },
+  {
+    label: "Styling and theming",
+    support: { markdown: false, oss: true, cloud: true },
+  },
+  {
+    label: "Reports and presentations",
+    support: { markdown: false, oss: false, cloud: true },
+  },
+];
+
+const OSS_CLOUD_COMPARISON_FEATURES: typeof COMPARISON_FEATURES = [
+  {
+    label: "Charts and data visualizations",
+    support: { markdown: false, oss: true, cloud: true },
+  },
+  {
+    label: "Interactive forms and actions",
+    support: { markdown: false, oss: true, cloud: true },
+  },
+  {
+    label: "Progressive streaming",
+    support: { markdown: true, oss: true, cloud: true },
+  },
+  {
+    label: "Reports and presentations",
+    support: { markdown: false, oss: false, cloud: true },
+  },
+  {
+    label: "Built-in tools",
+    support: { markdown: false, oss: false, cloud: true },
+  },
+  {
+    label: "Responsive output by default",
+    support: { markdown: false, oss: false, cloud: true },
+  },
+  {
+    label: "Automatic UI error correction",
+    support: { markdown: false, oss: false, cloud: true },
+  },
+  {
+    label: "Self-hostable and open source",
+    support: { markdown: true, oss: true, cloud: false },
+  },
+];
+
 function SupportIcon({ supported }: { supported: boolean }) {
   return supported ? (
-    <Check
-      size={15}
-      strokeWidth={2.25}
-      aria-hidden="true"
-      className={styles.comparisonTick}
-    />
+    <Check size={15} strokeWidth={2.25} aria-hidden="true" className={styles.comparisonTick} />
   ) : (
     <X size={15} strokeWidth={2} aria-hidden="true" className={styles.comparisonCross} />
   );
@@ -289,6 +369,14 @@ function ViewComparisonTray({ pair }: { pair: ComparisonPair }) {
   const { open, setOpen, wrapRef, triggerRef } = useHeaderDropdown();
   const [leftMode, rightMode] = getComparisonPair(pair).modes;
   const { left, right } = PAIR_TITLES[pair];
+  const features =
+    pair === "markdown-oss"
+      ? MARKDOWN_OSS_COMPARISON_FEATURES
+      : pair === "markdown-cloud"
+        ? MARKDOWN_CLOUD_COMPARISON_FEATURES
+        : pair === "oss-cloud"
+          ? OSS_CLOUD_COMPARISON_FEATURES
+          : COMPARISON_FEATURES;
 
   const columnLabel = (part: PairSide) => (
     <span className={styles.comparisonColumnLabel}>
@@ -313,7 +401,7 @@ function ViewComparisonTray({ pair }: { pair: ComparisonPair }) {
               <span />
               {columnLabel(right)}
             </div>
-            {COMPARISON_FEATURES.map((feature) => (
+            {features.map((feature) => (
               <div key={feature.label} className={styles.comparisonRow}>
                 <span className={styles.comparisonIconCell}>
                   <SupportIcon supported={feature.support[leftMode]} />
