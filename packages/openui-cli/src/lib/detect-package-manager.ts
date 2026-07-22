@@ -1,5 +1,3 @@
-import { execSync } from "node:child_process";
-
 export type PackageManagerName = "pnpm" | "yarn" | "bun" | "npm";
 
 export interface PackageManager {
@@ -28,19 +26,7 @@ function detectInvokingPackageManager(): PackageManagerName | null {
   return null;
 }
 
-function isPnpmAvailable(): boolean {
-  try {
-    execSync("pnpm --version", { stdio: "ignore" });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 export function resolveInstallPackageManager(): PackageManager {
   const invoking = detectInvokingPackageManager();
-  if (invoking === "pnpm" || invoking === "yarn" || invoking === "bun") {
-    return PACKAGE_MANAGERS[invoking];
-  }
-  return isPnpmAvailable() ? PACKAGE_MANAGERS.pnpm : PACKAGE_MANAGERS.npm;
+  return PACKAGE_MANAGERS[invoking ?? "npm"];
 }
