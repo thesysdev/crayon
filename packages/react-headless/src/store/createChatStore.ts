@@ -2,7 +2,7 @@ import { createStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import type { ChatLLM, ChatStorage } from "../adapters/types";
 import { processStreamedMessage } from "../stream/processStreamedMessage";
-import { DRAFT_KEY, makeThreadState, resolveViewKey } from "./threadStateEntry";
+import { DRAFT_KEY, buildThreadState, resolveViewKey } from "./threadStateItem";
 import type { ChatStore, Message, Thread, ThreadStateEntry, UserMessage } from "./types";
 
 export interface CreateChatStoreConfig {
@@ -52,7 +52,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
         fn: (cur: ThreadStateEntry) => Partial<ThreadStateEntry>,
       ) =>
         set((s) => {
-          const cur = s.threadStates[key] ?? makeThreadState();
+          const cur = s.threadStates[key] ?? buildThreadState();
           return { threadStates: { ...s.threadStates, [key]: { ...cur, ...fn(cur) } } };
         });
 

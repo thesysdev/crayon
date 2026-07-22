@@ -52,7 +52,10 @@ export type ThreadState = {
 };
 
 export type ThreadStateEntry = ThreadState & {
-  /** @internal — the in-flight run's controller, or `null` when idle. */
+  /** 
+   * @internal the in-flight run's controller, or `null` when idle.
+   * Intentionally not exposed to avoid usage from public contract
+   */
   abortController: AbortController | null;
 };
 
