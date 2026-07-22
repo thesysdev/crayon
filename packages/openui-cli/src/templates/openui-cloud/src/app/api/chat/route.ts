@@ -1,5 +1,5 @@
 import { getBillingCreditsErrorMessage } from "@/lib/billing";
-import { apiKeyOrError, envOr } from "@/lib/env";
+import { envOr, requiredEnv } from "@/lib/env";
 import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
 import { runFunctionToolLoop } from "@/lib/tool-loop";
 import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
@@ -45,12 +45,9 @@ export async function POST(req: Request) {
     );
   }
 
-  const apiKey = apiKeyOrError();
-  if (apiKey instanceof Response) return apiKey;
-
   const client = new OpenAI({
     baseURL: "https://api.thesys.dev/v1/embed",
-    apiKey, // sent as Authorization: Bearer …
+    apiKey: requiredEnv("THESYS_API_KEY"), // sent as Authorization: Bearer …
   });
 
   // App-owned function tools, executed in THIS route by runFunctionToolLoop.

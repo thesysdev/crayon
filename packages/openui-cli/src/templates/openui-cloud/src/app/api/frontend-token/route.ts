@@ -1,4 +1,4 @@
-import { apiKeyOrError, envOr } from "@/lib/env";
+import { envOr, requiredEnv } from "@/lib/env";
 
 /**
  * Mints the short-lived fct_ token the browser uses for the storage plane
@@ -15,15 +15,12 @@ import { apiKeyOrError, envOr } from "@/lib/env";
  * request body) — see the OpenUI skill's cloud-integration reference.
  */
 export async function POST() {
-  const apiKey = apiKeyOrError();
-  if (apiKey instanceof Response) return apiKey;
-
   const appId = process.env.APP_ID;
   const upstream = await fetch(`https://api.thesys.dev/v1/frontend-tokens`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${requiredEnv("THESYS_API_KEY")}`,
     },
     body: JSON.stringify({
       user_id: envOr("DEMO_USER_ID", "demo-user"),
@@ -32,18 +29,6 @@ export async function POST() {
   });
 
   if (!upstream.ok) {
-    if (upstream.status === 401 || upstream.status === 403) {
-      return Response.json(
-        {
-          error: {
-            code: "invalid_api_key",
-            message:
-              "OpenUI Cloud rejected THESYS_API_KEY. Check the key in .env against the Thesys console → API keys.",
-          },
-        },
-        { status: upstream.status },
-      );
-    }
     const errText = await upstream
       .text()
       .catch(() => "There was an error in the response from the upstream service.");
