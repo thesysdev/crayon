@@ -215,6 +215,7 @@ export function ChatPageClient() {
       <ChatPageHeader
         pair={pair}
         onPairChange={requestPairChange}
+        onReset={resetAll}
         leftHeading={renderPanelHeading(selectedPair.modes[0]!)}
         rightHeading={renderPanelHeading(selectedPair.modes[1]!)}
       />

@@ -29,14 +29,15 @@
   padding: 8px;
 }
 
-/* "View comparison" tab hanging centered below the top bar. No z-index: a
-   stacking context would trap the negative-z .menuOverlay above the header's
-   siblings and blur the top bar itself. */
+/* "View comparison" tab hanging centered below the top bar. z-index -2 keeps
+   it BELOW the pair menu's blur overlay (z -1) in the header's stacking
+   context, so it blurs with the page when the Change dropdown is open. */
 .viewComparison {
   position: absolute;
   top: 100%;
   right: 0;
   left: 0;
+  z-index: -2;
   display: flex;
   width: fit-content;
   margin-inline: auto;
@@ -71,6 +72,15 @@
    line runs across its top and it reads as part of the tray. */
 .comparisonTrayOpen + .viewComparisonChip {
   margin-top: -1px;
+}
+
+/* Dark mode, expanded only: the whole tray (card + attached chip) takes the
+   "Change" switch's sunken tint — flattened to an OPAQUE color (foreground +
+   the same 4% white) so the chip can cover the card's bottom border and no
+   stroke crosses its top. */
+:global([data-theme="dark"]) .comparisonTrayCard,
+:global([data-theme="dark"]) .viewComparisonChip[aria-expanded="true"] {
+  background: color-mix(in srgb, var(--openui-foreground) 96%, #fff);
 }
 
 .trayChevron {
@@ -176,6 +186,31 @@
 .comparisonIconCell {
   display: inline-flex;
   justify-content: center;
+}
+
+/* Primary CTA at the tray's base — compact variant. */
+.comparisonCta {
+  display: flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  border-radius: 9px;
+  background: var(--openui-inverted-background);
+  color: var(--openui-background);
+  font: var(--openui-text-label-sm);
+  text-decoration: none;
+  transition: opacity 120ms ease;
+}
+
+.comparisonCta:hover {
+  opacity: 0.88;
+}
+
+.comparisonCta:focus-visible {
+  outline: 2px solid var(--openui-border-accent-emphasis);
+  outline-offset: 2px;
 }
 
 .comparisonTick {
@@ -340,6 +375,130 @@
     opacity 0.18s ease,
     visibility 0s;
 }
+
+/* Darker variant used by the mobile tray; matches the homepage mobile menu's
+   backdrop. Inert on desktop. */
+.menuOverlayMobileDark {
+  display: none;
+  background: rgb(0 0 0 / 60%);
+  backdrop-filter: blur(12px);
+}
+
+:global([data-theme="dark"]) .menuOverlayMobileDark {
+  background: rgb(255 255 255 / 0.1);
+}
+
+/* Mobile hamburger menu (shown only under the 900px breakpoint). The sheet
+   itself reuses the homepage mobile tray component's styles. */
+.mobileMenuWrap {
+  position: relative;
+  display: none;
+}
+
+.mobileMenuButton {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--openui-text-neutral-primary);
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.mobileMenuButton:hover,
+.mobileMenuButton[aria-expanded="true"] {
+  background: var(--openui-highlight);
+}
+
+.mobileMenuButton:focus-visible {
+  outline: 2px solid var(--openui-border-accent-emphasis);
+  outline-offset: 2px;
+}
+
+.mobileMenuBackdrop {
+  position: fixed;
+  top: 53px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  cursor: pointer;
+  background: rgb(0 0 0 / 60%);
+  backdrop-filter: blur(12px);
+  animation: chatMobileMenuFade 0.2s ease;
+}
+
+:global([data-theme="dark"]) .mobileMenuBackdrop {
+  background: rgb(255 255 255 / 0.1);
+}
+
+.mobileMenuSheet {
+  position: fixed;
+  top: 53px;
+  right: 0;
+  left: 0;
+  z-index: 60;
+  animation: chatMobileMenuSlide 0.2s ease;
+}
+
+@keyframes chatMobileMenuFade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes chatMobileMenuSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.mobileMenuPairTitle {
+  min-width: 0;
+  flex: 1;
+}
+
+/* Doubled selectors: these must beat the homepage tray module's rules of
+   equal specificity regardless of stylesheet injection order. Layout and
+   spacing intentionally come from the homepage module untouched, so the two
+   mobile menus stay consistent. */
+
+/* The header's bottom stroke is the only line between bar and sheet. */
+.menuTrayFlush.menuTrayFlush {
+  border-top: 0;
+}
+
+/* A little more air above the first section. */
+.menuTrayPad.menuTrayPad {
+  padding-top: 1.25rem;
+}
+
+/* Slightly roomier rows than the homepage default. */
+.menuFlatLink.menuFlatLink {
+  min-height: 2.75rem;
+  padding-block: 0.5rem;
+}
+
+.menuFlatLink.menuFlatLink:hover {
+  background: transparent;
+}
+
+/* Left-aligned pair rows in the menu: the centred "vs" grid flattens into a
+   natural inline flow. */
+.mobileMenuPairTitle .pairTitleGroup {
+  display: inline-flex;
+  width: auto;
+  gap: 6px;
+}
+
+.mobileMenuPairTitle .pairTitleSideLeft {
+  justify-content: flex-start;
+}
+
 
 /* Fade-only reveal, as on the hero. */
 .ctaMenu {
@@ -973,11 +1132,12 @@
   cursor: not-allowed;
 }
 
-/* Borderless square icon button, floated outside the centered column. */
-.resetButton {
+/* Borderless square icon buttons, floated outside the centered column:
+   theme toggle on the left, reset on the right. */
+.resetButton,
+.themeToggle {
   position: absolute;
   bottom: 5px;
-  left: calc(100% + 10px);
   width: 44px;
   height: 44px;
   border: 0;
@@ -986,8 +1146,25 @@
   color: var(--openui-text-neutral-primary);
 }
 
-.resetButton:hover {
+.resetButton {
+  left: calc(100% + 10px);
+}
+
+.themeToggle {
+  display: grid;
+  right: calc(100% + 10px);
+  place-items: center;
+  cursor: pointer;
+}
+
+.resetButton:hover,
+.themeToggle:hover {
   background: var(--openui-highlight);
+}
+
+.themeToggle:focus-visible {
+  outline: 2px solid var(--openui-border-accent-emphasis);
+  outline-offset: 2px;
 }
 
 .mobilePanelTabs {
@@ -1159,8 +1336,114 @@
     gap: 6px 12px;
   }
 
-  .pairMenu {
-    max-width: calc(100vw - 24px);
+  /* The Change chip moves into the hamburger menu; View comparison sits in
+     the bar beside it. */
+  .modeControl {
+    display: none;
+  }
+
+  .mobileMenuWrap {
+    display: flex;
+    margin-left: auto;
+  }
+
+  /* Starts below the bar (like the hamburger backdrop) so the top bar never
+     dims or blurs. */
+  .menuOverlayMobileDark {
+    display: block;
+    top: 53px;
+  }
+
+  .viewComparison {
+    top: 12px;
+    right: 0;
+    left: 0;
+    z-index: auto;
+    margin: 0 auto;
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+
+  /* In the bar the chip looks like the Change switch, not a hanging tab. */
+  .viewComparisonChip {
+    margin-top: 0;
+    border: 1px solid var(--openui-border-default);
+    border-radius: 8px;
+    background: var(--openui-sunk);
+    box-shadow: none;
+  }
+
+  .comparisonTrayOpen + .viewComparisonChip {
+    margin-top: 0;
+  }
+
+  /* The tray detaches from the chip and drops edge to edge below the bar,
+     styled like the hamburger sheet. */
+  .comparisonTray {
+    position: fixed;
+    top: 53px;
+    right: 0;
+    left: 0;
+    width: auto;
+    max-width: none;
+  }
+
+  .comparisonTrayInner {
+    margin: 0 0 -36px;
+    padding: 0 0 36px;
+  }
+
+  .comparisonTrayCard {
+    border: 0;
+    border-radius: 0 0 28px 28px;
+    box-shadow: var(--openui-shadow-xl);
+    padding: 1rem 1.25rem 1.5rem;
+  }
+
+  /* Narrower icon columns give the feature text room to breathe. */
+  .comparisonRow {
+    grid-template-columns: 4rem 1fr 4rem;
+  }
+
+  /* All starter rows share one height, content top-aligned; tagged ones
+     stack label over tag and fill the band with symmetric padding. */
+  .suggestionButton {
+    min-height: 64px;
+    align-content: flex-start;
+    align-items: flex-start;
+    padding-block: 12px;
+  }
+
+  /* Optically centre the icon against the first text line. */
+  .suggestionButton > svg:first-child {
+    margin-top: 3px;
+  }
+
+  /* Tagged starters: full-width text line, tag dropped underneath (aligned
+     with the text, past the icon indent). */
+  .suggestionButton:has(.suggestionTag) {
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+
+  .suggestionButton:has(.suggestionTag)::after {
+    content: "";
+    order: 1;
+    flex-basis: 100%;
+  }
+
+  .suggestionLabel {
+    flex: 1;
+  }
+
+  /* Plain gray text on mobile instead of a chip. */
+  .suggestionTag {
+    order: 2;
+    margin-left: 24px;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+    color: var(--openui-text-neutral-secondary);
   }
 
   .mobilePanelTabs {
@@ -1226,9 +1509,11 @@
     padding: 10px 12px max(10px, env(safe-area-inset-bottom));
   }
 
-  /* Not enough room to float outside the column — back inline. */
-  .resetButton {
-    position: static;
+  /* Reset and theme live in the hamburger menu; the input takes the full
+     width of the controls area. */
+  .resetButton,
+  .themeToggle {
+    display: none;
   }
 
   .suggestionRow {
@@ -1238,8 +1523,7 @@
 
 @media (max-width: 560px) {
   .suggestionButton {
-    min-height: 44px;
-    padding: 8px 12px;
+    padding-inline: 12px;
   }
 
   .sharedComposer {
@@ -1280,6 +1564,11 @@
 
   .ctaMenuHighlight {
     transition: opacity 0.15s ease;
+  }
+
+  .mobileMenuBackdrop,
+  .mobileMenuSheet {
+    animation: none;
   }
 
   .loadingIndicator {

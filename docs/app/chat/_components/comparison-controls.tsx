@@ -4,13 +4,16 @@ import {
   ArrowRight,
   ArrowUp,
   FileText,
+  Moon,
   Plane,
   Presentation,
   RotateCcw,
   Square,
+  Sun,
   TrendingUp,
 } from "lucide-react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "../chat-page.module.css";
 
 const COMPARISON_SUGGESTIONS = [
@@ -34,7 +37,7 @@ const COMPARISON_SUGGESTIONS = [
       "Create a report on electric vehicles covering adoption trends, key manufacturers, and market outlook.",
     icon: FileText,
     color: "#6941c6",
-    tag: "On Cloud only",
+    tag: "Only on Cloud",
     cloudOnly: true,
   },
   {
@@ -43,7 +46,7 @@ const COMPARISON_SUGGESTIONS = [
       "Create a presentation on global coffee culture covering regions, brewing styles, and cafe trends.",
     icon: Presentation,
     color: "#cd8200",
-    tag: "On Cloud only",
+    tag: "Only on Cloud",
     cloudOnly: true,
   },
 ] as const;
@@ -72,13 +75,35 @@ export function ComparisonControls({
 }: ComparisonControlsProps) {
   const [text, setText] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { resolvedTheme, setTheme } = useTheme();
+  // Theme is unknown until mounted; gate the icon to avoid hydration mismatch.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isDark = mounted && resolvedTheme === "dark";
 
   useLayoutEffect(() => {
     const input = inputRef.current;
     if (!input) return;
 
-    input.style.height = "0px";
-    input.style.height = `${Math.max(24, Math.min(input.scrollHeight, 154))}px`;
+    const resize = () => {
+      input.style.height = "0px";
+      input.style.height = `${Math.max(24, Math.min(input.scrollHeight, 154))}px`;
+    };
+
+    resize();
+
+    // A zero-width layout (e.g. the page loading in a hidden pane) wraps the
+    // content onto one-character lines and locks in a bogus height, so
+    // re-measure whenever the field's width changes.
+    let lastWidth = input.getBoundingClientRect().width;
+    const observer = new ResizeObserver((entries) => {
+      const width = entries[0]?.contentRect.width ?? 0;
+      if (width === lastWidth) return;
+      lastWidth = width;
+      resize();
+    });
+    observer.observe(input);
+    return () => observer.disconnect();
   }, [text]);
 
   const submit = (content: string) => {
@@ -142,6 +167,19 @@ export function ComparisonControls({
       )}
 
       <div className={styles.composerRow}>
+        <button
+          type="button"
+          className={styles.themeToggle}
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          onClick={() => setTheme(isDark ? "light" : "dark")}
+        >
+          {isDark ? (
+            <Sun size={17} strokeWidth={2} aria-hidden="true" />
+          ) : (
+            <Moon size={17} strokeWidth={2} aria-hidden="true" />
+          )}
+        </button>
         <div className={styles.sharedComposer} data-running={isRunning || undefined}>
           <label className={styles.srOnly} htmlFor="comparison-composer">
             {isDegraded

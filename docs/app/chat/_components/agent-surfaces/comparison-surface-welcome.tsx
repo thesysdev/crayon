@@ -1,21 +1,21 @@
 "use client";
 
-import { Cloud, LayoutTemplate, TextQuote } from "lucide-react";
+import { AlignLeft, Blocks, Sparkles } from "lucide-react";
 import styles from "../../chat-page.module.css";
 import type { ComparisonMode } from "../comparison-mode-controller";
 
 const CONTENT = {
   markdown: {
-    icon: TextQuote,
-    description: "AI responses rendered as standard Markdown.",
+    icon: AlignLeft,
+    description: "AI responses without OpenUI.",
   },
   oss: {
-    icon: LayoutTemplate,
-    description: "Interactive responses rendered with the open-source OpenUI library.",
+    icon: Blocks,
+    description: "AI responses with OpenUI OSS.",
   },
   cloud: {
-    icon: Cloud,
-    description: "Managed generative responses with tools and full-page artifacts.",
+    icon: Sparkles,
+    description: "AI responses with OpenUI Cloud.",
   },
 } as const;
 

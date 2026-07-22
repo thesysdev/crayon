@@ -1,7 +1,21 @@
 "use client";
 
 import { ClipboardCommandButton } from "@/app/(home)/components/Button/Button";
-import { ArrowLeft, ArrowLeftRight, ArrowRight, Check, ChevronDown, X } from "lucide-react";
+import { GitHubButton } from "@/app/(home)/components/GitHubButton/GitHubButton";
+import trayStyles from "@/components/site-marketing-header.module.css";
+import {
+  ArrowLeft,
+  ArrowLeftRight,
+  ArrowRight,
+  Check,
+  ChevronDown,
+  Menu,
+  Moon,
+  RotateCcw,
+  Sun,
+  X,
+} from "lucide-react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import styles from "../chat-page.module.css";
@@ -284,6 +298,13 @@ function ViewComparisonTray({ pair }: { pair: ComparisonPair }) {
 
   return (
     <div className={styles.viewComparison} ref={wrapRef}>
+      <div
+        className={`${styles.menuOverlay} ${styles.menuOverlayMobileDark} ${
+          open ? styles.menuOverlayOpen : ""
+        }`.trim()}
+        aria-hidden="true"
+      />
+
       <div className={`${styles.comparisonTray} ${open ? styles.comparisonTrayOpen : ""}`.trim()}>
         <div className={styles.comparisonTrayInner}>
           <div className={styles.comparisonTrayCard} aria-label="Feature comparison">
@@ -303,6 +324,14 @@ function ViewComparisonTray({ pair }: { pair: ComparisonPair }) {
                 </span>
               </div>
             ))}
+            <Link
+              href="/docs/agent/getting-started/openui-cloud"
+              prefetch={false}
+              className={styles.comparisonCta}
+            >
+              Learn more about OpenUI Cloud
+              <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </div>
@@ -327,9 +356,127 @@ function ViewComparisonTray({ pair }: { pair: ComparisonPair }) {
   );
 }
 
+// Mobile-only hamburger: pair options, reset + theme, and setup commands.
+function MobileMenu({
+  pair,
+  onPairChange,
+  onReset,
+}: {
+  pair: ComparisonPair;
+  onPairChange: (pair: ComparisonPair) => void;
+  onReset: () => void;
+}) {
+  const { open, setOpen, wrapRef, triggerRef } = useHeaderDropdown();
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isDark = mounted && resolvedTheme === "dark";
+
+  return (
+    <div className={styles.mobileMenuWrap} ref={wrapRef}>
+      <button
+        type="button"
+        ref={triggerRef}
+        className={styles.mobileMenuButton}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label="Menu"
+        onClick={() => setOpen((value) => !value)}
+      >
+        {open ? (
+          <X size={18} strokeWidth={2} aria-hidden="true" />
+        ) : (
+          <Menu size={18} strokeWidth={2} aria-hidden="true" />
+        )}
+      </button>
+
+      {open ? (
+        <>
+          <div
+            className={styles.mobileMenuBackdrop}
+            aria-hidden="true"
+            onClick={() => setOpen(false)}
+          />
+          <div className={styles.mobileMenuSheet}>
+            <div className={`${trayStyles.mobileTray} ${styles.menuTrayFlush}`}>
+              <div className={`${trayStyles.mobileTrayInner} ${styles.menuTrayPad}`}>
+                <div className={trayStyles.mobileTraySection} role="menu" aria-label="Comparison">
+                  <div className={trayStyles.mobileTraySectionHeading}>Comparison</div>
+                  {PAIR_MENU_ORDER.map(
+                    (id) => COMPARISON_PAIRS.find((option) => option.id === id)!,
+                  ).map((option) => {
+                    const { left, right } = PAIR_TITLES[option.id];
+                    const sideText = (part: PairSide) =>
+                      part.chip ? `${part.label} ${part.chip}` : part.label;
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={option.id === pair}
+                        className={`${trayStyles.mobileTrayLink} ${styles.menuFlatLink}`}
+                        onClick={() => {
+                          onPairChange(option.id);
+                          setOpen(false);
+                        }}
+                      >
+                        <span className={styles.mobileMenuPairTitle}>
+                          {sideText(left)} <span className={styles.pairTitleVs}>vs</span>{" "}
+                          {sideText(right)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className={trayStyles.mobileTraySection}>
+                  <div className={trayStyles.mobileTraySectionHeading}>Preferences</div>
+                  <button
+                    type="button"
+                    className={`${trayStyles.mobileTrayLink} ${styles.menuFlatLink}`}
+                    onClick={() => {
+                      onReset();
+                      setOpen(false);
+                    }}
+                  >
+                    <RotateCcw size={15} strokeWidth={2} aria-hidden="true" />
+                    <span>Reset chats</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`${trayStyles.mobileTrayLink} ${styles.menuFlatLink}`}
+                    onClick={() => setTheme(isDark ? "light" : "dark")}
+                  >
+                    {isDark ? (
+                      <Sun size={15} strokeWidth={2} aria-hidden="true" />
+                    ) : (
+                      <Moon size={15} strokeWidth={2} aria-hidden="true" />
+                    )}
+                    <span>{isDark ? "Light mode" : "Dark mode"}</span>
+                  </button>
+                </div>
+
+                <div className={trayStyles.mobileTrayFooter}>
+                  <GitHubButton
+                    variant="desktopGlow"
+                    compact
+                    href="https://github.com/thesysdev/openui"
+                    arrow={<ArrowRight size={18} strokeWidth={2} aria-hidden="true" />}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
 interface ChatPageHeaderProps {
   pair: ComparisonPair;
   onPairChange: (pair: ComparisonPair) => void;
+  onReset: () => void;
   leftHeading?: ReactNode;
   rightHeading?: ReactNode;
 }
@@ -337,6 +484,7 @@ interface ChatPageHeaderProps {
 export function ChatPageHeader({
   pair,
   onPairChange,
+  onReset,
   leftHeading,
   rightHeading,
 }: ChatPageHeaderProps) {
@@ -354,6 +502,8 @@ export function ChatPageHeader({
         {rightHeading}
 
         <BuildForFreeMenu />
+
+        <MobileMenu pair={pair} onPairChange={onPairChange} onReset={onReset} />
       </div>
 
       <ViewComparisonTray pair={pair} />
