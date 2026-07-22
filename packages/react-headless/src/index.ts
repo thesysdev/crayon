@@ -6,6 +6,7 @@ export { useDetailedView } from "./hooks/useDetailedView";
 export { useDetailedViewPortalTarget } from "./hooks/useDetailedViewPortalTarget";
 export { MessageContext, MessageProvider, useMessage } from "./hooks/useMessage";
 export { useThread, useThreadList } from "./hooks/useThread";
+export { useThreadState } from "./hooks/useThreadState";
 export { useToolActivities } from "./hooks/useToolActivities";
 
 export { defineArtifactCategories } from "./store/artifactCategories";
@@ -78,6 +79,7 @@ export type {
   ThreadListActions,
   ThreadListState,
   ThreadState,
+  ThreadStateEntry,
 } from "./store/types";
 
 export type {

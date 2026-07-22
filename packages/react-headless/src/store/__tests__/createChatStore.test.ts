@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Message, Thread, UserMessage } from "../types";
+import { EventType } from "../../types/stream";
+import { DRAFT_KEY, makeThreadState } from "../threadStateEntry";
+import type { Message, Thread, ThreadStateEntry, UserMessage } from "../types";
 import { makeStore } from "./__helpers/makeStore";
 
 // ── Helpers ──
@@ -14,6 +16,25 @@ const makeMessage = (id: string, role: "user" | "assistant" = "user"): Message =
   ({ id, role, content: `msg-${id}` }) as Message;
 
 const flushPromises = () => new Promise((r) => setTimeout(r, 0));
+
+type Store = ReturnType<typeof makeStore>;
+
+// The key whose entry the view currently shows.
+const viewKeyOf = (store: Store) => store.getState().selectedThreadId ?? DRAFT_KEY;
+// The selected thread's entry (empty defaults when absent), i.e. what `useThread` shows.
+const active = (store: Store): ThreadStateEntry =>
+  store.getState().threadStates[viewKeyOf(store)] ?? makeThreadState();
+// A specific thread's raw entry (may be undefined).
+const entryOf = (store: Store, key: string): ThreadStateEntry | undefined =>
+  store.getState().threadStates[key];
+// Seed/patch one thread's entry, creating it if absent (replaces the old `setState({ messages })`).
+const seed = (store: Store, key: string, patch: Partial<ThreadStateEntry>) =>
+  store.setState((s) => ({
+    threadStates: {
+      ...s.threadStates,
+      [key]: { ...(s.threadStates[key] ?? makeThreadState()), ...patch },
+    },
+  }));
 
 // ── Test suite ──
 
@@ -106,25 +127,37 @@ describe("createChatStore", () => {
   });
 
   describe("selectThread", () => {
-    it("sets selectedThreadId, loads messages, clears previous", async () => {
+    it("sets selectedThreadId and loads messages into that thread's entry", async () => {
       const messages: Message[] = [makeMessage("m1"), makeMessage("m2", "assistant")];
       const getMessages = vi.fn().mockResolvedValue(messages);
 
       const store = makeStore({ getMessages });
 
-      store.setState({ messages: [makeMessage("old")] });
-
       store.getState().selectThread("t1");
 
       expect(store.getState().selectedThreadId).toBe("t1");
-      expect(store.getState().messages).toEqual([]);
-      expect(store.getState().isLoadingMessages).toBe(true);
+      expect(active(store).messages).toEqual([]);
+      expect(active(store).isLoadingMessages).toBe(true);
 
       await flushPromises();
 
-      expect(store.getState().messages).toEqual(messages);
-      expect(store.getState().isLoadingMessages).toBe(false);
+      expect(active(store).messages).toEqual(messages);
+      expect(active(store).isLoadingMessages).toBe(false);
       expect(getMessages).toHaveBeenCalledWith("t1");
+    });
+
+    it("does not reload a thread that already has an in-memory entry", async () => {
+      const getMessages = vi.fn().mockResolvedValue([makeMessage("stored")]);
+      const store = makeStore({ getMessages });
+
+      // Thread already loaded/streamed this session.
+      seed(store, "t1", { messages: [makeMessage("in-memory")] });
+
+      store.getState().selectThread("t1");
+      await flushPromises();
+
+      expect(active(store).messages.map((m) => m.id)).toEqual(["in-memory"]);
+      expect(getMessages).not.toHaveBeenCalled();
     });
 
     it("sets threadError on load failure", async () => {
@@ -135,26 +168,54 @@ describe("createChatStore", () => {
       store.getState().selectThread("t1");
       await flushPromises();
 
-      expect(store.getState().threadError).toBe(error);
-      expect(store.getState().isLoadingMessages).toBe(false);
+      expect(active(store).threadError).toBe(error);
+      expect(active(store).isLoadingMessages).toBe(false);
     });
   });
 
   describe("switchToNewThread", () => {
-    it("clears selection, messages, and errors", () => {
+    it("clears selection and shows an empty draft view", () => {
       const store = makeStore();
 
-      store.setState({
-        selectedThreadId: "t1",
-        messages: [makeMessage("m1")],
-        threadError: new Error("old"),
-      });
+      seed(store, "t1", { messages: [makeMessage("m1")], threadError: new Error("old") });
+      store.setState({ selectedThreadId: "t1" });
 
       store.getState().switchToNewThread();
 
       expect(store.getState().selectedThreadId).toBeNull();
-      expect(store.getState().messages).toEqual([]);
-      expect(store.getState().threadError).toBeNull();
+      expect(active(store).messages).toEqual([]);
+      expect(active(store).threadError).toBeNull();
+    });
+
+    it("is a no-op while a new thread is being created", async () => {
+      let resolveCreate!: (t: Thread) => void;
+      const createThread = vi.fn().mockImplementation(
+        () =>
+          new Promise<Thread>((r) => {
+            resolveCreate = r;
+          }),
+      );
+      const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
+      const store = makeStore({ createThread, send, streamProtocol: { parse: async function* () {} } });
+
+      // Brand-new chat: first message kicks off createThread (still pending).
+      store.getState().processMessage({ role: "user", content: "hello" });
+      await flushPromises();
+
+      expect(store.getState().isCreatingThread).toBe(true);
+      expect(entryOf(store, DRAFT_KEY)?.isRunning).toBe(true);
+
+      // Attempt to start a fresh chat mid-creation → ignored, draft run preserved.
+      store.getState().switchToNewThread();
+      expect(entryOf(store, DRAFT_KEY)?.isRunning).toBe(true);
+
+      resolveCreate(makeThread("t-real"));
+      await flushPromises();
+
+      // Draft re-keyed to the real thread; DRAFT slot freed.
+      expect(entryOf(store, DRAFT_KEY)).toBeUndefined();
+      expect(entryOf(store, "t-real")).toBeDefined();
+      expect(store.getState().isCreatingThread).toBe(false);
     });
   });
 
@@ -196,17 +257,41 @@ describe("createChatStore", () => {
       const deleteThread = vi.fn().mockResolvedValue(undefined);
       const store = makeStore({ deleteThread });
 
-      store.setState({
-        threads: [makeThread("t1")],
-        selectedThreadId: "t1",
-        messages: [makeMessage("m1")],
-      });
+      seed(store, "t1", { messages: [makeMessage("m1")] });
+      store.setState({ threads: [makeThread("t1")], selectedThreadId: "t1" });
 
       store.getState().deleteThread("t1");
       await flushPromises();
 
       expect(store.getState().selectedThreadId).toBeNull();
-      expect(store.getState().messages).toEqual([]);
+      expect(active(store).messages).toEqual([]);
+      expect(entryOf(store, "t1")).toBeUndefined();
+    });
+
+    it("aborts an in-flight run on the deleted thread and drops its entry (no ghost)", async () => {
+      let capturedSignal: AbortSignal | undefined;
+      const send = vi.fn().mockImplementation(({ signal }) => {
+        capturedSignal = signal;
+        return new Promise(() => {}); // never resolves
+      });
+      const deleteThread = vi.fn().mockResolvedValue(undefined);
+      const store = makeStore({ send, deleteThread, streamProtocol: { parse: async function* () {} } });
+
+      store.setState({ threads: [makeThread("t1")], selectedThreadId: "t1" });
+      store.getState().processMessage({ role: "user", content: "hello" });
+      await flushPromises();
+      expect(entryOf(store, "t1")?.isRunning).toBe(true);
+
+      store.getState().deleteThread("t1");
+      await flushPromises();
+
+      expect(capturedSignal?.aborted).toBe(true);
+      expect(entryOf(store, "t1")).toBeUndefined();
+      expect(store.getState().threads).toHaveLength(0);
+
+      // Late `finally`/abort callbacks for the dropped key must not resurrect it.
+      await flushPromises();
+      expect(entryOf(store, "t1")).toBeUndefined();
     });
 
     it("sets isPending during operation", async () => {
@@ -248,39 +333,40 @@ describe("createChatStore", () => {
   });
 
   // ────────────────────────────────────────────
-  // Message CRUD
+  // Message CRUD (operate on the active view entry)
   // ────────────────────────────────────────────
 
   describe("message CRUD", () => {
-    let store: ReturnType<typeof makeStore>;
+    let store: Store;
 
     beforeEach(() => {
       store = makeStore();
-      store.setState({ messages: [makeMessage("m1"), makeMessage("m2", "assistant")] });
+      // selectedThreadId is null → the active view is the DRAFT entry.
+      seed(store, DRAFT_KEY, { messages: [makeMessage("m1"), makeMessage("m2", "assistant")] });
     });
 
     it("appendMessages adds to end", () => {
       store.getState().appendMessages(makeMessage("m3"));
-      expect(store.getState().messages).toHaveLength(3);
-      expect(store.getState().messages[2].id).toBe("m3");
+      expect(active(store).messages).toHaveLength(3);
+      expect(active(store).messages[2].id).toBe("m3");
     });
 
     it("setMessages replaces all", () => {
       store.getState().setMessages([makeMessage("new")]);
-      expect(store.getState().messages).toHaveLength(1);
-      expect(store.getState().messages[0].id).toBe("new");
+      expect(active(store).messages).toHaveLength(1);
+      expect(active(store).messages[0].id).toBe("new");
     });
 
     it("updateMessage replaces by id", () => {
       const updated = { ...makeMessage("m1"), content: "edited" } as Message;
       store.getState().updateMessage(updated);
-      expect((store.getState().messages[0] as any).content).toBe("edited");
+      expect((active(store).messages[0] as any).content).toBe("edited");
     });
 
     it("deleteMessage removes by id", () => {
       store.getState().deleteMessage("m1");
-      expect(store.getState().messages).toHaveLength(1);
-      expect(store.getState().messages[0].id).toBe("m2");
+      expect(active(store).messages).toHaveLength(1);
+      expect(active(store).messages[0].id).toBe("m2");
     });
   });
 
@@ -292,46 +378,39 @@ describe("createChatStore", () => {
     it("appends optimistic user message and calls llm.send", async () => {
       const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
 
-      const store = makeStore({
-        send,
-        streamProtocol: { parse: async function* () {} },
-      });
-
+      const store = makeStore({ send, streamProtocol: { parse: async function* () {} } });
       store.setState({ selectedThreadId: "t1" });
 
       await store.getState().processMessage({ role: "user", content: "hello" });
 
-      expect(store.getState().messages).toHaveLength(1);
-      expect(store.getState().messages[0].role).toBe("user");
-      expect(store.getState().isRunning).toBe(false);
+      expect(active(store).messages).toHaveLength(1);
+      expect(active(store).messages[0].role).toBe("user");
+      expect(active(store).isRunning).toBe(false);
       expect(send).toHaveBeenCalledOnce();
     });
 
-    it("creates thread when none selected", async () => {
+    it("creates thread when none selected and follows into it", async () => {
       const newThread = makeThread("t-auto");
       const createThread = vi.fn().mockResolvedValue(newThread);
       const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
 
-      const store = makeStore({
-        createThread,
-        send,
-        streamProtocol: { parse: async function* () {} },
-      });
+      const store = makeStore({ createThread, send, streamProtocol: { parse: async function* () {} } });
 
       await store.getState().processMessage({ role: "user", content: "hello" });
 
       expect(createThread).toHaveBeenCalledOnce();
       expect(store.getState().selectedThreadId).toBe("t-auto");
+      expect(entryOf(store, DRAFT_KEY)).toBeUndefined();
+      expect(entryOf(store, "t-auto")?.messages).toHaveLength(1);
+      expect(store.getState().isCreatingThread).toBe(false);
     });
 
-    it("no-ops when already running", async () => {
+    it("no-ops when the same thread is already running", async () => {
       const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
 
-      const store = makeStore({
-        send,
-        streamProtocol: { parse: async function* () {} },
-      });
-      store.setState({ isRunning: true, selectedThreadId: "t1" });
+      const store = makeStore({ send, streamProtocol: { parse: async function* () {} } });
+      seed(store, "t1", { isRunning: true });
+      store.setState({ selectedThreadId: "t1" });
 
       await store.getState().processMessage({ role: "user", content: "hello" });
 
@@ -341,17 +420,14 @@ describe("createChatStore", () => {
     it("sets threadError on failure", async () => {
       const send = vi.fn().mockRejectedValue(new Error("api down"));
 
-      const store = makeStore({
-        send,
-        streamProtocol: { parse: async function* () {} },
-      });
+      const store = makeStore({ send, streamProtocol: { parse: async function* () {} } });
       store.setState({ selectedThreadId: "t1" });
 
       await store.getState().processMessage({ role: "user", content: "hello" });
 
-      expect(store.getState().threadError).toBeInstanceOf(Error);
-      expect(store.getState().threadError?.message).toBe("api down");
-      expect(store.getState().isRunning).toBe(false);
+      expect(active(store).threadError).toBeInstanceOf(Error);
+      expect(active(store).threadError?.message).toBe("api down");
+      expect(active(store).isRunning).toBe(false);
     });
   });
 
@@ -360,39 +436,59 @@ describe("createChatStore", () => {
   // ────────────────────────────────────────────
 
   describe("cancelMessage", () => {
-    it("aborts in-flight request", async () => {
+    it("aborts the selected thread's in-flight request", async () => {
       let capturedSignal: AbortSignal;
       const send = vi.fn().mockImplementation(({ signal }) => {
         capturedSignal = signal;
         return new Promise(() => {}); // never resolves
       });
 
-      const store = makeStore({
-        send,
-        streamProtocol: { parse: async function* () {} },
-      });
+      const store = makeStore({ send, streamProtocol: { parse: async function* () {} } });
       store.setState({ selectedThreadId: "t1" });
 
-      const _promise = store.getState().processMessage({ role: "user", content: "hello" });
+      store.getState().processMessage({ role: "user", content: "hello" });
 
       await flushPromises();
-      expect(store.getState().isRunning).toBe(true);
+      expect(active(store).isRunning).toBe(true);
 
       store.getState().cancelMessage();
 
       await flushPromises();
-      expect(store.getState().isRunning).toBe(false);
+      expect(active(store).isRunning).toBe(false);
       expect(capturedSignal!.aborted).toBe(true);
+    });
+
+    it("does not abort a run on a non-selected (background) thread", async () => {
+      const signals: AbortSignal[] = [];
+      const send = vi.fn().mockImplementation(({ signal }) => {
+        signals.push(signal);
+        return new Promise(() => {}); // never resolves
+      });
+      const store = makeStore({ send, streamProtocol: { parse: async function* () {} } });
+
+      // Run on t1, then switch to t2 (t1 keeps running in background).
+      store.setState({ selectedThreadId: "t1" });
+      store.getState().processMessage({ role: "user", content: "one" });
+      await flushPromises();
+      store.getState().selectThread("t2");
+      await flushPromises();
+
+      // Cancelling from t2 must not touch t1's run.
+      store.getState().cancelMessage();
+      await flushPromises();
+
+      expect(signals[0].aborted).toBe(false);
+      expect(entryOf(store, "t1")?.isRunning).toBe(true);
     });
   });
 
   // ────────────────────────────────────────────
-  // Thread switch during stream
+  // Background streaming across thread switches
   // ────────────────────────────────────────────
 
-  describe("selectThread while streaming", () => {
-    it("cancels current stream and loads new thread", async () => {
-      let capturedSignal: AbortSignal;
+  describe("thread switch while streaming", () => {
+    it("keeps the run alive in the background and loads the new thread", async () => {
+      let capturedSignal: AbortSignal | undefined;
       const send = vi.fn().mockImplementation(({ signal }) => {
         capturedSignal = signal;
         return new Promise(() => {}); // never resolves
@@ -400,29 +496,123 @@ describe("createChatStore", () => {
       const newMessages = [makeMessage("new-m1")];
       const getMessages = vi.fn().mockResolvedValue(newMessages);
 
+      const store = makeStore({ send, getMessages, streamProtocol: { parse: async function* () {} } });
+      store.setState({ selectedThreadId: "t1" });
+
+      // Start streaming on t1.
+      store.getState().processMessage({ role: "user", content: "hello" });
+      await flushPromises();
+      expect(active(store).isRunning).toBe(true);
+
+      // Switch to t2 mid-stream — the run must NOT be aborted (behaviour change).
+      store.getState().selectThread("t2");
+
+      expect(capturedSignal?.aborted).toBe(false);
+      expect(store.getState().selectedThreadId).toBe("t2");
+      expect(active(store).isLoadingMessages).toBe(true);
+      expect(entryOf(store, "t1")?.isRunning).toBe(true); // t1 still streaming
+
+      await flushPromises();
+
+      expect(active(store).messages).toEqual(newMessages);
+      expect(active(store).isLoadingMessages).toBe(false);
+
+      // Switch back to t1 → shows its in-session messages, NO storage reload.
+      store.getState().selectThread("t1");
+      expect(active(store).isRunning).toBe(true);
+      expect(active(store).messages).toHaveLength(1); // the optimistic user message
+      expect(getMessages).toHaveBeenCalledTimes(1); // only t2 was loaded
+      expect(getMessages).toHaveBeenCalledWith("t2");
+      expect(capturedSignal?.aborted).toBe(false);
+    });
+
+    it("runs two threads concurrently, each writing only its own entry", async () => {
+      const signals: AbortSignal[] = [];
+      const send = vi.fn().mockImplementation(({ signal }) => {
+        signals.push(signal);
+        return new Promise(() => {}); // never resolves
+      });
+      const store = makeStore({ send, streamProtocol: { parse: async function* () {} } });
+
+      store.setState({ selectedThreadId: "t1" });
+      store.getState().processMessage({ role: "user", content: "one" });
+      await flushPromises();
+
+      store.getState().selectThread("t2");
+      await flushPromises();
+      store.getState().processMessage({ role: "user", content: "two" });
+      await flushPromises();
+
+      expect(entryOf(store, "t1")?.isRunning).toBe(true);
+      expect(entryOf(store, "t2")?.isRunning).toBe(true);
+      expect(send).toHaveBeenCalledTimes(2);
+      // Distinct runs, distinct controllers.
+      expect(signals[0]).not.toBe(signals[1]);
+      expect(entryOf(store, "t1")?.messages).toHaveLength(1);
+      expect(entryOf(store, "t2")?.messages).toHaveLength(1);
+    });
+
+    it("a completed background run's messages survive a switch away and back", async () => {
+      const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
+      // One text chunk → the assistant message is created synchronously (isFirst path).
+      const streamProtocol = {
+        parse: async function* () {
+          yield { type: EventType.TEXT_MESSAGE_CONTENT, delta: "hi there" } as never;
+        },
+      };
+      const getMessages = vi.fn().mockResolvedValue([]);
+      const store = makeStore({ send, streamProtocol, getMessages });
+
+      store.setState({ selectedThreadId: "t1" });
+      await store.getState().processMessage({ role: "user", content: "hello" });
+
+      // optimistic user + streamed assistant message
+      expect(entryOf(store, "t1")?.messages).toHaveLength(2);
+      expect(entryOf(store, "t1")?.isRunning).toBe(false);
+
+      store.getState().selectThread("t2");
+      await flushPromises();
+      store.getState().selectThread("t1");
+
+      expect(active(store).messages).toHaveLength(2);
+      expect(getMessages).not.toHaveBeenCalledWith("t1"); // never reloaded from storage
+    });
+
+    it("re-keys a draft run to the background when the user navigates away mid-creation", async () => {
+      let resolveCreate!: (t: Thread) => void;
+      const createThread = vi.fn().mockImplementation(
+        () =>
+          new Promise<Thread>((r) => {
+            resolveCreate = r;
+          }),
+      );
+      const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
+      const getMessages = vi.fn().mockResolvedValue([]);
       const store = makeStore({
+        createThread,
         send,
         getMessages,
         streamProtocol: { parse: async function* () {} },
       });
-      store.setState({ selectedThreadId: "t1" });
 
-      // Start streaming
+      // New chat, first message → createThread pending, run under DRAFT.
       store.getState().processMessage({ role: "user", content: "hello" });
       await flushPromises();
-      expect(store.getState().isRunning).toBe(true);
+      expect(store.getState().isCreatingThread).toBe(true);
 
-      // Switch thread mid-stream
-      store.getState().selectThread("t2");
-
-      expect(capturedSignal!.aborted).toBe(true);
-      expect(store.getState().selectedThreadId).toBe("t2");
-      expect(store.getState().isLoadingMessages).toBe(true);
-
+      // User selects a saved thread before createThread resolves.
+      store.getState().selectThread("saved");
       await flushPromises();
 
-      expect(store.getState().messages).toEqual(newMessages);
-      expect(store.getState().isLoadingMessages).toBe(false);
+      resolveCreate(makeThread("t-real"));
+      await flushPromises();
+
+      // Did NOT follow — still viewing "saved"; the run backgrounds under its real id.
+      expect(store.getState().selectedThreadId).toBe("saved");
+      expect(entryOf(store, DRAFT_KEY)).toBeUndefined();
+      expect(entryOf(store, "t-real")).toBeDefined();
+      expect(entryOf(store, "t-real")?.messages).toHaveLength(1);
+      expect(store.getState().isCreatingThread).toBe(false);
     });
   });
 });

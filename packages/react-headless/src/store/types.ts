@@ -20,6 +20,7 @@ export type ThreadListState = {
   threadListError: Error | null;
   selectedThreadId: string | null;
   hasMoreThreads: boolean;
+  isCreatingThread: boolean;
 };
 
 export type ThreadListActions = {
@@ -50,6 +51,11 @@ export type ThreadState = {
   executingToolCallIds: Set<string>;
 };
 
+export type ThreadStateEntry = ThreadState & {
+  /** @internal — the in-flight run's controller, or `null` when idle. */
+  abortController: AbortController | null;
+};
+
 export type ThreadActions = {
   processMessage: (message: CreateMessage) => Promise<void>;
   appendMessages: (...messages: Message[]) => void;
@@ -63,12 +69,10 @@ export type ThreadActions = {
 
 export type ChatStore = ThreadListState &
   ThreadListActions &
-  ThreadState &
   ThreadActions & {
+    threadStates: Record<string, ThreadStateEntry>;
     /** @internal */
     _nextCursor?: string | undefined;
-    /** @internal */
-    _abortController: AbortController | null;
   };
 
 // ── Provider props ──
