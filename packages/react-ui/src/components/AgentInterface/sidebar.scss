@@ -156,14 +156,14 @@ $sidebar-shadow: inset -10px 0 18px -18px cssUtils.$sunk-deep;
       top: 0;
       left: 0;
     }
-    .openui-agent-sidebar-header__logo {
+
+    // Hide the toggle button at rest ONLY when a logo fills the slot (detected
+    // with :has) — the logo is the resting face and the button appears on hover.
+    // With no logo the slot is empty, so the button stays visible at rest
+    // instead, keeping the open control discoverable (TH-2392).
+    &:has(.openui-agent-sidebar-header__logo) .openui-agent-sidebar-header__toggle-button {
       opacity: 0;
       pointer-events: none;
-    }
-
-    .openui-agent-sidebar-header__toggle-button {
-      opacity: 1;
-      pointer-events: auto;
     }
   }
 }
@@ -204,6 +204,25 @@ $sidebar-shadow: inset -10px 0 18px -18px cssUtils.$sunk-deep;
 
   .openui-agent-container--mobile & {
     display: none;
+  }
+}
+
+// On hover (collapsed), swap the logo out for the toggle button. Gated on the
+// settled `data-sidebar-visual-state="collapsed"` state so the swap only runs
+// once the collapse animation has finished — keying it on the `--collapsed`
+// class instead would let the button flash in mid-collapse, while the still-wide
+// sidebar is momentarily under the cursor. (No-op when there is no logo: the
+// button is already shown at rest via the :has() rule above — which is what
+// fixes the reported TH-2392 no-logo case.)
+.openui-agent-sidebar-container[data-sidebar-visual-state="collapsed"]:hover {
+  .openui-agent-sidebar-header__logo {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .openui-agent-sidebar-header__toggle-button {
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
