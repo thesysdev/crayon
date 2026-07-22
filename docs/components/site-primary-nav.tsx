@@ -114,10 +114,8 @@ const PANEL_GAP = 4;
 const PANEL_PADDING = 10;
 /* Smallest gap left between the panel and either edge of the window. */
 const VIEWPORT_MARGIN = 16;
-/* How long the pointer may be outside the nav before the menu closes. Long
-   enough to cross the dead corner beside the nav, short enough that leaving
-   still feels immediate. */
-const CLOSE_GRACE_MS = 220;
+/* Forgiveness around the nav+panel box before the menu counts as left. */
+const POINTER_SLACK = 12;
 
 function DropdownCard({ child, onNavigate }: { child: NavDropdownChild; onNavigate: () => void }) {
   return (
@@ -203,13 +201,12 @@ export function SitePrimaryNav() {
   const contentRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const wasOpenRef = useRef(false);
-  const closeTimerRef = useRef<number | null>(null);
+  const watcherRef = useRef<((event: PointerEvent) => void) | null>(null);
 
-  // A pending close must not outlive the component, or fire after a navigation
-  // has already closed the menu.
+  // The watcher must not outlive the component.
   useEffect(
     () => () => {
-      if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
+      if (watcherRef.current) document.removeEventListener("pointermove", watcherRef.current);
     },
     [],
   );
@@ -283,48 +280,63 @@ export function SitePrimaryNav() {
     return () => window.removeEventListener("resize", place);
   }, [active]);
 
-  const cancelScheduledClose = () => {
-    if (closeTimerRef.current !== null) {
-      window.clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
+  const stopWatchingPointer = () => {
+    if (watcherRef.current) {
+      document.removeEventListener("pointermove", watcherRef.current);
+      watcherRef.current = null;
     }
   };
 
   const close = () => {
-    cancelScheduledClose();
+    stopWatchingPointer();
     setActive(null);
   };
 
   /**
-   * The panel is far wider than the nav and sits below it, so a diagonal move
-   * from a trigger towards a card at either end leaves the nav's box before it
-   * reaches the panel — and the pointer is over neither for those few frames.
-   * The hoverable area can't simply be extended upwards, because a bridge tall
-   * enough to cover that path would sit over the triggers and swallow their
-   * hovers. So the close is deferred instead, and cancelled the moment the
-   * pointer lands back on the nav or the panel.
+   * The panel is far wider than the nav and hangs below it, so moving from a
+   * trigger diagonally towards a card at either end leaves the nav's box long
+   * before reaching the panel — the pointer crosses open space beside the nav
+   * that belongs to neither.
    *
-   * Only pointer-leave is deferred. Clicking through, Escape and tabbing away
-   * are deliberate, so those still close immediately.
+   * So leaving the nav doesn't close anything by itself. It starts watching the
+   * pointer, and the menu closes only once the pointer is outside the box that
+   * encloses both the nav and the open panel. Every path from a trigger to any
+   * card stays inside that box, however diagonal, at whatever speed — there's no
+   * delay to outrun.
+   *
+   * (A bridge element over that space would have been simpler, but at this width
+   * it would sit on top of the header's logo and buttons and swallow their
+   * clicks.)
    */
-  const scheduleClose = () => {
-    cancelScheduledClose();
-    closeTimerRef.current = window.setTimeout(() => {
-      closeTimerRef.current = null;
-      setActive(null);
-    }, CLOSE_GRACE_MS);
+  const watchPointer = () => {
+    stopWatchingPointer();
+    const onMove = (event: PointerEvent) => {
+      const nav = navRef.current;
+      const panel = viewportRef.current;
+      if (!nav || !panel) return;
+      const a = nav.getBoundingClientRect();
+      const b = panel.getBoundingClientRect();
+      const inside =
+        event.clientX >= Math.min(a.left, b.left) - POINTER_SLACK &&
+        event.clientX <= Math.max(a.right, b.right) + POINTER_SLACK &&
+        event.clientY >= Math.min(a.top, b.top) - POINTER_SLACK &&
+        event.clientY <= Math.max(a.bottom, b.bottom) + POINTER_SLACK;
+      if (!inside) close();
+    };
+    watcherRef.current = onMove;
+    document.addEventListener("pointermove", onMove);
   };
 
   return (
     <nav
       className={styles.nav}
       ref={navRef}
-      onPointerLeave={scheduleClose}
+      onPointerLeave={watchPointer}
       /* pointerover, not pointerenter: enter only fires crossing the nav's own
          boundary, so coming back in over a trigger or the panel — both
-         descendants — would leave a pending close running. over bubbles from
-         any descendant, so every way back in cancels it. */
-      onPointerOver={cancelScheduledClose}
+         descendants — would leave the watcher running. over bubbles from any
+         descendant, so every way back in stops it. */
+      onPointerOver={stopWatchingPointer}
       onKeyDown={(event) => {
         if (event.key === "Escape") close();
       }}
