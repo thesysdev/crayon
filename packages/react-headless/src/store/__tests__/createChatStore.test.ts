@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { EventType } from "../../types/stream";
-import { DRAFT_KEY, makeThreadState } from "../threadStateEntry";
+import { DRAFT_KEY, buildThreadState } from "../threadStateEntry";
 import type { Message, Thread, ThreadStateEntry, UserMessage } from "../types";
 import { makeStore } from "./__helpers/makeStore";
 
@@ -23,7 +23,7 @@ type Store = ReturnType<typeof makeStore>;
 const viewKeyOf = (store: Store) => store.getState().selectedThreadId ?? DRAFT_KEY;
 // The selected thread's entry (empty defaults when absent), i.e. what `useThread` shows.
 const active = (store: Store): ThreadStateEntry =>
-  store.getState().threadStates[viewKeyOf(store)] ?? makeThreadState();
+  store.getState().threadStates[viewKeyOf(store)] ?? buildThreadState();
 // A specific thread's raw entry (may be undefined).
 const entryOf = (store: Store, key: string): ThreadStateEntry | undefined =>
   store.getState().threadStates[key];
@@ -32,7 +32,7 @@ const seed = (store: Store, key: string, patch: Partial<ThreadStateEntry>) =>
   store.setState((s) => ({
     threadStates: {
       ...s.threadStates,
-      [key]: { ...(s.threadStates[key] ?? makeThreadState()), ...patch },
+      [key]: { ...(s.threadStates[key] ?? buildThreadState()), ...patch },
     },
   }));
 
