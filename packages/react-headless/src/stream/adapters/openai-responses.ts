@@ -76,6 +76,25 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                   toolCallId: item.id,
                   toolCallName: item.name,
                 };
+              } else if (item.type === "mcp_list_tools") {
+                // Server connection + tool discovery can take seconds and is
+                // otherwise dead air — surface it as a live activity. Args
+                // carry the server label; START+ARGS+END puts it straight into
+                // "executing" (request sent, awaiting the server).
+                yield {
+                  type: EventType.TOOL_CALL_START,
+                  toolCallId: item.id,
+                  toolCallName: "mcp_list_tools",
+                };
+                yield {
+                  type: EventType.TOOL_CALL_ARGS,
+                  toolCallId: item.id,
+                  delta: JSON.stringify({ server_label: item.server_label }),
+                };
+                yield {
+                  type: EventType.TOOL_CALL_END,
+                  toolCallId: item.id,
+                };
               }
               break;
             }
@@ -151,6 +170,27 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                 break;
               }
 
+              if (event.item.type === "mcp_list_tools") {
+                const list = event.item;
+                // Summarize to names only — full schemas run to tens of KB and
+                // the card (and message store) only need the inventory.
+                const toolNames = list.tools.map((t) => t.name);
+                const listError =
+                  typeof list.error === "string" && list.error.length > 0 ? list.error : undefined;
+                yield {
+                  type: EventType.TOOL_CALL_RESULT,
+                  messageId: list.id,
+                  toolCallId: list.id,
+                  content: JSON.stringify({
+                    server_label: list.server_label,
+                    tool_count: toolNames.length,
+                    tools: toolNames,
+                  }),
+                  ...(listError ? { isError: true, error: listError } : {}),
+                };
+                break;
+              }
+
               const item = event.item as {
                 type?: string;
                 id?: string;
@@ -203,12 +243,11 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
             // Intentionally unhandled — these are lifecycle/metadata events:
             // response.created, response.in_progress, response.completed,
             // response.content_part.added, response.content_part.done,
-            // web_search's *.in_progress/searching/completed status events and
-            // response.mcp_call.in_progress/.completed/.failed (the respective
-            // output_item.added/.done handling above covers both), the
-            // response.mcp_list_tools.* events, and the mcp_list_tools /
-            // mcp_approval_request output items (inventory housekeeping and the
-            // HITL approval flow — no tray for either), etc.
+            // web_search's *.in_progress/searching/completed status events,
+            // response.mcp_call.in_progress/.completed/.failed and
+            // response.mcp_list_tools.* (the respective output_item.added/.done
+            // handling above covers all three), and the mcp_approval_request
+            // output item (HITL approval flow — no tray), etc.
             default:
               break;
           }

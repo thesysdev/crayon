@@ -67,6 +67,9 @@ export function ToolCallTimeline({
     (isRunning(activities[activities.length - 1]!) || awaitingResponse);
 
   const [expanded, setExpanded] = useState(false);
+  // User explicitly closed the tray mid-run — sticky until the next run's
+  // thinking rises, so the auto open/hold logic can't fight the user's intent.
+  const [userCollapsed, setUserCollapsed] = useState(false);
   // Live message → reveal one-by-one from the first; historical (not live) →
   // everything already revealed so it never animates "Working…" on mount.
   const [revealedCount, setRevealedCount] = useState(() =>
@@ -78,6 +81,7 @@ export function ToolCallTimeline({
     if (!prevThinking.current && thinking) {
       setRevealedCount(1);
       setExpanded(false);
+      setUserCollapsed(false);
     }
     if (prevThinking.current && !thinking) {
       setExpanded(false);
@@ -103,7 +107,7 @@ export function ToolCallTimeline({
   }, [isLast, activities.length, revealedCount, currentReady]);
 
   const revealing = revealedCount < activities.length;
-  const showCompact = (thinking || revealing) && !expanded;
+  const showCompact = (thinking || revealing) && !expanded && !userCollapsed;
   const [exiting, setExiting] = useState(false);
   const [prevShowCompact, setPrevShowCompact] = useState(showCompact);
   if (prevShowCompact !== showCompact) {
@@ -148,10 +152,20 @@ export function ToolCallTimeline({
       <button
         className="openui-behind-the-scenes__toggle"
         type="button"
-        aria-expanded={expanded}
-        onClick={() => setExpanded((v) => !v)}
+        aria-expanded={expanded || showCompact}
+        onClick={() => {
+          if (expanded || showCompact) {
+            // Anything open (full list or the live working card) → close it.
+            // The close sticks for the rest of the run via userCollapsed.
+            setExpanded(false);
+            setUserCollapsed(true);
+          } else {
+            // Closed (settled or user-collapsed) → open the full list.
+            setExpanded(true);
+          }
+        }}
       >
-        {expanded ? (
+        {expanded || showCompact ? (
           <ChevronUp size={14} className="openui-behind-the-scenes__toggle-icon" />
         ) : (
           <ChevronDown size={14} className="openui-behind-the-scenes__toggle-icon" />
