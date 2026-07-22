@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { memo } from "react";
 import ReactMarkdown, { Components, type Options } from "react-markdown";
+import { oneLight, vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { CodeBlock } from "../CodeBlock";
 import {
   Table,
@@ -12,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "../Table";
+import { useTheme } from "../ThemeProvider";
 
 type TableAlignment = TableHeadProps["align"];
 
@@ -42,6 +44,8 @@ export interface MarkDownRendererProps {
 }
 
 export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
+  const { mode } = useTheme();
+  const theme = mode === "dark" ? vscDarkPlus : oneLight;
   const components: Components = {
     code({ className, children, ...props }) {
       const match = /language-(\w+)/.exec(className || "");
@@ -49,7 +53,7 @@ export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
       if (match || (!className && String(children).includes("\n"))) {
         const language = match?.[1] ?? "text";
         const codeString = String(children).trim();
-        return <CodeBlock language={language} codeString={codeString} />;
+        return <CodeBlock language={language} codeString={codeString} theme={theme} />;
       }
 
       return (
