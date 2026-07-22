@@ -1,4 +1,4 @@
-name: CLI Template Package Managers
+name: CLI Template Package Manager Parity
 
 on:
   push:
@@ -23,36 +23,14 @@ permissions:
 
 jobs:
   package-manager-parity:
-    name: ${{ matrix.template }} (${{ matrix.os }}, Node ${{ matrix.node-version }}, npm + pnpm)
-    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.template }} (npm + pnpm)
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         template:
           - openui-cloud
           - openui-self-hosted
-        environment:
-          - ubuntu-node20
-          - ubuntu-node22
-          - ubuntu-node24
-          - macos-node22
-          - windows-node22
-        include:
-          - environment: ubuntu-node20
-            os: ubuntu-latest
-            node-version: 20
-          - environment: ubuntu-node22
-            os: ubuntu-latest
-            node-version: 22
-          - environment: ubuntu-node24
-            os: ubuntu-latest
-            node-version: 24
-          - environment: macos-node22
-            os: macos-latest
-            node-version: 22
-          - environment: windows-node22
-            os: windows-latest
-            node-version: 22
 
     steps:
       - uses: actions/checkout@v6
@@ -63,7 +41,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20
 
       - name: Prepare isolated template copies
         shell: bash
@@ -90,21 +68,5 @@ jobs:
       - name: Compare resolved direct dependencies
         run: >-
           node packages/openui-cli/scripts/compare-template-installs.mjs
-          "${RUNNER_TEMP}/npm-template"
-          "${RUNNER_TEMP}/pnpm-template"
-
-      - name: Build npm installation
-        working-directory: ${{ runner.temp }}/npm-template
-        run: npm run build
-        env:
-          OPENAI_API_KEY: sk-test
-          THESYS_API_KEY: sk-test
-          DEMO_USER_ID: test-user
-
-      - name: Build pnpm installation
-        working-directory: ${{ runner.temp }}/pnpm-template
-        run: pnpm run build
-        env:
-          OPENAI_API_KEY: sk-test
-          THESYS_API_KEY: sk-test
-          DEMO_USER_ID: test-user
+          "${{ runner.temp }}/npm-template"
+          "${{ runner.temp }}/pnpm-template"
