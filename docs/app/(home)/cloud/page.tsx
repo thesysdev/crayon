@@ -6,6 +6,7 @@ import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
 import { LogoStrip } from "../sections/LogoStrip/LogoStrip";
 import { CloudIntegrationSection } from "./CloudIntegrationSection";
+import { ComparisonSection } from "./ComparisonSection";
 import { FeaturesSection } from "./FeaturesSection";
 import cloudStyles from "./page.module.css";
 
@@ -73,6 +74,7 @@ export default function OpenUICloudPage() {
         <LogoStrip label="Powering AI experiences at:" />
         <FeaturesSection />
         <CloudIntegrationSection />
+        <ComparisonSection />
       </div>
       <Footer />
     </div>

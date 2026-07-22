@@ -1,3 +1,4 @@
+import { Button } from "@/components/button";
 import type { ReactNode } from "react";
 import {
   FeatureGridSection,
@@ -38,7 +39,10 @@ function FeatureCopy({
         <h2 className={styles.primaryHeading}>{title}</h2>
         <p className={styles.secondaryHeading}>{headline}</p>
       </div>
-      <p className={styles.body}>{description}</p>
+      <div className={styles.bodyGroup}>
+        <p className={styles.body}>{description}</p>
+        <Button href="/docs" text="Read docs" variant="tertiary" />
+      </div>
     </div>
   );
 }
