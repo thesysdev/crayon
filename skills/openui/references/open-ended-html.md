@@ -7,7 +7,7 @@ The canonical implementation is [`examples/html-artifact`](../../../examples/htm
 ## Pattern
 
 1. Define one OpenUI component with `title` and `document` string props.
-2. Make it the root of a small custom library.
+2. Put it alongside any library (the example uses a minimal one with just a markdown/text component and a plain container root) — the model chooses per reply whether to emit an artifact. Do NOT make the artifact the root: that forces every reply to be an HTML page.
 3. Generate the system prompt with `openui generate`.
 4. Pass that library to `AgentInterface.componentLibrary`.
 5. Use `useIsStreaming()` to distinguish incoming source from the completed document.
@@ -21,6 +21,7 @@ Use the existing assistant response stream. Do not add another streaming endpoin
 
 Tell the model to:
 
+- use the markdown component for normal conversation, and the artifact only when asked to build something interactive;
 - emit a self-contained HTML document or fragment;
 - use inline CSS and JavaScript;
 - avoid external resources and network requests;

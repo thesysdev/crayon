@@ -473,7 +473,9 @@ Form state is tracked automatically and saved with the thread.
 ### Open-ended HTML
 
 For generated HTML apps, define one OpenUI component with `title` and `document`
-props and make it the library root. Keep a compact status preview inline, then use
+props and add it to your component library (not as the root), so the model
+chats normally and emits the artifact only when asked to build something
+interactive. Keep a compact status preview inline, then use
 `DetailedViewPanel` for Raw and Rendered tabs. Raw displays the incoming source;
 Rendered shows a loading state and switches to a sandboxed `iframe srcDoc` when
 the stream completes. Use the existing assistant stream—no second endpoint or

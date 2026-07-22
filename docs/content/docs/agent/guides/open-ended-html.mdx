@@ -9,7 +9,7 @@ OpenUI usually asks the model to compose components from a library. For open-end
 
 ## How it works
 
-The example defines one root component:
+The example defines a small library: a `Response` root, a `Markdown` component for normal replies, and an `HtmlArtifact` component the model uses only when asked to build something interactive.
 
 ```tsx
 const HtmlArtifactSchema = z.object({
@@ -23,7 +23,14 @@ export const HtmlArtifact = defineComponent({
   props: HtmlArtifactSchema,
   component: HtmlArtifactRenderer,
 });
+
+export const library = createLibrary({
+  root: "Response",
+  components: [Response, Markdown, HtmlArtifact],
+});
 ```
+
+The model decides per reply: most responses are a `Response` with a single `Markdown` child; a request like "build me a sorting visualizer" produces an `HtmlArtifact`.
 
 `HtmlArtifactRenderer` uses the existing chat stream:
 
@@ -37,15 +44,16 @@ No additional streaming endpoint or tool call is required.
 
 ## Teach the model
 
-Make `HtmlArtifact` the library root and generate the system prompt with `openui generate`. Prompt rules should tell the model to:
+Generate the system prompt with `openui generate`. Prompt rules should tell the model to:
 
+- use `Markdown` for normal conversation and `HtmlArtifact` only when asked to build something interactive;
 - produce a self-contained HTML document or fragment;
 - use inline CSS and JavaScript;
 - avoid external scripts, styles, fonts, images, and network requests;
 - omit Markdown fences;
 - correctly escape the HTML inside the OpenUI Lang string.
 
-See the example's [`library.ts`](https://github.com/thesysdev/openui/blob/main/examples/html-artifact/src/library.ts) for the complete prompt options.
+See the example's [`library.tsx`](https://github.com/thesysdev/openui/blob/main/examples/html-artifact/src/library.tsx) for the complete prompt options.
 
 ## Before production
 
