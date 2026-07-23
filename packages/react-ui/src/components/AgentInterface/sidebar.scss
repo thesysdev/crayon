@@ -157,7 +157,11 @@ $sidebar-shadow: inset -10px 0 18px -18px cssUtils.$sunk-deep;
       left: 0;
     }
 
-    .openui-agent-sidebar-header__toggle-button {
+    // Hide the toggle button at rest ONLY when a logo fills the slot (detected
+    // with :has) — the logo is the resting face and the button appears on hover.
+    // With no logo the slot is empty, so the button stays visible at rest
+    // instead, keeping the open control discoverable.
+    &:has(.openui-agent-sidebar-header__logo) .openui-agent-sidebar-header__toggle-button {
       opacity: 0;
       pointer-events: none;
     }
@@ -203,7 +207,14 @@ $sidebar-shadow: inset -10px 0 18px -18px cssUtils.$sunk-deep;
   }
 }
 
-.openui-agent-sidebar-container[data-sidebar-visual-state="collapsed"]:hover {
+// Collapsed rail: logo at rest, open button on hover or keyboard focus. Key off
+// the binary --collapsed class (the same isCollapsedLayout state that hides the
+// button above), never data-sidebar-visual-state — its transitional values open
+// a window where the button is hidden but cannot be revealed. Keyboard focus is
+// matched via :focus-visible so the residual focus a mouse click leaves on the
+// toggle doesn't pin the button over the logo at rest.
+.openui-agent-sidebar-container--collapsed:hover,
+.openui-agent-sidebar-container--collapsed:has(:focus-visible) {
   .openui-agent-sidebar-header__logo {
     opacity: 0;
     pointer-events: none;
@@ -212,6 +223,23 @@ $sidebar-shadow: inset -10px 0 18px -18px cssUtils.$sunk-deep;
   .openui-agent-sidebar-header__toggle-button {
     opacity: 1;
     pointer-events: auto;
+  }
+}
+
+// No hover on touch devices: show the open button at rest instead of the logo.
+// The header class keeps specificity equal to the :has() hide rule above so
+// source order lets this win.
+@media (hover: none) {
+  .openui-agent-sidebar-container--collapsed {
+    .openui-agent-sidebar-header__logo {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .openui-agent-sidebar-header--collapsed .openui-agent-sidebar-header__toggle-button {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 }
 

@@ -5,10 +5,10 @@ import "./layout.css";
 
 export const metadata: Metadata = {
   alternates: {
-    canonical: "/playground",
+    canonical: "/demos",
   },
 };
 
-export default function PlaygroundLayout({ children }: { children: ReactNode }) {
+export default function DemosLayout({ children }: { children: ReactNode }) {
   return <WebsiteThemeProvider>{children}</WebsiteThemeProvider>;
 }

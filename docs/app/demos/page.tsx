@@ -10,7 +10,7 @@ import { Header } from "./components/Header/Header";
 import { PreviewPanel } from "./components/PreviewPanel/PreviewPanel";
 import { MODELS, STARTER_PROMPTS, type Model, type Status, type Theme } from "./constants";
 
-export default function PlaygroundPage() {
+export default function DemosPage() {
   const { theme, setTheme } = useTheme();
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState<Model>("anthropic/claude-sonnet-4.6");

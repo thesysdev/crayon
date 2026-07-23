@@ -289,17 +289,17 @@ const projects: ProjectItem[] = [
 const DISCORD_URL = "https://discord.gg/suzHfJnpw";
 
 export const metadata: Metadata = {
-  title: "OpenUI Projects",
+  title: "OpenUI Lab",
   description: "Official and community projects built around OpenUI.",
-  alternates: { canonical: "/projects" },
+  alternates: { canonical: "/lab" },
   openGraph: {
-    title: "OpenUI Projects",
+    title: "OpenUI Lab",
     description: "Discover official and community projects built around OpenUI.",
-    url: "/projects",
+    url: "/lab",
     type: "website",
   },
   twitter: {
-    title: "OpenUI Projects",
+    title: "OpenUI Lab",
     description: "Discover official and community projects built around OpenUI.",
     card: "summary_large_image",
   },
@@ -313,14 +313,14 @@ function DiscordIcon({ className }: { className?: string }) {
   );
 }
 
-export default function ProjectsPage() {
+export default function LabPage() {
   return (
     <main className={styles.page}>
       <PageHero
         smallSubtitle
         title={
           <>
-            OpenUI <PageHeroAccent>Projects</PageHeroAccent>
+            OpenUI <PageHeroAccent>Lab</PageHeroAccent>
           </>
         }
         subtitle={
