@@ -130,4 +130,4 @@ export type {
   ConversationStarterIcon,
   ConversationStarterProps,
 } from "./types/ConversationStarter";
-export type { PrefillChip } from "./types/PrefillChip";
+export type { PromptTemplate } from "./types/PromptTemplate";
