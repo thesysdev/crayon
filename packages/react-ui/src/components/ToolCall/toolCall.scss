@@ -49,6 +49,26 @@
     width: 100%;
   }
 
+  // Graceful auto-close of the compact "Working…" tray
+  &__compact {
+    display: grid;
+    grid-template-rows: 1fr;
+    width: 100%;
+    transition:
+      grid-template-rows 0.2s ease,
+      opacity 0.2s ease;
+
+    &--closed {
+      grid-template-rows: 0fr;
+      opacity: 0;
+    }
+  }
+
+  &__compact-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
   // Compact staggered reveal (CSS fade-in; remounted per step via React key).
   &__reveal-item {
     animation: openui-behind-the-scenes-reveal 0.2s ease;
@@ -481,6 +501,7 @@
   }
 
   .openui-behind-the-scenes__toggle-icon,
+  .openui-behind-the-scenes__compact,
   .openui-tool-call__chevron,
   .openui-tool-call__source,
   .openui-tool-code-block,

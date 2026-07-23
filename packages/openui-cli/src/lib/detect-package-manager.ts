@@ -1,5 +1,3 @@
-import { execSync } from "node:child_process";
-
 export type PackageManagerName = "pnpm" | "yarn" | "bun" | "npm";
 
 export interface PackageManager {
@@ -12,7 +10,11 @@ const PACKAGE_MANAGERS: Record<PackageManagerName, PackageManager> = {
   pnpm: { name: "pnpm", installCmd: "pnpm install", runCmd: "pnpm" },
   yarn: { name: "yarn", installCmd: "yarn", runCmd: "yarn" },
   bun: { name: "bun", installCmd: "bun install", runCmd: "bun" },
-  npm: { name: "npm", installCmd: "npm install", runCmd: "npm" },
+  npm: {
+    name: "npm",
+    installCmd: "npm ci --prefer-offline --no-audit --no-fund --progress=false",
+    runCmd: "npm",
+  },
 };
 
 function detectInvokingPackageManager(): PackageManagerName | null {
@@ -24,19 +26,7 @@ function detectInvokingPackageManager(): PackageManagerName | null {
   return null;
 }
 
-function isPnpmAvailable(): boolean {
-  try {
-    execSync("pnpm --version", { stdio: "ignore" });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 export function resolveInstallPackageManager(): PackageManager {
   const invoking = detectInvokingPackageManager();
-  if (invoking === "pnpm" || invoking === "yarn" || invoking === "bun") {
-    return PACKAGE_MANAGERS[invoking];
-  }
-  return isPnpmAvailable() ? PACKAGE_MANAGERS.pnpm : PACKAGE_MANAGERS.npm;
+  return PACKAGE_MANAGERS[invoking ?? "npm"];
 }
