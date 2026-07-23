@@ -16,7 +16,11 @@ import { chatLibrary } from "@openuidev/thesys";
 And the backend uses it by default when building the request instructions:
 
 ```ts
-instructions: createResponsesInstructions({
+import { generateSystemPrompt } from "@openuidev/thesys-server";
+
+...
+
+instructions: generateSystemPrompt({
   instructions: "Optional instructions for the model.",
 });
 ```
@@ -59,37 +63,37 @@ export const myLibrary = createLibrary({
 });
 ```
 
-**Generate the spec handover file.** [`openui generate-spec`](/docs/api-reference/cli#openui-generate-spec) turns the library module into a self-contained JSON file for the backend:
+**Generate the spec handover file.** [`openui generate`](/docs/api-reference/cli#openui-generate) turns the library module into a self-contained JSON file for the backend:
 
 ```bash tab="pnpm" tab-group="pkg"
-pnpx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generated/chat-library-spec.json
+pnpx @openuidev/cli@latest generate --spec src/lib/chat-library.tsx --out ./generated/library-spec.json
 ```
 
 ```bash tab="bun" tab-group="pkg"
-bunx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generated/chat-library-spec.json
+bunx @openuidev/cli@latest generate --spec src/lib/chat-library.tsx --out ./generated/library-spec.json
 ```
 
 ```bash tab="yarn" tab-group="pkg"
-yarn dlx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generated/chat-library-spec.json
+yarn dlx @openuidev/cli@latest generate --spec src/lib/chat-library.tsx --out ./generated/library-spec.json
 ```
 
 ```bash tab="npm" tab-group="pkg"
-npx @openuidev/cli@latest generate-spec src/lib/chat-library.tsx --out ./generated/chat-library-spec.json
+npx @openuidev/cli@latest generate --spec src/lib/chat-library.tsx --out ./generated/library-spec.json
 ```
 
-**Declare it in the backend call.** Import the generated JSON and pass it as `chatLibrary`.
+**Declare it in the backend call.** Import the generated JSON and pass it as `library`.
 
 ```diff
-+ import chatLibrarySpec from "./generated/chat-library-spec.json";
++ import librarySpec from "./generated/chat-library-spec.json";
 
-- instructions: createResponsesInstructions(),
-+ instructions: createResponsesInstructions({
-+   chatLibrary: chatLibrarySpec,
-+   systemPromptOptions: { preamble: "You build dashboards for Acme operators." },
-+ }),
+  instructions: generateSystemPrompt({
+    instructions: "Optional instructions for the model.",
++   library: librarySpec,
++   promptOptions: { preamble: "You build dashboards for Acme operators." },
+  }),
 ```
 
-`systemPromptOptions` (only valid alongside `chatLibrary`) tunes the generated prompt: `preamble`, `additionalRules`, `examples`.
+`promptOptions` (only valid alongside `library`) tunes the generated prompt: `preamble`, `additionalRules`, `examples`.
 
 **Swap the client library:**
 
