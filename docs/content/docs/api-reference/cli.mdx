@@ -153,7 +153,7 @@ npx @openuidev/cli@latest create --name my-app --no-skill
 
 ## `openui generate`
 
-Generates the system prompt **and** the serialized library spec from a file that exports a `createLibrary()` result. A single run emits both artifacts — they derive from the same `Library` instance, so they can never drift apart.
+Generates the system prompt **and** the serialized library spec from a file that exports a `createLibrary()` result. A single run emits both artifacts — they derive from the same `Library` instance, so they can never drift apart. Use the spec with `generateSystemPrompt` in backend routes; the prompt file supports static or legacy integrations.
 
 ```
 openui generate [entry] [options]
@@ -167,15 +167,15 @@ openui generate [entry] [options]
 
 **Options**
 
-| Flag                      | Description                                                                            |
-| ------------------------- | -------------------------------------------------------------------------------------- |
-| `-o, --out <file>`        | Write the prompt to `<file>`; the spec is also written alongside as `<file>.spec.json` |
-| `--json-schema`           | Output only the JSON schema                                                            |
-| `--spec`                  | Output only the spec file                                                              |
-| `--export <name>`         | Name of the export to use (auto-detected by default)                                   |
-| `--prompt-options <name>` | Name of the `PromptOptions` export to use (auto-detected by default)                   |
-| `--no-interactive`        | Fail instead of prompting for missing `entry`                                          |
-| `--agent-name <name>`     | Declare the invoking coding-agent slug (default: `unknown`)                            |
+| Flag                      | Description                                                                                 |
+| ------------------------- | ------------------------------------------------------------------------------------------- |
+| `-o, --out <file>`        | Write the prompt to `<file>`; the spec uses the same basename with a `.spec.json` extension |
+| `--json-schema`           | Output only the JSON schema; it is not the input to `generateSystemPrompt`                  |
+| `--spec`                  | Output only the serialized library spec                                                     |
+| `--export <name>`         | Name of the export to use (auto-detected by default)                                        |
+| `--prompt-options <name>` | Name of the `PromptOptions` export to use (auto-detected by default)                        |
+| `--no-interactive`        | Fail instead of prompting for missing `entry`                                               |
+| `--agent-name <name>`     | Declare the invoking coding-agent slug (default: `unknown`)                                 |
 
 **Examples**
 
@@ -183,13 +183,13 @@ openui generate [entry] [options]
 # Print system prompt to stdout
 pnpx @openuidev/cli@latest generate ./src/library.ts
 
-# Write system prompt to a file
+# Write both artifacts; use the sibling .spec.json file with generateSystemPrompt
 pnpx @openuidev/cli@latest generate ./src/library.ts --out ./src/generated/system-prompt.txt
 
-# Output JSON schema instead
+# Output JSON schema for external tooling (not generateSystemPrompt)
 pnpx @openuidev/cli@latest generate ./src/library.ts --json-schema
 
-# Output only the spec file instead
+# Output only the spec file
 pnpx @openuidev/cli@latest generate ./src/library.ts --spec
 
 # Explicit export names
@@ -200,13 +200,13 @@ pnpx @openuidev/cli@latest generate ./src/library.ts --export myLibrary --prompt
 # Print system prompt to stdout
 bunx @openuidev/cli@latest generate ./src/library.ts
 
-# Write system prompt to a file
+# Write both artifacts; use the sibling .spec.json file with generateSystemPrompt
 bunx @openuidev/cli@latest generate ./src/library.ts --out ./src/generated/system-prompt.txt
 
-# Output JSON schema instead
+# Output JSON schema for external tooling (not generateSystemPrompt)
 bunx @openuidev/cli@latest generate ./src/library.ts --json-schema
 
-# Output only the spec file instead
+# Output only the spec file
 bunx @openuidev/cli@latest generate ./src/library.ts --spec
 
 # Explicit export names
@@ -217,13 +217,13 @@ bunx @openuidev/cli@latest generate ./src/library.ts --export myLibrary --prompt
 # Print system prompt to stdout
 yarn dlx @openuidev/cli@latest generate ./src/library.ts
 
-# Write system prompt to a file
+# Write both artifacts; use the sibling .spec.json file with generateSystemPrompt
 yarn dlx @openuidev/cli@latest generate ./src/library.ts --out ./src/generated/system-prompt.txt
 
-# Output JSON schema instead
+# Output JSON schema for external tooling (not generateSystemPrompt)
 yarn dlx @openuidev/cli@latest generate ./src/library.ts --json-schema
 
-# Output only the spec file instead
+# Output only the spec file
 yarn dlx @openuidev/cli@latest generate ./src/library.ts --spec
 
 # Explicit export names
@@ -234,13 +234,13 @@ yarn dlx @openuidev/cli@latest generate ./src/library.ts --export myLibrary --pr
 # Print system prompt to stdout
 npx @openuidev/cli@latest generate ./src/library.ts
 
-# Write system prompt to a file
+# Write both artifacts; use the sibling .spec.json file with generateSystemPrompt
 npx @openuidev/cli@latest generate ./src/library.ts --out ./src/generated/system-prompt.txt
 
-# Output JSON schema instead
+# Output JSON schema for external tooling (not generateSystemPrompt)
 npx @openuidev/cli@latest generate ./src/library.ts --json-schema
 
-# Output only the spec file instead
+# Output only the spec file
 npx @openuidev/cli@latest generate ./src/library.ts --spec
 
 # Explicit export names

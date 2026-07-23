@@ -221,9 +221,11 @@ client's `isRunning` flips back to `false` only on close).
 ## `<AgentInterface>` props
 
 Required:
+
 - `llm: ChatLLM`: produces replies.
 
 Common:
+
 - `storage?: ChatStorage`: persistence (in-memory default, wiped on reload).
 - `componentLibrary?: Library`: turns on generative UI.
 - `artifactRenderers?: ArtifactRendererConfig[]`: custom artifact renderers.
@@ -233,6 +235,7 @@ Common:
 - `starters?: ConversationStarterProps[]`, `starterVariant?: "short" | "long"`.
 
 Routing and scroll:
+
 - `path?` / `defaultPath?` / `onNavigate?`: pass `onNavigate` for controlled nav.
 - `scrollVariant?: "always" | "user-message-anchor"` (default `user-message-anchor`).
 - `scrollOnLoad?: boolean` (default `true`).
@@ -256,13 +259,13 @@ fetchLLM({ url, streamAdapter, messageFormat?, headers?, fetch? }): ChatLLM;
 
 Stream adapters (all factories, call with `()`) and the message format each pairs with:
 
-| Adapter | Wire format | Message format |
-|---|---|---|
-| `agUIAdapter()` | AG-UI SSE (see AG-UI events) | `identityMessageFormat` (default) |
-| `openAIAdapter()` | OpenAI Chat Completions SSE | `openAIMessageFormat` |
-| `openAIReadableStreamAdapter()` | OpenAI SDK `toReadableStream()` NDJSON | `openAIMessageFormat` |
-| `openAIResponsesAdapter()` | OpenAI Responses SSE | `openAIConversationMessageFormat` |
-| `langGraphAdapter(opts?)` | LangGraph named SSE | `langGraphMessageFormat` |
+| Adapter                         | Wire format                            | Message format                    |
+| ------------------------------- | -------------------------------------- | --------------------------------- |
+| `agUIAdapter()`                 | AG-UI SSE (see AG-UI events)           | `identityMessageFormat` (default) |
+| `openAIAdapter()`               | OpenAI Chat Completions SSE            | `openAIMessageFormat`             |
+| `openAIReadableStreamAdapter()` | OpenAI SDK `toReadableStream()` NDJSON | `openAIMessageFormat`             |
+| `openAIResponsesAdapter()`      | OpenAI Responses SSE                   | `openAIConversationMessageFormat` |
+| `langGraphAdapter(opts?)`       | LangGraph named SSE                    | `langGraphMessageFormat`          |
 
 A `MessageFormat` is `{ toApi(messages): unknown; fromApi(data): Message[] }`.
 `toApi` shapes outgoing messages for your provider; `fromApi` parses stored
@@ -274,7 +277,10 @@ messages back. `identityMessageFormat` passes `Message[]` through unchanged.
 `artifact` channel.
 
 ```ts
-interface ChatStorage { thread: ThreadStorage; artifact?: ArtifactStorage; }
+interface ChatStorage {
+  thread: ThreadStorage;
+  artifact?: ArtifactStorage;
+}
 
 interface ThreadStorage {
   listThreads(cursor?: string): Promise<{ threads: Thread[]; nextCursor?: string }>;
@@ -309,13 +315,13 @@ type Message =
 `restStorage({ baseUrl, messageFormat?, headers?, fetch? })` implements the
 `thread` channel against this fixed REST contract (no `artifact` channel):
 
-| Operation | Method + path | Body | Returns |
-|---|---|---|---|
-| List threads | `GET {baseUrl}/get` (`?cursor=` to paginate) | none | `{ threads, nextCursor? }` |
-| Create thread | `POST {baseUrl}/create` | `{ messages: [...] }` (first user message) | the new `Thread` |
-| Get messages | `GET {baseUrl}/get/{threadId}` | none | `Message[]` |
-| Update thread | `PATCH {baseUrl}/update/{threadId}` | the full `Thread` | the updated `Thread` |
-| Delete thread | `DELETE {baseUrl}/delete/{threadId}` | none | nothing |
+| Operation     | Method + path                                | Body                                       | Returns                    |
+| ------------- | -------------------------------------------- | ------------------------------------------ | -------------------------- |
+| List threads  | `GET {baseUrl}/get` (`?cursor=` to paginate) | none                                       | `{ threads, nextCursor? }` |
+| Create thread | `POST {baseUrl}/create`                      | `{ messages: [...] }` (first user message) | the new `Thread`           |
+| Get messages  | `GET {baseUrl}/get/{threadId}`               | none                                       | `Message[]`                |
+| Update thread | `PATCH {baseUrl}/update/{threadId}`          | the full `Thread`                          | the updated `Thread`       |
+| Delete thread | `DELETE {baseUrl}/delete/{threadId}`         | none                                       | nothing                    |
 
 `restStorage` applies `messageFormat` to the `/create` body (`toApi`) and the
 `/get/{id}` response (`fromApi`), so it can match a backend that stores a
@@ -379,9 +385,11 @@ forms, and buttons. On Cloud use `chatLibrary` from `@openuidev/thesys`. Each
 library ships paired prompt options (`openuiPromptOptions`,
 `openuiChatPromptOptions`).
 
-The model must be told what components exist. Generate a system prompt from the
-library and send it to your provider (self-hosted): `library.prompt(promptOptions)`
-(see the self-hosted route above). On Cloud, `generateSystemPrompt()` does this — it returns a config envelope that the Cloud backend compiles into the real system prompt (`createResponsesInstructions` is its deprecated alias).
+The model must be told what components exist. For backend routes, generate a
+serialized library spec at build time and pass it to `generateSystemPrompt()`;
+this avoids importing React component code into the server. On Cloud,
+`generateSystemPrompt()` returns the config envelope the backend compiles into
+the real system prompt (`createResponsesInstructions` is its deprecated alias).
 
 ### Authoring your own components
 
@@ -442,12 +450,13 @@ takes `PromptOptions`:
 interface PromptOptions {
   preamble?: string;
   additionalRules?: string[];
-  examples?: string[];          // static/layout patterns
-  toolExamples?: string[];      // shown when tools present
+  examples?: string[]; // static/layout patterns
+  toolExamples?: string[]; // shown when tools present
   tools?: (string | ToolSpec)[];
-  editMode?: boolean; inlineMode?: boolean;
-  toolCalls?: boolean;          // default true when tools provided
-  bindings?: boolean;           // $variables/@Set/@Reset; default true if toolCalls
+  editMode?: boolean;
+  inlineMode?: boolean;
+  toolCalls?: boolean; // default true when tools provided
+  bindings?: boolean; // $variables/@Set/@Reset; default true if toolCalls
 }
 ```
 
@@ -455,11 +464,13 @@ Generate the system prompt at build time with the CLI:
 
 ```bash
 openui generate src/library.tsx --out src/system-prompt.txt   # also emits src/system-prompt.spec.json
-openui generate src/library.tsx --json-schema -o spec.json   # component signatures
+openui generate src/library.tsx --spec -o src/library.spec.json # spec only, for generateSystemPrompt
 ```
 
-Mount your library: `componentLibrary={library}`, and feed
-`library.prompt(promptOptions)` to your model as the system prompt.
+Mount your library with `componentLibrary={library}`. In the backend, import the
+generated `.spec.json` file and pass it to `generateSystemPrompt({ library })`.
+Use `library.prompt(promptOptions)` only when the route already imports the
+library and a static prompt is sufficient.
 
 ### Interactivity
 
@@ -499,6 +510,7 @@ const reportRenderer = defineArtifactRenderer({
 ```
 
 Parser contract (two paths, same renderer):
+
 - **Tool-call path:** `{ args, response }` exactly as the backend emitted them.
   `args` is a partial JSON string while the LLM streams; `response` is `null`
   until the tool result arrives (`isStreaming` is `true` until then). The SDK does
@@ -550,7 +562,7 @@ artifact types on Cloud, compose: pass your custom renderers and categories
 alongside the managed ones (`artifactRenderers={[...artifactRenderers, myRenderer]}`,
 `artifactCategories={[...artifactCategories, ...myCategories]}`); a custom
 `componentLibrary` works the same way (all just `<AgentInterface>` props). The
-renderer side is reliable on Cloud. The tool that *produces* a custom artifact's
+renderer side is reliable on Cloud. The tool that _produces_ a custom artifact's
 content, though, is only fully worked in the self-hosted loop above: the managed
 `artifactTool()` generates slides/reports inside Cloud, but running your own
 artifact-producing tool on Cloud (catching its streamed call and returning the
@@ -602,8 +614,14 @@ export async function POST(req: Request) {
     const msg = res.choices[0].message;
     if (!msg.tool_calls?.length) {
       // No more tool calls: stream the final answer back to the client.
-      const final = await openai.chat.completions.create({ model: "gpt-5", messages: convo, stream: true });
-      return new Response(final.toReadableStream(), { headers: { "Content-Type": "application/x-ndjson" } });
+      const final = await openai.chat.completions.create({
+        model: "gpt-5",
+        messages: convo,
+        stream: true,
+      });
+      return new Response(final.toReadableStream(), {
+        headers: { "Content-Type": "application/x-ndjson" },
+      });
     }
     convo.push(msg);
     for (const call of msg.tool_calls) {
@@ -641,7 +659,9 @@ Primitives: `SidebarItem`, `SidebarContent`, `SidebarSeparator`, `NewChatButton`
   <AgentInterface.Sidebar>
     <AgentInterface.SidebarHeader agentName="Acme" />
     <AgentInterface.NewChatButton />
-    <AgentInterface.SidebarItem icon={<HomeIcon />} path="/home">Home</AgentInterface.SidebarItem>
+    <AgentInterface.SidebarItem icon={<HomeIcon />} path="/home">
+      Home
+    </AgentInterface.SidebarItem>
     <AgentInterface.SidebarSeparator />
     <AgentInterface.ThreadList />
   </AgentInterface.Sidebar>
@@ -675,7 +695,7 @@ Primitives: `SidebarItem`, `SidebarContent`, `SidebarSeparator`, `NewChatButton`
   llm={llm}
   starters={[{ displayText: "Summarize", prompt: "Summarize my latest report.", icon: <Bulb /> }]}
   starterVariant="long" // "short" pills | "long" vertical list
-/>;
+/>
 ```
 
 Each starter is `{ displayText, prompt, icon? }`. Clicking one sends `prompt` as a
@@ -687,7 +707,10 @@ user message. Starters set on `AgentInterface` flow into Welcome and Composer; p
 ```tsx
 import { AgentInterface, type AssistantMessage } from "@openuidev/react-ui";
 
-function CustomAssistantMessage({ message, isStreaming }: {
+function CustomAssistantMessage({
+  message,
+  isStreaming,
+}: {
   message: AssistantMessage;
   isStreaming: boolean;
 }) {
@@ -707,19 +730,19 @@ All import from `@openuidev/react-ui`. Call only inside `<AgentInterface>` (a
 renderer's `preview`/`actual`, slot children, message components, and `Route`
 children are all inside the tree).
 
-| Hook | Returns |
-|---|---|
-| `useNav()` | `{ path: string \| undefined; navigate(next): void }` |
-| `useThread(selector?)` | `{ messages, isRunning, isLoadingMessages, threadError, executingToolCallIds, processMessage, appendMessages, updateMessage, setMessages, deleteMessage, cancelMessage }` |
-| `useThreadList(selector?)` | `{ threads, isLoadingThreads, selectedThreadId, hasMoreThreads, loadThreads, loadMoreThreads, switchToNewThread, createThread, selectThread, updateThread, deleteThread }` |
-| `useMessage()` | `{ message: Message }` |
-| `useArtifactList(filter?)` | per-thread artifact registry, optionally filtered by `type` |
-| `useArtifactRenderer(toolName)` | the matched `ArtifactRendererConfig` or `null` |
-| `useArtifactRendererRegistry()` | `{ byToolName, byType } \| null` (escape hatch) |
-| `useArtifactStorage()` | the `ArtifactStorage` adapter or `null` |
-| `useArtifactCategories()` | `ArtifactCategory[]` |
-| `useDetailedView(viewId)` / `useActiveDetailedView()` | the detailed-view (side panel) system |
-| `useToolActivities(message, allMessages)` | `ToolActivity[]` for a message |
+| Hook                                                  | Returns                                                                                                                                                                    |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `useNav()`                                            | `{ path: string \| undefined; navigate(next): void }`                                                                                                                      |
+| `useThread(selector?)`                                | `{ messages, isRunning, isLoadingMessages, threadError, executingToolCallIds, processMessage, appendMessages, updateMessage, setMessages, deleteMessage, cancelMessage }`  |
+| `useThreadList(selector?)`                            | `{ threads, isLoadingThreads, selectedThreadId, hasMoreThreads, loadThreads, loadMoreThreads, switchToNewThread, createThread, selectThread, updateThread, deleteThread }` |
+| `useMessage()`                                        | `{ message: Message }`                                                                                                                                                     |
+| `useArtifactList(filter?)`                            | per-thread artifact registry, optionally filtered by `type`                                                                                                                |
+| `useArtifactRenderer(toolName)`                       | the matched `ArtifactRendererConfig` or `null`                                                                                                                             |
+| `useArtifactRendererRegistry()`                       | `{ byToolName, byType } \| null` (escape hatch)                                                                                                                            |
+| `useArtifactStorage()`                                | the `ArtifactStorage` adapter or `null`                                                                                                                                    |
+| `useArtifactCategories()`                             | `ArtifactCategory[]`                                                                                                                                                       |
+| `useDetailedView(viewId)` / `useActiveDetailedView()` | the detailed-view (side panel) system                                                                                                                                      |
+| `useToolActivities(message, allMessages)`             | `ToolActivity[]` for a message                                                                                                                                             |
 
 `useThread` and `useThreadList` are selector hooks: pass a function that picks a
 slice; the component re-renders only when that slice changes. Send a message:

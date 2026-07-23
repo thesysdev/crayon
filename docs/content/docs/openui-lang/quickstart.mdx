@@ -74,17 +74,26 @@ src/
       route.ts        # Backend route with OpenAI streaming + example tools
   library.ts          # Re-exports openuiChatLibrary and openuiChatPromptOptions
   generated/
-    system-prompt.txt        # Auto-generated at build time via `openui generate`
-    system-prompt.spec.json  # Serialized library spec, emitted alongside the prompt
+    system-prompt.txt        # Generated for static or legacy prompt integrations
+    system-prompt.spec.json  # Generated library spec
 ```
 
 - **`page.tsx`**: Renders the `AgentInterface` chat (an artifact chat surface with thread history) with `openuiChatLibrary` for Generative UI rendering. It provides an `llm` whose `send` posts messages to the route and whose `streamProtocol` is `openAIAdapter()`. Storage is optional — omit it and threads are kept in memory (wiped on reload).
-- **`route.ts`**: A backend API route that sends the system prompt to the LLM and streams the response back.
-- **`library.ts`**: Your component library entrypoint. The `openui generate` CLI reads this file to produce the system prompt.
+- **`route.ts`**: A backend API route that uses `generateSystemPrompt` with the generated spec, then streams the response from the LLM.
+- **`library.ts`**: Your component library entrypoint. The `openui generate` CLI reads this file to produce both the prompt and the library spec.
 
-The `dev` and `build` scripts automatically regenerate the system prompt before starting:
+The `dev` and `build` scripts automatically regenerate both artifacts before starting. Use the emitted spec in your route:
 
 ```json
 "generate:prompt": "openui generate src/library.ts --out src/generated/system-prompt.txt",
 "dev": "pnpm generate:prompt && next dev"
+```
+
+```ts
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
+import librarySpec from "../../../generated/system-prompt.spec.json";
+
+const systemPrompt = generateSystemPrompt({
+  library: librarySpec as LibrarySpec,
+});
 ```

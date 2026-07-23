@@ -86,7 +86,7 @@ program
   .argument("[entry]", "Path to a file that exports a createLibrary() result")
   .option(
     "-o, --out <file>",
-    "Write the prompt to a file; the spec JSON lands alongside as <file>.spec.json",
+    "Write the prompt to a file; the spec JSON lands alongside with .spec.json extension",
   )
   .option(
     "--json-schema",

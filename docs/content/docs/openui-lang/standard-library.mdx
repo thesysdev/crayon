@@ -33,9 +33,9 @@ import { openuiLibrary } from "@openuidev/react-ui";
 <Renderer library={openuiLibrary} response={streamedText} isStreaming={isStreaming} />;
 ```
 
-## Generate prompt
+## Generate a spec and build the prompt
 
-Use the CLI to generate the system prompt at build time:
+Use the CLI to generate the prompt and serialized library spec at build time. In your backend, use the spec with `generateSystemPrompt`:
 
 ```bash tab="pnpm" tab-group="pkg"
 pnpx @openuidev/cli@latest generate ./src/library.ts --out src/generated/system-prompt.txt
@@ -53,12 +53,15 @@ yarn dlx @openuidev/cli@latest generate ./src/library.ts --out src/generated/sys
 npx @openuidev/cli@latest generate ./src/library.ts --out src/generated/system-prompt.txt
 ```
 
-Or generate programmatically:
+The command writes `src/generated/system-prompt.spec.json` beside the prompt file. Import that spec in your backend:
 
 ```ts
-import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui";
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
+import librarySpec from "./generated/system-prompt.spec.json";
 
-const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
+const systemPrompt = generateSystemPrompt({
+  library: librarySpec as LibrarySpec,
+});
 ```
 
 ## Extend it
@@ -89,4 +92,4 @@ const myLibrary = createLibrary({
 
 - Default root component is `Stack`.
 - `Form` requires explicit `buttons`.
-- Signature truth source is `openuiLibrary.prompt(openuiPromptOptions)`.
+- The generated library spec is the backend prompt source of truth
