@@ -6,7 +6,7 @@ import {
   openAIResponsesAdapter,
   type ChatLLM,
 } from "@openuidev/react-headless";
-import { AgentInterface } from "@openuidev/react-ui";
+import { AgentInterface, type PrefillChip } from "@openuidev/react-ui";
 // chatLibrary, useOpenuiCloudStorage, and the artifact renderers all come from the
 // migrated SDK (@openuidev/thesys). Its artifact parser now reads the program from
 // the tool INPUT channel (args.artifact_content), so the rich preview renders live
@@ -44,6 +44,33 @@ const llm: ChatLLM = {
   streamProtocol: openAIResponsesAdapter(),
 };
 
+// Prefill chips (ChatGPT-style): clicking drops the prompt into the welcome
+// composer; the chip's contextual starters then append to the draft.
+const PREFILL_CHIPS: PrefillChip[] = [
+  {
+    displayText: "Create a presentation",
+    prompt: "Create a presentation about ",
+    starters: [
+      { displayText: "Our Q2 business review", prompt: "our Q2 business review", icon: <></> },
+      { displayText: "A product launch plan", prompt: "a product launch plan", icon: <></> },
+      {
+        displayText: "The future of electric vehicles",
+        prompt: "the future of electric vehicles",
+        icon: <></>,
+      },
+    ],
+  },
+  {
+    displayText: "Write a report",
+    prompt: "Write a report on ",
+    starters: [
+      { displayText: "The EV market in 2026", prompt: "the EV market in 2026", icon: <></> },
+      { displayText: "Our quarterly performance", prompt: "our quarterly performance", icon: <></> },
+      { displayText: "Enterprise adoption of AI", prompt: "enterprise adoption of AI", icon: <></> },
+    ],
+  },
+];
+
 export function CloudChat() {
   const mode = useTheme();
   // useOpenuiCloudStorage: browser ChatStorage over /v1, fct_-authenticated. As a
@@ -54,7 +81,7 @@ export function CloudChat() {
     // refreshes it and injects x-thesys-frontend-token on every /v1 call.
     token: "/api/frontend-token",
     // Env-driven so a local stack can be targeted; defaults to prod when unset.
-    apiBaseUrl: "https://api.thesys.dev",
+    apiBaseUrl: process.env["NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL"] ?? "https://api.thesys.dev",
     features: { artifact: true },
   });
 
@@ -80,7 +107,14 @@ export function CloudChat() {
             prompt: "Write a brief market-analysis report on the EV sector.",
           },
         ]}
-      />
+      >
+        <AgentInterface.Welcome
+          title="Good to see you"
+          description="What's on your mind today?"
+          prefillChips={PREFILL_CHIPS}
+          glowAnimation
+        />
+      </AgentInterface>
     </div>
   );
 }
