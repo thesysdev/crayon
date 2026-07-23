@@ -20,6 +20,7 @@ export function PHProvider({ children }: { children: React.ReactNode }) {
         href,
         window.location.href,
         posthog.get_distinct_id(),
+        posthog.get_session_id(),
       );
 
       if (attributedHref !== href) anchor.setAttribute("href", attributedHref);
