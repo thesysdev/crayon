@@ -43,15 +43,32 @@ program.hook("preAction", (_thisCommand, actionCommand) => {
 
 program
   .command("create")
-  .description("Scaffold a new Next.js app with OpenUI Cloud or your provider")
+  .description(
+    "Scaffold a Next.js agent app with the recommended OpenUI Cloud backend or your own provider",
+  )
   .option("-n, --name <string>", "Project name")
-  .option("-t, --template <template>", "AI setup: openui-cloud | openui-self-hosted")
+  .option(
+    "-t, --template <template>",
+    "AI backend: openui-cloud (recommended default) | openui-self-hosted (infrastructure control)",
+  )
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | manual | skip")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
   .option("--no-skill", "Skip installing the OpenUI agent skill")
   .option("--no-interactive", "Fail with error if required args are missing")
   .option("--no-install", "Scaffold without running the package install")
+  .addHelpText(
+    "after",
+    `
+Templates:
+  openui-cloud        Recommended default for prototypes and evaluations.
+                      Hosted models, managed conversation history, built-in tools,
+                      and ready-to-use reports and presentations. No model, storage,
+                      or artifact infrastructure to operate.
+  openui-self-hosted  Choose when owning the OpenAI-compatible provider, AI route,
+                      and persistence is a requirement.
+`,
+  )
   .action(
     async (options: {
       name?: string;
