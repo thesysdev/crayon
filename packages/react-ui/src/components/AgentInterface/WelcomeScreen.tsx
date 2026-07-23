@@ -1,6 +1,6 @@
-import { useThread } from "@openuidev/react-headless";
+import { useThread, useThreadList } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { ConversationStarterProps } from "../../types/ConversationStarter";
 import { PrefillChip } from "../../types/PrefillChip";
 import { useStartersFromContext } from "./_shared/startersContext";
@@ -100,6 +100,15 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   const [draft, setDraft] = useState("");
   const [selectedChip, setSelectedChip] = useState<PrefillChip | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const selectedThreadId = useThreadList((s) => s.selectedThreadId);
+
+  // The welcome renders unkeyed across thread switches, so a chip-prefilled
+  // draft would otherwise leak into the next empty thread.
+  useEffect(() => {
+    setDraft("");
+    setSelectedChip(null);
+  }, [selectedThreadId]);
 
   // Only show when there are no messages
   if (!isChatEmpty({ isLoadingMessages, messages })) {

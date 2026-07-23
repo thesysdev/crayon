@@ -56,9 +56,9 @@ export const WelcomePrefillChips = ({
         aria-hidden={!isDraftEmpty || undefined}
       >
         <div className="openui-agent-welcome-screen__chip-row">
-          {chips.map((chip) => (
+          {chips.map((chip, index) => (
             <PrefillChipButton
-              key={chip.displayText}
+              key={`${chip.displayText}-${index}`}
               chip={chip}
               disabled={disabled}
               onClick={() => onChipClick(chip)}

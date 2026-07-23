@@ -81,7 +81,7 @@ export function CloudChat() {
     // refreshes it and injects x-thesys-frontend-token on every /v1 call.
     token: "/api/frontend-token",
     // Env-driven so a local stack can be targeted; defaults to prod when unset.
-    apiBaseUrl: process.env["NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL"] ?? "https://api.thesys.dev",
+    apiBaseUrl: process.env.NEXT_PUBLIC_OPENUI_CLOUD_BASE_URL ?? "https://api.thesys.dev",
     features: { artifact: true },
   });
 
