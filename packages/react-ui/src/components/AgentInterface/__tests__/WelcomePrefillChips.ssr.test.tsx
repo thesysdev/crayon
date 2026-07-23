@@ -14,7 +14,8 @@ const CHIPS: PrefillChip[] = [
 ];
 const STARTERS = [{ displayText: "Quarterly deck", prompt: "Create a Q2 deck." }];
 
-const render = (ui: React.ReactElement) => renderToString(<ChatProvider llm={makeMockLLM()}>{ui}</ChatProvider>);
+const render = (ui: React.ReactElement) =>
+  renderToString(<ChatProvider llm={makeMockLLM()}>{ui}</ChatProvider>);
 
 describe("WelcomePrefillChips SSR", () => {
   it("renders the chip row and default starters in layer 1 when draft is empty", () => {
