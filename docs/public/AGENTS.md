@@ -470,6 +470,19 @@ actions (`@Set`, `@Run`, `@ToAssistant`). Helpers: `useFormName`,
 `useGetFieldValue`, `useSetFieldValue`, `useIsQueryLoading`, `useIsStreaming`.
 Form state is tracked automatically and saved with the thread.
 
+### Open-ended HTML
+
+For generated HTML apps, define one OpenUI component with `title` and `document`
+props and add it to your component library (not as the root), so the model
+chats normally and emits the artifact only when asked to build something
+interactive. Keep a compact status preview inline, then use
+`DetailedViewPanel` for Raw and Rendered tabs. Raw displays the incoming source;
+Rendered shows a loading state and switches to a sandboxed `iframe srcDoc` when
+the stream completes. Use the existing assistant stream—no second endpoint or
+tool is required. See the
+[guide](https://www.openui.com/docs/agent/guides/open-ended-html) and
+[`examples/html-artifact`](https://github.com/thesysdev/openui/tree/main/examples/html-artifact).
+
 ## Artifacts
 
 An artifact is a durable output (report, slide deck, dashboard, code file): an
