@@ -9,7 +9,7 @@ import {
   SelectSeparator,
   SelectTrigger,
 } from "@openuidev/react-ui";
-import { useMemo } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 
 import { useTheme } from "@/hooks/use-system-theme";
 import { MODEL_OPTIONS, type ModelOption } from "@/lib/models";
@@ -23,6 +23,20 @@ interface ModelSwitcherProps {
 const PROVIDER_ORDER: ModelOption["provider"][] = ["Anthropic", "OpenAI", "Google"];
 // The model highlighted with a "Recommended" chip.
 const RECOMMENDED_MODEL_ID = "anthropic/claude-sonnet-5";
+
+// The persisted model lives in localStorage, so the server (and the first
+// client render) can only fall back to DEFAULT_MODEL. Showing that default and
+// then swapping to the stored model produces a visible flash on refresh. This
+// hook returns false on the server / during hydration and true once mounted, so
+// the trigger can render a neutral skeleton until the real value is known.
+const subscribeNoop = () => () => {};
+function useHydrated(): boolean {
+  return useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false,
+  );
+}
 
 function ProviderLogo({
   provider,
@@ -71,6 +85,7 @@ function ModelRow({ model }: { model: ModelOption }) {
 }
 
 export function ModelSwitcher({ selectedModel, onModelChange }: ModelSwitcherProps) {
+  const hydrated = useHydrated();
   const selectedOption =
     MODEL_OPTIONS.find((model) => model.id === selectedModel) ?? MODEL_OPTIONS[0];
   const { paidGroups, freeModels } = useMemo(() => splitModels(MODEL_OPTIONS), []);
@@ -80,22 +95,38 @@ export function ModelSwitcher({ selectedModel, onModelChange }: ModelSwitcherPro
       <Select value={selectedModel} onValueChange={onModelChange} size="sm">
         <SelectTrigger
           aria-label="Select model"
-          title={selectedOption?.id ?? selectedModel}
+          title={hydrated ? (selectedOption?.id ?? selectedModel) : undefined}
           className="flex! h-8! w-auto! max-w-[240px]! items-center! justify-start! gap-1.5! rounded-lg! border! border-gray-200! bg-white! px-2.5! text-sm! text-gray-900! shadow-sm"
         >
-          {selectedOption ? (
-            <ProviderLogo provider={selectedOption.provider} variant="light" size="sm" />
-          ) : null}
-          <span className="min-w-0 flex-1 truncate">{selectedOption?.name ?? selectedModel}</span>
-          {selectedOption?.id === RECOMMENDED_MODEL_ID ? (
-            <span className="shrink-0 rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
-              Recommended
-            </span>
-          ) : selectedOption?.badge ? (
-            <span className="shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700">
-              {selectedOption.badge}
-            </span>
-          ) : null}
+          {hydrated ? (
+            <>
+              {selectedOption ? (
+                <ProviderLogo provider={selectedOption.provider} variant="light" size="sm" />
+              ) : null}
+              <span className="min-w-0 flex-1 truncate">
+                {selectedOption?.name ?? selectedModel}
+              </span>
+              {selectedOption?.id === RECOMMENDED_MODEL_ID ? (
+                <span className="shrink-0 rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
+                  Recommended
+                </span>
+              ) : selectedOption?.badge ? (
+                <span className="shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700">
+                  {selectedOption.badge}
+                </span>
+              ) : null}
+            </>
+          ) : (
+            // Before the client reads localStorage, show a neutral skeleton
+            // instead of the default model so refresh doesn't flash it.
+            <>
+              <span
+                aria-hidden="true"
+                className="h-5 w-5 shrink-0 animate-pulse rounded-md bg-gray-200"
+              />
+              <span aria-hidden="true" className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+            </>
+          )}
         </SelectTrigger>
         <SelectContent
           align="start"
