@@ -89,17 +89,17 @@ export default function Layout({ children }: LayoutProps<"/">) {
         <PHProvider>
           <RootProvider theme={{ defaultTheme: "light" }}>{children}</RootProvider>
         </PHProvider>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-MZ0TZ82NM2"
+          strategy="afterInteractive"
+        />
+        <Script id="ga-init" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-MZ0TZ82NM2');
+        `}</Script>
       </body>
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-MZ0TZ82NM2"
-        strategy="afterInteractive"
-      />
-      <Script id="ga-init" strategy="afterInteractive">{`
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-MZ0TZ82NM2');
-      `}</Script>
     </html>
   );
 }
