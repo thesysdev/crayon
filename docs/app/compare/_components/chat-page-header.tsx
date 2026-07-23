@@ -60,7 +60,6 @@ interface ComparisonPairMetadata {
 const ALL_MODES_SUPPORTED: FeatureSupport = { markdown: true, oss: true, cloud: true };
 const OSS_AND_CLOUD_SUPPORTED: FeatureSupport = { markdown: false, oss: true, cloud: true };
 const CLOUD_ONLY_SUPPORTED: FeatureSupport = { markdown: false, oss: false, cloud: true };
-const MARKDOWN_AND_OSS_SUPPORTED: FeatureSupport = { markdown: true, oss: true, cloud: false };
 
 function comparisonFeature(label: string, support: FeatureSupport): ComparisonFeature {
   return { label, support };
@@ -101,7 +100,6 @@ const PAIR_METADATA: Record<ComparisonPair, ComparisonPairMetadata> = {
       { label: "Built-in tools", support: CLOUD_ONLY_SUPPORTED },
       { label: "Responsive output by default", support: CLOUD_ONLY_SUPPORTED },
       { label: "Automatic UI error correction", support: CLOUD_ONLY_SUPPORTED },
-      { label: "Self-hostable and open source", support: MARKDOWN_AND_OSS_SUPPORTED },
     ],
   },
   "markdown-cloud": {
