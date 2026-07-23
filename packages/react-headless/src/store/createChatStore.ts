@@ -15,17 +15,6 @@ const mergeThreadList = (existing: Thread[], incoming: Thread[]): Thread[] =>
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
-/**
- * Cap on how many *idle* threads (not selected, not running) keep their messages
- * in memory. Beyond this cap, the least-recently-used idle entries are dropped and
- * reloaded from storage on return.
- *
- * A non-persisting in-memory storage
- * would lose an evicted thread's assistant messages on reload; keep this high
- * enough that normal navigation never evicts, or wire a storage that persists.
- */
-const MAX_CACHED_THREADS = 20;
-
 export const createChatStore = (config: CreateChatStoreConfig) => {
   const { storage, llm } = config;
   const { thread: threadStorage } = storage;
@@ -76,45 +65,15 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
           return { threadStates: next };
         });
 
-      // LRU access order of thread keys, most-recently-used LAST. Plain closure
-      // state — it drives eviction only, never renders, so it stays out of the store.
-      const recentKeys: string[] = [];
-      const touchThread = (key: string) => {
-        const i = recentKeys.indexOf(key);
-        if (i !== -1) recentKeys.splice(i, 1);
-        recentKeys.push(key);
-      };
-
       /**
-       * Bound in-memory `threadStates` to {selected} ∪ {running} ∪ {DRAFT} ∪ the
-       * {@link MAX_CACHED_THREADS} most-recently-used idle threads, dropping the
-       * rest. Evicted entries reload from storage on the next {@link selectThread}.
-       * Called on navigation and when a run ends — the points where entries pile up
-       * or become idle.
+       * Retention invariant: an in-memory `threadStates` entry is kept only while
+       * its thread is the ACTIVE view or is still STREAMING.
        */
-      const evictIdleThreads = () => {
-        const { selectedThreadId, threadStates } = get();
-        // Drop keys whose entry is already gone (deleted / re-keyed / evicted).
-        let live = recentKeys.filter((k) => threadStates[k] !== undefined);
-        const isEvictable = (key: string) =>
-          key !== DRAFT_KEY && key !== selectedThreadId && !threadStates[key]?.isRunning;
-        const idle = live.filter(isEvictable); // oldest first
-        const overflow = idle.length - MAX_CACHED_THREADS;
-        if (overflow > 0) {
-          const drop = new Set(idle.slice(0, overflow));
-          set((s) => {
-            const next: Record<string, ThreadStateEntry> = {};
-            for (const k in s.threadStates) {
-              const entry = s.threadStates[k];
-              if (entry && !drop.has(k)) next[k] = entry;
-            }
-            return { threadStates: next };
-          });
-          live = live.filter((k) => !drop.has(k));
-        }
-        // Rewrite recentKeys with only surviving keys, preserving LRU order.
-        recentKeys.length = 0;
-        recentKeys.push(...live);
+      const dropIfDetached = (key: string) => {
+        const s = get();
+        if (key === resolveViewKey(s.selectedThreadId)) return; // active view — keep
+        if (s.threadStates[key]?.isRunning) return; // still streaming in background — keep
+        dropThreadState(key);
       };
 
       return {
@@ -168,8 +127,10 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
 
         switchToNewThread: () => {
           if (get().isCreatingThread) return;
+          const leftKey = viewKey();
           set({ selectedThreadId: null });
-          dropThreadState(DRAFT_KEY);
+          dropThreadState(DRAFT_KEY); // fresh blank draft
+          dropIfDetached(leftKey); // drop the thread we left unless it's still streaming
         },
 
         createThread: async (firstMessage: UserMessage) => {
@@ -179,21 +140,17 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
         },
 
         selectThread: (threadId: string) => {
-          // No abort — the previously-selected thread's run (if any) keeps
-          // streaming into its own entry in the background.
+          const leftKey = viewKey(); // the thread we're navigating away from
+          // No abort — a run on the thread we're leaving keeps streaming in the background.
           set({ selectedThreadId: threadId });
-          touchThread(threadId);
+          // Drop the thread we left unless it's still streaming (retention invariant).
+          dropIfDetached(leftKey);
 
-          // An in-memory entry (live/finished run, or an already-loaded thread)
-          // is shown as-is. Never reload: storage may not yet have messages
-          // streamed this session.
-          if (get().threadStates[threadId]) {
-            evictIdleThreads();
-            return;
-          }
+          // A streaming background thread already has a live entry → show it as-is
+          // (no reload — it may hold tokens not yet in storage).
+          if (get().threadStates[threadId]) return;
 
           upsertThreadState(threadId, () => ({ isLoadingMessages: true }));
-          evictIdleThreads();
           threadStorage
             .getMessages(threadId)
             .then((messages) =>
@@ -271,7 +228,6 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             executingToolCallIds: new Set<string>(),
             abortController,
           }));
-          touchThread(requestKey);
 
           // On abort, flip the request off on its own entry.
           abortController.signal.addEventListener("abort", () => {
@@ -301,7 +257,6 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
                   };
                 });
                 requestKey = created.id;
-                touchThread(requestKey);
               } finally {
                 set({ isCreatingThread: false });
               }
@@ -360,7 +315,9 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
               abortController: null,
               executingToolCallIds: new Set<string>(),
             });
-            evictIdleThreads();
+            // A background run that just finished is no longer active or streaming —
+            // drop it so a return trip reloads fresh from storage (no stale copy).
+            dropIfDetached(requestKey);
           }
         },
 
