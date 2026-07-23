@@ -1,6 +1,11 @@
 import type { AiSetup, TemplateName } from "./create-types";
-import { normalizeCliError } from "./error-reporting";
-import { CliCancellation, CreateError, telemetry as defaultTelemetry } from "./telemetry";
+import { classifyUnknownFailure } from "./error-telemetry";
+import {
+  CliCancelledError,
+  CreateError,
+  telemetry as defaultTelemetry,
+  type Telemetry,
+} from "./telemetry";
 
 const createFunnel = {
   funnel: "cli_create",
@@ -15,17 +20,23 @@ const createFunnelSteps = {
   scaffold_failed: "0320",
   env_resolution_started: "0400",
   cloud_auth_started: "0410",
+  cloud_auth_method_selected: "0415",
   cloud_auth_resolved: "0420",
+  cloud_auth_failed: "0425",
   env_written: "0430",
   skill_prompt_resolved: "0500",
   skill_install_started: "0510",
   skill_install_finished: "0520",
+  skill_install_succeeded: "0525",
+  skill_install_failed: "0530",
+  skill_install_cancelled: "0540",
   dependency_install_started: "0600",
   dependency_install_succeeded: "0610",
   dependency_install_failed: "0620",
+  dependency_install_cancelled: "0630",
   create_succeeded: "0700",
   create_failed: "9000",
-  create_cancelled: "9100",
+  create_cancelled: "9010",
 } as const;
 
 type CreateFunnelStep = keyof typeof createFunnelSteps;
@@ -44,16 +55,17 @@ export function aiSetupFromTemplate(template: TemplateName): AiSetup {
 
 export type CreateStage =
   | "args_resolution"
-  | "cloud_auth"
-  | "dependency_install"
-  | "environment_resolution"
-  | "environment_write"
   | "preflight"
+  | "environment_resolution"
+  | "cloud_auth"
   | "scaffold"
+  | "environment_write"
+  | "skill_prompt"
   | "skill_install"
-  | "skill_prompt";
+  | "dependency_install";
 
 export type CreateStageStatus = "started" | "succeeded" | "failed" | "cancelled" | "skipped";
+type CreateStageTerminalStatus = Exclude<CreateStageStatus, "started">;
 
 const createStageRanks: Record<CreateStage, number> = {
   args_resolution: 100,
@@ -67,15 +79,16 @@ const createStageRanks: Record<CreateStage, number> = {
   dependency_install: 600,
 };
 
-type TelemetryCapture = Pick<typeof defaultTelemetry, "capture">;
+type TelemetryCapture = Pick<Telemetry, "capture">;
 
-type StageOptions<T> = {
+interface StageOptions<T> {
   properties?: Record<string, unknown>;
   resultProperties?: (result: T) => Record<string, unknown>;
-  resultStatus?: (result: T) => Extract<CreateStageStatus, "succeeded" | "skipped">;
+  resultStatus?: (result: T) => CreateStageTerminalStatus;
+  errorProperties?: (error: unknown) => Record<string, unknown>;
   telemetry?: TelemetryCapture;
   now?: () => number;
-};
+}
 
 const stageProperties = (stage: CreateStage, status: CreateStageStatus) => ({
   funnel: createFunnel.funnel,
@@ -86,9 +99,21 @@ const stageProperties = (stage: CreateStage, status: CreateStageStatus) => ({
   stage_status: status,
 });
 
+const cancellationProperties = (error: CliCancelledError) => ({
+  failure_category: "user_cancelled",
+  failure_code:
+    error.exitCode === 130
+      ? "INTERRUPTED"
+      : error.exitCode === 143
+        ? "TERMINATED"
+        : "USER_CANCELLED",
+  cancellation_exit_code: error.exitCode,
+});
+
 /**
- * Emits a uniform lifecycle event around a create operation. This is the canonical
- * event for stage conversion and latency benchmarks; the older funnel events remain compatible.
+ * Emits one canonical lifecycle event around a create operation. Existing
+ * funnel events remain intact; this event is for stage conversion and latency
+ * benchmarks with consistent status, rank, and duration fields.
  */
 export async function instrumentCreateStage<T>(
   stage: CreateStage,
@@ -109,31 +134,40 @@ export async function instrumentCreateStage<T>(
     telemetry.capture("cli_create_stage", {
       ...options.properties,
       ...options.resultProperties?.(result),
+      ...(status === "failed" || status === "cancelled" ? { failure_stage: stage } : {}),
       ...stageProperties(stage, status),
       duration_ms: Math.max(0, now() - startedAt),
     });
     return result;
   } catch (error) {
     const promptCancelled = error instanceof Error && error.name === "ExitPromptError";
-    const cancelled = error instanceof CliCancellation || promptCancelled;
-    const failure = cancelled
-      ? ({
-          failure_code: "USER_CANCELLED",
-          failure_category: "user_cancelled",
-        } as const)
-      : normalizeCliError(error);
+    const cancellation =
+      error instanceof CliCancelledError
+        ? error
+        : promptCancelled
+          ? new CliCancelledError(stage)
+          : undefined;
     telemetry.capture("cli_create_stage", {
       ...options.properties,
-      ...stageProperties(stage, cancelled ? "cancelled" : "failed"),
-      duration_ms: Math.max(0, now() - startedAt),
+      ...(cancellation
+        ? cancellationProperties(cancellation)
+        : {
+            ...(error instanceof CreateError && error.telemetryProperties
+              ? error.telemetryProperties
+              : classifyUnknownFailure(error)),
+            ...options.errorProperties?.(error),
+          }),
       failure_stage:
-        error instanceof CreateError || error instanceof CliCancellation ? error.stage : stage,
-      ...failure,
+        error instanceof CreateError || error instanceof CliCancelledError ? error.stage : stage,
+      ...stageProperties(stage, cancellation ? "cancelled" : "failed"),
+      duration_ms: Math.max(0, now() - startedAt),
     });
-    if (error instanceof CreateError || error instanceof CliCancellation) throw error;
-    if (promptCancelled) throw new CliCancellation(stage);
-    const message = error instanceof Error ? error.message : String(error);
-    throw new CreateError(stage, message, { cause: error });
+
+    if (cancellation) throw cancellation;
+    if (error instanceof CreateError) throw error;
+    throw new CreateError(stage, error instanceof Error ? error.message : String(error), {
+      cause: error,
+    });
   }
 }
 

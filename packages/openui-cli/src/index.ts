@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -25,6 +26,7 @@ program.option("--no-telemetry", "Disable anonymous usage analytics");
 // Init telemetry once, just before any command runs (honors --no-telemetry / DO_NOT_TRACK).
 program.hook("preAction", (_thisCommand, actionCommand) => {
   telemetry.init({ cliVersion, flagEnabled: program.opts()["telemetry"] !== false });
+  telemetry.register({ cli_run_id: randomUUID() });
   telemetry.capture("cli_invoked", { command: actionCommand.name() });
 });
 

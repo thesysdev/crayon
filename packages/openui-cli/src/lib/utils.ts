@@ -1,9 +1,9 @@
 import type { CloudAuthMethod } from "../auth/mint";
 import { createFunnelProps } from "./create-telemetry";
 import type { TemplateName } from "./create-types";
-import { normalizeCliError } from "./error-reporting";
+import { classifyUnknownFailure } from "./error-telemetry";
 import {
-  CliCancellation,
+  CliCancelledError,
   CreateError,
   telemetry as defaultTelemetry,
   type Telemetry,
@@ -14,16 +14,22 @@ export function handleCliError(
   event: string,
   telemetry: Telemetry = defaultTelemetry,
 ): void {
-  if (e instanceof CliCancellation) {
+  if (e instanceof CliCancelledError) {
     console.info("Cancelled.");
-    const cancellationEvent = event.replace(/_failed$/, "_cancelled");
-    telemetry.capture(cancellationEvent, {
-      ...(event === "cli_create_failed" ? createFunnelProps("create_cancelled") : {}),
-      cancel_stage: e.stage,
-      failure_code: "USER_CANCELLED",
-      failure_category: "user_cancelled",
-    });
-    process.exitCode = 0;
+    const cancelledEvent = event.endsWith("_failed")
+      ? `${event.slice(0, -"_failed".length)}_cancelled`
+      : `${event}_cancelled`;
+    telemetry.capture(
+      cancelledEvent,
+      event === "cli_create_failed"
+        ? {
+            ...createFunnelProps("create_cancelled"),
+            cancellation_stage: e.stage,
+            cancellation_exit_code: e.exitCode,
+          }
+        : { cancellation_stage: e.stage, cancellation_exit_code: e.exitCode },
+    );
+    process.exitCode = e.exitCode;
     return;
   }
 
@@ -33,16 +39,16 @@ export function handleCliError(
 
   if (event === "cli_create_failed") {
     // Do not send raw create error messages: they can include user-entered
-    // project names or paths. Only normalized diagnostics leave the process.
+    // project names or paths. CreateError stages are code-defined and safe.
     telemetry.capture(event, {
       ...createFunnelProps("create_failed"),
       failure_stage: known ? e.stage : "unknown",
-      ...normalizeCliError(e),
+      ...(known && e.telemetryProperties ? e.telemetryProperties : classifyUnknownFailure(e)),
     });
   } else {
     telemetry.capture(event, {
       stage: known ? e.stage : "unknown",
-      error: message.slice(0, 200),
+      ...classifyUnknownFailure(e),
     });
   }
 

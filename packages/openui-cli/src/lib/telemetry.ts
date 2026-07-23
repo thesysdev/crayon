@@ -55,22 +55,37 @@ function writeState(file: string, s: Stored) {
 }
 
 /** Thrown by command funnels so the index wrapper can attribute the failure stage + drain once. */
+export interface SafeFailureTelemetry {
+  failure_category: string;
+  failure_code: string;
+  exit_code?: number;
+  failure_signal?: NodeJS.Signals;
+  http_status?: number;
+  cancellation_exit_code?: number;
+}
+
 export class CreateError extends Error {
+  public readonly telemetryProperties?: SafeFailureTelemetry;
+
   constructor(
     public stage: string,
     message: string,
-    options?: { cause?: unknown },
+    options?: { cause?: unknown; telemetryProperties?: SafeFailureTelemetry },
   ) {
-    super(message, options);
+    super(message, { cause: options?.cause });
     this.name = "CreateError";
+    this.telemetryProperties = options?.telemetryProperties;
   }
 }
 
-/** A deliberate prompt cancellation. It is reported separately and is not a CLI failure. */
-export class CliCancellation extends Error {
-  constructor(public stage: string) {
-    super("Cancelled by user.");
-    this.name = "CliCancellation";
+/** A user intentionally cancelled an interactive prompt; this is not a failure. */
+export class CliCancelledError extends Error {
+  constructor(
+    public stage: string,
+    public exitCode = 0,
+  ) {
+    super("Operation cancelled.");
+    this.name = "CliCancelledError";
   }
 }
 

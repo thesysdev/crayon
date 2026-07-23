@@ -109,7 +109,7 @@ export class Authenticator {
           const msg = error instanceof Error ? error.message : "Unknown error";
           res.writeHead(200, { "Content-Type": "text/html", Connection: "close" });
           res.end(errorHtml(msg));
-          finish(() => reject(new Error(`Token exchange failed: ${msg}`)));
+          finish(() => reject(new Error(`Token exchange failed: ${msg}`, { cause: error })));
         }
       });
 
