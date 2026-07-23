@@ -1,10 +1,12 @@
 import { useThread } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { ReactNode } from "react";
+import { ReactNode, useRef, useState } from "react";
 import { ConversationStarterProps } from "../../types/ConversationStarter";
+import { PrefillChip } from "../../types/PrefillChip";
 import { useStartersFromContext } from "./_shared/startersContext";
 import { isChatEmpty } from "./_shared/utils";
-import { DesktopWelcomeComposer } from "./components";
+import { appendStarterPrompt } from "./_shared/utils/welcomePrefill";
+import { DesktopWelcomeComposer, WelcomePrefillChips } from "./components";
 import { ConversationStarter, ConversationStarterVariant } from "./ConversationStarter";
 import { WelcomeGlow, WelcomeGlowProvider } from "./WelcomeGlow";
 
@@ -44,6 +46,12 @@ interface WelcomeScreenWithContentProps extends WelcomeScreenBaseProps {
    */
   starterVariant?: ConversationStarterVariant;
   /**
+   * Prefill chips rendered between the composer and the starters. Clicking a
+   * chip drops its prompt into the composer (instead of sending) and shows the
+   * chip's contextual starters, which append to the draft.
+   */
+  prefillChips?: PrefillChip[];
+  /**
    * Children are not allowed when using props-based content
    */
   children?: never;
@@ -60,6 +68,7 @@ interface WelcomeScreenWithChildrenProps extends WelcomeScreenBaseProps {
   image?: never;
   starters?: never;
   starterVariant?: never;
+  prefillChips?: never;
 }
 
 export type WelcomeScreenProps = WelcomeScreenWithContentProps | WelcomeScreenWithChildrenProps;
@@ -79,9 +88,18 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   const ownVariant = "starterVariant" in props ? props.starterVariant : undefined;
   const starters = ownStarters ?? fromCtx.starters ?? [];
   const starterVariant = ownVariant ?? fromCtx.starterVariant ?? "long";
+  const prefillChips = ("prefillChips" in props ? props.prefillChips : undefined) ?? [];
+  const hasChips = prefillChips.length > 0;
 
   const messages = useThread((s) => s.messages);
   const isLoadingMessages = useThread((s) => s.isLoadingMessages);
+  const isRunning = useThread((s) => s.isRunning);
+
+  // Prefill-chips draft state — owned here (not in the composer) so chips can
+  // write into the draft. Hooks stay unconditional; unused without chips.
+  const [draft, setDraft] = useState("");
+  const [selectedChip, setSelectedChip] = useState<PrefillChip | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Only show when there are no messages
   if (!isChatEmpty({ isLoadingMessages, messages })) {
@@ -118,6 +136,36 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
     return image;
   };
 
+  const handleDraftChange = (value: string) => {
+    setDraft(value);
+    if (!value) {
+      setSelectedChip(null);
+    }
+  };
+
+  const handleChipClick = (chip: PrefillChip) => {
+    if (isRunning) return;
+    setDraft(chip.prompt);
+    setSelectedChip(chip);
+    const input = inputRef.current;
+    if (!input) return;
+    input.focus();
+    // Caret to the end once React has applied the new value.
+    requestAnimationFrame(() => {
+      input.setSelectionRange(chip.prompt.length, chip.prompt.length);
+    });
+  };
+
+  const handleContextualSelect = (starter: ConversationStarterProps) => {
+    const next = appendStarterPrompt(draft, starter.prompt);
+    setDraft(next);
+    setSelectedChip(null);
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.setSelectionRange(next.length, next.length);
+    });
+  };
+
   return (
     <WelcomeGlowProvider enabled={glowAnimation}>
       <div
@@ -144,17 +192,42 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
           )}
         </div>
         {/* Desktop-only welcome composer */}
-        <div className="openui-agent-welcome-screen__composer-starters-container">
+        <div
+          className="openui-agent-welcome-screen__composer-starters-container"
+          data-has-prefill-chips={(hasChips && draft.length === 0) || undefined}
+        >
           <div className="openui-agent-welcome-screen__desktop-composer">
             <WelcomeGlow>
-              <DesktopWelcomeComposer />
+              {hasChips ? (
+                <DesktopWelcomeComposer
+                  value={draft}
+                  onChange={handleDraftChange}
+                  drafting={draft.length > 0 && !selectedChip}
+                  inputRef={inputRef}
+                />
+              ) : (
+                <DesktopWelcomeComposer />
+              )}
             </WelcomeGlow>
           </div>
-          {/* Desktop-only conversation starters */}
-          {starters.length > 0 && (
-            <div className="openui-agent-welcome-screen__desktop-starters">
-              <ConversationStarter starters={starters} variant={starterVariant} />
-            </div>
+          {hasChips ? (
+            <WelcomePrefillChips
+              chips={prefillChips}
+              starters={starters}
+              starterVariant={starterVariant}
+              draft={draft}
+              selectedChip={selectedChip}
+              onChipClick={handleChipClick}
+              onContextualSelect={handleContextualSelect}
+              disabled={isRunning}
+            />
+          ) : (
+            /* Desktop-only conversation starters */
+            starters.length > 0 && (
+              <div className="openui-agent-welcome-screen__desktop-starters">
+                <ConversationStarter starters={starters} variant={starterVariant} />
+              </div>
+            )
           )}
         </div>
       </div>
