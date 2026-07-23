@@ -9,13 +9,11 @@ const openUiSystemPrompt = readFileSync(
   "utf-8",
 );
 
-function createMarkdownSystemPrompt(toolsAvailable: boolean): string {
-  return `You are a helpful assistant. Respond using clear, well-structured GitHub-Flavored Markdown.
+const markdownSystemPrompt = `You are a helpful assistant. Respond using clear, well-structured GitHub-Flavored Markdown.
 
-Use headings, lists, tables, links, block quotes, and fenced code blocks when they make the response easier to understand.${toolsAvailable ? " Use the available tools when they are relevant, and incorporate their results into the answer." : ""}
+Use headings, lists, tables, links, block quotes, and fenced code blocks when they make the response easier to understand.
 
 Return only Markdown content. Do not emit OpenUI Lang, component syntax, JSON UI descriptions, or instructions for a renderer.`;
-}
 
 type ResponseMode = "markdown" | "openui";
 const TOOL_NAMES = ["get_weather", "get_stock_price", "search_web"] as const;
@@ -314,10 +312,7 @@ export async function POST(req: NextRequest) {
   const chatMessages: ChatCompletionMessageParam[] = [
     {
       role: "system" as const,
-      content:
-        responseMode === "markdown"
-          ? createMarkdownSystemPrompt(selectedTools.length > 0)
-          : openUiSystemPrompt,
+      content: responseMode === "markdown" ? markdownSystemPrompt : openUiSystemPrompt,
     },
     ...cleanMessages,
   ];
