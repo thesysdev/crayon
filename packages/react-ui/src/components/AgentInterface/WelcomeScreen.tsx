@@ -6,12 +6,18 @@ import { useStartersFromContext } from "./_shared/startersContext";
 import { isChatEmpty } from "./_shared/utils";
 import { DesktopWelcomeComposer } from "./components";
 import { ConversationStarter, ConversationStarterVariant } from "./ConversationStarter";
+import { WelcomeGlow, WelcomeGlowProvider } from "./WelcomeGlow";
 
 interface WelcomeScreenBaseProps {
   /**
    * Additional CSS class name
    */
   className?: string;
+  /**
+   * Plays the one-shot welcome entrance and composer glow animation.
+   * @default false
+   */
+  glowAnimation?: boolean;
 }
 
 interface WelcomeScreenWithContentProps extends WelcomeScreenBaseProps {
@@ -66,7 +72,7 @@ const isImageUrl = (image: { url: string } | ReactNode): image is { url: string 
 };
 
 export const WelcomeScreen = (props: WelcomeScreenProps) => {
-  const { className } = props;
+  const { className, glowAnimation = false } = props;
   const fromCtx = useStartersFromContext();
 
   const ownStarters = "starters" in props ? props.starters : undefined;
@@ -84,7 +90,17 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
 
   // Check if children are provided
   if ("children" in props && props.children) {
-    return <div className={clsx("openui-agent-welcome-screen", className)}>{props.children}</div>;
+    return (
+      <WelcomeGlowProvider enabled={glowAnimation}>
+        <div
+          className={clsx("openui-agent-welcome-screen", className, {
+            "openui-agent-welcome-screen--animated": glowAnimation,
+          })}
+        >
+          {props.children}
+        </div>
+      </WelcomeGlowProvider>
+    );
   }
 
   // Props-based content
@@ -103,39 +119,46 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   };
 
   return (
-    <div
-      className={clsx(
-        "openui-agent-welcome-screen",
-        "openui-agent-welcome-screen--with-composer",
-        className,
-      )}
-    >
-      <div className="openui-agent-welcome-screen__header">
-        {image && (
-          <div className="openui-agent-welcome-screen__image-container">{renderImage()}</div>
+    <WelcomeGlowProvider enabled={glowAnimation}>
+      <div
+        className={clsx(
+          "openui-agent-welcome-screen",
+          "openui-agent-welcome-screen--with-composer",
+          className,
+          {
+            "openui-agent-welcome-screen--animated": glowAnimation,
+          },
         )}
-        {(title || description) && (
-          <div className="openui-agent-welcome-screen__content">
-            {title && <h2 className="openui-agent-welcome-screen__title">{title}</h2>}
-            {description && (
-              <p className="openui-agent-welcome-screen__description">{description}</p>
-            )}
-          </div>
-        )}
-      </div>
-      {/* Desktop-only welcome composer */}
-      <div className="openui-agent-welcome-screen__composer-starters-container">
-        <div className="openui-agent-welcome-screen__desktop-composer">
-          <DesktopWelcomeComposer />
+      >
+        <div className="openui-agent-welcome-screen__header">
+          {image && (
+            <div className="openui-agent-welcome-screen__image-container">{renderImage()}</div>
+          )}
+          {(title || description) && (
+            <div className="openui-agent-welcome-screen__content">
+              {title && <h2 className="openui-agent-welcome-screen__title">{title}</h2>}
+              {description && (
+                <p className="openui-agent-welcome-screen__description">{description}</p>
+              )}
+            </div>
+          )}
         </div>
-        {/* Desktop-only conversation starters */}
-        {starters.length > 0 && (
-          <div className="openui-agent-welcome-screen__desktop-starters">
-            <ConversationStarter starters={starters} variant={starterVariant} />
+        {/* Desktop-only welcome composer */}
+        <div className="openui-agent-welcome-screen__composer-starters-container">
+          <div className="openui-agent-welcome-screen__desktop-composer">
+            <WelcomeGlow>
+              <DesktopWelcomeComposer />
+            </WelcomeGlow>
           </div>
-        )}
+          {/* Desktop-only conversation starters */}
+          {starters.length > 0 && (
+            <div className="openui-agent-welcome-screen__desktop-starters">
+              <ConversationStarter starters={starters} variant={starterVariant} />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </WelcomeGlowProvider>
   );
 };
 

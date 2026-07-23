@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import styles from "./page.module.css";
 import { CloudBanner } from "./sections/CloudBanner/CloudBanner";
 import { CloudSection } from "./sections/CloudSection/CloudSection";
@@ -9,6 +10,12 @@ import { ShiroPeek } from "./sections/ShiroPeek/ShiroPeek";
 import { StepsSection } from "./sections/StepsSection/StepsSection";
 import { TweetWallSection } from "./sections/TweetWallSection/TweetWallSection";
 import { UseCasesSection } from "./sections/UseCasesSection/UseCasesSection";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default function HomePage() {
   return (

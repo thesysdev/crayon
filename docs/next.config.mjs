@@ -33,23 +33,40 @@ const config = {
       },
       {
         source: "/docs/add-ons",
-        destination: "/projects",
+        destination: "/lab",
         permanent: false,
       },
       {
         source: "/add-ons",
-        destination: "/projects",
+        destination: "/lab",
         permanent: false,
       },
       {
         source: "/ecosystem",
-        destination: "/projects",
+        destination: "/lab",
         permanent: false,
       },
       {
         source: "/registry",
-        destination: "/projects",
+        destination: "/lab",
         permanent: false,
+      },
+      // Nav rename: Playground -> Demos, Projects -> Lab. Keep the old
+      // paths working for external links and search results.
+      {
+        source: "/playground",
+        destination: "/demos",
+        permanent: true,
+      },
+      {
+        source: "/projects",
+        destination: "/lab",
+        permanent: true,
+      },
+      {
+        source: "/showcase",
+        destination: "/lab",
+        permanent: true,
       },
       {
         source: "/blog/should-chat-be-the-new-homepage-for-saas",
