@@ -42,6 +42,11 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         href: "/chat",
       },
       {
+        title: "Compare OpenUI",
+        description: "Compare Markdown, OpenUI OSS, and Cloud side by side.",
+        href: "/compare",
+      },
+      {
         title: "Dashboard Demo",
         description: "Testdrive a dashboard building experience.",
         href: "/demo/github",

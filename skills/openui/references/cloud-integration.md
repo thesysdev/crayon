@@ -11,8 +11,10 @@ Use this runbook to add the stock OpenUI Cloud Agent Interface to an existing Re
 5. [Authorize Cloud Conversations](#authorize-cloud-conversations)
 6. [Add the Generation Proxy](#add-the-generation-proxy)
 7. [Add the Frontend Token Route](#add-the-frontend-token-route)
-8. [Adapt Beyond Next.js](#adapt-beyond-nextjs)
-9. [Verify](#verify)
+8. [Add Tools and MCP](#add-tools-and-mcp)
+9. [Multi-User and Multi-App Convention](#multi-user-and-multi-app-convention)
+10. [Adapt Beyond Next.js](#adapt-beyond-nextjs)
+11. [Verify](#verify)
 
 ## Supported Contract
 
@@ -23,8 +25,9 @@ The verified happy path provides:
 - The managed `chatLibrary` component set.
 - Managed report and presentation artifacts.
 - A server-side Responses proxy and a server-side frontend-token mint.
+- Server-side Cloud tools (artifacts, web/image search, remote MCP) and app-owned function tools via the documented loop ([Add Tools and MCP](#add-tools-and-mcp)).
 
-Do not imply that a browser-only app can safely integrate Cloud: it needs a trusted server boundary. Treat custom Cloud tool execution, historical data import, and generation with a custom component library as separate capabilities that require current first-party support. Do not assume the installed SDK exports a conversation-ownership helper; a production generation proxy needs the explicit ownership design below.
+Do not imply that a browser-only app can safely integrate Cloud: it needs a trusted server boundary. Custom tool execution is supported via the documented function-tool loop ([Add Tools and MCP](#add-tools-and-mcp)). Treat historical data import and generation with a custom component library as separate capabilities that require current first-party support. Do not assume the installed SDK exports a conversation-ownership helper; a production generation proxy needs the explicit ownership design below.
 
 ## Audit the Host
 
@@ -188,7 +191,11 @@ export async function mintCloudFrontendToken(userId: string): Promise<FrontendTo
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({ user_id: userId }),
+    body: JSON.stringify({
+      user_id: userId,
+      // Stable per-app identity — see Multi-User and Multi-App Convention.
+      ...(process.env.APP_ID ? { app_id: process.env.APP_ID } : {}),
+    }),
     cache: "no-store",
   });
 
@@ -386,6 +393,68 @@ same stable user id. Treat a scaffold's `DEMO_USER_ID` as local-demo identity
 only; replace it with real authentication, authorization, and rate limiting
 before enabling either route in production.
 
+## Add Tools and MCP
+
+OpenUI Cloud executes several tools **server-side, inside the platform** — declare them in `tools` and they run without any client code. Only `type: "function"` tools run on the app's server.
+
+| Tool | Declare as | Executes |
+|---|---|---|
+| Report/slide artifacts — generate + edit (editing auto-enabled) | `artifactTool({ artifacts: ["slides", "report"] })` | Cloud |
+| Web search | `{ type: "web_search" }` | Cloud |
+| Image search | `{ type: "image_search" }` | Cloud |
+| Remote MCP servers | `{ type: "mcp", server_label, server_url, headers? }` | Cloud |
+| App-owned function tools | `{ type: "function", name, description, parameters }` | The app's server |
+
+### Remote MCP — zero client code
+
+```ts
+tools: [
+  artifactTool({ artifacts: ["slides", "report"] }),
+  { type: "web_search" },
+  {
+    type: "mcp",
+    server_label: "deepwiki",
+    server_url: "https://mcp.deepwiki.com/mcp", // public, no auth — good smoke test
+    // headers: { Authorization: `Bearer ${process.env.MCP_TOKEN}` },
+  },
+],
+```
+
+MCP servers do not auto-attach; every request declares its own. The stream carries an `mcp_list_tools` item once per fresh server and one `mcp_call` item per invocation. A failed connection surfaces as `mcp_list_tools` with an `error` field — check for it before concluding the model "chose not to" use the server.
+
+### App-owned function tools
+
+The model emits a `function_call`; the app executes it and posts a `function_call_output` back on a continuation request, looping until the model answers. **Do not write this loop from scratch.** `runFunctionToolLoop` is not published as a package — copy the template's `src/lib/tool-loop.ts` plus `src/lib/tools/get-weather.ts` (a complete, no-auth reference tool) from a current scaffold or `packages/openui-cli/src/templates/openui-cloud/` in the openui repository, and register executors keyed by tool name. In a non-TypeScript stack, port the file and keep its two rules below intact.
+
+Two rules make any such loop safe next to Cloud's server-side tools; the template loop enforces both internally:
+
+1. **Execute only the tool names the app declared.** Cloud streams some of its own tools as real-named `function_call` items (names starting `thesys_`, e.g. the artifact program carrier) — they are already executed server-side; running or answering them corrupts the conversation.
+2. **Skip any call whose `call_id` already has a `function_call_output` on the same stream.** The platform never streams an output for a call it expects the app to execute, so an output's presence means "already settled".
+
+## Multi-User and Multi-App Convention
+
+Ask the user two questions before wiring identity; do not assume either answer:
+
+1. **"What is the app called?"** → `APP_ID`, the app's stable identity (scaffolds generate `<name>-<suffix>` into `.env`). Never derive it from the API key — key rotation would orphan every user's history — and never change it after launch.
+2. **"Single-user demo or real multi-user?"** Demo: keep the scaffold's `DEMO_USER_ID`. Multi-user: derive `user_id` from the host's server-side session; only the token route changes.
+
+How scoping works on the Cloud conversation plane:
+
+- **The fct_ token binds the scope.** Mint it with `POST /v1/frontend-tokens` `{ user_id, app_id }`. With an fct_ token, conversation create/list are locked to the token's user and app — `user_id`/`app_id` in request bodies or query are rejected, so the browser can never widen its own scope.
+- **The master key is the server plane.** Create conversations with `user_id` / `app_id` in the body; list org-wide or filtered with `GET /v1/conversations?user_id=<id>`.
+- **Ownership fields are first-class, not metadata.** The `metadata` object on conversations (create/update) and the `metadata` param on `POST /v1/embed/responses` are for the app's own data; reserved keys (`userId`, `appId`, `orgId`) are stripped server-side. Do not encode ownership in metadata.
+- **Generation still needs an ownership check.** `/api/chat` runs on the master key, so verify the untrusted `threadId` belongs to the session user ([Authorize Cloud Conversations](#authorize-cloud-conversations)).
+
+Working code: the template's `src/app/api/frontend-token/route.ts` sends `app_id` + demo identity; this runbook's mint helper and ownership designs cover the multi-user variants.
+
+Brownfield recipe (existing app, real users):
+
+1. Locate the host's server-side session lookup and its stable user id.
+2. Choose `APP_ID` with the user; put it in the host's server env.
+3. Token route: mint the fct with `{ user_id: sessionUserId, app_id: process.env.APP_ID }` — never accept `user_id` from the request body.
+4. Generation route: enforce thread ownership per [Authorize Cloud Conversations](#authorize-cloud-conversations).
+5. Verify isolation: two signed-in users see disjoint thread lists, and two apps with different `APP_ID`s on one org key see disjoint thread lists.
+
 ## Adapt Beyond Next.js
 
 Keep the same contracts in other server frameworks:
@@ -414,3 +483,6 @@ The managed client packages are React packages. Do not promise a Vue, Svelte, Re
 8. Verify ownership-check failures return a service error rather than accidentally authorizing or misreporting them as `403`.
 9. Verify a user cannot proxy generation into another user's `threadId`, then confirm two authenticated users receive isolated thread lists.
 10. With an authorized test key, stream a reply, reload the page to verify persistence, then create and open one report or presentation.
+11. Ask a weather-style question: confirm the declared function tool executes, its result reaches the model's final answer, and no `thesys_*` function_call is ever executed or answered by the app's loop.
+12. If MCP is declared, confirm `mcp_list_tools` appears on the stream and that an unreachable server surfaces its `error` instead of failing silently.
+13. Confirm two different `APP_ID`s sharing one org key produce disjoint thread lists.

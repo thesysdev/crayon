@@ -1,7 +1,9 @@
-import { useThread } from "@openuidev/react-headless";
+import { useThread, useThreadList } from "@openuidev/react-headless";
 import clsx from "clsx";
 import { ArrowUp, Square } from "lucide-react";
 import { useLayoutEffect, useRef } from "react";
+import { useLayoutContext } from "../../../context/LayoutContext";
+import { useAutoFocus } from "../../../hooks/useAutoFocus";
 import { useComposerState } from "../../../hooks/useComposerState";
 import { IconButton } from "../../IconButton";
 
@@ -20,6 +22,13 @@ export const DesktopWelcomeComposer = ({
   const isRunning = useThread((s) => s.isRunning);
   const isLoadingMessages = useThread((s) => s.isLoadingMessages);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const selectedThreadId = useThreadList((s) => s.selectedThreadId);
+  const { layout } = useLayoutContext();
+
+  useAutoFocus(inputRef, {
+    enabled: layout !== "mobile" && !isLoadingMessages,
+    focusKey: selectedThreadId,
+  });
 
   const handleSubmit = () => {
     if (!textContent.trim() || isRunning || isLoadingMessages) {
