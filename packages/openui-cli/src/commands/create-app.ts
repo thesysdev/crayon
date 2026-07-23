@@ -19,6 +19,25 @@ function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   return !["node_modules", ".next", ".turbo", "dist"].includes(top);
 }
 
+function restoreDotfiles(projectDir: string) {
+  // Templates ship `gitignore` un-dotted: npm silently strips `.gitignore`
+  // files (at any depth) from published packages, so a dotted copy never
+  // reaches the scaffold — and freshly created apps would commit `.env`.
+  // Restore the real name here instead.
+  const plain = path.join(projectDir, "gitignore");
+  if (fs.existsSync(plain)) {
+    fs.renameSync(plain, path.join(projectDir, ".gitignore"));
+  }
+}
+
+function buildAppId(name: string): string {
+  // Stable per-scaffold identity (see writeEnv). Slugified because the name is
+  // free-form and APP_ID lands in .env and ?app_id= query params; the random
+  // suffix keeps two same-named apps in one org from colliding.
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  return `${slug}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
 function rewritePackageJson(projectDir: string, name: string) {
   // package.json: set the project name and de-vendor monorepo-local deps
   // (workspace:* / file: / catalog:) to the published "latest". link: deps are
@@ -174,6 +193,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       recursive: true,
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
+    restoreDotfiles(targetDir);
     rewritePackageJson(targetDir, name);
     // The template lockfile enables npm ci; other managers should resolve from package.json.
     if (packageManager.name !== "npm") {
@@ -189,7 +209,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     ai_setup: aiSetup,
   });
 
-  await writeEnv(targetDir, envResult);
+  await writeEnv(targetDir, envResult, template === "openui-cloud" ? buildAppId(name) : undefined);
   telemetry.capture("cli_env_resolved", {
     ...createFunnelProps("env_written"),
     template,
@@ -270,9 +290,14 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   );
 }
 
-async function writeEnv(targetDir: string, result: EnvResult): Promise<void> {
-  if (!result.envContent) return;
-  await fs.promises.writeFile(path.join(targetDir, ".env"), result.envContent);
+async function writeEnv(targetDir: string, result: EnvResult, appId?: string): Promise<void> {
+  // APP_ID is the scaffold's stable identity: the frontend-token route sends
+  // it as `app_id`, so every conversation this app creates is bound to it and
+  // apps sharing one org API key stay isolated from each other. It must stay
+  // stable for the app's lifetime — regenerating it orphans existing threads.
+  const content = `${result.envContent ?? ""}${appId ? `APP_ID=${appId}\n` : ""}`;
+  if (!content) return;
+  await fs.promises.writeFile(path.join(targetDir, ".env"), content);
 }
 
 async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
