@@ -1,7 +1,7 @@
 import shadcnLibraryConfig from "@/generated/library-spec.json";
 import { envOr, requiredEnv } from "@/lib/env";
 import { shadcnPromptOptions } from "@/lib/shadcn-genui/metadata";
-import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
+import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
 import OpenAI from "openai";
 import type { ResponseInputItem } from "openai/resources/responses/responses";
 
@@ -208,9 +208,9 @@ export async function POST(req: Request) {
           { type: "image_search" },
           ...functionTools,
         ],
-        instructions: createResponsesInstructions({
-          chatLibrary: shadcnLibraryConfig,
-          systemPromptOptions: shadcnPromptOptions,
+        instructions: generateSystemPrompt({
+          library: shadcnLibraryConfig,
+          promptOptions: shadcnPromptOptions,
         }),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
