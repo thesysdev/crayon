@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
   const client = new OpenAI({
     // responses.create() POSTs to `${baseURL}/responses` → /v1/embed/responses.
-    baseURL: `${envOr("OPENUI_CLOUD_BASE_URL", "https://api.thesys.dev")}/v1/embed`,
+    baseURL: `https://api.thesys.dev/v1/embed`,
     apiKey: requiredEnv("THESYS_API_KEY"), // sent as Authorization: Bearer …
   });
 

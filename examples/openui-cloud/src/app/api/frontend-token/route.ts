@@ -1,17 +1,14 @@
 import { envOr, requiredEnv } from "@/lib/env";
 
 export async function POST() {
-  const upstream = await fetch(
-    `${envOr("OPENUI_CLOUD_BASE_URL", "https://api.thesys.dev")}/v1/frontend-tokens`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${requiredEnv("THESYS_API_KEY")}`,
-      },
-      body: JSON.stringify({ user_id: envOr("DEMO_USER_ID", "demo-user") }),
+  const upstream = await fetch(`https://api.thesys.dev/v1/frontend-tokens`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${requiredEnv("THESYS_API_KEY")}`,
     },
-  );
+    body: JSON.stringify({ user_id: envOr("DEMO_USER_ID", "demo-user") }),
+  });
 
   if (!upstream.ok) {
     const errText = await upstream
