@@ -31,7 +31,7 @@ import {
 } from "recharts";
 import { z } from "zod";
 
-import { buildChartData, buildSliceData, hasAllProps } from "../helpers";
+import { buildChartData, buildSliceData, hasAllProps } from "./helpers";
 
 const COLORS = [
   "var(--chart-1)",

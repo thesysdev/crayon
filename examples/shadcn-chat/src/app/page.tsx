@@ -1,40 +1,59 @@
 "use client";
+import "@openuidev/react-ui/components.css";
+import "@openuidev/thesys/styles.css";
 
 import { useTheme } from "@/hooks/use-system-theme";
 import { shadcnChatLibrary } from "@/lib/shadcn-genui";
 import {
-  AgentInterface,
-  openAIAdapter,
-  openAIMessageFormat,
+  defineArtifactCategories,
+  openAIConversationMessageFormat,
+  openAIResponsesAdapter,
   type ChatLLM,
-} from "@openuidev/react-ui";
-import { useMemo } from "react";
+} from "@openuidev/react-headless";
+import { AgentInterface } from "@openuidev/react-ui";
+import {
+  presentationArtifactRenderer,
+  reportArtifactRenderer,
+  useOpenuiCloudStorage,
+} from "@openuidev/thesys";
+
+const { artifactRenderers, artifactCategories } = defineArtifactCategories([
+  { name: "Presentations", renderers: [presentationArtifactRenderer] },
+  { name: "Reports", renderers: [reportArtifactRenderer] },
+]);
+
+const llm: ChatLLM = {
+  send: async ({ threadId, messages, signal }) => {
+    const latest = messages.slice(-1);
+    return fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId, input: openAIConversationMessageFormat.toApi(latest) }),
+      signal,
+    });
+  },
+  streamProtocol: openAIResponsesAdapter(),
+};
 
 export default function Page() {
   const mode = useTheme();
-
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: ({ messages, signal }) =>
-        fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: openAIMessageFormat.toApi(messages),
-          }),
-          signal,
-        }),
-      streamProtocol: openAIAdapter(),
-    }),
-    [],
-  );
+  const storage = useOpenuiCloudStorage({
+    token: "/api/frontend-token",
+    apiBaseUrl: "http://localhost:3102",
+    features: { artifact: true },
+  });
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       <AgentInterface
+        storage={storage}
         llm={llm}
         componentLibrary={shadcnChatLibrary}
+        artifactRenderers={artifactRenderers}
+        artifactCategories={artifactCategories}
         agentName="shadcn/ui Chat"
+        scrollVariant="always"
+        scrollOnLoad={false}
         theme={{ mode }}
         starterVariant="short"
         starters={[
@@ -64,14 +83,12 @@ export default function Page() {
               "Generate a team standup board with a sprint progress bar, a task table (5 members), a warning alert for blockers, an Accordion (Yesterday, Today, Blockers), and a DialogBlock that opens sprint metrics with a PieChart and summary table. Add follow-ups.",
           },
           {
-            displayText: "Recipe card",
-            prompt:
-              "Build a recipe card for Spicy Thai Basil Chicken with tags, Tabs (Ingredients table, Instructions accordion with 5 steps, Nutrition donut PieChart + table), a blockquote chef's tip, and buttons with a DialogBlock for the full recipe. Add follow-ups.",
+            displayText: "Quarterly deck",
+            prompt: "Create a short presentation about our Q2 results with three slides.",
           },
           {
-            displayText: "Chart showcase",
-            prompt:
-              "Build a 'Global Tech Industry Report 2025' with tags and Tabs containing six chart types: a grouped BarChart (quarterly revenue, 3 series), a LineChart (monthly trends, 2 series), an AreaChart (yearly adoption, 2 series), a donut PieChart (market share, 6 slices), a RadarChart (developer skills, 2 series), and a ScatterChart (funding vs revenue, 2 series with labeled points). Below add a summary table, a RadialChart for industry goals, and follow-ups.",
+            displayText: "Market report",
+            prompt: "Write a brief market-analysis report on the EV sector.",
           },
         ]}
       />

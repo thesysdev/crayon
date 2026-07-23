@@ -4,7 +4,7 @@ import { Tabs as ShadcnTabs, TabsContent, TabsList, TabsTrigger } from "@/compon
 import { defineComponent } from "@openuidev/react-lang";
 import * as React from "react";
 import { z } from "zod";
-import { ContentChildUnion } from "../unions";
+import { ContentChildUnion } from "./unions";
 
 const TabItemSchema = z.object({
   value: z.string(),
