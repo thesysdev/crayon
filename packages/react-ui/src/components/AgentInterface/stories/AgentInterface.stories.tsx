@@ -2,8 +2,10 @@ import type { Message } from "@openuidev/react-headless";
 import {
   ArrowLeft,
   BookOpen,
+  FileText,
   HelpCircle,
   MessageSquare,
+  Presentation as PresentationIcon,
   Settings,
   Share,
   Sparkles,
@@ -12,6 +14,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { makeMockLLM, makeMockStorage, mockSSEResponse } from "../../../__test-helpers/mockChat";
+import type { PrefillChip } from "../../../types/PrefillChip";
 import { Button } from "../../Button";
 import { IconButton } from "../../IconButton";
 import { AgentInterface } from "../AgentInterface";
@@ -113,6 +116,41 @@ const LONG_STARTERS = [
   },
 ];
 
+const PREFILL_CHIPS: PrefillChip[] = [
+  {
+    displayText: "Create a presentation",
+    prompt: "Create a presentation about ",
+    icon: <PresentationIcon size={16} />,
+    starters: [
+      { displayText: "Our Q2 business review", prompt: "our Q2 business review", icon: <></> },
+      { displayText: "A product launch plan", prompt: "a product launch plan", icon: <></> },
+      {
+        displayText: "The future of electric vehicles",
+        prompt: "the future of electric vehicles",
+        icon: <></>,
+      },
+    ],
+  },
+  {
+    displayText: "Write a report",
+    prompt: "Write a report on ",
+    icon: <FileText size={16} />,
+    starters: [
+      { displayText: "The EV market in 2026", prompt: "the EV market in 2026", icon: <></> },
+      {
+        displayText: "Our quarterly performance",
+        prompt: "our quarterly performance",
+        icon: <></>,
+      },
+      {
+        displayText: "Enterprise adoption of AI",
+        prompt: "enterprise adoption of AI",
+        icon: <></>,
+      },
+    ],
+  },
+];
+
 export default {
   title: "Components/AgentInterface",
   tags: ["dev"],
@@ -210,6 +248,27 @@ export const WithWelcome = {
         description="Everything you'll need, in one place"
         image={{ url: logoUrl }}
         glowAnimation={glowAnimation}
+      />
+    </AgentInterface>
+  ),
+};
+
+/** Welcome with prefill chips — chip click prefills the composer; contextual starters append. */
+export const WelcomeWithPrefillChips = {
+  render: () => (
+    <AgentInterface
+      storage={emptyStorage}
+      llm={echoLLM}
+      logoUrl={logoUrl}
+      agentName="OpenUI Assistant"
+      starters={LONG_STARTERS}
+      starterVariant="long"
+    >
+      <AgentInterface.Welcome
+        title="Good to see you"
+        description="What's on your mind today?"
+        prefillChips={PREFILL_CHIPS}
+        glowAnimation
       />
     </AgentInterface>
   ),
