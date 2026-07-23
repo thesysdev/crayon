@@ -23,7 +23,7 @@ export function useComparisonChatLLM(
           body: JSON.stringify({
             messages: openAIMessageFormat.toApi(messages),
             responseMode,
-            comparisonMode: true,
+            toolNames: [],
           }),
           signal,
         });

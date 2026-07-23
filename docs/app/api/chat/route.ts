@@ -18,11 +18,14 @@ Return only Markdown content. Do not emit OpenUI Lang, component syntax, JSON UI
 }
 
 type ResponseMode = "markdown" | "openui";
+const TOOL_NAMES = ["get_weather", "get_stock_price", "search_web"] as const;
+type ToolName = (typeof TOOL_NAMES)[number];
+const TOOL_NAME_SET = new Set<string>(TOOL_NAMES);
 
 interface ChatRequestBody {
   messages: unknown[];
   responseMode?: ResponseMode;
-  comparisonMode?: boolean;
+  toolNames?: ToolName[];
 }
 
 function invalidRequest(message: string) {
@@ -34,7 +37,7 @@ function parseRequestBody(body: unknown): ChatRequestBody | Response {
     return invalidRequest("Request body must be a JSON object");
   }
 
-  const { messages, responseMode, comparisonMode } = body as Record<string, unknown>;
+  const { messages, responseMode, toolNames } = body as Record<string, unknown>;
 
   if (!Array.isArray(messages)) {
     return invalidRequest("messages must be an array");
@@ -44,14 +47,18 @@ function parseRequestBody(body: unknown): ChatRequestBody | Response {
     return invalidRequest('responseMode must be either "markdown" or "openui"');
   }
 
-  if (comparisonMode !== undefined && typeof comparisonMode !== "boolean") {
-    return invalidRequest("comparisonMode must be a boolean");
+  if (
+    toolNames !== undefined &&
+    (!Array.isArray(toolNames) ||
+      !toolNames.every((toolName) => typeof toolName === "string" && TOOL_NAME_SET.has(toolName)))
+  ) {
+    return invalidRequest(`toolNames must contain only: ${TOOL_NAMES.join(", ")}`);
   }
 
   return {
     messages,
     responseMode: responseMode as ResponseMode | undefined,
-    comparisonMode: comparisonMode as boolean | undefined,
+    toolNames: toolNames as ToolName[] | undefined,
   };
 }
 
@@ -270,7 +277,11 @@ export async function POST(req: NextRequest) {
     return parsedBody;
   }
 
-  const { messages, responseMode = "openui", comparisonMode = false } = parsedBody;
+  const { messages, responseMode = "openui", toolNames } = parsedBody;
+  const selectedTools =
+    toolNames === undefined
+      ? tools
+      : tools.filter((tool) => toolNames.includes(tool.function.name as ToolName));
 
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -305,7 +316,7 @@ export async function POST(req: NextRequest) {
       role: "system" as const,
       content:
         responseMode === "markdown"
-          ? createMarkdownSystemPrompt(!comparisonMode)
+          ? createMarkdownSystemPrompt(selectedTools.length > 0)
           : openUiSystemPrompt,
     },
     ...cleanMessages,
@@ -339,25 +350,24 @@ export async function POST(req: NextRequest) {
       let callIdx = 0;
       let resultIdx = 0;
 
-      // Markdown and OpenUI OSS comparisons intentionally run without tools.
-      // Other /api/chat consumers retain the existing tool-enabled behavior.
-      const runner: any = comparisonMode
-        ? client.chat.completions.stream(
-            {
-              model: MODEL,
-              messages: chatMessages,
-            },
-            { signal: req.signal },
-          )
-        : (client.chat.completions as any).runTools(
-            {
-              model: MODEL,
-              messages: chatMessages,
-              tools,
-              stream: true,
-            },
-            { signal: req.signal },
-          );
+      const runner: any =
+        selectedTools.length === 0
+          ? client.chat.completions.stream(
+              {
+                model: MODEL,
+                messages: chatMessages,
+              },
+              { signal: req.signal },
+            )
+          : (client.chat.completions as any).runTools(
+              {
+                model: MODEL,
+                messages: chatMessages,
+                tools: selectedTools,
+                stream: true,
+              },
+              { signal: req.signal },
+            );
       activeRunner = runner;
 
       const handleAbort = () => {
@@ -372,7 +382,7 @@ export async function POST(req: NextRequest) {
         close();
       };
 
-      if (!comparisonMode) {
+      if (selectedTools.length > 0) {
         runner.on("functionToolCall", (fc: any) => {
           const id = `tc-${callIdx}`;
           pendingCalls.push({ id, name: fc.name, arguments: fc.arguments });
