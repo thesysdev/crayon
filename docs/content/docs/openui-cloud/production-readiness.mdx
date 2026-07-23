@@ -1,0 +1,34 @@
+---
+title: Production readiness
+description: "The production layer of OpenUI Cloud — model access and fallbacks, output validation and correction, and conversation persistence."
+---
+
+OpenUI Cloud runs the production layers around generative UI, so reliability work that would otherwise live in the application is handled by the platform.
+
+## Reliable model access
+
+OpenUI Cloud provides access to models from multiple providers through its APIs, and keeps requests succeeding when a model or provider is unavailable.
+
+- **Model access across providers** — applications reach models from supported providers through OpenUI Cloud's APIs. Provider accounts, credentials, and connections are managed by Cloud, and model usage is billed at cost. The application names a model per request, so switching models requires no application change.
+- **Automatic fallback** — when a selected model or its provider is unavailable, Cloud reroutes the request to a fallback without application involvement. Requests continue to succeed during a provider outage or slowdown.
+- **Output normalization** — generated output is normalized across providers and model versions, so an interface behaves consistently when the underlying model changes. Switching models requires no re-testing of the interface and no change to the component library.
+
+## Output validation & correction
+
+OpenUI Cloud validates every model response before it renders, and corrects invalid output in real time.
+
+- **Validation against the component library** — each response is checked against the component library it was generated for, the built-in library or one the application registered. Validation detects malformed structures, nonexistent components, and unrenderable content.
+- **Real-time correction** — correction happens in the streaming path, not as a retry the user waits through. Invalid output is corrected before it leaves Cloud, so it does not reach the interface.
+- **Consistency across models** — validation and correction run server-side, so behavior stays consistent as model providers and versions change underneath the application. Provider-specific quirks are normalized before rendering.
+
+## Conversation persistence
+
+OpenUI Cloud stores conversations and artifacts server-side, so applications run no database or storage layer for them.
+
+- **Automatic thread storage** — each turn's messages, actions, and outputs attach to a conversation thread. Threads can be created, read, renamed, deleted, and listed.
+- **Artifact storage and versioning** — generated slides and reports are stored alongside their conversations, and every version is kept.
+- **Reload on return** — AgentInterface reloads threads and artifacts when the application loads. Returning users find their conversations and artifacts intact.
+
+## Observability
+
+Built-in visibility into how models and rendered interfaces behave in production — render success, latency, and cost — is *coming soon*.

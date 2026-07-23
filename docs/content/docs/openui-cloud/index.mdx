@@ -3,9 +3,7 @@ title: Introduction
 description: "The managed API for generative UI in production."
 ---
 
-import { Browsers, Eye, Palette, Presentation, SealCheck, ShieldCheck } from "@phosphor-icons/react/dist/ssr";
-
-OpenUI Cloud is the managed layer that runs OpenUI applications in production. It provides everything a generative UI application needs: the LLM APIs of leading providers with automatic fallbacks, conversation and artifact storage, validation that catches broken model output before it renders, and complete artifacts beyond chat — slides and reports. Open-source OpenUI covers the rendering itself; the layers around it are what Cloud runs, so teams ship the product rather than operating the infrastructure.
+OpenUI Cloud is the managed layer that runs OpenUI applications in production. Open-source OpenUI and Cloud share the same foundation — OpenUI Lang and the rendering model are identical in both — and Cloud adds the layers around it: model access with automatic fallbacks, output validation, artifact generation, and conversation persistence. Teams ship the product rather than operating the infrastructure.
 
 <video
   src="/videos/agent/agent-interface-hero.mp4"
@@ -16,53 +14,55 @@ OpenUI Cloud is the managed layer that runs OpenUI applications in production. I
   className="w-full rounded-lg border"
 />
 
-## Features
+## Generative UI for agents
 
-<Cards>
-  <Card icon={<Browsers />} title="Production-grade rendering" href="/docs/openui-cloud/build/chat">
-    Tested, responsive components that render consistently across browsers, devices, and screen sizes.
-  </Card>
-  <Card icon={<Presentation />} title="Editable artifact generation" href="/docs/openui-cloud/build/slides">
-    Generate complete artifacts like slides and reports from a conversation.
-  </Card>
-  <Card icon={<Palette />} title="Bring your design system">
-    Apply your fonts, colors, spacing, and component styles across every generated interface.
-  </Card>
-  <Card icon={<SealCheck />} title="Output validation" href="/docs/openui-cloud/production/output-validation">
-    Detect and correct invalid model output before it turns into broken UI.
-  </Card>
-  <Card icon={<ShieldCheck />} title="Model & provider resilience" href="/docs/openui-cloud/production/model-access">
-    Keep generated UI working across model quirks, upgrades, slowdowns, and provider failures.
-  </Card>
-  <Card icon={<Eye />} title="Observability & audit trail">
-    Visibility into performance, failures, cost, and what was rendered across a deployment. <em>Coming soon.</em>
-  </Card>
-</Cards>
+The agent composes the interface for each response — a form when it needs input, the right chart for the data, tabs and cards for long answers — validated, streamed, and rendered live in the application.
 
-## Why OpenUI Cloud
+### Built-in component library
 
-Open-source OpenUI and OpenUI Cloud share the same foundation: OpenUI Lang and the rendering model are identical in both. The difference is operational — with open source, the production layers are built and run by the application team; with Cloud, they are managed. What follows is what that management covers.
+[Production-grade components](/docs/openui-cloud/build/chat) for the interfaces agents build: forms and inputs, interactive charts, layout components for organizing content, and actions that feed back into the conversation.
 
-### Reliable model access
+<div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+  <video src="/videos/agent/generative-ui-form-interaction.mp4" poster="/images/openui-cloud/posters/generative-ui-form-interaction.jpg" autoPlay loop muted playsInline className="w-full rounded-lg border" />
+  <video src="/videos/openui-cloud/chat/charts-visualizations.mp4" poster="/images/openui-cloud/posters/charts-visualizations.jpg" autoPlay loop muted playsInline className="w-full rounded-lg border" />
+  <video src="/videos/openui-cloud/chat/content-organization.mp4" poster="/images/openui-cloud/posters/content-organization.jpg" autoPlay loop muted playsInline className="w-full rounded-lg border" />
+  <video src="/videos/openui-cloud/chat/buttons-and-actions.mp4" poster="/images/openui-cloud/posters/buttons-and-actions.jpg" autoPlay loop muted playsInline className="w-full rounded-lg border" />
+</div>
 
-The LLM APIs of leading providers are available through OpenUI Cloud's APIs, billed at cost. Provider accounts, credentials, and integrations are handled by Cloud, and when a model or LLM provider becomes unavailable, requests reroute to a fallback automatically — the application stays up. For details, see [Reliable model access](/docs/openui-cloud/production/model-access).
+### Bring your own component library
 
-### Output validation & correction
+Applications can bring their own component library — their design system and custom components — and Cloud's production features apply to it: output validation, model reliability, and consistent behavior across models and providers.
 
-Models produce malformed responses. Cloud detects invalid output and corrects it in real time, in the stream, so broken model output never reaches the interface. For details, see [Output validation & correction](/docs/openui-cloud/production/output-validation).
+## Slides
 
-### Conversation & artifact storage
+Complete presentations generated from a conversation. Every slide renders from a professionally designed [slide template](/docs/openui-cloud/build/slides), decks stay editable through conversation, and each exports through a print-ready layout.
 
-Cloud persists conversations, actions, and generated artifacts automatically — no database or storage layer on the application side. Returning users find their threads and artifacts intact.
+<div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+  <img src="/images/openui-cloud/slides/slide_3.png" alt="Dramatic title slide" className="w-full rounded-lg border" />
+  <img src="/images/openui-cloud/slides/slide_9.png" alt="Insight grid slide" className="w-full rounded-lg border" />
+  <img src="/images/openui-cloud/slides/slide_15.png" alt="Chart with context slide" className="w-full rounded-lg border" />
+  <img src="/images/openui-cloud/slides/slide_23.png" alt="Personnel showcase slide" className="w-full rounded-lg border" />
+</div>
 
-### Slides, reports and dashboards
+## Reports
 
-Cloud generates complete presentations, reports, and interactive dashboards out of the box — designed templates, interactive viewers, and print-ready layouts for export. Building artifact types from scratch, with their templates, renderers, and storage, is not required. For details, see [Slides](/docs/openui-cloud/build/slides) and [Reports](/docs/openui-cloud/build/reports).
+Complete structured documents — front pages, metrics, charts, tables, and prose — composed from designed [pages and content blocks](/docs/openui-cloud/build/reports), versioned automatically, with a reading view and a print-ready export.
 
-### Production-grade UI components
+<video
+  src="/videos/openui-cloud/reports/full-report.mp4"
+  poster="/images/openui-cloud/posters/full-report.jpg"
+  autoPlay
+  loop
+  muted
+  playsInline
+  className="w-full rounded-lg border"
+/>
 
-Generated interfaces render with production-tested, responsive components built for generative UI, consistent across browsers, devices, and screen sizes — beyond the basic components included with open source. For details, see [Generative UI for agents](/docs/openui-cloud/build/chat).
+## Production ready
 
-### Observability
+- **[Model access & fallbacks](/docs/openui-cloud/production-readiness#reliable-model-access)** — models from supported providers through Cloud's APIs, billed at cost; requests reroute automatically when a model or provider is unavailable.
+- **[Output validation & correction](/docs/openui-cloud/production-readiness#output-validation--correction)** — every response validated against its component library and corrected in the stream; broken model output does not reach the interface.
+- **[Conversation persistence](/docs/openui-cloud/production-readiness#conversation-persistence)** — threads and artifacts stored and versioned automatically; no database on the application side.
+- **Observability** — visibility into render success, latency, and cost across a deployment. *Coming soon.*
 
-Cloud will provide built-in visibility into how models and rendered interfaces behave in production — *coming soon*.
+To scaffold a working application, see [Get Started](/docs/openui-cloud/get-started). For the architecture, see [How it works](/docs/openui-cloud/how-it-works).
