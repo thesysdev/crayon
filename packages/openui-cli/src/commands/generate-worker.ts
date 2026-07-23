@@ -191,7 +191,7 @@ async function main(): Promise<void> {
     output = JSON.stringify({ ...library.toSpec(), schema: library.toJSONSchema() }, null, 2);
   } else if (jsonSchema) {
     // Output a PromptSpec-compatible JSON with component signatures, groups, and JSON schema.
-    output = JSON.stringify(library.toSpec(), null, 2);
+    output = JSON.stringify(library.toJSONSchema(), null, 2);
   } else {
     // This behaviour will be deprecated in next major release
     // and only export standardised payloads

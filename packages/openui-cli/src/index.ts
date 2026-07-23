@@ -6,7 +6,7 @@ import * as path from "node:path";
 import { Command } from "commander";
 
 import { runCreateApp } from "./commands/create-app";
-import { runGenerate } from "./commands/generate";
+import { GenerateOptions, runGenerate } from "./commands/generate";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
 import { resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
@@ -92,81 +92,33 @@ program
     "--json-schema",
     "Output JSON schema with component signatures for standalone prompt generation",
   )
+  .option("--spec", "Generate a serialized library spec JSON (signatures, groups, JSON schema)")
   .option("--export <name>", "Name of the export to use (auto-detected by default)")
   .option(
     "--prompt-options <name>",
     "Name of the PromptOptions export to use (auto-detected by default)",
   )
   .option("--no-interactive", "Fail with error if required args are missing")
-  .action(
-    async (
-      entry: string | undefined,
-      options: {
-        out?: string;
-        jsonSchema?: boolean;
-        export?: string;
-        promptOptions?: string;
-        interactive: boolean;
-      },
-    ) => {
-      try {
-        const args = await resolveArgs(
-          {
-            entry: entry
-              ? { value: entry }
-              : {
-                  prompt: { type: "input", message: "Entry file path?" },
-                  required: true,
-                },
-          },
-          options.interactive,
-        );
+  .action(async (entry: string | undefined, options: GenerateOptions) => {
+    try {
+      const args = await resolveArgs(
+        {
+          entry: entry
+            ? { value: entry }
+            : {
+                prompt: { type: "input", message: "Entry file path?" },
+                required: true,
+              },
+        },
+        options.interactive,
+      );
 
-        await runGenerate((args as { entry: string }).entry, options);
-      } catch (e) {
-        handleCliError(e, "cli_generate_failed");
-      } finally {
-        await telemetry.shutdown();
-      }
-    },
-  );
-
-program
-  .command("generate-spec")
-  .description("Generate a serialized library spec JSON (signatures, groups, JSON schema)")
-  .argument("[entry]", "Path to a file that exports a createLibrary() result")
-  .option("-o, --out <file>", "Write output to a file instead of stdout")
-  .option("--export <name>", "Name of the export to use (auto-detected by default)")
-  .option("--no-interactive", "Fail with error if required args are missing")
-  .action(
-    async (
-      entry: string | undefined,
-      options: {
-        out?: string;
-        export?: string;
-        interactive: boolean;
-      },
-    ) => {
-      try {
-        const args = await resolveArgs(
-          {
-            entry: entry
-              ? { value: entry }
-              : {
-                  prompt: { type: "input", message: "Entry file path?" },
-                  required: true,
-                },
-          },
-          options.interactive,
-        );
-
-        await runGenerate((args as { entry: string }).entry, { ...options, spec: true });
-      } catch (e) {
-        handleCliError(e, "cli_generate_spec_failed");
-      } finally {
-        await telemetry.shutdown();
-      }
-    },
-  );
+      await runGenerate((args as { entry: string }).entry, options);
+    } catch (e) {
+      handleCliError(e, "cli_generate_failed");
+    } finally {
+      await telemetry.shutdown();
+    }
+  });
 
 program.parse();
