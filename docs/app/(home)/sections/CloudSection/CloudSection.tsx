@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArrowRight,
   ArrowUpRight,
   Browsers,
   Eye,
@@ -111,12 +112,21 @@ export function CloudSection() {
             }
             subtitle="Production-ready Generative UI"
           >
-            <BevelButton
-              className={styles.headerCta}
-              href="/docs/agent/getting-started/openui-cloud"
-              label="View Documentation"
-              badge={<ArrowUpRight size={16} weight="bold" />}
-            />
+            <div className={styles.headerCtas}>
+              <BevelButton
+                className={styles.headerPrimaryCta}
+                href="/compare"
+                label="Try Demo"
+                badge={<ArrowRight size={16} weight="bold" />}
+              />
+              <BevelButton
+                variant="dark"
+                className={styles.headerSecondaryCta}
+                href="/docs/agent/getting-started/openui-cloud"
+                label="View Documentation"
+                badge={<ArrowUpRight size={16} weight="bold" />}
+              />
+            </div>
           </SectionHeader>
         </div>
 

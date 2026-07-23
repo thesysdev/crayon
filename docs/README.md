@@ -17,11 +17,16 @@ pnpm --filter @openuidev/docs dev
 pnpm --filter @openuidev/docs build
 ```
 
-### `/chat` demo configuration
+### Chat and comparison demo configuration
 
-The standalone `/chat` page always starts in **OpenUI OSS** mode. Its selected mode is not
-stored across reloads. Live OSS generation uses the existing server-side
-`OPENROUTER_API_KEY`.
+`/chat` remains the standalone OpenUI OSS and Cloud chat and starts in **OpenUI OSS** mode. Its
+selected mode is not stored across reloads.
+
+`/compare` compares two visible response modes at a time and defaults to **Rendered Markdown vs
+OpenUI Cloud**. Use its page-level switcher to show **Markdown vs OSS** or **OSS vs Cloud**. The
+selected pair is stored in the `pair` query parameter. All three comparison providers remain
+mounted and receive each shared prompt; switching the visible pair resets the demo. Markdown and
+OSS generation use the existing server-side `OPENROUTER_API_KEY`.
 
 OpenUI Cloud requires the following server-side variables. If either is missing, Cloud requests
 show the unavailable state at runtime:
@@ -32,8 +37,8 @@ THESYS_API_KEY=your-cloud-key
 ```
 
 Do not expose `THESYS_API_KEY` through a `NEXT_PUBLIC_*` variable. The browser generates an
-anonymous user ID, retains it in `sessionStorage`, and sends it with Cloud requests so persisted
-conversations remain scoped to that tab session.
+anonymous user ID, retains it in `sessionStorage`, and sends it with Cloud requests. Active
+comparison threads are not restored after a refresh.
 
 The Cloud feature flag is intentionally fail-closed. Keep it disabled on public deployments until
 a shared, cross-instance session-and-IP rate limiter, Cloud organization budgets/token scopes, and
@@ -71,6 +76,8 @@ docs/
 │   │   └── theme-builder/                  # Theme creator interface
 │   │
 │   ├── blog/                               # Blog pages
+│   ├── chat/                               # Standalone OpenUI OSS and Cloud chat
+│   ├── compare/                            # Pairwise Markdown, OSS, and Cloud comparison
 │   ├── demo/                               # Demo route
 │   ├── playground/                         # Interactive playground
 │   │

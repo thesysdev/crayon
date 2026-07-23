@@ -2,14 +2,14 @@
 
 ## File Map
 
-| File                | Purpose                                                                                                                                                    |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ThemeProvider.tsx` | React component, `ThemeContext`, `InternalContext` (nesting detection), `useTheme` hook. Injects `--openui-*` vars into `<head>` via `useInsertionEffect`. |
-| `types.ts`          | TypeScript interfaces: `Theme`, `ColorTheme`, `LayoutTheme`, `TypographyTheme`, `EffectTheme`, `ChartColorPalette`.                                        |
-| `defaultTheme.ts`   | Builds `defaultLightTheme` / `defaultDarkTheme` (frozen) from the swatch system. Contains `createColorTheme()` and all layout/typography/shadow defaults.  |
-| `swatches.ts`       | 18 oklch color families x 14 shades. Exports `swatch()`, `withAlpha()`, `swatchToken()`, `swatchTokens`.                                                   |
-| `utils.ts`          | Exports `camelToKebab`, `themeToCssVars`, `createTheme` (dev-mode typo detection with Levenshtein distance suggestions).                                   |
-| `index.ts`          | Barrel re-exports from all the above files.                                                                                                                |
+| File                | Purpose                                                                                                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ThemeProvider.tsx` | React component, `ThemeContext`, `InternalContext` (nesting detection), `useTheme` hook. Injects `--openui-*` vars into `<head>` via `useInsertionEffect`.                     |
+| `types.ts`          | TypeScript interfaces: `Theme`, `ColorTheme`, `LayoutTheme`, `TypographyTheme`, `EffectTheme`, `ChartColorPalette`.                                                            |
+| `defaultTheme.ts`   | Builds `defaultLightTheme` / `defaultDarkTheme` (frozen) from the swatch system. Contains `createColorTheme()` and all layout/typography/shadow defaults.                      |
+| `swatches.ts`       | 18 oklch color families x 14 shades. Exports `swatch()`, `withAlpha()`, `swatchToken()`, `swatchTokens`.                                                                       |
+| `utils.ts`          | Exports `camelToKebab`, `themeToCssVars`, `createTheme` (dev-mode typo detection with Levenshtein distance suggestions), and `KNOWN_THEME_KEYS` (shared validator allow-list). |
+| `index.ts`          | Barrel re-exports from all the above files.                                                                                                                                    |
 
 ## Architecture
 
@@ -43,6 +43,8 @@ Only **2 files** need editing — the runtime walker (`themeToCssVars`) and the 
 2. **`defaultTheme.ts`** — set the default value inside `createColorTheme()` (or `layoutTheme`, `typographyTheme`, etc.).
 
 Run `pnpm build` (or `pnpm generate:css-utils`) to regenerate `cssUtils.scss` with the new token and its fallback.
+
+**Exception — chart palette keys** (`string[]`, no defaults): the validator allow-list is `Object.keys(defaultLightTheme)` + `CHART_PALETTE_KEYS`. The single source is the `CHART_PALETTE_KEYS` `as const` array in `types.ts` — the `ChartColorPalette` type is derived from it, so a new palette is added in exactly one place and type/runtime drift is impossible by construction. Do **not** give palettes defaults in `defaultTheme.ts`: a default would take precedence over the per-chart `theme` prop fallback in `useChartPalette`.
 
 ### Naming Convention
 
