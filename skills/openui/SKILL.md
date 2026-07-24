@@ -31,9 +31,9 @@ Do not use this skill for general React UI questions, generic design system advi
 | `@openuidev/react-headless` | Bring-your-own React chat state, hooks, storage/LLM adapter primitives, streaming adapters, message converters, and artifact primitives without OpenUI's visual components |
 | `@openuidev/react-email` | React Email component library and prompt options for generated email |
 | `@openuidev/browser-bundle` | CDN/iframe/no-build React renderer bundle exposed as `window.__OpenUI` |
-| `@openuidev/cli` | `openui create` scaffolding and `openui generate` prompt/schema generation from a library export |
+| `@openuidev/cli` | `openui create` scaffolding and `openui generate` system prompt + library spec generation from a library export |
 | `@openuidev/thesys` | Version-sensitive client-side OpenUI Cloud helpers such as `useOpenuiCloudStorage()`, Cloud component sets, and Cloud artifact components/renderers/categories; verify current exports |
-| `@openuidev/thesys-server` | Version-sensitive server-side OpenUI Cloud helpers such as `artifactTool` and `createResponsesInstructions` for Cloud-backed `/api/chat` routes |
+| `@openuidev/thesys-server` | Version-sensitive server-side OpenUI Cloud helpers such as `artifactTool` and `generateSystemPrompt` (`createResponsesInstructions` is its deprecated alias) for Cloud-backed `/api/chat` routes |
 
 Choose the package for the target runtime. For backend-only parsing or prompt/schema generation, prefer `@openuidev/lang-core` or the CLI instead of pulling in a UI framework.
 
@@ -117,7 +117,7 @@ Version-sensitive: verify exact Cloud template env vars, `@openuidev/thesys*` ex
 - Store `THESYS_API_KEY` server-side only, typically in `.env.local`.
 - The Cloud CLI template also uses `OPENUI_MODEL` in `provider/model` form and `DEMO_USER_ID` for the demo user identity.
 - Keep Cloud calls behind server routes such as `/api/chat` and `/api/frontend-token`; never expose the server key to the browser.
-- In the `openui-cloud` template, `/api/chat` uses `@openuidev/thesys-server` helpers such as `artifactTool` and `createResponsesInstructions`.
+- In the `openui-cloud` template, `/api/chat` uses `@openuidev/thesys-server` helpers such as `artifactTool` and `generateSystemPrompt`.
 - `AgentInterface` connects to Cloud with `llm` and `storage` props. `llm` points to an app route that proxies Cloud's Responses endpoint, usually with `openAIResponsesAdapter()` and `openAIConversationMessageFormat`. `storage` uses `useOpenuiCloudStorage()` from `@openuidev/thesys` with a short-lived frontend token.
 - Cloud-provided component sets, artifact renderers, and categories come from `@openuidev/thesys`.
 - Generate keys in the Thesys console: `https://console.thesys.dev/keys`.
@@ -233,11 +233,25 @@ OpenUI publishes first-party examples at `https://github.com/thesysdev/openui/tr
 - Third-party UI/component examples: `material-ui-chat`, `shadcn-chat`, `form-generator`, `hands-on-table-chat`.
 - Harnesses: `harnesses/pi-agent-harness`, `harnesses/vercel-eve`.
 
-### Generate a prompt or schema
+### Generate the system prompt and library spec
 
 ```bash
+# Default: writes the prompt to --out AND the serialized library spec alongside it (<file>.spec.json)
 npx @openuidev/cli@latest generate ./src/library.tsx --out ./src/generated/system-prompt.txt
-npx @openuidev/cli@latest generate ./src/library.tsx --json-schema --out ./src/generated/component-spec.json
+# Spec only (preferred input for backend prompt compilation)
+npx @openuidev/cli@latest generate --spec ./src/library.tsx --out ./src/generated/library.spec.json
+```
+
+Prefer the spec-first pattern in backend routes: generate the spec at build time, then compile the prompt at runtime with `generateSystemPrompt` from `@openuidev/lang-core` (no React dependency):
+
+```ts
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
+import librarySpec from "./generated/library.spec.json";
+
+const systemPrompt = generateSystemPrompt({
+  library: librarySpec as LibrarySpec,
+  promptOptions: { /* preamble, examples, tools, additionalRules, ... */ },
+});
 ```
 
 The target module must export a library with `prompt()` and `toJSONSchema()`. By default the CLI looks for `library`, then `default`, then any matching export. It can also auto-detect prompt options from `promptOptions`, `options`, or an export ending in `PromptOptions`.

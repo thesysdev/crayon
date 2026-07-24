@@ -49,7 +49,7 @@ OPENUI_MODEL=google/gemini-3.6-flash-free
 ## SDK packages
 
 - `@openuidev/thesys-server` — the server SDK (`artifactTool`,
-  `createResponsesInstructions`) used by the `/api/chat` route.
+  `generateSystemPrompt`) used by the `/api/chat` route.
 - `@openuidev/thesys` — the React component library (`chatLibrary`, `Presentation`,
   `Report`) used by the client page and artifact renderers.
 - `@openuidev/react-headless` / `@openuidev/react-ui` — the chat UI runtime
