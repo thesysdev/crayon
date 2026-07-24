@@ -1,9 +1,9 @@
 import { ConversationStarterProps } from "../../../types/ConversationStarter";
-import { PrefillChip } from "../../../types/PrefillChip";
+import { PromptTemplate } from "../../../types/PromptTemplate";
 import { ConversationStarter, ConversationStarterVariant } from "../ConversationStarter";
 
 interface PrefillChipButtonProps {
-  chip: PrefillChip;
+  chip: PromptTemplate;
   disabled: boolean;
   onClick: () => void;
 }
@@ -20,12 +20,12 @@ const PrefillChipButton = ({ chip, disabled, onClick }: PrefillChipButtonProps) 
 );
 
 export interface WelcomePrefillChipsProps {
-  chips: PrefillChip[];
+  chips: PromptTemplate[];
   starters: ConversationStarterProps[];
   starterVariant: ConversationStarterVariant;
   draft: string;
-  selectedChip: PrefillChip | null;
-  onChipClick: (chip: PrefillChip) => void;
+  selectedChip: PromptTemplate | null;
+  onChipClick: (chip: PromptTemplate) => void;
   onContextualSelect: (starter: ConversationStarterProps) => void;
   disabled: boolean;
 }
@@ -70,7 +70,7 @@ export const WelcomePrefillChips = ({
       {selectedChip && (
         <div className="openui-agent-welcome-screen__starters-layer">
           <ConversationStarter
-            starters={selectedChip.starters}
+            starters={selectedChip.completions}
             variant="long"
             onSelect={onContextualSelect}
           />

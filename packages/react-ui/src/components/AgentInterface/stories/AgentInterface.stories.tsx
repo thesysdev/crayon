@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { makeMockLLM, makeMockStorage, mockSSEResponse } from "../../../__test-helpers/mockChat";
-import type { PrefillChip } from "../../../types/PrefillChip";
+import type { PromptTemplate } from "../../../types/PromptTemplate";
 import { Button } from "../../Button";
 import { IconButton } from "../../IconButton";
 import { AgentInterface } from "../AgentInterface";
@@ -116,12 +116,12 @@ const LONG_STARTERS = [
   },
 ];
 
-const PREFILL_CHIPS: PrefillChip[] = [
+const PROMPT_TEMPLATES: PromptTemplate[] = [
   {
     displayText: "Create a presentation",
     prompt: "Create a presentation about ",
     icon: <PresentationIcon size={16} />,
-    starters: [
+    completions: [
       { displayText: "Our Q2 business review", prompt: "our Q2 business review", icon: <></> },
       { displayText: "A product launch plan", prompt: "a product launch plan", icon: <></> },
       {
@@ -135,7 +135,7 @@ const PREFILL_CHIPS: PrefillChip[] = [
     displayText: "Write a report",
     prompt: "Write a report on ",
     icon: <FileText size={16} />,
-    starters: [
+    completions: [
       { displayText: "The EV market in 2026", prompt: "the EV market in 2026", icon: <></> },
       {
         displayText: "Our quarterly performance",
@@ -267,7 +267,7 @@ export const WelcomeWithPrefillChips = {
       <AgentInterface.Welcome
         title="Good to see you"
         description="What's on your mind today?"
-        prefillChips={PREFILL_CHIPS}
+        promptTemplates={PROMPT_TEMPLATES}
         glowAnimation
       />
     </AgentInterface>

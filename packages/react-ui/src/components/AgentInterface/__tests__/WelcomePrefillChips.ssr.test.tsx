@@ -2,14 +2,14 @@ import { ChatProvider } from "@openuidev/react-headless";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { makeMockLLM } from "../../../__test-helpers/mockChat";
-import type { PrefillChip } from "../../../types/PrefillChip";
+import type { PromptTemplate } from "../../../types/PromptTemplate";
 import { WelcomePrefillChips } from "../components/WelcomePrefillChips";
 
-const CHIPS: PrefillChip[] = [
+const CHIPS: PromptTemplate[] = [
   {
     displayText: "Create a presentation",
     prompt: "Create a presentation about ",
-    starters: [{ displayText: "Our Q2 business review", prompt: "our Q2 business review" }],
+    completions: [{ displayText: "Our Q2 business review", prompt: "our Q2 business review" }],
   },
 ];
 const STARTERS = [{ displayText: "Quarterly deck", prompt: "Create a Q2 deck." }];

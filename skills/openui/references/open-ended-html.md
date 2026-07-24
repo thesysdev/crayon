@@ -2,7 +2,7 @@
 
 Use this pattern when the user wants full generative UI, generated mini-apps, raw HTML, or a sandboxed iframe rather than a fixed component catalog.
 
-The canonical implementation is [`examples/html-artifact`](../../../examples/html-artifact).
+The canonical implementation is [`examples/html-artifact`](https://github.com/thesysdev/openui/tree/main/examples/html-artifact).
 
 ## Pattern
 

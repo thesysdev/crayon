@@ -76,6 +76,7 @@ export * from "./components/CheckBoxGroup";
 export * from "./components/CheckBoxItem";
 export * from "./components/CodeBlock";
 export * from "./components/DatePicker";
+export * from "./components/DotMatrixLoader";
 export * from "./components/FollowUpBlock";
 export * from "./components/FollowUpItem";
 export * from "./components/FormControl";
@@ -136,4 +137,4 @@ export type {
   ConversationStarterIcon,
   ConversationStarterProps,
 } from "./types/ConversationStarter";
-export type { PrefillChip } from "./types/PrefillChip";
+export type { PromptTemplate } from "./types/PromptTemplate";

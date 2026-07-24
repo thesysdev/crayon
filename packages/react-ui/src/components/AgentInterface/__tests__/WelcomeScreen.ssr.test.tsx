@@ -2,10 +2,10 @@ import { ChatProvider } from "@openuidev/react-headless";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { makeMockLLM } from "../../../__test-helpers/mockChat";
-import type { PrefillChip } from "../../../types/PrefillChip";
+import type { PromptTemplate } from "../../../types/PromptTemplate";
 import { WelcomeScreen } from "../WelcomeScreen";
 
-const CHIPS: PrefillChip[] = [
+const CHIPS: PromptTemplate[] = [
   {
     displayText: "Create a presentation",
     prompt: "Create a presentation about ",
@@ -20,7 +20,7 @@ const render = (ui: React.ReactElement) =>
 describe("WelcomeScreen SSR", () => {
   it("renders chips mode: chip row, layers wrapper, empty-draft container attribute", () => {
     const html = render(
-      <WelcomeScreen title="Good to see you" starters={STARTERS} prefillChips={CHIPS} />,
+      <WelcomeScreen title="Good to see you" starters={STARTERS} promptTemplates={CHIPS} />,
     );
     expect(html).toContain("data-has-prefill-chips");
     expect(html).toContain("openui-agent-welcome-screen__starters-layers");
@@ -41,7 +41,7 @@ describe("WelcomeScreen SSR", () => {
   });
 
   it("treats an empty chips array as absent", () => {
-    const html = render(<WelcomeScreen title="Hi" starters={STARTERS} prefillChips={[]} />);
+    const html = render(<WelcomeScreen title="Hi" starters={STARTERS} promptTemplates={[]} />);
     expect(html).not.toContain("openui-agent-welcome-screen__starters-layers");
     expect(html).not.toContain("data-has-prefill-chips");
   });
