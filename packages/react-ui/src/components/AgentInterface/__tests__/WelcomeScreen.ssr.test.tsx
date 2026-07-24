@@ -9,7 +9,7 @@ const CHIPS: PromptTemplate[] = [
   {
     displayText: "Create a presentation",
     prompt: "Create a presentation about ",
-    starters: [{ displayText: "Our Q2 business review", prompt: "our Q2 business review" }],
+    completions: [{ displayText: "Our Q2 business review", prompt: "our Q2 business review" }],
   },
 ];
 const STARTERS = [{ displayText: "Quarterly deck", prompt: "Create a Q2 deck." }];
