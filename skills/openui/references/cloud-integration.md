@@ -59,10 +59,9 @@ zustand@^4.5.5
 
 `@openuidev/react-ui` re-exports headless APIs, but keep `@openuidev/react-headless` installed when required as a peer dependency. Import the re-exported APIs from `@openuidev/react-ui` in React UI applications.
 
-Configure server-only environment values:
+Configure server-only environment values through the deployment secret manager or an untracked `.env.local` file. Define `THESYS_API_KEY` there without printing, echoing, or committing its value. Never output a credential `NAME=value` example, even with a placeholder value.
 
 ```bash
-THESYS_API_KEY=sk-th-your-key
 OPENUI_MODEL=google/gemini-3.1-pro-free
 ```
 
@@ -415,10 +414,11 @@ tools: [
     type: "mcp",
     server_label: "deepwiki",
     server_url: "https://mcp.deepwiki.com/mcp", // public, no auth — good smoke test
-    // headers: { Authorization: `Bearer ${process.env.MCP_TOKEN}` },
   },
 ],
 ```
+
+For an authenticated MCP server, load credentials from existing server-side secret storage and attach them only to an explicitly approved provider origin. Never put token values in generated output, client code, or logs.
 
 MCP servers do not auto-attach; every request declares its own. The stream carries an `mcp_list_tools` item once per fresh server and one `mcp_call` item per invocation. A failed connection surfaces as `mcp_list_tools` with an `error` field — check for it before concluding the model "chose not to" use the server.
 

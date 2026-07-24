@@ -87,10 +87,12 @@ If “migrate” does not establish whether Cloud should replace the self-hosted
 
 ### Scaffold
 
+Never generate, print, echo, or invent placeholder API key values, and never ask the user to paste credentials into chat. Ask the user to configure required credentials outside the agent through their secret manager or an untracked local environment file. In generated commands, name the required variable but never emit a credential `NAME=value` assignment.
+
 ```bash
 npx @openuidev/cli@latest create --name genui-chat-app --template openui-self-hosted --no-skill --no-interactive
 cd genui-chat-app
-echo "OPENAI_API_KEY=sk-your-key-here" > .env
+# Confirm OPENAI_API_KEY is configured outside chat before starting the app.
 npm run dev
 ```
 
@@ -104,7 +106,7 @@ npx @openuidev/cli@latest create --name genui-chat-app --template openui-self-ho
 
 If scaffold install/build fails with `ERR_PNPM_IGNORED_BUILDS` for native packages such as `sharp` or `unrs-resolver`, do not treat the scaffold as broken. Run `pnpm approve-builds` or `pnpm approve-builds --all`, then rerun install/build in an environment where package build scripts are allowed. Use first-party GitHub examples for Vue, Svelte, React Native, LangGraph, Mastra, Supabase, Vercel AI SDK, and other integrations.
 
-For self-hosted template build checks, set `OPENAI_API_KEY` even if no real model call is made. The generated Next route creates the OpenAI client at module scope, so `OPENAI_API_KEY=sk-test pnpm run build` is a valid smoke test when no real request will be sent.
+For self-hosted template build checks, set `OPENAI_API_KEY` even if no real model call is made. The generated Next route creates the OpenAI client at module scope. For a no-call smoke test, require the variable to be preconfigured outside agent-generated commands, then run `pnpm run build`; do not emit an inline assignment or placeholder value, and never use a production credential.
 
 ### Choose OpenUI Cloud or self-hosted
 
