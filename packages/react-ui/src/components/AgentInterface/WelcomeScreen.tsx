@@ -2,7 +2,7 @@ import { useThread, useThreadList } from "@openuidev/react-headless";
 import clsx from "clsx";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { ConversationStarterProps } from "../../types/ConversationStarter";
-import { PrefillChip } from "../../types/PrefillChip";
+import { PromptTemplate } from "../../types/PromptTemplate";
 import { useStartersFromContext } from "./_shared/startersContext";
 import { isChatEmpty } from "./_shared/utils";
 import { appendStarterPrompt } from "./_shared/utils/welcomePrefill";
@@ -46,11 +46,12 @@ interface WelcomeScreenWithContentProps extends WelcomeScreenBaseProps {
    */
   starterVariant?: ConversationStarterVariant;
   /**
-   * Prefill chips rendered between the composer and the starters. Clicking a
-   * chip drops its prompt into the composer (instead of sending) and shows the
-   * chip's contextual starters, which append to the draft.
+   * Fill-in-the-blank prompt templates, rendered as chips between the composer
+   * and the starters. Clicking one drops its prompt stem into the composer
+   * (instead of sending) and shows the template's completions, which append to
+   * the draft.
    */
-  prefillChips?: PrefillChip[];
+  promptTemplates?: PromptTemplate[];
   /**
    * Children are not allowed when using props-based content
    */
@@ -68,7 +69,7 @@ interface WelcomeScreenWithChildrenProps extends WelcomeScreenBaseProps {
   image?: never;
   starters?: never;
   starterVariant?: never;
-  prefillChips?: never;
+  promptTemplates?: never;
 }
 
 export type WelcomeScreenProps = WelcomeScreenWithContentProps | WelcomeScreenWithChildrenProps;
@@ -88,8 +89,8 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   const ownVariant = "starterVariant" in props ? props.starterVariant : undefined;
   const starters = ownStarters ?? fromCtx.starters ?? [];
   const starterVariant = ownVariant ?? fromCtx.starterVariant ?? "long";
-  const prefillChips = ("prefillChips" in props ? props.prefillChips : undefined) ?? [];
-  const hasChips = prefillChips.length > 0;
+  const promptTemplates = ("promptTemplates" in props ? props.promptTemplates : undefined) ?? [];
+  const hasChips = promptTemplates.length > 0;
 
   const messages = useThread((s) => s.messages);
   const isLoadingMessages = useThread((s) => s.isLoadingMessages);
@@ -98,7 +99,7 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   // Prefill-chips draft state — owned here (not in the composer) so chips can
   // write into the draft. Hooks stay unconditional; unused without chips.
   const [draft, setDraft] = useState("");
-  const [selectedChip, setSelectedChip] = useState<PrefillChip | null>(null);
+  const [selectedChip, setSelectedChip] = useState<PromptTemplate | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const selectedThreadId = useThreadList((s) => s.selectedThreadId);
@@ -152,7 +153,7 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
     }
   };
 
-  const handleChipClick = (chip: PrefillChip) => {
+  const handleChipClick = (chip: PromptTemplate) => {
     if (isRunning) return;
     setDraft(chip.prompt);
     setSelectedChip(chip);
@@ -221,7 +222,7 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
           </div>
           {hasChips ? (
             <WelcomePrefillChips
-              chips={prefillChips}
+              chips={promptTemplates}
               starters={starters}
               starterVariant={starterVariant}
               draft={draft}
