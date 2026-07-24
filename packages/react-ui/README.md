@@ -223,7 +223,8 @@ reference the production TypeScript source shipped once under `src/`, rather tha
 copies of that source in every map. This supports browser and Node.js stack mapping as well as editor
 navigation into the original TypeScript.
 
-Storybook stories, tests, and test helpers are excluded from the published build and source tree.
+Storybook stories, tests, test helpers, and build scripts are excluded from the published build and
+source tree.
 
 ## Documentation
 
