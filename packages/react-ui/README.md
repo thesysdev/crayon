@@ -70,7 +70,7 @@ function App() {
 | `storage`          | Optional persistence adapter for thread history; defaults to in-memory (wiped on reload). Use `restStorage({ baseUrl })` from `@openuidev/react-ui` to back it with your own REST API |
 | `llm`              | Chat transport, usually built with `fetchLLM`; any `ChatLLM` (`{ send({ threadId, messages, signal }), streamProtocol }`) works |
 | `componentLibrary` | OpenUI Lang library used to render assistant messages (e.g. `openuiChatLibrary`)             |
-| `theme`            | Theme configuration, e.g. `{ mode: "light" }`                                                |
+| `theme`            | Theme configuration, e.g. `{ mode: "light" }                                                |
 | `agentName`        | Name displayed in the header                                                                 |
 | `starters`         | Conversation-starter prompts shown on the welcome screen                                     |
 
@@ -215,6 +215,15 @@ import { Charts } from "@openuidev/react-ui/Charts";
 | `@openuidev/react-ui/layered/styles/*`         | Per-component styles wrapped in `@layer openui`      |
 | `@openuidev/react-ui/scssUtils`                | SCSS utility functions                               |
 | `@openuidev/react-ui/<Component>`              | Per-component entry points                           |
+
+## Debugging published builds
+
+The npm package includes source maps for its production JavaScript and declaration files. The maps
+reference the production TypeScript source shipped once under `src/`, rather than embedding duplicate
+copies of that source in every map. This supports browser and Node.js stack mapping as well as editor
+navigation into the original TypeScript.
+
+Storybook stories, tests, and test helpers are excluded from the published build and source tree.
 
 ## Documentation
 
