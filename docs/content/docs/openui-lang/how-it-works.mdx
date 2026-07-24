@@ -146,14 +146,12 @@ const tools: ToolSpec[] = [
 
 ```ts
 // route.ts
-import { generatePrompt } from "@openuidev/lang-core";
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
 import componentSpec from "./generated/component-spec.json";
 
-const systemPrompt = generatePrompt({
-  ...componentSpec,
-  tools,
-  toolCalls: true,
-  bindings: true,
+const systemPrompt = generateSystemPrompt({
+  library: componentSpec as LibrarySpec,
+  promptOptions: { tools, toolCalls: true, bindings: true },
 });
 
 const completion = await openai.chat.completions.create({
