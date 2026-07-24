@@ -79,11 +79,11 @@
   border: 1px solid var(--openui-border-default);
   border-radius: 20px;
   background: var(--openui-foreground);
-  /* A wide, soft cast so the panel reads as floating clear of the page rather
-     than pinned to it — shadow-l is only an 8px blur and disappears against
-     the hero. One step down from 2xl: still clearly separates the panel from
-     the page, without the heavier cast reading as too much. */
-  box-shadow: var(--openui-shadow-xl);
+  /* A wide, diffuse cast so the panel reads as lifted off the page — the large
+     blur spreads it out while the low opacity keeps it from drawing attention. */
+  box-shadow:
+    0 8px 48px -12px rgb(0 0 0 / 0.12),
+    0 4px 12px -6px rgb(0 0 0 / 0.06);
   opacity: 0;
   pointer-events: none;
   transition:
@@ -131,11 +131,10 @@
 /* Width is written inline by the nav: the natural size at full width, or the
    viewport minus a margin once that no longer fits. Columns then share whatever
    that width is, so the cards shrink together rather than the panel clipping.
-   Each card carries 6px of its own padding so its hover fill can bleed 6px past
-   the artwork without any layout shift; the panel's padding and gap are reduced
-   by that same 6px per edge, so the rendered spacing is 20px from the panel edge
-   to the artwork and 20px between artwork edges, whatever the bleed is:
-     track  284 + 6*2 = 296      panel  14*2 + 296*4 + 8*3 = 1236
+   The hover fill sits on the text alone, so the card itself needs no padding and
+   the panel's own padding and gap set the spacing directly — 20px from the panel
+   edge to the artwork, 20px between artwork edges:
+     track  232      panel  20*2 + 232*4 + 20*3 = 1028
    Only the artwork scales — it holds its aspect ratio — while the label and
    description keep their size and re-wrap into the narrower column. */
 .viewportContent {
@@ -145,8 +144,8 @@
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
-  gap: 8px;
-  padding: 14px;
+  gap: 20px;
+  padding: 20px;
   opacity: 0;
   transition: opacity 0.16s ease;
 }
@@ -163,52 +162,62 @@
 }
 
 .dropdownItem {
-  /* Design spec is 3% black; the token set only steps 2/4/8%, so it's declared
-     here. Dark mode needs a light overlay — 3% black is invisible on a dark
-     surface — so it flips to a white wash of equivalent weight. */
-  --nav-card-hover: rgb(0 0 0 / 0.03);
-
   position: relative;
   display: flex;
   flex-direction: column;
-  /* Bleeds the hover fill 6px past the artwork. Compensated for in the panel's
-     padding/gap below, so this adds no visible spacing. */
-  padding: 6px;
-  /* Concentric with the 12px artwork radius inside it (12 + 6px padding). */
-  border-radius: 18px;
+  /* Separates the artwork from the text block below it. */
+  gap: 0.5rem;
   color: var(--openui-text-neutral-primary);
   text-decoration: none;
-  transition: background-color 0.15s ease;
-}
-
-[data-theme="dark"] .dropdownItem {
-  --nav-card-hover: rgb(255 255 255 / 0.04);
-}
-
-.dropdownItem:hover {
-  background: var(--nav-card-hover);
 }
 
 /* 284x160 preview slot. The art is decorative, so it sits behind the label and
-   is cropped to fill rather than letterboxed. */
-/* Renders the artwork exactly as exported — no border, no background, no
-   radius of its own. The art carries its own surface fill, 1px stroke and 12px
-   corners, so anything added here double-draws the edge or shows through as a
-   plate behind it. Drop-in replacements need no CSS changes. */
+   is cropped to fill rather than letterboxed. The artwork is oversized by 1px and
+   clipped (see the image rule) to shave off its own baked edge stroke; the
+   ::after below then draws a single, consistent stroke on top. */
 .dropdownPreview {
   position: relative;
   display: block;
   aspect-ratio: 284 / 160;
+  /* Also clips the hover zoom to the corners. The art's 12px corners are authored
+     at the 284px slot width, so at the rendered card width they land at ~10px. */
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+/* Very subtle stroke over the cropped artwork. Lives on the container, not the
+   image, so it stays crisp and put while the image zooms on hover. */
+.dropdownPreview::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--openui-border-default);
+  pointer-events: none;
 }
 
 /* The art is authored at the slot's exact 284:160 ratio, so it is drawn whole
    rather than cropped — object-fit: cover would silently trim a mismatched
    export instead of making the mismatch obvious. */
 .dropdownPreviewImage {
-  display: block;
-  width: 100%;
-  height: 100%;
+  /* Oversized by 1px on every side and clipped by the container, cropping off the
+     artwork's own baked edge stroke so the container's ::after stroke is the only
+     one. Zoom stays on transform so it composes with this sizing. */
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  /* Global reset caps img at max-width:100%, which would clamp the width back to
+     the container and undo the horizontal crop — opt out. */
+  max-width: none;
   object-fit: fill;
+  transition: transform 0.25s ease;
+}
+
+.dropdownItem:hover .dropdownPreviewImage {
+  transform: scale(1.05);
 }
 
 /* Per-theme artwork: render both variants, reveal the one matching the theme. */
@@ -235,7 +244,6 @@
 .dropdownTitleRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 0.5rem;
 }
 
@@ -247,13 +255,19 @@
   color: var(--openui-text-neutral-primary);
 }
 
-/* Plain arrow pinned to the end of the title row, revealed on hover. */
+/* Filled circle sitting right after the title, revealed on hover. Uses the
+   primary-text token for the disc and the surface token for the glyph, so it's a
+   black circle with a white arrow in light mode and inverts cleanly in dark. */
 .dropdownArrow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--openui-text-neutral-primary);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--openui-text-neutral-primary);
+  color: var(--openui-foreground);
   opacity: 0;
   transform: translateX(-0.25rem);
   transition:
@@ -275,10 +289,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dropdownItem,
+  .dropdownPreviewImage,
   .dropdownArrow,
   .viewportContent {
     transition: none;
+  }
+
+  .dropdownItem:hover .dropdownPreviewImage {
+    transform: none;
   }
 
   /* Keep the open/close fade, drop the morph. */
