@@ -1,5 +1,6 @@
 "use client";
 
+import { captureCreateCliCommandCopied } from "@/lib/create-cli-copy-analytics";
 import { ArrowRight } from "lucide-react";
 import { PLATFORMS } from "../../components/PlatformLogos";
 import { useTheme } from "next-themes";
@@ -10,6 +11,14 @@ import {
   GitHubButton,
 } from "../../components/GitHubButton/GitHubButton";
 import styles from "./HeroSection.module.css";
+
+function capturePrimaryHeroCliCopy(command: string) {
+  captureCreateCliCommandCopied(command, { source: "homepage_hero", interaction: "primary" });
+}
+
+function captureDropdownHeroCliCopy(command: string) {
+  captureCreateCliCommandCopied(command, { source: "homepage_hero", interaction: "dropdown" });
+}
 
 export const heroStyles = styles;
 
@@ -41,14 +50,14 @@ function commandVariants(command: string): CommandVariant[] {
 }
 
 const DESKTOP_HERO_IMAGE = {
-  light: "/homepage/hero-web.svg",
-  dark: "/homepage/hero-web-dark.svg",
+  light: "/homepage/hero-web.webp",
+  dark: "/homepage/hero-web-dark.webp",
   width: 768,
   height: 454,
 } as const;
 const MOBILE_HERO_IMAGE = {
-  light: "/homepage/mobile-hero-light.svg",
-  dark: "/homepage/mobile-hero-dark.svg",
+  light: "/homepage/mobile-hero-light.webp",
+  dark: "/homepage/mobile-hero-dark.webp",
   width: 333,
   height: 440,
 } as const;
@@ -93,6 +102,7 @@ export function NpmButton({ className = "", command }: { className?: string; com
     <div className={styles.npmButtonWrapper}>
       <ClipboardCommandButton
         command={command}
+        onCopySuccess={capturePrimaryHeroCliCopy}
         className={`${styles.npmButton} ${className}`.trim()}
         iconContainerClassName={styles.npmIconBadge}
         copyIconColor="currentColor"
@@ -143,6 +153,7 @@ function CommandDropdownButton({
     >
       <ClipboardCommandButton
         command={command}
+        onCopySuccess={capturePrimaryHeroCliCopy}
         className={styles.commandTrigger}
         iconContainerClassName={styles.commandTriggerBadge}
         copyIconColor="currentColor"
@@ -163,6 +174,7 @@ function CommandDropdownButton({
             <ClipboardCommandButton
               key={variant.id}
               command={variant.command}
+              onCopySuccess={captureDropdownHeroCliCopy}
               className={styles.commandMenuItem}
               iconContainerClassName={styles.commandMenuItemIcon}
               copyIconColor="currentColor"
@@ -218,7 +230,7 @@ function CommandTabs({
 function DesktopPlaygroundButton({ className = "" }: { className?: string }) {
   return (
     <PillLink
-      href="/playground"
+      href="/demos"
       className={`${styles.desktopPlaygroundButton} ${className}`.trim()}
       arrow={<TrailingArrow />}
     >

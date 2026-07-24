@@ -27,13 +27,44 @@
   font-size: 0.9375rem;
 }
 
+.statText {
+  min-width: 0;
+}
+
 .statNumber {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  /* Keep "1 Million+" / "7,657" from ever splitting across lines. */
+  white-space: nowrap;
 }
 
 .statLabel {
   color: var(--openui-text-neutral-secondary);
+}
+
+/* Narrow phones: stack the two stats and let each label wrap as flowing text
+   right after its number, so the icon/number/label never get stranded apart. */
+@media (max-width: 480px) {
+  .stats {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  /* Render each stat as one centered line of text that wraps as a unit, with
+     the icon inline at the start — so the icon hugs its number instead of being
+     stranded, and nothing gets pushed apart on narrow screens. */
+  .statChip {
+    display: block;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .statChip svg {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.35rem;
+  }
 }
 
 @media (min-width: 1024px) {

@@ -10,8 +10,8 @@ Command-line tools for starting OpenUI projects and generating model instruction
 It currently supports two workflows:
 
 - scaffolding a new OpenUI app from one of two templates:
-  - **OpenUI Chat** — a Next.js app where you bring your own model key (OpenAI)
-  - **OpenUI Cloud** — a Next.js app backed by OpenUI Cloud for managed conversations, artifacts, and streaming
+  - **OpenUI Cloud (recommended)** — hosted models with managed conversations, streaming, built-in tools, and ready-to-use report and presentation artifacts
+  - **Self-hosted** — bring an OpenAI-compatible model key and own the AI route and persistence
 - generating a system prompt or JSON Schema from a `createLibrary()` export
 
 ## Install
@@ -35,8 +35,8 @@ npx @openuidev/cli@latest create
 Skip the prompt and pick a template directly:
 
 ```bash
-npx @openuidev/cli@latest create --template openui-self-hosted
 npx @openuidev/cli@latest create --template openui-cloud
+npx @openuidev/cli@latest create --template openui-self-hosted
 ```
 
 Generate a prompt from a library file:
@@ -55,7 +55,7 @@ npx @openuidev/cli@latest generate ./src/library.ts --json-schema
 
 ### `openui create`
 
-Scaffolds a new Next.js app from the **OpenUI Chat** or **OpenUI Cloud** template.
+Scaffolds a new Next.js agent app from the recommended managed **OpenUI Cloud** template or the **self-hosted** template.
 
 ```bash
 openui create [options]
@@ -64,7 +64,7 @@ openui create [options]
 Options:
 
 - `-n, --name <string>`: Project name
-- `-t, --template <template>`: Template to scaffold — `openui-self-hosted` or `openui-cloud`
+- `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
@@ -83,9 +83,13 @@ What it does:
 - optionally installs the OpenUI agent skill for AI coding assistants
 - writes a `.env` file tailored to the template (see below)
 
+#### Choose a backend
+
+- **OpenUI Cloud (recommended default)** — start here for prototypes and evaluations. You get hosted models, managed conversation history and streaming, built-in tools, and ready-to-use report and presentation artifacts without operating the model, storage, or artifact infrastructure.
+- **Self-hosted** — choose this when owning the OpenAI-compatible provider integration, AI route, and persistence is a requirement.
+
 #### Template-specific `.env`
 
-- **OpenUI Chat** — prompts for your OpenAI API key and writes `OPENAI_API_KEY` to `.env` (interactive mode only). Leave blank to skip.
 - **OpenUI Cloud** — obtains an OpenUI Cloud API key and writes `THESYS_API_KEY` plus `DEMO_USER_ID=demo-user` to `.env`. The key is resolved by, in order:
   - `--api-key <key>` if provided
   - the `--auth` method, otherwise an interactive prompt offering:
@@ -93,14 +97,15 @@ What it does:
     - `manual` — paste an existing key
     - `skip` — leave `THESYS_API_KEY` empty and add it later (get one at <https://console.thesys.dev/keys>)
   - in non-interactive mode without `--api-key`, the cloud template fails because a key is required
+- **Self-hosted** — prompts for your OpenAI-compatible provider API key and writes `OPENAI_API_KEY` to `.env` (interactive mode only). Leave blank to skip.
 
 Examples:
 
 ```bash
 openui create
-openui create --name my-app --template openui-self-hosted
 openui create --name my-app --template openui-cloud --auth oauth
 openui create --name my-app --template openui-cloud --api-key tk_your_key
+openui create --name my-app --template openui-self-hosted
 openui create --name my-app --no-skill --no-install
 openui create --no-interactive --name my-app --template openui-cloud --api-key tk_your_key
 ```

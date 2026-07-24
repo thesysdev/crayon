@@ -1,9 +1,15 @@
 import { getBillingCreditsErrorMessage } from "@/lib/billing";
 import { envOr, requiredEnv } from "@/lib/env";
 import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
+import { runFunctionToolLoop } from "@/lib/tool-loop";
+import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
 import OpenAI from "openai";
-import type { ResponseInputItem } from "openai/resources/responses/responses";
+import type {
+  ResponseCreateParamsNonStreaming,
+  ResponseInputItem,
+  Tool,
+} from "openai/resources/responses/responses";
 
 /**
  * Generation plane: browser → THIS route → OpenUI Cloud.
@@ -13,9 +19,11 @@ import type { ResponseInputItem } from "openai/resources/responses/responses";
  * stream straight to the browser, where `openAIResponsesAdapter` parses it
  * (including the custom `response.artifact_call.delta` events).
  *
- * The artifact tool runs **server-side** inside OpenUI Cloud, so this route is a
- * pure pipe: there is no client-side tool loop. Reads/edits go browser → /v1/*
- * with the fct_ token (see /api/frontend-token + the storage adapter).
+ * Cloud's built-in tools (artifacts / web_search / image_search / MCP) run
+ * server-side inside OpenUI Cloud. App-owned `type: "function"` tools run HERE
+ * via `runFunctionToolLoop` — `get_weather` ships as the reference example.
+ * Reads/edits go browser → /v1/* with the fct_ token (see /api/frontend-token
+ * + the storage adapter).
  */
 export async function POST(req: Request) {
   const { threadId, input, model: requestedModel } = (await req.json()) as {
@@ -42,29 +50,43 @@ export async function POST(req: Request) {
     apiKey: requiredEnv("THESYS_API_KEY"), // sent as Authorization: Bearer …
   });
 
+  // App-owned function tools, executed in THIS route by runFunctionToolLoop.
+  // The loop runs ONLY the names declared here — Cloud-internal function_call
+  // items (thesys_*) pass through untouched. Add your own tools the same way.
+  const functionTools = {
+    [getWeatherTool.name]: executeGetWeather,
+  };
+
+  const createParams: ResponseCreateParamsNonStreaming = {
+    model: resolveRequestedModel(requestedModel, envOr("OPENUI_MODEL", DEFAULT_MODEL)),
+    conversation: threadId, // store:true persists to the conversation
+    input,
+    store: true,
+    tools: [
+      // artifact/image_search are Cloud extensions of the Responses tools
+      // union — cast those entries only; the rest stays type-checked.
+      artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
+      {
+        type: "web_search",
+      },
+      { type: "image_search" } as unknown as Tool,
+      getWeatherTool,
+      // Remote MCP servers run server-side inside OpenUI Cloud — no client
+      // loop needed. Uncomment to let the model answer questions about any
+      // public GitHub repo via DeepWiki (no auth required):
+      // {
+      //   type: "mcp",
+      //   server_label: "deepwiki",
+      //   server_url: "https://mcp.deepwiki.com/mcp",
+      // },
+    ],
+    instructions: createResponsesInstructions(),
+  };
+
   let stream: AsyncIterable<Record<string, unknown>>;
   try {
-    const model = resolveRequestedModel(requestedModel, envOr("OPENUI_MODEL", DEFAULT_MODEL));
-
     stream = (await client.responses.create(
-      {
-        model,
-        conversation: threadId, // store:true persists to the conversation
-        input,
-        stream: true,
-        store: true,
-        tools: [
-          artifactTool({ artifacts: ["slides", "report"] }),
-          {
-            type: "web_search",
-          },
-          {
-            type: "image_search",
-          },
-        ],
-        instructions: createResponsesInstructions(),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
+      { ...createParams, stream: true },
       { signal: req.signal }, // propagate browser aborts (stop button / tab close)
     )) as unknown as AsyncIterable<Record<string, unknown>>;
   } catch (err) {
@@ -79,29 +101,49 @@ export async function POST(req: Request) {
       );
     }
 
+    if (e.status === 401 || e.status === 403) {
+      return Response.json(
+        {
+          error: {
+            code: "invalid_api_key",
+            message:
+              "OpenUI Cloud rejected THESYS_API_KEY. Check the key in .env against the Thesys console → API keys.",
+          },
+        },
+        { status: e.status },
+      );
+    }
+
     return Response.json(
       { error: e.error ?? { message: e.message ?? "upstream error" } },
       { status: e.status ?? 502 },
     );
   }
 
-  // Re-emit each SDK event as SSE for the browser adapter.
+  // Re-emit each SDK event as SSE for the browser adapter, executing declared
+  // function tools between model turns.
   const encoder = new TextEncoder();
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
+      const enqueue = (event: Record<string, unknown>) => {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+      };
       try {
-        for await (const event of stream) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
-        }
+        await runFunctionToolLoop({
+          client,
+          createParams,
+          firstStream: stream,
+          tools: functionTools,
+          enqueue,
+          signal: req.signal,
+        });
       } catch (err) {
         const message = isRateLimitError(err)
           ? getBillingCreditsErrorMessage()
           : err instanceof Error
             ? err.message
             : String(err);
-        controller.enqueue(
-          encoder.encode(`data: ${JSON.stringify({ type: "error", message })}\n\n`),
-        );
+        enqueue({ type: "error", message });
       } finally {
         controller.close();
       }
