@@ -4,9 +4,9 @@ export type { ArtifactListFilter } from "./hooks/useArtifactList";
 export { useArtifactRenderer } from "./hooks/useArtifactRenderer";
 export { useDetailedView } from "./hooks/useDetailedView";
 export { useDetailedViewPortalTarget } from "./hooks/useDetailedViewPortalTarget";
+export { useIsThreadStreaming } from "./hooks/useIsThreadStreaming";
 export { MessageContext, MessageProvider, useMessage } from "./hooks/useMessage";
 export { useThread, useThreadList } from "./hooks/useThread";
-export { useThreadState } from "./hooks/useThreadState";
 export { useToolActivities } from "./hooks/useToolActivities";
 
 export { defineArtifactCategories } from "./store/artifactCategories";

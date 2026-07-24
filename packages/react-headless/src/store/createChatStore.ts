@@ -2,13 +2,15 @@ import { createStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import type { ChatLLM, ChatStorage } from "../adapters/types";
 import { processStreamedMessage } from "../stream/processStreamedMessage";
-import { DRAFT_KEY } from "./threadStateEntry";
 import type { ChatStore, Message, Thread, ThreadStateEntry, UserMessage } from "./types";
 
 export interface CreateChatStoreConfig {
   storage: ChatStorage;
   llm: ChatLLM;
 }
+
+/** Key for a brand-new chat's run before its thread has a real id (see the re-key in `processMessage`). */
+const DRAFT_KEY = "__draft__";
 
 const mergeThreadList = (existing: Thread[], incoming: Thread[]): Thread[] =>
   Array.from(new Map([...existing, ...incoming].map((t) => [t.id, t])).values()).sort(
