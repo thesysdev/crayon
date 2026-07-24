@@ -162,8 +162,6 @@ openui/
 │   ├── svelte-lang/      # Svelte runtime bindings for OpenUI Lang
 │   ├── browser-bundle/   # Script-tag bundle for CDN / iframe / no-build embeds
 │   └── openui-cli/       # CLI for scaffolding & prompt generation
-├── skills/
-│   └── openui/           # Claude Code skill for AI-assisted development
 ├── examples/
 │   └── openui-chat/      # Full working example app (Next.js)
 ├── docs/                 # Documentation site (openui.com)
