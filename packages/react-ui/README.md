@@ -216,16 +216,6 @@ import { Charts } from "@openuidev/react-ui/Charts";
 | `@openuidev/react-ui/scssUtils`                | SCSS utility functions                               |
 | `@openuidev/react-ui/<Component>`              | Per-component entry points                           |
 
-## Debugging published builds
-
-The npm package includes source maps for its production JavaScript and declaration files. The maps
-reference the production TypeScript source shipped once under `src/`, rather than embedding duplicate
-copies of that source in every map. This supports browser and Node.js stack mapping as well as editor
-navigation into the original TypeScript.
-
-Storybook stories, tests, test helpers, and build scripts are excluded from the published build and
-source tree.
-
 ## Documentation
 
 - [React UI API reference](https://openui.com/docs/api-reference/react-ui)
