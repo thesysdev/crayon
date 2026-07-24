@@ -1,0 +1,231 @@
+.openui-agent-welcome-screen--animated {
+  --openui-agent-welcome-settle-delay: 80ms;
+
+  .openui-agent-welcome-screen__header {
+    animation: openui-agent-welcome-enter 0.35s cubic-bezier(0.22, 1, 0.36, 1)
+      var(--openui-agent-welcome-settle-delay) both;
+  }
+
+  .openui-agent-welcome-screen__desktop-composer {
+    animation: openui-agent-welcome-enter 0.35s cubic-bezier(0.22, 1, 0.36, 1)
+      calc(var(--openui-agent-welcome-settle-delay) + 0.12s) both;
+  }
+
+  .openui-agent-welcome-screen__desktop-starters > * {
+    animation: openui-agent-welcome-enter 0.3s cubic-bezier(0.22, 1, 0.36, 1)
+      calc(var(--openui-agent-welcome-settle-delay) + 0.24s) both;
+  }
+}
+
+.openui-agent-welcome-glow {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  max-width: 768px;
+
+  > .openui-agent-desktop-welcome-composer {
+    position: relative;
+    z-index: 1;
+  }
+
+  &::before,
+  &::after,
+  &__blob {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  &::before {
+    content: "";
+    top: -180px;
+    left: 50%;
+    width: 620px;
+    height: 210px;
+    border-radius: 50%;
+    background: radial-gradient(
+      ellipse,
+      color-mix(in oklch, var(--openui-interactive-accent-default) 38%, transparent) 0%,
+      color-mix(in oklch, var(--openui-interactive-accent-default) 20%, transparent) 45%,
+      transparent 75%
+    );
+    filter: blur(40px);
+    animation: openui-agent-welcome-glow-drop 1.5s linear
+      calc(var(--openui-agent-welcome-settle-delay) + 0.5s) 1 both;
+  }
+
+  &::after {
+    content: "";
+    inset: -2px;
+    box-sizing: border-box;
+    border: 8px solid color-mix(in oklch, var(--openui-interactive-accent-default) 90%, transparent);
+    border-radius: 18px;
+    background: transparent;
+    filter: blur(8px);
+    -webkit-mask-image: radial-gradient(closest-side, black 35%, transparent 100%);
+    mask-image: radial-gradient(closest-side, black 35%, transparent 100%);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: 50% -30px;
+    mask-position: 50% -30px;
+    animation: openui-agent-welcome-glow-halo 1.5s linear
+      calc(var(--openui-agent-welcome-settle-delay) + 0.5s) 1 both;
+  }
+
+  &__blob {
+    top: -150px;
+    left: 50%;
+    border-radius: 50%;
+    animation: openui-agent-welcome-glow-blob-drop 1.5s linear 1 both;
+
+    &--accent {
+      --openui-agent-welcome-blob-x: -200px;
+      --openui-agent-welcome-blob-peak: 0.2;
+
+      width: 360px;
+      height: 160px;
+      background: radial-gradient(
+        ellipse,
+        color-mix(in oklch, var(--openui-interactive-accent-default) 42%, transparent) 0%,
+        transparent 70%
+      );
+      filter: blur(30px);
+      animation-delay: calc(var(--openui-agent-welcome-settle-delay) + 0.6s);
+    }
+
+    &--foreground {
+      --openui-agent-welcome-blob-x: 90px;
+      --openui-agent-welcome-blob-peak: 1;
+
+      width: 240px;
+      height: 110px;
+      background: radial-gradient(
+        ellipse,
+        color-mix(in oklch, var(--openui-foreground) 100%, transparent) 0%,
+        transparent 70%
+      );
+      filter: blur(24px);
+      animation-delay: calc(var(--openui-agent-welcome-settle-delay) + 0.55s);
+    }
+  }
+}
+
+@keyframes openui-agent-welcome-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes openui-agent-welcome-glow-blob-drop {
+  0% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--openui-agent-welcome-blob-x) * 0.3), -220px) scale(0.8);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.65, 0.5);
+  }
+
+  12% {
+    opacity: calc(var(--openui-agent-welcome-blob-peak) * 0.3);
+  }
+
+  30% {
+    opacity: var(--openui-agent-welcome-blob-peak);
+    transform: translate(calc(-50% + var(--openui-agent-welcome-blob-x)), 2px) scale(1);
+    animation-timing-function: ease-in-out;
+  }
+
+  52%,
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--openui-agent-welcome-blob-x) * 0.6), 44px)
+      scale(0.85, 0.5);
+  }
+}
+
+@keyframes openui-agent-welcome-glow-drop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -240px) scale(0.8);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.65, 0.5);
+  }
+
+  10% {
+    opacity: 0.18;
+  }
+
+  22% {
+    opacity: 0.35;
+  }
+
+  30% {
+    opacity: 0.65;
+    transform: translate(-50%, 4px) scale(1);
+    animation-timing-function: ease-in-out;
+  }
+
+  52%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 52px) scale(0.9, 0.45);
+  }
+}
+
+@keyframes openui-agent-welcome-glow-halo {
+  0%,
+  30% {
+    opacity: 0;
+    -webkit-mask-size: 480px 110px;
+    mask-size: 480px 110px;
+  }
+
+  38% {
+    opacity: 0.85;
+    -webkit-mask-size: 700px 150px;
+    mask-size: 700px 150px;
+    animation-timing-function: ease-out;
+  }
+
+  48% {
+    opacity: 0.85;
+    -webkit-mask-size: 1400px 380px;
+    mask-size: 1400px 380px;
+    animation-timing-function: ease-out;
+  }
+
+  62% {
+    opacity: 0.75;
+    -webkit-mask-size: 2200px 760px;
+    mask-size: 2200px 760px;
+    animation-timing-function: ease-in-out;
+  }
+
+  100% {
+    opacity: 0;
+    -webkit-mask-size: 2500px 860px;
+    mask-size: 2500px 860px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .openui-agent-welcome-screen--animated {
+    .openui-agent-welcome-screen__header,
+    .openui-agent-welcome-screen__desktop-composer,
+    .openui-agent-welcome-screen__desktop-starters > * {
+      animation: none;
+    }
+  }
+
+  .openui-agent-welcome-glow {
+    &::before,
+    &::after,
+    &__blob {
+      animation: none;
+    }
+  }
+}

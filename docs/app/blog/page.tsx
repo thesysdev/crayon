@@ -126,7 +126,12 @@ function FeaturedCard({ card }: { card: BlogCardData }) {
     <Link href={card.href} className={`${CARD_CLASS} md:min-h-[24rem] md:flex-row`}>
       <div className="relative flex h-44 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--openui-highlight)] md:h-auto md:w-1/2">
         {card.image ? (
-          <img src={card.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={card.image}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         ) : (
           <ImagePlaceholder size="large" />
         )}
@@ -160,7 +165,12 @@ function RegularCard({ card }: { card: BlogCardData }) {
     >
       <div className="relative flex h-44 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--openui-highlight)] md:h-60">
         {card.image ? (
-          <img src={card.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={card.image}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         ) : (
           <ImagePlaceholder />
         )}

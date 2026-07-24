@@ -60,6 +60,7 @@ interface ClipboardCommandButtonProps {
   copyIconColor?: string;
   type?: ButtonType;
   onCopyChange?: (copied: boolean) => void;
+  onCopySuccess?: (command: string) => void;
 }
 
 export function ClipboardCommandButton({
@@ -72,6 +73,7 @@ export function ClipboardCommandButton({
   copyIconColor = "white",
   type = "button",
   onCopyChange,
+  onCopySuccess,
 }: ClipboardCommandButtonProps) {
   const [copied, setCopied] = useState(false);
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -92,6 +94,7 @@ export function ClipboardCommandButton({
     }
     setCopied(true);
     onCopyChange?.(true);
+    onCopySuccess?.(command);
     if (resetTimeoutRef.current) {
       clearTimeout(resetTimeoutRef.current);
     }

@@ -1,4 +1,6 @@
 .nav {
+  /* Positioning context for the shared dropdown viewport. */
+  position: relative;
   display: none;
   align-items: center;
   gap: 0.5rem;
@@ -64,88 +66,194 @@
   color: inherit;
 }
 
-.dropdownPanel {
+/* The single shared panel. Its width/height/offset are set inline from the
+   measured content, so moving between menus morphs this one box rather than
+   swapping two. `left: 0` + `translate` keeps the animated offset independent
+   of the -50% centring a `transform` shorthand would otherwise fight over. */
+.viewport {
   position: absolute;
   top: calc(100% + 0.5rem);
-  left: 50%;
+  left: 0;
   z-index: 60;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-width: 24rem;
-  padding: 0.625rem;
+  overflow: hidden;
   border: 1px solid var(--openui-border-default);
-  border-radius: 14px;
+  border-radius: 20px;
   background: var(--openui-foreground);
-  box-shadow: var(--openui-shadow-l);
+  /* A wide, soft cast so the panel reads as floating clear of the page rather
+     than pinned to it — shadow-l is only an 8px blur and disappears against
+     the hero. One step down from 2xl: still clearly separates the panel from
+     the page, without the heavier cast reading as too much. */
+  box-shadow: var(--openui-shadow-xl);
   opacity: 0;
   pointer-events: none;
-  transform: translate(-50%, -4px);
   transition:
     opacity 0.18s ease,
-    transform 0.18s ease;
+    visibility 0s linear 0.18s;
+  visibility: hidden;
 }
 
-.dropdown:hover .dropdownPanel,
-.dropdown:focus-within .dropdownPanel {
+/* Bridges the 0.5rem gap between the trigger row and the panel so the pointer
+   can travel down into the menu without leaving the nav and closing it. */
+.viewport::before {
+  content: "";
+  position: absolute;
+  top: -0.5rem;
+  right: 0;
+  left: 0;
+  height: 0.5rem;
+}
+
+.viewport[data-open="true"] {
   opacity: 1;
   pointer-events: auto;
-  transform: translate(-50%, 0);
+  transition:
+    opacity 0.18s ease,
+    visibility 0s,
+    width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  visibility: visible;
 }
 
-/* While the dropdown is open, keep its trigger tab in the hover state — even
-   once the pointer moves down into the panel. */
-.dropdown:hover .dropdownTrigger,
-.dropdown:focus-within .dropdownTrigger {
+/* Size/offset only animate once the box is already on screen — opening from
+   closed snaps straight to the right dimensions. */
+.viewport:not(.viewportMorph) {
+  transition:
+    opacity 0.18s ease,
+    visibility 0s;
+}
+
+/* Pinned to the left edge, not centred. The viewport is sized to exactly the
+   active menu's width, so left:0 lines them up — whereas centring re-resolves
+   the offset on every frame of the width animation, which makes the labels
+   visibly slide while the box morphs. The outgoing menu is wider and simply
+   gets clipped on the right as it fades. */
+/* Width is written inline by the nav: the natural size at full width, or the
+   viewport minus a margin once that no longer fits. Columns then share whatever
+   that width is, so the cards shrink together rather than the panel clipping.
+   Each card carries 6px of its own padding so its hover fill can bleed 6px past
+   the artwork without any layout shift; the panel's padding and gap are reduced
+   by that same 6px per edge, so the rendered spacing is 20px from the panel edge
+   to the artwork and 20px between artwork edges, whatever the bleed is:
+     track  284 + 6*2 = 296      panel  14*2 + 296*4 + 8*3 = 1236
+   Only the artwork scales — it holds its aspect ratio — while the label and
+   description keep their size and re-wrap into the narrower column. */
+.viewportContent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 8px;
+  padding: 14px;
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+
+.viewportContent[data-active="true"] {
+  opacity: 1;
+}
+
+/* While a dropdown is open, keep its trigger tab in the hover state — even once
+   the pointer moves down into the panel. */
+.dropdownTriggerOpen,
+.dropdown:hover .dropdownTrigger {
   background: var(--openui-highlight-strong);
 }
 
 .dropdownItem {
+  /* Design spec is 3% black; the token set only steps 2/4/8%, so it's declared
+     here. Dark mode needs a light overlay — 3% black is invisible on a dark
+     surface — so it flips to a white wash of equivalent weight. */
+  --nav-card-hover: rgb(0 0 0 / 0.03);
+
   position: relative;
   display: flex;
-  padding: 1rem;
-  border-radius: 9px;
+  flex-direction: column;
+  /* Bleeds the hover fill 6px past the artwork. Compensated for in the panel's
+     padding/gap below, so this adds no visible spacing. */
+  padding: 6px;
+  /* Concentric with the 12px artwork radius inside it (12 + 6px padding). */
+  border-radius: 18px;
   color: var(--openui-text-neutral-primary);
   text-decoration: none;
   transition: background-color 0.15s ease;
 }
 
+[data-theme="dark"] .dropdownItem {
+  --nav-card-hover: rgb(255 255 255 / 0.04);
+}
+
 .dropdownItem:hover {
-  background: var(--openui-highlight);
+  background: var(--nav-card-hover);
+}
+
+/* 284x160 preview slot. The art is decorative, so it sits behind the label and
+   is cropped to fill rather than letterboxed. */
+/* Renders the artwork exactly as exported — no border, no background, no
+   radius of its own. The art carries its own surface fill, 1px stroke and 12px
+   corners, so anything added here double-draws the edge or shows through as a
+   plate behind it. Drop-in replacements need no CSS changes. */
+.dropdownPreview {
+  position: relative;
+  display: block;
+  aspect-ratio: 284 / 160;
+}
+
+/* The art is authored at the slot's exact 284:160 ratio, so it is drawn whole
+   rather than cropped — object-fit: cover would silently trim a mismatched
+   export instead of making the mismatch obvious. */
+.dropdownPreviewImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+/* Per-theme artwork: render both variants, reveal the one matching the theme. */
+.dropdownPreviewDark {
+  display: none;
+}
+
+[data-theme="dark"] .dropdownPreviewLight {
+  display: none;
+}
+
+[data-theme="dark"] .dropdownPreviewDark {
+  display: block;
 }
 
 .dropdownText {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.375rem;
+  padding: 0.625rem 0.5rem 0.5rem;
 }
 
 .dropdownTitleRow {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
 }
 
 .dropdownTitle {
   font-family: "Inter Display", sans-serif;
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 500;
-  line-height: 1.15;
+  line-height: 1.5;
   color: var(--openui-text-neutral-primary);
 }
 
-/* Arrow-in-circle revealed next to the title on hover (mirrors the menu reference). */
+/* Plain arrow pinned to the end of the title row, revealed on hover. */
 .dropdownArrow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 9999px;
-  background: var(--openui-inverted-background);
-  color: var(--openui-background);
+  color: var(--openui-text-neutral-primary);
   opacity: 0;
   transform: translateX(-0.25rem);
   transition:
@@ -161,9 +269,25 @@
 .dropdownDescription {
   font-family: "Inter", sans-serif;
   font-size: 14px;
-  line-height: 1.3;
+  line-height: 1.57;
   color: var(--openui-text-neutral-secondary);
   opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdownItem,
+  .dropdownArrow,
+  .viewportContent {
+    transition: none;
+  }
+
+  /* Keep the open/close fade, drop the morph. */
+  .viewport,
+  .viewport[data-open="true"] {
+    transition:
+      opacity 0.18s ease,
+      visibility 0s;
+  }
 }
 
 @media (min-width: 1024px) {

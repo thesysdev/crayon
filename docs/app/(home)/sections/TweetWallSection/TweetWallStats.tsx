@@ -20,13 +20,17 @@ export function TweetWallStats() {
     <div className={styles.stats}>
       <span className={styles.statChip}>
         <GitHubMark size={16} />
-        <span className={styles.statNumber}>{stars.toLocaleString()}</span>
-        <span className={styles.statLabel}>stars</span>
+        <span className={styles.statText}>
+          <span className={styles.statNumber}>{stars.toLocaleString()}</span>{" "}
+          <span className={styles.statLabel}>stars</span>
+        </span>
       </span>
       <span className={styles.statChip}>
         <NpmMark />
-        <span className={styles.statNumber}>1 Million+</span>
-        <span className={styles.statLabel}>downloads across all packages</span>
+        <span className={styles.statText}>
+          <span className={styles.statNumber}>1 Million+</span>{" "}
+          <span className={styles.statLabel}>downloads across all packages</span>
+        </span>
       </span>
     </div>
   );

@@ -34,6 +34,9 @@ const shared = {
   target: "es2022",
   outDir: "dist",
   clean: false,
+  outputOptions: {
+    sourcemapExcludeSources: true,
+  },
   deps: {
     neverBundle: [/^(?![./]|[A-Za-z]:[/\\])/, /\.scss$/, /\.css$/],
   },
