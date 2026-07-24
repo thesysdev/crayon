@@ -3,6 +3,10 @@ import { createFunnelProps } from "./create-telemetry";
 import type { TemplateName } from "./create-types";
 import { CreateError, telemetry as defaultTelemetry, type Telemetry } from "./telemetry";
 
+/** ASCII Record Separator — Untypeable in prompt text and always
+ *  escaped by JSON.stringify, so it can never collide with either artifact. */
+export const SEPARATION_DELIMITER = "\u001E";
+
 export function handleCliError(
   e: unknown,
   event: string,

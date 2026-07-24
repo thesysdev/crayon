@@ -26,6 +26,15 @@ The Renderer parses the generated code. When it encounters a `Query("list_ticket
 
 The LLM generated the wiring. The runtime executes it.
 
+<Callout
+  type="info"
+  icon={<span className="hidden" aria-hidden="true" />}
+  className="my-6 border-fd-border bg-fd-muted/30 px-4 py-3.5 ps-4 shadow-none [&>div:first-child]:hidden"
+>
+  Keep generative UI reliable with output correction, model fallbacks, and monitoring. [Explore
+  OpenUI Cloud](/docs/openui-cloud/production-readiness).
+</Callout>
+
 ## What this enables
 
 - **Reactive dashboards** with date range filters, auto-refresh, and live KPIs computed from query results
@@ -137,14 +146,12 @@ const tools: ToolSpec[] = [
 
 ```ts
 // route.ts
-import { generatePrompt } from "@openuidev/lang-core";
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
 import componentSpec from "./generated/component-spec.json";
 
-const systemPrompt = generatePrompt({
-  ...componentSpec,
-  tools,
-  toolCalls: true,
-  bindings: true,
+const systemPrompt = generateSystemPrompt({
+  library: componentSpec as LibrarySpec,
+  promptOptions: { tools, toolCalls: true, bindings: true },
 });
 
 const completion = await openai.chat.completions.create({

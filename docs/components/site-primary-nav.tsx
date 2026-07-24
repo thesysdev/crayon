@@ -57,7 +57,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
       },
       {
         title: "OpenUI Chat",
-        description: "A ChatGPT-like assistant powered by OpenUI that responds with UI.",
+        description: "A ChatGPT-like assistant powered by OpenUI.",
         href: "/chat",
         preview: {
           light: "/nav/chat-light.webp",
@@ -80,7 +80,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
     children: [
       {
         title: "OpenClaw OS",
-        description: "A workspace for running and managing your OpenClaw agents.",
+        description: "A power-packed workspace for your OpenClaw agents.",
         href: "/openclaw-os",
         preview: {
           light: "/nav/openclaw-light.webp",
@@ -88,8 +88,18 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         },
       },
       {
+        title: "AppLess",
+        description: "A no-app phone experience powered by OpenUI-generated native interfaces.",
+        href: "https://github.com/thesysdev/appless",
+        newTab: true,
+        preview: {
+          light: "/nav/appless-light.webp",
+          dark: "/nav/appless-dark.webp",
+        },
+      },
+      {
         title: "Community projects",
-        description: "Tools, packages, plugins, and examples built by the community.",
+        description: "Tools, packages, plugins, demos, and more.",
         href: "/lab",
         preview: {
           light: "/nav/community-light.webp",
@@ -109,9 +119,9 @@ export function isNavDropdown(item: NavItem): item is NavDropdown {
 
 /* Panel geometry, mirrored from .viewportContent in the stylesheet. Kept in
    sync by hand because the natural width has to be known before layout. */
-const CARD_TRACK = 296;
-const PANEL_GAP = 8;
-const PANEL_PADDING = 14;
+const CARD_TRACK = 232;
+const PANEL_GAP = 20;
+const PANEL_PADDING = 20;
 /* Smallest gap left between the panel and either edge of the window. */
 const VIEWPORT_MARGIN = 16;
 /* Forgiveness around the nav+panel box before the menu counts as left. */
@@ -160,7 +170,7 @@ function DropdownCard({ child, onNavigate }: { child: NavDropdownChild; onNaviga
         <span className={styles.dropdownTitleRow}>
           <span className={styles.dropdownTitle}>{child.title}</span>
           <span className={styles.dropdownArrow} aria-hidden="true">
-            <ArrowRight size={18} />
+            <ArrowRight size={12} weight="bold" />
           </span>
         </span>
         {child.description && (
