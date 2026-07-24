@@ -1,7 +1,6 @@
 import { useStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 import { useChatStore } from "../store/ChatContext";
-import { deriveThreadState, EMPTY_THREAD_STATE, resolveViewKey } from "../store/threadStateEntry";
 import type {
   ChatStore,
   ThreadActions,
@@ -13,18 +12,20 @@ import type {
 type ThreadSlice = ThreadState & ThreadActions;
 type ThreadListSlice = ThreadListState & ThreadListActions;
 
-const threadSelector = (s: ChatStore): ThreadSlice => {
-  const entry = s.threadStates[resolveViewKey(s.selectedThreadId)] ?? EMPTY_THREAD_STATE;
-  return {
-    ...deriveThreadState(entry),
-    processMessage: s.processMessage,
-    appendMessages: s.appendMessages,
-    updateMessage: s.updateMessage,
-    setMessages: s.setMessages,
-    deleteMessage: s.deleteMessage,
-    cancelMessage: s.cancelMessage,
-  };
-};
+// The active thread lives directly in the store's flat fields.
+const threadSelector = (s: ChatStore): ThreadSlice => ({
+  messages: s.messages,
+  isRunning: s.isRunning,
+  isLoadingMessages: s.isLoadingMessages,
+  threadError: s.threadError,
+  executingToolCallIds: s.executingToolCallIds,
+  processMessage: s.processMessage,
+  appendMessages: s.appendMessages,
+  updateMessage: s.updateMessage,
+  setMessages: s.setMessages,
+  deleteMessage: s.deleteMessage,
+  cancelMessage: s.cancelMessage,
+});
 
 const threadListSelector = (s: ChatStore): ThreadListSlice => ({
   threads: s.threads,

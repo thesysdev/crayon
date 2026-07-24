@@ -2,7 +2,7 @@ import { createStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import type { ChatLLM, ChatStorage } from "../adapters/types";
 import { processStreamedMessage } from "../stream/processStreamedMessage";
-import { DRAFT_KEY, buildThreadState, resolveViewKey } from "./threadStateEntry";
+import { DRAFT_KEY } from "./threadStateEntry";
 import type { ChatStore, Message, Thread, ThreadStateEntry, UserMessage } from "./types";
 
 export interface CreateChatStoreConfig {
@@ -15,66 +15,84 @@ const mergeThreadList = (existing: Thread[], incoming: Thread[]): Thread[] =>
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
+/** Reset the flat active-thread fields to empty (fresh/blank view). */
+const emptyActive = () => ({
+  messages: [] as Message[],
+  isRunning: false,
+  isLoadingMessages: false,
+  threadError: null,
+  executingToolCallIds: new Set<string>(),
+  _abortController: null,
+});
+
 export const createChatStore = (config: CreateChatStoreConfig) => {
   const { storage, llm } = config;
   const { thread: threadStorage } = storage;
 
   const store = createStore<ChatStore>()(
     subscribeWithSelector((set, get) => {
-      /** The key whose entry the view currently shows. */
-      const viewKey = () => resolveViewKey(get().selectedThreadId);
+      /** Snapshot the flat active-thread fields as a background {@link ThreadStateEntry}. */
+      const snapshotActive = (s: ChatStore): ThreadStateEntry => ({
+        messages: s.messages,
+        isRunning: s.isRunning,
+        isLoadingMessages: s.isLoadingMessages,
+        threadError: s.threadError,
+        executingToolCallIds: s.executingToolCallIds,
+        abortController: s._abortController,
+      });
+
+      /** Turn a background entry into a flat active-fields patch (`abortController` → `_abortController`). */
+      const activeFrom = (e: ThreadStateEntry) => ({
+        messages: e.messages,
+        isRunning: e.isRunning,
+        isLoadingMessages: e.isLoadingMessages,
+        threadError: e.threadError,
+        executingToolCallIds: e.executingToolCallIds,
+        _abortController: e.abortController,
+      });
+
+      /** Read a running thread's live state wherever it lives (active flat fields or the background map). */
+      const readRun = (s: ChatStore, key: string): ThreadStateEntry | undefined =>
+        key === (s.selectedThreadId ?? DRAFT_KEY) ? snapshotActive(s) : s.inFlightThreads[key];
 
       /**
-       * Guarded functional update of one thread's entry. No-ops when the entry
-       * is absent (thread deleted) or `fn` returns `null`, so a dropped thread's
-       * late `finally`/abort/straggler callbacks can't resurrect a ghost.
-       * Spreads preserve every other entry's identity.
+       * Route a run's write to wherever its thread currently lives: the flat active
+       * fields if it's the on-screen thread, else its `inFlightThreads[key]` entry.
+       * A run that gets backgrounded mid-flight (user switched away) keeps writing to
+       * the map; guarded so a dropped background thread swallows late callbacks.
        */
-      const withThreadState = (
+      const writeRun = (
         key: string,
         fn: (cur: ThreadStateEntry) => Partial<ThreadStateEntry> | null,
       ) =>
         set((s) => {
-          const cur = s.threadStates[key];
-          if (!cur) return s;
+          if (key === (s.selectedThreadId ?? DRAFT_KEY)) {
+            const patch = fn(snapshotActive(s));
+            if (!patch) return s;
+            const { abortController, ...rest } = patch;
+            return "abortController" in patch
+              ? { ...rest, _abortController: abortController }
+              : rest;
+          }
+          const cur = s.inFlightThreads[key];
+          if (!cur) return s; // dropped background thread — ignore late writes
           const patch = fn(cur);
           if (!patch) return s;
-          return { threadStates: { ...s.threadStates, [key]: { ...cur, ...patch } } };
+          return { inFlightThreads: { ...s.inFlightThreads, [key]: { ...cur, ...patch } } };
         });
 
-      /** Guarded merge of a static patch into one thread's entry. */
-      const patchThreadState = (key: string, patch: Partial<ThreadStateEntry>) =>
-        withThreadState(key, () => patch);
+      /** Move the current active thread into the background map (used when switching away mid-stream). */
+      const backgroundActive = (key: string) =>
+        set((s) => ({ inFlightThreads: { ...s.inFlightThreads, [key]: snapshotActive(s) } }));
 
-      /** Update one thread's entry, creating it if absent. */
-      const upsertThreadState = (
-        key: string,
-        fn: (cur: ThreadStateEntry) => Partial<ThreadStateEntry>,
-      ) =>
+      /** Remove a thread's background entry. */
+      const dropInFlight = (key: string) =>
         set((s) => {
-          const cur = s.threadStates[key] ?? buildThreadState();
-          return { threadStates: { ...s.threadStates, [key]: { ...cur, ...fn(cur) } } };
-        });
-
-      /** Drop a thread's entry entirely. */
-      const dropThreadState = (key: string) =>
-        set((s) => {
-          if (!(key in s.threadStates)) return s;
-          const next = { ...s.threadStates };
+          if (!(key in s.inFlightThreads)) return s;
+          const next = { ...s.inFlightThreads };
           delete next[key];
-          return { threadStates: next };
+          return { inFlightThreads: next };
         });
-
-      /**
-       * Retention invariant: an in-memory `threadStates` entry is kept only while
-       * its thread is the ACTIVE view or is still STREAMING.
-       */
-      const dropIfDetached = (key: string) => {
-        const s = get();
-        if (key === resolveViewKey(s.selectedThreadId)) return; // active view — keep
-        if (s.threadStates[key]?.isRunning) return; // still streaming in background — keep
-        dropThreadState(key);
-      };
 
       return {
         // ── Thread List State ──
@@ -86,8 +104,11 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
         isCreatingThread: false,
         _nextCursor: undefined,
 
-        // ── Per-thread State ──
-        threadStates: {},
+        // ── Active Thread State (flat, like the single-thread store) ──
+        ...emptyActive(),
+
+        // ── Background streaming threads (NOT the active one) ──
+        inFlightThreads: {},
 
         // ── Thread List Actions ──
 
@@ -126,11 +147,14 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
         },
 
         switchToNewThread: () => {
+          // Guard the create window — a draft still becoming a real thread owns the
+          // flat fields; resetting now would collide with its re-key.
           if (get().isCreatingThread) return;
-          const leftKey = viewKey();
-          set({ selectedThreadId: null });
-          dropThreadState(DRAFT_KEY); // fresh blank draft
-          dropIfDetached(leftKey); // drop the thread we left unless it's still streaming
+          const s = get();
+          // A still-streaming active thread keeps running in the background; an idle
+          // one is simply discarded (no stale cache).
+          if (s.isRunning) backgroundActive(s.selectedThreadId ?? DRAFT_KEY);
+          set({ selectedThreadId: null, ...emptyActive() });
         },
 
         createThread: async (firstMessage: UserMessage) => {
@@ -140,26 +164,40 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
         },
 
         selectThread: (threadId: string) => {
-          const leftKey = viewKey(); // the thread we're navigating away from
-          // No abort — a run on the thread we're leaving keeps streaming in the background.
+          const s = get();
+          const leftKey = s.selectedThreadId ?? DRAFT_KEY;
+          if (leftKey === threadId) return; // re-selecting the active thread — no-op
+
+          // Keep the thread we're leaving alive in the background only if it's still
+          // streaming; otherwise let it go (it will reload from storage on return).
+          if (s.isRunning) backgroundActive(leftKey);
+
           set({ selectedThreadId: threadId });
-          // Drop the thread we left unless it's still streaming (retention invariant).
-          dropIfDetached(leftKey);
 
-          // A streaming background thread already has a live entry → show it as-is
-          // (no reload — it may hold tokens not yet in storage).
-          if (get().threadStates[threadId]) return;
+          // If the target is streaming in the background, promote it into the flat
+          // active fields (live — no reload).
+          const bg = get().inFlightThreads[threadId];
+          if (bg) {
+            set((st) => {
+              const next = { ...st.inFlightThreads };
+              delete next[threadId];
+              return { ...activeFrom(bg), inFlightThreads: next };
+            });
+            return;
+          }
 
-          upsertThreadState(threadId, () => ({ isLoadingMessages: true }));
+          // Otherwise load a fresh copy from storage.
+          set({ ...emptyActive(), isLoadingMessages: true });
           threadStorage
             .getMessages(threadId)
-            .then((messages) =>
-              // A run started (or the thread was deleted) meanwhile → don't clobber.
-              withThreadState(threadId, (cur) =>
-                cur.isRunning ? null : { messages, isLoadingMessages: false },
-              ),
-            )
-            .catch((e) => patchThreadState(threadId, { threadError: e, isLoadingMessages: false }));
+            .then((messages) => {
+              if ((get().selectedThreadId ?? DRAFT_KEY) !== threadId) return; // navigated away
+              set({ messages, isLoadingMessages: false });
+            })
+            .catch((e) => {
+              if ((get().selectedThreadId ?? DRAFT_KEY) !== threadId) return;
+              set({ threadError: e, isLoadingMessages: false });
+            });
         },
 
         updateThread: (thread: Thread) => {
@@ -188,12 +226,15 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             .deleteThread(threadId)
             .then(() => {
               const state = get();
-              state.threadStates[threadId]?.abortController?.abort();
-              dropThreadState(threadId);
+              const isActive = state.selectedThreadId === threadId;
+              // Abort its run whether it's the active thread or a background stream.
+              if (isActive) state._abortController?.abort();
+              else state.inFlightThreads[threadId]?.abortController?.abort();
+              dropInFlight(threadId);
               set((s) => ({ threads: s.threads.filter((t) => t.id !== threadId) }));
-              if (state.selectedThreadId === threadId) {
-                get().switchToNewThread();
-              }
+              // If we deleted the active thread, clear the flat fields to a blank chat
+              // (don't background it — it's gone).
+              if (isActive) set({ selectedThreadId: null, ...emptyActive() });
             })
             .catch(() => setPending(threadId, false));
         },
@@ -201,16 +242,12 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
         // ── Thread Actions ──
 
         processMessage: async (message) => {
-          const startState = get();
-          // The run's key: the selected thread, or DRAFT_KEY for a brand-new chat.
-          // A mutable local so post-re-key callbacks target the real threadId.
-          let requestKey = startState.selectedThreadId ?? DRAFT_KEY;
+          // A run only ever starts on the active thread; block if it's already running.
+          if (get().isRunning) return;
 
-          // Per-thread concurrency guard: only block if THIS thread is already
-          // running. Different threads run concurrently.
-          if (startState.threadStates[requestKey]?.isRunning) return;
-
-          const isNewChat = !startState.selectedThreadId;
+          const isNewChat = !get().selectedThreadId;
+          // The run's key — a mutable local so post-re-key callbacks target the real id.
+          let runKey = get().selectedThreadId ?? DRAFT_KEY;
           const abortController = new AbortController();
           const optimisticMessage: UserMessage = {
             ...message,
@@ -218,53 +255,48 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             role: "user",
           };
 
-          // Start the request on this thread's entry, preserving any already-loaded
-          // messages and appending the optimistic user message.
-          if (isNewChat) set({ isCreatingThread: true });
-          upsertThreadState(requestKey, (cur) => ({
-            messages: [...cur.messages, optimisticMessage],
+          // Start the run on the active (flat) fields.
+          set((s) => ({
+            messages: [...s.messages, optimisticMessage],
             isRunning: true,
             threadError: null,
             executingToolCallIds: new Set<string>(),
-            abortController,
+            _abortController: abortController,
+            ...(isNewChat ? { isCreatingThread: true } : null),
           }));
 
-          // On abort, flip the request off on its own entry.
+          // On abort, flip the run off wherever it now lives.
           abortController.signal.addEventListener("abort", () => {
-            patchThreadState(requestKey, { isRunning: false, abortController: null });
+            writeRun(runKey, () => ({ isRunning: false, abortController: null }));
           });
 
           try {
             if (isNewChat) {
               try {
                 const created = await get().createThread(optimisticMessage);
-                // Re-key the draft entry to the real threadId, carrying the live
-                // run. Follow into the new thread ONLY if the user is still on the
-                // draft view — a background re-key must not write selectedThreadId,
-                // or ChatProvider would reset the ephemeral stores of the thread
-                // the user is now viewing.
+                // Re-key the draft to its real id. Two cases:
+                //  A) still on the draft (flat active) → just relabel selectedThreadId.
+                //  B) navigated away mid-creation → the draft was moved to
+                //     inFlightThreads[DRAFT_KEY]; re-key it there (stays background).
                 set((s) => {
-                  const draft = s.threadStates[DRAFT_KEY];
-                  const nextStates = { ...s.threadStates };
-                  if (draft) {
-                    delete nextStates[DRAFT_KEY];
-                    nextStates[created.id] = draft;
+                  if (DRAFT_KEY in s.inFlightThreads) {
+                    const draft = s.inFlightThreads[DRAFT_KEY]!;
+                    const next = { ...s.inFlightThreads };
+                    delete next[DRAFT_KEY];
+                    next[created.id] = draft;
+                    return { inFlightThreads: next };
                   }
-                  const follow = s.selectedThreadId === null;
-                  return {
-                    threadStates: nextStates,
-                    ...(follow ? { selectedThreadId: created.id } : null),
-                  };
+                  return s.selectedThreadId === null ? { selectedThreadId: created.id } : s;
                 });
-                requestKey = created.id;
+                runKey = created.id;
               } finally {
                 set({ isCreatingThread: false });
               }
             }
 
             const response = await llm.send({
-              threadId: requestKey,
-              messages: get().threadStates[requestKey]?.messages ?? [],
+              threadId: runKey,
+              messages: readRun(get(), runKey)?.messages ?? [],
               signal: abortController.signal,
             });
 
@@ -275,23 +307,21 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             await processStreamedMessage({
               response,
               createMessage: (msg) =>
-                withThreadState(requestKey, (cur) => ({ messages: [...cur.messages, msg] })),
+                writeRun(runKey, (cur) => ({ messages: [...cur.messages, msg] })),
               updateMessage: (msg) =>
-                withThreadState(requestKey, (cur) => ({
+                writeRun(runKey, (cur) => ({
                   messages: cur.messages.map((m) => (m.id === msg.id ? msg : m)),
                 })),
-              // A tool's args have closed (TOOL_CALL_END) → it is now executing.
-              // The `null` no-op keeps the Set reference stable when membership is
+              // Keep the Set reference stable (return null) when membership is
               // unchanged so `useToolActivities` doesn't re-run needlessly.
               markToolExecuting: (id) =>
-                withThreadState(requestKey, (cur) =>
+                writeRun(runKey, (cur) =>
                   cur.executingToolCallIds.has(id)
                     ? null
                     : { executingToolCallIds: new Set(cur.executingToolCallIds).add(id) },
                 ),
-              // Its result landed (or it errored) → no longer executing.
               clearToolExecuting: (id) =>
-                withThreadState(requestKey, (cur) => {
+                writeRun(runKey, (cur) => {
                   if (!cur.executingToolCallIds.has(id)) return null;
                   const next = new Set(cur.executingToolCallIds);
                   next.delete(id);
@@ -301,43 +331,35 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             });
           } catch (e) {
             if (!abortController.signal.aborted) {
-              patchThreadState(requestKey, {
+              writeRun(runKey, () => ({
                 threadError: e instanceof Error ? e : new Error(String(e)),
-              });
+              }));
             }
           } finally {
-            // Clear run flags + any tool calls still flagged "executing" — adapters
-            // that emit TOOL_CALL_END without a matching TOOL_CALL_RESULT (e.g.
-            // client-side tool calls in the OpenAI adapters) would otherwise leave
-            // them stuck.
-            patchThreadState(requestKey, {
+            writeRun(runKey, () => ({
               isRunning: false,
               abortController: null,
               executingToolCallIds: new Set<string>(),
-            });
-            // A background run that just finished is no longer active or streaming —
-            // drop it so a return trip reloads fresh from storage (no stale copy).
-            dropIfDetached(requestKey);
+            }));
+            // If the run finished on a BACKGROUND thread, drop it — it's no longer
+            // active or streaming, so a return trip reloads it fresh from storage.
+            if (runKey !== (get().selectedThreadId ?? DRAFT_KEY)) dropInFlight(runKey);
           }
         },
 
         appendMessages: (...newMessages: Message[]) =>
-          upsertThreadState(viewKey(), (cur) => ({ messages: [...cur.messages, ...newMessages] })),
+          set((s) => ({ messages: [...s.messages, ...newMessages] })),
 
         updateMessage: (message: Message) =>
-          withThreadState(viewKey(), (cur) => ({
-            messages: cur.messages.map((m) => (m.id === message.id ? message : m)),
-          })),
+          set((s) => ({ messages: s.messages.map((m) => (m.id === message.id ? message : m)) })),
 
-        setMessages: (messages: Message[]) => upsertThreadState(viewKey(), () => ({ messages })),
+        setMessages: (messages: Message[]) => set({ messages }),
 
         deleteMessage: (messageId: string) =>
-          withThreadState(viewKey(), (cur) => ({
-            messages: cur.messages.filter((m) => m.id !== messageId),
-          })),
+          set((s) => ({ messages: s.messages.filter((m) => m.id !== messageId) })),
 
         cancelMessage: () => {
-          get().threadStates[viewKey()]?.abortController?.abort();
+          get()._abortController?.abort();
         },
       };
     }),

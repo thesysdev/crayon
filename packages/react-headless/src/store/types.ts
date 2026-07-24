@@ -64,10 +64,19 @@ export type ThreadActions = {
 
 export type ChatStore = ThreadListState &
   ThreadListActions &
+  ThreadState &
   ThreadActions & {
-    threadStates: Record<string, ThreadStateEntry>;
+    /**
+     * Threads streaming in the BACKGROUND — i.e. runs on threads that are not the
+     * active view. The active thread lives in the flat {@link ThreadState} fields
+     * above; a background entry is dropped the moment its run completes (a return
+     * trip reloads it from storage), so this holds only genuinely in-flight threads.
+     */
+    inFlightThreads: Record<string, ThreadStateEntry>;
     /** @internal */
     _nextCursor?: string | undefined;
+    /** @internal the active thread's in-flight run controller, or `null` when idle. */
+    _abortController: AbortController | null;
   };
 
 // ── Provider props ──
