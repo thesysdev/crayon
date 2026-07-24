@@ -88,6 +88,16 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         },
       },
       {
+        title: "AppLess",
+        description: "A no-app phone experience powered by OpenUI-generated native interfaces.",
+        href: "https://github.com/thesysdev/appless",
+        newTab: true,
+        preview: {
+          light: "/nav/appless-light.webp",
+          dark: "/nav/appless-dark.webp",
+        },
+      },
+      {
         title: "Community projects",
         description: "Tools, packages, plugins, demos, and more.",
         href: "/lab",
