@@ -1,5 +1,6 @@
 "use client";
 
+import { usePersistedModel, getPersistedModel } from "@/hooks/use-persisted-model";
 import { useTheme } from "@/hooks/use-system-theme";
 import { shouldShowBillingCreditsNotice } from "@/lib/billing";
 import {
@@ -9,7 +10,6 @@ import {
   starters,
 } from "@/lib/cloud-chat-constants";
 import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
-import { DEFAULT_MODEL } from "@/lib/models";
 import { defineArtifactCategories } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
 import {
@@ -40,12 +40,16 @@ const showBillingCreditsNotice = shouldShowBillingCreditsNotice();
 
 export function CloudChat() {
   const mode = useTheme();
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
+  const [selectedModel, setSelectedModel] = usePersistedModel();
   const [billingDialogOpen, setBillingDialogOpen] = useState(false);
   const [billingCreditsRequired, setBillingCreditsRequired] = useState(false);
   const [llm] = useState(() =>
     createCloudChatLLM({
-      initialModel: selectedModel,
+      // Read the persisted model directly so the LLM starts on the saved
+      // selection at construction. selectedModel is still the server snapshot
+      // (DEFAULT_MODEL) during the first client render; the effect below also
+      // keeps it in sync afterwards.
+      initialModel: getPersistedModel(),
       showBillingCreditsNotice,
       onRequestStart: () => {
         if (showBillingCreditsNotice) setBillingCreditsRequired(false);
@@ -62,6 +66,7 @@ export function CloudChat() {
     features: { artifact: true },
   });
 
+  // Keep the LLM in sync with the persisted selection (initial restore + changes).
   useEffect(() => {
     llm.setSelectedModel(selectedModel);
   }, [llm, selectedModel]);
@@ -69,9 +74,10 @@ export function CloudChat() {
   const handleModelChange = useCallback(
     (model: string) => {
       llm.setSelectedModel(model);
+      // Persist + notify; useSyncExternalStore re-reads and re-renders.
       setSelectedModel(model);
     },
-    [llm],
+    [llm, setSelectedModel],
   );
 
   return (

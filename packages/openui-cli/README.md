@@ -112,7 +112,7 @@ openui create --no-interactive --name my-app --template openui-cloud --api-key t
 
 ### `openui generate`
 
-Generates a system prompt or JSON Schema from a file that exports a `createLibrary()` result.
+Generates a system prompt and serialized library spec from a file that exports a `createLibrary()` result. Use the spec with `generateSystemPrompt` in backend routes; the prompt file remains available for static or legacy integrations.
 
 ```bash
 openui generate [options] [entry]
@@ -124,8 +124,9 @@ Arguments:
 
 Options:
 
-- `-o, --out <file>`: Write output to a file instead of stdout
-- `--json-schema`: Output JSON Schema instead of the system prompt
+- `-o, --out <file>`: Write the prompt to a file and the spec alongside it with the extension replaced by `.spec.json`
+- `--json-schema`: Output only JSON Schema instead of the prompt and spec
+- `--spec`: Output only the serialized library spec
 - `--export <name>`: Use a specific export name instead of auto-detecting the library export
 - `--prompt-options <name>`: Use a specific `PromptOptions` export name (auto-detected by default)
 - `--no-interactive`: Fail instead of prompting for a missing `entry`
@@ -145,6 +146,7 @@ Examples:
 ```bash
 openui generate ./src/library.ts
 openui generate ./src/library.ts --json-schema
+openui generate ./src/library.ts --spec
 openui generate ./src/library.ts --export library
 openui generate ./src/library.ts --out ./artifacts/system-prompt.txt
 openui generate ./src/library.ts --prompt-options myPromptOptions
@@ -153,7 +155,7 @@ openui generate --no-interactive ./src/library.ts
 
 ## How `generate` resolves exports
 
-`openui generate` expects the target module to export a library object with both `prompt()` and `toJSONSchema()` methods.
+`openui generate` expects the target module to export a library object with `prompt()`, `toSpec()`, and `toJSONSchema()` methods.
 
 If `--export` is not provided, it looks for exports in this order:
 
