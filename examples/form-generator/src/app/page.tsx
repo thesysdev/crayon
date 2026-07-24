@@ -3,6 +3,7 @@
 import { herouiChatLibrary } from "@/lib/heroui-genui";
 import type { Message } from "@openuidev/react-headless";
 import {
+  fetchLLM,
   openAIAdapter,
   openAIMessageFormat,
   processStreamedMessage,
@@ -33,6 +34,12 @@ const STARTERS = [
   },
 ];
 
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIAdapter(),
+  messageFormat: openAIMessageFormat,
+});
 
 export default function Page() {
   const [instruction, setInstruction] = useState("");
@@ -68,13 +75,9 @@ export default function Page() {
     let draftContent = "";
 
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          messages: openAIMessageFormat.toApi(nextMessages as any),
-        }),
+      const response = await llm.send({
+        threadId: "form",
+        messages: nextMessages,
         signal: abortController.signal,
       });
 
@@ -89,7 +92,7 @@ export default function Page() {
 
       await processStreamedMessage({
         response,
-        adapter: openAIAdapter(),
+        adapter: llm.streamProtocol,
         createMessage: applyContent,
         updateMessage: applyContent,
       });

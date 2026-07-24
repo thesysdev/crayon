@@ -31,17 +31,17 @@ Use `@openuidev/react-headless` when you want OpenUI's chat behavior without Ope
 
 ### URL-based setup
 
-The simplest configuration points to your API and lets the provider handle REST calls and streaming automatically:
+The simplest configuration points to your API and lets the provider handle the requests and streaming automatically:
 
 ```tsx
-import { ChatProvider } from "@openuidev/react-headless";
+import { agUIAdapter, ChatProvider, fetchLLM, restStorage } from "@openuidev/react-headless";
+
+const llm = fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() });
+const storage = restStorage({ baseUrl: "/api/threads" });
 
 function App() {
   return (
-    <ChatProvider
-      apiUrl="/api/chat"
-      threadApiUrl="/api/threads"
-    >
+    <ChatProvider llm={llm} storage={storage}>
       <YourChatUI />
     </ChatProvider>
   );
@@ -50,31 +50,21 @@ function App() {
 
 ### Custom functions
 
-For full control, provide your own functions instead of URLs:
+For full control, implement the `ChatLLM` interface instead:
 
 ```tsx
-<ChatProvider
-  processMessage={async ({ threadId, messages, abortController }) => {
-    return fetch("/api/chat", {
+import { openAIAdapter, openAIMessageFormat, type ChatLLM } from "@openuidev/react-headless";
+
+const llm: ChatLLM = {
+  send: ({ threadId, messages, signal }) =>
+    fetch("/api/chat", {
       method: "POST",
-      body: JSON.stringify({ threadId, messages }),
-      signal: abortController.signal,
-    });
-  }}
-  fetchThreadList={async () => {
-    const res = await fetch("/api/threads");
-    return res.json();
-  }}
-  createThread={async (firstMessage) => {
-    const res = await fetch("/api/threads", {
-      method: "POST",
-      body: JSON.stringify({ message: firstMessage }),
-    });
-    return res.json();
-  }}
->
-  <YourChatUI />
-</ChatProvider>
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId, messages: openAIMessageFormat.toApi(messages) }),
+      signal,
+    }),
+  streamProtocol: openAIAdapter(),
+};
 ```
 
 ## Hooks
@@ -175,22 +165,20 @@ function MessageBubble() {
 
 ## Streaming Adapters
 
-Adapters transform HTTP responses into the internal event stream. Pass one to `ChatProvider` via `streamProtocol`:
+Adapters transform HTTP responses into the internal event stream. They are factories — call one and pass the result to `fetchLLM` via `streamAdapter`:
 
 ```tsx
-import { ChatProvider, openAIAdapter } from "@openuidev/react-headless";
+import { fetchLLM, openAIAdapter } from "@openuidev/react-headless";
 
-<ChatProvider apiUrl="/api/chat" streamProtocol={openAIAdapter}>
-  {children}
-</ChatProvider>
+const llm = fetchLLM({ url: "/api/chat", streamAdapter: openAIAdapter() });
 ```
 
 | Adapter | Description |
 | :--- | :--- |
-| `agUIAdapter` | Default adapter for AG-UI SSE events (`data: {json}\n`) |
-| `openAIAdapter` | Parses OpenAI Chat Completions streaming (`ChatCompletionChunk`) |
-| `openAIResponsesAdapter` | Parses OpenAI Responses API streaming (`ResponseStreamEvent`) |
-| `openAIReadableStreamAdapter` | Parses OpenAI SDK's `Stream.toReadableStream()` NDJSON output |
+| `agUIAdapter()` | Parses AG-UI SSE events (`data: {json}\n`) |
+| `openAIAdapter()` | Parses OpenAI Chat Completions streaming (`ChatCompletionChunk`) |
+| `openAIResponsesAdapter()` | Parses OpenAI Responses API streaming (`ResponseStreamEvent`) |
+| `openAIReadableStreamAdapter()` | Parses OpenAI SDK's `Stream.toReadableStream()` NDJSON output |
 
 ### Custom adapter
 
@@ -208,14 +196,16 @@ const myAdapter: StreamProtocolAdapter = {
 
 ## Message Formats
 
-Message formats convert between your API's message shape and the internal AG-UI format. Pass one to `ChatProvider` via `messageFormat`:
+Message formats convert between your API's message shape and the internal AG-UI format. Pass one to `fetchLLM` via the `messageFormat` option:
 
 ```tsx
-import { ChatProvider, openAIMessageFormat } from "@openuidev/react-headless";
+import { fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-headless";
 
-<ChatProvider apiUrl="/api/chat" messageFormat={openAIMessageFormat}>
-  {children}
-</ChatProvider>
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIAdapter(),
+  messageFormat: openAIMessageFormat,
+});
 ```
 
 | Format | Description |

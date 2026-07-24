@@ -1,0 +1,101 @@
+---
+title: How it works
+description: "Learn how OpenUI Cloud handles model access, automatic fallbacks, output validation, slides, reports, and conversation persistence."
+---
+
+## Overview
+
+Generative UI puts model output directly in front of users, and raw model output is not reliable enough for that. OpenUI Cloud sits between the application and the model: generation requests go through it, and what comes back is validated, renderable UI.
+
+OpenUI Cloud exposes two API surfaces:
+
+- **Responses API:** The generation endpoint is compatible with the OpenAI Responses API, so existing OpenAI SDKs work against it. It accepts a conversation turn and streams validated UI as **OpenUI Lang**, the same open-source format rendered by OpenUI component libraries. Managed model access, automatic fallbacks, output validation, and slide and report generation happen behind this endpoint.
+- **Persistence API:** Provides read and write access to stored conversations, slides, and reports. The browser calls it directly using short-lived session tokens.
+
+Both integrate with AgentInterface, OpenUI's chat surface: streaming, generative UI rendering, artifact panels, and thread history connect without additional wiring. Applications with their own UI consume the same OpenUI Lang stream with the open-source renderer.
+
+Rendering stays in the browser: responses render client-side with the application's component library, exactly as in open-source OpenUI.
+
+<Mermaid chart={`
+flowchart LR
+    subgraph App[The application]
+        P[Product code] --> A[AgentInterface]
+        B[Backend route]
+    end
+    subgraph Cloud[OpenUI Cloud]
+        R[Responses API]
+        PA[Persistence API]
+        M["Model routing and fallbacks"]
+        V["Output validation and correction"]
+        G[Artifact generation]
+        S["Conversation and artifact storage"]
+    end
+    A --> B
+    B --> R
+    A -->|session token| PA
+    R --> M
+    R --> V
+    R --> G
+    R --> S
+    PA --> S
+`} />
+
+The application consists of product code, AgentInterface, and a backend route that holds the API key. OpenUI Cloud runs model routing, validation, artifact generation, and storage.
+
+## Request lifecycle
+
+<Mermaid chart={`
+sequenceDiagram
+    participant Browser as User's browser
+    participant App as Application backend
+    participant Cloud as OpenUI Cloud
+    participant Models as Model providers
+
+    Browser->>App: Message from AgentInterface
+    App->>Cloud: Responses API call (new turn + conversation reference)
+    Cloud->>Models: Request to the selected model
+    Models-->>Cloud: Raw model output
+    Note over Cloud: Output validated and corrected
+    Cloud-->>App: Stream of renderable UI
+    App-->>Browser: Stream relayed, interface renders progressively
+    Note over Cloud: Turn persisted to the conversation
+`} />
+
+1. The user sends a message. AgentInterface posts it to the application backend.
+2. The backend makes one Responses API call for the new turn. The call names the model to use and references the server-side conversation, so the backend sends only the new message. Cloud supplies the earlier turns.
+3. Cloud routes the request to that model. If the model or provider is unavailable, the request reroutes to a fallback.
+4. Model output is validated and corrected before it leaves Cloud.
+5. The response streams back through the backend to the browser, and the interface renders progressively as it arrives.
+6. The turn's messages, actions, and outputs persist to the conversation. Actions include user interactions with generated components, such as button clicks and form submissions.
+
+## Output validation
+
+Each response is checked against the component library it was generated for. By default, that is OpenUI Cloud's pre-tested, responsive, and accessible component library. An application can instead register its own component library, including its component schema, generated prompt, and custom components. Invalid output, including malformed structures, unknown components, and unrenderable content, is corrected in the streaming path before it reaches the client. Differences between model providers and versions are normalized at the same stage, so rendered behavior stays consistent when the underlying model changes.
+
+## Artifact generation
+
+Slides and reports are generated through the Responses API. A request declares which artifact types are allowed, and the model produces them inside the same stream as the conversation. Slides and reports are stored and versioned automatically, and both support manual editing in their viewers. Slides can be exported to PowerPoint, and reports can be exported to PDF.
+
+## Conversation persistence
+
+Conversations are stored server-side. Each turn's messages, actions, and outputs attach to a conversation thread, and generation calls reference the thread instead of resending its history. The application backend stores no chat history and runs no database. On load, AgentInterface reads threads and artifacts from the Persistence API.
+
+## Authentication
+
+Two credentials with different scopes:
+
+- **API key:** Authorizes generation calls and session-token minting. It is held by the application backend and is never sent to the browser.
+- **Session tokens:** Short-lived tokens that the application backend requests from Cloud and returns to the browser. The browser uses them to read conversations and artifacts from the Persistence API without the backend proxying each read. Tokens expire within minutes, and AgentInterface requests a fresh token from the backend before expiry.
+
+<Mermaid chart={`
+sequenceDiagram
+    participant Browser as User's browser
+    participant App as Application backend
+    participant Cloud as OpenUI Cloud
+
+    Browser->>App: Session token request
+    App->>Cloud: Mint request, authorized with the API key
+    Cloud-->>App: Short-lived session token
+    App-->>Browser: Session token
+    Browser->>Cloud: Reads conversations and artifacts
+`} />

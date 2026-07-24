@@ -1,0 +1,176 @@
+name: CLI End to End
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/cli-e2e.yml"
+      - "packages/openui-cli/**"
+      - "tsconfig.json"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/cli-e2e.yml"
+      - "packages/openui-cli/**"
+      - "tsconfig.json"
+
+permissions:
+  contents: read
+
+jobs:
+  package-cli:
+    name: Package CLI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI and templates
+        run: pnpm --filter @openuidev/cli build
+
+      - name: Pack CLI
+        working-directory: packages/openui-cli
+        run: |
+          mkdir -p "${RUNNER_TEMP}/cli-package"
+          npm pack --ignore-scripts --pack-destination "${RUNNER_TEMP}/cli-package"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: openui-cli-package
+          path: ${{ runner.temp }}/cli-package/*.tgz
+          if-no-files-found: error
+          retention-days: 1
+
+  cli-e2e:
+    name: ${{ matrix.template }} (${{ matrix.package-manager }}, ${{ matrix.os }}, Node ${{ matrix.node-version }})
+    needs: package-cli
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        template:
+          - openui-cloud
+          - openui-self-hosted
+        package-manager:
+          - npm
+          - pnpm
+        environment:
+          - ubuntu-node20
+          - ubuntu-node22
+          - ubuntu-node24
+          - macos-node22
+          - windows-node22
+        include:
+          - environment: ubuntu-node20
+            os: ubuntu-latest
+            node-version: 20
+          - environment: ubuntu-node22
+            os: ubuntu-latest
+            node-version: 22
+          - environment: ubuntu-node24
+            os: ubuntu-latest
+            node-version: 24
+          - environment: macos-node22
+            os: macos-latest
+            node-version: 22
+          - environment: windows-node22
+            os: windows-latest
+            node-version: 22
+
+    steps:
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - uses: pnpm/action-setup@v6
+        if: matrix.package-manager == 'pnpm'
+        with:
+          version: 10.33.0
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: openui-cli-package
+          path: ${{ runner.temp }}/cli-package
+
+      - name: Locate CLI package and prepare workspace
+        id: cli-package
+        shell: bash
+        env:
+          CLI_PACKAGE_DIR: ${{ runner.temp }}/cli-package
+          CLI_E2E_DIR: ${{ runner.temp }}/cli-e2e
+        run: |
+          node --input-type=module -e "
+            import fs from 'node:fs';
+            import path from 'node:path';
+            const tarballs = fs.readdirSync(process.env.CLI_PACKAGE_DIR).filter((file) => file.endsWith('.tgz'));
+            if (tarballs.length !== 1) throw new Error('Expected exactly one CLI tarball');
+            const tarball = path.join(process.env.CLI_PACKAGE_DIR, tarballs[0]);
+            fs.mkdirSync(process.env.CLI_E2E_DIR, { recursive: true });
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'path=' + tarball + '\n');
+          "
+
+      - name: Run CLI with npm
+        if: matrix.package-manager == 'npm'
+        working-directory: ${{ runner.temp }}/cli-e2e
+        run: >-
+          npm exec --yes --package="${{ steps.cli-package.outputs.path }}" --
+          openui --no-telemetry create
+          --name generated-app
+          --template ${{ matrix.template }}
+          --api-key sk-test
+          --no-interactive
+          --no-skill
+
+      - name: Run CLI with pnpm
+        if: matrix.package-manager == 'pnpm'
+        working-directory: ${{ runner.temp }}/cli-e2e
+        run: >-
+          pnpm dlx "${{ steps.cli-package.outputs.path }}"
+          --no-telemetry create
+          --name generated-app
+          --template ${{ matrix.template }}
+          --api-key sk-test
+          --no-interactive
+          --no-skill
+
+      # npm- and pnpm-installed node_modules can both satisfy either run command.
+      # Check manager metadata and lockfile retention to verify CLI selection.
+      - name: Verify selected package manager
+        working-directory: ${{ runner.temp }}/cli-e2e/generated-app
+        shell: bash
+        env:
+          PACKAGE_MANAGER: ${{ matrix.package-manager }}
+        run: |
+          node --input-type=module -e "
+            import fs from 'node:fs';
+            import path from 'node:path';
+            const marker = process.env.PACKAGE_MANAGER === 'pnpm'
+              ? path.join('node_modules', '.modules.yaml')
+              : path.join('node_modules', '.package-lock.json');
+            if (!fs.existsSync(marker)) throw new Error('Missing ' + process.env.PACKAGE_MANAGER + ' install marker: ' + marker);
+            const hasNpmLockfile = fs.existsSync('package-lock.json');
+            if (process.env.PACKAGE_MANAGER === 'npm' && !hasNpmLockfile) {
+              throw new Error('npm-generated project is missing package-lock.json');
+            }
+            if (process.env.PACKAGE_MANAGER !== 'npm' && hasNpmLockfile) {
+              throw new Error(process.env.PACKAGE_MANAGER + '-generated project retained package-lock.json');
+            }
+          "
+
+      - name: Build generated app
+        working-directory: ${{ runner.temp }}/cli-e2e/generated-app
+        run: ${{ matrix.package-manager }} run build
+        env:
+          OPENAI_API_KEY: sk-test
+          THESYS_API_KEY: sk-test
+          DEMO_USER_ID: test-user
