@@ -52,7 +52,7 @@ Use the package name that matches the area you are changing.
 
 ## OpenUI Agent Skill
 
-The OpenUI agent skill is maintained in the [thesysdev/skills repository](https://github.com/thesysdev/skills/tree/main/skills/openui), which is its source of truth. The `skills` directory in this repository is a Git submodule linked to that repository.
+The OpenUI agent skill is maintained in the [thesysdev/skills repository](https://github.com/thesysdev/skills/tree/main/skills/openui), which is its source of truth. The `skills/openui` directory in this repository is retained temporarily as a compatibility mirror for older `@openuidev/cli` releases that still install the skill from `thesysdev/openui`.
 
 To propose changes to the skill or its supporting references, open a pull request in `thesysdev/skills` rather than editing the linked files through this repository.
 
