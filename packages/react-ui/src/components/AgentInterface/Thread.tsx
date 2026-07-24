@@ -21,9 +21,9 @@ import { TimelineEntry } from "./_shared/tool-renderer";
 import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
 
 import { Callout } from "../Callout";
+import { DotMatrixLoader } from "../DotMatrixLoader";
 import { IconButton } from "../IconButton";
 import { MarkDownRenderer } from "../MarkDownRenderer";
-import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
 import { ResizableSeparator } from "./ResizableSeparator";
 import { UserMessageContent } from "./UserMessageContent";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
@@ -120,7 +120,7 @@ export const ScrollArea = ({
   children,
   className,
   scrollVariant = "user-message-anchor",
-  userMessageSelector = ".openui-agent-thread-message-user",
+  userMessageSelector = ".openui-agent-thread-message-user, .openui-shell-thread-message-user",
   scrollOnLoad = true,
 }: {
   children?: React.ReactNode;
@@ -289,7 +289,7 @@ export const RenderMessage = memo(
 export const MessageLoading = () => {
   return (
     <div className="openui-agent-thread-message-loading">
-      <MessageLoadingComponent />
+      <DotMatrixLoader variant="compact" />
     </div>
   );
 };

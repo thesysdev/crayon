@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 const SITE_TITLE = "OpenUI - The Open Standard for Generative UI";
 const SITE_DESCRIPTION =
-  "OpenUI is a full-stack Generative UI framework with a compact streaming-first language, a React runtime with built-in components, and ready-to-use chat interfaces - using up to 67% fewer tokens than JSON.";
+  "Full-stack, renderer-agnostic Generative UI with a streaming-first language, official React support, community integrations, and up to 67% fewer tokens than JSON.";
 const SITE_IMAGE = "/meta-image.png";
 
 export const metadata: Metadata = {
@@ -43,9 +43,6 @@ export const metadata: Metadata = {
   creator: "OpenUI",
   publisher: "OpenUI",
   category: "technology",
-  alternates: {
-    canonical: "/",
-  },
   icons: {
     icon: "/shiro-logo.svg",
     shortcut: "/shiro-logo.svg",
@@ -92,17 +89,17 @@ export default function Layout({ children }: LayoutProps<"/">) {
         <PHProvider>
           <RootProvider theme={{ defaultTheme: "light" }}>{children}</RootProvider>
         </PHProvider>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-MZ0TZ82NM2"
+          strategy="afterInteractive"
+        />
+        <Script id="ga-init" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-MZ0TZ82NM2');
+        `}</Script>
       </body>
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-MZ0TZ82NM2"
-        strategy="afterInteractive"
-      />
-      <Script id="ga-init" strategy="afterInteractive">{`
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-MZ0TZ82NM2');
-      `}</Script>
     </html>
   );
 }

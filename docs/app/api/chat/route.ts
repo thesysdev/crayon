@@ -4,40 +4,61 @@ import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
 import { join } from "path";
 
-const systemPrompt = readFileSync(join(process.cwd(), "generated/chat-system-prompt.txt"), "utf-8");
+const openUiSystemPrompt = readFileSync(
+  join(process.cwd(), "generated/chat-system-prompt.txt"),
+  "utf-8",
+);
 
-const conversationLog: Array<{ role: string; content: string }> = [];
+const markdownSystemPrompt = `You are a helpful assistant. Respond using clear, well-structured GitHub-Flavored Markdown.
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-function extractText(msg: any): string {
-  const content = msg?.content;
-  if (typeof content === "string") {
-    try {
-      const parsed = JSON.parse(content);
-      if (parsed?.parts)
-        return parsed.parts
-          .filter((p: any) => p.type === "text")
-          .map((p: any) => p.text)
-          .join("");
-    } catch {
-      /* plain string */
-    }
-    return content;
-  }
-  if (Array.isArray(content))
-    return content
-      .filter((p: any) => p.type === "text")
-      .map((p: any) => p.text)
-      .join("");
-  if (Array.isArray(msg?.parts))
-    return msg.parts
-      .filter((p: any) => p.type === "text")
-      .map((p: any) => p.text)
-      .join("");
-  if (typeof msg?.text === "string") return msg.text;
-  return JSON.stringify(msg);
+Use headings, lists, tables, links, block quotes, and fenced code blocks when they make the response easier to understand.
+
+Return only Markdown content. Do not emit OpenUI Lang, component syntax, JSON UI descriptions, or instructions for a renderer.`;
+
+type ResponseMode = "markdown" | "openui";
+const TOOL_NAMES = ["get_weather", "get_stock_price", "search_web"] as const;
+type ToolName = (typeof TOOL_NAMES)[number];
+const TOOL_NAME_SET = new Set<string>(TOOL_NAMES);
+
+interface ChatRequestBody {
+  messages: unknown[];
+  responseMode?: ResponseMode;
+  toolNames?: ToolName[];
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
+
+function invalidRequest(message: string) {
+  return Response.json({ error: { message } }, { status: 400 });
+}
+
+function parseRequestBody(body: unknown): ChatRequestBody | Response {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return invalidRequest("Request body must be a JSON object");
+  }
+
+  const { messages, responseMode, toolNames } = body as Record<string, unknown>;
+
+  if (!Array.isArray(messages)) {
+    return invalidRequest("messages must be an array");
+  }
+
+  if (responseMode !== undefined && responseMode !== "markdown" && responseMode !== "openui") {
+    return invalidRequest('responseMode must be either "markdown" or "openui"');
+  }
+
+  if (
+    toolNames !== undefined &&
+    (!Array.isArray(toolNames) ||
+      !toolNames.every((toolName) => typeof toolName === "string" && TOOL_NAME_SET.has(toolName)))
+  ) {
+    return invalidRequest(`toolNames must contain only: ${TOOL_NAMES.join(", ")}`);
+  }
+
+  return {
+    messages,
+    responseMode: responseMode as ResponseMode | undefined,
+    toolNames: toolNames as ToolName[] | undefined,
+  };
+}
 
 // ── Tool implementations ──
 
@@ -133,7 +154,6 @@ function searchWeb({ query }: { query: string }): Promise<string> {
 
 // ── Tool definitions ──
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tools: any[] = [
   {
     type: "function",
@@ -243,11 +263,23 @@ function sseToolCallArgs(
 // ── Route handler ──
 
 export async function POST(req: NextRequest) {
-  const { messages } = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return invalidRequest("Request body must be valid JSON");
+  }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const lastUserMsg = (messages as any[]).filter((m: any) => m.role === "user").pop();
-  if (lastUserMsg) conversationLog.push({ role: "user", content: extractText(lastUserMsg) });
+  const parsedBody = parseRequestBody(body);
+  if (parsedBody instanceof Response) {
+    return parsedBody;
+  }
+
+  const { messages, responseMode = "openui", toolNames } = parsedBody;
+  const selectedTools =
+    toolNames === undefined
+      ? tools
+      : tools.filter((tool) => toolNames.includes(tool.function.name as ToolName));
 
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -263,24 +295,31 @@ export async function POST(req: NextRequest) {
   });
   const MODEL = "openai/gpt-5.4";
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cleanMessages = (messages as any[])
-    .filter((m) => m.role !== "tool")
+    .filter(
+      (m) =>
+        m.role !== "tool" &&
+        (responseMode === "openui" || (m.role !== "system" && m.role !== "developer")),
+    )
     .map((m) => {
       if (m.role === "assistant" && m.tool_calls?.length) {
-        const { tool_calls: _tc, ...rest } = m; // eslint-disable-line @typescript-eslint/no-unused-vars
+        const { tool_calls: _tc, ...rest } = m;
         return rest;
       }
       return m;
     });
 
   const chatMessages: ChatCompletionMessageParam[] = [
-    { role: "system" as const, content: systemPrompt },
+    {
+      role: "system" as const,
+      content: responseMode === "markdown" ? markdownSystemPrompt : openUiSystemPrompt,
+    },
     ...cleanMessages,
   ];
 
   const encoder = new TextEncoder();
   let controllerClosed = false;
+  let activeRunner: { abort: () => void } | undefined;
 
   const readable = new ReadableStream({
     start(controller) {
@@ -302,43 +341,66 @@ export async function POST(req: NextRequest) {
         }
       };
 
-      let fullResponse = "";
       const pendingCalls: Array<{ id: string; name: string; arguments: string }> = [];
       let callIdx = 0;
       let resultIdx = 0;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const runner = (client.chat.completions as any).runTools({
-        model: MODEL,
-        messages: chatMessages,
-        tools,
-        stream: true,
-      });
+      const runner: any =
+        selectedTools.length === 0
+          ? client.chat.completions.stream(
+              {
+                model: MODEL,
+                messages: chatMessages,
+              },
+              { signal: req.signal },
+            )
+          : (client.chat.completions as any).runTools(
+              {
+                model: MODEL,
+                messages: chatMessages,
+                tools: selectedTools,
+                stream: true,
+              },
+              { signal: req.signal },
+            );
+      activeRunner = runner;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      runner.on("functionToolCall", (fc: any) => {
-        const id = `tc-${callIdx}`;
-        pendingCalls.push({ id, name: fc.name, arguments: fc.arguments });
-        enqueue(sseToolCallStart(encoder, { id, function: { name: fc.name } }, callIdx));
-        callIdx++;
-      });
+      const handleAbort = () => {
+        runner.abort();
+        close();
+      };
+      req.signal.addEventListener("abort", handleAbort, { once: true });
 
-      runner.on("functionToolCallResult", (result: string) => {
-        const tc = pendingCalls[resultIdx];
-        if (tc) {
-          enqueue(
-            sseToolCallArgs(
-              encoder,
-              { id: tc.id, function: { arguments: tc.arguments } },
-              result,
-              resultIdx,
-            ),
-          );
-        }
-        resultIdx++;
-      });
+      const finish = () => {
+        req.signal.removeEventListener("abort", handleAbort);
+        activeRunner = undefined;
+        close();
+      };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (selectedTools.length > 0) {
+        runner.on("functionToolCall", (fc: any) => {
+          const id = `tc-${callIdx}`;
+          pendingCalls.push({ id, name: fc.name, arguments: fc.arguments });
+          enqueue(sseToolCallStart(encoder, { id, function: { name: fc.name } }, callIdx));
+          callIdx++;
+        });
+
+        runner.on("functionToolCallResult", (result: string) => {
+          const tc = pendingCalls[resultIdx];
+          if (tc) {
+            enqueue(
+              sseToolCallArgs(
+                encoder,
+                { id: tc.id, function: { arguments: tc.arguments } },
+                result,
+                resultIdx,
+              ),
+            );
+          }
+          resultIdx++;
+        });
+      }
+
       runner.on("chunk", (chunk: any) => {
         // Keep credit handling to non-2xx responses. Provider-specific mid-stream
         // chunks are intentionally ignored because they are harder to maintain
@@ -347,7 +409,6 @@ export async function POST(req: NextRequest) {
         const delta = choice?.delta;
         if (!delta) return;
         if (delta.content) {
-          fullResponse += delta.content;
           enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
         }
         if (choice?.finish_reason === "stop") {
@@ -358,28 +419,24 @@ export async function POST(req: NextRequest) {
       runner.on("end", () => {
         if (controllerClosed) return;
 
-        conversationLog.push({ role: "assistant", content: fullResponse });
-        console.info(
-          "[OpenUI Lang] Conversation:\n",
-          JSON.stringify(
-            conversationLog.map((m) => ({ ...m, content: m.content.replace(/\n/g, " ") })),
-            null,
-            2,
-          ),
-        );
         enqueue(encoder.encode("data: [DONE]\n\n"));
-        close();
+        finish();
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       runner.on("error", (err: any) => {
         if (controllerClosed) return;
 
         const msg = err instanceof Error ? err.message : "Stream error";
         console.error("Chat route error:", msg);
         enqueue(encoder.encode(`data: ${JSON.stringify({ error: msg })}\n\n`));
-        close();
+        finish();
       });
+
+      runner.on("abort", finish);
+    },
+    cancel() {
+      activeRunner?.abort();
+      activeRunner = undefined;
     },
   });
 
