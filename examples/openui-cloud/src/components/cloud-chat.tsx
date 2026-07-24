@@ -6,7 +6,8 @@ import {
   openAIResponsesAdapter,
   type ChatLLM,
 } from "@openuidev/react-headless";
-import { AgentInterface } from "@openuidev/react-ui";
+import { AgentInterface, type PromptTemplate } from "@openuidev/react-ui";
+import { FileText, Presentation } from "lucide-react";
 // chatLibrary, useOpenuiCloudStorage, and the artifact renderers all come from the
 // migrated SDK (@openuidev/thesys). Its artifact parser now reads the program from
 // the tool INPUT channel (args.artifact_content), so the rich preview renders live
@@ -19,14 +20,67 @@ import {
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
 
-// Categories are consumer-owned (the SDK exports each renderer separately). One
-// category per genui artifact kind; `defineArtifactCategories` returns both the
-// deduped `artifactRenderers` and the `artifactCategories` (each `filter.type`
-// derived from the renderers' types). Presentation is listed first — it owns the
-// artifact tool names (the renderer registry is first-wins per toolName).
+const LIGHT_LOGO_URL = "/openui-cloud-logo-light.svg";
+const DARK_LOGO_URL = "/openui-cloud-logo-dark.svg";
+
+const PROMPT_TEMPLATES: PromptTemplate[] = [
+  {
+    displayText: "Create a presentation",
+    prompt: "Create a presentation about ",
+    icon: <Presentation size={16} />,
+    completions: [
+      {
+        displayText: "The rise of reusable rockets and commercial spaceflight",
+        prompt: "the rise of reusable rockets and commercial spaceflight",
+        icon: null,
+      },
+      {
+        displayText: "How Formula 1 became a global business",
+        prompt: "how Formula 1 became a global business",
+        icon: null,
+      },
+      {
+        displayText: "Why electric vehicles are changing transportation",
+        prompt: "why electric vehicles are changing transportation",
+        icon: null,
+      },
+    ],
+  },
+  {
+    displayText: "Write a report",
+    prompt: "Write a report on ",
+    icon: <FileText size={16} />,
+    completions: [
+      {
+        displayText: "Global coffee market trends and consumer preferences",
+        prompt: "global coffee market trends and consumer preferences",
+        icon: null,
+      },
+      {
+        displayText: "The state of the electric vehicle market in 2026",
+        prompt: "the state of the electric vehicle market in 2026",
+        icon: null,
+      },
+      {
+        displayText: "Global travel trends and emerging destinations",
+        prompt: "global travel trends and emerging destinations",
+        icon: null,
+      },
+    ],
+  },
+];
+
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
-  { name: "Presentations", renderers: [presentationArtifactRenderer] },
-  { name: "Reports", renderers: [reportArtifactRenderer] },
+  {
+    name: "Presentations",
+    renderers: [presentationArtifactRenderer],
+    icon: <Presentation size="1em" />,
+  },
+  {
+    name: "Reports",
+    renderers: [reportArtifactRenderer],
+    icon: <FileText size="1em" />,
+  },
 ]);
 
 const llm: ChatLLM = {
@@ -46,6 +100,7 @@ const llm: ChatLLM = {
 
 export function CloudChat() {
   const mode = useTheme();
+
   // useOpenuiCloudStorage: browser ChatStorage over /v1, fct_-authenticated. As a
   // hook the storage + its fct_ token manager are created on mount (not at module
   // load), so the token fetch follows this component's lifecycle.
@@ -66,21 +121,35 @@ export function CloudChat() {
         componentLibrary={chatLibrary}
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
-        agentName="OpenUI Cloud"
+        logoUrl={mode === "dark" ? DARK_LOGO_URL : LIGHT_LOGO_URL}
         scrollVariant="always"
         scrollOnLoad={false}
         theme={{ mode }}
         starters={[
           {
-            displayText: "Quarterly deck",
-            prompt: "Create a short presentation about our Q2 results with three slides.",
+            displayText: "Relive the FIFA World Cup 2026",
+            prompt: "Relive the FIFA World Cup 2026.",
+            icon: null,
           },
           {
-            displayText: "Market report",
-            prompt: "Write a brief market-analysis report on the EV sector.",
+            displayText: "Create a report on global coffee trends",
+            prompt: "Create a report on global coffee trends.",
+            icon: null,
+          },
+          {
+            displayText: "Help me plan my next vacation",
+            prompt: "Help me plan my next vacation.",
+            icon: null,
           },
         ]}
-      />
+      >
+        <AgentInterface.Welcome
+          title="Good to see you"
+          description="What's on your mind today?"
+          promptTemplates={PROMPT_TEMPLATES}
+          glowAnimation
+        />
+      </AgentInterface>
     </div>
   );
 }
