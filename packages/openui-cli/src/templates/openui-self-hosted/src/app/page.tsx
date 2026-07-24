@@ -7,14 +7,8 @@ import {
   openAIReadableStreamAdapter,
   type ChatLLM,
 } from "@openuidev/react-headless";
-import { generateSystemPrompt } from "@openuidev/react-lang";
 import { AgentInterface } from "@openuidev/react-ui";
-import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui/genui-lib";
-
-const systemPrompt = generateSystemPrompt({
-  library: openuiLibrary,
-  promptOptions: openuiPromptOptions,
-});
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 
 const llm: ChatLLM = {
   send: async ({ messages, signal }) =>
@@ -22,7 +16,6 @@ const llm: ChatLLM = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        systemPrompt,
         messages: openAIMessageFormat.toApi(messages),
       }),
       signal,

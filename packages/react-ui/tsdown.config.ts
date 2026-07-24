@@ -61,6 +61,23 @@ export default defineConfig([
     entry: { index: "src/genui-lib/index.ts" },
     plugins: [fixEsmExternalPaths],
   },
+  // genui-lib/prompt-options — server-safe prompt data, no "use client" (CJS)
+  {
+    ...shared,
+    format: ["cjs"],
+    dts: true,
+    outDir: "dist/genui-lib/prompt-options",
+    entry: { index: "src/genui-lib/prompt-options/index.ts" },
+  },
+  // genui-lib/prompt-options — server-safe prompt data, no "use client" (ESM)
+  {
+    ...shared,
+    format: ["esm"],
+    dts: true,
+    outDir: "dist/genui-lib/prompt-options",
+    entry: { index: "src/genui-lib/prompt-options/index.ts" },
+    plugins: [fixEsmExternalPaths],
+  },
   // Individual components — CJS only
   { ...shared, format: ["cjs"], entry: componentEntries },
 ]);
