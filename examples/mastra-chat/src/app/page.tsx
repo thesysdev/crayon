@@ -1,27 +1,22 @@
 "use client";
 
 import { useTheme } from "@/hooks/use-system-theme";
-import { AgentInterface, agUIAdapter, type ChatLLM } from "@openuidev/react-ui";
+import { AgentInterface, agUIAdapter, fetchLLM } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 import { useMemo } from "react";
 
 export default function Page() {
   const mode = useTheme();
 
-  // The backend call is unchanged — only the chat surface moved from FullScreen
-  // to AgentInterface. Storage is omitted, so AgentInterface uses its built-in
-  // in-memory default (wiped on reload).
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: ({ messages, threadId, signal }) =>
-        fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages, threadId }),
-          signal,
-        }),
-      streamProtocol: agUIAdapter(),
-    }),
+  // fetchLLM's default message format POSTs { messages, threadId, ... } —
+  // exactly what the Mastra route expects. Storage is omitted, so
+  // AgentInterface uses its built-in in-memory default (wiped on reload).
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: agUIAdapter(),
+      }),
     [],
   );
 

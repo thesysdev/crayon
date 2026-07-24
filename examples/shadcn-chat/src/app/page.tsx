@@ -2,30 +2,19 @@
 
 import { useTheme } from "@/hooks/use-system-theme";
 import { shadcnChatLibrary } from "@/lib/shadcn-genui";
-import {
-  AgentInterface,
-  openAIAdapter,
-  openAIMessageFormat,
-  type ChatLLM,
-} from "@openuidev/react-ui";
+import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 import { useMemo } from "react";
 
 export default function Page() {
   const mode = useTheme();
 
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: ({ messages, signal }) =>
-        fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: openAIMessageFormat.toApi(messages),
-          }),
-          signal,
-        }),
-      streamProtocol: openAIAdapter(),
-    }),
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: openAIAdapter(),
+        messageFormat: openAIMessageFormat,
+      }),
     [],
   );
 

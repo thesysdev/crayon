@@ -1,4 +1,4 @@
-export const DEFAULT_MODEL = "google/gemini-3.1-pro-free";
+export const DEFAULT_MODEL = "google/gemini-3.6-flash-free";
 
 export interface ModelOption {
   id: string;
@@ -15,6 +15,13 @@ export const MODEL_OPTIONS: ModelOption[] = [
     name: "Gemini 3.1 Flash Lite",
     badge: "Free",
   },
+  {
+    provider: "Google",
+    id: "google/gemini-3.6-flash-free",
+    name: "Gemini 3.6 Flash",
+    badge: "Free",
+  },
+  { provider: "Google", id: "google/gemini-3.6-flash", name: "Gemini 3.6 Flash" },
   {
     provider: "Google",
     id: "google/gemini-3.5-flash-free",
