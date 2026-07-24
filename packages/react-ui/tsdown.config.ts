@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, statSync } from "fs";
 import { join } from "path";
-import { defineConfig } from "tsdown";
 import type { Plugin } from "rolldown";
+import { defineConfig } from "tsdown";
 
 // Rewrite external import paths in ESM output so they are fully-specified.
 // webpack 5 (CRA) treats .mjs as strict ESM and requires explicit extensions.
@@ -46,7 +46,30 @@ export default defineConfig([
   // Main index — CJS + bundled .d.cts
   { ...shared, format: ["cjs"], dts: true, entry: { index: "src/index.ts" } },
   // Main index — ESM + bundled .d.mts
-  { ...shared, format: ["esm"], dts: true, entry: { index: "src/index.ts" }, plugins: [fixEsmExternalPaths] },
+  {
+    ...shared,
+    format: ["esm"],
+    dts: true,
+    entry: { index: "src/index.ts" },
+    plugins: [fixEsmExternalPaths],
+  },
+  // genui-lib/prompt-options — server-safe prompt data, no "use client" (CJS)
+  {
+    ...shared,
+    format: ["cjs"],
+    dts: true,
+    outDir: "dist/genui-lib/prompt-options",
+    entry: { index: "src/genui-lib/prompt-options/index.ts" },
+  },
+  // genui-lib/prompt-options — server-safe prompt data, no "use client" (ESM)
+  {
+    ...shared,
+    format: ["esm"],
+    dts: true,
+    outDir: "dist/genui-lib/prompt-options",
+    entry: { index: "src/genui-lib/prompt-options/index.ts" },
+    plugins: [fixEsmExternalPaths],
+  },
   // genui-lib — CJS + .d.cts (own outDir so dts lands at dist/genui-lib/index.d.cts)
   {
     ...shared,
