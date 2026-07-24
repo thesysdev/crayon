@@ -38,7 +38,10 @@ function SearchBar() {
   const [isMac, setIsMac] = useState(false);
 
   useEffect(() => {
-    setIsMac(/mac/i.test(navigator.userAgent));
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) setIsMac(/mac/i.test(navigator.userAgent));
+    });
 
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -47,7 +50,10 @@ function SearchBar() {
       }
     };
     window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("keydown", handler);
+    };
   }, [setOpenSearch]);
 
   return (
@@ -87,7 +93,15 @@ export function DocsNavbar({ showSidebarToggle = false }: { showSidebarToggle?: 
   // theme-derived variant behind a mount flag (matching SiteMarketingHeader) to
   // avoid a hydration mismatch on the brand text color.
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) setMounted(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const logoVariant = mounted && resolvedTheme === "dark" ? "dark" : "light";
 
   const tabValue = useMemo(() => activeTabUrl(pathname), [pathname]);
