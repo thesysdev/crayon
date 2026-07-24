@@ -70,7 +70,7 @@ function App() {
 | `storage`          | Optional persistence adapter for thread history; defaults to in-memory (wiped on reload). Use `restStorage({ baseUrl })` from `@openuidev/react-ui` to back it with your own REST API |
 | `llm`              | Chat transport, usually built with `fetchLLM`; any `ChatLLM` (`{ send({ threadId, messages, signal }), streamProtocol }`) works |
 | `componentLibrary` | OpenUI Lang library used to render assistant messages (e.g. `openuiChatLibrary`)             |
-| `theme`            | Theme configuration, e.g. `{ mode: "light" }                                                |
+| `theme`            | Theme configuration, e.g. `{ mode: "light" }`                                                |
 | `agentName`        | Name displayed in the header                                                                 |
 | `starters`         | Conversation-starter prompts shown on the welcome screen                                     |
 
