@@ -1,13 +1,24 @@
 {
   "name": "OpenUI",
   "version": "1.0.1",
+  "private": true,
+  "packageManager": "pnpm@10.34.5",
   "description": "A full-stack, renderer-agnostic Generative UI framework with a streaming-first language, official React support, and community integrations for other frameworks",
   "main": "index.js",
   "scripts": {
-    "test": "pnpm -r run test"
+    "test": "pnpm -r run test",
+    "changeset": "changeset",
+    "changeset:status": "changeset status",
+    "changeset:validate": "node scripts/validate-changesets.mjs",
+    "version-packages": "changeset version && pnpm install --lockfile-only",
+    "release:config": "node scripts/validate-release-config.mjs",
+    "release:check": "node scripts/release-check.mjs",
+    "release": "pnpm release:check && changeset publish"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",
+    "@changesets/changelog-github": "0.7.0",
+    "@changesets/cli": "2.31.1",
     "@rolldown/binding-darwin-arm64": "1.0.0-rc.16",
     "@typescript-eslint/eslint-plugin": "catalog:",
     "eslint": "catalog:",

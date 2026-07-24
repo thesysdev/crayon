@@ -4,7 +4,7 @@ Describe the change and why it is needed.
 
 ## Changes
 
-- 
+-
 
 ## Test Plan
 
@@ -18,3 +18,8 @@ Describe how you validated this change.
 - [ ] I linked a related issue, if applicable
 - [ ] I updated docs/README when needed
 - [ ] I considered backwards compatibility
+
+Release impact (select one):
+
+- [ ] I committed a consumer-facing changeset for every affected published package
+- [ ] No package release is needed (outside `packages/`, or an empty changeset is committed)

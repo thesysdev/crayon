@@ -1,0 +1,49 @@
+name: Validate changesets
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate:
+    name: Validate release intent
+    runs-on: ubuntu-latest
+    env:
+      CHANGESET_RELEASE_PR: ${{ github.event.pull_request.user.login == 'github-actions[bot]' && startsWith(github.head_ref, 'changeset-release/') }}
+    steps:
+      - name: Check out repository with full history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Fetch the base branch
+        run: git fetch --no-tags origin main:refs/remotes/origin/main
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate changeset syntax and release calculations
+        if: env.CHANGESET_RELEASE_PR != 'true'
+        run: pnpm changeset:status --since=origin/main
+
+      - name: Validate changed-package coverage
+        run: pnpm changeset:validate --base=origin/main

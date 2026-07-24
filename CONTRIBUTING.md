@@ -17,8 +17,9 @@ This helps us avoid duplicate work, keep the project direction coherent, and mak
 3. Fork the repository.
 4. Create a new branch for your work.
 5. Make your changes.
-6. Run the relevant checks for the package or area you changed.
-7. Open a pull request and link it to the approved issue.
+6. Add a changeset when a published package is affected.
+7. Run the relevant checks for the package or area you changed.
+8. Open a pull request and link it to the approved issue.
 
 Pull requests without an approved issue may be closed so the discussion can happen in the issue first.
 
@@ -50,6 +51,46 @@ pnpm --filter @openuidev/react-lang build
 
 Use the package name that matches the area you are changing.
 
+## Changesets and release notes
+
+When a pull request affects one or more packages under `packages/`, run this
+from the repository root:
+
+```sh
+pnpm changeset
+```
+
+Select every published package whose consumers are affected. Choose:
+
+- **patch** for backward-compatible fixes and small improvements;
+- **minor** for new functionality and clearly documented breaking changes to a
+  package that is still below `1.0.0`;
+- **major** for the transition to `1.0.0`, or a post-1.0 breaking change.
+
+Write the summary for package consumers: explain what behavior or API changed
+and whether they need to take action. Do not use the changeset as an
+implementation summary.
+
+Commit the generated `.changeset/*.md` file with the feature or fix. If files in
+a published package changed but the pull request intentionally has no
+consumer-facing release—for example, it changes only tests—record that reviewed
+exception with:
+
+```sh
+pnpm changeset --empty
+```
+
+Do not combine an empty changeset with package release entries in the same pull
+request. Changes entirely outside published packages, such as repository CI or
+standalone documentation, do not require a changeset.
+
+`@openuidev/browser-bundle` embeds compiled code from
+`@openuidev/react-ui` and `@openuidev/react-lang`. A release entry for either
+source package must include an explicit release entry for the browser bundle.
+
+See [RELEASING.md](RELEASING.md) for the complete release policy and local
+validation commands.
+
 ## OpenUI Agent Skill
 
 The OpenUI agent skill is maintained in the [thesysdev/skills repository](https://github.com/thesysdev/skills/tree/main/skills/openui), which is its source of truth. The `skills` directory in this repository is a Git submodule linked to that repository.
@@ -64,6 +105,8 @@ Before opening a pull request, please make sure that:
 - The change is focused and avoids unrelated refactors.
 - Tests are added or updated when behavior changes.
 - Documentation or examples are updated when public behavior changes.
+- A changeset or explicit no-release changeset is committed when a published
+  package changes.
 - Relevant lint, test, and build commands have been run.
 - Any skipped checks are explained in the pull request description.
 
