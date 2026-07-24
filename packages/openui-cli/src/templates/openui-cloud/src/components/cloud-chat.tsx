@@ -1,6 +1,6 @@
 "use client";
 
-import { usePersistedModel, getPersistedModel } from "@/hooks/use-persisted-model";
+import { getPersistedModel, usePersistedModel } from "@/hooks/use-persisted-model";
 import { useTheme } from "@/hooks/use-system-theme";
 import { shouldShowBillingCreditsNotice } from "@/lib/billing";
 import {
@@ -92,7 +92,6 @@ export function CloudChat() {
         componentLibrary={chatLibrary}
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
-        agentName="OpenUI Cloud"
         scrollVariant="always"
         scrollOnLoad={false}
         logoUrl={mode === "dark" ? DARK_LOGO_URL : LIGHT_LOGO_URL}
