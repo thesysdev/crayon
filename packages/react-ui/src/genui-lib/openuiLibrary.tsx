@@ -202,11 +202,7 @@ export const openuiComponentGroups: ComponentGroup[] = [
 ];
 
 // ── Examples & prompt options ──
-export {
-  openuiAdditionalRules,
-  openuiExamples,
-  openuiPromptOptions,
-} from "./prompt-options";
+export { openuiAdditionalRules, openuiExamples, openuiPromptOptions } from "./prompt-options";
 
 // ── Library ──
 
