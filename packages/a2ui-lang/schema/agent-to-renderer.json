@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openui.com/schema/a2ui-lang/v1.0/agent-to-renderer.json",
+  "title": "A2UI v1.0 with OpenUI Lang component updates",
+  "description": "The A2UI v1.0 agent-to-renderer envelope with updateComponents.components replaced by OpenUI Lang statement strings.",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/CreateSurfaceMessage" },
+    { "$ref": "#/$defs/UpdateComponentsMessage" },
+    { "$ref": "#/$defs/UpdateDataModelMessage" },
+    { "$ref": "#/$defs/DeleteSurfaceMessage" },
+    { "$ref": "#/$defs/CallFunctionMessage" },
+    { "$ref": "#/$defs/ActionResponseMessage" }
+  ],
+  "$defs": {
+    "CreateSurfaceMessage": {
+      "type": "object",
+      "properties": {
+        "version": { "const": "v1.0" },
+        "createSurface": {
+          "type": "object",
+          "properties": {
+            "surfaceId": { "type": "string" },
+            "catalogId": { "type": "string" },
+            "surfaceProperties": { "type": "object" },
+            "sendDataModel": { "type": "boolean", "default": false },
+            "components": {
+              "type": "array",
+              "description": "The unchanged optional A2UI JSON component list. The OpenUI Lang profile omits this field and sends its initial tree through updateComponents.",
+              "minItems": 1,
+              "items": { "type": "object" }
+            },
+            "dataModel": { "type": "object", "additionalProperties": true }
+          },
+          "required": ["surfaceId", "catalogId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["version", "createSurface"],
+      "additionalProperties": false
+    },
+    "UpdateComponentsMessage": {
+      "type": "object",
+      "properties": {
+        "version": { "const": "v1.0" },
+        "updateComponents": {
+          "type": "object",
+          "properties": {
+            "surfaceId": { "type": "string" },
+            "components": {
+              "type": "array",
+              "description": "Complete OpenUI Lang statements or statement blocks, merged by statement ID in array order.",
+              "minItems": 1,
+              "items": { "type": "string", "minLength": 1 }
+            }
+          },
+          "required": ["surfaceId", "components"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["version", "updateComponents"],
+      "additionalProperties": false
+    },
+    "UpdateDataModelMessage": {
+      "type": "object",
+      "properties": {
+        "version": { "const": "v1.0" },
+        "updateDataModel": {
+          "type": "object",
+          "properties": {
+            "surfaceId": { "type": "string" },
+            "path": { "type": "string" },
+            "value": true
+          },
+          "required": ["surfaceId", "value"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["version", "updateDataModel"],
+      "additionalProperties": false
+    },
+    "DeleteSurfaceMessage": {
+      "type": "object",
+      "properties": {
+        "version": { "const": "v1.0" },
+        "deleteSurface": {
+          "type": "object",
+          "properties": { "surfaceId": { "type": "string" } },
+          "required": ["surfaceId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["version", "deleteSurface"],
+      "additionalProperties": false
+    },
+    "CallFunctionMessage": {
+      "type": "object",
+      "properties": {
+        "version": { "const": "v1.0" },
+        "functionCallId": { "type": "string" },
+        "wantResponse": { "type": "boolean", "default": false },
+        "callFunction": {
+          "type": "object",
+          "properties": {
+            "call": { "type": "string" },
+            "args": { "type": "object", "additionalProperties": true }
+          },
+          "required": ["call"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["version", "functionCallId", "callFunction"],
+      "additionalProperties": false
+    },
+    "ActionResponseMessage": {
+      "type": "object",
+      "properties": {
+        "version": { "const": "v1.0" },
+        "actionId": { "type": "string" },
+        "actionResponse": {
+          "type": "object",
+          "properties": {
+            "value": true,
+            "error": {
+              "type": "object",
+              "properties": {
+                "code": { "type": "string" },
+                "message": { "type": "string" }
+              },
+              "required": ["code", "message"],
+              "additionalProperties": false
+            }
+          },
+          "oneOf": [
+            { "required": ["value"], "not": { "required": ["error"] } },
+            { "required": ["error"], "not": { "required": ["value"] } }
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": ["version", "actionId", "actionResponse"],
+      "additionalProperties": false
+    }
+  }
+}

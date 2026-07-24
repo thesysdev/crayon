@@ -22,6 +22,7 @@ export interface OpenUIContextValue {
     userMessage: string,
     formName?: string,
     action?: ActionPlan | { type?: string; params?: Record<string, any> },
+    sourceComponentId?: string,
   ) => void | Promise<void>;
 
   /** Whether the LLM is currently streaming content. */

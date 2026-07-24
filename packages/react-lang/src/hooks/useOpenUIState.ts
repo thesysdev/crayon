@@ -279,6 +279,7 @@ export function useOpenUIState(
       userMessage: string,
       formName?: string,
       action?: ActionPlan | { type?: string; params?: Record<string, any> },
+      sourceComponentId?: string,
     ) => {
       const formPayload = getFormPayload(formName);
       const { onAction: handler } = propsRef.current;
@@ -296,6 +297,7 @@ export function useOpenUIState(
           humanFriendlyMessage: userMessage,
           formState: formPayload,
           formName,
+          sourceComponentId,
         });
         return;
       }
@@ -327,6 +329,7 @@ export function useOpenUIState(
                 humanFriendlyMessage: step.message,
                 formState: formPayload,
                 formName,
+                sourceComponentId,
               });
               break;
             case ACTION_STEPS.OpenUrl:
@@ -336,6 +339,7 @@ export function useOpenUIState(
                 humanFriendlyMessage: "",
                 formState: formPayload,
                 formName,
+                sourceComponentId,
               });
               break;
             case ACTION_STEPS.Set: {
@@ -366,6 +370,7 @@ export function useOpenUIState(
         humanFriendlyMessage: userMessage,
         formState: formPayload,
         formName,
+        sourceComponentId,
       });
     },
     [queryManager, evaluationContext, getFormPayload, store],

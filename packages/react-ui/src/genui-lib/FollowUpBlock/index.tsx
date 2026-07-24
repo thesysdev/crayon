@@ -12,7 +12,7 @@ export const FollowUpBlock = defineComponent({
     items: z.array(FollowUpItem.ref),
   }),
   description: "List of clickable follow-up suggestions placed at the end of a response",
-  component: ({ props }) => {
+  component: ({ props, statementId }) => {
     const triggerAction = useTriggerAction();
     const items = (props.items ?? []) as any[];
 
@@ -20,7 +20,13 @@ export const FollowUpBlock = defineComponent({
       <OpenUIFollowUpBlock>
         {items.map((item, i) => {
           const text = String(item?.props?.text ?? "");
-          return <OpenUIFollowUpItem key={i} text={text} onClick={() => triggerAction(text)} />;
+          return (
+            <OpenUIFollowUpItem
+              key={i}
+              text={text}
+              onClick={() => triggerAction(text, undefined, undefined, statementId)}
+            />
+          );
         })}
       </OpenUIFollowUpBlock>
     );
