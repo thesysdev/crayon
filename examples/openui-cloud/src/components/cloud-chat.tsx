@@ -32,17 +32,17 @@ const PROMPT_TEMPLATES: PromptTemplate[] = [
       {
         displayText: "The rise of reusable rockets and commercial spaceflight",
         prompt: "the rise of reusable rockets and commercial spaceflight",
-        icon: null,
+        icon: <></>,
       },
       {
         displayText: "How Formula 1 became a global business",
         prompt: "how Formula 1 became a global business",
-        icon: null,
+        icon: <></>,
       },
       {
         displayText: "Why electric vehicles are changing transportation",
         prompt: "why electric vehicles are changing transportation",
-        icon: null,
+        icon: <></>,
       },
     ],
   },
@@ -54,17 +54,17 @@ const PROMPT_TEMPLATES: PromptTemplate[] = [
       {
         displayText: "Global coffee market trends and consumer preferences",
         prompt: "global coffee market trends and consumer preferences",
-        icon: null,
+        icon: <></>,
       },
       {
         displayText: "The state of the electric vehicle market in 2026",
         prompt: "the state of the electric vehicle market in 2026",
-        icon: null,
+        icon: <></>,
       },
       {
         displayText: "Global travel trends and emerging destinations",
         prompt: "global travel trends and emerging destinations",
-        icon: null,
+        icon: <></>,
       },
     ],
   },
@@ -129,17 +129,17 @@ export function CloudChat() {
           {
             displayText: "Relive the FIFA World Cup 2026",
             prompt: "Relive the FIFA World Cup 2026.",
-            icon: null,
+            icon: <></>,
           },
           {
             displayText: "Create a report on global coffee trends",
             prompt: "Create a report on global coffee trends.",
-            icon: null,
+            icon: <></>,
           },
           {
             displayText: "Help me plan my next vacation",
             prompt: "Help me plan my next vacation.",
-            icon: null,
+            icon: <></>,
           },
         ]}
       >
