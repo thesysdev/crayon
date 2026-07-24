@@ -3,7 +3,7 @@ import { envOr, requiredEnv } from "@/lib/env";
 import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
 import { runFunctionToolLoop } from "@/lib/tool-loop";
 import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
-import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
+import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
 import OpenAI from "openai";
 import type {
   ResponseCreateParamsNonStreaming,
@@ -26,11 +26,7 @@ import type {
  * + the storage adapter).
  */
 export async function POST(req: Request) {
-  const {
-    threadId,
-    input,
-    model: requestedModel,
-  } = (await req.json()) as {
+  const { threadId, input, model: requestedModel } = (await req.json()) as {
     threadId?: string;
     input?: ResponseInputItem[];
     model?: unknown;
@@ -84,7 +80,7 @@ export async function POST(req: Request) {
       //   server_url: "https://mcp.deepwiki.com/mcp",
       // },
     ],
-    instructions: generateSystemPrompt(),
+    instructions: createResponsesInstructions(),
   };
 
   let stream: AsyncIterable<Record<string, unknown>>;

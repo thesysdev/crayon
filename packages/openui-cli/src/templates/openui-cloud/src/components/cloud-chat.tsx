@@ -2,12 +2,6 @@
 
 import { useTheme } from "@/hooks/use-system-theme";
 import { shouldShowBillingCreditsNotice } from "@/lib/billing";
-import {
-  DARK_LOGO_URL,
-  LIGHT_LOGO_URL,
-  PROMPT_TEMPLATES,
-  starters,
-} from "@/lib/cloud-chat-constants";
 import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
 import { DEFAULT_MODEL } from "@/lib/models";
 import { defineArtifactCategories } from "@openuidev/react-headless";
@@ -18,22 +12,13 @@ import {
   reportArtifactRenderer,
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
-import { FileText, Presentation } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { BillingCreditsDialog } from "./billing-credits-dialog";
 import { ModelSwitcher } from "./model-switcher";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
-  {
-    name: "Presentations",
-    renderers: [presentationArtifactRenderer],
-    icon: <Presentation size="1em" />,
-  },
-  {
-    name: "Reports",
-    renderers: [reportArtifactRenderer],
-    icon: <FileText size="1em" />,
-  },
+  { name: "Presentations", renderers: [presentationArtifactRenderer] },
+  { name: "Reports", renderers: [reportArtifactRenderer] },
 ]);
 
 const showBillingCreditsNotice = shouldShowBillingCreditsNotice();
@@ -66,13 +51,10 @@ export function CloudChat() {
     llm.setSelectedModel(selectedModel);
   }, [llm, selectedModel]);
 
-  const handleModelChange = useCallback(
-    (model: string) => {
-      llm.setSelectedModel(model);
-      setSelectedModel(model);
-    },
-    [llm],
-  );
+  const handleModelChange = useCallback((model: string) => {
+    llm.setSelectedModel(model);
+    setSelectedModel(model);
+  }, [llm]);
 
   return (
     <div
@@ -89,9 +71,21 @@ export function CloudChat() {
         agentName="OpenUI Cloud"
         scrollVariant="always"
         scrollOnLoad={false}
-        logoUrl={mode === "dark" ? DARK_LOGO_URL : LIGHT_LOGO_URL}
         theme={{ mode }}
-        starters={starters}
+        starters={[
+          {
+            displayText: "Pricing strategy tips",
+            prompt: "List five quick tips for pricing a new electric vehicle competitively.",
+          },
+          {
+            displayText: "Quarterly deck",
+            prompt: "Create a short presentation about our Q2 results with three slides.",
+          },
+          {
+            displayText: "Market report",
+            prompt: "Write a brief market-analysis report on the EV sector.",
+          },
+        ]}
       >
         <AgentInterface.MobileHeader
           className="openui-cloud-mobile-header"
@@ -103,12 +97,6 @@ export function CloudChat() {
         <AgentInterface.ThreadHeader className="openui-cloud-thread-header">
           <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
         </AgentInterface.ThreadHeader>
-        <AgentInterface.Welcome
-          title="Good to see you"
-          description="What's on your mind today?"
-          promptTemplates={PROMPT_TEMPLATES}
-          glowAnimation
-        />
       </AgentInterface>
       {showBillingCreditsNotice ? (
         <BillingCreditsDialog open={billingDialogOpen} onOpenChange={setBillingDialogOpen} />
