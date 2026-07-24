@@ -126,7 +126,12 @@ function FeaturedCard({ card }: { card: BlogCardData }) {
     <Link href={card.href} className={`${CARD_CLASS} md:min-h-[24rem] md:flex-row`}>
       <div className="relative flex h-44 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--openui-highlight)] md:h-auto md:w-1/2">
         {card.image ? (
-          <img src={card.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={card.image}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         ) : (
           <ImagePlaceholder size="large" />
         )}
@@ -151,14 +156,21 @@ function FeaturedCard({ card }: { card: BlogCardData }) {
 
 // Regular: image on top, no description.
 function RegularCard({ card }: { card: BlogCardData }) {
-  const externalProps = card.external
-    ? { target: "_blank", rel: "noopener noreferrer" }
-    : {};
+  const externalProps = card.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
   return (
-    <Link href={card.href} {...externalProps} className={`${CARD_CLASS} min-h-[15rem] max-md:min-h-0`}>
+    <Link
+      href={card.href}
+      {...externalProps}
+      className={`${CARD_CLASS} min-h-[15rem] max-md:min-h-0`}
+    >
       <div className="relative flex h-44 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--openui-highlight)] md:h-60">
         {card.image ? (
-          <img src={card.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={card.image}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         ) : (
           <ImagePlaceholder />
         )}
