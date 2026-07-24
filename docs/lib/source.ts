@@ -2,6 +2,7 @@ import { type InferPageType, loader } from "fumadocs-core/source";
 import { lucideIconsPlugin } from "fumadocs-core/source/lucide-icons";
 import { toFumadocsSource } from "fumadocs-mdx/runtime/server";
 import { blogPosts, docs } from "fumadocs-mdx:collections/server";
+import { createLlmPageDocument } from "./geo/llm-output";
 
 export const BASE_URL = "https://www.openui.com";
 
@@ -29,7 +30,10 @@ export function getPageImage(page: InferPageType<typeof source>) {
 export async function getLLMText(page: InferPageType<typeof source>) {
   const processed = await page.data.getText("processed");
 
-  return `# ${page.data.title}
-
-${processed}`;
+  return createLlmPageDocument({
+    title: page.data.title,
+    description: page.data.description,
+    canonicalUrl: new URL(page.url, BASE_URL).toString(),
+    body: processed,
+  });
 }
