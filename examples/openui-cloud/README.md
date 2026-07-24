@@ -17,7 +17,7 @@ cp .env.example .env.local   # then fill THESYS_API_KEY
 | Var              | Required | Default                       | Purpose                                                          |
 | ---------------- | -------- | ----------------------------- | ---------------------------------------------------------------- |
 | `THESYS_API_KEY` | yes      | —                             | Org master key. **Server-side only**; never reaches the browser. |
-| `OPENUI_MODEL`   | no       | `anthropic/claude-sonnet-4.6` | Bare `provider/model` id for generation.                         |
+| `OPENUI_MODEL`   | no       | `google/gemini-3.6-flash-free` | Bare `provider/model` id for generation.                        |
 | `DEMO_USER_ID`   | no       | `demo-user`                   | End-user identity stamped into the frontend token.               |
 
 `.env.local` is gitignored. Restart `pnpm dev` after editing env.
