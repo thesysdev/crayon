@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { Message, Thread, ThreadStateEntry, UserMessage } from "../types";
+import type { Message, Thread, ThreadStateEntry } from "../types";
 import { makeStore } from "./__helpers/makeStore";
 
 // ── Helpers ──
@@ -141,9 +141,15 @@ describe("createChatStore", () => {
 
     it("is a no-op while a new thread is being created", async () => {
       let resolveCreate!: (t: Thread) => void;
-      const createThread = vi.fn().mockImplementation(() => new Promise<Thread>((r) => (resolveCreate = r)));
+      const createThread = vi
+        .fn()
+        .mockImplementation(() => new Promise<Thread>((r) => (resolveCreate = r)));
       const send = vi.fn().mockImplementation(() => new Promise(() => {}));
-      const store = makeStore({ createThread, send, streamProtocol: { parse: async function* () {} } });
+      const store = makeStore({
+        createThread,
+        send,
+        streamProtocol: { parse: async function* () {} },
+      });
 
       store.getState().processMessage({ role: "user", content: "hi" });
       await flushPromises();
@@ -169,7 +175,11 @@ describe("createChatStore", () => {
 
     it("clears the active view when the deleted thread was selected", async () => {
       const store = makeStore({ deleteThread: vi.fn().mockResolvedValue(undefined) });
-      store.setState({ threads: [makeThread("t1")], selectedThreadId: "t1", messages: [makeMessage("m1")] });
+      store.setState({
+        threads: [makeThread("t1")],
+        selectedThreadId: "t1",
+        messages: [makeMessage("m1")],
+      });
       store.getState().deleteThread("t1");
       await flushPromises();
       expect(store.getState().selectedThreadId).toBeNull();
@@ -246,7 +256,11 @@ describe("createChatStore", () => {
     it("creates a thread when none is selected and follows into it", async () => {
       const createThread = vi.fn().mockResolvedValue(makeThread("t-auto"));
       const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
-      const store = makeStore({ createThread, send, streamProtocol: { parse: async function* () {} } });
+      const store = makeStore({
+        createThread,
+        send,
+        streamProtocol: { parse: async function* () {} },
+      });
 
       await store.getState().processMessage({ role: "user", content: "hello" });
 
@@ -334,7 +348,11 @@ describe("createChatStore", () => {
       });
       const newMessages = [makeMessage("t2-m1")];
       const getMessages = vi.fn().mockResolvedValue(newMessages);
-      const store = makeStore({ send, getMessages, streamProtocol: { parse: async function* () {} } });
+      const store = makeStore({
+        send,
+        getMessages,
+        streamProtocol: { parse: async function* () {} },
+      });
       store.setState({ selectedThreadId: "t1" });
 
       store.getState().processMessage({ role: "user", content: "hello" });
@@ -380,7 +398,9 @@ describe("createChatStore", () => {
 
     it("drops a background run from inFlightThreads when it completes", async () => {
       let resolveSend!: (r: Response) => void;
-      const send = vi.fn().mockImplementation(() => new Promise<Response>((r) => (resolveSend = r)));
+      const send = vi
+        .fn()
+        .mockImplementation(() => new Promise<Response>((r) => (resolveSend = r)));
       const store = makeStore({ send, streamProtocol: { parse: async function* () {} } });
 
       store.setState({ selectedThreadId: "t1" });
@@ -397,10 +417,17 @@ describe("createChatStore", () => {
 
     it("backgrounds a draft run when the user navigates away mid-creation", async () => {
       let resolveCreate!: (t: Thread) => void;
-      const createThread = vi.fn().mockImplementation(() => new Promise<Thread>((r) => (resolveCreate = r)));
+      const createThread = vi
+        .fn()
+        .mockImplementation(() => new Promise<Thread>((r) => (resolveCreate = r)));
       const send = vi.fn().mockImplementation(() => new Promise(() => {})); // never resolves
       const getMessages = vi.fn().mockResolvedValue([]);
-      const store = makeStore({ createThread, send, getMessages, streamProtocol: { parse: async function* () {} } });
+      const store = makeStore({
+        createThread,
+        send,
+        getMessages,
+        streamProtocol: { parse: async function* () {} },
+      });
 
       store.getState().processMessage({ role: "user", content: "hello" });
       await flushPromises();
