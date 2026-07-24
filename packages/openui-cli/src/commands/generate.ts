@@ -8,13 +8,16 @@ import { CreateError, telemetry } from "../lib/telemetry";
 export interface GenerateOptions {
   out?: string;
   jsonSchema?: boolean;
-  /** Emit the serialized library spec JSON (toSpec + schema) — `generate-spec`. */
   spec?: boolean;
   export?: string;
   promptOptions?: string;
+  interactive: boolean;
 }
 
-export async function runGenerate(entry: string, options: GenerateOptions): Promise<void> {
+export async function runGenerate(
+  entry: string,
+  options: Omit<GenerateOptions, "interactive">,
+): Promise<void> {
   const t0 = Date.now();
   telemetry.capture("cli_generate_started", {
     json_schema: !!options.jsonSchema,

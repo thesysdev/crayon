@@ -208,14 +208,13 @@ Contributions are welcome. See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for contri
 
 OpenUI ships an [Agent Skill](https://agentskills.io) so AI coding assistants (Claude Code, Codex, Cursor, Copilot, etc.) can help you scaffold, build, and debug Generative UI apps using OpenUI Lang.
 
+The skill is maintained in the [`thesysdev/skills`](https://github.com/thesysdev/skills/tree/main/skills/openui) repository.
+
 ### Install
 
 ```bash
 # With the skills CLI (works across all agents)
 npx skills add thesysdev/skills --skill openui
-
-# Manual - copy into your project
-cp -r skills/openui .claude/skills/openui
 ```
 
 The skill covers component library design, OpenUI Lang syntax, system prompt generation, the Renderer, SDK packages, and debugging malformed LLM output.

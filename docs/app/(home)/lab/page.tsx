@@ -179,6 +179,16 @@ const projects: ProjectItem[] = [
     ],
   },
   {
+    name: "AppLess",
+    description:
+      "An experimental no-app phone experience that streams OpenUI-generated native interfaces on iOS and Android.",
+    type: "App",
+    status: "Official",
+    accent: "green",
+    icon: MonitorSmartphone,
+    links: [{ label: "GitHub", href: "https://github.com/thesysdev/appless", external: true }],
+  },
+  {
     name: "OpenUI Plotly",
     description:
       "Scaffold a Next.js generative UI chat with typed Plotly chart components for data-heavy responses.",

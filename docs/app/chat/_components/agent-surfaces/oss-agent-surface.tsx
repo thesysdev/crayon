@@ -47,6 +47,7 @@ export function OssAgentSurface({ themeMode, onCreditsExhausted }: OssAgentSurfa
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: openAIMessageFormat.toApi(messages),
+            toolNames: [],
           }),
           signal,
         });
