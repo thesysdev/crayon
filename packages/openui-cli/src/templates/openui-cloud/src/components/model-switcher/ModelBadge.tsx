@@ -2,17 +2,12 @@ import { type ModelOption } from "@/lib/models";
 
 import { getModelBadge } from "./utils";
 
-// Trigger sits on a white pill; the dropdown row sits on the themed surface —
-// so the two contexts use different chip styles for the same badge.
-const BADGE_STYLES = {
-  trigger: {
-    recommended: "bg-indigo-100 text-indigo-700",
-    free: "bg-green-100 text-green-700",
-  },
-  row: {
-    recommended: "bg-indigo-500/15 text-indigo-400",
-    free: "bg-green-500/15 text-green-400",
-  },
+// Recommended = info (blue), Free = success (green), both from the @openuidev
+// design tokens. Trigger and row share the same colors (both sit on the themed
+// surface); they differ only in shape/size, handled below.
+const BADGE_COLORS = {
+  recommended: "bg-[var(--openui-info-background)] text-[color:var(--openui-text-info-primary)]",
+  free: "bg-[var(--openui-success-background)] text-[color:var(--openui-text-success-primary)]",
 } as const;
 
 export function ModelBadge({
@@ -31,7 +26,7 @@ export function ModelBadge({
       : "rounded-md px-2 py-0.5 text-xs";
 
   return (
-    <span className={`shrink-0 font-semibold ${shape} ${BADGE_STYLES[variant][badge.kind]}`}>
+    <span className={`shrink-0 font-semibold ${shape} ${BADGE_COLORS[badge.kind]}`}>
       {badge.label}
     </span>
   );

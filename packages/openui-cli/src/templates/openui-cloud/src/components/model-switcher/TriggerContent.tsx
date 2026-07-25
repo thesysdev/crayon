@@ -8,8 +8,14 @@ import { ProviderLogo } from "./ProviderLogo";
 function TriggerSkeleton() {
   return (
     <>
-      <span aria-hidden="true" className="h-5 w-5 shrink-0 animate-pulse rounded-md bg-gray-200" />
-      <span aria-hidden="true" className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+      <span
+        aria-hidden="true"
+        className="h-5 w-5 shrink-0 animate-pulse rounded-md bg-[var(--openui-border-default)]"
+      />
+      <span
+        aria-hidden="true"
+        className="h-4 w-24 animate-pulse rounded bg-[var(--openui-border-default)]"
+      />
     </>
   );
 }
@@ -27,7 +33,7 @@ export function TriggerContent({
 
   return (
     <>
-      {option ? <ProviderLogo provider={option.provider} variant="light" size="sm" /> : null}
+      {option ? <ProviderLogo provider={option.provider} size="sm" /> : null}
       <span className="min-w-0 flex-1 truncate">{option?.name ?? fallbackLabel}</span>
       {option ? <ModelBadge model={option} variant="trigger" /> : null}
     </>

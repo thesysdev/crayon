@@ -15,6 +15,7 @@ import { MODEL_OPTIONS } from "@/lib/models";
 
 import { ModelRow } from "./ModelRow";
 import { TriggerContent } from "./TriggerContent";
+import { UsagePolicy } from "./UsagePolicy";
 import { splitModels, useHydrated } from "./utils";
 
 interface ModelSwitcherProps {
@@ -34,7 +35,7 @@ export function ModelSwitcher({ selectedModel, onModelChange }: ModelSwitcherPro
         <SelectTrigger
           aria-label="Select model"
           title={hydrated ? (selectedOption?.id ?? selectedModel) : undefined}
-          className="flex! h-8! w-auto! max-w-[240px]! items-center! justify-start! gap-1.5! rounded-lg! border! border-gray-200! bg-white! px-2.5! text-sm! text-gray-900! shadow-sm"
+          className="flex! h-8! w-auto! max-w-[240px]! items-center! justify-start! gap-1.5! rounded-lg! border! border-[var(--openui-border-interactive)]! bg-[var(--openui-foreground)]! px-2.5! text-sm! text-[color:var(--openui-text-neutral-primary)]! shadow-[var(--openui-shadow-s)]"
         >
           <TriggerContent
             option={selectedOption}
@@ -60,16 +61,10 @@ export function ModelSwitcher({ selectedModel, onModelChange }: ModelSwitcherPro
             <SelectGroup>
               <SelectSeparator />
               <SelectLabel className="flex items-center justify-between gap-2">
-                <span className="font-semibold text-green-400">Free</span>
-                <a
-                  href="https://openui.com/docs"
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={(event) => event.stopPropagation()}
-                  className="text-xs font-normal text-gray-400 no-underline hover:underline"
-                >
-                  Usage policy
-                </a>
+                <span className="font-semibold text-[color:var(--openui-text-success-primary)]">
+                  Free
+                </span>
+                <UsagePolicy />
               </SelectLabel>
               {freeModels.map((model) => (
                 <SelectItem key={model.id} value={model.id}>
