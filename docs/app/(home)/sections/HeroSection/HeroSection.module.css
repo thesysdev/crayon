@@ -271,13 +271,10 @@
   background: var(--openui-foreground);
   box-shadow: var(--openui-shadow-l);
   cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .npmButton:hover {
-  transform: scale(0.99);
   box-shadow: none;
 }
 
@@ -692,13 +689,11 @@
   font-size: 18px;
   line-height: 1.5rem;
   box-shadow: var(--home-bevel-on-dark);
-  transition: transform 0.2s ease;
 }
 
 /* Keep it black on hover (the .heroBanner base would otherwise turn it purple). */
 .mobileGithubButton:hover {
   background: var(--home-surface-ink);
-  transform: scale(0.99);
 }
 
 .mobileGithubButton .heroBannerIcon {
@@ -789,10 +784,21 @@
   padding-inline: 2rem;
 }
 
+.desktopHeroInnerFlushInline {
+  padding-inline: 0;
+}
+
 .desktopHeroLockupLeft {
   align-items: flex-start;
   text-align: left;
   gap: 0.5rem;
+}
+
+.desktopHeroLockupSplit {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
 }
 
 .desktopTitleLeft {
@@ -837,7 +843,6 @@
 }
 
 .desktopCtaStackLeft .npmButton:hover {
-  transform: scale(0.99);
   box-shadow: var(--npm-bevel);
 }
 
@@ -888,12 +893,12 @@
   /* clip the horizontal bleed at the screen edge, but let the framed image's
      shadow show vertically (overflow-y stays visible). */
   overflow-x: clip;
-  padding-top: 5.5rem;
+  padding-top: 4rem;
 }
 
 .mobileHeroIntro {
   position: relative;
-  padding: 24px 1.25rem 0;
+  padding: 24px var(--home-section-padding-inline) 0;
 }
 
 .mobileHeroStack {
@@ -988,6 +993,12 @@
   max-width: 130rem;
 }
 
+.previewFrameSlot {
+  max-width: 1280px;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
 /* Custom screenshot override (e.g. OpenClaw OS): a thin padded surface with a soft,
    wide-blur shadow; the screenshot itself carries the gray stroke. No bottom fade. */
 .previewFrameCustom {
@@ -1028,6 +1039,11 @@
   box-shadow: 0 16px 56px -12px rgba(0, 0, 0, 0.16);
 }
 
+.mobileIllustrationViewportSlot {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
 [data-theme="dark"] .mobileIllustrationViewportFramed {
   box-shadow: 0 16px 56px -12px rgba(0, 0, 0, 0.6);
 }
@@ -1062,7 +1078,6 @@
   overflow-x: clip;
   overflow-y: visible;
   margin-top: 2rem;
-  padding-inline: 1rem;
 }
 
 .previewSectionTight {
@@ -1124,7 +1139,7 @@
     display: block;
     position: relative;
     width: 100%;
-    padding: 8rem 2rem 0;
+    padding: 6rem 2rem 0;
   }
 
   /* Directory heroes (openclaw-os, agent-interface) sit closer to the top:
@@ -1144,11 +1159,6 @@
 
   .previewSection {
     margin-top: 2.5rem;
-    padding-inline: 1rem;
-  }
-
-  .previewSectionFlush {
-    padding-inline: 0;
   }
 
   .previewDesktopOnly {
@@ -1174,13 +1184,19 @@
   .mobileTitle {
     font-size: clamp(72px, 21vw, 88px);
     font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  .mobileTitle.mobileTitleCompact,
+  .heroBannerBadge {
+    letter-spacing: 0;
   }
 
   /* Tagline matches the section-title size and uses more width. */
   .tagline {
     font-size: 1.5rem;
     font-weight: 400;
-    letter-spacing: -0.5px;
+    letter-spacing: 0;
   }
 
   .taglineSection {

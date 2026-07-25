@@ -2,14 +2,11 @@
 
 import { captureCreateCliCommandCopied } from "@/lib/create-cli-copy-analytics";
 import { ArrowRight } from "lucide-react";
-import { PLATFORMS } from "../../components/PlatformLogos";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ClipboardCommandButton, PillLink } from "../../components/Button/Button";
-import {
-  DEFAULT_GITHUB_REPO_URL,
-  GitHubButton,
-} from "../../components/GitHubButton/GitHubButton";
+import { DEFAULT_GITHUB_REPO_URL, GitHubButton } from "../../components/GitHubButton/GitHubButton";
+import { PLATFORMS } from "../../components/PlatformLogos";
 import styles from "./HeroSection.module.css";
 
 function capturePrimaryHeroCliCopy(command: string) {
@@ -46,7 +43,11 @@ function commandVariants(command: string): CommandVariant[] {
   const runner = COMMAND_RUNNERS.find(({ prefix }) => command.startsWith(`${prefix} `));
   if (!runner) return [];
   const spec = command.slice(runner.prefix.length + 1);
-  return COMMAND_RUNNERS.map(({ id, prefix }) => ({ id, command: `${prefix} ${spec}`, runner: prefix }));
+  return COMMAND_RUNNERS.map(({ id, prefix }) => ({
+    id,
+    command: `${prefix} ${spec}`,
+    runner: prefix,
+  }));
 }
 
 const DESKTOP_HERO_IMAGE = {
@@ -317,6 +318,9 @@ function DesktopHero({
   compact,
   align,
   smallSubtitle,
+  tightDesktopSpacing,
+  splitLockup,
+  flushInnerInlinePadding,
   showPlaygroundButton,
   githubRepoUrl,
   githubButtonLabel,
@@ -331,6 +335,9 @@ function DesktopHero({
   compact: boolean;
   align: "center" | "left";
   smallSubtitle: boolean;
+  tightDesktopSpacing: boolean;
+  splitLockup: boolean;
+  flushInnerInlinePadding: boolean;
   showPlaygroundButton: boolean;
   githubRepoUrl?: string;
   githubButtonLabel?: string;
@@ -341,14 +348,18 @@ function DesktopHero({
   const isLeft = align === "left";
 
   return (
-    <div className={`${styles.desktopHero} ${smallSubtitle ? styles.desktopHeroTight : ""}`.trim()}>
+    <div
+      className={`${styles.desktopHero} ${tightDesktopSpacing ? styles.desktopHeroTight : ""}`.trim()}
+    >
       <div
-        className={`${styles.desktopHeroInner} ${isLeft ? styles.desktopHeroInnerLeft : ""}`.trim()}
+        className={`${styles.desktopHeroInner} ${isLeft ? styles.desktopHeroInnerLeft : ""} ${
+          flushInnerInlinePadding ? styles.desktopHeroInnerFlushInline : ""
+        }`.trim()}
       >
         <div
           className={`${styles.desktopHeroLockup} ${
             isLeft ? styles.desktopHeroLockupLeft : ""
-          }`.trim()}
+          } ${splitLockup ? styles.desktopHeroLockupSplit : ""}`.trim()}
         >
           <h1
             className={`${styles.desktopTitle} ${compact ? styles.desktopTitleCompact : ""} ${
@@ -419,6 +430,7 @@ function MobileHero({
   mobileImageWidth,
   mobileImageHeight,
   mobileImageCropTopPercent = 0,
+  mobilePreviewSlot,
 }: {
   theme: HeroTheme;
   title: ReactNode;
@@ -439,6 +451,7 @@ function MobileHero({
   mobileImageWidth?: number;
   mobileImageHeight?: number;
   mobileImageCropTopPercent?: number;
+  mobilePreviewSlot?: ReactNode;
 }) {
   const [platform, setPlatform] = useState<CommandPlatform>("macos");
   const activeCommand = platform === "windows" && secondaryCommand ? secondaryCommand : command;
@@ -514,20 +527,22 @@ function MobileHero({
       <div
         className={`${styles.mobileIllustrationViewport} ${
           mobileImageOverride ? styles.mobileIllustrationViewportFramed : ""
-        }`.trim()}
+        } ${mobilePreviewSlot ? styles.mobileIllustrationViewportSlot : ""}`.trim()}
         style={viewportStyle}
       >
-        <img
-          src={mobileHeroImage}
-          alt={mobileImageAlt ?? "OpenUI mobile hero preview"}
-          width={naturalWidth}
-          height={naturalHeight}
-          className={styles.mobileIllustrationImage}
-          style={imageStyle}
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-        />
+        {mobilePreviewSlot ?? (
+          <img
+            src={mobileHeroImage}
+            alt={mobileImageAlt ?? "OpenUI mobile hero preview"}
+            width={naturalWidth}
+            height={naturalHeight}
+            className={styles.mobileIllustrationImage}
+            style={imageStyle}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+          />
+        )}
       </div>
     </div>
   );
@@ -539,22 +554,22 @@ function MobileHero({
 
 function PreviewImage({
   theme,
-  align,
   desktopImageOverride,
   desktopImageOverrideDark,
   desktopImageAlt,
   desktopImageWidth,
   desktopImageHeight,
   widePreview,
+  desktopPreviewSlot,
 }: {
   theme: HeroTheme;
-  align: "center" | "left";
   desktopImageOverride?: string;
   desktopImageOverrideDark?: string;
   desktopImageAlt?: string;
   desktopImageWidth?: number;
   desktopImageHeight?: number;
   widePreview?: boolean;
+  desktopPreviewSlot?: ReactNode;
 }) {
   const desktopHeroImage = desktopImageOverride
     ? theme === "dark"
@@ -566,26 +581,26 @@ function PreviewImage({
 
   return (
     <div
-      className={`${styles.previewSection} ${widePreview ? styles.previewSectionTight : ""} ${
-        align === "left" ? styles.previewSectionFlush : ""
-      }`.trim()}
+      className={`${styles.previewSection} ${widePreview ? styles.previewSectionTight : ""}`.trim()}
     >
       <div className={styles.previewDesktopOnly}>
         <div
           className={`${styles.previewFrame} ${widePreview ? styles.previewFrameWide : ""} ${
             desktopImageOverride ? styles.previewFrameCustom : ""
-          }`.trim()}
+          } ${desktopPreviewSlot ? styles.previewFrameSlot : ""}`.trim()}
         >
-          <img
-            src={desktopHeroImage}
-            alt={desktopImageAlt ?? "OpenUI desktop hero preview"}
-            width={desktopImageWidth ?? DESKTOP_HERO_IMAGE.width}
-            height={desktopImageHeight ?? DESKTOP_HERO_IMAGE.height}
-            className={styles.previewImage}
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-          />
+          {desktopPreviewSlot ?? (
+            <img
+              src={desktopHeroImage}
+              alt={desktopImageAlt ?? "OpenUI desktop hero preview"}
+              width={desktopImageWidth ?? DESKTOP_HERO_IMAGE.width}
+              height={desktopImageHeight ?? DESKTOP_HERO_IMAGE.height}
+              className={styles.previewImage}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+            />
+          )}
         </div>
       </div>
     </div>
@@ -628,12 +643,16 @@ export function HeroSection({
   compact = false,
   align = "center",
   smallSubtitle = false,
+  tightDesktopSpacing,
+  splitLockup = false,
+  flushInnerInlinePadding = false,
   showPlaygroundButton = true,
   desktopPreviewImage,
   desktopPreviewImageDark,
   desktopPreviewImageAlt,
   desktopPreviewImageWidth,
   desktopPreviewImageHeight,
+  desktopPreviewSlot,
   widePreview = false,
   showTagline = true,
   tagline,
@@ -647,6 +666,7 @@ export function HeroSection({
   mobilePreviewImageWidth,
   mobilePreviewImageHeight,
   mobilePreviewImageCropTopPercent,
+  mobilePreviewSlot,
 }: {
   title?: ReactNode;
   subtitle?: ReactNode;
@@ -661,6 +681,12 @@ export function HeroSection({
   align?: "center" | "left";
   /** Render the subtitle at a smaller size (sub-product pages like /openclaw-os). */
   smallSubtitle?: boolean;
+  /** Tighten the desktop hero's top spacing independently of subtitle size. */
+  tightDesktopSpacing?: boolean;
+  /** Place the title and subtitle in two desktop columns. */
+  splitLockup?: boolean;
+  /** Remove horizontal padding from the desktop hero's inner container. */
+  flushInnerInlinePadding?: boolean;
   showPlaygroundButton?: boolean;
   desktopPreviewImage?: string;
   /** Dark-theme variant of the desktop preview image (falls back to the light one). */
@@ -668,6 +694,8 @@ export function HeroSection({
   desktopPreviewImageAlt?: string;
   desktopPreviewImageWidth?: number;
   desktopPreviewImageHeight?: number;
+  /** Replaces the desktop hero screenshot with custom preview content. */
+  desktopPreviewSlot?: ReactNode;
   widePreview?: boolean;
   showTagline?: boolean;
   tagline?: ReactNode;
@@ -686,11 +714,14 @@ export function HeroSection({
   mobilePreviewImageWidth?: number;
   mobilePreviewImageHeight?: number;
   mobilePreviewImageCropTopPercent?: number;
+  /** Replaces the mobile hero screenshot with custom preview content. */
+  mobilePreviewSlot?: ReactNode;
 } = {}) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const theme: HeroTheme = mounted && resolvedTheme === "dark" ? "dark" : "light";
+  const resolvedTightDesktopSpacing = tightDesktopSpacing ?? smallSubtitle;
 
   return (
     <section className={styles.section}>
@@ -705,6 +736,9 @@ export function HeroSection({
         compact={compact}
         align={align}
         smallSubtitle={smallSubtitle}
+        tightDesktopSpacing={resolvedTightDesktopSpacing}
+        splitLockup={splitLockup}
+        flushInnerInlinePadding={flushInnerInlinePadding}
         showPlaygroundButton={showPlaygroundButton}
         githubRepoUrl={githubRepoUrl}
         githubButtonLabel={githubButtonLabel}
@@ -729,17 +763,18 @@ export function HeroSection({
         mobileImageWidth={mobilePreviewImageWidth}
         mobileImageHeight={mobilePreviewImageHeight}
         mobileImageCropTopPercent={mobilePreviewImageCropTopPercent}
+        mobilePreviewSlot={mobilePreviewSlot}
       />
-      <PreviewImage
-        theme={theme}
-        align={align}
-        desktopImageOverride={desktopPreviewImage}
-        desktopImageOverrideDark={desktopPreviewImageDark}
-        desktopImageAlt={desktopPreviewImageAlt}
-        desktopImageWidth={desktopPreviewImageWidth}
-        desktopImageHeight={desktopPreviewImageHeight}
-        widePreview={widePreview}
-      />
+        <PreviewImage
+          theme={theme}
+          desktopImageOverride={desktopPreviewImage}
+          desktopImageOverrideDark={desktopPreviewImageDark}
+          desktopImageAlt={desktopPreviewImageAlt}
+          desktopImageWidth={desktopPreviewImageWidth}
+          desktopImageHeight={desktopPreviewImageHeight}
+          widePreview={widePreview}
+          desktopPreviewSlot={desktopPreviewSlot}
+        />
       {showTagline && <Tagline compact={taglineCompact}>{tagline}</Tagline>}
     </section>
   );
