@@ -18,13 +18,9 @@ c3 = TextContent("Cherry section content")`;
 
 describe("Accordion initial open state", () => {
   it("opens the first section on a static mount", () => {
-    const html = renderToString(
-      <Renderer response={STATIC_PROGRAM} library={openuiLibrary} />,
-    );
+    const html = renderToString(<Renderer response={STATIC_PROGRAM} library={openuiLibrary} />);
 
-    const expandedStates = [...html.matchAll(/aria-expanded="(true|false)"/g)].map(
-      (m) => m[1],
-    );
+    const expandedStates = [...html.matchAll(/aria-expanded="(true|false)"/g)].map((m) => m[1]);
     expect(expandedStates).toEqual(["true", "false", "false"]);
 
     expect(html).toContain("Apple section content");
