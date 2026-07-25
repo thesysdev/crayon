@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight } from "@phosphor-icons/react";
+import { ArrowRight, ArrowUpRight } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -89,7 +89,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
       },
       {
         title: "AppLess",
-        description: "A no-app phone experience powered by OpenUI-generated native interfaces.",
+        description: "An open-source concept for an OS without any apps.",
         href: "https://github.com/thesysdev/appless",
         newTab: true,
         preview: {
@@ -170,7 +170,11 @@ function DropdownCard({ child, onNavigate }: { child: NavDropdownChild; onNaviga
         <span className={styles.dropdownTitleRow}>
           <span className={styles.dropdownTitle}>{child.title}</span>
           <span className={styles.dropdownArrow} aria-hidden="true">
-            <ArrowRight size={12} weight="bold" />
+            {child.newTab ? (
+              <ArrowUpRight size={12} weight="bold" />
+            ) : (
+              <ArrowRight size={12} weight="bold" />
+            )}
           </span>
         </span>
         {child.description && (
