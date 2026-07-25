@@ -1,6 +1,6 @@
 .section {
   width: 100%;
-  padding: 0 1.25rem;
+  padding: 0 var(--home-section-padding-inline);
 }
 
 .header {
@@ -41,6 +41,15 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding: clamp(1.75rem, 2.5vw, 2.5rem);
+  min-height: var(--feature-grid-card-min-height, auto);
+}
+
+.lead {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: var(--feature-grid-card-min-height, auto);
   padding: clamp(1.75rem, 2.5vw, 2.5rem);
 }
 
@@ -188,11 +197,98 @@
     background-repeat: no-repeat;
   }
 
+  .gridFourColumns {
+    grid-template-columns: repeat(4, 1fr);
+    background-image:
+      linear-gradient(var(--home-hairline), var(--home-hairline)),
+      linear-gradient(var(--home-hairline), var(--home-hairline)),
+      linear-gradient(var(--home-hairline), var(--home-hairline)),
+      linear-gradient(
+        to right,
+        transparent,
+        var(--home-hairline) 8%,
+        var(--home-hairline) 92%,
+        transparent
+      );
+    background-size:
+      1px 100%,
+      1px 100%,
+      1px 100%,
+      100% 1px;
+    background-position:
+      25% 0,
+      50% 0,
+      75% 0,
+      0 50%;
+    background-repeat: no-repeat;
+  }
+
+  .gridFourColumns.gridSingleRow {
+    background-image:
+      linear-gradient(var(--home-hairline), var(--home-hairline)),
+      linear-gradient(var(--home-hairline), var(--home-hairline)),
+      linear-gradient(var(--home-hairline), var(--home-hairline));
+    background-size:
+      1px 100%,
+      1px 100%,
+      1px 100%;
+    background-position:
+      25% 0,
+      50% 0,
+      75% 0;
+  }
+
+  .gridFourColumns .feature {
+    padding-inline: clamp(1.5rem, 2vw, 2rem);
+  }
+
   .gridSingleRow .feature:first-child {
     padding-left: 0;
   }
 
   .gridSingleRow .feature:last-child {
+    padding-right: 0;
+  }
+
+  .gridFlushOuterCards > :nth-child(1),
+  .gridFlushOuterCards > :nth-child(4) {
+    padding-left: 0;
+  }
+
+  .gridFlushOuterCards > :nth-child(3),
+  .gridFlushOuterCards > :nth-child(6) {
+    padding-right: 0;
+  }
+
+  .gridBalancedLastRow {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    background-image: linear-gradient(
+      to right,
+      transparent,
+      var(--home-hairline) 8%,
+      var(--home-hairline) 92%,
+      transparent
+    );
+    background-size: 100% 1px;
+    background-position: 0 50%;
+    background-repeat: no-repeat;
+  }
+
+  .gridBalancedLastRow > .feature {
+    grid-column: span 2;
+  }
+
+  .gridBalancedLastRow > .feature:nth-last-child(-n + 2) {
+    grid-column: span 3;
+  }
+
+  .gridBalancedLastRow > .feature:nth-child(2),
+  .gridBalancedLastRow > .feature:nth-child(3),
+  .gridBalancedLastRow > .feature:nth-child(5) {
+    border-left: 1px solid var(--home-hairline);
+  }
+
+  .gridBalancedLastRow.gridFlushOuterCards > :nth-child(5) {
     padding-right: 0;
   }
 
@@ -208,7 +304,7 @@
   .separator {
     width: auto;
     max-width: none;
-    margin-inline: -1.25rem;
+    margin-inline: calc(0px - var(--home-section-padding-inline));
     background: linear-gradient(to right, transparent, var(--home-hairline) 15%);
   }
 
@@ -221,14 +317,20 @@
     row-gap: 0;
     align-items: center;
     padding: 1.25rem 0;
+    font-family: var(--home-font-display);
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  .lead {
+    min-height: auto;
+    padding: 1.25rem 0 2.5rem;
   }
 
   /* Separator runs edge to edge (breaks out of the section padding) and fades
      out on the left. */
   .feature:not(:first-child)::before {
-    inset-inline: -1.25rem;
+    inset-inline: calc(0px - var(--home-section-padding-inline));
     background: linear-gradient(to right, transparent, var(--home-hairline) 15%);
   }
 

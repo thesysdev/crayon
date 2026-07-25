@@ -554,7 +554,6 @@ function MobileHero({
 
 function PreviewImage({
   theme,
-  align,
   desktopImageOverride,
   desktopImageOverrideDark,
   desktopImageAlt,
@@ -564,7 +563,6 @@ function PreviewImage({
   desktopPreviewSlot,
 }: {
   theme: HeroTheme;
-  align: "center" | "left";
   desktopImageOverride?: string;
   desktopImageOverrideDark?: string;
   desktopImageAlt?: string;
@@ -583,9 +581,7 @@ function PreviewImage({
 
   return (
     <div
-      className={`${styles.previewSection} ${widePreview ? styles.previewSectionTight : ""} ${
-        align === "left" ? styles.previewSectionFlush : ""
-      }`.trim()}
+      className={`${styles.previewSection} ${widePreview ? styles.previewSectionTight : ""}`.trim()}
     >
       <div className={styles.previewDesktopOnly}>
         <div
@@ -769,17 +765,16 @@ export function HeroSection({
         mobileImageCropTopPercent={mobilePreviewImageCropTopPercent}
         mobilePreviewSlot={mobilePreviewSlot}
       />
-      <PreviewImage
-        theme={theme}
-        align={align}
-        desktopImageOverride={desktopPreviewImage}
-        desktopImageOverrideDark={desktopPreviewImageDark}
-        desktopImageAlt={desktopPreviewImageAlt}
-        desktopImageWidth={desktopPreviewImageWidth}
-        desktopImageHeight={desktopPreviewImageHeight}
-        widePreview={widePreview}
-        desktopPreviewSlot={desktopPreviewSlot}
-      />
+        <PreviewImage
+          theme={theme}
+          desktopImageOverride={desktopPreviewImage}
+          desktopImageOverrideDark={desktopPreviewImageDark}
+          desktopImageAlt={desktopPreviewImageAlt}
+          desktopImageWidth={desktopPreviewImageWidth}
+          desktopImageHeight={desktopPreviewImageHeight}
+          widePreview={widePreview}
+          desktopPreviewSlot={desktopPreviewSlot}
+        />
       {showTagline && <Tagline compact={taglineCompact}>{tagline}</Tagline>}
     </section>
   );

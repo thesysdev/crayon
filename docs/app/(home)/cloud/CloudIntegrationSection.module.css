@@ -6,7 +6,7 @@
 
 .inner {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 120px;
   width: 100%;
   max-width: 1200px;
@@ -17,7 +17,8 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: 32px;
+  justify-content: space-between;
+  gap: 0;
   min-width: 0;
   text-align: left;
 }
@@ -62,7 +63,7 @@
   bottom: 0;
   left: 13px;
   width: 1px;
-  background: var(--openui-border-default);
+  background: var(--openui-border-interactive);
   content: "";
 }
 
@@ -75,7 +76,7 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  border: 1px solid var(--openui-border-default);
+  border: 1px solid var(--openui-border-interactive);
   border-radius: 50%;
   background: var(--openui-foreground);
   color: var(--openui-text-neutral-secondary);
@@ -131,10 +132,17 @@
 }
 
 .codeColumn {
+  display: flex;
   box-sizing: border-box;
   flex: 0 0 600px;
   width: 600px;
   max-width: 100%;
+}
+
+.codeColumn > * {
+  flex: 1 1 100%;
+  width: 100%;
+  min-width: 0;
 }
 
 .customers {
@@ -165,7 +173,7 @@
   margin-left: 2px;
   padding: 2px 7px 3px;
   border: 1px solid currentColor;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 0.85em;
   line-height: 1;
   vertical-align: 0.06em;
@@ -204,7 +212,7 @@
 }
 
 .customerLogo,
-.customerDescription {
+.customerFooter {
   position: relative;
   z-index: 2;
 }
@@ -224,6 +232,21 @@
   font-weight: 400;
   line-height: 1.45;
   text-align: left;
+}
+
+.customerFooter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.customerStory :global(.openui-button-base-tertiary) {
+  color: #fff !important;
+}
+
+.customerStory :global(.openui-button-base-tertiary:hover) {
+  color: rgb(255 255 255 / 72%) !important;
 }
 
 @media (max-width: 1023px) {
@@ -253,9 +276,49 @@
 }
 
 @media (max-width: 767px) {
+  .inner {
+    width: calc(100% - 32px);
+  }
+
+  .content {
+    gap: 32px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .customers {
+    width: calc(100% - 32px);
+  }
+
+  .customersTitle {
+    font-size: 28px;
+  }
+
   .customerGrid {
-    grid-template-columns: 1fr;
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    width: calc(100% + 32px);
     margin-top: 48px;
+    margin-left: -16px;
+    box-sizing: border-box;
+    padding: 0 16px 8px;
+    scroll-padding-inline: 16px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .customerGrid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .customerCard {
+    flex: 0 0 84%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 
   .customerDescription {

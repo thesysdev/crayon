@@ -3,9 +3,14 @@
 import {
   ArrowUpRight,
   Broadcast,
+  ChartLineUp,
+  CloudArrowUp,
   CursorClick,
+  Database,
   Devices,
+  Handshake,
   Plugs,
+  Pulse,
   PuzzlePiece,
   ShieldCheck,
   type Icon,
@@ -18,7 +23,12 @@ import { SectionHeader } from "../../components/SectionHeader/SectionHeader";
 import { CompatibilitySection } from "../CompatibilitySection/CompatibilitySection";
 import styles from "./FeatureGridSection.module.css";
 
-export type GridFeature = { Icon?: Icon; title: string; description: string };
+export type GridFeature = {
+  Icon?: Icon;
+  icon?: GridFeatureIcon;
+  title: string;
+  description: string;
+};
 
 const FEATURES: GridFeature[] = [
   {
@@ -54,16 +64,36 @@ const FEATURES: GridFeature[] = [
   },
 ];
 
+const FEATURE_ICONS = {
+  chart: ChartLineUp,
+  cloud: CloudArrowUp,
+  database: Database,
+  devices: Devices,
+  handshake: Handshake,
+  interaction: CursorClick,
+  pulse: Pulse,
+  shield: ShieldCheck,
+  signal: Broadcast,
+} as const;
+
+export type GridFeatureIcon = keyof typeof FEATURE_ICONS;
+
 export function FeatureGridSection({
   features = FEATURES,
+  lead,
   showHeader = true,
   showCompat = true,
   header,
   showBottomSeparator = true,
   fadeColumnLines = false,
   showTopSeparator = false,
+  flushOuterCards = false,
+  balanceLastRow = false,
+  desktopColumns = 3,
 }: {
   features?: GridFeature[];
+  /** Optional content rendered as the first cell in the feature grid. */
+  lead?: ReactNode;
   /** The benchmark header + CTA (OpenUI-specific). Off for sub-product pages. */
   showHeader?: boolean;
   /** The "Works with your stack" compatibility band (OpenUI-specific). */
@@ -76,6 +106,12 @@ export function FeatureGridSection({
   fadeColumnLines?: boolean;
   /** Show a full-width rule above the grid. */
   showTopSeparator?: boolean;
+  /** Remove the outside padding from the edge cells in a two-row, three-column grid. */
+  flushOuterCards?: boolean;
+  /** Let the final two cards split the full grid width evenly. */
+  balanceLastRow?: boolean;
+  /** Number of columns used by the feature grid on desktop. */
+  desktopColumns?: 3 | 4;
 } = {}) {
   // Mobile-only: all rows collapsed by default; one expands at a time and the
   // open one can be tapped to collapse. Desktop ignores this (CSS shows all).
@@ -112,28 +148,36 @@ export function FeatureGridSection({
       {showTopSeparator && <div className={styles.separator} />}
       <div
         className={`${styles.grid} ${fadeColumnLines ? styles.gridFadeLines : ""} ${
-          features.length <= 3 ? styles.gridSingleRow : ""
+          features.length <= desktopColumns ? styles.gridSingleRow : ""
+        } ${flushOuterCards ? styles.gridFlushOuterCards : ""} ${
+          balanceLastRow ? styles.gridBalancedLastRow : ""
+        } ${desktopColumns === 4 ? styles.gridFourColumns : ""
         }`.trim()}
       >
-        {features.map(({ Icon, title, description }, index) => (
-          <div
-            className={`${styles.feature} ${Icon ? "" : styles.featureWithPlaceholder}`.trim()}
-            key={title}
-            {...accordion.getToggleProps(index)}
-          >
-            <span
-              className={`${styles.icon} ${Icon ? "" : styles.iconPlaceholder}`.trim()}
-              aria-hidden="true"
+        {lead && <div className={styles.lead}>{lead}</div>}
+        {features.map(({ Icon, icon, title, description }, index) => {
+          const FeatureIcon = Icon ?? (icon ? FEATURE_ICONS[icon] : undefined);
+
+          return (
+            <div
+              className={`${styles.feature} ${FeatureIcon ? "" : styles.featureWithPlaceholder}`.trim()}
+              key={title}
+              {...accordion.getToggleProps(index)}
             >
-              {Icon && <Icon size={28} weight="light" />}
-            </span>
-            <h3 className={styles.featureTitle}>{title}</h3>
-            <ExpandChevron className={styles.chevron} />
-            <p className={styles.featureDescription}>
-              <span className={styles.featureDescriptionInner}>{description}</span>
-            </p>
-          </div>
-        ))}
+              <span
+                className={`${styles.icon} ${FeatureIcon ? "" : styles.iconPlaceholder}`.trim()}
+                aria-hidden="true"
+              >
+                {FeatureIcon && <FeatureIcon size={28} weight="light" />}
+              </span>
+              <h3 className={styles.featureTitle}>{title}</h3>
+              <ExpandChevron className={styles.chevron} />
+              <p className={styles.featureDescription}>
+                <span className={styles.featureDescriptionInner}>{description}</span>
+              </p>
+            </div>
+          );
+        })}
       </div>
       {showCompat && (
         <>

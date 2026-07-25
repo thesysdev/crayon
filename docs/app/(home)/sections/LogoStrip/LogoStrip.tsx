@@ -1,6 +1,12 @@
 import styles from "./LogoStrip.module.css";
 
-const LOGOS = [
+type Logo = {
+  src: string;
+  alt: string;
+  href?: string;
+};
+
+const HOME_LOGOS: Logo[] = [
   { src: "/logos/oodle.svg", alt: "Oodle AI", href: "https://www.oodle.ai/" },
   {
     src: "/logos/standard-metrics.svg",
@@ -14,14 +20,32 @@ const LOGOS = [
   { src: "/logos/productboard.svg", alt: "Productboard", href: "https://productboard.com/" },
 ];
 
+const CLOUD_LOGOS: Logo[] = [
+  { src: "/logos/entelligence.svg", alt: "Entelligence" },
+  { src: "/logos/pointlabs.svg", alt: "Pointlabs" },
+  { src: "/logos/wisdom.svg", alt: "Wisdom" },
+  { src: "/logos/mili.svg", alt: "Mili" },
+  { src: "/logos/ficell-labs.svg", alt: "Ficell Labs" },
+];
+
 /* The track holds SETS copies of the logo list and animates by -50%, so the
    second half must mirror the first exactly for a seamless loop. */
 const SETS = 4;
 
-export function LogoStrip({ label }: { label?: string }) {
+export function LogoStrip({
+  label,
+  variant = "home",
+}: {
+  label?: string;
+  variant?: "home" | "cloud";
+}) {
+  const logos = variant === "cloud" ? CLOUD_LOGOS : HOME_LOGOS;
+
   return (
     <section
-      className={`${styles.section} ${label ? styles.sectionWithLabel : ""}`.trim()}
+      className={`${styles.section} ${label ? styles.sectionWithLabel : ""} ${
+        variant === "cloud" ? styles.sectionCloud : ""
+      }`.trim()}
       aria-label="Customers using OpenUI"
     >
       <div className={styles.inner}>
@@ -29,16 +53,8 @@ export function LogoStrip({ label }: { label?: string }) {
         <div className={styles.marquee}>
           <div className={styles.track}>
             {Array.from({ length: SETS }, (_, set) =>
-              LOGOS.map((logo) => (
-                <a
-                  key={`${set}-${logo.src}`}
-                  className={styles.card}
-                  href={logo.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-hidden={set > 0 || undefined}
-                  tabIndex={set > 0 ? -1 : undefined}
-                >
+              logos.map((logo) => {
+                const image = (
                   <img
                     className={styles.logo}
                     src={logo.src}
@@ -47,8 +63,30 @@ export function LogoStrip({ label }: { label?: string }) {
                     height={48}
                     loading="lazy"
                   />
-                </a>
-              )),
+                );
+
+                return logo.href ? (
+                  <a
+                    key={`${set}-${logo.src}`}
+                    className={styles.card}
+                    href={logo.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-hidden={set > 0 || undefined}
+                    tabIndex={set > 0 ? -1 : undefined}
+                  >
+                    {image}
+                  </a>
+                ) : (
+                  <span
+                    key={`${set}-${logo.src}`}
+                    className={styles.card}
+                    aria-hidden={set > 0 || undefined}
+                  >
+                    {image}
+                  </span>
+                );
+              }),
             )}
           </div>
         </div>

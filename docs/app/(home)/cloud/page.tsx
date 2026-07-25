@@ -1,12 +1,15 @@
 import { ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import { BevelButton } from "../components/Button/BevelButton";
 import styles from "../page.module.css";
 import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
 import { LogoStrip } from "../sections/LogoStrip/LogoStrip";
+import { CloudCtaSection } from "./CloudCtaSection";
 import { CloudIntegrationSection } from "./CloudIntegrationSection";
 import { ComparisonSection } from "./ComparisonSection";
+import { EnterpriseSection } from "./EnterpriseSection";
 import { FeaturesSection } from "./FeaturesSection";
 import cloudStyles from "./page.module.css";
 
@@ -21,6 +24,21 @@ export const metadata: Metadata = {
       "The managed backend for production agent interfaces, powered by the open-source OpenUI rendering engine.",
     url: "/cloud",
     type: "website",
+    images: [
+      {
+        url: "/meta-image.png?v=20260725-1708",
+        width: 1800,
+        height: 942,
+        alt: "OpenUI Cloud preview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OpenUI Cloud — Generative UI, ready for production",
+    description:
+      "The managed backend for production agent interfaces, powered by the open-source OpenUI rendering engine.",
+    images: ["/meta-image.png?v=20260725-1708"],
   },
 };
 
@@ -68,13 +86,55 @@ export default function OpenUICloudPage() {
           showPlaygroundButton={false}
           showGitHubBanner={false}
           showTagline={false}
-          desktopPreviewSlot={<div className={cloudStyles.heroPlaceholder} aria-hidden="true" />}
-          mobilePreviewSlot={<div className={cloudStyles.heroPlaceholder} aria-hidden="true" />}
+          desktopPreviewSlot={
+            <>
+              <Image
+                className={`${cloudStyles.heroImage} ${cloudStyles.heroImageLight}`}
+                src="/openui-cloud/hero-light.svg"
+                alt="OpenUI Cloud production interface preview"
+                width={1280}
+                height={600}
+                priority
+              />
+              <Image
+                className={`${cloudStyles.heroImage} ${cloudStyles.heroImageDark}`}
+                src="/openui-cloud/hero-dark.svg"
+                alt=""
+                aria-hidden="true"
+                width={1280}
+                height={600}
+                priority
+              />
+            </>
+          }
+          mobilePreviewSlot={
+            <>
+              <Image
+                className={`${cloudStyles.heroImage} ${cloudStyles.heroImageLight}`}
+                src="/openui-cloud/hero-light.svg"
+                alt="OpenUI Cloud production interface preview"
+                width={1280}
+                height={600}
+                priority
+              />
+              <Image
+                className={`${cloudStyles.heroImage} ${cloudStyles.heroImageDark}`}
+                src="/openui-cloud/hero-dark.svg"
+                alt=""
+                aria-hidden="true"
+                width={1280}
+                height={600}
+                priority
+              />
+            </>
+          }
         />
-        <LogoStrip label="Powering AI experiences at:" />
+        <LogoStrip label="Powering AI experiences at:" variant="cloud" />
         <FeaturesSection />
         <CloudIntegrationSection />
         <ComparisonSection />
+        <EnterpriseSection />
+        <CloudCtaSection />
       </div>
       <Footer />
     </div>

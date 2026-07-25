@@ -21,8 +21,8 @@ function CloudCheckmark() {
   return (
     <svg
       className={styles.cloudCheckmark}
-      width="16"
-      height="16"
+      width="14"
+      height="14"
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -44,15 +44,23 @@ function CloudCheckmark() {
 export function ComparisonSection() {
   return (
     <section className={styles.section} aria-labelledby="cloud-comparison-title">
+      <div className={styles.separator} aria-hidden="true" />
       <div className={styles.inner}>
         <h2 id="cloud-comparison-title" className={styles.title}>
           Purpose
-          <br />
-          built for production use-cases
+          <br className={styles.titleBreak} />
+          {" "}built for
+          <br className={styles.mobileTitleBreak} />
+          {" "}production use-cases
         </h2>
 
         <div className={styles.tableScroller}>
           <table className={styles.table}>
+            <colgroup>
+              <col className={styles.capabilityColumn} />
+              <col />
+              <col />
+            </colgroup>
             <thead>
               <tr>
                 <th scope="col">Capability</th>

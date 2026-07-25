@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
+import { Button } from "@/components/button";
 import { CloudCodeBlock } from "./CloudCodeBlock";
 import styles from "./CloudIntegrationSection.module.css";
 
@@ -19,6 +20,7 @@ const CUSTOMERS = [
     logoHeight: 40,
     description:
       "Pointlabs replaced A2UI with OpenUI Cloud to power a voice-first AI travel concierge",
+    href: "https://www.thesys.dev/customers/point-labs",
   },
   {
     name: "Entelligence",
@@ -28,6 +30,7 @@ const CUSTOMERS = [
     logoHeight: 40,
     description:
       "Using OpenUI Cloud to deliver engineering intelligence through AI-native Generative UI experiences.",
+    href: "https://www.thesys.dev/customers/entelligence",
   },
   {
     name: "Wisdom AI",
@@ -37,6 +40,7 @@ const CUSTOMERS = [
     logoHeight: 40,
     description:
       "Using OpenUI Cloud artifacts to create shareable reports with enterprise-ready business insights.",
+    href: null,
   },
 ] as const;
 
@@ -111,7 +115,14 @@ export function CloudIntegrationSection() {
                 width={customer.logoWidth}
                 height={customer.logoHeight}
               />
-              <p className={styles.customerDescription}>{customer.description}</p>
+              <div className={styles.customerFooter}>
+                <p className={styles.customerDescription}>{customer.description}</p>
+                {customer.href ? (
+                  <div className={styles.customerStory}>
+                    <Button href={customer.href} text="Read story" variant="tertiary" />
+                  </div>
+                ) : null}
+              </div>
             </article>
           ))}
         </div>

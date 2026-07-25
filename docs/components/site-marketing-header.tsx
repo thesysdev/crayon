@@ -106,6 +106,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
       key={entry.href}
       className={styles.mobileTrayLink}
       href={entry.href}
+      onClick={onClose}
       {...(entry.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
       <span>{entry.title}</span>
@@ -206,6 +207,10 @@ export function SiteMarketingHeader({
     setIsMobileMenuOpen((prev) => !prev);
   }, []);
 
+  const closeMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
+
   const isBordered = borderMode === "always" || isScrolled;
 
   return (
@@ -254,7 +259,7 @@ export function SiteMarketingHeader({
         }
       />
       <AnimatePresence>
-        {isMobileMenuOpen && <MobileMenu onClose={toggleMobileMenu} />}
+        {isMobileMenuOpen && <MobileMenu onClose={closeMobileMenu} />}
       </AnimatePresence>
     </nav>
   );
