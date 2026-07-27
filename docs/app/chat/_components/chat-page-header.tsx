@@ -1,61 +1,119 @@
 "use client";
 
-import { copyText } from "@/lib/copy-text";
+import { ClipboardCommandButton } from "@/app/(home)/components/Button/Button";
 import { ToggleGroup } from "@openuidev/react-ui/ToggleGroup";
 import { ToggleItem } from "@openuidev/react-ui/ToggleItem";
-import { ArrowLeft, Check, SquareTerminal } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import styles from "../chat-page.module.css";
 import type { ChatMode } from "./chat-types";
 
-const CREATE_COMMAND = "npx @openuidev/cli@latest create";
-const COPY_FEEDBACK_MS = 1800;
+const CLI_COMMANDS = [
+  { id: "pnpm", runner: "pnpx", command: "pnpx @openuidev/cli@latest create" },
+  { id: "bun", runner: "bunx", command: "bunx @openuidev/cli@latest create" },
+  { id: "yarn", runner: "yarn dlx", command: "yarn dlx @openuidev/cli@latest create" },
+  { id: "npm", runner: "npx", command: "npx @openuidev/cli@latest create" },
+] as const;
 
-function StartLocallyButton() {
-  const [copied, setCopied] = useState(false);
-  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+function BuildForFreeMenu() {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
-      if (resetTimeoutRef.current) clearTimeout(resetTimeoutRef.current);
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
     };
   }, []);
 
-  const handleCopy = async () => {
-    if (!(await copyText(CREATE_COMMAND))) return;
-
-    setCopied(true);
-    if (resetTimeoutRef.current) clearTimeout(resetTimeoutRef.current);
-    resetTimeoutRef.current = setTimeout(() => setCopied(false), COPY_FEEDBACK_MS);
+  const cancelScheduledClose = () => {
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    closeTimeoutRef.current = null;
   };
 
+  const handleHoverOpen = (event: React.PointerEvent) => {
+    if (event.pointerType !== "mouse") return;
+    cancelScheduledClose();
+    setOpen(true);
+  };
+
+  const handleHoverClose = (event: React.PointerEvent) => {
+    if (event.pointerType !== "mouse") return;
+    cancelScheduledClose();
+    closeTimeoutRef.current = setTimeout(() => setOpen(false), 160);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!wrapRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
+
   return (
-    <button
-      type="button"
-      className={styles.startLocallyButton}
-      data-copied={copied}
-      onClick={handleCopy}
-      aria-label={`Copy local setup command: ${CREATE_COMMAND}`}
+    <div
+      className={styles.ctaWrap}
+      ref={wrapRef}
+      onPointerEnter={handleHoverOpen}
+      onPointerLeave={handleHoverClose}
     >
-      {copied ? (
-        <Check size={17} strokeWidth={2} aria-hidden="true" />
-      ) : (
-        <SquareTerminal size={17} strokeWidth={1.8} aria-hidden="true" />
-      )}
-      <span className={styles.startLocallyLabelGroup} aria-hidden="true">
-        <span className={`${styles.startLocallyLabel} ${styles.startLocallyDefault}`}>
-          Run on your machine
-        </span>
-        <span className={`${styles.startLocallyLabel} ${styles.startLocallyCommand}`}>
-          {CREATE_COMMAND}
-        </span>
-        <span className={`${styles.startLocallyLabel} ${styles.startLocallyCopied}`}>Copied</span>
-      </span>
-      <span className={styles.srOnly} aria-live="polite">
-        {copied ? "Local setup command copied." : ""}
-      </span>
-    </button>
+      <button
+        type="button"
+        ref={triggerRef}
+        className={styles.ctaButton}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <span>Build for free</span>
+        <ArrowRight
+          size={15}
+          strokeWidth={2}
+          aria-hidden="true"
+          className={styles.ctaArrow}
+          data-open={open}
+        />
+      </button>
+
+      <div className={`${styles.ctaMenu} ${open ? styles.ctaMenuOpen : ""}`.trim()}>
+        <div
+          className={styles.ctaMenuCard}
+          role="menu"
+          aria-label="Copy the setup command for a package manager"
+        >
+          {CLI_COMMANDS.map((item) => (
+            <ClipboardCommandButton
+              key={item.id}
+              command={item.command}
+              className={styles.ctaMenuItem}
+              iconContainerClassName={styles.ctaMenuItemIcon}
+              copyIconColor="currentColor"
+            >
+              <span className={styles.ctaMenuItemLabel}>
+                <span className={styles.ctaMenuItemRunner}>{item.runner}</span>
+                {item.command.slice(item.runner.length)}
+              </span>
+            </ClipboardCommandButton>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -68,12 +126,9 @@ export function ChatPageHeader({ mode, onModeChange }: ChatPageHeaderProps) {
   return (
     <header className={styles.header} aria-label="OpenUI chat controls">
       <div className={styles.headerRow}>
-        <Link className={styles.backLink} href="/" prefetch={false}>
-          <ArrowLeft aria-hidden="true" size={17} />
-          <span>Back to docs</span>
+        <Link className={styles.backLink} href="/" prefetch={false} aria-label="Back to docs">
+          <ArrowLeft aria-hidden="true" size={15} strokeWidth={2} />
         </Link>
-
-        <StartLocallyButton />
 
         <div className={styles.modeControl}>
           <ToggleGroup
@@ -93,6 +148,8 @@ export function ChatPageHeader({ mode, onModeChange }: ChatPageHeaderProps) {
             </ToggleItem>
           </ToggleGroup>
         </div>
+
+        <BuildForFreeMenu />
       </div>
     </header>
   );
