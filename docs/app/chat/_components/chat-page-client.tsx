@@ -2,7 +2,6 @@
 
 import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
 import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
-import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { Component, useCallback, useState, type ReactNode } from "react";
 import styles from "../chat-page.module.css";
@@ -39,11 +38,9 @@ class CloudSurfaceErrorBoundary extends Component<
 }
 
 export function ChatPageClient() {
-  const { resolvedTheme } = useTheme();
   const [mode, setMode] = useState<ChatMode>("oss");
   const [announcement, setAnnouncement] = useState("");
   const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
-  const themeMode = resolvedTheme === "dark" ? "dark" : "light";
 
   const handleCreditsExhausted = useCallback(() => {
     setCreditsDialogOpen(true);
@@ -71,10 +68,10 @@ export function ChatPageClient() {
         aria-label={`${mode === "oss" ? "OpenUI OSS" : "OpenUI Cloud"} chat`}
       >
         {mode === "oss" ? (
-          <OssAgentSurface themeMode={themeMode} onCreditsExhausted={handleCreditsExhausted} />
+          <OssAgentSurface onCreditsExhausted={handleCreditsExhausted} />
         ) : (
           <CloudSurfaceErrorBoundary>
-            <CloudAgentSurface themeMode={themeMode} />
+            <CloudAgentSurface />
           </CloudSurfaceErrorBoundary>
         )}
       </section>
