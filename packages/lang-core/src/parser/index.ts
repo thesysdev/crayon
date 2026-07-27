@@ -1,4 +1,4 @@
-export { BuiltinActionType } from "./types";
+export { BuiltinActionType, isElementNode, isSlotElement, splitSlots } from "./types";
 export type {
   ActionEvent,
   ElementNode,
@@ -14,7 +14,7 @@ export type {
 } from "./types";
 
 export { createParser, createStreamingParser, parse } from "./parser";
-export type { Parser, StreamParser } from "./parser";
+export type { ParseOptions, Parser, StreamParser } from "./parser";
 
 export { enrichErrors } from "./enrich-errors";
 

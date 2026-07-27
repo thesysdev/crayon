@@ -22,6 +22,13 @@ export interface ParamDef {
   required: boolean;
   /** Default value from JSON Schema — used when the required field is missing/null. */
   defaultValue?: unknown;
+  /**
+   * Array-prop classification derived from JSON Schema `items`:
+   * - "poly": union of component refs or untyped (children-style arrays, rendered via renderNode)
+   * - "typed": single component ref (e.g. Tabs.items → TabItem)
+   * Undefined for non-array props. Poly arrays are where streaming slots are emitted.
+   */
+  slotKind?: "poly" | "typed";
 }
 
 /** Internal parameter map for positional-arg to named-prop mapping. */
@@ -52,6 +59,13 @@ export interface ElementNode {
    * Undefined is treated as true (dynamic) for backward compatibility.
    */
   hasDynamicProps?: boolean;
+  /**
+   * True for a streaming placeholder holding the position of a not-yet-renderable
+   * statement (unresolved ref or missing required props mid-stream). `typeName` is
+   * the target's component name when known, or "__slot__" when only the name is
+   * known. Renderers show a skeleton; emitted only when parsing with {slots: true}.
+   */
+  slot?: boolean;
 }
 
 export function isElementNode(value: unknown): value is ElementNode {
@@ -64,6 +78,28 @@ export function isElementNode(value: unknown): value is ElementNode {
     node.props !== null &&
     typeof node.partial === "boolean"
   );
+}
+
+/** True for streaming slot placeholders (emitted when parsing with slots enabled). */
+export function isSlotElement(value: unknown): value is ElementNode {
+  return isElementNode(value) && value.slot === true;
+}
+
+/**
+ * Split an array prop into rendered elements and pending slot placeholders.
+ * For components that introspect their children (read `item.props.x`) instead
+ * of rendering via renderNode — call this first so slots never reach data code,
+ * and use `pending` to render that many skeleton units.
+ */
+export function splitSlots<T = unknown>(items: T[] | undefined | null): { ready: T[]; pending: number } {
+  if (!Array.isArray(items)) return { ready: [], pending: 0 };
+  const ready: T[] = [];
+  let pending = 0;
+  for (const item of items) {
+    if (isSlotElement(item)) pending++;
+    else ready.push(item);
+  }
+  return { ready, pending };
 }
 
 /**

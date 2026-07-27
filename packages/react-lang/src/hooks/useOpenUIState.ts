@@ -19,7 +19,7 @@ import {
   type ToolProvider,
 } from "@openuidev/lang-core";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { OpenUIContextValue } from "../context";
 import type { Library } from "../library";
 
@@ -47,11 +47,19 @@ export interface UseOpenUIStateOptions {
   toolProvider?: ToolProvider | null;
   /** Callback for structured, LLM-friendly errors. See OpenUIError type. */
   onError?: (errors: OpenUIError[]) => void;
+  /** Smooth streaming: emit layout slots for pending statements + paced reveals. */
+  smooth?: boolean;
 }
 
 export interface OpenUIState {
   /** Evaluated result (props resolved to concrete values). Used by Renderer. */
   result: ParseResult | null;
+  /**
+   * False when `result` was parsed from a previous response that is not a
+   * prefix of the current one (a reset just happened; a fresh parse lands
+   * within one frame). Renderers must not show a stale root.
+   */
+  resultIsFresh: boolean;
   /** Raw parse result (AST nodes in props). Used by onParseResult callback. */
   parseResult: ParseResult | null;
   contextValue: OpenUIContextValue;
@@ -76,30 +84,91 @@ export function useOpenUIState(
     initialState,
     toolProvider,
     onError,
+    smooth = false,
   }: UseOpenUIStateOptions,
   renderDeep: (value: unknown) => React.ReactNode,
 ): OpenUIState {
   // ─── Streaming parser (incremental — caches completed statements) ───
-  const sp = useMemo(() => createStreamingParser(library.toJSONSchema(), library.root), [library]);
+  // typedSlots libraries get slot reservation in typed arrays too (their
+  // introspecting components handle slots via splitSlots).
+  const sp = useMemo(
+    () =>
+      createStreamingParser(library.toJSONSchema(), library.root, {
+        slots: smooth ? (library.typedSlots ? "all" : true) : false,
+      }),
+    [library, smooth],
+  );
 
-  // ─── Parse result ───
+  // ─── Parse result (frame-coalesced) ───
+  // Hosts re-render per network chunk — up to hundreds per second on
+  // fine-grained streams. Parsing + evaluating + reconciling faster than the
+  // display refreshes is wasted work, so parses are coalesced to at most one
+  // per animation frame; the scheduled parse always reads the LATEST text.
   const parseExceptionRef = useRef<OpenUIError | null>(null);
-  const result = useMemo<ParseResult | null>(() => {
-    parseExceptionRef.current = null;
-    if (!response) return null;
-    try {
-      return sp.set(response);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      parseExceptionRef.current = {
-        source: "parser",
-        code: "parse-exception",
-        message: `Parser crashed: ${msg}`,
-        hint: "The response may contain syntax the parser cannot handle",
-      };
-      return null;
-    }
-  }, [sp, response]);
+  const runParse = useCallback(
+    (text: string | null): ParseResult | null => {
+      parseExceptionRef.current = null;
+      if (!text) return null;
+      try {
+        return sp.set(text);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        parseExceptionRef.current = {
+          source: "parser",
+          code: "parse-exception",
+          message: `Parser crashed: ${msg}`,
+          hint: "The response may contain syntax the parser cannot handle",
+        };
+        return null;
+      }
+    },
+    [sp],
+  );
+
+  const [parsed, setParsed] = useState<{ result: ParseResult | null; text: string | null }>(
+    () => ({ result: runParse(response), text: response }),
+  );
+  const latestResponseRef = useRef(response);
+  latestResponseRef.current = response;
+  const parseScheduledRef = useRef(false);
+
+  useEffect(() => {
+    // sp changed (library/smooth): reparse synchronously so result matches
+    setParsed({ result: runParse(latestResponseRef.current), text: latestResponseRef.current });
+  }, [runParse]);
+
+  useEffect(() => {
+    if (parseScheduledRef.current) return; // pending frame will pick up the latest text
+    parseScheduledRef.current = true;
+    const schedule =
+      typeof requestAnimationFrame === "function"
+        ? requestAnimationFrame
+        : (cb: () => void) => setTimeout(cb, 16) as unknown as number;
+    const cancel =
+      typeof cancelAnimationFrame === "function" ? cancelAnimationFrame : clearTimeout;
+    const id = schedule(() => {
+      parseScheduledRef.current = false;
+      const text = latestResponseRef.current;
+      setParsed({ result: runParse(text), text });
+    });
+    return () => {
+      // Only cancel on unmount/sp-change — response changes keep the pending frame.
+      if (parseScheduledRef.current) {
+        cancel(id as never);
+        parseScheduledRef.current = false;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [response, runParse]);
+
+  // The parse lags `response` by ≤1 frame. It is "fresh" while it corresponds
+  // to a prefix of the current response (same stream, catching up). After a
+  // reset (new stream), the previous result is stale and must not render.
+  const result = parsed.result;
+  const resultIsFresh =
+    parsed.text == null || response == null
+      ? parsed.text === response
+      : response.startsWith(parsed.text);
 
   // ─── Store (holds everything: $bindings + form fields) ───
   const store = useMemo<Store>(() => createStore(), []);
@@ -383,6 +452,25 @@ export function useOpenUIState(
 
   const isQueryLoading = querySnapshot.__openui_loading.length > 0;
 
+  // ─── Reveal pacer (smooth streaming) ───
+  // Staggers reveals of statements that complete in the same network chunk so
+  // they cascade one-by-one instead of popping simultaneously. Delays are
+  // assigned once per statement key and capped so nothing waits long.
+  const pacerRef = useRef({ lastAt: 0, seen: new Map<string, number>() });
+  const revealDelay = useCallback((key: string) => {
+    const p = pacerRef.current;
+    const existing = p.seen.get(key);
+    if (existing !== undefined) return existing;
+    const now = typeof performance !== "undefined" ? performance.now() : 0;
+    const STAGGER = 110;
+    const MAX_DELAY = 500;
+    const at = Math.min(now + MAX_DELAY, Math.max(now, p.lastAt + STAGGER));
+    p.lastAt = at;
+    const delay = Math.round(at - now);
+    p.seen.set(key, delay);
+    return delay;
+  }, []);
+
   // ─── Context value ───
   const contextValue = useMemo<OpenUIContextValue>(
     () => ({
@@ -396,6 +484,7 @@ export function useOpenUIState(
       evaluationContext,
       reportError,
       isQueryLoading,
+      revealDelay: smooth ? revealDelay : undefined,
     }),
     [
       library,
@@ -408,6 +497,8 @@ export function useOpenUIState(
       store,
       evaluationContext,
       reportError,
+      smooth,
+      revealDelay,
     ],
   );
 
@@ -503,5 +594,5 @@ export function useOpenUIState(
     }
   }, [isStreaming, response, result, evaluatedResult, querySnapshot, library]);
 
-  return { result: evaluatedResult, parseResult: result, contextValue, isQueryLoading };
+  return { result: evaluatedResult, resultIsFresh, parseResult: result, contextValue, isQueryLoading };
 }

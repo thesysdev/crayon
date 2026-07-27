@@ -15,7 +15,10 @@ export type {
 
 // openui-lang renderer
 export { Renderer } from "./Renderer";
-export type { RendererProps } from "./Renderer";
+export type { RendererProps, RevealComponentProps, SlotComponentProps } from "./Renderer";
+
+// smooth streaming — slot helpers for slot-aware (introspecting) components
+export { isElementNode, isSlotElement, splitSlots } from "@openuidev/lang-core";
 
 // openui-lang action types
 export { ACTION_STEPS, BuiltinActionType } from "@openuidev/lang-core";
@@ -51,6 +54,7 @@ export {
   useGetFieldValue,
   useIsQueryLoading,
   useIsStreaming,
+  useLibrary,
   useRenderNode,
   useSetDefaultValue,
   useSetFieldValue,

@@ -60,6 +60,13 @@ export interface OpenUIContextValue {
 
   /** Report a structured error (used internally by error boundary). */
   reportError?: (error: OpenUIError) => void;
+
+  /**
+   * Reveal pacer for smooth streaming — assigns a small stagger delay (ms) to
+   * each newly appearing statement node so bursty chunks reveal one-by-one.
+   * Undefined when smooth streaming is disabled.
+   */
+  revealDelay?: (key: string) => number;
 }
 
 export const OpenUIContext = createContext<OpenUIContextValue | null>(null);
@@ -93,6 +100,14 @@ export function useRenderNode() {
  */
 export function useTriggerAction() {
   return useOpenUI().triggerAction;
+}
+
+/**
+ * The active component library (schema + renderers). For library-provided
+ * streaming visuals (e.g. skeleton lookup in slot components).
+ */
+export function useLibrary(): Library {
+  return useOpenUI().library;
 }
 
 /**
