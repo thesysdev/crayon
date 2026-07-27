@@ -105,3 +105,71 @@ describe("processStreamedMessage — TOOL_CALL_RESULT handling", () => {
     expect(toolMessages[1]).toMatchObject({ toolCallId: "tc-2", content: "res-2" });
   });
 });
+
+describe("processStreamedMessage — interleaved output message items", () => {
+  it("splits a run with multiple message items into separate assistant messages in wire order", async () => {
+    // Gemini-style interleave: prose → tool call → prose → tool call → answer.
+    const adapter = adapterFromEvents([
+      { type: EventType.TEXT_MESSAGE_START, messageId: "item-1", role: "assistant" },
+      { type: EventType.TEXT_MESSAGE_CONTENT, messageId: "item-1", delta: "Let me search. " },
+      { type: EventType.TOOL_CALL_START, toolCallId: "tc-1", toolCallName: "thesys_web_search" },
+      { type: EventType.TOOL_CALL_ARGS, toolCallId: "tc-1", delta: '{"q":"a"}' },
+      { type: EventType.TOOL_CALL_END, toolCallId: "tc-1" },
+      {
+        type: EventType.TOOL_CALL_RESULT,
+        toolCallId: "tc-1",
+        content: '{"hits":1}',
+        messageId: "out-1",
+        role: "tool",
+      },
+      { type: EventType.TEXT_MESSAGE_START, messageId: "item-2", role: "assistant" },
+      { type: EventType.TEXT_MESSAGE_CONTENT, messageId: "item-2", delta: "Found it. Final answer." },
+    ]);
+
+    const created: Message[] = [];
+    const updatedById = new Map<string, Message>();
+
+    await processStreamedMessage({
+      response: new Response(""),
+      createMessage: (m) => created.push(m),
+      updateMessage: (m) => updatedById.set(m.id, m),
+      adapter,
+    });
+
+    await flush();
+
+    // Creation order preserves the wire order: segment 1, its tool result,
+    // then segment 2 — matching what fromItems reconstructs on reload.
+    expect(created.map((m) => m.role)).toEqual(["assistant", "tool", "assistant"]);
+
+    const seg1 = created[0] as Message & { content?: string; toolCalls?: unknown[] };
+    const seg2 = created[2] as Message & { content?: string; toolCalls?: unknown[] };
+    const finalSeg1 = (updatedById.get(seg1.id) ?? seg1) as typeof seg1;
+    const finalSeg2 = (updatedById.get(seg2.id) ?? seg2) as typeof seg2;
+
+    expect(finalSeg1.content).toBe("Let me search. ");
+    expect(finalSeg1.toolCalls).toHaveLength(1);
+    expect(finalSeg2.content).toBe("Found it. Final answer.");
+    expect(finalSeg2.toolCalls ?? []).toHaveLength(0);
+  });
+
+  it("does not split when the same message item id starts twice", async () => {
+    const adapter = adapterFromEvents([
+      { type: EventType.TEXT_MESSAGE_START, messageId: "item-1", role: "assistant" },
+      { type: EventType.TEXT_MESSAGE_CONTENT, messageId: "item-1", delta: "Hello" },
+      { type: EventType.TEXT_MESSAGE_START, messageId: "item-1", role: "assistant" },
+      { type: EventType.TEXT_MESSAGE_CONTENT, messageId: "item-1", delta: " world" },
+    ]);
+
+    const created: Message[] = [];
+    await processStreamedMessage({
+      response: new Response(""),
+      createMessage: (m) => created.push(m),
+      updateMessage: () => {},
+      adapter,
+    });
+    await flush();
+
+    expect(created.filter((m) => m.role === "assistant")).toHaveLength(1);
+  });
+});

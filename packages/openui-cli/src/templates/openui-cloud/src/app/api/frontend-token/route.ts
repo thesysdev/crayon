@@ -16,7 +16,10 @@ import { envOr, requiredEnv } from "@/lib/env";
  */
 export async function POST() {
   const appId = process.env.APP_ID;
-  const upstream = await fetch(`https://api.thesys.dev/v1/frontend-tokens`, {
+  // THESYS_API_BASE_URL overrides the hosted endpoint (e.g. a local backend
+  // during development). Defaults to production.
+  const baseUrl = envOr("THESYS_API_BASE_URL", "https://api.thesys.dev");
+  const upstream = await fetch(`${baseUrl}/v1/frontend-tokens`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

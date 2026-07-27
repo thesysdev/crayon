@@ -5,6 +5,29 @@ import { Collapsible } from "../_shared/Collapsible";
 import { ToolCall } from "./ToolCallPrimitives";
 
 /**
+ * One-line muted digest of a call's arguments for the title row, so two calls
+ * to the same tool (e.g. consecutive web searches) are distinguishable without
+ * expanding the request accordion. String/number values joined in declaration
+ * order; falls back to the raw (possibly still-streaming) JSON text.
+ */
+function argsSummary(rawArgs: string | undefined): string | null {
+  if (!rawArgs) return null;
+  try {
+    const parsed: unknown = JSON.parse(rawArgs);
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      const parts = Object.values(parsed)
+        .filter((v): v is string | number => typeof v === "string" || typeof v === "number")
+        .map(String)
+        .filter(Boolean);
+      if (parts.length) return parts.join(" · ");
+    }
+  } catch {
+    // Partial JSON mid-stream — the raw tail is still a useful hint.
+  }
+  return rawArgs;
+}
+
+/**
  * Timeline-shaped composition of the compound {@link ToolCall} parts — the
  * molded `StatusStep` + `TimelineItem` (dot + connector). The running shimmer
  * is `(streaming|executing) && isLast`, derived from the lifecycle status via
@@ -59,6 +82,14 @@ export const TimelineToolCard = memo(function TimelineToolCard({
             </span>
           )}
         />
+        {(() => {
+          const summary = argsSummary(activity.toolCall.function.arguments);
+          return summary ? (
+            <span className="openui-tool-call__args-summary" title={summary}>
+              {summary}
+            </span>
+          ) : null;
+        })()}
       </div>
 
       <div
