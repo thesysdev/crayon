@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 const SITE_TITLE = "OpenUI - The Open Standard for Generative UI";
 const SITE_DESCRIPTION =
   "Full-stack, renderer-agnostic Generative UI with a streaming-first language, official React support, community integrations, and up to 67% fewer tokens than JSON.";
-const SITE_IMAGE = "/meta-image.png";
+const SITE_IMAGE = "/meta-image.png?v=20260725-1708";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -57,8 +57,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: SITE_IMAGE,
-        width: 1200,
-        height: 630,
+        width: 1800,
+        height: 942,
         alt: "OpenUI preview",
       },
     ],

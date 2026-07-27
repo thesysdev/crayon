@@ -2,12 +2,34 @@
   margin-top: 2.5rem;
 }
 
-.marquee {
+.sectionWithLabel {
+  padding-inline: 32px;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
   max-width: 75rem;
   margin-inline: auto;
+}
+
+.label {
+  flex: 0 0 auto;
+  margin: 0;
+  color: var(--openui-text-neutral-secondary);
+  font-family: "Inter Display", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  white-space: nowrap;
+}
+
+.marquee {
+  min-width: 0;
+  flex: 1;
   overflow: hidden;
-  /* Room for the "Website" chip that pokes above the hovered card. */
-  padding-block: 1.25rem 0.25rem;
+  padding-block: 0.25rem;
   mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
   -webkit-mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
 }
@@ -40,68 +62,32 @@
 }
 
 .card {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.625rem 0.875rem;
   margin-inline: 0.25rem;
-  border: 1px solid transparent;
-  border-radius: 1rem;
-  transition: border-color 0.15s ease;
-}
-
-.card:hover,
-.card:focus-visible {
-  border-color: var(--openui-border-default);
 }
 
 .logo {
   height: 2.5rem;
   width: auto;
   flex: 0 0 auto;
-  transition: transform 0.15s ease;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
+
+.sectionCloud .logo {
+  filter: brightness(0);
+}
+
+[data-theme="dark"] .sectionCloud .logo {
+  filter: brightness(0) invert(1);
 }
 
 .card:hover .logo,
 .card:focus-visible .logo {
-  transform: scale(1.06);
-}
-
-.chip {
-  position: absolute;
-  top: -0.875rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(0.25rem);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.3125rem 0.75rem;
-  border-radius: 999px;
-  background: var(--openui-foreground);
-  color: var(--openui-text-neutral-primary);
-  border: 1px solid var(--openui-border-default);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  line-height: 1;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
-}
-
-.card:hover .chip,
-.card:focus-visible .chip {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-.chipArrow {
-  width: 0.75rem;
-  height: 0.75rem;
 }
 
 @media (min-width: 768px) {
@@ -111,5 +97,11 @@
 
   .logo {
     height: 3rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .sectionWithLabel {
+    padding-inline: var(--home-section-padding-inline);
   }
 }

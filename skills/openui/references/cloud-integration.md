@@ -256,7 +256,7 @@ of weakening the check.
 import { getAuthenticatedUserId } from "@/lib/auth.server";
 import { parseCloudChatRequest } from "@/lib/cloud-request";
 import { userOwnsCloudConversation } from "@/lib/conversation-ownership.server";
-import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
+import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
 import OpenAI from "openai";
 
 export async function POST(req: Request) {
@@ -306,7 +306,7 @@ export async function POST(req: Request) {
         stream: true,
         store: true,
         tools: [artifactTool({ artifacts: ["slides", "report"] })],
-        instructions: createResponsesInstructions(),
+        instructions: generateSystemPrompt(),
         // The Cloud artifact tool extends the stock OpenAI Responses tool union.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
