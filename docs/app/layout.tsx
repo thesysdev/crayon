@@ -1,17 +1,12 @@
-import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
-import Script from "next/script";
+import { Inter } from "next/font/google";
 import { BASE_URL } from "../lib/source";
+import { DeferredAnalytics } from "./deferred-analytics";
 import "./global.css";
 import { PHProvider } from "./providers";
+import { SiteThemeProvider } from "./site-theme-provider";
 
 const inter = Inter({
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -84,23 +79,12 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.className} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
-        <PHProvider>
-          <RootProvider theme={{ defaultTheme: "system", enableSystem: true }}>
-            {children}
-          </RootProvider>
-        </PHProvider>
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-MZ0TZ82NM2"
-          strategy="afterInteractive"
-        />
-        <Script id="ga-init" strategy="afterInteractive">{`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-MZ0TZ82NM2');
-        `}</Script>
+        <SiteThemeProvider>
+          <PHProvider>{children}</PHProvider>
+        </SiteThemeProvider>
+        <DeferredAnalytics />
       </body>
     </html>
   );

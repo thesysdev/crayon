@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, type CSSProperties, type ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { OpenUILogo, ThesysLogo, type LogoVariant } from "./brand-logo";
 import styles from "./site-header.module.css";
 
@@ -9,11 +7,9 @@ function joinClasses(...classNames: Array<string | false | null | undefined>) {
 }
 
 export function SiteHeaderBrand({ variant = "light" }: { variant?: LogoVariant }) {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <div className={styles.brand}>
-      <ThesysLogo isHovered={isHovered} onHoverChange={setIsHovered} variant={variant} />
+      <ThesysLogo variant={variant} />
       <span aria-hidden="true" className={styles.brandDivider} />
       <OpenUILogo variant={variant} />
     </div>

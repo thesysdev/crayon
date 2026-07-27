@@ -10,7 +10,7 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@openuidev/react-ui";
+} from "@openuidev/react-ui/Select";
 
 function SelectPreview() {
   return (

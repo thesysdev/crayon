@@ -2,7 +2,12 @@
 
 import BlocksDocPage from "@components/blocks/_components/BlocksDocPage";
 import ClientOnly from "@components/blocks/_components/ClientOnly";
-import { ScatterChart } from "@openuidev/react-ui";
+import dynamic from "next/dynamic";
+
+const ScatterChart = dynamic(
+  () => import("@openuidev/react-ui/Charts").then((module) => module.ScatterChart),
+  { ssr: false },
+);
 
 const scatterData = [
   {

@@ -1,7 +1,7 @@
 "use client";
 
 import BlocksDocPage from "@components/blocks/_components/BlocksDocPage";
-import { Input } from "@openuidev/react-ui";
+import { Input } from "@openuidev/react-ui/Input";
 
 function InputFieldPreview() {
   return <Input size="medium" placeholder="Enter text..." />;

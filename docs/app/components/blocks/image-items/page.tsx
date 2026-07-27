@@ -1,7 +1,7 @@
 "use client";
 
 import { BlockVariantPreview, PreviewPage, PreviewSection } from "@components/components/preview";
-import { ImageBlock } from "@openuidev/react-ui";
+import { ImageBlock } from "@openuidev/react-ui/ImageBlock";
 import styles from "./page.module.css";
 
 const DEFAULT_IMAGE =

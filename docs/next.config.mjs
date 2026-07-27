@@ -8,6 +8,7 @@ const withMDX = createMDX();
 
 /** @type {import('next').NextConfig} */
 const config = {
+  productionBrowserSourceMaps: true,
   serverExternalPackages: ["@takumi-rs/image-response"],
   turbopack: {
     root: dirname(dirname(__dirname)),

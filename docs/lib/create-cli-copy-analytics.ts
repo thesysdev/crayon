@@ -1,4 +1,4 @@
-import posthog from "posthog-js";
+import { capturePostHogEvent } from "./posthog-client";
 
 export const CREATE_CLI_COMMAND_COPIED_EVENT = "create_cli_command_copied";
 
@@ -49,9 +49,5 @@ export function captureCreateCliCommandCopied(
   const properties = getCreateCliCommandCopiedProperties(command, context);
   if (!properties || typeof window === "undefined") return;
 
-  try {
-    posthog.capture(CREATE_CLI_COMMAND_COPIED_EVENT, properties);
-  } catch {
-    // Analytics must never interfere with a successful clipboard action.
-  }
+  capturePostHogEvent(CREATE_CLI_COMMAND_COPIED_EVENT, properties);
 }

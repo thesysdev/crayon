@@ -14,7 +14,6 @@ import {
 } from "react";
 import styles from "../chat-page.module.css";
 import { MarkdownAgentSurface } from "./agent-surfaces/markdown-agent-surface";
-import { OssAgentSurface } from "./agent-surfaces/oss-agent-surface";
 import { ChatPageHeader } from "./chat-page-header";
 import {
   COMPARISON_MODE_LABELS,
@@ -35,6 +34,14 @@ import {
 } from "./comparison-mode-controller";
 
 const ALL_MODES = ["markdown", "oss", "cloud"] as const;
+
+const OssAgentSurface = dynamic(
+  () => import("./agent-surfaces/oss-agent-surface").then((module) => module.OssAgentSurface),
+  {
+    ssr: false,
+    loading: () => <ChatLoadingState label="Loading OpenUI OSS…" />,
+  },
+);
 
 const CloudAgentSurface = dynamic(
   () => import("./agent-surfaces/cloud-agent-surface").then((module) => module.CloudAgentSurface),

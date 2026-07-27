@@ -7,7 +7,7 @@ import {
   PieChart,
   RadialChart,
   ScatterChart,
-} from "@openuidev/react-ui";
+} from "@openuidev/react-ui/Charts";
 import styles from "./realBlocksCanvas.module.css";
 
 const MONTHLY_DATA = [

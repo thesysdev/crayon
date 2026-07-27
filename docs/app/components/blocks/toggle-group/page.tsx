@@ -1,7 +1,8 @@
 "use client";
 
 import BlocksDocPage from "@components/blocks/_components/BlocksDocPage";
-import { SwitchGroup, SwitchItem } from "@openuidev/react-ui";
+import { SwitchGroup } from "@openuidev/react-ui/SwitchGroup";
+import { SwitchItem } from "@openuidev/react-ui/SwitchItem";
 
 function ToggleGroupPreview() {
   return (

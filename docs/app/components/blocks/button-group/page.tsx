@@ -6,16 +6,16 @@ import {
   PreviewSection,
   SegmentedToggle,
 } from "@components/components/preview";
+import { Button } from "@openuidev/react-ui/Button";
+import { Buttons } from "@openuidev/react-ui/Buttons";
+import { IconButton } from "@openuidev/react-ui/IconButton";
 import {
-  Button,
-  Buttons,
-  IconButton,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@openuidev/react-ui";
+} from "@openuidev/react-ui/Select";
 import { useState } from "react";
 import styles from "./page.module.css";
 

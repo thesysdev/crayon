@@ -1,6 +1,4 @@
-"use client";
 import svgPaths from "@/imports/svg-urruvoh2be";
-import { useId } from "react";
 import styles from "./Footer.module.css";
 
 // ---------------------------------------------------------------------------
@@ -55,9 +53,8 @@ const SOCIAL_LINKS: SocialLink[] = [
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function SocialIcon({ link }: { link: SocialLink }) {
-  const uniqueId = useId();
-  const clipPathId = link.clipId ? `${link.clipId}-${uniqueId}` : undefined;
+function SocialIcon({ link, idPrefix }: { link: SocialLink; idPrefix: string }) {
+  const clipPathId = link.clipId ? `${idPrefix}-${link.clipId}` : undefined;
 
   const svgContent = clipPathId ? (
     <svg className={styles.absoluteSvg} fill="none" viewBox={link.viewBox}>
@@ -95,11 +92,11 @@ function SocialIcon({ link }: { link: SocialLink }) {
   );
 }
 
-function SocialIcons() {
+function SocialIcons({ idPrefix }: { idPrefix: string }) {
   return (
     <div className={styles.socialIcons}>
       {SOCIAL_LINKS.map((link) => (
-        <SocialIcon key={link.label} link={link} />
+        <SocialIcon key={link.label} link={link} idPrefix={idPrefix} />
       ))}
     </div>
   );
@@ -123,12 +120,7 @@ function ThesysLogo() {
 function HandcraftedMascot() {
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img
-      className={styles.handcraftedMascot}
-      src="/shiro-logo.svg"
-      alt=""
-      aria-hidden="true"
-    />
+    <img className={styles.handcraftedMascot} src="/shiro-logo.svg" alt="" aria-hidden="true" />
   );
 }
 
@@ -170,14 +162,14 @@ export function Footer() {
           <div className={styles.bottomBar}>
             <div className={styles.desktopBottomBar}>
               <p className={styles.desktopMetaLeft}>355 Bryant St, San Francisco, CA 94107</p>
-              <SocialIcons />
+              <SocialIcons idPrefix="footer-desktop" />
               <p className={styles.desktopMetaRight}>
                 © {new Date().getFullYear()} Thesys Inc. All Rights Reserved
               </p>
             </div>
 
             <div className={styles.mobileBottomBar}>
-              <SocialIcons />
+              <SocialIcons idPrefix="footer-mobile" />
               <div className={styles.mobileMeta}>
                 <p className={styles.mobileMetaText}>
                   © {new Date().getFullYear()} Thesys Inc. All Rights Reserved

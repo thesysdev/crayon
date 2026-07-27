@@ -1,12 +1,46 @@
 "use client";
 
-import { AnimatePresence, motion, type TargetAndTransition, type Transition } from "motion/react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 const NO_SHADOW = "0px 0px 0px rgba(0,0,0,0)";
-const DEFAULT_PANEL_INITIAL = { height: 0, opacity: 0 };
-const DEFAULT_PANEL_ANIMATE = { height: "auto", opacity: 1 };
-const DEFAULT_PANEL_EXIT = { height: 0, opacity: 0 };
+
+interface Transition {
+  duration?: number;
+  delay?: number;
+  ease?: readonly number[] | string;
+}
+
+interface PanelTarget {
+  height?: CSSProperties["height"];
+  opacity?: CSSProperties["opacity"];
+  scale?: number;
+  y?: number;
+}
+
+function transitionStyle(transition?: Transition): string | undefined {
+  if (!transition) return undefined;
+  const duration = transition.duration ?? 0.3;
+  const delay = transition.delay ?? 0;
+  const easing =
+    Array.isArray(transition.ease) && transition.ease.length === 4
+      ? `cubic-bezier(${transition.ease.join(",")})`
+      : (transition.ease ?? "ease");
+  return `all ${duration}s ${easing} ${delay}s`;
+}
+
+function panelStyle(target: PanelTarget, transition?: Transition): CSSProperties {
+  const transforms = [
+    target.y !== undefined ? `translateY(${target.y}px)` : "",
+    target.scale !== undefined ? `scale(${target.scale})` : "",
+  ].filter(Boolean);
+
+  return {
+    height: target.height,
+    opacity: target.opacity,
+    transform: transforms.length > 0 ? transforms.join(" ") : undefined,
+    transition: transitionStyle(transition),
+  };
+}
 
 interface AccordionItemProps {
   open: boolean;
@@ -36,19 +70,19 @@ export function AccordionItem({
   children,
 }: AccordionItemProps) {
   return (
-    <motion.div
+    <div
       className={className}
-      animate={{
+      style={{
         height: open ? expandedHeight : collapsedHeight,
         boxShadow: open ? activeShadow : NO_SHADOW,
         zIndex: open ? zIndexOpen : zIndexClosed,
+        transition: transitionStyle(transition),
       }}
-      transition={transition}
       onClick={onActivate}
       onMouseEnter={activateOnHover ? onActivate : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -56,9 +90,9 @@ interface AccordionPanelProps {
   open: boolean;
   className?: string;
   transition?: Transition;
-  initial?: TargetAndTransition;
-  animate?: TargetAndTransition;
-  exit?: TargetAndTransition;
+  initial?: PanelTarget;
+  animate?: PanelTarget;
+  exit?: PanelTarget;
   children: ReactNode;
 }
 
@@ -66,24 +100,14 @@ export function AccordionPanel({
   open,
   className,
   transition,
-  initial = DEFAULT_PANEL_INITIAL,
-  animate = DEFAULT_PANEL_ANIMATE,
-  exit = DEFAULT_PANEL_EXIT,
+  animate = { height: "auto", opacity: 1 },
   children,
 }: AccordionPanelProps) {
+  if (!open) return null;
+
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className={className}
-          initial={initial}
-          animate={animate}
-          exit={exit}
-          transition={transition}
-        >
-          {children}
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className={className} style={panelStyle(animate, transition)}>
+      {children}
+    </div>
   );
 }

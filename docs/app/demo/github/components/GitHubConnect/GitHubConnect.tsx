@@ -1,7 +1,7 @@
 "use client";
 
 import { GitHubIcon } from "@/components/brand-logo";
-import { Button } from "@openuidev/react-ui";
+import { Button } from "@openuidev/react-ui/Button";
 import {
   Activity,
   Check,

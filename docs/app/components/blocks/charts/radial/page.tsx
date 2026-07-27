@@ -2,7 +2,12 @@
 
 import BlocksDocPage from "@components/blocks/_components/BlocksDocPage";
 import ClientOnly from "@components/blocks/_components/ClientOnly";
-import { RadialChart } from "@openuidev/react-ui";
+import dynamic from "next/dynamic";
+
+const RadialChart = dynamic(
+  () => import("@openuidev/react-ui/Charts").then((module) => module.RadialChart),
+  { ssr: false },
+);
 
 const radialData = [
   { month: "January", value: 1250 },

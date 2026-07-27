@@ -1,5 +1,3 @@
-"use client";
-
 import { SiteMarketingHeader } from "@/components/site-marketing-header";
 
 export function Navbar() {

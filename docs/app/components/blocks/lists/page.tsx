@@ -6,7 +6,8 @@ import {
   PreviewSection,
   SegmentedToggle,
 } from "@components/components/preview";
-import { ListBlock, ListItem } from "@openuidev/react-ui";
+import { ListBlock } from "@openuidev/react-ui/ListBlock";
+import { ListItem } from "@openuidev/react-ui/ListItem";
 import { ChevronRight, FileText, Globe, LayoutPanelTop } from "lucide-react";
 import { useMemo, useState } from "react";
 import styles from "./page.module.css";

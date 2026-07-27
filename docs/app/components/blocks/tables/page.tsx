@@ -8,8 +8,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  Tag,
-} from "@openuidev/react-ui";
+} from "@openuidev/react-ui/Table";
+import { Tag } from "@openuidev/react-ui/Tag";
 
 function TablePreview() {
   return (

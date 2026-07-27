@@ -2,7 +2,16 @@
 
 import ClientOnly from "@components/blocks/_components/ClientOnly";
 import { BlockVariantPreview, PreviewPage, PreviewSection } from "@components/components/preview";
-import { LineChart, LineChartCondensed } from "@openuidev/react-ui";
+import dynamic from "next/dynamic";
+
+const LineChart = dynamic(
+  () => import("@openuidev/react-ui/Charts").then((module) => module.LineChart),
+  { ssr: false },
+);
+const LineChartCondensed = dynamic(
+  () => import("@openuidev/react-ui/Charts").then((module) => module.LineChartCondensed),
+  { ssr: false },
+);
 
 const lineData = [
   { month: "Jan", desktop: 150, mobile: 90 },

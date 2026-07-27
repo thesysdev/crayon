@@ -1,5 +1,6 @@
 import { WebsiteThemeProvider } from "@/components/website-theme-provider";
 import { createPageMetadata } from "@/lib/page-metadata";
+import "@openuidev/react-ui/styles/index.css";
 import type { ReactNode } from "react";
 import "./layout.css";
 
