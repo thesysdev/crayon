@@ -13,11 +13,6 @@ export type CloudAuthMethod = "oauth" | "manual" | "skip";
 /** How the cloud key was obtained (for telemetry) — auth method + the `--api-key` flag case. */
 export type ResolvedAuthMethod = CloudAuthMethod | "apikey-flag";
 
-export const CLOUD_AUTH_CHOICES = [
-  { name: "Sign in with Thesys (opens a browser, mints a key)", value: "oauth" },
-  { name: "Skip — add THESYS_API_KEY to .env later", value: "skip" },
-] as const;
-
 /** Sign in via the browser and mint an OpenUI Cloud API key for the user's org. */
 export async function mintCloudApiKey(projectName: string): Promise<string> {
   const auth = new Authenticator({ issuerUrl: THESYS_ISSUER_URL, clientId: THESYS_CLIENT_ID });
@@ -87,7 +82,10 @@ export async function resolveCloudApiKey(opts: {
     const { select } = await import("@inquirer/prompts");
     method = (await select({
       message: "Connect to OpenUI Cloud:",
-      choices: CLOUD_AUTH_CHOICES,
+      choices: [
+        { name: "Sign in with Thesys (opens a browser, mints a key)", value: "oauth" },
+        { name: "Skip — add THESYS_API_KEY to .env later", value: "skip" },
+      ],
     })) as CloudAuthMethod;
   }
 
