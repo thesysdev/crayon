@@ -1,0 +1,138 @@
+---
+title: "@openuidev/devtools"
+description: API reference for development-time diagnostics — LLM request observation and the OpenUI Cloud credits notice.
+---
+
+Use this package for development-time affordances in OpenUI apps. Today it ships a OpenUI Cloud credits notice and the request-observation primitives underneath it.
+
+```bash tab="pnpm" tab-group="pkg"
+pnpm install -D @openuidev/devtools
+```
+
+```bash tab="bun" tab-group="pkg"
+yarn add -D @openuidev/devtools
+```
+
+```bash tab="yarn" tab-group="pkg"
+bun install -D @openuidev/devtools
+```
+
+```bash tab="npm" tab-group="pkg"
+npm install -D @openuidev/devtools
+```
+
+## Import
+
+```ts
+import { observeLLM, useLLMObserver, OpenUICreditsModal } from "@openuidev/devtools";
+```
+
+The exports are layered, so you take exactly the piece you need:
+
+| Export                          | Kind           | Use it when                                                          |
+| :------------------------------ | :------------- | :------------------------------------------------------------------- |
+| `observeLLM(llm, observer)`     | plain function | Request/error callbacks outside React (logging, metrics, custom UIs) |
+| `useLLMObserver(llm, observer)` | hook           | Wire the callbacks to a component's lifecycle                        |
+| `OpenUICreditsModal`            | component      | A drop-in observe + state + modal component                          |
+
+## `OpenUICreditsModal`
+
+```ts
+function OpenUICreditsModal(props: {
+  llm?: ChatLLM;
+  billingUrl?: string;
+  hideThreadError?: boolean;
+}): JSX.Element;
+```
+
+| Prop              | Type      | Default                     | Purpose                                                                                                        |
+| :---------------- | :-------- | :-------------------------- | :------------------------------------------------------------------------------------------------------------- |
+| `llm`             | `ChatLLM` | —                           | The app's LLM; its requests are observed for HTTP 429 responses.                                               |
+| `billingUrl`      | `string`  | Thesys console billing page | Where the "Purchase credits" button sends the user.                                                            |
+| `hideThreadError` | `boolean` | `true`                      | While the modal is open, hide `AgentInterface`'s inline thread error so the same failure isn't reported twice. |
+
+When a request through `llm` fails with **HTTP 429** (OpenUI Cloud's out-of-credits response), the modal opens and offers the billing console. The next request that starts resets the notice.
+
+Render it next to `<AgentInterface>`, gated to development and loaded dynamically so it never enters the production bundle:
+
+```tsx
+import dynamic from "next/dynamic";
+
+const OpenUICreditsModal =
+  process.env.NODE_ENV === "development"
+    ? dynamic(() => import("@openuidev/devtools").then((m) => m.OpenUICreditsModal), {
+        ssr: false,
+      })
+    : null;
+
+export function Chat() {
+  const llm = useLLM({ url: "/api/chat" /* … */ });
+
+  return (
+    <>
+      <AgentInterface llm={llm} /* … */ />
+      {OpenUICreditsModal ? <OpenUICreditsModal llm={llm} /> : null}
+    </>
+  );
+}
+```
+
+<Callout type="info">
+  The check against `process.env.NODE_ENV` must stay outside `dynamic()` — Next.js replaces it at
+  build time, so the production bundle drops both the component and the import.
+</Callout>
+
+## `useLLMObserver`
+
+```ts
+function useLLMObserver(
+  llm: ChatLLM | undefined,
+  observer: {
+    onRequestStart?: () => void;
+    onResponseError?: (response: Response) => void;
+  },
+): void;
+```
+
+Attaches an [`observeLLM`](#observellm) subscription to the component lifecycle: subscribes when `llm` becomes available, restores the original `send` on unmount or when `llm` changes. The latest observer callbacks are always invoked — passing a fresh object literal on every render is fine and does not re-wrap `llm.send`.
+
+Use it to build your own notices on top of raw responses:
+
+```tsx
+function RateLimitToast({ llm }: { llm: ChatLLM }) {
+  const [limited, setLimited] = useState(false);
+
+  useLLMObserver(llm, {
+    onRequestStart: () => setLimited(false),
+    onResponseError: (response) => {
+      if (response.status === 429) setLimited(true);
+    },
+  });
+
+  return limited ? <Toast>Slow down — try again in a moment.</Toast> : null;
+}
+```
+
+## `observeLLM`
+
+```ts
+function observeLLM(
+  llm: ChatLLM,
+  observer: {
+    onRequestStart?: () => void;
+    onResponseError?: (response: Response) => void;
+  },
+): () => void;
+```
+
+The framework-free primitive underneath the hook. Wraps `llm.send` in place:
+
+- `onRequestStart` fires immediately before each request.
+- `onResponseError` receives a **clone** of any non-2xx response before the original is returned to the caller — reading its body never consumes the stream the UI is parsing.
+
+Returns an unsubscribe that restores the original `send`. If something else wrapped `send` after this observer, the unsubscribe leaves that newer wrapper untouched rather than clobbering it.
+
+<Callout type="warn">
+  `observeLLM` mutates the `ChatLLM` object it's given. Observe the same instance the UI uses (the
+  one you pass to `AgentInterface`), and keep the unsubscribe function to clean up when you're done.
+</Callout>
