@@ -13,7 +13,7 @@ A chat application built with [Nuxt 3](https://nuxt.com), [Vercel AI SDK](https:
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22+
 - [pnpm](https://pnpm.io/)
 - An OpenAI API key
 
@@ -48,10 +48,21 @@ The generated prompt lives at `generated/system-prompt.txt` and is checked in, s
 ### Run
 
 ```bash
+pnpm --filter vue-chat prepare
 pnpm --filter vue-chat dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+### Test
+
+```bash
+pnpm --filter vue-chat test
+```
+
+### Known issues
+
+- **Nuxt IPC socket error with `ssr: false`**: Nuxt 3.21.x has a bug where the dev server fails with `Vite Node IPC socket path not configured` in SPA mode. A workaround is included in `nuxt.config.ts` — see the comment there for details. This will be removed once the app upgrades to Nuxt 3.21.9+ where the bug is fixed upstream ([nuxt/nuxt#34957](https://github.com/nuxt/nuxt/issues/34957)).
 
 ## Project structure
 
@@ -70,9 +81,10 @@ components/
 └── openui/                    # Vue component renderers for openui-lang output
     ├── Stack.vue
     ├── Card.vue
-    ├── TextContent.vue
+    ├── TextContent.vue          # Renders text with markdown support
     ├── Button.vue
-    └── Chart.vue
+    ├── Chart.vue
+    └── __tests__/               # Component unit tests
 lib/
 ├── library.ts                 # OpenUI component definitions (Stack, Card, TextContent, Button, Chart)
 └── tools.ts                   # AI tool definitions (weather, stocks, math, search)

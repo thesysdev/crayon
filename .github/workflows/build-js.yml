@@ -15,10 +15,10 @@ jobs:
           fetch-depth: 0
       - uses: pnpm/action-setup@v2
         with:
-          version: 9.0.6
+          version: 11.0.0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
           cache-dependency-path: "pnpm-lock.yaml"
 
@@ -41,10 +41,10 @@ jobs:
           fetch-depth: 0
       - uses: pnpm/action-setup@v2
         with:
-          version: 9.0.6
+          version: 11.0.0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
           cache-dependency-path: "pnpm-lock.yaml"
 
@@ -53,3 +53,6 @@ jobs:
 
       - name: Build examples
         run: pnpm --filter "./examples/**" --workspace-concurrency=1 run build
+
+      - name: Test vue-chat
+        run: cd examples/vue-chat && pnpm nuxt prepare && pnpm exec vitest run
