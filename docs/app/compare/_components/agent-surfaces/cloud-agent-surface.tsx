@@ -11,10 +11,9 @@ import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
 
 interface CloudAgentSurfaceProps {
   registry: ComparisonControllerRegistry;
-  themeMode: "light" | "dark";
 }
 
-export function CloudAgentSurface({ registry, themeMode }: CloudAgentSurfaceProps) {
+export function CloudAgentSurface({ registry }: CloudAgentSurfaceProps) {
   const [userId] = useState(getOrCreateCloudUserId);
   const [llm] = useState(createCloudChatLLM);
   const cloudFetch = useMemo<typeof fetch>(() => {
@@ -41,7 +40,6 @@ export function CloudAgentSurface({ registry, themeMode }: CloudAgentSurfaceProp
         componentLibrary={chatLibrary}
         artifactRenderers={artifactRenderers}
         scrollVariant="always"
-        theme={{ mode: themeMode }}
       >
         <AgentInterface.Sidebar />
         <AgentInterface.Welcome>
