@@ -3,7 +3,7 @@ title: "@openuidev/devtools"
 description: API reference for the development-only devtools widget.
 ---
 
-Development-only UI widget for OpenUI apps. Renders a floating button that expands into a panel listing the events captured by [`@openuidev/observability`](/docs/api-reference/observability) — event type, message, and stack trace per entry.
+Development-only UI widget for OpenUI apps. Renders a floating button that opens a left side drawer listing the events captured by [`@openuidev/observability`](/docs/api-reference/observability) — event type, message, and a drill-in stack trace per entry.
 
 ## Install
 
@@ -42,13 +42,11 @@ function App() {
 
 ### Props
 
-| Prop         | Default          | Description                                           |
-| ------------ | ---------------- | ----------------------------------------------------- |
-| `enabled`    | dev-only         | Force the widget on/off.                              |
-| `maxEvents`  | `50`             | How many events to keep; oldest are dropped first.    |
-| `errorsOnly` | `true`           | Capture only error/warning events, or every event.    |
-| `bus`        | shared singleton | A custom `Observer` instance from `createObserver()`. |
-
-## How it gets data
-
-The widget calls `observability.listenAll()` and keeps the last `maxEvents` events in memory. Anything that emits to the same bus — fetch instrumentation, LLM call wrappers, renderer error boundaries — shows up with no extra wiring. The toggle badge shows the count of `severity: "error"` events; 
+| Prop              | Default          | Description                                                      |
+| ----------------- | ---------------- | ---------------------------------------------------------------- |
+| `enabled`         | dev-only         | Force the widget on/off.                                         |
+| `position`        | `"bottom-right"` | Corner for the toggle button: `top-left`/`top-right`/`bottom-*`. |
+| `maxEvents`       | `50`             | How many events to keep; oldest are dropped first.               |
+| `errorsOnly`      | `true`           | Capture only error/warning events, or every event.               |
+| `autoOpenOnError` | `true`           | Initial state of the drawer's "auto-open on error" checkbox.     |
+| `bus`             | shared singleton | An `Observability` instance to listen to.                        |

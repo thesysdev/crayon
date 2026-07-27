@@ -6,30 +6,39 @@ import {
   type ObservabilityErrorInfo,
   type ObservabilityEvent,
 } from "@openuidev/observability";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ShiroLogo } from "./ShiroLogo";
+
+export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
 export interface OpenUIDevtoolsProps {
   /** Force the widget on/off. Defaults to on outside production builds. */
   enabled?: boolean;
+  /** Corner for the floating toggle button. Defaults to "bottom-right". */
+  position?: DevtoolsPosition;
   /** How many events to keep; oldest are dropped first. */
   maxEvents?: number;
   /** Capture only error/warning events (default) or every event. */
   errorsOnly?: boolean;
+  /** Initial state of the drawer's "auto-open on error" checkbox. Defaults to true. */
+  autoOpenOnError?: boolean;
   /** Observability instance to listen to. Defaults to the shared singleton. */
   bus?: Observability;
 }
 
 /**
  * dev-only widget that surfaces events captured by `@openuidev/observability` —
- * a Shiro-logo button with the error count that opens a modal dialog listing
- * every captured event; selecting one drills into its stack trace. Renders
+ * a Shiro-logo button (with an error-count badge) that opens a left side drawer
+ * listing every captured event; selecting one drills into its stack trace. A
+ * checkbox in the drawer controls whether it auto-opens on error. Renders
  * nothing in production unless `enabled` is set explicitly.
  */
 export function OpenUIDevtools({
   enabled,
+  position = "bottom-right",
   maxEvents = 50,
   errorsOnly = true,
+  autoOpenOnError = true,
   bus = observability,
 }: OpenUIDevtoolsProps) {
   const isEnabled =
@@ -39,12 +48,18 @@ export function OpenUIDevtools({
   const [selected, setSelected] = useState<ObservabilityEvent | null>(null);
   const [wrapStack, setWrapStack] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [autoOpen, setAutoOpen] = useState(autoOpenOnError);
+
+  // Read the live checkbox value inside the (stable) subscription without re-subscribing.
+  const autoOpenRef = useRef(autoOpen);
+  autoOpenRef.current = autoOpen;
 
   useEffect(() => {
     if (!isEnabled) return;
     return bus.listenAll((event) => {
       if (errorsOnly && event.severity === "info") return;
       setEvents((prev) => [event, ...prev].slice(0, maxEvents));
+      if (event.severity === "error" && autoOpenRef.current) setOpen(true);
     });
   }, [bus, isEnabled, errorsOnly, maxEvents]);
 
@@ -64,7 +79,7 @@ export function OpenUIDevtools({
 
   const errorCount = events.filter((event) => event.severity === "error").length;
 
-  const openDialog = () => {
+  const openDrawer = () => {
     setSelected(null);
     setOpen(true);
   };
@@ -88,30 +103,32 @@ export function OpenUIDevtools({
   const selectedStack = selected ? (getErrorInfo(selected)?.stack ?? "") : "";
 
   return (
-    <div style={styles.root}>
-      <button
-        style={{ ...styles.toggle, ...(errorCount > 0 ? styles.toggleError : null) }}
-        onClick={openDialog}
-        aria-label="Open OpenUI devtools"
-        aria-expanded={open}
-      >
-        <ShiroLogo size={22} />
-        {errorCount > 0 ? <span style={styles.toggleCount}>{errorCount}</span> : null}
-      </button>
+    <>
+      <div style={{ ...styles.toggleWrap, ...positionStyles[position] }}>
+        <button
+          style={{ ...styles.toggle, ...(errorCount > 0 ? styles.toggleError : null) }}
+          onClick={openDrawer}
+          aria-label="Open OpenUI devtools"
+          aria-expanded={open}
+        >
+          <ShiroLogo size={22} />
+          {errorCount > 0 ? <span style={styles.toggleCount}>{errorCount}</span> : null}
+        </button>
+      </div>
 
       {/* Kept mounted so open/close can transition; hidden + inert when closed. */}
       <div
         style={{ ...styles.backdrop, ...(open ? styles.backdropOpen : null) }}
         onClick={() => setOpen(false)}
       >
-        <div
-          style={{ ...styles.dialog, ...(open ? styles.dialogOpen : null) }}
+        <aside
+          style={{ ...styles.drawer, ...(open ? styles.drawerOpen : null) }}
           role="dialog"
           aria-modal="true"
           aria-label="OpenUI devtools"
           onClick={(event) => event.stopPropagation()}
         >
-          <div style={styles.dialogHeader}>
+          <div style={styles.header}>
             <div style={styles.headerLeft}>
               {selected ? (
                 <button
@@ -122,7 +139,7 @@ export function OpenUIDevtools({
                   ←
                 </button>
               ) : null}
-              <span style={styles.dialogTitle}>
+              <span style={styles.title}>
                 {selected ? `${selected.type} — stack trace` : "OpenUI Devtools"}
               </span>
             </div>
@@ -140,7 +157,7 @@ export function OpenUIDevtools({
                     Wrap
                   </button>
                   <button style={styles.textButton} onClick={copyStack}>
-                    {copied ? "copied" : "copy"}
+                    {copied ? "Copied" : "Copy"}
                   </button>
                 </>
               ) : (
@@ -153,7 +170,7 @@ export function OpenUIDevtools({
                 onClick={() => setOpen(false)}
                 aria-label="Close OpenUI devtools"
               >
-                Close
+                ✕
               </button>
             </div>
           </div>
@@ -170,37 +187,47 @@ export function OpenUIDevtools({
               ))}
             </div>
           ) : (
-            <div style={styles.list}>
-              {events.length === 0 ? (
-                <div style={styles.empty}>No events captured yet.</div>
-              ) : (
-                events.map((event, index) => {
-                  const error = getErrorInfo(event);
-                  return (
-                    <div key={`${event.timestamp}-${index}`} style={styles.row}>
-                      <div style={styles.rowHeader}>
-                        <span style={{ ...styles.badge, ...badgeBySeverity[event.severity] }}>
-                          {event.type}
-                        </span>
-                        <span style={styles.time}>
-                          {new Date(event.timestamp).toLocaleTimeString()}
-                        </span>
+            <>
+              <label style={styles.autoOpenRow}>
+                <input
+                  type="checkbox"
+                  checked={autoOpen}
+                  onChange={(event) => setAutoOpen(event.target.checked)}
+                />
+                Auto-open on error
+              </label>
+              <div style={styles.list}>
+                {events.length === 0 ? (
+                  <div style={styles.empty}>No events captured yet.</div>
+                ) : (
+                  events.map((event, index) => {
+                    const error = getErrorInfo(event);
+                    return (
+                      <div key={`${event.timestamp}-${index}`} style={styles.row}>
+                        <div style={styles.rowHeader}>
+                          <span style={{ ...styles.badge, ...badgeBySeverity[event.severity] }}>
+                            {event.type}
+                          </span>
+                          <span style={styles.time}>
+                            {new Date(event.timestamp).toLocaleTimeString()}
+                          </span>
+                        </div>
+                        <div style={styles.summary}>{summarize(event)}</div>
+                        {error?.stack ? (
+                          <button style={styles.stackButton} onClick={() => showStack(event)}>
+                            Stack Trace
+                          </button>
+                        ) : null}
                       </div>
-                      <div style={styles.summary}>{summarize(event)}</div>
-                      {error?.stack ? (
-                        <button style={styles.stackButton} onClick={() => showStack(event)}>
-                          Stack Trace
-                        </button>
-                      ) : null}
-                    </div>
-                  );
-                })
-              )}
-            </div>
+                    );
+                  })
+                )}
+              </div>
+            </>
           )}
-        </div>
+        </aside>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -253,14 +280,20 @@ const badgeBySeverity: Record<ObservabilityEvent["severity"], CSSProperties> = {
   info: { background: "#1e3a5f", color: "#bfdbfe" },
 };
 
+const positionStyles: Record<DevtoolsPosition, CSSProperties> = {
+  "top-left": { top: 16, left: 16 },
+  "top-right": { top: 16, right: 16 },
+  "bottom-left": { bottom: 16, left: 16 },
+  "bottom-right": { bottom: 16, right: 16 },
+};
+
 const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
 
 const styles = {
-  root: {
+  toggleWrap: {
     position: "fixed",
-    bottom: 16,
-    right: 16,
-    zIndex: 2147483000,
+    // Max 32-bit signed int — sit above any app chrome.
+    zIndex: 2147483647,
   },
   toggle: {
     position: "relative",
@@ -299,48 +332,45 @@ const styles = {
     position: "fixed",
     inset: 0,
     background: "rgba(0, 0, 0, 0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 2147483001,
+    // Max 32-bit signed int — the open drawer sits above everything, including the toggle.
+    zIndex: 2147483647,
     opacity: 0,
     visibility: "hidden",
     pointerEvents: "none",
-    transition: "opacity 160ms ease, visibility 0s linear 160ms",
+    transition: "opacity 200ms ease, visibility 0s linear 200ms",
   },
   backdropOpen: {
     opacity: 1,
     visibility: "visible",
     pointerEvents: "auto",
-    transition: "opacity 160ms ease, visibility 0s",
+    transition: "opacity 200ms ease, visibility 0s",
   },
-  dialog: {
-    fontFamily: "system-ui, -apple-system, sans-serif",
-    fontSize: 12,
-    width: "min(720px, calc(100vw - 32px))",
-    maxHeight: "70vh",
+  drawer: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    width: "min(420px, 100vw)",
     display: "flex",
     flexDirection: "column",
-    borderRadius: 8,
-    border: "1px solid #3f3f46",
+    borderRight: "1px solid #3f3f46",
     background: "#18181b",
     color: "#fafafa",
-    overflow: "hidden",
-    boxShadow: "0 12px 32px rgba(0, 0, 0, 0.5)",
-    opacity: 0,
-    transform: "translateY(8px) scale(0.98)",
-    transition: "opacity 160ms ease, transform 160ms ease",
+    fontFamily: "system-ui, -apple-system, sans-serif",
+    fontSize: 12,
+    boxShadow: "8px 0 32px rgba(0, 0, 0, 0.5)",
+    transform: "translateX(-100%)",
+    transition: "transform 200ms ease",
   },
-  dialogOpen: {
-    opacity: 1,
-    transform: "translateY(0) scale(1)",
+  drawerOpen: {
+    transform: "translateX(0)",
   },
-  dialogHeader: {
+  header: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     gap: 8,
-    padding: "8px 12px",
+    padding: "10px 12px",
     borderBottom: "1px solid #3f3f46",
     fontWeight: 600,
   },
@@ -350,7 +380,7 @@ const styles = {
     gap: 6,
     minWidth: 0,
   },
-  dialogTitle: {
+  title: {
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
@@ -382,6 +412,15 @@ const styles = {
     fontSize: 16,
     lineHeight: 1,
     padding: "0 2px",
+  },
+  autoOpenRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    padding: "8px 12px",
+    borderBottom: "1px solid #27272a",
+    color: "#a1a1aa",
+    cursor: "pointer",
   },
   list: {
     overflowY: "auto",
@@ -432,6 +471,7 @@ const styles = {
     textDecoration: "underline",
   },
   stackBody: {
+    flex: 1,
     overflow: "auto",
     padding: "8px 0",
     background: "#09090b",
