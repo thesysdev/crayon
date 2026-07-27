@@ -298,7 +298,9 @@ export function ComparePageClient({
                         registry={registry}
                       />
                     )}
-                    {mode === "cloud" && <CloudAgentSurface registry={registry} />}
+                    {mode === "cloud" && (
+                      <CloudAgentSurface registry={registry} themeMode={themeMode} />
+                    )}
                   </SurfaceErrorBoundary>
                   {!snapshot.isReady && !snapshot.threadError && !unavailableModes.has(mode) ? (
                     <div className={styles.panelLoadingOverlay}>
