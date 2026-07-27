@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 
 export interface BehindTheScenesProps {
   /** True while the overall message is still streaming */
@@ -44,6 +44,23 @@ export const BehindTheScenes = ({
 
   const panelId = useId();
 
+  // The items tray scrolls internally past its max-height (see toolCall.scss).
+  // While tools are active, follow the newest step — unless the user has
+  // scrolled up to read an earlier one (24px slack, same heuristic as chat
+  // auto-scroll), in which case leave their position alone.
+  const itemsRef = useRef<HTMLDivElement>(null);
+  const followRef = useRef(true);
+  const handleItemsScroll = useCallback(() => {
+    const el = itemsRef.current;
+    if (!el) return;
+    followRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
+  }, []);
+  useLayoutEffect(() => {
+    if (!toolsActive || !isExpanded || !followRef.current) return;
+    const el = itemsRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  });
+
   return (
     <div className="openui-behind-the-scenes">
       <button
@@ -61,7 +78,12 @@ export const BehindTheScenes = ({
         {toolsActive ? "Working..." : "Behind the scenes"}
       </button>
       {isExpanded && (
-        <div className="openui-behind-the-scenes__items" id={panelId}>
+        <div
+          className="openui-behind-the-scenes__items"
+          id={panelId}
+          ref={itemsRef}
+          onScroll={handleItemsScroll}
+        >
           {children}
         </div>
       )}

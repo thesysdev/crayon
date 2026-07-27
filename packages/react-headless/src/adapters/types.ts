@@ -24,6 +24,12 @@ export interface ArtifactSummary {
   /** Thread the artifact was created in. Drives the "go to original thread" action. */
   threadId: string;
   updatedAt?: string | number;
+  /**
+   * Storage-side version marker, when the backend versions artifacts. Lets a
+   * renderer that knows which version it streamed decide whether a fetched row
+   * already reflects that write (an edit's persist can lag the stream end).
+   */
+  version?: string;
 }
 
 /** Full artifact. `content` must have the same shape as the tool-call `response` the renderer's parser expects. */

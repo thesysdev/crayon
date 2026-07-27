@@ -41,6 +41,10 @@ export const processStreamedMessage = async ({
   };
 
   let isFirst = true;
+  // The wire message-item id whose text currently streams into currentMessage.
+  // A NEW item id after content/tool calls have accumulated marks the model
+  // interleaving prose with tool calls — that boundary must be preserved.
+  let currentTextItemId: string | null = null;
 
   // Tool messages by toolCallId, so repeated TOOL_CALL_RESULTs for the same
   // call UPDATE one message in place instead of duplicating it.
@@ -153,13 +157,41 @@ export const processStreamedMessage = async ({
         break;
       }
 
-      case EventType.TEXT_MESSAGE_START:
+      case EventType.TEXT_MESSAGE_START: {
         // The optimistic id is kept regardless of `event.messageId` — swapping
         // ids mid-stream by deleting + re-creating the assistant message
         // breaks ordering when tool messages have already been appended
         // between the original create and this event (e.g. from
         // TOOL_CALL_RESULT). Persistence layers should map ids on save.
+        //
+        // A DIFFERENT item id after content/tool calls have accumulated means
+        // the model is interleaving prose with tool calls (several output
+        // message items in one run). Split into a fresh assistant message so
+        // the live structure matches what `fromItems` reconstructs on reload —
+        // separate assistant messages in wire order — instead of mashing every
+        // text section into one string.
+        const startId = (event as { messageId?: string }).messageId ?? null;
+        const hasBody =
+          (currentMessage.content?.length ?? 0) > 0 || (currentMessage.toolCalls?.length ?? 0) > 0;
+        if (hasBody && startId !== currentTextItemId) {
+          if (rafId !== null) {
+            // Flush the pending update so the finished segment's final state
+            // lands before the next segment is created.
+            cancelAnimationFrame(rafId);
+            rafId = null;
+            if (!isFirst) updateMessage(currentMessage);
+          }
+          currentMessage = {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content: "",
+            toolCalls: [],
+          };
+          isFirst = true;
+        }
+        currentTextItemId = startId;
         break;
+      }
 
       case EventType.TOOL_CALL_RESULT: {
         // Result landed → no longer executing / in flight.

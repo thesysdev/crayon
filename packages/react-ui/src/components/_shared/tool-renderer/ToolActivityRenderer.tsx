@@ -7,7 +7,15 @@ import {
   type ParsedArtifact,
   type ToolActivity,
 } from "@openuidev/react-headless";
-import { useEffect, useId, useMemo, useRef, type ComponentType, type ReactNode } from "react";
+import {
+  Fragment,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  type ComponentType,
+  type ReactNode,
+} from "react";
 import { DetailedViewPanel as DefaultDetailedViewPanel } from "../../AgentInterface/_shared/detailed-view";
 import { ToolCallErrorFallback } from "./ToolCallErrorFallback";
 
@@ -156,11 +164,15 @@ export function ToolActivityRenderer<Props>({
   };
 
   return (
-    <>
+    // Keyed by (id, version): an edit that DELETES content must remount the
+    // artifact subtree — reconciled in place, renderer-internal state (parser
+    // caches, slide index, memos) can keep deleted content on screen,
+    // especially in the fullscreen panel.
+    <Fragment key={viewId}>
       {renderer.preview(parsed.props, controls)}
       <DetailedViewPanel viewId={viewId} title={meta?.heading ?? "Detailed view"}>
         {renderer.actual(parsed.props, controls)}
       </DetailedViewPanel>
-    </>
+    </Fragment>
   );
 }
