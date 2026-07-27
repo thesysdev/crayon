@@ -218,7 +218,22 @@ function buildResult(
   const materialized = materializeValue(syms.get(entryId)!, ctx);
 
   const root = isElementNode(materialized) ? materialized : null;
-  if (root) root.statementId = entryId;
+  if (root) {
+    root.statementId = entryId;
+  } else if (!wasIncomplete && errors.length === 0) {
+    // The entry statement resolved to a non-component value and nothing else
+    // explained the null root (no missing-required/unknown-component/etc.).
+    // Without this, callers see `root: null` with empty errors/unresolved/orphaned
+    // and no signal that a top-level component statement is missing. Gated on
+    // `!wasIncomplete` because root is legitimately null mid-stream.
+    errors.push({
+      code: "no-root",
+      component: "",
+      path: "",
+      message: `No root component found. Define a top-level component statement named \`root\`, e.g. \`root = Stack([...])\`. Entry "${entryId}" resolved to a non-component value.`,
+      statementId: entryId,
+    });
+  }
 
   const { stateDeclarations, queryStatements, mutationStatements } = extractStatements(
     typedStmts,

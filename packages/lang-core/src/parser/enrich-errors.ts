@@ -38,6 +38,10 @@ export function enrichErrors(
       error.hint = buildSignatureHint(ve.component, schema.$defs?.[ve.component]);
     } else if (ve.code === "inline-reserved") {
       error.hint = `Declare as a top-level statement: myVar = ${ve.component}(...)`;
+    } else if (ve.code === "no-root") {
+      error.hint = componentNames.length
+        ? `Add a top-level component statement named \`root\`, e.g. root = ${componentNames[0]}(...)`
+        : "Add a top-level component statement named `root`, e.g. root = Stack([...])";
     }
     return error;
   });
