@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 
-const SOCIAL_IMAGE = "/meta-image.png?v=20260725-1708";
-
 type PageMetadataOptions = {
   pathname: string;
   title: string;
   description: string;
+  image: string;
   imageAlt: string;
 };
 
@@ -13,6 +12,7 @@ export function createPageMetadata({
   pathname,
   title,
   description,
+  image,
   imageAlt,
 }: PageMetadataOptions): Metadata {
   return {
@@ -28,9 +28,9 @@ export function createPageMetadata({
       type: "website",
       images: [
         {
-          url: SOCIAL_IMAGE,
-          width: 1800,
-          height: 942,
+          url: image,
+          width: 560,
+          height: 320,
           alt: imageAlt,
         },
       ],
@@ -39,7 +39,7 @@ export function createPageMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [SOCIAL_IMAGE],
+      images: [image],
     },
   };
 }
