@@ -5,18 +5,12 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/cli-e2e.yml"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
       - "packages/openui-cli/**"
       - "tsconfig.json"
   pull_request:
     branches: [main]
     paths:
       - ".github/workflows/cli-e2e.yml"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
       - "packages/openui-cli/**"
       - "tsconfig.json"
 
@@ -36,7 +30,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
@@ -68,45 +62,33 @@ jobs:
           - openui-cloud
           - openui-self-hosted
         configuration:
-          # Exercise every supported Node/package-manager major on Linux.
+          # Keep one npm and pnpm canary for the legacy Node.js line.
           - ubuntu-node20-npm10
-          - ubuntu-node20-npm11
           - ubuntu-node20-pnpm9
-          - ubuntu-node20-pnpm10
+          # Exercise established and current package-manager majors on Linux.
           - ubuntu-node22-npm10
           - ubuntu-node22-npm11
-          - ubuntu-node22-pnpm9
           - ubuntu-node22-pnpm10
-          - ubuntu-node24-npm10
+          - ubuntu-node22-pnpm11
           - ubuntu-node24-npm11
-          - ubuntu-node24-pnpm9
           - ubuntu-node24-pnpm10
+          - ubuntu-node24-pnpm11
           # Keep the non-Linux jobs focused on the current package-manager majors.
-          - macos-node22-npm11
-          - macos-node22-pnpm10
-          - windows-node22-npm11
-          - windows-node22-pnpm10
+          - macos-node24-npm11
+          - macos-node24-pnpm11
+          - windows-node24-npm11
+          - windows-node24-pnpm11
         include:
           - configuration: ubuntu-node20-npm10
             os: ubuntu-latest
             node-version: 20
             package-manager: npm
             package-manager-version: "10"
-          - configuration: ubuntu-node20-npm11
-            os: ubuntu-latest
-            node-version: 20
-            package-manager: npm
-            package-manager-version: "11"
           - configuration: ubuntu-node20-pnpm9
             os: ubuntu-latest
             node-version: 20
             package-manager: pnpm
             package-manager-version: "9"
-          - configuration: ubuntu-node20-pnpm10
-            os: ubuntu-latest
-            node-version: 20
-            package-manager: pnpm
-            package-manager-version: "10"
           - configuration: ubuntu-node22-npm10
             os: ubuntu-latest
             node-version: 22
@@ -117,56 +99,51 @@ jobs:
             node-version: 22
             package-manager: npm
             package-manager-version: "11"
-          - configuration: ubuntu-node22-pnpm9
-            os: ubuntu-latest
-            node-version: 22
-            package-manager: pnpm
-            package-manager-version: "9"
           - configuration: ubuntu-node22-pnpm10
             os: ubuntu-latest
             node-version: 22
             package-manager: pnpm
             package-manager-version: "10"
-          - configuration: ubuntu-node24-npm10
+          - configuration: ubuntu-node22-pnpm11
             os: ubuntu-latest
-            node-version: 24
-            package-manager: npm
-            package-manager-version: "10"
+            node-version: 22
+            package-manager: pnpm
+            package-manager-version: "11"
           - configuration: ubuntu-node24-npm11
             os: ubuntu-latest
             node-version: 24
             package-manager: npm
             package-manager-version: "11"
-          - configuration: ubuntu-node24-pnpm9
-            os: ubuntu-latest
-            node-version: 24
-            package-manager: pnpm
-            package-manager-version: "9"
           - configuration: ubuntu-node24-pnpm10
             os: ubuntu-latest
             node-version: 24
             package-manager: pnpm
             package-manager-version: "10"
-          - configuration: macos-node22-npm11
+          - configuration: ubuntu-node24-pnpm11
+            os: ubuntu-latest
+            node-version: 24
+            package-manager: pnpm
+            package-manager-version: "11"
+          - configuration: macos-node24-npm11
             os: macos-latest
-            node-version: 22
+            node-version: 24
             package-manager: npm
             package-manager-version: "11"
-          - configuration: macos-node22-pnpm10
+          - configuration: macos-node24-pnpm11
             os: macos-latest
-            node-version: 22
+            node-version: 24
             package-manager: pnpm
-            package-manager-version: "10"
-          - configuration: windows-node22-npm11
+            package-manager-version: "11"
+          - configuration: windows-node24-npm11
             os: windows-latest
-            node-version: 22
+            node-version: 24
             package-manager: npm
             package-manager-version: "11"
-          - configuration: windows-node22-pnpm10
+          - configuration: windows-node24-pnpm11
             os: windows-latest
-            node-version: 22
+            node-version: 24
             package-manager: pnpm
-            package-manager-version: "10"
+            package-manager-version: "11"
 
     steps:
       - uses: actions/setup-node@v6
