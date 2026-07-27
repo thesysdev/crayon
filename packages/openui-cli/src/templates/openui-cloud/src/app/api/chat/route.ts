@@ -1,9 +1,9 @@
-import { getBillingCreditsErrorMessage } from "@/lib/billing";
-import { envOr, requiredEnv } from "@/lib/env";
-import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
+import { isDevelopment, requiredEnv } from "@/lib/env";
+import { resolveRequestedModel } from "@/lib/models";
 import { runFunctionToolLoop } from "@/lib/tool-loop";
 import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
 import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
+import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import type {
   ResponseCreateParamsNonStreaming,
@@ -11,20 +11,6 @@ import type {
   Tool,
 } from "openai/resources/responses/responses";
 
-/**
- * Generation plane: browser → THIS route → OpenUI Cloud.
- *
- * Calls the hosted Responses API (`POST /v1/embed/responses`) with the stock
- * OpenAI SDK — the endpoint speaks the Responses protocol — and proxies the SSE
- * stream straight to the browser, where `openAIResponsesAdapter` parses it
- * (including the custom `response.artifact_call.delta` events).
- *
- * Cloud's built-in tools (artifacts / web_search / image_search / MCP) run
- * server-side inside OpenUI Cloud. App-owned `type: "function"` tools run HERE
- * via `runFunctionToolLoop` — `get_weather` ships as the reference example.
- * Reads/edits go browser → /v1/* with the fct_ token (see /api/frontend-token
- * + the storage adapter).
- */
 export async function POST(req: Request) {
   const {
     threadId,
@@ -37,17 +23,14 @@ export async function POST(req: Request) {
   };
 
   if (!threadId) {
-    return Response.json(
-      { error: { message: "threadId is required — create the conversation first" } },
-      { status: 400 },
-    );
+    return badRequest("threadId is required — create the conversation first");
   }
   if (!Array.isArray(input) || input.length === 0) {
-    return Response.json(
-      { error: { message: "input must be a non-empty ResponseInputItem[]" } },
-      { status: 400 },
-    );
+    return badRequest("input must be a non-empty ResponseInputItem[]");
   }
+
+  const model = resolveRequestedModel(requestedModel);
+  if (!model) return badRequest(`Model ${requestedModel} is not available in this agent.`);
 
   const client = new OpenAI({
     baseURL: "https://api.thesys.dev/v1/embed",
@@ -62,7 +45,7 @@ export async function POST(req: Request) {
   };
 
   const createParams: ResponseCreateParamsNonStreaming = {
-    model: resolveRequestedModel(requestedModel, envOr("OPENUI_MODEL", DEFAULT_MODEL)),
+    model,
     conversation: threadId, // store:true persists to the conversation
     input,
     store: true,
@@ -99,7 +82,7 @@ export async function POST(req: Request) {
     if (isRateLimitError(e)) {
       return Response.json(
         {
-          error: { message: getBillingCreditsErrorMessage() },
+          error: { message: BILLING_CREDITS_ERROR_MESSAGE },
         },
         { status: 429 },
       );
@@ -143,7 +126,7 @@ export async function POST(req: Request) {
         });
       } catch (err) {
         const message = isRateLimitError(err)
-          ? getBillingCreditsErrorMessage()
+          ? BILLING_CREDITS_ERROR_MESSAGE
           : err instanceof Error
             ? err.message
             : String(err);
@@ -163,6 +146,16 @@ export async function POST(req: Request) {
   });
 }
 
+// Utilities
+
+const BILLING_CREDITS_ERROR_MESSAGE = isDevelopment()
+  ? "Looks like this workspace is out of OpenUI Cloud credits. Purchase credits to keep testing, then try your request again. This notice is only shown in development."
+  : "Something went wrong while sending your message. Please try again.";
+
 function isRateLimitError(err: unknown): boolean {
   return typeof err === "object" && err !== null && "status" in err && err.status === 429;
+}
+
+function badRequest(message: string) {
+  return NextResponse.json({ error: { message } }, { status: 400 });
 }

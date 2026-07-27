@@ -38,13 +38,14 @@ export {
 export { processStreamedMessage } from "./stream/processStreamedMessage";
 
 // ── Adapter interfaces + factories ──
-export { fetchLLM, restStorage } from "./adapters";
+export { fetchLLM, getResponseErrorMessage, restStorage, useLLM } from "./adapters";
 export type {
   Artifact,
   ArtifactCategory,
   ArtifactListParams,
   ArtifactStorage,
   ArtifactSummary,
+  BuildLLMRequestBodyParams,
   ChatLLM,
   ChatStorage,
   FetchLLMOptions,

@@ -63,10 +63,9 @@ Configure server-only environment values:
 
 ```bash
 THESYS_API_KEY=sk-th-your-key
-OPENUI_MODEL=google/gemini-3.1-pro-free
 ```
 
-Use a current supported `provider/model` value for `OPENUI_MODEL`; prefer the generated template or console over a stale hardcoded list. A scaffold may also use `DEMO_USER_ID=demo-user`, but production must derive the user id from authenticated server state.
+Keep the allowed model list and default model in app configuration, and validate requested models on the server. A scaffold may use `DEMO_USER_ID=demo-user`, but production must derive the user id from authenticated server state.
 
 ## Wire the Client
 
@@ -104,7 +103,7 @@ import {
   defineArtifactCategories,
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
-  type ChatLLM,
+  useLLM,
 } from "@openuidev/react-ui";
 import {
   chatLibrary,
@@ -118,21 +117,18 @@ const artifacts = defineArtifactCategories([
   { name: "Reports", renderers: [reportArtifactRenderer] },
 ]);
 
-const llm: ChatLLM = {
-  send: ({ threadId, messages, signal }) =>
-    fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        threadId,
-        input: openAIConversationMessageFormat.toApi(messages.slice(-1)),
-      }),
-      signal,
-    }),
-  streamProtocol: openAIResponsesAdapter(),
-};
-
 export default function CloudAgent() {
+  const llm = useLLM({
+    url: "/api/chat",
+    messageFormat: openAIConversationMessageFormat,
+    streamAdapter: openAIResponsesAdapter(),
+    buildBody: ({ threadId, messages, formatMessages }) => ({
+      threadId,
+      input: formatMessages(messages.slice(-1)),
+      model: selectedModel,
+    }),
+  });
+
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",
@@ -397,13 +393,13 @@ before enabling either route in production.
 
 OpenUI Cloud executes several tools **server-side, inside the platform** — declare them in `tools` and they run without any client code. Only `type: "function"` tools run on the app's server.
 
-| Tool | Declare as | Executes |
-|---|---|---|
-| Report/slide artifacts — generate + edit (editing auto-enabled) | `artifactTool({ artifacts: ["slides", "report"] })` | Cloud |
-| Web search | `{ type: "web_search" }` | Cloud |
-| Image search | `{ type: "image_search" }` | Cloud |
-| Remote MCP servers | `{ type: "mcp", server_label, server_url, headers? }` | Cloud |
-| App-owned function tools | `{ type: "function", name, description, parameters }` | The app's server |
+| Tool                                                            | Declare as                                            | Executes         |
+| --------------------------------------------------------------- | ----------------------------------------------------- | ---------------- |
+| Report/slide artifacts — generate + edit (editing auto-enabled) | `artifactTool({ artifacts: ["slides", "report"] })`   | Cloud            |
+| Web search                                                      | `{ type: "web_search" }`                              | Cloud            |
+| Image search                                                    | `{ type: "image_search" }`                            | Cloud            |
+| Remote MCP servers                                              | `{ type: "mcp", server_label, server_url, headers? }` | Cloud            |
+| App-owned function tools                                        | `{ type: "function", name, description, parameters }` | The app's server |
 
 ### Remote MCP — zero client code
 
@@ -440,7 +436,7 @@ Ask the user two questions before wiring identity; do not assume either answer:
 
 How scoping works on the Cloud conversation plane:
 
-- **The fct_ token binds the scope.** Mint it with `POST /v1/frontend-tokens` `{ user_id, app_id }`. With an fct_ token, conversation create/list are locked to the token's user and app — `user_id`/`app_id` in request bodies or query are rejected, so the browser can never widen its own scope.
+- **The fct\_ token binds the scope.** Mint it with `POST /v1/frontend-tokens` `{ user_id, app_id }`. With an fct\_ token, conversation create/list are locked to the token's user and app — `user_id`/`app_id` in request bodies or query are rejected, so the browser can never widen its own scope.
 - **The master key is the server plane.** Create conversations with `user_id` / `app_id` in the body; list org-wide or filtered with `GET /v1/conversations?user_id=<id>`.
 - **Ownership fields are first-class, not metadata.** The `metadata` object on conversations (create/update) and the `metadata` param on `POST /v1/embed/responses` are for the app's own data; reserved keys (`userId`, `appId`, `orgId`) are stripped server-side. Do not encode ownership in metadata.
 - **Generation still needs an ownership check.** `/api/chat` runs on the master key, so verify the untrusted `threadId` belongs to the session user ([Authorize Cloud Conversations](#authorize-cloud-conversations)).

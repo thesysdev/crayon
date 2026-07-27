@@ -10,7 +10,9 @@ export type {
 } from "./types";
 
 export { fetchLLM } from "./fetchLLM";
-export type { FetchLLMOptions } from "./fetchLLM";
+export type { BuildLLMRequestBodyParams, FetchLLMOptions } from "./fetchLLM";
+export { getResponseErrorMessage } from "./httpError";
+export { useLLM } from "./useLLM";
 
 export { restStorage } from "./restStorage";
 export type { RestStorageOptions } from "./restStorage";

@@ -1,13 +1,6 @@
-export const DEFAULT_MODEL = "google/gemini-3.6-flash-free";
+import type { ModelOption } from "@openuidev/react-ui";
 
-export interface ModelOption {
-  id: string;
-  name: string;
-  provider: "Anthropic" | "Google" | "OpenAI";
-  badge?: string;
-}
-
-export const MODEL_OPTIONS: ModelOption[] = [
+export const AVAILABLE_MODELS = [
   { provider: "Google", id: "google/gemini-3.1-pro-free", name: "Gemini 3.1 Pro", badge: "Free" },
   {
     provider: "Google",
@@ -15,13 +8,6 @@ export const MODEL_OPTIONS: ModelOption[] = [
     name: "Gemini 3.1 Flash Lite",
     badge: "Free",
   },
-  {
-    provider: "Google",
-    id: "google/gemini-3.6-flash-free",
-    name: "Gemini 3.6 Flash",
-    badge: "Free",
-  },
-  { provider: "Google", id: "google/gemini-3.6-flash", name: "Gemini 3.6 Flash" },
   {
     provider: "Google",
     id: "google/gemini-3.5-flash-free",
@@ -39,8 +25,13 @@ export const MODEL_OPTIONS: ModelOption[] = [
   { provider: "Anthropic", id: "anthropic/claude-sonnet-5", name: "Claude Sonnet 5" },
   { provider: "Anthropic", id: "anthropic/claude-sonnet-4.6", name: "Claude Sonnet 4.6" },
   { provider: "Anthropic", id: "anthropic/claude-opus-4-7", name: "Claude Opus 4.7" },
-];
+] as const satisfies readonly ModelOption[];
 
-export function resolveRequestedModel(model: unknown, fallback = DEFAULT_MODEL): string {
-  return typeof model === "string" && model.trim() ? model : fallback;
+export const DEFAULT_MODEL = AVAILABLE_MODELS[0].id;
+
+const AVAILABLE_MODEL_IDS = new Set<string>(AVAILABLE_MODELS.map((model) => model.id));
+
+export function resolveRequestedModel(value: unknown): string | null {
+  if (value === undefined || value === null || value === "") return DEFAULT_MODEL;
+  return typeof value === "string" && AVAILABLE_MODEL_IDS.has(value) ? value : null;
 }

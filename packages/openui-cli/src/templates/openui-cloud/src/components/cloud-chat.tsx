@@ -1,17 +1,20 @@
 "use client";
 
-import { getPersistedModel, usePersistedModel } from "@/hooks/use-persisted-model";
-import { useTheme } from "@/hooks/use-system-theme";
-import { shouldShowBillingCreditsNotice } from "@/lib/billing";
+import { usePersistedModel } from "@/hooks/use-persisted-model";
 import {
   DARK_LOGO_URL,
   LIGHT_LOGO_URL,
   PROMPT_TEMPLATES,
   starters,
 } from "@/lib/cloud-chat-constants";
-import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
-import { defineArtifactCategories } from "@openuidev/react-headless";
-import { AgentInterface } from "@openuidev/react-ui";
+import { isDevelopment } from "@/lib/env";
+import { AVAILABLE_MODELS } from "@/lib/models";
+import {
+  defineArtifactCategories,
+  openAIConversationMessageFormat,
+  useLLM,
+} from "@openuidev/react-headless";
+import { AgentInterface, ModelSwitcher, useSystemThemeMode } from "@openuidev/react-ui";
 import {
   chatLibrary,
   presentationArtifactRenderer,
@@ -19,9 +22,8 @@ import {
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
 import { FileText, Presentation } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { BillingCreditsDialog } from "./billing-credits-dialog";
-import { ModelSwitcher } from "./model-switcher";
+import dynamic from "next/dynamic";
+import { useEffect } from "react";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   {
@@ -36,30 +38,25 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   },
 ]);
 
-const showBillingCreditsNotice = shouldShowBillingCreditsNotice();
+const OpenUICreditsModal = isDevelopment()
+  ? dynamic(() => import("@openuidev/devtools").then((m) => m.OpenUICreditsModal), {
+      ssr: false,
+    })
+  : null;
 
 export function CloudChat() {
-  const mode = useTheme();
+  const mode = useSystemThemeMode();
   const [selectedModel, setSelectedModel] = usePersistedModel();
-  const [billingDialogOpen, setBillingDialogOpen] = useState(false);
-  const [billingCreditsRequired, setBillingCreditsRequired] = useState(false);
-  const [llm] = useState(() =>
-    createCloudChatLLM({
-      // Read the persisted model directly so the LLM starts on the saved
-      // selection at construction. selectedModel is still the server snapshot
-      // (DEFAULT_MODEL) during the first client render; the effect below also
-      // keeps it in sync afterwards.
-      initialModel: getPersistedModel(),
-      showBillingCreditsNotice,
-      onRequestStart: () => {
-        if (showBillingCreditsNotice) setBillingCreditsRequired(false);
-      },
-      onBillingCreditsRequired: () => {
-        setBillingCreditsRequired(true);
-        setBillingDialogOpen(true);
-      },
+  const [llm] = useLLM({
+    url: "/api/chat",
+    messageFormat: openAIConversationMessageFormat,
+    streamAdapter: openAIResponsesAdapter(),
+    buildBody: ({ threadId, messages, formatMessages }) => ({
+      threadId,
+      input: formatMessages(messages.slice(-1)),
+      model: selectedModel,
     }),
-  );
+  });
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",
@@ -71,21 +68,8 @@ export function CloudChat() {
     llm.setSelectedModel(selectedModel);
   }, [llm, selectedModel]);
 
-  const handleModelChange = useCallback(
-    (model: string) => {
-      llm.setSelectedModel(model);
-      // Persist + notify; useSyncExternalStore re-reads and re-renders.
-      setSelectedModel(model);
-    },
-    [llm, setSelectedModel],
-  );
-
   return (
-    <div
-      className={`h-screen w-screen overflow-hidden relative${
-        billingCreditsRequired ? " openui-cloud-root--billing-credits-required" : ""
-      }`}
-    >
+    <div className="openui-cloud-page">
       <AgentInterface
         storage={storage}
         llm={llm}
@@ -99,14 +83,16 @@ export function CloudChat() {
         starters={starters}
       >
         <AgentInterface.MobileHeader
-          className="openui-cloud-mobile-header"
-          agentName=""
           actions={
-            <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+            <ModelSwitcher
+              models={AVAILABLE_MODELS}
+              value={selectedModel}
+              onValueChange={setSelectedModel}
+            />
           }
         />
         <AgentInterface.ThreadHeader className="openui-cloud-thread-header">
-          <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+          <ModelSwitcher selectedModel={selectedModel} onModelChange={setSelectedModel} />
         </AgentInterface.ThreadHeader>
         <AgentInterface.Welcome
           title="Good to see you"
@@ -115,9 +101,7 @@ export function CloudChat() {
           glowAnimation
         />
       </AgentInterface>
-      {showBillingCreditsNotice ? (
-        <BillingCreditsDialog open={billingDialogOpen} onOpenChange={setBillingDialogOpen} />
-      ) : null}
+      {OpenUICreditsModal ? <OpenUICreditsModal llm={llm} /> : null}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { createStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import { getResponseErrorMessage } from "../adapters/httpError";
 import type { ChatLLM, ChatStorage } from "../adapters/types";
 import { processStreamedMessage } from "../stream/processStreamedMessage";
 import type { ChatStore, Message, Thread, UserMessage } from "./types";
@@ -174,7 +175,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
           });
 
           if (response instanceof Response && !response.ok) {
-            throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+            throw new Error(await getResponseErrorMessage(response));
           }
 
           await processStreamedMessage({
