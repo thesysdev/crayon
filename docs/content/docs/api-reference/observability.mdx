@@ -1,0 +1,93 @@
+---
+title: "@openuidev/observability"
+description: API reference for the framework-agnostic, toast-style observability event bus.
+---
+
+Framework-agnostic event bus for observing what happens inside an OpenUI app — fetch calls, LLM calls, renderer outcomes, whatever your app cares about — through one fixed, generic interface modeled on a toast library's contract. Zero dependencies, safe on server and browser. A single shared instance per app; third-party sinks (Sentry, Datadog, custom loggers) attach with one `listenAll` call.
+
+## Install
+
+```bash tab="pnpm" tab-group="pkg"
+pnpm add @openuidev/observability
+```
+
+```bash tab="bun" tab-group="pkg"
+bun add @openuidev/observability
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn add @openuidev/observability
+```
+
+```bash tab="npm" tab-group="pkg"
+npm install @openuidev/observability
+```
+
+## `observability`
+
+The shared bus. It is **itself callable** to emit an event, with severity shortcuts and listen methods hanging off it. There is one shared instance — import it anywhere; emitters and listeners meet on it.
+
+```ts
+import { observability, toErrorInfo } from "@openuidev/observability";
+
+// Call the bus to emit any event; severity is inferred from the type suffix.
+observability("renderer:error", { component: "Chart", error: toErrorInfo(err) });
+
+observability.error("llm:timeout", { requestId, message: "timed out" });
+observability.warn("chart:overflow", { points: 1200 });
+observability.info("route:change", { to: "/settings" });
+
+// App-specific events are just a call with your own namespaced type:
+observability("myapp:cache-miss", { key: "products:featured" });
+
+// Listen to one type, or to everything (the sink attachment point).
+const remove = observability.listen("llm:error", (event) => console.error(event.detail));
+const detach = observability.listenAll((event) => {
+  if (event.severity === "error") {
+    // forward event.type and event.detail to your service
+  }
+});
+```
+
+Every method returning a listener gives back an `Unsubscribe` remover, and a listener that throws never breaks the emitter or other listeners.
+
+## The event envelope
+
+Every listener receives the same fixed envelope, generic over the payload:
+
+```ts
+interface ObservabilityEvent<TDetail = unknown> {
+  type: string; // e.g. "fetch:response", "renderer:error"
+  severity: "info" | "warning" | "error";
+  timestamp: number; // ms since epoch
+  detail: TDetail; // event-specific payload
+}
+```
+
+`severity` defaults from the type suffix — `*:error` → `error`, `*:warning` → `warning`, else `info` — and can be overridden per emit: `observability(type, detail, { severity: "error" })`. The severity shortcuts (`error` / `warn` / `info`) are exactly that override applied for you.
+
+## `toErrorInfo`
+
+Normalizes any thrown value into the fixed error shape carried by `*:error` events:
+
+```ts
+interface ObservabilityErrorInfo {
+  name?: string; // e.g. "TypeError"
+  message: string;
+  stack?: string;
+  cause?: unknown; // the original thrown value
+}
+```
+
+## Event name conventions
+
+Event types are namespaced strings — the bus doesn't restrict them. Recommended names for OpenUI apps:
+
+| Event type                             | Suggested detail fields                              |
+| -------------------------------------- | ---------------------------------------------------- |
+| `fetch:request` / `response` / `error` | `requestId`, `url`, `method`, `status`, `durationMs` |
+| `llm:request` / `response` / `error`   | `requestId`, `target` (model/endpoint), `status`     |
+| `renderer:success` / `error`           | `component`, `code`, `statementId`, `hint`           |
+| `tool:call` / `result` / `error`       | `toolName`, `statementId`, `args`, `durationMs`      |
+
+Conventions: `*:error` details carry `{ error: ObservabilityErrorInfo }`, and a shared `requestId` correlates the request/response/error events of one call.

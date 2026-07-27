@@ -1,6 +1,6 @@
 # @openuidev/devtools
 
-Development-only UI widget for OpenUI apps. Renders a floating badge that expands into a panel listing the errors captured by [`@openuidev/observer`](../observer) — event type, error message, and stack trace per entry.
+Development-only UI widget for OpenUI apps. Renders a floating button that opens a modal dialog listing the events captured by [`@openuidev/observability`](../observability) — event type, message, and a drill-in stack trace per entry.
 
 ## Usage
 
@@ -26,4 +26,4 @@ The widget renders nothing in production builds (`NODE_ENV === "production"`) un
 | `enabled`    | dev-only         | Force the widget on/off.                              |
 | `maxEvents`  | `50`             | How many events to keep; oldest are dropped first.    |
 | `errorsOnly` | `true`           | Capture only error/warning events, or all.            |
-| `bus`        | shared singleton | A custom `Observer` instance from `createObserver()`. |
+| `bus`        | shared singleton | An `Observability` instance to listen to.             |

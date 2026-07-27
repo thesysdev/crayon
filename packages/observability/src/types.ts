@@ -3,7 +3,7 @@
  * third-party sinks (Sentry, Datadog, custom loggers) can forward it without
  * unwrapping.
  */
-export interface ObserverErrorInfo {
+export interface ObservabilityErrorInfo {
   /** Error class name, e.g. "TypeError". */
   name?: string;
   message: string;
@@ -12,19 +12,16 @@ export interface ObserverErrorInfo {
   cause?: unknown;
 }
 
-export type ObserverSeverity = "info" | "warning" | "error";
+export type ObservabilitySeverity = "info" | "warning" | "error";
 
 /** The fixed envelope every listener receives, whatever the event type. */
-export interface ObserverEvent<TDetail = unknown> {
+export interface ObservabilityEvent<TDetail = unknown> {
   /** Namespaced event name, e.g. "fetch:response", "llm:error", "renderer:error". */
   type: string;
-  /** Defaults to "error" for `*:error` types, "warning" for `*:warning` types, "info" otherwise. */
-  severity: ObserverSeverity;
+  /** Derived from the type suffix by default; override per emit. */
+  severity: ObservabilitySeverity;
   /** Milliseconds since epoch. */
   timestamp: number;
-  /**
-   * Event-specific payload. By convention `*:error` payloads carry
-   * `{ error: ObserverErrorInfo }`.
-   */
+  /** Event-specific payload. By convention `*:error` payloads carry `{ error: ObservabilityErrorInfo }`. */
   detail: TDetail;
 }

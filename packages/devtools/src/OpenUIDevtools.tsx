@@ -1,11 +1,11 @@
 "use client";
 
 import {
-  observer,
-  type Observer,
-  type ObserverErrorInfo,
-  type ObserverEvent,
-} from "@openuidev/observer";
+  observability,
+  type Observability,
+  type ObservabilityErrorInfo,
+  type ObservabilityEvent,
+} from "@openuidev/observability";
 import { useEffect, useState, type CSSProperties } from "react";
 import { ShiroLogo } from "./ShiroLogo";
 
@@ -16,33 +16,33 @@ export interface OpenUIDevtoolsProps {
   maxEvents?: number;
   /** Capture only error/warning events (default) or every event. */
   errorsOnly?: boolean;
-  /** Observer instance to listen to. Defaults to the shared singleton. */
-  bus?: Observer;
+  /** Observability instance to listen to. Defaults to the shared singleton. */
+  bus?: Observability;
 }
 
 /**
- * dev-only widget that surfaces events captured by
- * `@openuidev/observer` — a badge with the error count, expanding into a panel
- * with type, message, and stack trace per event. Renders nothing in
- * production unless `enabled` is set explicitly.
+ * dev-only widget that surfaces events captured by `@openuidev/observability` —
+ * a Shiro-logo button with the error count that opens a modal dialog listing
+ * every captured event; selecting one drills into its stack trace. Renders
+ * nothing in production unless `enabled` is set explicitly.
  */
 export function OpenUIDevtools({
   enabled,
   maxEvents = 50,
   errorsOnly = true,
-  bus = observer,
+  bus = observability,
 }: OpenUIDevtoolsProps) {
   const isEnabled =
     enabled ?? (typeof process === "undefined" || process.env["NODE_ENV"] !== "production");
-  const [events, setEvents] = useState<ObserverEvent[]>([]);
+  const [events, setEvents] = useState<ObservabilityEvent[]>([]);
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<ObserverEvent | null>(null);
+  const [selected, setSelected] = useState<ObservabilityEvent | null>(null);
   const [wrapStack, setWrapStack] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!isEnabled) return;
-    return bus.subscribeAll((event) => {
+    return bus.listenAll((event) => {
       if (errorsOnly && event.severity === "info") return;
       setEvents((prev) => [event, ...prev].slice(0, maxEvents));
     });
@@ -69,7 +69,7 @@ export function OpenUIDevtools({
     setOpen(true);
   };
 
-  const showStack = (event: ObserverEvent) => {
+  const showStack = (event: ObservabilityEvent) => {
     setSelected(event);
     setCopied(false);
   };
@@ -212,10 +212,10 @@ function asString(value: unknown): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
-function getErrorInfo(event: ObserverEvent): ObserverErrorInfo | undefined {
+function getErrorInfo(event: ObservabilityEvent): ObservabilityErrorInfo | undefined {
   const error = asRecord(event.detail)["error"];
   if (typeof error === "object" && error !== null && "message" in error) {
-    return error as ObserverErrorInfo;
+    return error as ObservabilityErrorInfo;
   }
   return undefined;
 }
@@ -225,7 +225,7 @@ function getErrorInfo(event: ObserverEvent): ObserverErrorInfo | undefined {
  * (component/toolName/target/method+url/status/error.message). Falls back to
  * JSON for unconventional payloads.
  */
-function summarize(event: ObserverEvent): string {
+function summarize(event: ObservabilityEvent): string {
   const detail = asRecord(event.detail);
   const error = getErrorInfo(event);
   const method = asString(detail["method"]);
@@ -247,7 +247,7 @@ function summarize(event: ObserverEvent): string {
   }
 }
 
-const badgeBySeverity: Record<ObserverEvent["severity"], CSSProperties> = {
+const badgeBySeverity: Record<ObservabilityEvent["severity"], CSSProperties> = {
   error: { background: "#7f1d1d", color: "#fecaca" },
   warning: { background: "#78350f", color: "#fde68a" },
   info: { background: "#1e3a5f", color: "#bfdbfe" },
