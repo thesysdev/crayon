@@ -8,17 +8,22 @@ import {
 } from "@openuidev/react-headless";
 import { AgentInterface, type PromptTemplate } from "@openuidev/react-ui";
 import { FileText, Presentation } from "lucide-react";
+import { useCallback, useEffect } from "react";
 // chatLibrary, useOpenuiCloudStorage, and the artifact renderers all come from the
 // migrated SDK (@openuidev/thesys). Its artifact parser now reads the program from
 // the tool INPUT channel (args.artifact_content), so the rich preview renders live
 // during/after generation without a refresh.
+import { usePersistedModel } from "@/hooks/use-persisted-model";
 import { useTheme } from "@/hooks/use-system-theme";
+import { DEFAULT_MODEL } from "@/lib/models";
 import {
   chatLibrary,
   presentationArtifactRenderer,
   reportArtifactRenderer,
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
+
+import { ModelSwitcher } from "./model-switcher";
 
 const LIGHT_LOGO_URL = "/openui-cloud-logo-light.svg";
 const DARK_LOGO_URL = "/openui-cloud-logo-dark.svg";
@@ -83,6 +88,10 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   },
 ]);
 
+// Read at send-time (mutated by the ModelSwitcher) so the static llm always
+// posts the current selection. Kept in sync with the persisted model below.
+let currentModel = DEFAULT_MODEL;
+
 const llm: ChatLLM = {
   send: async ({ threadId, messages, signal }) => {
     // The API replays full history via the conversation linkage — send only
@@ -91,7 +100,11 @@ const llm: ChatLLM = {
     return fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ threadId, input: openAIConversationMessageFormat.toApi(latest) }),
+      body: JSON.stringify({
+        threadId,
+        input: openAIConversationMessageFormat.toApi(latest),
+        model: currentModel,
+      }),
       signal,
     });
   },
@@ -100,6 +113,7 @@ const llm: ChatLLM = {
 
 export function CloudChat() {
   const mode = useTheme();
+  const [selectedModel, setSelectedModel] = usePersistedModel();
 
   // useOpenuiCloudStorage: browser ChatStorage over /v1, fct_-authenticated. As a
   // hook the storage + its fct_ token manager are created on mount (not at module
@@ -112,6 +126,19 @@ export function CloudChat() {
     apiBaseUrl: "https://api.thesys.dev",
     features: { artifact: true },
   });
+
+  // Keep the module-level model (read by llm.send) in sync with the selection.
+  useEffect(() => {
+    currentModel = selectedModel;
+  }, [selectedModel]);
+
+  const handleModelChange = useCallback(
+    (model: string) => {
+      currentModel = model;
+      setSelectedModel(model);
+    },
+    [setSelectedModel],
+  );
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
@@ -143,6 +170,16 @@ export function CloudChat() {
           },
         ]}
       >
+        <AgentInterface.MobileHeader
+          className="openui-cloud-mobile-header"
+          agentName=""
+          actions={
+            <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+          }
+        />
+        <AgentInterface.ThreadHeader className="openui-cloud-thread-header">
+          <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+        </AgentInterface.ThreadHeader>
         <AgentInterface.Welcome
           title="Good to see you"
           description="What's on your mind today?"
