@@ -67,14 +67,17 @@ interface ErrorBoundaryState {
 }
 
 /**
- * Error boundary that intentionally shows the last successfully rendered
- * children when a render error occurs. This "show last good state" behavior
- * prevents the UI from going blank during streaming or transient evaluation
- * errors, and auto-recovers when new valid children arrive.
+ * Error boundary that isolates a single rendered element: when a child throws
+ * during render it renders nothing for that element (instead of tearing down
+ * the whole tree) and auto-recovers as soon as new valid children arrive, e.g.
+ * the next streaming update.
+ *
+ * It deliberately does NOT re-present the previously rendered children on error.
+ * Those are element instances from an earlier render whose DOM React has already
+ * reconciled/moved, so re-inserting them desyncs the fiber tree from the live
+ * DOM and throws an uncatchable `insertBefore` error in the commit phase (#727).
  */
-class ElementErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  private lastValidChildren: React.ReactNode = null;
-
+export class ElementErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -84,16 +87,7 @@ class ElementErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return { hasError: true };
   }
 
-  componentDidMount(): void {
-    if (!this.state.hasError) {
-      this.lastValidChildren = this.props.children;
-    }
-  }
-
   componentDidUpdate(prevProps: ErrorBoundaryProps): void {
-    if (!this.state.hasError) {
-      this.lastValidChildren = this.props.children;
-    }
     if (this.state.hasError && prevProps.children !== this.props.children) {
       this.setState({ hasError: false });
     }
@@ -111,7 +105,7 @@ class ElementErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   render() {
     if (this.state.hasError) {
-      return this.lastValidChildren;
+      return null;
     }
     return this.props.children;
   }
