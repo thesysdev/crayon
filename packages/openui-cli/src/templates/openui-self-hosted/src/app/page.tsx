@@ -2,6 +2,7 @@
 import "@openuidev/react-ui/components.css";
 import "@openuidev/react-ui/styles/index.css";
 
+import { useTheme } from "@/hooks/use-system-theme";
 import {
   openAIMessageFormat,
   openAIReadableStreamAdapter,
@@ -24,9 +25,16 @@ const llm: ChatLLM = {
 };
 
 export default function Home() {
+  const mode = useTheme();
+
   return (
     <div className="h-screen w-screen overflow-hidden">
-      <AgentInterface llm={llm} componentLibrary={openuiLibrary} agentName="OpenUI Self Hosted" />
+      <AgentInterface
+        llm={llm}
+        componentLibrary={openuiLibrary}
+        agentName="OpenUI Self Hosted"
+        theme={{ mode }}
+      />
     </div>
   );
 }
