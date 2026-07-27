@@ -9,7 +9,7 @@ const HIDE_THREAD_ERROR_CLASS = "openui-devtools--billing-credits-required";
 
 export interface OpenUICreditsModalProps {
   /** The app's ChatLLM; its requests are observed for 429 responses. */
-  llm?: ChatLLM;
+  llm: ChatLLM;
   billingUrl?: string;
   /**
    * While the modal is open, hide AgentInterface's inline thread error so the
