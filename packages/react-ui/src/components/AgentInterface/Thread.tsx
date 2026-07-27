@@ -31,6 +31,7 @@ import { MarkDownRenderer } from "../MarkDownRenderer";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
 import { AmbientLoader } from "./components/AmbientLoader";
+import { ScrollToLatest } from "./components/ScrollToLatest";
 import { ResizableSeparator } from "./ResizableSeparator";
 import { useDetailedViewResize } from "./useDetailedViewResize";
 import { UserMessageContent } from "./UserMessageContent";
@@ -184,6 +185,7 @@ export const ScrollArea = ({
       >
         {children}
       </div>
+      <ScrollToLatest scrollRef={ref} />
     </div>
   );
 };

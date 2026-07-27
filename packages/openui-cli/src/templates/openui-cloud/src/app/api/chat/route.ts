@@ -50,7 +50,9 @@ export async function POST(req: Request) {
   }
 
   const client = new OpenAI({
-    baseURL: "https://api.thesys.dev/v1/embed",
+    // THESYS_API_BASE_URL overrides the hosted endpoint (e.g. a local
+    // backend during development). Defaults to production.
+    baseURL: `${envOr("THESYS_API_BASE_URL", "https://api.thesys.dev")}/v1/embed`,
     apiKey: requiredEnv("THESYS_API_KEY"), // sent as Authorization: Bearer …
   });
 
