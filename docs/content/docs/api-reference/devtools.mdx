@@ -1,0 +1,54 @@
+---
+title: "@openuidev/devtools"
+description: API reference for the development-only devtools widget.
+---
+
+Development-only UI widget for OpenUI apps. Renders a floating button that expands into a panel listing the events captured by [`@openuidev/observer`](/docs/api-reference/observer) — event type, message, and stack trace per entry.
+
+## Install
+
+```bash tab="pnpm" tab-group="pkg"
+pnpm add -D @openuidev/devtools @openuidev/observer
+```
+
+```bash tab="bun" tab-group="pkg"
+bun add -d @openuidev/devtools @openuidev/observer
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn add -D @openuidev/devtools @openuidev/observer
+```
+
+```bash tab="npm" tab-group="pkg"
+npm install -D @openuidev/devtools @openuidev/observer
+```
+
+## `OpenUIDevtools`
+
+Mount it once, anywhere in your tree. It renders nothing in production builds (`NODE_ENV === "production"`) unless `enabled` is passed explicitly.
+
+```tsx
+import { OpenUIDevtools } from "@openuidev/devtools";
+
+function App() {
+  return (
+    <>
+      {/* your app */}
+      <OpenUIDevtools />
+    </>
+  );
+}
+```
+
+### Props
+
+| Prop         | Default          | Description                                           |
+| ------------ | ---------------- | ----------------------------------------------------- |
+| `enabled`    | dev-only         | Force the widget on/off.                              |
+| `maxEvents`  | `50`             | How many events to keep; oldest are dropped first.    |
+| `errorsOnly` | `true`           | Capture only error/warning events, or every event.    |
+| `bus`        | shared singleton | A custom `Observer` instance from `createObserver()`. |
+
+## How it gets data
+
+The widget calls `observer.subscribeAll()` and keeps the last `maxEvents` events in memory. Anything that publishes to the same bus — fetch instrumentation, LLM call wrappers, renderer error boundaries — shows up with no extra wiring. The toggle badge shows the count of `severity: "error"` events; each row expands to reveal the normalized stack trace when present.

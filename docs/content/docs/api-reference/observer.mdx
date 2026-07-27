@@ -1,0 +1,111 @@
+---
+title: "@openuidev/observer"
+description: API reference for the framework-agnostic observability event bus.
+---
+
+Framework-agnostic event bus for observing what happens inside an OpenUI app through one fixed, generic event interface. Third-party sinks (Sentry, Datadog, custom loggers) attach with a single `subscribeAll` call.
+
+## Install
+
+```bash tab="pnpm" tab-group="pkg"
+pnpm add @openuidev/observer
+```
+
+```bash tab="bun" tab-group="pkg"
+bun add @openuidev/observer
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn add @openuidev/observer
+```
+
+```bash tab="npm" tab-group="pkg"
+npm install @openuidev/observer
+```
+
+## `observer`
+
+The shared default bus. Import it anywhere — publishers and subscribers meet on this singleton.
+
+```ts
+import { observer, toErrorInfo } from "@openuidev/observer";
+
+// Listen to one event type — returns a remover.
+const remove = observer.subscribe("llm:error", (event) => {
+  console.error(event.detail);
+});
+remove();
+
+// Listen to everything — the attachment point for third-party sinks.
+const detach = observer.subscribeAll((event) => {
+  if (event.severity === "error") {
+    // forward event.type and event.detail to your service
+  }
+});
+
+// Publish events.
+observer.publish("renderer:error", {
+  component: "Chart",
+  error: toErrorInfo(caughtError),
+});
+```
+
+## The event envelope
+
+Every listener receives the same fixed envelope, generic over the payload:
+
+```ts
+interface ObserverEvent<TDetail = unknown> {
+  type: string; // e.g. "fetch:response", "renderer:error"
+  severity: "info" | "warning" | "error";
+  timestamp: number; // ms since epoch
+  detail: TDetail; // event-specific payload
+}
+```
+
+`severity` defaults from the type suffix — `*:error` → `"error"`, `*:warning` → `"warning"`, anything else → `"info"` — and can be overridden per publish: `observer.publish(type, detail, { severity: "error" })`.
+
+## `toErrorInfo`
+
+Normalizes any thrown value into the fixed error shape carried by `*:error` events:
+
+```ts
+interface ObserverErrorInfo {
+  name?: string; // e.g. "TypeError"
+  message: string;
+  stack?: string;
+  cause?: unknown; // the original thrown value
+}
+```
+
+## Event conventions
+
+Event types are namespaced strings — the bus doesn't restrict them. Recommended names for OpenUI apps:
+
+| Event type                             | Suggested detail fields                              |
+| -------------------------------------- | ---------------------------------------------------- |
+| `fetch:request` / `response` / `error` | `requestId`, `url`, `method`, `status`, `durationMs` |
+| `llm:request` / `response` / `error`   | `requestId`, `target` (model/endpoint), `status`     |
+| `renderer:success` / `error`           | `component`, `code`, `statementId`, `hint`           |
+| `tool:call` / `result` / `error`       | `toolName`, `statementId`, `args`, `durationMs`      |
+
+Conventions:
+
+- `*:error` details carry `{ error: ObserverErrorInfo }`.
+- Use a shared `requestId` to correlate the request/response/error events of one call.
+
+## DOM CustomEvent bridge
+
+In browsers, every event is also dispatched as a `CustomEvent` named `openui_observer:event` on `globalThis`, so code outside the module graph (a second bundle copy, an extension, a plain script tag) can listen with the same interface:
+
+```ts
+import { OBSERVER_EVENT_NAME, type ObserverEvent } from "@openuidev/observer";
+
+window.addEventListener(OBSERVER_EVENT_NAME, (e) => {
+  const event = (e as CustomEvent<ObserverEvent>).detail;
+});
+```
+
+## `createObserver`
+
+`observer` is a shared singleton. Call `createObserver()` for an isolated bus (e.g. per test or per embedded widget) with the same `publish` / `subscribe` / `subscribeAll` interface. All subscribe methods return an `Unsubscribe` remover, and a listener that throws never breaks the publisher or other listeners.
