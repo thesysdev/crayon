@@ -32,12 +32,9 @@ export function UsagePolicy() {
               // at the @openuidev design tokens (same tokens globals.css uses for
               // callouts/dialogs), so the tooltip is theme-aware and consistent.
               style={{ position: "fixed", top: anchor.top - 8, left: anchor.left }}
-              className="z-[100000] w-[280px] -translate-x-full -translate-y-full rounded-[var(--openui-radius-l)] border border-[var(--openui-border-interactive)] bg-[var(--openui-foreground)] p-[var(--openui-space-m)] text-left shadow-[var(--openui-shadow-m)]"
+              className="z-[100000] w-[280px] -translate-x-full -translate-y-full rounded-[var(--openui-radius-l)] border border-[var(--openui-border-interactive)] bg-[var(--openui-foreground)] px-[var(--openui-space-s)] py-[var(--openui-space-xs)] text-left shadow-[var(--openui-shadow-m)]"
             >
-              <div className="[font:var(--openui-text-label-default)] font-semibold! text-[color:var(--openui-text-neutral-primary)]">
-                Usage policy
-              </div>
-              <p className="mt-[var(--openui-space-2xs)] [font:var(--openui-text-body-sm)] tracking-[var(--openui-text-body-sm-letter-spacing)] text-[color:var(--openui-text-neutral-secondary)]">
+              <p className="[font:var(--openui-text-body-sm)] tracking-[var(--openui-text-body-sm-letter-spacing)] text-[color:var(--openui-text-neutral-secondary)]">
                 Data from free models may be used for training. Rate limits apply.
               </p>
             </div>,
