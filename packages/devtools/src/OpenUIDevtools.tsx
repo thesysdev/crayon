@@ -36,6 +36,9 @@ export function OpenUIDevtools({
     enabled ?? (typeof process === "undefined" || process.env["NODE_ENV"] !== "production");
   const [events, setEvents] = useState<ObserverEvent[]>([]);
   const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<ObserverEvent | null>(null);
+  const [wrapStack, setWrapStack] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!isEnabled) return;
@@ -45,58 +48,158 @@ export function OpenUIDevtools({
     });
   }, [bus, isEnabled, errorsOnly, maxEvents]);
 
+  // Escape steps back: stack view → list, list → closed.
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (selected) setSelected(null);
+      else setOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, selected]);
+
   if (!isEnabled) return null;
 
   const errorCount = events.filter((event) => event.severity === "error").length;
 
+  const openDialog = () => {
+    setSelected(null);
+    setOpen(true);
+  };
+
+  const showStack = (event: ObserverEvent) => {
+    setSelected(event);
+    setCopied(false);
+  };
+
+  const copyStack = () => {
+    if (!selected || typeof navigator === "undefined" || !navigator.clipboard) return;
+    navigator.clipboard
+      .writeText(getErrorInfo(selected)?.stack ?? "")
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      })
+      .catch(() => {});
+  };
+
+  const selectedStack = selected ? (getErrorInfo(selected)?.stack ?? "") : "";
+
   return (
     <div style={styles.root}>
-      {open ? (
-        <div style={styles.panel}>
-          <div style={styles.panelHeader}>
-            <span>OpenUI Devtools</span>
-            <button style={styles.headerButton} onClick={() => setEvents([])}>
-              clear
-            </button>
-          </div>
-          <div style={styles.list}>
-            {events.length === 0 ? (
-              <div style={styles.empty}>No events captured yet.</div>
-            ) : (
-              events.map((event, index) => {
-                const error = getErrorInfo(event);
-                return (
-                  <div key={`${event.timestamp}-${index}`} style={styles.row}>
-                    <div style={styles.rowHeader}>
-                      <span style={{ ...styles.badge, ...badgeBySeverity[event.severity] }}>
-                        {event.type}
-                      </span>
-                      <span style={styles.time}>
-                        {new Date(event.timestamp).toLocaleTimeString()}
-                      </span>
-                    </div>
-                    <div style={styles.summary}>{summarize(event)}</div>
-                    {error?.stack ? (
-                      <details style={styles.details}>
-                        <summary style={styles.detailsSummary}>stack trace</summary>
-                        <pre style={styles.stack}>{error.stack}</pre>
-                      </details>
-                    ) : null}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      ) : null}
       <button
         style={{ ...styles.toggle, ...(errorCount > 0 ? styles.toggleError : null) }}
-        onClick={() => setOpen((prev) => !prev)}
-        aria-label="Toggle OpenUI devtools"
+        onClick={openDialog}
+        aria-label="Open OpenUI devtools"
+        aria-expanded={open}
       >
         <ShiroLogo size={22} />
         {errorCount > 0 ? <span style={styles.toggleCount}>{errorCount}</span> : null}
       </button>
+
+      {/* Kept mounted so open/close can transition; hidden + inert when closed. */}
+      <div
+        style={{ ...styles.backdrop, ...(open ? styles.backdropOpen : null) }}
+        onClick={() => setOpen(false)}
+      >
+        <div
+          style={{ ...styles.dialog, ...(open ? styles.dialogOpen : null) }}
+          role="dialog"
+          aria-modal="true"
+          aria-label="OpenUI devtools"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div style={styles.dialogHeader}>
+            <div style={styles.headerLeft}>
+              {selected ? (
+                <button
+                  style={styles.iconButton}
+                  onClick={() => setSelected(null)}
+                  aria-label="Back to event list"
+                >
+                  ←
+                </button>
+              ) : null}
+              <span style={styles.dialogTitle}>
+                {selected ? `${selected.type} — stack trace` : "OpenUI Devtools"}
+              </span>
+            </div>
+            <div style={styles.headerActions}>
+              {selected ? (
+                <>
+                  <button
+                    style={{
+                      ...styles.textButton,
+                      ...(wrapStack ? styles.textButtonActive : null),
+                    }}
+                    onClick={() => setWrapStack((prev) => !prev)}
+                    aria-pressed={wrapStack}
+                  >
+                    Wrap
+                  </button>
+                  <button style={styles.textButton} onClick={copyStack}>
+                    {copied ? "copied" : "copy"}
+                  </button>
+                </>
+              ) : (
+                <button style={styles.textButton} onClick={() => setEvents([])}>
+                  Clear
+                </button>
+              )}
+              <button
+                style={styles.iconButton}
+                onClick={() => setOpen(false)}
+                aria-label="Close OpenUI devtools"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+
+          {selected ? (
+            <div style={styles.stackBody}>
+              {selectedStack.split("\n").map((line, index) => (
+                <div key={index} style={styles.stackLine}>
+                  <span style={styles.lineNumber}>{index + 1}</span>
+                  <span style={{ ...styles.lineText, ...(wrapStack ? styles.lineTextWrap : null) }}>
+                    {line || " "}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={styles.list}>
+              {events.length === 0 ? (
+                <div style={styles.empty}>No events captured yet.</div>
+              ) : (
+                events.map((event, index) => {
+                  const error = getErrorInfo(event);
+                  return (
+                    <div key={`${event.timestamp}-${index}`} style={styles.row}>
+                      <div style={styles.rowHeader}>
+                        <span style={{ ...styles.badge, ...badgeBySeverity[event.severity] }}>
+                          {event.type}
+                        </span>
+                        <span style={styles.time}>
+                          {new Date(event.timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <div style={styles.summary}>{summarize(event)}</div>
+                      {error?.stack ? (
+                        <button style={styles.stackButton} onClick={() => showStack(event)}>
+                          Stack Trace
+                        </button>
+                      ) : null}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -150,18 +253,14 @@ const badgeBySeverity: Record<ObserverEvent["severity"], CSSProperties> = {
   info: { background: "#1e3a5f", color: "#bfdbfe" },
 };
 
+const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
+
 const styles = {
   root: {
     position: "fixed",
     bottom: 16,
     right: 16,
     zIndex: 2147483000,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-end",
-    gap: 8,
-    fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-    fontSize: 12,
   },
   toggle: {
     position: "relative",
@@ -173,7 +272,7 @@ const styles = {
     borderRadius: "50%",
     border: "1px solid #3f3f46",
     background: "#18181b",
-    color: "#fafafa",
+    color: "#fff",
     cursor: "pointer",
   },
   toggleError: {
@@ -196,9 +295,30 @@ const styles = {
     fontWeight: 700,
     padding: "0 4px",
   },
-  panel: {
-    width: 380,
-    maxHeight: 480,
+  backdrop: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 2147483001,
+    opacity: 0,
+    visibility: "hidden",
+    pointerEvents: "none",
+    transition: "opacity 160ms ease, visibility 0s linear 160ms",
+  },
+  backdropOpen: {
+    opacity: 1,
+    visibility: "visible",
+    pointerEvents: "auto",
+    transition: "opacity 160ms ease, visibility 0s",
+  },
+  dialog: {
+    fontFamily: "system-ui, -apple-system, sans-serif",
+    fontSize: 12,
+    width: "min(720px, calc(100vw - 32px))",
+    maxHeight: "70vh",
     display: "flex",
     flexDirection: "column",
     borderRadius: 8,
@@ -206,17 +326,42 @@ const styles = {
     background: "#18181b",
     color: "#fafafa",
     overflow: "hidden",
-    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.4)",
+    boxShadow: "0 12px 32px rgba(0, 0, 0, 0.5)",
+    opacity: 0,
+    transform: "translateY(8px) scale(0.98)",
+    transition: "opacity 160ms ease, transform 160ms ease",
   },
-  panelHeader: {
+  dialogOpen: {
+    opacity: 1,
+    transform: "translateY(0) scale(1)",
+  },
+  dialogHeader: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 8,
     padding: "8px 12px",
     borderBottom: "1px solid #3f3f46",
     fontWeight: 600,
   },
-  headerButton: {
+  headerLeft: {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    minWidth: 0,
+  },
+  dialogTitle: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
+  headerActions: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    flexShrink: 0,
+  },
+  textButton: {
     border: "1px solid #3f3f46",
     borderRadius: 4,
     background: "transparent",
@@ -224,6 +369,19 @@ const styles = {
     cursor: "pointer",
     fontSize: 11,
     padding: "2px 8px",
+  },
+  textButtonActive: {
+    background: "#3f3f46",
+    color: "#fafafa",
+  },
+  iconButton: {
+    border: "none",
+    background: "transparent",
+    color: "#a1a1aa",
+    cursor: "pointer",
+    fontSize: 16,
+    lineHeight: 1,
+    padding: "0 2px",
   },
   list: {
     overflowY: "auto",
@@ -254,6 +412,7 @@ const styles = {
     borderRadius: 4,
     padding: "1px 6px",
     fontSize: 11,
+    fontFamily: MONO,
   },
   time: {
     color: "#71717a",
@@ -262,22 +421,43 @@ const styles = {
   summary: {
     wordBreak: "break-word",
   },
-  details: {
-    marginTop: 2,
-  },
-  detailsSummary: {
-    cursor: "pointer",
+  stackButton: {
+    alignSelf: "flex-start",
+    border: "none",
+    background: "transparent",
     color: "#a1a1aa",
+    cursor: "pointer",
     fontSize: 11,
+    padding: 0,
+    textDecoration: "underline",
   },
-  stack: {
-    margin: "4px 0 0",
-    padding: 8,
+  stackBody: {
+    overflow: "auto",
+    padding: "8px 0",
     background: "#09090b",
-    borderRadius: 4,
-    overflowX: "auto",
-    whiteSpace: "pre",
+    fontFamily: MONO,
     fontSize: 11,
     color: "#fca5a5",
+  },
+  stackLine: {
+    display: "flex",
+    gap: 8,
+    paddingRight: 12,
+  },
+  lineNumber: {
+    flexShrink: 0,
+    width: 32,
+    textAlign: "right",
+    color: "#52525b",
+    userSelect: "none",
+    padding: "0 4px",
+    borderRight: "1px solid #27272a",
+  },
+  lineText: {
+    whiteSpace: "pre",
+  },
+  lineTextWrap: {
+    whiteSpace: "pre-wrap",
+    wordBreak: "break-all",
   },
 } satisfies Record<string, CSSProperties>;
