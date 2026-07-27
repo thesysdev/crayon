@@ -8,6 +8,7 @@ import type {
 } from "@openuidev/lang-core";
 import { ToolNotFoundError, extractToolResult } from "@openuidev/lang-core";
 import React, { Component, Fragment, useEffect, useInsertionEffect, useRef } from "react";
+import { isElementNode } from "@openuidev/lang-core";
 import { OpenUIContext, useOpenUI, useRenderNode } from "./context";
 import { useOpenUIState } from "./hooks/useOpenUIState";
 import type { ComponentRenderer, Library } from "./library";
@@ -52,6 +53,13 @@ export interface RendererProps {
    * Called with [] when all errors are resolved.
    */
   onError?: (errors: OpenUIError[]) => void;
+  /**
+   * Smooth streaming (default true): reserves layout slots for statements that
+   * haven't finished streaming, fades content in with a gentle stagger, and
+   * eases height changes — so backfilling data never shoves the layout.
+   * Set false for the legacy pop-in behavior.
+   */
+  smooth?: boolean;
 }
 
 // ─── Error boundary ───
@@ -117,6 +125,74 @@ class ElementErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 }
 
+// ─── Smooth streaming: slots & reveal (logic only) ───
+// react-lang stays platform-neutral (React Native compatible): the DOM/visual
+// implementations are provided by the component library via
+// createLibrary({ streamingComponents }). Without them, slots render nothing
+// and content renders bare — safe legacy behavior on any platform.
+
+/** Props contract for a library-provided reveal wrapper (fade/ease visuals). */
+export interface RevealComponentProps {
+  /** The statement-level node being revealed (never a slot). */
+  node: ElementNode;
+  /** Stagger delay in ms assigned by the reveal pacer. */
+  delayMs: number;
+  /** False when this node mounted outside streaming (history render) — do not animate. */
+  animate: boolean;
+  children: React.ReactNode;
+}
+
+/** Props contract for a library-provided slot skeleton. */
+export interface SlotComponentProps {
+  /** The slot placeholder. `typeName` is the target component ("__slot__" if unknown). */
+  node: ElementNode;
+}
+
+function getStreamingImpls(library: Library) {
+  return library.streamingComponents as
+    | {
+        reveal?: React.ComponentType<RevealComponentProps>;
+        slot?: React.ComponentType<SlotComponentProps>;
+      }
+    | undefined;
+}
+
+/**
+ * Statement-level child wrapper: assigns the reveal stagger delay and delegates
+ * visuals to the library's streaming components. Pure logic — no DOM.
+ */
+function Reveal({ node }: { node: ElementNode }) {
+  const { isStreaming, revealDelay, library } = useOpenUI();
+  const isSlot = !!node.slot;
+
+  // Animate entrance only for content that first appears while streaming —
+  // persisted messages rendering from history must not animate.
+  const bornStreamingRef = useRef(isStreaming);
+  const delayRef = useRef<number | null>(null);
+  if (!isSlot && delayRef.current == null) {
+    delayRef.current =
+      bornStreamingRef.current && revealDelay ? revealDelay(node.statementId ?? "") : -1;
+  }
+
+  const impls = getStreamingImpls(library);
+
+  if (isSlot) {
+    if (!isStreaming || !revealDelay) return null;
+    const Slot = impls?.slot;
+    return Slot ? <Slot node={node} /> : null;
+  }
+
+  const content = <RenderNode node={node} />;
+  const RevealImpl = impls?.reveal;
+  if (!revealDelay || !RevealImpl) return content;
+  const delay = delayRef.current ?? -1;
+  return (
+    <RevealImpl node={node} delayMs={Math.max(0, delay)} animate={delay >= 0}>
+      {content}
+    </RevealImpl>
+  );
+}
+
 // ─── Internal rendering ───
 
 /**
@@ -130,7 +206,18 @@ function renderDeep(value: unknown): React.ReactNode {
   if (typeof value === "boolean") return String(value);
 
   if (Array.isArray(value)) {
-    return value.map((v, i) => <Fragment key={i}>{renderDeep(v)}</Fragment>);
+    // Statement-level children get identity keys (statementId + occurrence for
+    // shared refs) and a Reveal wrapper; everything else keeps index keys.
+    const seen = new Map<string, number>();
+    return value.map((v, i) => {
+      if (isElementNode(v) && v.statementId) {
+        const n = seen.get(v.statementId) ?? 0;
+        seen.set(v.statementId, n + 1);
+        const key = n ? `${v.statementId}#${n}` : v.statementId;
+        return <Reveal key={key} node={v} />;
+      }
+      return <Fragment key={`i${i}`}>{renderDeep(v)}</Fragment>;
+    });
   }
 
   if (typeof value === "object" && value !== null) {
@@ -150,6 +237,11 @@ function RenderNode({ node }: { node: ElementNode }) {
   const { library, reportError } = useOpenUI();
   const Comp = library.components[node.typeName]?.component;
 
+  // Slot placeholders must never reach real components (their props are empty).
+  if (node.slot) {
+    const Slot = getStreamingImpls(library)?.slot;
+    return Slot ? <Slot node={node} /> : null;
+  }
   if (!Comp) return null;
 
   return (
@@ -181,19 +273,17 @@ function ensureLoadingStyle() {
 
 // ─── Public component ───
 
+// Placement (absolute, top-right) is owned by the Renderer's overlay wrapper —
+// this is just the visual.
 const DefaultQueryLoader = () => (
   <div
     style={{
-      position: "absolute",
-      top: 8,
-      right: 8,
       width: 16,
       height: 16,
       border: "2px solid #e5e7eb",
       borderTopColor: "#3b82f6",
       borderRadius: "50%",
       animation: "openui-spin 0.6s linear infinite",
-      zIndex: 10,
     }}
   />
 );
@@ -209,6 +299,7 @@ export function Renderer({
   toolProvider,
   queryLoader,
   onError,
+  smooth = true,
 }: RendererProps) {
   useInsertionEffect(() => {
     ensureLoadingStyle();
@@ -245,7 +336,7 @@ export function Renderer({
   });
   const resolvedToolProvider = toolProvider != null ? stableToolProvider.current : null;
 
-  const { result, parseResult, contextValue, isQueryLoading } = useOpenUIState(
+  const { result, resultIsFresh, parseResult, contextValue, isQueryLoading } = useOpenUIState(
     {
       response,
       library,
@@ -255,6 +346,7 @@ export function Renderer({
       initialState,
       toolProvider: resolvedToolProvider,
       onError,
+      smooth,
     },
     renderDeep,
   );
@@ -265,16 +357,48 @@ export function Renderer({
     onParseResultRef.current?.(parseResult);
   }, [parseResult]);
 
-  if (!result?.root) {
+  // Last-good tree: once something has rendered, a transiently null root
+  // mid-stream must never blank the UI. Reset when a new stream begins
+  // (response no longer extends the previous one).
+  const lastGoodRootRef = useRef<ElementNode | null>(null);
+  const prevResponseRef = useRef<string>("");
+  const resp = response ?? "";
+  if (resp.length < prevResponseRef.current.length || !resp.startsWith(prevResponseRef.current)) {
+    lastGoodRootRef.current = null;
+  }
+  prevResponseRef.current = resp;
+  // Only fresh parses may render or be captured — a stale result from before a
+  // reset must never resurrect the previous stream's tree.
+  const freshRoot = resultIsFresh ? (result?.root ?? null) : null;
+  if (freshRoot) lastGoodRootRef.current = freshRoot;
+
+  const rootNode = freshRoot ?? (isStreaming && smooth ? lastGoodRootRef.current : null);
+  if (!rootNode) {
     return null;
   }
 
   return (
     <OpenUIContext.Provider value={contextValue}>
       <div style={{ position: "relative" }}>
-        {isQueryLoading && (queryLoader ?? <DefaultQueryLoader />)}
+        {/* Overlayed (absolute) so a refetch NEVER displaces the tree — an
+            in-flow loader pushed the whole UI down by its height on every
+            filter change, then snapped back when data settled. The opacity
+            dim below is the primary loading affordance. */}
+        {isQueryLoading && (
+          <div
+            style={{
+              position: "absolute",
+              top: 4,
+              right: 8,
+              zIndex: 10,
+              pointerEvents: "none",
+            }}
+          >
+            {queryLoader ?? <DefaultQueryLoader />}
+          </div>
+        )}
         <div style={{ opacity: isQueryLoading ? 0.7 : 1, transition: "opacity 0.2s ease" }}>
-          <RenderNode node={result.root} />
+          <RenderNode node={rootNode} />
         </div>
       </div>
     </OpenUIContext.Provider>

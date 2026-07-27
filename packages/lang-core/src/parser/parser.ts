@@ -179,6 +179,18 @@ function pickEntryId(
   return firstComponent?.id ?? firstId;
 }
 
+export interface ParseOptions {
+  /**
+   * Emit slot placeholder elements (`{slot: true}`) for unrenderable entries
+   * instead of dropping them, so streaming renderers can reserve layout positions.
+   * - true: poly (children-style) arrays only — safe for any component library
+   * - "all": also typed arrays (Tabs.items, Form.fields, ...) — requires the
+   *   library's introspecting components to be slot-aware (use splitSlots)
+   * Default: false (drop, matching prior behavior).
+   */
+  slots?: boolean | "all";
+}
+
 function buildResult(
   stmtMap: Map<string, Statement>,
   typedStmts: Statement[],
@@ -187,6 +199,7 @@ function buildResult(
   stmtCount: number,
   cat: ParamMap | undefined,
   rootName?: string,
+  opts?: ParseOptions,
 ): ParseResult {
   const entryId = pickEntryId(stmtMap, typedStmts, firstId, rootName);
   if (!stmtMap.has(entryId)) return emptyResult(wasIncomplete);
@@ -214,6 +227,7 @@ function buildResult(
     partial: wasIncomplete,
     currentStatementId: entryId,
     unreached,
+    slots: opts?.slots,
   };
   const materialized = materializeValue(syms.get(entryId)!, ctx);
 
@@ -403,7 +417,12 @@ function preprocess(input: string): string {
  * @param cat    - Param map for positional-arg → named-prop mapping
  * @returns      ParseResult with root ElementNode (or null) and metadata
  */
-export function parse(input: string, cat: ParamMap, rootName?: string): ParseResult {
+export function parse(
+  input: string,
+  cat: ParamMap,
+  rootName?: string,
+  opts?: ParseOptions,
+): ParseResult {
   const trimmed = preprocess(input);
   if (!trimmed) return emptyResult();
 
@@ -422,7 +441,7 @@ export function parse(input: string, cat: ParamMap, rootName?: string): ParseRes
   // Derive from map to deduplicate — Map.set overwrites duplicates
   const typedStmts = [...stmtMap.values()];
 
-  return buildResult(stmtMap, typedStmts, firstId, wasIncomplete, stmtMap.size, cat, rootName);
+  return buildResult(stmtMap, typedStmts, firstId, wasIncomplete, stmtMap.size, cat, rootName, opts);
 }
 
 export interface StreamParser {
@@ -435,7 +454,7 @@ export interface StreamParser {
   getResult(): ParseResult;
 }
 
-export function createStreamParser(cat: ParamMap, rootName?: string): StreamParser {
+export function createStreamParser(cat: ParamMap, rootName?: string, opts?: ParseOptions): StreamParser {
   let buf = ""; // raw accumulated input (kept for set() diffing)
   // Preprocessed view of `buf` (fences + comments stripped, same as parse()'s
   // preprocess). The completed-statement scan runs over THIS, never the raw
@@ -553,6 +572,7 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
         completedCount,
         cat,
         rootName,
+        opts,
       );
     }
 
@@ -571,6 +591,7 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
         completedCount,
         cat,
         rootName,
+        opts,
       );
     }
 
@@ -597,6 +618,7 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
       completedCount + stmts.length,
       cat,
       rootName,
+      opts,
     );
   }
 
@@ -637,6 +659,22 @@ function getSchemaDefaultValue(property: unknown): unknown {
   return (property as { default?: unknown }).default;
 }
 
+/**
+ * Classify an array prop from its JSON Schema `items`:
+ * - single $ref → "typed" (introspected arrays like Tabs.items — no slots)
+ * - anyOf of refs or untyped items → "poly" (children-style, rendered via renderNode)
+ */
+function getSlotKind(property: unknown): "poly" | "typed" | undefined {
+  if (!property || typeof property !== "object") return undefined;
+  const p = property as { type?: string; items?: Record<string, unknown> };
+  if (p.type !== "array") return undefined;
+  const items = p.items;
+  if (!items || Object.keys(items).length === 0) return "poly"; // z.array(z.any())
+  if (items.$ref) return "typed";
+  if (items.anyOf) return "poly";
+  return undefined; // arrays of plain objects/scalars — not slot-eligible
+}
+
 export function compileSchema(schema: LibraryJSONSchema): ParamMap {
   const map: ParamMap = new Map();
   const defs = schema.$defs ?? {};
@@ -648,6 +686,7 @@ export function compileSchema(schema: LibraryJSONSchema): ParamMap {
       name: key,
       required: required.includes(key),
       defaultValue: getSchemaDefaultValue(properties[key]),
+      slotKind: getSlotKind(properties[key]),
     }));
     map.set(name, { params });
   }
@@ -665,11 +704,11 @@ export function compileSchema(schema: LibraryJSONSchema): ParamMap {
  * const result = parser.parse(openuiLangString);
  * ```
  */
-export function createParser(schema: LibraryJSONSchema, rootName?: string): Parser {
+export function createParser(schema: LibraryJSONSchema, rootName?: string, opts?: ParseOptions): Parser {
   const paramMap = compileSchema(schema);
   return {
     parse(input: string): ParseResult {
-      return parse(input, paramMap, rootName);
+      return parse(input, paramMap, rootName, opts);
     },
   };
 }
@@ -678,6 +717,6 @@ export function createParser(schema: LibraryJSONSchema, rootName?: string): Pars
  * Create a streaming parser from a library JSON Schema document.
  * Pass `library.toJSONSchema()` to get the schema.
  */
-export function createStreamingParser(schema: LibraryJSONSchema, rootName?: string): StreamParser {
-  return createStreamParser(compileSchema(schema), rootName);
+export function createStreamingParser(schema: LibraryJSONSchema, rootName?: string, opts?: ParseOptions): StreamParser {
+  return createStreamParser(compileSchema(schema), rootName, opts);
 }

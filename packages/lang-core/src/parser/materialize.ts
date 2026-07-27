@@ -33,6 +33,24 @@ export interface MaterializeCtx {
   currentStatementId?: string;
   /** Statement IDs not yet reached — delete as they're touched. Remaining = orphaned. */
   unreached?: Set<string>;
+  /** Emit slot placeholders for unrenderable array entries instead of dropping them. */
+  slots?: boolean | "all";
+  /** True while materializing a poly (children-style) array prop — slots allowed here. */
+  slotScope?: boolean;
+}
+
+/** Streaming placeholder element — holds layout position until the target renders. */
+function makeSlot(typeName: string, statementId?: string): unknown {
+  const el: Record<string, unknown> = {
+    type: "element",
+    typeName,
+    props: {},
+    partial: true,
+    hasDynamicProps: false,
+    slot: true,
+  };
+  if (statementId) el.statementId = statementId;
+  return el;
 }
 
 /**
@@ -218,13 +236,28 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
 
     // ── Collections ──────────────────────────────────────────────────────
     case "Arr": {
+      const emitSlots = !!(ctx.slots && ctx.slotScope);
       const items: unknown[] = [];
       for (const e of node.els) {
-        // Drop unresolved placeholders from arrays
-        if (e.k === "Ph") continue;
+        // Unresolved placeholders: hold their layout position with a slot, or drop
+        if (e.k === "Ph") {
+          if (emitSlots) items.push(makeSlot("__slot__", e.n));
+          continue;
+        }
         const value = materializeValue(e, ctx);
-        // Drop null entries from component/ref resolution (incomplete props, unresolved refs, unknown components)
-        if (value === null && (e.k === "Comp" || e.k === "Ref")) continue;
+        // Null from component/ref resolution (incomplete props, unresolved refs,
+        // unknown components): hold position with a typed slot, or drop
+        if (value === null && (e.k === "Comp" || e.k === "Ref")) {
+          if (emitSlots) {
+            let typeName = e.k === "Comp" ? e.name : "__slot__";
+            if (e.k === "Ref") {
+              const target = ctx.syms.get(e.n);
+              if (target?.k === "Comp" && !isReservedCall(target.name)) typeName = target.name;
+            }
+            items.push(makeSlot(typeName, e.k === "Ref" ? e.n : undefined));
+          }
+          continue;
+        }
         items.push(value);
       }
       return items;
@@ -262,9 +295,15 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
       const props: Record<string, unknown> = {};
 
       if (def) {
-        // Catalog component: map positional args → named props
+        // Catalog component: map positional args → named props.
+        // Slot placeholders are emitted only inside poly (children-style) array
+        // props — typed/introspected arrays keep the drop behavior.
         for (let i = 0; i < def.params.length && i < args.length; i++) {
+          const prevScope = ctx.slotScope;
+          const kind = def.params[i].slotKind;
+          ctx.slotScope = kind === "poly" || (kind === "typed" && ctx.slots === "all");
           props[def.params[i].name] = materializeValue(args[i], ctx);
+          ctx.slotScope = prevScope;
         }
 
         // Report excess positional args (extra args are silently dropped)

@@ -10,7 +10,7 @@ import {
   starters,
 } from "@/lib/cloud-chat-constants";
 import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
-import { defineArtifactCategories } from "@openuidev/react-headless";
+import { defineArtifactCategories, useThreadList } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
 import {
   chatLibrary,
@@ -38,9 +38,22 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
 
 const showBillingCreditsNotice = shouldShowBillingCreditsNotice();
 
+// The chat store only exists inside <AgentInterface>, but the model selection
+// lives out here in CloudChat (the LLM object needs it). This null-rendering
+// bridge runs inside the provider and reports the active thread id up so the
+// selection can be per-thread.
+function ThreadIdBridge({ onChange }: { onChange: (id: string | null) => void }) {
+  const selectedThreadId = useThreadList((s) => s.selectedThreadId);
+  useEffect(() => {
+    onChange(selectedThreadId);
+  }, [selectedThreadId, onChange]);
+  return null;
+}
+
 export function CloudChat() {
   const mode = useTheme();
-  const [selectedModel, setSelectedModel] = usePersistedModel();
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = usePersistedModel(activeThreadId);
   const [billingDialogOpen, setBillingDialogOpen] = useState(false);
   const [billingCreditsRequired, setBillingCreditsRequired] = useState(false);
   const [llm] = useState(() =>
@@ -62,7 +75,9 @@ export function CloudChat() {
   );
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
-    apiBaseUrl: "https://api.thesys.dev",
+    // NEXT_PUBLIC_THESYS_API_BASE_URL overrides the hosted endpoint for the
+    // browser storage plane (e.g. a local backend during development).
+    apiBaseUrl: process.env.NEXT_PUBLIC_THESYS_API_BASE_URL ?? "https://api.thesys.dev",
     features: { artifact: true },
   });
 
@@ -92,12 +107,11 @@ export function CloudChat() {
         componentLibrary={chatLibrary}
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
-        scrollVariant="always"
-        scrollOnLoad={false}
         logoUrl={mode === "dark" ? DARK_LOGO_URL : LIGHT_LOGO_URL}
         theme={{ mode }}
         starters={starters}
       >
+        <ThreadIdBridge onChange={setActiveThreadId} />
         <AgentInterface.MobileHeader
           className="openui-cloud-mobile-header"
           agentName=""

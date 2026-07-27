@@ -13,8 +13,8 @@ export type {
 } from "./library";
 
 // ── Parser ──
-export { createParser, createStreamingParser, parse } from "./parser";
-export type { Parser, StreamParser } from "./parser";
+export { createParser, createStreamingParser, isElementNode, isSlotElement, parse, splitSlots } from "./parser";
+export type { ParseOptions, Parser, StreamParser } from "./parser";
 export { isASTNode, isRuntimeExpr } from "./parser/ast";
 export type { ASTNode, CallNode, RuntimeExprNode, Statement } from "./parser/ast";
 export {

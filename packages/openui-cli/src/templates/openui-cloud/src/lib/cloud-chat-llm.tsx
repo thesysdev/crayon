@@ -4,7 +4,7 @@ import {
   type ChatLLM,
 } from "@openuidev/react-headless";
 
-import { getChatErrorMessage } from "./chat-error";
+import { getChatErrorMessage, isFreeModelLimitResponse } from "./chat-error";
 
 interface CloudChatLLMOptions {
   initialModel: string;
@@ -46,7 +46,13 @@ export function createCloudChatLLM({
 
       if (response.ok) return response;
 
-      if (response.status === 429 && showBillingCreditsNotice) {
+      // A free-model throttle 429 is not a credits problem — don't open the
+      // purchase dialog for it (getChatErrorMessage explains the switch).
+      if (
+        response.status === 429 &&
+        showBillingCreditsNotice &&
+        !(await isFreeModelLimitResponse(response))
+      ) {
         onBillingCreditsRequired?.();
       }
 

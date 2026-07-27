@@ -118,9 +118,20 @@ export const SliderBlock = (props: SliderBlockProps) => {
   const isRange = value.length > 1;
   const isDiscrete = variant === "discrete";
   const effectiveStep = isDiscrete ? (step ?? 1) : Math.max(1, step ?? 1);
+  // A Select is only a sane picker for a bounded option set. With a missing or
+  // tiny `step` against a wide range (common mid-stream: `step` is the LAST
+  // positional arg, so a discrete 500–10000 slider briefly implies 9,501
+  // options) building thousands of SelectItems per render freezes the page —
+  // fall back to the numeric-input controls until the count is reasonable.
+  const discreteOptionCount =
+    isDiscrete && effectiveStep > 0
+      ? Math.floor(Math.max(0, max - min) / effectiveStep) + 1
+      : 0;
+  const useSelectControls =
+    isDiscrete && discreteOptionCount > 0 && discreteOptionCount <= 200;
 
   const controlElements = useMemo(() => {
-    if (isDiscrete) {
+    if (useSelectControls) {
       const allOptions = Array.from(
         { length: Math.floor((max - min) / effectiveStep) + 1 },
         (_, i) => min + i * effectiveStep,
@@ -233,7 +244,7 @@ export const SliderBlock = (props: SliderBlockProps) => {
       );
     }
   }, [
-    isDiscrete,
+    useSelectControls,
     isRange,
     value,
     min,
@@ -245,7 +256,8 @@ export const SliderBlock = (props: SliderBlockProps) => {
     setValueAndCommit,
   ]);
 
-  const hasError = !isDiscrete && (isRange ? Boolean(minError || maxError) : Boolean(minError));
+  const hasError =
+    !useSelectControls && (isRange ? Boolean(minError || maxError) : Boolean(minError));
 
   return (
     <div className="openui-slider-block">

@@ -103,6 +103,12 @@ export const Slider = forwardRef<React.ComponentRef<typeof SliderPrimitive.Root>
     const renderDots = () => {
       if (variant === "discrete" && step) {
         const numSteps = Math.floor((max - min) / step);
+        // A dot per step only makes sense while dots are distinguishable.
+        // Beyond this the track is visually continuous anyway — and rendering
+        // thousands of positioned divs freezes the page (hit in practice while
+        // a discrete slider's `step` hasn't streamed in yet: step defaults to 1
+        // against a 500–10000 range → 9,501 dots re-laid-out per parse tick).
+        if (numSteps > 100) return null;
         const currentValue = valueToShow?.[0] ?? min;
 
         return Array.from({ length: numSteps + 1 }, (_, index) => {

@@ -506,3 +506,84 @@ $thread-header-action-min-height: 32px;
   overflow-wrap: break-word;
   min-width: 0;
 }
+
+// =============================================================================
+// Scroll-to-latest affordance
+// =============================================================================
+// Down-arrow above the composer, shown only when message content is below the
+// fold. Click brings the latest content into view.
+
+.openui-agent-thread-scroll-latest {
+  position: absolute;
+  bottom: cssUtils.$space-m;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid cssUtils.$border-default;
+  border-radius: cssUtils.$radius-full;
+  background-color: cssUtils.$background;
+  color: cssUtils.$text-neutral-secondary;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+
+  &:hover {
+    color: cssUtils.$text-neutral-primary;
+    border-color: cssUtils.$border-interactive;
+  }
+
+  &__arrow {
+    display: block;
+  }
+}
+
+// =============================================================================
+// Interleaved turn (Chain B)
+// =============================================================================
+// A run where the model narrates between tool calls renders as ONE collapsible
+// panel (narration + raw tool rows) followed by the final answer.
+
+.openui-agent-thread-turn {
+  display: flex;
+  flex-direction: column;
+  gap: cssUtils.$space-s;
+
+  &__segment {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-xs;
+    width: 100%;
+  }
+
+  // Narration renders as a timeline STEP (marker + text) so it reads as part
+  // of the tool timeline instead of a loose paragraph floating beside indented
+  // tool rows. Geometry mirrors .openui-tool-call's title-row: same start
+  // padding, 14px glyph, same gap — the text column lines up with tool names.
+  &__step {
+    display: flex;
+    align-items: flex-start;
+    gap: cssUtils.$space-m;
+    padding-inline-start: cssUtils.$space-l;
+    width: 100%;
+  }
+
+  &__step-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    // Optically center the glyph on the narration's first text line.
+    margin-top: 3px;
+    color: cssUtils.$text-neutral-secondary;
+  }
+
+  &__narration {
+    @include cssUtils.typography(body, small);
+    color: cssUtils.$text-neutral-secondary;
+    min-width: 0;
+  }
+}

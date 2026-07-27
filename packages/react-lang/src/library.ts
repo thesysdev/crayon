@@ -42,12 +42,26 @@ export function defineComponent<T extends $ZodObject>(config: {
   props: T;
   description: string;
   component: ComponentRenderer<z.infer<T>>;
+  /** Skeleton shown while this component streams (smooth streaming). Rendered with no props. */
+  skeleton?: React.ComponentType;
 }): DefinedComponent<T> {
-  return coreDefineComponent<T, ComponentRenderer<z.infer<T>>>(config);
+  return coreDefineComponent<T, ComponentRenderer<z.infer<T>>>({
+    ...config,
+    skeleton: config.skeleton as unknown as ComponentRenderer<z.infer<T>> | undefined,
+  });
 }
 
 // ─── createLibrary (React) ──────────────────────────────────────────────────
 
-export function createLibrary(input: LibraryDefinition): Library {
+export function createLibrary(
+  input: LibraryDefinition & {
+    /**
+     * Smooth-streaming visuals: a reveal wrapper (fade/height easing) and a
+     * slot skeleton. See RevealComponentProps / SlotComponentProps in Renderer.
+     * Provided by the component library so react-lang stays platform-neutral.
+     */
+    streamingComponents?: { reveal?: React.ComponentType<any>; slot?: React.ComponentType<any> };
+  },
+): Library {
   return coreCreateLibrary<ComponentRenderer<any>>(input) as Library;
 }

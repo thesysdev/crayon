@@ -47,6 +47,12 @@
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
+    // Tool-heavy runs must not push the conversation hundreds of pixels down:
+    // past this height the tray scrolls internally (BehindTheScenes keeps the
+    // newest step in view while the run is live).
+    max-height: 28rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   // Graceful auto-close of the compact "Working…" tray
@@ -72,6 +78,36 @@
   // Compact staggered reveal (CSS fade-in; remounted per step via React key).
   &__reveal-item {
     animation: openui-behind-the-scenes-reveal 0.2s ease;
+  }
+
+  // Height+fade collapse for the interleaved-turn tray: closing eases shut
+  // instead of vanishing (grid-template-rows 1fr→0fr is the animatable
+  // height-to-content trick). `visibility` flips only AFTER the fade so the
+  // tray's buttons drop out of the tab order once hidden; reopening restores
+  // it instantly (the base transition list carries no visibility delay).
+  &__collapse {
+    display: grid;
+    grid-template-rows: 1fr;
+    width: 100%;
+    transition:
+      grid-template-rows 0.35s ease,
+      opacity 0.3s ease;
+    animation: openui-behind-the-scenes-reveal 0.2s ease;
+
+    &--closed {
+      grid-template-rows: 0fr;
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        grid-template-rows 0.35s ease,
+        opacity 0.3s ease,
+        visibility 0s linear 0.35s;
+    }
+  }
+
+  &__collapse-inner {
+    overflow: hidden;
+    min-height: 0;
   }
 }
 
@@ -101,6 +137,18 @@
     color: cssUtils.$text-neutral-secondary;
     // Allow the name to shrink/ellipsize instead of overflowing the row.
     min-width: 0;
+  }
+
+  // Muted one-line digest of the call's arguments — what makes two calls to
+  // the same tool tell-apart-able without expanding the request accordion.
+  &__args-summary {
+    @include cssUtils.typography(body, small);
+    color: cssUtils.$text-neutral-tertiary;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__icon-wrapper {

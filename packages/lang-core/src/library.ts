@@ -78,6 +78,12 @@ export interface DefinedComponent<T extends z.$ZodObject = z.$ZodObject, C = unk
   props: T;
   description: string;
   component: C;
+  /**
+   * Optional skeleton renderer shown while this component's statement or data
+   * is still streaming (smooth streaming slots). Same opaque framework type
+   * as `component`, rendered with no props.
+   */
+  skeleton?: C;
   /** Use in parent schemas: `z.array(ChildComponent.ref)` */
   ref: z.$ZodType<SubComponentOf<T extends z.$ZodType<infer O> ? O : any>>;
 }
@@ -92,6 +98,7 @@ export function defineComponent<T extends z.$ZodObject, C>(config: {
   props: T;
   description: string;
   component: C;
+  skeleton?: C;
 }): DefinedComponent<T, C> {
   assertV4Schema(config.props, config.name);
   schemaIdTags.set(config.props, config.name);
@@ -337,6 +344,19 @@ export interface Library<C = unknown> {
   readonly componentGroups: ComponentGroup[] | undefined;
   readonly root: string | undefined;
   readonly id: string | undefined;
+  /**
+   * Declares that this library's introspecting components tolerate slot
+   * placeholders in typed arrays (via splitSlots). Enables full typed-array
+   * slot reservation during smooth streaming.
+   */
+  readonly typedSlots?: boolean;
+  /**
+   * Framework-specific smooth-streaming visuals (reveal wrapper, slot skeleton),
+   * stored opaquely like `component`. Provided by the component library (e.g. a
+   * DOM library supplies CSS implementations; a React Native library would supply
+   * Animated-based ones). Renderers fall back to plain rendering when absent.
+   */
+  readonly streamingComponents?: { reveal?: unknown; slot?: unknown };
 
   prompt(options?: PromptOptions): string;
   toSpec(): PromptSpec;
@@ -348,6 +368,10 @@ export interface LibraryDefinition<C = unknown> {
   componentGroups?: ComponentGroup[];
   root?: string;
   id?: string;
+  /** See Library.typedSlots — set true once introspecting components use splitSlots. */
+  typedSlots?: boolean;
+  /** See Library.streamingComponents. */
+  streamingComponents?: { reveal?: unknown; slot?: unknown };
 }
 
 /**
@@ -374,6 +398,8 @@ export function createLibrary<C = unknown>(input: LibraryDefinition<C>): Library
     componentGroups: input.componentGroups,
     root: input.root,
     id: input.id,
+    typedSlots: input.typedSlots,
+    streamingComponents: input.streamingComponents,
 
     prompt(options?: PromptOptions): string {
       const spec: PromptSpec = {
