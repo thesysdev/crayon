@@ -423,7 +423,7 @@ export function ChatPageHeader({
 
         {rightHeading}
 
-        <BuildForFreeMenu className={styles.buildForFreeMenu} />
+        <BuildForFreeMenu analyticsSource="compare_navbar" className={styles.buildForFreeMenu} />
 
         <MobileMenu pair={pair} onPairChange={onPairChange} onReset={onReset} />
       </div>

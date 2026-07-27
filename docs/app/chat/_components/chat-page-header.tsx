@@ -40,7 +40,7 @@ export function ChatPageHeader({ mode, onModeChange }: ChatPageHeaderProps) {
           </ToggleGroup>
         </div>
 
-        <BuildForFreeMenu className={styles.buildForFreeMenu} />
+        <BuildForFreeMenu analyticsSource="chat_navbar" className={styles.buildForFreeMenu} />
       </div>
     </header>
   );

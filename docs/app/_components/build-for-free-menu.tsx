@@ -1,6 +1,7 @@
 "use client";
 
 import { ClipboardCommandButton } from "@/app/(home)/components/Button/Button";
+import { captureCreateCliCommandCopied } from "@/lib/create-cli-copy-analytics";
 import { ArrowRight } from "lucide-react";
 import styles from "./build-for-free-menu.module.css";
 import { useHeaderDropdown } from "./use-header-dropdown";
@@ -12,7 +13,12 @@ export const CLI_COMMANDS = [
   { id: "npm", runner: "npx", command: "npx @openuidev/cli@latest create" },
 ] as const;
 
-export function BuildForFreeMenu({ className }: { className?: string }) {
+interface BuildForFreeMenuProps {
+  analyticsSource: "chat_navbar" | "compare_navbar";
+  className?: string;
+}
+
+export function BuildForFreeMenu({ analyticsSource, className }: BuildForFreeMenuProps) {
   const { open, setOpen, wrapRef, triggerRef, handleHoverOpen, handleHoverClose } =
     useHeaderDropdown();
 
@@ -54,6 +60,12 @@ export function BuildForFreeMenu({ className }: { className?: string }) {
               className={styles.menuItem}
               iconContainerClassName={styles.menuItemIcon}
               copyIconColor="currentColor"
+              onCopySuccess={(command) =>
+                captureCreateCliCommandCopied(command, {
+                  source: analyticsSource,
+                  interaction: "dropdown",
+                })
+              }
             >
               <span className={styles.menuItemLabel}>
                 <span className={styles.menuItemRunner}>{item.runner}</span>
