@@ -35,7 +35,7 @@ export function ModelSwitcher({ selectedModel, onModelChange }: ModelSwitcherPro
         <SelectTrigger
           aria-label="Select model"
           title={hydrated ? (selectedOption?.id ?? selectedModel) : undefined}
-          className="flex! h-8! w-auto! max-w-[240px]! items-center! justify-start! gap-1.5! rounded-lg! border! border-[var(--openui-border-interactive)]! bg-[var(--openui-foreground)]! px-2.5! text-sm! text-[color:var(--openui-text-neutral-primary)]! shadow-[var(--openui-shadow-s)]"
+          className="flex! h-9! w-auto! max-w-[240px]! items-center! justify-start! gap-1.5! rounded-lg! border! border-[var(--openui-border-interactive)]! bg-[var(--openui-foreground)]! px-2.5! text-sm! text-[color:var(--openui-text-neutral-primary)]! shadow-[var(--openui-shadow-s)]"
         >
           <TriggerContent
             option={selectedOption}
@@ -45,13 +45,18 @@ export function ModelSwitcher({ selectedModel, onModelChange }: ModelSwitcherPro
         </SelectTrigger>
         <SelectContent
           align="start"
-          className="max-h-[360px]! w-[min(360px,calc(100vw-32px))]! overflow-auto!"
+          className="max-h-[360px]! w-[min(360px,calc(100vw-32px))]! overflow-auto! rounded-[var(--openui-radius-xl)]!"
         >
           {paidGroups.map(([provider, providerModels], index) => (
             <SelectGroup key={provider}>
               {index > 0 ? <SelectSeparator /> : null}
               {providerModels.map((model) => (
-                <SelectItem key={model.id} value={model.id}>
+                <SelectItem
+                  key={model.id}
+                  value={model.id}
+                  showTick={false}
+                  className="rounded-[var(--openui-radius-m)]!"
+                >
                   <ModelRow model={model} />
                 </SelectItem>
               ))}
@@ -67,7 +72,12 @@ export function ModelSwitcher({ selectedModel, onModelChange }: ModelSwitcherPro
                 <UsagePolicy />
               </SelectLabel>
               {freeModels.map((model) => (
-                <SelectItem key={model.id} value={model.id}>
+                <SelectItem
+                  key={model.id}
+                  value={model.id}
+                  showTick={false}
+                  className="rounded-[var(--openui-radius-m)]!"
+                >
                   <ModelRow model={model} />
                 </SelectItem>
               ))}
