@@ -1,4 +1,6 @@
 export { useActiveDetailedView } from "./hooks/useActiveDetailedView";
+export { shouldAutoOpen, useArtifactAutoOpen } from "./hooks/useArtifactAutoOpen";
+export type { UseArtifactAutoOpenOptions } from "./hooks/useArtifactAutoOpen";
 export { useArtifactList } from "./hooks/useArtifactList";
 export type { ArtifactListFilter } from "./hooks/useArtifactList";
 export { useArtifactRenderer } from "./hooks/useArtifactRenderer";
