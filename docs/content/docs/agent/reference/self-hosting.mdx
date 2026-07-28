@@ -18,8 +18,8 @@ They are configured separately. You can run a real `llm` with ephemeral (in-memo
 
 The `llm` channel is two halves of one loop:
 
-- **Browser half** — `fetchLLM({ url, streamAdapter, messageFormat })` POSTs `{ threadId, messages }` to your route and parses the streamed reply.
-- **Server half** — a route handler that receives `{ threadId, messages }`, calls your provider with streaming on, and returns the stream.
+- **Browser half** — `fetchLLM({ url, streamAdapter, messageFormat })` POSTs an AG-UI-shaped body (`threadId`, `runId`, formatted `messages`) to your route — or a custom shape via `buildBody` — and parses the streamed reply.
+- **Server half** — a route handler that reads what it needs from that body, calls your provider with streaming on, and returns the stream.
 
 ```tsx
 import { AgentInterface, fetchLLM, openAIReadableStreamAdapter, openAIMessageFormat } from "@openuidev/react-ui";
@@ -35,7 +35,7 @@ export default function App() {
 }
 ```
 
-Your route always receives a JSON body of `{ threadId, messages }` and returns a streaming `Response`. `fetchLLM` runs that response through `streamAdapter` to turn the bytes into the AG-UI events the UI renders.
+Your route receives the default AG-UI-shaped body (destructure just the fields you need, e.g. `{ messages }`) — or exactly what your `buildBody` returns — and returns a streaming `Response`. `fetchLLM` runs that response through `streamAdapter` to turn the bytes into the AG-UI events the UI renders.
 
 `threadId` is in the body so your route can scope context, log, or attach per-thread state. The minimal route can ignore it.
 
