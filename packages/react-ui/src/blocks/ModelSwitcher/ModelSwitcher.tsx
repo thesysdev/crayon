@@ -12,10 +12,14 @@ import {
   SelectSeparator,
   SelectTrigger,
 } from "../../components/Select";
+import { useTheme, type ThemeMode } from "../../components/ThemeProvider";
 
 import { groupModels, useHydrated } from "./utils";
 
 import "./modelSwitcher.scss";
+
+/** A single logo node, or a light/dark pair the switcher picks from by theme. */
+export type ModelLogo = ReactNode | { light: ReactNode; dark: ReactNode };
 
 export interface ModelOption {
   /** Unique id — the value the switcher reports through `onValueChange`. */
@@ -28,8 +32,9 @@ export interface ModelOption {
   badge?: string;
   /** Marks the model with a "Recommended" chip. */
   recommended?: boolean;
-  /** Optional leading logo/icon — apps supply their own asset. */
-  logo?: ReactNode;
+  /** Optional leading logo/icon — apps supply their own asset. Pass a
+   *  `{ light, dark }` pair to have the switcher swap it by the active theme. */
+  logo?: ModelLogo;
 }
 
 export interface ModelSwitcherProps {
@@ -44,10 +49,12 @@ export interface ModelSwitcherProps {
 /**
  * A dropdown for picking an LLM, grouped by `ModelOption.group`, with optional
  * per-model logo, "Recommended", and badge chips. Data-agnostic: pass your own
- * `models` — the block owns no model list.
+ * `models` — the block owns no model list. A model's `logo` may be a single
+ * node or a `{ light, dark }` pair the switcher swaps by the active theme.
  */
 export function ModelSwitcher({ models, value, onValueChange }: ModelSwitcherProps) {
   const hydrated = useHydrated();
+  const { mode } = useTheme();
   const selected = models.find((model) => model.id === value) ?? models[0];
   const groups = groupModels(models);
 
@@ -59,7 +66,11 @@ export function ModelSwitcher({ models, value, onValueChange }: ModelSwitcherPro
           title={hydrated ? (selected?.id ?? value) : undefined}
           className="openui-model-switcher-trigger"
         >
-          {hydrated ? <TriggerContent option={selected} fallback={value} /> : <TriggerSkeleton />}
+          {hydrated ? (
+            <TriggerContent option={selected} fallback={value} mode={mode} />
+          ) : (
+            <TriggerSkeleton />
+          )}
         </SelectTrigger>
         <SelectContent align="start" className="openui-model-switcher-content">
           {groups.map((group, index) => (
@@ -73,7 +84,7 @@ export function ModelSwitcher({ models, value, onValueChange }: ModelSwitcherPro
                   showTick={false}
                   className="openui-model-switcher-item"
                 >
-                  <ModelRow model={model} />
+                  <ModelRow model={model} mode={mode} />
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -84,16 +95,28 @@ export function ModelSwitcher({ models, value, onValueChange }: ModelSwitcherPro
   );
 }
 
+// Resolve a model's logo for the active theme: a `{ light, dark }` pair yields
+// the variant for `mode`; a plain node renders as-is.
+function resolveLogo(logo: ModelLogo | undefined, mode: ThemeMode): ReactNode {
+  if (logo && typeof logo === "object" && "light" in logo && "dark" in logo) {
+    return mode === "dark" ? logo.dark : logo.light;
+  }
+  return (logo ?? null) as ReactNode;
+}
+
 function TriggerContent({
   option,
   fallback,
+  mode,
 }: {
   option: ModelOption | undefined;
   fallback: string;
+  mode: ThemeMode;
 }) {
+  const logo = option ? resolveLogo(option.logo, mode) : null;
   return (
     <>
-      {option?.logo ? <span className="openui-model-switcher-logo">{option.logo}</span> : null}
+      {logo ? <span className="openui-model-switcher-logo">{logo}</span> : null}
       <span className="openui-model-switcher-name">{option?.name ?? fallback}</span>
       {option ? <Badge model={option} variant="trigger" /> : null}
     </>
@@ -111,10 +134,11 @@ function TriggerSkeleton() {
   );
 }
 
-function ModelRow({ model }: { model: ModelOption }) {
+function ModelRow({ model, mode }: { model: ModelOption; mode: ThemeMode }) {
+  const logo = resolveLogo(model.logo, mode);
   return (
     <span className="openui-model-switcher-row">
-      {model.logo ? <span className="openui-model-switcher-logo">{model.logo}</span> : null}
+      {logo ? <span className="openui-model-switcher-logo">{logo}</span> : null}
       <span className="openui-model-switcher-name">{model.name}</span>
       <Badge model={model} variant="row" />
     </span>

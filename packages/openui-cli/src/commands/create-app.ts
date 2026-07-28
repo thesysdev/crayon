@@ -199,6 +199,10 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     if (packageManager.name !== "npm") {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
     }
+    if (packageManager.name !== "pnpm") {
+      fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
+      fs.rmSync(path.join(targetDir, "pnpm-workspace.yaml"), { force: true });
+    }
   } catch (err) {
     captureScaffoldFailed();
     throw err;

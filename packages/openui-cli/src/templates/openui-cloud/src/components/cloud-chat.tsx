@@ -3,17 +3,16 @@
 import { getPersistedModel, usePersistedModel } from "@/hooks/use-persisted-model";
 import { useTheme } from "@/hooks/use-system-theme";
 import { shouldShowBillingCreditsNotice } from "@/lib/billing";
-import {
-  DARK_LOGO_URL,
-  LIGHT_LOGO_URL,
-  PROMPT_TEMPLATES,
-  starters,
-} from "@/lib/cloud-chat-constants";
 import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
+import { isDevelopment } from "@/lib/env";
 import { MODEL_OPTIONS } from "@/lib/models";
-import { defineArtifactCategories } from "@openuidev/react-headless";
-import { AgentInterface } from "@openuidev/react-ui";
-import { ModelSwitcher } from "@openuidev/react-ui/blocks";
+import { OpenUICreditsModal } from "@openuidev/devtools";
+import {
+  AgentInterface,
+  ModelSwitcher,
+  defineArtifactCategories,
+  type PromptTemplate,
+} from "@openuidev/react-ui";
 import {
   chatLibrary,
   presentationArtifactRenderer,
@@ -22,7 +21,6 @@ import {
 } from "@openuidev/thesys";
 import { FileText, Presentation } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { BillingCreditsDialog } from "./billing-credits-dialog";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   {
@@ -39,11 +37,12 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
 
 const showBillingCreditsNotice = shouldShowBillingCreditsNotice();
 
-export function CloudChat() {
+const LIGHT_LOGO_URL = "/openui-cloud-logo-light.svg";
+const DARK_LOGO_URL = "/openui-cloud-logo-dark.svg";
+
+export default function CloudChat() {
   const mode = useTheme();
   const [selectedModel, setSelectedModel] = usePersistedModel();
-  const [billingDialogOpen, setBillingDialogOpen] = useState(false);
-  const [billingCreditsRequired, setBillingCreditsRequired] = useState(false);
   const [llm] = useState(() =>
     createCloudChatLLM({
       // Read the persisted model directly so the LLM starts on the saved
@@ -52,13 +51,6 @@ export function CloudChat() {
       // keeps it in sync afterwards.
       initialModel: getPersistedModel(),
       showBillingCreditsNotice,
-      onRequestStart: () => {
-        if (showBillingCreditsNotice) setBillingCreditsRequired(false);
-      },
-      onBillingCreditsRequired: () => {
-        setBillingCreditsRequired(true);
-        setBillingDialogOpen(true);
-      },
     }),
   );
   const storage = useOpenuiCloudStorage({
@@ -81,12 +73,10 @@ export function CloudChat() {
     [llm, setSelectedModel],
   );
 
+  const logoPath = mode === "dark" ? DARK_LOGO_URL : LIGHT_LOGO_URL;
+
   return (
-    <div
-      className={`h-screen w-screen overflow-hidden relative${
-        billingCreditsRequired ? " openui-cloud-root--billing-credits-required" : ""
-      }`}
-    >
+    <div className="h-screen w-screen overflow-hidden relative">
       <AgentInterface
         storage={storage}
         llm={llm}
@@ -95,7 +85,7 @@ export function CloudChat() {
         artifactCategories={artifactCategories}
         scrollVariant="always"
         scrollOnLoad={false}
-        logoUrl={mode === "dark" ? DARK_LOGO_URL : LIGHT_LOGO_URL}
+        logoUrl={logoPath}
         theme={{ mode }}
         starters={starters}
       >
@@ -103,11 +93,19 @@ export function CloudChat() {
           className="openui-cloud-mobile-header"
           agentName=""
           actions={
-            <ModelSwitcher models={MODEL_OPTIONS} value={selectedModel} onValueChange={handleModelChange} />
+            <ModelSwitcher
+              models={MODEL_OPTIONS}
+              value={selectedModel}
+              onValueChange={handleModelChange}
+            />
           }
         />
         <AgentInterface.ThreadHeader className="openui-cloud-thread-header">
-          <ModelSwitcher models={MODEL_OPTIONS} value={selectedModel} onValueChange={handleModelChange} />
+          <ModelSwitcher
+            models={MODEL_OPTIONS}
+            value={selectedModel}
+            onValueChange={handleModelChange}
+          />
         </AgentInterface.ThreadHeader>
         <AgentInterface.Welcome
           title="Good to see you"
@@ -116,9 +114,72 @@ export function CloudChat() {
           glowAnimation
         />
       </AgentInterface>
-      {showBillingCreditsNotice ? (
-        <BillingCreditsDialog open={billingDialogOpen} onOpenChange={setBillingDialogOpen} />
-      ) : null}
+      {isDevelopment() && <OpenUICreditsModal />}
     </div>
   );
 }
+
+const PROMPT_TEMPLATES: PromptTemplate[] = [
+  {
+    displayText: "Create a presentation",
+    prompt: "Create a presentation about ",
+    icon: <Presentation size={16} />,
+    completions: [
+      {
+        displayText: "The rise of reusable rockets and commercial spaceflight",
+        prompt: "the rise of reusable rockets and commercial spaceflight",
+        icon: <></>,
+      },
+      {
+        displayText: "How Formula 1 became a global business",
+        prompt: "how Formula 1 became a global business",
+        icon: <></>,
+      },
+      {
+        displayText: "Why electric vehicles are changing transportation",
+        prompt: "why electric vehicles are changing transportation",
+        icon: <></>,
+      },
+    ],
+  },
+  {
+    displayText: "Write a report",
+    prompt: "Write a report on ",
+    icon: <FileText size={16} />,
+    completions: [
+      {
+        displayText: "Global coffee market trends and consumer preferences",
+        prompt: "global coffee market trends and consumer preferences",
+        icon: <></>,
+      },
+      {
+        displayText: "The state of the electric vehicle market in 2026",
+        prompt: "the state of the electric vehicle market in 2026",
+        icon: <></>,
+      },
+      {
+        displayText: "Global travel trends and emerging destinations",
+        prompt: "global travel trends and emerging destinations",
+        icon: <></>,
+      },
+    ],
+  },
+];
+
+const starters = [
+  {
+    displayText: "Relive the FIFA World Cup 2026",
+    prompt: "Relive the FIFA World Cup 2026.",
+    icon: <></>,
+  },
+  {
+    displayText: "Create a report on global coffee trends",
+    prompt: "Create a report on global coffee trends.",
+    icon: <></>,
+  },
+  {
+    displayText: "Help me plan my next vacation",
+    prompt: "Help me plan my next vacation.",
+    icon: <></>,
+  },
+];
