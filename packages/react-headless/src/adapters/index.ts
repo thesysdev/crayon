@@ -11,6 +11,7 @@ export type {
 
 export { fetchLLM } from "./fetchLLM";
 export type { FetchLLMOptions } from "./fetchLLM";
+export { getResponseErrorMessage } from "./httpError";
 export { useFetchLLM } from "./useFetchLLM";
 
 export { restStorage } from "./restStorage";
