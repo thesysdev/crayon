@@ -173,6 +173,8 @@ There are two valid `llm` wiring patterns:
 
 ```ts
 import { type ChatLLM, openAIAdapter } from "@openuidev/react-ui";
+// openAIAdapter() pairs with a route that returns the SDK's raw SSE
+// (e.g. `client.chat.completions.create(..., { signal }).asResponse()`).
 
 const llm: ChatLLM = {
   streamProtocol: openAIAdapter(),
