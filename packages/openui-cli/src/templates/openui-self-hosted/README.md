@@ -6,9 +6,9 @@ Create `.env.local` with your OpenAI credentials:
 
 ```bash
 OPENAI_API_KEY=...
+# Optional:
+OPENAI_MODEL=gpt-5.2
 ```
-
-The model is set in `src/app/api/chat/route.ts` — edit it there.
 
 ## Getting Started
 
