@@ -2,7 +2,6 @@
 
 import {
   observability,
-  type Observability,
   type ObservabilityErrorInfo,
   type ObservabilityEvent,
 } from "@openuidev/observability";
@@ -22,8 +21,6 @@ export interface OpenUIDevtoolsProps {
   errorsOnly?: boolean;
   /** Initial state of the drawer's "auto-open on error" checkbox. Defaults to true. */
   autoOpenOnError?: boolean;
-  /** Observability instance to listen to. Defaults to the shared singleton. */
-  bus?: Observability;
 }
 
 /**
@@ -39,7 +36,6 @@ export function OpenUIDevtools({
   maxEvents = 50,
   errorsOnly = true,
   autoOpenOnError = true,
-  bus = observability,
 }: OpenUIDevtoolsProps) {
   const isEnabled =
     enabled ?? (typeof process === "undefined" || process.env["NODE_ENV"] !== "production");
@@ -56,12 +52,12 @@ export function OpenUIDevtools({
 
   useEffect(() => {
     if (!isEnabled) return;
-    return bus.listenAll((event) => {
+    return observability.listenAll((event) => {
       if (errorsOnly && event.level === "info") return;
       setEvents((prev) => [event, ...prev].slice(0, maxEvents));
       if (event.level === "error" && autoOpenRef.current) setOpen(true);
     });
-  }, [bus, isEnabled, errorsOnly, maxEvents]);
+  }, [isEnabled, errorsOnly, maxEvents]);
 
   // Escape steps back: stack view → list, list → closed.
   useEffect(() => {

@@ -112,6 +112,9 @@ export * from "./components/ThemeProvider";
 export * from "./components/ToolCall";
 export * from "./components/ToolResult";
 
+export { ModelSwitcher } from "./blocks";
+export type { ModelLogo, ModelOption, ModelSwitcherProps } from "./blocks";
+
 // Genui-lib standard library
 export {
   openuiAdditionalRules,

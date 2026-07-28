@@ -1,0 +1,143 @@
+@use "../../cssUtils" as cssUtils;
+
+.openui-model-switcher {
+  min-width: 0;
+
+  &-trigger {
+    display: flex;
+    height: 36px;
+    width: auto;
+    max-width: 240px;
+    align-items: center;
+    justify-content: flex-start;
+    gap: cssUtils.$space-2xs;
+    border-radius: cssUtils.$radius-l;
+    border: 1px solid cssUtils.$border-interactive;
+    background-color: cssUtils.$foreground;
+    padding-inline: cssUtils.$space-s;
+    color: cssUtils.$text-neutral-primary;
+    box-shadow: cssUtils.$shadow-s;
+    @include cssUtils.typography(label, small);
+  }
+
+  &-content {
+    max-height: 360px;
+    width: min(360px, calc(100vw - 32px));
+    overflow: auto;
+    border-radius: cssUtils.$radius-xl;
+  }
+
+  &-item {
+    border-radius: cssUtils.$radius-m;
+  }
+
+  &-row {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+    gap: cssUtils.$space-xs;
+  }
+
+  &-name {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &-logo {
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    & > * {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  &-dot {
+    height: 6px;
+    width: 6px;
+    flex-shrink: 0;
+    border-radius: 9999px;
+
+    &-recommended {
+      background-color: cssUtils.$border-info-emphasis;
+    }
+
+    &-badge {
+      background-color: cssUtils.$border-success-emphasis;
+    }
+  }
+
+  &-badge-trigger {
+    display: inline-flex;
+    height: 20px;
+    width: 20px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid cssUtils.$border-default;
+  }
+
+  &-badge-row {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: cssUtils.$space-2xs;
+    border-radius: 9999px;
+    border: 1px solid cssUtils.$border-default;
+    padding-inline: cssUtils.$space-xs;
+    padding-block: 2px;
+    color: cssUtils.$text-neutral-primary;
+  }
+
+  &-skeleton-dot {
+    height: 20px;
+    width: 20px;
+    flex-shrink: 0;
+    border-radius: cssUtils.$radius-m;
+    background-color: cssUtils.$border-default;
+    animation: openui-model-switcher-pulse 1.5s ease-in-out infinite;
+  }
+
+  &-skeleton-bar {
+    height: 16px;
+    width: 96px;
+    border-radius: cssUtils.$radius-m;
+    background-color: cssUtils.$border-default;
+    animation: openui-model-switcher-pulse 1.5s ease-in-out infinite;
+  }
+
+  // Visually-hidden label for the trigger's badge dot.
+  &-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@keyframes openui-model-switcher-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
