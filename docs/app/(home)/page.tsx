@@ -25,8 +25,6 @@ export default function HomePage() {
           align="left"
           subtitle="Open Standard for Generative UI"
           showPlaygroundButton={false}
-          githubRepoUrl="https://github.com/thesysdev/openui"
-          githubButtonLabel="Star us on GitHub"
           showTagline={false}
         />
         <LogoStrip />
