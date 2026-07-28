@@ -15,10 +15,9 @@ export interface FetchLLMOptions {
   headers?: Record<string, string>;
   /** Override fetch implementation (for tests, custom auth wrappers, etc.). */
   fetch?: typeof fetch;
-  /** Customize the POST body. Receives the run's thread/run ids and the
-   *  canonical messages; returns the JSON-serializable request body. Defaults
-   *  to the AG-UI `RunAgentInput` shape. When provided, `messageFormat` is not
-   *  applied — shape the wire format inside `buildBody`. */
+  /** Receives the run's thread/run ids and the canonical messages; returns 
+   *  the JSON-serializable request body. 
+   */
   buildBody?: (params: { threadId: string; runId: string; messages: Message[] }) => unknown;
 }
 
@@ -50,7 +49,7 @@ export function fetchLLM({
   return {
     send: ({ threadId, messages, signal }) => {
       const runId = crypto.randomUUID();
-      observability.info({ kind: "llm:request", requestId: runId, url });
+      observability.info({ kind: "fetchLLM:request", requestId: runId, url });
 
       const body = buildBody
         ? buildBody({ threadId, runId, messages })
