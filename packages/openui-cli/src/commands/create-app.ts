@@ -6,7 +6,10 @@ import * as path from "node:path";
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
-import { resolveInstallPackageManager } from "../lib/detect-package-manager";
+import {
+  resolveInstallPackageManager,
+  type PackageManagerName,
+} from "../lib/detect-package-manager";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { resolveArgs } from "../lib/resolve-args";
 import { runDevCommand } from "../lib/run-dev-command";
@@ -39,7 +42,7 @@ function buildAppId(name: string): string {
   return `${slug}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function rewritePackageJson(projectDir: string, name: string) {
+function rewritePackageJson(projectDir: string, name: string, packageManager: PackageManagerName) {
   // package.json: set the project name and de-vendor monorepo-local deps
   // (workspace:* / file: / catalog:) to the published "latest". link: deps are
   // rewritten to an absolute file: path so locally-linked packages (e.g.
@@ -51,8 +54,10 @@ function rewritePackageJson(projectDir: string, name: string) {
     name: string;
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
+    pnpm?: unknown;
   };
   pkg.name = name;
+  if (packageManager !== "pnpm") delete pkg.pnpm;
   for (const section of ["dependencies", "devDependencies"] as const) {
     const deps = pkg[section];
     if (!deps) continue;
@@ -216,10 +221,14 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
     restoreDotfiles(targetDir);
-    rewritePackageJson(targetDir, name);
-    // The template lockfile enables npm ci; other managers should resolve from package.json.
+    rewritePackageJson(targetDir, name, packageManager.name);
+    // Keep only the detected manager's lockfile and workspace configuration.
     if (packageManager.name !== "npm") {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
+    }
+    if (packageManager.name !== "pnpm") {
+      fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
+      fs.rmSync(path.join(targetDir, "pnpm-workspace.yaml"), { force: true });
     }
   } catch (err) {
     captureScaffoldFailed();
