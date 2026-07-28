@@ -30,8 +30,8 @@
   --border: var(--openui-border-default);
   --border-strong: var(--openui-border-interactive);
   --text-primary: var(--openui-text-neutral-primary);
-  --text-secondary: var(--openui-text-neutral-secondary);
-  --text-tertiary: var(--openui-text-neutral-tertiary);
+  --text-secondary: color-mix(in srgb, var(--openui-text-neutral-primary) 68%, transparent);
+  --text-tertiary: color-mix(in srgb, var(--openui-text-neutral-primary) 60%, transparent);
   --btn-primary-bg: var(--openui-interactive-accent-default);
   --btn-primary-text: var(--openui-text-accent-primary);
   --btn-primary-hover: var(--openui-interactive-accent-hover);
@@ -44,8 +44,8 @@
   --chip-border: var(--openui-border-default);
   --code-bg: var(--openui-inverted-background);
   --code-text: var(--openui-text-accent-primary);
-  --code-text-secondary: var(--openui-text-accent-secondary);
-  --code-text-tertiary: var(--openui-text-accent-tertiary);
+  --code-text-secondary: color-mix(in srgb, var(--openui-text-accent-primary) 72%, transparent);
+  --code-text-tertiary: color-mix(in srgb, var(--openui-text-accent-primary) 60%, transparent);
   --code-hover: color-mix(in srgb, var(--openui-text-accent-primary) 8%, transparent);
   --code-hover-strong: color-mix(in srgb, var(--openui-text-accent-primary) 14%, transparent);
   --code-border: color-mix(in srgb, var(--openui-text-accent-primary) 12%, transparent);
@@ -88,6 +88,25 @@
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
+}
+
+/* The inverted tokens intentionally swap light and dark surfaces. They make a
+   useful dark code canvas in light mode, but become a white canvas in dark
+   mode. Keep the editor dark and strengthen muted content/control boundaries
+   when the site theme is dark. */
+:where([data-theme="dark"]) .app {
+  --border: color-mix(in srgb, var(--openui-text-neutral-primary) 16%, transparent);
+  --border-strong: color-mix(in srgb, var(--openui-text-neutral-primary) 36%, transparent);
+  --input-border: var(--border-strong);
+  --chip-border: var(--border);
+  --code-bg: var(--openui-background);
+  --code-text: var(--openui-text-neutral-primary);
+  --code-text-secondary: color-mix(in srgb, var(--openui-text-neutral-primary) 72%, transparent);
+  --code-text-tertiary: color-mix(in srgb, var(--openui-text-neutral-primary) 60%, transparent);
+  --code-hover: color-mix(in srgb, var(--openui-text-neutral-primary) 8%, transparent);
+  --code-hover-strong: color-mix(in srgb, var(--openui-text-neutral-primary) 14%, transparent);
+  --code-border: var(--border);
+  --panel-header-border: var(--border);
 }
 
 .app-body {
