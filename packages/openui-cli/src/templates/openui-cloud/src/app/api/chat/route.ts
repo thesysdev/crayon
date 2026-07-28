@@ -12,18 +12,10 @@ import type {
 } from "openai/resources/responses/responses";
 
 /**
- * Generation plane: browser → THIS route → OpenUI Cloud.
- *
- * Calls the hosted Responses API (`POST /v1/embed/responses`) with the stock
- * OpenAI SDK — the endpoint speaks the Responses protocol — and proxies the SSE
- * stream straight to the browser, where `openAIResponsesAdapter` parses it
- * (including the custom `response.artifact_call.delta` events).
- *
- * Cloud's built-in tools (artifacts / web_search / image_search / MCP) run
- * server-side inside OpenUI Cloud. App-owned `type: "function"` tools run HERE
- * via `runFunctionToolLoop` — `get_weather` ships as the reference example.
- * Reads/edits go browser → /v1/* with the fct_ token (see /api/frontend-token
- * + the storage adapter).
+ * Generation plane: browser → this route → OpenUI Cloud's Responses API,
+ * proxying the SSE stream back for `openAIResponsesAdapter` to parse.
+ * Cloud tools (artifacts / search / MCP) run inside Cloud; app-owned
+ * `type: "function"` tools run here via `runFunctionToolLoop`.
  */
 export async function POST(req: Request) {
   const {
@@ -48,9 +40,7 @@ export async function POST(req: Request) {
     apiKey: requiredEnv("THESYS_API_KEY"), // sent as Authorization: Bearer …
   });
 
-  // App-owned function tools, executed in THIS route by runFunctionToolLoop.
-  // The loop runs ONLY the names declared here — Cloud-internal function_call
-  // items (thesys_*) pass through untouched. Add your own tools the same way.
+  // App-owned function tools — the loop runs only the names declared here.
   const functionTools = {
     [getWeatherTool.name]: executeGetWeather,
   };
@@ -61,22 +51,13 @@ export async function POST(req: Request) {
     input,
     store: true,
     tools: [
-      // artifact/image_search are Cloud extensions of the Responses tools
-      // union — cast those entries only; the rest stays type-checked.
+      // artifact/image_search are Cloud extensions of the Responses tool union.
       artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
-      {
-        type: "web_search",
-      },
+      { type: "web_search" },
       { type: "image_search" } as unknown as Tool,
       getWeatherTool,
-      // Remote MCP servers run server-side inside OpenUI Cloud — no client
-      // loop needed. Uncomment to let the model answer questions about any
-      // public GitHub repo via DeepWiki (no auth required):
-      // {
-      //   type: "mcp",
-      //   server_label: "deepwiki",
-      //   server_url: "https://mcp.deepwiki.com/mcp",
-      // },
+      // Remote MCP servers run inside OpenUI Cloud, e.g.:
+      // { type: "mcp", server_label: "deepwiki", server_url: "https://mcp.deepwiki.com/mcp" },
     ],
     instructions: generateSystemPrompt(),
   };
@@ -88,8 +69,7 @@ export async function POST(req: Request) {
       { signal: req.signal }, // propagate browser aborts (stop button / tab close)
     )) as unknown as AsyncIterable<Record<string, unknown>>;
   } catch (err) {
-    // The SDK surfaces upstream HTTP errors (e.g. 429/403) as APIError —
-    // propagate the upstream message and status; the chat store surfaces it.
+    // Propagate the upstream message and status; the chat store surfaces it.
     const e = err as { status?: number; error?: unknown; message?: string };
     return NextResponse.json(
       { error: e.error ?? { message: e.message ?? "upstream error" } },
@@ -97,8 +77,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // Re-emit each SDK event as SSE for the browser adapter, executing declared
-  // function tools between model turns.
+  // Re-emit SDK events as SSE, executing function tools between model turns.
   const encoder = new TextEncoder();
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {

@@ -2,9 +2,7 @@ import type { ModelOption } from "@openuidev/react-ui/blocks";
 
 export const DEFAULT_MODEL = "google/gemini-3.6-flash-free";
 
-// Provider logos, passed to the switcher per model. Each is a { light, dark }
-// pair; the switcher swaps the variant to match the active theme. Swap in your
-// own assets (or drop `logo` entirely) to rebrand the menu.
+// Per-model { light, dark } logo pairs — the switcher swaps them by theme.
 const logo = {
   anthropic: {
     light: <img src="/logos/anthropic-light.svg" alt="" />,
@@ -20,9 +18,7 @@ const logo = {
   },
 };
 
-// The models offered in the switcher. `group` drives the dropdown sections
-// (rendered in this order), `recommended` adds the chip, and `badge: "Free"`
-// tags the free tier. Edit this list to change the app's model menu.
+// The app's model menu — `group` drives the dropdown sections, in this order.
 export const MODEL_OPTIONS: ModelOption[] = [
   { id: "anthropic/claude-sonnet-5", name: "Claude Sonnet 5", group: "Anthropic", recommended: true, logo: logo.anthropic },
   { id: "anthropic/claude-sonnet-4.6", name: "Claude Sonnet 4.6", group: "Anthropic", logo: logo.anthropic },
@@ -47,8 +43,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
 
 const MODEL_IDS = new Set(MODEL_OPTIONS.map((model) => model.id));
 
-/** Resolve the requested model against the allowlist above: absent → default,
- *  unknown → null (the route rejects it). */
+/** Absent → default; unknown → null (the route rejects it). */
 export function resolveRequestedModel(model: unknown): string | null {
   if (model === undefined || model === null || model === "") return DEFAULT_MODEL;
   return typeof model === "string" && MODEL_IDS.has(model) ? model : null;
