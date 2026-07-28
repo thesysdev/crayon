@@ -1,4 +1,5 @@
 import {
+  useArtifactViewMode,
   useDetailedView,
   useDetailedViewStore,
   useThreadContextStore,
@@ -133,6 +134,40 @@ export function ToolActivityRenderer<Props>({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dvStore, viewId, meta?.id, meta?.version]);
+
+  // Artifact view mode: "auto-open" opens the panel by itself while this
+  // activity streams live; "open-on-mount" opens once per mount regardless.
+  // Hooks sit ABOVE the error/parsed early-return below, so both failure
+  // shapes must be re-gated here — a failed tool call renders only the
+  // fallback card and must never open a panel. Reload safety comes from the
+  // isStreaming gate (historical activities mount as "complete"). The
+  // auto-open latch lives on the detailed-view store (reset on thread
+  // switch), keyed by TOOL-CALL id — not `meta.id:meta.version`, because a
+  // streamed edit often carries no version in its args (numericVersion
+  // defaults it to the generate's), which would collide and swallow the
+  // edit's auto-open. activity.id is unique per generate/edit call and
+  // stable across host remounts, so a user's mid-stream close sticks while
+  // every new call (an edit) auto-opens again. Opening early on the useId
+  // fallback viewId is safe: the migration effect above carries the open
+  // state to the real key when meta lands.
+  const viewMode = useArtifactViewMode();
+  const openedThisMountRef = useRef(false);
+  const isError = activity.isError ?? false;
+  const parsedIsNull = parsed === null;
+  useEffect(() => {
+    if (viewMode === "overview") return;
+    if (isError || parsedIsNull) return;
+    const dv = dvStore.getState();
+    if (viewMode === "auto-open") {
+      if (!isStreaming) return;
+      if (!dv._markAutoOpened(activity.id)) return;
+    } else {
+      if (openedThisMountRef.current) return;
+    }
+    openedThisMountRef.current = true;
+    dv.setActiveDetailedView(viewId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewMode, isStreaming, isError, parsedIsNull, viewId, activity.id, dvStore]);
 
   const { isActive, open, close, toggle } = useDetailedView(viewId);
 

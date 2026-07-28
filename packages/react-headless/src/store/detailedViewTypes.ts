@@ -35,6 +35,20 @@ export type DetailedViewInternals = {
   _detailedViewPanelNode: HTMLElement | null;
   /** @internal */
   _setDetailedViewPanelNode: (node: HTMLElement | null) => void;
+  /**
+   * Artifact keys (`id:version`) that already auto-opened once, so a user's
+   * mid-stream close sticks even when the renderer host remounts during
+   * streaming. Cleared by `reset()` (thread switch).
+   * @internal
+   */
+  _autoOpenedArtifactKeys: ReadonlySet<string>;
+  /**
+   * Atomically records an auto-open for `key`. Returns `false` when the key
+   * already fired (the caller must not open again), `true` when this call
+   * claimed it.
+   * @internal
+   */
+  _markAutoOpened: (key: string) => boolean;
 };
 
 /** Combined detailed-view store type (state + actions + internals). */

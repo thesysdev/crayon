@@ -18,7 +18,15 @@ export const createDetailedViewStore = () => {
       },
 
       reset: () => {
-        set({ activeDetailedViewId: null });
+        set({ activeDetailedViewId: null, _autoOpenedArtifactKeys: new Set() });
+      },
+
+      _autoOpenedArtifactKeys: new Set<string>(),
+      _markAutoOpened: (key) => {
+        const keys = get()._autoOpenedArtifactKeys;
+        if (keys.has(key)) return false;
+        set({ _autoOpenedArtifactKeys: new Set(keys).add(key) });
+        return true;
       },
 
       _detailedViewPanelNode: null,

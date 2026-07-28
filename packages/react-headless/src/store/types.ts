@@ -1,6 +1,7 @@
 import type { ArtifactCategory, ChatLLM, ChatStorage } from "../adapters/types";
 import type { Message, UserMessage } from "../types/message";
 import type { ArtifactRendererConfig } from "./artifactRendererTypes";
+import type { ArtifactViewMode } from "./ArtifactViewModeContext";
 
 export type { Message, UserMessage } from "../types/message";
 export type CreateMessage = Omit<UserMessage, "id">;
@@ -91,5 +92,12 @@ export interface ChatProviderProps {
    * artifact browser's pre-applied filters, and workspace section grouping.
    */
   artifactCategories?: ArtifactCategory[];
+  /**
+   * How artifact detail panels open (default `"overview"` — only on user
+   * action). `"auto-open"` opens a panel by itself while its artifact streams
+   * live; `"open-on-mount"` opens on every artifact mount (deep-link/kiosk).
+   * Live — prop changes apply on the next render.
+   */
+  artifactViewMode?: ArtifactViewMode;
   children: React.ReactNode;
 }
