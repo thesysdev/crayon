@@ -1,3 +1,4 @@
+import { OpenUIDevtools } from "@openuidev/devtools";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        {process.env.NODE_ENV === "development" && <OpenUIDevtools />}
+      </body>
     </html>
   );
 }
