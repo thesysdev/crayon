@@ -93,14 +93,16 @@ export default function Layout({ children }: LayoutProps<"/">) {
         </PHProvider>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-MZ0TZ82NM2"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="ga-init" strategy="afterInteractive">{`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-MZ0TZ82NM2');
-        `}</Script>
+        <Script id="ga-init" strategy="lazyOnload">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-MZ0TZ82NM2');
+          `}
+        </Script>
       </body>
     </html>
   );

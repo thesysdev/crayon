@@ -702,6 +702,32 @@
   overflow: hidden !important;
 }
 
+/* Artifacts are the primary output in this comparison, so promote an open
+   detailed view above the page chrome instead of confining it to the Cloud
+   half of the comparison grid. AgentInterface uses a desktop split panel and
+   a mobile overlay; both must be fixed to the viewport for consistent
+   behavior at every container width. */
+.panelBody :global(.openui-agent-thread-detailed-view-panel),
+.panelBody :global(.openui-detailed-view-overlay) {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 100;
+  width: 100dvw !important;
+  height: 100dvh !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: none !important;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--openui-foreground);
+}
+
+/* The desktop splitter only controls the now-covered chat pane and should not
+   remain focusable behind the fullscreen artifact. */
+.panelBody :global(.openui-agent-resizable-separator) {
+  display: none;
+}
+
 /* Comparison owns all navigation and input chrome. Both internal desktop and
    mobile branches are suppressed because each pane measures its own width. */
 .panelBody :global(.openui-agent-sidebar-container),
