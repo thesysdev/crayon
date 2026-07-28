@@ -36,9 +36,11 @@ export type DetailedViewInternals = {
   /** @internal */
   _setDetailedViewPanelNode: (node: HTMLElement | null) => void;
   /**
-   * Artifact keys (`id:version`) that already auto-opened once, so a user's
+   * Latch keys (tool-call ids) that already auto-opened once, so a user's
    * mid-stream close sticks even when the renderer host remounts during
-   * streaming. Cleared by `reset()` (thread switch).
+   * streaming. Keyed per tool call — not per artifact version — because a
+   * streamed edit often carries no version in its args and would collide
+   * with the generate's key. Cleared by `reset()` (thread switch).
    * @internal
    */
   _autoOpenedArtifactKeys: ReadonlySet<string>;
