@@ -1,14 +1,14 @@
 "use client";
 
-import { getPersistedModel, usePersistedModel } from "@/hooks/use-persisted-model";
+import { usePersistedModel } from "@/hooks/use-persisted-model";
 import { useTheme } from "@/hooks/use-system-theme";
 import { isDevelopment } from "@/lib/env";
 import { MODEL_OPTIONS } from "@/lib/models";
 import { OpenUICreditsModal } from "@openuidev/devtools";
 import {
-  fetchLLM,
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
+  useFetchLLM,
 } from "@openuidev/react-headless";
 import {
   AgentInterface,
@@ -23,7 +23,7 @@ import {
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
 import { FileText, Presentation } from "lucide-react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback } from "react";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   {
@@ -45,22 +45,10 @@ export default function CloudChat() {
   const mode = useTheme();
   const [selectedModel, setSelectedModel] = usePersistedModel();
 
-  // buildBody (below) reads the current model at request time via this ref, so
-  // switching models takes effect without recreating the LLM. Seed it with the
-  // persisted value so the first request uses the saved selection (selectedModel
-  // is still the server snapshot during the first client render).
-  const selectedModelRef = useRef(getPersistedModel());
-  useEffect(() => {
-    selectedModelRef.current = selectedModel;
-  }, [selectedModel]);
-
-  // Create the LLM once and keep it across renders via a ref (not state — it
-  // never changes and never needs to trigger a re-render). The `??=` lazy-init
-  // runs fetchLLM exactly once and is tolerant of re-renders / strict-mode
-  // double-invocation. buildBody reads the live model from selectedModelRef, so
-  // switching models reuses this instance.
-  const llmRef = useRef<ReturnType<typeof fetchLLM> | null>(null);
-  const llm = (llmRef.current ??= fetchLLM({
+  // useFetchLLM keeps a single stable LLM across renders and reads its options
+  // fresh on each send, so buildBody can close over selectedModel directly —
+  // no state, no ref plumbing.
+  const llm = useFetchLLM({
     url: "/api/chat",
     streamAdapter: openAIResponsesAdapter(),
     // The cloud route persists history (store:true + conversation), so send
@@ -68,9 +56,9 @@ export default function CloudChat() {
     buildBody: ({ threadId, messages }) => ({
       threadId,
       input: openAIConversationMessageFormat.toApi(messages.slice(-1)),
-      model: selectedModelRef.current,
+      model: selectedModel,
     }),
-  }));
+  });
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",
