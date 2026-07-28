@@ -99,7 +99,7 @@ export default function CloudChat() {
             />
           }
         />
-        <AgentInterface.ThreadHeader className="openui-cloud-thread-header">
+        <AgentInterface.ThreadHeader>
           <ModelSwitcher
             models={MODEL_OPTIONS}
             value={selectedModel}
