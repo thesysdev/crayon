@@ -46,7 +46,7 @@ program
   .description(
     "Scaffold a Next.js agent app with the recommended OpenUI Cloud backend or your own provider",
   )
-  .option("-n, --name <string>", "Project name")
+  .option("-n, --name <string>", "Project name (interactive default: openui-project)")
   .option(
     "-t, --template <template>",
     "AI backend: openui-cloud (recommended default) | openui-self-hosted (infrastructure control)",

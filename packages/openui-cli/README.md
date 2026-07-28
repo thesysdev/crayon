@@ -63,7 +63,7 @@ openui create [options]
 
 Options:
 
-- `-n, --name <string>`: Project name
+- `-n, --name <string>`: Project name (interactive default: `openui-project`)
 - `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
@@ -77,7 +77,7 @@ Options:
 
 What it does:
 
-- prompts for the project name if you do not pass `--name`
+- prompts for the project name, defaulting to `openui-project`, if you do not pass `--name`
 - prompts for the template if you do not pass `--template`
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`

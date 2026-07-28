@@ -120,7 +120,10 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     {
       name: options.name
         ? { value: options.name }
-        : { prompt: { type: "input", message: "Project name?" }, required: true },
+        : {
+            prompt: { type: "input", message: "Project name?", default: "openui-project" },
+            required: true,
+          },
       template: options.template
         ? { value: options.template }
         : {
@@ -188,7 +191,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     options.immediate,
     options.noInstall,
     interactive,
-    packageManager.name,
   );
   telemetry.capture("cli_immediate_selected", {
     immediate: immediateResolution.immediate,
@@ -332,7 +334,6 @@ async function resolveImmediate(
   immediate: boolean | undefined,
   noInstall: boolean | undefined,
   interactive: boolean,
-  packageManager: string,
 ): Promise<{
   immediate: boolean;
   installDependencies: boolean;
@@ -359,7 +360,7 @@ async function resolveImmediate(
   try {
     const { confirm } = await import("@inquirer/prompts");
     const selected = await confirm({
-      message: `Start the development server after installing with ${packageManager}?`,
+      message: "Start dev server after install?",
       default: true,
     });
     return {
