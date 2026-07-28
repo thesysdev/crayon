@@ -1,6 +1,6 @@
 # @openuidev/devtools
 
-Development-only UI widget for OpenUI apps. Renders a floating button that opens a left side drawer listing the events captured by [`@openuidev/observability`](../observability) — event type, message, and a drill-in stack trace per entry.
+Development-only UI widget for OpenUI apps. Renders a floating button that opens a left side drawer listing the events captured by [`@openuidev/observability`](../observability) — level, a one-line summary, and a drill-in stack trace per entry.
 
 ## Usage
 

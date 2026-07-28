@@ -25,26 +25,25 @@ npm install @openuidev/observability
 
 ## `observability`
 
-The shared bus. It is **itself callable** to emit an event, with severity shortcuts and listen methods hanging off it. There is one shared instance — import it anywhere; emitters and listeners meet on it.
+The shared bus. It is **itself callable** — `observability(level, detail)` — with level shortcuts and listen methods hanging off it. There is one shared instance — import it anywhere; emitters and listeners meet on it.
 
 ```ts
 import { observability, toErrorInfo } from "@openuidev/observability";
 
-// Call the bus to emit any event; severity is inferred from the type suffix.
-observability("renderer:error", { component: "Chart", error: toErrorInfo(err) });
+// Call the bus with an explicit level and a payload.
+observability("error", { kind: "renderer:error", component: "Chart", error: toErrorInfo(err) });
 
-observability.error("llm:timeout", { requestId, message: "timed out" });
-observability.warn("chart:overflow", { points: 1200 });
-observability.info("route:change", { to: "/settings" });
+// Level shortcuts:
+observability.error({ kind: "llm:timeout", requestId, message: "timed out" });
+observability.warn({ kind: "chart:overflow", component: "Chart", points: 1200 });
+observability.info({ kind: "route:change", to: "/settings" });
 
-// App-specific events are just a call with your own namespaced type:
-observability("myapp:cache-miss", { key: "products:featured" });
-
-// Listen to one type, or to everything (the sink attachment point).
-const remove = observability.listen("llm:error", (event) => console.error(event.detail));
+// Listen by level (one or several), or to everything (the sink attachment point).
+const remove = observability.listen("error", (event) => console.error(event.detail));
+const some = observability.listen(["warning", "error"], (event) => report(event));
 const detach = observability.listenAll((event) => {
-  if (event.severity === "error") {
-    // forward event.type and event.detail to your service
+  if (event.level === "error") {
+    // forward event.detail to your service
   }
 });
 ```
@@ -53,22 +52,32 @@ Every method returning a listener gives back an `Unsubscribe` remover, and a lis
 
 ## The event envelope
 
-Every listener receives the same fixed envelope, generic over the payload:
+Every listener receives the same fixed envelope:
 
 ```ts
-interface ObservabilityEvent<TDetail = unknown> {
-  type: string; // e.g. "fetch:response", "renderer:error"
-  severity: "info" | "warning" | "error";
+interface ObservabilityEvent {
+  level: "info" | "warning" | "error";
   timestamp: number; // ms since epoch
-  detail: TDetail; // event-specific payload
+  detail: ObservabilityDetail;
 }
 ```
 
-`severity` defaults from the type suffix — `*:error` → `error`, `*:warning` → `warning`, else `info` — and can be overridden per emit: `observability(type, detail, { severity: "error" })`. The severity shortcuts (`error` / `warn` / `info`) are exactly that override applied for you.
+## The detail
+
+`detail` is a typed shape, not free-form — a required `kind` descriptor plus optional `message` / `error`, and any extra fields you need:
+
+```ts
+interface ObservabilityDetail {
+  kind: string; //                  required descriptor, e.g. "fetch:error"
+  message?: string; //              optional human-readable message
+  error?: ObservabilityErrorInfo; // present on failures; build with toErrorInfo()
+  [key: string]: unknown; //        extra structured fields — ids, timings, urls
+}
+```
 
 ## `toErrorInfo`
 
-Normalizes any thrown value into the fixed error shape carried by `*:error` events:
+Normalizes any thrown value into the fixed error shape, for placing under `detail.error`:
 
 ```ts
 interface ObservabilityErrorInfo {
@@ -78,16 +87,3 @@ interface ObservabilityErrorInfo {
   cause?: unknown; // the original thrown value
 }
 ```
-
-## Event name conventions
-
-Event types are namespaced strings — the bus doesn't restrict them. Recommended names for OpenUI apps:
-
-| Event type                             | Suggested detail fields                              |
-| -------------------------------------- | ---------------------------------------------------- |
-| `fetch:request` / `response` / `error` | `requestId`, `url`, `method`, `status`, `durationMs` |
-| `llm:request` / `response` / `error`   | `requestId`, `target` (model/endpoint), `status`     |
-| `renderer:success` / `error`           | `component`, `code`, `statementId`, `hint`           |
-| `tool:call` / `result` / `error`       | `toolName`, `statementId`, `args`, `durationMs`      |
-
-Conventions: `*:error` details carry `{ error: ObservabilityErrorInfo }`, and a shared `requestId` correlates the request/response/error events of one call.

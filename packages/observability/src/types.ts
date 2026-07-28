@@ -1,7 +1,35 @@
+/** The observability interface */
+export interface Observability {
+  /** Emit an event at `level` carrying `detail`. */
+  (level: ObservabilityLevel, detail: ObservabilityDetail): void;
+
+  /**
+   * Listen to one level, or several — every event at that level. Returns a
+   * remover.
+   */
+  listen(
+    level: ObservabilityLevel | ObservabilityLevel[],
+    handler: (event: ObservabilityEvent) => void,
+  ): Unsubscribe;
+  /** Listen to every event — the attachment point for sinks. Returns a remover. */
+  listenAll(handler: (event: ObservabilityEvent) => void): Unsubscribe;
+
+  /** Level shortcut — emit `detail` at info level. */
+  info(detail: ObservabilityDetail): void;
+  /** Level shortcut — emit `detail` at warning level. */
+  warn(detail: ObservabilityDetail): void;
+  /** Level shortcut — emit `detail` at error level. */
+  error(detail: ObservabilityDetail): void;
+}
+
+export type Unsubscribe = () => void;
+
+export type Handler = (event: ObservabilityEvent) => void;
+
 /**
- * Normalized error attached to every `*:error` event. Flat on purpose so
- * third-party sinks (Sentry, Datadog, custom loggers) can forward it without
- * unwrapping.
+ * Normalized error, convenient to place on an event's `detail` (e.g.
+ * `{ error: ObservabilityErrorInfo }`) so third party sinks
+ * can forward it without unwrapping.
  */
 export interface ObservabilityErrorInfo {
   /** Error class name, e.g. "TypeError". */
@@ -12,16 +40,28 @@ export interface ObservabilityErrorInfo {
   cause?: unknown;
 }
 
-export type ObservabilitySeverity = "info" | "warning" | "error";
+export type ObservabilityLevel = "info" | "warning" | "error";
 
-/** The fixed envelope every listener receives, whatever the event type. */
-export interface ObservabilityEvent<TDetail = unknown> {
-  /** Namespaced event name, e.g. "fetch:response", "llm:error", "renderer:error". */
-  type: string;
-  /** Derived from the type suffix by default; override per emit. */
-  severity: ObservabilitySeverity;
+/**
+ * Payload shape for every event. A required `kind` gives each
+ * event a machine-readable descriptor (the structured replacement for a
+ * top-level type); everything else is optional or free extra fields.
+ */
+export interface ObservabilityDetail {
+  /** Short descriptor of what happened, e.g. "fetch:error", "route:change". */
+  kind: string;
+  /** Optional human-readable message. */
+  message?: string;
+  /** Present on failures; build it with `toErrorInfo()`. */
+  error?: ObservabilityErrorInfo;
+  /** Extra structured fields — ids, timings, urls, etc. */
+  [key: string]: unknown;
+}
+
+/** The fixed envelope every listener receives. */
+export interface ObservabilityEvent {
+  level: ObservabilityLevel;
   /** Milliseconds since epoch. */
   timestamp: number;
-  /** Event-specific payload. By convention `*:error` payloads carry `{ error: ObservabilityErrorInfo }`. */
-  detail: TDetail;
+  detail: ObservabilityDetail;
 }

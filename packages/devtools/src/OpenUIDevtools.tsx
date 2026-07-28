@@ -57,9 +57,9 @@ export function OpenUIDevtools({
   useEffect(() => {
     if (!isEnabled) return;
     return bus.listenAll((event) => {
-      if (errorsOnly && event.severity === "info") return;
+      if (errorsOnly && event.level === "info") return;
       setEvents((prev) => [event, ...prev].slice(0, maxEvents));
-      if (event.severity === "error" && autoOpenRef.current) setOpen(true);
+      if (event.level === "error" && autoOpenRef.current) setOpen(true);
     });
   }, [bus, isEnabled, errorsOnly, maxEvents]);
 
@@ -77,7 +77,7 @@ export function OpenUIDevtools({
 
   if (!isEnabled) return null;
 
-  const errorCount = events.filter((event) => event.severity === "error").length;
+  const errorCount = events.filter((event) => event.level === "error").length;
 
   const openDrawer = () => {
     setSelected(null);
@@ -140,7 +140,7 @@ export function OpenUIDevtools({
                 </button>
               ) : null}
               <span style={styles.title}>
-                {selected ? `${selected.type} — stack trace` : "OpenUI Devtools"}
+                {selected ? `${selected.level} — stack trace` : "OpenUI Devtools"}
               </span>
             </div>
             <div style={styles.headerActions}>
@@ -205,8 +205,8 @@ export function OpenUIDevtools({
                     return (
                       <div key={`${event.timestamp}-${index}`} style={styles.row}>
                         <div style={styles.rowHeader}>
-                          <span style={{ ...styles.badge, ...badgeBySeverity[event.severity] }}>
-                            {event.type}
+                          <span style={{ ...styles.badge, ...badgeByLevel[event.level] }}>
+                            {event.level}
                           </span>
                           <span style={styles.time}>
                             {new Date(event.timestamp).toLocaleTimeString()}
@@ -248,9 +248,9 @@ function getErrorInfo(event: ObservabilityEvent): ObservabilityErrorInfo | undef
 }
 
 /**
- * Best-effort one-line summary from the conventional detail fields
- * (component/toolName/target/method+url/status/error.message). Falls back to
- * JSON for unconventional payloads.
+ * Best-effort one-line summary from conventional detail fields
+ * (kind/component/toolName/target/method+url/status/message/error.message).
+ * Falls back to JSON for unconventional payloads.
  */
 function summarize(event: ObservabilityEvent): string {
   const detail = asRecord(event.detail);
@@ -258,23 +258,24 @@ function summarize(event: ObservabilityEvent): string {
   const method = asString(detail["method"]);
   const url = asString(detail["url"]);
   const subject =
+    asString(detail["kind"]) ??
     asString(detail["component"]) ??
     asString(detail["toolName"]) ??
     asString(detail["target"]) ??
     (url ? [method, url].filter(Boolean).join(" ") : undefined);
   const status = typeof detail["status"] === "number" ? `→ ${detail["status"]}` : undefined;
-  const message = error ? `— ${error.message}` : undefined;
+  const message = error ? `— ${error.message}` : asString(detail["message"]);
 
   const parts = [subject, status, message].filter(Boolean);
   if (parts.length > 0) return parts.join(" ");
   try {
-    return JSON.stringify(event.detail) ?? event.type;
+    return JSON.stringify(event.detail) ?? "(no detail)";
   } catch {
-    return event.type;
+    return "(no detail)";
   }
 }
 
-const badgeBySeverity: Record<ObservabilityEvent["severity"], CSSProperties> = {
+const badgeByLevel: Record<ObservabilityEvent["level"], CSSProperties> = {
   error: { background: "#7f1d1d", color: "#fecaca" },
   warning: { background: "#78350f", color: "#fde68a" },
   info: { background: "#1e3a5f", color: "#bfdbfe" },

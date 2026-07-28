@@ -1,8 +1,10 @@
-export {
-  observability,
-  toErrorInfo,
-  type EmitOptions,
-  type Observability,
-  type Unsubscribe,
-} from "./observability";
-export type { ObservabilityErrorInfo, ObservabilityEvent, ObservabilitySeverity } from "./types";
+export { observability } from "./observability";
+export type {
+  Observability,
+  ObservabilityDetail,
+  ObservabilityErrorInfo,
+  ObservabilityEvent,
+  ObservabilityLevel,
+  Unsubscribe,
+} from "./types";
+export { toErrorInfo } from "./utils";
