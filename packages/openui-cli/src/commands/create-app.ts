@@ -360,7 +360,7 @@ async function resolveImmediate(
     const { confirm } = await import("@inquirer/prompts");
     const selected = await confirm({
       message: `Start the development server after installing with ${packageManager}?`,
-      default: false,
+      default: true,
     });
     return {
       immediate: selected,
