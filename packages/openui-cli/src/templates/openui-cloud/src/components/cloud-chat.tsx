@@ -2,11 +2,14 @@
 
 import { getPersistedModel, usePersistedModel } from "@/hooks/use-persisted-model";
 import { useTheme } from "@/hooks/use-system-theme";
-import { shouldShowBillingCreditsNotice } from "@/lib/billing";
-import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
 import { isDevelopment } from "@/lib/env";
 import { MODEL_OPTIONS } from "@/lib/models";
 import { OpenUICreditsModal } from "@openuidev/devtools";
+import {
+  fetchLLM,
+  openAIConversationMessageFormat,
+  openAIResponsesAdapter,
+} from "@openuidev/react-headless";
 import {
   AgentInterface,
   ModelSwitcher,
@@ -20,7 +23,7 @@ import {
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
 import { FileText, Presentation } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   {
@@ -35,22 +38,33 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   },
 ]);
 
-const showBillingCreditsNotice = shouldShowBillingCreditsNotice();
-
 const LIGHT_LOGO_URL = "/openui-cloud-logo-light.svg";
 const DARK_LOGO_URL = "/openui-cloud-logo-dark.svg";
 
 export default function CloudChat() {
   const mode = useTheme();
   const [selectedModel, setSelectedModel] = usePersistedModel();
+
+  // buildBody (below) reads the current model at request time via this ref, so
+  // switching models takes effect without recreating the LLM. Seed it with the
+  // persisted value so the first request uses the saved selection (selectedModel
+  // is still the server snapshot during the first client render).
+  const selectedModelRef = useRef(getPersistedModel());
+  useEffect(() => {
+    selectedModelRef.current = selectedModel;
+  }, [selectedModel]);
+
   const [llm] = useState(() =>
-    createCloudChatLLM({
-      // Read the persisted model directly so the LLM starts on the saved
-      // selection at construction. selectedModel is still the server snapshot
-      // (DEFAULT_MODEL) during the first client render; the effect below also
-      // keeps it in sync afterwards.
-      initialModel: getPersistedModel(),
-      showBillingCreditsNotice,
+    fetchLLM({
+      url: "/api/chat",
+      streamAdapter: openAIResponsesAdapter(),
+      // The cloud route persists history (store:true + conversation), so send
+      // only the latest message — plus the currently selected model.
+      buildBody: ({ threadId, messages }) => ({
+        threadId,
+        input: openAIConversationMessageFormat.toApi(messages.slice(-1)),
+        model: selectedModelRef.current,
+      }),
     }),
   );
   const storage = useOpenuiCloudStorage({
@@ -59,18 +73,13 @@ export default function CloudChat() {
     features: { artifact: true },
   });
 
-  // Keep the LLM in sync with the persisted selection (initial restore + changes).
-  useEffect(() => {
-    llm.setSelectedModel(selectedModel);
-  }, [llm, selectedModel]);
-
   const handleModelChange = useCallback(
     (model: string) => {
-      llm.setSelectedModel(model);
-      // Persist + notify; useSyncExternalStore re-reads and re-renders.
+      // Persist + notify; useSyncExternalStore re-reads and re-renders, and the
+      // ref effect above propagates the new model to buildBody.
       setSelectedModel(model);
     },
-    [llm, setSelectedModel],
+    [setSelectedModel],
   );
 
   const logoPath = mode === "dark" ? DARK_LOGO_URL : LIGHT_LOGO_URL;

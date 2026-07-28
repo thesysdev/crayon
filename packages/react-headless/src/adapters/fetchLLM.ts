@@ -2,7 +2,7 @@ import { observability, ObservabilityLevel, toErrorInfo } from "@openuidev/obser
 
 import { identityMessageFormat, type MessageFormat } from "../types/messageFormat";
 import type { StreamProtocolAdapter } from "../types/stream";
-import type { ChatLLM } from "./types";
+import type { ChatLLM, Message } from "./types";
 
 export interface FetchLLMOptions {
   /** Endpoint that accepts POST'd messages and returns a streaming Response. */
@@ -15,6 +15,11 @@ export interface FetchLLMOptions {
   headers?: Record<string, string>;
   /** Override fetch implementation (for tests, custom auth wrappers, etc.). */
   fetch?: typeof fetch;
+  /** Customize the POST body. Receives the run's thread/run ids and the
+   *  canonical messages; returns the JSON-serializable request body. Defaults
+   *  to the AG-UI `RunAgentInput` shape. When provided, `messageFormat` is not
+   *  applied — shape the wire format inside `buildBody`. */
+  buildBody?: (params: { threadId: string; runId: string; messages: Message[] }) => unknown;
 }
 
 // Observability level for a response's HTTP status: a rate limit surfaces as an
@@ -39,6 +44,7 @@ export function fetchLLM({
   messageFormat = identityMessageFormat,
   headers,
   fetch: customFetch,
+  buildBody,
 }: FetchLLMOptions): ChatLLM {
   const fetchImpl = customFetch ?? globalThis.fetch.bind(globalThis);
   return {
@@ -46,20 +52,16 @@ export function fetchLLM({
       const runId = crypto.randomUUID();
       observability.info({ kind: "llm:request", requestId: runId, url });
 
-      const wire = messageFormat.toApi(messages);
+      const body = buildBody
+        ? buildBody({ threadId, runId, messages })
+        : { threadId, runId, messages: messageFormat.toApi(messages), tools: [], context: [] };
       return fetchImpl(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...headers,
         },
-        body: JSON.stringify({
-          threadId,
-          runId,
-          messages: wire,
-          tools: [],
-          context: [],
-        }),
+        body: JSON.stringify(body),
         signal,
       }).then(
         (response) => {
