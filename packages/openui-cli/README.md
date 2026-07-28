@@ -201,7 +201,7 @@ The CLI sends usage analytics; OAuth sign-ins may link usage to your OIDC accoun
 
 When a coding agent invokes the CLI, it should pass `--agent-name` using its stable, lowercase kebab-case product slug—for example, `codex`, `claude-code`, `cline`, `factory-droid`, or `pi`. Do not pass a model/version, user name, session ID, or other unique value. Humans can omit the flag; it defaults to `unknown`.
 
-Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. For `create`, telemetry also includes `package_manager`, the immediate-start selection, and the dev-command lifecycle. Dev-command events contain status, duration, exit code, and signal—not project paths, command output, code, or environment values. Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
+Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. For `create`, telemetry also includes `package_manager`, the immediate-start selection, and best-effort dev-command start and result events. Dev-command events contain status, duration, exit code, and signal—not project paths, command output, code, or environment values. Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
 
 ```bash
 openui create --no-telemetry

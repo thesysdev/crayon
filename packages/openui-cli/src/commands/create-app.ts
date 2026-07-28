@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import spawn from "cross-spawn";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
@@ -12,8 +12,16 @@ import {
 } from "../lib/detect-package-manager";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { resolveArgs } from "../lib/resolve-args";
-import { runDevCommand } from "../lib/run-dev-command";
 import { CreateError, telemetry } from "../lib/telemetry";
+
+function runCommand(command: string, args: string[], cwd: string) {
+  return spawn.sync(command, args, { cwd, stdio: "inherit" });
+}
+
+function errorCode(error: Error): string {
+  const code = (error as NodeJS.ErrnoException).code;
+  return typeof code === "string" ? code : "UNKNOWN";
+}
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
@@ -280,8 +288,8 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       template,
       ai_setup: aiSetup,
     });
-    try {
-      execSync(installCmd, { stdio: "inherit", cwd: targetDir });
+    const installResult = runCommand(packageManager.runCmd, packageManager.installArgs, targetDir);
+    if (!installResult.error && installResult.status === 0) {
       dependencyInstalled = true;
       telemetry.capture("cli_dependency_install_succeeded", {
         ...createFunnelProps("dependency_install_succeeded"),
@@ -289,7 +297,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
         ai_setup: aiSetup,
         dependency_installed: dependencyInstalled,
       });
-    } catch {
+    } else {
       telemetry.capture("cli_dependency_install_failed", {
         ...createFunnelProps("dependency_install_failed"),
         template,
@@ -332,12 +340,40 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     return;
   }
 
-  const devResult = await runDevCommand(targetDir, packageManager);
-  if (devResult.status === "failed") {
+  const devStartedAt = Date.now();
+  telemetry.capture("cli_dev_command_started", {
+    package_manager: packageManager.name,
+  });
+  const devResult = runCommand(devCmd, ["run", "dev"], targetDir);
+  const durationMs = Math.max(0, Date.now() - devStartedAt);
+  const stoppedNormally =
+    devResult.status === 0 ||
+    devResult.status === 130 ||
+    devResult.status === 143 ||
+    devResult.signal === "SIGINT" ||
+    devResult.signal === "SIGTERM";
+
+  if (stoppedNormally) {
+    telemetry.capture("cli_dev_command_stopped", {
+      package_manager: packageManager.name,
+      duration_ms: durationMs,
+      exit_code: devResult.status,
+      signal: devResult.signal,
+    });
+  } else {
+    const exitCode = devResult.status ?? 1;
+    telemetry.capture("cli_dev_command_failed", {
+      package_manager: packageManager.name,
+      duration_ms: durationMs,
+      failure_reason: devResult.error ? "spawn_error" : "nonzero_exit",
+      exit_code: exitCode,
+      signal: devResult.signal,
+      ...(devResult.error ? { error_code: errorCode(devResult.error) } : {}),
+    });
     console.error(
       `\nDevelopment server exited. Retry with:\n\n> cd ${name}\n> ${devCmd} run dev\n`,
     );
-    process.exitCode = devResult.exitCode;
+    process.exitCode = exitCode;
   }
 }
 
