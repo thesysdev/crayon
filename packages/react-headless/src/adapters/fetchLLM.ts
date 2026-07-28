@@ -15,8 +15,8 @@ export interface FetchLLMOptions {
   headers?: Record<string, string>;
   /** Override fetch implementation (for tests, custom auth wrappers, etc.). */
   fetch?: typeof fetch;
-  /** Receives the run's thread/run ids and the canonical messages; returns 
-   *  the JSON-serializable request body. 
+  /** Receives the run's thread/run ids and the canonical messages; returns
+   *  the JSON-serializable request body.
    */
   buildBody?: (params: { threadId: string; runId: string; messages: Message[] }) => unknown;
 }
