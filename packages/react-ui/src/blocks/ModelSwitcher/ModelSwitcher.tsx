@@ -12,6 +12,7 @@ import {
   SelectSeparator,
   SelectTrigger,
 } from "../../components/Select";
+import { Tag } from "../../components/Tag";
 import { useTheme, type ThemeMode } from "../../components/ThemeProvider";
 
 import { groupModels, useHydrated } from "./utils";
@@ -154,20 +155,21 @@ function badgeFor(model: ModelOption): { label: string; kind: "recommended" | "b
 function Badge({ model, variant }: { model: ModelOption; variant: "trigger" | "row" }) {
   const badge = badgeFor(model);
   if (!badge) return null;
-  const dot = clsx("openui-model-switcher-dot", `openui-model-switcher-dot-${badge.kind}`);
 
+  // The trigger is too compact for a Tag — show a colored dot with an
+  // sr-only label instead.
   if (variant === "trigger") {
     return (
       <span className="openui-model-switcher-badge-trigger">
-        <span aria-hidden="true" className={dot} />
+        <span
+          aria-hidden="true"
+          className={clsx("openui-model-switcher-dot", `openui-model-switcher-dot-${badge.kind}`)}
+        />
         <span className="openui-model-switcher-sr">{badge.label}</span>
       </span>
     );
   }
   return (
-    <span className="openui-model-switcher-badge-row">
-      <span aria-hidden="true" className={dot} />
-      {badge.label}
-    </span>
+    <Tag size="sm" variant={badge.kind === "recommended" ? "info" : "success"} text={badge.label} />
   );
 }
