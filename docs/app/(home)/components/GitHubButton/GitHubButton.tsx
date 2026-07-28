@@ -1,7 +1,7 @@
 "use client";
 
-import type { JSX, ReactNode } from "react";
 import { GitHubIcon, useGitHubStarCount } from "@/components/brand-logo";
+import type { JSX, ReactNode } from "react";
 import { PillLink } from "../Button/Button";
 import styles from "./GitHubButton.module.css";
 
@@ -25,9 +25,12 @@ export function parseRepoFromUrl(href: string): string {
  * (count-up via requestAnimationFrame) and folds in the repo-parse + fallback
  * that Hero duplicated in two places.
  */
-export function useGitHubStars(hrefOrRepo: string, options?: { fallback?: number }): number {
+export function useGitHubStars(
+  hrefOrRepo: string,
+  options?: { fallback?: number; live?: boolean },
+): number {
   const repo = hrefOrRepo.includes("github.com/") ? parseRepoFromUrl(hrefOrRepo) : hrefOrRepo;
-  const count = useGitHubStarCount(repo);
+  const count = useGitHubStarCount(repo, options?.live ?? true);
   return count ?? options?.fallback ?? GITHUB_STAR_FALLBACK;
 }
 
@@ -73,6 +76,8 @@ export interface GitHubButtonProps {
   compact?: boolean;
   /** desktopGlow only: keep the black pill appearance in dark mode (skip the white flip). */
   keepBlack?: boolean;
+  /** Fetch the live star count. Disable for critical navigation chrome. */
+  liveCount?: boolean;
 }
 
 function cx(...classNames: Array<string | undefined>): string {
@@ -88,14 +93,40 @@ export function GitHubButton({
   classes,
   compact,
   keepBlack,
+  liveCount = true,
 }: GitHubButtonProps): JSX.Element {
   if (variant === "desktopPill") {
-    return <DesktopPillVariant href={href} label={label} className={className} arrow={arrow} classes={classes} />;
+    return (
+      <DesktopPillVariant
+        href={href}
+        label={label}
+        className={className}
+        arrow={arrow}
+        classes={classes}
+      />
+    );
   }
   if (variant === "desktopGlow") {
-    return <DesktopGlowVariant href={href} className={className} compact={compact} keepBlack={keepBlack} arrow={arrow} />;
+    return (
+      <DesktopGlowVariant
+        href={href}
+        className={className}
+        compact={compact}
+        keepBlack={keepBlack}
+        arrow={arrow}
+        liveCount={liveCount}
+      />
+    );
   }
-  return <MobileBannerVariant href={href} label={label} className={className} arrow={arrow} classes={classes} />;
+  return (
+    <MobileBannerVariant
+      href={href}
+      label={label}
+      className={className}
+      arrow={arrow}
+      classes={classes}
+    />
+  );
 }
 
 // --- desktopPill (= HeroSection's DesktopGithubButton) ----------------------
@@ -129,14 +160,16 @@ function DesktopGlowVariant({
   compact,
   keepBlack,
   arrow,
+  liveCount,
 }: {
   href: string;
   className?: string;
   compact?: boolean;
   keepBlack?: boolean;
   arrow?: ReactNode;
+  liveCount: boolean;
 }): JSX.Element {
-  const count = useGitHubStars(href);
+  const count = useGitHubStars(href, { live: liveCount });
   const label = String(count);
 
   return (
