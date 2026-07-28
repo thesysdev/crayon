@@ -2,16 +2,11 @@
 
 import { useTheme } from "next-themes";
 import { Highlight, themes } from "prism-react-renderer";
-import { useEffect, useState } from "react";
 import styles from "./CloudCodeBlock.module.css";
 
 export function CloudCodeBlock({ code }: { code: string }) {
   const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
-  const isDark = mounted && resolvedTheme === "dark";
+  const isDark = resolvedTheme === "dark";
 
   return (
     <div className={styles.panel}>

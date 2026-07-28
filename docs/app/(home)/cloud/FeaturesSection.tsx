@@ -1,5 +1,4 @@
 import { Button } from "@/components/button";
-import Image from "next/image";
 import type { ReactNode } from "react";
 import {
   FeatureGridSection,
@@ -64,21 +63,23 @@ export function FeaturesSection() {
     <>
       <section className={styles.section} aria-label="OpenUI Cloud features">
         <article className={styles.card}>
-          <Image
-            className={`${styles.featureImage} ${styles.featureImageLight}`}
-            src="/openui-cloud/llm-gateway.svg"
-            alt="OpenUI Cloud routing requests across model providers"
-            width={720}
-            height={400}
-          />
-          <Image
-            className={`${styles.featureImage} ${styles.featureImageDark}`}
-            src="/openui-cloud/llm-gateway-dark.svg"
-            alt=""
-            aria-hidden="true"
-            width={720}
-            height={400}
-          />
+          <picture className={styles.featureMedia}>
+            <source
+              data-theme-source
+              media="(prefers-color-scheme: dark)"
+              type="image/webp"
+              srcSet="/openui-cloud/llm-gateway-dark.webp"
+            />
+            <img
+              className={styles.featureImage}
+              src="/openui-cloud/llm-gateway.webp"
+              alt="OpenUI Cloud routing requests across model providers"
+              width={720}
+              height={400}
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
           <FeatureCopy
             title="Reliable model access"
             headline={
@@ -100,41 +101,45 @@ export function FeaturesSection() {
             description="Make sure broken responses never reach your user. OpenUI Cloud detects invalid responses, corrects issues, and safely renders the result, in real-time."
             docsHref="https://www.openui.com/docs/openui-cloud/production-readiness"
           />
-          <Image
-            className={`${styles.featureImage} ${styles.featureImageLight}`}
-            src="/openui-cloud/validation.svg"
-            alt="OpenUI Cloud validating and correcting model output"
-            width={720}
-            height={400}
-          />
-          <Image
-            className={`${styles.featureImage} ${styles.featureImageDark}`}
-            src="/openui-cloud/validation-dark.svg"
-            alt=""
-            aria-hidden="true"
-            width={720}
-            height={400}
-          />
+          <picture className={styles.featureMedia}>
+            <source
+              data-theme-source
+              media="(prefers-color-scheme: dark)"
+              srcSet="/openui-cloud/validation-dark.svg"
+            />
+            <img
+              className={styles.featureImage}
+              src="/openui-cloud/validation.svg"
+              alt="OpenUI Cloud validating and correcting model output"
+              width={720}
+              height={400}
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
         </article>
 
         <article className={styles.card}>
-          <Image
-            className={`${styles.featureImage} ${styles.featureImageLight}`}
-            src="/openui-cloud/reports&presentation.png?v=20260723-1444"
-            alt="OpenUI Cloud reports and presentation artifacts"
-            width={720}
-            height={400}
-            unoptimized
-          />
-          <Image
-            className={`${styles.featureImage} ${styles.featureImageDark}`}
-            src="/openui-cloud/reports&presentations-dark.png"
-            alt=""
-            aria-hidden="true"
-            width={720}
-            height={400}
-            unoptimized
-          />
+          <picture className={styles.featureMedia}>
+            <source
+              data-theme-source
+              media="(prefers-color-scheme: dark)"
+              srcSet="/openui-cloud/reports-dark-720.webp 720w, /openui-cloud/reports-dark-1440.webp 1440w"
+              sizes="(max-width: 1023px) calc(100vw - 32px), 720px"
+              type="image/webp"
+            />
+            <img
+              className={styles.featureImage}
+              src="/openui-cloud/reports-light-720.webp"
+              srcSet="/openui-cloud/reports-light-720.webp 720w, /openui-cloud/reports-light-1440.webp 1440w"
+              sizes="(max-width: 1023px) calc(100vw - 32px), 720px"
+              alt="OpenUI Cloud reports and presentation artifacts"
+              width={720}
+              height={400}
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
           <FeatureCopy
             title="Live & Static Artifacts"
             headline="Generate more than chat responses"

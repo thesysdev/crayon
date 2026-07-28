@@ -22,10 +22,10 @@ const HOME_LOGOS: Logo[] = [
 
 const CLOUD_LOGOS: Logo[] = [
   { src: "/logos/entelligence.svg", alt: "Entelligence" },
-  { src: "/logos/pointlabs.svg", alt: "Pointlabs" },
+  { src: "/logos/pointlabs.webp", alt: "Pointlabs" },
   { src: "/logos/wisdom.svg", alt: "Wisdom" },
   { src: "/logos/mili.svg", alt: "Mili" },
-  { src: "/logos/ficell-labs.svg", alt: "Ficell Labs" },
+  { src: "/logos/ficell-labs.webp", alt: "Ficell Labs" },
 ];
 
 /* The track holds SETS copies of the logo list and animates by -50%, so the
