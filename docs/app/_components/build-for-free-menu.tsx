@@ -1,7 +1,7 @@
 "use client";
 
 import { ClipboardCommandButton } from "@/app/(home)/components/Button/Button";
-import { captureCreateCliCommandCopied } from "@/lib/create-cli-copy-analytics";
+import { captureCreateCliCommandCopied } from "@/lib/analytics";
 import { ArrowRight } from "lucide-react";
 import styles from "./build-for-free-menu.module.css";
 import { useHeaderDropdown } from "./use-header-dropdown";
