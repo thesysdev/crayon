@@ -68,8 +68,8 @@ Options:
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
-- `-i, --immediate`: Install dependencies and start the development server
-- `--no-immediate`: Skip dependency installation and dev-server startup
+- `-i, --immediate`: Start the development server after installing dependencies
+- `--no-immediate`: Install dependencies without starting the development server
 - `--no-interactive`: Fail instead of prompting for missing required input
 - `--api-key <key>`: (cloud template) OpenUI Cloud API key; skips sign-in
 - `--auth <method>`: (cloud template) How to obtain the key — `oauth`, `manual`, or `skip`
@@ -81,8 +81,9 @@ What it does:
 - prompts for the template if you do not pass `--template`
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
-- asks whether to install dependencies and start the development server immediately
-- in non-interactive mode, installs dependencies without starting the server unless overridden with `--immediate`, `--no-immediate`, or `--no-install`
+- asks whether to start the development server after dependency installation; answering no preserves the install-and-exit behavior
+- installs dependencies automatically using the detected package manager (unless `--no-install`)
+- in non-interactive mode, installs dependencies without starting the server unless overridden with `--immediate`
 - optionally installs the OpenUI agent skill for AI coding assistants
 - writes a `.env` file tailored to the template (see below)
 

@@ -254,12 +254,10 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   let dependencyInstalled = false;
 
   if (!immediateResolution.installDependencies) {
-    const skipReason = options.noInstall ? "no_install_flag" : "not_immediate";
     telemetry.capture("cli_dependency_install_skipped", {
-      skip_reason: skipReason,
+      skip_reason: "no_install_flag",
     });
-    const reason = options.noInstall ? " (--no-install)" : "";
-    console.info(`Skipping dependency install${reason}. Run \`${installCmd}\` later.\n`);
+    console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.\n`);
   } else {
     console.info(`Installing dependencies with: ${installCmd}\n`);
     telemetry.capture("cli_dependency_install_started", {
@@ -314,7 +312,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
 
   if (!startDev) {
     telemetry.capture("cli_dev_command_skipped", {
-      skip_reason: immediateResolution.immediate ? "dependencies_not_installed" : "not_immediate",
+      skip_reason: options.noInstall ? "dependencies_not_installed" : "not_immediate",
     });
     return;
   }
@@ -346,7 +344,7 @@ async function resolveImmediate(
   if (immediate !== undefined) {
     return {
       immediate,
-      installDependencies: immediate,
+      installDependencies: true,
       source: "flag",
     };
   }
@@ -361,12 +359,12 @@ async function resolveImmediate(
   try {
     const { confirm } = await import("@inquirer/prompts");
     const selected = await confirm({
-      message: `Install with ${packageManager} and start now?`,
-      default: true,
+      message: `Start the development server after installing with ${packageManager}?`,
+      default: false,
     });
     return {
       immediate: selected,
-      installDependencies: selected,
+      installDependencies: true,
       source: "interactive_prompt",
     };
   } catch (error) {

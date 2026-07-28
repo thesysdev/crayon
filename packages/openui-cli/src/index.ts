@@ -57,8 +57,8 @@ program
   .option("--no-skill", "Skip installing the OpenUI agent skill")
   .option("--no-interactive", "Fail with error if required args are missing")
   .option("--no-install", "Scaffold without running the package install")
-  .option("-i, --immediate", "Install dependencies and start the development server")
-  .option("--no-immediate", "Skip dependency installation and dev-server startup")
+  .option("-i, --immediate", "Start the development server after installing dependencies")
+  .option("--no-immediate", "Install dependencies without starting the development server")
   .addHelpText(
     "after",
     `

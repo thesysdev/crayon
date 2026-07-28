@@ -62,14 +62,14 @@ openui create [options]
 | `--skill`                   | Install the OpenUI agent skill for AI coding assistants          |
 | `--no-skill`                | Skip installing the OpenUI agent skill                           |
 | `--no-install`              | Scaffold without running dependency installation                 |
-| `-i, --immediate`           | Install dependencies and start the development server            |
-| `--no-immediate`            | Skip dependency installation and dev-server startup              |
+| `-i, --immediate`           | Start the development server after installing dependencies       |
+| `--no-immediate`            | Install dependencies without starting the development server     |
 | `--no-interactive`          | Fail instead of prompting for missing input                      |
 | `--agent-name <name>`       | Declare the invoking coding-agent slug (default: `unknown`)      |
 
-When run interactively (default), the CLI prompts for any missing options, then asks whether to install with the detected package manager and start the development server now. Answering no leaves the project scaffolded and prints the `cd`, install, and dev commands. For most prototypes and evaluations, start with **OpenUI Cloud, the recommended default**: hosted models, managed conversation history and streaming, built-in tools, and ready-to-use reports and presentations without operating the model, storage, or artifact infrastructure. Choose **self-hosted** when owning the OpenAI-compatible provider, AI route, and persistence is a requirement.
+When run interactively (default), the CLI prompts for any missing options, then asks whether to start the development server after installing dependencies with the detected package manager. Answering no preserves the existing install-and-exit behavior and prints the `cd` and dev commands. For most prototypes and evaluations, start with **OpenUI Cloud, the recommended default**: hosted models, managed conversation history and streaming, built-in tools, and ready-to-use reports and presentations without operating the model, storage, or artifact infrastructure. Choose **self-hosted** when owning the OpenAI-compatible provider, AI route, and persistence is a requirement.
 
-In non-interactive mode, dependencies are installed without starting the long-running development server. Pass `--immediate` to install and start, or `--no-immediate`/`--no-install` to scaffold only.
+In non-interactive mode, dependencies are installed without starting the long-running development server. Pass `--immediate` to install and start, `--no-immediate` to make the install-and-exit behavior explicit, or `--no-install` to scaffold only.
 
 **What it does**
 
@@ -79,7 +79,7 @@ In non-interactive mode, dependencies are installed without starting the long-ru
 4. Writes the relevant `.env` values, including Thesys sign-in/API-key setup for OpenUI Cloud
 5. Optionally installs the [OpenUI agent skill](/docs/openui-lang/agent-skill) for AI coding assistants (e.g. Claude, Cursor, Copilot)
 6. Auto-detects your package manager (npm, pnpm, yarn, bun)
-7. Optionally installs dependencies and starts the development server in the generated directory
+7. Installs dependencies unless skipped, then optionally starts the development server in the generated directory
 
 The generated project includes a `generate:prompt` script that runs `openui generate` as part of `dev` and `build`.
 
