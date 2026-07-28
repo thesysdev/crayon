@@ -222,10 +222,13 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     });
     restoreDotfiles(targetDir);
     rewritePackageJson(targetDir, name, packageManager.name);
-    // Keep only the detected manager's lockfile and workspace configuration.
+    // npm ci requires the copied package-lock; other managers resolve from package.json.
     if (packageManager.name !== "npm") {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
     }
+    // The Cloud template ships pnpm's lock/workspace files for reproducible pnpm
+    // installs and native-build policy. They are irrelevant to npm/yarn/bun and
+    // can confuse workspace-root detection, so keep them only for pnpm scaffolds.
     if (packageManager.name !== "pnpm") {
       fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
       fs.rmSync(path.join(targetDir, "pnpm-workspace.yaml"), { force: true });
