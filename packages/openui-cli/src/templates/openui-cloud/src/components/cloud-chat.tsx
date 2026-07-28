@@ -23,7 +23,7 @@ import {
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
 import { FileText, Presentation } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   {
@@ -54,19 +54,23 @@ export default function CloudChat() {
     selectedModelRef.current = selectedModel;
   }, [selectedModel]);
 
-  const [llm] = useState(() =>
-    fetchLLM({
-      url: "/api/chat",
-      streamAdapter: openAIResponsesAdapter(),
-      // The cloud route persists history (store:true + conversation), so send
-      // only the latest message — plus the currently selected model.
-      buildBody: ({ threadId, messages }) => ({
-        threadId,
-        input: openAIConversationMessageFormat.toApi(messages.slice(-1)),
-        model: selectedModelRef.current,
-      }),
+  // Create the LLM once and keep it across renders via a ref (not state — it
+  // never changes and never needs to trigger a re-render). The `??=` lazy-init
+  // runs fetchLLM exactly once and is tolerant of re-renders / strict-mode
+  // double-invocation. buildBody reads the live model from selectedModelRef, so
+  // switching models reuses this instance.
+  const llmRef = useRef<ReturnType<typeof fetchLLM> | null>(null);
+  const llm = (llmRef.current ??= fetchLLM({
+    url: "/api/chat",
+    streamAdapter: openAIResponsesAdapter(),
+    // The cloud route persists history (store:true + conversation), so send
+    // only the latest message — plus the currently selected model.
+    buildBody: ({ threadId, messages }) => ({
+      threadId,
+      input: openAIConversationMessageFormat.toApi(messages.slice(-1)),
+      model: selectedModelRef.current,
     }),
-  );
+  }));
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",
