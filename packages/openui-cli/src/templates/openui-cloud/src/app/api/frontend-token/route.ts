@@ -1,4 +1,5 @@
 import { envOr, requiredEnv } from "@/lib/env";
+import { NextResponse } from "next/server";
 
 /**
  * Mints the short-lived fct_ token the browser uses for the storage plane
@@ -33,9 +34,9 @@ export async function POST() {
       .text()
       .catch(() => "There was an error in the response from the upstream service.");
     console.error("[frontend-token] mint failed:", upstream.status, errText);
-    return Response.json({ error: { message: errText } }, { status: 502 });
+    return NextResponse.json({ error: { message: errText } }, { status: upstream.status });
   }
 
   const { token, expires_at } = (await upstream.json()) as { token: string; expires_at: number };
-  return Response.json({ token, expires_at });
+  return NextResponse.json({ token, expires_at });
 }

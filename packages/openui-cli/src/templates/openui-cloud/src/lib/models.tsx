@@ -45,6 +45,11 @@ export const MODEL_OPTIONS: ModelOption[] = [
   { id: "google/gemini-3.5-flash-free", name: "Gemini 3.5 Flash", group: "Free", badge: "Free", logo: logo.google },
 ];
 
-export function resolveRequestedModel(model: unknown, fallback = DEFAULT_MODEL): string {
-  return typeof model === "string" && model.trim() ? model : fallback;
+const MODEL_IDS = new Set(MODEL_OPTIONS.map((model) => model.id));
+
+/** Resolve the requested model against the allowlist above: absent → default,
+ *  unknown → null (the route rejects it). */
+export function resolveRequestedModel(model: unknown): string | null {
+  if (model === undefined || model === null || model === "") return DEFAULT_MODEL;
+  return typeof model === "string" && MODEL_IDS.has(model) ? model : null;
 }

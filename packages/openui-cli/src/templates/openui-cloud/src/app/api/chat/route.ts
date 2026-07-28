@@ -1,9 +1,9 @@
-import { getBillingCreditsErrorMessage } from "@/lib/billing";
-import { envOr, requiredEnv } from "@/lib/env";
-import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
+import { requiredEnv } from "@/lib/env";
+import { resolveRequestedModel } from "@/lib/models";
 import { runFunctionToolLoop } from "@/lib/tool-loop";
 import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
 import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
+import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import type {
   ResponseCreateParamsNonStreaming,
@@ -36,18 +36,12 @@ export async function POST(req: Request) {
     model?: unknown;
   };
 
-  if (!threadId) {
-    return Response.json(
-      { error: { message: "threadId is required — create the conversation first" } },
-      { status: 400 },
-    );
-  }
+  if (!threadId) return badRequest("threadId is required — create the conversation first");
   if (!Array.isArray(input) || input.length === 0) {
-    return Response.json(
-      { error: { message: "input must be a non-empty ResponseInputItem[]" } },
-      { status: 400 },
-    );
+    return badRequest("input must be a non-empty ResponseInputItem[]");
   }
+  const model = resolveRequestedModel(requestedModel);
+  if (!model) return badRequest("model is not available in this agent");
 
   const client = new OpenAI({
     baseURL: "https://api.thesys.dev/v1/embed",
@@ -62,7 +56,7 @@ export async function POST(req: Request) {
   };
 
   const createParams: ResponseCreateParamsNonStreaming = {
-    model: resolveRequestedModel(requestedModel, envOr("OPENUI_MODEL", DEFAULT_MODEL)),
+    model,
     conversation: threadId, // store:true persists to the conversation
     input,
     store: true,
@@ -94,31 +88,10 @@ export async function POST(req: Request) {
       { signal: req.signal }, // propagate browser aborts (stop button / tab close)
     )) as unknown as AsyncIterable<Record<string, unknown>>;
   } catch (err) {
-    // The SDK surfaces upstream HTTP errors (e.g. 403) as APIError.
+    // The SDK surfaces upstream HTTP errors (e.g. 429/403) as APIError —
+    // propagate the upstream message and status; the chat store surfaces it.
     const e = err as { status?: number; error?: unknown; message?: string };
-    if (isRateLimitError(e)) {
-      return Response.json(
-        {
-          error: { message: getBillingCreditsErrorMessage() },
-        },
-        { status: 429 },
-      );
-    }
-
-    if (e.status === 401 || e.status === 403) {
-      return Response.json(
-        {
-          error: {
-            code: "invalid_api_key",
-            message:
-              "OpenUI Cloud rejected THESYS_API_KEY. Check the key in .env against the Thesys console → API keys.",
-          },
-        },
-        { status: e.status },
-      );
-    }
-
-    return Response.json(
+    return NextResponse.json(
       { error: e.error ?? { message: e.message ?? "upstream error" } },
       { status: e.status ?? 502 },
     );
@@ -142,12 +115,10 @@ export async function POST(req: Request) {
           signal: req.signal,
         });
       } catch (err) {
-        const message = isRateLimitError(err)
-          ? getBillingCreditsErrorMessage()
-          : err instanceof Error
-            ? err.message
-            : String(err);
-        enqueue({ type: "error", message });
+        enqueue({
+          type: "error",
+          message: err instanceof Error ? err.message : String(err),
+        });
       } finally {
         controller.close();
       }
@@ -163,6 +134,6 @@ export async function POST(req: Request) {
   });
 }
 
-function isRateLimitError(err: unknown): boolean {
-  return typeof err === "object" && err !== null && "status" in err && err.status === 429;
+function badRequest(message: string): Response {
+  return NextResponse.json({ error: { message } }, { status: 400 });
 }

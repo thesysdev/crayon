@@ -1,7 +1,6 @@
 "use client";
 
 import { usePersistedModel } from "@/hooks/use-persisted-model";
-import { useTheme } from "@/hooks/use-system-theme";
 import { isDevelopment } from "@/lib/env";
 import { MODEL_OPTIONS } from "@/lib/models";
 import { OpenUICreditsModal } from "@openuidev/devtools";
@@ -14,6 +13,7 @@ import {
   AgentInterface,
   ModelSwitcher,
   defineArtifactCategories,
+  useSystemThemeMode,
   type PromptTemplate,
 } from "@openuidev/react-ui";
 import {
@@ -42,7 +42,7 @@ const LIGHT_LOGO_URL = "/openui-cloud-logo-light.svg";
 const DARK_LOGO_URL = "/openui-cloud-logo-dark.svg";
 
 export default function CloudChat() {
-  const mode = useTheme();
+  const mode = useSystemThemeMode();
   const [selectedModel, setSelectedModel] = usePersistedModel();
 
   // useFetchLLM keeps a single stable LLM across renders and reads its options
@@ -77,7 +77,7 @@ export default function CloudChat() {
   const logoPath = mode === "dark" ? DARK_LOGO_URL : LIGHT_LOGO_URL;
 
   return (
-    <div className="h-screen w-screen overflow-hidden relative">
+    <div className="openui-cloud-page">
       <AgentInterface
         storage={storage}
         llm={llm}
@@ -89,7 +89,6 @@ export default function CloudChat() {
         starters={starters}
       >
         <AgentInterface.MobileHeader
-          className="openui-cloud-mobile-header"
           agentName=""
           actions={
             <ModelSwitcher
