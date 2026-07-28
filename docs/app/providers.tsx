@@ -1,6 +1,6 @@
 "use client";
 
-import { loadPostHog } from "@/lib/posthog-client";
+import { loadPostHog } from "@/lib/analytics";
 import { addThesysLinkAttribution } from "@/lib/thesys-link-attribution";
 import { useEffect } from "react";
 
