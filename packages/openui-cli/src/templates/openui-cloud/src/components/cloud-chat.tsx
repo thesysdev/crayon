@@ -2,16 +2,20 @@
 
 import { getPersistedModel, usePersistedModel } from "@/hooks/use-persisted-model";
 import { useTheme } from "@/hooks/use-system-theme";
-import { shouldShowBillingCreditsNotice } from "@/lib/billing";
+import { isDevelopment } from "@/lib/env";
+import { MODEL_OPTIONS } from "@/lib/models";
+import { OpenUICreditsModal } from "@openuidev/devtools";
 import {
-  DARK_LOGO_URL,
-  LIGHT_LOGO_URL,
-  PROMPT_TEMPLATES,
-  starters,
-} from "@/lib/cloud-chat-constants";
-import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
-import { defineArtifactCategories } from "@openuidev/react-headless";
-import { AgentInterface } from "@openuidev/react-ui";
+  fetchLLM,
+  openAIConversationMessageFormat,
+  openAIResponsesAdapter,
+} from "@openuidev/react-headless";
+import {
+  AgentInterface,
+  ModelSwitcher,
+  defineArtifactCategories,
+  type PromptTemplate,
+} from "@openuidev/react-ui";
 import {
   chatLibrary,
   presentationArtifactRenderer,
@@ -19,9 +23,7 @@ import {
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
 import { FileText, Presentation } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { BillingCreditsDialog } from "./billing-credits-dialog";
-import { ModelSwitcher } from "./model-switcher";
+import { useCallback, useEffect, useRef } from "react";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   {
@@ -36,56 +38,58 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   },
 ]);
 
-const showBillingCreditsNotice = shouldShowBillingCreditsNotice();
+const LIGHT_LOGO_URL = "/openui-cloud-logo-light.svg";
+const DARK_LOGO_URL = "/openui-cloud-logo-dark.svg";
 
-export function CloudChat() {
+export default function CloudChat() {
   const mode = useTheme();
   const [selectedModel, setSelectedModel] = usePersistedModel();
-  const [billingDialogOpen, setBillingDialogOpen] = useState(false);
-  const [billingCreditsRequired, setBillingCreditsRequired] = useState(false);
-  const [llm] = useState(() =>
-    createCloudChatLLM({
-      // Read the persisted model directly so the LLM starts on the saved
-      // selection at construction. selectedModel is still the server snapshot
-      // (DEFAULT_MODEL) during the first client render; the effect below also
-      // keeps it in sync afterwards.
-      initialModel: getPersistedModel(),
-      showBillingCreditsNotice,
-      onRequestStart: () => {
-        if (showBillingCreditsNotice) setBillingCreditsRequired(false);
-      },
-      onBillingCreditsRequired: () => {
-        setBillingCreditsRequired(true);
-        setBillingDialogOpen(true);
-      },
+
+  // buildBody (below) reads the current model at request time via this ref, so
+  // switching models takes effect without recreating the LLM. Seed it with the
+  // persisted value so the first request uses the saved selection (selectedModel
+  // is still the server snapshot during the first client render).
+  const selectedModelRef = useRef(getPersistedModel());
+  useEffect(() => {
+    selectedModelRef.current = selectedModel;
+  }, [selectedModel]);
+
+  // Create the LLM once and keep it across renders via a ref (not state — it
+  // never changes and never needs to trigger a re-render). The `??=` lazy-init
+  // runs fetchLLM exactly once and is tolerant of re-renders / strict-mode
+  // double-invocation. buildBody reads the live model from selectedModelRef, so
+  // switching models reuses this instance.
+  const llmRef = useRef<ReturnType<typeof fetchLLM> | null>(null);
+  const llm = (llmRef.current ??= fetchLLM({
+    url: "/api/chat",
+    streamAdapter: openAIResponsesAdapter(),
+    // The cloud route persists history (store:true + conversation), so send
+    // only the latest message — plus the currently selected model.
+    buildBody: ({ threadId, messages }) => ({
+      threadId,
+      input: openAIConversationMessageFormat.toApi(messages.slice(-1)),
+      model: selectedModelRef.current,
     }),
-  );
+  }));
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",
     features: { artifact: true },
   });
 
-  // Keep the LLM in sync with the persisted selection (initial restore + changes).
-  useEffect(() => {
-    llm.setSelectedModel(selectedModel);
-  }, [llm, selectedModel]);
-
   const handleModelChange = useCallback(
     (model: string) => {
-      llm.setSelectedModel(model);
-      // Persist + notify; useSyncExternalStore re-reads and re-renders.
+      // Persist + notify; useSyncExternalStore re-reads and re-renders, and the
+      // ref effect above propagates the new model to buildBody.
       setSelectedModel(model);
     },
-    [llm, setSelectedModel],
+    [setSelectedModel],
   );
 
+  const logoPath = mode === "dark" ? DARK_LOGO_URL : LIGHT_LOGO_URL;
+
   return (
-    <div
-      className={`h-screen w-screen overflow-hidden relative${
-        billingCreditsRequired ? " openui-cloud-root--billing-credits-required" : ""
-      }`}
-    >
+    <div className="h-screen w-screen overflow-hidden relative">
       <AgentInterface
         storage={storage}
         llm={llm}
@@ -100,11 +104,19 @@ export function CloudChat() {
           className="openui-cloud-mobile-header"
           agentName=""
           actions={
-            <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+            <ModelSwitcher
+              models={MODEL_OPTIONS}
+              value={selectedModel}
+              onValueChange={handleModelChange}
+            />
           }
         />
         <AgentInterface.ThreadHeader className="openui-cloud-thread-header">
-          <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+          <ModelSwitcher
+            models={MODEL_OPTIONS}
+            value={selectedModel}
+            onValueChange={handleModelChange}
+          />
         </AgentInterface.ThreadHeader>
         <AgentInterface.Welcome
           title="Good to see you"
@@ -113,9 +125,72 @@ export function CloudChat() {
           glowAnimation
         />
       </AgentInterface>
-      {showBillingCreditsNotice ? (
-        <BillingCreditsDialog open={billingDialogOpen} onOpenChange={setBillingDialogOpen} />
-      ) : null}
+      {isDevelopment() && <OpenUICreditsModal />}
     </div>
   );
 }
+
+const PROMPT_TEMPLATES: PromptTemplate[] = [
+  {
+    displayText: "Create a presentation",
+    prompt: "Create a presentation about ",
+    icon: <Presentation size={16} />,
+    completions: [
+      {
+        displayText: "The rise of reusable rockets and commercial spaceflight",
+        prompt: "the rise of reusable rockets and commercial spaceflight",
+        icon: <></>,
+      },
+      {
+        displayText: "How Formula 1 became a global business",
+        prompt: "how Formula 1 became a global business",
+        icon: <></>,
+      },
+      {
+        displayText: "Why electric vehicles are changing transportation",
+        prompt: "why electric vehicles are changing transportation",
+        icon: <></>,
+      },
+    ],
+  },
+  {
+    displayText: "Write a report",
+    prompt: "Write a report on ",
+    icon: <FileText size={16} />,
+    completions: [
+      {
+        displayText: "Global coffee market trends and consumer preferences",
+        prompt: "global coffee market trends and consumer preferences",
+        icon: <></>,
+      },
+      {
+        displayText: "The state of the electric vehicle market in 2026",
+        prompt: "the state of the electric vehicle market in 2026",
+        icon: <></>,
+      },
+      {
+        displayText: "Global travel trends and emerging destinations",
+        prompt: "global travel trends and emerging destinations",
+        icon: <></>,
+      },
+    ],
+  },
+];
+
+const starters = [
+  {
+    displayText: "Relive the FIFA World Cup 2026",
+    prompt: "Relive the FIFA World Cup 2026.",
+    icon: <></>,
+  },
+  {
+    displayText: "Create a report on global coffee trends",
+    prompt: "Create a report on global coffee trends.",
+    icon: <></>,
+  },
+  {
+    displayText: "Help me plan my next vacation",
+    prompt: "Help me plan my next vacation.",
+    icon: <></>,
+  },
+];
