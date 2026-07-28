@@ -55,17 +55,21 @@ openui create [options]
 
 | Flag                        | Description                                                      |
 | --------------------------- | ---------------------------------------------------------------- |
-| `-n, --name <string>`       | Project name (directory to create)                               |
+| `-n, --name <string>`       | Project name (interactive default: `openui-agent`)               |
 | `-t, --template <template>` | AI backend: `openui-cloud` (recommended) or `openui-self-hosted` |
 | `--api-key <key>`           | OpenUI Cloud API key; skips sign-in for the Cloud setup          |
 | `--auth <method>`           | Cloud auth method: `oauth`, `manual`, or `skip`                  |
 | `--skill`                   | Install the OpenUI agent skill for AI coding assistants          |
 | `--no-skill`                | Skip installing the OpenUI agent skill                           |
 | `--no-install`              | Scaffold without running dependency installation                 |
+| `-i, --immediate`           | Start the development server after installing dependencies       |
+| `--no-immediate`            | Install dependencies without starting the development server     |
 | `--no-interactive`          | Fail instead of prompting for missing input                      |
 | `--agent-name <name>`       | Declare the invoking coding-agent slug (default: `unknown`)      |
 
-When run interactively (default), the CLI prompts for any missing options. For most prototypes and evaluations, start with **OpenUI Cloud, the recommended default**: hosted models, managed conversation history and streaming, built-in tools, and ready-to-use reports and presentations without operating the model, storage, or artifact infrastructure. Choose **self-hosted** when owning the OpenAI-compatible provider, AI route, and persistence is a requirement. Pass `--no-interactive` in CI or scripted environments to surface missing required flags as errors instead.
+When run interactively (default), the CLI prompts for any missing options, then asks whether to start the development server after installing dependencies with the detected package manager. The start prompt defaults to yes; answering no preserves the existing install-and-exit behavior and prints the `cd` and dev commands. For most prototypes and evaluations, start with **OpenUI Cloud, the recommended default**: hosted models, managed conversation history and streaming, built-in tools, and ready-to-use reports and presentations without operating the model, storage, or artifact infrastructure. Choose **self-hosted** when owning the OpenAI-compatible provider, AI route, and persistence is a requirement.
+
+In non-interactive mode, dependencies are installed without starting the long-running development server. Pass `--immediate` to install and start, `--no-immediate` to make the install-and-exit behavior explicit, or `--no-install` to scaffold only.
 
 **What it does**
 
@@ -75,7 +79,7 @@ When run interactively (default), the CLI prompts for any missing options. For m
 4. Writes the relevant `.env` values, including Thesys sign-in/API-key setup for OpenUI Cloud
 5. Optionally installs the [OpenUI agent skill](/docs/openui-lang/agent-skill) for AI coding assistants (e.g. Claude, Cursor, Copilot)
 6. Auto-detects your package manager (npm, pnpm, yarn, bun)
-7. Installs dependencies
+7. Installs dependencies unless skipped, then optionally starts the development server in the generated directory
 
 The generated project includes a `generate:prompt` script that runs `openui generate` as part of `dev` and `build`.
 
@@ -94,6 +98,7 @@ pnpx @openuidev/cli@latest create
 # Select an AI setup explicitly
 pnpx @openuidev/cli@latest create --name my-app --template openui-cloud
 pnpx @openuidev/cli@latest create --name my-app --template openui-self-hosted
+pnpx @openuidev/cli@latest create --name my-app --template openui-cloud --immediate
 
 # Non-interactive
 pnpx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip
@@ -326,8 +331,9 @@ Usage analytics include two independent properties: `agent_name`, declared throu
 and `detected_agent_name`, inferred best-effort from known product environment markers. Either
 value can be spoofed, inherited, missing, or ambiguous, so neither should be treated as an
 authentication or security signal. For `create`, analytics also include `package_manager`, the
-manager selected for dependency installation (`npm`, `pnpm`, `yarn`, or `bun`). Use
-`--no-telemetry` or `DO_NOT_TRACK=1` to disable collection.
+immediate-start selection, and best-effort dev-command start and result events. Dev-command events
+contain status, duration, exit code, and signal—not project paths, command output, code, or
+environment values. Use `--no-telemetry` or `DO_NOT_TRACK=1` to disable collection.
 
 ## See also
 

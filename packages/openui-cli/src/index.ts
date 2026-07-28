@@ -46,7 +46,7 @@ program
   .description(
     "Scaffold a Next.js agent app with the recommended OpenUI Cloud backend or your own provider",
   )
-  .option("-n, --name <string>", "Project name")
+  .option("-n, --name <string>", "Project name (interactive default: openui-agent)")
   .option(
     "-t, --template <template>",
     "AI backend: openui-cloud (recommended default) | openui-self-hosted (infrastructure control)",
@@ -57,6 +57,8 @@ program
   .option("--no-skill", "Skip installing the OpenUI agent skill")
   .option("--no-interactive", "Fail with error if required args are missing")
   .option("--no-install", "Scaffold without running the package install")
+  .option("-i, --immediate", "Start the development server after installing dependencies")
+  .option("--no-immediate", "Install dependencies without starting the development server")
   .addHelpText(
     "after",
     `
@@ -78,6 +80,7 @@ Templates:
       skill?: boolean;
       interactive: boolean;
       install: boolean;
+      immediate?: boolean;
     }) => {
       try {
         await runCreateApp({
@@ -88,6 +91,7 @@ Templates:
           skill: options.skill,
           noInteractive: !options.interactive,
           noInstall: !options.install,
+          immediate: options.immediate,
         });
       } catch (e) {
         handleCliError(e, "cli_create_failed");
