@@ -17,8 +17,6 @@ import { useTheme, type ThemeMode } from "../../components/ThemeProvider";
 
 import { groupModels, useHydrated } from "./utils";
 
-import "./modelSwitcher.scss";
-
 /** A single logo node, or a light/dark pair the switcher picks from by theme. */
 export type ModelLogo = ReactNode | { light: ReactNode; dark: ReactNode };
 
