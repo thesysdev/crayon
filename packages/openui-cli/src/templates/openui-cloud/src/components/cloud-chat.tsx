@@ -10,8 +10,10 @@ import {
   starters,
 } from "@/lib/cloud-chat-constants";
 import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
+import { MODEL_OPTIONS } from "@/lib/models";
 import { defineArtifactCategories } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
+import { ModelSwitcher } from "@openuidev/react-ui/blocks";
 import {
   chatLibrary,
   presentationArtifactRenderer,
@@ -21,7 +23,6 @@ import {
 import { FileText, Presentation } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { BillingCreditsDialog } from "./billing-credits-dialog";
-import { ModelSwitcher } from "./model-switcher";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   {
@@ -102,11 +103,11 @@ export function CloudChat() {
           className="openui-cloud-mobile-header"
           agentName=""
           actions={
-            <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+            <ModelSwitcher models={MODEL_OPTIONS} value={selectedModel} onValueChange={handleModelChange} />
           }
         />
         <AgentInterface.ThreadHeader className="openui-cloud-thread-header">
-          <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+          <ModelSwitcher models={MODEL_OPTIONS} value={selectedModel} onValueChange={handleModelChange} />
         </AgentInterface.ThreadHeader>
         <AgentInterface.Welcome
           title="Good to see you"
