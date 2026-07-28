@@ -1,20 +1,41 @@
 "use client";
 
+import { loadPostHog } from "@/lib/posthog-client";
 import { addThesysLinkAttribution } from "@/lib/thesys-link-attribution";
-import posthog from "posthog-js";
-import { PostHogProvider } from "posthog-js/react";
 import { useEffect } from "react";
+
+const FALLBACK_DELAY_MS = 30_000;
 
 export function PHProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    posthog.init("phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D", {
-      api_host: "https://dgoeivjus9jfp.cloudfront.net",
-      capture_pageview: "history_change",
-      disable_session_recording: false,
-      session_recording: {
-        sampleRate: 0.1,
-      },
-    });
+    let loaded = false;
+    let idleCallbackId: number | undefined;
+    let posthogDistinctId: string | undefined;
+    let posthogSessionId: string | undefined;
+
+    const load = () => {
+      if (loaded) return;
+      loaded = true;
+
+      void loadPostHog()
+        .then((posthog) => {
+          posthogDistinctId = posthog.get_distinct_id();
+          posthogSessionId = posthog.get_session_id();
+        })
+        .catch(() => {
+          // Analytics failures must not affect navigation.
+        });
+    };
+
+    const scheduleAfterNextPaint = () => {
+      window.requestAnimationFrame(() => {
+        if ("requestIdleCallback" in window) {
+          idleCallbackId = window.requestIdleCallback(load, { timeout: 2_000 });
+        } else {
+          setTimeout(load, 0);
+        }
+      });
+    };
 
     const decorateLink = (anchor: HTMLAnchorElement) => {
       const href = anchor.getAttribute("href");
@@ -23,39 +44,14 @@ export function PHProvider({ children }: { children: React.ReactNode }) {
       const attributedHref = addThesysLinkAttribution(
         href,
         window.location.href,
-        posthog.get_distinct_id(),
-        posthog.get_session_id(),
+        posthogDistinctId,
+        posthogSessionId,
       );
 
       if (attributedHref !== href) anchor.setAttribute("href", attributedHref);
     };
 
-    const decorateLinksWithin = (root: ParentNode) => {
-      if (root instanceof HTMLAnchorElement) decorateLink(root);
-      root.querySelectorAll<HTMLAnchorElement>("a[href]").forEach(decorateLink);
-    };
-
-    decorateLinksWithin(document);
-
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.type === "attributes") {
-          if (mutation.target instanceof HTMLAnchorElement) decorateLink(mutation.target);
-          continue;
-        }
-
-        for (const node of mutation.addedNodes) {
-          if (node instanceof Element) decorateLinksWithin(node);
-        }
-      }
-    });
-
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["href"],
-      childList: true,
-      subtree: true,
-    });
+    document.querySelectorAll<HTMLAnchorElement>("a[href]").forEach(decorateLink);
 
     const refreshLinkAtInteraction = (event: Event) => {
       if (!(event.target instanceof Element)) return;
@@ -66,11 +62,27 @@ export function PHProvider({ children }: { children: React.ReactNode }) {
     document.addEventListener("pointerdown", refreshLinkAtInteraction, true);
     document.addEventListener("click", refreshLinkAtInteraction, true);
 
+    const interactionEvents = ["pointerdown", "keydown", "touchstart"] as const;
+    interactionEvents.forEach((eventName) => {
+      window.addEventListener(eventName, scheduleAfterNextPaint, {
+        once: true,
+        passive: true,
+      });
+    });
+
+    const fallbackTimer = window.setTimeout(load, FALLBACK_DELAY_MS);
+
     return () => {
-      observer.disconnect();
+      window.clearTimeout(fallbackTimer);
+      if (idleCallbackId !== undefined && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleCallbackId);
+      }
       document.removeEventListener("pointerdown", refreshLinkAtInteraction, true);
       document.removeEventListener("click", refreshLinkAtInteraction, true);
+      interactionEvents.forEach((eventName) => {
+        window.removeEventListener(eventName, scheduleAfterNextPaint);
+      });
     };
   }, []);
-  return <PostHogProvider client={posthog}>{children}</PostHogProvider>;
+  return children;
 }
