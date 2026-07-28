@@ -45,5 +45,8 @@ export function normalizeAuth(a?: string): CloudAuthMethod | undefined {
   if (!a) return undefined;
   const v = a.toLowerCase();
   if (v === "oauth" || v === "manual" || v === "skip") return v;
-  throw new CreateError("bad_args", `unknown --auth "${a}". Use: oauth | manual | skip.`);
+  throw new CreateError(
+    "bad_args",
+    `unknown --auth "${a}". Use: oauth | skip (manual is deprecated).`,
+  );
 }

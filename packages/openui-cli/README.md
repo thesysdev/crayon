@@ -72,7 +72,7 @@ Options:
 - `--no-immediate`: Install dependencies without starting the development server
 - `--no-interactive`: Fail instead of prompting for missing required input
 - `--api-key <key>`: (cloud template) OpenUI Cloud API key; skips sign-in
-- `--auth <method>`: (cloud template) How to obtain the key — `oauth`, `manual`, or `skip`
+- `--auth <method>`: (cloud template) How to obtain the key — `oauth` or `skip`; `manual` remains available for backward compatibility but is deprecated
 - `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
 What it does:
@@ -98,8 +98,8 @@ What it does:
   - `--api-key <key>` if provided
   - the `--auth` method, otherwise an interactive prompt offering:
     - `oauth` — sign in with Thesys in the browser and mint a key for your org
-    - `manual` — paste an existing key
     - `skip` — leave `THESYS_API_KEY` empty and add it later (get one at <https://console.thesys.dev/keys>)
+  - `--auth manual` is deprecated but remains available for backward compatibility; use `--api-key` for scripted setup instead
   - in non-interactive mode without `--api-key`, the cloud template fails because a key is required
 - **Self-hosted** — prompts for your OpenAI-compatible provider API key and writes `OPENAI_API_KEY` to `.env` (interactive mode only). Leave blank to skip.
 

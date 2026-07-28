@@ -52,7 +52,7 @@ program
     "AI backend: openui-cloud (recommended default) | openui-self-hosted (infrastructure control)",
   )
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
-  .option("--auth <method>", "Cloud auth method: oauth | manual | skip")
+  .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
   .option("--no-skill", "Skip installing the OpenUI agent skill")
   .option("--no-interactive", "Fail with error if required args are missing")

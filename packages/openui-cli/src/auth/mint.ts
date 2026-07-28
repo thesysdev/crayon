@@ -59,7 +59,8 @@ export async function mintCloudApiKey(projectName: string): Promise<string> {
 
 /**
  * Resolve a cloud API key by the chosen method: an explicitly provided key, a
- * browser OAuth mint, a manual paste, or skip (null → leave the .env slot empty).
+ * browser OAuth mint, the deprecated manual paste, or skip (null → leave the
+ * .env slot empty).
  */
 export async function resolveCloudApiKey(opts: {
   apiKey?: string;
@@ -83,7 +84,6 @@ export async function resolveCloudApiKey(opts: {
       message: "Connect to OpenUI Cloud:",
       choices: [
         { name: "Sign in with Thesys (opens a browser, mints a key)", value: "oauth" },
-        { name: "Paste an existing API key", value: "manual" },
         { name: "Skip — add THESYS_API_KEY to .env later", value: "skip" },
       ],
     })) as CloudAuthMethod;
@@ -92,6 +92,9 @@ export async function resolveCloudApiKey(opts: {
   if (method === "skip") return { key: null, method: "skip" };
 
   if (method === "manual") {
+    console.warn(
+      "⚠ --auth manual is deprecated. Use browser sign-in or pass --api-key for scripted setup.",
+    );
     const { password } = await import("@inquirer/prompts");
     const key = (
       await password({ message: "Paste your OpenUI Cloud API key:", mask: true })
