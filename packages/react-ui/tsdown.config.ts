@@ -87,6 +87,23 @@ export default defineConfig([
     entry: { index: "src/genui-lib/index.ts" },
     plugins: [fixEsmExternalPaths],
   },
+  // blocks — CJS + .d.cts (own outDir so dts lands at dist/blocks/index.d.cts)
+  {
+    ...shared,
+    format: ["cjs"],
+    dts: true,
+    outDir: "dist/blocks",
+    entry: { index: "src/blocks/index.ts" },
+  },
+  // blocks — ESM + .d.mts (own outDir so dts lands at dist/blocks/index.d.mts)
+  {
+    ...shared,
+    format: ["esm"],
+    dts: true,
+    outDir: "dist/blocks",
+    entry: { index: "src/blocks/index.ts" },
+    plugins: [fixEsmExternalPaths],
+  },
   // Individual components — CJS only
   { ...shared, format: ["cjs"], entry: componentEntries },
 ]);
