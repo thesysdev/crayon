@@ -1,3 +1,5 @@
+import { observability, ObservabilityLevel, toErrorInfo } from "@openuidev/observability";
+
 import { identityMessageFormat, type MessageFormat } from "../types/messageFormat";
 import type { StreamProtocolAdapter } from "../types/stream";
 import type { ChatLLM } from "./types";
@@ -15,14 +17,21 @@ export interface FetchLLMOptions {
   fetch?: typeof fetch;
 }
 
+// Observability level for a response's HTTP status: a rate limit surfaces as an
+// error (it feeds the dev credits notice), server errors are errors, other
+// client errors are warnings, and 2xx is info.
+function levelForStatus(status: number): ObservabilityLevel {
+  return status >= 400 ? "error" : "info";
+}
+
 /**
  * Generic HTTP-based LLM adapter. POSTs an AG-UI `RunAgentInput`-shaped body
  * (`{ threadId, runId, messages, tools, context }`, messages in the chosen wire
  * format) to `url` and returns the streaming `Response` for downstream processing.
  *
- * The fields the {@link ChatLLM} `send` contract doesn't carry are defaulted
- * here so the body satisfies a spec-compliant AG-UI agent: a fresh `runId` is
- * generated per send, and `tools`/`context` default to `[]` (override via options).
+ * Every send is reported to `@openuidev/observability` — an `llm:request` on
+ * start, then an `llm:response`/`llm:error` (level varied by status) on the
+ * reply, or an `llm:error` on network failure. The `runId` correlates them.
  */
 export function fetchLLM({
   url,
@@ -34,6 +43,9 @@ export function fetchLLM({
   const fetchImpl = customFetch ?? globalThis.fetch.bind(globalThis);
   return {
     send: ({ threadId, messages, signal }) => {
+      const runId = crypto.randomUUID();
+      observability.info({ kind: "llm:request", requestId: runId, url });
+
       const wire = messageFormat.toApi(messages);
       return fetchImpl(url, {
         method: "POST",
@@ -43,13 +55,33 @@ export function fetchLLM({
         },
         body: JSON.stringify({
           threadId,
-          runId: crypto.randomUUID(),
+          runId,
           messages: wire,
           tools: [],
           context: [],
         }),
         signal,
-      });
+      }).then(
+        (response) => {
+          observability(levelForStatus(response.status), {
+            kind: response.ok ? "fetchLLM:response" : "fetchLLM:error",
+            requestId: runId,
+            url,
+            status: response.status,
+            ok: response.ok,
+          });
+          return response;
+        },
+        (error: unknown) => {
+          observability.error({
+            kind: "fetchLLM:error",
+            requestId: runId,
+            url,
+            error: toErrorInfo(error),
+          });
+          throw error;
+        },
+      );
     },
     streamProtocol: streamAdapter,
   };
