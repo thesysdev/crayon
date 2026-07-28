@@ -38,7 +38,7 @@ export {
 export { processStreamedMessage } from "./stream/processStreamedMessage";
 
 // ── Adapter interfaces + factories ──
-export { fetchLLM, restStorage } from "./adapters";
+export { fetchLLM, restStorage, useFetchLLM } from "./adapters";
 export type {
   Artifact,
   ArtifactCategory,
