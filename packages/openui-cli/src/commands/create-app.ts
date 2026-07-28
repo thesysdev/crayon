@@ -121,7 +121,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       name: options.name
         ? { value: options.name }
         : {
-            prompt: { type: "input", message: "Project name?", default: "openui-project" },
+            prompt: { type: "input", message: "Project name?", default: "openui-agent" },
             required: true,
           },
       template: options.template
@@ -187,6 +187,12 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       ? await resolveChatEnv(interactive)
       : await resolveCloudEnv(name, options, interactive);
 
+  const installSkill = await shouldInstallSkill(options.skill, interactive);
+  telemetry.capture("cli_skill_installed", {
+    ...createFunnelProps("skill_prompt_resolved"),
+    skill_installed: installSkill,
+  });
+
   const immediateResolution = await resolveImmediate(
     options.immediate,
     options.noInstall,
@@ -235,11 +241,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     auth_succeeded: envResult.authSucceeded,
   });
 
-  const installSkill = await shouldInstallSkill(options.skill, interactive);
-  telemetry.capture("cli_skill_installed", {
-    ...createFunnelProps("skill_prompt_resolved"),
-    skill_installed: installSkill,
-  });
   if (installSkill) {
     telemetry.capture("cli_skill_install_started", {
       ...createFunnelProps("skill_install_started"),
