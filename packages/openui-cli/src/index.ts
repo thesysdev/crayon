@@ -57,6 +57,8 @@ program
   .option("--no-skill", "Skip installing the OpenUI agent skill")
   .option("--no-interactive", "Fail with error if required args are missing")
   .option("--no-install", "Scaffold without running the package install")
+  .option("-i, --immediate", "Install dependencies and start the development server")
+  .option("--no-immediate", "Skip dependency installation and dev-server startup")
   .addHelpText(
     "after",
     `
@@ -78,6 +80,7 @@ Templates:
       skill?: boolean;
       interactive: boolean;
       install: boolean;
+      immediate?: boolean;
     }) => {
       try {
         await runCreateApp({
@@ -88,6 +91,7 @@ Templates:
           skill: options.skill,
           noInteractive: !options.interactive,
           noInstall: !options.install,
+          immediate: options.immediate,
         });
       } catch (e) {
         handleCliError(e, "cli_create_failed");

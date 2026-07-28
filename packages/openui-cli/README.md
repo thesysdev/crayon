@@ -68,6 +68,8 @@ Options:
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
+- `-i, --immediate`: Install dependencies and start the development server
+- `--no-immediate`: Skip dependency installation and dev-server startup
 - `--no-interactive`: Fail instead of prompting for missing required input
 - `--api-key <key>`: (cloud template) OpenUI Cloud API key; skips sign-in
 - `--auth <method>`: (cloud template) How to obtain the key — `oauth`, `manual`, or `skip`
@@ -79,7 +81,8 @@ What it does:
 - prompts for the template if you do not pass `--template`
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
-- installs dependencies automatically using the detected package manager (unless `--no-install`)
+- asks whether to install dependencies and start the development server immediately
+- in non-interactive mode, installs dependencies without starting the server unless overridden with `--immediate`, `--no-immediate`, or `--no-install`
 - optionally installs the OpenUI agent skill for AI coding assistants
 - writes a `.env` file tailored to the template (see below)
 
@@ -106,6 +109,8 @@ openui create
 openui create --name my-app --template openui-cloud --auth oauth
 openui create --name my-app --template openui-cloud --api-key tk_your_key
 openui create --name my-app --template openui-self-hosted
+openui create --name my-app --template openui-cloud --immediate
+openui create --name my-app --template openui-cloud --no-immediate
 openui create --name my-app --no-skill --no-install
 openui create --no-interactive --name my-app --template openui-cloud --api-key tk_your_key
 ```
@@ -195,7 +200,7 @@ The CLI sends usage analytics; OAuth sign-ins may link usage to your OIDC accoun
 
 When a coding agent invokes the CLI, it should pass `--agent-name` using its stable, lowercase kebab-case product slug—for example, `codex`, `claude-code`, `cline`, `factory-droid`, or `pi`. Do not pass a model/version, user name, session ID, or other unique value. Humans can omit the flag; it defaults to `unknown`.
 
-Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. For `create`, telemetry also includes `package_manager`, the manager selected for dependency installation (`npm`, `pnpm`, `yarn`, or `bun`). Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
+Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. For `create`, telemetry also includes `package_manager`, the immediate-start selection, and the dev-command lifecycle. Dev-command events contain status, duration, exit code, and signal—not project paths, command output, code, or environment values. Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
 
 ```bash
 openui create --no-telemetry

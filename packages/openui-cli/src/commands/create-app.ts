@@ -9,6 +9,7 @@ import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-ty
 import { resolveInstallPackageManager } from "../lib/detect-package-manager";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { resolveArgs } from "../lib/resolve-args";
+import { runDevCommand } from "../lib/run-dev-command";
 import { CreateError, telemetry } from "../lib/telemetry";
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
@@ -112,6 +113,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     has_api_key_arg: Boolean(options.apiKey),
     has_auth_arg: Boolean(options.auth),
     no_install: Boolean(options.noInstall),
+    immediate_arg: options.immediate,
   });
 
   const args = await resolveArgs(
@@ -182,6 +184,18 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       ? await resolveChatEnv(interactive)
       : await resolveCloudEnv(name, options, interactive);
 
+  const immediateResolution = await resolveImmediate(
+    options.immediate,
+    options.noInstall,
+    interactive,
+    packageManager.name,
+  );
+  telemetry.capture("cli_immediate_selected", {
+    immediate: immediateResolution.immediate,
+    dependency_install_requested: immediateResolution.installDependencies,
+    selection_source: immediateResolution.source,
+  });
+
   console.info(`\nScaffolding ${template} into "${name}"...\n`);
   telemetry.capture("cli_scaffold_started", {
     ...createFunnelProps("scaffold_started"),
@@ -239,8 +253,13 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   const installCmd = packageManager.installCmd;
   let dependencyInstalled = false;
 
-  if (options.noInstall) {
-    console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.\n`);
+  if (!immediateResolution.installDependencies) {
+    const skipReason = options.noInstall ? "no_install_flag" : "not_immediate";
+    telemetry.capture("cli_dependency_install_skipped", {
+      skip_reason: skipReason,
+    });
+    const reason = options.noInstall ? " (--no-install)" : "";
+    console.info(`Skipping dependency install${reason}. Run \`${installCmd}\` later.\n`);
   } else {
     console.info(`Installing dependencies with: ${installCmd}\n`);
     telemetry.capture("cli_dependency_install_started", {
@@ -269,6 +288,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   }
 
   const devCmd = packageManager.runCmd;
+  const startDev = immediateResolution.immediate && dependencyInstalled;
 
   telemetry.capture("cli_create_succeeded", {
     ...createFunnelProps("create_succeeded"),
@@ -286,8 +306,74 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       template,
       skillInstalled: installSkill,
       envWritten: envResult.envWritten,
+      startDev,
+      installCmd,
+      dependencyInstalled,
     }),
   );
+
+  if (!startDev) {
+    telemetry.capture("cli_dev_command_skipped", {
+      skip_reason: immediateResolution.immediate ? "dependencies_not_installed" : "not_immediate",
+    });
+    return;
+  }
+
+  const devResult = await runDevCommand(targetDir, packageManager);
+  if (devResult.status === "failed") {
+    console.error(
+      `\nDevelopment server exited. Retry with:\n\n> cd ${name}\n> ${devCmd} run dev\n`,
+    );
+    process.exitCode = devResult.exitCode;
+  }
+}
+
+const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
+
+async function resolveImmediate(
+  immediate: boolean | undefined,
+  noInstall: boolean | undefined,
+  interactive: boolean,
+  packageManager: string,
+): Promise<{
+  immediate: boolean;
+  installDependencies: boolean;
+  source: "flag" | "interactive_prompt" | "no_install" | "noninteractive_default";
+}> {
+  if (noInstall) {
+    return { immediate: false, installDependencies: false, source: "no_install" };
+  }
+  if (immediate !== undefined) {
+    return {
+      immediate,
+      installDependencies: immediate,
+      source: "flag",
+    };
+  }
+  if (!interactive || !isInteractiveTerminal()) {
+    return {
+      immediate: false,
+      installDependencies: true,
+      source: "noninteractive_default",
+    };
+  }
+
+  try {
+    const { confirm } = await import("@inquirer/prompts");
+    const selected = await confirm({
+      message: `Install with ${packageManager} and start now?`,
+      default: true,
+    });
+    return {
+      immediate: selected,
+      installDependencies: selected,
+      source: "interactive_prompt",
+    };
+  } catch (error) {
+    const { ExitPromptError } = await import("@inquirer/core");
+    if (error instanceof ExitPromptError) process.exit(0);
+    throw error;
+  }
 }
 
 async function writeEnv(targetDir: string, result: EnvResult, appId?: string): Promise<void> {
@@ -362,6 +448,9 @@ function getStartedMessage(o: {
   template: TemplateName;
   skillInstalled: boolean;
   envWritten: boolean;
+  startDev: boolean;
+  installCmd: string;
+  dependencyInstalled: boolean;
 }): string {
   const skillMessage = o.skillInstalled
     ? "The OpenUI agent skill was installed.\nAI coding assistants will use it to help you build with OpenUI.\n"
@@ -376,12 +465,19 @@ function getStartedMessage(o: {
         ? "✅ .env created with your API key."
         : "Add your API key to .env:\nOPENAI_API_KEY=sk-your-key-here";
 
+  const nextStep = o.startDev
+    ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
+    : [
+        `> cd ${o.name}`,
+        ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
+        `> ${o.devCmd} run dev`,
+      ].join("\n");
+
   return `${skillMessage}
 Done!
 
 ${envNote}
 
-> cd ${o.name}
-> ${o.devCmd} run dev
+${nextStep}
 `;
 }
