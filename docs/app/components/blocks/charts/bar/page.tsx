@@ -2,7 +2,16 @@
 
 import ClientOnly from "@components/blocks/_components/ClientOnly";
 import { BlockVariantPreview, PreviewPage, PreviewSection } from "@components/components/preview";
-import { BarChart, BarChartCondensed } from "@openuidev/react-ui";
+import dynamic from "next/dynamic";
+
+const BarChart = dynamic(
+  () => import("@openuidev/react-ui/Charts").then((module) => module.BarChart),
+  { ssr: false },
+);
+const BarChartCondensed = dynamic(
+  () => import("@openuidev/react-ui/Charts").then((module) => module.BarChartCondensed),
+  { ssr: false },
+);
 
 const barData = [
   { month: "Jan", desktop: 150, mobile: 90 },

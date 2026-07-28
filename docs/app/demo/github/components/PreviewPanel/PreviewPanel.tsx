@@ -1,6 +1,8 @@
 import type { ActionEvent, ParseResult } from "@openuidev/react-lang";
 import { Renderer } from "@openuidev/react-lang";
-import { IconButton, openuiLibrary, ThemeProvider } from "@openuidev/react-ui";
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
+import { IconButton } from "@openuidev/react-ui/IconButton";
+import { ThemeProvider } from "@openuidev/react-ui/ThemeProvider";
 import { Loader2, Maximize2, Monitor } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Modal } from "../Modal/Modal";

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ComponentGroup } from "@openuidev/react-lang";
-import { openuiLibrary } from "@openuidev/react-ui";
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 import { ChevronLeft, ChevronRight, LayoutList } from "lucide-react";
 import { useState } from "react";
 import "./CatalogPanel.css";

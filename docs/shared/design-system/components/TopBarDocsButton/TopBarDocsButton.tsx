@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@openuidev/react-ui";
+import { Button } from "@openuidev/react-ui/Button";
 import { useRouter } from "next/navigation";
 
 export default function TopBarDocsButton() {

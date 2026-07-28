@@ -1,7 +1,13 @@
 "use client";
 
 import { useAppTheme } from "@components/components/AppThemeProvider/AppThemeProvider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@openuidev/react-ui";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@openuidev/react-ui/Select";
 import {
   ThemeProvider,
   swatch,

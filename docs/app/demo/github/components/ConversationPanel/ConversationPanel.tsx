@@ -1,6 +1,6 @@
 "use client";
 
-import { IconButton } from "@openuidev/react-ui";
+import { IconButton } from "@openuidev/react-ui/IconButton";
 import { MarkDownRenderer } from "@openuidev/react-ui/MarkDownRenderer";
 import { ChevronRight, MessageSquare, Send, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

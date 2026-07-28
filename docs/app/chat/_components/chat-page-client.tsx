@@ -5,9 +5,16 @@ import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import dynamic from "next/dynamic";
 import { Component, useCallback, useState, type ReactNode } from "react";
 import styles from "../chat-page.module.css";
-import { OssAgentSurface } from "./agent-surfaces/oss-agent-surface";
 import { ChatPageHeader } from "./chat-page-header";
 import type { ChatMode } from "./chat-types";
+
+const OssAgentSurface = dynamic(
+  () => import("./agent-surfaces/oss-agent-surface").then((module) => module.OssAgentSurface),
+  {
+    ssr: false,
+    loading: () => <ChatLoadingState label="Loading OpenUI OSS…" />,
+  },
+);
 
 const CloudAgentSurface = dynamic(
   () => import("./agent-surfaces/cloud-agent-surface").then((module) => module.CloudAgentSurface),

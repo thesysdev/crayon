@@ -6,12 +6,14 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+} from "@openuidev/react-ui/Accordion";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@openuidev/react-ui";
+} from "@openuidev/react-ui/Select";
 import { useState } from "react";
 import styles from "./page.module.css";
 

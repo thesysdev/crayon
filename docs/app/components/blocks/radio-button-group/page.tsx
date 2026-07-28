@@ -1,7 +1,8 @@
 "use client";
 
 import BlocksDocPage from "@components/blocks/_components/BlocksDocPage";
-import { RadioGroup, RadioItem } from "@openuidev/react-ui";
+import { RadioGroup } from "@openuidev/react-ui/RadioGroup";
+import { RadioItem } from "@openuidev/react-ui/RadioItem";
 
 function RadioButtonGroupPreview() {
   return (

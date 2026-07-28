@@ -9,8 +9,12 @@ import {
   TabsTrigger,
 } from "@/components/overview-components";
 import { genuiOutput } from "@/components/overview-components/genui";
-import { Renderer } from "@openuidev/react-lang";
-import { openuiLibrary } from "@openuidev/react-ui";
+import dynamic from "next/dynamic";
+
+const RenderedOpenUIExample = dynamic(
+  () => import("./rendered-openui-example").then((module) => module.RenderedOpenUIExample),
+  { ssr: false },
+);
 
 const renderableOutput = `root = Stack([welcomeCard])
 welcomeCard = Card([welcomeHeader, welcomeBody])
@@ -115,7 +119,7 @@ const completion = await client.chat.completions.create({
           <span className="text-sm font-medium">Output Preview</span>
         </div>
         <div className="p-6">
-          <Renderer library={openuiLibrary} response={renderableOutput} isStreaming={false} />
+          <RenderedOpenUIExample response={renderableOutput} />
         </div>
       </SimpleCard>
     </div>

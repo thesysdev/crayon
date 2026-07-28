@@ -8,7 +8,7 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-} from "@openuidev/react-ui";
+} from "@openuidev/react-ui/Select";
 import { useMemo } from "react";
 import styles from "../../chat-page.module.css";
 

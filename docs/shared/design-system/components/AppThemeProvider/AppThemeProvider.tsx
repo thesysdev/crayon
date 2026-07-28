@@ -1,6 +1,6 @@
 "use client";
 
-import { ThemeProvider } from "@openuidev/react-ui";
+import { ThemeProvider } from "@openuidev/react-ui/ThemeProvider";
 import type { ReactNode } from "react";
 
 const FONT_FAMILY = 'var(--font-inter), "Inter", "Segoe UI", Arial, sans-serif';

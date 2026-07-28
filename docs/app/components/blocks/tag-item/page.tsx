@@ -1,7 +1,7 @@
 "use client";
 
 import BlocksDocPage from "@components/blocks/_components/BlocksDocPage";
-import { Tag } from "@openuidev/react-ui";
+import { Tag } from "@openuidev/react-ui/Tag";
 
 function TagItemPreview() {
   const tags = [
