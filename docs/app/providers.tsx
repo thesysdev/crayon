@@ -4,19 +4,12 @@ import { loadPostHog } from "@/lib/posthog-client";
 import { addThesysLinkAttribution } from "@/lib/thesys-link-attribution";
 import { useEffect } from "react";
 
-const FALLBACK_DELAY_MS = 30_000;
-
 export function PHProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    let loaded = false;
-    let idleCallbackId: number | undefined;
     let posthogDistinctId: string | undefined;
     let posthogSessionId: string | undefined;
 
     const load = () => {
-      if (loaded) return;
-      loaded = true;
-
       void loadPostHog()
         .then((posthog) => {
           posthogDistinctId = posthog.get_distinct_id();
@@ -27,15 +20,16 @@ export function PHProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
-    const scheduleAfterNextPaint = () => {
-      window.requestAnimationFrame(() => {
-        if ("requestIdleCallback" in window) {
-          idleCallbackId = window.requestIdleCallback(load, { timeout: 2_000 });
-        } else {
-          setTimeout(load, 0);
-        }
+    let cancelLoad: () => void;
+    if (typeof window.requestIdleCallback === "function") {
+      const idleCallbackId = window.requestIdleCallback(load, {
+        timeout: 5_000,
       });
-    };
+      cancelLoad = () => window.cancelIdleCallback(idleCallbackId);
+    } else {
+      const timeoutId = setTimeout(load, 0);
+      cancelLoad = () => clearTimeout(timeoutId);
+    }
 
     const decorateLink = (anchor: HTMLAnchorElement) => {
       const href = anchor.getAttribute("href");
@@ -62,26 +56,10 @@ export function PHProvider({ children }: { children: React.ReactNode }) {
     document.addEventListener("pointerdown", refreshLinkAtInteraction, true);
     document.addEventListener("click", refreshLinkAtInteraction, true);
 
-    const interactionEvents = ["pointerdown", "keydown", "touchstart"] as const;
-    interactionEvents.forEach((eventName) => {
-      window.addEventListener(eventName, scheduleAfterNextPaint, {
-        once: true,
-        passive: true,
-      });
-    });
-
-    const fallbackTimer = window.setTimeout(load, FALLBACK_DELAY_MS);
-
     return () => {
-      window.clearTimeout(fallbackTimer);
-      if (idleCallbackId !== undefined && "cancelIdleCallback" in window) {
-        window.cancelIdleCallback(idleCallbackId);
-      }
+      cancelLoad();
       document.removeEventListener("pointerdown", refreshLinkAtInteraction, true);
       document.removeEventListener("click", refreshLinkAtInteraction, true);
-      interactionEvents.forEach((eventName) => {
-        window.removeEventListener(eventName, scheduleAfterNextPaint);
-      });
     };
   }, []);
   return children;
