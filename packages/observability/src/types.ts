@@ -10,9 +10,9 @@ export interface Observability {
   listen(
     level: ObservabilityLevel | ObservabilityLevel[],
     handler: (event: ObservabilityEvent) => void,
-  ): Unsubscribe;
+  ): Remove;
   /** Listen to every event — the attachment point for sinks. Returns a remover. */
-  listenAll(handler: (event: ObservabilityEvent) => void): Unsubscribe;
+  listenAll(handler: (event: ObservabilityEvent) => void): Remove;
 
   /** Level shortcut — emit `detail` at info level. */
   info(detail: ObservabilityDetail): void;
@@ -22,7 +22,7 @@ export interface Observability {
   error(detail: ObservabilityDetail): void;
 }
 
-export type Unsubscribe = () => void;
+export type Remove = () => void;
 
 export type Handler = (event: ObservabilityEvent) => void;
 

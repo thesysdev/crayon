@@ -4,7 +4,7 @@ import type {
   ObservabilityDetail,
   ObservabilityEvent,
   ObservabilityLevel,
-  Unsubscribe,
+  Remove,
 } from "./types";
 
 /**
@@ -27,7 +27,7 @@ function createObservability(): Observability {
     }
   };
 
-  const subscribe = (key: string, handler: Handler): Unsubscribe => {
+  const subscribe = (key: string, handler: Handler): Remove => {
     let set = listeners.get(key);
     if (!set) {
       set = new Set();

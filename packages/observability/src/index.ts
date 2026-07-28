@@ -5,6 +5,6 @@ export type {
   ObservabilityErrorInfo,
   ObservabilityEvent,
   ObservabilityLevel,
-  Unsubscribe,
+  Remove,
 } from "./types";
 export { toErrorInfo } from "./utils";
