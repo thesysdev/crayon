@@ -1,5 +1,6 @@
 import { createStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import { getResponseErrorMessage } from "../adapters/httpError";
 import type { ChatLLM, ChatStorage } from "../adapters/types";
 import { processStreamedMessage } from "../stream/processStreamedMessage";
 import type { ChatStore, Message, Thread, UserMessage } from "./types";
@@ -14,8 +15,10 @@ const mergeThreadList = (existing: Thread[], incoming: Thread[]): Thread[] =>
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
-export const createChatStore = (config: CreateChatStoreConfig) => {
-  const { storage, llm } = config;
+// Takes the ref itself and reads `current` at call time, so the caller
+// (ChatProvider) can refresh `llm` by mutating or replacing `current`.
+export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig>) => {
+  const { storage } = configRef.current;
   const { thread: threadStorage } = storage;
 
   const store = createStore<ChatStore>()(
@@ -89,6 +92,8 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
       },
 
       selectThread: (threadId: string) => {
+        // Re-selecting the active thread is a no-op — don't wipe and refetch.
+        if (get().selectedThreadId === threadId) return;
         get().cancelMessage();
         set({
           selectedThreadId: threadId,
@@ -167,14 +172,14 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             set({ selectedThreadId: threadId });
           }
 
-          const response = await llm.send({
+          const response = await configRef.current.llm.send({
             threadId,
             messages: get().messages,
             signal: abortController.signal,
           });
 
           if (response instanceof Response && !response.ok) {
-            throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+            throw new Error(await getResponseErrorMessage(response));
           }
 
           await processStreamedMessage({
@@ -199,7 +204,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
                 next.delete(id);
                 return { executingToolCallIds: next };
               }),
-            adapter: llm.streamProtocol,
+            adapter: configRef.current.llm.streamProtocol,
           });
         } catch (e) {
           if (!abortController.signal.aborted) {

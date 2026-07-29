@@ -90,6 +90,7 @@ function fetchLLM(options: {
   messageFormat?: MessageFormat;
   headers?: Record<string, string>;
   fetch?: typeof fetch;
+  body?: Record<string, unknown>;
 }): ChatLLM;
 ```
 
@@ -100,6 +101,7 @@ function fetchLLM(options: {
 | `messageFormat` | `MessageFormat`            | No       | Converts outgoing `messages` to your provider's shape. Defaults to `identityMessageFormat`. |
 | `headers`       | `Record<string, string>`   | No       | Extra headers merged into every request (e.g. a session token). **Browser-visible.**     |
 | `fetch`         | `typeof fetch`             | No       | Override `fetch` (auth wrappers, instrumentation, tests).                                 |
+| `body`          | `Record<string, unknown>`  | No       | Extra fields merged into the request body (e.g. `model`) |
 
 **Request body.** `fetchLLM` POSTs JSON `{ threadId, messages }`, where `messages` is run through `messageFormat.toApi`, and threads the `AbortSignal` from the UI:
 
@@ -108,12 +110,19 @@ function fetchLLM(options: {
 fetch(url, {
   method: "POST",
   headers: { "Content-Type": "application/json", ...headers },
-  body: JSON.stringify({ threadId, messages: messageFormat.toApi(messages) }),
+  body: JSON.stringify({
+    ...body,
+    tools: [],
+    context: [],
+    threadId,
+    runId,
+    messages: messageFormat.toApi(messages),
+  }),
   signal, // wired to the UI's cancel/stop control
 });
 ```
 
-Your route therefore always receives `{ threadId, messages }` and must return a streaming `Response`. `fetchLLM` runs that response through `streamAdapter`.
+Your route receives this shape (destructure just the fields you need, e.g. `{ messages }`) and must return a streaming `Response`. `fetchLLM` runs that response through `streamAdapter`.
 
 ```tsx
 import { fetchLLM, openAIReadableStreamAdapter, openAIMessageFormat } from "@openuidev/react-ui";

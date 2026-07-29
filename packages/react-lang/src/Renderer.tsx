@@ -40,9 +40,7 @@ export interface RendererProps {
    * - MCP client: any object with `callTool({ name, arguments })` (e.g. from @modelcontextprotocol/sdk)
    */
   toolProvider?:
-    | Record<string, (args: Record<string, unknown>) => Promise<unknown>>
-    | McpClientLike
-    | null;
+    Record<string, (args: Record<string, unknown>) => Promise<unknown>> | McpClientLike | null;
   /** Custom loading indicator shown while queries are fetching. Defaults to a spinner. */
   queryLoader?: React.ReactNode;
   /**
