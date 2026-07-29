@@ -31,9 +31,7 @@ export interface RendererProps {
   initialState?: Record<string, any>;
   onParseResult?: (result: ParseResult | null) => void;
   toolProvider?:
-    | Record<string, (args: Record<string, unknown>) => Promise<unknown>>
-    | McpClientLike
-    | null;
+    Record<string, (args: Record<string, unknown>) => Promise<unknown>> | McpClientLike | null;
   queryLoader?: any;
   onError?: (errors: OpenUIError[]) => void;
 }

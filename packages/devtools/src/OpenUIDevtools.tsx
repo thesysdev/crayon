@@ -2,10 +2,10 @@
 
 import {
   observability,
-  type Observability,
   type ObservabilityErrorInfo,
   type ObservabilityEvent,
 } from "@openuidev/observability";
+import { ArrowLeft, Check, Copy, CreditCard, WrapText, X } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ShiroLogo } from "./ShiroLogo";
 
@@ -18,12 +18,11 @@ export interface OpenUIDevtoolsProps {
   position?: DevtoolsPosition;
   /** How many events to keep; oldest are dropped first. */
   maxEvents?: number;
-  /** Capture only error/warning events (default) or every event. */
+  /** Initial state of the drawer's "errors only" capture filter: only
+   *  error/warning events (default) or every event. */
   errorsOnly?: boolean;
   /** Initial state of the drawer's "auto-open on error" checkbox. Defaults to true. */
   autoOpenOnError?: boolean;
-  /** Observability instance to listen to. Defaults to the shared singleton. */
-  bus?: Observability;
 }
 
 /**
@@ -39,7 +38,6 @@ export function OpenUIDevtools({
   maxEvents = 50,
   errorsOnly = true,
   autoOpenOnError = true,
-  bus = observability,
 }: OpenUIDevtoolsProps) {
   const isEnabled =
     enabled ?? (typeof process === "undefined" || process.env["NODE_ENV"] !== "production");
@@ -49,19 +47,22 @@ export function OpenUIDevtools({
   const [wrapStack, setWrapStack] = useState(false);
   const [copied, setCopied] = useState(false);
   const [autoOpen, setAutoOpen] = useState(autoOpenOnError);
+  const [onlyErrors, setOnlyErrors] = useState(errorsOnly);
 
-  // Read the live checkbox value inside the (stable) subscription without re-subscribing.
+  // Read the live checkbox values inside the (stable) subscription without re-subscribing.
   const autoOpenRef = useRef(autoOpen);
   autoOpenRef.current = autoOpen;
+  const onlyErrorsRef = useRef(onlyErrors);
+  onlyErrorsRef.current = onlyErrors;
 
   useEffect(() => {
     if (!isEnabled) return;
-    return bus.listenAll((event) => {
-      if (errorsOnly && event.level === "info") return;
+    return observability.listenAll((event) => {
+      if (onlyErrorsRef.current && event.level === "info") return;
       setEvents((prev) => [event, ...prev].slice(0, maxEvents));
       if (event.level === "error" && autoOpenRef.current) setOpen(true);
     });
-  }, [bus, isEnabled, errorsOnly, maxEvents]);
+  }, [isEnabled, maxEvents]);
 
   // Escape steps back: stack view → list, list → closed.
   useEffect(() => {
@@ -136,7 +137,7 @@ export function OpenUIDevtools({
                   onClick={() => setSelected(null)}
                   aria-label="Back to event list"
                 >
-                  ←
+                  <ArrowLeft size={14} />
                 </button>
               ) : null}
               <span style={styles.title}>
@@ -154,9 +155,11 @@ export function OpenUIDevtools({
                     onClick={() => setWrapStack((prev) => !prev)}
                     aria-pressed={wrapStack}
                   >
+                    <WrapText size={12} />
                     Wrap
                   </button>
                   <button style={styles.textButton} onClick={copyStack}>
+                    {copied ? <Check size={12} /> : <Copy size={12} />}
                     {copied ? "Copied" : "Copy"}
                   </button>
                 </>
@@ -170,7 +173,7 @@ export function OpenUIDevtools({
                 onClick={() => setOpen(false)}
                 aria-label="Close OpenUI devtools"
               >
-                ✕
+                <X size={15} />
               </button>
             </div>
           </div>
@@ -188,31 +191,65 @@ export function OpenUIDevtools({
             </div>
           ) : (
             <>
-              <label style={styles.autoOpenRow}>
-                <input
-                  type="checkbox"
-                  checked={autoOpen}
-                  onChange={(event) => setAutoOpen(event.target.checked)}
-                />
-                Auto-open on error
-              </label>
+              <div style={styles.controlsRow}>
+                <label style={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={autoOpen}
+                    onChange={(event) => setAutoOpen(event.target.checked)}
+                  />
+                  Auto-open on error
+                </label>
+                <label style={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={onlyErrors}
+                    onChange={(event) => setOnlyErrors(event.target.checked)}
+                  />
+                  Errors only
+                </label>
+              </div>
               <div style={styles.list}>
                 {events.length === 0 ? (
                   <div style={styles.empty}>No events captured yet.</div>
                 ) : (
                   events.map((event, index) => {
+                    const key = `${event.timestamp}-${index}`;
+                    if (isCreditsExhausted(event)) return <CreditsEventRow key={key} />;
+
                     const error = getErrorInfo(event);
+                    const detail = asRecord(event.detail);
+                    const kind = asString(detail["kind"]);
+                    const status =
+                      typeof detail["status"] === "number" ? String(detail["status"]) : undefined;
+                    const message = error?.message ?? asString(detail["message"]);
                     return (
-                      <div key={`${event.timestamp}-${index}`} style={styles.row}>
+                      <div key={key} style={styles.row}>
                         <div style={styles.rowHeader}>
-                          <span style={{ ...styles.badge, ...badgeByLevel[event.level] }}>
-                            {event.level}
-                          </span>
+                          <div style={styles.badgeGroup}>
+                            <span style={{ ...styles.badge, ...badgeByLevel[event.level] }}>
+                              {event.level}
+                            </span>
+                            {kind ? (
+                              <span style={{ ...styles.badge, ...styles.badgeNeutral }}>
+                                {kind}
+                              </span>
+                            ) : null}
+                            {status ? (
+                              <span style={{ ...styles.badge, ...styles.badgeNeutral }}>
+                                {status}
+                              </span>
+                            ) : null}
+                          </div>
                           <span style={styles.time}>
                             {new Date(event.timestamp).toLocaleTimeString()}
                           </span>
                         </div>
-                        <div style={styles.summary}>{summarize(event)}</div>
+                        {message ? (
+                          <div style={styles.summary}>{message}</div>
+                        ) : kind ? null : (
+                          <div style={styles.summary}>{summarize(event)}</div>
+                        )}
                         {error?.stack ? (
                           <button style={styles.stackButton} onClick={() => showStack(event)}>
                             Stack Trace
@@ -233,6 +270,36 @@ export function OpenUIDevtools({
 
 function asRecord(detail: unknown): Record<string, unknown> {
   return typeof detail === "object" && detail !== null ? (detail as Record<string, unknown>) : {};
+}
+
+// A 429 from the LLM plane means the workspace is out of credits.
+function isCreditsExhausted(event: ObservabilityEvent): boolean {
+  return event.level === "error" && asRecord(event.detail)["status"] === 429;
+}
+
+/** Out-of-credits list entry — the highlighted card a 429 event renders as. */
+function CreditsEventRow() {
+  return (
+    <div style={{ ...styles.row, ...styles.rowCredits }}>
+      <div style={styles.creditsNote}>
+        <div style={styles.creditsTitle}>Add credits to keep going</div>
+        <p style={styles.creditsMessage}>
+          Looks like this workspace is out of OpenUI Cloud credits. Purchase credits to keep
+          testing, then try your request again. This notice is only shown in development.
+        </p>
+        <button
+          type="button"
+          style={styles.action}
+          onClick={() =>
+            window.open("https://console.thesys.dev/billing", "_blank", "noopener,noreferrer")
+          }
+        >
+          <CreditCard size={13} />
+          Purchase Credits
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function asString(value: unknown): string | undefined {
@@ -274,11 +341,10 @@ function summarize(event: ObservabilityEvent): string {
     return "(no detail)";
   }
 }
-
 const badgeByLevel: Record<ObservabilityEvent["level"], CSSProperties> = {
-  error: { background: "#7f1d1d", color: "#fecaca" },
-  warning: { background: "#78350f", color: "#fde68a" },
-  info: { background: "#1e3a5f", color: "#bfdbfe" },
+  error: { background: "#fef2f2", color: "#b91c1c", borderColor: "#fecaca" },
+  warning: { background: "#fffbeb", color: "#b45309", borderColor: "#fde68a" },
+  info: { background: "#eff6ff", color: "#1d4ed8", borderColor: "#bfdbfe" },
 };
 
 const positionStyles: Record<DevtoolsPosition, CSSProperties> = {
@@ -288,6 +354,9 @@ const positionStyles: Record<DevtoolsPosition, CSSProperties> = {
   "bottom-right": { bottom: 16, right: 16 },
 };
 
+// Mirrors react-ui's look (Inter, hairline borders, soft shadows) without
+// depending on it — values, not tokens.
+const FONT = '"Inter", system-ui, sans-serif';
 const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
 
 const styles = {
@@ -304,19 +373,24 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     borderRadius: "50%",
-    border: "1px solid #3f3f46",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "rgba(0, 0, 0, 0.08)",
     background: "#18181b",
     color: "#fff",
     cursor: "pointer",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.16)",
+    transition: "transform 150ms ease, box-shadow 150ms ease",
   },
   toggleError: {
-    background: "#7f1d1d",
-    borderColor: "#dc2626",
+    background: "#b91c1c",
+    borderColor: "#fecaca",
   },
   toggleCount: {
     position: "absolute",
     top: -6,
     right: -6,
+    boxSizing: "border-box",
     minWidth: 16,
     height: 16,
     display: "flex",
@@ -324,15 +398,16 @@ const styles = {
     justifyContent: "center",
     borderRadius: 999,
     background: "#dc2626",
+    border: "2px solid #fff",
     color: "#fff",
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 700,
-    padding: "0 4px",
+    padding: "0 3px",
   },
   backdrop: {
     position: "fixed",
     inset: 0,
-    background: "rgba(0, 0, 0, 0.5)",
+    background: "rgba(24, 24, 27, 0.4)",
     // Max 32-bit signed int — the open drawer sits above everything, including the toggle.
     zIndex: 2147483647,
     opacity: 0,
@@ -348,20 +423,23 @@ const styles = {
   },
   drawer: {
     position: "fixed",
-    top: 0,
-    right: 0,
-    bottom: 0,
-    width: "min(420px, 100vw)",
+    top: 12,
+    right: 12,
+    bottom: 12,
+    boxSizing: "border-box",
+    width: "min(420px, calc(100vw - 24px))",
     display: "flex",
     flexDirection: "column",
-    borderLeft: "1px solid #3f3f46",
-    background: "#18181b",
-    color: "#fafafa",
-    fontFamily: "system-ui, -apple-system, sans-serif",
-    fontSize: 12,
-    boxShadow: "-8px 0 32px rgba(0, 0, 0, 0.5)",
-    transform: "translateX(100%)",
-    transition: "transform 200ms ease",
+    border: "1px solid #e4e4e7",
+    borderRadius: 16,
+    background: "#ffffff",
+    color: "#18181b",
+    fontFamily: FONT,
+    fontSize: 13,
+    boxShadow: "0 16px 48px rgba(24, 24, 27, 0.18)",
+    transform: "translateX(calc(100% + 12px))",
+    transition: "transform 220ms cubic-bezier(0.32, 0.72, 0, 1)",
+    overflow: "hidden",
   },
   drawerOpen: {
     transform: "translateX(0)",
@@ -371,9 +449,10 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     gap: 8,
-    padding: "10px 12px",
-    borderBottom: "1px solid #3f3f46",
+    padding: "12px 16px",
+    borderBottom: "1px solid #f4f4f5",
     fontWeight: 600,
+    fontSize: 14,
   },
   headerLeft: {
     display: "flex",
@@ -389,58 +468,119 @@ const styles = {
   headerActions: {
     display: "flex",
     alignItems: "center",
-    gap: 8,
+    gap: 6,
     flexShrink: 0,
   },
   textButton: {
-    border: "1px solid #3f3f46",
-    borderRadius: 4,
-    background: "transparent",
-    color: "#a1a1aa",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 4,
+    border: "1px solid #e4e4e7",
+    borderRadius: 8,
+    background: "#ffffff",
+    color: "#3f3f46",
     cursor: "pointer",
-    fontSize: 11,
-    padding: "2px 8px",
+    fontFamily: FONT,
+    fontSize: 12,
+    fontWeight: 500,
+    padding: "4px 10px",
   },
   textButtonActive: {
-    background: "#3f3f46",
-    color: "#fafafa",
+    background: "#18181b",
+    borderColor: "#18181b",
+    color: "#ffffff",
   },
   iconButton: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 26,
+    height: 26,
     border: "none",
+    borderRadius: 8,
     background: "transparent",
-    color: "#a1a1aa",
+    color: "#71717a",
     cursor: "pointer",
-    fontSize: 16,
-    lineHeight: 1,
-    padding: "0 2px",
+    padding: 0,
   },
-  autoOpenRow: {
+  controlsRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 16,
+    padding: "10px 16px",
+    borderBottom: "1px solid #f4f4f5",
+  },
+  checkboxLabel: {
     display: "flex",
     alignItems: "center",
     gap: 6,
-    padding: "8px 12px",
-    borderBottom: "1px solid #27272a",
-    color: "#a1a1aa",
+    color: "#52525b",
+    fontSize: 12,
     cursor: "pointer",
+    accentColor: "#18181b",
   },
   list: {
     overflowY: "auto",
-    padding: 8,
+    padding: 12,
     display: "flex",
     flexDirection: "column",
-    gap: 8,
+    gap: 10,
   },
   empty: {
     color: "#a1a1aa",
-    padding: 8,
+    padding: "32px 0",
+    textAlign: "center",
   },
   row: {
-    border: "1px solid #27272a",
-    borderRadius: 6,
-    padding: 8,
+    border: "1px solid #e4e4e7",
+    borderRadius: 12,
+    padding: 12,
     display: "flex",
     flexDirection: "column",
-    gap: 4,
+    gap: 6,
+    background: "#ffffff",
+    boxShadow: "0 1px 2px rgba(24, 24, 27, 0.04)",
+  },
+  rowCredits: {
+    border: "1px solid #fde68a",
+    background: "linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%)",
+  },
+  badgeCredits: {
+    background: "#fef3c7",
+    color: "#92400e",
+    borderColor: "#fde68a",
+  },
+  creditsNote: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 6,
+  },
+  creditsTitle: {
+    fontSize: 13,
+    fontWeight: 600,
+    color: "#18181b",
+  },
+  creditsMessage: {
+    margin: 0,
+    fontSize: 12,
+    lineHeight: 1.55,
+    color: "#52525b",
+  },
+  action: {
+    alignSelf: "flex-start",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+    border: "none",
+    borderRadius: 8,
+    background: "#18181b",
+    color: "#ffffff",
+    padding: "6px 12px",
+    fontFamily: FONT,
+    fontSize: 12,
+    fontWeight: 500,
+    cursor: "pointer",
+    marginTop: 2,
   },
   rowHeader: {
     display: "flex",
@@ -448,37 +588,62 @@ const styles = {
     alignItems: "center",
     gap: 8,
   },
-  badge: {
-    borderRadius: 4,
-    padding: "1px 6px",
-    fontSize: 11,
+  badgeGroup: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 6,
+    minWidth: 0,
+  },
+  badgeNeutral: {
+    background: "#f4f4f5",
+    color: "#52525b",
+    borderColor: "#e4e4e7",
     fontFamily: MONO,
   },
+  badge: {
+    display: "inline-flex",
+    alignItems: "center",
+    borderRadius: 999,
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "transparent",
+    padding: "1px 8px",
+    fontSize: 11,
+    fontWeight: 500,
+    fontFamily: FONT,
+  },
   time: {
-    color: "#71717a",
+    color: "#a1a1aa",
     fontSize: 11,
   },
   summary: {
     wordBreak: "break-word",
+    color: "#3f3f46",
+    fontSize: 12,
+    lineHeight: 1.5,
   },
   stackButton: {
     alignSelf: "flex-start",
     border: "none",
     background: "transparent",
-    color: "#a1a1aa",
+    color: "#52525b",
     cursor: "pointer",
-    fontSize: 11,
+    fontFamily: FONT,
+    fontSize: 12,
+    fontWeight: 500,
     padding: 0,
     textDecoration: "underline",
+    textUnderlineOffset: 2,
   },
   stackBody: {
     flex: 1,
     overflow: "auto",
     padding: "8px 0",
-    background: "#09090b",
+    background: "#fafafa",
     fontFamily: MONO,
     fontSize: 11,
-    color: "#fca5a5",
+    color: "#3f3f46",
   },
   stackLine: {
     display: "flex",
@@ -489,10 +654,10 @@ const styles = {
     flexShrink: 0,
     width: 32,
     textAlign: "right",
-    color: "#52525b",
+    color: "#a1a1aa",
     userSelect: "none",
     padding: "0 4px",
-    borderRight: "1px solid #27272a",
+    borderRight: "1px solid #e4e4e7",
   },
   lineText: {
     whiteSpace: "pre",

@@ -30,11 +30,7 @@ export const Tabs = forwardRef<React.ComponentRef<typeof TabsPrimitive.Root>, Ta
 Tabs.displayName = "Tabs";
 
 type TabsListVariant =
-  | "title"
-  | "iconTitle"
-  | "iconTitleSubtext"
-  | "imageTitle"
-  | "imageTitleSubtext";
+  "title" | "iconTitle" | "iconTitleSubtext" | "imageTitle" | "imageTitleSubtext";
 
 const tabsListVariants: Record<TabsListVariant, string> = {
   title: "openui-tabs-list--title",
@@ -210,8 +206,9 @@ export const TabsList = forwardRef<React.ComponentRef<typeof TabsPrimitive.List>
 
 TabsList.displayName = "TabsList";
 
-export interface TabsTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> {
+export interface TabsTriggerProps extends React.ComponentPropsWithoutRef<
+  typeof TabsPrimitive.Trigger
+> {
   className?: string;
   style?: React.CSSProperties;
   value: string;
@@ -247,8 +244,9 @@ export const TabsTrigger = forwardRef<
 
 TabsTrigger.displayName = "TabsTrigger";
 
-export interface TabsContentProps
-  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content> {
+export interface TabsContentProps extends React.ComponentPropsWithoutRef<
+  typeof TabsPrimitive.Content
+> {
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
