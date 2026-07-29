@@ -104,6 +104,7 @@ const styles = {
     zIndex: 2147483647,
   },
   dialog: {
+    boxSizing: "border-box",
     width: "min(420px, calc(100vw - 32px))",
     borderRadius: 12,
     border: "1px solid #e4e4e7",
