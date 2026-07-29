@@ -41,8 +41,7 @@ function click(el: Element): void {
 
 function buttonByText(text: string): HTMLButtonElement | undefined {
   return [...container.querySelectorAll("button")].find((b) => b.textContent === text) as
-    | HTMLButtonElement
-    | undefined;
+    HTMLButtonElement | undefined;
 }
 
 describe("OpenUIDevtools", () => {
