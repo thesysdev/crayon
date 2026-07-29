@@ -115,7 +115,7 @@ Use Cloud when the user wants managed production infrastructure for an Agent Int
 Version-sensitive: verify exact Cloud template env vars, `@openuidev/thesys*` exports, and route helpers against the installed package/template. The CLI quickstart prompts for **OpenUI Cloud or self-hosted**. For Cloud:
 
 - Store `THESYS_API_KEY` server-side only, typically in `.env.local`.
-- The Cloud CLI template keeps its `provider/model` allowlist in app configuration (`src/lib/models.tsx`) and uses `DEMO_USER_ID` for the demo user identity.
+- The Cloud CLI template also uses `OPENUI_MODEL` in `provider/model` form and `DEMO_USER_ID` for the demo user identity.
 - Keep Cloud calls behind server routes such as `/api/chat` and `/api/frontend-token`; never expose the server key to the browser.
 - In the `openui-cloud` template, `/api/chat` uses `@openuidev/thesys-server` helpers such as `artifactTool` and `generateSystemPrompt`.
 - `AgentInterface` connects to Cloud with `llm` and `storage` props. `llm` points to an app route that proxies Cloud's Responses endpoint, usually with `openAIResponsesAdapter()` and `openAIConversationMessageFormat`. `storage` uses `useOpenuiCloudStorage()` from `@openuidev/thesys` with a short-lived frontend token.
@@ -164,17 +164,15 @@ export function Chat() {
 }
 ```
 
-`fetchLLM` talks only to the app's own route; by default it posts an AG-UI-shaped body (`threadId`, `runId`, formatted `messages`), and `buildBody` can replace that shape. The provider API key stays server-side in that route. The route must return a streaming `Response` that the selected adapter can parse. Call adapter factories, for example `agUIAdapter()`, `openAIAdapter()`, `openAIReadableStreamAdapter()`, `openAIResponsesAdapter()`, or `langGraphAdapter()`, and pair them with the matching message format when one is needed.
+`fetchLLM` talks only to the app's own route and posts `{ threadId, messages }`; the provider API key stays server-side in that route. The route must return a streaming `Response` that the selected adapter can parse. Call adapter factories, for example `agUIAdapter()`, `openAIAdapter()`, `openAIReadableStreamAdapter()`, `openAIResponsesAdapter()`, or `langGraphAdapter()`, and pair them with the matching message format when one is needed.
 
 There are two valid `llm` wiring patterns:
 
-- Use `fetchLLM({ url, streamAdapter, messageFormat })` for ordinary POST-to-route integrations; add `buildBody` when the route wants a custom body shape. In React components whose options reference live state, use `useFetchLLM(options)` — same options, stable `ChatLLM` identity. The option is named `streamAdapter`.
+- Use `fetchLLM({ url, streamAdapter, messageFormat })` for ordinary POST-to-route integrations. The option is named `streamAdapter`.
 - Implement `ChatLLM` directly when the scaffold or app needs custom transport. Direct `ChatLLM` objects use `streamProtocol`, not `streamAdapter`.
 
 ```ts
 import { type ChatLLM, openAIAdapter } from "@openuidev/react-ui";
-// openAIAdapter() pairs with a route that returns the SDK's raw SSE
-// (e.g. `client.chat.completions.create(..., { signal }).asResponse()`).
 
 const llm: ChatLLM = {
   streamProtocol: openAIAdapter(),

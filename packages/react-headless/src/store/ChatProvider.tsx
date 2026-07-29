@@ -24,7 +24,10 @@ export const ChatProvider: FC<ChatProviderProps> = ({
   artifactCategories,
 }) => {
   const [resolvedStorage] = useState(() => storage ?? createDefaultInMemoryStorage());
-  const [chatStore] = useState(() => createChatStore({ storage: resolvedStorage, llm }));
+  // Stable config object, refreshed every render
+  const config = useRef({ storage: resolvedStorage, llm }).current;
+  config.llm = llm;
+  const [chatStore] = useState(() => createChatStore(config));
   const [detailedViewStore] = useState(() => createDetailedViewStore());
   const [threadContextStore] = useState(() => createThreadContextStore());
   const [artifactRendererRegistry] = useState(() =>

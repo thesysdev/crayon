@@ -1,9 +1,7 @@
 "use client";
 
 import { observability } from "@openuidev/observability";
-import { Button } from "@openuidev/react-ui";
-import { Modal } from "@openuidev/react-ui/Modal";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState } from "react";
 
 export interface OpenUICreditsModalProps {
@@ -47,19 +45,126 @@ export function OpenUICreditsModal({
     };
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  if (!open) return null;
+
   return (
-    <Modal open={open} onOpenChange={setOpen} size="sm" title={title}>
-      <p>{message}</p>
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 16 }}>
-        <Button
-          iconLeft={icon}
-          onClick={() => window.open(billingUrl, "_blank", "noopener,noreferrer")}
-          size="medium"
-          variant="primary"
-        >
-          {actionLabel}
-        </Button>
+    <div style={styles.backdrop} onClick={() => setOpen(false)}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        style={styles.dialog}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div style={styles.header}>
+          <h2 style={styles.title}>{title}</h2>
+          <button
+            type="button"
+            aria-label="Close"
+            style={styles.close}
+            onClick={() => setOpen(false)}
+          >
+            ×
+          </button>
+        </div>
+        <p style={styles.message}>{message}</p>
+        <div style={styles.actions}>
+          <button
+            type="button"
+            style={styles.action}
+            onClick={() => window.open(billingUrl, "_blank", "noopener,noreferrer")}
+          >
+            {icon ? <span style={styles.actionIcon}>{icon}</span> : null}
+            {actionLabel}
+          </button>
+        </div>
       </div>
-    </Modal>
+    </div>
   );
 }
+
+const styles = {
+  backdrop: {
+    position: "fixed",
+    inset: 0,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "rgba(0, 0, 0, 0.5)",
+    // Max 32-bit signed int — sit above any app chrome.
+    zIndex: 2147483647,
+  },
+  dialog: {
+    width: "min(420px, calc(100vw - 32px))",
+    borderRadius: 12,
+    border: "1px solid #e4e4e7",
+    background: "#ffffff",
+    color: "#18181b",
+    boxShadow: "0 20px 50px rgba(0, 0, 0, 0.25)",
+    padding: 20,
+    fontFamily: "ui-sans-serif, system-ui, sans-serif",
+  },
+  header: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  title: {
+    margin: 0,
+    fontSize: 16,
+    fontWeight: 600,
+    lineHeight: 1.4,
+  },
+  close: {
+    width: 28,
+    height: 28,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    border: "none",
+    borderRadius: 6,
+    background: "transparent",
+    color: "#71717a",
+    fontSize: 20,
+    lineHeight: 1,
+    cursor: "pointer",
+  },
+  message: {
+    margin: "12px 0 0",
+    fontSize: 14,
+    lineHeight: 1.5,
+    color: "#52525b",
+  },
+  actions: {
+    display: "flex",
+    justifyContent: "flex-end",
+    marginTop: 16,
+  },
+  action: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 8,
+    border: "none",
+    borderRadius: 8,
+    background: "#18181b",
+    color: "#ffffff",
+    padding: "8px 14px",
+    fontSize: 14,
+    fontWeight: 500,
+    cursor: "pointer",
+  },
+  actionIcon: {
+    display: "inline-flex",
+    alignItems: "center",
+  },
+} satisfies Record<string, CSSProperties>;

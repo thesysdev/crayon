@@ -2,7 +2,7 @@ import { observability, ObservabilityLevel, toErrorInfo } from "@openuidev/obser
 
 import { identityMessageFormat, type MessageFormat } from "../types/messageFormat";
 import type { StreamProtocolAdapter } from "../types/stream";
-import type { ChatLLM, Message } from "./types";
+import type { ChatLLM } from "./types";
 
 export interface FetchLLMOptions {
   /** Endpoint that accepts POST'd messages and returns a streaming Response. */
@@ -15,10 +15,8 @@ export interface FetchLLMOptions {
   headers?: Record<string, string>;
   /** Override fetch implementation (for tests, custom auth wrappers, etc.). */
   fetch?: typeof fetch;
-  /** Receives the run's thread/run ids and the canonical messages; returns
-   *  the JSON-serializable request body.
-   */
-  buildBody?: (params: { threadId: string; runId: string; messages: Message[] }) => unknown;
+  /** Override fields merged into the request body */
+  body?: Record<string, unknown>;
 }
 
 // Observability level for a response's HTTP status: a rate limit surfaces as an
@@ -43,7 +41,7 @@ export function fetchLLM({
   messageFormat = identityMessageFormat,
   headers,
   fetch: customFetch,
-  buildBody,
+  body,
 }: FetchLLMOptions): ChatLLM {
   const fetchImpl = customFetch ?? globalThis.fetch.bind(globalThis);
   return {
@@ -51,16 +49,20 @@ export function fetchLLM({
       const runId = crypto.randomUUID();
       observability.info({ kind: "fetchLLM:request", requestId: runId, url });
 
-      const body = buildBody
-        ? buildBody({ threadId, runId, messages })
-        : { threadId, runId, messages: messageFormat.toApi(messages), tools: [], context: [] };
       return fetchImpl(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...headers,
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          threadId,
+          runId,
+          messages: messageFormat.toApi(messages),
+          tools: [],
+          context: [],
+          ...body,
+        }),
         signal,
       }).then(
         (response) => {

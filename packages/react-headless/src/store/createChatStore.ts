@@ -15,8 +15,11 @@ const mergeThreadList = (existing: Thread[], incoming: Thread[]): Thread[] =>
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
+// `config` is held by reference and `config.llm` is read at call time — the
+// caller (ChatProvider) mutates it each render, so an `llm` that closes over
+// live props/state stays fresh without recreating the store.
 export const createChatStore = (config: CreateChatStoreConfig) => {
-  const { storage, llm } = config;
+  const { storage } = config;
   const { thread: threadStorage } = storage;
 
   const store = createStore<ChatStore>()(
@@ -168,7 +171,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             set({ selectedThreadId: threadId });
           }
 
-          const response = await llm.send({
+          const response = await config.llm.send({
             threadId,
             messages: get().messages,
             signal: abortController.signal,
@@ -200,7 +203,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
                 next.delete(id);
                 return { executingToolCallIds: next };
               }),
-            adapter: llm.streamProtocol,
+            adapter: config.llm.streamProtocol,
           });
         } catch (e) {
           if (!abortController.signal.aborted) {
