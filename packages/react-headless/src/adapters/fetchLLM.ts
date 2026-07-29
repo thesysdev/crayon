@@ -15,8 +15,10 @@ export interface FetchLLMOptions {
   headers?: Record<string, string>;
   /** Override fetch implementation (for tests, custom auth wrappers, etc.). */
   fetch?: typeof fetch;
-  /** Override fields merged into the request body */
-  body?: Record<string, unknown>;
+  /** Extra fields merged into the request body (e.g. `model`). May override the
+   *  static defaults (`tools`, `context`) but never the per-send fields —
+   *  `threadId`, `runId`, and `messages` always win. */
+  body?: { model?: string };
 }
 
 // Observability level for a response's HTTP status: a rate limit surfaces as an
@@ -56,12 +58,12 @@ export function fetchLLM({
           ...headers,
         },
         body: JSON.stringify({
+          ...body,
+          tools: [],
+          context: [],
           threadId,
           runId,
           messages: messageFormat.toApi(messages),
-          tools: [],
-          context: [],
-          ...body,
         }),
         signal,
       }).then(
