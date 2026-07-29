@@ -11,9 +11,9 @@ import {
   SelectLabel,
   SelectSeparator,
   SelectTrigger,
-} from "../../components/Select";
-import { Tag } from "../../components/Tag";
-import { useTheme, type ThemeMode } from "../../components/ThemeProvider";
+} from "../Select";
+import { Tag } from "../Tag";
+import { useTheme, type ThemeMode } from "../ThemeProvider";
 
 import { groupModels, useHydrated } from "./utils";
 

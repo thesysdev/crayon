@@ -89,6 +89,7 @@ export * from "./components/Label";
 export * from "./components/ListBlock";
 export * from "./components/ListItem";
 export * from "./components/MarkDownRenderer";
+export * from "./components/ModelSwitcher";
 export * from "./components/OpenUIChat";
 export * from "./components/RadioGroup";
 export * from "./components/RadioItem";
@@ -111,9 +112,6 @@ export * from "./components/ThemeProvider";
 
 export * from "./components/ToolCall";
 export * from "./components/ToolResult";
-
-export { ModelSwitcher } from "./blocks";
-export type { ModelLogo, ModelOption, ModelSwitcherProps } from "./blocks";
 
 // Genui-lib standard library
 export {

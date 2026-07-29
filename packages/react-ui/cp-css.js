@@ -21,7 +21,7 @@ function fixScssImportsInJs(dir) {
     const stat = fs.statSync(fullPath);
     if (stat.isDirectory()) {
       fixScssImportsInJs(fullPath);
-    } else if (/\.js$/.test(entry)) {
+    } else if (entry.endsWith(".js")) {
       const content = fs.readFileSync(fullPath, "utf8");
       const fixed = content.replace(/(['"])([^'"]*\.scss)\1/g, (match, quote, p) => {
         return `${quote}${p.replace(/\.scss$/, ".css")}${quote}`;
