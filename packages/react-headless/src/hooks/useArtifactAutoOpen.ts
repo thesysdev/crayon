@@ -38,8 +38,8 @@ export interface UseArtifactAutoOpenOptions {
 }
 
 /**
- * The artifact auto-open behavior, complete: reads the `artifactViewMode`
- * set on `ChatProvider` and opens `viewId` per its semantics —
+ * Applies the `artifactViewMode` set on `ChatProvider` from a rendering host,
+ * opening `viewId` per its semantics —
  *
  * - `"overview"` (default): never.
  * - `"auto-open"`: once per `latchKey`, only while `isStreaming`. The latch
@@ -47,9 +47,11 @@ export interface UseArtifactAutoOpenOptions {
  *   survives host remounts mid-stream.
  * - `"open-on-mount"`: once per mounted host instance, streaming or not.
  *
- * The host (react-ui's tool renderer, a custom thread UI, an SDK's artifact
- * component) supplies only the render-derived facts: which view to open,
- * the latch identity, streaming state, and eligibility.
+ * Tool-call artifacts need none of this — `ChatProvider` drives them itself
+ * from the chat store. This hook is for artifact sources the store can't
+ * see (an SDK's chat-library artifacts, custom renderer hosts): the host
+ * supplies the render-derived facts — which view to open, the latch
+ * identity, streaming state, and eligibility.
  */
 export function useArtifactAutoOpen({
   viewId,

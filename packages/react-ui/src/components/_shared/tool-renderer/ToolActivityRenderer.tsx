@@ -1,5 +1,5 @@
 import {
-  useArtifactAutoOpen,
+  runArtifactRenderer,
   useDetailedView,
   useDetailedViewStore,
   useThreadContextStore,
@@ -24,21 +24,6 @@ export type ToolDetailedViewPanel = ComponentType<{
   title?: string;
   children: ReactNode;
 }>;
-
-/**
- * Runs a matched renderer for one tool activity via the `parser` contract:
- * reconstruct the raw envelope from the typed activity (`args` = the raw JSON
- * string, `response` = the result or null) so parsers see exactly today's input.
- */
-function runRenderer<Props>(
-  renderer: ArtifactRendererConfig<Props>,
-  activity: ToolActivity,
-): ParsedArtifact<Props> | null {
-  return renderer.parser(
-    { args: activity.toolCall.function.arguments, response: activity.result ?? null },
-    { isStreaming: activity.status === "streaming" || activity.status === "executing" },
-  );
-}
 
 /**
  * Renders a matched artifact renderer for a single {@link ToolActivity}.
@@ -72,7 +57,7 @@ export function ToolActivityRenderer<Props>({
 
   const { parsed, error } = useMemo(() => {
     try {
-      return { parsed: runRenderer(renderer, activity), error: null as string | null };
+      return { parsed: runArtifactRenderer(renderer, activity), error: null as string | null };
     } catch (e) {
       return { parsed: null as ParsedArtifact<Props> | null, error: String(e) };
     }
@@ -134,22 +119,6 @@ export function ToolActivityRenderer<Props>({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dvStore, viewId, meta?.id, meta?.version]);
-
-  // Artifact view mode ("auto-open" / "open-on-mount" / default "overview"):
-  // the behavior lives in react-headless (useArtifactAutoOpen — mode context,
-  // gates, remount-proof latch on the detailed-view store). This host only
-  // feeds it the render-derived facts. `enabled` re-gates the error/parsed
-  // failure shapes because these hooks sit ABOVE the fallback early-return
-  // below — a failed tool call renders only the fallback card and must never
-  // open a panel. Opening early on the useId fallback viewId is safe: the
-  // migration effect above carries the open state to the real key when meta
-  // lands.
-  useArtifactAutoOpen({
-    viewId,
-    latchKey: activity.id,
-    isStreaming,
-    enabled: !activity.isError && parsed !== null,
-  });
 
   const { isActive, open, close, toggle } = useDetailedView(viewId);
 

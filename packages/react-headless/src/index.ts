@@ -25,6 +25,8 @@ export { ArtifactViewModeContext, useArtifactViewMode } from "./store/ArtifactVi
 export type { ArtifactViewMode } from "./store/ArtifactViewModeContext";
 export { ChatProvider } from "./store/ChatProvider";
 export { DetailedViewContext, useDetailedViewStore } from "./store/DetailedViewContext";
+export { runArtifactRenderer } from "./store/runArtifactRenderer";
+export type { ArtifactParseSource } from "./store/runArtifactRenderer";
 export { ThreadContextContext, useThreadContextStore } from "./store/ThreadContextContext";
 export { pairToolActivity, partialJSONParse } from "./store/toolActivity";
 export {

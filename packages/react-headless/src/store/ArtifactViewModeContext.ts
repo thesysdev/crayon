@@ -1,17 +1,20 @@
 import { createContext, useContext } from "react";
 
 /**
- * How artifact detail panels open.
+ * How artifact detail panels open. For tool-call artifacts the behavior is
+ * driven entirely inside `ChatProvider` (a store-level watcher) — rendering
+ * hosts need no wiring. Non-tool-call artifact sources apply the same mode
+ * via `useArtifactAutoOpen`.
  *
  * - `"overview"` (default) — panels only open on an explicit user action
  *   (clicking an artifact preview's open control).
- * - `"auto-open"` — a panel opens by itself the moment its artifact is
- *   observed streaming live. A user's mid-stream close sticks; historical
- *   artifacts mounted on a thread reload never fire; a new artifact version
- *   (an edit) auto-opens again.
- * - `"open-on-mount"` — a panel opens whenever its artifact mounts, streaming
- *   or not. Deep-link / kiosk embeds; on a thread reload the last-mounted
- *   artifact wins.
+ * - `"auto-open"` — a panel opens by itself as soon as its artifact's header
+ *   parses from the live stream, once per tool call: a user's mid-stream
+ *   close sticks; historical artifacts on a thread reload never fire; an
+ *   edit (a new call) auto-opens again.
+ * - `"open-on-mount"` — every artifact opens once per thread session,
+ *   streaming or not: loading a thread opens its newest artifact (last one
+ *   wins). Deep-link / kiosk embeds.
  *
  * @category Types
  */
@@ -21,8 +24,9 @@ export const DEFAULT_ARTIFACT_VIEW_MODE: ArtifactViewMode = "overview";
 
 /**
  * Carries the artifact view mode from `ChatProvider` (set via its
- * `artifactViewMode` prop) to the renderer host. Unlike the renderer
- * registry, the value is live — prop changes apply on the next render.
+ * `artifactViewMode` prop) to custom artifact hosts (`useArtifactAutoOpen`).
+ * Unlike the renderer registry, the value is live — prop changes apply on
+ * the next render.
  */
 export const ArtifactViewModeContext = createContext<ArtifactViewMode>(DEFAULT_ARTIFACT_VIEW_MODE);
 

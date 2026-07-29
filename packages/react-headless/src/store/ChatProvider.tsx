@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FC } from "react";
 import { createDefaultInMemoryStorage } from "../adapters/_defaultStorage";
+import { useArtifactAutoOpenWatcher } from "./artifactAutoOpenWatcher";
 import { ArtifactCategoriesContext } from "./ArtifactCategoriesContext";
 import {
   ArtifactRenderersContext,
@@ -65,6 +66,17 @@ export const ChatProvider: FC<ChatProviderProps> = ({
     );
     return unsubscribe;
   }, [chatStore, detailedViewStore, threadContextStore]);
+
+  // Drives artifactViewMode for tool-call artifacts entirely at the store
+  // layer — no rendering host involved. Declared AFTER the reset subscription
+  // so on a thread switch the latch clears before this pass sees the new
+  // thread's messages.
+  useArtifactAutoOpenWatcher(
+    artifactViewMode ?? DEFAULT_ARTIFACT_VIEW_MODE,
+    artifactRendererRegistry,
+    chatStore,
+    detailedViewStore,
+  );
 
   return (
     <ChatContext.Provider value={chatStore}>

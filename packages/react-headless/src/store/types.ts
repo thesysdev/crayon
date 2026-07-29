@@ -95,8 +95,11 @@ export interface ChatProviderProps {
   /**
    * How artifact detail panels open (default `"overview"` — only on user
    * action). `"auto-open"` opens a panel by itself while its artifact streams
-   * live; `"open-on-mount"` opens on every artifact mount (deep-link/kiosk).
-   * Live — prop changes apply on the next render.
+   * live; `"open-on-mount"` opens each artifact once per thread session,
+   * streaming or not — loading a thread opens its newest artifact
+   * (deep-link/kiosk). Driven entirely inside ChatProvider for tool-call
+   * artifacts; no host wiring needed. Live — prop changes apply on the next
+   * render.
    */
   artifactViewMode?: ArtifactViewMode;
   children: React.ReactNode;
