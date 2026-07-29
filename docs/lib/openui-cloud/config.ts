@@ -1,4 +1,4 @@
-const CLOUD_API_ORIGIN = "https://api.thesys.dev";
+const CLOUD_API_ORIGIN = process.env.OPENUI_CLOUD_API_ORIGIN?.trim() || "https://api.thesys.dev";
 
 export interface OpenuiCloudConfig {
   apiKey: string;

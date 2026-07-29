@@ -22,16 +22,14 @@ import { useHasMounted } from "./use-has-mounted";
 const COMPARISON_SUGGESTIONS = [
   {
     label: "Exciting stocks to look out for this year",
-    prompt:
-      "Show me a chart of the top 5 US stocks outperforming the market in 2025 with key trendlines.",
+    prompt: "Exciting stocks to look out for this year?",
     icon: TrendingUp,
     color: "#067647",
     hiddenForPair: "oss-cloud",
   },
   {
     label: "Hidden travel gems to explore",
-    prompt:
-      "Give me travel ideas for underrated destinations with notable landmarks and cultural highlights.",
+    prompt: "Hidden travel gems to explore",
     icon: Plane,
     color: "#dd517b",
   },

@@ -1,4 +1,4 @@
-export const DEFAULT_MODEL = "openai/gpt-5.4";
+export const DEFAULT_MODEL = "google/gemini-3.6-flash-free";
 
 export interface ModelOption {
   id: string;
@@ -7,6 +7,8 @@ export interface ModelOption {
 }
 
 export const MODEL_OPTIONS: readonly ModelOption[] = [
+  { provider: "Google", id: "google/gemini-3.6-flash-free", name: "Gemini 3.6 Flash" },
+  { provider: "Google", id: "google/gemini-3.6-flash", name: "Gemini 3.6 Flash (Paid)" },
   { provider: "Google", id: "google/gemini-3.1-pro-free", name: "Gemini 3.1 Pro" },
   {
     provider: "Google",
