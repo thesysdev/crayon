@@ -4,7 +4,6 @@ import {
   ArrowRight,
   ArrowUp,
   FileText,
-  ListChecks,
   Moon,
   Plane,
   Presentation,
@@ -12,6 +11,7 @@ import {
   Square,
   Sun,
   TrendingUp,
+  Trophy,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useLayoutEffect, useRef, useState } from "react";
@@ -34,13 +34,10 @@ const COMPARISON_SUGGESTIONS = [
     color: "#dd517b",
   },
   {
-    label: "Create an editable launch plan",
-    prompt:
-      "Create an editable launch plan for a developer tool. Include owner, phase, deadline, status, dependency, and risk. Let me update statuses and show the next three actions.",
-    icon: ListChecks,
+    label: "Relive the FIFA World Cup 2026",
+    prompt: "Relive the FIFA World Cup 2026.",
+    icon: Trophy,
     color: "#175cd3",
-    tag: "Only on Cloud",
-    cloudOnly: true,
     pairOnly: "oss-cloud",
   },
   {
