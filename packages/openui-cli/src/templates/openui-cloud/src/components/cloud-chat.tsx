@@ -9,9 +9,9 @@ import {
   AgentInterface,
   ModelSwitcher,
   defineArtifactCategories,
+  fetchLLM,
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
-  useFetchLLM,
   useSystemThemeMode,
 } from "@openuidev/react-ui";
 import {
@@ -41,15 +41,11 @@ const DARK_LOGO_URL = "/openui-cloud-logo-dark.svg";
 export default function CloudChat() {
   const mode = useSystemThemeMode();
   const [selectedModel, setSelectedModel] = usePersistedModel();
-  const llm = useFetchLLM({
+  const llm = fetchLLM({
     url: "/api/chat",
     streamAdapter: openAIResponsesAdapter(),
-    // History is stored server-side — send only the latest message + model.
-    buildBody: ({ threadId, messages }) => ({
-      threadId,
-      input: openAIConversationMessageFormat.toApi(messages.slice(-1)),
-      model: selectedModel,
-    }),
+    messageFormat: openAIConversationMessageFormat,
+    body: { model: selectedModel },
   });
 
   const storage = useOpenuiCloudStorage({

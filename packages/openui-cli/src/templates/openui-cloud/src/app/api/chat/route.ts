@@ -20,18 +20,21 @@ import type {
 export async function POST(req: Request) {
   const {
     threadId,
-    input,
+    messages,
     model: requestedModel,
   } = (await req.json()) as {
     threadId?: string;
-    input?: ResponseInputItem[];
+    messages?: ResponseInputItem[];
     model?: unknown;
   };
 
   if (!threadId) return badRequest("threadId is required — create the conversation first");
-  if (!Array.isArray(input) || input.length === 0) {
-    return badRequest("input must be a non-empty ResponseInputItem[]");
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return badRequest("messages must be a non-empty ResponseInputItem[]");
   }
+  // History is stored server-side (conversation + store:true)
+  // forward only the latest message upstream.
+  const input = messages.slice(-1);
   const model = resolveRequestedModel(requestedModel);
   if (!model) return badRequest("model is not available in this agent");
 

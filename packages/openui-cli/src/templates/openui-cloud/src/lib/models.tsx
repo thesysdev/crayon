@@ -1,4 +1,4 @@
-import type { ModelOption } from "@openuidev/react-ui/blocks";
+import type { ModelOption } from "@openuidev/react-ui";
 
 export const DEFAULT_MODEL = "google/gemini-3.6-flash-free";
 
