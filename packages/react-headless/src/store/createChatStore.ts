@@ -15,9 +15,7 @@ const mergeThreadList = (existing: Thread[], incoming: Thread[]): Thread[] =>
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
-// `config` is held by reference and `config.llm` is read at call time — the
-// caller (ChatProvider) mutates it each render, so an `llm` that closes over
-// live props/state stays fresh without recreating the store.
+// `config` is held by reference and `llm` is read at call time
 export const createChatStore = (config: CreateChatStoreConfig) => {
   const { storage } = config;
   const { thread: threadStorage } = storage;

@@ -47,7 +47,7 @@ export function fetchLLM({
   return {
     send: ({ threadId, messages, signal }) => {
       const runId = crypto.randomUUID();
-      observability.info({ kind: "fetchLLM:request", requestId: runId, url });
+      observability.info({ kind: "fetchLLM:request", requestId: runId, url, threadId });
 
       return fetchImpl(url, {
         method: "POST",
@@ -72,6 +72,7 @@ export function fetchLLM({
             url,
             status: response.status,
             ok: response.ok,
+            threadId,
           });
           return response;
         },
@@ -81,6 +82,7 @@ export function fetchLLM({
             requestId: runId,
             url,
             error: toErrorInfo(error),
+            threadId,
           });
           throw error;
         },
