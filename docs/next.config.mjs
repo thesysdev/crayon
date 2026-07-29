@@ -14,6 +14,19 @@ const config = {
   },
 
   reactStrictMode: true,
+  async headers() {
+    return [
+      {
+        source: "/agent-interface/:path*.mp4",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, immutable",
+          },
+        ],
+      },
+    ];
+  },
   async redirects() {
     return [
       {
