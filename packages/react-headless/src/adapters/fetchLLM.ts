@@ -19,9 +19,6 @@ export interface FetchLLMOptions {
   body?: { model?: string };
 }
 
-// Observability level for a response's HTTP status: a rate limit surfaces as an
-// error (it feeds the dev credits notice), server errors are errors, other
-// client errors are warnings, and 2xx is info.
 function levelForStatus(status: number): ObservabilityLevel {
   return status >= 400 ? "error" : "info";
 }
@@ -31,9 +28,7 @@ function levelForStatus(status: number): ObservabilityLevel {
  * (`{ threadId, runId, messages, tools, context }`, messages in the chosen wire
  * format) to `url` and returns the streaming `Response` for downstream processing.
  *
- * Every send is reported to `@openuidev/observability` — an `llm:request` on
- * start, then an `llm:response`/`llm:error` (level varied by status) on the
- * reply, or an `llm:error` on network failure. The `runId` correlates them.
+ * Every send is reported to `@openuidev/observability` — The `runId` correlates them.
  */
 export function fetchLLM({
   url,

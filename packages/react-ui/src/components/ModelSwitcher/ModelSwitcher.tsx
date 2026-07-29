@@ -31,8 +31,7 @@ export interface ModelOption {
   badge?: string;
   /** Marks the model with a "Recommended" chip. */
   recommended?: boolean;
-  /** Optional leading logo/icon — apps supply their own asset. Pass a
-   *  `{ light, dark }` pair to have the switcher swap it by the active theme. */
+  /** Optional leading logo/icon — apps supply their own asset */
   logo?: ModelLogo;
 }
 
@@ -45,12 +44,6 @@ export interface ModelSwitcherProps {
   onValueChange: (id: string) => void;
 }
 
-/**
- * A dropdown for picking an LLM, grouped by `ModelOption.group`, with optional
- * per-model logo, "Recommended", and badge chips. Data-agnostic: pass your own
- * `models` — the block owns no model list. A model's `logo` may be a single
- * node or a `{ light, dark }` pair the switcher swaps by the active theme.
- */
 export function ModelSwitcher({ models, value, onValueChange }: ModelSwitcherProps) {
   const hydrated = useHydrated();
   const { mode } = useTheme();
