@@ -91,6 +91,8 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
       },
 
       selectThread: (threadId: string) => {
+        // Re-selecting the active thread is a no-op — don't wipe and refetch.
+        if (get().selectedThreadId === threadId) return;
         get().cancelMessage();
         set({
           selectedThreadId: threadId,
