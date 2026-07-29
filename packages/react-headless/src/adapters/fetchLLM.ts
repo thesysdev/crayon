@@ -1,7 +1,7 @@
 import { observability, ObservabilityLevel, toErrorInfo } from "@openuidev/observability";
-
 import { identityMessageFormat, type MessageFormat } from "../types/messageFormat";
 import type { StreamProtocolAdapter } from "../types/stream";
+import { getResponseErrorMessage } from "./httpError";
 import type { ChatLLM } from "./types";
 
 export interface FetchLLMOptions {
@@ -16,7 +16,7 @@ export interface FetchLLMOptions {
   /** Override fetch implementation (for tests, custom auth wrappers, etc.). */
   fetch?: typeof fetch;
   /** Extra fields merged into the request body (e.g. `model`) */
-  body?: { model?: string };
+  body?: Record<string, unknown>;
 }
 
 function levelForStatus(status: number): ObservabilityLevel {
@@ -60,7 +60,7 @@ export function fetchLLM({
         }),
         signal,
       }).then(
-        (response) => {
+        async (response) => {
           observability(levelForStatus(response.status), {
             kind: response.ok ? "fetchLLM:response" : "fetchLLM:error",
             requestId: runId,
@@ -68,6 +68,7 @@ export function fetchLLM({
             status: response.status,
             ok: response.ok,
             threadId,
+            ...(response.ok ? null : { message: await getResponseErrorMessage(response) }),
           });
           return response;
         },

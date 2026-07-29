@@ -15,9 +15,10 @@ const mergeThreadList = (existing: Thread[], incoming: Thread[]): Thread[] =>
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
-// `config` is held by reference and `llm` is read at call time
-export const createChatStore = (config: CreateChatStoreConfig) => {
-  const { storage } = config;
+// Takes the ref itself and reads `current` at call time, so the caller
+// (ChatProvider) can refresh `llm` by mutating or replacing `current`.
+export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig>) => {
+  const { storage } = configRef.current;
   const { thread: threadStorage } = storage;
 
   const store = createStore<ChatStore>()(
@@ -171,7 +172,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
             set({ selectedThreadId: threadId });
           }
 
-          const response = await config.llm.send({
+          const response = await configRef.current.llm.send({
             threadId,
             messages: get().messages,
             signal: abortController.signal,
@@ -203,7 +204,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
                 next.delete(id);
                 return { executingToolCallIds: next };
               }),
-            adapter: config.llm.streamProtocol,
+            adapter: configRef.current.llm.streamProtocol,
           });
         } catch (e) {
           if (!abortController.signal.aborted) {
