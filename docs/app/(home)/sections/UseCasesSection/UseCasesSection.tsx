@@ -11,11 +11,12 @@ export function UseCasesSection() {
       <div className={styles.header}>
         <SectionHeader title="Generative UI for every use case">
           <p className={styles.description}>
-            From dashboards to support to dev tools, OpenUI renders the interface your users need.
+            From dashboards to support to dev tools, OpenUI renders the
+            interface your users need.
           </p>
         </SectionHeader>
       </div>
-      <AgentSteps variant="useCases" />
+      <AgentSteps autoAdvance variant="useCases" />
     </section>
   );
 }

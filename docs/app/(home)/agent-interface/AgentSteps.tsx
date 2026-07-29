@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import {
   StepsAccordion,
   type StepsAccordionItem,
@@ -8,56 +8,6 @@ import {
 function createVideoIllustration(src: string) {
   return function VideoIllustration() {
     const videoRef = useRef<HTMLVideoElement>(null);
-    const [hasEnteredViewport, setHasEnteredViewport] = useState(false);
-    const [isInViewport, setIsInViewport] = useState(false);
-    const [isPageVisible, setIsPageVisible] = useState(false);
-    const [canAutoPlay, setCanAutoPlay] = useState(false);
-
-    useEffect(() => {
-      const video = videoRef.current;
-      if (!video) return;
-
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          const isVisible = entry?.isIntersecting ?? false;
-          setIsInViewport(isVisible);
-          if (isVisible) setHasEnteredViewport(true);
-        },
-        { threshold: 0.25 },
-      );
-
-      observer.observe(video);
-      return () => observer.disconnect();
-    }, []);
-
-    useEffect(() => {
-      const updatePageVisibility = () => setIsPageVisible(!document.hidden);
-      updatePageVisibility();
-      document.addEventListener("visibilitychange", updatePageVisibility);
-      return () => document.removeEventListener("visibilitychange", updatePageVisibility);
-    }, []);
-
-    useEffect(() => {
-      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-      const updateMotionPreference = () => setCanAutoPlay(!reducedMotion.matches);
-      updateMotionPreference();
-      reducedMotion.addEventListener("change", updateMotionPreference);
-      return () => reducedMotion.removeEventListener("change", updateMotionPreference);
-    }, []);
-
-    useEffect(() => {
-      const video = videoRef.current;
-      if (!video || !hasEnteredViewport) return;
-
-      if (isInViewport && isPageVisible && canAutoPlay) {
-        void video.play().catch(() => {
-          // Autoplay can still be blocked by browser policy; the visual remains
-          // on its first frame without retrying or fetching another source.
-        });
-      } else {
-        video.pause();
-      }
-    }, [canAutoPlay, hasEnteredViewport, isInViewport, isPageVisible]);
 
     const handleLoadedMetadata = () => {
       const video = videoRef.current;
@@ -80,7 +30,8 @@ function createVideoIllustration(src: string) {
     return (
       <video
         ref={videoRef}
-        src={hasEnteredViewport ? src : undefined}
+        src={src}
+        autoPlay
         muted
         loop
         playsInline
@@ -110,7 +61,8 @@ const AGENT_STEPS: StepsAccordionItem[] = [
   {
     number: 2,
     title: "CRM / Sales",
-    description: "Help teams turn account context into QBRs, follow-ups, and revenue actions.",
+    description:
+      "Help teams turn account context into QBRs, follow-ups, and revenue actions.",
     details: [],
     Illustration: createVideoIllustration("/agent-interface/Play.mp4"),
   },
@@ -125,14 +77,16 @@ const AGENT_STEPS: StepsAccordionItem[] = [
   {
     number: 4,
     title: "DevTools",
-    description: "Help developers move from logs and errors to explanations, fixes, and workflows.",
+    description:
+      "Help developers move from logs and errors to explanations, fixes, and workflows.",
     details: [],
     Illustration: createVideoIllustration("/agent-interface/Fixpanel.mp4"),
   },
   {
     number: 5,
     title: "Project management",
-    description: "Help teams turn scattered work into plans, summaries, blockers, and next steps.",
+    description:
+      "Help teams turn scattered work into plans, summaries, blockers, and next steps.",
     details: [],
     Illustration: createVideoIllustration("/agent-interface/Linea.mp4"),
   },
