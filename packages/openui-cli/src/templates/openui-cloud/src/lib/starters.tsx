@@ -1,6 +1,11 @@
 import { PromptTemplate } from "@openuidev/react-ui";
 import { FileText, Presentation } from "lucide-react";
 
+export const OpenUILogoPaths = {
+  light: "/openui-cloud-logo-light.svg",
+  dark: "/openui-cloud-logo-dark.svg",
+};
+
 export const PROMPT_TEMPLATES: PromptTemplate[] = [
   {
     displayText: "Create a presentation",
