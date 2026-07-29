@@ -17,7 +17,7 @@ const config = {
   async headers() {
     return [
       {
-        source: "/agent-interface/:path*.mp4",
+        source: "/:path*.mp4",
         headers: [
           {
             key: "Cache-Control",
