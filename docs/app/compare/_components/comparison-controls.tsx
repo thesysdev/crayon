@@ -21,8 +21,8 @@ import { useHasMounted } from "./use-has-mounted";
 
 const COMPARISON_SUGGESTIONS = [
   {
-    label: "Exciting stocks to look out for this year",
-    prompt: "Exciting stocks to look out for this year?",
+    label: "Compare stock growth of MAANG companies",
+    prompt: "Compare stock growth of MAANG companies?",
     icon: TrendingUp,
     color: "#067647",
     hiddenForPair: "oss-cloud",
