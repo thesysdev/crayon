@@ -15,9 +15,7 @@ export interface FetchLLMOptions {
   headers?: Record<string, string>;
   /** Override fetch implementation (for tests, custom auth wrappers, etc.). */
   fetch?: typeof fetch;
-  /** Extra fields merged into the request body (e.g. `model`). May override the
-   *  static defaults (`tools`, `context`) but never the per-send fields —
-   *  `threadId`, `runId`, and `messages` always win. */
+  /** Extra fields merged into the request body (e.g. `model`) */
   body?: { model?: string };
 }
 
