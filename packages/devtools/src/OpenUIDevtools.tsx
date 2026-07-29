@@ -231,7 +231,9 @@ export function OpenUIDevtools({
                               {event.level}
                             </span>
                             {kind ? (
-                              <span style={{ ...styles.badge, ...styles.badgeNeutral }}>{kind}</span>
+                              <span style={{ ...styles.badge, ...styles.badgeNeutral }}>
+                                {kind}
+                              </span>
                             ) : null}
                             {status ? (
                               <span style={{ ...styles.badge, ...styles.badgeNeutral }}>
