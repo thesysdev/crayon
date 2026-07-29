@@ -1,10 +1,8 @@
 "use client";
 
 import { usePersistedModel } from "@/hooks/use-persisted-model";
-import { isDevelopment } from "@/lib/env";
 import { MODEL_OPTIONS } from "@/lib/models";
 import { PROMPT_TEMPLATES, starters } from "@/lib/starters";
-import { OpenUICreditsModal } from "@openuidev/devtools";
 import {
   AgentInterface,
   ModelSwitcher,
@@ -92,7 +90,6 @@ export default function CloudChat() {
           glowAnimation
         />
       </AgentInterface>
-      {isDevelopment() && <OpenUICreditsModal />}
     </div>
   );
 }
