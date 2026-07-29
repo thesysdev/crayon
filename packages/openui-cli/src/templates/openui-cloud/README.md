@@ -38,7 +38,7 @@ list](https://models.dev/providers/openrouter/).
 - `@openuidev/thesys` — the React component library (`chatLibrary`, `Presentation`,
   `Report`) used by the client page and artifact renderers.
 - `@openuidev/react-headless` / `@openuidev/react-ui` — the chat UI runtime
-  (`AgentInterface`, `useFetchLLM`, `ModelSwitcher`, storage/stream contracts).
+  (`AgentInterface`, `fetchLLM`, `ModelSwitcher`, storage/stream contracts).
 - `@openuidev/devtools` — dev-only widget surfacing errors and the credits notice
   (rendered only in development).
 
