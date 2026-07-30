@@ -2,6 +2,7 @@ import { Box, Text, useFocus, useFocusManager, useInput } from "ink";
 import { Component, Fragment, type ReactNode, useState } from "react";
 import { renderBars } from "./chart.js";
 import { FormNameProvider, useFormName, useTui } from "./context.js";
+import { GradientText } from "./gradient.js";
 import { Clickable, isTypedText } from "./mouse.js";
 
 /** The render contract each library component receives (matches lang-core's ComponentRenderProps). */
@@ -101,7 +102,7 @@ function CardView({ props, renderNode }: ViewProps) {
 function CardHeaderView({ props }: ViewProps) {
   return (
     <Box flexDirection="column">
-      {props.title ? <Text bold>{str(props.title)}</Text> : null}
+      {props.title ? <GradientText text={str(props.title)} preset="mind" bold /> : null}
       {props.subtitle ? <Text dimColor>{str(props.subtitle)}</Text> : null}
     </Box>
   );
@@ -109,8 +110,56 @@ function CardHeaderView({ props }: ViewProps) {
 
 function TextContentView({ props }: ViewProps) {
   const size = str(props.size);
-  const heavy = size.includes("heavy") || size === "large";
-  return <Text bold={heavy}>{str(props.text)}</Text>;
+  const heavy = size.includes("heavy");
+  const large = size === "large" || size === "large-heavy";
+  const text = str(props.text);
+  // Headline-sized text gets a gradient for a richer look.
+  if (large) {
+    return <GradientText text={text} preset="pastel" bold={heavy} />;
+  }
+  return (
+    <Text bold={heavy} dimColor={size === "small"}>
+      {text}
+    </Text>
+  );
+}
+
+const CALLOUT_STYLES: Record<string, { color: string; icon: string }> = {
+  info: { color: "cyan", icon: "ℹ" },
+  success: { color: "green", icon: "✓" },
+  warning: { color: "yellow", icon: "⚠" },
+  error: { color: "red", icon: "✕" },
+  neutral: { color: "gray", icon: "•" },
+};
+
+function CalloutView({ props }: ViewProps) {
+  const variant = str(props.variant) || "info";
+  const style = CALLOUT_STYLES[variant] ?? CALLOUT_STYLES.info!;
+  return (
+    <Box borderStyle="round" borderColor={style.color} paddingX={1} marginTop={1} flexDirection="column">
+      <Box>
+        <Text color={style.color} bold>
+          {style.icon} {str(props.title)}
+        </Text>
+      </Box>
+      {props.description ? <Text>{str(props.description)}</Text> : null}
+    </Box>
+  );
+}
+
+const TAG_COLORS = ["cyan", "magenta", "green", "yellow", "blue", "red"] as const;
+
+function TagBlockView({ props }: ViewProps) {
+  const tags = Array.isArray(props.tags) ? props.tags.map(str) : [];
+  return (
+    <Box marginTop={1} gap={1} flexWrap="wrap">
+      {tags.map((t, i) => (
+        <Text key={i} color="black" backgroundColor={TAG_COLORS[i % TAG_COLORS.length]}>
+          {` ${t} `}
+        </Text>
+      ))}
+    </Box>
+  );
 }
 
 function TableView({ props }: ViewProps) {
@@ -146,9 +195,7 @@ function BarChartView({ props }: ViewProps) {
     <Box flexDirection="column" marginTop={1}>
       {props.yLabel ? <Text dimColor>{str(props.yLabel)}</Text> : null}
       {lines.map((ln, i) => (
-        <Text key={i} color="cyan">
-          {ln}
-        </Text>
+        <GradientText key={i} text={ln} preset="mind" />
       ))}
       {props.xLabel ? <Text dimColor>{str(props.xLabel)}</Text> : null}
     </Box>
@@ -406,6 +453,8 @@ export const views: Record<string, View> = {
   Card: CardView,
   CardHeader: CardHeaderView,
   TextContent: TextContentView,
+  Callout: CalloutView,
+  TagBlock: TagBlockView,
   Table: TableView,
   Col: StructuralView,
   BarChart: BarChartView,

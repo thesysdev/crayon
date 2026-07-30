@@ -138,6 +138,25 @@ const CardHeader = defineComponent({
   component: views.CardHeader,
 });
 
+const Callout = defineComponent({
+  name: "Callout",
+  description:
+    "A colored callout banner for highlights, tips, or status. Choose a variant that matches the tone.",
+  props: z.object({
+    variant: z.enum(["info", "success", "warning", "error", "neutral"]),
+    title: z.string(),
+    description: z.string().optional(),
+  }),
+  component: views.Callout,
+});
+
+const TagBlock = defineComponent({
+  name: "TagBlock",
+  description: "A row of short colored tags/pills (keywords, categories, or labels).",
+  props: z.object({ tags: z.array(z.string()) }),
+  component: views.TagBlock,
+});
+
 const FollowUpBlock = defineComponent({
   name: "FollowUpBlock",
   description: "A list of follow-up suggestions shown at the end of a response.",
@@ -157,6 +176,8 @@ export const tuiLibrary = createLibrary({
     Card,
     CardHeader,
     TextContent,
+    Callout,
+    TagBlock,
     Table,
     Col,
     BarChart,

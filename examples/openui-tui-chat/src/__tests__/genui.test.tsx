@@ -13,6 +13,11 @@ import { useGenUi } from "../genui/state.js";
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+// Strip ANSI SGR codes so assertions match text even when it's colored/gradient
+// (gradient text inserts a color code between every character).
+// eslint-disable-next-line no-control-regex
+const plain = (s: string | undefined) => (s ?? "").replace(/\u001B\[[0-9;]*m/g, "");
+
 /** Parse + evaluate an OpenUI Lang program with the TUI library. */
 function evalProgram(src: string) {
   const sp = createStreamingParser(tuiLibrary.toJSONSchema(), tuiLibrary.root);
@@ -65,7 +70,7 @@ describe("TUI renderer", () => {
       createElement(TuiProvider, { value: noopCtx }, createElement(RenderValue, { value: root })),
     );
 
-    const frame = lastFrame() ?? "";
+    const frame = plain(lastFrame());
     expect(frame).toContain("Setup Status");
     expect(frame).toContain("All green");
     expect(frame).toContain("█"); // chart bars
@@ -74,12 +79,30 @@ describe("TUI renderer", () => {
     expect(frame).toContain("react-headless");
   });
 
+  it("renders rich Callout and TagBlock components", () => {
+    const src = [
+      "root = Card([c, tags])",
+      'c = Callout("success", "All set", "Your Pro plan is active")',
+      'tags = TagBlock(["Pro", "Fast", "New"])',
+    ].join("\n");
+    const root = evalProgram(src);
+    const { lastFrame } = render(
+      createElement(TuiProvider, { value: noopCtx }, createElement(RenderValue, { value: root })),
+    );
+    const frame = plain(lastFrame());
+    expect(frame).toContain("All set");
+    expect(frame).toContain("Your Pro plan is active");
+    expect(frame).toContain("Pro");
+    expect(frame).toContain("Fast");
+    expect(frame).toContain("New");
+  });
+
   it("renders unknown components as a visible marker instead of crashing", () => {
     const root = evalProgram('root = Card([x])\nx = TextContent("hello world")');
     const { lastFrame } = render(
       createElement(TuiProvider, { value: noopCtx }, createElement(RenderValue, { value: root })),
     );
-    expect(lastFrame() ?? "").toContain("hello world");
+    expect(plain(lastFrame())).toContain("hello world");
   });
 
   it("renders finalized turns display-only (buttons are not interactive)", () => {
@@ -90,7 +113,7 @@ describe("TUI renderer", () => {
     const { lastFrame } = render(
       createElement(TuiProvider, { value: staticCtx }, createElement(RenderValue, { value: root })),
     );
-    expect(lastFrame() ?? "").toContain("[ Retry ]");
+    expect(plain(lastFrame())).toContain("[ Retry ]");
   });
 });
 
@@ -134,7 +157,7 @@ describe("TUI interactivity", () => {
     stdin.write("\r"); // Enter → select Support
     await delay(40);
 
-    const frame = lastFrame() ?? "";
+    const frame = plain(lastFrame());
     expect(frame).toContain("(•) 2. Support");
     expect(frame).not.toContain("(•) 1. Sales");
   });
@@ -156,7 +179,7 @@ describe("TUI interactivity", () => {
     await delay(30);
     stdin.write("2"); // press "2" → pick the 2nd option directly
     await delay(40);
-    const frame = lastFrame() ?? "";
+    const frame = plain(lastFrame());
     expect(frame).toContain("(•) 2. Support");
     expect(frame).not.toContain("(•) 1. Sales");
   });
@@ -178,7 +201,7 @@ describe("TUI interactivity", () => {
     await delay(30);
     stdin.write("\u001B[B"); // Down arrow only — should select immediately
     await delay(40);
-    expect(lastFrame() ?? "").toContain("(•) 2. Support");
+    expect(plain(lastFrame())).toContain("(•) 2. Support");
   });
 
   it("shows typed Input text immediately", async () => {
@@ -196,7 +219,7 @@ describe("TUI interactivity", () => {
     await delay(30);
     stdin.write("Hi");
     await delay(40);
-    expect(lastFrame() ?? "").toContain("Hi");
+    expect(plain(lastFrame())).toContain("Hi");
   });
 
   it("collects form field values and submits them via the button's action", async () => {

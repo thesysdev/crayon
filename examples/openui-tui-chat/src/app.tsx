@@ -1,9 +1,12 @@
 import type { Message } from "@openuidev/react-headless";
-import { Box, Static, Text, useFocus, useInput, type DOMElement } from "ink";
-import { useEffect, useRef, useState } from "react";
+import BigText from "ink-big-text";
+import Spinner from "ink-spinner";
+import { Box, Text, useFocus, useInput, useStdout, type DOMElement } from "ink";
+import { useRef, useState } from "react";
 import { useLocalChat, type ProcessFn } from "./chat.js";
 import { RenderValue } from "./genui/components.js";
 import { TuiProvider } from "./genui/context.js";
+import { GradientText } from "./genui/gradient.js";
 import { tuiLibrary } from "./genui/library.js";
 import { isTypedText, MouseProvider } from "./genui/mouse.js";
 import { useGenUi } from "./genui/state.js";
@@ -20,16 +23,12 @@ function messageText(content: unknown): string {
 
 const firstLine = (s: string) => s.split("\n")[0] ?? "";
 
-const SPINNER = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
-
 // ─────────────────────────── chrome ───────────────────────────
 
 function Header() {
   return (
-    <Box marginBottom={1}>
-      <Text backgroundColor="green" color="black" bold>
-        {" ◆ OpenUI TUI Chat "}
-      </Text>
+    <Box>
+      <GradientText text=" ◆ OpenUI TUI " preset="mind" bold />
       <Text dimColor>{"  generative UI, streamed into your terminal"}</Text>
     </Box>
   );
@@ -37,11 +36,12 @@ function Header() {
 
 function Welcome() {
   return (
-    <Box flexDirection="column" marginY={1}>
+    <Box flexDirection="column" marginTop={1}>
+      <BigText text="OpenUI" font="tiny" colors={["cyan", "magenta"]} />
       <Text>Ask for UI and it renders live, right here in your terminal. Try:</Text>
       <Text dimColor> · Compare the 4 largest countries by population as a bar chart</Text>
       <Text dimColor> · Build a contact form with a name field and a topic dropdown</Text>
-      <Text dimColor> · Show the top 5 programming languages by popularity in a table</Text>
+      <Text dimColor> · A pricing callout with tags for a Pro plan</Text>
     </Box>
   );
 }
@@ -57,15 +57,12 @@ function UserBubble({ text }: { text: string }) {
 }
 
 function Thinking() {
-  const [frame, setFrame] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setFrame((f) => (f + 1) % SPINNER.length), 90);
-    return () => clearInterval(t);
-  }, []);
   return (
     <Box marginTop={1}>
-      <Text color="cyan">{SPINNER[frame]} </Text>
-      <Text dimColor>OpenUI is thinking…</Text>
+      <Text color="magenta">
+        <Spinner type="dots" />
+      </Text>
+      <GradientText text=" OpenUI is thinking…" preset="mind" />
     </Box>
   );
 }
@@ -81,15 +78,15 @@ function Composer({
 }) {
   return (
     <Box flexDirection="column" marginTop={1}>
-      <Box borderStyle="round" borderColor={focused ? "green" : "gray"} paddingX={1}>
-        <Text color={focused ? "green" : "gray"}>{"❯ "}</Text>
+      <Box borderStyle="round" borderColor={focused ? "magenta" : "gray"} paddingX={1}>
+        <Text color={focused ? "magenta" : "gray"}>{"❯ "}</Text>
         <Text>{draft}</Text>
-        {focused ? <Text color="green">▏</Text> : null}
+        {focused ? <Text color="magenta">▏</Text> : null}
         {draft.length === 0 ? (
           <Text dimColor>{isRunning ? "waiting for response…" : "Message OpenUI…"}</Text>
         ) : null}
       </Box>
-      <Text dimColor>{"  Enter send · Tab focus UI · ↑↓ choose · Ctrl+C quit"}</Text>
+      <Text dimColor>{"  Enter send · Tab/click focus · ↑↓ or number keys choose · Ctrl+C quit"}</Text>
     </Box>
   );
 }
@@ -98,24 +95,15 @@ function Composer({
 
 function AssistantMessageView({
   message,
-  interactive,
   isStreaming,
   onSend,
 }: {
   message: Message;
-  interactive: boolean;
   isStreaming: boolean;
   onSend: (content: string) => void;
 }) {
   const content = messageText(message.content);
-  const { result, ctx } = useGenUi(
-    tuiLibrary,
-    message.id,
-    content,
-    isStreaming,
-    onSend,
-    interactive,
-  );
+  const { result, ctx } = useGenUi(tuiLibrary, message.id, content, isStreaming, onSend, true);
 
   if (!result?.root) {
     if (isStreaming) return null;
@@ -128,9 +116,7 @@ function AssistantMessageView({
 
   return (
     <Box flexDirection="column" marginTop={1}>
-      <Text color="green" bold>
-        ◆ OpenUI
-      </Text>
+      <GradientText text="◆ OpenUI" preset="mind" bold />
       <TuiProvider value={ctx}>
         <RenderValue value={result.root} />
       </TuiProvider>
@@ -140,12 +126,12 @@ function AssistantMessageView({
 
 // ─────────────────────────── app ───────────────────────────
 
-type StaticItem = { kind: "header" } | { kind: "message"; message: Message };
-
 export function App({ processMessage }: { processMessage: ProcessFn }) {
   const { messages, isRunning, send } = useLocalChat(processMessage);
   const [draft, setDraft] = useState("");
   const dynamicRef = useRef<DOMElement>(null);
+  const { stdout } = useStdout();
+  const rows = stdout?.rows ?? 24;
 
   const { isFocused: composerFocused } = useFocus({ id: "composer", autoFocus: true });
   useInput(
@@ -162,8 +148,6 @@ export function App({ processMessage }: { processMessage: ProcessFn }) {
         setDraft((d) => d.slice(0, -1));
         return;
       }
-      // Accept printable text but drop escape/mouse sequences that share stdin
-      // when mouse tracking is enabled.
       if (isTypedText(input) && !key.ctrl && !key.meta) {
         setDraft((d) => d + input);
       }
@@ -173,56 +157,25 @@ export function App({ processMessage }: { processMessage: ProcessFn }) {
 
   const last = messages[messages.length - 1];
   const liveAssistant = last && last.role === "assistant" ? last : null;
-  const finalized = liveAssistant ? messages.slice(0, -1) : messages;
   const liveContent = liveAssistant ? messageText(liveAssistant.content) : "";
   const showThinking = isRunning && liveContent.trim() === "";
+  const lastUser = [...messages].reverse().find((m) => m.role === "user") ?? null;
 
-  // Completed turns are emitted once into scrollback via <Static>, keeping the
-  // live/interactive region small so the composer never scrolls off screen.
-  const staticItems: StaticItem[] = [
-    { kind: "header" },
-    ...finalized.map((message) => ({ kind: "message" as const, message })),
-  ];
-
+  // Single full-height frame on the alternate screen (see cli.tsx): the current
+  // exchange is pinned to the bottom, the frame fills the screen from row 0, so
+  // Ink repaints in place (minimal flicker) and mouse clicks map 1:1 to rows.
   return (
     <MouseProvider rootRef={dynamicRef}>
-      <Box flexDirection="column">
-        <Static items={staticItems}>
-          {(item, index) =>
-            item.kind === "header" ? (
-              <Box key="header" paddingX={1}>
-                <Header />
-              </Box>
-            ) : (
-              <Box key={item.message.id ?? index} paddingX={1}>
-                {item.message.role === "user" ? (
-                  <UserBubble text={firstLine(messageText(item.message.content))} />
-                ) : (
-                  <AssistantMessageView
-                    message={item.message}
-                    interactive={false}
-                    isStreaming={false}
-                    onSend={() => {}}
-                  />
-                )}
-              </Box>
-            )
-          }
-        </Static>
-
-        <Box ref={dynamicRef} flexDirection="column" paddingX={1}>
-          {messages.length === 0 ? <Welcome /> : null}
-          {liveAssistant ? (
-            <AssistantMessageView
-              message={liveAssistant}
-              interactive
-              isStreaming={isRunning}
-              onSend={send}
-            />
-          ) : null}
-          {showThinking ? <Thinking /> : null}
-          <Composer draft={draft} focused={composerFocused} isRunning={isRunning} />
-        </Box>
+      <Box ref={dynamicRef} flexDirection="column" height={rows} paddingX={1}>
+        <Header />
+        <Box flexGrow={1} />
+        {messages.length === 0 ? <Welcome /> : null}
+        {lastUser ? <UserBubble text={firstLine(messageText(lastUser.content))} /> : null}
+        {liveAssistant ? (
+          <AssistantMessageView message={liveAssistant} isStreaming={isRunning} onSend={send} />
+        ) : null}
+        {showThinking ? <Thinking /> : null}
+        <Composer draft={draft} focused={composerFocused} isRunning={isRunning} />
       </Box>
     </MouseProvider>
   );

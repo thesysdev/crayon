@@ -24,4 +24,20 @@ if (!process.env.OPENAI_API_KEY) {
 
 const systemPrompt = tuiLibrary.prompt();
 
-render(createElement(App, { processMessage: makeProcessMessage(systemPrompt) }));
+// Use the terminal's alternate screen buffer: a stable, full-screen canvas that
+// doesn't scroll the main buffer, so full-height repaints don't flicker/jump and
+// mouse clicks map 1:1 to screen rows. (Trade-off: no scrollback history.)
+const ENTER_ALT_SCREEN = "\u001B[?1049h";
+const EXIT_ALT_SCREEN = "\u001B[?1049l";
+process.stdout.write(ENTER_ALT_SCREEN);
+const restoreScreen = () => {
+  try {
+    process.stdout.write(EXIT_ALT_SCREEN);
+  } catch {
+    // ignore
+  }
+};
+process.on("exit", restoreScreen);
+
+const app = render(createElement(App, { processMessage: makeProcessMessage(systemPrompt) }));
+app.waitUntilExit().then(restoreScreen, restoreScreen);
