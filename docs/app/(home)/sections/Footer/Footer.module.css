@@ -9,56 +9,13 @@
   width: 100%;
 }
 
-.handcraftedSection {
-  width: 100%;
-  padding-inline: 1.25rem;
-  background: var(--openui-foreground);
-}
-
-.handcraftedContainer {
-  display: flex;
-  max-width: 75rem;
-  margin-inline: auto;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.625rem;
-  padding-block: 4rem;
-}
-
-.mascotWrap {
-  position: relative;
-  height: 64px;
-  width: 64px;
-  flex-shrink: 0;
-  color: var(--openui-text-neutral-primary);
-}
-
-.handcraftedMascot {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-.handcraftedCopy {
-  text-align: center;
-  font-family: var(--font-geist-mono);
-  font-size: 18px;
-  line-height: 1.2;
-  color: var(--openui-text-neutral-primary);
-  margin-top: 12px;
-}
-
-.handcraftedCursor {
-  display: inline-block;
-  margin-left: 0.06em;
-  animation: handcraftedCursorBlink 1s steps(1, end) infinite;
-}
-
 .contentSection {
-  padding: 60px 1.25rem 1rem;
+  /* Open above the brand row, tighter below it, so the mark and the theme
+     control read as belonging to the separator they sit on. */
+  --footer-air: 60px;
+  --footer-air-below: 1.75rem;
+
+  padding: var(--footer-air) 1.25rem 1rem;
   background: var(--openui-foreground);
 }
 
@@ -67,26 +24,72 @@
   margin-inline: auto;
 }
 
-.desktopLogoRow {
-  display: none;
-}
-
-.mobileLogoRow {
+/* The mark and the theme control face each other across the footer's width. */
+.brandRow {
   display: flex;
-  width: 100%;
-  flex-direction: column;
   align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-bottom: var(--footer-air-below);
 }
 
 .logoWrap {
   position: relative;
-  height: 3rem;
-  width: 124px;
+  /* Held to the mark's own 2.5:1 ratio, so the wordmark never stretches. */
+  height: 2.625rem;
+  width: 105px;
+  flex-shrink: 0;
   color: var(--openui-text-neutral-primary);
 }
 
+/* ---- Theme tabs ----
+   A segmented pair rather than the header's single swap button, so the footer
+   shows which theme is on rather than only offering the other one. */
+.themeTabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  flex-shrink: 0;
+  padding: 0.25rem;
+  border: 1px solid var(--home-hairline);
+  border-radius: var(--openui-radius-full);
+}
+
+.themeTab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--openui-radius-full);
+  background: transparent;
+  color: var(--openui-text-neutral-secondary);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.themeTab:hover {
+  color: var(--openui-text-neutral-primary);
+}
+
+.themeTabActive {
+  border-color: var(--openui-border-default);
+  background: var(--openui-highlight);
+  color: var(--openui-text-neutral-primary);
+}
+
+.themeTabIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
 .bottomBar {
-  margin-top: 2.5rem;
   padding-block: 1rem;
   border-top: 1px solid var(--home-hairline);
 }
@@ -98,7 +101,7 @@
 .desktopMetaLeft,
 .desktopMetaRight {
   font-family: "Inter", sans-serif;
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1.5;
   color: var(--openui-text-neutral-secondary);
 }
@@ -128,7 +131,15 @@
   position: relative;
   height: 1.5rem;
   width: 1.5rem;
-  color: var(--openui-text-neutral-tertiary);
+  color: var(--openui-text-neutral-secondary);
+  transition: color 0.15s ease;
+}
+
+/* Steps up to the page's ink under the pointer, so the icon reads as live
+   rather than as a static row. */
+.socialLink:hover,
+.socialLink:focus-visible {
+  color: var(--openui-text-neutral-primary);
 }
 
 .socialIconWrap {
@@ -162,58 +173,24 @@
 
 .mobileMetaText {
   font-family: "Inter", sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.5;
   color: var(--openui-text-neutral-secondary);
 }
 
-/* Dark mode: the footer bands sit on var(--openui-foreground) (a dark gray raised
-   surface) by default; make them pure black so the footer matches the black page. */
-[data-theme="dark"] .handcraftedSection,
+/* Dark mode: the footer band sits on var(--openui-foreground) (a dark gray raised
+   surface) by default; make it pure black so the footer matches the black page. */
 [data-theme="dark"] .contentSection {
   background: #000;
 }
 
-@keyframes handcraftedCursorBlink {
-  0%,
-  49% {
-    opacity: 1;
-  }
-
-  50%,
-  100% {
-    opacity: 0;
-  }
-}
-
-/* Mobile-only: slightly smaller handcrafted line. */
-@media (max-width: 767px) {
-  .handcraftedCopy {
-    font-size: 15px;
-  }
-}
-
 @media (min-width: 1024px) {
-  .handcraftedSection {
-    padding-inline: 2rem;
-  }
-
   .contentSection {
     padding-inline: 2rem;
   }
-  .desktopLogoRow {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
 
-  .mobileLogoRow,
   .mobileBottomBar {
     display: none;
-  }
-
-  .bottomBar {
-    margin-top: 60px;
   }
 
   .desktopBottomBar {
