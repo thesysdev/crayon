@@ -3,7 +3,7 @@ export type Status = "idle" | "streaming" | "done" | "error";
 
 export const MODELS = [
   "anthropic/claude-sonnet-4.6",
-  "google/gemini-3.1-pro-free",
+  "anthropic/claude-haiku-4.5",
   "openai/gpt-5.2",
 ] as const;
 export type Model = (typeof MODELS)[number];
