@@ -1,10 +1,11 @@
 import type { Message } from "@openuidev/react-headless";
-import { Box, Static, Text, useFocus, useInput } from "ink";
-import { useEffect, useState } from "react";
+import { Box, Static, Text, useFocus, useInput, type DOMElement } from "ink";
+import { useEffect, useRef, useState } from "react";
 import { useLocalChat, type ProcessFn } from "./chat.js";
 import { RenderValue } from "./genui/components.js";
 import { TuiProvider } from "./genui/context.js";
 import { tuiLibrary } from "./genui/library.js";
+import { isTypedText, MouseProvider } from "./genui/mouse.js";
 import { useGenUi } from "./genui/state.js";
 
 function messageText(content: unknown): string {
@@ -144,6 +145,7 @@ type StaticItem = { kind: "header" } | { kind: "message"; message: Message };
 export function App({ processMessage }: { processMessage: ProcessFn }) {
   const { messages, isRunning, send } = useLocalChat(processMessage);
   const [draft, setDraft] = useState("");
+  const dynamicRef = useRef<DOMElement>(null);
 
   const { isFocused: composerFocused } = useFocus({ id: "composer", autoFocus: true });
   useInput(
@@ -160,7 +162,11 @@ export function App({ processMessage }: { processMessage: ProcessFn }) {
         setDraft((d) => d.slice(0, -1));
         return;
       }
-      if (input && !key.ctrl && !key.meta && !key.tab) setDraft((d) => d + input);
+      // Accept printable text but drop escape/mouse sequences that share stdin
+      // when mouse tracking is enabled.
+      if (isTypedText(input) && !key.ctrl && !key.meta) {
+        setDraft((d) => d + input);
+      }
     },
     { isActive: composerFocused },
   );
@@ -179,43 +185,45 @@ export function App({ processMessage }: { processMessage: ProcessFn }) {
   ];
 
   return (
-    <Box flexDirection="column">
-      <Static items={staticItems}>
-        {(item, index) =>
-          item.kind === "header" ? (
-            <Box key="header" paddingX={1}>
-              <Header />
-            </Box>
-          ) : (
-            <Box key={item.message.id ?? index} paddingX={1}>
-              {item.message.role === "user" ? (
-                <UserBubble text={firstLine(messageText(item.message.content))} />
-              ) : (
-                <AssistantMessageView
-                  message={item.message}
-                  interactive={false}
-                  isStreaming={false}
-                  onSend={() => {}}
-                />
-              )}
-            </Box>
-          )
-        }
-      </Static>
+    <MouseProvider rootRef={dynamicRef}>
+      <Box flexDirection="column">
+        <Static items={staticItems}>
+          {(item, index) =>
+            item.kind === "header" ? (
+              <Box key="header" paddingX={1}>
+                <Header />
+              </Box>
+            ) : (
+              <Box key={item.message.id ?? index} paddingX={1}>
+                {item.message.role === "user" ? (
+                  <UserBubble text={firstLine(messageText(item.message.content))} />
+                ) : (
+                  <AssistantMessageView
+                    message={item.message}
+                    interactive={false}
+                    isStreaming={false}
+                    onSend={() => {}}
+                  />
+                )}
+              </Box>
+            )
+          }
+        </Static>
 
-      <Box flexDirection="column" paddingX={1}>
-        {messages.length === 0 ? <Welcome /> : null}
-        {liveAssistant ? (
-          <AssistantMessageView
-            message={liveAssistant}
-            interactive
-            isStreaming={isRunning}
-            onSend={send}
-          />
-        ) : null}
-        {showThinking ? <Thinking /> : null}
-        <Composer draft={draft} focused={composerFocused} isRunning={isRunning} />
+        <Box ref={dynamicRef} flexDirection="column" paddingX={1}>
+          {messages.length === 0 ? <Welcome /> : null}
+          {liveAssistant ? (
+            <AssistantMessageView
+              message={liveAssistant}
+              interactive
+              isStreaming={isRunning}
+              onSend={send}
+            />
+          ) : null}
+          {showThinking ? <Thinking /> : null}
+          <Composer draft={draft} focused={composerFocused} isRunning={isRunning} />
+        </Box>
       </Box>
-    </Box>
+    </MouseProvider>
   );
 }

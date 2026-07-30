@@ -40,8 +40,19 @@ or _"Build a contact form with name, email and a topic dropdown"_.
 - Type + **Enter** — send a message.
 - **Tab / Shift+Tab** — move focus between the composer and interactive UI (follow-ups, buttons, form fields).
 - **Enter** — activate the focused follow-up/button (also confirms the highlighted Select option).
-- **↑ / ↓** — choose an option in a focused Select; the highlighted option is selected immediately.
+- **↑ / ↓** or **number keys** — choose an option in a focused Select; the highlighted option is selected immediately.
+- **Mouse click** — click a dropdown option to select it, a button/follow-up to activate it, or a text field to focus it (see caveats below).
 - **Ctrl+C** — quit.
+
+### Mouse support (form elements)
+
+Clicking works on the **latest** turn's interactive elements (dropdown options, buttons, follow-ups, text fields). It uses click-only SGR mouse tracking (`?1000`/`?1006`) enabled once at the root; clicks are hit-tested against the bottom-anchored live region using Yoga layout offsets.
+
+Caveats (inherent to terminal mouse tracking):
+
+- While mouse tracking is active, the terminal's native click-drag **text selection/copy is disabled** (hold Shift in most terminals to bypass and select text).
+- Only the current (bottom) turn is clickable; earlier turns scrolled into history are keyboard-recallable but not click targets.
+- Requires an xterm-style terminal; through tmux you must set `set -g mouse on`. Keyboard remains the fully-portable path.
 
 ## Supported components (v1)
 

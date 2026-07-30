@@ -1,7 +1,8 @@
-import { Box, Text, useFocus, useInput } from "ink";
+import { Box, Text, useFocus, useFocusManager, useInput } from "ink";
 import { Component, Fragment, type ReactNode, useState } from "react";
 import { renderBars } from "./chart.js";
 import { FormNameProvider, useFormName, useTui } from "./context.js";
+import { Clickable, isTypedText } from "./mouse.js";
 
 /** The render contract each library component receives (matches lang-core's ComponentRenderProps). */
 interface ViewProps {
@@ -188,10 +189,12 @@ function FollowUpItemInteractive({ text }: { text: string }) {
     { isActive: isFocused },
   );
   return (
-    <Text color={isFocused ? "black" : "magenta"} backgroundColor={isFocused ? "magenta" : undefined}>
-      {isFocused ? "❯ " : "• "}
-      {text}
-    </Text>
+    <Clickable onClick={() => triggerAction(text)}>
+      <Text color={isFocused ? "black" : "magenta"} backgroundColor={isFocused ? "magenta" : undefined}>
+        {isFocused ? "❯ " : "• "}
+        {text}
+      </Text>
+    </Clickable>
   );
 }
 
@@ -228,9 +231,11 @@ function ButtonInteractive({ label, action }: { label: string; action: unknown }
     { isActive: isFocused },
   );
   return (
-    <Text color={isFocused ? "black" : "cyan"} backgroundColor={isFocused ? "cyan" : undefined}>
-      {` ${label} `}
-    </Text>
+    <Clickable onClick={() => triggerAction(label, formName, action)}>
+      <Text color={isFocused ? "black" : "cyan"} backgroundColor={isFocused ? "cyan" : undefined}>
+        {` ${label} `}
+      </Text>
+    </Clickable>
   );
 }
 
@@ -274,10 +279,12 @@ function InputView({ props }: ViewProps) {
 }
 
 function InputInteractive({ props }: { props: Record<string, unknown> }) {
-  const { isFocused } = useFocus();
   const formName = useFormName();
   const { getFieldValue, setFieldValue } = useTui();
   const name = str(props.name);
+  const focusId = `input:${formName ?? ""}:${name}`;
+  const { isFocused } = useFocus({ id: focusId });
+  const { focus } = useFocusManager();
   const value = str(getFieldValue(formName, name));
   useInput(
     (input, key) => {
@@ -287,17 +294,22 @@ function InputInteractive({ props }: { props: Record<string, unknown> }) {
       }
       if (key.return || key.tab || key.upArrow || key.downArrow || key.leftArrow || key.rightArrow)
         return;
-      if (input && !key.ctrl && !key.meta) setFieldValue(formName, "Input", name, value + input);
+      // Accept printable text; drop mouse escape sequences that share stdin.
+      if (isTypedText(input) && !key.ctrl && !key.meta) {
+        setFieldValue(formName, "Input", name, value + input);
+      }
     },
     { isActive: isFocused },
   );
   const shown = value.length ? value : str(props.placeholder);
   return (
-    <Text color={isFocused ? "cyan" : "gray"}>
-      {isFocused ? "❯ " : "  "}
-      {shown}
-      {isFocused ? "▏" : ""}
-    </Text>
+    <Clickable onClick={() => focus(focusId)}>
+      <Text color={isFocused ? "cyan" : "gray"}>
+        {isFocused ? "❯ " : "  "}
+        {shown}
+        {isFocused ? "▏" : ""}
+      </Text>
+    </Clickable>
   );
 }
 
@@ -371,14 +383,16 @@ function SelectInteractive({ props }: { props: Record<string, unknown> }) {
         const isSel = o.value === current;
         const isCursor = isFocused && i === cursor;
         return (
-          <Text key={o.value || i} color={isCursor ? "cyan" : isSel ? "green" : undefined}>
-            {isCursor ? "❯ " : "  "}
-            {isSel ? "(•) " : "( ) "}
-            {i + 1}. {o.label}
-          </Text>
+          <Clickable key={o.value || i} onClick={() => choose(i)}>
+            <Text color={isCursor ? "cyan" : isSel ? "green" : undefined}>
+              {isCursor ? "❯ " : "  "}
+              {isSel ? "(•) " : "( ) "}
+              {i + 1}. {o.label}
+            </Text>
+          </Clickable>
         );
       })}
-      {isFocused ? <Text dimColor> press 1-{options.length} or ↑↓ to choose</Text> : null}
+      {isFocused ? <Text dimColor> click, press 1-{options.length}, or ↑↓ to choose</Text> : null}
     </Box>
   );
 }
