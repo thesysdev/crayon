@@ -19,13 +19,12 @@ export interface UseArtifactAutoOpenOptions {
   /** The detailed-view id to open. */
   viewId: string;
   /**
-   * Identity of the artifact-producing unit for the `"auto-open"` once-latch —
-   * a tool-call id for tool-call artifacts, a statement id for chat-library
-   * artifacts. Must be unique per generate/edit and stable across host
-   * remounts, so a user's mid-stream close sticks while every new call (an
-   * edit) auto-opens again. Deliberately NOT `artifactId:version`: a streamed
-   * edit often carries no version in its args and would collide with the
-   * generate's key.
+   * Identity for the `"auto-open"` once-latch — e.g. a statement id or
+   * artifact id for chat-library artifacts. Must be stable across host
+   * remounts, so a user's mid-stream close sticks instead of re-opening
+   * when the host remounts. Lives on the detailed-view store's latch
+   * (cleared on thread switch), sharing a namespace with the registration
+   * path's artifact ids.
    */
   latchKey: string;
   /** Whether the artifact is streaming live right now. `"auto-open"` only
@@ -47,11 +46,12 @@ export interface UseArtifactAutoOpenOptions {
  *   survives host remounts mid-stream.
  * - `"open-on-mount"`: once per mounted host instance, streaming or not.
  *
- * Tool-call artifacts need none of this — `ChatProvider` drives them itself
- * from the chat store. This hook is for artifact sources the store can't
- * see (an SDK's chat-library artifacts, custom renderer hosts): the host
- * supplies the render-derived facts — which view to open, the latch
- * identity, streaming state, and eligibility.
+ * Artifacts that register in the ThreadContext need none of this —
+ * `ChatProvider` presents them itself on first registration. This hook is
+ * for artifact sources that bypass the registry (an SDK's chat-library
+ * artifacts, custom renderer hosts): the host supplies the render-derived
+ * facts — which view to open, the latch identity, streaming state, and
+ * eligibility.
  */
 export function useArtifactAutoOpen({
   viewId,
@@ -73,6 +73,10 @@ export function useArtifactAutoOpen({
       return;
     }
     openedThisMountRef.current = true;
+    // First wins, same policy as the registration path: never steal a panel
+    // that is already open (this view re-asserting itself is fine).
+    const active = dv.activeDetailedViewId;
+    if (active !== null && active !== viewId) return;
     dv.setActiveDetailedView(viewId);
   }, [viewMode, enabled, isStreaming, latchKey, viewId, store]);
 }

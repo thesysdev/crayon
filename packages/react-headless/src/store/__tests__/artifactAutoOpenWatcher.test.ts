@@ -1,152 +1,113 @@
 import { describe, expect, it } from "vitest";
-import type { AssistantMessage, Message, ToolMessage } from "../../types";
-import { evaluateArtifactAutoOpen } from "../artifactAutoOpenWatcher";
-import { buildArtifactRendererRegistry } from "../ArtifactRenderersContext";
-import type { ArtifactRendererConfig } from "../artifactRendererTypes";
+import { evaluateRegisteredArtifacts } from "../artifactAutoOpenWatcher";
 import { createDetailedViewStore } from "../createDetailedViewStore";
+import type { ArtifactEntry } from "../threadContextTypes";
 
-// Test renderer: parses `{"id": "...", "version": n}` out of the (possibly
-// partial) args and yields meta only once `id` is present — mirroring real
-// parsers, whose header arrives a few tokens into the stream.
-const artifactRenderer: ArtifactRendererConfig<unknown> = {
+const entry = (id: string, version = 1): ArtifactEntry => ({
+  id,
+  version,
+  heading: `${id} v${version}`,
   type: "test_artifact",
-  toolName: "make_artifact",
-  parser: ({ args }) => {
-    if (typeof args !== "string") return null;
-    let input: { id?: string; version?: number; explode?: boolean };
-    try {
-      input = JSON.parse(args) as typeof input;
-    } catch {
-      return { props: {}, meta: null }; // header not parseable yet
-    }
-    if (input.explode) throw new Error("parser exploded");
-    if (!input.id) return { props: {}, meta: null };
-    return {
-      props: {},
-      meta: { id: input.id, version: input.version ?? 1, heading: "t" },
-    };
-  },
-  preview: () => null,
-  actual: () => null,
-};
-
-const registry = buildArtifactRendererRegistry([artifactRenderer]);
-
-const assistant = (callId: string, args: string, toolName = "make_artifact"): AssistantMessage => ({
-  id: `msg-${callId}`,
-  role: "assistant",
-  toolCalls: [{ id: callId, type: "function", function: { name: toolName, arguments: args } }],
 });
 
-const toolResult = (callId: string, error?: string): ToolMessage => ({
-  id: `res-${callId}`,
-  role: "tool",
-  toolCallId: callId,
-  content: JSON.stringify({ id: "art", version: 1 }),
-  ...(error ? { error } : {}),
-});
-
-const run = (
-  viewMode: "auto-open" | "open-on-mount" | "overview",
-  messages: Message[],
-  store = createDetailedViewStore(),
-  executing: ReadonlySet<string> = new Set(),
-) => {
-  evaluateArtifactAutoOpen(
-    viewMode,
-    registry,
-    { messages, executingToolCallIds: executing },
-    store.getState(),
-  );
-  return store;
+// Registry shape mirrors ThreadContextState.artifacts: id → versions ascending.
+const registry = (...entries: ArtifactEntry[]): Record<string, ArtifactEntry[]> => {
+  const out: Record<string, ArtifactEntry[]> = {};
+  for (const e of entries) (out[e.id] ??= []).push(e);
+  return out;
 };
 
-describe("evaluateArtifactAutoOpen", () => {
-  it("auto-open: opens a streaming artifact once its header parses", () => {
-    const store = run("auto-open", [assistant("c1", '{"id": "art", "version": 1}')]);
-    expect(store.getState().activeDetailedViewId).toBe("art:1");
-    expect(store.getState()._autoOpenedArtifactKeys.has("c1")).toBe(true);
-  });
-
-  it("auto-open: a user close sticks — the same call never re-opens", () => {
-    const messages = [assistant("c1", '{"id": "art", "version": 1}')];
-    const store = run("auto-open", messages);
-    store.getState().setActiveDetailedView(null); // user closes mid-stream
-    run("auto-open", messages, store); // next stream update
-    expect(store.getState().activeDetailedViewId).toBeNull();
-  });
-
-  it("auto-open: does not burn the latch before the header arrives", () => {
+describe("evaluateRegisteredArtifacts", () => {
+  it("auto-open: a newly registered artifact opens while the thread runs", () => {
     const store = createDetailedViewStore();
-    run("auto-open", [assistant("c1", '{"id": "ar')], store); // partial args
-    expect(store.getState().activeDetailedViewId).toBeNull();
-    expect(store.getState()._autoOpenedArtifactKeys.has("c1")).toBe(false);
-    run("auto-open", [assistant("c1", '{"id": "art", "version": 2}')], store);
-    expect(store.getState().activeDetailedViewId).toBe("art:2");
+    evaluateRegisteredArtifacts("auto-open", registry(entry("art")), true, store);
+    expect(store.getState().activeDetailedViewId).toBe("art:1");
+    expect(store.getState()._autoOpenedArtifactKeys.has("art")).toBe(true);
   });
 
-  it("auto-open: settled (historical) artifacts stay quiet", () => {
-    const store = run("auto-open", [
-      assistant("c1", '{"id": "art", "version": 1}'),
-      toolResult("c1"),
-    ]);
+  it("presents once: a user close sticks across re-registrations", () => {
+    const store = createDetailedViewStore();
+    const arts = registry(entry("art"));
+    evaluateRegisteredArtifacts("auto-open", arts, true, store);
+    store.getState().setActiveDetailedView(null); // user closes
+    evaluateRegisteredArtifacts("auto-open", arts, true, store); // remount re-register
     expect(store.getState().activeDetailedViewId).toBeNull();
   });
 
-  it("auto-open: an executing call (args closed, no result) still opens", () => {
-    const store = run(
+  it("edits never re-open: a new version shares the claimed id", () => {
+    const store = createDetailedViewStore();
+    evaluateRegisteredArtifacts("auto-open", registry(entry("art", 1)), true, store);
+    store.getState().setActiveDetailedView(null); // user closes the generate
+    // The edit registers v2 under the same id — still quiet.
+    evaluateRegisteredArtifacts(
       "auto-open",
-      [assistant("c1", '{"id": "art", "version": 1}')],
-      createDetailedViewStore(),
-      new Set(["c1"]),
+      registry(entry("art", 1), entry("art", 2)),
+      true,
+      store,
     );
+    expect(store.getState().activeDetailedViewId).toBeNull();
+  });
+
+  it("opens the latest registered version of an id", () => {
+    const store = createDetailedViewStore();
+    evaluateRegisteredArtifacts(
+      "open-on-mount",
+      registry(entry("art", 1), entry("art", 3)),
+      false,
+      store,
+    );
+    expect(store.getState().activeDetailedViewId).toBe("art:3");
+  });
+
+  it("auto-open: historical registrations (thread not running) never open — and stay claimed", () => {
+    const store = createDetailedViewStore();
+    const arts = registry(entry("old"));
+    evaluateRegisteredArtifacts("auto-open", arts, false, store); // thread load
+    expect(store.getState().activeDetailedViewId).toBeNull();
+    // A later run starts and the host re-registers: the claim is already burned.
+    evaluateRegisteredArtifacts("auto-open", arts, true, store);
+    expect(store.getState().activeDetailedViewId).toBeNull();
+  });
+
+  it("open-on-mount: opens on thread load with nothing running", () => {
+    const store = createDetailedViewStore();
+    evaluateRegisteredArtifacts("open-on-mount", registry(entry("art")), false, store);
     expect(store.getState().activeDetailedViewId).toBe("art:1");
   });
 
-  it("open-on-mount: settled artifacts open, newest (last) wins", () => {
-    const store = run("open-on-mount", [
-      assistant("c1", '{"id": "a1", "version": 1}'),
-      toolResult("c1"),
-      assistant("c2", '{"id": "a2", "version": 1}'),
-      toolResult("c2"),
-    ]);
-    expect(store.getState().activeDetailedViewId).toBe("a2:1");
-    expect(store.getState()._autoOpenedArtifactKeys.has("c1")).toBe(true);
+  it("first wins: an open panel is never stolen by another artifact", () => {
+    const store = createDetailedViewStore();
+    evaluateRegisteredArtifacts("auto-open", registry(entry("a1"), entry("a2")), true, store);
+    expect(store.getState().activeDetailedViewId).toBe("a1:1");
+    // a2's chance is spent: even after the user closes, it stays quiet.
+    expect(store.getState()._autoOpenedArtifactKeys.has("a2")).toBe(true);
+    store.getState().setActiveDetailedView(null);
+    evaluateRegisteredArtifacts("auto-open", registry(entry("a1"), entry("a2")), true, store);
+    expect(store.getState().activeDetailedViewId).toBeNull();
   });
 
-  it("overview: never opens anything", () => {
-    const store = run("overview", [assistant("c1", '{"id": "art", "version": 1}')]);
+  it("first wins: a user-opened panel blocks auto-open the same way", () => {
+    const store = createDetailedViewStore();
+    store.getState().setActiveDetailedView("user-panel");
+    evaluateRegisteredArtifacts("auto-open", registry(entry("art")), true, store);
+    expect(store.getState().activeDetailedViewId).toBe("user-panel");
+    expect(store.getState()._autoOpenedArtifactKeys.has("art")).toBe(true);
+  });
+
+  it("overview: never opens and never claims", () => {
+    const store = createDetailedViewStore();
+    evaluateRegisteredArtifacts("overview", registry(entry("art")), true, store);
     expect(store.getState().activeDetailedViewId).toBeNull();
     expect(store.getState()._autoOpenedArtifactKeys.size).toBe(0);
   });
 
-  it("skips errored tool calls", () => {
-    const store = run("open-on-mount", [
-      assistant("c1", '{"id": "art", "version": 1}'),
-      toolResult("c1", "boom"),
-    ]);
-    expect(store.getState().activeDetailedViewId).toBeNull();
-  });
-
-  it("skips tool calls with no matching renderer", () => {
-    const store = run("auto-open", [assistant("c1", '{"id": "art"}', "unrelated_tool")]);
-    expect(store.getState().activeDetailedViewId).toBeNull();
-  });
-
-  it("a throwing parser is skipped without claiming the latch", () => {
+  it("thread switch (reset) re-arms for the next thread", () => {
     const store = createDetailedViewStore();
-    run("auto-open", [assistant("c1", '{"id": "art", "explode": true}')], store);
-    expect(store.getState().activeDetailedViewId).toBeNull();
-    expect(store.getState()._autoOpenedArtifactKeys.has("c1")).toBe(false);
-  });
-
-  it("thread switch (reset) re-arms open-on-mount for the next thread", () => {
-    const messages = [assistant("c1", '{"id": "art", "version": 1}'), toolResult("c1")];
-    const store = run("open-on-mount", messages);
+    const arts = registry(entry("art"));
+    evaluateRegisteredArtifacts("open-on-mount", arts, false, store);
     expect(store.getState().activeDetailedViewId).toBe("art:1");
     store.getState().reset();
-    expect(store.getState().activeDetailedViewId).toBeNull();
-    run("open-on-mount", messages, store);
+    evaluateRegisteredArtifacts("open-on-mount", arts, false, store);
     expect(store.getState().activeDetailedViewId).toBe("art:1");
   });
 });

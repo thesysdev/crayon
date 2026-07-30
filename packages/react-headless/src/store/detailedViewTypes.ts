@@ -36,11 +36,12 @@ export type DetailedViewInternals = {
   /** @internal */
   _setDetailedViewPanelNode: (node: HTMLElement | null) => void;
   /**
-   * Latch keys (tool-call ids) that already auto-opened once, so a user's
-   * mid-stream close sticks even when the renderer host remounts during
-   * streaming. Keyed per tool call — not per artifact version — because a
-   * streamed edit often carries no version in its args and would collide
-   * with the generate's key. Cleared by `reset()` (thread switch).
+   * Auto-open latch: keys that already had their one chance to auto-open,
+   * claimed whether or not a panel actually opened. Keyed by artifact id on
+   * the registration path (an edit shares its generate's id, so edits can
+   * never force a panel open; remounts/re-registrations are invisible) and
+   * by the caller's `latchKey` for `useArtifactAutoOpen` hosts. Cleared by
+   * `reset()` (thread switch).
    * @internal
    */
   _autoOpenedArtifactKeys: ReadonlySet<string>;

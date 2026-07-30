@@ -1,20 +1,22 @@
 import { createContext, useContext } from "react";
 
 /**
- * How artifact detail panels open. For tool-call artifacts the behavior is
- * driven entirely inside `ChatProvider` (a store-level watcher) — rendering
- * hosts need no wiring. Non-tool-call artifact sources apply the same mode
- * via `useArtifactAutoOpen`.
+ * How artifact detail panels open. The policy is "present once": an artifact
+ * may open by itself exactly one time — when its id first registers in the
+ * ThreadContext — and only into an empty panel (an open panel is never
+ * stolen). Edits update in place and never force a panel open. Driven
+ * entirely inside `ChatProvider`; rendering hosts need no wiring. Artifact
+ * sources that bypass the registry apply the mode via `useArtifactAutoOpen`.
  *
  * - `"overview"` (default) — panels only open on an explicit user action
  *   (clicking an artifact preview's open control).
- * - `"auto-open"` — a panel opens by itself as soon as its artifact's header
- *   parses from the live stream, once per tool call: a user's mid-stream
- *   close sticks; historical artifacts on a thread reload never fire; an
- *   edit (a new call) auto-opens again.
- * - `"open-on-mount"` — every artifact opens once per thread session,
- *   streaming or not: loading a thread opens its newest artifact (last one
- *   wins). Deep-link / kiosk embeds.
+ * - `"auto-open"` — a newly registered artifact opens while the thread is
+ *   running (a live generation presenting its artifact). A user's close
+ *   sticks; historical artifacts on a thread reload never fire.
+ * - `"open-on-mount"` — a newly registered artifact opens regardless of
+ *   running: loading a thread presents its first artifact (message order;
+ *   an id's panel still ends at its newest version). Deep-link / kiosk
+ *   embeds.
  *
  * @category Types
  */

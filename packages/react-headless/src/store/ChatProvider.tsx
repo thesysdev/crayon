@@ -67,14 +67,15 @@ export const ChatProvider: FC<ChatProviderProps> = ({
     return unsubscribe;
   }, [chatStore, detailedViewStore, threadContextStore]);
 
-  // Drives artifactViewMode for tool-call artifacts entirely at the store
-  // layer — no rendering host involved. Declared AFTER the reset subscription
-  // so on a thread switch the latch clears before this pass sees the new
-  // thread's messages.
+  // Drives artifactViewMode entirely at the store layer — an artifact may
+  // present itself once, when it first registers in the ThreadContext.
+  // Thread-switch safety comes from the reset subscription above running
+  // synchronously inside the selectThread set(): the latch and registry are
+  // both cleared before any new-thread registration can fire this watcher.
   useArtifactAutoOpenWatcher(
     artifactViewMode ?? DEFAULT_ARTIFACT_VIEW_MODE,
-    artifactRendererRegistry,
     chatStore,
+    threadContextStore,
     detailedViewStore,
   );
 
