@@ -15,10 +15,10 @@ interface CloudAgentSurfaceProps {
 
 export function CloudAgentSurface({ registry }: CloudAgentSurfaceProps) {
   const [userId] = useState(getOrCreateCloudUserId);
-  const [llm] = useState(createCloudChatLLM);
+  const [llm] = useState(() => createCloudChatLLM("/api/openui-cloud/compare/chat"));
   const cloudFetch = useMemo<typeof fetch>(() => {
     return async (input, init) => {
-      if (typeof input !== "string" || input !== "/api/openui-cloud/frontend-token") {
+      if (typeof input !== "string" || input !== "/api/openui-cloud/compare/frontend-token") {
         return fetch(input, init);
       }
 
@@ -28,7 +28,7 @@ export function CloudAgentSurface({ registry }: CloudAgentSurfaceProps) {
     };
   }, [userId]);
   const cloudStorage = useOpenuiCloudStorage({
-    token: "/api/openui-cloud/frontend-token",
+    token: "/api/openui-cloud/compare/frontend-token",
     fetch: cloudFetch,
   });
 

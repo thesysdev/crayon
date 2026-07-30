@@ -14,15 +14,16 @@ export function useComparisonChatLLM(
   responseMode: ComparisonResponseMode,
   onCreditsExhausted: () => void,
 ): ChatLLM {
+  const endpoint = responseMode === "markdown" ? "/api/compare/markdown" : "/api/compare/oss";
+
   return useMemo<ChatLLM>(
     () => ({
       send: async ({ messages, signal }) => {
-        const response = await fetch("/api/chat", {
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: openAIMessageFormat.toApi(messages),
-            responseMode,
             toolNames: [],
           }),
           signal,
@@ -36,7 +37,7 @@ export function useComparisonChatLLM(
       },
       streamProtocol: openAIAdapter(),
     }),
-    [onCreditsExhausted, responseMode],
+    [endpoint, onCreditsExhausted],
   );
 }
 

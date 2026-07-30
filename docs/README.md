@@ -17,7 +17,7 @@ pnpm --filter @openuidev/docs dev
 pnpm --filter @openuidev/docs build
 ```
 
-### Chat and comparison demo configuration
+### Hosted demo configuration
 
 `/chat` remains the standalone OpenUI OSS and Cloud chat and starts in **OpenUI OSS** mode. Its
 selected mode is not stored across reloads.
@@ -25,25 +25,37 @@ selected mode is not stored across reloads.
 `/compare` compares two visible response modes at a time and defaults to **Rendered Markdown vs
 OpenUI Cloud**. Use its page-level switcher to show **Markdown vs OSS** or **OSS vs Cloud**. The
 selected pair is stored in the `pair` query parameter. All three comparison providers remain
-mounted and receive each shared prompt; switching the visible pair resets the demo. Markdown and
-OSS generation use the existing server-side `OPENROUTER_API_KEY`.
+mounted and receive each shared prompt; switching the visible pair resets the demo.
 
-OpenUI Cloud requires the following server-side variables. If either is missing, Cloud requests
-show the unavailable state at runtime:
+All hosted demo generation uses OpenUI Cloud as the LLM provider. The OSS, Markdown, playground,
+and GitHub workloads use Cloud's OpenAI-compatible Chat Completions endpoint while the managed
+Cloud surfaces use its Responses endpoint. Each workload has a dedicated server-side key for
+independent usage attribution:
 
 ```bash
-OPENUI_CLOUD_DEMO_ENABLED=true
-THESYS_API_KEY=your-cloud-key
+THESYS_API_KEY_DOCS_CHAT_OSS=your-chat-oss-key
+THESYS_API_KEY_DOCS_CHAT_CLOUD=your-chat-cloud-key
+THESYS_API_KEY_DOCS_COMPARE_MARKDOWN=your-compare-markdown-key
+THESYS_API_KEY_DOCS_COMPARE_OSS=your-compare-oss-key
+THESYS_API_KEY_DOCS_COMPARE_CLOUD=your-compare-cloud-key
+THESYS_API_KEY_DOCS_PLAYGROUND=your-playground-key
+THESYS_API_KEY_DOCS_GITHUB=your-github-key
 ```
 
-Do not expose `THESYS_API_KEY` through a `NEXT_PUBLIC_*` variable. The browser generates an
-anonymous user ID, retains it in `sessionStorage`, and sends it with Cloud requests. Active
-comparison threads are not restored after a refresh.
+See [the migration plan](./OPENUI_CLOUD_DEMO_MIGRATION.md) for the complete workload map,
+implementation details, deployment sequence, and verification checklist.
 
-The Cloud feature flag is intentionally fail-closed. Keep it disabled on public deployments until
-a shared, cross-instance session-and-IP rate limiter, Cloud organization budgets/token scopes, and
-an approved conversation retention/deletion process are in place. Same-origin validation is an
-additional browser safeguard, not a substitute for those cost controls.
+There is deliberately no shared-key fallback: if a workload's key is missing, that workload shows
+the unavailable state instead of charging another demo's key. Do not expose any
+`THESYS_API_KEY_DOCS_*` value through a `NEXT_PUBLIC_*` variable. The browser generates an anonymous
+user ID, retains it in `sessionStorage`, and sends it with managed Cloud requests. Active comparison
+threads are not restored after a refresh.
+
+Hosted demos are always enabled; there is no global feature flag. Before deploying them publicly,
+configure a shared, cross-instance session-and-IP rate limiter, Cloud organization budgets/token
+scopes, and an approved conversation retention/deletion process. The managed Responses and
+frontend-token routes also enforce same-origin validation as an additional browser safeguard, not
+a substitute for those cost controls.
 
 ## Project structure
 
@@ -78,12 +90,15 @@ docs/
 │   ├── blog/                               # Blog pages
 │   ├── chat/                               # Standalone OpenUI OSS and Cloud chat
 │   ├── compare/                            # Pairwise Markdown, OSS, and Cloud comparison
-│   ├── demo/                               # Demo route
-│   ├── playground/                         # Interactive playground
+│   ├── demo/                               # Individual hosted demos
+│   ├── demos/                              # OpenUI-vs-JSON playground
 │   │
 │   ├── api/                                # API routes
+│   │   ├── _lib/                           # Shared hosted-demo handlers
 │   │   ├── search/route.ts                 # Search endpoint
-│   │   ├── chat/route.ts                   # Chat API
+│   │   ├── chat/route.ts                   # Standalone OSS chat API
+│   │   ├── compare/                        # Markdown and OSS comparison APIs
+│   │   ├── openui-cloud/                   # Managed chat/comparison + token APIs
 │   │   ├── demo/github/stream/route.ts     # GitHub demo stream
 │   │   └── playground/stream/route.ts      # Playground stream
 │   ├── og/docs/[...slug]/route.tsx         # OG image generation

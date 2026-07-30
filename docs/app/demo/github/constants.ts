@@ -7,7 +7,7 @@ export const STREAM_RESULT = {
 } as const;
 export type StreamResult = (typeof STREAM_RESULT)[keyof typeof STREAM_RESULT];
 
-export const GITHUB_DEMO_MODEL = "anthropic/claude-sonnet-4-6";
+export const GITHUB_DEMO_MODEL = "anthropic/claude-sonnet-4.6";
 export const GITHUB_DEMO_MODEL_LABEL = "Claude Sonnet 4.6";
 
 export type GitHubStarterIconKey =
