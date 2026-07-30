@@ -32,24 +32,12 @@ const CLOUD_LOGOS: Logo[] = [
    second half must mirror the first exactly for a seamless loop. */
 const SETS = 4;
 
-export function LogoStrip({
-  label,
-  variant = "home",
-}: {
-  label?: string;
-  variant?: "home" | "cloud";
-}) {
+export function LogoStrip({ variant = "home" }: { variant?: "home" | "cloud" }) {
   const logos = variant === "cloud" ? CLOUD_LOGOS : HOME_LOGOS;
 
   return (
-    <section
-      className={`${styles.section} ${label ? styles.sectionWithLabel : ""} ${
-        variant === "cloud" ? styles.sectionCloud : ""
-      }`.trim()}
-      aria-label="Customers using OpenUI"
-    >
+    <section className={styles.section} aria-label="Customers using OpenUI">
       <div className={styles.inner}>
-        {label && <p className={styles.label}>{label}</p>}
         <div className={styles.marquee}>
           <div className={styles.track}>
             {Array.from({ length: SETS }, (_, set) =>
