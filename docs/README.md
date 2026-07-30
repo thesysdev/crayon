@@ -42,9 +42,6 @@ THESYS_API_KEY_DOCS_PLAYGROUND=your-playground-key
 THESYS_API_KEY_DOCS_GITHUB=your-github-key
 ```
 
-See [the migration plan](./OPENUI_CLOUD_DEMO_MIGRATION.md) for the complete workload map,
-implementation details, deployment sequence, and verification checklist.
-
 There is deliberately no shared-key fallback: if a workload's key is missing, that workload shows
 the unavailable state instead of charging another demo's key. Do not expose any
 `THESYS_API_KEY_DOCS_*` value through a `NEXT_PUBLIC_*` variable. The browser generates an anonymous
