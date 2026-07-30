@@ -1,4 +1,3 @@
-import { isPlaygroundModel } from "@/app/demos/constants";
 import {
   createDemoCreditsExhaustedResponse,
   isDemoCreditsExhaustedError,
@@ -17,33 +16,7 @@ const systemPrompt = readFileSync(
 const conversationLog: Array<{ role: string; content: string }> = [];
 
 export async function POST(req: NextRequest) {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return Response.json(
-      { error: { message: "Request body must be valid JSON" } },
-      { status: 400 },
-    );
-  }
-
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return Response.json(
-      { error: { message: "Request body must be a JSON object" } },
-      { status: 400 },
-    );
-  }
-
-  const { model, prompt } = body as Record<string, unknown>;
-  if (!isPlaygroundModel(model)) {
-    return Response.json({ error: { message: "Unsupported playground model" } }, { status: 400 });
-  }
-  if (typeof prompt !== "string" || prompt.trim().length === 0) {
-    return Response.json(
-      { error: { message: "prompt must be a non-empty string" } },
-      { status: 400 },
-    );
-  }
+  const { model, prompt } = await req.json();
 
   const config = readOpenuiCloudConfig("playground");
   if (!config) return unavailableResponse();

@@ -8,10 +8,6 @@ export const MODELS = [
 ] as const;
 export type Model = (typeof MODELS)[number];
 
-export function isPlaygroundModel(value: unknown): value is Model {
-  return typeof value === "string" && (MODELS as readonly string[]).includes(value);
-}
-
 export const STARTER_PROMPTS = [
   "Weather dashboard",
   "Pricing cards",
