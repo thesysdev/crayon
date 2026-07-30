@@ -32,6 +32,7 @@ function evalProgram(src: string) {
 
 const noopCtx: TuiContextValue = {
   library: tuiLibrary,
+  interactive: true,
   triggerAction: () => {},
   getFieldValue: () => undefined,
   setFieldValue: () => {},
@@ -79,6 +80,17 @@ describe("TUI renderer", () => {
       createElement(TuiProvider, { value: noopCtx }, createElement(RenderValue, { value: root })),
     );
     expect(lastFrame() ?? "").toContain("hello world");
+  });
+
+  it("renders finalized turns display-only (buttons are not interactive)", () => {
+    const root = evalProgram(
+      'root = Card([btns])\nbtns = Buttons([b1])\nb1 = Button("Retry", Action([@ToAssistant("retry")]))',
+    );
+    const staticCtx: TuiContextValue = { ...noopCtx, interactive: false };
+    const { lastFrame } = render(
+      createElement(TuiProvider, { value: staticCtx }, createElement(RenderValue, { value: root })),
+    );
+    expect(lastFrame() ?? "").toContain("[ Retry ]");
   });
 });
 

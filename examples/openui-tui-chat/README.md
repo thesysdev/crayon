@@ -58,8 +58,15 @@ pnpm --filter openui-tui-chat test        # vitest + ink-testing-library
 pnpm --filter openui-tui-chat typecheck
 ```
 
+## Chat UI
+
+- A header, a welcome/empty state with example prompts, and a bordered composer with key hints.
+- User messages render as bubbles; assistant turns render as live generative UI.
+- Completed turns are written to the terminal scrollback via Ink's `<Static>`, so full history stays visible and the composer stays anchored at the bottom (no viewport clobbering on tall output).
+- An animated spinner shows while the assistant is streaming.
+
 ## Limitations (POC)
 
 - Read-oriented charts/tables render as ASCII; not pixel-faithful.
-- Interactivity targets the latest assistant message; prior turns show as compact prompt lines.
+- Interactivity targets the **latest** assistant turn; completed turns become display-only once they scroll into history.
 - Queries/`$state` two-way binding beyond simple form fields are out of scope for v1.

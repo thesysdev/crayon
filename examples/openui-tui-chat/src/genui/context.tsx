@@ -7,6 +7,8 @@ import { createContext, useContext } from "react";
  */
 export interface TuiContextValue {
   library: Library;
+  /** When false, components render display-only (no focus/keyboard) — used for finalized turns. */
+  interactive: boolean;
   /** Fire an action (button / follow-up / form submit) → sends a message to the assistant. */
   triggerAction: (
     userMessage: string,

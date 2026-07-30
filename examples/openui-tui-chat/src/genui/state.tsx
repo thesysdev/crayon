@@ -35,6 +35,7 @@ export function useGenUi(
   response: string | null,
   isStreaming: boolean,
   onSend: (content: string) => void,
+  interactive = true,
 ): GenUiState {
   const onSendRef = useRef(onSend);
   onSendRef.current = onSend;
@@ -139,8 +140,8 @@ export function useGenUi(
   );
 
   const ctx = useMemo<TuiContextValue>(
-    () => ({ library, triggerAction, getFieldValue, setFieldValue }),
-    [library, triggerAction, getFieldValue, setFieldValue],
+    () => ({ library, interactive, triggerAction, getFieldValue, setFieldValue }),
+    [library, interactive, triggerAction, getFieldValue, setFieldValue],
   );
 
   // isStreaming currently only affects display in the app; kept for parity/future use.

@@ -169,9 +169,18 @@ function FollowUpBlockView({ props, renderNode }: ViewProps) {
 }
 
 function FollowUpItemView({ props }: ViewProps) {
+  const { interactive } = useTui();
+  const text = str(props.text);
+  return interactive ? (
+    <FollowUpItemInteractive text={text} />
+  ) : (
+    <Text color="magenta">{"• "}{text}</Text>
+  );
+}
+
+function FollowUpItemInteractive({ text }: { text: string }) {
   const { isFocused } = useFocus();
   const { triggerAction } = useTui();
-  const text = str(props.text);
   useInput(
     (_input, key) => {
       if (key.return) triggerAction(text);
@@ -199,13 +208,22 @@ function ButtonsView({ props, renderNode }: ViewProps) {
 }
 
 function ButtonView({ props }: ViewProps) {
+  const { interactive } = useTui();
+  const label = str(props.label) || "Button";
+  return interactive ? (
+    <ButtonInteractive label={label} action={props.action} />
+  ) : (
+    <Text color="cyan">{`[ ${label} ]`}</Text>
+  );
+}
+
+function ButtonInteractive({ label, action }: { label: string; action: unknown }) {
   const { isFocused } = useFocus();
   const formName = useFormName();
   const { triggerAction } = useTui();
-  const label = str(props.label) || "Button";
   useInput(
     (_input, key) => {
-      if (key.return) triggerAction(label, formName, props.action);
+      if (key.return) triggerAction(label, formName, action);
     },
     { isActive: isFocused },
   );
@@ -242,6 +260,19 @@ function FormControlView({ props, renderNode }: ViewProps) {
 }
 
 function InputView({ props }: ViewProps) {
+  const { interactive } = useTui();
+  if (!interactive) {
+    return (
+      <Text dimColor>
+        {"  "}
+        {str(props.placeholder) || str(props.name)}
+      </Text>
+    );
+  }
+  return <InputInteractive props={props} />;
+}
+
+function InputInteractive({ props }: { props: Record<string, unknown> }) {
   const { isFocused } = useFocus();
   const formName = useFormName();
   const { getFieldValue, setFieldValue } = useTui();
@@ -270,6 +301,24 @@ function InputView({ props }: ViewProps) {
 }
 
 function SelectView({ props }: ViewProps) {
+  const { interactive } = useTui();
+  const items = Array.isArray(props.items) ? props.items : [];
+  if (!interactive) {
+    return (
+      <Box flexDirection="column">
+        {items.map((it, i) => (
+          <Text key={i} dimColor>
+            {"  ( ) "}
+            {str((it as ElementLike)?.props?.label ?? (it as ElementLike)?.props?.value)}
+          </Text>
+        ))}
+      </Box>
+    );
+  }
+  return <SelectInteractive props={props} />;
+}
+
+function SelectInteractive({ props }: { props: Record<string, unknown> }) {
   const { isFocused } = useFocus();
   const formName = useFormName();
   const { getFieldValue, setFieldValue } = useTui();
