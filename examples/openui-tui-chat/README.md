@@ -51,8 +51,7 @@ Clicking works on the **latest** turn's interactive elements (dropdown options, 
 Caveats (inherent to terminal mouse tracking):
 
 - While mouse tracking is active, the terminal's native click-drag **text selection/copy is disabled** (hold Shift in most terminals to bypass and select text).
-- Only the current (bottom) turn is clickable; earlier turns scrolled into history are keyboard-recallable but not click targets.
-- Requires an xterm-style terminal; through tmux you must set `set -g mouse on`. Keyboard remains the fully-portable path.
+- Run the app **directly in a terminal** so it receives mouse events; through tmux you must `set -g mouse on` (otherwise tmux captures the mouse). Keyboard remains the fully-portable path.
 
 ## Supported components (v1)
 
@@ -72,12 +71,12 @@ pnpm --filter openui-tui-chat typecheck
 ## Chat UI
 
 - A header, a welcome/empty state with example prompts, and a bordered composer with key hints.
-- User messages render as bubbles; assistant turns render as live generative UI.
-- Completed turns are written to the terminal scrollback via Ink's `<Static>`, so full history stays visible and the composer stays anchored at the bottom (no viewport clobbering on tall output).
+- The current exchange (your last prompt + the live assistant UI) renders in a single fixed full-height frame anchored to the bottom. Ink updates this frame in place, so typing stays stable (no flicker/scroll-jumping) and mouse clicks map cleanly to screen rows.
 - An animated spinner shows while the assistant is streaming.
+- Trade-off of the fixed-frame approach: only the current exchange is shown on screen (there is no scroll-back log of earlier turns).
 
 ## Limitations (POC)
 
 - Read-oriented charts/tables render as ASCII; not pixel-faithful.
-- Interactivity targets the **latest** assistant turn; completed turns become display-only once they scroll into history.
+- Only the current exchange is shown (no on-screen scroll-back of earlier turns).
 - Queries/`$state` two-way binding beyond simple form fields are out of scope for v1.
