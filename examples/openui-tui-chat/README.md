@@ -46,12 +46,17 @@ or _"Build a contact form with name, email and a topic dropdown"_.
 
 ### Mouse support (form elements)
 
-Clicking works on the **latest** turn's interactive elements (dropdown options, buttons, follow-ups, text fields). It uses click-only SGR mouse tracking (`?1000`/`?1006`) enabled once at the root; clicks are hit-tested against the bottom-anchored live region using Yoga layout offsets.
+Clicking targets the **latest** turn's interactive elements (dropdown options, buttons, follow-ups, text fields). It uses click-only SGR mouse tracking (`?1000`/`?1006`) enabled once at the root; clicks are hit-tested against the live region using Yoga layout offsets.
 
-Caveats (inherent to terminal mouse tracking):
+Caveats (inherent to terminal mouse tracking + the scrollback layout):
 
+- Click hit-testing is **best-effort**: it's reliable once the conversation has filled the screen (so the live region sits at the bottom). On the very first short turn — when there's empty space below the live region — clicks may miss; use the keyboard (Tab + number keys/arrows) there. Getting pixel-perfect mouse on every turn would require a full-screen layout that gives up scrollback history — see below.
 - While mouse tracking is active, the terminal's native click-drag **text selection/copy is disabled** (hold Shift in most terminals to bypass and select text).
-- Run the app **directly in a terminal** so it receives mouse events; through tmux you must `set -g mouse on` (otherwise tmux captures the mouse). Keyboard remains the fully-portable path.
+- Run the app **directly in a terminal** so it receives mouse events; through tmux you must `set -g mouse on` (otherwise tmux captures the mouse). Keyboard is the fully-portable path.
+
+### History vs. reliable mouse (design trade-off)
+
+Ink can't cleanly give all three of rendered scrollback history, zero typing flicker, and pixel-perfect mouse at once. This example prioritizes **history + smooth typing**, with best-effort mouse. A full-screen (alternate-screen) layout could make mouse pixel-perfect everywhere, but it gives up terminal scrollback history.
 
 ## Supported components (v1)
 
@@ -71,12 +76,11 @@ pnpm --filter openui-tui-chat typecheck
 ## Chat UI
 
 - A header, a welcome/empty state with example prompts, and a bordered composer with key hints.
-- The current exchange (your last prompt + the live assistant UI) renders in a single fixed full-height frame anchored to the bottom. Ink updates this frame in place, so typing stays stable (no flicker/scroll-jumping) and mouse clicks map cleanly to screen rows.
-- An animated spinner shows while the assistant is streaming.
-- Trade-off of the fixed-frame approach: only the current exchange is shown on screen (there is no scroll-back log of earlier turns).
+- Completed turns are written to the terminal scrollback via Ink's `<Static>`, so the full conversation history stays on screen (scroll up to see earlier turns) while the latest assistant turn renders live and interactive at the bottom. Typing is smooth (the live region is small, so Ink updates it without repainting the whole screen).
+- User messages render as bubbles; the assistant turn renders as generative UI. An animated spinner shows while streaming.
 
 ## Limitations (POC)
 
 - Read-oriented charts/tables render as ASCII; not pixel-faithful.
-- Only the current exchange is shown (no on-screen scroll-back of earlier turns).
+- Mouse hit-testing is best-effort (see the trade-off above); keyboard works everywhere.
 - Queries/`$state` two-way binding beyond simple form fields are out of scope for v1.
