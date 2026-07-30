@@ -8,19 +8,16 @@ import type { ResponseInputItem } from "openai/resources/responses/responses";
 
 const MAX_INPUT_ITEMS = 16;
 const MAX_THREAD_ID_LENGTH = 256;
+type CloudChatWorkload = Extract<DocsDemoWorkload, "chat-cloud" | "compare-cloud">;
 
 interface CloudChatRequest {
+  workload: CloudChatWorkload;
   threadId: string;
   input: ResponseInputItem[];
   model: string;
 }
 
-export async function handleCloudResponses(
-  request: Request,
-  demo: Extract<DocsDemoWorkload, "chat-cloud" | "compare-cloud">,
-): Promise<Response> {
-  const config = readOpenuiCloudConfig(demo);
-  if (!config) return unavailableResponse();
+export async function handleCloudResponses(request: Request): Promise<Response> {
   if (!hasAllowedOrigin(request)) return unavailableResponse(403);
   if (!hasJsonContentType(request)) return unavailableResponse(415);
 
@@ -33,6 +30,9 @@ export async function handleCloudResponses(
   } catch {
     return unavailableResponse(400);
   }
+
+  const config = readOpenuiCloudConfig(body.workload);
+  if (!config) return unavailableResponse();
 
   const client = new OpenAI({
     baseURL: config.embedBaseUrl,
@@ -63,6 +63,9 @@ export async function handleCloudResponses(
 function parseCloudChatRequest(value: unknown): CloudChatRequest | null {
   if (!isRecord(value)) return null;
 
+  const workload = value.workload;
+  if (workload !== "chat-cloud" && workload !== "compare-cloud") return null;
+
   const threadId = value.threadId;
   if (
     typeof threadId !== "string" ||
@@ -86,7 +89,7 @@ function parseCloudChatRequest(value: unknown): CloudChatRequest | null {
   const model = resolveRequestedModel(value.model);
   if (!model) return null;
 
-  return { threadId, input: input as unknown as ResponseInputItem[], model };
+  return { workload, threadId, input: input as unknown as ResponseInputItem[], model };
 }
 
 function createSseResponse(

@@ -9,11 +9,9 @@ interface CloudChatLLM extends ChatLLM {
   setSelectedModel: (model: string) => void;
 }
 
-type CloudChatEndpoint = "/api/openui-cloud/chat" | "/api/openui-cloud/compare/chat";
+type CloudChatWorkload = "chat-cloud" | "compare-cloud";
 
-export function createCloudChatLLM(
-  endpoint: CloudChatEndpoint = "/api/openui-cloud/chat",
-): CloudChatLLM {
+export function createCloudChatLLM(workload: CloudChatWorkload = "chat-cloud"): CloudChatLLM {
   let selectedModel = DEFAULT_MODEL;
 
   return {
@@ -21,10 +19,11 @@ export function createCloudChatLLM(
       selectedModel = model;
     },
     async send({ threadId, messages, signal }) {
-      return fetch(endpoint, {
+      return fetch("/api/openui-cloud/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          workload,
           threadId,
           input: openAIConversationMessageFormat.toApi(messages.slice(-1)),
           model: selectedModel,

@@ -1,5 +1,5 @@
 import { handleCloudResponses } from "../_lib/responses-handler";
 
 export function POST(request: Request) {
-  return handleCloudResponses(request, "chat-cloud");
+  return handleCloudResponses(request);
 }

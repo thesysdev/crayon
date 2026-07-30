@@ -15,7 +15,7 @@ interface CloudAgentSurfaceProps {
 
 export function CloudAgentSurface({ registry }: CloudAgentSurfaceProps) {
   const [userId] = useState(getOrCreateCloudUserId);
-  const [llm] = useState(() => createCloudChatLLM("/api/openui-cloud/compare/chat"));
+  const [llm] = useState(() => createCloudChatLLM("compare-cloud"));
   const cloudFetch = useMemo<typeof fetch>(() => {
     return async (input, init) => {
       if (typeof input !== "string" || input !== "/api/openui-cloud/compare/frontend-token") {
