@@ -1,5 +1,5 @@
 import type { Message } from "@openuidev/react-headless";
-import { Box, Static, Text, useFocus, useInput, type DOMElement } from "ink";
+import { Box, Static, Text, useFocus, useInput, useStdout, type DOMElement } from "ink";
 import { useEffect, useRef, useState } from "react";
 import { useLocalChat, type ProcessFn } from "./chat.js";
 import { RenderValue } from "./genui/components.js";
@@ -146,6 +146,8 @@ export function App({ processMessage }: { processMessage: ProcessFn }) {
   const { messages, isRunning, send } = useLocalChat(processMessage);
   const [draft, setDraft] = useState("");
   const dynamicRef = useRef<DOMElement>(null);
+  const { stdout } = useStdout();
+  const rows = stdout?.rows ?? 24;
 
   const { isFocused: composerFocused } = useFocus({ id: "composer", autoFocus: true });
   useInput(
@@ -210,7 +212,13 @@ export function App({ processMessage }: { processMessage: ProcessFn }) {
           }
         </Static>
 
-        <Box ref={dynamicRef} flexDirection="column" paddingX={1}>
+        <Box
+          ref={dynamicRef}
+          flexDirection="column"
+          justifyContent="flex-end"
+          height={rows}
+          paddingX={1}
+        >
           {messages.length === 0 ? <Welcome /> : null}
           {liveAssistant ? (
             <AssistantMessageView
