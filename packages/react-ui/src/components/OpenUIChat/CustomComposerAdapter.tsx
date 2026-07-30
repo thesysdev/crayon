@@ -10,7 +10,7 @@ export const CustomComposerAdapter = ({ composer: Composer }: { composer: Compos
   return (
     <Composer
       onSend={(message: string) => {
-        processMessage({ role: "user", content: message });
+        processMessage({ role: "user", content: message }, { source: "composer" });
       }}
       onCancel={cancelMessage}
       isRunning={isRunning}

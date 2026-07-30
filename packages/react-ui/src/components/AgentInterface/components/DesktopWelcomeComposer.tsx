@@ -58,10 +58,13 @@ export const DesktopWelcomeComposer = ({
       return;
     }
 
-    processMessage({
-      role: "user",
-      content: textContent,
-    });
+    processMessage(
+      {
+        role: "user",
+        content: textContent,
+      },
+      { source: "composer" },
+    );
 
     setTextContent("");
   };

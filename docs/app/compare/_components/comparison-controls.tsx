@@ -65,12 +65,14 @@ const COMPARISON_SUGGESTIONS = [
   },
 ] as const;
 
+export type ComparisonSubmissionSource = "composer" | "starter";
+
 interface ComparisonControlsProps {
   comparisonPair: ComparisonPair;
   isReady: boolean;
   isRunning: boolean;
   hasStarted: boolean;
-  onSubmit: (content: string) => void;
+  onSubmit: (content: string, source: ComparisonSubmissionSource) => void;
   onStop: () => void;
   onReset: () => void;
   isDegraded: boolean;
@@ -121,11 +123,11 @@ export function ComparisonControls({
     return () => observer.disconnect();
   }, [text]);
 
-  const submit = (content: string) => {
+  const submit = (content: string, source: ComparisonSubmissionSource) => {
     const next = content.trim();
     if (!next || !isReady || isRunning) return;
 
-    onSubmit(next);
+    onSubmit(next, source);
     setText("");
   };
 
@@ -152,7 +154,7 @@ export function ComparisonControls({
                   key={suggestion.label}
                   type="button"
                   className={styles.suggestionButton}
-                  onClick={() => submit(suggestion.prompt)}
+                  onClick={() => submit(suggestion.prompt, "starter")}
                   disabled={!isReady || isRunning || (needsCloud && !cloudEnabled)}
                   title={
                     needsCloud && !cloudEnabled
@@ -217,14 +219,14 @@ export function ComparisonControls({
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault();
-                submit(text);
+                submit(text, "composer");
               }
             }}
           />
           <button
             type="button"
             className={styles.composerSubmit}
-            onClick={isRunning ? onStop : () => submit(text)}
+            onClick={isRunning ? onStop : () => submit(text, "composer")}
             disabled={!isRunning && (!isReady || text.trim().length === 0)}
             aria-label={
               isRunning

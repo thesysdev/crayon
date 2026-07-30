@@ -26,6 +26,7 @@ export function withChatProvider<ExtraProps = {}>(WrappedComponent: React.Compon
       llm,
       artifactRenderers,
       artifactCategories,
+      onUserMessageAccepted,
       theme,
       disableThemeProvider,
       ...innerProps
@@ -65,6 +66,7 @@ export function withChatProvider<ExtraProps = {}>(WrappedComponent: React.Compon
           llm={llm}
           artifactRenderers={artifactRenderers}
           artifactCategories={artifactCategories}
+          onUserMessageAccepted={onUserMessageAccepted}
         >
           <WrappedComponent {...finalInnerProps} />
         </ChatProvider>

@@ -44,10 +44,13 @@ export const Composer = ({ className, placeholder = "Type your query here" }: Co
       return;
     }
 
-    processMessage({
-      role: "user",
-      content: textContent,
-    });
+    processMessage(
+      {
+        role: "user",
+        content: textContent,
+      },
+      { source: "composer" },
+    );
 
     setTextContent("");
   };

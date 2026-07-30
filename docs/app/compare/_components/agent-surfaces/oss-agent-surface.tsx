@@ -2,6 +2,7 @@
 
 import { AgentInterface } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
+import { captureComparisonRenderedAction } from "../comparison-analytics";
 import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
 import { ComparisonModeControllerBridge } from "../comparison-mode-controller";
 import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
@@ -22,6 +23,10 @@ export function OssAgentSurface({ onCreditsExhausted, registry }: OssAgentSurfac
         componentLibrary={openuiChatLibrary}
         agentName="OpenUI OSS"
         scrollVariant="always"
+        onUserMessageAccepted={({ source }) => {
+          if (source !== "rendered_action") return;
+          captureComparisonRenderedAction("oss");
+        }}
       >
         <AgentInterface.Sidebar />
         <AgentInterface.Welcome>

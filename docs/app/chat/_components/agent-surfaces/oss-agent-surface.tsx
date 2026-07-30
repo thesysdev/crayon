@@ -1,6 +1,8 @@
 "use client";
 
+import { captureDemoAgentInteraction } from "@/lib/demo-analytics";
 import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
+import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import {
   AgentInterface,
   openAIAdapter,
@@ -80,6 +82,15 @@ export function OssAgentSurface({ onCreditsExhausted }: OssAgentSurfaceProps) {
         agentName="OpenUI OSS"
         starterVariant="short"
         starters={OSS_STARTERS}
+        onUserMessageAccepted={({ source }) => {
+          if (source === "programmatic") return;
+          captureDemoAgentInteraction({
+            demo: "openui_chat",
+            variant: "oss",
+            model: DEFAULT_MODEL,
+            interaction_source: source,
+          });
+        }}
       >
         <AgentInterface.Welcome
           title="Build with OpenUI OSS"

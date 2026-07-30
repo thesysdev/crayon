@@ -5,6 +5,18 @@ import type { ArtifactRendererConfig } from "./artifactRendererTypes";
 export type { Message, UserMessage } from "../types/message";
 export type CreateMessage = Omit<UserMessage, "id">;
 
+export type UserMessageSource = "composer" | "starter" | "rendered_action" | "programmatic";
+
+export interface ProcessMessageOptions {
+  /** Identifies the UI path that initiated this accepted user turn. */
+  source?: UserMessageSource;
+}
+
+export interface UserMessageAcceptedEvent {
+  /** The initiating UI path. Message content is intentionally not exposed. */
+  source: UserMessageSource;
+}
+
 export type Thread = {
   id: string;
   title: string;
@@ -51,7 +63,7 @@ export type ThreadState = {
 };
 
 export type ThreadActions = {
-  processMessage: (message: CreateMessage) => Promise<void>;
+  processMessage: (message: CreateMessage, options?: ProcessMessageOptions) => Promise<void>;
   appendMessages: (...messages: Message[]) => void;
   updateMessage: (message: Message) => void;
   setMessages: (messages: Message[]) => void;
@@ -91,5 +103,11 @@ export interface ChatProviderProps {
    * artifact browser's pre-applied filters, and workspace section grouping.
    */
   artifactCategories?: ArtifactCategory[];
+  /**
+   * Called once after a user turn is accepted for processing. Rejected turns
+   * (for example, while another turn is running) do not trigger the callback.
+   * The event intentionally excludes message content.
+   */
+  onUserMessageAccepted?: (event: UserMessageAcceptedEvent) => void;
   children: React.ReactNode;
 }

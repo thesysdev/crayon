@@ -22,10 +22,12 @@ export const ChatProvider: FC<ChatProviderProps> = ({
   llm,
   artifactRenderers,
   artifactCategories,
+  onUserMessageAccepted,
 }) => {
   const [resolvedStorage] = useState(() => storage ?? createDefaultInMemoryStorage());
-  const config = useRef({ storage: resolvedStorage, llm });
+  const config = useRef({ storage: resolvedStorage, llm, onUserMessageAccepted });
   config.current.llm = llm;
+  config.current.onUserMessageAccepted = onUserMessageAccepted;
   const [chatStore] = useState(() => createChatStore(config));
   const [detailedViewStore] = useState(() => createDetailedViewStore());
   const [threadContextStore] = useState(() => createThreadContextStore());

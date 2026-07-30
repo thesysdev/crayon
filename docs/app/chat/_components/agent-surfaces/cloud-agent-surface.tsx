@@ -1,5 +1,6 @@
 "use client";
 
+import { captureDemoAgentInteraction } from "@/lib/demo-analytics";
 import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import { CLOUD_USER_ID_HEADER, getOrCreateCloudUserId } from "@/lib/openui-cloud/user-id";
@@ -82,6 +83,15 @@ export function CloudAgentSurface() {
         scrollOnLoad={false}
         starterVariant="short"
         starters={CLOUD_STARTERS}
+        onUserMessageAccepted={({ source }) => {
+          if (source === "programmatic") return;
+          captureDemoAgentInteraction({
+            demo: "openui_chat",
+            variant: "cloud",
+            model: selectedModel,
+            interaction_source: source,
+          });
+        }}
       >
         <AgentInterface.MobileHeader
           className={styles.cloudMobileHeader}

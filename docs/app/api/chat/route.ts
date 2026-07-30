@@ -1,3 +1,4 @@
+import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import { readFileSync } from "fs";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
@@ -293,7 +294,7 @@ export async function POST(req: NextRequest) {
     apiKey,
     baseURL: "https://openrouter.ai/api/v1",
   });
-  const MODEL = "openai/gpt-5.4";
+  const MODEL = DEFAULT_MODEL;
 
   const cleanMessages = (messages as any[])
     .filter(

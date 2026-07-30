@@ -5,6 +5,7 @@ import { CLOUD_USER_ID_HEADER, getOrCreateCloudUserId } from "@/lib/openui-cloud
 import { AgentInterface } from "@openuidev/react-ui";
 import { artifactRenderers, chatLibrary, useOpenuiCloudStorage } from "@openuidev/thesys";
 import { useMemo, useState } from "react";
+import { captureComparisonRenderedAction } from "../comparison-analytics";
 import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
 import { ComparisonModeControllerBridge } from "../comparison-mode-controller";
 import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
@@ -40,6 +41,10 @@ export function CloudAgentSurface({ registry }: CloudAgentSurfaceProps) {
         componentLibrary={chatLibrary}
         artifactRenderers={artifactRenderers}
         scrollVariant="always"
+        onUserMessageAccepted={({ source }) => {
+          if (source !== "rendered_action") return;
+          captureComparisonRenderedAction("cloud");
+        }}
       >
         <AgentInterface.Sidebar />
         <AgentInterface.Welcome>
