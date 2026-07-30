@@ -1,5 +1,5 @@
 import type { Message } from "@openuidev/react-headless";
-import { Box, Static, Text, useFocus, useInput, useStdout, type DOMElement } from "ink";
+import { Box, Text, useFocus, useInput, useStdout, type DOMElement } from "ink";
 import { useEffect, useRef, useState } from "react";
 import { useLocalChat, type ProcessFn } from "./chat.js";
 import { RenderValue } from "./genui/components.js";
@@ -140,8 +140,6 @@ function AssistantMessageView({
 
 // ─────────────────────────── app ───────────────────────────
 
-type StaticItem = { kind: "header" } | { kind: "message"; message: Message };
-
 export function App({ processMessage }: { processMessage: ProcessFn }) {
   const { messages, isRunning, send } = useLocalChat(processMessage);
   const [draft, setDraft] = useState("");
@@ -175,62 +173,31 @@ export function App({ processMessage }: { processMessage: ProcessFn }) {
 
   const last = messages[messages.length - 1];
   const liveAssistant = last && last.role === "assistant" ? last : null;
-  const finalized = liveAssistant ? messages.slice(0, -1) : messages;
   const liveContent = liveAssistant ? messageText(liveAssistant.content) : "";
   const showThinking = isRunning && liveContent.trim() === "";
+  const lastUser = [...messages].reverse().find((m) => m.role === "user") ?? null;
 
-  // Completed turns are emitted once into scrollback via <Static>, keeping the
-  // live/interactive region small so the composer never scrolls off screen.
-  const staticItems: StaticItem[] = [
-    { kind: "header" },
-    ...finalized.map((message) => ({ kind: "message" as const, message })),
-  ];
-
+  // A single fixed-height frame (no <Static>): the current exchange is anchored
+  // to the bottom. A stable, full-height frame lets Ink update in place without
+  // scrolling the terminal, so typing no longer flickers/jumps — and because the
+  // frame fills the screen from the top, mouse clicks map 1:1 to screen rows.
   return (
     <MouseProvider rootRef={dynamicRef}>
-      <Box flexDirection="column">
-        <Static items={staticItems}>
-          {(item, index) =>
-            item.kind === "header" ? (
-              <Box key="header" paddingX={1}>
-                <Header />
-              </Box>
-            ) : (
-              <Box key={item.message.id ?? index} paddingX={1}>
-                {item.message.role === "user" ? (
-                  <UserBubble text={firstLine(messageText(item.message.content))} />
-                ) : (
-                  <AssistantMessageView
-                    message={item.message}
-                    interactive={false}
-                    isStreaming={false}
-                    onSend={() => {}}
-                  />
-                )}
-              </Box>
-            )
-          }
-        </Static>
-
-        <Box
-          ref={dynamicRef}
-          flexDirection="column"
-          justifyContent="flex-end"
-          height={rows}
-          paddingX={1}
-        >
-          {messages.length === 0 ? <Welcome /> : null}
-          {liveAssistant ? (
-            <AssistantMessageView
-              message={liveAssistant}
-              interactive
-              isStreaming={isRunning}
-              onSend={send}
-            />
-          ) : null}
-          {showThinking ? <Thinking /> : null}
-          <Composer draft={draft} focused={composerFocused} isRunning={isRunning} />
-        </Box>
+      <Box ref={dynamicRef} flexDirection="column" height={rows} paddingX={1}>
+        <Header />
+        <Box flexGrow={1} />
+        {messages.length === 0 ? <Welcome /> : null}
+        {lastUser ? <UserBubble text={firstLine(messageText(lastUser.content))} /> : null}
+        {liveAssistant ? (
+          <AssistantMessageView
+            message={liveAssistant}
+            interactive
+            isStreaming={isRunning}
+            onSend={send}
+          />
+        ) : null}
+        {showThinking ? <Thinking /> : null}
+        <Composer draft={draft} focused={composerFocused} isRunning={isRunning} />
       </Box>
     </MouseProvider>
   );
