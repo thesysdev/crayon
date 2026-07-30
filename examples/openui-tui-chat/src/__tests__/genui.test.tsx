@@ -135,8 +135,30 @@ describe("TUI interactivity", () => {
     await delay(40);
 
     const frame = lastFrame() ?? "";
-    expect(frame).toContain("(•) Support");
-    expect(frame).not.toContain("(•) Sales");
+    expect(frame).toContain("(•) 2. Support");
+    expect(frame).not.toContain("(•) 1. Sales");
+  });
+
+  it("selects a Select option by number key (no cursor movement)", async () => {
+    const src = [
+      "root = Card([form])",
+      'form = Form("f", btns, [topicField])',
+      'topicField = FormControl("Topic", topic)',
+      'topic = Select("topic", [o1, o2])',
+      'o1 = SelectItem("sales", "Sales")',
+      'o2 = SelectItem("support", "Support")',
+      "btns = Buttons([submit])",
+      'submit = Button("Send")',
+    ].join("\n");
+    const { stdin, lastFrame } = render(createElement(Harness, { src, onSend: () => {} }));
+    await delay(40);
+    stdin.write("\t"); // focus the Select
+    await delay(30);
+    stdin.write("2"); // press "2" → pick the 2nd option directly
+    await delay(40);
+    const frame = lastFrame() ?? "";
+    expect(frame).toContain("(•) 2. Support");
+    expect(frame).not.toContain("(•) 1. Sales");
   });
 
   it("selects a Select option immediately on arrow (no Enter needed)", async () => {
@@ -156,7 +178,7 @@ describe("TUI interactivity", () => {
     await delay(30);
     stdin.write("\u001B[B"); // Down arrow only — should select immediately
     await delay(40);
-    expect(lastFrame() ?? "").toContain("(•) Support");
+    expect(lastFrame() ?? "").toContain("(•) 2. Support");
   });
 
   it("shows typed Input text immediately", async () => {

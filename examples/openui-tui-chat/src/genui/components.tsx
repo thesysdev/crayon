@@ -240,7 +240,7 @@ function FormView({ props, renderNode }: ViewProps) {
   return (
     <FormNameProvider value={name}>
       <Box flexDirection="column" borderStyle="round" borderColor="blue" paddingX={1} marginTop={1}>
-        <Text dimColor>Tab between fields · type to fill · ↑↓ to choose · Enter on a button to submit</Text>
+        <Text dimColor>Tab between fields · type to fill · number keys or ↑↓ to choose · Enter on a button to submit</Text>
         {fields.map((f, i) => (
           <Box key={i}>{renderNode(f)}</Box>
         ))}
@@ -351,7 +351,13 @@ function SelectInteractive({ props }: { props: Record<string, unknown> }) {
   };
 
   useInput(
-    (_input, key) => {
+    (input, key) => {
+      // Number keys pick an option directly — no cursor movement needed.
+      if (/^[1-9]$/.test(input) && !key.ctrl && !key.meta) {
+        const index = Number(input) - 1;
+        if (index < options.length) choose(index);
+        return;
+      }
       if (key.upArrow) choose(cursor - 1);
       else if (key.downArrow) choose(cursor + 1);
       else if (key.return) choose(cursor);
@@ -368,11 +374,11 @@ function SelectInteractive({ props }: { props: Record<string, unknown> }) {
           <Text key={o.value || i} color={isCursor ? "cyan" : isSel ? "green" : undefined}>
             {isCursor ? "❯ " : "  "}
             {isSel ? "(•) " : "( ) "}
-            {o.label}
+            {i + 1}. {o.label}
           </Text>
         );
       })}
-      {isFocused ? <Text dimColor> ↑↓ to choose</Text> : null}
+      {isFocused ? <Text dimColor> press 1-{options.length} or ↑↓ to choose</Text> : null}
     </Box>
   );
 }
