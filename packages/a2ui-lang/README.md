@@ -1,6 +1,6 @@
 # `@openuidev/a2ui-lang`
 
-An experimental A2UI v1.0 profile that keeps the protocol lifecycle and envelopes intact while replacing only `updateComponents.components` with OpenUI Lang statements.
+An experimental A2UI v1.0 profile that keeps the protocol lifecycle and envelopes intact while representing component lists as OpenUI Lang statements.
 
 ```json
 {
@@ -12,9 +12,9 @@ An experimental A2UI v1.0 profile that keeps the protocol lifecycle and envelope
 }
 ```
 
-`createSurface`, `updateDataModel`, `deleteSurface`, actions, `callFunction`, `functionResponse`, `actionResponse`, errors, capabilities, and renderer data-model metadata retain their A2UI v1.0 shapes. The official optional `createSurface.components` field is omitted in this profile so there is exactly one component encoding on the wire; send the initial tree in the first `updateComponents` message.
+`updateDataModel`, `deleteSurface`, actions, `callFunction`, `functionResponse`, `actionResponse`, errors, capabilities, and renderer data-model metadata retain their A2UI v1.0 shapes. For v1.0 single-message creation, optional `createSurface.components` uses the same Lang statement array as `updateComponents.components`, so there is exactly one component representation on the wire.
 
-The publishable hybrid envelope schema is available at `@openuidev/a2ui-lang/schema/agent-to-renderer.json`.
+Publishable schemas are available under `@openuidev/a2ui-lang/schema/*` for agent-to-renderer messages, renderer-to-agent messages, renderer/agent capabilities, and renderer data-model metadata.
 
 ## How updates work
 
@@ -30,8 +30,11 @@ import { openuiLibrary } from "@openuidev/react-ui";
 const client = createA2UILangClient({
   schema: openuiLibrary.toJSONSchema(),
   rootName: openuiLibrary.root,
-  onMessage(message) {
-    transport.send(message);
+  rendererCapabilities: {
+    "v1.0": { supportedCatalogIds: ["com.example:openui"] },
+  },
+  onMessage(message, metadata) {
+    transport.send(message, metadata);
   },
 });
 
@@ -58,13 +61,18 @@ export function Surface() {
       client={client}
       surfaceId="main"
       library={openuiLibrary}
+      isStreaming={transport.isStreaming}
       mapAction={(event) => ({ name: event.type })}
     />
   );
 }
 ```
 
-The client is framework-neutral: it owns surface lifecycle, Lang parsing and merging, data-model patches, actions, RPC, and protocol errors. `A2UILangRenderer` is the React adapter; it subscribes to one surface and delegates the parsed OpenUI Lang UI to `@openuidev/react-lang`.
+The client is framework-neutral: it owns surface lifecycle, runtime envelope validation, Lang parsing and merging, data-model patches, actions, RPC, and protocol errors. `A2UILangRenderer` is the React adapter; it subscribes to one surface and delegates the parsed OpenUI Lang UI to `@openuidev/react-lang`.
+
+When `sendDataModel` is enabled, the second `onMessage` argument contains `a2uiRendererDataModel` metadata filtered to opted-in surfaces. Configured renderer capabilities are exposed in the same metadata object. The host transport decides where to attach this metadata.
+
+Renderer functions can be registered as a direct function shorthand or as `{ handler, callableFrom }`. Explicit registrations default to `rendererOnly`; incoming `callFunction` messages are accepted only for `agentOnly` and `rendererOrAgent` registrations.
 
 For A2UI action compatibility, assign interactive controls to named Lang statements. Their statement names become `sourceComponentId`; inline interactive components fall back to the surface `root` ID.
 

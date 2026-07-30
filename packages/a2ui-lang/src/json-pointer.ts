@@ -104,13 +104,19 @@ function unwrapFormValue(value: unknown): JsonValue | undefined {
   return undefined;
 }
 
-export function dataModelToOpenUIState(dataModel: JsonObject): Record<string, unknown> {
+export function dataModelToOpenUIState(
+  dataModel: JsonObject,
+  formStateKeys: Iterable<string> = [],
+): Record<string, unknown> {
   const state: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(dataModel)) {
-    // $key supports Lang bindings such as $user.name. The unprefixed copy
-    // hydrates a Form whose name matches the A2UI top-level data-model key.
+    // $key is the canonical owner for Lang bindings such as $user.name.
     state[`$${key}`] = value;
-    state[key] = value;
+  }
+  // Form namespaces are opt-in so a stale form mirror cannot overwrite a
+  // reactive $binding with the same top-level data-model key.
+  for (const key of formStateKeys) {
+    if (key in dataModel) state[key] = dataModel[key];
   }
   return state;
 }
@@ -125,18 +131,15 @@ export function mergeOpenUIStateIntoDataModel(
     ...Object.keys(state).map((key) => (key.startsWith("$") ? key.slice(1) : key)),
   ]);
   for (const key of keys) {
-    const bindingValue = unwrapFormValue(state[`$${key}`]);
-    const formValue = unwrapFormValue(state[key]);
-    const previous = current[key];
-    const bindingChanged =
-      bindingValue !== undefined && JSON.stringify(bindingValue) !== JSON.stringify(previous);
-    const formChanged =
-      formValue !== undefined && JSON.stringify(formValue) !== JSON.stringify(previous);
+    const hasFormState = Object.prototype.hasOwnProperty.call(state, key);
+    const hasBindingState = Object.prototype.hasOwnProperty.call(state, `$${key}`);
+    const formValue = hasFormState ? unwrapFormValue(state[key]) : undefined;
+    const bindingValue = hasBindingState ? unwrapFormValue(state[`$${key}`]) : undefined;
 
-    if (formChanged) next[key] = formValue;
-    else if (bindingChanged) next[key] = bindingValue;
-    else if (formValue !== undefined) next[key] = formValue;
-    else if (bindingValue !== undefined) next[key] = bindingValue;
+    // Once a real form namespace exists it owns that data-model key. Bindings
+    // own every other key. This avoids change-detection races between mirrors.
+    if (hasFormState && formValue !== undefined) next[key] = formValue;
+    else if (hasBindingState && bindingValue !== undefined) next[key] = bindingValue;
   }
   return next;
 }

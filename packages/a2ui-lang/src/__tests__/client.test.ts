@@ -87,25 +87,78 @@ describe("A2UILangClient", () => {
     expect(client.getSurface("main")).toBeUndefined();
   });
 
-  it("rejects legacy components embedded in createSurface for the hybrid profile", async () => {
-    const messages: RendererToAgentMessage[] = [];
-    const client = createA2UILangClient({ schema, onMessage: (message) => messages.push(message) });
-
+  it("supports single-message creation with Lang components and no catalogId", async () => {
+    const client = createA2UILangClient({ schema });
     const result = await client.process({
       version: "v1.0",
       createSurface: {
         surfaceId: "main",
-        catalogId: "com.example:openui",
-        components: [{ id: "root", component: "Text" }],
+        components: ["root = Stack([title])", 'title = TextContent("Created inline")'],
       },
     });
 
-    expect(result.ok).toBe(false);
-    expect(result.outbound).toEqual(messages);
-    expect(messages[0]).toMatchObject({
-      error: { code: "VALIDATION_FAILED", path: "/createSurface/components" },
+    expect(result.ok).toBe(true);
+    expect(client.getSurface("main")?.catalogId).toBeUndefined();
+    expect(client.getSurface("main")?.parseResult?.root?.props.children).toEqual([
+      expect.objectContaining({ props: { text: "Created inline", variant: undefined } }),
+    ]);
+  });
+
+  it("preserves components that are referenced by a later incremental update", async () => {
+    const client = createA2UILangClient({ schema });
+    await createSurface(client);
+    await client.process({
+      version: "v1.0",
+      updateComponents: {
+        surfaceId: "main",
+        components: ["root = Stack([a])", 'a = TextContent("A")'],
+      },
     });
-    expect(client.getSurface("main")).toBeUndefined();
+    await client.process({
+      version: "v1.0",
+      updateComponents: { surfaceId: "main", components: ['b = TextContent("B")'] },
+    });
+    const result = await client.process({
+      version: "v1.0",
+      updateComponents: { surfaceId: "main", components: ["root = Stack([a, b])"] },
+    });
+
+    expect(result.ok).toBe(true);
+    expect(client.getSurface("main")?.source).toContain('b = TextContent("B")');
+    expect(client.getSurface("main")?.parseResult?.root?.props.children).toEqual([
+      expect.objectContaining({ statementId: "a" }),
+      expect.objectContaining({ statementId: "b" }),
+    ]);
+  });
+
+  it("validates malformed transport input without throwing or corrupting state", async () => {
+    const client = createA2UILangClient({ schema });
+    await createSurface(client);
+
+    const missingComponents = await client.process({
+      version: "v1.0",
+      updateComponents: { surfaceId: "main" },
+    });
+    expect(missingComponents.ok).toBe(false);
+    expect(missingComponents.issues?.[0]?.path).toBe("/updateComponents/components");
+    expect(missingComponents.outbound[0]).toMatchObject({
+      error: {
+        code: "VALIDATION_FAILED",
+        surfaceId: "main",
+        path: "/updateComponents/components",
+      },
+    });
+
+    const missingSurfaceId = await client.process({
+      version: "v1.0",
+      createSurface: { catalogId: "com.example:openui" },
+    });
+    expect(missingSurfaceId.ok).toBe(false);
+    expect(missingSurfaceId.issues?.length).toBeGreaterThan(0);
+    expect(client.getSurfaces()).toHaveLength(1);
+
+    const wrongVersion = await client.process({ version: "v0.9", unknown: {} });
+    expect(wrongVersion).toMatchObject({ ok: false, outbound: [], issues: expect.any(Array) });
   });
 
   it("emits A2UI actions, resolves actionResponse, and stores responsePath", async () => {
@@ -200,6 +253,32 @@ describe("A2UILangClient", () => {
     });
   });
 
+  it("enforces callableFrom for agent-initiated function calls", async () => {
+    const client = createA2UILangClient({
+      schema,
+      functions: {
+        localOnly: {
+          callableFrom: "rendererOnly",
+          handler: () => ({ ok: true }),
+        },
+      },
+    });
+
+    const result = await client.process({
+      version: "v1.0",
+      functionCallId: "function-local",
+      callFunction: { call: "localOnly" },
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.outbound[0]).toMatchObject({
+      error: {
+        code: "INVALID_FUNCTION_CALL",
+        functionCallId: "function-local",
+      },
+    });
+  });
+
   it("maps OpenUI action context, form state, and source statement to A2UI", async () => {
     const messages: RendererToAgentMessage[] = [];
     const client = createA2UILangClient({ schema, onMessage: (message) => messages.push(message) });
@@ -228,7 +307,15 @@ describe("A2UILangClient", () => {
 
   it("keeps renderer data-model metadata in sync with local OpenUI state", async () => {
     const client = createA2UILangClient({ schema });
-    await createSurface(client);
+    await client.process({
+      version: "v1.0",
+      createSurface: {
+        surfaceId: "main",
+        catalogId: "com.example:openui",
+        sendDataModel: true,
+        dataModel: { user: { name: "Alice" } },
+      },
+    });
 
     expect(
       client.updateSurfaceFromOpenUIState("main", {
@@ -244,6 +331,69 @@ describe("A2UILangClient", () => {
           contact: { email: "c@example.com" },
         },
       },
+    });
+  });
+
+  it("filters renderer metadata to opted-in surfaces and includes capabilities", async () => {
+    const metadata: unknown[] = [];
+    const client = createA2UILangClient({
+      schema,
+      rendererCapabilities: {
+        "v1.0": { supportedCatalogIds: ["com.example:openui"] },
+      },
+      onMessage: (_message, nextMetadata) => metadata.push(nextMetadata),
+    });
+    await client.process({
+      version: "v1.0",
+      createSurface: {
+        surfaceId: "shared",
+        catalogId: "com.example:openui",
+        sendDataModel: true,
+        dataModel: { shared: true },
+      },
+    });
+    await client.process({
+      version: "v1.0",
+      createSurface: {
+        surfaceId: "private",
+        catalogId: "com.example:openui",
+        dataModel: { private: true },
+      },
+    });
+
+    client.dispatchAction({
+      surfaceId: "shared",
+      sourceComponentId: "button",
+      name: "submit",
+    });
+
+    expect(metadata.at(-1)).toEqual({
+      a2uiRendererCapabilities: {
+        "v1.0": { supportedCatalogIds: ["com.example:openui"] },
+      },
+      a2uiRendererDataModel: {
+        version: "v1.0",
+        surfaces: { shared: { shared: true } },
+      },
+    });
+  });
+
+  it("rejects a catalog outside configured renderer capabilities", async () => {
+    const client = createA2UILangClient({
+      schema,
+      rendererCapabilities: {
+        "v1.0": { supportedCatalogIds: ["com.example:supported"] },
+      },
+    });
+
+    const result = await client.process({
+      version: "v1.0",
+      createSurface: { surfaceId: "main", catalogId: "com.example:unsupported" },
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.outbound[0]).toMatchObject({
+      error: { code: "UNSUPPORTED_CATALOG", surfaceId: "main" },
     });
   });
 });
@@ -262,6 +412,9 @@ describe("A2UI data model bridge", () => {
 
   it("converts A2UI data-model keys to Lang bindings and unwraps form state", () => {
     expect(dataModelToOpenUIState({ user: { name: "Alice" } })).toEqual({
+      $user: { name: "Alice" },
+    });
+    expect(dataModelToOpenUIState({ user: { name: "Alice" } }, ["user"])).toEqual({
       $user: { name: "Alice" },
       user: { name: "Alice" },
     });
@@ -286,6 +439,39 @@ describe("A2UI data model bridge", () => {
 
     expect(
       mergeOpenUIStateIntoDataModel({ filter: "all" }, { $filter: "active", filter: "all" }),
-    ).toEqual({ filter: "active" });
+    ).toEqual({ filter: "all" });
+
+    expect(mergeOpenUIStateIntoDataModel({ filter: "all" }, { $filter: "active" })).toEqual({
+      filter: "active",
+    });
+  });
+
+  it("does not let a stale binding mirror revert a user-edited form", async () => {
+    const client = createA2UILangClient({ schema });
+    await client.process({
+      version: "v1.0",
+      createSurface: {
+        surfaceId: "main",
+        dataModel: { contact: { email: "seed@x.com" } },
+      },
+    });
+    const state = {
+      $contact: { email: "seed@x.com" },
+      contact: {
+        email: { value: "typed@x.com", componentType: "Input" },
+      },
+    };
+
+    expect(client.updateSurfaceFromOpenUIState("main", state)).toBe(true);
+    const revision = client.getSurface("main")?.revision;
+    expect(client.getSurface("main")?.dataModel).toEqual({
+      contact: { email: "typed@x.com" },
+    });
+
+    expect(client.updateSurfaceFromOpenUIState("main", state)).toBe(false);
+    expect(client.getSurface("main")?.revision).toBe(revision);
+    expect(client.getSurface("main")?.dataModel).toEqual({
+      contact: { email: "typed@x.com" },
+    });
   });
 });

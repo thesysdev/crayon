@@ -1,5 +1,4 @@
 import {
-  BuiltinActionType,
   createParser,
   mergeStatements,
   type ActionEvent,
@@ -8,6 +7,7 @@ import {
   type ValidationError,
 } from "@openuidev/lang-core";
 import { applyDataModelUpdate, mergeOpenUIStateIntoDataModel, toJsonObject } from "./json-pointer";
+import { validateAgentToRendererMessage } from "./runtime-schema";
 import type {
   A2UILangClientOptions,
   ActionMessage,
@@ -19,14 +19,16 @@ import type {
   JsonValue,
   OpenUIActionOptions,
   ProcessResult,
+  ProtocolValidationIssue,
   RendererDataModel,
+  RendererMetadata,
   RendererToAgentMessage,
   SurfaceSnapshot,
   ValidationFailedErrorMessage,
 } from "./types";
 
 type SurfaceListener = () => void;
-type MessageListener = (message: RendererToAgentMessage) => void;
+type MessageListener = (message: RendererToAgentMessage, metadata: RendererMetadata) => void;
 
 interface PendingAction {
   surfaceId: string;
@@ -92,10 +94,34 @@ function isCallFunction(
   return "callFunction" in message;
 }
 
+function record(value: unknown): Record<string, unknown> | undefined {
+  return value != null && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
+}
+
+function validationTarget(input: unknown): {
+  surfaceId?: string;
+  functionCallId?: string;
+} {
+  const message = record(input);
+  if (!message) return {};
+  const functionCallId =
+    typeof message.functionCallId === "string" ? message.functionCallId : undefined;
+  for (const key of ["createSurface", "updateComponents", "updateDataModel", "deleteSurface"]) {
+    const payload = record(message[key]);
+    if (typeof payload?.surfaceId === "string") {
+      return { surfaceId: payload.surfaceId, functionCallId };
+    }
+  }
+  return { functionCallId };
+}
+
 export class A2UILangClient {
   readonly #parser: Parser;
   readonly #functions: A2UILangClientOptions["functions"];
   readonly #onMessage?: A2UILangClientOptions["onMessage"];
+  readonly #rendererCapabilities?: A2UILangClientOptions["rendererCapabilities"];
   readonly #now: () => Date;
   readonly #createId: () => string;
   readonly #surfaces = new Map<string, SurfaceSnapshot>();
@@ -108,6 +134,7 @@ export class A2UILangClient {
     this.#parser = createParser(options.schema, options.rootName);
     this.#functions = options.functions;
     this.#onMessage = options.onMessage;
+    this.#rendererCapabilities = options.rendererCapabilities;
     this.#now = options.now ?? (() => new Date());
     this.#createId = options.createId ?? defaultId;
   }
@@ -130,23 +157,37 @@ export class A2UILangClient {
     return [...this.#surfaces.values()];
   }
 
-  getRendererDataModel(): RendererDataModel {
+  getRendererDataModel(): RendererDataModel | undefined {
+    const surfaces = Object.fromEntries(
+      [...this.#surfaces]
+        .filter(([, surface]) => surface.sendDataModel)
+        .map(([surfaceId, surface]) => [surfaceId, structuredClone(surface.dataModel)]),
+    );
+    if (Object.keys(surfaces).length === 0) return undefined;
     return {
       version: "v1.0",
-      surfaces: Object.fromEntries(
-        [...this.#surfaces].map(([surfaceId, surface]) => [surfaceId, surface.dataModel]),
-      ),
+      surfaces,
     };
   }
 
-  async process(message: AgentToRendererMessage): Promise<ProcessResult> {
+  getRendererMetadata(): RendererMetadata {
+    const dataModel = this.getRendererDataModel();
+    return {
+      ...(this.#rendererCapabilities
+        ? { a2uiRendererCapabilities: structuredClone(this.#rendererCapabilities) }
+        : {}),
+      ...(dataModel ? { a2uiRendererDataModel: dataModel } : {}),
+    };
+  }
+
+  async process(input: unknown): Promise<ProcessResult> {
     const outbound: RendererToAgentMessage[] = [];
     const capture = (next: RendererToAgentMessage) => outbound.push(next);
     this.#messageListeners.add(capture);
     try {
-      if (message.version !== "v1.0") {
-        return { ok: false, outbound };
-      }
+      const validated = validateAgentToRendererMessage(input);
+      if (!validated.success) return this.#invalidMessage(input, validated.issues, outbound);
+      const message = validated.message;
 
       if (isCreateSurface(message)) return this.#createSurface(message, outbound);
       if (isUpdateComponents(message)) return this.#updateComponents(message, outbound);
@@ -162,9 +203,11 @@ export class A2UILangClient {
   updateSurfaceFromOpenUIState(surfaceId: string, state: Record<string, unknown>): boolean {
     const surface = this.#surfaces.get(surfaceId);
     if (!surface) return false;
+    const dataModel = mergeOpenUIStateIntoDataModel(surface.dataModel, state);
+    if (JSON.stringify(dataModel) === JSON.stringify(surface.dataModel)) return false;
     this.#replaceSurface({
       ...surface,
-      dataModel: mergeOpenUIStateIntoDataModel(surface.dataModel, state),
+      dataModel,
     });
     return true;
   }
@@ -182,11 +225,7 @@ export class A2UILangClient {
     return this.dispatchAction({
       surfaceId,
       sourceComponentId: event.sourceComponentId ?? "root",
-      name:
-        options.name ??
-        (event.type === BuiltinActionType.ContinueConversation
-          ? BuiltinActionType.ContinueConversation
-          : event.type),
+      name: options.name ?? event.type,
       context,
       wantResponse: options.wantResponse,
       responsePath: options.responsePath,
@@ -251,26 +290,54 @@ export class A2UILangClient {
       );
       return { ok: false, outbound };
     }
-    if (input.components) {
-      this.#emitValidationError(
+    const supportedCatalogIds = this.#rendererCapabilities?.["v1.0"].supportedCatalogIds ?? [];
+    if (
+      input.catalogId &&
+      supportedCatalogIds.length > 0 &&
+      !supportedCatalogIds.includes(input.catalogId)
+    ) {
+      this.#emitGenericError(
+        "UNSUPPORTED_CATALOG",
+        `Renderer does not support catalog: ${input.catalogId}`,
         input.surfaceId,
-        "/createSurface/components",
-        "The A2UI + OpenUI Lang profile keeps createSurface unchanged but requires its optional components field to be omitted; send Lang statements in updateComponents.components.",
       );
       return { ok: false, outbound };
+    }
+
+    let source = "";
+    let parseResult: SurfaceSnapshot["parseResult"] = null;
+    let errors: OpenUIError[] = [];
+    if (input.components) {
+      try {
+        ({ source, parseResult, errors } = this.#mergeComponents("", input.components));
+      } catch (error) {
+        this.#emitValidationError(
+          input.surfaceId,
+          "/createSurface/components",
+          error instanceof Error ? error.message : String(error),
+        );
+        return { ok: false, outbound };
+      }
     }
     this.#replaceSurface({
       surfaceId: input.surfaceId,
       catalogId: input.catalogId,
       surfaceProperties: input.surfaceProperties,
       sendDataModel: input.sendDataModel ?? false,
-      source: "",
+      source,
       dataModel: structuredClone(input.dataModel ?? {}),
-      parseResult: null,
-      errors: [],
+      parseResult,
+      errors,
       revision: 0,
     });
-    return { ok: true, outbound };
+    for (const error of errors) {
+      this.#emitValidationError(
+        input.surfaceId,
+        "/createSurface/components",
+        error.statementId ? `${error.statementId}: ${error.message}` : error.message,
+      );
+    }
+    return { ok: errors.length === 0, outbound };
   }
 
   #updateComponents(
@@ -280,22 +347,11 @@ export class A2UILangClient {
     const input = message.updateComponents;
     const surface = this.#requireSurface(input.surfaceId);
     if (!surface) return { ok: false, outbound };
-    if (
-      input.components.length === 0 ||
-      input.components.some((item) => typeof item !== "string")
-    ) {
-      this.#emitValidationError(
-        input.surfaceId,
-        "/updateComponents/components",
-        "components must be a non-empty array of OpenUI Lang statement strings",
-      );
-      return { ok: false, outbound };
-    }
-
     try {
-      const source = mergeStatements(surface.source, input.components.join("\n"));
-      const parseResult = this.#parser.parse(source);
-      const errors = parseResult.meta.errors.map(parseError);
+      const { source, parseResult, errors } = this.#mergeComponents(
+        surface.source,
+        input.components,
+      );
       this.#replaceSurface({ ...surface, source, parseResult, errors });
       for (const error of errors) {
         this.#emitValidationError(
@@ -358,11 +414,24 @@ export class A2UILangClient {
     outbound: RendererToAgentMessage[],
   ): Promise<ProcessResult> {
     const { call, args = {} } = message.callFunction;
-    const fn = this.#functions?.[call];
-    if (!fn) {
+    const registration = this.#functions?.[call];
+    if (!registration) {
       this.#emitGenericError(
-        "FUNCTION_NOT_FOUND",
+        "INVALID_FUNCTION_CALL",
         `Renderer function is not registered: ${call}`,
+        undefined,
+        message.functionCallId,
+      );
+      return { ok: false, outbound };
+    }
+    const fn = typeof registration === "function" ? registration : registration.handler;
+    if (
+      typeof registration !== "function" &&
+      (registration.callableFrom ?? "rendererOnly") === "rendererOnly"
+    ) {
+      this.#emitGenericError(
+        "INVALID_FUNCTION_CALL",
+        `Renderer function is not callable from the agent: ${call}`,
         undefined,
         message.functionCallId,
       );
@@ -394,7 +463,11 @@ export class A2UILangClient {
   ): ProcessResult {
     const pending = this.#pendingActions.get(message.actionId);
     if (!pending) {
-      return { ok: false, outbound };
+      return {
+        ok: false,
+        outbound,
+        issues: [{ path: "/actionId", message: `Unknown actionId: ${message.actionId}` }],
+      };
     }
     this.#pendingActions.delete(message.actionId);
     if (message.actionResponse.error) {
@@ -427,6 +500,44 @@ export class A2UILangClient {
     this.#revision += 1;
     this.#surfaces.set(surface.surfaceId, { ...surface, revision: this.#revision });
     this.#notify();
+  }
+
+  #mergeComponents(
+    existing: string,
+    components: string[],
+  ): Pick<SurfaceSnapshot, "source" | "parseResult" | "errors"> {
+    const source = mergeStatements(existing, components.join("\n"), "root", {
+      garbageCollect: false,
+    });
+    const parseResult = this.#parser.parse(source);
+    return {
+      source,
+      parseResult,
+      errors: parseResult.meta.errors.map(parseError),
+    };
+  }
+
+  #invalidMessage(
+    input: unknown,
+    issues: ProtocolValidationIssue[],
+    outbound: RendererToAgentMessage[],
+  ): ProcessResult {
+    const target = validationTarget(input);
+    const issue = issues[0] ?? { path: "/", message: "Invalid A2UI message" };
+    if (target.surfaceId) {
+      this.#emitValidationError(target.surfaceId, issue.path, issue.message);
+      return { ok: false, outbound, issues };
+    }
+    if (target.functionCallId) {
+      this.#emitGenericError(
+        "INVALID_MESSAGE",
+        `${issue.path}: ${issue.message}`,
+        undefined,
+        target.functionCallId,
+      );
+      return { ok: false, outbound, issues };
+    }
+    return { ok: false, outbound, issues };
   }
 
   #requireSurface(surfaceId: string): SurfaceSnapshot | undefined {
@@ -464,8 +575,9 @@ export class A2UILangClient {
   }
 
   #emit(message: RendererToAgentMessage): void {
-    this.#onMessage?.(message);
-    for (const listener of this.#messageListeners) listener(message);
+    const metadata = this.getRendererMetadata();
+    this.#onMessage?.(message, metadata);
+    for (const listener of this.#messageListeners) listener(message, metadata);
   }
 
   #notify(): void {

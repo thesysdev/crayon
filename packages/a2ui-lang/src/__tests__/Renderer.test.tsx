@@ -1,6 +1,14 @@
-import { createLibrary, defineComponent } from "@openuidev/react-lang";
+import {
+  createLibrary,
+  defineComponent,
+  FormNameContext,
+  useIsStreaming,
+  useStateField,
+} from "@openuidev/react-lang";
+import { act } from "react";
+import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { z } from "zod/v4";
 import { createA2UILangClient } from "../client";
 import { A2UILangRenderer } from "../Renderer";
@@ -20,6 +28,38 @@ const Stack = defineComponent({
 });
 
 const library = createLibrary({ components: [Stack, TextContent], root: "Stack" });
+
+const Field = defineComponent({
+  name: "Field",
+  description: "Interactive test field",
+  props: z.object({ name: z.string() }),
+  component: ({ props }) => {
+    const field = useStateField<string>(props.name);
+    const isStreaming = useIsStreaming();
+    return (
+      <button
+        data-streaming={String(isStreaming)}
+        disabled={isStreaming}
+        onClick={() => field.setValue("typed@x.com")}
+      >
+        {field.value ?? ""}
+      </button>
+    );
+  },
+});
+
+const Form = defineComponent({
+  name: "Form",
+  description: "Test form",
+  props: z.object({ name: z.string(), fields: z.array(Field.ref) }),
+  component: ({ props, renderNode }) => (
+    <FormNameContext.Provider value={props.name}>
+      {renderNode(props.fields)}
+    </FormNameContext.Provider>
+  ),
+});
+
+const formLibrary = createLibrary({ components: [Form, Field], root: "Form" });
 
 describe("A2UILangRenderer", () => {
   it("renders the active A2UI surface through the OpenUI Lang React renderer", async () => {
@@ -60,5 +100,100 @@ describe("A2UILangRenderer", () => {
     expect(
       renderToStaticMarkup(<A2UILangRenderer client={client} surfaceId="main" library={library} />),
     ).toBe("");
+  });
+
+  it("keeps live form input and the A2UI data model converged", async () => {
+    const client = createA2UILangClient({
+      schema: formLibrary.toJSONSchema(),
+      rootName: formLibrary.root,
+    });
+    await client.process({
+      version: "v1.0",
+      createSurface: {
+        surfaceId: "main",
+        dataModel: { contact: { email: "seed@x.com" } },
+        components: ['root = Form("contact", [email])', 'email = Field("email")'],
+      },
+    });
+
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    const onStateUpdate = vi.fn();
+    const revisionBeforeInput = client.getSurface("main")!.revision;
+
+    await act(async () => {
+      root.render(
+        <A2UILangRenderer
+          client={client}
+          surfaceId="main"
+          library={formLibrary}
+          onStateUpdate={onStateUpdate}
+        />,
+      );
+    });
+    const button = container.querySelector("button")!;
+    expect(button.textContent).toBe("seed@x.com");
+
+    await act(async () => {
+      button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    expect(button.textContent).toBe("typed@x.com");
+    expect(client.getSurface("main")?.dataModel).toEqual({
+      contact: { email: "typed@x.com" },
+    });
+    expect(client.getSurface("main")?.revision).toBe(revisionBeforeInput + 1);
+    expect(onStateUpdate).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(client.getSurface("main")?.dataModel).toEqual({
+      contact: { email: "typed@x.com" },
+    });
+
+    await act(async () => {
+      await client.process({
+        version: "v1.0",
+        updateDataModel: {
+          surfaceId: "main",
+          path: "/contact/email",
+          value: "agent@x.com",
+        },
+      });
+    });
+    expect(button.textContent).toBe("agent@x.com");
+    expect(client.getSurface("main")?.dataModel).toEqual({
+      contact: { email: "agent@x.com" },
+    });
+
+    await act(async () => root.unmount());
+    container.remove();
+  });
+
+  it("forwards the A2UI transport streaming state", async () => {
+    const client = createA2UILangClient({
+      schema: formLibrary.toJSONSchema(),
+      rootName: formLibrary.root,
+    });
+    await client.process({
+      version: "v1.0",
+      createSurface: {
+        surfaceId: "main",
+        components: ['root = Form("contact", [email])', 'email = Field("email")'],
+      },
+    });
+    const container = document.createElement("div");
+    const root = createRoot(container);
+
+    await act(async () => {
+      root.render(
+        <A2UILangRenderer client={client} surfaceId="main" library={formLibrary} isStreaming />,
+      );
+    });
+    expect(container.querySelector("button")?.disabled).toBe(true);
+    expect(container.querySelector("button")?.dataset.streaming).toBe("true");
+
+    await act(async () => root.unmount());
   });
 });

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openui.com/schema/a2ui-lang/v1.0/agent-to-renderer.json",
   "title": "A2UI v1.0 with OpenUI Lang component updates",
-  "description": "The A2UI v1.0 agent-to-renderer envelope with updateComponents.components replaced by OpenUI Lang statement strings.",
+  "description": "The A2UI v1.0 agent-to-renderer envelope with component lists represented as OpenUI Lang statement strings.",
   "type": "object",
   "oneOf": [
     { "$ref": "#/$defs/CreateSurfaceMessage" },
@@ -26,13 +26,13 @@
             "sendDataModel": { "type": "boolean", "default": false },
             "components": {
               "type": "array",
-              "description": "The unchanged optional A2UI JSON component list. The OpenUI Lang profile omits this field and sends its initial tree through updateComponents.",
+              "description": "Optional initial OpenUI Lang statements for single-message surface creation.",
               "minItems": 1,
-              "items": { "type": "object" }
+              "items": { "type": "string", "minLength": 1 }
             },
             "dataModel": { "type": "object", "additionalProperties": true }
           },
-          "required": ["surfaceId", "catalogId"],
+          "required": ["surfaceId"],
           "additionalProperties": false
         }
       },

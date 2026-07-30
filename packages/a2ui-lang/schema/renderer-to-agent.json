@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openui.com/schema/a2ui-lang/v1.0/renderer-to-agent.json",
+  "title": "A2UI v1.0 renderer-to-agent messages",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/ActionMessage" },
+    { "$ref": "#/$defs/FunctionResponseMessage" },
+    { "$ref": "#/$defs/ValidationFailedErrorMessage" },
+    { "$ref": "#/$defs/GenericErrorMessage" }
+  ],
+  "$defs": {
+    "ActionMessage": {
+      "type": "object",
+      "properties": {
+        "version": { "const": "v1.0" },
+        "action": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "surfaceId": { "type": "string" },
+            "sourceComponentId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" },
+            "context": { "type": "object", "additionalProperties": true },
+            "wantResponse": { "type": "boolean", "default": false },
+            "actionId": { "type": "string" }
+          },
+          "required": ["name", "surfaceId", "sourceComponentId", "timestamp", "context"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["version", "action"],
+      "additionalProperties": false
+    },
+    "FunctionResponseMessage": {
+      "type": "object",
+      "properties": {
+        "version": { "const": "v1.0" },
+        "functionResponse": {
+          "type": "object",
+          "properties": {
+            "functionCallId": { "type": "string" },
+            "call": { "type": "string" },
+            "value": true
+          },
+          "required": ["functionCallId", "call", "value"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["version", "functionResponse"],
+      "additionalProperties": false
+    },
+    "ValidationFailedErrorMessage": {
+      "type": "object",
+      "properties": {
+        "version": { "const": "v1.0" },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": { "const": "VALIDATION_FAILED" },
+            "surfaceId": { "type": "string" },
+            "path": { "type": "string" },
+            "message": { "type": "string" }
+          },
+          "required": ["code", "surfaceId", "path", "message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["version", "error"],
+      "additionalProperties": false
+    },
+    "GenericErrorMessage": {
+      "type": "object",
+      "properties": {
+        "version": { "const": "v1.0" },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": { "type": "string", "not": { "const": "VALIDATION_FAILED" } },
+            "message": { "type": "string" },
+            "surfaceId": { "type": "string" },
+            "functionCallId": { "type": "string" }
+          },
+          "required": ["code", "message"],
+          "oneOf": [
+            { "required": ["surfaceId"], "not": { "required": ["functionCallId"] } },
+            { "required": ["functionCallId"], "not": { "required": ["surfaceId"] } }
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": ["version", "error"],
+      "additionalProperties": false
+    }
+  }
+}

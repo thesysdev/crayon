@@ -4,10 +4,13 @@ export {
   dataModelToOpenUIState,
   mergeOpenUIStateIntoDataModel,
 } from "./json-pointer";
+export { agentToRendererMessageSchema, validateAgentToRendererMessage } from "./runtime-schema";
 export type {
   A2UIFunctionCall,
+  A2UIFunctionCallableFrom,
   A2UILangClientOptions,
   A2UIRendererFunction,
+  A2UIRendererFunctionRegistration,
   ActionMessage,
   ActionResponseMessage,
   AgentCapabilities,
@@ -24,8 +27,10 @@ export type {
   MapOpenUIAction,
   OpenUIActionOptions,
   ProcessResult,
+  ProtocolValidationIssue,
   RendererCapabilities,
   RendererDataModel,
+  RendererMetadata,
   RendererToAgentMessage,
   SurfaceSnapshot,
   UpdateComponentsMessage,

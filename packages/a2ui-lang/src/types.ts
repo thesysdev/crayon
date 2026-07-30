@@ -20,14 +20,14 @@ export interface CreateSurfaceMessage {
   version: "v1.0";
   createSurface: {
     surfaceId: string;
-    catalogId: string;
+    catalogId?: string;
     surfaceProperties?: JsonObject;
     sendDataModel?: boolean;
     /**
-     * Part of A2UI v1.0, but intentionally not used by the OpenUI Lang profile.
-     * Send the initial Lang tree in updateComponents instead.
+     * A2UI v1.0 single-message surface creation using the profile's OpenUI
+     * Lang component representation.
      */
-    components?: JsonObject[];
+    components?: string[];
     dataModel?: JsonObject;
   };
 }
@@ -150,7 +150,7 @@ export interface RendererDataModel {
 
 export interface SurfaceSnapshot {
   surfaceId: string;
-  catalogId: string;
+  catalogId?: string;
   surfaceProperties?: JsonObject;
   sendDataModel: boolean;
   source: string;
@@ -162,18 +162,34 @@ export interface SurfaceSnapshot {
 
 export type A2UIRendererFunction = (args: JsonObject) => JsonValue | Promise<JsonValue>;
 
+export type A2UIFunctionCallableFrom = "rendererOnly" | "agentOnly" | "rendererOrAgent";
+
+export interface A2UIRendererFunctionRegistration {
+  handler: A2UIRendererFunction;
+  /** Matches A2UI catalog callableFrom semantics. Defaults to rendererOnly. */
+  callableFrom?: A2UIFunctionCallableFrom;
+}
+
 export interface A2UILangClientOptions {
   schema: LibraryJSONSchema;
   rootName?: string;
-  functions?: Record<string, A2UIRendererFunction>;
-  onMessage?: (message: RendererToAgentMessage) => void;
+  functions?: Record<string, A2UIRendererFunction | A2UIRendererFunctionRegistration>;
+  rendererCapabilities?: RendererCapabilities;
+  onMessage?: (message: RendererToAgentMessage, metadata: RendererMetadata) => void;
   now?: () => Date;
   createId?: () => string;
+}
+
+export interface ProtocolValidationIssue {
+  path: string;
+  message: string;
 }
 
 export interface ProcessResult {
   ok: boolean;
   outbound: RendererToAgentMessage[];
+  /** Present when malformed input cannot be represented as an A2UI error envelope. */
+  issues?: ProtocolValidationIssue[];
 }
 
 export interface DispatchActionInput {
@@ -193,3 +209,8 @@ export interface OpenUIActionOptions {
 }
 
 export type MapOpenUIAction = (event: ActionEvent, surface: SurfaceSnapshot) => OpenUIActionOptions;
+
+export interface RendererMetadata {
+  a2uiRendererCapabilities?: RendererCapabilities;
+  a2uiRendererDataModel?: RendererDataModel;
+}
