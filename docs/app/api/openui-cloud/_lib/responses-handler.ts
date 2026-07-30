@@ -1,4 +1,4 @@
-import { readOpenuiCloudConfig, type DocsDemoWorkload } from "@/lib/openui-cloud/config";
+import { readOpenuiCloudConfig, type CloudDemoWorkload } from "@/lib/openui-cloud/config";
 import { unavailableResponse } from "@/lib/openui-cloud/errors";
 import { resolveRequestedModel } from "@/lib/openui-cloud/models";
 import { hasAllowedOrigin, hasJsonContentType, readLimitedJson } from "@/lib/openui-cloud/request";
@@ -8,10 +8,9 @@ import type { ResponseInputItem } from "openai/resources/responses/responses";
 
 const MAX_INPUT_ITEMS = 16;
 const MAX_THREAD_ID_LENGTH = 256;
-type CloudChatWorkload = Extract<DocsDemoWorkload, "chat-cloud" | "compare-cloud">;
 
 interface CloudChatRequest {
-  workload: CloudChatWorkload;
+  workload: CloudDemoWorkload;
   threadId: string;
   input: ResponseInputItem[];
   model: string;

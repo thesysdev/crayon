@@ -9,6 +9,8 @@ export type DocsDemoWorkload =
   | "playground"
   | "github";
 
+export type CloudDemoWorkload = Extract<DocsDemoWorkload, "chat-cloud" | "compare-cloud">;
+
 const DEMO_API_KEY_ENV = {
   "chat-oss": "THESYS_API_KEY_DOCS_CHAT_OSS",
   "chat-cloud": "THESYS_API_KEY_DOCS_CHAT_CLOUD",
@@ -28,8 +30,8 @@ export interface OpenuiCloudConfig {
 /**
  * Read a hosted demo's Cloud configuration at request time.
  *
- * Each workload has a dedicated key so Cloud usage can be attributed without
- * trusting a browser-provided key selector.
+ * Each workload has a dedicated key so Cloud usage can be attributed
+ * independently.
  */
 export function readOpenuiCloudConfig(demo: DocsDemoWorkload): OpenuiCloudConfig | null {
   const apiKey = process.env[DEMO_API_KEY_ENV[demo]]?.trim();

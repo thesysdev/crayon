@@ -1,12 +1,12 @@
 import { mintFrontendToken } from "@/lib/openui-cloud/cloud-api";
-import { readOpenuiCloudConfig, type DocsDemoWorkload } from "@/lib/openui-cloud/config";
+import { readOpenuiCloudConfig, type CloudDemoWorkload } from "@/lib/openui-cloud/config";
 import { unavailableResponse } from "@/lib/openui-cloud/errors";
 import { hasAllowedOrigin, hasValidEmptyBody } from "@/lib/openui-cloud/request";
 import { readCloudUserId } from "@/lib/openui-cloud/user-id";
 
 export async function handleFrontendToken(
   request: Request,
-  demo: Extract<DocsDemoWorkload, "chat-cloud" | "compare-cloud">,
+  demo: CloudDemoWorkload,
 ): Promise<Response> {
   const config = readOpenuiCloudConfig(demo);
   if (!config) return unavailableResponse();
