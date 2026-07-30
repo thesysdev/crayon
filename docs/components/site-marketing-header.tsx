@@ -10,7 +10,6 @@ import {
 } from "@/components/site-primary-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ArrowRight } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
@@ -116,21 +115,8 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
 
   return (
     <>
-      <motion.div
-        className={styles.mobileBackdrop}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        onClick={onClose}
-      />
-      <motion.div
-        className={styles.mobileTrayWrap}
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.2 }}
-      >
+      <div className={styles.mobileBackdrop} onClick={onClose} />
+      <div className={styles.mobileTrayWrap}>
         <div className={styles.mobileTray}>
           <div className={styles.mobileTrayInner}>
             <div className={styles.mobileTraySection}>
@@ -156,6 +142,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
               <GitHubButton
                 variant="desktopGlow"
                 compact
+                liveCount={false}
                 href="https://github.com/thesysdev/openui"
                 arrow={
                   <ArrowRight
@@ -169,7 +156,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </>
   );
 }
@@ -183,14 +170,11 @@ export function SiteMarketingHeader({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(borderMode === "always");
   const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
   const resolvedBrandVariant =
-    brandVariant ?? (mounted && resolvedTheme === "dark" ? "dark" : "light");
+    brandVariant ?? (resolvedTheme === "dark" ? "dark" : "light");
 
   useEffect(() => {
     if (borderMode === "always") {
-      setIsScrolled(true);
       return;
     }
 
@@ -235,6 +219,7 @@ export function SiteMarketingHeader({
             <GitHubButton
               variant="desktopGlow"
               compact
+              liveCount={false}
               href="https://github.com/thesysdev/openui"
             />
           </div>
@@ -258,9 +243,7 @@ export function SiteMarketingHeader({
           </div>
         }
       />
-      <AnimatePresence>
-        {isMobileMenuOpen && <MobileMenu onClose={closeMobileMenu} />}
-      </AnimatePresence>
+      {isMobileMenuOpen && <MobileMenu onClose={closeMobileMenu} />}
     </nav>
   );
 }

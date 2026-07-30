@@ -1,16 +1,9 @@
 "use client";
 
 import svgPaths from "@/imports/svg-urruvoh2be";
-import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styles from "./brand-logo.module.css";
-
-const COUNT_UP_DURATION = 1500;
-
-const LOGO_SPRING = { type: "spring", stiffness: 400, damping: 15 } as const;
-const LOGO_COLOR_TRANSITION = { duration: 0.25 } as const;
-const GLOW_TRANSITION = { duration: 0.2 } as const;
 
 export type LogoVariant = "light" | "dark";
 
@@ -18,87 +11,36 @@ function cx(...classNames: Array<string | false | null | undefined>) {
   return classNames.filter(Boolean).join(" ");
 }
 
-export function ThesysLogo({
-  isHovered,
-  onHoverChange,
-  variant = "light",
-}: {
-  isHovered: boolean;
-  onHoverChange: (hovered: boolean) => void;
-  variant?: LogoVariant;
-}) {
+export function ThesysLogo({ variant = "light" }: { variant?: LogoVariant }) {
   const isDark = variant === "dark";
-
-  const rectIdleColor = isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.04)";
-  const rectHoveredColor = isDark ? "#ffffff" : "#000000";
-  const pathIdleColor = isDark ? "#ffffff" : "#000000";
-  const pathHoveredColor = isDark ? "#000000" : "#ffffff";
-  const glowClass = isDark
-    ? "absolute -inset-1 rounded-lg bg-white/10"
-    : "absolute -inset-1 rounded-lg bg-black/5";
 
   return (
     <a
       href="https://thesys.dev"
       target="_blank"
       rel="noopener noreferrer"
-      className="relative shrink-0 size-6 cursor-pointer"
-      onMouseEnter={() => onHoverChange(true)}
-      onMouseLeave={() => onHoverChange(false)}
+      aria-label="Visit Thesys"
+      className={`${styles.thesysLink} ${isDark ? styles.thesysLinkDark : ""}`.trim()}
     >
-      <motion.svg
-        className="absolute block size-full"
-        fill="none"
-        viewBox="0 0 24 24"
-        animate={isHovered ? { scale: 1.15, rotate: 8 } : { scale: 1, rotate: 0 }}
-        transition={LOGO_SPRING}
-      >
-        <motion.rect
-          height="24"
-          rx="4"
-          width="24"
-          animate={{ fill: isHovered ? rectHoveredColor : rectIdleColor }}
-          transition={LOGO_COLOR_TRANSITION}
-        />
-        <motion.path
-          d={svgPaths.p24ce2f00}
-          animate={{ fill: isHovered ? pathHoveredColor : pathIdleColor }}
-          transition={LOGO_COLOR_TRANSITION}
-        />
-      </motion.svg>
-
-      <AnimatePresence>
-        {isHovered && (
-          <motion.div
-            className={glowClass}
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            transition={GLOW_TRANSITION}
-          />
-        )}
-      </AnimatePresence>
+      <span aria-hidden="true" className={styles.thesysGlow} />
+      <svg className={styles.thesysMark} fill="none" viewBox="0 0 24 24" aria-hidden="true">
+        <rect className={styles.thesysRect} height="24" rx="4" width="24" />
+        <path className={styles.thesysPath} d={svgPaths.p24ce2f00} />
+      </svg>
     </a>
   );
 }
 
 export function OpenUILogo({ variant = "light" }: { variant?: LogoVariant }) {
   const isDark = variant === "dark";
-  const textClass = isDark
-    ? "font-['Geist',sans-serif] font-semibold text-[15px] text-white leading-6"
-    : "font-['Geist',sans-serif] font-semibold text-[15px] text-black leading-6";
+  const textClass = `${styles.openuiText} ${isDark ? styles.openuiTextDark : ""}`.trim();
 
   return (
-    <Link href="/" className="flex items-center gap-0.5 no-underline">
+    <Link href="/" className={styles.openuiLink}>
       {/* Shiro mascot */}
-      <div className="relative shrink-0 size-8">
+      <div className={styles.openuiMascot}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/shiro-logo.svg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 block size-full object-contain"
-        />
+        <img src="/shiro-logo.svg" alt="" aria-hidden="true" className={styles.openuiMascotImage} />
       </div>
       <span className={textClass}>OpenUI</span>
     </Link>
@@ -144,33 +86,23 @@ function fetchGitHubStarCount(repo: string): Promise<number | null> {
   return inflight;
 }
 
-export function useGitHubStarCount(repo: string) {
+export function useGitHubStarCount(repo: string, enabled = true) {
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
+    if (!enabled) return;
+
     let cancelled = false;
 
     void fetchGitHubStarCount(repo).then((target) => {
       if (cancelled || target === null) return;
-      const startCount = Math.max(target - 50, 0);
-      const startTime = performance.now();
-
-      setCount(startCount);
-
-      const tick = () => {
-        if (cancelled) return;
-        const progress = Math.min((performance.now() - startTime) / COUNT_UP_DURATION, 1);
-        setCount(Math.round(startCount + (target - startCount) * progress));
-        if (progress < 1) requestAnimationFrame(tick);
-      };
-
-      requestAnimationFrame(tick);
+      setCount(target);
     });
 
     return () => {
       cancelled = true;
     };
-  }, [repo]);
+  }, [enabled, repo]);
 
   return count;
 }
