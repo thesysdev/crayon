@@ -7,26 +7,16 @@ import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
 import { useComparisonChatLLM } from "./use-comparison-chat-llm";
 
 interface MarkdownAgentSurfaceProps {
-  themeMode: "light" | "dark";
   onCreditsExhausted: () => void;
   registry: ComparisonControllerRegistry;
 }
 
-export function MarkdownAgentSurface({
-  themeMode,
-  onCreditsExhausted,
-  registry,
-}: MarkdownAgentSurfaceProps) {
+export function MarkdownAgentSurface({ onCreditsExhausted, registry }: MarkdownAgentSurfaceProps) {
   const llm = useComparisonChatLLM("markdown", onCreditsExhausted);
 
   return (
     <div className="chat-agent-surface" data-chat-mode="markdown">
-      <AgentInterface
-        llm={llm}
-        agentName="Markdown"
-        scrollVariant="always"
-        theme={{ mode: themeMode }}
-      >
+      <AgentInterface llm={llm} agentName="Markdown" scrollVariant="always">
         <AgentInterface.Sidebar />
         <AgentInterface.Welcome>
           <ComparisonSurfaceWelcome mode="markdown" />

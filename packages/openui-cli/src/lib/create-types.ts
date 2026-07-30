@@ -8,6 +8,7 @@ export interface CreateAppOptions {
   skill?: boolean;
   noInteractive?: boolean;
   noInstall?: boolean;
+  immediate?: boolean;
   apiKey?: string;
   auth?: CloudAuthMethod;
 }

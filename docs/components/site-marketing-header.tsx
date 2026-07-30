@@ -223,14 +223,10 @@ export function SiteMarketingHeader({
         brandVariant={resolvedBrandVariant}
         center={<SitePrimaryNav />}
         end={
+          // No theme toggle on desktop: the footer's own control owns theme
+          // switching now. The mobile menu below keeps one, since the footer is
+          // a long scroll away on a phone.
           <div className={styles.desktopActions}>
-            {themeToggle !== null && (
-              <ThemeToggle
-                onToggle={themeToggle?.onToggle}
-                title={themeToggle?.title}
-                ariaLabel={themeToggle?.ariaLabel}
-              />
-            )}
             {extraActions}
             <GitHubButton
               variant="desktopGlow"

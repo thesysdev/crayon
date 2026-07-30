@@ -1,4 +1,5 @@
 import { envOr, requiredEnv } from "@/lib/env";
+import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
 import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
 import OpenAI from "openai";
 import type { ResponseInputItem } from "openai/resources/responses/responses";
@@ -11,9 +12,14 @@ import type { ResponseInputItem } from "openai/resources/responses/responses";
  * server-side, so this route is a pure pipe — no client-tool loop.
  */
 export async function POST(req: Request) {
-  const { threadId, input } = (await req.json()) as {
+  const {
+    threadId,
+    input,
+    model: requestedModel,
+  } = (await req.json()) as {
     threadId?: string;
     input?: ResponseInputItem[];
+    model?: unknown;
   };
 
   if (!threadId) {
@@ -39,7 +45,7 @@ export async function POST(req: Request) {
   try {
     stream = (await client.responses.create(
       {
-        model: envOr("OPENUI_MODEL", "google/gemini-3.6-flash-free"),
+        model: resolveRequestedModel(requestedModel, envOr("OPENUI_MODEL", DEFAULT_MODEL)),
         conversation: threadId, // store:true persists to the conversation
         input,
         stream: true,

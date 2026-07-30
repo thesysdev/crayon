@@ -1,6 +1,6 @@
 "use client";
 
-import { captureCreateCliCommandCopied } from "@/lib/create-cli-copy-analytics";
+import { captureCreateCliCommandCopied } from "@/lib/analytics";
 import { ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, type ReactNode } from "react";

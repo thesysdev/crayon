@@ -92,8 +92,6 @@ export function CloudChat() {
         componentLibrary={chatLibrary}
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
-        scrollVariant="always"
-        scrollOnLoad={false}
         logoUrl={mode === "dark" ? DARK_LOGO_URL : LIGHT_LOGO_URL}
         theme={{ mode }}
         starters={starters}

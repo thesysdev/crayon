@@ -11,7 +11,6 @@ import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 import { useMemo } from "react";
 
 interface OssAgentSurfaceProps {
-  themeMode: "light" | "dark";
   onCreditsExhausted: () => void;
 }
 
@@ -38,7 +37,7 @@ const OSS_STARTERS = [
   },
 ];
 
-export function OssAgentSurface({ themeMode, onCreditsExhausted }: OssAgentSurfaceProps) {
+export function OssAgentSurface({ onCreditsExhausted }: OssAgentSurfaceProps) {
   const llm = useMemo<ChatLLM>(
     () => ({
       send: async ({ messages, signal }) => {
@@ -79,7 +78,6 @@ export function OssAgentSurface({ themeMode, onCreditsExhausted }: OssAgentSurfa
         llm={llm}
         componentLibrary={openuiChatLibrary}
         agentName="OpenUI OSS"
-        theme={{ mode: themeMode }}
         starterVariant="short"
         starters={OSS_STARTERS}
       >
