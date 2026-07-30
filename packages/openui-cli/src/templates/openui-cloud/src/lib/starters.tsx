@@ -1,8 +1,10 @@
-import { type PromptTemplate } from "@openuidev/react-ui";
+import { PromptTemplate } from "@openuidev/react-ui";
 import { FileText, Presentation } from "lucide-react";
 
-export const LIGHT_LOGO_URL = "/openui-cloud-logo-light.svg";
-export const DARK_LOGO_URL = "/openui-cloud-logo-dark.svg";
+export const OPENUI_LOGOS = {
+  LIGHT: "/openui-cloud-logo-light.svg",
+  DARK: "/openui-cloud-logo-dark.svg",
+};
 
 export const PROMPT_TEMPLATES: PromptTemplate[] = [
   {
@@ -51,7 +53,7 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
   },
 ];
 
-export const starters = [
+export const STARTERS = [
   {
     displayText: "Relive the FIFA World Cup 2026",
     prompt: "Relive the FIFA World Cup 2026.",
