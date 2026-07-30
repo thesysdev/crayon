@@ -25,9 +25,11 @@ export default function HomePage() {
           align="left"
           subtitle="Open Standard for Generative UI"
           showPlaygroundButton={false}
-          githubRepoUrl="https://github.com/thesysdev/openui"
-          githubButtonLabel="Star us on GitHub"
           showTagline={false}
+          /* No GitHub CTA in the hero on either breakpoint: the header carries
+             the star count already. Dropping githubRepoUrl takes the desktop
+             button; the mobile banner defaults on, so it is turned off here. */
+          showGitHubBanner={false}
         />
         <LogoStrip />
         <Tagline />
