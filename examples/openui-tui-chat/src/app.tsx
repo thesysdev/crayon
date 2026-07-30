@@ -1,6 +1,6 @@
-import { useThread } from "@openuidev/react-headless";
 import { Box, Text, useFocus, useInput } from "ink";
 import { useState } from "react";
+import { useLocalChat, type ProcessFn } from "./chat.js";
 import { RenderValue } from "./genui/components.js";
 import { TuiProvider } from "./genui/context.js";
 import { tuiLibrary } from "./genui/library.js";
@@ -16,18 +16,14 @@ function messageText(content: unknown): string {
   return "";
 }
 
-export function App() {
-  const messages = useThread((s) => s.messages);
-  const isRunning = useThread((s) => s.isRunning);
-  const processMessage = useThread((s) => s.processMessage);
+export function App({ processMessage }: { processMessage: ProcessFn }) {
+  const { messages, isRunning, send } = useLocalChat(processMessage);
   const [draft, setDraft] = useState("");
 
   const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
   const response = lastAssistant ? messageText(lastAssistant.content) : null;
 
-  const onSend = (content: string) => {
-    if (!isRunning) processMessage({ role: "user", content });
-  };
+  const onSend = (content: string) => send(content);
 
   const { result, ctx } = useGenUi(
     tuiLibrary,

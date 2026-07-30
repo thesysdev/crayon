@@ -9,7 +9,6 @@ if (typeof g.requestAnimationFrame !== "function") {
   g.cancelAnimationFrame = (id) => clearTimeout(id as ReturnType<typeof setTimeout>);
 }
 
-import { ChatProvider, openAIMessageFormat, openAIReadableStreamAdapter } from "@openuidev/react-headless";
 import { render } from "ink";
 import { createElement } from "react";
 import { App } from "./app.js";
@@ -25,11 +24,4 @@ if (!process.env.OPENAI_API_KEY) {
 
 const systemPrompt = tuiLibrary.prompt();
 
-render(
-  createElement(ChatProvider, {
-    processMessage: makeProcessMessage(systemPrompt),
-    streamProtocol: openAIReadableStreamAdapter(),
-    messageFormat: openAIMessageFormat,
-    children: createElement(App),
-  }),
-);
+render(createElement(App, { processMessage: makeProcessMessage(systemPrompt) }));
