@@ -156,15 +156,14 @@ Defined as `AgentInterfaceProps` in `AgentInterface.tsx`. It `extends Omit<ChatP
 
 **Forwarded to `ChatProvider`** (from `@openuidev/react-headless`):
 
-| Prop                    | Type                                             | Notes                                                                                                |
-| ----------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| `storage`               | `ChatStorage`                                    | Thread persistence (`listThreads`, `getMessages`, …) and optional `artifact` storage for the browser |
-| `llm`                   | LLM transport                                    | The streaming send adapter                                                                           |
-| `artifactRenderers`     | `AppRenderer[]`                                  | Tool-name → renderer (`parser`/`preview`/`actual`); drives inline previews + detailed view           |
-| `artifactCategories`    | `{ name; filter: { type: string[] } }[]`         | Splits the artifact browser & workspace into sections                                                |
-| `onUserMessageAccepted` | `(event: { source: UserMessageSource }) => void` | Observes accepted user turns without exposing message content                                        |
+| Prop                 | Type                                     | Notes                                                                                                |
+| -------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `storage`            | `ChatStorage`                            | Thread persistence (`listThreads`, `getMessages`, …) and optional `artifact` storage for the browser |
+| `llm`                | LLM transport                            | The streaming send adapter                                                                           |
+| `artifactRenderers`  | `AppRenderer[]`                          | Tool-name → renderer (`parser`/`preview`/`actual`); drives inline previews + detailed view           |
+| `artifactCategories` | `{ name; filter: { type: string[] } }[]` | Splits the artifact browser & workspace into sections                                                |
 
-> ⚠️ Only those five `ChatProviderProps` are actually forwarded (they're destructured explicitly in
+> ⚠️ Only those four `ChatProviderProps` are actually forwarded (they're destructured explicitly in
 > `AgentInterface.tsx`). Other `ChatProviderProps` are accepted by the _type_ but not passed through.
 
 **AgentInterface-specific:**

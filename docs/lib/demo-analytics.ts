@@ -24,6 +24,13 @@ export interface DemoAgentInteraction {
 
 export type DemoAgentInteractionProperties = DemoAgentInteraction;
 
+interface DemoInteractionMessage {
+  role?: unknown;
+  content?: unknown;
+}
+
+const OPENUI_CONTEXT_MARKER = "\n]]>openui:context\n";
+
 const DEMO_AGENT_INTERACTION_DEMO_SET = new Set<string>(DEMO_AGENT_INTERACTION_DEMOS);
 const DEMO_INTERACTION_SOURCE_SET = new Set<string>(DEMO_INTERACTION_SOURCES);
 const DEMO_VARIANTS: Record<DemoAgentInteractionDemo, ReadonlySet<string>> = {
@@ -38,6 +45,53 @@ const DEMO_MODELS: Record<DemoAgentInteractionDemo, ReadonlySet<string>> = {
   openui_chat: new Set(DEMO_MODEL_IDS.openui_chat),
   openui_vs_json: new Set(DEMO_MODEL_IDS.openui_vs_json),
 };
+
+/**
+ * Classifies the accepted user turn already present in a chat transport's
+ * message list. Message content is inspected only in memory and is never added
+ * to the analytics payload.
+ */
+export function getDemoInteractionSourceFromMessages(
+  messages: readonly DemoInteractionMessage[],
+  starterPrompts: readonly string[] = [],
+): DemoInteractionSource | null {
+  const userMessages = messages.filter((message) => message.role === "user");
+  const lastUserMessage = userMessages.at(-1);
+  if (!lastUserMessage) return null;
+
+  if (
+    typeof lastUserMessage.content === "string" &&
+    isRenderedActionMessage(lastUserMessage.content)
+  ) {
+    return "rendered_action";
+  }
+
+  if (
+    userMessages.length === 1 &&
+    typeof lastUserMessage.content === "string" &&
+    starterPrompts.includes(lastUserMessage.content)
+  ) {
+    return "starter";
+  }
+
+  return "composer";
+}
+
+function isRenderedActionMessage(content: string): boolean {
+  const markerIndex = content.lastIndexOf(OPENUI_CONTEXT_MARKER);
+  if (markerIndex === -1) return false;
+
+  try {
+    const context = JSON.parse(content.slice(markerIndex + OPENUI_CONTEXT_MARKER.length));
+    return (
+      Array.isArray(context) &&
+      typeof context[0] === "string" &&
+      context[0].startsWith("User clicked:")
+    );
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Builds the complete PostHog payload from an allowlist of low-cardinality

@@ -1,7 +1,12 @@
 "use client";
 
 import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
-import { openAIAdapter, openAIMessageFormat, type ChatLLM } from "@openuidev/react-ui";
+import {
+  openAIAdapter,
+  openAIMessageFormat,
+  type ChatLLM,
+  type Message,
+} from "@openuidev/react-ui";
 import { useMemo } from "react";
 
 type ComparisonResponseMode = "markdown" | "openui";
@@ -13,10 +18,17 @@ type ComparisonResponseMode = "markdown" | "openui";
 export function useComparisonChatLLM(
   responseMode: ComparisonResponseMode,
   onCreditsExhausted: () => void,
+  onSend?: (messages: readonly Message[]) => void,
 ): ChatLLM {
   return useMemo<ChatLLM>(
     () => ({
       send: async ({ messages, signal }) => {
+        try {
+          onSend?.(messages);
+        } catch {
+          // Analytics observers must never interfere with the chat request.
+        }
+
         const response = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -36,7 +48,7 @@ export function useComparisonChatLLM(
       },
       streamProtocol: openAIAdapter(),
     }),
-    [onCreditsExhausted, responseMode],
+    [onCreditsExhausted, onSend, responseMode],
   );
 }
 

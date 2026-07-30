@@ -20,12 +20,3 @@ export function captureComparisonPromptInteractions(
     });
   });
 }
-
-export function captureComparisonRenderedAction(mode: ComparisonMode): void {
-  captureDemoAgentInteraction({
-    demo: "compare",
-    variant: mode,
-    model: DEFAULT_MODEL,
-    interaction_source: "rendered_action",
-  });
-}

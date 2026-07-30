@@ -3,12 +3,11 @@ import { subscribeWithSelector } from "zustand/middleware";
 import { getResponseErrorMessage } from "../adapters/httpError";
 import type { ChatLLM, ChatStorage } from "../adapters/types";
 import { processStreamedMessage } from "../stream/processStreamedMessage";
-import type { ChatStore, Message, Thread, UserMessage, UserMessageAcceptedEvent } from "./types";
+import type { ChatStore, Message, Thread, UserMessage } from "./types";
 
 export interface CreateChatStoreConfig {
   storage: ChatStorage;
   llm: ChatLLM;
-  onUserMessageAccepted?: (event: UserMessageAcceptedEvent) => void;
 }
 
 const mergeThreadList = (existing: Thread[], incoming: Thread[]): Thread[] =>
@@ -141,7 +140,7 @@ export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig
 
       // ── Thread Actions ──
 
-      processMessage: async (message, options) => {
+      processMessage: async (message) => {
         const state = get();
         if (state.isRunning) return;
 
@@ -159,14 +158,6 @@ export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig
           executingToolCallIds: new Set<string>(),
         });
         set((s) => ({ messages: [...s.messages, optimisticMessage] }));
-
-        try {
-          configRef.current.onUserMessageAccepted?.({
-            source: options?.source ?? "programmatic",
-          });
-        } catch {
-          // Observers must not prevent an accepted message from being sent.
-        }
 
         abortController.signal.addEventListener("abort", () => {
           set({ _abortController: null, isRunning: false });

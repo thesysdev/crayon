@@ -307,29 +307,6 @@ describe("createChatStore", () => {
       expect(send).toHaveBeenCalledOnce();
     });
 
-    it("reports the supplied source without exposing message content", async () => {
-      const onUserMessageAccepted = vi.fn();
-      const store = makeStore({ onUserMessageAccepted });
-      store.setState({ selectedThreadId: "t1" });
-
-      await store
-        .getState()
-        .processMessage({ role: "user", content: "private prompt" }, { source: "composer" });
-
-      expect(onUserMessageAccepted).toHaveBeenCalledOnce();
-      expect(onUserMessageAccepted).toHaveBeenCalledWith({ source: "composer" });
-    });
-
-    it("defaults direct calls to the programmatic source", async () => {
-      const onUserMessageAccepted = vi.fn();
-      const store = makeStore({ onUserMessageAccepted });
-      store.setState({ selectedThreadId: "t1" });
-
-      await store.getState().processMessage({ role: "user", content: "hello" });
-
-      expect(onUserMessageAccepted).toHaveBeenCalledWith({ source: "programmatic" });
-    });
-
     it("creates thread when none selected", async () => {
       const newThread = makeThread("t-auto");
       const createThread = vi.fn().mockResolvedValue(newThread);
@@ -349,11 +326,9 @@ describe("createChatStore", () => {
 
     it("no-ops when already running", async () => {
       const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
-      const onUserMessageAccepted = vi.fn();
 
       const store = makeStore({
         send,
-        onUserMessageAccepted,
         streamProtocol: { parse: async function* () {} },
       });
       store.setState({ isRunning: true, selectedThreadId: "t1" });
@@ -361,24 +336,6 @@ describe("createChatStore", () => {
       await store.getState().processMessage({ role: "user", content: "hello" });
 
       expect(send).not.toHaveBeenCalled();
-      expect(onUserMessageAccepted).not.toHaveBeenCalled();
-    });
-
-    it("continues processing if the accepted-turn observer throws", async () => {
-      const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
-      const store = makeStore({
-        send,
-        onUserMessageAccepted: () => {
-          throw new Error("observer failed");
-        },
-      });
-      store.setState({ selectedThreadId: "t1" });
-
-      await expect(
-        store.getState().processMessage({ role: "user", content: "hello" }),
-      ).resolves.toBeUndefined();
-
-      expect(send).toHaveBeenCalledOnce();
     });
 
     it("sets threadError on failure", async () => {

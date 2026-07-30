@@ -111,13 +111,10 @@ export const ConversationStarter = ({
       onSelect(starter);
       return;
     }
-    processMessage(
-      {
-        role: "user",
-        content: starter.prompt,
-      },
-      { source: "starter" },
-    );
+    processMessage({
+      role: "user",
+      content: starter.prompt,
+    });
   };
 
   // Only show when there are no messages

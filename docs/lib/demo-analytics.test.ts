@@ -14,12 +14,60 @@ import {
   captureDemoAgentInteraction,
   DEMO_AGENT_INTERACTION_EVENT,
   getDemoAgentInteractionProperties,
+  getDemoInteractionSourceFromMessages,
   type DemoAgentInteraction,
 } from "./demo-analytics";
 
 afterEach(() => {
   capture.mockReset();
   vi.unstubAllGlobals();
+});
+
+describe("getDemoInteractionSourceFromMessages", () => {
+  const starter = "Build a revenue dashboard";
+
+  it("classifies a matching first user turn as a starter", () => {
+    expect(
+      getDemoInteractionSourceFromMessages([{ role: "user", content: starter }], [starter]),
+    ).toBe("starter");
+  });
+
+  it("classifies the same text later in a thread as composer input", () => {
+    expect(
+      getDemoInteractionSourceFromMessages(
+        [
+          { role: "user", content: "First turn" },
+          { role: "assistant", content: "Response" },
+          { role: "user", content: starter },
+        ],
+        [starter],
+      ),
+    ).toBe("composer");
+  });
+
+  it("classifies the strict OpenUI action context as a rendered action", () => {
+    expect(
+      getDemoInteractionSourceFromMessages([
+        {
+          role: "user",
+          content:
+            ']]>openui:content\nContinue\n]]>openui:context\n["User clicked: Continue",{"choice":"a"}]',
+        },
+      ]),
+    ).toBe("rendered_action");
+  });
+
+  it("does not mistake arbitrary context or malformed content for an action", () => {
+    expect(
+      getDemoInteractionSourceFromMessages([
+        {
+          role: "user",
+          content: 'Prompt\n]]>openui:context\n["Not an action"]',
+        },
+      ]),
+    ).toBe("composer");
+    expect(getDemoInteractionSourceFromMessages([])).toBeNull();
+  });
 });
 
 describe("getDemoAgentInteractionProperties", () => {

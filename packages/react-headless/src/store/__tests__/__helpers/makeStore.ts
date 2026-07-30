@@ -1,11 +1,10 @@
 import { vi } from "vitest";
 import type { ChatLLM, ChatStorage, ThreadStorage } from "../../../adapters/types";
-import { createChatStore, type CreateChatStoreConfig } from "../../createChatStore";
+import { createChatStore } from "../../createChatStore";
 
 export interface MakeStoreOverrides extends Partial<ThreadStorage> {
   send?: ChatLLM["send"];
   streamProtocol?: ChatLLM["streamProtocol"];
-  onUserMessageAccepted?: CreateChatStoreConfig["onUserMessageAccepted"];
 }
 
 /**
@@ -14,7 +13,7 @@ export interface MakeStoreOverrides extends Partial<ThreadStorage> {
  * overridden gets a vi.fn() mock with a sensible default return.
  */
 export function makeStore(overrides: MakeStoreOverrides = {}) {
-  const { send, streamProtocol, onUserMessageAccepted, ...threadOverrides } = overrides;
+  const { send, streamProtocol, ...threadOverrides } = overrides;
 
   const storage: ChatStorage = {
     thread: {
@@ -36,5 +35,5 @@ export function makeStore(overrides: MakeStoreOverrides = {}) {
     streamProtocol: streamProtocol ?? { parse: async function* () {} },
   };
 
-  return createChatStore({ current: { storage, llm, onUserMessageAccepted } });
+  return createChatStore({ current: { storage, llm } });
 }

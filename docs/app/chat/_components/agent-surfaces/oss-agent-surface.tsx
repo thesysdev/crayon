@@ -1,6 +1,9 @@
 "use client";
 
-import { captureDemoAgentInteraction } from "@/lib/demo-analytics";
+import {
+  captureDemoAgentInteraction,
+  getDemoInteractionSourceFromMessages,
+} from "@/lib/demo-analytics";
 import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import {
@@ -38,11 +41,25 @@ const OSS_STARTERS = [
       "Show me a carousel of 3 popular travel destinations with images, descriptions, and best time to visit.",
   },
 ];
+const OSS_STARTER_PROMPTS = OSS_STARTERS.map((starter) => starter.prompt);
 
 export function OssAgentSurface({ onCreditsExhausted }: OssAgentSurfaceProps) {
   const llm = useMemo<ChatLLM>(
     () => ({
       send: async ({ messages, signal }) => {
+        const interactionSource = getDemoInteractionSourceFromMessages(
+          messages,
+          OSS_STARTER_PROMPTS,
+        );
+        if (interactionSource) {
+          captureDemoAgentInteraction({
+            demo: "openui_chat",
+            variant: "oss",
+            model: DEFAULT_MODEL,
+            interaction_source: interactionSource,
+          });
+        }
+
         const response = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -82,15 +99,6 @@ export function OssAgentSurface({ onCreditsExhausted }: OssAgentSurfaceProps) {
         agentName="OpenUI OSS"
         starterVariant="short"
         starters={OSS_STARTERS}
-        onUserMessageAccepted={({ source }) => {
-          if (source === "programmatic") return;
-          captureDemoAgentInteraction({
-            demo: "openui_chat",
-            variant: "oss",
-            model: DEFAULT_MODEL,
-            interaction_source: source,
-          });
-        }}
       >
         <AgentInterface.Welcome
           title="Build with OpenUI OSS"

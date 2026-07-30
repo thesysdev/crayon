@@ -73,14 +73,11 @@ export type {
   ChatProviderProps,
   ChatStore,
   CreateMessage,
-  ProcessMessageOptions,
   Thread,
   ThreadActions,
   ThreadListActions,
   ThreadListState,
   ThreadState,
-  UserMessageAcceptedEvent,
-  UserMessageSource,
 } from "./store/types";
 
 export type {

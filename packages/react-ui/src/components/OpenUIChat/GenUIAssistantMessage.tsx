@@ -108,13 +108,10 @@ export const GenUIAssistantMessage = ({
         const contextPart = wrapContext(JSON.stringify(messageCtx));
         const llmMessage = `${contentPart}${contextPart}`;
 
-        processMessage(
-          {
-            role: "user",
-            content: llmMessage,
-          },
-          { source: "rendered_action" },
-        );
+        processMessage({
+          role: "user",
+          content: llmMessage,
+        });
       } else if (event.type === BuiltinActionType.OpenUrl) {
         const url = event.params?.["url"] as string | undefined;
         if (typeof window !== "undefined" && url) {
