@@ -240,6 +240,7 @@ function FormView({ props, renderNode }: ViewProps) {
   return (
     <FormNameProvider value={name}>
       <Box flexDirection="column" borderStyle="round" borderColor="blue" paddingX={1} marginTop={1}>
+        <Text dimColor>Tab between fields · type to fill · ↑↓ to choose · Enter on a button to submit</Text>
         {fields.map((f, i) => (
           <Box key={i}>{renderNode(f)}</Box>
         ))}
@@ -329,31 +330,49 @@ function SelectInteractive({ props }: { props: Record<string, unknown> }) {
     label: str((it as ElementLike)?.props?.label ?? (it as ElementLike)?.props?.value),
   }));
   const current = str(getFieldValue(formName, name));
-  const [cursor, setCursor] = useState(0);
+  const initialIndex = Math.max(
+    0,
+    options.findIndex((o) => o.value === current),
+  );
+  const [cursor, setCursor] = useState(initialIndex);
+  // Bumped on every choice so the row re-renders immediately, even when the
+  // cursor index is unchanged (e.g. pressing Enter) where a store-only update
+  // may not repaint on the next frame.
+  const [, bump] = useState(0);
+
+  // Arrow keys select immediately (radio-group behaviour) for instant feedback;
+  // Enter also confirms the current row.
+  const choose = (index: number) => {
+    const clamped = Math.max(0, Math.min(options.length - 1, index));
+    const option = options[clamped];
+    setCursor(clamped);
+    bump((n) => n + 1);
+    if (option) setFieldValue(formName, "Select", name, option.value);
+  };
+
   useInput(
     (_input, key) => {
-      if (key.upArrow) setCursor((c) => Math.max(0, c - 1));
-      else if (key.downArrow) setCursor((c) => Math.min(options.length - 1, c + 1));
-      else if (key.return) {
-        const o = options[cursor];
-        if (o) setFieldValue(formName, "Select", name, o.value);
-      }
+      if (key.upArrow) choose(cursor - 1);
+      else if (key.downArrow) choose(cursor + 1);
+      else if (key.return) choose(cursor);
     },
     { isActive: isFocused },
   );
+
   return (
     <Box flexDirection="column">
       {options.map((o, i) => {
         const isSel = o.value === current;
         const isCursor = isFocused && i === cursor;
         return (
-          <Text key={o.value || i} color={isCursor ? "cyan" : undefined}>
+          <Text key={o.value || i} color={isCursor ? "cyan" : isSel ? "green" : undefined}>
             {isCursor ? "❯ " : "  "}
             {isSel ? "(•) " : "( ) "}
             {o.label}
           </Text>
         );
       })}
+      {isFocused ? <Text dimColor> ↑↓ to choose</Text> : null}
     </Box>
   );
 }

@@ -113,6 +113,70 @@ describe("TUI interactivity", () => {
     expect(sent).toContain("Show this as a table");
   });
 
+  it("shows a Select choice immediately after Enter (no extra keypress needed)", async () => {
+    const src = [
+      "root = Card([form])",
+      'form = Form("f", btns, [topicField])',
+      'topicField = FormControl("Topic", topic)',
+      'topic = Select("topic", [o1, o2])',
+      'o1 = SelectItem("sales", "Sales")',
+      'o2 = SelectItem("support", "Support")',
+      "btns = Buttons([submit])",
+      'submit = Button("Send", Action([@ToAssistant("go")]))',
+    ].join("\n");
+
+    const { stdin, lastFrame } = render(createElement(Harness, { src, onSend: () => {} }));
+    await delay(40);
+    stdin.write("\t"); // focus the Select (first focusable)
+    await delay(30);
+    stdin.write("\u001B[B"); // Down arrow → move cursor to Support
+    await delay(30);
+    stdin.write("\r"); // Enter → select Support
+    await delay(40);
+
+    const frame = lastFrame() ?? "";
+    expect(frame).toContain("(•) Support");
+    expect(frame).not.toContain("(•) Sales");
+  });
+
+  it("selects a Select option immediately on arrow (no Enter needed)", async () => {
+    const src = [
+      "root = Card([form])",
+      'form = Form("f", btns, [topicField])',
+      'topicField = FormControl("Topic", topic)',
+      'topic = Select("topic", [o1, o2])',
+      'o1 = SelectItem("sales", "Sales")',
+      'o2 = SelectItem("support", "Support")',
+      "btns = Buttons([submit])",
+      'submit = Button("Send")',
+    ].join("\n");
+    const { stdin, lastFrame } = render(createElement(Harness, { src, onSend: () => {} }));
+    await delay(40);
+    stdin.write("\t"); // focus the Select
+    await delay(30);
+    stdin.write("\u001B[B"); // Down arrow only — should select immediately
+    await delay(40);
+    expect(lastFrame() ?? "").toContain("(•) Support");
+  });
+
+  it("shows typed Input text immediately", async () => {
+    const src = [
+      "root = Card([form])",
+      'form = Form("f", btns, [nameField])',
+      'nameField = FormControl("Name", nameInput)',
+      'nameInput = Input("name", "Your name")',
+      "btns = Buttons([submit])",
+      'submit = Button("Send")',
+    ].join("\n");
+    const { stdin, lastFrame } = render(createElement(Harness, { src, onSend: () => {} }));
+    await delay(40);
+    stdin.write("\t");
+    await delay(30);
+    stdin.write("Hi");
+    await delay(40);
+    expect(lastFrame() ?? "").toContain("Hi");
+  });
+
   it("collects form field values and submits them via the button's action", async () => {
     const sent: string[] = [];
     const src = [

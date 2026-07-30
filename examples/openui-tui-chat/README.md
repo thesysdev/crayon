@@ -39,8 +39,8 @@ or _"Build a contact form with name, email and a topic dropdown"_.
 
 - Type + **Enter** — send a message.
 - **Tab / Shift+Tab** — move focus between the composer and interactive UI (follow-ups, buttons, form fields).
-- **Enter** — activate the focused follow-up/button, or (in a Select) choose the highlighted option.
-- **↑ / ↓** — move within a focused Select.
+- **Enter** — activate the focused follow-up/button (also confirms the highlighted Select option).
+- **↑ / ↓** — choose an option in a focused Select; the highlighted option is selected immediately.
 - **Ctrl+C** — quit.
 
 ## Supported components (v1)
