@@ -11,6 +11,7 @@ import type { ActionEvent, Library } from "@openuidev/react-lang";
 import { BuiltinActionType, Renderer } from "@openuidev/react-lang";
 import { useCallback, useMemo } from "react";
 import {
+  narrationPrefix,
   separateContentAndContext,
   wrapContent,
   wrapContentWithHeader,
@@ -77,15 +78,39 @@ export const GenUIAssistantMessage = ({
   const answerSegment = !interleaved ? message : lastIsPureText || !turnLive ? lastSegment : null;
   const isAnswerSegment = answerSegment?.id === message.id;
 
-  // Separate openui-lang code from persisted form state
+  // Separate openui-lang code from persisted form state. `narrationSections`
+  // are the thinking sections BEFORE the last one; `content` is the last
+  // section — the response, or the newest thinking while it streams.
   const {
     content: openuiCode,
     contextString,
     contentHeader,
+    narrationSections,
   } = useMemo(() => {
-    if (!message.content) return { content: null, contextString: null, contentHeader: undefined };
+    if (!message.content) {
+      return {
+        content: null,
+        contextString: null,
+        contentHeader: undefined,
+        narrationSections: undefined,
+      };
+    }
     return separateContentAndContext(message.content);
   }, [message.content]);
+
+  // Has the RESPONSE section started (single-segment live runs)? Thinking
+  // prose never carries the openui-lang fence; the response always does. A
+  // reply without tool calls IS the response from its first byte, and a
+  // settled run always surfaces whatever it has (no text is ever lost).
+  const singleResponseStarted =
+    !!openuiCode &&
+    ((message.toolCalls?.length ?? 0) === 0 ||
+      openuiCode.includes("```openui-lang") ||
+      !isRunning);
+
+  // While the response hasn't started, the LAST section is thinking too —
+  // it belongs in the timeline, not the Lang renderer.
+  const pendingThinking = !interleaved && !singleResponseStarted && openuiCode ? openuiCode : null;
 
   const initialState = useMemo(() => {
     if (!contextString) return undefined;
@@ -117,6 +142,26 @@ export const GenUIAssistantMessage = ({
     const ownIds = new Set((message.toolCalls ?? []).map((t) => t.id));
     return turnActivities.filter((a) => ownIds.has(a.toolCall.id));
   }, [interleaved, turnActivities, message.toolCalls]);
+
+  // Single-segment (live) timeline rows: thinking sections as text steps
+  // before the tool rows. `undefined` keeps the tray's plain activities-only
+  // rendering when there is no thinking to show.
+  const ownSteps = useMemo<TimelineStep[] | undefined>(() => {
+    if (interleaved) return undefined;
+    const texts = [...(narrationSections ?? [])];
+    if (pendingThinking) texts.push(pendingThinking);
+    if (texts.length === 0) return undefined;
+    return [
+      ...texts.map((text, i) => ({
+        type: "text" as const,
+        // Index-based ids stay stable when the pending section is later
+        // promoted into narrationSections (same position → same key).
+        id: `${message.id}::thinking-${i}`,
+        text,
+      })),
+      ...activities.map((activity) => ({ type: "activity" as const, activity })),
+    ];
+  }, [interleaved, narrationSections, pendingThinking, activities, message.id]);
 
   // Display rows for the merged timeline, in run order: each thinking segment
   // contributes its prose (sentinel-stripped) followed by its tool rows. The
@@ -156,7 +201,10 @@ export const GenUIAssistantMessage = ({
     (state: Record<string, any>) => {
       const code = openuiCode ?? "";
       const hasState = Object.keys(state).length > 0;
-      const contentPart = wrapContentWithHeader(code, contentHeader);
+      // Rebuild only the LAST section; the thinking sections before it are
+      // displayed now, so they must round-trip verbatim.
+      const contentPart =
+        narrationPrefix(message.content ?? "") + wrapContentWithHeader(code, contentHeader);
       const fullMessage = hasState
         ? contentPart + wrapContext(JSON.stringify([state]))
         : contentPart;
@@ -212,12 +260,15 @@ export const GenUIAssistantMessage = ({
   return (
     <AssistantMessageContainer>
       {rendersOwnTimeline && (
-        // Raw request/response for ALL tool calls, collapsed by default.
+        // Raw request/response for ALL tool calls, collapsed by default, with
+        // thinking prose as text steps. Held open until the RESPONSE section
+        // starts — thinking bytes alone must not collapse it.
         <ToolCallTimeline
           activities={activities}
+          steps={ownSteps}
           isLast={isStreaming}
           forceDefault
-          awaitingResponse={isStreaming && !message.content}
+          awaitingResponse={isStreaming && !singleResponseStarted}
         />
       )}
       {rendersTurnTimeline && (
@@ -243,9 +294,9 @@ export const GenUIAssistantMessage = ({
           fallbackToDefault={false}
         />
       ))}
-      {isAnswerSegment && (
-        // Thinking segments' prose lives in the timeline; only the answer
-        // segment feeds the Lang renderer — no extra bubble per segment.
+      {(interleaved ? isAnswerSegment : singleResponseStarted) && (
+        // Thinking prose lives in the timeline; the Lang renderer only gets
+        // the actual response — no extra bubble per thinking section.
         <Renderer
           response={openuiCode}
           library={library}

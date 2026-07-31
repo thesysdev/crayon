@@ -13,6 +13,14 @@ export interface ParsedMessageContent {
   contextString: string | null;
   contentHeader?: string;
   /**
+   * Bodies of content sections BEFORE the last one — the model's thinking
+   * prose emitted alongside tool calls. `content` is always the LAST section
+   * (the response, or the newest thinking while it streams). Display-only
+   * view; the raw bytes in the store stay untouched. Absent when the message
+   * has a single section.
+   */
+  narrationSections?: string[];
+  /**
    * True when the bare `]]>openui:end` liveness marker was present — the
    * stream reached its terminal chunk. Absent on a PERSISTED message ⇒ the
    * stream died mid-write. HOW a response ended is structural (output item
@@ -45,11 +53,46 @@ export function separateContentAndContext(raw: string): ParsedMessageContent {
   return { ...sections, content, ...(end ? { end: true } : {}) };
 }
 
+/**
+ * Raw bytes of every content section before the LAST marker — the thinking
+ * prefix. Used to round-trip a message's earlier sections verbatim when the
+ * last section is rewritten (form-state persistence); empty string when the
+ * message has fewer than two sections.
+ */
+export function narrationPrefix(raw: string): string {
+  const first = raw.indexOf(CONTENT_MARKER);
+  if (first === -1) return "";
+  const last = raw.lastIndexOf(CONTENT_MARKER);
+  return last > first ? raw.slice(0, last) : "";
+}
+
+// Bodies of the content sections before the last marker, in order, blanks
+// dropped. Sentinel headers are stripped; a trailing context/end marker can't
+// appear between content sections, so each body runs to the next marker.
+function narrationSections(raw: string): string[] {
+  const starts: number[] = [];
+  for (
+    let i = raw.indexOf(CONTENT_MARKER);
+    i !== -1;
+    i = raw.indexOf(CONTENT_MARKER, i + CONTENT_MARKER.length)
+  ) {
+    starts.push(i);
+  }
+  if (starts.length < 2) return [];
+  const sections: string[] = [];
+  for (let k = 0; k + 1 < starts.length; k++) {
+    const body = stripSectionSeparator(raw.slice(bodyStartIndex(raw, starts[k]!), starts[k + 1]));
+    if (body.trim().length > 0) sections.push(body);
+  }
+  return sections;
+}
+
 // The ordered section walk over the inline-sentinel format.
 function splitSections(raw: string): {
   content: string;
   contextString: string | null;
   contentHeader?: string;
+  narrationSections?: string[];
 } {
   const lastContentIdx = raw.lastIndexOf(CONTENT_MARKER);
   const lastContextIdx = raw.lastIndexOf(CONTEXT_MARKER);
@@ -68,12 +111,16 @@ function splitSections(raw: string): {
     };
   }
 
+  const narration = narrationSections(raw);
+  const narrationField = narration.length > 0 ? { narrationSections: narration } : {};
+
   // Content-only response
   if (lastContextIdx === -1 || lastContentIdx > lastContextIdx) {
     return {
       content: raw.slice(bodyStartIndex(raw, lastContentIdx)),
       contextString: null,
       contentHeader: contentHeader(raw, lastContentIdx),
+      ...narrationField,
     };
   }
 
@@ -82,6 +129,7 @@ function splitSections(raw: string): {
     content: stripSectionSeparator(raw.slice(bodyStartIndex(raw, lastContentIdx), lastContextIdx)),
     contextString: raw.slice(bodyStartIndex(raw, lastContextIdx)),
     contentHeader: contentHeader(raw, lastContentIdx),
+    ...narrationField,
   };
 }
 
