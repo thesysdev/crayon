@@ -1,7 +1,7 @@
 import { useThread, type ToolActivity } from "@openuidev/react-headless";
 import clsx from "clsx";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MarkDownRenderer } from "../MarkDownRenderer";
 import { TimelineEntry } from "../_shared/tool-renderer/TimelineEntry";
 import type { ToolDetailedViewPanel } from "../_shared/tool-renderer/ToolActivityRenderer";
@@ -127,12 +127,41 @@ export function ToolCallTimeline({
       setRevealedCount(1);
       setExpanded(false);
       setUserCollapsed(false);
+      followRef.current = true;
     } else if (prevThinking.current && !thinking) {
       setExpanded(false);
       setRevealedCount(displaySteps.length);
     }
     prevThinking.current = thinking;
   }, [thinking, displaySteps.length]);
+
+  // The items list is height-capped (see toolCall.scss) and scrolls
+  // internally. While the run is live, SMOOTHLY follow the newest row as
+  // content streams in — unless the user scrolled up to read an earlier one.
+  const itemsRef = useRef<HTMLDivElement>(null);
+  const followRef = useRef(true);
+  const distanceFromBottom = (el: HTMLElement) => el.scrollHeight - el.scrollTop - el.clientHeight;
+  const handleItemsScroll = useCallback(() => {
+    const el = itemsRef.current;
+    if (el && distanceFromBottom(el) < 24) followRef.current = true;
+  }, []);
+  const handleItemsWheel = useCallback((e: React.WheelEvent) => {
+    if (e.deltaY < 0) followRef.current = false;
+  }, []);
+  const handleItemsTouchMove = useCallback(() => {
+    const el = itemsRef.current;
+    if (el && distanceFromBottom(el) >= 24) followRef.current = false;
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!thinking || !followRef.current) return;
+    const el = itemsRef.current;
+    if (!el || distanceFromBottom(el) < 1) return;
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    el.scrollTo({ top: el.scrollHeight, behavior: reduceMotion ? "auto" : "smooth" });
+  });
 
   // Advance the reveal once the current step is ready — an activity whose args
   // have closed (left "streaming"); text steps are always ready. Only the live
@@ -214,7 +243,13 @@ export function ToolCallTimeline({
           inert={!showCompact}
         >
           <div className="openui-behind-the-scenes__compact-inner">
-            <div className="openui-behind-the-scenes__items">
+            <div
+              className="openui-behind-the-scenes__items"
+              ref={itemsRef}
+              onScroll={handleItemsScroll}
+              onWheel={handleItemsWheel}
+              onTouchMove={handleItemsTouchMove}
+            >
               {/* key changes per reveal → remounts → re-triggers the CSS fade-in */}
               <div
                 key={revealedCount}
@@ -234,7 +269,13 @@ export function ToolCallTimeline({
       )}
 
       {expanded && (
-        <div className="openui-behind-the-scenes__items">
+        <div
+          className="openui-behind-the-scenes__items"
+          ref={itemsRef}
+          onScroll={handleItemsScroll}
+          onWheel={handleItemsWheel}
+          onTouchMove={handleItemsTouchMove}
+        >
           {displaySteps.map((step, idx) => (
             <div key={stepKey(step)} style={{ width: "100%" }}>
               <TimelineStepRow

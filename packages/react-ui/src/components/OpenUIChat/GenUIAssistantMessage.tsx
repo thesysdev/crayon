@@ -9,7 +9,7 @@ import {
 } from "@openuidev/react-headless";
 import type { ActionEvent, Library } from "@openuidev/react-lang";
 import { BuiltinActionType, Renderer } from "@openuidev/react-lang";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import {
   narrationPrefix,
   separateContentAndContext,
@@ -144,21 +144,56 @@ export const GenUIAssistantMessage = ({
   // Single-segment (live) timeline rows: thinking sections as text steps
   // before the tool rows. `undefined` keeps the tray's plain activities-only
   // rendering when there is no thinking to show.
+
+  // ── Arrival-order ledger ──
+  // The flat message records no interleave between its content sections and
+  // its tool calls — but this component re-renders on every stream delta, so
+  // it can OBSERVE the order things arrive in: a second thought that starts
+  // after the first tool call renders beneath it, matching the wire.
+  const arrival = useRef<{
+    messageId: string;
+    textCount: number;
+    toolIds: Set<string>;
+    order: ({ kind: "text"; index: number } | { kind: "tool"; id: string })[];
+  }>({ messageId: message.id, textCount: 0, toolIds: new Set(), order: [] });
+  if (arrival.current.messageId !== message.id) {
+    arrival.current = { messageId: message.id, textCount: 0, toolIds: new Set(), order: [] };
+  }
+  {
+    const ledger = arrival.current;
+    // New text section(s) first: within one batched render, narration
+    // precedes the tool calls it narrates (protocol order).
+    const textCountNow = (narrationSections?.length ?? 0) + (pendingThinking ? 1 : 0);
+    while (ledger.textCount < textCountNow) {
+      ledger.order.push({ kind: "text", index: ledger.textCount++ });
+    }
+    for (const toolCall of message.toolCalls ?? []) {
+      if (!ledger.toolIds.has(toolCall.id)) {
+        ledger.toolIds.add(toolCall.id);
+        ledger.order.push({ kind: "tool", id: toolCall.id });
+      }
+    }
+  }
+
   const ownSteps = useMemo<TimelineStep[] | undefined>(() => {
     if (interleaved) return undefined;
     const texts = [...(narrationSections ?? [])];
     if (pendingThinking) texts.push(pendingThinking);
     if (texts.length === 0) return undefined;
-    return [
-      ...texts.map((text, i) => ({
-        type: "text" as const,
+    const byCallId = new Map(activities.map((a) => [a.toolCall.id, a]));
+    const rows: TimelineStep[] = [];
+    for (const entry of arrival.current.order) {
+      if (entry.kind === "text") {
+        const text = texts[entry.index];
         // Index-based ids stay stable when the pending section is later
         // promoted into narrationSections (same position → same key).
-        id: `${message.id}::thinking-${i}`,
-        text,
-      })),
-      ...activities.map((activity) => ({ type: "activity" as const, activity })),
-    ];
+        if (text) rows.push({ type: "text", id: `${message.id}::thinking-${entry.index}`, text });
+      } else {
+        const activity = byCallId.get(entry.id);
+        if (activity) rows.push({ type: "activity", activity });
+      }
+    }
+    return rows;
   }, [interleaved, narrationSections, pendingThinking, activities, message.id]);
 
   // Display rows for the merged timeline, in run order: each thinking segment
@@ -280,7 +315,7 @@ export const GenUIAssistantMessage = ({
           forceDefault
         />
       )}
-      {matchedActivities.map((activity) => (
+      {matchedActivities.map((activity: ToolActivity) => (
         // Matched renderers (artifact previews, web search) — always visible,
         // for thinking segments too. No raw fallback here: the forceDefault
         // timeline above already shows the raw card, so a null-parser renderer
