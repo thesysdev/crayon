@@ -45,14 +45,14 @@ export function withChatProvider<ExtraProps = {}>(WrappedComponent: React.Compon
       if (customAssistantMessage || !componentLibrary) return undefined;
       return ({
         message,
-        turnMessages,
+        messageGroup,
       }: {
         message: AssistantMessage;
-        turnMessages?: Message[];
+        messageGroup?: Message[];
       }) => (
         <GenUIAssistantMessage
           message={message}
-          turnMessages={turnMessages}
+          messageGroup={messageGroup}
           library={componentLibrary}
         />
       );

@@ -24,7 +24,7 @@ import { AssistantMessageContainer } from "./AssistantMessageContainer";
 export const GenUIAssistantMessage = ({
   message,
   library,
-  turnMessages,
+  messageGroup,
 }: {
   message: AssistantMessage;
   library: Library;
@@ -34,7 +34,7 @@ export const GenUIAssistantMessage = ({
    * dumbly from it — no thread-structure derivation of its own. Absent →
    * plain single-message rendering.
    */
-  turnMessages?: Message[];
+  messageGroup?: Message[];
 }) => {
   const messages = useThread((s) => s.messages);
   const isRunning = useThread((s) => s.isRunning);
@@ -53,16 +53,16 @@ export const GenUIAssistantMessage = ({
   // ── Turn roles ─────────────────────────────────────────────────────────────
   // A stored interleaved run loads as SEVERAL assistant messages (thinking +
   // its tool calls each, then the answer). The thread pre-computes the turn
-  // and hands it down as `turnMessages`; the LAST segment hosts everything —
+  // and hands it down as `messageGroup`; the LAST segment hosts everything —
   // the single ToolCallTimeline for the whole turn (thinking prose between
   // the tool rows) AND, once the turn closes with pure text, the Lang
   // renderer — so tray and answer share one message container. Earlier
   // segments render nothing (the thread filters them out). Single-segment
-  // turns (or no `turnMessages`) keep today's per-message behavior exactly.
+  // turns (or no `messageGroup`) keep today's per-message behavior exactly.
   const turnSegments = useMemo(() => {
-    const turn = turnMessages?.length ? turnMessages : [message];
+    const turn = messageGroup?.length ? messageGroup : [message];
     return turn.filter((m): m is AssistantMessage => m.role === "assistant");
-  }, [turnMessages, message]);
+  }, [messageGroup, message]);
 
   const interleaved = turnSegments.length >= 2;
   const firstSegment = turnSegments[0] ?? message;
@@ -104,9 +104,7 @@ export const GenUIAssistantMessage = ({
   // settled run always surfaces whatever it has (no text is ever lost).
   const singleResponseStarted =
     !!openuiCode &&
-    ((message.toolCalls?.length ?? 0) === 0 ||
-      openuiCode.includes("```openui-lang") ||
-      !isRunning);
+    ((message.toolCalls?.length ?? 0) === 0 || openuiCode.includes("```openui-lang") || !isRunning);
 
   // While the response hasn't started, the LAST section is thinking too —
   // it belongs in the timeline, not the Lang renderer.

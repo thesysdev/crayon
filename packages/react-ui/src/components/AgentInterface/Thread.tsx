@@ -256,7 +256,7 @@ export const RenderMessage = memo(
     userMessage: CustomUserMessage,
     isStreaming,
     isLast,
-    turnMessages,
+    messageGroup,
   }: {
     message: Message;
     className?: string;
@@ -268,7 +268,7 @@ export const RenderMessage = memo(
     isLast: boolean;
     /** The turn (contiguous assistant/tool block) this message belongs to,
      *  pre-computed by Messages. Forwarded to the custom assistant component. */
-    turnMessages?: Message[];
+    messageGroup?: Message[];
   }) => {
     if (message.role === "tool") {
       // Tool messages are rendered inline with their parent assistant message
@@ -281,7 +281,7 @@ export const RenderMessage = memo(
           <CustomAssistantMessage
             message={message}
             isStreaming={isStreaming}
-            turnMessages={turnMessages}
+            messageGroup={messageGroup}
           />
         );
       }
@@ -417,7 +417,7 @@ export const Messages = ({
               userMessage={userMessage}
               isStreaming={isRunning && i === lastAssistantIndex}
               isLast={i === lastAssistantIndex}
-              turnMessages={turnByMessageId.get(message.id)}
+              messageGroup={turnByMessageId.get(message.id)}
             />
           </MessageProvider>
         );

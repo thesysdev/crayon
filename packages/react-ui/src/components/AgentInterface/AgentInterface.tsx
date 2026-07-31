@@ -215,19 +215,19 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
   const resolvedAssistantMessage = useMemo<AssistantMessageComponent | undefined>(() => {
     if (components?.AssistantMessage) return components.AssistantMessage;
     if (componentLibrary) {
-      // Forward turnMessages — dropping it here silently degrades interleaved
+      // Forward messageGroup — dropping it here silently degrades interleaved
       // turns into one tray per segment (every instance falls back to a
       // "turn of one").
       const Cmp = ({
         message,
-        turnMessages,
+        messageGroup,
       }: {
         message: AssistantMessage;
-        turnMessages?: Message[];
+        messageGroup?: Message[];
       }) => (
         <GenUIAssistantMessage
           message={message}
-          turnMessages={turnMessages}
+          messageGroup={messageGroup}
           library={componentLibrary}
         />
       );

@@ -22,7 +22,7 @@ export type AssistantMessageComponent = React.ComponentType<{
    * one merged tool timeline) without deriving thread structure itself.
    * Hosts that don't pass it get plain per-message rendering.
    */
-  turnMessages?: Message[];
+  messageGroup?: Message[];
 }>;
 
 /**
