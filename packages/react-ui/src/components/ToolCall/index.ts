@@ -7,4 +7,4 @@ export { DefaultToolCard } from "./DefaultToolCard";
 export { SourceIcon } from "./SourceIcon";
 export { TimelineToolCard } from "./TimelineToolCard";
 export { ToolCall, defaultLabel, prettyResult, useToolCall } from "./ToolCallPrimitives";
-export { ToolCallTimeline } from "./ToolCallTimeline";
+export { ToolCallTimeline, type TimelineStep } from "./ToolCallTimeline";

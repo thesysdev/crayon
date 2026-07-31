@@ -7,6 +7,7 @@ import {
   type Artifact,
   type AssistantMessage,
   type ChatProviderProps,
+  type Message,
   type UserMessage,
 } from "@openuidev/react-headless";
 import type { Library } from "@openuidev/react-lang";
@@ -214,8 +215,21 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
   const resolvedAssistantMessage = useMemo<AssistantMessageComponent | undefined>(() => {
     if (components?.AssistantMessage) return components.AssistantMessage;
     if (componentLibrary) {
-      const Cmp = ({ message }: { message: AssistantMessage }) => (
-        <GenUIAssistantMessage message={message} library={componentLibrary} />
+      // Forward turnMessages — dropping it here silently degrades interleaved
+      // turns into one tray per segment (every instance falls back to a
+      // "turn of one").
+      const Cmp = ({
+        message,
+        turnMessages,
+      }: {
+        message: AssistantMessage;
+        turnMessages?: Message[];
+      }) => (
+        <GenUIAssistantMessage
+          message={message}
+          turnMessages={turnMessages}
+          library={componentLibrary}
+        />
       );
       return Cmp;
     }

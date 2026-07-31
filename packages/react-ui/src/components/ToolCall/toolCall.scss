@@ -8,6 +8,9 @@
   align-items: flex-start;
   gap: cssUtils.$space-m;
   width: 100%;
+  // Breathing room between the tray and whatever follows it (the answer card
+  // when hosted inside the same message container).
+  margin-block-end: cssUtils.$space-m;
 
   &__toggle {
     @include cssUtils.button-reset;
@@ -47,6 +50,12 @@
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
+    // Long runs must not push the conversation far down the page: past this
+    // height the timeline scrolls internally. Overridable per app via the
+    // custom property.
+    max-height: var(--openui-tool-timeline-max-height, 20rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   // Graceful auto-close of the compact "Working…" tray
@@ -475,6 +484,58 @@
   }
   100% {
     background-position: 0% center;
+  }
+}
+
+// ── Timeline thinking steps ──
+// Prose the model emitted alongside its tool calls, rendered as a timeline
+// step so it reads as part of the run instead of a loose paragraph. Geometry
+// mirrors .openui-tool-call's title row: same start padding, 14px glyph, same
+// gap — the text column lines up with tool names.
+.openui-tool-call-timeline {
+  &__text-step {
+    display: flex;
+    align-items: flex-start;
+    gap: cssUtils.$space-m;
+    padding-inline-start: cssUtils.$space-l;
+    // Breathing room against the neighboring timeline entries.
+    margin-block: cssUtils.$space-s;
+    width: 100%;
+  }
+
+  // Doubled-up selector so these rules WIN over `.openui-markdown-renderer`'s
+  // own class and tag rules (body/default typography, primary color on
+  // p/strong/…) regardless of which stylesheet lands later in the build.
+  &__text-step &__text-step-body {
+    @include cssUtils.typography(body, small);
+    color: cssUtils.$text-neutral-secondary;
+    min-width: 0;
+    flex: 1;
+
+    // Neutralize the markdown wrapper's own tag sizing/coloring so every
+    // piece of thinking prose shares this step's small muted look. `strong`
+    // keeps its heavy weight — only its size/color are pinned; default
+    // margins would break the single-line alignment with the icon.
+    p,
+    li {
+      margin: 0;
+      font: inherit;
+      color: inherit;
+    }
+
+    strong,
+    em {
+      font-size: inherit;
+      line-height: inherit;
+      color: inherit;
+    }
+
+    :is(h1, h2, h3, h4, h5, h6) {
+      margin: 0;
+      font-size: inherit;
+      line-height: inherit;
+      color: inherit;
+    }
   }
 }
 

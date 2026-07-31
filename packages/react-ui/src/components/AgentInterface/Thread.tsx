@@ -7,7 +7,7 @@ import {
   useToolActivities,
 } from "@openuidev/react-headless";
 import clsx from "clsx";
-import React, { memo, useId, useRef } from "react";
+import React, { memo, useEffect, useId, useMemo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import {
@@ -256,6 +256,7 @@ export const RenderMessage = memo(
     userMessage: CustomUserMessage,
     isStreaming,
     isLast,
+    turnMessages,
   }: {
     message: Message;
     className?: string;
@@ -265,6 +266,9 @@ export const RenderMessage = memo(
     isStreaming: boolean;
     /** Whether this is the last *assistant* message (drives the running shimmer). */
     isLast: boolean;
+    /** The turn (contiguous assistant/tool block) this message belongs to,
+     *  pre-computed by Messages. Forwarded to the custom assistant component. */
+    turnMessages?: Message[];
   }) => {
     if (message.role === "tool") {
       // Tool messages are rendered inline with their parent assistant message
@@ -273,7 +277,13 @@ export const RenderMessage = memo(
 
     if (message.role === "assistant") {
       if (CustomAssistantMessage) {
-        return <CustomAssistantMessage message={message} isStreaming={isStreaming} />;
+        return (
+          <CustomAssistantMessage
+            message={message}
+            isStreaming={isStreaming}
+            turnMessages={turnMessages}
+          />
+        );
       }
       return (
         <AssistantMessageContainer className={className}>
@@ -321,6 +331,30 @@ export const ThreadError = () => {
   );
 };
 
+/**
+ * Groups a message list into turns: a run of consecutive assistant/tool
+ * messages (thinking, tool calls, results, answer) becomes ONE group; every
+ * other message (user, system, …) stands alone. `startIndex` is the group's
+ * position in the original list.
+ */
+function groupIntoTurns(messages: Message[]): { messages: Message[]; startIndex: number }[] {
+  const groups: { messages: Message[]; startIndex: number }[] = [];
+  let current: { messages: Message[]; startIndex: number } | null = null;
+  messages.forEach((message, i) => {
+    if (message.role === "assistant" || message.role === "tool") {
+      if (!current) {
+        current = { messages: [], startIndex: i };
+        groups.push(current);
+      }
+      current.messages.push(message);
+    } else {
+      current = null;
+      groups.push({ messages: [message], startIndex: i });
+    }
+  });
+  return groups;
+}
+
 export const Messages = ({
   className,
   loader,
@@ -336,6 +370,28 @@ export const Messages = ({
   const isRunning = useThread((s) => s.isRunning);
   const threadError = useThread((s) => s.threadError);
 
+  // Turn lookup: message id → the contiguous assistant/tool block it belongs
+  // to. Computed ONCE per message-list change and passed down, so the
+  // assistant component can render an interleaved run as one unit without
+  // deriving thread structure itself. Memoized so the arrays keep their
+  // identity across unrelated re-renders (RenderMessage is memoized on props).
+  //
+  // In a multi-segment turn, only the LAST assistant segment renders (it hosts
+  // the merged timeline + answer in one container); the earlier thinking
+  // segments are filtered out here.
+  const { turnByMessageId, hiddenMessageIds } = useMemo(() => {
+    const byId = new Map<string, Message[]>();
+    const hidden = new Set<string>();
+    for (const group of groupIntoTurns(messages)) {
+      const assistants = group.messages.filter((m) => m.role === "assistant");
+      for (const m of group.messages) byId.set(m.id, group.messages);
+      if (assistants.length >= 2) {
+        for (const m of assistants.slice(0, -1)) hidden.add(m.id);
+      }
+    }
+    return { turnByMessageId: byId, hiddenMessageIds: hidden };
+  }, [messages]);
+
   // Scan for the last *assistant* message (not the last message index) so the
   // running shimmer survives trailing tool messages.
   let lastAssistantIndex = -1;
@@ -349,6 +405,9 @@ export const Messages = ({
   return (
     <div className={clsx("openui-agent-thread-messages", className)}>
       {messages.map((message, i) => {
+        // Earlier thinking segments of a multi-segment turn: their prose and
+        // tool rows render inside the turn host's merged timeline.
+        if (hiddenMessageIds.has(message.id)) return null;
         return (
           <MessageProvider key={message.id} message={message}>
             <RenderMessage
@@ -358,6 +417,7 @@ export const Messages = ({
               userMessage={userMessage}
               isStreaming={isRunning && i === lastAssistantIndex}
               isLast={i === lastAssistantIndex}
+              turnMessages={turnByMessageId.get(message.id)}
             />
           </MessageProvider>
         );

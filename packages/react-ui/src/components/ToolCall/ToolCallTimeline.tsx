@@ -2,9 +2,51 @@ import { useThread, type ToolActivity } from "@openuidev/react-headless";
 import clsx from "clsx";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { MarkDownRenderer } from "../MarkDownRenderer";
 import { TimelineEntry } from "../_shared/tool-renderer/TimelineEntry";
 import type { ToolDetailedViewPanel } from "../_shared/tool-renderer/ToolActivityRenderer";
 import { defaultLabel } from "./ToolCallPrimitives";
+
+/**
+ * One display row of the timeline: a tool activity, or a thinking-text step
+ * (prose the model emitted alongside its tool calls), in run order.
+ */
+export type TimelineStep =
+  { type: "text"; id: string; text: string } | { type: "activity"; activity: ToolActivity };
+
+const stepKey = (step: TimelineStep) =>
+  step.type === "text" ? `text-${step.id}` : step.activity.id;
+
+const TimelineStepRow = ({
+  step,
+  isLast,
+  detailedViewPanel,
+  forceDefault,
+}: {
+  step: TimelineStep;
+  isLast: boolean;
+  detailedViewPanel?: ToolDetailedViewPanel;
+  forceDefault: boolean;
+}) => {
+  if (step.type === "text") {
+    return (
+      <div className="openui-tool-call-timeline__text-step">
+        <MarkDownRenderer
+          textMarkdown={step.text}
+          className="openui-tool-call-timeline__text-step-body"
+        />
+      </div>
+    );
+  }
+  return (
+    <TimelineEntry
+      activity={step.activity}
+      isLast={isLast}
+      detailedViewPanel={detailedViewPanel}
+      forceDefault={forceDefault}
+    />
+  );
+};
 
 const REVEAL_INTERVAL = 600;
 
@@ -37,12 +79,15 @@ const isRunning = (a: ToolActivity) => a.status === "streaming" || a.status === 
  */
 export function ToolCallTimeline({
   activities,
+  steps,
   isLast = false,
   detailedViewPanel,
   forceDefault = false,
   awaitingResponse = false,
 }: {
   activities: ToolActivity[];
+  /** Ordered display rows interleaving thinking text with tool activities */
+  steps?: TimelineStep[];
   isLast?: boolean;
   detailedViewPanel?: ToolDetailedViewPanel;
   /** Render every row as the raw default card (e.g. so matched tools' raw
@@ -52,6 +97,8 @@ export function ToolCallTimeline({
    *  gap instead of collapsing the instant the last result lands. */
   awaitingResponse?: boolean;
 }) {
+  const displaySteps: TimelineStep[] =
+    steps ?? activities.map((activity) => ({ type: "activity", activity }));
   // "Thinking" while the last activity is still running (or its results are in
   // but the response hasn't started), on the live message, and the thread is
   // actually running — so a closed-args call with no result stops showing
@@ -66,10 +113,10 @@ export function ToolCallTimeline({
   const [expanded, setExpanded] = useState(false);
   // A user close mid-run sticks until the next run.
   const [userCollapsed, setUserCollapsed] = useState(false);
-  // Live message reveals from the first activity; historical reveals them all so
+  // Live message reveals from the first step; historical reveals them all so
   // it never animates "Working…" on mount.
   const [revealedCount, setRevealedCount] = useState(() =>
-    isLast ? 1 : Math.max(activities.length, 1),
+    isLast ? 1 : Math.max(displaySteps.length, 1),
   );
 
   // Reset on each run edge: a rising `thinking` restarts the reveal and clears
@@ -82,34 +129,42 @@ export function ToolCallTimeline({
       setUserCollapsed(false);
     } else if (prevThinking.current && !thinking) {
       setExpanded(false);
-      setRevealedCount(activities.length);
+      setRevealedCount(displaySteps.length);
     }
     prevThinking.current = thinking;
-  }, [thinking, activities.length]);
+  }, [thinking, displaySteps.length]);
 
-  // Advance the reveal once the current activity's args have closed (left
-  // "streaming"); only the live message reveals incrementally.
-  const revealingActivity = activities[revealedCount - 1];
-  const currentReady = revealingActivity ? revealingActivity.status !== "streaming" : true;
+  // Advance the reveal once the current step is ready — an activity whose args
+  // have closed (left "streaming"); text steps are always ready. Only the live
+  // message reveals incrementally.
+  const revealingStep = displaySteps[revealedCount - 1];
+  const currentReady =
+    !revealingStep || revealingStep.type === "text"
+      ? true
+      : revealingStep.activity.status !== "streaming";
   useEffect(() => {
-    if (isLast && revealedCount < activities.length && currentReady) {
+    if (isLast && revealedCount < displaySteps.length && currentReady) {
       const t = setTimeout(() => setRevealedCount((c) => c + 1), REVEAL_INTERVAL);
       return () => clearTimeout(t);
     }
     return undefined;
-  }, [isLast, activities.length, revealedCount, currentReady]);
+  }, [isLast, displaySteps.length, revealedCount, currentReady]);
 
   if (activities.length === 0) return null;
 
-  const revealing = revealedCount < activities.length;
+  const revealing = revealedCount < displaySteps.length;
   const showCompact = (thinking || revealing) && !expanded && !userCollapsed;
   const isOpen = expanded || showCompact;
-  const current = activities[Math.min(revealedCount - 1, activities.length - 1)]!;
+  const current = displaySteps[Math.min(revealedCount - 1, displaySteps.length - 1)]!;
 
   // Persistent live announcement reflecting the current step's status — driven by
   // the same fallback the primitives use so SRs hear status changes as content
   // updates (the keyed reveal wrapper remounts and never announces on its own).
-  const liveLabel = current.statusMessage ?? defaultLabel(current.status, current.toolName);
+  const liveLabel =
+    current.type === "text"
+      ? current.text
+      : (current.activity.statusMessage ??
+        defaultLabel(current.activity.status, current.activity.toolName));
 
   // Once settled, surface a failure count on the toggle so errors aren't hidden
   // behind a collapsed "Behind the scenes".
@@ -166,8 +221,8 @@ export function ToolCallTimeline({
                 className="openui-behind-the-scenes__reveal-item"
                 style={{ width: "100%" }}
               >
-                <TimelineEntry
-                  activity={current}
+                <TimelineStepRow
+                  step={current}
                   isLast
                   detailedViewPanel={detailedViewPanel}
                   forceDefault={forceDefault}
@@ -180,11 +235,11 @@ export function ToolCallTimeline({
 
       {expanded && (
         <div className="openui-behind-the-scenes__items">
-          {activities.map((a, idx) => (
-            <div key={a.id} style={{ width: "100%" }}>
-              <TimelineEntry
-                activity={a}
-                isLast={isLast && idx === activities.length - 1}
+          {displaySteps.map((step, idx) => (
+            <div key={stepKey(step)} style={{ width: "100%" }}>
+              <TimelineStepRow
+                step={step}
+                isLast={isLast && idx === displaySteps.length - 1}
                 detailedViewPanel={detailedViewPanel}
                 forceDefault={forceDefault}
               />
