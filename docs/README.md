@@ -40,17 +40,6 @@ Do not expose `THESYS_API_KEY` through a `NEXT_PUBLIC_*` variable. The browser g
 anonymous user ID, retains it in `sessionStorage`, and sends it with Cloud requests. Active
 comparison threads are not restored after a refresh.
 
-### Reo.dev analytics
-
-Set the public Reo Client ID from **Integrations > Tracking Beacon > Documentation** when building
-the production docs site:
-
-```bash
-NEXT_PUBLIC_REO_CLIENT_ID=your-reo-client-id
-```
-
-The Reo browser beacon is not loaded when this variable is unset.
-
 The Cloud feature flag is intentionally fail-closed. Keep it disabled on public deployments until
 a shared, cross-instance session-and-IP rate limiter, Cloud organization budgets/token scopes, and
 an approved conversation retention/deletion process are in place. Same-origin validation is an
