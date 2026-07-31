@@ -27,8 +27,10 @@ const emptyActive = () => ({
   _abortController: null,
 });
 
-export const createChatStore = (config: CreateChatStoreConfig) => {
-  const { storage, llm } = config;
+// Takes the ref itself and reads `current` at call time, so the caller
+// (ChatProvider) can refresh `llm` by mutating or replacing `current`.
+export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig>) => {
+  const { storage } = configRef.current;
   const { thread: threadStorage } = storage;
 
   const store = createStore<ChatStore>()(
@@ -296,7 +298,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
               }
             }
 
-            const response = await llm.send({
+            const response = await configRef.current.llm.send({
               threadId: runKey,
               messages: readRun(get(), runKey)?.messages ?? [],
               signal: abortController.signal,
@@ -329,7 +331,7 @@ export const createChatStore = (config: CreateChatStoreConfig) => {
                   next.delete(id);
                   return { executingToolCallIds: next };
                 }),
-              adapter: llm.streamProtocol,
+              adapter: configRef.current.llm.streamProtocol,
             });
           } catch (e) {
             if (!abortController.signal.aborted) {

@@ -8,8 +8,7 @@ type ButtonsVariant = "vertical" | "horizontal";
 export interface ButtonsProps extends HTMLAttributes<HTMLDivElement> {
   variant?: ButtonsVariant;
   children:
-    | ReactElement<ButtonProps | IconButtonProps>
-    | ReactElement<ButtonProps | IconButtonProps>[];
+    ReactElement<ButtonProps | IconButtonProps> | ReactElement<ButtonProps | IconButtonProps>[];
   className?: string;
   style?: CSSProperties;
 }

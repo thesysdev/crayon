@@ -52,7 +52,7 @@ artifacts, custom slots/theme, and tests.
 | `openAIMessageFormat`                                | `openAIConversationMessageFormat`                                                                      |
 | In-memory, `restStorage`, or custom `ChatStorage`    | `useOpenuiCloudStorage({ token: "/api/frontend-token" })`                                              |
 | `openuiLibrary`/`openuiChatLibrary`                  | `chatLibrary` from `@openuidev/thesys` when the user chooses Cloud components                          |
-| `library.prompt(...)` in the provider route          | `createResponsesInstructions()` in the Cloud route                                                     |
+| `generateSystemPrompt({ library, promptOptions })` in the provider route | `generateSystemPrompt()` from `@openuidev/thesys-server` in the Cloud route |
 | App-owned artifact loop/renderers                    | Managed `artifactTool({ artifacts: ["slides", "report"] })` plus managed renderers for stock artifacts |
 | No browser storage credential                        | Short-lived frontend token scoped to the authenticated `user_id`                                       |
 
@@ -72,7 +72,7 @@ Preserve branding, theme, starters, slots, navigation, route placement, error bo
 8. Remove provider dependencies, environment variables, storage routes, and dead adapters only when no other application path uses them.
 9. Update environment examples and deployment configuration without committing secrets.
 
-Do not send both full history and a Cloud conversation id. Doing so can duplicate context. Do not leave `library.prompt()` in the stock Cloud route; `createResponsesInstructions()` supplies the managed instructions.
+Do not send both full history and a Cloud conversation id. Doing so can duplicate context. Do not leave `library.prompt()` in the stock Cloud route; `generatePromptOptions()` supplies the managed instructions.
 
 ## Handle Renderer-Only and Custom-Library Apps
 
