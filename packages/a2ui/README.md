@@ -89,3 +89,7 @@ When `sendDataModel` is enabled, the second `onMessage` argument contains `a2uiR
 Renderer functions can be registered as a direct function shorthand or as `{ handler, callableFrom }`. Explicit registrations default to `rendererOnly`; incoming `callFunction` messages are accepted only for `agentOnly` and `rendererOrAgent` registrations.
 
 Use `mapAction` to provide `sourceComponentId` when the host renderer does not include one in its action event. Otherwise actions fall back to the surface `root` ID.
+
+## Development
+
+The `check:attw` script intentionally ignores the `no-resolution` rule. `./react` is exported through modern package `exports`; `attw` reports `no-resolution` only for legacy Node 10 resolution, which this package does not support.

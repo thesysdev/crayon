@@ -13,6 +13,7 @@ function stripFences(source: string): string {
 function splitStatements(source: string): string[] {
   const statements: string[] = [];
   let depth = 0;
+  let ternaryDepth = 0;
   let quote: false | '"' | "'" = false;
   let escaped = false;
   let start = 0;
@@ -38,7 +39,16 @@ function splitStatements(source: string): string[] {
     if (character === "(" || character === "[" || character === "{") depth += 1;
     else if (character === ")" || character === "]" || character === "}") {
       depth = Math.max(0, depth - 1);
-    } else if (character === "\n" && depth === 0) {
+    } else if (character === "?" && depth === 0) {
+      ternaryDepth += 1;
+    } else if (character === ":" && depth === 0 && ternaryDepth > 0) {
+      ternaryDepth -= 1;
+    } else if (character === "\n" && depth === 0 && ternaryDepth === 0) {
+      // A top-level ternary may begin on the next line after its condition.
+      let next = index + 1;
+      while (next < source.length && /\s/u.test(source[next]!)) next += 1;
+      if (source[next] === "?") continue;
+
       const statement = source.slice(start, index).trim();
       if (statement) statements.push(statement);
       start = index + 1;
