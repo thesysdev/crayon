@@ -16,6 +16,20 @@ An experimental A2UI v1.0 profile that keeps the protocol lifecycle and envelope
 
 Publishable schemas are available under `@openuidev/a2ui/schema/*` for agent-to-renderer messages, renderer-to-agent messages, renderer/agent capabilities, and renderer data-model metadata.
 
+## Installation
+
+Install the framework-neutral protocol client with its runtime schema peer:
+
+```bash
+npm install @openuidev/a2ui zod
+```
+
+The React adapter is optional. Install its peers only when importing `@openuidev/a2ui/react`:
+
+```bash
+npm install react @openuidev/react-lang
+```
+
 ## How updates work
 
 Each array item is one complete OpenUI Lang statement (a multiline statement block is also accepted). Repeated messages are merged by statement ID and the resulting source is parsed by `@openuidev/lang-core`. A newer assignment replaces the previous statement, and `statementId = null` deletes it. The `root` statement remains the surface root.
