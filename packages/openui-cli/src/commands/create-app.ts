@@ -146,7 +146,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
               choices: [
                 {
                   value: "openui-cloud",
-                  name: "OpenUI Cloud — managed models, history, tools & artifacts (recommended)",
+                  name: "OpenUI Cloud — fastest setup with hosted models included (recommended)",
                 },
                 {
                   value: "openui-self-hosted",
