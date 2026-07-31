@@ -21,8 +21,10 @@ export type {
 
 // ─── React-specific types ───────────────────────────────────────────────────
 
-export interface ComponentRenderProps<P = Record<string, unknown>>
-  extends CoreRenderProps<P, ReactNode> {}
+export interface ComponentRenderProps<P = Record<string, unknown>> extends CoreRenderProps<
+  P,
+  ReactNode
+> {}
 
 export type ComponentRenderer<P = Record<string, unknown>> = React.FC<ComponentRenderProps<P>>;
 

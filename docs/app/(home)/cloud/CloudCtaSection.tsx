@@ -7,9 +7,7 @@ export function CloudCtaSection() {
     <section className={styles.section} aria-labelledby="cloud-cta-title">
       <div className={styles.inner}>
         <h2 id="cloud-cta-title" className={styles.title}>
-          You build the product.
-          <br />
-          We’ll run the generative UI layer.
+          Turn your OpenUI application into a production-grade experience.
         </h2>
         <div className={styles.actions}>
           <BevelButton

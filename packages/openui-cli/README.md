@@ -63,23 +63,27 @@ openui create [options]
 
 Options:
 
-- `-n, --name <string>`: Project name
+- `-n, --name <string>`: Project name (interactive default: `openui-agent`)
 - `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
+- `-i, --immediate`: Start the development server after installing dependencies
+- `--no-immediate`: Install dependencies without starting the development server
 - `--no-interactive`: Fail instead of prompting for missing required input
 - `--api-key <key>`: (cloud template) OpenUI Cloud API key; skips sign-in
-- `--auth <method>`: (cloud template) How to obtain the key — `oauth`, `manual`, or `skip`
+- `--auth <method>`: (cloud template) How to obtain the key — `oauth` or `skip`; `manual` remains available for backward compatibility but is deprecated
 - `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
 What it does:
 
-- prompts for the project name if you do not pass `--name`
+- prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
 - prompts for the template if you do not pass `--template`
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
+- asks whether to start the development server after dependency installation (default: yes); answering no preserves the install-and-exit behavior
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
+- in non-interactive mode, installs dependencies without starting the server unless overridden with `--immediate`
 - optionally installs the OpenUI agent skill for AI coding assistants
 - writes a `.env` file tailored to the template (see below)
 
@@ -94,8 +98,8 @@ What it does:
   - `--api-key <key>` if provided
   - the `--auth` method, otherwise an interactive prompt offering:
     - `oauth` — sign in with Thesys in the browser and mint a key for your org
-    - `manual` — paste an existing key
     - `skip` — leave `THESYS_API_KEY` empty and add it later (get one at <https://console.thesys.dev/keys>)
+  - `--auth manual` is deprecated but remains available for backward compatibility; use `--api-key` for scripted setup instead
   - in non-interactive mode without `--api-key`, the cloud template fails because a key is required
 - **Self-hosted** — prompts for your OpenAI-compatible provider API key and writes `OPENAI_API_KEY` to `.env` (interactive mode only). Leave blank to skip.
 
@@ -106,6 +110,8 @@ openui create
 openui create --name my-app --template openui-cloud --auth oauth
 openui create --name my-app --template openui-cloud --api-key tk_your_key
 openui create --name my-app --template openui-self-hosted
+openui create --name my-app --template openui-cloud --immediate
+openui create --name my-app --template openui-cloud --no-immediate
 openui create --name my-app --no-skill --no-install
 openui create --no-interactive --name my-app --template openui-cloud --api-key tk_your_key
 ```
@@ -195,7 +201,7 @@ The CLI sends usage analytics; OAuth sign-ins may link usage to your OIDC accoun
 
 When a coding agent invokes the CLI, it should pass `--agent-name` using its stable, lowercase kebab-case product slug—for example, `codex`, `claude-code`, `cline`, `factory-droid`, or `pi`. Do not pass a model/version, user name, session ID, or other unique value. Humans can omit the flag; it defaults to `unknown`.
 
-Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. For `create`, telemetry also includes `package_manager`, the manager selected for dependency installation (`npm`, `pnpm`, `yarn`, or `bun`). Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
+Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. For `create`, telemetry also includes `package_manager`, the immediate-start selection, and best-effort dev-command start and result events. Dev-command events contain status, duration, exit code, and signal—not project paths, command output, code, or environment values. Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
 
 ```bash
 openui create --no-telemetry

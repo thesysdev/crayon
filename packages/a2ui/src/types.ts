@@ -118,16 +118,12 @@ export interface GenericErrorMessage {
     code: string;
     message: string;
   } & (
-    | { surfaceId: string; functionCallId?: never }
-    | { surfaceId?: never; functionCallId: string }
+    { surfaceId: string; functionCallId?: never } | { surfaceId?: never; functionCallId: string }
   );
 }
 
 export type RendererToAgentMessage =
-  | ActionMessage
-  | FunctionResponseMessage
-  | ValidationFailedErrorMessage
-  | GenericErrorMessage;
+  ActionMessage | FunctionResponseMessage | ValidationFailedErrorMessage | GenericErrorMessage;
 
 export interface RendererCapabilities {
   "v1.0": {

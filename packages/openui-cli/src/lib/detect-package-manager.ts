@@ -3,16 +3,18 @@ export type PackageManagerName = "pnpm" | "yarn" | "bun" | "npm";
 export interface PackageManager {
   name: PackageManagerName;
   installCmd: string;
+  installArgs: string[];
   runCmd: string;
 }
 
 const PACKAGE_MANAGERS: Record<PackageManagerName, PackageManager> = {
-  pnpm: { name: "pnpm", installCmd: "pnpm install", runCmd: "pnpm" },
-  yarn: { name: "yarn", installCmd: "yarn", runCmd: "yarn" },
-  bun: { name: "bun", installCmd: "bun install", runCmd: "bun" },
+  pnpm: { name: "pnpm", installCmd: "pnpm install", installArgs: ["install"], runCmd: "pnpm" },
+  yarn: { name: "yarn", installCmd: "yarn", installArgs: [], runCmd: "yarn" },
+  bun: { name: "bun", installCmd: "bun install", installArgs: ["install"], runCmd: "bun" },
   npm: {
     name: "npm",
     installCmd: "npm ci --prefer-offline --no-audit --no-fund --progress=false",
+    installArgs: ["ci", "--prefer-offline", "--no-audit", "--no-fund", "--progress=false"],
     runCmd: "npm",
   },
 };

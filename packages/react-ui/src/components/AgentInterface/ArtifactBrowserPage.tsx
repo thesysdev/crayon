@@ -114,7 +114,10 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [artifacts, setArtifacts] = useState<ArtifactSummary[]>([]);
   const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(false);
+  // Starts true so a fresh mount (see the `key` on this component at its render
+  // site — the category name) shows the loader immediately rather than flashing
+  // the empty state before the fetch effect runs.
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const requestIdRef = useRef(0);
 
