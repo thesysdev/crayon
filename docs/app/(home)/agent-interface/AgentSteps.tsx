@@ -35,7 +35,7 @@ function createVideoIllustration(src: string) {
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="none"
         onLoadedMetadata={handleLoadedMetadata}
         style={{
           width: "100%",

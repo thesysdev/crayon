@@ -417,7 +417,13 @@ const AgentInterfaceBody = ({
               <MobileHeader />
             ))}
           {artifactPath.kind === "list" ? (
-            <ArtifactBrowserPage categoryName={artifactPath.categoryName} />
+            // Keyed on category so switching categories remounts with fresh
+            // state instead of rendering the previous category's list while the
+            // new one loads.
+            <ArtifactBrowserPage
+              key={artifactPath.categoryName ?? "__all__"}
+              categoryName={artifactPath.categoryName}
+            />
           ) : (
             <ArtifactViewPage
               artifactId={artifactPath.artifactId}

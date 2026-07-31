@@ -159,6 +159,7 @@ export default function DemosPage() {
               <div className="prompt-actions">
                 <select
                   className="model-select"
+                  aria-label="Model"
                   value={model}
                   onChange={(e) => setModel(e.target.value as Model)}
                   disabled={isDisabled}

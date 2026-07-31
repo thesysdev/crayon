@@ -18,16 +18,16 @@ They are configured separately. You can run a real `llm` with ephemeral (in-memo
 
 The `llm` channel is two halves of one loop:
 
-- **Browser half** — `fetchLLM({ url, streamAdapter, messageFormat })` POSTs `{ threadId, messages }` to your route and parses the streamed reply.
-- **Server half** — a route handler that receives `{ threadId, messages }`, calls your provider with streaming on, and returns the stream.
+- **Browser half** — `fetchLLM({ url, streamAdapter, messageFormat })` POSTs an AG-UI-shaped body (`threadId`, `runId`, formatted `messages`, plus any extra `body` fields) to your route and parses the streamed reply.
+- **Server half** — a route handler that reads what it needs from that body, calls your provider with streaming on, and returns the stream.
 
 ```tsx
-import { AgentInterface, fetchLLM, openAIReadableStreamAdapter, openAIMessageFormat } from "@openuidev/react-ui";
+import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 
 const llm = fetchLLM({
-  url: "/api/chat",                            // your route handler
-  streamAdapter: openAIReadableStreamAdapter(), // how to parse the streamed response
-  messageFormat: openAIMessageFormat,           // how to shape outgoing messages
+  url: "/api/chat",                    // your route handler
+  streamAdapter: openAIAdapter(),      // parses the SDK's raw SSE response
+  messageFormat: openAIMessageFormat,  // how to shape outgoing messages
 });
 
 export default function App() {
@@ -55,7 +55,7 @@ The full catalogue and the precise wire format each adapter expects are in [Adap
 
 ### Recipe: OpenAI
 
-With `openAIMessageFormat` on the client, `messages` already arrives in OpenAI's chat shape, so you forward it straight to the SDK. `stream.toReadableStream()` emits NDJSON, which `openAIReadableStreamAdapter()` parses on the client.
+With `openAIMessageFormat` on the client, `messages` already arrives in OpenAI's chat shape, so you forward it straight to the SDK. `.asResponse()` preserves the SDK's SSE response without re-encoding it, and `openAIAdapter()` parses that stream on the client.
 
 ```ts
 // app/api/chat/route.ts
@@ -64,22 +64,22 @@ import OpenAI from "openai";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY }); // server-side only
 
 export async function POST(req: Request) {
-  const { threadId, messages } = await req.json();
+  const { messages } = await req.json();
 
-  const stream = await openai.chat.completions.create({
-    model: "gpt-4o",
-    stream: true,                 // ← the part that makes it stream
-    messages,                     // already OpenAI-shaped via openAIMessageFormat
-  });
-
-  // openAIReadableStreamAdapter() parses exactly this NDJSON output.
-  return new Response(stream.toReadableStream(), {
-    headers: { "Content-Type": "text/event-stream" },
-  });
+  return await openai.chat.completions
+    .create(
+      {
+        model: "gpt-4o",
+        stream: true, // ← the part that makes it stream
+        messages,     // already OpenAI-shaped via openAIMessageFormat
+      },
+      { signal: req.signal }, // propagate browser aborts
+    )
+    .asResponse();
 }
 ```
 
-**Variant — forward raw SSE.** If you proxy another OpenAI-compatible service that emits SSE, return the SSE bytes unchanged and switch the client to `openAIAdapter()`:
+**Variant — direct fetch.** If you proxy another OpenAI-compatible service without its SDK, return the SSE bytes unchanged and keep `openAIAdapter()`:
 
 ```ts
 export async function POST(req: Request) {
