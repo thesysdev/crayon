@@ -1,6 +1,7 @@
 "use client";
 
 import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
+import { captureDemoAgentInteraction, type DemoInteractionSource } from "@/lib/demo-analytics";
 import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { mergeStatements } from "@openuidev/react-lang";
 import { Button } from "@openuidev/react-ui";
@@ -26,6 +27,7 @@ import { Header } from "./components/Header/Header";
 import { PreviewPanel } from "./components/PreviewPanel/PreviewPanel";
 import { SavedSidebar } from "./components/SavedSidebar/SavedSidebar";
 import {
+  GITHUB_DEMO_MODEL,
   GITHUB_DEMO_MODEL_LABEL,
   GITHUB_STARTERS,
   STREAM_RESULT,
@@ -257,7 +259,10 @@ export default function GitHubDemoPage() {
 
   const abortRef = useRef<AbortController | null>(null);
   const responseRef = useRef("");
-  const pendingPromptRef = useRef<string | null>(null);
+  const pendingPromptRef = useRef<{
+    text: string;
+    interactionSource: DemoInteractionSource;
+  } | null>(null);
 
   const isStreaming = status === "streaming";
   const hasDashboard = dashboardCode !== null;
@@ -348,9 +353,15 @@ export default function GitHubDemoPage() {
   // ── Send message ─────────────────────────────────────────────────────
 
   const send = useCallback(
-    async (text: string) => {
+    async (text: string, interactionSource: DemoInteractionSource) => {
       if (!text.trim() || isStreaming) return;
       const trimmed = text.trim();
+
+      captureDemoAgentInteraction({
+        demo: "github_dashboard",
+        model: GITHUB_DEMO_MODEL,
+        interaction_source: interactionSource,
+      });
 
       setConvCollapsed(false);
       setStatus("streaming");
@@ -486,9 +497,9 @@ export default function GitHubDemoPage() {
   // Process pending prompt after GitHub connect
   useEffect(() => {
     if (githubUsername && toolProvider && pendingPromptRef.current) {
-      const p = pendingPromptRef.current;
+      const pendingPrompt = pendingPromptRef.current;
       pendingPromptRef.current = null;
-      send(p);
+      send(pendingPrompt.text, pendingPrompt.interactionSource);
     }
   }, [githubUsername, toolProvider, send]);
 
@@ -500,7 +511,10 @@ export default function GitHubDemoPage() {
 
   const handleConnectAndPrompt = useCallback(
     (username: string, promptText: string) => {
-      pendingPromptRef.current = promptText;
+      pendingPromptRef.current = {
+        text: promptText,
+        interactionSource: "starter",
+      };
       handleConnect(username);
     },
     [handleConnect],
@@ -596,7 +610,7 @@ export default function GitHubDemoPage() {
                         className="gh-starter-card"
                         variant="tertiary"
                         size="large"
-                        onClick={() => send(s.prompt)}
+                        onClick={() => send(s.prompt, "starter")}
                         disabled={isStreaming}
                       >
                         <span className={`gh-starter-icon gh-tone-${s.tone}`}>
@@ -770,7 +784,7 @@ export default function GitHubDemoPage() {
                           (typeof event.params?.context === "string" ? event.params.context : "") ||
                           event.humanFriendlyMessage ||
                           "";
-                        if (text) send(text);
+                        if (text) send(text, "rendered_action");
                       } else if (event.type === "open_url") {
                         const url = event.params?.["url"] as string | undefined;
                         if (url) window.open(url, "_blank");
@@ -798,7 +812,7 @@ export default function GitHubDemoPage() {
                 streamingText={streamingText}
                 isStreaming={isStreaming}
                 elapsed={elapsed}
-                onSend={send}
+                onSend={(text) => send(text, "composer")}
                 onStop={handleStop}
                 hasDashboard={hasDashboard}
                 responseHasCode={streamResponseHasCode}

@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  captureDemoAgentInteraction,
+  getDemoInteractionSourceFromMessages,
+} from "@/lib/demo-analytics";
 import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
 import { CLOUD_USER_ID_HEADER, getOrCreateCloudUserId } from "@/lib/openui-cloud/user-id";
 import { AgentInterface } from "@openuidev/react-ui";
@@ -15,7 +19,18 @@ interface CloudAgentSurfaceProps {
 
 export function CloudAgentSurface({ registry }: CloudAgentSurfaceProps) {
   const [userId] = useState(getOrCreateCloudUserId);
-  const [llm] = useState(createCloudChatLLM);
+  const [llm] = useState(() =>
+    createCloudChatLLM(({ model, messages }) => {
+      if (getDemoInteractionSourceFromMessages(messages) !== "rendered_action") return;
+
+      captureDemoAgentInteraction({
+        demo: "compare",
+        variant: "cloud",
+        model,
+        interaction_source: "rendered_action",
+      });
+    }),
+  );
   const cloudFetch = useMemo<typeof fetch>(() => {
     return async (input, init) => {
       if (typeof input !== "string" || input !== "/api/openui-cloud/frontend-token") {

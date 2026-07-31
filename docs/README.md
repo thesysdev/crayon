@@ -45,6 +45,35 @@ a shared, cross-instance session-and-IP rate limiter, Cloud organization budgets
 an approved conversation retention/deletion process are in place. Same-origin validation is an
 additional browser safeguard, not a substitute for those cost controls.
 
+### Demo interaction analytics
+
+The four hosted demos (`/compare`, `/demo/github`, `/chat`, and `/demos`) emit
+`demo_agent_interaction` PostHog events for accepted user interactions. Most turns emit one event;
+`/compare` emits one per visible panel. The instrumentation supplies only these custom dimensions
+(PostHog may also attach its standard page context):
+
+- `demo`: the stable demo identifier
+- `variant`: the visible comparison mode or chat mode when applicable
+- `model`: the canonical provider/model ID requested for the interaction
+- `interaction_source`: `composer`, `starter`, or `rendered_action`
+
+`/compare` emits two events for a shared prompt, one per available mode in the selected visible
+pair. Its hidden third controller still receives the prompt in the background, but that work is
+not counted as a visible user interaction. A generated `continue_conversation` action emits one
+event for the panel it targets. Prefill-only chips, blocked submissions, restored messages, and
+local generated-UI state changes do not emit events.
+
+Demo analytics never add prompt or message content, generated output, action payloads, form state,
+GitHub usernames, action or tool URLs, thread or Cloud user IDs, tool arguments, or raw errors. The
+docs site uses the shared, fail-open PostHog client in `lib/analytics.ts`; published OpenUI packages
+do not initialize or send analytics.
+
+OpenUI visitors remain anonymous. Outbound `thesys.dev` links carry PostHog's current anonymous
+distinct ID and session ID as handoff query parameters, not event properties. The receiving console
+validates and removes those parameters before analytics initialization, bootstraps the distinct ID
+as anonymous, and later merges the demo history through its canonical `posthog.identify(user.id)`
+call. Both applications must use the same PostHog project, and the console resets PostHog on logout.
+
 ## Project structure
 
 ```

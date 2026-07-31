@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  captureDemoAgentInteraction,
+  getDemoInteractionSourceFromMessages,
+} from "@/lib/demo-analytics";
 import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import { CLOUD_USER_ID_HEADER, getOrCreateCloudUserId } from "@/lib/openui-cloud/user-id";
@@ -34,11 +38,27 @@ const CLOUD_STARTERS = [
     prompt: "Write a brief market-analysis report on the EV sector.",
   },
 ];
+const CLOUD_STARTER_PROMPTS = CLOUD_STARTERS.map((starter) => starter.prompt);
 
 export function CloudAgentSurface() {
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const [userId] = useState(getOrCreateCloudUserId);
-  const [llm] = useState(createCloudChatLLM);
+  const [llm] = useState(() =>
+    createCloudChatLLM(({ model, messages }) => {
+      const interactionSource = getDemoInteractionSourceFromMessages(
+        messages,
+        CLOUD_STARTER_PROMPTS,
+      );
+      if (!interactionSource) return;
+
+      captureDemoAgentInteraction({
+        demo: "openui_chat",
+        variant: "cloud",
+        model,
+        interaction_source: interactionSource,
+      });
+    }),
+  );
   const cloudFetch = useMemo<typeof fetch>(() => {
     return async (input, init) => {
       if (typeof input !== "string" || input !== "/api/openui-cloud/frontend-token") {

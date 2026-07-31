@@ -23,7 +23,8 @@ import {
   getComparisonPair,
   type ComparisonPair,
 } from "./chat-types";
-import { ComparisonControls } from "./comparison-controls";
+import { captureComparisonPromptInteractions } from "./comparison-analytics";
+import { ComparisonControls, type ComparisonSubmissionSource } from "./comparison-controls";
 import type {
   ComparisonMode,
   ComparisonModeController,
@@ -148,15 +149,18 @@ export function ComparePageClient({
   }, [registry, unavailableModes]);
 
   const submitToAll = useCallback(
-    (content: string) => {
+    (content: string, source: ComparisonSubmissionSource) => {
       const controllers = getReadyControllers();
       if (!controllers) return;
       const states = controllers.map((controller) => controller.getSnapshot());
       if (states.some((state) => !state.isReady || state.isRunning)) return;
 
+      const availableModes = new Set(controllers.map(({ mode }) => mode));
+      const visibleModes = getComparisonPair(pair).modes.filter((mode) => availableModes.has(mode));
+      captureComparisonPromptInteractions(visibleModes, source);
       void Promise.allSettled(controllers.map((controller) => controller.send(content)));
     },
-    [getReadyControllers],
+    [getReadyControllers, pair],
   );
 
   const stopAll = useCallback(() => {

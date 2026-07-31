@@ -1,6 +1,7 @@
 "use client";
 
 import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
+import { captureDemoAgentInteraction } from "@/lib/demo-analytics";
 import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { Send, Square } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -43,6 +44,12 @@ export default function DemosPage() {
 
   const handleSubmit = useCallback(async () => {
     if (!prompt.trim() || status === "streaming") return;
+
+    captureDemoAgentInteraction({
+      demo: "openui_vs_json",
+      model,
+      interaction_source: "composer",
+    });
 
     abortRef.current?.abort();
     const controller = new AbortController();
