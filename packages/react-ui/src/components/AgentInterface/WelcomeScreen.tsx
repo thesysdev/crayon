@@ -5,7 +5,7 @@ import { ConversationStarterProps } from "../../types/ConversationStarter";
 import { PromptTemplate } from "../../types/PromptTemplate";
 import { useStartersFromContext } from "./_shared/startersContext";
 import { isChatEmpty } from "./_shared/utils";
-import { appendStarterPrompt } from "./_shared/utils/welcomePrefill";
+import { submitStarterPrompt } from "./_shared/utils/welcomePrefill";
 import { DesktopWelcomeComposer, WelcomePrefillChips } from "./components";
 import { ConversationStarter, ConversationStarterVariant } from "./ConversationStarter";
 import { WelcomeGlow, WelcomeGlowProvider } from "./WelcomeGlow";
@@ -48,8 +48,8 @@ interface WelcomeScreenWithContentProps extends WelcomeScreenBaseProps {
   /**
    * Fill-in-the-blank prompt templates, rendered as chips between the composer
    * and the starters. Clicking one drops its prompt stem into the composer
-   * (instead of sending) and shows the template's completions, which append to
-   * the draft.
+   * (instead of sending) and shows the template's completions. Selecting a
+   * completion sends the completed prompt immediately.
    */
   promptTemplates?: PromptTemplate[];
   /**
@@ -95,6 +95,7 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   const messages = useThread((s) => s.messages);
   const isLoadingMessages = useThread((s) => s.isLoadingMessages);
   const isRunning = useThread((s) => s.isRunning);
+  const processMessage = useThread((s) => s.processMessage);
 
   // Prefill-chips draft state — owned here (not in the composer) so chips can
   // write into the draft. Hooks stay unconditional; unused without chips.
@@ -167,13 +168,7 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   };
 
   const handleContextualSelect = (starter: ConversationStarterProps) => {
-    const next = appendStarterPrompt(draft, starter.prompt);
-    setDraft(next);
-    setSelectedChip(null);
-    requestAnimationFrame(() => {
-      inputRef.current?.focus();
-      inputRef.current?.setSelectionRange(next.length, next.length);
-    });
+    submitStarterPrompt(processMessage, draft, starter.prompt);
   };
 
   return (
