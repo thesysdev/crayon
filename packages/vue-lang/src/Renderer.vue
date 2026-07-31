@@ -37,9 +37,7 @@ interface RendererProps {
   onParseResult?: (result: ParseResult | null) => void;
   /** Tool provider for Query()/Mutation() calls. */
   toolProvider?:
-    | Record<string, (args: Record<string, unknown>) => Promise<unknown>>
-    | McpClientLike
-    | null;
+    Record<string, (args: Record<string, unknown>) => Promise<unknown>> | McpClientLike | null;
   /** Custom loading indicator shown while queries are fetching. */
   queryLoader?: Component | VNode | null;
   /** Called with structured errors. */

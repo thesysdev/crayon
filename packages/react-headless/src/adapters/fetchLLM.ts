@@ -1,5 +1,7 @@
+import { observability, ObservabilityLevel, toErrorInfo } from "@openuidev/observability";
 import { identityMessageFormat, type MessageFormat } from "../types/messageFormat";
 import type { StreamProtocolAdapter } from "../types/stream";
+import { getResponseErrorMessage } from "./httpError";
 import type { ChatLLM } from "./types";
 
 export interface FetchLLMOptions {
@@ -13,6 +15,12 @@ export interface FetchLLMOptions {
   headers?: Record<string, string>;
   /** Override fetch implementation (for tests, custom auth wrappers, etc.). */
   fetch?: typeof fetch;
+  /** Extra fields merged into the request body (e.g. `model`) */
+  body?: Record<string, unknown>;
+}
+
+function levelForStatus(status: number): ObservabilityLevel {
+  return status >= 400 ? "error" : "info";
 }
 
 /**
@@ -20,9 +28,7 @@ export interface FetchLLMOptions {
  * (`{ threadId, runId, messages, tools, context }`, messages in the chosen wire
  * format) to `url` and returns the streaming `Response` for downstream processing.
  *
- * The fields the {@link ChatLLM} `send` contract doesn't carry are defaulted
- * here so the body satisfies a spec-compliant AG-UI agent: a fresh `runId` is
- * generated per send, and `tools`/`context` default to `[]` (override via options).
+ * Every send is reported to `@openuidev/observability` — The `runId` correlates them.
  */
 export function fetchLLM({
   url,
@@ -30,11 +36,14 @@ export function fetchLLM({
   messageFormat = identityMessageFormat,
   headers,
   fetch: customFetch,
+  body,
 }: FetchLLMOptions): ChatLLM {
   const fetchImpl = customFetch ?? globalThis.fetch.bind(globalThis);
   return {
     send: ({ threadId, messages, signal }) => {
-      const wire = messageFormat.toApi(messages);
+      const runId = crypto.randomUUID();
+      observability.info({ kind: "fetchLLM:request", requestId: runId, url, threadId });
+
       return fetchImpl(url, {
         method: "POST",
         headers: {
@@ -42,14 +51,38 @@ export function fetchLLM({
           ...headers,
         },
         body: JSON.stringify({
-          threadId,
-          runId: crypto.randomUUID(),
-          messages: wire,
+          ...body,
           tools: [],
           context: [],
+          threadId,
+          runId,
+          messages: messageFormat.toApi(messages),
         }),
         signal,
-      });
+      }).then(
+        async (response) => {
+          observability(levelForStatus(response.status), {
+            kind: response.ok ? "fetchLLM:response" : "fetchLLM:error",
+            requestId: runId,
+            url,
+            status: response.status,
+            ok: response.ok,
+            threadId,
+            ...(response.ok ? null : { message: await getResponseErrorMessage(response) }),
+          });
+          return response;
+        },
+        (error: unknown) => {
+          observability.error({
+            kind: "fetchLLM:error",
+            requestId: runId,
+            url,
+            error: toErrorInfo(error),
+            threadId,
+          });
+          throw error;
+        },
+      );
     },
     streamProtocol: streamAdapter,
   };
