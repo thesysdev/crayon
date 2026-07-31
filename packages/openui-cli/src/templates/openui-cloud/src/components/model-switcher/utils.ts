@@ -4,8 +4,6 @@ import { type ModelOption } from "@/lib/models";
 
 // Order the paid provider groups the way the console lists them.
 export const PROVIDER_ORDER: ModelOption["provider"][] = ["Anthropic", "OpenAI", "Google"];
-// The model highlighted with a "Recommended" chip.
-export const RECOMMENDED_MODEL_ID = "anthropic/claude-sonnet-5";
 
 // Group paid models by provider (in PROVIDER_ORDER) and pull the free models
 // into their own list so the dropdown can render a dedicated "Free" section.
@@ -33,12 +31,11 @@ export function splitModels(models: ModelOption[]): {
   return { paidGroups, freeModels };
 }
 
-export type ModelBadgeInfo = { label: string; kind: "recommended" | "free" };
+export type ModelBadgeInfo = { label: string; kind: "free" };
 
-// Single source of truth for which chip a model gets (used by both the trigger
-// and the dropdown rows).
+// Single source of truth for the free chip (used by both the trigger and the
+// dropdown rows).
 export function getModelBadge(model: ModelOption): ModelBadgeInfo | null {
-  if (model.id === RECOMMENDED_MODEL_ID) return { label: "Recommended", kind: "recommended" };
   if (model.badge === "Free") return { label: model.badge, kind: "free" };
   return null;
 }
