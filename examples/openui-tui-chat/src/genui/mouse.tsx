@@ -81,13 +81,12 @@ export function MouseProvider({
 
     const dispatch = (cx: number, cy: number) => {
       const rows = stdout.rows ?? 24;
-      // The dynamic region is anchored to the bottom of the terminal, so its
-      // top screen row is rows - height. Zone tops are measured relative to it.
-      let offsetY = 0;
-      if (rootRef.current) {
-        const { height } = measureElement(rootRef.current);
-        offsetY = Math.max(0, rows - height);
-      }
+      const height = rootRef.current ? measureElement(rootRef.current).height : 0;
+      // The live region's last line (composer) sits at the bottom of the terminal
+      // output, so its top screen row is (rows - height). This is correct once the
+      // content fills the screen (including long forms); for a short exchange it's
+      // approximate, so keyboard remains the exact path there.
+      const offsetY = height > 0 ? rows - height : 0;
 
       let hit: Zone | null = null;
       let hitInfo = "miss";

@@ -48,23 +48,21 @@ or _"Build a contact form with name, email and a topic dropdown"_.
 
 Clicking targets the **latest** turn's interactive elements (dropdown options, buttons, follow-ups, text fields). It uses click-only SGR mouse tracking (`?1000`/`?1006`) enabled once at the root; clicks are hit-tested against the live region using Yoga layout offsets.
 
-Caveats (inherent to terminal mouse tracking + the scrollback layout):
+Caveats (inherent to terminal mouse tracking + natural-height layout):
 
-- Click hit-testing is **best-effort**: it's reliable once the conversation has filled the screen (so the live region sits at the bottom). On the very first short turn — when there's empty space below the live region — clicks may miss; use the keyboard (Tab + number keys/arrows) there. Getting pixel-perfect mouse on every turn would require a full-screen layout that gives up scrollback history — see below.
+- Hit-testing anchors to the bottom of the terminal (where the live region ends), so it's reliable for content that fills the screen — including a long form's visible fields. For a short exchange with empty space below, clicks may be slightly off; keyboard (Tab + number keys/arrows) is exact everywhere.
 - While mouse tracking is active, the terminal's native click-drag **text selection/copy is disabled** (hold Shift in most terminals to bypass and select text).
 - Run the app **directly in a terminal** so it receives mouse events; through tmux you must `set -g mouse on` (otherwise tmux captures the mouse). Keyboard is the fully-portable path.
 
-### History vs. reliable mouse (design trade-off)
+## Supported components
 
-Ink can't cleanly give all three of rendered scrollback history, zero typing flicker, and pixel-perfect mouse at once. This example prioritizes **history + smooth typing**, with best-effort mouse. A full-screen (alternate-screen) layout could make mouse pixel-perfect everywhere, but it gives up terminal scrollback history.
+`Card`, `CardHeader`, `TextContent`, `Callout` (colored banner), `TagBlock` (colored pills),
+`Table`/`Col`, `BarChart`/`Series` (gradient bars), `FollowUpBlock`/`FollowUpItem`,
+`Form`/`FormControl`/`Input`/`Select`/`Buttons`/`Button`.
 
-## Supported components (v1)
-
-`Card`, `CardHeader`, `TextContent`, `Table`/`Col`, `BarChart`/`Series`,
-`FollowUpBlock`/`FollowUpItem`, `Form`/`FormControl`/`Input`/`Select`/`Buttons`/`Button`.
-
-Follow-ups, buttons and form submits drive the assistant loop via the OpenUI
-`@ToAssistant` action.
+Headings, chart bars and the header use a truecolor gradient; `ink-spinner` shows while
+streaming and `ink-big-text` renders the welcome logo. Follow-ups, buttons and form submits
+drive the assistant loop via the OpenUI `@ToAssistant` action.
 
 ## Test
 
@@ -75,12 +73,14 @@ pnpm --filter openui-tui-chat typecheck
 
 ## Chat UI
 
-- A header, a welcome/empty state with example prompts, and a bordered composer with key hints.
-- Completed turns are written to the terminal scrollback via Ink's `<Static>`, so the full conversation history stays on screen (scroll up to see earlier turns) while the latest assistant turn renders live and interactive at the bottom. Typing is smooth (the live region is small, so Ink updates it without repainting the whole screen).
-- User messages render as bubbles; the assistant turn renders as generative UI. An animated spinner shows while streaming.
+- A gradient header, a welcome splash (big-text logo) with example prompts, and a bordered composer with key hints.
+- The current exchange renders at **natural height**. Content taller than the terminal (e.g. a long form) scrolls in the terminal's native scrollback rather than corrupting the layout — the composer stays intact and the app never "breaks". Short exchanges stay compact.
+- User messages render as bubbles; the assistant turn renders as generative UI with an animated spinner while streaming.
 
 ## Limitations (POC)
 
 - Read-oriented charts/tables render as ASCII; not pixel-faithful.
-- Mouse hit-testing is best-effort (see the trade-off above); keyboard works everywhere.
+- On a form taller than the screen, upper fields scroll out of view — reach them with keyboard focus (Tab) or by scrolling the terminal; mouse clicks target the visible (on-screen) fields.
+- Mouse hit-testing is best-effort for short exchanges (see caveats above); keyboard works everywhere.
+- Only the current exchange is shown; there is no in-app multi-turn history log.
 - Queries/`$state` two-way binding beyond simple form fields are out of scope for v1.

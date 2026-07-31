@@ -1,7 +1,7 @@
 import type { Message } from "@openuidev/react-headless";
 import BigText from "ink-big-text";
 import Spinner from "ink-spinner";
-import { Box, Text, useFocus, useInput, useStdout, type DOMElement } from "ink";
+import { Box, Text, useFocus, useInput, type DOMElement } from "ink";
 import { useRef, useState } from "react";
 import { useLocalChat, type ProcessFn } from "./chat.js";
 import { RenderValue } from "./genui/components.js";
@@ -130,8 +130,6 @@ export function App({ processMessage }: { processMessage: ProcessFn }) {
   const { messages, isRunning, send } = useLocalChat(processMessage);
   const [draft, setDraft] = useState("");
   const dynamicRef = useRef<DOMElement>(null);
-  const { stdout } = useStdout();
-  const rows = stdout?.rows ?? 24;
 
   const { isFocused: composerFocused } = useFocus({ id: "composer", autoFocus: true });
   useInput(
@@ -161,14 +159,14 @@ export function App({ processMessage }: { processMessage: ProcessFn }) {
   const showThinking = isRunning && liveContent.trim() === "";
   const lastUser = [...messages].reverse().find((m) => m.role === "user") ?? null;
 
-  // Single full-height frame on the alternate screen (see cli.tsx): the current
-  // exchange is pinned to the bottom, the frame fills the screen from row 0, so
-  // Ink repaints in place (minimal flicker) and mouse clicks map 1:1 to rows.
+  // Natural-height frame (no fixed height): the current exchange renders at its
+  // true size. Content taller than the terminal scrolls natively instead of
+  // corrupting the layout, so a long form never breaks. Mouse hit-testing tracks
+  // the region via a cursor-position query (see mouse.tsx).
   return (
     <MouseProvider rootRef={dynamicRef}>
-      <Box ref={dynamicRef} flexDirection="column" height={rows} paddingX={1}>
+      <Box ref={dynamicRef} flexDirection="column" paddingX={1}>
         <Header />
-        <Box flexGrow={1} />
         {messages.length === 0 ? <Welcome /> : null}
         {lastUser ? <UserBubble text={firstLine(messageText(lastUser.content))} /> : null}
         {liveAssistant ? (
