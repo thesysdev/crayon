@@ -30,9 +30,6 @@ export function CloudAgentSurface({ registry }: CloudAgentSurfaceProps) {
   const cloudStorage = useOpenuiCloudStorage({
     token: "/api/openui-cloud/frontend-token",
     fetch: cloudFetch,
-    ...(process.env.NEXT_PUBLIC_OPENUI_CLOUD_API_ORIGIN
-      ? { apiBaseUrl: process.env.NEXT_PUBLIC_OPENUI_CLOUD_API_ORIGIN }
-      : {}),
   });
 
   return (
