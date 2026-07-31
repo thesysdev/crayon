@@ -3,20 +3,18 @@ import { createContext, useContext } from "react";
 /**
  * How artifact detail panels open. The policy is "present once": an artifact
  * may open by itself exactly one time — when its id first registers in the
- * ThreadContext — and only into an empty panel (an open panel is never
- * stolen). Edits update in place and never force a panel open. Driven
- * entirely inside `ChatProvider`; rendering hosts need no wiring. Artifact
- * sources that bypass the registry apply the mode via `useArtifactAutoOpen`.
+ * ThreadContext — and only into an empty panel. Edits update in place and
+ * never force a panel open. Driven by `ChatProvider` for artifacts that
+ * register in the thread context; non-registered artifact sources are out
+ * of scope for this policy.
  *
- * - `"overview"` (default) — panels only open on an explicit user action
- *   (clicking an artifact preview's open control).
- * - `"auto-open"` — a newly registered artifact opens while the thread is
+ * - `"overview"` (default): panels open only on explicit user action.
+ * - `"auto-open"`: a newly registered artifact opens while the thread is
  *   running (a live generation presenting its artifact). A user's close
- *   sticks; historical artifacts on a thread reload never fire.
- * - `"open-on-mount"` — a newly registered artifact opens regardless of
- *   running: loading a thread presents its first artifact (message order;
- *   an id's panel still ends at its newest version). Deep-link / kiosk
- *   embeds.
+ *   sticks; thread reloads stay quiet.
+ * - `"open-on-mount"`: a newly registered artifact opens whether or not the
+ *   thread is running, so loading a thread presents its first artifact.
+ *   For deep-link / kiosk embeds.
  *
  * @category Types
  */
@@ -25,10 +23,9 @@ export type ArtifactViewMode = "auto-open" | "open-on-mount" | "overview";
 export const DEFAULT_ARTIFACT_VIEW_MODE: ArtifactViewMode = "overview";
 
 /**
- * Carries the artifact view mode from `ChatProvider` (set via its
- * `artifactViewMode` prop) to custom artifact hosts (`useArtifactAutoOpen`).
- * Unlike the renderer registry, the value is live — prop changes apply on
- * the next render.
+ * Carries the mode from `ChatProvider`'s `artifactViewMode` prop to custom
+ * artifact hosts (`useArtifactAutoOpen`). Live, unlike the renderer
+ * registry: prop changes apply on the next render.
  */
 export const ArtifactViewModeContext = createContext<ArtifactViewMode>(DEFAULT_ARTIFACT_VIEW_MODE);
 

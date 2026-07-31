@@ -94,12 +94,11 @@ export interface ChatProviderProps {
   artifactCategories?: ArtifactCategory[];
   /**
    * How artifact detail panels open (default `"overview"` — only on user
-   * action). An artifact may present itself once, when it first registers:
-   * `"auto-open"` does so only while the thread is running (live
-   * generation); `"open-on-mount"` regardless (loading a thread presents
-   * its artifact — deep-link/kiosk). An open panel is never stolen and
-   * edits never force a panel open. Driven entirely inside ChatProvider;
-   * no host wiring needed. Live — prop changes apply on the next render.
+   * action). `"auto-open"` presents a newly registered artifact while the
+   * thread runs (live generation); `"open-on-mount"` also on thread load
+   * (deep-link/kiosk). Each artifact presents at most once, into an empty
+   * panel; edits never force one open. Driven inside ChatProvider — no host
+   * wiring needed — and live: prop changes apply on the next render.
    */
   artifactViewMode?: ArtifactViewMode;
   children: React.ReactNode;

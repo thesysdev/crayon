@@ -1,6 +1,4 @@
 export { useActiveDetailedView } from "./hooks/useActiveDetailedView";
-export { shouldAutoOpen, useArtifactAutoOpen } from "./hooks/useArtifactAutoOpen";
-export type { UseArtifactAutoOpenOptions } from "./hooks/useArtifactAutoOpen";
 export { useArtifactList } from "./hooks/useArtifactList";
 export type { ArtifactListFilter } from "./hooks/useArtifactList";
 export { useArtifactRenderer } from "./hooks/useArtifactRenderer";
@@ -21,7 +19,6 @@ export {
 } from "./store/ArtifactRenderersContext";
 export { defineArtifactRenderer } from "./store/artifactRendererTypes";
 export { useArtifactStorage } from "./store/ArtifactStorageContext";
-export { ArtifactViewModeContext, useArtifactViewMode } from "./store/ArtifactViewModeContext";
 export type { ArtifactViewMode } from "./store/ArtifactViewModeContext";
 export { ChatProvider } from "./store/ChatProvider";
 export { DetailedViewContext, useDetailedViewStore } from "./store/DetailedViewContext";

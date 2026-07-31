@@ -1,13 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { shouldAutoOpen } from "../useArtifactAutoOpen";
 
-// The auto-open decision matrix. The hook is a once-latch around this pure
-// predicate (plus the store-level _markAutoOpened latch, tested in
-// store/__tests__/detailedViewAutoOpenLatch.test.ts), so the matrix is the
-// behavior:
-//   open-on-mount → open on mount, streaming or not (deep-link / kiosk).
-//   auto-open     → open only while the artifact streams live.
-//   overview      → never (the click-to-open default).
+// The auto-open decision matrix — the hook is a once-latch around this
+// predicate, so the matrix is the behavior. The latch itself is tested in
+// store/__tests__/detailedViewAutoOpenLatch.test.ts.
 describe("shouldAutoOpen", () => {
   it.each([
     ["open-on-mount", true, true],

@@ -36,19 +36,16 @@ export type DetailedViewInternals = {
   /** @internal */
   _setDetailedViewPanelNode: (node: HTMLElement | null) => void;
   /**
-   * Auto-open latch: keys that already had their one chance to auto-open,
-   * claimed whether or not a panel actually opened. Keyed by artifact id on
-   * the registration path (an edit shares its generate's id, so edits can
-   * never force a panel open; remounts/re-registrations are invisible) and
-   * by the caller's `latchKey` for `useArtifactAutoOpen` hosts. Cleared by
-   * `reset()` (thread switch).
+   * Auto-open latch: keys that already used their one chance to auto-open,
+   * claimed whether or not a panel opened. The registration path keys by
+   * artifact id (edits and re-registrations stay quiet); `useArtifactAutoOpen`
+   * hosts key by their own `latchKey`. Cleared by `reset()` on thread switch.
    * @internal
    */
   _autoOpenedArtifactKeys: ReadonlySet<string>;
   /**
-   * Atomically records an auto-open for `key`. Returns `false` when the key
-   * already fired (the caller must not open again), `true` when this call
-   * claimed it.
+   * Claims `key` for auto-open. Returns `false` if already claimed (the
+   * caller must not open), `true` if this call claimed it.
    * @internal
    */
   _markAutoOpened: (key: string) => boolean;
