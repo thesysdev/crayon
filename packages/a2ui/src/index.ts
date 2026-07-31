@@ -4,7 +4,27 @@ export {
   dataModelToOpenUIState,
   mergeOpenUIStateIntoDataModel,
 } from "./json-pointer";
-export { agentToRendererMessageSchema, validateAgentToRendererMessage } from "./runtime-schema";
+export {
+  a2uiFunctionCallSchema,
+  actionMessageSchema,
+  actionResponseMessageSchema,
+  agentCapabilitiesSchema,
+  agentToRendererMessageSchema,
+  callFunctionMessageSchema,
+  createSurfaceMessageSchema,
+  deleteSurfaceMessageSchema,
+  functionResponseMessageSchema,
+  genericErrorMessageSchema,
+  jsonObjectSchema,
+  jsonValueSchema,
+  rendererCapabilitiesSchema,
+  rendererDataModelSchema,
+  rendererToAgentMessageSchema,
+  updateComponentsMessageSchema,
+  updateDataModelMessageSchema,
+  validationFailedErrorMessageSchema,
+} from "./protocol-schema";
+export { validateAgentToRendererMessage } from "./runtime-schema";
 export type {
   A2UIClientOptions,
   A2UIFunctionCall,

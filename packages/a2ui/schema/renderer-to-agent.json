@@ -2,95 +2,244 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openui.com/schema/a2ui/v1.0/renderer-to-agent.json",
   "title": "A2UI v1.0 renderer-to-agent messages",
+  "$defs": {
+    "__schema0": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/__schema0"
+          }
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/__schema0"
+          }
+        }
+      ]
+    }
+  },
   "type": "object",
   "oneOf": [
-    { "$ref": "#/$defs/ActionMessage" },
-    { "$ref": "#/$defs/FunctionResponseMessage" },
-    { "$ref": "#/$defs/ValidationFailedErrorMessage" },
-    { "$ref": "#/$defs/GenericErrorMessage" }
-  ],
-  "$defs": {
-    "ActionMessage": {
+    {
       "type": "object",
       "properties": {
-        "version": { "const": "v1.0" },
+        "version": {
+          "type": "string",
+          "const": "v1.0"
+        },
         "action": {
           "type": "object",
           "properties": {
-            "name": { "type": "string" },
-            "surfaceId": { "type": "string" },
-            "sourceComponentId": { "type": "string" },
-            "timestamp": { "type": "string", "format": "date-time" },
-            "context": { "type": "object", "additionalProperties": true },
-            "wantResponse": { "type": "boolean", "default": false },
-            "actionId": { "type": "string" }
+            "name": {
+              "type": "string"
+            },
+            "surfaceId": {
+              "type": "string"
+            },
+            "sourceComponentId": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+            },
+            "context": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "$ref": "#/$defs/__schema0"
+              }
+            },
+            "wantResponse": {
+              "default": false,
+              "type": "boolean"
+            },
+            "actionId": {
+              "type": "string"
+            }
           },
-          "required": ["name", "surfaceId", "sourceComponentId", "timestamp", "context"],
-          "additionalProperties": false
-        }
-      },
-      "required": ["version", "action"],
-      "additionalProperties": false
-    },
-    "FunctionResponseMessage": {
-      "type": "object",
-      "properties": {
-        "version": { "const": "v1.0" },
-        "functionResponse": {
-          "type": "object",
-          "properties": {
-            "functionCallId": { "type": "string" },
-            "call": { "type": "string" },
-            "value": true
-          },
-          "required": ["functionCallId", "call", "value"],
-          "additionalProperties": false
-        }
-      },
-      "required": ["version", "functionResponse"],
-      "additionalProperties": false
-    },
-    "ValidationFailedErrorMessage": {
-      "type": "object",
-      "properties": {
-        "version": { "const": "v1.0" },
-        "error": {
-          "type": "object",
-          "properties": {
-            "code": { "const": "VALIDATION_FAILED" },
-            "surfaceId": { "type": "string" },
-            "path": { "type": "string" },
-            "message": { "type": "string" }
-          },
-          "required": ["code", "surfaceId", "path", "message"],
-          "additionalProperties": false
-        }
-      },
-      "required": ["version", "error"],
-      "additionalProperties": false
-    },
-    "GenericErrorMessage": {
-      "type": "object",
-      "properties": {
-        "version": { "const": "v1.0" },
-        "error": {
-          "type": "object",
-          "properties": {
-            "code": { "type": "string", "not": { "const": "VALIDATION_FAILED" } },
-            "message": { "type": "string" },
-            "surfaceId": { "type": "string" },
-            "functionCallId": { "type": "string" }
-          },
-          "required": ["code", "message"],
-          "oneOf": [
-            { "required": ["surfaceId"], "not": { "required": ["functionCallId"] } },
-            { "required": ["functionCallId"], "not": { "required": ["surfaceId"] } }
+          "required": [
+            "name",
+            "surfaceId",
+            "sourceComponentId",
+            "timestamp",
+            "context"
           ],
           "additionalProperties": false
         }
       },
-      "required": ["version", "error"],
+      "required": [
+        "version",
+        "action"
+      ],
       "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "const": "v1.0"
+        },
+        "functionResponse": {
+          "type": "object",
+          "properties": {
+            "functionCallId": {
+              "type": "string"
+            },
+            "call": {
+              "type": "string"
+            },
+            "value": {
+              "$ref": "#/$defs/__schema0"
+            }
+          },
+          "required": [
+            "functionCallId",
+            "call",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "version",
+        "functionResponse"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "const": "v1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "const": "VALIDATION_FAILED"
+            },
+            "surfaceId": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "surfaceId",
+            "path",
+            "message"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "version",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "string",
+              "const": "v1.0"
+            },
+            "error": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "pattern": "^(?!VALIDATION_FAILED$).*$"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "surfaceId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "surfaceId"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "error"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "string",
+              "const": "v1.0"
+            },
+            "error": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "pattern": "^(?!VALIDATION_FAILED$).*$"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "functionCallId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "functionCallId"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "error"
+          ],
+          "additionalProperties": false
+        }
+      ]
     }
-  }
+  ]
 }

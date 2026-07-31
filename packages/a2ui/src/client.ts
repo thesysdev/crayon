@@ -474,7 +474,7 @@ export class A2UIClient {
       };
     }
     this.#pendingActions.delete(message.actionId);
-    if (message.actionResponse.error) {
+    if ("error" in message.actionResponse) {
       pending.reject(
         new A2UIActionError(
           message.actionResponse.error.code,
@@ -526,11 +526,11 @@ export class A2UIClient {
   ): ProcessResult {
     const target = validationTarget(input);
     const issue = issues[0] ?? { path: "/", message: "Invalid A2UI message" };
-    if (target.surfaceId) {
+    if (target.surfaceId !== undefined) {
       this.#emitValidationError(target.surfaceId, issue.path, issue.message);
       return { ok: false, outbound, issues };
     }
-    if (target.functionCallId) {
+    if (target.functionCallId !== undefined) {
       this.#emitGenericError(
         "INVALID_MESSAGE",
         `${issue.path}: ${issue.message}`,
@@ -564,15 +564,11 @@ export class A2UIClient {
     surfaceId?: string,
     functionCallId?: string,
   ): void {
-    if (!surfaceId && !functionCallId) return;
-    const error: GenericErrorMessage = {
-      version: "v1.0",
-      error: {
-        code,
-        message,
-        ...(surfaceId ? { surfaceId } : { functionCallId: functionCallId! }),
-      } as GenericErrorMessage["error"],
-    };
+    if (surfaceId === undefined && functionCallId === undefined) return;
+    const error: GenericErrorMessage =
+      surfaceId !== undefined
+        ? { version: "v1.0", error: { code, message, surfaceId } }
+        : { version: "v1.0", error: { code, message, functionCallId: functionCallId! } };
     this.#emit(error);
   }
 

@@ -4,145 +4,47 @@ import type {
   OpenUIError,
   ParseResult,
 } from "@openuidev/lang-core";
+import type { z } from "zod/v4";
+import type {
+  a2uiFunctionCallSchema,
+  actionMessageSchema,
+  actionResponseMessageSchema,
+  agentCapabilitiesSchema,
+  agentToRendererMessageSchema,
+  callFunctionMessageSchema,
+  createSurfaceMessageSchema,
+  deleteSurfaceMessageSchema,
+  functionResponseMessageSchema,
+  genericErrorMessageSchema,
+  jsonObjectSchema,
+  jsonValueSchema,
+  rendererCapabilitiesSchema,
+  rendererDataModelSchema,
+  rendererToAgentMessageSchema,
+  updateComponentsMessageSchema,
+  updateDataModelMessageSchema,
+  validationFailedErrorMessageSchema,
+} from "./protocol-schema";
 
-export type JsonPrimitive = string | number | boolean | null;
-export type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
-export interface JsonObject {
-  [key: string]: JsonValue;
-}
-
-export interface A2UIFunctionCall {
-  call: string;
-  args?: JsonObject;
-}
-
-export interface CreateSurfaceMessage {
-  version: "v1.0";
-  createSurface: {
-    surfaceId: string;
-    catalogId?: string;
-    surfaceProperties?: JsonObject;
-    sendDataModel?: boolean;
-    /**
-     * A2UI v1.0 single-message surface creation using the profile's OpenUI
-     * Lang component representation.
-     */
-    components?: string[];
-    dataModel?: JsonObject;
-  };
-}
-
-export interface UpdateComponentsMessage {
-  version: "v1.0";
-  updateComponents: {
-    surfaceId: string;
-    /** The profile's only wire-level change: A2UI component objects become Lang statements. */
-    components: string[];
-  };
-}
-
-export interface UpdateDataModelMessage {
-  version: "v1.0";
-  updateDataModel: {
-    surfaceId: string;
-    path?: string;
-    value: JsonValue;
-  };
-}
-
-export interface DeleteSurfaceMessage {
-  version: "v1.0";
-  deleteSurface: {
-    surfaceId: string;
-  };
-}
-
-export interface CallFunctionMessage {
-  version: "v1.0";
-  functionCallId: string;
-  wantResponse?: boolean;
-  callFunction: A2UIFunctionCall;
-}
-
-export interface ActionResponseMessage {
-  version: "v1.0";
-  actionId: string;
-  actionResponse:
-    | { value: JsonValue; error?: never }
-    | { value?: never; error: { code: string; message: string } };
-}
-
-export type AgentToRendererMessage =
-  | CreateSurfaceMessage
-  | UpdateComponentsMessage
-  | UpdateDataModelMessage
-  | DeleteSurfaceMessage
-  | CallFunctionMessage
-  | ActionResponseMessage;
-
-export interface ActionMessage {
-  version: "v1.0";
-  action: {
-    name: string;
-    surfaceId: string;
-    sourceComponentId: string;
-    timestamp: string;
-    context: JsonObject;
-    wantResponse?: boolean;
-    actionId?: string;
-  };
-}
-
-export interface FunctionResponseMessage {
-  version: "v1.0";
-  functionResponse: {
-    functionCallId: string;
-    call: string;
-    value: JsonValue;
-  };
-}
-
-export interface ValidationFailedErrorMessage {
-  version: "v1.0";
-  error: {
-    code: "VALIDATION_FAILED";
-    surfaceId: string;
-    path: string;
-    message: string;
-  };
-}
-
-export interface GenericErrorMessage {
-  version: "v1.0";
-  error: {
-    code: string;
-    message: string;
-  } & (
-    { surfaceId: string; functionCallId?: never } | { surfaceId?: never; functionCallId: string }
-  );
-}
-
-export type RendererToAgentMessage =
-  ActionMessage | FunctionResponseMessage | ValidationFailedErrorMessage | GenericErrorMessage;
-
-export interface RendererCapabilities {
-  "v1.0": {
-    supportedCatalogIds: string[];
-    inlineCatalogs?: JsonObject[];
-  };
-}
-
-export interface AgentCapabilities {
-  "v1.0": {
-    supportedCatalogIds?: string[];
-    acceptsInlineCatalogs?: boolean;
-  };
-}
-
-export interface RendererDataModel {
-  version: "v1.0";
-  surfaces: Record<string, JsonObject>;
-}
+export type JsonValue = z.infer<typeof jsonValueSchema>;
+export type JsonPrimitive = Extract<JsonValue, string | number | boolean | null>;
+export type JsonObject = z.infer<typeof jsonObjectSchema>;
+export type A2UIFunctionCall = z.infer<typeof a2uiFunctionCallSchema>;
+export type CreateSurfaceMessage = z.infer<typeof createSurfaceMessageSchema>;
+export type UpdateComponentsMessage = z.infer<typeof updateComponentsMessageSchema>;
+export type UpdateDataModelMessage = z.infer<typeof updateDataModelMessageSchema>;
+export type DeleteSurfaceMessage = z.infer<typeof deleteSurfaceMessageSchema>;
+export type CallFunctionMessage = z.infer<typeof callFunctionMessageSchema>;
+export type ActionResponseMessage = z.infer<typeof actionResponseMessageSchema>;
+export type AgentToRendererMessage = z.infer<typeof agentToRendererMessageSchema>;
+export type ActionMessage = z.infer<typeof actionMessageSchema>;
+export type FunctionResponseMessage = z.infer<typeof functionResponseMessageSchema>;
+export type ValidationFailedErrorMessage = z.infer<typeof validationFailedErrorMessageSchema>;
+export type GenericErrorMessage = z.infer<typeof genericErrorMessageSchema>;
+export type RendererToAgentMessage = z.infer<typeof rendererToAgentMessageSchema>;
+export type RendererCapabilities = z.infer<typeof rendererCapabilitiesSchema>;
+export type AgentCapabilities = z.infer<typeof agentCapabilitiesSchema>;
+export type RendererDataModel = z.infer<typeof rendererDataModelSchema>;
 
 export interface SurfaceSnapshot {
   surfaceId: string;
