@@ -9,7 +9,7 @@ import { isChatEmpty } from "./_shared/utils";
 export type ConversationStarterVariant = "short" | "long";
 
 interface ConversationStarterItemProps extends ConversationStarterProps {
-  onClick: (prompt: string) => void;
+  onClick: () => void;
   variant: ConversationStarterVariant;
 }
 
@@ -39,7 +39,6 @@ const hasRenderableIcon = (icon: ReactNode): boolean => {
 
 const ConversationStarterItem = ({
   displayText,
-  prompt,
   onClick,
   variant,
   icon,
@@ -52,7 +51,7 @@ const ConversationStarterItem = ({
       <button
         type="button"
         className="openui-agent-conversation-starter-item-short"
-        onClick={() => onClick(prompt)}
+        onClick={onClick}
       >
         {shouldRenderIcon && (
           <span className="openui-agent-conversation-starter-item-short__icon">{renderedIcon}</span>
@@ -64,11 +63,7 @@ const ConversationStarterItem = ({
 
   // Long variant (detailed list style)
   return (
-    <button
-      type="button"
-      className="openui-agent-conversation-starter-item-long"
-      onClick={() => onClick(prompt)}
-    >
+    <button type="button" className="openui-agent-conversation-starter-item-long" onClick={onClick}>
       <div className="openui-agent-conversation-starter-item-long__content">
         {shouldRenderIcon && (
           <span className="openui-agent-conversation-starter-item-long__icon">{renderedIcon}</span>
@@ -91,23 +86,34 @@ export interface ConversationStarterContainerProps {
    * - "long": Vertical list items with icons and hover arrow
    */
   variant?: ConversationStarterVariant;
+  /**
+   * Optional click override. When provided, replaces the default
+   * send-to-thread behavior (still guarded by `isRunning`). The prefill-chips
+   * welcome uses it to append contextual-starter prompts into the draft.
+   */
+  onSelect?: (starter: ConversationStarterProps) => void;
 }
 
 export const ConversationStarter = ({
   starters,
   className,
   variant = "short",
+  onSelect,
 }: ConversationStarterContainerProps) => {
   const processMessage = useThread((s) => s.processMessage);
   const isRunning = useThread((s) => s.isRunning);
   const messages = useThread((s) => s.messages);
   const isLoadingMessages = useThread((s) => s.isLoadingMessages);
 
-  const handleClick = (prompt: string) => {
+  const handleClick = (starter: ConversationStarterProps) => {
     if (isRunning) return;
+    if (onSelect) {
+      onSelect(starter);
+      return;
+    }
     processMessage({
       role: "user",
-      content: prompt,
+      content: starter.prompt,
     });
   };
 
@@ -137,7 +143,7 @@ export const ConversationStarter = ({
               displayText={item.displayText}
               prompt={item.prompt}
               icon={item.icon}
-              onClick={handleClick}
+              onClick={() => handleClick(item)}
               variant={variant}
             />
           ))}
@@ -163,7 +169,7 @@ export const ConversationStarter = ({
             displayText={item.displayText}
             prompt={item.prompt}
             icon={item.icon}
-            onClick={handleClick}
+            onClick={() => handleClick(item)}
             variant={variant}
           />
         </Fragment>

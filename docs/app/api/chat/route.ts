@@ -11,15 +11,19 @@ const openUiSystemPrompt = readFileSync(
 
 const markdownSystemPrompt = `You are a helpful assistant. Respond using clear, well-structured GitHub-Flavored Markdown.
 
-Use headings, lists, tables, links, block quotes, and fenced code blocks when they make the response easier to understand. Use the available tools when they are relevant, and incorporate their results into the answer.
+Use headings, lists, tables, links, block quotes, and fenced code blocks when they make the response easier to understand.
 
 Return only Markdown content. Do not emit OpenUI Lang, component syntax, JSON UI descriptions, or instructions for a renderer.`;
 
 type ResponseMode = "markdown" | "openui";
+const TOOL_NAMES = ["get_weather", "get_stock_price", "search_web"] as const;
+type ToolName = (typeof TOOL_NAMES)[number];
+const TOOL_NAME_SET = new Set<string>(TOOL_NAMES);
 
 interface ChatRequestBody {
   messages: unknown[];
   responseMode?: ResponseMode;
+  toolNames?: ToolName[];
 }
 
 function invalidRequest(message: string) {
@@ -31,7 +35,7 @@ function parseRequestBody(body: unknown): ChatRequestBody | Response {
     return invalidRequest("Request body must be a JSON object");
   }
 
-  const { messages, responseMode } = body as Record<string, unknown>;
+  const { messages, responseMode, toolNames } = body as Record<string, unknown>;
 
   if (!Array.isArray(messages)) {
     return invalidRequest("messages must be an array");
@@ -41,9 +45,18 @@ function parseRequestBody(body: unknown): ChatRequestBody | Response {
     return invalidRequest('responseMode must be either "markdown" or "openui"');
   }
 
+  if (
+    toolNames !== undefined &&
+    (!Array.isArray(toolNames) ||
+      !toolNames.every((toolName) => typeof toolName === "string" && TOOL_NAME_SET.has(toolName)))
+  ) {
+    return invalidRequest(`toolNames must contain only: ${TOOL_NAMES.join(", ")}`);
+  }
+
   return {
     messages,
     responseMode: responseMode as ResponseMode | undefined,
+    toolNames: toolNames as ToolName[] | undefined,
   };
 }
 
@@ -262,7 +275,11 @@ export async function POST(req: NextRequest) {
     return parsedBody;
   }
 
-  const { messages, responseMode = "openui" } = parsedBody;
+  const { messages, responseMode = "openui", toolNames } = parsedBody;
+  const selectedTools =
+    toolNames === undefined
+      ? tools
+      : tools.filter((tool) => toolNames.includes(tool.function.name as ToolName));
 
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -328,15 +345,24 @@ export async function POST(req: NextRequest) {
       let callIdx = 0;
       let resultIdx = 0;
 
-      const runner = (client.chat.completions as any).runTools(
-        {
-          model: MODEL,
-          messages: chatMessages,
-          tools,
-          stream: true,
-        },
-        { signal: req.signal },
-      );
+      const runner: any =
+        selectedTools.length === 0
+          ? client.chat.completions.stream(
+              {
+                model: MODEL,
+                messages: chatMessages,
+              },
+              { signal: req.signal },
+            )
+          : (client.chat.completions as any).runTools(
+              {
+                model: MODEL,
+                messages: chatMessages,
+                tools: selectedTools,
+                stream: true,
+              },
+              { signal: req.signal },
+            );
       activeRunner = runner;
 
       const handleAbort = () => {
@@ -351,27 +377,29 @@ export async function POST(req: NextRequest) {
         close();
       };
 
-      runner.on("functionToolCall", (fc: any) => {
-        const id = `tc-${callIdx}`;
-        pendingCalls.push({ id, name: fc.name, arguments: fc.arguments });
-        enqueue(sseToolCallStart(encoder, { id, function: { name: fc.name } }, callIdx));
-        callIdx++;
-      });
+      if (selectedTools.length > 0) {
+        runner.on("functionToolCall", (fc: any) => {
+          const id = `tc-${callIdx}`;
+          pendingCalls.push({ id, name: fc.name, arguments: fc.arguments });
+          enqueue(sseToolCallStart(encoder, { id, function: { name: fc.name } }, callIdx));
+          callIdx++;
+        });
 
-      runner.on("functionToolCallResult", (result: string) => {
-        const tc = pendingCalls[resultIdx];
-        if (tc) {
-          enqueue(
-            sseToolCallArgs(
-              encoder,
-              { id: tc.id, function: { arguments: tc.arguments } },
-              result,
-              resultIdx,
-            ),
-          );
-        }
-        resultIdx++;
-      });
+        runner.on("functionToolCallResult", (result: string) => {
+          const tc = pendingCalls[resultIdx];
+          if (tc) {
+            enqueue(
+              sseToolCallArgs(
+                encoder,
+                { id: tc.id, function: { arguments: tc.arguments } },
+                result,
+                resultIdx,
+              ),
+            );
+          }
+          resultIdx++;
+        });
+      }
 
       runner.on("chunk", (chunk: any) => {
         // Keep credit handling to non-2xx responses. Provider-specific mid-stream

@@ -3,6 +3,7 @@ import {
   useArtifactCategories,
   useArtifactRendererRegistry,
   useArtifactStorage,
+  useThreadList,
   type ArtifactSummary,
 } from "@openuidev/react-headless";
 import { Boxes, Search, X } from "lucide-react";
@@ -94,6 +95,7 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
   const storage = useArtifactStorage();
   const categories = useArtifactCategories();
   const { navigate } = useNav();
+  const switchToNewThread = useThreadList((s) => s.switchToNewThread);
   const { defaultCategory } = useAgentInterfaceLabels();
 
   const category = categoryName ? categories.find((c) => c.name === categoryName) : undefined;
@@ -104,12 +106,18 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
   const notFound = categoryName !== undefined && category === undefined;
   const typeFilter = category?.filter.type;
   const categoryIllustration = useArtifactIcon(typeFilter?.[0] ?? "");
+  const categoryItemLabel = categoryName
+    ? categoryName.replace(/s$/i, "").toLowerCase()
+    : "artifact";
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [artifacts, setArtifacts] = useState<ArtifactSummary[]>([]);
   const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(false);
+  // Starts true so a fresh mount (see the `key` on this component at its render
+  // site — the category name) shows the loader immediately rather than flashing
+  // the empty state before the fetch effect runs.
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const requestIdRef = useRef(0);
 
@@ -119,11 +127,12 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
   }, [search]);
 
   const typeKey = typeFilter?.join(" ");
-  // Noun derived from the category name (not a hardcoded "Apps" match).
-  const emptyItemLabel = categoryName ? categoryName.toLowerCase() : "artifacts";
-  const emptyMessage = debouncedSearch
+  const emptyTitle = debouncedSearch
     ? `No results found for "${debouncedSearch}"`
-    : `No ${emptyItemLabel} yet`;
+    : `Ready to create your first ${categoryItemLabel}?`;
+  const emptySubtitle = debouncedSearch
+    ? undefined
+    : "Start with a prompt and create your first draft.";
 
   // Initial page + reload on search/category change.
   useEffect(() => {
@@ -170,6 +179,11 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
         setError(e instanceof Error ? e : new Error(String(e)));
         setIsLoading(false);
       });
+  };
+
+  const handleNewChat = () => {
+    switchToNewThread();
+    navigate(undefined);
   };
 
   if (!storage) return null;
@@ -237,9 +251,21 @@ export const ArtifactBrowserPage = ({ categoryName }: { categoryName?: string })
           {!error && artifacts.length === 0 && !isLoading && (
             <div className="openui-agent-artifact-browser__empty">
               <span className="openui-agent-artifact-browser__empty-illustration">
-                {debouncedSearch ? categoryIllustration : <Boxes size="1em" />}
+                {categoryIllustration}
               </span>
-              <span className="openui-agent-artifact-browser__empty-text">{emptyMessage}</span>
+              <div className="openui-agent-artifact-browser__empty-copy">
+                <span className="openui-agent-artifact-browser__empty-text">{emptyTitle}</span>
+                {emptySubtitle && (
+                  <span className="openui-agent-artifact-browser__empty-subtitle">
+                    {emptySubtitle}
+                  </span>
+                )}
+              </div>
+              {!debouncedSearch && (
+                <Button variant="primary" size="small" onClick={handleNewChat}>
+                  New Chat
+                </Button>
+              )}
             </div>
           )}
           {artifacts.map((artifact) => {

@@ -1,4 +1,4 @@
-export const DEFAULT_MODEL = "anthropic/claude-sonnet-4.6";
+export const DEFAULT_MODEL = "openai/gpt-5.4";
 
 export interface ModelOption {
   id: string;

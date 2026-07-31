@@ -3,6 +3,7 @@
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CLOUD_SECTION_ID } from "../CloudSection/CloudSection";
+import { USE_CASES_SECTION_ID } from "../UseCasesSection/UseCasesSection";
 import styles from "./CloudBanner.module.css";
 
 export function CloudBanner() {
@@ -10,16 +11,18 @@ export function CloudBanner() {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
 
-  // Show once past the first screen, but hide near the top and once the OpenUI
-  // Cloud section has been reached (and stay hidden through and past it).
+  // Appear once the use cases section comes into view, then hide again once the
+  // OpenUI Cloud section is reached (and stay hidden through and past it).
   useEffect(() => {
     const update = () => {
       const vh = window.innerHeight;
-      const past = window.scrollY > vh * 0.6;
-      const el = document.getElementById(CLOUD_SECTION_ID);
-      const rect = el?.getBoundingClientRect();
-      const reachedCloud = rect ? rect.top <= vh * 0.75 : false;
-      setShouldShow(past && !reachedCloud);
+      const useCasesRect = document
+        .getElementById(USE_CASES_SECTION_ID)
+        ?.getBoundingClientRect();
+      const reachedUseCases = useCasesRect ? useCasesRect.top <= vh * 0.75 : false;
+      const cloudRect = document.getElementById(CLOUD_SECTION_ID)?.getBoundingClientRect();
+      const reachedCloud = cloudRect ? cloudRect.top <= vh * 0.75 : false;
+      setShouldShow(reachedUseCases && !reachedCloud);
     };
     update();
     window.addEventListener("scroll", update, { passive: true });

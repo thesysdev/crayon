@@ -4,7 +4,6 @@ import {
   ArrowRight,
   ArrowUp,
   FileText,
-  LayoutDashboard,
   ListChecks,
   Moon,
   Plane,
@@ -27,6 +26,7 @@ const COMPARISON_SUGGESTIONS = [
       "Show me a chart of the top 5 US stocks outperforming the market in 2025 with key trendlines.",
     icon: TrendingUp,
     color: "#067647",
+    hiddenForPair: "oss-cloud",
   },
   {
     label: "Hidden travel gems to explore",
@@ -34,13 +34,6 @@ const COMPARISON_SUGGESTIONS = [
       "Give me travel ideas for underrated destinations with notable landmarks and cultural highlights.",
     icon: Plane,
     color: "#dd517b",
-  },
-  {
-    label: "Create an executive dashboard",
-    prompt:
-      "Visualize following SaaS metrics: MRR $1.28M, growth 8.4%, NRR 112%, churn 2.1%, CAC $740, and pipeline $3.6M. Highlight trends, risks, and the three actions leadership should take.",
-    icon: LayoutDashboard,
-    color: "#b54708",
   },
   {
     label: "Create an editable launch plan",
@@ -148,7 +141,9 @@ export function ComparisonControls({
         <div className={styles.suggestionScroller} aria-label="Try a comparison prompt">
           <div className={styles.suggestionRow}>
             {COMPARISON_SUGGESTIONS.filter(
-              (suggestion) => !("pairOnly" in suggestion) || suggestion.pairOnly === comparisonPair,
+              (suggestion) =>
+                (!("pairOnly" in suggestion) || suggestion.pairOnly === comparisonPair) &&
+                (!("hiddenForPair" in suggestion) || suggestion.hiddenForPair !== comparisonPair),
             ).map((suggestion) => {
               const SuggestionIcon = suggestion.icon;
               const needsCloud = "cloudOnly" in suggestion && suggestion.cloudOnly;

@@ -349,8 +349,8 @@ const typographyTheme: TypographyTheme = {
   fontSize4xl: "32px",
   fontSize5xl: "36px",
 
-  fontWeightRegular: "400",
-  fontWeightMedium: "500",
+  fontWeightRegular: "375",
+  fontWeightMedium: "475",
   fontWeightBold: "600",
   fontWeightHeavy: "700",
 

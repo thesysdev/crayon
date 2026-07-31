@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import spawn from "cross-spawn";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
@@ -6,10 +6,22 @@ import * as path from "node:path";
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
-import { resolveInstallPackageManager } from "../lib/detect-package-manager";
+import {
+  resolveInstallPackageManager,
+  type PackageManagerName,
+} from "../lib/detect-package-manager";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { resolveArgs } from "../lib/resolve-args";
 import { CreateError, telemetry } from "../lib/telemetry";
+
+function runCommand(command: string, args: string[], cwd: string) {
+  return spawn.sync(command, args, { cwd, stdio: "inherit" });
+}
+
+function errorCode(error: Error): string {
+  const code = (error as NodeJS.ErrnoException).code;
+  return typeof code === "string" ? code : "UNKNOWN";
+}
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
@@ -38,7 +50,7 @@ function buildAppId(name: string): string {
   return `${slug}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function rewritePackageJson(projectDir: string, name: string) {
+function rewritePackageJson(projectDir: string, name: string, packageManager: PackageManagerName) {
   // package.json: set the project name and de-vendor monorepo-local deps
   // (workspace:* / file: / catalog:) to the published "latest". link: deps are
   // rewritten to an absolute file: path so locally-linked packages (e.g.
@@ -50,8 +62,10 @@ function rewritePackageJson(projectDir: string, name: string) {
     name: string;
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
+    pnpm?: unknown;
   };
   pkg.name = name;
+  if (packageManager !== "pnpm") delete pkg.pnpm;
   for (const section of ["dependencies", "devDependencies"] as const) {
     const deps = pkg[section];
     if (!deps) continue;
@@ -112,27 +126,31 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     has_api_key_arg: Boolean(options.apiKey),
     has_auth_arg: Boolean(options.auth),
     no_install: Boolean(options.noInstall),
+    immediate_arg: options.immediate,
   });
 
   const args = await resolveArgs(
     {
       name: options.name
         ? { value: options.name }
-        : { prompt: { type: "input", message: "Project name?" }, required: true },
+        : {
+            prompt: { type: "input", message: "Project name?", default: "openui-agent" },
+            required: true,
+          },
       template: options.template
         ? { value: options.template }
         : {
             prompt: {
               type: "select",
-              message: "Choose your AI setup",
+              message: "Choose your agent backend",
               choices: [
                 {
                   value: "openui-cloud",
-                  name: "OpenUI Cloud — fastest setup with free hosted models (recommended)",
+                  name: "OpenUI Cloud — free hosted models, managed history, tools & artifacts; fastest setup (recommended)",
                 },
                 {
                   value: "openui-self-hosted",
-                  name: "OpenAI-compatible provider — use your own key and self-host the AI route",
+                  name: "Self-hosted — bring your own provider and self-manage the entire backend",
                 },
               ],
             },
@@ -182,6 +200,23 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       ? await resolveChatEnv(interactive)
       : await resolveCloudEnv(name, options, interactive);
 
+  const installSkill = await shouldInstallSkill(options.skill, interactive);
+  telemetry.capture("cli_skill_installed", {
+    ...createFunnelProps("skill_prompt_resolved"),
+    skill_installed: installSkill,
+  });
+
+  const immediateResolution = await resolveImmediate(
+    options.immediate,
+    options.noInstall,
+    interactive,
+  );
+  telemetry.capture("cli_immediate_selected", {
+    immediate: immediateResolution.immediate,
+    dependency_install_requested: immediateResolution.installDependencies,
+    selection_source: immediateResolution.source,
+  });
+
   console.info(`\nScaffolding ${template} into "${name}"...\n`);
   telemetry.capture("cli_scaffold_started", {
     ...createFunnelProps("scaffold_started"),
@@ -194,10 +229,17 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
     restoreDotfiles(targetDir);
-    rewritePackageJson(targetDir, name);
-    // The template lockfile enables npm ci; other managers should resolve from package.json.
+    rewritePackageJson(targetDir, name, packageManager.name);
+    // npm ci requires the copied package-lock; other managers resolve from package.json.
     if (packageManager.name !== "npm") {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
+    }
+    // The Cloud template ships pnpm's lock/workspace files for reproducible pnpm
+    // installs and native-build policy. They are irrelevant to npm/yarn/bun and
+    // can confuse workspace-root detection, so keep them only for pnpm scaffolds.
+    if (packageManager.name !== "pnpm") {
+      fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
+      fs.rmSync(path.join(targetDir, "pnpm-workspace.yaml"), { force: true });
     }
   } catch (err) {
     captureScaffoldFailed();
@@ -219,11 +261,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     auth_succeeded: envResult.authSucceeded,
   });
 
-  const installSkill = await shouldInstallSkill(options.skill, interactive);
-  telemetry.capture("cli_skill_installed", {
-    ...createFunnelProps("skill_prompt_resolved"),
-    skill_installed: installSkill,
-  });
   if (installSkill) {
     telemetry.capture("cli_skill_install_started", {
       ...createFunnelProps("skill_install_started"),
@@ -239,7 +276,10 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   const installCmd = packageManager.installCmd;
   let dependencyInstalled = false;
 
-  if (options.noInstall) {
+  if (!immediateResolution.installDependencies) {
+    telemetry.capture("cli_dependency_install_skipped", {
+      skip_reason: "no_install_flag",
+    });
     console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.\n`);
   } else {
     console.info(`Installing dependencies with: ${installCmd}\n`);
@@ -248,8 +288,8 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       template,
       ai_setup: aiSetup,
     });
-    try {
-      execSync(installCmd, { stdio: "inherit", cwd: targetDir });
+    const installResult = runCommand(packageManager.runCmd, packageManager.installArgs, targetDir);
+    if (!installResult.error && installResult.status === 0) {
       dependencyInstalled = true;
       telemetry.capture("cli_dependency_install_succeeded", {
         ...createFunnelProps("dependency_install_succeeded"),
@@ -257,7 +297,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
         ai_setup: aiSetup,
         dependency_installed: dependencyInstalled,
       });
-    } catch {
+    } else {
       telemetry.capture("cli_dependency_install_failed", {
         ...createFunnelProps("dependency_install_failed"),
         template,
@@ -269,6 +309,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   }
 
   const devCmd = packageManager.runCmd;
+  const startDev = immediateResolution.immediate && dependencyInstalled;
 
   telemetry.capture("cli_create_succeeded", {
     ...createFunnelProps("create_succeeded"),
@@ -286,8 +327,101 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       template,
       skillInstalled: installSkill,
       envWritten: envResult.envWritten,
+      startDev,
+      installCmd,
+      dependencyInstalled,
     }),
   );
+
+  if (!startDev) {
+    telemetry.capture("cli_dev_command_skipped", {
+      skip_reason: options.noInstall ? "dependencies_not_installed" : "not_immediate",
+    });
+    return;
+  }
+
+  const devStartedAt = Date.now();
+  telemetry.capture("cli_dev_command_started", {
+    package_manager: packageManager.name,
+  });
+  const devResult = runCommand(devCmd, ["run", "dev"], targetDir);
+  const durationMs = Math.max(0, Date.now() - devStartedAt);
+  const stoppedNormally =
+    devResult.status === 0 ||
+    devResult.status === 130 ||
+    devResult.status === 143 ||
+    devResult.signal === "SIGINT" ||
+    devResult.signal === "SIGTERM";
+
+  if (stoppedNormally) {
+    telemetry.capture("cli_dev_command_stopped", {
+      package_manager: packageManager.name,
+      duration_ms: durationMs,
+      exit_code: devResult.status,
+      signal: devResult.signal,
+    });
+  } else {
+    const exitCode = devResult.status ?? 1;
+    telemetry.capture("cli_dev_command_failed", {
+      package_manager: packageManager.name,
+      duration_ms: durationMs,
+      failure_reason: devResult.error ? "spawn_error" : "nonzero_exit",
+      exit_code: exitCode,
+      signal: devResult.signal,
+      ...(devResult.error ? { error_code: errorCode(devResult.error) } : {}),
+    });
+    console.error(
+      `\nDevelopment server exited. Retry with:\n\n> cd ${name}\n> ${devCmd} run dev\n`,
+    );
+    process.exitCode = exitCode;
+  }
+}
+
+const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
+
+async function resolveImmediate(
+  immediate: boolean | undefined,
+  noInstall: boolean | undefined,
+  interactive: boolean,
+): Promise<{
+  immediate: boolean;
+  installDependencies: boolean;
+  source: "flag" | "interactive_prompt" | "no_install" | "noninteractive_default";
+}> {
+  if (noInstall) {
+    return { immediate: false, installDependencies: false, source: "no_install" };
+  }
+  if (immediate !== undefined) {
+    return {
+      immediate,
+      installDependencies: true,
+      source: "flag",
+    };
+  }
+  if (!interactive || !isInteractiveTerminal()) {
+    return {
+      immediate: false,
+      installDependencies: true,
+      source: "noninteractive_default",
+    };
+  }
+
+  try {
+    const { confirm } = await import("@inquirer/prompts");
+    const selected = await confirm({
+      message: "Start dev server after install?",
+      default: true,
+    });
+    return {
+      immediate: selected,
+      installDependencies: true,
+      source: "interactive_prompt",
+    };
+  } catch (error) {
+    const { ExitPromptError } = await import("@inquirer/core");
+    if (error instanceof ExitPromptError) process.exit(0);
+    throw error;
+  }
 }
 
 async function writeEnv(targetDir: string, result: EnvResult, appId?: string): Promise<void> {
@@ -362,6 +496,9 @@ function getStartedMessage(o: {
   template: TemplateName;
   skillInstalled: boolean;
   envWritten: boolean;
+  startDev: boolean;
+  installCmd: string;
+  dependencyInstalled: boolean;
 }): string {
   const skillMessage = o.skillInstalled
     ? "The OpenUI agent skill was installed.\nAI coding assistants will use it to help you build with OpenUI.\n"
@@ -376,12 +513,19 @@ function getStartedMessage(o: {
         ? "✅ .env created with your API key."
         : "Add your API key to .env:\nOPENAI_API_KEY=sk-your-key-here";
 
+  const nextStep = o.startDev
+    ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
+    : [
+        `> cd ${o.name}`,
+        ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
+        `> ${o.devCmd} run dev`,
+      ].join("\n");
+
   return `${skillMessage}
 Done!
 
 ${envNote}
 
-> cd ${o.name}
-> ${o.devCmd} run dev
+${nextStep}
 `;
 }

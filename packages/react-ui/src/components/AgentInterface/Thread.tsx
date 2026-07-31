@@ -24,11 +24,12 @@ import { Callout } from "../Callout";
 import { DotMatrixLoader } from "../DotMatrixLoader";
 import { IconButton } from "../IconButton";
 import { MarkDownRenderer } from "../MarkDownRenderer";
-import { ResizableSeparator } from "./ResizableSeparator";
-import { UserMessageContent } from "./UserMessageContent";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
+import { AmbientLoader } from "./components/AmbientLoader";
+import { ResizableSeparator } from "./ResizableSeparator";
 import { useDetailedViewResize } from "./useDetailedViewResize";
+import { UserMessageContent } from "./UserMessageContent";
 
 export const ThreadContainer = ({
   children,
@@ -75,6 +76,15 @@ export const ThreadContainer = ({
         visibility: isLoadingMessages ? "hidden" : undefined,
       }}
     >
+      {/* Full-screen loading state while a thread's messages load. The
+          container above hides via `visibility` (keeps layout + scroll state);
+          this overlay opts back in with `visibility: visible`. */}
+      {isLoadingMessages && (
+        <AmbientLoader
+          className="openui-agent-thread-container__loading"
+          label="Loading conversation…"
+        />
+      )}
       <div className="openui-agent-thread-wrapper" ref={containerRef}>
         {/* Chat panel - always visible */}
         <div

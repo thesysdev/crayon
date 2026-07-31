@@ -1,7 +1,8 @@
 "use client";
 
-import { ClipboardCommandButton } from "@/app/(home)/components/Button/Button";
 import { GitHubButton } from "@/app/(home)/components/GitHubButton/GitHubButton";
+import { BuildForFreeMenu } from "@/app/_components/build-for-free-menu";
+import { useHeaderDropdown } from "@/app/_components/use-header-dropdown";
 import trayStyles from "@/components/site-marketing-header.module.css";
 import {
   ArrowLeft,
@@ -17,19 +18,11 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import styles from "../chat-page.module.css";
 import { getComparisonPair, type ComparisonPair } from "./chat-types";
 import type { ComparisonMode } from "./comparison-mode-controller";
 import { useHasMounted } from "./use-has-mounted";
-
-// Same runner set and order as the homepage hero's command dropdown.
-const CLI_COMMANDS = [
-  { id: "pnpm", runner: "pnpx", command: "pnpx @openuidev/cli@latest create" },
-  { id: "bun", runner: "bunx", command: "bunx @openuidev/cli@latest create" },
-  { id: "yarn", runner: "yarn dlx", command: "yarn dlx @openuidev/cli@latest create" },
-  { id: "npm", runner: "npx", command: "npx @openuidev/cli@latest create" },
-] as const;
 
 // Display titles for the pair options, mirroring the panel headings: mode name
 // plus a chip for the OpenUI flavor. aria-labels keep the canonical names.
@@ -60,7 +53,6 @@ interface ComparisonPairMetadata {
 const ALL_MODES_SUPPORTED: FeatureSupport = { markdown: true, oss: true, cloud: true };
 const OSS_AND_CLOUD_SUPPORTED: FeatureSupport = { markdown: false, oss: true, cloud: true };
 const CLOUD_ONLY_SUPPORTED: FeatureSupport = { markdown: false, oss: false, cloud: true };
-const MARKDOWN_AND_OSS_SUPPORTED: FeatureSupport = { markdown: true, oss: true, cloud: false };
 
 function comparisonFeature(label: string, support: FeatureSupport): ComparisonFeature {
   return { label, support };
@@ -101,7 +93,6 @@ const PAIR_METADATA: Record<ComparisonPair, ComparisonPairMetadata> = {
       { label: "Built-in tools", support: CLOUD_ONLY_SUPPORTED },
       { label: "Responsive output by default", support: CLOUD_ONLY_SUPPORTED },
       { label: "Automatic UI error correction", support: CLOUD_ONLY_SUPPORTED },
-      { label: "Self-hostable and open source", support: MARKDOWN_AND_OSS_SUPPORTED },
     ],
   },
   "markdown-cloud": {
@@ -138,62 +129,6 @@ function PairTitle({ pair }: { pair: ComparisonPair }) {
       <span className={styles.pairTitleSide}>{side(right)}</span>
     </span>
   );
-}
-
-// Shared open/close behavior for the header dropdowns: hover opens (mouse only,
-// with a grace delay so the pointer can cross into the menu), click toggles,
-// outside pointer-down and Escape close.
-function useHeaderDropdown() {
-  const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-    };
-  }, []);
-
-  const cancelScheduledClose = () => {
-    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-    closeTimeoutRef.current = null;
-  };
-
-  const handleHoverOpen = (event: React.PointerEvent) => {
-    if (event.pointerType !== "mouse") return;
-    cancelScheduledClose();
-    setOpen(true);
-  };
-
-  const handleHoverClose = (event: React.PointerEvent) => {
-    if (event.pointerType !== "mouse") return;
-    cancelScheduledClose();
-    closeTimeoutRef.current = setTimeout(() => setOpen(false), 160);
-  };
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handlePointerDown = (event: PointerEvent) => {
-      if (!wrapRef.current?.contains(event.target as Node)) setOpen(false);
-    };
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-        triggerRef.current?.focus();
-      }
-    };
-
-    document.addEventListener("pointerdown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("pointerdown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open]);
-
-  return { open, setOpen, wrapRef, triggerRef, handleHoverOpen, handleHoverClose };
 }
 
 // Menu display order, independent of the default comparison pair.
@@ -259,61 +194,6 @@ function PairSwitcher({
                 </span>
               </span>
             </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function BuildForFreeMenu() {
-  const { open, setOpen, wrapRef, triggerRef, handleHoverOpen, handleHoverClose } =
-    useHeaderDropdown();
-
-  return (
-    <div
-      className={styles.ctaWrap}
-      ref={wrapRef}
-      onPointerEnter={handleHoverOpen}
-      onPointerLeave={handleHoverClose}
-    >
-      <button
-        type="button"
-        ref={triggerRef}
-        className={styles.ctaButton}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-      >
-        <span>Build for free</span>
-        <ArrowRight
-          size={15}
-          strokeWidth={2}
-          aria-hidden="true"
-          className={styles.ctaChevron}
-          data-open={open}
-        />
-      </button>
-
-      <div className={`${styles.ctaMenu} ${open ? styles.ctaMenuOpen : ""}`.trim()}>
-        <div
-          className={styles.ctaMenuCard}
-          role="menu"
-          aria-label="Copy the setup command for a package manager"
-        >
-          {CLI_COMMANDS.map((item) => (
-            <ClipboardCommandButton
-              key={item.id}
-              command={item.command}
-              className={styles.ctaMenuItem}
-              iconContainerClassName={styles.ctaMenuItemIcon}
-              copyIconColor="currentColor"
-            >
-              <span className={styles.ctaMenuItemLabel}>
-                <span className={styles.ctaMenuItemRunner}>{item.runner}</span>
-                {item.command.slice(item.runner.length)}
-              </span>
-            </ClipboardCommandButton>
           ))}
         </div>
       </div>
@@ -543,7 +423,7 @@ export function ChatPageHeader({
 
         {rightHeading}
 
-        <BuildForFreeMenu />
+        <BuildForFreeMenu analyticsSource="compare_navbar" className={styles.buildForFreeMenu} />
 
         <MobileMenu pair={pair} onPairChange={onPairChange} onReset={onReset} />
       </div>

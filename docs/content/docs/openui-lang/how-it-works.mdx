@@ -3,6 +3,8 @@ title: Architecture
 description: Build dashboards, CRUD interfaces, and monitoring tools. The LLM generates the UI once, then your app runs independently.
 ---
 
+import { OpenUICloudCallout } from "./components/openui-cloud-callout";
+
 ## The problem today
 
 In most AI-powered applications, when a user interacts with a generated UI (filtering data, submitting a form, refreshing a view), the request goes back through the LLM. The model re-processes the context, calls tools, and regenerates the response. Every click costs tokens. Every interaction adds latency.
@@ -25,6 +27,8 @@ The user describes what they want. Your backend sends the request to an LLM alon
 The Renderer parses the generated code. When it encounters a `Query("list_tickets")`, the runtime calls your tool directly, no LLM roundtrip. When the user clicks a button that triggers `@Run(createResult)`, the runtime executes the mutation against your tool. When a `$variable` changes from a dropdown, all dependent queries re-fetch automatically.
 
 The LLM generated the wiring. The runtime executes it.
+
+<OpenUICloudCallout description="Keep generative UI reliable with output correction, model fallbacks, and monitoring." />
 
 ## What this enables
 
@@ -137,14 +141,12 @@ const tools: ToolSpec[] = [
 
 ```ts
 // route.ts
-import { generatePrompt } from "@openuidev/lang-core";
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
 import componentSpec from "./generated/component-spec.json";
 
-const systemPrompt = generatePrompt({
-  ...componentSpec,
-  tools,
-  toolCalls: true,
-  bindings: true,
+const systemPrompt = generateSystemPrompt({
+  library: componentSpec as LibrarySpec,
+  promptOptions: { tools, toolCalls: true, bindings: true },
 });
 
 const completion = await openai.chat.completions.create({
