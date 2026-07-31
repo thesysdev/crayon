@@ -20,7 +20,7 @@ const logo = {
 
 // The app's model menu — `group` drives the dropdown sections, in this order.
 export const MODEL_OPTIONS: ModelOption[] = [
-  { id: "anthropic/claude-sonnet-5", name: "Claude Sonnet 5", group: "Anthropic", recommended: true, logo: logo.anthropic },
+  { id: "anthropic/claude-sonnet-5", name: "Claude Sonnet 5", group: "Anthropic", logo: logo.anthropic },
   { id: "anthropic/claude-sonnet-4.6", name: "Claude Sonnet 4.6", group: "Anthropic", logo: logo.anthropic },
   { id: "anthropic/claude-opus-4-7", name: "Claude Opus 4.7", group: "Anthropic", logo: logo.anthropic },
 
