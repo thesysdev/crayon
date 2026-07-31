@@ -207,6 +207,12 @@ Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_n
 openui create --no-telemetry
 ```
 
+The package also uses [Reo.dev NPM install tracking](https://docs.reo.dev/set-up-npm-package-installs-tracking-on-reo.dev) in partial data mode. During dependency installation, Reo receives package and environment metadata, the configured Git user name and email domain, and the source IP observed by its endpoint. It does not receive the full Git email address or dependency list. This install-time collection happens before the CLI runs and is controlled separately from the command telemetry above. Disable it by setting `PACKAGE_TRACKER_ANALYTICS=false` while installing:
+
+```bash
+PACKAGE_TRACKER_ANALYTICS=false npm install @openuidev/cli
+```
+
 ## Notes
 
 - interactive prompts can be cancelled without creating output

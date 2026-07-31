@@ -4,7 +4,7 @@ import { Geist_Mono, Inter } from "next/font/google";
 import Script from "next/script";
 import { BASE_URL } from "../lib/source";
 import "./global.css";
-import { PHProvider } from "./providers";
+import { AnalyticsProvider } from "./providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -86,11 +86,11 @@ export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${inter.className} ${geistMono.variable}`} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
-        <PHProvider>
+        <AnalyticsProvider>
           <RootProvider theme={{ defaultTheme: "system", enableSystem: true }}>
             {children}
           </RootProvider>
-        </PHProvider>
+        </AnalyticsProvider>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-MZ0TZ82NM2"
           strategy="lazyOnload"

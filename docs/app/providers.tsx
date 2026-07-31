@@ -1,13 +1,18 @@
 "use client";
 
 import { loadPostHog } from "@/lib/analytics";
+import { loadReo } from "@/lib/reo";
 import { addThesysLinkAttribution } from "@/lib/thesys-link-attribution";
 import { useEffect } from "react";
 
-export function PHProvider({ children }: { children: React.ReactNode }) {
+export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let posthogDistinctId: string | undefined;
     let posthogSessionId: string | undefined;
+
+    void loadReo().catch(() => {
+      // Analytics failures must not affect navigation.
+    });
 
     const load = () => {
       void loadPostHog()
