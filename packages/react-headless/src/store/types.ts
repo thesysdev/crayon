@@ -92,14 +92,6 @@ export interface ChatProviderProps {
    * artifact browser's pre-applied filters, and workspace section grouping.
    */
   artifactCategories?: ArtifactCategory[];
-  /**
-   * How artifact detail panels open (default `"overview"` — only on user
-   * action). `"auto-open"` presents a newly registered artifact while the
-   * thread runs (live generation); `"open-on-mount"` also on thread load
-   * (deep-link/kiosk). Each artifact presents at most once, into an empty
-   * panel; edits never force one open. Driven inside ChatProvider — no host
-   * wiring needed — and live: prop changes apply on the next render.
-   */
   artifactViewMode?: ArtifactViewMode;
   children: React.ReactNode;
 }

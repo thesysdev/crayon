@@ -67,11 +67,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({
     return unsubscribe;
   }, [chatStore, detailedViewStore, threadContextStore]);
 
-  // Store-level driver for artifactViewMode: an artifact may present itself
-  // once, when it first registers in the ThreadContext. Thread-switch safety
-  // comes from the reset subscription above running synchronously inside the
-  // selectThread set(): latch and registry clear before any new-thread
-  // registration can reach this watcher.
   useArtifactAutoOpenWatcher(
     artifactViewMode ?? DEFAULT_ARTIFACT_VIEW_MODE,
     chatStore,

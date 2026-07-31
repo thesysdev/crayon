@@ -10,7 +10,6 @@ const entry = (id: string, version = 1): ArtifactEntry => ({
   type: "test_artifact",
 });
 
-// Registry shape mirrors ThreadContextState.artifacts: id → versions ascending.
 const registry = (...entries: ArtifactEntry[]): Record<string, ArtifactEntry[]> => {
   const out: Record<string, ArtifactEntry[]> = {};
   for (const e of entries) (out[e.id] ??= []).push(e);
@@ -29,16 +28,15 @@ describe("evaluateRegisteredArtifacts", () => {
     const store = createDetailedViewStore();
     const arts = registry(entry("art"));
     evaluateRegisteredArtifacts("auto-open", arts, true, store);
-    store.getState().setActiveDetailedView(null); // user closes
-    evaluateRegisteredArtifacts("auto-open", arts, true, store); // remount re-register
+    store.getState().setActiveDetailedView(null);
+    evaluateRegisteredArtifacts("auto-open", arts, true, store);
     expect(store.getState().activeDetailedViewId).toBeNull();
   });
 
   it("edits never re-open: a new version shares the claimed id", () => {
     const store = createDetailedViewStore();
     evaluateRegisteredArtifacts("auto-open", registry(entry("art", 1)), true, store);
-    store.getState().setActiveDetailedView(null); // user closes the generate
-    // The edit registers v2 under the same id — still quiet.
+    store.getState().setActiveDetailedView(null);
     evaluateRegisteredArtifacts(
       "auto-open",
       registry(entry("art", 1), entry("art", 2)),
@@ -62,9 +60,8 @@ describe("evaluateRegisteredArtifacts", () => {
   it("auto-open: historical registrations (thread not running) never open — and stay claimed", () => {
     const store = createDetailedViewStore();
     const arts = registry(entry("old"));
-    evaluateRegisteredArtifacts("auto-open", arts, false, store); // thread load
+    evaluateRegisteredArtifacts("auto-open", arts, false, store);
     expect(store.getState().activeDetailedViewId).toBeNull();
-    // A later run starts and the host re-registers: the claim is already burned.
     evaluateRegisteredArtifacts("auto-open", arts, true, store);
     expect(store.getState().activeDetailedViewId).toBeNull();
   });
@@ -79,7 +76,6 @@ describe("evaluateRegisteredArtifacts", () => {
     const store = createDetailedViewStore();
     evaluateRegisteredArtifacts("auto-open", registry(entry("a1"), entry("a2")), true, store);
     expect(store.getState().activeDetailedViewId).toBe("a1:1");
-    // a2's chance is spent: even after the user closes, it stays quiet.
     expect(store.getState()._autoOpenedArtifactKeys.has("a2")).toBe(true);
     store.getState().setActiveDetailedView(null);
     evaluateRegisteredArtifacts("auto-open", registry(entry("a1"), entry("a2")), true, store);

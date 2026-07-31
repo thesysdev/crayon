@@ -6,8 +6,6 @@ describe("detailed-view auto-open latch", () => {
     const store = createDetailedViewStore();
 
     expect(store.getState()._markAutoOpened("a1:1")).toBe(true);
-    // A remounted host asking again for the same artifact version must not
-    // re-open (a user's mid-stream close sticks).
     expect(store.getState()._markAutoOpened("a1:1")).toBe(false);
   });
 
