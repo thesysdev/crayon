@@ -31,10 +31,10 @@ export function splitModels(models: ModelOption[]): {
   return { paidGroups, freeModels };
 }
 
-export type ModelBadgeInfo = { label: string; kind: "free" };
+export type ModelBadgeInfo = { label: string; kind: "recommended" | "free" };
 
-// Single source of truth for the free chip (used by both the trigger and the
-// dropdown rows).
+// Single source of truth for which chip a model gets (used by both the trigger
+// and the dropdown rows).
 export function getModelBadge(model: ModelOption): ModelBadgeInfo | null {
   if (model.badge === "Free") return { label: model.badge, kind: "free" };
   return null;

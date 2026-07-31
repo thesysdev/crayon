@@ -2,10 +2,11 @@ import { type ModelOption } from "@/lib/models";
 
 import { getModelBadge } from "./utils";
 
-// Free uses the success color from the @openuidev design tokens. Labels use
-// neutral primary text while the leading dot carries the semantic color.
-// Trigger and row differ only in shape/size.
+// Recommended = info (blue), Free = success (green), both from the @openuidev
+// design tokens. Labels use neutral primary text while the leading dot carries
+// the semantic color. Trigger and row differ only in shape/size.
 const BADGE_DOT_COLORS = {
+  recommended: "bg-[var(--openui-border-info-emphasis)]",
   free: "bg-[var(--openui-border-success-emphasis)]",
 } as const;
 

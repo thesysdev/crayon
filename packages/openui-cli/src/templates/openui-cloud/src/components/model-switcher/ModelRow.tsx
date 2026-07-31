@@ -3,7 +3,7 @@ import { type ModelOption } from "@/lib/models";
 import { ModelBadge } from "./ModelBadge";
 import { ProviderLogo } from "./ProviderLogo";
 
-// A single row inside the dropdown: provider logo, name, and an optional Free
+// A single row inside the dropdown: provider logo, name, and a Recommended/Free
 // chip.
 export function ModelRow({ model }: { model: ModelOption }) {
   return (
