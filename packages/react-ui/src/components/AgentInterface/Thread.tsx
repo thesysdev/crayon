@@ -7,7 +7,7 @@ import {
   useToolActivities,
 } from "@openuidev/react-headless";
 import clsx from "clsx";
-import React, { memo, useEffect, useId, useMemo, useRef } from "react";
+import React, { memo, useId, useMemo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import {
