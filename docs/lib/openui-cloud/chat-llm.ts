@@ -1,3 +1,4 @@
+import type { CloudDemoWorkload } from "@/lib/openui-cloud/config";
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import {
   openAIConversationMessageFormat,
@@ -9,7 +10,7 @@ interface CloudChatLLM extends ChatLLM {
   setSelectedModel: (model: string) => void;
 }
 
-export function createCloudChatLLM(): CloudChatLLM {
+export function createCloudChatLLM(workload: CloudDemoWorkload = "chat-cloud"): CloudChatLLM {
   let selectedModel = DEFAULT_MODEL;
 
   return {
@@ -21,6 +22,7 @@ export function createCloudChatLLM(): CloudChatLLM {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          workload,
           threadId,
           input: openAIConversationMessageFormat.toApi(messages.slice(-1)),
           model: selectedModel,

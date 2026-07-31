@@ -20,18 +20,7 @@ export function hasAllowedOrigin(request: Request): boolean {
 
   if (normalizedOrigin !== origin) return false;
 
-  const allowedOrigins = new Set([new URL(request.url).origin]);
-  for (const configuredOrigin of (process.env.OPENUI_CLOUD_ALLOWED_ORIGINS ?? "").split(",")) {
-    const candidate = configuredOrigin.trim();
-    if (!candidate) continue;
-    try {
-      allowedOrigins.add(new URL(candidate).origin);
-    } catch {
-      // A malformed allowlist entry is ignored rather than broadening access.
-    }
-  }
-
-  return allowedOrigins.has(normalizedOrigin);
+  return normalizedOrigin === new URL(request.url).origin;
 }
 
 export function hasJsonContentType(request: Request): boolean {

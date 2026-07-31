@@ -2,7 +2,8 @@ import {
   createDemoCreditsExhaustedResponse,
   isDemoCreditsExhaustedError,
 } from "@/lib/demo-credits";
-import { BASE_URL } from "@/lib/source";
+import { readOpenuiCloudConfig } from "@/lib/openui-cloud/config";
+import { unavailableResponse } from "@/lib/openui-cloud/errors";
 import { readFileSync } from "fs";
 import { type NextRequest } from "next/server";
 import { join } from "path";
@@ -17,15 +18,16 @@ const conversationLog: Array<{ role: string; content: string }> = [];
 export async function POST(req: NextRequest) {
   const { model, prompt } = await req.json();
 
+  const config = readOpenuiCloudConfig("playground");
+  if (!config) return unavailableResponse();
+
   conversationLog.push({ role: "user", content: prompt });
 
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  const res = await fetch(`${config.embedBaseUrl}/chat/completions`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      Authorization: `Bearer ${config.apiKey}`,
       "Content-Type": "application/json",
-      "HTTP-Referer": `${BASE_URL}/demos`,
-      "X-Title": "OpenUI Playground",
     },
     body: JSON.stringify({
       model,
@@ -47,7 +49,7 @@ export async function POST(req: NextRequest) {
     return Response.json(
       {
         error: (err as { error?: { message?: string } }).error ?? {
-          message: `OpenRouter error ${res.status}`,
+          message: `OpenUI Cloud error ${res.status}`,
         },
       },
       { status: res.status },
@@ -56,7 +58,7 @@ export async function POST(req: NextRequest) {
 
   // Keep credit handling to provider 4xx responses. Provider-specific mid-stream
   // error chunks are intentionally passed through because they are harder to
-  // maintain across OpenRouter/OpenAI streaming shape changes.
+  // maintain across OpenUI Cloud/OpenAI streaming shape changes.
   const [streamForClient, streamForLog] = res.body!.tee();
 
   const reader = streamForLog.getReader();
