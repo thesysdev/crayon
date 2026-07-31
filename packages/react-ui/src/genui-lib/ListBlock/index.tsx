@@ -16,7 +16,7 @@ export const ListBlock = defineComponent({
   }),
   description:
     "A list of items with number or image indicators. Each item can optionally have an action.",
-  component: ({ props, statementId }) => {
+  component: ({ props }) => {
     const triggerAction = useTriggerAction();
     const items = (props.items ?? []) as any[];
     const variant = (props.variant as "number" | "image") ?? "number";
@@ -33,7 +33,7 @@ export const ListBlock = defineComponent({
           const hasAction = !!action;
 
           const handleClick = hasAction
-            ? () => triggerAction(title, undefined, action as ActionPlan | undefined, statementId)
+            ? () => triggerAction(title, undefined, action as ActionPlan | undefined)
             : undefined;
 
           return (

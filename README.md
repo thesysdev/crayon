@@ -94,7 +94,6 @@ Try it yourself in the [Playground](https://www.openui.com/playground): generate
 | Package                                                                                                    | Best for                                         | Description                                                                                                  |
 | :--------------------------------------------------------------------------------------------------------- | :----------------------------------------------- | :----------------------------------------------------------------------------------------------------------- |
 | [`@openuidev/lang-core`](./packages/lang-core)                                                             | Framework-agnostic parsing and prompt generation | Core parser, prompt-generation, runtime-evaluation, and type layer with no React, Vue, or Svelte dependency  |
-| [`@openuidev/a2ui-lang`](./packages/a2ui-lang)                                                             | A2UI protocol with OpenUI Lang components        | A2UI v1.0 surface lifecycle, data model, actions, RPC, and React rendering with Lang component updates       |
 | [`@openuidev/react-lang`](./packages/react-lang)                                                           | React rendering runtimes                         | Define component libraries, generate prompts, and render streamed OpenUI Lang in React                       |
 | [`@openuidev/react-headless`](./packages/react-headless)                                                   | Bring-your-own React chat UI                     | Headless chat state, streaming adapters, and message format converters                                       |
 | [`@openuidev/react-ui`](./packages/react-ui)                                                               | Fastest path to a full React chat experience     | Prebuilt chat layouts, standalone UI primitives, and two built-in component libraries                        |
@@ -113,9 +112,6 @@ npm install @openuidev/react-lang @openuidev/react-ui
 
 # Framework-agnostic backend or Edge prompt generation
 npm install @openuidev/lang-core
-
-# A2UI v1.0 protocol streams with OpenUI Lang component updates
-npm install @openuidev/a2ui-lang
 
 # Vue or Svelte runtime
 npm install @openuidev/vue-lang

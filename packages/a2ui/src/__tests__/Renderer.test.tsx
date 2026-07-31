@@ -10,8 +10,8 @@ import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod/v4";
-import { createA2UILangClient } from "../client";
-import { A2UILangRenderer } from "../Renderer";
+import { createA2UIClient } from "../client";
+import { A2UIRenderer } from "../Renderer";
 
 const TextContent = defineComponent({
   name: "TextContent",
@@ -61,9 +61,9 @@ const Form = defineComponent({
 
 const formLibrary = createLibrary({ components: [Form, Field], root: "Form" });
 
-describe("A2UILangRenderer", () => {
+describe("A2UIRenderer", () => {
   it("renders the active A2UI surface through the OpenUI Lang React renderer", async () => {
-    const client = createA2UILangClient({
+    const client = createA2UIClient({
       schema: library.toJSONSchema(),
       rootName: library.root,
     });
@@ -80,14 +80,14 @@ describe("A2UILangRenderer", () => {
     });
 
     const html = renderToStaticMarkup(
-      <A2UILangRenderer client={client} surfaceId="main" library={library} />,
+      <A2UIRenderer client={client} surfaceId="main" library={library} />,
     );
     expect(html).toContain("Hello A2UI");
     expect(html).toContain('data-statement="greeting"');
   });
 
   it("renders nothing after the surface is deleted", async () => {
-    const client = createA2UILangClient({ schema: library.toJSONSchema() });
+    const client = createA2UIClient({ schema: library.toJSONSchema() });
     await client.process({
       version: "v1.0",
       createSurface: { surfaceId: "main", catalogId: "com.example:test" },
@@ -98,12 +98,12 @@ describe("A2UILangRenderer", () => {
     });
 
     expect(
-      renderToStaticMarkup(<A2UILangRenderer client={client} surfaceId="main" library={library} />),
+      renderToStaticMarkup(<A2UIRenderer client={client} surfaceId="main" library={library} />),
     ).toBe("");
   });
 
   it("keeps live form input and the A2UI data model converged", async () => {
-    const client = createA2UILangClient({
+    const client = createA2UIClient({
       schema: formLibrary.toJSONSchema(),
       rootName: formLibrary.root,
     });
@@ -124,7 +124,7 @@ describe("A2UILangRenderer", () => {
 
     await act(async () => {
       root.render(
-        <A2UILangRenderer
+        <A2UIRenderer
           client={client}
           surfaceId="main"
           library={formLibrary}
@@ -172,7 +172,7 @@ describe("A2UILangRenderer", () => {
   });
 
   it("forwards the A2UI transport streaming state", async () => {
-    const client = createA2UILangClient({
+    const client = createA2UIClient({
       schema: formLibrary.toJSONSchema(),
       rootName: formLibrary.root,
     });
@@ -188,7 +188,7 @@ describe("A2UILangRenderer", () => {
 
     await act(async () => {
       root.render(
-        <A2UILangRenderer client={client} surfaceId="main" library={formLibrary} isStreaming />,
+        <A2UIRenderer client={client} surfaceId="main" library={formLibrary} isStreaming />,
       );
     });
     expect(container.querySelector("button")?.disabled).toBe(true);

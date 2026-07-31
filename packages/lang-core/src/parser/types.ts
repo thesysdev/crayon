@@ -184,8 +184,6 @@ export interface ActionEvent {
   formState?: Record<string, unknown>;
   /** The form name that triggered this action, if any. */
   formName?: string;
-  /** Statement ID of the interactive component that triggered the action. */
-  sourceComponentId?: string;
 }
 
 /**

@@ -25,7 +25,7 @@ export const Button = defineComponent({
   name: "Button",
   props: ButtonSchema,
   description: "Clickable button",
-  component: ({ props, statementId }) => {
+  component: ({ props }) => {
     const triggerAction = useTriggerAction();
     const formName = useFormName();
     const isStreaming = useIsStreaming();
@@ -58,7 +58,7 @@ export const Button = defineComponent({
             }
           }
 
-          triggerAction(label, formName, action, statementId);
+          triggerAction(label, formName, action);
         }}
       >
         {label}

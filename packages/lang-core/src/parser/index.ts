@@ -21,7 +21,7 @@ export { enrichErrors } from "./enrich-errors";
 export { generatePrompt } from "./prompt";
 export type { ComponentGroup, ComponentPromptSpec, PromptSpec, ToolSpec } from "./prompt";
 
-export { mergeStatements, type MergeStatementsOptions } from "./merge";
+export { mergeStatements } from "./merge";
 
 export { jsonToOpenUI } from "./serialize";
 export type { SerializeOptions } from "./serialize";

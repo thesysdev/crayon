@@ -539,21 +539,6 @@ describe("jsonToOpenUI", () => {
       const children = result.root!.props.children as ElementNode[];
       expect(children[0].props.text).toBe("New");
     });
-
-    it("can preserve temporarily unreachable statements for incremental protocols", () => {
-      const existing = 'root = Stack([header])\nheader = Title("Header")';
-
-      const merged = mergeStatements(existing, 'footer = Title("Footer")', "root", {
-        garbageCollect: false,
-      });
-
-      expect(merged).toContain('footer = Title("Footer")');
-      expect(
-        mergeStatements(merged, "root = Stack([header, footer])", "root", {
-          garbageCollect: false,
-        }),
-      ).toContain('footer = Title("Footer")');
-    });
   });
 
   // ── Edge cases ─────────────────────────────────────────────────────────

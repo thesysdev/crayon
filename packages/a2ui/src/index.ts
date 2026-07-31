@@ -1,4 +1,4 @@
-export { A2UIActionError, A2UILangClient, createA2UILangClient } from "./client";
+export { A2UIActionError, A2UIClient, createA2UIClient } from "./client";
 export {
   applyDataModelUpdate,
   dataModelToOpenUIState,
@@ -6,9 +6,9 @@ export {
 } from "./json-pointer";
 export { agentToRendererMessageSchema, validateAgentToRendererMessage } from "./runtime-schema";
 export type {
+  A2UIClientOptions,
   A2UIFunctionCall,
   A2UIFunctionCallableFrom,
-  A2UILangClientOptions,
   A2UIRendererFunction,
   A2UIRendererFunctionRegistration,
   ActionMessage,

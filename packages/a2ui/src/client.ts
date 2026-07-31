@@ -1,6 +1,5 @@
 import {
   createParser,
-  mergeStatements,
   type ActionEvent,
   type OpenUIError,
   type Parser,
@@ -8,8 +7,9 @@ import {
 } from "@openuidev/lang-core";
 import { applyDataModelUpdate, mergeOpenUIStateIntoDataModel, toJsonObject } from "./json-pointer";
 import { validateAgentToRendererMessage } from "./runtime-schema";
+import { mergeComponentStatements } from "./statement-patch";
 import type {
-  A2UILangClientOptions,
+  A2UIClientOptions,
   ActionMessage,
   ActionResponseMessage,
   AgentToRendererMessage,
@@ -117,11 +117,11 @@ function validationTarget(input: unknown): {
   return { functionCallId };
 }
 
-export class A2UILangClient {
+export class A2UIClient {
   readonly #parser: Parser;
-  readonly #functions: A2UILangClientOptions["functions"];
-  readonly #onMessage?: A2UILangClientOptions["onMessage"];
-  readonly #rendererCapabilities?: A2UILangClientOptions["rendererCapabilities"];
+  readonly #functions: A2UIClientOptions["functions"];
+  readonly #onMessage?: A2UIClientOptions["onMessage"];
+  readonly #rendererCapabilities?: A2UIClientOptions["rendererCapabilities"];
   readonly #now: () => Date;
   readonly #createId: () => string;
   readonly #surfaces = new Map<string, SurfaceSnapshot>();
@@ -130,7 +130,7 @@ export class A2UILangClient {
   readonly #pendingActions = new Map<string, PendingAction>();
   #revision = 0;
 
-  constructor(options: A2UILangClientOptions) {
+  constructor(options: A2UIClientOptions) {
     this.#parser = createParser(options.schema, options.rootName);
     this.#functions = options.functions;
     this.#onMessage = options.onMessage;
@@ -217,6 +217,8 @@ export class A2UILangClient {
     event: ActionEvent,
     options: OpenUIActionOptions = {},
   ): Promise<JsonValue> | undefined {
+    const eventSourceComponentId = (event as ActionEvent & { sourceComponentId?: unknown })
+      .sourceComponentId;
     const context: JsonObject = {
       ...toJsonObject(event.params),
       ...(event.formState ? { formState: toJsonObject(event.formState) } : {}),
@@ -224,7 +226,9 @@ export class A2UILangClient {
     };
     return this.dispatchAction({
       surfaceId,
-      sourceComponentId: event.sourceComponentId ?? "root",
+      sourceComponentId:
+        options.sourceComponentId ??
+        (typeof eventSourceComponentId === "string" ? eventSourceComponentId : "root"),
       name: options.name ?? event.type,
       context,
       wantResponse: options.wantResponse,
@@ -506,9 +510,7 @@ export class A2UILangClient {
     existing: string,
     components: string[],
   ): Pick<SurfaceSnapshot, "source" | "parseResult" | "errors"> {
-    const source = mergeStatements(existing, components.join("\n"), "root", {
-      garbageCollect: false,
-    });
+    const source = mergeComponentStatements(existing, components);
     const parseResult = this.#parser.parse(source);
     return {
       source,
@@ -585,6 +587,6 @@ export class A2UILangClient {
   }
 }
 
-export function createA2UILangClient(options: A2UILangClientOptions): A2UILangClient {
-  return new A2UILangClient(options);
+export function createA2UIClient(options: A2UIClientOptions): A2UIClient {
+  return new A2UIClient(options);
 }

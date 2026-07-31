@@ -10,12 +10,12 @@ import {
   type RendererProps as OpenUIRendererProps,
 } from "@openuidev/react-lang";
 import { useCallback, useMemo, useSyncExternalStore } from "react";
-import type { A2UILangClient } from "./client";
+import type { A2UIClient } from "./client";
 import { dataModelToOpenUIState } from "./json-pointer";
 import type { JsonValue, MapOpenUIAction, OpenUIActionOptions, SurfaceSnapshot } from "./types";
 
-export interface A2UILangRendererProps {
-  client: A2UILangClient;
+export interface A2UIRendererProps {
+  client: A2UIClient;
   surfaceId: string;
   library: Library;
   mapAction?: MapOpenUIAction;
@@ -56,7 +56,7 @@ function collectFormStateKeys(result: ParseResult | null): string[] {
   return [...keys];
 }
 
-export function A2UILangRenderer({
+export function A2UIRenderer({
   client,
   surfaceId,
   library,
@@ -72,7 +72,7 @@ export function A2UILangRenderer({
   formStateKeys,
   toolProvider,
   queryLoader,
-}: A2UILangRendererProps) {
+}: A2UIRendererProps) {
   const subscribe = useCallback((notify: () => void) => client.subscribe(notify), [client]);
   const getSnapshot = useCallback(() => client.getSurface(surfaceId), [client, surfaceId]);
   const surface = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);

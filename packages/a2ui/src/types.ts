@@ -170,7 +170,7 @@ export interface A2UIRendererFunctionRegistration {
   callableFrom?: A2UIFunctionCallableFrom;
 }
 
-export interface A2UILangClientOptions {
+export interface A2UIClientOptions {
   schema: LibraryJSONSchema;
   rootName?: string;
   functions?: Record<string, A2UIRendererFunction | A2UIRendererFunctionRegistration>;
@@ -203,6 +203,8 @@ export interface DispatchActionInput {
 
 export interface OpenUIActionOptions {
   name?: string;
+  /** A2UI component ID to report for the action. Defaults to the Lang statement ID, then root. */
+  sourceComponentId?: string;
   context?: JsonObject;
   wantResponse?: boolean;
   responsePath?: string;

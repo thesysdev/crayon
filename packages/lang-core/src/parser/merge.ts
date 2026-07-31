@@ -15,16 +15,6 @@ interface ParsedStatement {
   raw: string;
 }
 
-export interface MergeStatementsOptions {
-  /**
-   * Remove statements that are not reachable from `root` after applying the
-   * patch. Defaults to true for the existing whole-program patch semantics.
-   * Protocols that deliver independent component updates can disable this so
-   * a statement survives until a later parent update references it.
-   */
-  garbageCollect?: boolean;
-}
-
 function splitStatementSource(input: string): string[] {
   const stmts: string[] = [];
   let depth = 0;
@@ -148,12 +138,7 @@ function gcUnreachable(
  * Unreachable statements are automatically garbage-collected.
  * Returns the merged program as a string.
  */
-export function mergeStatements(
-  existing: string,
-  patch: string,
-  rootId = "root",
-  options: MergeStatementsOptions = {},
-): string {
+export function mergeStatements(existing: string, patch: string, rootId = "root"): string {
   const existingStmts = parseStatements(existing);
   const patchStmts = parseStatements(stripFences(patch));
 
@@ -189,11 +174,8 @@ export function mergeStatements(
     asts.set(stmt.id, stmt.ast);
   }
 
-  // GC is appropriate for whole-response edits, but not for protocols that
-  // may define a component before a later update attaches it to the root.
-  if (options.garbageCollect !== false) {
-    gcUnreachable(order, merged, asts, rootId);
-  }
+  // GC: remove statements unreachable from root
+  gcUnreachable(order, merged, asts, rootId);
 
   return order
     .filter((id) => merged.has(id))

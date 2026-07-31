@@ -1,8 +1,7 @@
-import { createParser } from "@openuidev/lang-core";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { OpenAI } from "openai";
 import { join } from "path";
-import { astToA2UIJsonStream, openUIToA2UILangStream } from "./a2ui-converter.js";
+import { createParser } from "../packages/react-lang/src/parser/parser.js";
 import { astToThesysC1Json } from "./thesys-c1-converter.js";
 import { astToVercelJsonl } from "./vercel-jsonl-converter.js";
 import { astToYaml } from "./yaml-converter.js";
@@ -101,11 +100,6 @@ async function main() {
 
     // Save YAML spec payload (the content inside a yaml-spec fence)
     writeFileSync(join("samples", `${name}.yaml`), astToYaml(ast));
-
-    // Save complete A2UI v1.0 streams with identical envelopes. Only the
-    // updateComponents.components representation differs between these files.
-    writeFileSync(join("samples", `${name}.a2ui.jsonl`), astToA2UIJsonStream(ast));
-    writeFileSync(join("samples", `${name}.a2ui-openui.jsonl`), openUIToA2UILangStream(fullText));
 
     console.log(`  Done! ${completionTokens} tokens @ ${tps.toFixed(1)} tok/s`);
   }

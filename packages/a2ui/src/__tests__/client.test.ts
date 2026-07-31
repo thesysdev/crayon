@@ -1,6 +1,6 @@
 import type { LibraryJSONSchema } from "@openuidev/lang-core";
 import { describe, expect, it, vi } from "vitest";
-import { A2UIActionError, createA2UILangClient } from "../client";
+import { A2UIActionError, createA2UIClient } from "../client";
 import {
   applyDataModelUpdate,
   dataModelToOpenUIState,
@@ -21,7 +21,7 @@ const schema: LibraryJSONSchema = {
   },
 };
 
-function createSurface(client: ReturnType<typeof createA2UILangClient>) {
+function createSurface(client: ReturnType<typeof createA2UIClient>) {
   return client.process({
     version: "v1.0",
     createSurface: {
@@ -32,9 +32,9 @@ function createSurface(client: ReturnType<typeof createA2UILangClient>) {
   });
 }
 
-describe("A2UILangClient", () => {
+describe("A2UIClient", () => {
   it("runs the A2UI surface lifecycle with incremental OpenUI Lang updates", async () => {
-    const client = createA2UILangClient({ schema });
+    const client = createA2UIClient({ schema });
 
     expect((await createSurface(client)).ok).toBe(true);
     expect(
@@ -88,7 +88,7 @@ describe("A2UILangClient", () => {
   });
 
   it("supports single-message creation with Lang components and no catalogId", async () => {
-    const client = createA2UILangClient({ schema });
+    const client = createA2UIClient({ schema });
     const result = await client.process({
       version: "v1.0",
       createSurface: {
@@ -105,7 +105,7 @@ describe("A2UILangClient", () => {
   });
 
   it("preserves components that are referenced by a later incremental update", async () => {
-    const client = createA2UILangClient({ schema });
+    const client = createA2UIClient({ schema });
     await createSurface(client);
     await client.process({
       version: "v1.0",
@@ -131,8 +131,36 @@ describe("A2UILangClient", () => {
     ]);
   });
 
+  it("merges multiline blocks and deletes statements by ID", async () => {
+    const client = createA2UIClient({ schema });
+    await createSurface(client);
+
+    await client.process({
+      version: "v1.0",
+      updateComponents: {
+        surfaceId: "main",
+        components: [
+          `root = Stack([
+            title
+          ])
+          title = TextContent("Before")`,
+        ],
+      },
+    });
+    const result = await client.process({
+      version: "v1.0",
+      updateComponents: {
+        surfaceId: "main",
+        components: ["title = null", "root = Stack([])"],
+      },
+    });
+
+    expect(result.ok).toBe(true);
+    expect(client.getSurface("main")?.source).toBe("root = Stack([])");
+  });
+
   it("validates malformed transport input without throwing or corrupting state", async () => {
-    const client = createA2UILangClient({ schema });
+    const client = createA2UIClient({ schema });
     await createSurface(client);
 
     const missingComponents = await client.process({
@@ -163,7 +191,7 @@ describe("A2UILangClient", () => {
 
   it("emits A2UI actions, resolves actionResponse, and stores responsePath", async () => {
     const messages: RendererToAgentMessage[] = [];
-    const client = createA2UILangClient({
+    const client = createA2UIClient({
       schema,
       onMessage: (message) => messages.push(message),
       now: () => new Date("2026-07-24T10:00:00.000Z"),
@@ -203,7 +231,7 @@ describe("A2UILangClient", () => {
   });
 
   it("rejects a pending action when actionResponse contains an error", async () => {
-    const client = createA2UILangClient({ schema, createId: () => "action-2" });
+    const client = createA2UIClient({ schema, createId: () => "action-2" });
     await createSurface(client);
     const response = client.dispatchAction({
       surfaceId: "main",
@@ -225,7 +253,7 @@ describe("A2UILangClient", () => {
 
   it("executes callFunction and returns the official functionResponse shape", async () => {
     const lookup = vi.fn(async ({ id }: { id?: unknown }) => ({ id: String(id), found: true }));
-    const client = createA2UILangClient({
+    const client = createA2UIClient({
       schema,
       functions: { lookup: lookup as never },
     });
@@ -254,7 +282,7 @@ describe("A2UILangClient", () => {
   });
 
   it("enforces callableFrom for agent-initiated function calls", async () => {
-    const client = createA2UILangClient({
+    const client = createA2UIClient({
       schema,
       functions: {
         localOnly: {
@@ -281,17 +309,20 @@ describe("A2UILangClient", () => {
 
   it("maps OpenUI action context, form state, and source statement to A2UI", async () => {
     const messages: RendererToAgentMessage[] = [];
-    const client = createA2UILangClient({ schema, onMessage: (message) => messages.push(message) });
+    const client = createA2UIClient({ schema, onMessage: (message) => messages.push(message) });
     await createSurface(client);
 
-    client.dispatchOpenUIAction("main", {
-      type: "submit",
-      params: { mode: "fast" },
-      humanFriendlyMessage: "Submit",
-      formState: { contact: { email: { value: "a@example.com", componentType: "Input" } } },
-      formName: "contact",
-      sourceComponentId: "submitButton",
-    });
+    client.dispatchOpenUIAction(
+      "main",
+      {
+        type: "submit",
+        params: { mode: "fast" },
+        humanFriendlyMessage: "Submit",
+        formState: { contact: { email: { value: "a@example.com", componentType: "Input" } } },
+        formName: "contact",
+      },
+      { sourceComponentId: "submitButton" },
+    );
 
     expect(messages.at(-1)).toMatchObject({
       action: {
@@ -306,7 +337,7 @@ describe("A2UILangClient", () => {
   });
 
   it("keeps renderer data-model metadata in sync with local OpenUI state", async () => {
-    const client = createA2UILangClient({ schema });
+    const client = createA2UIClient({ schema });
     await client.process({
       version: "v1.0",
       createSurface: {
@@ -336,7 +367,7 @@ describe("A2UILangClient", () => {
 
   it("filters renderer metadata to opted-in surfaces and includes capabilities", async () => {
     const metadata: unknown[] = [];
-    const client = createA2UILangClient({
+    const client = createA2UIClient({
       schema,
       rendererCapabilities: {
         "v1.0": { supportedCatalogIds: ["com.example:openui"] },
@@ -379,7 +410,7 @@ describe("A2UILangClient", () => {
   });
 
   it("rejects a catalog outside configured renderer capabilities", async () => {
-    const client = createA2UILangClient({
+    const client = createA2UIClient({
       schema,
       rendererCapabilities: {
         "v1.0": { supportedCatalogIds: ["com.example:supported"] },
@@ -447,7 +478,7 @@ describe("A2UI data model bridge", () => {
   });
 
   it("does not let a stale binding mirror revert a user-edited form", async () => {
-    const client = createA2UILangClient({ schema });
+    const client = createA2UIClient({ schema });
     await client.process({
       version: "v1.0",
       createSurface: {
