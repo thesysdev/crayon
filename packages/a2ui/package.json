@@ -10,7 +10,6 @@
   "sideEffects": false,
   "files": [
     "dist",
-    "schema",
     "README.md"
   ],
   "exports": {
@@ -33,29 +32,22 @@
         "types": "./dist/react.d.cts",
         "default": "./dist/react.cjs"
       }
-    },
-    "./schema/agent-to-renderer.json": "./schema/agent-to-renderer.json",
-    "./schema/renderer-to-agent.json": "./schema/renderer-to-agent.json",
-    "./schema/renderer-capabilities.json": "./schema/renderer-capabilities.json",
-    "./schema/agent-capabilities.json": "./schema/agent-capabilities.json",
-    "./schema/renderer-data-model.json": "./schema/renderer-data-model.json"
+    }
   },
   "scripts": {
     "test": "vitest run",
     "build": "tsdown",
     "watch": "tsdown --watch",
-    "schema:generate": "tsx scripts/generate-protocol-schemas.ts",
-    "schema:check": "tsx scripts/generate-protocol-schemas.ts --check",
     "typecheck": "tsc --noEmit",
     "lint:check": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "format:fix": "prettier --write ./src ./scripts README.md",
-    "format:check": "prettier --check ./src ./scripts README.md",
+    "format:fix": "prettier --write ./src README.md",
+    "format:check": "prettier --check ./src README.md",
     "check:publint": "publint",
     "check:attw": "attw --pack . --ignore-rules=no-resolution",
     "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm run schema:check && pnpm run check:publint && pnpm run check:attw",
-    "ci": "pnpm run schema:check && pnpm run lint:check && pnpm run format:check"
+    "prepublishOnly": "pnpm run check:publint && pnpm run check:attw",
+    "ci": "pnpm run lint:check && pnpm run format:check"
   },
   "keywords": [
     "a2ui",
@@ -98,7 +90,6 @@
     "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "tsx": "^4.19.2",
     "vitest": "^4.0.18"
   }
 }

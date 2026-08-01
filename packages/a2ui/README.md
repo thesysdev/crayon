@@ -14,7 +14,7 @@ An experimental A2UI v1.0 profile that keeps the protocol lifecycle and envelope
 
 `updateDataModel`, `deleteSurface`, actions, `callFunction`, `functionResponse`, `actionResponse`, errors, capabilities, and renderer data-model metadata retain their A2UI v1.0 shapes. For v1.0 single-message creation, optional `createSurface.components` uses the same Lang statement array as `updateComponents.components`, so there is exactly one component representation on the wire.
 
-Publishable schemas are available under `@openuidev/a2ui/schema/*` for agent-to-renderer messages, renderer-to-agent messages, renderer/agent capabilities, and renderer data-model metadata. They are generated from the same exported Zod schemas used for runtime validation and TypeScript type inference, so Zod is the protocol's source of truth. Run `pnpm schema:generate` after changing a protocol schema; `pnpm schema:check` verifies that committed JSON Schemas are current.
+Incoming protocol messages are validated with the exported Zod schemas in the package. The public TypeScript message types are inferred from the same definitions, so runtime validation and static types stay aligned.
 
 ## Installation
 

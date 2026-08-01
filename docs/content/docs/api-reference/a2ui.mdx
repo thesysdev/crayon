@@ -488,9 +488,9 @@ const metadata = client.getRendererMetadata();
 
 The metadata is supplied as the second argument to `onMessage` and message subscribers. Your transport decides whether it is attached to a model request, agent context, or another protocol-specific location.
 
-## Runtime schemas and TypeScript types
+## Runtime validation and TypeScript types
 
-Zod is the source of truth for runtime validation, inferred TypeScript types, and published JSON Schemas.
+Zod is the source of truth for runtime validation and inferred TypeScript types.
 
 ```ts
 import {
@@ -505,19 +505,7 @@ const result = agentToRendererMessageSchema.safeParse(input);
 const validated = validateAgentToRendererMessage(input);
 ```
 
-The package exports runtime Zod schemas for every message and shared protocol structure, including capabilities and renderer data-model metadata.
-
-Generated JSON Schemas are available as package subpaths:
-
-```ts
-import agentToRendererSchema from "@openuidev/a2ui/schema/agent-to-renderer.json";
-import rendererToAgentSchema from "@openuidev/a2ui/schema/renderer-to-agent.json";
-import rendererCapabilitiesSchema from "@openuidev/a2ui/schema/renderer-capabilities.json";
-import agentCapabilitiesSchema from "@openuidev/a2ui/schema/agent-capabilities.json";
-import rendererDataModelSchema from "@openuidev/a2ui/schema/renderer-data-model.json";
-```
-
-Use these files for non-TypeScript agents, transport gateways, code generation, or contract tests. In this repository, `pnpm schema:generate` regenerates them and `pnpm schema:check` detects drift.
+The package exports runtime Zod schemas for every message and shared protocol structure, including capabilities and renderer data-model metadata. The public TypeScript message types are inferred from those definitions, keeping runtime behavior and static types aligned without maintaining a second schema format.
 
 ## Client API
 
