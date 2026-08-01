@@ -50,3 +50,58 @@ function App() {
 | `errorsOnly`      | `true`           | Capture only error/warning events, or every event.               |
 | `autoOpenOnError` | `true`           | Initial state of the drawer's "auto-open on error" checkbox.     |
 | `bus`             | shared singleton | An `Observability` instance to listen to.                        |
+
+## Telemetry
+
+`@openuidev/devtools` sends one pseudonymous
+`openui_devtools_installed` event to PostHog when its npm `postinstall` script
+runs. This measures dependency installation, not whether the widget was rendered
+or used. CI jobs, reinstalls, and dependency-cache misses can produce additional
+events.
+
+The event includes:
+
+| Property                                                   | Description                                                                                                                                                                       |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `project_id`                                               | SHA-256 of a locally stored secret salt and the normalized Git origin. Falls back to `REPOSITORY_URL`, then the install-root path. Neither the underlying value nor salt is sent. |
+| `project_id_source`                                        | `git_origin`, `repository_url`, or `install_root`.                                                                                                                                |
+| `devtools_version`                                         | Installed Devtools version.                                                                                                                                                       |
+| `node_version`                                             | Node.js version running the lifecycle script.                                                                                                                                     |
+| `system_platform`, `system_release`, `system_architecture` | Coarse operating-system and architecture metadata.                                                                                                                                |
+| `package_manager`, `package_manager_version`               | Parsed npm, pnpm, Yarn, or Bun name and version.                                                                                                                                  |
+| `ci`, `ci_name`                                            | CI detection and a bounded provider name.                                                                                                                                         |
+| `is_docker`                                                | Best-effort container detection.                                                                                                                                                  |
+| `telemetry_schema_version`                                 | Event-schema version.                                                                                                                                                             |
+
+PostHog also receives a persistent random OpenUI installation identifier, event
+timestamps, PostHog library metadata, and the network source IP visible to its
+ingestion service. It may derive coarse geographic properties from that IP. The
+IP may represent a CI runner, proxy, VPN, corporate gateway, or NAT address
+rather than the developer's device.
+
+OpenUI Devtools does not send the raw Git origin, branch, commit, repository or
+package name, filesystem path, username, email, credentials, API keys,
+environment-variable values, source code, prompts, generated content,
+observability events, errors, messages, stack traces, application URLs, routes,
+DOM content, or Devtools interactions.
+
+Disable all installation telemetry with either variable:
+
+```bash
+OPENUI_TELEMETRY_DISABLED=1
+DO_NOT_TRACK=1
+```
+
+The values `1` and `true` are accepted. The check happens before project
+inspection, telemetry-state access, PostHog loading, disclosure output, or
+network access. Installing with lifecycle scripts disabled also prevents
+collection.
+
+Print the exact local event payload without sending it:
+
+```bash
+OPENUI_TELEMETRY_DEBUG=1
+```
+
+Telemetry is best-effort, has a short timeout, and never fails package
+installation.
