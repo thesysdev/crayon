@@ -2,7 +2,36 @@ import type { ToolActivity } from "@openuidev/react-headless";
 import { CircleDot } from "lucide-react";
 import { memo } from "react";
 import { Collapsible } from "../_shared/Collapsible";
+import { SourceIcon } from "./SourceIcon";
 import { ToolCall } from "./ToolCallPrimitives";
+import { extractToolSources } from "./toolSources";
+
+/** Favicon + title rows for the links a tool's result carries (see
+ *  {@link extractToolSources} — per-tool formats live in one registry).
+ *  Renders nothing when the tool/result yields no links. */
+const ToolSources = ({ toolName, result }: { toolName: string; result: string }) => {
+  const sources = extractToolSources(toolName, result);
+  if (sources.length === 0) return null;
+  return (
+    <div className="openui-tool-call__sources">
+      {sources.map((source) => (
+        <a
+          key={source.url}
+          href={source.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="openui-tool-call__source"
+        >
+          <span className="openui-tool-call__source-left">
+            <SourceIcon src={`https://www.google.com/s2/favicons?domain=${source.host}&sz=64`} />
+            <span className="openui-tool-call__source-title">{source.title}</span>
+          </span>
+          <span className="openui-tool-call__source-desc">{source.siteName}</span>
+        </a>
+      ))}
+    </div>
+  );
+};
 
 /**
  * Timeline-shaped composition of the compound {@link ToolCall} parts — the
@@ -67,6 +96,9 @@ export const TimelineToolCard = memo(function TimelineToolCard({
         }`}
       >
         <div className="openui-tool-call__args-block">
+          {typeof activity.result === "string" && (
+            <ToolSources toolName={activity.toolName} result={activity.result} />
+          )}
           {/* request → typed input, response → paired result, both collapsible */}
           <Collapsible
             label="Tool Request"

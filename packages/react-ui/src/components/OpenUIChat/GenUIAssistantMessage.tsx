@@ -98,13 +98,17 @@ export const GenUIAssistantMessage = ({
     return separateContentAndContext(message.content);
   }, [message.content]);
 
-  // Has the RESPONSE section started (single-segment live runs)? Thinking
-  // prose never carries the openui-lang fence; the response always does. A
-  // reply without tool calls IS the response from its first byte, and a
-  // settled run always surfaces whatever it has (no text is ever lost).
-  const singleResponseStarted =
+  // Has the RESPONSE section started (single-segment live runs)? The response
+  // is Lang code — recognized by its fence when present, or by the mandatory
+  // `root = …` assignment when the backend emits it UNFENCED (otherwise
+  // unfenced Lang classifies as thinking and streams into the tray). A reply
+  // without tool calls IS the response from its first byte, and a settled run
+  // always surfaces whatever it has (no text is ever lost).
+  const looksLikeLang =
     !!openuiCode &&
-    ((message.toolCalls?.length ?? 0) === 0 || openuiCode.includes("```openui-lang") || !isRunning);
+    (openuiCode.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(openuiCode));
+  const singleResponseStarted =
+    !!openuiCode && ((message.toolCalls?.length ?? 0) === 0 || looksLikeLang || !isRunning);
 
   // While the response hasn't started, the LAST section is thinking too —
   // it belongs in the timeline, not the Lang renderer.
