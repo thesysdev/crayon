@@ -105,8 +105,7 @@ export const GenUIAssistantMessage = ({
   // without tool calls IS the response from its first byte, and a settled run
   // always surfaces whatever it has (no text is ever lost).
   const looksLikeLang =
-    !!openuiCode &&
-    (openuiCode.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(openuiCode));
+    !!openuiCode && (openuiCode.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(openuiCode));
   const singleResponseStarted =
     !!openuiCode && ((message.toolCalls?.length ?? 0) === 0 || looksLikeLang || !isRunning);
 
