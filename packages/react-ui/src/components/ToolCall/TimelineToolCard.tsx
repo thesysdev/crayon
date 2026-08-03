@@ -1,17 +1,13 @@
 import type { ToolActivity } from "@openuidev/react-headless";
-import { CircleDot } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { memo } from "react";
-import { Collapsible } from "../_shared/Collapsible";
 import { SourceIcon } from "./SourceIcon";
-import { ToolCall } from "./ToolCallPrimitives";
-import { extractToolSources } from "./toolSources";
+import { ToolCall, toolIcon } from "./ToolCallPrimitives";
+import { extractToolSources, type ToolResultSource } from "./toolSources";
 
 /** Favicon + title rows for the links a tool's result carries (see
- *  {@link extractToolSources} — per-tool formats live in one registry).
- *  Renders nothing when the tool/result yields no links. */
-const ToolSources = ({ toolName, result }: { toolName: string; result: string }) => {
-  const sources = extractToolSources(toolName, result);
-  if (sources.length === 0) return null;
+ *  {@link extractToolSources} — per-tool formats live in one registry). */
+const ToolSources = ({ sources }: { sources: ToolResultSource[] }) => {
   return (
     <div className="openui-tool-call__sources">
       {sources.map((source) => (
@@ -34,10 +30,12 @@ const ToolSources = ({ toolName, result }: { toolName: string; result: string })
 };
 
 /**
- * Timeline-shaped composition of the compound {@link ToolCall} parts — the
- * molded `StatusStep` + `TimelineItem` (dot + connector). The running shimmer
- * is `(streaming|executing) && isLast`, derived from the lifecycle status via
- * the parts' `data-spin`, not a separate `isThinking` flag. `ToolCall.Root` is
+ * Timeline-shaped composition of the compound {@link ToolCall} parts: one row —
+ * tool glyph, status label, chevron — that expands into either the result's
+ * sources or a SINGLE block holding the request and the response together. The
+ * running affordances (glyph blink,
+ * label shimmer) are `(streaming|executing) && isLast`, derived from the
+ * lifecycle status rather than a separate `isThinking` flag. `ToolCall.Root` is
  * the single `.openui-tool-call` container, so we compose *inside* it.
  *
  * @category Components
@@ -53,9 +51,25 @@ export const TimelineToolCard = memo(function TimelineToolCard({
    *  so a closed-args call with no result doesn't animate forever after the run ends. */
   isRunning?: boolean;
 }) {
+  const Icon = toolIcon(activity.toolName, activity.status);
+  const running =
+    (activity.status === "streaming" || activity.status === "executing") && isLast && isRunning;
+  // A result we can turn into links speaks for itself — the raw request/response
+  // would only repeat it. A failure always falls back to the raw block, since
+  // that's where the error text lives.
+  const sources =
+    typeof activity.result === "string" && !activity.isError
+      ? extractToolSources(activity.toolName, activity.result)
+      : [];
+
   return (
-    <ToolCall.Root activity={activity} isLast={isLast} running={isRunning}>
-      <div className="openui-tool-call__title-row">
+    <ToolCall.Root
+      activity={activity}
+      isLast={isLast}
+      running={isRunning}
+      defaultOpen={activity.isError}
+    >
+      <ToolCall.Trigger className="openui-tool-call__title-row">
         <ToolCall.StatusIcon
           render={(_state, props) => (
             <span
@@ -64,12 +78,12 @@ export const TimelineToolCard = memo(function TimelineToolCard({
               }`}
               data-status={props["data-status"] as string}
             >
-              <CircleDot size={14} className="openui-tool-call__icon" />
+              <Icon size={14} className="openui-tool-call__icon" />
             </span>
           )}
         />
         <ToolCall.StatusText
-          render={(state, props) => (
+          render={(_state, props) => (
             <span
               // Announce tool-call status transitions (Calling → Running →
               // Called/failed) to assistive tech; only changes are spoken, so
@@ -77,61 +91,34 @@ export const TimelineToolCard = memo(function TimelineToolCard({
               role="status"
               aria-live="polite"
               className={`openui-tool-call__name${
-                (state.status === "streaming" || state.status === "executing") &&
-                isLast &&
-                isRunning
-                  ? " openui-tool-call__name--shimmer"
-                  : ""
+                running ? " openui-tool-call__name--shimmer" : ""
               }`}
             >
               {props["children"] as string}
             </span>
           )}
         />
-      </div>
+        <ChevronDown size={14} className="openui-tool-call__chevron" />
+      </ToolCall.Trigger>
 
-      <div
-        className={`openui-tool-call__connector${
-          isLast ? " openui-tool-call__connector--last" : ""
-        }`}
-      >
-        <div className="openui-tool-call__args-block">
-          {typeof activity.result === "string" && (
-            <ToolSources toolName={activity.toolName} result={activity.result} />
-          )}
-          {/* request → typed input, response → paired result, both collapsible */}
-          <Collapsible
-            label="Tool Request"
-            labelLoading={`Sending request to ${activity.toolName}...`}
-            loading={isRunning && isLast && activity.status === "streaming"}
-          >
-            <ToolCall.Parameters
-              render={(_s, p) => (
-                <pre className="openui-tool-code-block__code">{p["children"] as string}</pre>
+      <ToolCall.Content className="openui-tool-call__content">
+        {sources.length > 0 ? (
+          <ToolSources sources={sources} />
+        ) : (
+          // Request and response share one block; ToolCall.Result renders
+          // nothing until a result or error lands.
+          <pre className="openui-tool-call__block openui-tool-code-block__code">
+            <ToolCall.Parameters render={(_s, p) => <code>{p["children"] as string}</code>} />
+            <ToolCall.Result
+              render={(s, p) => (
+                <code
+                  className={s.isError ? "openui-tool-code-block__code--error" : undefined}
+                >{`\n\n${p["children"] as string}`}</code>
               )}
             />
-          </Collapsible>
-          {/* ToolCall.Result returns null until a result/error lands, so the
-              response collapsible only appears once it does. */}
-          <ToolCall.Result
-            render={(s, p) => (
-              <Collapsible
-                label="Tool Response"
-                labelLoading={`Awaiting response from ${activity.toolName}...`}
-                loading={isRunning && isLast && activity.status === "executing"}
-              >
-                <pre
-                  className={`openui-tool-code-block__code${
-                    s.isError ? " openui-tool-code-block__code--error" : ""
-                  }`}
-                >
-                  {p["children"] as string}
-                </pre>
-              </Collapsible>
-            )}
-          />
-        </div>
-      </div>
+          </pre>
+        )}
+      </ToolCall.Content>
     </ToolCall.Root>
   );
 });

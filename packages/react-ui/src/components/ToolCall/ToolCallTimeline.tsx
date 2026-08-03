@@ -50,6 +50,8 @@ const TimelineStepRow = ({
 
 const REVEAL_INTERVAL = 600;
 
+const NO_FADE: { top: boolean; bottom: boolean } = { top: false, bottom: false };
+
 /** Visually hidden but available to screen readers; inline so we don't depend on
  *  scss (a sibling agent owns the stylesheet). */
 const VISUALLY_HIDDEN = {
@@ -67,11 +69,12 @@ const VISUALLY_HIDDEN = {
 const isRunning = (a: ToolActivity) => a.status === "streaming" || a.status === "executing";
 
 /**
- * The "Working… / Behind the scenes" timeline wrapper, driven by
- * {@link ToolActivity}[] from `useToolActivities`. Reveals the run's activities
- * one-by-one, holds the compact card open across the tool-result → first-token
- * gap (`awaitingResponse`), and lets a manual close stick for the rest of the
- * run. "Running" is read from each activity's status, not an `isThinking` prop.
+ * The "Working / Behind the scenes" timeline wrapper, driven by
+ * {@link ToolActivity}[] from `useToolActivities`. Reveals the run's steps
+ * one-by-one and keeps every revealed one on screen, holds the tray open across
+ * the tool-result → first-token gap (`awaitingResponse`), and lets a manual
+ * close stick for the rest of the run. "Running" is read from each activity's
+ * status, not an `isThinking` prop.
  *
  * (Animations are CSS-only — framer-motion is intentionally not a dependency.)
  *
@@ -141,10 +144,36 @@ export function ToolCallTimeline({
   const itemsRef = useRef<HTMLDivElement>(null);
   const followRef = useRef(true);
   const distanceFromBottom = (el: HTMLElement) => el.scrollHeight - el.scrollTop - el.clientHeight;
+
+  // Each edge fades only while content is actually hidden past it, so the first
+  // row isn't dimmed at the top of the list and the last isn't dimmed at the
+  // bottom. Measured every render (rows stream in), on scroll, and on resize —
+  // the capped element's own box doesn't change when its content grows.
+  const [fade, setFade] = useState(NO_FADE);
+  const measureEdges = useCallback(() => {
+    const el = itemsRef.current;
+    const next =
+      el && el.scrollHeight - el.clientHeight > 1
+        ? { top: el.scrollTop > 1, bottom: distanceFromBottom(el) > 1 }
+        : NO_FADE;
+    setFade((prev) => (prev.top === next.top && prev.bottom === next.bottom ? prev : next));
+  }, []);
+  useLayoutEffect(() => {
+    measureEdges();
+    window.addEventListener("resize", measureEdges);
+    return () => window.removeEventListener("resize", measureEdges);
+  });
+
+  const itemsClassName = clsx("openui-behind-the-scenes__items", {
+    "openui-behind-the-scenes__items--fade-top": fade.top,
+    "openui-behind-the-scenes__items--fade-bottom": fade.bottom,
+  });
+
   const handleItemsScroll = useCallback(() => {
     const el = itemsRef.current;
     if (el && distanceFromBottom(el) < 24) followRef.current = true;
-  }, []);
+    measureEdges();
+  }, [measureEdges]);
   const handleItemsWheel = useCallback((e: React.WheelEvent) => {
     if (e.deltaY < 0) followRef.current = false;
   }, []);
@@ -199,12 +228,12 @@ export function ToolCallTimeline({
   // behind a collapsed "Behind the scenes".
   const settled = !thinking && !revealing;
   const failedCount = settled ? activities.filter((a) => a.status === "error").length : 0;
-  const toggleLabel =
-    thinking || revealing
-      ? "Working..."
-      : failedCount > 0
-        ? `Behind the scenes · ${failedCount} failed`
-        : "Behind the scenes";
+  const working = thinking || revealing;
+  const toggleLabel = working
+    ? "Working"
+    : failedCount > 0
+      ? `Behind the scenes · ${failedCount} failed`
+      : "Behind the scenes";
 
   return (
     <div className="openui-behind-the-scenes">
@@ -227,12 +256,20 @@ export function ToolCallTimeline({
           }
         }}
       >
+        <span
+          className={clsx("openui-behind-the-scenes__toggle-label", {
+            // While the run is live the label itself shimmers, matching the
+            // running tool rows below it.
+            "openui-behind-the-scenes__toggle-label--shimmer": working,
+          })}
+        >
+          {toggleLabel}
+        </span>
         {isOpen ? (
           <ChevronUp size={14} className="openui-behind-the-scenes__toggle-icon" />
         ) : (
           <ChevronDown size={14} className="openui-behind-the-scenes__toggle-icon" />
         )}
-        {toggleLabel}
       </button>
 
       {isLast && !expanded && (
@@ -244,25 +281,29 @@ export function ToolCallTimeline({
         >
           <div className="openui-behind-the-scenes__compact-inner">
             <div
-              className="openui-behind-the-scenes__items"
+              className={itemsClassName}
               ref={itemsRef}
               onScroll={handleItemsScroll}
               onWheel={handleItemsWheel}
               onTouchMove={handleItemsTouchMove}
             >
-              {/* key changes per reveal → remounts → re-triggers the CSS fade-in */}
-              <div
-                key={revealedCount}
-                className="openui-behind-the-scenes__reveal-item"
-                style={{ width: "100%" }}
-              >
-                <TimelineStepRow
-                  step={current}
-                  isLast
-                  detailedViewPanel={detailedViewPanel}
-                  forceDefault={forceDefault}
-                />
-              </div>
+              {/* The run accumulates: every revealed step stays on screen and only
+                  the newest is `isLast`, so just that one shimmers and blinks.
+                  Keyed per step, so each row plays the fade-in once, on mount. */}
+              {displaySteps.slice(0, revealedCount).map((step, idx) => (
+                <div
+                  key={stepKey(step)}
+                  className="openui-behind-the-scenes__reveal-item"
+                  style={{ width: "100%" }}
+                >
+                  <TimelineStepRow
+                    step={step}
+                    isLast={idx === revealedCount - 1}
+                    detailedViewPanel={detailedViewPanel}
+                    forceDefault={forceDefault}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -270,7 +311,7 @@ export function ToolCallTimeline({
 
       {expanded && (
         <div
-          className="openui-behind-the-scenes__items"
+          className={itemsClassName}
           ref={itemsRef}
           onScroll={handleItemsScroll}
           onWheel={handleItemsWheel}

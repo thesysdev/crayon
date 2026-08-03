@@ -6,37 +6,59 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: cssUtils.$space-m;
+  gap: cssUtils.$space-s;
   width: 100%;
-  // Breathing room between the tray and whatever follows it (the answer card
-  // when hosted inside the same message container).
+  // Closes the whole run off from the answer that follows it.
+  padding-block-end: cssUtils.$space-m;
   margin-block-end: cssUtils.$space-m;
+  border-block-end: 1px solid cssUtils.$border-default;
 
   &__toggle {
     @include cssUtils.button-reset;
     display: flex;
     align-items: center;
-    gap: cssUtils.$space-m;
-    padding: cssUtils.$space-2xs cssUtils.$space-s;
-    border-radius: cssUtils.$radius-m;
-    @include cssUtils.typography(label, small-heavy);
-    color: cssUtils.$text-neutral-primary;
+    gap: cssUtils.$space-s;
+    // Flush with the message content: the tray carries no chrome of its own,
+    // so the label lines up with the tool rows and the answer below it.
+    padding: 0;
+    @include cssUtils.typography(body, small);
+    color: cssUtils.$text-neutral-secondary;
     cursor: pointer;
     background-color: transparent;
-
-    &:not(:disabled):hover {
-      background-color: cssUtils.$sunk;
-    }
-
-    &:not(:disabled):active {
-      background-color: cssUtils.$sunk;
-    }
+    text-align: start;
 
     // button-reset strips chrome, so restore a visible keyboard focus ring.
     &:focus-visible {
       outline: 2px solid cssUtils.$border-interactive-emphasis;
       outline-offset: cssUtils.$space-3xs;
     }
+  }
+
+  &__toggle-label {
+    -webkit-text-fill-color: currentColor;
+  }
+
+  // Same clipped-gradient sweep the running tool rows use, so the tray header
+  // and the step it is summarizing animate as one: tertiary at rest, brightening
+  // to secondary as the highlight passes through.
+  &__toggle-label--shimmer {
+    display: inline-block;
+    background-image:
+      linear-gradient(
+        90deg,
+        transparent calc(50% - 50px),
+        cssUtils.$text-neutral-secondary,
+        transparent calc(50% + 50px)
+      ),
+      linear-gradient(cssUtils.$text-neutral-tertiary, cssUtils.$text-neutral-tertiary);
+    background-size:
+      250% 100%,
+      auto;
+    background-repeat: no-repeat, padding-box;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: cssUtils.$text-neutral-secondary;
+    background-clip: text;
+    animation: openui-tool-code-shimmer 2s linear infinite;
   }
 
   &__toggle-icon {
@@ -49,6 +71,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    gap: cssUtils.$space-xs;
     width: 100%;
     // Long runs must not push the conversation far down the page: past this
     // height the timeline scrolls internally. Overridable per app via the
@@ -56,9 +79,42 @@
     max-height: var(--openui-tool-timeline-max-height, 20rem);
     overflow-y: auto;
     overscroll-behavior: contain;
-    // Clearance so an overlay scrollbar doesn't sit on top of right-aligned
-    // content (e.g. the sources-group chevron).
+    // Scrolls, but silently: the edge fades already signal there's more, and a
+    // bar over the rows would fight them.
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    // Breathing room so right-aligned content (e.g. the row chevron) isn't
+    // flush against the edge.
     padding-inline-end: cssUtils.$space-s;
+
+    // Each edge dissolves only while a row is actually hidden behind it, so the
+    // first row isn't dimmed at rest and the last isn't dimmed once scrolled to.
+    // The widths are driven from JS (CSS can't ask about overflow or scroll
+    // position); at 0 the stops collapse and the mask is a no-op.
+    --openui-timeline-fade-top: 0px;
+    --openui-timeline-fade-bottom: 0px;
+    $edges: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 var(--openui-timeline-fade-top),
+      #000 calc(100% - var(--openui-timeline-fade-bottom)),
+      transparent 100%
+    );
+    -webkit-mask-image: $edges;
+    mask-image: $edges;
+  }
+
+  &__items--fade-top {
+    --openui-timeline-fade-top: 1.5rem;
+  }
+
+  &__items--fade-bottom {
+    --openui-timeline-fade-bottom: 2rem;
   }
 
   // Graceful auto-close of the compact "Working…" tray
@@ -81,20 +137,20 @@
     min-height: 0;
   }
 
-  // Compact staggered reveal (CSS fade-in; remounted per step via React key).
+  // Staggered reveal: each newly mounted step fades in where it lands. Opacity
+  // only — the list already slides as it follows the newest row, and adding a
+  // rise on top of that reads as two competing motions.
   &__reveal-item {
-    animation: openui-behind-the-scenes-reveal 0.2s ease;
+    animation: openui-behind-the-scenes-reveal 0.25s ease;
   }
 }
 
 @keyframes openui-behind-the-scenes-reveal {
   from {
     opacity: 0;
-    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -104,15 +160,55 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding-inline-start: cssUtils.$space-l;
+  padding-inline-start: 0;
 
+  // The row is the collapsible trigger for the request/response block.
   &__title-row {
+    @include cssUtils.button-reset;
     display: flex;
     align-items: center;
-    gap: cssUtils.$space-m;
+    gap: cssUtils.$space-s;
+    padding: cssUtils.$space-3xs 0;
+    width: 100%;
     color: cssUtils.$text-neutral-secondary;
+    background-color: transparent;
+    cursor: pointer;
+    // The row is a <button>, whose UA default centers text; the label is a
+    // stretched flex item, so without this it floats mid-row instead of
+    // sitting against the glyph.
+    text-align: start;
     // Allow the name to shrink/ellipsize instead of overflowing the row.
     min-width: 0;
+
+    &:focus-visible {
+      outline: 2px solid cssUtils.$border-interactive-emphasis;
+      outline-offset: cssUtils.$space-3xs;
+    }
+
+    &[aria-expanded="true"] .openui-tool-call__chevron {
+      transform: rotate(180deg);
+    }
+  }
+
+  // Everything a row reveals — the sources list, then the request/response
+  // block. No explicit width: the flex column stretches it, so the left indent
+  // eats into its own width instead of pushing it past the container's edge.
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: cssUtils.$space-xs;
+    margin-block: cssUtils.$space-2xs;
+    margin-inline-start: cssUtils.$space-s;
+  }
+
+  // Request + response in ONE block.
+  &__block {
+    padding: cssUtils.$space-s cssUtils.$space-m;
+    border: 1px solid cssUtils.$border-interactive;
+    border-radius: cssUtils.$radius-m;
+    background-color: cssUtils.$foreground;
+    max-height: 250px;
+    overflow: auto;
   }
 
   &__icon-wrapper {
@@ -120,11 +216,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    // Full-strength primary knocked back as a whole, rather than a lighter text
+    // token: keeps the glyph the same hue as the surrounding copy while sitting
+    // clearly behind it.
+    opacity: 0.3;
   }
 
   &__icon {
     flex-shrink: 0;
-    color: cssUtils.$text-neutral-secondary;
+    color: cssUtils.$text-neutral-primary;
   }
 
   &__icon--blinking {
@@ -132,8 +232,8 @@
   }
 
   &__name {
-    @include cssUtils.typography(body, default);
-    color: cssUtils.$text-neutral-primary;
+    @include cssUtils.typography(body, small);
+    color: cssUtils.$text-neutral-secondary;
     -webkit-text-fill-color: currentColor;
     white-space: nowrap;
     overflow: hidden;
@@ -143,22 +243,23 @@
     min-width: 0;
   }
 
+  // Tertiary at rest, brightening to secondary as the highlight sweeps through.
   &__name--shimmer {
     display: inline-block;
     background-image:
       linear-gradient(
         90deg,
         transparent calc(50% - 50px),
-        cssUtils.$text-neutral-primary,
+        cssUtils.$text-neutral-secondary,
         transparent calc(50% + 50px)
       ),
-      linear-gradient(cssUtils.$text-neutral-secondary, cssUtils.$text-neutral-secondary);
+      linear-gradient(cssUtils.$text-neutral-tertiary, cssUtils.$text-neutral-tertiary);
     background-size:
       250% 100%,
       auto;
     background-repeat: no-repeat, padding-box;
     -webkit-background-clip: text;
-    -webkit-text-fill-color: cssUtils.$text-neutral-primary;
+    -webkit-text-fill-color: cssUtils.$text-neutral-secondary;
     background-clip: text;
     animation: openui-tool-code-shimmer 2s linear infinite;
   }
@@ -202,7 +303,7 @@
     flex-direction: column;
     width: 100%;
     border: 1px solid cssUtils.$border-default;
-    border-radius: cssUtils.$radius-l;
+    border-radius: cssUtils.$radius-xl;
     background-color: cssUtils.$foreground;
     padding: cssUtils.$space-2xs;
   }
@@ -247,7 +348,7 @@
 
   &__source-title {
     @include cssUtils.typography(label, small);
-    color: cssUtils.$text-neutral-primary;
+    color: cssUtils.$text-neutral-secondary;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -255,7 +356,8 @@
 
   &__source-desc {
     @include cssUtils.typography(label, small);
-    color: cssUtils.$text-neutral-secondary;
+    color: cssUtils.$text-neutral-tertiary;
+    // Let the description shrink + truncate so it never squeezes the title.
     flex: 1 1 25%;
     min-width: 0;
     text-align: end;
@@ -325,20 +427,14 @@
     color: cssUtils.$text-danger-primary;
   }
 
-  // ── Status tints (subtle; driven by the Root `--{status}` modifier) ──
-  // Complete vs running look near-identical otherwise — tint the glyph only.
-  &--complete {
-    .openui-tool-call__icon {
-      color: cssUtils.$text-success-primary;
-    }
-  }
-
-  // A failed call should read as failed at a glance: tint the glyph + name and
-  // give the card a restrained danger left-border + faint background.
+  // ── Status tints (driven by the Root `--{status}` modifier) ──
+  // A failed call reads as failed through its glyph + label alone — no border
+  // or fill, so it keeps the same rhythm as the rows around it. It's also the
+  // one status that opts out of the muted icon: a warning has to be legible.
   &--error {
-    border-inline-start: 2px solid cssUtils.$text-danger-primary;
-    background-color: cssUtils.$danger-background;
-    border-radius: cssUtils.$radius-m;
+    .openui-tool-call__icon-wrapper {
+      opacity: 1;
+    }
 
     .openui-tool-call__icon {
       color: cssUtils.$text-danger-primary;
@@ -474,13 +570,15 @@
   }
 }
 
+// Compounds with the wrapper's 0.3, so the trough stops well short of 0 —
+// otherwise the running glyph disappears entirely mid-pulse.
 @keyframes openui-tool-call-icon-blink {
   0%,
   100% {
     opacity: 1;
   }
   50% {
-    opacity: 0.2;
+    opacity: 0.4;
   }
 }
 
@@ -502,8 +600,10 @@
   &__text-step {
     display: flex;
     align-items: flex-start;
-    gap: cssUtils.$space-m;
-    padding-inline-start: cssUtils.$space-l;
+    gap: cssUtils.$space-s;
+    // Flush with the tool rows' glyph column — the prose is a peer of the
+    // steps around it, not an indented aside.
+    padding-inline-start: 0;
     // Breathing room against the neighboring timeline entries.
     margin-block: cssUtils.$space-s;
     width: 100%;
@@ -557,6 +657,7 @@
   }
 
   .openui-tool-call__name--shimmer,
+  .openui-behind-the-scenes__toggle-label--shimmer,
   .openui-tool-code-block__label--loading {
     animation: none;
     background-image: none;
