@@ -256,7 +256,6 @@ export const RenderMessage = memo(
     userMessage: CustomUserMessage,
     isStreaming,
     isLast,
-    messageGroup,
   }: {
     message: Message;
     className?: string;
@@ -266,9 +265,6 @@ export const RenderMessage = memo(
     isStreaming: boolean;
     /** Whether this is the last *assistant* message (drives the running shimmer). */
     isLast: boolean;
-    /** The turn (contiguous assistant/tool block) this message belongs to,
-     *  pre-computed by Messages. Forwarded to the custom assistant component. */
-    messageGroup?: Message[];
   }) => {
     if (message.role === "tool") {
       // Tool messages are rendered inline with their parent assistant message
@@ -277,13 +273,7 @@ export const RenderMessage = memo(
 
     if (message.role === "assistant") {
       if (CustomAssistantMessage) {
-        return (
-          <CustomAssistantMessage
-            message={message}
-            isStreaming={isStreaming}
-            messageGroup={messageGroup}
-          />
-        );
+        return <CustomAssistantMessage message={message} isStreaming={isStreaming} />;
       }
       return (
         <AssistantMessageContainer className={className}>
@@ -355,6 +345,67 @@ function groupIntoTurns(messages: Message[]): { messages: Message[]; startIndex:
   return groups;
 }
 
+/**
+ * Renders one turn (a group from {@link groupIntoTurns}).
+ *
+ * A multi-segment turn — several assistant segments (thinking… then answer) —
+ * collapses into ONE render at the host (the last assistant segment), which
+ * receives the whole group as `messageGroup` and draws the merged tool
+ * timeline + answer itself. This only applies with a custom assistant
+ * component (the default renderer has no notion of a merged turn); otherwise
+ * every message renders individually, exactly as before.
+ */
+const RenderGroup = ({
+  group,
+  allMessages,
+  assistantMessage: CustomAssistantMessage,
+  userMessage,
+  className,
+  isRunning,
+  lastAssistantId,
+}: {
+  group: Message[];
+  allMessages: Message[];
+  assistantMessage?: AssistantMessageComponent;
+  userMessage?: UserMessageComponent;
+  className?: string;
+  isRunning: boolean;
+  lastAssistantId: string | null;
+}) => {
+  const assistants = group.filter((m) => m.role === "assistant");
+  const host = assistants[assistants.length - 1];
+
+  if (CustomAssistantMessage && host && assistants.length >= 2) {
+    return (
+      <MessageProvider key={host.id} message={host}>
+        <CustomAssistantMessage
+          message={host as AssistantMessage}
+          isStreaming={isRunning && lastAssistantId === host.id}
+          messageGroup={group}
+        />
+      </MessageProvider>
+    );
+  }
+
+  return (
+    <>
+      {group.map((message) => (
+        <MessageProvider key={message.id} message={message}>
+          <RenderMessage
+            message={message}
+            allMessages={allMessages}
+            assistantMessage={CustomAssistantMessage}
+            userMessage={userMessage}
+            isStreaming={isRunning && message.id === lastAssistantId}
+            isLast={message.id === lastAssistantId}
+            className={className}
+          />
+        </MessageProvider>
+      ))}
+    </>
+  );
+};
+
 export const Messages = ({
   className,
   loader,
@@ -370,58 +421,33 @@ export const Messages = ({
   const isRunning = useThread((s) => s.isRunning);
   const threadError = useThread((s) => s.threadError);
 
-  // Turn lookup: message id → the contiguous assistant/tool block it belongs
-  // to. Computed ONCE per message-list change and passed down, so the
-  // assistant component can render an interleaved run as one unit without
-  // deriving thread structure itself. Memoized so the arrays keep their
-  // identity across unrelated re-renders (RenderMessage is memoized on props).
-  //
-  // In a multi-segment turn, only the LAST assistant segment renders (it hosts
-  // the merged timeline + answer in one container); the earlier thinking
-  // segments are filtered out here.
-  const { turnByMessageId, hiddenMessageIds } = useMemo(() => {
-    const byId = new Map<string, Message[]>();
-    const hidden = new Set<string>();
-    for (const group of groupIntoTurns(messages)) {
-      const assistants = group.messages.filter((m) => m.role === "assistant");
-      for (const m of group.messages) byId.set(m.id, group.messages);
-      if (assistants.length >= 2) {
-        for (const m of assistants.slice(0, -1)) hidden.add(m.id);
-      }
-    }
-    return { turnByMessageId: byId, hiddenMessageIds: hidden };
-  }, [messages]);
+  // Group the flat message list into turns ONCE per change; the arrays keep
+  // their identity across unrelated re-renders.
+  const groups = useMemo(() => groupIntoTurns(messages), [messages]);
 
-  // Scan for the last *assistant* message (not the last message index) so the
-  // running shimmer survives trailing tool messages.
-  let lastAssistantIndex = -1;
-  for (let i = messages.length - 1; i >= 0; i--) {
-    if (messages[i]?.role === "assistant") {
-      lastAssistantIndex = i;
-      break;
+  // Id of the last *assistant* message (not the last message) so the running
+  // shimmer survives trailing tool messages.
+  const lastAssistantId = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i]?.role === "assistant") return messages[i]!.id;
     }
-  }
+    return null;
+  }, [messages]);
 
   return (
     <div className={clsx("openui-agent-thread-messages", className)}>
-      {messages.map((message, i) => {
-        // Earlier thinking segments of a multi-segment turn: their prose and
-        // tool rows render inside the turn host's merged timeline.
-        if (hiddenMessageIds.has(message.id)) return null;
-        return (
-          <MessageProvider key={message.id} message={message}>
-            <RenderMessage
-              message={message}
-              allMessages={messages}
-              assistantMessage={assistantMessage}
-              userMessage={userMessage}
-              isStreaming={isRunning && i === lastAssistantIndex}
-              isLast={i === lastAssistantIndex}
-              messageGroup={turnByMessageId.get(message.id)}
-            />
-          </MessageProvider>
-        );
-      })}
+      {groups.map((group) => (
+        <RenderGroup
+          key={group.messages[0]!.id}
+          group={group.messages}
+          allMessages={messages}
+          assistantMessage={assistantMessage}
+          userMessage={userMessage}
+          className={className}
+          isRunning={isRunning}
+          lastAssistantId={lastAssistantId}
+        />
+      ))}
       {isRunning && <div>{loader}</div>}
       {!isRunning && threadError && <ThreadError />}
     </div>
