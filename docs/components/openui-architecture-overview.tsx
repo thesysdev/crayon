@@ -1,4 +1,4 @@
-import { ArrowDownUp, ArrowRight } from "lucide-react";
+import { ArrowDownUp, ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import styles from "./openui-architecture-overview.module.css";
 
@@ -57,7 +57,13 @@ function ArchitectureDiagram() {
 
       <Connector />
 
-      <div className={`${styles.node} ${styles.nodeRuntime}`}>OpenUI Lang runtime</div>
+      <div className={`${styles.node} ${styles.nodeRuntime}`}>
+        <span className={styles.runtimeTag}>
+          <Sparkles size={12} strokeWidth={2} aria-hidden="true" />
+          Gen UI
+        </span>
+        OpenUI Lang runtime
+      </div>
 
       <Connector />
 
