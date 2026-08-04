@@ -8,12 +8,23 @@ import Link from "next/link";
 import styles from "../chat-page.module.css";
 import { isViewportPreset, type ViewportPreset } from "./viewport-presets";
 
+const VIEWPORT_OPTIONS = [
+  { id: "mobile", label: "Mobile", icon: Smartphone },
+  { id: "tablet", label: "Tablet", icon: Tablet },
+  { id: "desktop", label: "Desktop", icon: Monitor },
+] as const;
+
 interface ChatPageHeaderProps {
   viewport: ViewportPreset;
+  availableViewports: readonly ViewportPreset[];
   onViewportChange: (viewport: ViewportPreset) => void;
 }
 
-export function ChatPageHeader({ viewport, onViewportChange }: ChatPageHeaderProps) {
+export function ChatPageHeader({
+  viewport,
+  availableViewports,
+  onViewportChange,
+}: ChatPageHeaderProps) {
   return (
     <header className={styles.header} aria-label="OpenUI chat controls">
       <div className={styles.headerRow}>
@@ -22,46 +33,39 @@ export function ChatPageHeader({ viewport, onViewportChange }: ChatPageHeaderPro
         </Link>
 
         <div className={styles.viewportControl}>
-          <ToggleGroup
-            type="single"
-            value={viewport}
-            aria-label="Preview width"
-            className={styles.viewportGroup}
-            onValueChange={(value) => {
-              if (isViewportPreset(value)) onViewportChange(value);
-            }}
-          >
-            <ToggleItem
-              id="chat-viewport-mobile"
-              value="mobile"
-              className={styles.viewportItem}
-              aria-label="Preview mobile width"
-              title="Mobile preview"
+          {availableViewports.length > 1 ? (
+            <ToggleGroup
+              type="single"
+              value={viewport}
+              aria-label="Preview width"
+              className={styles.viewportGroup}
+              onValueChange={(value) => {
+                if (isViewportPreset(value) && availableViewports.includes(value)) {
+                  onViewportChange(value);
+                }
+              }}
             >
-              <Smartphone aria-hidden="true" size={15} />
-              <span className={styles.viewportItemLabel}>Mobile</span>
-            </ToggleItem>
-            <ToggleItem
-              id="chat-viewport-tablet"
-              value="tablet"
-              className={styles.viewportItem}
-              aria-label="Preview tablet width"
-              title="Tablet preview"
-            >
-              <Tablet aria-hidden="true" size={15} />
-              <span className={styles.viewportItemLabel}>Tablet</span>
-            </ToggleItem>
-            <ToggleItem
-              id="chat-viewport-desktop"
-              value="desktop"
-              className={styles.viewportItem}
-              aria-label="Preview desktop width"
-              title="Desktop preview"
-            >
-              <Monitor aria-hidden="true" size={15} />
-              <span className={styles.viewportItemLabel}>Desktop</span>
-            </ToggleItem>
-          </ToggleGroup>
+              {VIEWPORT_OPTIONS.filter((option) => availableViewports.includes(option.id)).map(
+                ({ id, label, icon: Icon }) => (
+                  <ToggleItem
+                    key={id}
+                    id={`chat-viewport-${id}`}
+                    value={id}
+                    className={
+                      id === "desktop"
+                        ? `${styles.viewportItem} ${styles.desktopViewportItem}`
+                        : styles.viewportItem
+                    }
+                    aria-label={`Preview ${id} width`}
+                    title={`${label} preview`}
+                  >
+                    <Icon aria-hidden="true" size={15} />
+                    <span className={styles.viewportItemLabel}>{label}</span>
+                  </ToggleItem>
+                ),
+              )}
+            </ToggleGroup>
+          ) : null}
         </div>
 
         <BuildForFreeMenu analyticsSource="chat_navbar" className={styles.buildForFreeMenu} />
