@@ -42,6 +42,14 @@ export const processStreamedMessage = async ({
 
   let isFirst = true;
 
+  // The wire message-item id whose text currently streams into currentMessage.
+  // The backend emits one output message item per content section (thinking,
+  // then the response); a NEW item id after content/tool calls have already
+  // accumulated marks that boundary, and it must be preserved as a separate
+  // assistant message so the LIVE structure matches what reload rebuilds from
+  // storage (one message per section) instead of merging the run into one entry.
+  let currentTextItemId: string | null = null;
+
   // Tool messages by toolCallId, so repeated TOOL_CALL_RESULTs for the same
   // call UPDATE one message in place instead of duplicating it.
   const toolMessagesByCallId = new Map<string, ToolMessage>();
@@ -153,13 +161,38 @@ export const processStreamedMessage = async ({
         break;
       }
 
-      case EventType.TEXT_MESSAGE_START:
-        // The optimistic id is kept regardless of `event.messageId` — swapping
-        // ids mid-stream by deleting + re-creating the assistant message
-        // breaks ordering when tool messages have already been appended
-        // between the original create and this event (e.g. from
-        // TOOL_CALL_RESULT). Persistence layers should map ids on save.
+      case EventType.TEXT_MESSAGE_START: {
+        // A DIFFERENT item id after content/tool calls have accumulated means
+        // the model opened a new output message item — interleaving prose with
+        // tool calls (several sections in one run). Split into a fresh assistant
+        // message so the live structure matches what reload reconstructs from
+        // storage — separate assistant messages in wire order — instead of
+        // merging every section into one entry. The optimistic id is minted
+        // locally (never the wire `messageId`); persistence layers map ids on
+        // save, and swapping an existing id mid-stream would break ordering
+        // when tool messages were already appended between segments.
+        const startId = (event as { messageId?: string }).messageId ?? null;
+        const hasBody =
+          (currentMessage.content?.length ?? 0) > 0 || (currentMessage.toolCalls?.length ?? 0) > 0;
+        if (hasBody && startId !== currentTextItemId) {
+          if (rafId !== null) {
+            // Flush the pending update so the finished segment's final state
+            // lands before the next segment is created.
+            cancelAnimationFrame(rafId);
+            rafId = null;
+            if (!isFirst) updateMessage(currentMessage);
+          }
+          currentMessage = {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content: "",
+            toolCalls: [],
+          };
+          isFirst = true;
+        }
+        currentTextItemId = startId;
         break;
+      }
 
       case EventType.TOOL_CALL_RESULT: {
         // Result landed → no longer executing / in flight.

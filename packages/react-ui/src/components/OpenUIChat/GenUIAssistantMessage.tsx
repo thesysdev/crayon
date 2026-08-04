@@ -9,9 +9,8 @@ import {
 } from "@openuidev/react-headless";
 import type { ActionEvent, Library } from "@openuidev/react-lang";
 import { BuiltinActionType, Renderer } from "@openuidev/react-lang";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import {
-  narrationPrefix,
   separateContentAndContext,
   wrapContent,
   wrapContentWithHeader,
@@ -78,40 +77,28 @@ export const GenUIAssistantMessage = ({
   const answerSegment = !interleaved ? message : lastIsPureText || !turnLive ? lastSegment : null;
   const isAnswerSegment = answerSegment?.id === message.id;
 
-  // Separate openui-lang code from persisted form state. `narrationSections`
-  // are the thinking sections BEFORE the last one; `content` is the last
-  // section — the response, or the newest thinking while it streams.
-  const {
-    content: openuiCode,
-    contextString,
-    contentHeader,
-    narrationSections,
-  } = useMemo(() => {
-    if (!message.content) {
-      return {
-        content: null,
-        contextString: null,
-        contentHeader: undefined,
-        narrationSections: undefined,
-      };
-    }
-    return separateContentAndContext(message.content);
-  }, [message.content]);
+  // The stream layer emits one content section per message, so each entry holds
+  // a single section — its thinking prose, or the final response. Strip the
+  // sentinels and separate any inline form-state.
+  const { content, contextString, contentHeader } = useMemo(
+    () =>
+      message.content
+        ? separateContentAndContext(message.content)
+        : { content: null, contextString: null, contentHeader: undefined },
+    [message.content],
+  );
 
-  // Has the RESPONSE section started (single-segment live runs)? The response
-  // is Lang code — recognized by its fence when present, or by the mandatory
-  // `root = …` assignment when the backend emits it UNFENCED (otherwise
-  // unfenced Lang classifies as thinking and streams into the tray). A reply
-  // without tool calls IS the response from its first byte, and a settled run
-  // always surfaces whatever it has (no text is ever lost).
+  // Is this entry's section the RESPONSE (Lang), not thinking? Lang carries a
+  // fence, or (unfenced) the mandatory `root =`. A reply with no tool calls is
+  // the response from its first byte; a settled run always surfaces what it has.
   const looksLikeLang =
-    !!openuiCode && (openuiCode.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(openuiCode));
+    !!content && (content.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(content));
   const singleResponseStarted =
-    !!openuiCode && ((message.toolCalls?.length ?? 0) === 0 || looksLikeLang || !isRunning);
-
-  // While the response hasn't started, the LAST section is thinking too —
-  // it belongs in the timeline, not the Lang renderer.
-  const pendingThinking = !interleaved && !singleResponseStarted && openuiCode ? openuiCode : null;
+    !!content && ((message.toolCalls?.length ?? 0) === 0 || looksLikeLang || !isRunning);
+  const openuiCode = singleResponseStarted ? content : null;
+  // Otherwise the section is thinking — it belongs in the timeline, not the
+  // Lang renderer.
+  const pendingThinking = !interleaved && !singleResponseStarted ? content : null;
 
   const initialState = useMemo(() => {
     if (!contextString) return undefined;
@@ -144,71 +131,28 @@ export const GenUIAssistantMessage = ({
     return turnActivities.filter((a) => ownIds.has(a.toolCall.id));
   }, [interleaved, turnActivities, message.toolCalls]);
 
-  // Single-segment (live) timeline rows: thinking sections as text steps
-  // before the tool rows. `undefined` keeps the tray's plain activities-only
-  // rendering when there is no thinking to show.
-
-  // ── Arrival-order ledger ──
-  // The flat message records no interleave between its content sections and
-  // its tool calls — but this component re-renders on every stream delta, so
-  // it can OBSERVE the order things arrive in: a second thought that starts
-  // after the first tool call renders beneath it, matching the wire.
-  const arrival = useRef<{
-    messageId: string;
-    textCount: number;
-    toolIds: Set<string>;
-    order: ({ kind: "text"; index: number } | { kind: "tool"; id: string })[];
-  }>({ messageId: message.id, textCount: 0, toolIds: new Set(), order: [] });
-  if (arrival.current.messageId !== message.id) {
-    arrival.current = { messageId: message.id, textCount: 0, toolIds: new Set(), order: [] };
-  }
-  {
-    const ledger = arrival.current;
-    // New text section(s) first: within one batched render, narration
-    // precedes the tool calls it narrates (protocol order).
-    const textCountNow = (narrationSections?.length ?? 0) + (pendingThinking ? 1 : 0);
-    while (ledger.textCount < textCountNow) {
-      ledger.order.push({ kind: "text", index: ledger.textCount++ });
-    }
-    for (const toolCall of message.toolCalls ?? []) {
-      if (!ledger.toolIds.has(toolCall.id)) {
-        ledger.toolIds.add(toolCall.id);
-        ledger.order.push({ kind: "tool", id: toolCall.id });
-      }
-    }
-  }
-
+  // Single-segment (live) timeline rows: this entry's thinking text followed by
+  // its tool rows. The stream layer emits one section per message, so an entry
+  // carries at most one thinking part — no cross-section ordering to reconstruct
+  // (that's the whole run's job, handled by the multi-segment turn below).
   const ownSteps = useMemo<TimelineStep[] | undefined>(() => {
-    if (interleaved) return undefined;
-    const texts = [...(narrationSections ?? [])];
-    if (pendingThinking) texts.push(pendingThinking);
-    if (texts.length === 0) return undefined;
-    const byCallId = new Map(activities.map((a) => [a.toolCall.id, a]));
-    const rows: TimelineStep[] = [];
-    for (const entry of arrival.current.order) {
-      if (entry.kind === "text") {
-        const text = texts[entry.index];
-        // Index-based ids stay stable when the pending section is later
-        // promoted into narrationSections (same position → same key).
-        if (text) rows.push({ type: "text", id: `${message.id}::thinking-${entry.index}`, text });
-      } else {
-        const activity = byCallId.get(entry.id);
-        if (activity) rows.push({ type: "activity", activity });
-      }
-    }
-    return rows;
-  }, [interleaved, narrationSections, pendingThinking, activities, message.id]);
+    if (interleaved || !pendingThinking) return undefined;
+    return [
+      { type: "text" as const, id: `${message.id}::thinking`, text: pendingThinking },
+      ...activities.map((activity) => ({ type: "activity" as const, activity })),
+    ];
+  }, [interleaved, pendingThinking, activities, message.id]);
 
-  // Display rows for the merged timeline, in run order: each thinking segment
-  // contributes its prose (sentinel-stripped) followed by its tool rows. The
+  // Display rows for the merged (multi-segment) timeline, in run order: each
+  // thinking segment contributes its prose followed by its tool rows. The
   // answer's text never appears here — it renders below via the Lang renderer.
   const turnSteps = useMemo<TimelineStep[]>(() => {
     const byCallId = new Map(turnActivities.map((a) => [a.toolCall.id, a]));
     const rows: TimelineStep[] = [];
     for (const segment of turnSegments) {
       if (segment.id !== answerSegment?.id) {
-        const { content } = separateContentAndContext(segment.content ?? "");
-        if (content) rows.push({ type: "text", id: segment.id, text: content });
+        const prose = separateContentAndContext(segment.content ?? "").content;
+        if (prose) rows.push({ type: "text", id: segment.id, text: prose });
       }
       for (const toolCall of segment.toolCalls ?? []) {
         const activity = byCallId.get(toolCall.id);
@@ -237,10 +181,7 @@ export const GenUIAssistantMessage = ({
     (state: Record<string, any>) => {
       const code = openuiCode ?? "";
       const hasState = Object.keys(state).length > 0;
-      // Rebuild only the LAST section; the thinking sections before it are
-      // displayed now, so they must round-trip verbatim.
-      const contentPart =
-        narrationPrefix(message.content ?? "") + wrapContentWithHeader(code, contentHeader);
+      const contentPart = wrapContentWithHeader(code, contentHeader);
       const fullMessage = hasState
         ? contentPart + wrapContext(JSON.stringify([state]))
         : contentPart;
