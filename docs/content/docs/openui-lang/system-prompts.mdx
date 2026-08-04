@@ -99,6 +99,25 @@ const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
 
 This is convenient but imports React components. Prefer the generated spec plus `generateSystemPrompt` for backend routes.
 
+## Telemetry and privacy
+
+Server-side `generateSystemPrompt()` sends a best-effort first-use event
+directly to PostHog at `https://us.i.posthog.com` once per distinct prompt
+configuration per runtime, capped at 16 configurations. It does not send from
+browsers or browser workers and does not run for every user request. A new
+process, pod, worker, or serverless cold start may send again.
+
+The event contains package/runtime versions, coarse environment and CI flags, a
+tool-count bucket, a prompt-configuration hash, memory-only random IDs, and an
+optional Node.js repository-derived project hash. It does not contain prompt
+output, component/tool content, chat-user IPs, request headers, credentials,
+errors, or raw repository/path values. The direct connection exposes the server
+or build runner's transport IP to PostHog for configured GeoIP processing.
+
+Disable telemetry for a call with `{ telemetry: false }` as the second
+argument, or process-wide with `OPENUI_TELEMETRY_DISABLED=1` or
+`DO_NOT_TRACK=1`.
+
 ## What gets generated
 
 The generated prompt includes:

@@ -61,16 +61,18 @@ const result2 = sp.set("root = Stack([header])\nheader = CardHeader(\"Hello\")\n
 ### Generate a system prompt
 
 ```ts
-import { generatePrompt, type PromptSpec } from "@openuidev/lang-core";
-import componentSpec from "./generated/component-spec.json";
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
+import librarySpec from "./generated/system-prompt.spec.json";
 
-const prompt = generatePrompt({
-  ...componentSpec,
-  tools: myToolSpecs,
-  toolCalls: true,
-  bindings: true,
-  editMode: true,
-  preamble: "You build dashboards.",
+const prompt = generateSystemPrompt({
+  library: librarySpec as LibrarySpec,
+  promptOptions: {
+    tools: myToolSpecs,
+    toolCalls: true,
+    bindings: true,
+    editMode: true,
+    preamble: "You build dashboards.",
+  },
 });
 ```
 
@@ -97,13 +99,45 @@ const merged = mergeStatements(original, patch);
 
 ### Prompt Generation
 
-| Export | Description |
-| :--- | :--- |
-| `generatePrompt(spec)` | Generate a system prompt from a `PromptSpec` |
+| Export                                                              | Description                                                                   |
+| :------------------------------------------------------------------ | :---------------------------------------------------------------------------- |
+| `generateSystemPrompt({ library, promptOptions }, runtimeOptions?)` | Generate a system prompt from a serialized library and runtime prompt options |
+| `generatePrompt(spec)`                                              | Deprecated low-level prompt generator                                         |
 
-**`PromptSpec`** includes component signatures, tool definitions (`ToolSpec[]`), feature flags (`toolCalls`, `bindings`, `editMode`, `inlineMode`), examples, and custom rules.
+**`SystemPromptSpec`** combines a serialized `LibrarySpec` with prompt options. Prompt options include tool definitions (`ToolSpec[]`), feature flags (`toolCalls`, `bindings`, `editMode`, `inlineMode`), examples, and custom rules.
 
 **`ToolSpec`** describes a tool for prompt generation (name, description, inputSchema, outputSchema). Shape inspired by MCP's tool schema.
+
+## Telemetry
+
+On a successful server-side `generateSystemPrompt()` call, Lang Core sends a
+best-effort event directly to PostHog at
+[`https://us.i.posthog.com`](https://us.i.posthog.com). It sends once per
+distinct prompt configuration per runtime, with a maximum of 16 configurations.
+It does not send on every user request, and it never sends from a browser or
+browser worker. New processes, pods, workers, and serverless cold starts have
+fresh in-memory deduplication state and may send again.
+
+The event contains the full Lang Core and server runtime versions, coarse
+environment and CI flags, API/input shape, a powers-of-four tool-count bucket,
+a SHA-256 prompt-configuration hash, random memory-only event/runtime IDs, and,
+on Node.js when available, a separate repository-derived project hash. It does
+not contain prompt output, component or tool content, library IDs, request
+headers, chat-user IPs, credentials, errors, or raw repository/path values.
+PostHog observes the server or build runner's direct transport IP and may apply
+its configured GeoIP processing. Person-profile processing is disabled for the
+event.
+
+Disable this event for one call:
+
+```ts
+generateSystemPrompt({ library, promptOptions }, { telemetry: false });
+```
+
+Disable it for the process with `OPENUI_TELEMETRY_DISABLED=1` or
+`DO_NOT_TRACK=1`. Telemetry is also disabled automatically when
+`NODE_ENV=test`. Delivery is asynchronous, has no retry, and cannot change the
+generated prompt or throw into application code.
 
 ### Runtime
 

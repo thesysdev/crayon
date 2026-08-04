@@ -197,6 +197,10 @@ When a coding agent invokes the CLI, it should pass `--agent-name` using its sta
 
 Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. For `create`, telemetry also includes `package_manager`, the manager selected for dependency installation (`npm`, `pnpm`, `yarn`, or `bun`). Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
 
+CLI events are separate from `@openuidev/lang-core` server-side
+`generateSystemPrompt()` first-use telemetry. The `generate` command uses the
+library prompt API and does not emit that Lang Core event.
+
 ```bash
 openui create --no-telemetry
 ```

@@ -1,0 +1,526 @@
+import type { PromptSpec, ToolSpec } from "./parser/prompt";
+
+declare const __OPENUI_LANG_CORE_VERSION__: string;
+declare const __OPENUI_TELEMETRY_CAPTURE_URL__: string;
+declare const __OPENUI_TELEMETRY_POSTHOG_KEY__: string;
+
+const EVENT_NAME = "lang_core_system_prompt_generation_used";
+const HASH_DOMAIN = "openui-system-prompt-config-v1";
+const PROJECT_HASH_DOMAIN = "openui-project-v1";
+const MAX_CONFIGURATIONS_PER_RUNTIME = 16;
+const REQUEST_TIMEOUT_MS = 2_000;
+
+const SDK_VERSION =
+  typeof __OPENUI_LANG_CORE_VERSION__ === "string"
+    ? __OPENUI_LANG_CORE_VERSION__
+    : "0.0.0-development";
+const CAPTURE_URL =
+  typeof __OPENUI_TELEMETRY_CAPTURE_URL__ === "string"
+    ? __OPENUI_TELEMETRY_CAPTURE_URL__
+    : "https://us.i.posthog.com/capture/";
+const POSTHOG_KEY =
+  typeof __OPENUI_TELEMETRY_POSTHOG_KEY__ === "string"
+    ? __OPENUI_TELEMETRY_POSTHOG_KEY__
+    : "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
+
+type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
+type InputShape = "library_spec" | "legacy_prompt_spec";
+type ToolCountBucket = "0" | "1-3" | "4-15" | "16-63" | "64+";
+type Environment = "production" | "development" | "test" | "unknown";
+type RuntimeName = "node" | "bun" | "deno" | "edge";
+
+interface ProcessLike {
+  cwd?: () => string;
+  env?: Record<string, string | undefined>;
+  getBuiltinModule?: (specifier: string) => unknown;
+  release?: { name?: string };
+  versions?: Record<string, string | undefined>;
+}
+
+interface RuntimeInfo {
+  name: RuntimeName;
+  version?: string;
+  env?: Record<string, string | undefined>;
+  process?: ProcessLike;
+}
+
+interface TelemetryState {
+  attemptedConfigurations: Set<string>;
+  projectHash?: Promise<string | undefined>;
+  runtimeId: string;
+}
+
+interface CaptureProperties {
+  distinct_id: string;
+  $process_person_profile: false;
+  event_id: string;
+  telemetry_schema_version: 1;
+  system_prompt_config_hash_version: 1;
+  system_prompt_config_hash: string;
+  project_hash_version?: 1;
+  project_hash?: string;
+  tool_count_bucket: ToolCountBucket;
+  sdk_name: "@openuidev/lang-core";
+  sdk_version: string;
+  api_surface: "generate_system_prompt";
+  input_shape: InputShape;
+  runtime: RuntimeName;
+  runtime_version?: string;
+  environment: Environment;
+  ci: boolean;
+  telemetry_mode: "server_runtime_prompt_config_first_use";
+}
+
+export interface GenerateSystemPromptRuntimeOptions {
+  telemetry?: boolean;
+}
+
+const STATE_KEY = Symbol.for("@openuidev/lang-core/telemetry/v1");
+
+function canonicalize(value: unknown): Json {
+  if (value === null || typeof value === "string" || typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) throw new TypeError("Non-finite number");
+    return value;
+  }
+
+  if (Array.isArray(value)) return value.map(canonicalize);
+
+  if (typeof value === "object") {
+    const result: Record<string, Json> = {};
+    for (const key of Object.keys(value).sort()) {
+      const child = (value as Record<string, unknown>)[key];
+      if (child !== undefined) result[key] = canonicalize(child);
+    }
+    return result;
+  }
+
+  throw new TypeError(`Unsupported value: ${typeof value}`);
+}
+
+function stableJson(value: unknown): string {
+  return JSON.stringify(canonicalize(value));
+}
+
+function canonicalTool(tool: string | ToolSpec): Json {
+  if (typeof tool === "string") return { kind: "string", value: tool };
+
+  return canonicalize({
+    kind: "spec",
+    name: tool.name,
+    description: tool.description ?? null,
+    inputSchema: tool.inputSchema,
+    outputSchema: tool.outputSchema,
+    annotations: {
+      readOnlyHint: tool.annotations?.readOnlyHint ?? null,
+      destructiveHint: tool.annotations?.destructiveHint ?? null,
+    },
+  });
+}
+
+export function buildSystemPromptConfigProjection(spec: PromptSpec): Json {
+  const hasTools = (spec.tools?.length ?? 0) > 0;
+  const toolCalls = spec.toolCalls ?? hasTools;
+  const bindings = spec.bindings ?? toolCalls;
+
+  const components = Object.entries(spec.components)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([name, component]) => ({
+      name,
+      signature: component.signature,
+      description: component.description ?? null,
+    }));
+
+  const componentGroups = (spec.componentGroups ?? [])
+    .map((group) => ({
+      name: group.name,
+      components: [...group.components].sort(),
+      notes: [...(group.notes ?? [])],
+    }))
+    .sort((left, right) => left.name.localeCompare(right.name));
+
+  const tools = (spec.tools ?? [])
+    .map(canonicalTool)
+    .sort((left, right) => stableJson(left).localeCompare(stableJson(right)));
+
+  return canonicalize({
+    root: spec.root ?? "Root",
+    components,
+    componentGroups,
+    tools,
+    modes: {
+      toolCalls,
+      bindings,
+      editMode: spec.editMode === true,
+      inlineMode: spec.inlineMode === true,
+    },
+    preamble: spec.preamble ?? null,
+    examples: [...(spec.examples ?? [])],
+    toolExamples: [...(spec.toolExamples ?? [])],
+    additionalRules: [...(spec.additionalRules ?? [])],
+  });
+}
+
+async function sha256(value: string): Promise<string> {
+  const subtle = globalThis.crypto?.subtle;
+  if (!subtle) throw new Error("Web Crypto is unavailable");
+
+  const bytes = new TextEncoder().encode(value);
+  const digest = await subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+export function calculateSystemPromptConfigHash(spec: PromptSpec): Promise<string> {
+  const canonicalJson = stableJson(buildSystemPromptConfigProjection(spec));
+  return sha256(`${HASH_DOMAIN}\0${canonicalJson}`);
+}
+
+export function getToolCountBucket(count: number): ToolCountBucket {
+  if (count === 0) return "0";
+  if (count < 4) return "1-3";
+  if (count < 16) return "4-15";
+  if (count < 64) return "16-63";
+  return "64+";
+}
+
+function getProcess(): ProcessLike | undefined {
+  const candidate = (globalThis as typeof globalThis & { process?: unknown }).process;
+  if (!candidate || typeof candidate !== "object") return undefined;
+  return candidate as ProcessLike;
+}
+
+function hasBrowserWindow(): boolean {
+  const target = globalThis as typeof globalThis & {
+    document?: unknown;
+    navigator?: { product?: string };
+    window?: unknown;
+  };
+  return target.navigator?.product === "ReactNative" || Boolean(target.window && target.document);
+}
+
+function isBrowserWorker(): boolean {
+  const target = globalThis as typeof globalThis & {
+    WorkerGlobalScope?: { prototype: object };
+  };
+  const workerGlobalScope = target.WorkerGlobalScope;
+  return Boolean(workerGlobalScope && workerGlobalScope.prototype.isPrototypeOf(globalThis));
+}
+
+function detectRuntime(): RuntimeInfo | undefined {
+  if (hasBrowserWindow()) return undefined;
+
+  const target = globalThis as typeof globalThis & {
+    Bun?: { version?: string };
+    Deno?: {
+      env?: { get?: (name: string) => string | undefined };
+      version?: { deno?: string };
+    };
+    EdgeRuntime?: unknown;
+    WebSocketPair?: unknown;
+  };
+  const processLike = getProcess();
+
+  if (target.Bun && typeof target.Bun === "object") {
+    return {
+      name: "bun",
+      version: target.Bun.version,
+      env: processLike?.env,
+      process: processLike,
+    };
+  }
+
+  if (target.Deno && typeof target.Deno === "object") {
+    const env: Record<string, string | undefined> = {};
+    try {
+      for (const name of ENVIRONMENT_KEYS) env[name] = target.Deno.env?.get?.(name);
+    } catch {
+      // Deno may deny environment access. Telemetry remains content-free.
+    }
+    return { name: "deno", version: target.Deno.version?.deno, env };
+  }
+
+  if (typeof target.EdgeRuntime === "string") {
+    return { name: "edge", version: target.EdgeRuntime };
+  }
+
+  if (typeof target.WebSocketPair === "function") {
+    return { name: "edge" };
+  }
+
+  if (isBrowserWorker()) return undefined;
+
+  if (
+    processLike?.release?.name === "node" ||
+    (typeof processLike?.versions?.node === "string" && processLike.versions.node.length > 0)
+  ) {
+    return {
+      name: "node",
+      version: processLike.versions?.node,
+      env: processLike.env,
+      process: processLike,
+    };
+  }
+
+  return undefined;
+}
+
+function getEnvironment(env: Record<string, string | undefined> | undefined): Environment {
+  const value = env?.NODE_ENV;
+  if (value === "production" || value === "development" || value === "test") return value;
+  return "unknown";
+}
+
+function isTruthyOptOut(value: string | undefined): boolean {
+  return value === "1" || value?.toLowerCase() === "true";
+}
+
+function isCi(env: Record<string, string | undefined> | undefined): boolean {
+  if (!env) return false;
+  return [
+    "CI",
+    "CONTINUOUS_INTEGRATION",
+    "BUILD_NUMBER",
+    "GITHUB_ACTIONS",
+    "GITLAB_CI",
+    "BUILDKITE",
+    "CIRCLECI",
+    "VERCEL",
+    "NETLIFY",
+  ].some((name) => {
+    const value = env[name];
+    return Boolean(value && value !== "0" && value.toLowerCase() !== "false");
+  });
+}
+
+const ENVIRONMENT_KEYS = [
+  "NODE_ENV",
+  "DO_NOT_TRACK",
+  "OPENUI_TELEMETRY_DISABLED",
+  "CI",
+  "CONTINUOUS_INTEGRATION",
+  "BUILD_NUMBER",
+  "GITHUB_ACTIONS",
+  "GITLAB_CI",
+  "BUILDKITE",
+  "CIRCLECI",
+  "VERCEL",
+  "NETLIFY",
+] as const;
+
+function randomUuid(): string {
+  if (typeof globalThis.crypto?.randomUUID === "function") return globalThis.crypto.randomUUID();
+
+  const bytes = new Uint8Array(16);
+  globalThis.crypto.getRandomValues(bytes);
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0"));
+  return `${hex.slice(0, 4).join("")}-${hex.slice(4, 6).join("")}-${hex
+    .slice(6, 8)
+    .join("")}-${hex.slice(8, 10).join("")}-${hex.slice(10).join("")}`;
+}
+
+function getState(): TelemetryState {
+  const registry = globalThis as typeof globalThis & { [STATE_KEY]?: TelemetryState };
+  registry[STATE_KEY] ??= {
+    attemptedConfigurations: new Set<string>(),
+    runtimeId: randomUuid(),
+  };
+  return registry[STATE_KEY];
+}
+
+// This key is process-local and is never sent. It avoids retaining canonical prompt data in memory.
+function getReservationKey(value: string): string {
+  let left = 0x811c9dc5;
+  let right = 0x9e3779b9;
+  for (let index = 0; index < value.length; index += 1) {
+    const code = value.charCodeAt(index);
+    left = Math.imul(left ^ code, 0x01000193);
+    right = Math.imul(right ^ code, 0x85ebca6b);
+  }
+  return `${(left >>> 0).toString(16)}:${(right >>> 0).toString(16)}`;
+}
+
+function normalizeRepositoryIdentifier(rawValue: string): string | undefined {
+  const value = rawValue.trim();
+  if (!value) return undefined;
+
+  try {
+    const url = new URL(value);
+    const pathname = decodeURIComponent(url.pathname)
+      .replace(/^\/+|\/+$/g, "")
+      .replace(/\.git$/i, "");
+    if (url.hostname && pathname) return `${url.hostname.toLowerCase()}/${pathname}`;
+  } catch {
+    // SCP-style Git origins and local paths are handled below.
+  }
+
+  if (/^[A-Za-z]:[\\/]/.test(value)) {
+    return value.replace(/\\/g, "/").replace(/\/+$/g, "");
+  }
+
+  const scpMatch = /^(?:[^@/\s]+@)?([^:/\s]+):(.+)$/.exec(value);
+  if (scpMatch) {
+    const host = scpMatch[1]?.toLowerCase();
+    const pathname = scpMatch[2]?.replace(/^\/+|\/+$/g, "").replace(/\.git$/i, "");
+    if (host && pathname) return `${host}/${pathname}`;
+  }
+
+  // Local paths are still useful as a last-resort, deployment-local identifier.
+  return value.replace(/\\/g, "/").replace(/\/+$/g, "");
+}
+
+function readGitOrigin(processLike: ProcessLike): string | undefined {
+  try {
+    const childProcess = processLike.getBuiltinModule?.("node:child_process") as
+      | {
+          execFileSync?: (file: string, args: string[], options: Record<string, unknown>) => string;
+        }
+      | undefined;
+    return childProcess?.execFileSync?.(
+      "git",
+      ["config", "--local", "--get", "remote.origin.url"],
+      {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+        timeout: 500,
+      },
+    );
+  } catch {
+    return undefined;
+  }
+}
+
+function getRepositoryIdentifier(processLike: ProcessLike | undefined): string | undefined {
+  if (!processLike) return undefined;
+
+  const rawValue =
+    readGitOrigin(processLike) ?? processLike.env?.REPOSITORY_URL ?? processLike.cwd?.();
+  return rawValue ? normalizeRepositoryIdentifier(rawValue) : undefined;
+}
+
+export function calculateProjectHash(repositoryIdentifier: string): Promise<string> {
+  const normalized = normalizeRepositoryIdentifier(repositoryIdentifier);
+  if (!normalized) return Promise.reject(new TypeError("Repository identifier is empty"));
+  return sha256(`${PROJECT_HASH_DOMAIN}\0${normalized}`);
+}
+
+function getProjectHash(state: TelemetryState, runtime: RuntimeInfo): Promise<string | undefined> {
+  if (runtime.name !== "node") return Promise.resolve(undefined);
+
+  state.projectHash ??= Promise.resolve()
+    .then(() => getRepositoryIdentifier(runtime.process))
+    .then((identifier) => (identifier ? calculateProjectHash(identifier) : undefined))
+    .catch(() => undefined);
+  return state.projectHash;
+}
+
+async function sendCapture(
+  state: TelemetryState,
+  spec: PromptSpec,
+  canonicalJson: string,
+  inputShape: InputShape,
+  runtime: RuntimeInfo,
+  environment: Environment,
+): Promise<void> {
+  const [systemPromptConfigHash, projectHash] = await Promise.all([
+    sha256(`${HASH_DOMAIN}\0${canonicalJson}`),
+    getProjectHash(state, runtime),
+  ]);
+
+  const properties: CaptureProperties = {
+    distinct_id: state.runtimeId,
+    $process_person_profile: false,
+    event_id: randomUuid(),
+    telemetry_schema_version: 1,
+    system_prompt_config_hash_version: 1,
+    system_prompt_config_hash: systemPromptConfigHash,
+    tool_count_bucket: getToolCountBucket(spec.tools?.length ?? 0),
+    sdk_name: "@openuidev/lang-core",
+    sdk_version: SDK_VERSION,
+    api_surface: "generate_system_prompt",
+    input_shape: inputShape,
+    runtime: runtime.name,
+    runtime_version: runtime.version,
+    environment,
+    ci: isCi(runtime.env),
+    telemetry_mode: "server_runtime_prompt_config_first_use",
+  };
+
+  if (projectHash) {
+    properties.project_hash_version = 1;
+    properties.project_hash = projectHash;
+  }
+
+  const controller = typeof AbortController === "function" ? new AbortController() : undefined;
+  const timeout = controller ? setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS) : undefined;
+  (timeout as unknown as { unref?: () => void } | undefined)?.unref?.();
+
+  try {
+    const headers: Record<string, string> = { "content-type": "application/json" };
+    if (runtime.name !== "edge") headers["user-agent"] = `@openuidev/lang-core/${SDK_VERSION}`;
+
+    await globalThis.fetch(CAPTURE_URL, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        api_key: POSTHOG_KEY,
+        event: EVENT_NAME,
+        timestamp: new Date().toISOString(),
+        properties,
+      }),
+      keepalive: true,
+      signal: controller?.signal,
+    });
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+}
+
+export function recordSystemPromptGeneration(
+  spec: PromptSpec,
+  inputShape: InputShape,
+  options?: GenerateSystemPromptRuntimeOptions,
+): void {
+  try {
+    if (options?.telemetry === false || !CAPTURE_URL || !POSTHOG_KEY) return;
+
+    const runtime = detectRuntime();
+    if (!runtime || typeof globalThis.fetch !== "function" || !globalThis.crypto?.subtle) return;
+
+    const env = runtime.env;
+    const environment = getEnvironment(env);
+    if (
+      environment === "test" ||
+      isTruthyOptOut(env?.DO_NOT_TRACK) ||
+      isTruthyOptOut(env?.OPENUI_TELEMETRY_DISABLED)
+    ) {
+      return;
+    }
+
+    const canonicalJson = stableJson(buildSystemPromptConfigProjection(spec));
+    const reservationKey = getReservationKey(canonicalJson);
+    const state = getState();
+    if (
+      state.attemptedConfigurations.has(reservationKey) ||
+      state.attemptedConfigurations.size >= MAX_CONFIGURATIONS_PER_RUNTIME
+    ) {
+      return;
+    }
+    state.attemptedConfigurations.add(reservationKey);
+
+    void Promise.resolve()
+      .then(() => sendCapture(state, spec, canonicalJson, inputShape, runtime, environment))
+      .catch(() => undefined);
+  } catch {
+    // Telemetry must never affect prompt generation.
+  }
+}
+
+export function resetTelemetryStateForTests(): void {
+  const registry = globalThis as typeof globalThis & { [STATE_KEY]?: TelemetryState };
+  delete registry[STATE_KEY];
+}
