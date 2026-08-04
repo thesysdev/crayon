@@ -1,6 +1,6 @@
 "use client";
 
-import type { AssistantMessage, Message, ToolActivity } from "@openuidev/react-headless";
+import type { AssistantMessage, ToolActivity } from "@openuidev/react-headless";
 import {
   lookupArtifactRenderer,
   useArtifactRendererRegistry,
@@ -20,20 +20,23 @@ import { ToolCallTimeline, type TimelineStep } from "../ToolCall";
 import { TimelineEntry } from "../_shared/tool-renderer";
 import { AssistantMessageContainer } from "./AssistantMessageContainer";
 
+/**
+ * Renders a SINGLE assistant message: its tool timeline (with its thinking
+ * prose as the leading step) and, once the response section has begun, the
+ * OpenUI-lang answer.
+ *
+ * Multi-segment turns (thinking… then answer, split across messages by the
+ * stream layer) are assembled ONE level up, in the thread's `InterleavedTurn`,
+ * which owns the single merged tray and calls this component only for the
+ * answer segment. So there is no turn/grouping logic here — one message in,
+ * one message rendered.
+ */
 export const GenUIAssistantMessage = ({
   message,
   library,
-  messageGroup,
 }: {
   message: AssistantMessage;
   library: Library;
-  /**
-   * The TURN this message belongs to (contiguous assistant/tool block),
-   * pre-computed by the thread and passed down. This component renders
-   * dumbly from it — no thread-structure derivation of its own. Absent →
-   * plain single-message rendering.
-   */
-  messageGroup?: Message[];
 }) => {
   const messages = useThread((s) => s.messages);
   const isRunning = useThread((s) => s.isRunning);
@@ -46,38 +49,9 @@ export const GenUIAssistantMessage = ({
     }
     return null;
   }, [messages]);
-
   const isStreaming = isRunning && lastAssistantId === message.id;
 
-  // ── Turn roles ─────────────────────────────────────────────────────────────
-  // A stored interleaved run loads as SEVERAL assistant messages (thinking +
-  // its tool calls each, then the answer). The thread pre-computes the turn
-  // and hands it down as `messageGroup`; the LAST segment hosts everything —
-  // the single ToolCallTimeline for the whole turn (thinking prose between
-  // the tool rows) AND, once the turn closes with pure text, the Lang
-  // renderer — so tray and answer share one message container. Earlier
-  // segments render nothing (the thread filters them out). Single-segment
-  // turns (or no `messageGroup`) keep today's per-message behavior exactly.
-  const turnSegments = useMemo(() => {
-    const turn = messageGroup?.length ? messageGroup : [message];
-    return turn.filter((m): m is AssistantMessage => m.role === "assistant");
-  }, [messageGroup, message]);
-
-  const interleaved = turnSegments.length >= 2;
-  const firstSegment = turnSegments[0] ?? message;
-  const lastSegment = turnSegments[turnSegments.length - 1] ?? message;
-  const turnLive = isRunning && lastAssistantId === lastSegment.id;
-
-  // The ANSWER is the segment that closes the turn with pure text. While the
-  // newest segment still carries tool calls on a live run, the model is
-  // mid-work — everything stays in the timeline. A settled turn always
-  // surfaces the last segment so no text is ever lost. Single-segment turns
-  // treat the message itself as the answer (today's behavior).
-  const lastIsPureText = (lastSegment.toolCalls?.length ?? 0) === 0;
-  const answerSegment = !interleaved ? message : lastIsPureText || !turnLive ? lastSegment : null;
-  const isAnswerSegment = answerSegment?.id === message.id;
-
-  // The stream layer emits one content section per message, so each entry holds
+  // The stream layer emits one content section per message, so this entry holds
   // a single section — its thinking prose, or the final response. Strip the
   // sentinels and separate any inline form-state.
   const { content, contextString, contentHeader } = useMemo(
@@ -88,9 +62,9 @@ export const GenUIAssistantMessage = ({
     [message.content],
   );
 
-  // Is this entry's section the RESPONSE (Lang), not thinking? Lang carries a
-  // fence, or (unfenced) the mandatory `root =`. A reply with no tool calls is
-  // the response from its first byte; a settled run always surfaces what it has.
+  // Is this section the RESPONSE (Lang), not thinking? Lang carries a fence, or
+  // (unfenced) the mandatory `root =`. A reply with no tool calls is the
+  // response from its first byte; a settled run always surfaces what it has.
   const looksLikeLang =
     !!content && (content.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(content));
   const singleResponseStarted =
@@ -98,7 +72,7 @@ export const GenUIAssistantMessage = ({
   const openuiCode = singleResponseStarted ? content : null;
   // Otherwise the section is thinking — it belongs in the timeline, not the
   // Lang renderer.
-  const pendingThinking = !interleaved && !singleResponseStarted ? content : null;
+  const pendingThinking = !singleResponseStarted ? content : null;
 
   const initialState = useMemo(() => {
     if (!contextString) return undefined;
@@ -112,67 +86,23 @@ export const GenUIAssistantMessage = ({
     }
   }, [contextString]);
 
-  // ONE id-keyed pairing of calls↔results (with real status) for the whole
-  // turn: a synthetic message carrying every segment's tool calls in order.
-  // (useToolActivities only reads id/toolCalls and keys its memo on the args,
-  // so the merge stays live.)
-  const turnMessage = useMemo(
-    () => ({ ...firstSegment, toolCalls: turnSegments.flatMap((s) => s.toolCalls ?? []) }),
-    [firstSegment, turnSegments],
-  );
-  const turnActivities = useToolActivities(turnMessage, messages);
+  const activities = useToolActivities(message, messages);
 
-  // This instance's own activities are the subset whose calls belong to
-  // `message` — identical to turnActivities when the turn is just us, so no
-  // second pairing pass is needed.
-  const activities = useMemo(() => {
-    if (!interleaved) return turnActivities;
-    const ownIds = new Set((message.toolCalls ?? []).map((t) => t.id));
-    return turnActivities.filter((a) => ownIds.has(a.toolCall.id));
-  }, [interleaved, turnActivities, message.toolCalls]);
-
-  // Single-segment (live) timeline rows: this entry's thinking text followed by
-  // its tool rows. The stream layer emits one section per message, so an entry
-  // carries at most one thinking part — no cross-section ordering to reconstruct
-  // (that's the whole run's job, handled by the multi-segment turn below).
+  // Timeline rows: this message's thinking prose (if any) followed by its tools.
   const ownSteps = useMemo<TimelineStep[] | undefined>(() => {
-    if (interleaved || !pendingThinking) return undefined;
+    if (!pendingThinking) return undefined;
     return [
       { type: "text" as const, id: `${message.id}::thinking`, text: pendingThinking },
       ...activities.map((activity) => ({ type: "activity" as const, activity })),
     ];
-  }, [interleaved, pendingThinking, activities, message.id]);
+  }, [pendingThinking, activities, message.id]);
 
-  // Display rows for the merged (multi-segment) timeline, in run order: each
-  // thinking segment contributes its prose followed by its tool rows. The
-  // answer's text never appears here — it renders below via the Lang renderer.
-  const turnSteps = useMemo<TimelineStep[]>(() => {
-    const byCallId = new Map(turnActivities.map((a) => [a.toolCall.id, a]));
-    const rows: TimelineStep[] = [];
-    for (const segment of turnSegments) {
-      if (segment.id !== answerSegment?.id) {
-        const prose = separateContentAndContext(segment.content ?? "").content;
-        if (prose) rows.push({ type: "text", id: segment.id, text: prose });
-      }
-      for (const toolCall of segment.toolCalls ?? []) {
-        const activity = byCallId.get(toolCall.id);
-        if (activity) rows.push({ type: "activity", activity });
-      }
-    }
-    return rows;
-  }, [turnSegments, turnActivities, answerSegment?.id]);
-
-  // The "Behind the scenes" timeline shows the RAW request/response for EVERY
-  // tool call (forceDefault), so matched tools (artifacts, web search) stay
-  // inspectable there. Matched renderers additionally render their rich preview
-  // OUTSIDE the timeline so it's always visible and its detailed-view panel
-  // stays mounted even after the message completes. The turn host surfaces the
-  // WHOLE turn's matched previews — earlier segments render nothing themselves.
-  const isTurnHost = interleaved && lastSegment.id === message.id;
+  // Matched renderers (artifact previews, web search) render OUTSIDE the tray
+  // so they stay visible after it collapses.
   const registry = useArtifactRendererRegistry();
-  const isMatched = (a: ToolActivity) =>
-    !!(registry && lookupArtifactRenderer(registry, a.toolName));
-  const matchedActivities = (isTurnHost ? turnActivities : activities).filter(isMatched);
+  const matchedActivities = activities.filter(
+    (a) => !!(registry && lookupArtifactRenderer(registry, a.toolName)),
+  );
 
   // Persist form state into the inline-wrapped message content. The original
   // header line (which may include `libraryVersion` and telemetry tags emitted
@@ -218,28 +148,12 @@ export const GenUIAssistantMessage = ({
     [processMessage],
   );
 
-  const rendersOwnTimeline = !interleaved && activities.length > 0;
-  const rendersTurnTimeline = isTurnHost && turnActivities.length > 0;
-
-  // A middle thinking segment with nothing of its own to show (its prose and
-  // tool rows live in the first segment's timeline) must mount NOTHING — an
-  // empty message container otherwise paints as a stray divider between the
-  // timeline and the answer.
-  if (
-    !rendersOwnTimeline &&
-    !rendersTurnTimeline &&
-    !isAnswerSegment &&
-    matchedActivities.length === 0
-  ) {
-    return null;
-  }
-
   return (
     <AssistantMessageContainer>
-      {rendersOwnTimeline && (
+      {activities.length > 0 && (
         // Raw request/response for ALL tool calls, collapsed by default, with
-        // thinking prose as text steps. Held open until the RESPONSE section
-        // starts — thinking bytes alone must not collapse it.
+        // thinking prose as the leading step. Held open until the response
+        // section starts — thinking bytes alone must not collapse it.
         <ToolCallTimeline
           activities={activities}
           steps={ownSteps}
@@ -248,22 +162,10 @@ export const GenUIAssistantMessage = ({
           awaitingResponse={isStreaming && !singleResponseStarted}
         />
       )}
-      {rendersTurnTimeline && (
-        // Interleaved turn: ONE timeline for the whole turn, hosted at the
-        // turn's LAST segment so it sits in the same container as the answer.
-        // Thinking prose renders between the raw tool rows.
-        <ToolCallTimeline
-          activities={turnActivities}
-          steps={turnSteps}
-          isLast={turnLive}
-          forceDefault
-        />
-      )}
       {matchedActivities.map((activity: ToolActivity) => (
-        // Matched renderers (artifact previews, web search) — always visible,
-        // for thinking segments too. No raw fallback here: the forceDefault
-        // timeline above already shows the raw card, so a null-parser renderer
-        // shouldn't double it.
+        // Matched renderers (artifact previews, web search) — always visible.
+        // No raw fallback here: the forceDefault timeline above already shows the
+        // raw card, so a null-parser renderer shouldn't double it.
         <TimelineEntry
           key={activity.id}
           activity={activity}
@@ -271,9 +173,7 @@ export const GenUIAssistantMessage = ({
           fallbackToDefault={false}
         />
       ))}
-      {(interleaved ? isAnswerSegment : singleResponseStarted) && (
-        // Thinking prose lives in the timeline; the Lang renderer only gets
-        // the actual response — no extra bubble per thinking section.
+      {singleResponseStarted && (
         <Renderer
           response={openuiCode}
           library={library}

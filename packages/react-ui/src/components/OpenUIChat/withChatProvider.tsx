@@ -1,9 +1,4 @@
-import type {
-  AssistantMessage,
-  ChatProviderProps,
-  Message,
-  UserMessage,
-} from "@openuidev/react-headless";
+import type { AssistantMessage, ChatProviderProps, UserMessage } from "@openuidev/react-headless";
 import { ChatProvider } from "@openuidev/react-headless";
 import type { Library } from "@openuidev/react-lang";
 import { useMemo } from "react";
@@ -43,18 +38,8 @@ export function withChatProvider<ExtraProps = {}>(WrappedComponent: React.Compon
 
     const genUIAssistantMessage = useMemo(() => {
       if (customAssistantMessage || !componentLibrary) return undefined;
-      return ({
-        message,
-        messageGroup,
-      }: {
-        message: AssistantMessage;
-        messageGroup?: Message[];
-      }) => (
-        <GenUIAssistantMessage
-          message={message}
-          messageGroup={messageGroup}
-          library={componentLibrary}
-        />
+      return ({ message }: { message: AssistantMessage }) => (
+        <GenUIAssistantMessage message={message} library={componentLibrary} />
       );
     }, [customAssistantMessage, componentLibrary]);
 

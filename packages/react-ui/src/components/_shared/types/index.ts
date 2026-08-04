@@ -1,4 +1,4 @@
-import type { AssistantMessage, Message, UserMessage } from "@openuidev/react-headless";
+import type { AssistantMessage, UserMessage } from "@openuidev/react-headless";
 
 /**
  * Custom component for rendering assistant messages.
@@ -15,14 +15,6 @@ import type { AssistantMessage, Message, UserMessage } from "@openuidev/react-he
 export type AssistantMessageComponent = React.ComponentType<{
   message: AssistantMessage;
   isStreaming: boolean;
-  /**
-   * The TURN this message belongs to — the contiguous assistant/tool block
-   * around it (thinking segments, tool results, answer), pre-computed by the
-   * thread. Lets the component render an interleaved run as one unit (e.g.
-   * one merged tool timeline) without deriving thread structure itself.
-   * Hosts that don't pass it get plain per-message rendering.
-   */
-  messageGroup?: Message[];
 }>;
 
 /**

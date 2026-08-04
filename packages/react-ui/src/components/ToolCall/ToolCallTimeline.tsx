@@ -179,6 +179,17 @@ export function ToolCallTimeline({
     return undefined;
   }, [isLast, displaySteps.length, revealedCount, currentReady]);
 
+  // Robustness: once the thread stops running, reveal everything. The
+  // incremental reveal only advances while `isLast`, so a run that ends
+  // mid-reveal (or a tray that mounted after `thinking` already fell) would
+  // otherwise stay stuck showing "Working…". This is independent of the
+  // rising/falling `thinking` edge, so it settles regardless of mount timing.
+  useEffect(() => {
+    if (!isThreadRunning && revealedCount < displaySteps.length) {
+      setRevealedCount(displaySteps.length);
+    }
+  }, [isThreadRunning, revealedCount, displaySteps.length]);
+
   if (activities.length === 0) return null;
 
   const revealing = revealedCount < displaySteps.length;
@@ -243,6 +254,10 @@ export function ToolCallTimeline({
           inert={!showCompact}
         >
           <div className="openui-behind-the-scenes__compact-inner">
+            {/* All revealed steps ACCUMULATE (scrollable past the cap) — each
+                new step appends and only IT animates in (keyed by stepKey, so
+                prior rows stay mounted). Showing one card at a time here made
+                the tray look like it reopened on every step. */}
             <div
               className="openui-behind-the-scenes__items"
               ref={itemsRef}
@@ -250,19 +265,22 @@ export function ToolCallTimeline({
               onWheel={handleItemsWheel}
               onTouchMove={handleItemsTouchMove}
             >
-              {/* key changes per reveal → remounts → re-triggers the CSS fade-in */}
-              <div
-                key={revealedCount}
-                className="openui-behind-the-scenes__reveal-item"
-                style={{ width: "100%" }}
-              >
-                <TimelineStepRow
-                  step={current}
-                  isLast
-                  detailedViewPanel={detailedViewPanel}
-                  forceDefault={forceDefault}
-                />
-              </div>
+              {displaySteps.slice(0, revealedCount).map((step, idx) => (
+                <div
+                  key={stepKey(step)}
+                  className={
+                    idx === revealedCount - 1 ? "openui-behind-the-scenes__reveal-item" : undefined
+                  }
+                  style={{ width: "100%" }}
+                >
+                  <TimelineStepRow
+                    step={step}
+                    isLast={idx === revealedCount - 1}
+                    detailedViewPanel={detailedViewPanel}
+                    forceDefault={forceDefault}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>

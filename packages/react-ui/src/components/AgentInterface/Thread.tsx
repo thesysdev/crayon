@@ -1,8 +1,10 @@
 import type { AssistantMessage, Message } from "@openuidev/react-headless";
 import {
   MessageProvider,
+  lookupArtifactRenderer,
   useActiveDetailedView,
   useArtifactList,
+  useArtifactRendererRegistry,
   useThread,
   useToolActivities,
 } from "@openuidev/react-headless";
@@ -10,6 +12,8 @@ import clsx from "clsx";
 import React, { memo, useId, useMemo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
+import { separateContentAndContext } from "../../utils/sentinelParser";
+import { ToolCallTimeline, type TimelineStep } from "../ToolCall";
 import {
   DetailedViewOverlay,
   DetailedViewPanel,
@@ -346,14 +350,122 @@ function groupIntoTurns(messages: Message[]): { messages: Message[]; startIndex:
 }
 
 /**
+ * The merged tool timeline for a turn plus its final answer — the whole run
+ * rendered as ONE unit, OWNED HERE (outside the per-message component) so it
+ * stays a single stable element across the live run.
+ *
+ * The stream emits one message per section (thinking… then the answer), so a
+ * turn spans several assistant messages. Rendering the tray at the per-message
+ * level meant it hopped from segment to segment as each arrived, remounting
+ * and resetting its reveal state (flicker + stuck "Working…"). Here it mounts
+ * once — keyed by the turn's first segment in {@link Messages} — and only its
+ * props change as segments stream in. The answer segment renders through the
+ * (custom) assistant component; earlier thinking segments live in the tray.
+ */
+const InterleavedTurn = ({
+  segments,
+  allMessages,
+  assistantMessage: CustomAssistantMessage,
+  className,
+  isRunning,
+  lastAssistantId,
+}: {
+  segments: AssistantMessage[];
+  allMessages: Message[];
+  assistantMessage?: AssistantMessageComponent;
+  className?: string;
+  isRunning: boolean;
+  lastAssistantId: string | null;
+}) => {
+  const first = segments[0]!;
+  const last = segments[segments.length - 1]!;
+  const turnLive = isRunning && lastAssistantId === last.id;
+
+  // The answer is the segment that closes the turn with pure text (no tool
+  // calls); while the newest segment still has tools the model is mid-work and
+  // everything stays in the tray. A settled turn always surfaces the last.
+  const lastIsPureText = (last.toolCalls?.length ?? 0) === 0;
+  const answer = lastIsPureText || !turnLive ? last : null;
+
+  // One id-keyed pairing across every segment's tool calls (synthetic message).
+  const turnMessage = useMemo(
+    () => ({ ...first, toolCalls: segments.flatMap((s) => s.toolCalls ?? []) }),
+    [first, segments],
+  );
+  const turnActivities = useToolActivities(turnMessage, allMessages);
+
+  // Rows in run order: each non-answer segment's thinking prose, then its tools.
+  const steps = useMemo<TimelineStep[]>(() => {
+    const byCallId = new Map(turnActivities.map((a) => [a.toolCall.id, a]));
+    const rows: TimelineStep[] = [];
+    for (const seg of segments) {
+      if (seg.id !== answer?.id) {
+        const prose = separateContentAndContext(seg.content ?? "").content;
+        if (prose) rows.push({ type: "text", id: seg.id, text: prose });
+      }
+      for (const tc of seg.toolCalls ?? []) {
+        const activity = byCallId.get(tc.id);
+        if (activity) rows.push({ type: "activity", activity });
+      }
+    }
+    return rows;
+  }, [segments, turnActivities, answer?.id]);
+
+  // Matched renderers (artifact/search previews) render OUTSIDE the tray so
+  // they stay visible after it collapses.
+  const registry = useArtifactRendererRegistry();
+  const matched = turnActivities.filter(
+    (a) => !!(registry && lookupArtifactRenderer(registry, a.toolName)),
+  );
+
+  // Hold the tray open until the answer's first tokens arrive.
+  const answerStarted =
+    !!answer && separateContentAndContext(answer.content ?? "").content.length > 0;
+
+  return (
+    <>
+      {turnActivities.length > 0 && (
+        <ToolCallTimeline
+          activities={turnActivities}
+          steps={steps}
+          isLast={turnLive}
+          forceDefault
+          awaitingResponse={turnLive && !answerStarted}
+        />
+      )}
+      {matched.map((activity) => (
+        <TimelineEntry key={activity.id} activity={activity} isLast={turnLive} fallbackToDefault={false} />
+      ))}
+      {answer && (
+        <MessageProvider key={answer.id} message={answer}>
+          {CustomAssistantMessage ? (
+            <CustomAssistantMessage
+              message={answer}
+              isStreaming={isRunning && lastAssistantId === answer.id}
+            />
+          ) : (
+            <AssistantMessageContainer className={className}>
+              <AssistantMessageContent
+                message={answer}
+                allMessages={allMessages}
+                isLast={isRunning && lastAssistantId === answer.id}
+              />
+            </AssistantMessageContainer>
+          )}
+        </MessageProvider>
+      )}
+    </>
+  );
+};
+
+/**
  * Renders one turn (a group from {@link groupIntoTurns}).
  *
- * A multi-segment turn — several assistant segments (thinking… then answer) —
- * collapses into ONE render at the host (the last assistant segment), which
- * receives the whole group as `messageGroup` and draws the merged tool
- * timeline + answer itself. This only applies with a custom assistant
- * component (the default renderer has no notion of a merged turn); otherwise
- * every message renders individually, exactly as before.
+ * A multi-segment run — or a live tool-bearing run (its panel mounts from the
+ * first tool call so it stays ONE stable element as later segments arrive) —
+ * renders through {@link InterleavedTurn}. Everything else renders message by
+ * message. Turn treatment needs a custom assistant component (the default
+ * renderer has no merged-turn notion).
  */
 const RenderGroup = ({
   group,
@@ -372,18 +484,24 @@ const RenderGroup = ({
   isRunning: boolean;
   lastAssistantId: string | null;
 }) => {
-  const assistants = group.filter((m) => m.role === "assistant");
-  const host = assistants[assistants.length - 1];
+  const assistants = group.filter((m): m is AssistantMessage => m.role === "assistant");
+  const containsLast = !!lastAssistantId && assistants.some((m) => m.id === lastAssistantId);
+  const hasToolCalls = assistants.some((m) => (m.toolCalls?.length ?? 0) > 0);
 
-  if (CustomAssistantMessage && host && assistants.length >= 2) {
+  if (
+    CustomAssistantMessage &&
+    assistants.length > 0 &&
+    (assistants.length >= 2 || (isRunning && containsLast && hasToolCalls))
+  ) {
     return (
-      <MessageProvider key={host.id} message={host}>
-        <CustomAssistantMessage
-          message={host as AssistantMessage}
-          isStreaming={isRunning && lastAssistantId === host.id}
-          messageGroup={group}
-        />
-      </MessageProvider>
+      <InterleavedTurn
+        segments={assistants}
+        allMessages={allMessages}
+        assistantMessage={CustomAssistantMessage}
+        className={className}
+        isRunning={isRunning}
+        lastAssistantId={lastAssistantId}
+      />
     );
   }
 
