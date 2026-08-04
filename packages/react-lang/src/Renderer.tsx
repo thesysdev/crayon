@@ -7,10 +7,11 @@ import type {
   ToolProvider,
 } from "@openuidev/lang-core";
 import { ToolNotFoundError, extractToolResult } from "@openuidev/lang-core";
-import React, { Component, Fragment, useEffect, useInsertionEffect, useRef } from "react";
+import React, { Component, Fragment, useEffect, useRef } from "react";
 import { OpenUIContext, useOpenUI, useRenderNode } from "./context";
 import { useOpenUIState } from "./hooks/useOpenUIState";
 import type { ComponentRenderer, Library } from "./library";
+import { useInsertionEffectCompat } from "./react-compat";
 
 export interface RendererProps {
   /** Raw response text (openui-lang code). */
@@ -208,7 +209,7 @@ export function Renderer({
   queryLoader,
   onError,
 }: RendererProps) {
-  useInsertionEffect(() => {
+  useInsertionEffectCompat(() => {
     ensureLoadingStyle();
   }, []);
 
