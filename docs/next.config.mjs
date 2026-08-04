@@ -51,7 +51,7 @@ const config = {
       },
       {
         source: "/docs",
-        destination: "/docs/openui-lang",
+        destination: "/docs/overview",
         permanent: false,
       },
       {

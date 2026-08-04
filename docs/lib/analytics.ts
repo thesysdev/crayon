@@ -1,15 +1,17 @@
-type PostHog = (typeof import("posthog-js/dist/module.slim"))["default"];
+type PostHog = (typeof import("posthog-js"))["default"];
 
 let posthogPromise: Promise<PostHog> | undefined;
 
 export function loadPostHog(): Promise<PostHog> {
-  posthogPromise ??= import("posthog-js/dist/module.slim").then(({ default: posthog }) => {
+  posthogPromise ??= import("posthog-js").then(({ default: posthog }) => {
     posthog.init("phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D", {
       api_host: "https://dgoeivjus9jfp.cloudfront.net",
       capture_pageview: "history_change",
       advanced_disable_flags: true,
-      disable_external_dependency_loading: true,
-      disable_session_recording: true,
+      disable_session_recording: false,
+      session_recording: {
+        sampleRate: 0.1,
+      },
       disable_surveys: true,
     });
 
