@@ -7,7 +7,9 @@ import {
 } from "@openuidev/observability";
 import { ArrowLeft, Check, Copy, CreditCard, WrapText, X } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { getReactLangStreamDetail, ReactLangStreamEventRow } from "./ReactLangStreamEventRow";
 import { ShiroLogo } from "./ShiroLogo";
+import { addOrReplaceEvent } from "./eventBuffer";
 
 export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
@@ -18,7 +20,7 @@ export interface OpenUIDevtoolsProps {
   position?: DevtoolsPosition;
   /** How many events to keep; oldest are dropped first. */
   maxEvents?: number;
-  /** Initial state of the drawer's "errors only" capture filter: only
+  /** Initial state of the drawer's "errors only" display filter: only
    *  error/warning events (default) or every event. */
   errorsOnly?: boolean;
   /** Initial state of the drawer's "auto-open on error" checkbox. Defaults to true. */
@@ -36,7 +38,7 @@ export function OpenUIDevtools({
   enabled,
   position = "bottom-right",
   maxEvents = 50,
-  errorsOnly = true,
+  errorsOnly = false,
   autoOpenOnError = true,
 }: OpenUIDevtoolsProps) {
   const isEnabled =
@@ -52,14 +54,11 @@ export function OpenUIDevtools({
   // Read the live checkbox values inside the (stable) subscription without re-subscribing.
   const autoOpenRef = useRef(autoOpen);
   autoOpenRef.current = autoOpen;
-  const onlyErrorsRef = useRef(onlyErrors);
-  onlyErrorsRef.current = onlyErrors;
 
   useEffect(() => {
     if (!isEnabled) return;
     return observability.listenAll((event) => {
-      if (onlyErrorsRef.current && event.level === "info") return;
-      setEvents((prev) => [event, ...prev].slice(0, maxEvents));
+      setEvents((prev) => addOrReplaceEvent(prev, event, maxEvents));
       if (event.level === "error" && autoOpenRef.current) setOpen(true);
     });
   }, [isEnabled, maxEvents]);
@@ -79,6 +78,7 @@ export function OpenUIDevtools({
   if (!isEnabled) return null;
 
   const errorCount = events.filter((event) => event.level === "error").length;
+  const visibleEvents = onlyErrors ? events.filter((event) => event.level !== "info") : events;
 
   const openDrawer = () => {
     setSelected(null);
@@ -210,12 +210,19 @@ export function OpenUIDevtools({
                 </label>
               </div>
               <div style={styles.list}>
-                {events.length === 0 ? (
+                {visibleEvents.length === 0 ? (
                   <div style={styles.empty}>No events captured yet.</div>
                 ) : (
-                  events.map((event, index) => {
-                    const key = `${event.timestamp}-${index}`;
+                  visibleEvents.map((event, index) => {
+                    const key =
+                      typeof event.detail["id"] === "string"
+                        ? event.detail["id"]
+                        : `${event.timestamp}-${index}`;
                     if (isCreditsExhausted(event)) return <CreditsEventRow key={key} />;
+                    const stream = getReactLangStreamDetail(event);
+                    if (stream) {
+                      return <ReactLangStreamEventRow key={key} event={event} stream={stream} />;
+                    }
 
                     const error = getErrorInfo(event);
                     const detail = asRecord(event.detail);
