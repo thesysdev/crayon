@@ -3,7 +3,7 @@ import { generatePrompt, generateSystemPrompt, type PromptSpec } from "../index"
 import {
   calculateProjectHash,
   calculateSystemPromptConfigHash,
-  getToolCountBucket,
+  getCountBucket,
   recordSystemPromptGeneration,
   resetTelemetryStateForTests,
 } from "../telemetry";
@@ -49,17 +49,8 @@ describe("system prompt telemetry", () => {
     else process.env.OPENUI_TELEMETRY_DISABLED = originalDisabled;
   });
 
-  it("uses powers-of-four tool count buckets", () => {
-    expect([0, 1, 3, 4, 15, 16, 63, 64].map(getToolCountBucket)).toEqual([
-      "0",
-      "1-3",
-      "1-3",
-      "4-15",
-      "4-15",
-      "16-63",
-      "16-63",
-      "64+",
-    ]);
+  it("uses numeric powers-of-four count buckets", () => {
+    expect([0, 1, 3, 4, 15, 16, 63, 64].map(getCountBucket)).toEqual([0, 1, 1, 4, 4, 16, 16, 64]);
   });
 
   it("hashes canonical prompt configuration, independent of declaration order", async () => {
@@ -167,9 +158,10 @@ describe("system prompt telemetry", () => {
     expect(payload.event).toBe("lang_core_system_prompt_generation_used");
     expect(payload.properties).toMatchObject({
       $process_person_profile: false,
+      component_count_bucket: 1,
       telemetry_schema_version: 1,
       system_prompt_config_hash_version: 1,
-      tool_count_bucket: "1-3",
+      tool_count_bucket: 1,
       sdk_name: "@openuidev/lang-core",
       api_surface: "generate_system_prompt",
       input_shape: "legacy_prompt_spec",
@@ -182,6 +174,7 @@ describe("system prompt telemetry", () => {
         "$process_person_profile",
         "api_surface",
         "ci",
+        "component_count_bucket",
         "distinct_id",
         "environment",
         "event_id",

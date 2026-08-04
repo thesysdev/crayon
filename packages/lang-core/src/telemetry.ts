@@ -11,7 +11,7 @@ const POSTHOG_KEY = "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
 
 type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 type InputShape = "library_spec" | "legacy_prompt_spec";
-type ToolCountBucket = "0" | "1-3" | "4-15" | "16-63" | "64+";
+type CountBucket = 0 | 1 | 4 | 16 | 64;
 type Environment = "production" | "development" | "test" | "unknown";
 type RuntimeName = "node" | "bun" | "deno" | "edge";
 
@@ -51,7 +51,8 @@ interface CaptureProperties {
   system_prompt_config_hash: string;
   project_hash_version?: 1;
   project_hash?: string;
-  tool_count_bucket: ToolCountBucket;
+  component_count_bucket: CountBucket;
+  tool_count_bucket: CountBucket;
   sdk_name: "@openuidev/lang-core";
   sdk_version: string;
   api_surface: "generate_system_prompt";
@@ -166,12 +167,13 @@ export function calculateSystemPromptConfigHash(spec: PromptSpec): Promise<strin
   return sha256(`${HASH_DOMAIN}\0${canonicalJson}`);
 }
 
-export function getToolCountBucket(count: number): ToolCountBucket {
-  if (count === 0) return "0";
-  if (count < 4) return "1-3";
-  if (count < 16) return "4-15";
-  if (count < 64) return "16-63";
-  return "64+";
+export function getCountBucket(count: number): CountBucket {
+  // Numeric lower bounds keep the powers-of-four ranges usable on histogram axes.
+  if (count === 0) return 0;
+  if (count < 4) return 1;
+  if (count < 16) return 4;
+  if (count < 64) return 16;
+  return 64;
 }
 
 function getProcess(): ProcessLike | undefined {
@@ -442,7 +444,8 @@ async function sendCapture(
     telemetry_schema_version: 1,
     system_prompt_config_hash_version: 1,
     system_prompt_config_hash: systemPromptConfigHash,
-    tool_count_bucket: getToolCountBucket(spec.tools?.length ?? 0),
+    component_count_bucket: getCountBucket(Object.keys(spec.components).length),
+    tool_count_bucket: getCountBucket(spec.tools?.length ?? 0),
     sdk_name: "@openuidev/lang-core",
     sdk_version: SDK_VERSION,
     api_surface: "generate_system_prompt",

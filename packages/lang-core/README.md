@@ -112,10 +112,11 @@ prompt configuration once per runtime, capped at 16, directly to PostHog.
 Browsers and browser workers never send telemetry; new runtimes may report
 again.
 
-Events contain runtime metadata, a tool-count bucket, and hashed configuration
-and project identifiers—not prompts, component/tool content, credentials, or
-chat-user data. PostHog observes the server's transport IP. Disable telemetry
-with `OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1`.
+Events contain runtime metadata, numeric powers-of-four component/tool-count
+buckets, and hashed configuration and project identifiers—not prompts,
+component/tool content, credentials, or chat-user data. PostHog observes the
+server's transport IP. Disable telemetry with `OPENUI_TELEMETRY_DISABLED=1` or
+`DO_NOT_TRACK=1`.
 
 ### Runtime
 
