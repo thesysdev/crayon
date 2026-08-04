@@ -7,7 +7,7 @@ import path from "node:path";
 const POSTHOG_KEY =
   process.env["OPENUI_POSTHOG_KEY"] ?? "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
 const POSTHOG_HOST = process.env["OPENUI_POSTHOG_HOST"] ?? "https://us.i.posthog.com";
-const SHUTDOWN_TIMEOUT_MS = 2000;
+const REQUEST_TIMEOUT_MS = 2000;
 const TELEMETRY_SCHEMA_VERSION = 1;
 
 export const INSTALL_EVENT = "openui_devtools_installed";
@@ -346,25 +346,19 @@ async function sendToPostHog(
   payload: InstallTelemetryPayload,
   env: NodeJS.ProcessEnv,
 ): Promise<void> {
-  const { PostHog } = await import("posthog-node");
-  const client = new PostHog(env["OPENUI_POSTHOG_KEY"] ?? POSTHOG_KEY, {
-    host: env["OPENUI_POSTHOG_HOST"] ?? POSTHOG_HOST,
-    flushAt: 1,
-    flushInterval: 0,
-    fetchRetryCount: 0,
-    requestTimeout: SHUTDOWN_TIMEOUT_MS,
-    preloadFeatureFlags: false,
-    fetch: async (url, options) => {
-      try {
-        const response = await fetch(url, options);
-        if (response.ok) return response;
-      } catch {
-        // Best-effort telemetry treats transport failures as dropped events.
-      }
-      return new Response(null, { status: 204 });
-    },
+  const response = await fetch(new URL("/capture/", env["OPENUI_POSTHOG_HOST"] ?? POSTHOG_HOST), {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      api_key: env["OPENUI_POSTHOG_KEY"] ?? POSTHOG_KEY,
+      event: payload.event,
+      properties: {
+        distinct_id: payload.distinctId,
+        ...payload.properties,
+      },
+    }),
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
-  client.on("error", () => {});
-  client.capture(payload);
-  await client.shutdown(SHUTDOWN_TIMEOUT_MS);
+
+  if (!response.ok) throw new Error(`PostHog capture failed: ${response.status}`);
 }
