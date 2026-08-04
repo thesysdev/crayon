@@ -55,7 +55,6 @@ export type {
   ValidationError,
   ValidationErrorCode,
 } from "./parser/types";
-export type { GenerateSystemPromptRuntimeOptions } from "./telemetry";
 
 // ── Reactive schema marker ──
 export { isReactiveSchema, markReactive } from "./reactive";

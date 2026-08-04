@@ -101,8 +101,8 @@ const merged = mergeStatements(original, patch);
 
 | Export                                                              | Description                                                                   |
 | :------------------------------------------------------------------ | :---------------------------------------------------------------------------- |
-| `generateSystemPrompt({ library, promptOptions }, runtimeOptions?)` | Generate a system prompt from a serialized library and runtime prompt options |
-| `generatePrompt(spec)`                                              | Deprecated low-level prompt generator                                         |
+| `generateSystemPrompt({ library, promptOptions })` | Generate a system prompt from a serialized library and prompt options |
+| `generatePrompt(spec)`                            | Deprecated low-level prompt generator                                |
 
 **`SystemPromptSpec`** combines a serialized `LibrarySpec` with prompt options. Prompt options include tool definitions (`ToolSpec[]`), feature flags (`toolCalls`, `bindings`, `editMode`, `inlineMode`), examples, and custom rules.
 
@@ -127,12 +127,6 @@ headers, chat-user IPs, credentials, errors, or raw repository/path values.
 PostHog observes the server or build runner's direct transport IP and may apply
 its configured GeoIP processing. Person-profile processing is disabled for the
 event.
-
-Disable this event for one call:
-
-```ts
-generateSystemPrompt({ library, promptOptions }, { telemetry: false });
-```
 
 Disable it for the process with `OPENUI_TELEMETRY_DISABLED=1` or
 `DO_NOT_TRACK=1`. Telemetry is also disabled automatically when

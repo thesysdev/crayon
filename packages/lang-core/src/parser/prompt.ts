@@ -1,7 +1,4 @@
-import {
-  recordSystemPromptGeneration,
-  type GenerateSystemPromptRuntimeOptions,
-} from "../telemetry";
+import { recordSystemPromptGeneration } from "../telemetry";
 import { BUILTINS, LAZY_BUILTIN_DEFS } from "./builtins";
 import type { LibraryJSONSchema } from "./types";
 
@@ -709,27 +706,18 @@ export interface SystemPromptSpec {
 }
 
 /** Render the full system prompt for a library. */
-export function generateSystemPrompt(
-  spec: SystemPromptSpec,
-  runtimeOptions?: GenerateSystemPromptRuntimeOptions,
-): string;
+export function generateSystemPrompt(spec: SystemPromptSpec): string;
 /** @deprecated Pass `{ library, promptOptions, instructions }` instead. Removed at the next major. */
-export function generateSystemPrompt(
-  spec: PromptSpec,
-  runtimeOptions?: GenerateSystemPromptRuntimeOptions,
-): string;
-export function generateSystemPrompt(
-  spec: SystemPromptSpec | PromptSpec,
-  runtimeOptions?: GenerateSystemPromptRuntimeOptions,
-): string {
+export function generateSystemPrompt(spec: PromptSpec): string;
+export function generateSystemPrompt(spec: SystemPromptSpec | PromptSpec): string {
   if (!isSystemPromptSpec(spec)) {
     const prompt = generatePrompt(spec);
-    recordSystemPromptGeneration(spec, "legacy_prompt_spec", runtimeOptions);
+    recordSystemPromptGeneration(spec, "legacy_prompt_spec");
     return prompt;
   }
   const merged: PromptSpec = { ...spec.library, ...spec.promptOptions };
   const prompt = generatePrompt(merged);
-  recordSystemPromptGeneration(merged, "library_spec", runtimeOptions);
+  recordSystemPromptGeneration(merged, "library_spec");
   return prompt;
 }
 

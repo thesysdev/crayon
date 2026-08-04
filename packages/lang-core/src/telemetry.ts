@@ -1,27 +1,13 @@
 import type { PromptSpec, ToolSpec } from "./parser/prompt";
 
-declare const __OPENUI_LANG_CORE_VERSION__: string;
-declare const __OPENUI_TELEMETRY_CAPTURE_URL__: string;
-declare const __OPENUI_TELEMETRY_POSTHOG_KEY__: string;
-
 const EVENT_NAME = "lang_core_system_prompt_generation_used";
 const HASH_DOMAIN = "openui-system-prompt-config-v1";
 const PROJECT_HASH_DOMAIN = "openui-project-v1";
 const MAX_CONFIGURATIONS_PER_RUNTIME = 16;
 const REQUEST_TIMEOUT_MS = 2_000;
-
-const SDK_VERSION =
-  typeof __OPENUI_LANG_CORE_VERSION__ === "string"
-    ? __OPENUI_LANG_CORE_VERSION__
-    : "0.0.0-development";
-const CAPTURE_URL =
-  typeof __OPENUI_TELEMETRY_CAPTURE_URL__ === "string"
-    ? __OPENUI_TELEMETRY_CAPTURE_URL__
-    : "https://us.i.posthog.com/capture/";
-const POSTHOG_KEY =
-  typeof __OPENUI_TELEMETRY_POSTHOG_KEY__ === "string"
-    ? __OPENUI_TELEMETRY_POSTHOG_KEY__
-    : "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
+const SDK_VERSION = "0.2.10";
+const CAPTURE_URL = "https://us.i.posthog.com/capture/";
+const POSTHOG_KEY = "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
 
 type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 type InputShape = "library_spec" | "legacy_prompt_spec";
@@ -69,10 +55,6 @@ interface CaptureProperties {
   environment: Environment;
   ci: boolean;
   telemetry_mode: "server_runtime_prompt_config_first_use";
-}
-
-export interface GenerateSystemPromptRuntimeOptions {
-  telemetry?: boolean;
 }
 
 const STATE_KEY = Symbol.for("@openuidev/lang-core/telemetry/v1");
@@ -480,13 +462,9 @@ async function sendCapture(
   }
 }
 
-export function recordSystemPromptGeneration(
-  spec: PromptSpec,
-  inputShape: InputShape,
-  options?: GenerateSystemPromptRuntimeOptions,
-): void {
+export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: InputShape): void {
   try {
-    if (options?.telemetry === false || !CAPTURE_URL || !POSTHOG_KEY) return;
+    if (!CAPTURE_URL || !POSTHOG_KEY) return;
 
     const runtime = detectRuntime();
     if (!runtime || typeof globalThis.fetch !== "function" || !globalThis.crypto?.subtle) return;

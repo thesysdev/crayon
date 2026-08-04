@@ -179,9 +179,7 @@ describe("system prompt telemetry", () => {
     const library = makeSpec();
     const expected = generatePrompt({ ...library, editMode: true });
 
-    expect(
-      generateSystemPrompt({ library, promptOptions: { editMode: true } }, { telemetry: true }),
-    ).toBe(expected);
+    expect(generateSystemPrompt({ library, promptOptions: { editMode: true } })).toBe(expected);
     await waitForCaptures(fetchMock, 1);
 
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
@@ -189,11 +187,10 @@ describe("system prompt telemetry", () => {
     expect(payload.properties.input_shape).toBe("library_spec");
   });
 
-  it("honors API, environment, and browser opt-outs", async () => {
+  it("honors environment and browser opt-outs", async () => {
     const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
 
-    generateSystemPrompt(makeSpec(), { telemetry: false });
     process.env.DO_NOT_TRACK = "1";
     generateSystemPrompt(makeSpec({ preamble: "dnt" }));
     delete process.env.DO_NOT_TRACK;
