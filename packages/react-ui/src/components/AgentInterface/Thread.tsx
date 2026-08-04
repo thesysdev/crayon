@@ -327,9 +327,8 @@ export const ThreadError = () => {
 
 /**
  * Groups a message list into turns: a run of consecutive assistant/tool
- * messages (thinking, tool calls, results, answer) becomes ONE group; every
- * other message (user, system, …) stands alone. `startIndex` is the group's
- * position in the original list.
+ * messages becomes ONE group; every other message (user, system, …) stands alone.
+ * `startIndex` is the group's position in the original list.
  */
 function groupIntoTurns(messages: Message[]): { messages: Message[]; startIndex: number }[] {
   const groups: { messages: Message[]; startIndex: number }[] = [];
@@ -350,12 +349,8 @@ function groupIntoTurns(messages: Message[]): { messages: Message[]; startIndex:
 }
 
 /**
- * A whole turn (its merged tool timeline + final answer) as one unit. Owned
- * here rather than per-message so the tray is a single element keyed by the
- * turn's first segment ({@link Messages}) — it mounts once and only updates as
- * segments stream in, instead of hopping between segments and resetting its
- * reveal state. Earlier segments live in the tray; the answer renders through
- * the assistant component.
+ * A whole turn as one unit. Owned here rather than per-message
+ * so the tray is a single element keyed by the turn's first segment ({@link Messages})
  */
 const InterleavedTurn = ({
   segments,
@@ -452,15 +447,7 @@ const InterleavedTurn = ({
   );
 };
 
-/**
- * Renders one turn (a group from {@link groupIntoTurns}).
- *
- * A multi-segment run — or a live tool-bearing run (its panel mounts from the
- * first tool call so it stays ONE stable element as later segments arrive) —
- * renders through {@link InterleavedTurn}. Everything else renders message by
- * message. Turn treatment needs a custom assistant component (the default
- * renderer has no merged-turn notion).
- */
+/** Renders one turn (a group from {@link groupIntoTurns}). */
 const RenderGroup = ({
   group,
   allMessages,

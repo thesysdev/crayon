@@ -47,11 +47,8 @@ export function separateContentAndContext(raw: string): ParsedMessageContent {
 
 /**
  * Whether the content carries recognizable OpenUI-lang syntax — the
- * ```` ```openui-lang ```` fence, or a top-level `root =` binding when emitted
- * unfenced. Used to tell the final response apart from thinking prose. A
- * best-effort signal, not a guarantee: unfenced Lang without a `root =` line
- * won't match, so callers pair it with structural signals (tool-less section,
- * settled run) rather than relying on it alone.
+ * ```openui-lang ``` fence, or a top-level `root =` binding when emitted
+ * unfenced.
  */
 export function hasLangSyntax(content: string | null | undefined): boolean {
   return !!content && (content.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(content));

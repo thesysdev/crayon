@@ -43,11 +43,6 @@ export const processStreamedMessage = async ({
   let isFirst = true;
 
   // The wire message-item id whose text currently streams into currentMessage.
-  // The backend emits one output message item per content section (thinking,
-  // then the response); a NEW item id after content/tool calls have already
-  // accumulated marks that boundary, and it must be preserved as a separate
-  // assistant message so the LIVE structure matches what reload rebuilds from
-  // storage (one message per section) instead of merging the run into one entry.
   let currentTextItemId: string | null = null;
 
   // Tool messages by toolCallId, so repeated TOOL_CALL_RESULTs for the same
@@ -166,11 +161,7 @@ export const processStreamedMessage = async ({
         // the model opened a new output message item — interleaving prose with
         // tool calls (several sections in one run). Split into a fresh assistant
         // message so the live structure matches what reload reconstructs from
-        // storage — separate assistant messages in wire order — instead of
-        // merging every section into one entry. The optimistic id is minted
-        // locally (never the wire `messageId`); persistence layers map ids on
-        // save, and swapping an existing id mid-stream would break ordering
-        // when tool messages were already appended between segments.
+        // storage
         const startId = (event as { messageId?: string }).messageId ?? null;
         const hasBody =
           (currentMessage.content?.length ?? 0) > 0 || (currentMessage.toolCalls?.length ?? 0) > 0;

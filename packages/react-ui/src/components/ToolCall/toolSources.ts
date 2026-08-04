@@ -1,11 +1,6 @@
 /**
  * Extraction of link "sources" from tool RESULT text, powering the
  * favicon + title rows on tool cards.
- *
- * One extractor per result format, matched by tool name: supporting a new
- * tool means adding ONE entry to {@link EXTRACTORS} — either reusing an
- * existing format parser or supplying its own. Unknown tools and unparseable
- * results yield `[]`, so callers can render unconditionally.
  */
 
 export interface ToolResultSource {
@@ -25,10 +20,8 @@ interface SourceExtractor {
 
 const stripWww = (host: string) => host.replace(/^www\./, "");
 
-// Registrable-name heuristic: drop the TLD (including two-part ones like
-// .co.uk) and any subdomains, capitalize what remains —
-// en.wikipedia.org → Wikipedia, bbc.co.uk → Bbc, amazon.com → Amazon.
-// No registry lookup; a wrong-but-readable name beats a raw domain here.
+// Registrable-name heuristic: drop the TLD and
+// any subdomains, capitalize what remains
 const TWO_PART_TLD = /\.(co|com|org|net|gov|ac|edu)\.[a-z]{2}$/;
 
 function siteNameFromHost(host: string): string {
@@ -43,11 +36,6 @@ function siteNameFromHost(host: string): string {
 // `[n] Title` followed by a URL line, optionally a `Source:` domain line:
 //   web:   `[n] Title\nURL: <page url>`
 //   image: `[n] Title\nImage URL: <image file>\nSource: <page domain>`
-// The optional word before `URL:` absorbs the "Image" prefix. For images the
-// link is the image FILE, so the favicon/domain comes from the `Source:` line
-// when present. Both marker lines are anchored to LINE STARTS (`m` flag):
-// result text embeds whole page content, and un-anchored patterns match
-// `[n]`/`URL:`-looking fragments inside it, producing junk rows.
 const NUMBERED_LINKS = /^\[\d+\]\s*([^\n]*)\n(?:\w+ )?URL:\s*(\S+)(?:\nSource:\s*(\S+))?/gm;
 
 // Readable stand-in when a result entry has no title line: the URL's last
@@ -88,16 +76,12 @@ function extractNumberedLinks(result: string): ToolResultSource[] {
 // ── Registry ─────────────────────────────────────────────────────────────────
 
 const EXTRACTORS: SourceExtractor[] = [
-  // thesys_web_search, thesys_image_search, and future *_search siblings all
-  // emit the numbered-link format.
   { matches: (toolName) => /_search$/.test(toolName), extract: extractNumberedLinks },
 ];
 
 /**
  * Link sources of a tool result, deduped by URL. `[]` when no extractor
  * claims the tool or nothing in the result parses.
- *
- * @category Utilities
  */
 export function extractToolSources(toolName: string, result: string): ToolResultSource[] {
   const extractor = EXTRACTORS.find((e) => e.matches(toolName));

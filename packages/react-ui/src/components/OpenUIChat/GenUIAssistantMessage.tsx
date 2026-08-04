@@ -21,12 +21,6 @@ import { ToolCallTimeline, type TimelineStep } from "../ToolCall";
 import { TimelineEntry } from "../_shared/tool-renderer";
 import { AssistantMessageContainer } from "./AssistantMessageContainer";
 
-/**
- * Renders a SINGLE assistant message: its tool timeline (thinking prose as the
- * leading step) and, once the response begins, the OpenUI-lang answer. Turn
- * grouping is assembled a level up in {@link InterleavedTurn}, which calls this
- * only for the answer segment — no turn logic here.
- */
 export const GenUIAssistantMessage = ({
   message,
   library,

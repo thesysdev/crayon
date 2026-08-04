@@ -138,28 +138,16 @@ function resolveLegacyResponse(activity: ToolActivity): unknown {
   return value != null ? value : undefined;
 }
 
-// Built-in tool families that get their own glyph. Matched on the name so a
-// provider prefix (`thesys_web_search`, `web_search_call`, …) still resolves.
+// Built-in tool families that get their own glyph. Matched on the name
 const TOOL_ICONS: { match: RegExp; icon: typeof SquareCode }[] = [
   { match: /image[_-]?search/i, icon: ImageIcon },
   { match: /web[_-]?search/i, icon: Globe },
   { match: /artifact|generate[_-]?report/i, icon: Blocks },
 ];
 
-/** App-defined tools have no family to recognise, so they read as a generic
- *  call rather than borrowing a built-in tool's meaning. */
-const CUSTOM_TOOL_ICON = SquareCode;
-
-/**
- * The glyph for a tool call: a failure always reads as an alert, otherwise the
- * tool family decides. Status no longer swaps in a spinner — a running call is
- * signalled by the blinking glyph + shimmering label instead.
- *
- * @category Functions
- */
 export function toolIcon(toolName: string, status: ToolCallStatus): typeof SquareCode {
   if (status === "error") return AlertCircle;
-  return TOOL_ICONS.find((entry) => entry.match.test(toolName))?.icon ?? CUSTOM_TOOL_ICON;
+  return TOOL_ICONS.find((entry) => entry.match.test(toolName))?.icon ?? SquareCode;
 }
 
 // ── Parts ──
