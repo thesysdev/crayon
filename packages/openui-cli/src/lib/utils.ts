@@ -3,6 +3,10 @@ import { createFunnelProps } from "./create-telemetry";
 import type { TemplateName } from "./create-types";
 import { CreateError, telemetry as defaultTelemetry, type Telemetry } from "./telemetry";
 
+/** ASCII Record Separator — Untypeable in prompt text and always
+ *  escaped by JSON.stringify, so it can never collide with either artifact. */
+export const SEPARATION_DELIMITER = "\u001E";
+
 export function handleCliError(
   e: unknown,
   event: string,
@@ -41,5 +45,8 @@ export function normalizeAuth(a?: string): CloudAuthMethod | undefined {
   if (!a) return undefined;
   const v = a.toLowerCase();
   if (v === "oauth" || v === "manual" || v === "skip") return v;
-  throw new CreateError("bad_args", `unknown --auth "${a}". Use: oauth | manual | skip.`);
+  throw new CreateError(
+    "bad_args",
+    `unknown --auth "${a}". Use: oauth | skip (manual is deprecated).`,
+  );
 }

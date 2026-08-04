@@ -1,6 +1,6 @@
 ---
 name: openui
-description: "Use for building, debugging, integrating, migrating, or documenting OpenUI, OpenUI Lang, Agent Interface, OpenUI Cloud, @openuidev packages, streaming generative UI rendering, component libraries, existing-project Cloud integration, self-hosted-to-Cloud migration, and migrations from JSON UI formats."
+description: "Use for building, debugging, integrating, migrating, or documenting OpenUI, OpenUI Lang, Agent Interface, OpenUI Cloud, @openuidev packages, streaming generative UI rendering, component libraries, existing-project Cloud integration, self-hosted-to-Cloud migration, migrations from JSON UI formats, Cloud tools (web/image search, artifacts), remote MCP servers, custom function tools and tool loops, and multi-user or multi-app identity (frontend tokens, app_id/user_id, conversation APIs, Responses metadata)."
 ---
 
 # OpenUI
@@ -31,9 +31,9 @@ Do not use this skill for general React UI questions, generic design system advi
 | `@openuidev/react-headless` | Bring-your-own React chat state, hooks, storage/LLM adapter primitives, streaming adapters, message converters, and artifact primitives without OpenUI's visual components |
 | `@openuidev/react-email` | React Email component library and prompt options for generated email |
 | `@openuidev/browser-bundle` | CDN/iframe/no-build React renderer bundle exposed as `window.__OpenUI` |
-| `@openuidev/cli` | `openui create` scaffolding and `openui generate` prompt/schema generation from a library export |
+| `@openuidev/cli` | `openui create` scaffolding and `openui generate` system prompt + library spec generation from a library export |
 | `@openuidev/thesys` | Version-sensitive client-side OpenUI Cloud helpers such as `useOpenuiCloudStorage()`, Cloud component sets, and Cloud artifact components/renderers/categories; verify current exports |
-| `@openuidev/thesys-server` | Version-sensitive server-side OpenUI Cloud helpers such as `artifactTool` and `createResponsesInstructions` for Cloud-backed `/api/chat` routes |
+| `@openuidev/thesys-server` | Version-sensitive server-side OpenUI Cloud helpers such as `artifactTool` and `generateSystemPrompt` (`createResponsesInstructions` is its deprecated alias) for Cloud-backed `/api/chat` routes |
 
 Choose the package for the target runtime. For backend-only parsing or prompt/schema generation, prefer `@openuidev/lang-core` or the CLI instead of pulling in a UI framework.
 
@@ -44,7 +44,30 @@ Choose the package for the target runtime. For backend-only parsing or prompt/sc
 - If the user wants a new OpenUI/GenUI app, use `@openuidev/cli`; it is the easiest scaffolding path.
 - If the user wants to integrate OpenUI into an existing React/Next agent or chat app and wants an out-of-box component library, use `@openuidev/react-ui` with `AgentInterface`, `openuiLibrary`, or `openuiChatLibrary`.
 - If the user wants OpenUI Lang rendering in an existing React project without the full React UI surface, use `@openuidev/react-lang`.
+- If the user wants open-ended generation, generated HTML apps, sandboxed iframes, or Raw/Rendered previews, read [references/open-ended-html.md](references/open-ended-html.md).
 - If the host app is Vue or Svelte, use `@openuidev/vue-lang` or `@openuidev/svelte-lang`. Use `@openuidev/lang-core` for framework-agnostic parsing, prompt generation, schemas, or backend/runtime work.
+
+## OpenUI Cloud Capabilities
+
+OpenUI Cloud speaks the OpenAI Responses API (`POST https://api.thesys.dev/v1/embed/responses`, stock `openai` SDK). Check this table before calling anything unsupported:
+
+| Capability | How |
+|---|---|
+| Generative UI (OpenUI Lang) | Default response format, streamed in Responses-compatible events |
+| Output validation & correction | Invalid model output detected and corrected in-stream; sanitized fallback — no broken UI reaches the renderer |
+| Managed model access | Leading providers behind one API (billed at cost), automatic model/provider fallbacks; models list endpoint |
+| Artifacts: slides + reports | `artifactTool({ artifacts: ["slides", "report"] })` — generated server-side; **editing is automatically enabled** (the model edits existing artifacts on follow-up asks, no extra config), rendered in the managed viewer |
+| Web search | `{ type: "web_search" }` — runs server-side |
+| Image search | `{ type: "image_search" }` — runs server-side |
+| Remote MCP servers | `{ type: "mcp", server_label, server_url }` — run server-side, declared per request |
+| App-owned function tools | `type: "function"` tools + the template's `runFunctionToolLoop` (`src/lib/tool-loop.ts`) — not published as a package: copy the file, or port its two safety rules when writing another language/stack |
+| Conversation + artifact persistence | `conversation` + `store: true` persists server-side; the browser reads/edits it DIRECTLY via `useOpenuiCloudStorage` + one fct_ mint route — no proxy routes for the conversation APIs needed. (Alternative: proxy `/v1/conversations*` yourself with the master key.) |
+| Multi-user / multi-app isolation | Mint the fct_ with `{ user_id, app_id }` — the token binds the scope, so every browser storage call is automatically limited to that user + app (first-class fields, not metadata) |
+| App metadata | `metadata` on conversations and on Responses calls |
+| Standard OpenAI Responses params | Being Responses-compatible, `previous_response_id`, `stream: false`, `instructions`, `tool_choice`, `parallel_tool_calls`, `safety_identifier` work as documented by OpenAI — production setups here use `conversation` + `store: true` + streaming |
+| Responsive managed UI | `AgentInterface` + `chatLibrary` |
+
+Tools/MCP and multi-user are steps 8-9 of [references/cloud-integration.md](references/cloud-integration.md).
 
 ## Route Cloud Integration and Migration Tasks
 
@@ -92,9 +115,9 @@ Use Cloud when the user wants managed production infrastructure for an Agent Int
 Version-sensitive: verify exact Cloud template env vars, `@openuidev/thesys*` exports, and route helpers against the installed package/template. The CLI quickstart prompts for **OpenUI Cloud or self-hosted**. For Cloud:
 
 - Store `THESYS_API_KEY` server-side only, typically in `.env.local`.
-- The Cloud CLI template also uses `OPENUI_MODEL` in `provider/model` form and `DEMO_USER_ID` for the demo user identity.
+- The Cloud CLI template keeps its `provider/model` allowlist in app configuration and uses `DEMO_USER_ID` for the demo user identity.
 - Keep Cloud calls behind server routes such as `/api/chat` and `/api/frontend-token`; never expose the server key to the browser.
-- In the `openui-cloud` template, `/api/chat` uses `@openuidev/thesys-server` helpers such as `artifactTool` and `createResponsesInstructions`.
+- In the `openui-cloud` template, `/api/chat` uses `@openuidev/thesys-server` helpers such as `artifactTool` and `generateSystemPrompt`.
 - `AgentInterface` connects to Cloud with `llm` and `storage` props. `llm` points to an app route that proxies Cloud's Responses endpoint, usually with `openAIResponsesAdapter()` and `openAIConversationMessageFormat`. `storage` uses `useOpenuiCloudStorage()` from `@openuidev/thesys` with a short-lived frontend token.
 - Cloud-provided component sets, artifact renderers, and categories come from `@openuidev/thesys`.
 - Generate keys in the Thesys console: `https://console.thesys.dev/keys`.
@@ -210,11 +233,25 @@ OpenUI publishes first-party examples at `https://github.com/thesysdev/openui/tr
 - Third-party UI/component examples: `material-ui-chat`, `shadcn-chat`, `form-generator`, `hands-on-table-chat`.
 - Harnesses: `harnesses/pi-agent-harness`, `harnesses/vercel-eve`.
 
-### Generate a prompt or schema
+### Generate the system prompt and library spec
 
 ```bash
+# Default: writes the prompt to --out AND the serialized library spec alongside it (<file>.spec.json)
 npx @openuidev/cli@latest generate ./src/library.tsx --out ./src/generated/system-prompt.txt
-npx @openuidev/cli@latest generate ./src/library.tsx --json-schema --out ./src/generated/component-spec.json
+# Spec only (preferred input for backend prompt compilation)
+npx @openuidev/cli@latest generate --spec ./src/library.tsx --out ./src/generated/library.spec.json
+```
+
+Prefer the spec-first pattern in backend routes: generate the spec at build time, then compile the prompt at runtime with `generateSystemPrompt` from `@openuidev/lang-core` (no React dependency):
+
+```ts
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
+import librarySpec from "./generated/library.spec.json";
+
+const systemPrompt = generateSystemPrompt({
+  library: librarySpec as LibrarySpec,
+  promptOptions: { /* preamble, examples, tools, additionalRules, ... */ },
+});
 ```
 
 The target module must export a library with `prompt()` and `toJSONSchema()`. By default the CLI looks for `library`, then `default`, then any matching export. It can also auto-detect prompt options from `promptOptions`, `options`, or an export ending in `PromptOptions`.

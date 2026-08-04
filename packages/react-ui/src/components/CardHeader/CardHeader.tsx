@@ -8,8 +8,7 @@ export interface CardHeaderProps extends Omit<React.HTMLAttributes<HTMLDivElemen
   title?: ReactNode;
   subtitle?: ReactNode;
   actions?:
-    | ReactElement<ButtonProps | IconButtonProps>
-    | ReactElement<ButtonProps | IconButtonProps>[];
+    ReactElement<ButtonProps | IconButtonProps> | ReactElement<ButtonProps | IconButtonProps>[];
   className?: string;
   styles?: CSSProperties;
 }

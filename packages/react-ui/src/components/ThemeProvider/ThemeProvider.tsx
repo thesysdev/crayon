@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useId, useInsertionEffect, useMemo } from "react";
 import { defaultDarkTheme, defaultLightTheme } from "./defaultTheme";
 import { Theme, ThemeMode } from "./types";
-import { themeToCssVars } from "./utils";
+import { KNOWN_THEME_KEYS, themeToCssVars } from "./utils";
 
 /**
  * Props for the {@link ThemeProvider} component.
@@ -109,8 +109,6 @@ function cssSafeId(id: string): string {
   return id.replace(/[^a-zA-Z0-9-_]/g, "");
 }
 
-const _knownThemeKeys = new Set(Object.keys(defaultLightTheme));
-
 function validateThemeObject(themeObj: Theme, propName: string) {
   for (const [key, value] of Object.entries(themeObj)) {
     if (value !== undefined && typeof value !== "string" && !Array.isArray(value)) {
@@ -119,7 +117,7 @@ function validateThemeObject(themeObj: Theme, propName: string) {
         `[OpenUI] ${propName} key "${key}" has a non-string value (${typeof value}). All theme values should be strings.`,
       );
     }
-    if (!_knownThemeKeys.has(key)) {
+    if (!KNOWN_THEME_KEYS.has(key)) {
       warnOnce(
         `unknown-key:${propName}:${key}`,
         `[OpenUI] ${propName} contains unknown key "${key}". It will be ignored. Use createTheme() for typo detection with suggestions.`,

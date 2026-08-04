@@ -4,9 +4,10 @@ A generative-UI chat app where the responses are produced by a
 [deepagents](https://www.npmjs.com/package/deepagents) agent and rendered live
 with [OpenUI](https://openui.com).
 
-The agent has mock **weather**, **finance**, and **research** tools. Its
-LangGraph protocol stream is transformed locally into AG-UI events on a custom
-`openui` channel, so the browser can use OpenUI's AG-UI stream adapter.
+The agent has mock **weather**, **finance**, and **research** tools.
+`@openuidev/langchain` transforms its LangGraph protocol stream into AG-UI
+events on a custom `openui` channel, so the browser can use OpenUI's AG-UI
+stream adapter.
 
 ```
 browser ──fetch /api/chat──▶ Next.js route ──protocol v2──▶ LangGraph server
@@ -17,19 +18,20 @@ browser ──fetch /api/chat──▶ Next.js route ──protocol v2──▶ 
 
 ## How it connects
 
-| Piece | File | Role |
-| --- | --- | --- |
-| Frontend | `src/app/page.tsx` | `<AgentInterface llm={fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() })}>` using the AG-UI stream protocol. |
-| Proxy | `src/app/api/chat/route.ts` | Converts AG-UI messages to LangChain messages, starts a protocol-v2 run, and relays `custom:openui` as AG-UI SSE. Keeps the API key + deployment URL server-side. |
-| Graph | `src/agent/agent.ts` | `createDeepAgent` with the generated OpenUI system prompt, the mock tools, and the local stream transformer. |
-| Transformer | `src/agent/openui-transformer.ts` | Maps root LangGraph protocol `messages` events into AG-UI events and emits them as `custom:openui`. |
-| Stream helper | `src/lib/stream-openui.ts` | Talks to `/threads/:id/stream/events` and `/threads/:id/commands` using raw fetch. |
-| Tools | `src/agent/tools.ts` | Mock `get_weather` / `get_stock_price` / `search_web` (no external keys needed). |
-| Component library | `src/library.ts` | The OpenUI components the model is allowed to render. `pnpm generate:prompt` turns it into `src/generated/system-prompt.txt`. |
+| Piece             | File                        | Role                                                                                                                                                                             |
+| ----------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frontend          | `src/app/page.tsx`          | `<AgentInterface llm={fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() })}>` using the AG-UI stream protocol.                                                           |
+| Proxy             | `src/app/api/chat/route.ts` | Uses `createLangChainStreamResponse` to convert AG-UI messages, start a protocol-v2 run, and relay `custom:openui` as AG-UI SSE. Keeps the API key + deployment URL server-side. |
+| Graph             | `src/agent/agent.ts`        | `createDeepAgent` with the generated OpenUI system prompt, the mock tools, and `openUIStreamTransformer`.                                                                        |
+| Integration       | `@openuidev/langchain`      | Maps LangGraph protocol `messages` and `tools` into AG-UI events, adds run lifecycle events, starts stateless runs, and relays `custom:openui`.                                  |
+| Tools             | `src/agent/tools.ts`        | Mock `get_weather` / `get_stock_price` / `search_web` (no external keys needed).                                                                                                 |
+| Component library | `src/library.ts`            | The OpenUI components the model is allowed to render. `pnpm generate:prompt` turns it into `src/generated/system-prompt.txt`.                                                    |
 
-The transformer is intentionally local to this example for now. It mimics the
-LangGraph protocol types instead of adding new toolkit dependencies, making it
-easy to extract later if the OpenUI team wants to publish a shared integration.
+The shared integration package uses Web-standard requests, responses, fetch,
+and streams. It does not depend on Next.js or DeepAgents.
+
+The local server uses `@langchain/langgraph-cli` 1.4.x because the integration
+requires agent-protocol-v2 `custom:*` and root `lifecycle` event channels.
 
 ## Getting started (local)
 
@@ -71,7 +73,8 @@ Open [http://localhost:3000](http://localhost:3000) and try a starter such as
 
 > `OPENAI_API_KEY` is read by the **LangGraph server** (it runs the LLM), so it
 > belongs in `.env` next to `langgraph.json`. The Next.js app only needs the
-> `LANGGRAPH_*` variables.
+> `LANGGRAPH_*` variables. The example route enables detailed upstream errors
+> outside production so a misconfigured graph id is visible during local setup.
 
 ## Using LangGraph Cloud / Platform
 

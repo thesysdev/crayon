@@ -188,7 +188,7 @@ All components are available as individual imports:
 | **Data Display** | `Table`, `Charts` (bar, line, area, pie, radar, scatter), `ListBlock`, `ListItem`, `Tag`, `TagBlock`, `CodeBlock`, `Image`, `ImageBlock`, `ImageGallery`               |
 | **Forms**        | `Input`, `TextArea`, `Select`, `CheckBoxGroup`, `CheckBoxItem`, `RadioGroup`, `RadioItem`, `SwitchGroup`, `SwitchItem`, `Slider`, `DatePicker`, `FormControl`, `Label` |
 | **Actions**      | `Button`, `Buttons`, `IconButton`, `FollowUpBlock`, `FollowUpItem`                                                                                                     |
-| **Feedback**     | `Callout`, `TextCallout`, `MessageLoading`                                                                                                                             |
+| **Feedback**     | `Callout`, `TextCallout`                                                                                                                                               |
 | **Content**      | `TextContent`, `MarkDownRenderer`                                                                                                                                      |
 | **Chat**         | `AgentInterface`, `ToolCall`, `ToolResult`                                                                                                                             |
 

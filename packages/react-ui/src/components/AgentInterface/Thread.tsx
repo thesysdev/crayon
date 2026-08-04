@@ -21,14 +21,16 @@ import { TimelineEntry } from "./_shared/tool-renderer";
 import type { AssistantMessageComponent, UserMessageComponent } from "./_shared/types";
 
 import { Callout } from "../Callout";
+import { DotMatrixLoader } from "../DotMatrixLoader";
 import { IconButton } from "../IconButton";
 import { MarkDownRenderer } from "../MarkDownRenderer";
-import { MessageLoading as MessageLoadingComponent } from "../MessageLoading";
-import { ResizableSeparator } from "./ResizableSeparator";
-import { UserMessageContent } from "./UserMessageContent";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
+import { AmbientLoader } from "./components/AmbientLoader";
+import { ScrollToLatest } from "./components/ScrollToLatest";
+import { ResizableSeparator } from "./ResizableSeparator";
 import { useDetailedViewResize } from "./useDetailedViewResize";
+import { UserMessageContent } from "./UserMessageContent";
 
 export const ThreadContainer = ({
   children,
@@ -75,6 +77,15 @@ export const ThreadContainer = ({
         visibility: isLoadingMessages ? "hidden" : undefined,
       }}
     >
+      {/* Full-screen loading state while a thread's messages load. The
+          container above hides via `visibility` (keeps layout + scroll state);
+          this overlay opts back in with `visibility: visible`. */}
+      {isLoadingMessages && (
+        <AmbientLoader
+          className="openui-agent-thread-container__loading"
+          label="Loading conversation…"
+        />
+      )}
       <div className="openui-agent-thread-wrapper" ref={containerRef}>
         {/* Chat panel - always visible */}
         <div
@@ -120,7 +131,7 @@ export const ScrollArea = ({
   children,
   className,
   scrollVariant = "user-message-anchor",
-  userMessageSelector = ".openui-agent-thread-message-user",
+  userMessageSelector = ".openui-agent-thread-message-user, .openui-shell-thread-message-user",
   scrollOnLoad = true,
 }: {
   children?: React.ReactNode;
@@ -170,6 +181,7 @@ export const ScrollArea = ({
       >
         {children}
       </div>
+      <ScrollToLatest scrollRef={ref} />
     </div>
   );
 };
@@ -289,7 +301,7 @@ export const RenderMessage = memo(
 export const MessageLoading = () => {
   return (
     <div className="openui-agent-thread-message-loading">
-      <MessageLoadingComponent />
+      <DotMatrixLoader variant="compact" />
     </div>
   );
 };

@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     headers: {
       Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
       "Content-Type": "application/json",
-      "HTTP-Referer": `${BASE_URL}/playground`,
+      "HTTP-Referer": `${BASE_URL}/demos`,
       "X-Title": "OpenUI Playground",
     },
     body: JSON.stringify({

@@ -52,7 +52,7 @@ artifacts, custom slots/theme, and tests.
 | `openAIMessageFormat`                                | `openAIConversationMessageFormat`                                                                      |
 | In-memory, `restStorage`, or custom `ChatStorage`    | `useOpenuiCloudStorage({ token: "/api/frontend-token" })`                                              |
 | `openuiLibrary`/`openuiChatLibrary`                  | `chatLibrary` from `@openuidev/thesys` when the user chooses Cloud components                          |
-| `library.prompt(...)` in the provider route          | `createResponsesInstructions()` in the Cloud route                                                     |
+| `generateSystemPrompt({ library, promptOptions })` in the provider route | `generateSystemPrompt()` from `@openuidev/thesys-server` in the Cloud route |
 | App-owned artifact loop/renderers                    | Managed `artifactTool({ artifacts: ["slides", "report"] })` plus managed renderers for stock artifacts |
 | No browser storage credential                        | Short-lived frontend token scoped to the authenticated `user_id`                                       |
 
@@ -72,7 +72,7 @@ Preserve branding, theme, starters, slots, navigation, route placement, error bo
 8. Remove provider dependencies, environment variables, storage routes, and dead adapters only when no other application path uses them.
 9. Update environment examples and deployment configuration without committing secrets.
 
-Do not send both full history and a Cloud conversation id. Doing so can duplicate context. Do not leave `library.prompt()` in the stock Cloud route; `createResponsesInstructions()` supplies the managed instructions.
+Do not send both full history and a Cloud conversation id. Doing so can duplicate context. Do not leave `library.prompt()` in the stock Cloud route; `generatePromptOptions()` supplies the managed instructions.
 
 ## Handle Renderer-Only and Custom-Library Apps
 
@@ -106,7 +106,7 @@ Select the mode on the server or through trusted deployment configuration. Do no
 ## Respect Unsupported Boundaries
 
 - **Historical conversations/artifacts:** no import path is established by the repository sources. Preserve the old store read-only or export it separately; do not fabricate Cloud records.
-- **Custom tool execution:** declaring a function tool is not the same as executing it. The app must catch the streamed tool call, execute it, and submit the result through the supported Responses continuation flow. Keep the self-hosted loop unless current Cloud docs provide the full contract.
+- **Custom tool execution:** supported. Declare `type: "function"` tools and execute them with the template's `runFunctionToolLoop` (`src/lib/tool-loop.ts`; see cloud-integration.md "Add Tools and MCP"). Never execute or answer Cloud's own `thesys_*` function calls. Prefer a remote MCP server when the capability already exists as one.
 - **Custom artifact-producing tools:** managed `artifactTool()` covers the documented report and slide path. Do not infer support for arbitrary custom artifacts.
 - **Attachments and media:** preserve an attachment-capable self-hosted path until the installed Cloud client, generation input, storage, and size-limit contracts are verified end to end.
 - **Non-React clients:** the verified managed client surface is React. Require a first-party runtime/example before promising another framework.

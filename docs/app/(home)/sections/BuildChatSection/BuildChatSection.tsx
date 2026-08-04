@@ -1,6 +1,6 @@
 "use client";
 
-import { captureCreateCliCommandCopied } from "@/lib/create-cli-copy-analytics";
+import { captureCreateCliCommandCopied } from "@/lib/analytics";
 import { ClipboardCommandButton } from "../../components/Button/Button";
 import styles from "./BuildChatSection.module.css";
 
