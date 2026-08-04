@@ -2,9 +2,9 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { openUIStreamTransformer } from "@openuidev/langchain/transformer";
 import { createDeepAgent } from "deepagents";
 
-import { openUIStreamTransformer } from "./openui-transformer";
 import { getStockPrice, getWeather, searchWeb } from "./tools";
 
 /**
