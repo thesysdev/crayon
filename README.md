@@ -148,16 +148,6 @@ Full methodology and reproduction steps in [`benchmarks/`](./benchmarks).
 
 Detailed documentation is available at [openui.com](https://openui.com).
 
-## Telemetry
-
-The CLI collects usage analytics, and direct server-side
-`@openuidev/lang-core` `generateSystemPrompt()` calls collect bounded
-prompt-configuration first-use telemetry. Lang Core telemetry is not sent from
-browsers or on every user request. See the
-[`@openuidev/lang-core` telemetry disclosure](./packages/lang-core#telemetry)
-for the exact fields, transport-IP behavior, and opt-outs. Set
-`OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` to disable it.
-
 ## Repository structure
 
 ```
