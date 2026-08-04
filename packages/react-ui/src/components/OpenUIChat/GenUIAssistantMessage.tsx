@@ -21,15 +21,10 @@ import { TimelineEntry } from "../_shared/tool-renderer";
 import { AssistantMessageContainer } from "./AssistantMessageContainer";
 
 /**
- * Renders a SINGLE assistant message: its tool timeline (with its thinking
- * prose as the leading step) and, once the response section has begun, the
- * OpenUI-lang answer.
- *
- * Multi-segment turns (thinking… then answer, split across messages by the
- * stream layer) are assembled ONE level up, in the thread's `InterleavedTurn`,
- * which owns the single merged tray and calls this component only for the
- * answer segment. So there is no turn/grouping logic here — one message in,
- * one message rendered.
+ * Renders a SINGLE assistant message: its tool timeline (thinking prose as the
+ * leading step) and, once the response begins, the OpenUI-lang answer. Turn
+ * grouping is assembled a level up in {@link InterleavedTurn}, which calls this
+ * only for the answer segment — no turn logic here.
  */
 export const GenUIAssistantMessage = ({
   message,

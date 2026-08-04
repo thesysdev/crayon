@@ -350,17 +350,12 @@ function groupIntoTurns(messages: Message[]): { messages: Message[]; startIndex:
 }
 
 /**
- * The merged tool timeline for a turn plus its final answer — the whole run
- * rendered as ONE unit, OWNED HERE (outside the per-message component) so it
- * stays a single stable element across the live run.
- *
- * The stream emits one message per section (thinking… then the answer), so a
- * turn spans several assistant messages. Rendering the tray at the per-message
- * level meant it hopped from segment to segment as each arrived, remounting
- * and resetting its reveal state (flicker + stuck "Working…"). Here it mounts
- * once — keyed by the turn's first segment in {@link Messages} — and only its
- * props change as segments stream in. The answer segment renders through the
- * (custom) assistant component; earlier thinking segments live in the tray.
+ * A whole turn (its merged tool timeline + final answer) as one unit. Owned
+ * here rather than per-message so the tray is a single element keyed by the
+ * turn's first segment ({@link Messages}) — it mounts once and only updates as
+ * segments stream in, instead of hopping between segments and resetting its
+ * reveal state. Earlier segments live in the tray; the answer renders through
+ * the assistant component.
  */
 const InterleavedTurn = ({
   segments,
@@ -381,12 +376,10 @@ const InterleavedTurn = ({
   const last = segments[segments.length - 1]!;
   const turnLive = isRunning && lastAssistantId === last.id;
 
-  // The answer is the OpenUI-lang response — recognized by its fence or the
-  // mandatory `root =`. "Tool-less text" isn't enough: an intermediate
-  // narration segment is also tool-less while it streams (its tool call lands
-  // a beat later), so keying off that collapsed the tray on every narration.
-  // While live, only a Lang-looking last segment closes the turn; a settled
-  // turn always surfaces the last so no text is lost.
+  // The answer is the OpenUI-lang response (fence or `root =`), not merely
+  // tool-less text — a streaming narration is tool-less too until its tool call
+  // lands, and keying off that collapsed the tray on every narration. Live:
+  // only a Lang-looking last segment closes the turn; settled: always the last.
   const lastContent = separateContentAndContext(last.content ?? "").content;
   const lastIsLang =
     !!lastContent && (lastContent.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(lastContent));
