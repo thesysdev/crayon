@@ -3,7 +3,6 @@ import { Check, ChevronDown, ChevronRight, Copy } from "lucide-react";
 import { useState, type CSSProperties } from "react";
 
 export interface ReactLangStreamDetail {
-  streamId: string;
   phase: "streaming" | "settled";
   response?: string;
   errors: Record<string, unknown>[];
@@ -19,7 +18,6 @@ export function getReactLangStreamDetail(event: ObservabilityEvent): ReactLangSt
   const detail = asRecord(event.detail);
   if (
     detail["kind"] !== "react-lang:stream" ||
-    typeof detail["streamId"] !== "string" ||
     (detail["phase"] !== "streaming" && detail["phase"] !== "settled")
   ) {
     return null;
@@ -27,7 +25,6 @@ export function getReactLangStreamDetail(event: ObservabilityEvent): ReactLangSt
 
   const parser = asRecord(detail["parser"]);
   return {
-    streamId: detail["streamId"],
     phase: detail["phase"],
     response: asString(detail["response"]),
     errors: Array.isArray(detail["errors"]) ? detail["errors"].map((error) => asRecord(error)) : [],

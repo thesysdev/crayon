@@ -92,6 +92,29 @@ describe("OpenUIDevtools", () => {
     expect(container.textContent).toContain("real-error");
   });
 
+  it("coalesces successive snapshots of any event with a stable id", () => {
+    render({ enabled: true, errorsOnly: false });
+
+    act(() =>
+      observability.info({
+        id: "job-1",
+        kind: "job:progress",
+        message: "Starting",
+      }),
+    );
+    act(() =>
+      observability.warn({
+        id: "job-1",
+        kind: "job:progress",
+        message: "Needs attention",
+      }),
+    );
+
+    expect(container.textContent?.match(/job:progress/g)).toHaveLength(1);
+    expect(container.textContent).not.toContain("Starting");
+    expect(container.textContent).toContain("Needs attention");
+  });
+
   it("drills into the stack trace when a row's Stack Trace is clicked", () => {
     render({ enabled: true, errorsOnly: false });
     act(() => observability.error({ kind: "boom", error: toErrorInfo(new Error("kaboom")) }));
@@ -103,13 +126,13 @@ describe("OpenUIDevtools", () => {
     expect(container.textContent).toContain("stack trace");
   });
 
-  it("coalesces react-lang stream updates by their stable stream id", () => {
+  it("coalesces react-lang stream updates by their stable event id", () => {
     render({ enabled: true, errorsOnly: false });
 
     act(() =>
       observability.info({
         kind: "react-lang:stream",
-        streamId: "stream-1",
+        id: "stream-1",
         phase: "streaming",
         updateIndex: 1,
         response: "root = Car",
@@ -119,7 +142,7 @@ describe("OpenUIDevtools", () => {
     act(() =>
       observability.info({
         kind: "react-lang:stream",
-        streamId: "stream-1",
+        id: "stream-1",
         phase: "streaming",
         updateIndex: 2,
         response: 'root = Card("done")',
@@ -151,7 +174,7 @@ describe("OpenUIDevtools", () => {
     act(() =>
       observability.info({
         kind: "react-lang:stream",
-        streamId: "stream-1",
+        id: "stream-1",
         phase: "streaming",
         updateIndex: 1,
         response: "root = Ghost()",
@@ -160,7 +183,7 @@ describe("OpenUIDevtools", () => {
     act(() =>
       observability.error({
         kind: "react-lang:stream",
-        streamId: "stream-1",
+        id: "stream-1",
         phase: "settled",
         updateIndex: 1,
         response: "root = Ghost()",
@@ -204,7 +227,7 @@ describe("OpenUIDevtools", () => {
     act(() =>
       observability.info({
         kind: "react-lang:stream",
-        streamId: "stream-1",
+        id: "stream-1",
         phase: "streaming",
         response: "root = Ghost()",
         errors: [{ source: "parser", code: "unknown-component", message: "Transient error" }],
@@ -228,7 +251,7 @@ describe("OpenUIDevtools", () => {
     act(() =>
       observability.error({
         kind: "react-lang:stream",
-        streamId: "stream-1",
+        id: "stream-1",
         phase: "settled",
         response: "root = First()",
         errors: [{ source: "parser", code: "first-error", message: "First error" }],
@@ -244,7 +267,7 @@ describe("OpenUIDevtools", () => {
     act(() =>
       observability.error({
         kind: "react-lang:stream",
-        streamId: "stream-1",
+        id: "stream-1",
         phase: "settled",
         response: "root = Second()",
         errors: [{ source: "query", code: "query-error", message: "Second error" }],
@@ -263,7 +286,7 @@ describe("OpenUIDevtools", () => {
     act(() =>
       observability.error({
         kind: "react-lang:stream",
-        streamId: "stream-1",
+        id: "stream-1",
         phase: "settled",
         errors: [{ source: "query", code: "query-error", message: "Query failed" }],
       }),
@@ -273,7 +296,7 @@ describe("OpenUIDevtools", () => {
     act(() =>
       observability.info({
         kind: "react-lang:stream",
-        streamId: "stream-1",
+        id: "stream-1",
         phase: "settled",
         errors: [],
       }),

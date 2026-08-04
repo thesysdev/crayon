@@ -134,7 +134,7 @@ describe("streaming observability integration", () => {
     );
     removeListener();
 
-    const streamIds = events.map((event) => event.detail["streamId"]);
+    const streamIds = events.map((event) => event.detail.id);
     expect(events.map((event) => event.detail["phase"])).toEqual([
       "streaming",
       "settled",
@@ -167,7 +167,7 @@ describe("streaming observability integration", () => {
 
     const settled = events.filter((event) => event.detail["phase"] === "settled");
     expect(settled).toHaveLength(2);
-    expect(settled[0]?.detail["streamId"]).toBe(settled[1]?.detail["streamId"]);
+    expect(settled[0]?.detail.id).toBe(settled[1]?.detail.id);
     expect(settled[0]?.detail["errors"]).toEqual([]);
     expect(settled[1]?.level).toBe("error");
     expect(settled[1]?.detail["errors"]).toEqual([queryError]);

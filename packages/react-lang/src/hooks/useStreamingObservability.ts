@@ -22,7 +22,7 @@ export interface StreamingObservabilityState {
 }
 
 export interface StreamingObservabilityUpdate {
-  streamId: string;
+  id: string;
   phase: "streaming" | "settled";
   updateIndex: number;
 }
@@ -67,7 +67,7 @@ export function advanceStreamingObservability(
     state.hasPublishedStreamingSnapshot = true;
     state.lastResponse = response;
     state.updateIndex += 1;
-    return { streamId: state.id, phase: "streaming", updateIndex: state.updateIndex };
+    return { id: state.id, phase: "streaming", updateIndex: state.updateIndex };
   }
 
   // A Renderer mounted only for static or historical content never starts a stream.
@@ -81,7 +81,7 @@ export function advanceStreamingObservability(
 
   state.settled = true;
   state.lastSettledErrorKey = settledErrorKey;
-  return { streamId: state.id, phase: "settled", updateIndex: state.updateIndex };
+  return { id: state.id, phase: "settled", updateIndex: state.updateIndex };
 }
 
 function parserMetadata(result: ParseResult | null) {
@@ -120,8 +120,8 @@ export function useStreamingObservability({
     if (isStreaming) {
       if (update) {
         observability.info({
+          id: update.id,
           kind: "react-lang:stream",
-          streamId: update.streamId,
           phase: update.phase,
           updateIndex: update.updateIndex,
           response,
@@ -135,8 +135,8 @@ export function useStreamingObservability({
 
     if (update?.phase === "settled") {
       observability(errors.length > 0 ? "error" : "info", {
+        id: update.id,
         kind: "react-lang:stream",
-        streamId: update.streamId,
         phase: update.phase,
         updateIndex: update.updateIndex,
         response,

@@ -20,21 +20,21 @@ describe("streaming observability lifecycle", () => {
     const idFactory = vi.fn(() => "stream-1");
 
     expect(advanceStreamingObservability(state, true, "root = Car", null, idFactory)).toEqual({
-      streamId: "stream-1",
+      id: "stream-1",
       phase: "streaming",
       updateIndex: 1,
     });
     expect(
       advanceStreamingObservability(state, true, 'root = Card("done")', null, idFactory),
     ).toEqual({
-      streamId: "stream-1",
+      id: "stream-1",
       phase: "streaming",
       updateIndex: 2,
     });
     expect(
       advanceStreamingObservability(state, false, 'root = Card("done")', "[]", idFactory),
     ).toEqual({
-      streamId: "stream-1",
+      id: "stream-1",
       phase: "settled",
       updateIndex: 2,
     });
@@ -63,22 +63,22 @@ describe("streaming observability lifecycle", () => {
       .mockReturnValueOnce("stream-2");
 
     expect(advanceStreamingObservability(state, true, "first", null, idFactory)).toEqual({
-      streamId: "stream-1",
+      id: "stream-1",
       phase: "streaming",
       updateIndex: 1,
     });
     expect(advanceStreamingObservability(state, false, "first", "[]", idFactory)).toEqual({
-      streamId: "stream-1",
+      id: "stream-1",
       phase: "settled",
       updateIndex: 1,
     });
     expect(advanceStreamingObservability(state, true, "second", null, idFactory)).toEqual({
-      streamId: "stream-2",
+      id: "stream-2",
       phase: "streaming",
       updateIndex: 1,
     });
     expect(advanceStreamingObservability(state, false, "second", "[]", idFactory)).toEqual({
-      streamId: "stream-2",
+      id: "stream-2",
       phase: "settled",
       updateIndex: 1,
     });
@@ -101,7 +101,7 @@ describe("streaming observability lifecycle", () => {
         idFactory,
       ),
     ).toEqual({
-      streamId: "stream-1",
+      id: "stream-1",
       phase: "settled",
       updateIndex: 1,
     });

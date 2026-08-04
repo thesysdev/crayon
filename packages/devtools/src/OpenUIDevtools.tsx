@@ -214,17 +214,14 @@ export function OpenUIDevtools({
                   <div style={styles.empty}>No events captured yet.</div>
                 ) : (
                   visibleEvents.map((event, index) => {
-                    const key = `${event.timestamp}-${index}`;
+                    const key =
+                      typeof event.detail["id"] === "string"
+                        ? event.detail["id"]
+                        : `${event.timestamp}-${index}`;
                     if (isCreditsExhausted(event)) return <CreditsEventRow key={key} />;
                     const stream = getReactLangStreamDetail(event);
                     if (stream) {
-                      return (
-                        <ReactLangStreamEventRow
-                          key={`react-lang:stream:${stream.streamId}`}
-                          event={event}
-                          stream={stream}
-                        />
-                      );
+                      return <ReactLangStreamEventRow key={key} event={event} stream={stream} />;
                     }
 
                     const error = getErrorInfo(event);
