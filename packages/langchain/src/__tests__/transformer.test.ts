@@ -3,7 +3,7 @@ import type { ProtocolEvent, ToolsEventData } from "@langchain/langgraph";
 import type { MessagesData } from "@langchain/protocol";
 import { describe, expect, it } from "vitest";
 
-import { openUIStreamTransformer } from "../openui-stream-transformer";
+import { openUIStreamTransformer } from "../transformer";
 
 describe("openUIStreamTransformer", () => {
   it("converts streamed assistant text when the runtime omits message-start role", () => {

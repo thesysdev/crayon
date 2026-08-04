@@ -1,7 +1,7 @@
 import { EventSchemas, EventType, type AGUIEvent } from "@ag-ui/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { streamOpenUI } from "../stream-openui";
+import { streamOpenUI } from "../stream-relay";
 
 afterEach(() => {
   vi.unstubAllGlobals();

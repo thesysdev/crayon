@@ -1,7 +1,7 @@
 import { EventType } from "@ag-ui/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { createLangChainStreamResponse } from "../langchain-stream-response";
+import { createLangChainStreamResponse } from "../request-handler";
 
 afterEach(() => {
   vi.unstubAllGlobals();

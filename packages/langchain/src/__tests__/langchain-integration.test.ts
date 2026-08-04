@@ -2,8 +2,8 @@ import { EventSchemas, EventType, type AGUIEvent } from "@ag-ui/core";
 import type { ProtocolEvent } from "@langchain/langgraph";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { openUIStreamTransformer } from "../openui-stream-transformer";
-import { streamOpenUI } from "../stream-openui";
+import { streamOpenUI } from "../stream-relay";
+import { openUIStreamTransformer } from "../transformer";
 
 afterEach(() => {
   vi.unstubAllGlobals();

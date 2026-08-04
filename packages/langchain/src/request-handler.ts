@@ -1,6 +1,6 @@
 import { MessageSchema, type InputContent, type Message } from "@ag-ui/core";
 
-import { streamOpenUI } from "./stream-openui";
+import { streamOpenUI } from "./stream-relay";
 
 /** A LangChain/LangGraph input message accepted by a graph's `messages` field. */
 export interface LangChainInputMessage {
