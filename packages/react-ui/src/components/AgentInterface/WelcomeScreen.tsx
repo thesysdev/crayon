@@ -169,6 +169,12 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
 
   const handleContextualSelect = (starter: ConversationStarterProps) => {
     submitStarterPrompt(processMessage, draft, starter.prompt);
+    // Clear at submit time like the composer's own submit path — the
+    // thread-switch reset above won't fire when selectedThreadId doesn't
+    // change (e.g. thread creation fails on a fresh chat and it stays null),
+    // and the stale stem would resurface if the welcome shows again.
+    setDraft("");
+    setSelectedChip(null);
   };
 
   return (
