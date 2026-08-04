@@ -1,4 +1,4 @@
-import { useIsThreadStreaming, useThreadList } from "@openuidev/react-headless";
+import { useThreadList, useThreadState } from "@openuidev/react-headless";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import { EllipsisIcon, Loader2, Trash2Icon } from "lucide-react";
@@ -48,7 +48,7 @@ export const ThreadButton = ({
   const selectedThreadId = useThreadList((s) => s.selectedThreadId);
   // Background streams live in `inFlightThreads` (never the active thread), so this
   // is already background-only — no `selectedThreadId !== id` guard needed.
-  const isStreaming = useIsThreadStreaming(id);
+  const { isStreaming } = useThreadState(id);
   const { isSidebarOpen, setIsSidebarOpen } = useAgentInterfaceStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
     setIsSidebarOpen: state.setIsSidebarOpen,
