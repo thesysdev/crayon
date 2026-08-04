@@ -160,20 +160,30 @@ export const processStreamedMessage = async ({
       }
 
       case EventType.TEXT_MESSAGE_START:
-        // Use the server id when available (usually available from
-        // the TEXT_MESSAGE_START event. The swap is done IN PLACE
-        // — deleting + re-creating the assistant message would break
-        // ordering when tool messages were already appended between the
-        // If the message isn't in the store yet (this is the first event), the
-        // trailing isFirst createMessage below already carries the server id.
+        // Adopt the server-generated message id (carried on TEXT_MESSAGE_START)
+        // in place of the optimistic uuid, so a later persist (updateMessage)
+        // keys on the same id the backend stored. Two cases:
+        //
+        //   - Not yet created (isFirst): just relabel currentMessage; the
+        //     trailing isFirst createMessage below writes it with the server id
+        //     — no store swap needed.
+        //   - Already created: swap IN PLACE via replaceMessageId. Deleting +
+        //     re-creating would break ordering when tool messages were appended
+        //     between the create and this event (e.g. from TOOL_CALL_RESULT).
+        //     Without replaceMessageId we can't relabel the caller's store, so
+        //     we keep the optimistic id rather than let currentMessage's id
+        //     drift away from it (which would make later updates miss).
         //
         // First TEXT_MESSAGE_START wins: a multi-text-item run emits one per
-        // item, and re-relabeling would remount the message component (keyed
-        // by id) for each.
-        if (!serverIdAdopted && event.messageId) {
-          serverIdAdopted = true;
-          if (event.messageId !== currentMessage.id) {
-            replaceMessageId?.(currentMessage.id, event.messageId);
+        // item, and re-relabeling would remount the message component (keyed by
+        // id) for each.
+        if (!serverIdAdopted && event.messageId && event.messageId !== currentMessage.id) {
+          if (isFirst) {
+            serverIdAdopted = true;
+            currentMessage = { ...currentMessage, id: event.messageId };
+          } else if (replaceMessageId) {
+            serverIdAdopted = true;
+            replaceMessageId(currentMessage.id, event.messageId);
             currentMessage = { ...currentMessage, id: event.messageId };
           }
         }

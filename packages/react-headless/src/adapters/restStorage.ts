@@ -84,6 +84,13 @@ export function restStorage({
       async deleteThread(id: string): Promise<void> {
         await request(`${baseUrl}/delete/${id}`, { method: "DELETE" });
       },
+      async updateMessage(threadId: string, message: Message): Promise<void> {
+        const [wire] = messageFormat.toApi([message]) as unknown[];
+        await request(`${baseUrl}/messages/${threadId}/${message.id}`, {
+          method: "PATCH",
+          body: JSON.stringify(wire),
+        });
+      },
     },
   };
 }

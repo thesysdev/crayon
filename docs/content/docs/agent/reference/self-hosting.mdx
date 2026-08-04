@@ -294,11 +294,15 @@ export const storage: ChatStorage = {
     async deleteThread(id) {
       await gql(DELETE_THREAD, { id });
     },
+    // Optional — persists in-message edits
+    async updateMessage(threadId, message) {
+      await gql(UPDATE_MESSAGE, { threadId, message });
+    },
   },
 };
 ```
 
-The five methods map one-to-one onto the sidebar:
+The required methods map onto the sidebar; `updateMessage` is optional and backs in-message edits:
 
 | Method | When it runs |
 |---|---|
@@ -307,7 +311,7 @@ The five methods map one-to-one onto the sidebar:
 | `getMessages(threadId)` | User opens a thread. Returns its `Message[]`. |
 | `updateThread(thread)` | A thread changes (e.g. rename). Returns the updated `Thread`. |
 | `deleteThread(id)` | User deletes a thread. |
-
+| `updateMessage(threadId, message)` | *Optional.* User edits form state in a rendered message; called fire-and-forget. |
 
 ## 4. Store artifacts
 

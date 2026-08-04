@@ -4,7 +4,11 @@ import { sseLineIterator } from "./_shared/sseLines";
 
 export const openAIAdapter = (): StreamProtocolAdapter => ({
   async *parse(response: Response): AsyncIterable<AGUIEvent> {
-    const messageId = crypto.randomUUID();
+    // Prefer the completion id (`json.id`, stable across the whole response and
+    // seen by both client and backend) as the message id, so an edit persisted
+    // later keys on an id the backend agrees on. Fall back to a client uuid only
+    // if the stream omits it. Set from the first chunk below.
+    let messageId = "";
     const toolCallIds: Record<number, string> = {};
     let messageStarted = false;
 
@@ -15,6 +19,7 @@ export const openAIAdapter = (): StreamProtocolAdapter => ({
 
       try {
         const json = JSON.parse(data) as ChatCompletionChunk;
+        if (!messageId) messageId = json.id || crypto.randomUUID();
         const choice = json.choices?.[0];
         const delta = choice?.delta;
 
