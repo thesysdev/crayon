@@ -1,5 +1,34 @@
 @use "../../cssUtils" as cssUtils;
 
+// A highlight travelling across the glyphs to mark work still in flight: the
+// text is painted by two stacked gradients clipped to its shape — a moving
+// window of $bright over a flat bed of $base.
+//
+// The fill MUST be transparent. `background-clip: text` only clips the
+// background; an opaque -webkit-text-fill-color paints the glyphs on top of it
+// and the gradient never shows, which is why this looked completely static.
+@mixin text-shimmer($base, $bright, $duration: 3s) {
+  display: inline-block;
+  // Every length here is relative to the label, so the highlight stays the same
+  // fraction of "Working" as it is of a long tool name. Sized in px it came out
+  // wider than a short label — the whole word lit at once and read as a flash
+  // rather than a sweep.
+  background-image:
+    linear-gradient(90deg, transparent 40%, $bright 50%, transparent 60%),
+    linear-gradient($base, $base);
+  // 3x the label, so the 20%-wide band spans 60% of it and — the part that
+  // matters — sits fully off both edges at the ends of its travel. A band still
+  // on screen when the animation loops back reads as a jump.
+  background-size:
+    300% 100%,
+    100% 100%;
+  background-repeat: no-repeat, no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: openui-tool-code-shimmer $duration linear infinite;
+}
+
 // ── "Behind the scenes" wrapper ──
 
 .openui-behind-the-scenes {
@@ -42,23 +71,7 @@
   // and the step it is summarizing animate as one: tertiary at rest, brightening
   // to secondary as the highlight passes through.
   &__toggle-label--shimmer {
-    display: inline-block;
-    background-image:
-      linear-gradient(
-        90deg,
-        transparent calc(50% - 50px),
-        cssUtils.$text-neutral-secondary,
-        transparent calc(50% + 50px)
-      ),
-      linear-gradient(cssUtils.$text-neutral-tertiary, cssUtils.$text-neutral-tertiary);
-    background-size:
-      250% 100%,
-      auto;
-    background-repeat: no-repeat, padding-box;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: cssUtils.$text-neutral-secondary;
-    background-clip: text;
-    animation: openui-tool-code-shimmer 2s linear infinite;
+    @include text-shimmer(cssUtils.$text-neutral-tertiary, cssUtils.$text-neutral-secondary);
   }
 
   &__toggle-icon {
@@ -245,23 +258,7 @@
 
   // Tertiary at rest, brightening to secondary as the highlight sweeps through.
   &__name--shimmer {
-    display: inline-block;
-    background-image:
-      linear-gradient(
-        90deg,
-        transparent calc(50% - 50px),
-        cssUtils.$text-neutral-secondary,
-        transparent calc(50% + 50px)
-      ),
-      linear-gradient(cssUtils.$text-neutral-tertiary, cssUtils.$text-neutral-tertiary);
-    background-size:
-      250% 100%,
-      auto;
-    background-repeat: no-repeat, padding-box;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: cssUtils.$text-neutral-secondary;
-    background-clip: text;
-    animation: openui-tool-code-shimmer 2s linear infinite;
+    @include text-shimmer(cssUtils.$text-neutral-tertiary, cssUtils.$text-neutral-secondary);
   }
 
   &__connector {
@@ -490,23 +487,7 @@
 
   &__label--loading {
     @include cssUtils.typography(label, small);
-    display: inline-block;
-    background-image:
-      linear-gradient(
-        90deg,
-        transparent calc(50% - 40px),
-        cssUtils.$text-neutral-primary,
-        transparent calc(50% + 40px)
-      ),
-      linear-gradient(cssUtils.$text-neutral-secondary, cssUtils.$text-neutral-secondary);
-    background-size:
-      250% 100%,
-      auto;
-    background-repeat: no-repeat, padding-box;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: cssUtils.$text-neutral-primary;
-    background-clip: text;
-    animation: openui-tool-code-shimmer 2s linear infinite;
+    @include text-shimmer(cssUtils.$text-neutral-secondary, cssUtils.$text-neutral-primary);
   }
 
   &__chevron {
