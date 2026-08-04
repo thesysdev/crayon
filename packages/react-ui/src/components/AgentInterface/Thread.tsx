@@ -1,7 +1,6 @@
 import type { AssistantMessage, Message } from "@openuidev/react-headless";
 import {
   MessageProvider,
-  lookupArtifactRenderer,
   useActiveDetailedView,
   useArtifactList,
   useArtifactRendererRegistry,
@@ -12,7 +11,8 @@ import clsx from "clsx";
 import React, { memo, useId, useMemo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
-import { separateContentAndContext } from "../../utils/sentinelParser";
+import { getLastAssistantMessageId, getMatchedRendererActivities } from "../../utils/messages";
+import { hasLangSyntax, separateContentAndContext } from "../../utils/sentinelParser";
 import { ToolCallTimeline, type TimelineStep } from "../ToolCall";
 import {
   DetailedViewOverlay,
@@ -372,24 +372,16 @@ const InterleavedTurn = ({
   isRunning: boolean;
   lastAssistantId: string | null;
 }) => {
-  const first = segments[0]!;
   const last = segments[segments.length - 1]!;
   const turnLive = isRunning && lastAssistantId === last.id;
 
-  // The answer is the OpenUI-lang response (fence or `root =`), not merely
-  // tool-less text — a streaming narration is tool-less too until its tool call
-  // lands, and keying off that collapsed the tray on every narration. Live:
-  // only a Lang-looking last segment closes the turn; settled: always the last.
   const lastContent = separateContentAndContext(last.content ?? "").content;
-  const lastIsLang =
-    !!lastContent &&
-    (lastContent.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(lastContent));
-  const answer = !turnLive ? last : lastIsLang ? last : null;
+  const answer = !turnLive || hasLangSyntax(lastContent) ? last : null;
 
   // One id-keyed pairing across every segment's tool calls (synthetic message).
   const turnMessage = useMemo(
-    () => ({ ...first, toolCalls: segments.flatMap((s) => s.toolCalls ?? []) }),
-    [first, segments],
+    () => ({ ...segments[0]!, toolCalls: segments.flatMap((s) => s.toolCalls ?? []) }),
+    [segments],
   );
   const turnActivities = useToolActivities(turnMessage, allMessages);
 
@@ -413,13 +405,11 @@ const InterleavedTurn = ({
   // Matched renderers (artifact/search previews) render OUTSIDE the tray so
   // they stay visible after it collapses.
   const registry = useArtifactRendererRegistry();
-  const matched = turnActivities.filter(
-    (a) => !!(registry && lookupArtifactRenderer(registry, a.toolName)),
-  );
+  const matched = getMatchedRendererActivities(registry, turnActivities);
 
-  // Hold the tray open until the answer's first tokens arrive.
-  const answerStarted =
-    !!answer && separateContentAndContext(answer.content ?? "").content.length > 0;
+  // Hold the tray open until the answer's first tokens arrive. `answer` is
+  // `last` or null, so reuse the already-parsed `lastContent`.
+  const answerStarted = !!answer && lastContent.length > 0;
 
   return (
     <>
@@ -549,12 +539,7 @@ export const Messages = ({
 
   // Id of the last *assistant* message (not the last message) so the running
   // shimmer survives trailing tool messages.
-  const lastAssistantId = useMemo(() => {
-    for (let i = messages.length - 1; i >= 0; i--) {
-      if (messages[i]?.role === "assistant") return messages[i]!.id;
-    }
-    return null;
-  }, [messages]);
+  const lastAssistantId = useMemo(() => getLastAssistantMessageId(messages), [messages]);
 
   return (
     <div className={clsx("openui-agent-thread-messages", className)}>

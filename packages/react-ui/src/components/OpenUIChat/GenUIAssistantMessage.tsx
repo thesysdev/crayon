@@ -2,7 +2,6 @@
 
 import type { AssistantMessage, ToolActivity } from "@openuidev/react-headless";
 import {
-  lookupArtifactRenderer,
   useArtifactRendererRegistry,
   useThread,
   useToolActivities,
@@ -10,7 +9,9 @@ import {
 import type { ActionEvent, Library } from "@openuidev/react-lang";
 import { BuiltinActionType, Renderer } from "@openuidev/react-lang";
 import { useCallback, useMemo } from "react";
+import { getLastAssistantMessageId, getMatchedRendererActivities } from "../../utils/messages";
 import {
+  hasLangSyntax,
   separateContentAndContext,
   wrapContent,
   wrapContentWithHeader,
@@ -38,12 +39,7 @@ export const GenUIAssistantMessage = ({
   const processMessage = useThread((s) => s.processMessage);
   const updateMessage = useThread((s) => s.updateMessage);
 
-  const lastAssistantId = useMemo(() => {
-    for (let i = messages.length - 1; i >= 0; i--) {
-      if (messages[i]?.role === "assistant") return messages[i]!.id;
-    }
-    return null;
-  }, [messages]);
+  const lastAssistantId = useMemo(() => getLastAssistantMessageId(messages), [messages]);
   const isStreaming = isRunning && lastAssistantId === message.id;
 
   // The stream layer emits one content section per message, so this entry holds
@@ -57,13 +53,11 @@ export const GenUIAssistantMessage = ({
     [message.content],
   );
 
-  // Is this section the RESPONSE (Lang), not thinking? Lang carries a fence, or
-  // (unfenced) the mandatory `root =`. A reply with no tool calls is the
-  // response from its first byte; a settled run always surfaces what it has.
-  const looksLikeLang =
-    !!content && (content.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(content));
+  // A reply with no tool calls is the response from its first byte;
+  // otherwise it must look like Lang; a settled run always surfaces
+  // what it has.
   const singleResponseStarted =
-    !!content && ((message.toolCalls?.length ?? 0) === 0 || looksLikeLang || !isRunning);
+    !!content && ((message.toolCalls?.length ?? 0) === 0 || hasLangSyntax(content) || !isRunning);
   const openuiCode = singleResponseStarted ? content : null;
   // Otherwise the section is thinking — it belongs in the timeline, not the
   // Lang renderer.
@@ -95,9 +89,7 @@ export const GenUIAssistantMessage = ({
   // Matched renderers (artifact previews, web search) render OUTSIDE the tray
   // so they stay visible after it collapses.
   const registry = useArtifactRendererRegistry();
-  const matchedActivities = activities.filter(
-    (a) => !!(registry && lookupArtifactRenderer(registry, a.toolName)),
-  );
+  const matchedActivities = getMatchedRendererActivities(registry, activities);
 
   // Persist form state into the inline-wrapped message content. The original
   // header line (which may include `libraryVersion` and telemetry tags emitted
