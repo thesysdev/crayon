@@ -61,6 +61,19 @@ export async function POST(req: Request) {
           {
             type: "image_search",
           },
+          // Remote MCP runs inside OpenUI Cloud, so there's no client tool loop
+          // to add: the stream just carries an `mcp_list_tools` item per fresh
+          // server plus an `mcp_call` per invocation, which the adapter turns
+          // into ordinary timeline tool calls. Declared per request — servers
+          // never auto-attach. Point MCP_SERVER_URL at your own to swap it.
+          {
+            type: "mcp",
+            server_label: envOr("MCP_SERVER_LABEL", "deepwiki"),
+            server_url: envOr("MCP_SERVER_URL", "https://mcp.deepwiki.com/mcp"),
+            ...(process.env["MCP_SERVER_TOKEN"]
+              ? { headers: { Authorization: `Bearer ${process.env["MCP_SERVER_TOKEN"]}` } }
+              : {}),
+          },
         ],
         instructions: createResponsesInstructions(),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
