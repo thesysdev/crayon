@@ -1,7 +1,11 @@
 "use client";
 
+import {
+  OPENUI_CLOUD_LOGO_URL,
+  OPENUI_CLOUD_PROMPT_TEMPLATES,
+  OPENUI_CLOUD_STARTERS,
+} from "@/lib/openui-cloud/chat-constants";
 import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
-import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import { CLOUD_USER_ID_HEADER, getOrCreateCloudUserId } from "@/lib/openui-cloud/user-id";
 import { defineArtifactCategories } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
@@ -11,34 +15,47 @@ import {
   reportArtifactRenderer,
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
+import { FileText, Presentation } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "../../chat-page.module.css";
-import { CloudModelSwitcher } from "./cloud-model-switcher";
+import {
+  DemoAwareComposer,
+  DemoAwareModelSwitcher,
+  DemoPathSynchronizer,
+} from "../demo-aware-chat-controls";
+import { DemoConversationList } from "../demo-conversation-list";
+import { createDemoConversationStorage } from "../demo-conversation-storage";
+import { DemoForkRegistry } from "../demo-fork-registry";
+import { getPersistedCloudModel, usePersistedCloudModel } from "../use-persisted-cloud-model";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
-  { name: "Presentations", renderers: [presentationArtifactRenderer] },
-  { name: "Reports", renderers: [reportArtifactRenderer] },
+  {
+    name: "Presentations",
+    renderers: [presentationArtifactRenderer],
+    icon: <Presentation size="1em" />,
+  },
+  {
+    name: "Reports",
+    renderers: [reportArtifactRenderer],
+    icon: <FileText size="1em" />,
+  },
 ]);
 
-const CLOUD_STARTERS = [
-  {
-    displayText: "Pricing strategy tips",
-    prompt: "List five quick tips for pricing a new electric vehicle competitively.",
-  },
-  {
-    displayText: "Quarterly deck",
-    prompt: "Create a short presentation about our Q2 results with three slides.",
-  },
-  {
-    displayText: "Market report",
-    prompt: "Write a brief market-analysis report on the EV sector.",
-  },
-];
-
 export function CloudAgentSurface() {
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
+  const { resolvedTheme } = useTheme();
+  const mode = resolvedTheme === "dark" ? "dark" : "light";
+  const [selectedModel, setSelectedModel] = usePersistedCloudModel();
   const [userId] = useState(getOrCreateCloudUserId);
-  const [llm] = useState(createCloudChatLLM);
+  const [forkRegistry] = useState(() => new DemoForkRegistry(userId));
+  const [llm] = useState(() =>
+    createCloudChatLLM({
+      initialModel: getPersistedCloudModel(),
+      shouldSendFullHistory: (threadId) => forkRegistry.shouldSeed(threadId),
+      onFullHistoryAccepted: (threadId) => forkRegistry.markSeeded(threadId),
+    }),
+  );
+  const [path, setPath] = useState<string>();
   const cloudFetch = useMemo<typeof fetch>(() => {
     return async (input, init) => {
       if (typeof input !== "string" || input !== "/api/openui-cloud/frontend-token") {
@@ -56,6 +73,10 @@ export function CloudAgentSurface() {
     features: { artifact: true },
     fetch: cloudFetch,
   });
+  const storage = useMemo(
+    () => createDemoConversationStorage(cloudStorage, forkRegistry),
+    [cloudStorage, forkRegistry],
+  );
 
   useEffect(() => {
     llm.setSelectedModel(selectedModel);
@@ -66,37 +87,58 @@ export function CloudAgentSurface() {
       llm.setSelectedModel(model);
       setSelectedModel(model);
     },
-    [llm],
+    [llm, setSelectedModel],
   );
 
   return (
     <div className="chat-agent-surface" data-chat-mode="cloud">
       <AgentInterface
-        storage={cloudStorage}
+        storage={storage}
         llm={llm}
         componentLibrary={chatLibrary}
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
-        agentName="OpenUI Cloud"
-        scrollVariant="always"
-        scrollOnLoad={false}
-        starterVariant="short"
-        starters={CLOUD_STARTERS}
+        logoUrl={OPENUI_CLOUD_LOGO_URL}
+        theme={{ mode }}
+        starters={OPENUI_CLOUD_STARTERS}
+        path={path}
+        onNavigate={setPath}
       >
+        <AgentInterface.Sidebar>
+          <AgentInterface.SidebarHeader />
+          <div className={styles.cloudSidebarPrimaryActions}>
+            <AgentInterface.NewChatButton />
+            <AgentInterface.ArtifactNav />
+          </div>
+          <AgentInterface.SidebarContent>
+            <DemoConversationList />
+            <AgentInterface.SidebarSeparator />
+            <AgentInterface.ThreadList />
+          </AgentInterface.SidebarContent>
+        </AgentInterface.Sidebar>
         <AgentInterface.MobileHeader
           className={styles.cloudMobileHeader}
           agentName=""
           actions={
-            <CloudModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+            <DemoAwareModelSwitcher
+              selectedModel={selectedModel}
+              onModelChange={handleModelChange}
+            />
           }
         />
         <AgentInterface.ThreadHeader className={styles.cloudThreadHeader}>
-          <CloudModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+          <DemoAwareModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
         </AgentInterface.ThreadHeader>
         <AgentInterface.Welcome
-          title="Build with OpenUI Cloud"
-          description="Create managed generative interfaces, reports, and presentations."
+          title="Good to see you"
+          description="What's on your mind today?"
+          promptTemplates={OPENUI_CLOUD_PROMPT_TEMPLATES}
+          glowAnimation
         />
+        <AgentInterface.Composer>
+          <DemoAwareComposer forkRegistry={forkRegistry} onNavigate={setPath} />
+        </AgentInterface.Composer>
+        <DemoPathSynchronizer path={path} onNavigate={setPath} />
       </AgentInterface>
     </div>
   );

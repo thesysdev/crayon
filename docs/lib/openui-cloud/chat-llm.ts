@@ -9,24 +9,39 @@ interface CloudChatLLM extends ChatLLM {
   setSelectedModel: (model: string) => void;
 }
 
-export function createCloudChatLLM(): CloudChatLLM {
-  let selectedModel = DEFAULT_MODEL;
+interface CloudChatLLMOptions {
+  initialModel?: string;
+  shouldSendFullHistory?: (threadId: string) => boolean;
+  onFullHistoryAccepted?: (threadId: string) => void;
+}
+
+export function createCloudChatLLM(options: CloudChatLLMOptions = {}): CloudChatLLM {
+  let selectedModel = options.initialModel ?? DEFAULT_MODEL;
 
   return {
     setSelectedModel(model) {
       selectedModel = model;
     },
     async send({ threadId, messages, signal }) {
-      return fetch("/api/openui-cloud/chat", {
+      const shouldSendFullHistory = options.shouldSendFullHistory?.(threadId) ?? false;
+      const response = await fetch("/api/openui-cloud/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           threadId,
-          input: openAIConversationMessageFormat.toApi(messages.slice(-1)),
+          input: openAIConversationMessageFormat.toApi(
+            shouldSendFullHistory ? messages : messages.slice(-1),
+          ),
           model: selectedModel,
         }),
         signal,
       });
+
+      if (response.ok && shouldSendFullHistory) {
+        options.onFullHistoryAccepted?.(threadId);
+      }
+
+      return response;
     },
     streamProtocol: openAIResponsesAdapter(),
   };

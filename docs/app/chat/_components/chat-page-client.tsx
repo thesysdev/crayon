@@ -1,13 +1,11 @@
 "use client";
 
-import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
 import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import dynamic from "next/dynamic";
-import { Component, useCallback, useState, type ReactNode } from "react";
+import { Component, useState, type ReactNode } from "react";
 import styles from "../chat-page.module.css";
-import { OssAgentSurface } from "./agent-surfaces/oss-agent-surface";
 import { ChatPageHeader } from "./chat-page-header";
-import type { ChatMode } from "./chat-types";
+import type { ViewportPreset } from "./viewport-presets";
 
 const CloudAgentSurface = dynamic(
   () => import("./agent-surfaces/cloud-agent-surface").then((module) => module.CloudAgentSurface),
@@ -38,49 +36,24 @@ class CloudSurfaceErrorBoundary extends Component<
 }
 
 export function ChatPageClient() {
-  const [mode, setMode] = useState<ChatMode>("oss");
-  const [announcement, setAnnouncement] = useState("");
-  const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
-
-  const handleCreditsExhausted = useCallback(() => {
-    setCreditsDialogOpen(true);
-  }, []);
-
-  const requestModeChange = useCallback(
-    (nextMode: ChatMode) => {
-      if (nextMode === mode) return;
-
-      setMode(nextMode);
-      setAnnouncement(
-        `${nextMode === "oss" ? "OpenUI OSS" : "OpenUI Cloud"} mode selected. New chat started.`,
-      );
-    },
-    [mode],
-  );
+  const [viewport, setViewport] = useState<ViewportPreset>("desktop");
 
   return (
     <main className={styles.page}>
-      <h1 className={styles.srOnly}>OpenUI Chat</h1>
-      <ChatPageHeader mode={mode} onModeChange={requestModeChange} />
+      <h1 className={styles.srOnly}>OpenUI Cloud Chat</h1>
+      <ChatPageHeader viewport={viewport} onViewportChange={setViewport} />
 
       <section
         className={styles.agentViewport}
-        aria-label={`${mode === "oss" ? "OpenUI OSS" : "OpenUI Cloud"} chat`}
+        data-viewport={viewport}
+        aria-label="OpenUI Cloud chat"
       >
-        {mode === "oss" ? (
-          <OssAgentSurface onCreditsExhausted={handleCreditsExhausted} />
-        ) : (
+        <div className={styles.agentFrame} data-viewport={viewport}>
           <CloudSurfaceErrorBoundary>
             <CloudAgentSurface />
           </CloudSurfaceErrorBoundary>
-        )}
+        </div>
       </section>
-
-      <p className={styles.srOnly} aria-live="polite">
-        {announcement}
-      </p>
-
-      <DemoCreditsDialog open={creditsDialogOpen} onClose={() => setCreditsDialogOpen(false)} />
     </main>
   );
 }

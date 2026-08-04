@@ -52,12 +52,12 @@
   outline-offset: 2px;
 }
 
-.modeControl {
+.viewportControl {
   min-width: 0;
   justify-self: center;
 }
 
-.modeGroup {
+.viewportGroup {
   display: inline-flex !important;
   width: auto !important;
   min-width: 0;
@@ -69,8 +69,11 @@
   padding: 0;
 }
 
-.modeItem {
+.viewportItem {
+  display: inline-flex;
   min-height: 2.25rem !important;
+  align-items: center;
+  gap: 6px;
   border: 0 !important;
   border-radius: 10px !important;
   background: transparent !important;
@@ -83,18 +86,18 @@
     background-color 120ms ease;
 }
 
-.modeItem:hover:not(:disabled) {
+.viewportItem:hover:not(:disabled) {
   color: var(--openui-text-neutral-primary) !important;
   background: var(--openui-highlight) !important;
 }
 
-.modeItem[data-state="on"] {
+.viewportItem[data-state="on"] {
   color: var(--openui-text-neutral-primary) !important;
   background: var(--openui-sunk) !important;
   box-shadow: none;
 }
 
-.modeItem:focus-visible {
+.viewportItem:focus-visible {
   position: relative;
   z-index: 1;
   outline: 2px solid var(--openui-border-accent-emphasis);
@@ -113,11 +116,42 @@
   min-width: 0;
   min-height: 0;
   flex: 1;
+  align-items: stretch;
+  justify-content: center;
   overflow: hidden;
-  background: var(--openui-foreground);
+  background: var(--openui-background);
+  padding: 12px;
 }
 
-.agentViewport > * {
+.agentViewport[data-viewport="desktop"] {
+  padding: 0;
+}
+
+.agentFrame {
+  position: relative;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--openui-foreground);
+  transition:
+    width 180ms ease,
+    border-radius 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.agentFrame[data-viewport="desktop"] {
+  width: 100%;
+}
+
+.agentFrame[data-viewport="mobile"] {
+  width: min(390px, 100%);
+  border: 1px solid var(--openui-border-default);
+  border-radius: 14px;
+  box-shadow: var(--openui-shadow-m);
+}
+
+.agentFrame > * {
   width: 100%;
   height: 100%;
   min-width: 0;
@@ -137,13 +171,11 @@
   height: 100% !important;
 }
 
-/* AgentInterface normally swaps a collapsed sidebar logo for this control on
-   hover. The chat surfaces have no logo, so keep the only expand affordance
-   visible at rest. */
-.agentViewport
-  :global(.openui-agent-sidebar-header--collapsed .openui-agent-sidebar-header__toggle-button) {
-  opacity: 1;
-  pointer-events: auto;
+.agentViewport :global(.openui-agent-sidebar-header__logo) {
+  border-radius: 7px;
+  background: var(--openui-border-default);
+  padding: 3px;
+  object-fit: contain;
 }
 
 .agentViewport :global([data-chat-mode="cloud"] .openui-agent-thread-error) {
@@ -216,7 +248,7 @@
   width: auto !important;
   min-width: 0 !important;
   max-width: min(240px, calc(100vw - 32px));
-  height: 32px !important;
+  height: 36px !important;
   justify-content: flex-start !important;
   gap: 6px !important;
   border: 1px solid var(--openui-border-default) !important;
@@ -228,12 +260,68 @@
   font: var(--openui-text-body-sm) !important;
 }
 
+.modelSwitcherTrigger:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.58;
+  box-shadow: none;
+}
+
 .modelSwitcherValue {
   min-width: 0;
   flex: 0 1 auto;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.providerMark {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--openui-border-default);
+  color: var(--openui-text-neutral-primary);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.providerMark[data-size="small"] {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  font-size: 10px;
+}
+
+.providerMark[data-provider="google"] > span {
+  background: conic-gradient(
+    from -45deg,
+    #4285f4 0 25%,
+    #34a853 0 45%,
+    #fbbc05 0 68%,
+    #ea4335 0 82%,
+    #4285f4 0
+  );
+  background-clip: text;
+  color: transparent;
+  font-size: 14px;
+}
+
+.providerMark[data-size="small"][data-provider="google"] > span {
+  font-size: 13px;
+}
+
+.providerMark img {
+  width: 16px;
+  height: 16px;
+}
+
+.providerMark[data-size="small"] img {
+  width: 13px;
+  height: 13px;
 }
 
 .modelSwitcherContent {
@@ -244,29 +332,54 @@
 
 .modelOption {
   display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.modelOptionHeading {
-  display: flex;
+  width: 100%;
   min-width: 0;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
 }
 
-.modelOptionName,
-.modelOptionId {
+.modelOptionName {
   min-width: 0;
+  flex: 1 1 auto;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.modelOptionId {
-  color: var(--openui-text-neutral-tertiary);
+.modelFreeLabel {
+  color: var(--openui-text-success-primary) !important;
+  font-weight: 600 !important;
+}
+
+.modelBadge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: var(--openui-text-neutral-primary);
   font-size: 12px;
+  font-weight: 400;
+}
+
+.modelBadge[data-compact="true"] {
+  width: 20px;
+  height: 20px;
+  justify-content: center;
+  padding: 0;
+}
+
+.modelBadgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--openui-border-info-emphasis);
+}
+
+.modelBadge[data-kind="free"] .modelBadgeDot {
+  background: var(--openui-border-success-emphasis);
 }
 
 .cloudMobileHeader :global(.openui-agent-mobile-header-logo-container) {
@@ -287,6 +400,97 @@
 
 .cloudMobileHeader .modelSwitcherTrigger {
   width: min(220px, 100%) !important;
+}
+
+.cloudSidebarPrimaryActions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 8px 12px;
+}
+
+.demoThreadGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-block: 4px 10px;
+}
+
+.demoThreadGroupLabel {
+  padding: 4px 12px 6px;
+  color: var(--openui-text-neutral-tertiary);
+  font: var(--openui-text-label-xs);
+}
+
+.demoThreadBadge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 999px;
+  background: var(--openui-sunk);
+  padding: 1px 6px;
+  color: var(--openui-text-neutral-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.agentViewport
+  :global(.openui-agent-sidebar-container--collapsed)
+  :is(.demoThreadGroupLabel, .demoThreadBadge) {
+  display: none;
+}
+
+.demoComposerState {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px 12px;
+  border-top: 1px solid var(--openui-border-default);
+  background: var(--openui-foreground);
+  padding: 12px 16px 16px;
+}
+
+.demoComposerNotice {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--openui-text-neutral-secondary);
+  font: var(--openui-text-body-sm);
+}
+
+.demoComposerNotice strong {
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-label-sm);
+}
+
+.demoComposerInput {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  resize: none;
+  border: 1px solid var(--openui-border-default);
+  border-radius: var(--openui-radius-m);
+  outline: none;
+  background: var(--openui-sunk);
+  padding: 9px 11px;
+  color: var(--openui-text-neutral-tertiary);
+  font: var(--openui-text-body-sm);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.demoComposerInput::placeholder {
+  color: var(--openui-text-neutral-tertiary);
+  opacity: 1;
+}
+
+.demoComposerError {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--openui-text-danger-primary);
+  font: var(--openui-text-body-sm);
 }
 
 .srOnly {
@@ -311,24 +515,47 @@
     gap: 6px;
   }
 
-  .modeControl {
+  .viewportControl {
     width: min(100%, 15rem) !important;
   }
 
-  .modeGroup {
+  .viewportGroup {
     width: 100% !important;
   }
 
-  .modeItem {
+  .viewportItem {
     min-width: 0;
     flex: 1;
     justify-content: center;
     padding-inline: 4px !important;
-    font-size: 0.6875rem !important;
+  }
+
+  .viewportItemLabel {
+    display: none;
   }
 
   .buildForFreeMenu {
     display: none;
+  }
+
+  .agentViewport {
+    padding: 0;
+  }
+
+  .agentFrame[data-viewport="mobile"] {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .demoComposerState {
+    grid-template-columns: 1fr;
+    padding: 10px 12px 12px;
+  }
+
+  .demoComposerNotice,
+  .demoComposerError {
+    grid-column: 1;
   }
 }
 
@@ -339,7 +566,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .modeItem {
+  .viewportItem,
+  .agentFrame {
     transition: none;
   }
 

@@ -3,17 +3,17 @@
 import { BuildForFreeMenu } from "@/app/_components/build-for-free-menu";
 import { ToggleGroup } from "@openuidev/react-ui/ToggleGroup";
 import { ToggleItem } from "@openuidev/react-ui/ToggleItem";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Monitor, Smartphone } from "lucide-react";
 import Link from "next/link";
 import styles from "../chat-page.module.css";
-import type { ChatMode } from "./chat-types";
+import { isViewportPreset, type ViewportPreset } from "./viewport-presets";
 
 interface ChatPageHeaderProps {
-  mode: ChatMode;
-  onModeChange: (mode: ChatMode) => void;
+  viewport: ViewportPreset;
+  onViewportChange: (viewport: ViewportPreset) => void;
 }
 
-export function ChatPageHeader({ mode, onModeChange }: ChatPageHeaderProps) {
+export function ChatPageHeader({ viewport, onViewportChange }: ChatPageHeaderProps) {
   return (
     <header className={styles.header} aria-label="OpenUI chat controls">
       <div className={styles.headerRow}>
@@ -21,21 +21,35 @@ export function ChatPageHeader({ mode, onModeChange }: ChatPageHeaderProps) {
           <ArrowLeft aria-hidden="true" size={15} strokeWidth={2} />
         </Link>
 
-        <div className={styles.modeControl}>
+        <div className={styles.viewportControl}>
           <ToggleGroup
             type="single"
-            value={mode}
-            aria-label="OpenUI implementation"
-            className={styles.modeGroup}
+            value={viewport}
+            aria-label="Preview width"
+            className={styles.viewportGroup}
             onValueChange={(value) => {
-              if (value === "oss" || value === "cloud") onModeChange(value);
+              if (isViewportPreset(value)) onViewportChange(value);
             }}
           >
-            <ToggleItem id="chat-mode-oss" value="oss" className={styles.modeItem}>
-              OpenUI OSS
+            <ToggleItem
+              id="chat-viewport-mobile"
+              value="mobile"
+              className={styles.viewportItem}
+              aria-label="Preview mobile width"
+              title="Mobile preview"
+            >
+              <Smartphone aria-hidden="true" size={15} />
+              <span className={styles.viewportItemLabel}>Mobile</span>
             </ToggleItem>
-            <ToggleItem id="chat-mode-cloud" value="cloud" className={styles.modeItem}>
-              OpenUI Cloud
+            <ToggleItem
+              id="chat-viewport-desktop"
+              value="desktop"
+              className={styles.viewportItem}
+              aria-label="Preview desktop width"
+              title="Desktop preview"
+            >
+              <Monitor aria-hidden="true" size={15} />
+              <span className={styles.viewportItemLabel}>Desktop</span>
             </ToggleItem>
           </ToggleGroup>
         </div>
