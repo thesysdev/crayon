@@ -52,6 +52,13 @@ const REVEAL_INTERVAL = 600;
 
 const NO_FADE: { top: boolean; bottom: boolean } = { top: false, bottom: false };
 
+// scrollHeight and clientHeight are both rounded, and rows have fractional
+// heights (line-height on a 14px body), so a list that fits can still report a
+// pixel or two of overflow. Only a gap wider than that — and, per edge, a real
+// scroll offset — counts, or a short run fades an edge it never scrolls past.
+const OVERFLOW_SLACK = 8;
+const EDGE_SLACK = 4;
+
 /** Visually hidden but available to screen readers; inline so we don't depend on
  *  scss (a sibling agent owns the stylesheet). */
 const VISUALLY_HIDDEN = {
@@ -141,25 +148,40 @@ export function ToolCallTimeline({
   // The items list is height-capped (see toolCall.scss) and scrolls
   // internally. While the run is live, SMOOTHLY follow the newest row as
   // content streams in — unless the user scrolled up to read an earlier one.
-  const itemsRef = useRef<HTMLDivElement>(null);
+  const itemsRef = useRef<HTMLDivElement | null>(null);
   const followRef = useRef(true);
   const distanceFromBottom = (el: HTMLElement) => el.scrollHeight - el.scrollTop - el.clientHeight;
 
-  // Re-measured every render as well as on scroll/resize: the capped element's
-  // own box doesn't change as rows stream into it.
   const [fade, setFade] = useState(NO_FADE);
   const measureEdges = useCallback(() => {
     const el = itemsRef.current;
     const next =
-      el && el.scrollHeight - el.clientHeight > 1
-        ? { top: el.scrollTop > 1, bottom: distanceFromBottom(el) > 1 }
+      el && el.scrollHeight - el.clientHeight > OVERFLOW_SLACK
+        ? { top: el.scrollTop > EDGE_SLACK, bottom: distanceFromBottom(el) > EDGE_SLACK }
         : NO_FADE;
     setFade((prev) => (prev.top === next.top && prev.bottom === next.bottom ? prev : next));
   }, []);
+  // Measured on every render of THIS component, which covers rows streaming in —
+  // but a row expanding or collapsing is the child's own state, so the list can
+  // grow past its cap and drop back under it without the timeline re-rendering
+  // at all. Observing the element covers that: its box is content-sized until
+  // the cap, so it changes on the way in and on the way back out.
+  const observerRef = useRef<ResizeObserver | null>(null);
+  const attachItems = useCallback(
+    (el: HTMLDivElement | null) => {
+      itemsRef.current = el;
+      observerRef.current?.disconnect();
+      observerRef.current = null;
+      if (!el || typeof ResizeObserver === "undefined") return;
+      const observer = new ResizeObserver(() => measureEdges());
+      observer.observe(el);
+      observerRef.current = observer;
+    },
+    [measureEdges],
+  );
+  useEffect(() => () => observerRef.current?.disconnect(), []);
   useLayoutEffect(() => {
     measureEdges();
-    window.addEventListener("resize", measureEdges);
-    return () => window.removeEventListener("resize", measureEdges);
   });
 
   const itemsClassName = clsx("openui-behind-the-scenes__items", {
@@ -280,7 +302,7 @@ export function ToolCallTimeline({
           <div className="openui-behind-the-scenes__compact-inner">
             <div
               className={itemsClassName}
-              ref={itemsRef}
+              ref={attachItems}
               onScroll={handleItemsScroll}
               onWheel={handleItemsWheel}
               onTouchMove={handleItemsTouchMove}
@@ -310,7 +332,7 @@ export function ToolCallTimeline({
       {expanded && (
         <div
           className={itemsClassName}
-          ref={itemsRef}
+          ref={attachItems}
           onScroll={handleItemsScroll}
           onWheel={handleItemsWheel}
           onTouchMove={handleItemsTouchMove}
