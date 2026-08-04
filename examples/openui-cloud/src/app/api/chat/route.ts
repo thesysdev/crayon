@@ -61,13 +61,6 @@ export async function POST(req: Request) {
           {
             type: "image_search",
           },
-          // Runs inside Cloud, so there's no client tool loop to add. Declared
-          // per request — MCP servers never auto-attach.
-          {
-            type: "mcp",
-            server_label: "deepwiki",
-            server_url: "https://mcp.deepwiki.com/mcp",
-          },
         ],
         instructions: createResponsesInstructions(),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
