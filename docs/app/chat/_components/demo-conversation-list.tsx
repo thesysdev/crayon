@@ -25,11 +25,6 @@ export function DemoConversationList() {
           key={conversation.id}
           path={`demo/${conversation.id}`}
           icon={ICONS[conversation.icon]}
-          trailing={
-            <span className={styles.demoThreadBadge}>
-              {conversation.artifact.type === "slides" ? "Deck" : "Report"}
-            </span>
-          }
           aria-label={`${conversation.title}, ${conversation.description}, read-only demo thread`}
           onClick={() => selectThread(conversation.id)}
         >
