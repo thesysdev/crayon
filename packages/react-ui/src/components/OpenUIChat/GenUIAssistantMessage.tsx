@@ -1,26 +1,20 @@
 "use client";
 
-import type { AssistantMessage, ToolActivity } from "@openuidev/react-headless";
-import {
-  useArtifactRendererRegistry,
-  useThread,
-  useToolActivities,
-} from "@openuidev/react-headless";
+import type { AssistantMessage } from "@openuidev/react-headless";
+import { useThread } from "@openuidev/react-headless";
 import type { ActionEvent, Library } from "@openuidev/react-lang";
 import { BuiltinActionType, Renderer } from "@openuidev/react-lang";
 import { useCallback, useMemo } from "react";
-import { getLastAssistantMessageId, getMatchedRendererActivities } from "../../utils/messages";
+import { getLastAssistantMessageId } from "../../utils/messages";
 import {
-  hasLangSyntax,
   separateContentAndContext,
   wrapContent,
   wrapContentWithHeader,
   wrapContext,
 } from "../../utils/sentinelParser";
-import { ToolCallTimeline, type TimelineStep } from "../ToolCall";
-import { TimelineEntry } from "../_shared/tool-renderer";
 import { AssistantMessageContainer } from "./AssistantMessageContainer";
 
+/** Renders the OpenUI-Lang response for one assistant message. */
 export const GenUIAssistantMessage = ({
   message,
   library,
@@ -36,9 +30,7 @@ export const GenUIAssistantMessage = ({
   const lastAssistantId = useMemo(() => getLastAssistantMessageId(messages), [messages]);
   const isStreaming = isRunning && lastAssistantId === message.id;
 
-  // The stream layer emits one content section per message, so this entry holds
-  // a single section — its thinking prose, or the final response. Strip the
-  // sentinels and separate any inline form-state.
+  // Strip the inline sentinels and separate any persisted form-state.
   const { content, contextString, contentHeader } = useMemo(
     () =>
       message.content
@@ -46,16 +38,6 @@ export const GenUIAssistantMessage = ({
         : { content: null, contextString: null, contentHeader: undefined },
     [message.content],
   );
-
-  // A reply with no tool calls is the response from its first byte;
-  // otherwise it must look like Lang; a settled run always surfaces
-  // what it has.
-  const singleResponseStarted =
-    !!content && ((message.toolCalls?.length ?? 0) === 0 || hasLangSyntax(content) || !isRunning);
-  const openuiCode = singleResponseStarted ? content : null;
-  // Otherwise the section is thinking — it belongs in the timeline, not the
-  // Lang renderer.
-  const pendingThinking = !singleResponseStarted ? content : null;
 
   const initialState = useMemo(() => {
     if (!contextString) return undefined;
@@ -69,36 +51,19 @@ export const GenUIAssistantMessage = ({
     }
   }, [contextString]);
 
-  const activities = useToolActivities(message, messages);
-
-  // Timeline rows: this message's thinking prose (if any) followed by its tools.
-  const ownSteps = useMemo<TimelineStep[] | undefined>(() => {
-    if (!pendingThinking) return undefined;
-    return [
-      { type: "text" as const, id: `${message.id}::thinking`, text: pendingThinking },
-      ...activities.map((activity) => ({ type: "activity" as const, activity })),
-    ];
-  }, [pendingThinking, activities, message.id]);
-
-  // Matched renderers (artifact previews, web search) render OUTSIDE the tray
-  // so they stay visible after it collapses.
-  const registry = useArtifactRendererRegistry();
-  const matchedActivities = getMatchedRendererActivities(registry, activities);
-
   // Persist form state into the inline-wrapped message content. The original
   // header line (which may include `libraryVersion` and telemetry tags emitted
   // by the backend) is reused so attrs survive the persist round-trip.
   const handleStateUpdate = useCallback(
     (state: Record<string, any>) => {
-      const code = openuiCode ?? "";
       const hasState = Object.keys(state).length > 0;
-      const contentPart = wrapContentWithHeader(code, contentHeader);
+      const contentPart = wrapContentWithHeader(content ?? "", contentHeader);
       const fullMessage = hasState
         ? contentPart + wrapContext(JSON.stringify([state]))
         : contentPart;
       updateMessage({ ...message, content: fullMessage });
     },
-    [updateMessage, message, openuiCode, contentHeader],
+    [updateMessage, message, content, contentHeader],
   );
 
   // Build LLM-friendly message from action + form state, then dispatch
@@ -131,32 +96,9 @@ export const GenUIAssistantMessage = ({
 
   return (
     <AssistantMessageContainer>
-      {activities.length > 0 && (
-        // Raw request/response for ALL tool calls, collapsed by default, with
-        // thinking prose as the leading step. Held open until the response
-        // section starts — thinking bytes alone must not collapse it.
-        <ToolCallTimeline
-          activities={activities}
-          steps={ownSteps}
-          isLast={isStreaming}
-          forceDefault
-          awaitingResponse={isStreaming && !singleResponseStarted}
-        />
-      )}
-      {matchedActivities.map((activity: ToolActivity) => (
-        // Matched renderers (artifact previews, web search) — always visible.
-        // No raw fallback here: the forceDefault timeline above already shows the
-        // raw card, so a null-parser renderer shouldn't double it.
-        <TimelineEntry
-          key={activity.id}
-          activity={activity}
-          isLast={isStreaming}
-          fallbackToDefault={false}
-        />
-      ))}
-      {singleResponseStarted && (
+      {content && (
         <Renderer
-          response={openuiCode}
+          response={content}
           library={library}
           isStreaming={isStreaming}
           onAction={handleAction}

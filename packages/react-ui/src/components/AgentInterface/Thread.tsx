@@ -370,19 +370,17 @@ const InterleavedTurn = ({
   const last = segments[segments.length - 1]!;
   const turnLive = isRunning && lastAssistantId === last.id;
 
-  const lastContent = separateContentAndContext(last.content ?? "").content;
-  const answer = !turnLive || hasLangSyntax(lastContent) ? last : null;
-
-  // Hand the answer card a tool-call-free copy so it renders
-  // only the response and doesn't draw a second, duplicate tray.
-  const answerMessage = useMemo(() => (answer ? { ...answer, toolCalls: [] } : null), [answer]);
-
   // One id-keyed pairing across every segment's tool calls (synthetic message).
   const turnMessage = useMemo(
     () => ({ ...segments[0]!, toolCalls: segments.flatMap((s) => s.toolCalls ?? []) }),
     [segments],
   );
   const turnActivities = useToolActivities(turnMessage, allMessages);
+
+  const lastContent = separateContentAndContext(last.content ?? "").content;
+  const answer =
+    !turnLive || turnActivities.length === 0 || hasLangSyntax(lastContent) ? last : null;
+  const answerMessage = useMemo(() => (answer ? { ...answer, toolCalls: [] } : null), [answer]);
 
   // Rows in run order: each non-answer segment's thinking prose, then its tools.
   const steps = useMemo<TimelineStep[]>(() => {
@@ -469,43 +467,34 @@ const RenderGroup = ({
   isRunning: boolean;
   lastAssistantId: string | null;
 }) => {
+  // A group is either a run of assistant/tool messages or one standalone
+  // non-assistant message (user/system/…). The former is always one interleaved
+  // turn, which owns the tool-call timeline (it reads `last` for the answer, so
+  // a length-one assistant group works too); the latter renders on its own.
   const assistants = group.filter((m): m is AssistantMessage => m.role === "assistant");
-  const containsLast = !!lastAssistantId && assistants.some((m) => m.id === lastAssistantId);
-  const hasToolCalls = assistants.some((m) => (m.toolCalls?.length ?? 0) > 0);
+  const message = group[0]!;
 
-  if (
-    CustomAssistantMessage &&
-    assistants.length > 0 &&
-    (assistants.length >= 2 || (isRunning && containsLast && hasToolCalls))
-  ) {
-    return (
-      <InterleavedTurn
-        segments={assistants}
+  return assistants.length > 0 ? (
+    <InterleavedTurn
+      segments={assistants}
+      allMessages={allMessages}
+      assistantMessage={CustomAssistantMessage}
+      className={className}
+      isRunning={isRunning}
+      lastAssistantId={lastAssistantId}
+    />
+  ) : (
+    <MessageProvider key={message.id} message={message}>
+      <RenderMessage
+        message={message}
         allMessages={allMessages}
         assistantMessage={CustomAssistantMessage}
+        userMessage={userMessage}
+        isStreaming={isRunning && message.id === lastAssistantId}
+        isLast={message.id === lastAssistantId}
         className={className}
-        isRunning={isRunning}
-        lastAssistantId={lastAssistantId}
       />
-    );
-  }
-
-  return (
-    <>
-      {group.map((message) => (
-        <MessageProvider key={message.id} message={message}>
-          <RenderMessage
-            message={message}
-            allMessages={allMessages}
-            assistantMessage={CustomAssistantMessage}
-            userMessage={userMessage}
-            isStreaming={isRunning && message.id === lastAssistantId}
-            isLast={message.id === lastAssistantId}
-            className={className}
-          />
-        </MessageProvider>
-      ))}
-    </>
+    </MessageProvider>
   );
 };
 
