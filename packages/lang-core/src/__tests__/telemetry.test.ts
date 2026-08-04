@@ -33,6 +33,7 @@ describe("system prompt telemetry", () => {
   const originalDisabled = process.env.OPENUI_TELEMETRY_DISABLED;
 
   beforeEach(() => {
+    vi.spyOn(Math, "random").mockReturnValue(0);
     process.env.NODE_ENV = "production";
     delete process.env.DO_NOT_TRACK;
     delete process.env.OPENUI_TELEMETRY_DISABLED;
@@ -41,6 +42,7 @@ describe("system prompt telemetry", () => {
 
   afterEach(() => {
     resetTelemetryStateForTests();
+    vi.restoreAllMocks();
     vi.unstubAllGlobals();
     process.env.NODE_ENV = originalNodeEnv;
     if (originalDoNotTrack === undefined) delete process.env.DO_NOT_TRACK;
@@ -103,7 +105,7 @@ describe("system prompt telemetry", () => {
     );
   });
 
-  it("memoizes configuration work for a reused prompt input", async () => {
+  it("memoizes configuration work for a reused sampled prompt input", async () => {
     const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
     let schemaReads = 0;
@@ -130,12 +132,13 @@ describe("system prompt telemetry", () => {
     const readsAfterFirstCapture = schemaReads;
 
     recordSystemPromptGeneration(spec, "legacy_prompt_spec");
+    await waitForCaptures(fetchMock, 2);
 
     expect(schemaReads).toBe(readsAfterFirstCapture);
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
-  it("captures once for concurrent and repeated uses of one configuration", async () => {
+  it("captures an eligible sampled generation", async () => {
     const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
     const spec = makeSpec({
@@ -144,8 +147,6 @@ describe("system prompt telemetry", () => {
     });
 
     const expected = generatePrompt(spec);
-    expect(generateSystemPrompt(spec)).toBe(expected);
-    expect(generateSystemPrompt(spec)).toBe(expected);
     expect(generateSystemPrompt(spec)).toBe(expected);
     await waitForCaptures(fetchMock, 1);
 
@@ -167,7 +168,8 @@ describe("system prompt telemetry", () => {
       input_shape: "legacy_prompt_spec",
       runtime: "node",
       environment: "production",
-      telemetry_mode: "server_runtime_prompt_config_first_use",
+      sample_rate: 0.01,
+      telemetry_mode: "server_generation_1_percent_sample",
     });
     expect(Object.keys(payload.properties).sort()).toEqual(
       [
@@ -183,6 +185,7 @@ describe("system prompt telemetry", () => {
         "project_hash_version",
         "runtime",
         "runtime_version",
+        "sample_rate",
         "sdk_name",
         "sdk_version",
         "system_prompt_config_hash",
@@ -250,15 +253,17 @@ describe("system prompt telemetry", () => {
     expect(payload.properties.environment).toBe("test");
   });
 
-  it("caps distinct configuration attempts at sixteen per runtime", async () => {
+  it("captures only calls inside the one-percent sample", async () => {
     const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
+    vi.mocked(Math.random).mockReturnValueOnce(0.009).mockReturnValueOnce(0.01);
 
-    for (let index = 0; index < 20; index += 1) {
-      generateSystemPrompt(makeSpec({ preamble: `configuration-${index}` }));
-    }
+    generateSystemPrompt(makeSpec({ preamble: "sampled" }));
+    generateSystemPrompt(makeSpec({ preamble: "not-sampled" }));
 
-    await waitForCaptures(fetchMock, 16);
+    await waitForCaptures(fetchMock, 1);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it("never lets a rejected capture affect prompt generation", async () => {
@@ -268,11 +273,8 @@ describe("system prompt telemetry", () => {
     vi.stubGlobal("fetch", fetchMock);
     const spec = makeSpec();
 
-    expect(() => generateSystemPrompt(spec)).not.toThrow();
     expect(generateSystemPrompt(spec)).toBe(generatePrompt(spec));
     await waitForCaptures(fetchMock, 1);
-    generateSystemPrompt(spec);
-    await new Promise((resolve) => setTimeout(resolve, 20));
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 

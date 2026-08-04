@@ -107,10 +107,8 @@ const merged = mergeStatements(original, patch);
 
 ## Telemetry
 
-Successful server-side `generateSystemPrompt()` calls report each distinct
-prompt configuration once per runtime, capped at 16, directly to PostHog.
-Browsers and browser workers never send telemetry; new runtimes may report
-again.
+One percent of successful server-side `generateSystemPrompt()` calls report
+directly to PostHog. Browsers and browser workers never send telemetry.
 
 Events contain runtime metadata, numeric powers-of-four component/tool-count
 buckets, and hashed configuration and project identifiers—not prompts,

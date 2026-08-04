@@ -3,7 +3,7 @@ import type { PromptSpec, ToolSpec } from "./parser/prompt";
 const EVENT_NAME = "lang_core_system_prompt_generation_used";
 const HASH_DOMAIN = "openui-system-prompt-config-v1";
 const PROJECT_HASH_DOMAIN = "openui-project-v1";
-const MAX_CONFIGURATIONS_PER_RUNTIME = 16;
+const SAMPLE_RATE = 0.01;
 const REQUEST_TIMEOUT_MS = 2_000;
 const SDK_VERSION = "0.2.10";
 const CAPTURE_URL = "https://us.i.posthog.com/capture/";
@@ -31,15 +31,9 @@ interface RuntimeInfo {
 }
 
 interface TelemetryState {
-  attemptedConfigurations: Set<string>;
-  configurationsByInput: WeakMap<object, CachedConfiguration>;
+  configurationHashesByInput: WeakMap<object, Promise<string>>;
   projectHash?: Promise<string | undefined>;
   runtimeId: string;
-}
-
-interface CachedConfiguration {
-  hash?: Promise<string>;
-  reservationKey: string;
 }
 
 interface CaptureProperties {
@@ -61,7 +55,8 @@ interface CaptureProperties {
   runtime_version?: string;
   environment: Environment;
   ci: boolean;
-  telemetry_mode: "server_runtime_prompt_config_first_use";
+  sample_rate: 0.01;
+  telemetry_mode: "server_generation_1_percent_sample";
 }
 
 const STATE_KEY = Symbol.for("@openuidev/lang-core/telemetry/v1");
@@ -316,24 +311,11 @@ function randomUuid(): string {
 function getState(): TelemetryState {
   const registry = globalThis as typeof globalThis & { [STATE_KEY]?: TelemetryState };
   registry[STATE_KEY] ??= {
-    attemptedConfigurations: new Set<string>(),
     // Weak keys avoid extending the lifetime of application-owned prompt specs.
-    configurationsByInput: new WeakMap<object, CachedConfiguration>(),
+    configurationHashesByInput: new WeakMap<object, Promise<string>>(),
     runtimeId: randomUuid(),
   };
   return registry[STATE_KEY];
-}
-
-// This key is process-local and is never sent. It avoids retaining canonical prompt data in memory.
-function getReservationKey(value: string): string {
-  let left = 0x811c9dc5;
-  let right = 0x9e3779b9;
-  for (let index = 0; index < value.length; index += 1) {
-    const code = value.charCodeAt(index);
-    left = Math.imul(left ^ code, 0x01000193);
-    right = Math.imul(right ^ code, 0x85ebca6b);
-  }
-  return `${(left >>> 0).toString(16)}:${(right >>> 0).toString(16)}`;
 }
 
 function normalizeRepositoryIdentifier(rawValue: string): string | undefined {
@@ -454,7 +436,8 @@ async function sendCapture(
     runtime_version: runtime.version,
     environment,
     ci: isCi(runtime.env),
-    telemetry_mode: "server_runtime_prompt_config_first_use",
+    sample_rate: SAMPLE_RATE,
+    telemetry_mode: "server_generation_1_percent_sample",
   };
 
   if (projectHash) {
@@ -504,34 +487,19 @@ export function recordSystemPromptGeneration(
       return;
     }
 
+    // Reject 99% of calls before projection, hashing, repository lookup, or payload allocation.
+    if (Math.random() >= SAMPLE_RATE) return;
+
     const state = getState();
-    // Once the cap is reached, avoid all further projection and hashing work.
-    if (state.attemptedConfigurations.size >= MAX_CONFIGURATIONS_PER_RUNTIME) return;
-
     // Prompt inputs are treated as immutable. Reusing the same input object becomes O(1).
-    let cached = state.configurationsByInput.get(inputIdentity);
-    let canonicalJson: string | undefined;
-    if (!cached) {
-      canonicalJson = stableJson(buildSystemPromptConfigProjection(spec));
-      cached = { reservationKey: getReservationKey(canonicalJson) };
-      state.configurationsByInput.set(inputIdentity, cached);
-    }
-
-    if (
-      state.attemptedConfigurations.has(cached.reservationKey) ||
-      state.attemptedConfigurations.size >= MAX_CONFIGURATIONS_PER_RUNTIME
-    ) {
-      return;
-    }
-    state.attemptedConfigurations.add(cached.reservationKey);
-
-    if (!cached.hash) {
-      if (canonicalJson === undefined) return;
-      cached.hash = sha256(`${HASH_DOMAIN}\0${canonicalJson}`);
+    let configHash = state.configurationHashesByInput.get(inputIdentity);
+    if (!configHash) {
+      configHash = calculateSystemPromptConfigHash(spec);
+      state.configurationHashesByInput.set(inputIdentity, configHash);
     }
 
     void Promise.resolve()
-      .then(() => sendCapture(state, spec, cached.hash!, inputShape, runtime, environment))
+      .then(() => sendCapture(state, spec, configHash, inputShape, runtime, environment))
       .catch(() => undefined);
   } catch {
     // Telemetry must never affect prompt generation.
