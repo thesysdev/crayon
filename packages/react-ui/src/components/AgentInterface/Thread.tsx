@@ -381,11 +381,16 @@ const InterleavedTurn = ({
   const last = segments[segments.length - 1]!;
   const turnLive = isRunning && lastAssistantId === last.id;
 
-  // The answer is the segment that closes the turn with pure text (no tool
-  // calls); while the newest segment still has tools the model is mid-work and
-  // everything stays in the tray. A settled turn always surfaces the last.
-  const lastIsPureText = (last.toolCalls?.length ?? 0) === 0;
-  const answer = lastIsPureText || !turnLive ? last : null;
+  // The answer is the OpenUI-lang response — recognized by its fence or the
+  // mandatory `root =`. "Tool-less text" isn't enough: an intermediate
+  // narration segment is also tool-less while it streams (its tool call lands
+  // a beat later), so keying off that collapsed the tray on every narration.
+  // While live, only a Lang-looking last segment closes the turn; a settled
+  // turn always surfaces the last so no text is lost.
+  const lastContent = separateContentAndContext(last.content ?? "").content;
+  const lastIsLang =
+    !!lastContent && (lastContent.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(lastContent));
+  const answer = !turnLive ? last : lastIsLang ? last : null;
 
   // One id-keyed pairing across every segment's tool calls (synthetic message).
   const turnMessage = useMemo(

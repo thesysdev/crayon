@@ -50,6 +50,15 @@ const TimelineStepRow = ({
 
 const REVEAL_INTERVAL = 600;
 
+const NO_FADE: { top: boolean; bottom: boolean } = { top: false, bottom: false };
+
+// scrollHeight and clientHeight are both rounded, and rows have fractional
+// heights (line-height on a 14px body), so a list that fits can still report a
+// pixel or two of overflow. Only a gap wider than that — and, per edge, a real
+// scroll offset — counts, or a short run fades an edge it never scrolls past.
+const OVERFLOW_SLACK = 8;
+const EDGE_SLACK = 4;
+
 /** Visually hidden but available to screen readers; inline so we don't depend on
  *  scss (a sibling agent owns the stylesheet). */
 const VISUALLY_HIDDEN = {
@@ -67,11 +76,12 @@ const VISUALLY_HIDDEN = {
 const isRunning = (a: ToolActivity) => a.status === "streaming" || a.status === "executing";
 
 /**
- * The "Working… / Behind the scenes" timeline wrapper, driven by
- * {@link ToolActivity}[] from `useToolActivities`. Reveals the run's activities
- * one-by-one, holds the compact card open across the tool-result → first-token
- * gap (`awaitingResponse`), and lets a manual close stick for the rest of the
- * run. "Running" is read from each activity's status, not an `isThinking` prop.
+ * The "Working / Behind the scenes" timeline wrapper, driven by
+ * {@link ToolActivity}[] from `useToolActivities`. Reveals the run's steps
+ * one-by-one and keeps every revealed one on screen, holds the tray open across
+ * the tool-result → first-token gap (`awaitingResponse`), and lets a manual
+ * close stick for the rest of the run. "Running" is read from each activity's
+ * status, not an `isThinking` prop.
  *
  * (Animations are CSS-only — framer-motion is intentionally not a dependency.)
  *
@@ -138,13 +148,52 @@ export function ToolCallTimeline({
   // The items list is height-capped (see toolCall.scss) and scrolls
   // internally. While the run is live, SMOOTHLY follow the newest row as
   // content streams in — unless the user scrolled up to read an earlier one.
-  const itemsRef = useRef<HTMLDivElement>(null);
+  const itemsRef = useRef<HTMLDivElement | null>(null);
   const followRef = useRef(true);
   const distanceFromBottom = (el: HTMLElement) => el.scrollHeight - el.scrollTop - el.clientHeight;
+
+  const [fade, setFade] = useState(NO_FADE);
+  const measureEdges = useCallback(() => {
+    const el = itemsRef.current;
+    const next =
+      el && el.scrollHeight - el.clientHeight > OVERFLOW_SLACK
+        ? { top: el.scrollTop > EDGE_SLACK, bottom: distanceFromBottom(el) > EDGE_SLACK }
+        : NO_FADE;
+    setFade((prev) => (prev.top === next.top && prev.bottom === next.bottom ? prev : next));
+  }, []);
+  // Measured on every render of THIS component, which covers rows streaming in —
+  // but a row expanding or collapsing is the child's own state, so the list can
+  // grow past its cap and drop back under it without the timeline re-rendering
+  // at all. Observing the element covers that: its box is content-sized until
+  // the cap, so it changes on the way in and on the way back out.
+  const observerRef = useRef<ResizeObserver | null>(null);
+  const attachItems = useCallback(
+    (el: HTMLDivElement | null) => {
+      itemsRef.current = el;
+      observerRef.current?.disconnect();
+      observerRef.current = null;
+      if (!el || typeof ResizeObserver === "undefined") return;
+      const observer = new ResizeObserver(() => measureEdges());
+      observer.observe(el);
+      observerRef.current = observer;
+    },
+    [measureEdges],
+  );
+  useEffect(() => () => observerRef.current?.disconnect(), []);
+  useLayoutEffect(() => {
+    measureEdges();
+  });
+
+  const itemsClassName = clsx("openui-behind-the-scenes__items", {
+    "openui-behind-the-scenes__items--fade-top": fade.top,
+    "openui-behind-the-scenes__items--fade-bottom": fade.bottom,
+  });
+
   const handleItemsScroll = useCallback(() => {
     const el = itemsRef.current;
     if (el && distanceFromBottom(el) < 24) followRef.current = true;
-  }, []);
+    measureEdges();
+  }, [measureEdges]);
   const handleItemsWheel = useCallback((e: React.WheelEvent) => {
     if (e.deltaY < 0) followRef.current = false;
   }, []);
@@ -210,12 +259,12 @@ export function ToolCallTimeline({
   // behind a collapsed "Behind the scenes".
   const settled = !thinking && !revealing;
   const failedCount = settled ? activities.filter((a) => a.status === "error").length : 0;
-  const toggleLabel =
-    thinking || revealing
-      ? "Working..."
-      : failedCount > 0
-        ? `Behind the scenes · ${failedCount} failed`
-        : "Behind the scenes";
+  const working = thinking || revealing;
+  const toggleLabel = working
+    ? "Working"
+    : failedCount > 0
+      ? `Behind the scenes · ${failedCount} failed`
+      : "Behind the scenes";
 
   return (
     <div className="openui-behind-the-scenes">
@@ -238,12 +287,20 @@ export function ToolCallTimeline({
           }
         }}
       >
+        <span
+          className={clsx("openui-behind-the-scenes__toggle-label", {
+            // While the run is live the label itself shimmers, matching the
+            // running tool rows below it.
+            "openui-behind-the-scenes__toggle-label--shimmer": working,
+          })}
+        >
+          {toggleLabel}
+        </span>
         {isOpen ? (
           <ChevronUp size={14} className="openui-behind-the-scenes__toggle-icon" />
         ) : (
           <ChevronDown size={14} className="openui-behind-the-scenes__toggle-icon" />
         )}
-        {toggleLabel}
       </button>
 
       {isLast && !expanded && (
@@ -259,18 +316,19 @@ export function ToolCallTimeline({
                 prior rows stay mounted). Showing one card at a time here made
                 the tray look like it reopened on every step. */}
             <div
-              className="openui-behind-the-scenes__items"
-              ref={itemsRef}
+              className={itemsClassName}
+              ref={attachItems}
               onScroll={handleItemsScroll}
               onWheel={handleItemsWheel}
               onTouchMove={handleItemsTouchMove}
             >
+              {/* The run accumulates: every revealed step stays on screen and only
+                  the newest is `isLast`, so just that one shimmers and blinks.
+                  Keyed per step, so each row plays the fade-in once, on mount. */}
               {displaySteps.slice(0, revealedCount).map((step, idx) => (
                 <div
                   key={stepKey(step)}
-                  className={
-                    idx === revealedCount - 1 ? "openui-behind-the-scenes__reveal-item" : undefined
-                  }
+                  className="openui-behind-the-scenes__reveal-item"
                   style={{ width: "100%" }}
                 >
                   <TimelineStepRow
@@ -288,8 +346,8 @@ export function ToolCallTimeline({
 
       {expanded && (
         <div
-          className="openui-behind-the-scenes__items"
-          ref={itemsRef}
+          className={itemsClassName}
+          ref={attachItems}
           onScroll={handleItemsScroll}
           onWheel={handleItemsWheel}
           onTouchMove={handleItemsTouchMove}
