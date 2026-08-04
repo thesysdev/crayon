@@ -373,6 +373,10 @@ const InterleavedTurn = ({
   const lastContent = separateContentAndContext(last.content ?? "").content;
   const answer = !turnLive || hasLangSyntax(lastContent) ? last : null;
 
+  // Hand the answer card a tool-call-free copy so it renders
+  // only the response and doesn't draw a second, duplicate tray.
+  const answerMessage = useMemo(() => (answer ? { ...answer, toolCalls: [] } : null), [answer]);
+
   // One id-keyed pairing across every segment's tool calls (synthetic message).
   const turnMessage = useMemo(
     () => ({ ...segments[0]!, toolCalls: segments.flatMap((s) => s.toolCalls ?? []) }),
@@ -425,17 +429,17 @@ const InterleavedTurn = ({
           fallbackToDefault={false}
         />
       ))}
-      {answer && (
-        <MessageProvider key={answer.id} message={answer}>
+      {answer && answerMessage && (
+        <MessageProvider key={answer.id} message={answerMessage}>
           {CustomAssistantMessage ? (
             <CustomAssistantMessage
-              message={answer}
+              message={answerMessage}
               isStreaming={isRunning && lastAssistantId === answer.id}
             />
           ) : (
             <AssistantMessageContainer className={className}>
               <AssistantMessageContent
-                message={answer}
+                message={answerMessage}
                 allMessages={allMessages}
                 isLast={isRunning && lastAssistantId === answer.id}
               />
