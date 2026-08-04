@@ -59,6 +59,7 @@ export interface InstallTelemetryIO {
   randomUUID(): string;
   randomHex(bytes: number): string;
   isDocker(): boolean;
+  stdout(message: string): void;
   stderr(message: string): void;
 }
 
@@ -210,7 +211,7 @@ export async function runInstallTelemetry(
     persistState(stateFile, state, io);
 
     if (isTruthyEnv(env["OPENUI_TELEMETRY_DEBUG"])) {
-      io.stderr(`[OpenUI telemetry debug]\n${JSON.stringify(payload, null, 2)}\n`);
+      io.stdout(`[OpenUI telemetry debug]\n${JSON.stringify(payload, null, 2)}\n`);
       return { status: "debug", payload };
     }
 
@@ -248,6 +249,7 @@ function createInstallTelemetryIO(overrides: Partial<InstallTelemetryIO> = {}): 
     randomUUID,
     randomHex: (bytes) => randomBytes(bytes).toString("hex"),
     isDocker: defaultIsDocker,
+    stdout: (message) => process.stdout.write(message),
     stderr: (message) => process.stderr.write(message),
     ...overrides,
   };
