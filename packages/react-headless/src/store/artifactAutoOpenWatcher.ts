@@ -1,10 +1,13 @@
 import { useEffect } from "react";
-import { shouldAutoOpen } from "../hooks/useArtifactAutoOpen";
 import type { ArtifactViewMode } from "./ArtifactViewModeContext";
 import type { createChatStore } from "./createChatStore";
 import type { createDetailedViewStore } from "./createDetailedViewStore";
 import type { createThreadContextStore } from "./createThreadContextStore";
 import type { ArtifactEntry } from "./threadContextTypes";
+
+export function shouldAutoOpen(mode: ArtifactViewMode, isStreaming: boolean): boolean {
+  return mode === "open-on-mount" || (mode === "auto-open" && isStreaming);
+}
 
 export function evaluateRegisteredArtifacts(
   viewMode: ArtifactViewMode,
