@@ -8,7 +8,6 @@ import { CloudModelSwitcher } from "./agent-surfaces/cloud-model-switcher";
 import {
   getDemoConversation,
   getDemoFirstUserMessage,
-  getDemoTurnCount,
   type DemoConversation,
 } from "./demo-conversations";
 import type { DemoForkRegistry } from "./demo-fork-registry";
@@ -67,8 +66,6 @@ function ReadOnlyDemoComposer({ demo, forkRegistry, onNavigate }: ReadOnlyDemoCo
   const selectThread = useThreadList((state) => state.selectThread);
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState("");
-  const turnCount = getDemoTurnCount(demo);
-  const artifactLabel = demo.artifact.type === "slides" ? "Presentation" : "Report";
 
   const continueInNewChat = async () => {
     if (isCreating) return;
@@ -96,9 +93,6 @@ function ReadOnlyDemoComposer({ demo, forkRegistry, onNavigate }: ReadOnlyDemoCo
           <strong>Explore this example</strong>
           <span>Messages and model are fixed. Continue privately to add your own prompts.</span>
         </div>
-        <span className={styles.demoComposerMeta}>
-          {turnCount} turns · {artifactLabel}
-        </span>
       </div>
       <textarea
         className={styles.demoComposerInput}
