@@ -1,6 +1,5 @@
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { defineCollections, defineConfig, defineDocs } from "fumadocs-mdx/config";
-import lastModified from "fumadocs-mdx/plugins/last-modified";
 import { z } from "zod";
 
 // You can customise Zod schemas for frontmatter and `meta.json` here
@@ -28,6 +27,4 @@ export const blogPosts = defineCollections({
   }),
 });
 
-export default defineConfig({
-  plugins: [lastModified()],
-});
+export default defineConfig();

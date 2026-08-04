@@ -1,24 +1,20 @@
 import { BASE_URL, blog, source } from "@/lib/source";
+import type { MetadataRoute } from "next";
 
 const STATIC_PATHS = ["/", "/cloud", "/demos", "/compare", "/lab", "/chat", "/blog"];
 
-export default async function sitemap() {
+export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = STATIC_PATHS.map((path) => ({
     url: `${BASE_URL}${path}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
   }));
 
   const docsRoutes = source.getPages().map((page) => ({
     url: `${BASE_URL}${page.url}`,
-    lastModified: page.data.lastModified,
-    changeFrequency: "weekly" as const,
   }));
 
   const blogRoutes = blog.getPages().map((page) => ({
     url: `${BASE_URL}${page.url}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
+    lastModified: page.data.date,
   }));
 
   return [...staticRoutes, ...docsRoutes, ...blogRoutes];
