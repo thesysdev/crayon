@@ -71,7 +71,7 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                 yield {
                   type: EventType.TOOL_CALL_START,
                   toolCallId: item.id,
-                  toolCallName: "thesys_web_search",
+                  toolCallName: "web_search",
                 };
               } else if (item.type === "mcp_call") {
                 yield {
