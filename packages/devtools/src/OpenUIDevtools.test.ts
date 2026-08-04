@@ -84,9 +84,11 @@ describe("OpenUIDevtools", () => {
   it("filters out info events when errorsOnly is set", () => {
     render({ enabled: true, errorsOnly: true });
     act(() => observability.info({ kind: "just-info" }));
+    act(() => observability.warn({ kind: "useful-warning" }));
     act(() => observability.error({ kind: "real-error" }));
 
     expect(container.textContent).not.toContain("just-info");
+    expect(container.textContent).toContain("useful-warning");
     expect(container.textContent).toContain("real-error");
   });
 
@@ -99,5 +101,185 @@ describe("OpenUIDevtools", () => {
     click(stackButton!);
 
     expect(container.textContent).toContain("stack trace");
+  });
+
+  it("coalesces react-lang stream updates by their stable stream id", () => {
+    render({ enabled: true, errorsOnly: false });
+
+    act(() =>
+      observability.info({
+        kind: "react-lang:stream",
+        streamId: "stream-1",
+        phase: "streaming",
+        updateIndex: 1,
+        response: "root = Car",
+        parser: { statementCount: 1, orphaned: [] },
+      }),
+    );
+    act(() =>
+      observability.info({
+        kind: "react-lang:stream",
+        streamId: "stream-1",
+        phase: "streaming",
+        updateIndex: 2,
+        response: 'root = Card("done")',
+        parser: { statementCount: 2, orphaned: ["unused"] },
+      }),
+    );
+
+    expect(container.textContent?.match(/OpenUI Lang stream/g)).toHaveLength(1);
+    expect(container.textContent).toContain("info");
+    expect(container.textContent).toContain("Streaming");
+    expect(container.textContent).toContain("2 statements");
+    expect(container.textContent).toContain("1 orphaned statement");
+    expect(container.textContent).not.toContain("stream-1");
+    expect(container.textContent).not.toContain('root = Card("done")');
+
+    const expand = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="Toggle OpenUI Lang stream details"]',
+    );
+    expect(expand).not.toBeNull();
+    click(expand!);
+
+    expect(container.textContent).toContain('root = Card("done")');
+    expect(container.textContent).toContain("Orphaned: unused");
+  });
+
+  it("replaces a stream update with its settled diagnostics", () => {
+    render({ enabled: true, errorsOnly: false });
+
+    act(() =>
+      observability.info({
+        kind: "react-lang:stream",
+        streamId: "stream-1",
+        phase: "streaming",
+        updateIndex: 1,
+        response: "root = Ghost()",
+      }),
+    );
+    act(() =>
+      observability.error({
+        kind: "react-lang:stream",
+        streamId: "stream-1",
+        phase: "settled",
+        updateIndex: 1,
+        response: "root = Ghost()",
+        parser: { statementCount: 1, orphaned: [] },
+        errors: [
+          {
+            source: "parser",
+            code: "unknown-component",
+            message: "Unknown component Ghost",
+            component: "Ghost",
+            statementId: "root",
+            hint: "Use a component registered in the library",
+          },
+        ],
+      }),
+    );
+
+    expect(container.textContent?.match(/OpenUI Lang stream/g)).toHaveLength(1);
+    expect(container.textContent).not.toContain("settled");
+    expect(container.textContent).not.toContain("Streaming");
+    expect(container.textContent).toContain("1 statement");
+    expect(container.textContent).toContain("1 error");
+    expect(container.textContent).not.toContain("Unknown component Ghost");
+
+    const expand = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="Toggle OpenUI Lang stream details"]',
+    );
+    expect(expand).not.toBeNull();
+    click(expand!);
+
+    expect(container.textContent).toContain("parser / unknown-component");
+    expect(container.textContent).toContain("Unknown component Ghost");
+    expect(container.textContent).toContain("Use a component registered in the library");
+    expect(container.textContent).toContain("root = Ghost()");
+    expect(toggle().textContent).toContain("1");
+  });
+
+  it("hides provisional errors while the stream is still running", () => {
+    render({ enabled: true, errorsOnly: false });
+
+    act(() =>
+      observability.info({
+        kind: "react-lang:stream",
+        streamId: "stream-1",
+        phase: "streaming",
+        response: "root = Ghost()",
+        errors: [{ source: "parser", code: "unknown-component", message: "Transient error" }],
+        parser: { statementCount: 1, orphaned: ["draft"] },
+      }),
+    );
+
+    const expand = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="Toggle OpenUI Lang stream details"]',
+    );
+    click(expand!);
+
+    expect(container.textContent).not.toContain("Transient error");
+    expect(container.textContent).toContain("root = Ghost()");
+    expect(container.textContent).toContain("Orphaned: draft");
+  });
+
+  it("keeps an expanded stream open when a settled error snapshot is refreshed", () => {
+    render({ enabled: true, errorsOnly: false });
+
+    act(() =>
+      observability.error({
+        kind: "react-lang:stream",
+        streamId: "stream-1",
+        phase: "settled",
+        response: "root = First()",
+        errors: [{ source: "parser", code: "first-error", message: "First error" }],
+      }),
+    );
+
+    const expand = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="Toggle OpenUI Lang stream details"]',
+    );
+    click(expand!);
+    expect(container.textContent).toContain("First error");
+
+    act(() =>
+      observability.error({
+        kind: "react-lang:stream",
+        streamId: "stream-1",
+        phase: "settled",
+        response: "root = Second()",
+        errors: [{ source: "query", code: "query-error", message: "Second error" }],
+      }),
+    );
+
+    expect(container.textContent?.match(/OpenUI Lang stream/g)).toHaveLength(1);
+    expect(container.textContent).not.toContain("First error");
+    expect(container.textContent).toContain("Second error");
+    expect(container.textContent).toContain("root = Second()");
+  });
+
+  it("removes a resolved stream from the errors-only view", () => {
+    render({ enabled: true, errorsOnly: true, autoOpenOnError: false });
+
+    act(() =>
+      observability.error({
+        kind: "react-lang:stream",
+        streamId: "stream-1",
+        phase: "settled",
+        errors: [{ source: "query", code: "query-error", message: "Query failed" }],
+      }),
+    );
+    expect(container.textContent).toContain("OpenUI Lang stream");
+
+    act(() =>
+      observability.info({
+        kind: "react-lang:stream",
+        streamId: "stream-1",
+        phase: "settled",
+        errors: [],
+      }),
+    );
+
+    expect(container.textContent).not.toContain("OpenUI Lang stream");
+    expect(container.textContent).toContain("No events captured yet.");
   });
 });
