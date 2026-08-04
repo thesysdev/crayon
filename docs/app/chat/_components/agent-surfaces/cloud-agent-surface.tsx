@@ -7,8 +7,7 @@ import {
 } from "@/lib/openui-cloud/chat-constants";
 import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
 import { CLOUD_USER_ID_HEADER, getOrCreateCloudUserId } from "@/lib/openui-cloud/user-id";
-import { defineArtifactCategories } from "@openuidev/react-headless";
-import { AgentInterface } from "@openuidev/react-ui";
+import { AgentInterface, defineArtifactCategories } from "@openuidev/react-ui";
 import {
   chatLibrary,
   presentationArtifactRenderer,

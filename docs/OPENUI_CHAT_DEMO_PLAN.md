@@ -16,7 +16,7 @@ The unused OSS surface, `ChatMode` type, shared `/api/chat` route, and supportin
 
 The implemented demo resolves the current published chat package baseline: `@openuidev/react-ui@0.13.3`, `@openuidev/react-headless@0.9.4`, and `@openuidev/thesys@0.3.1`.
 
-The empty/new-chat shell is also aligned with the generated OpenUI Cloud template: the same welcome copy, prompt templates, starters, artifact-category icons, default model, model catalog, model persistence, theme handoff, and OpenUI mascot are used. The hosted demo adds the curated **Demo threads** section and read-only continuation controls around that shared baseline.
+The empty/new-chat shell is also aligned with the generated OpenUI Cloud template: the same welcome copy, prompt templates, starters, artifact-category icons, model persistence, theme handoff, and OpenUI mascot are used. The model menu follows the latest hosted Cloud baseline with paid Gemini 3.6 as the default, no stale free-model badge, and the exact provider logo assets from the template. After the latest template moved model selection and HTTP transport into shared packages, the hosted demo now uses the shared `ModelSwitcher` and `fetchLLM` adapters too. The hosted demo adds the curated **Demo threads** section and read-only continuation controls around that shared baseline; its small transport wrapper exists only to send an immutable fixture transcript once when a visitor continues a demo.
 
 ## Product decisions
 

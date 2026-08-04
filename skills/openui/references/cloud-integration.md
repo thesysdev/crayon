@@ -63,10 +63,9 @@ Configure server-only environment values:
 
 ```bash
 THESYS_API_KEY=sk-th-your-key
-OPENUI_MODEL=google/gemini-3.1-pro-free
 ```
 
-Use a current supported `provider/model` value for `OPENUI_MODEL`; prefer the generated template or console over a stale hardcoded list. A scaffold may also use `DEMO_USER_ID=demo-user`, but production must derive the user id from authenticated server state.
+Keep the allowed model list and default model in app configuration, and validate requested models on the server. A scaffold may use `DEMO_USER_ID=demo-user`, but production must derive the user id from authenticated server state.
 
 ## Wire the Client
 
@@ -300,7 +299,7 @@ export async function POST(req: Request) {
   try {
     stream = (await client.responses.create(
       {
-        model: process.env.OPENUI_MODEL || "google/gemini-3.1-pro-free",
+        model: "google/gemini-3.1-pro-free", // resolve from the app's model allowlist
         conversation: threadId,
         input,
         stream: true,

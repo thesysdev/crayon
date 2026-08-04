@@ -13,6 +13,7 @@ import { SiteHeaderFrame } from "./site-header";
 import { ThemeToggle } from "./theme-toggle";
 
 const tabs: { title: string; url: string; match?: string }[] = [
+  { title: "Overview", url: "/docs/overview" },
   { title: "OpenUI", url: "/docs/openui-lang" },
   {
     title: "Agent Interface",

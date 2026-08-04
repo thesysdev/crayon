@@ -142,15 +142,15 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
         : {
             prompt: {
               type: "select",
-              message: "Choose your agent backend (OpenUI Cloud is recommended for most apps)",
+              message: "Choose your agent backend",
               choices: [
                 {
                   value: "openui-cloud",
-                  name: "OpenUI Cloud — managed models, history, tools & artifacts (recommended)",
+                  name: "OpenUI Cloud — free hosted models, managed history, tools & artifacts; fastest setup (recommended)",
                 },
                 {
                   value: "openui-self-hosted",
-                  name: "Self-hosted — choose when you need to own the provider, AI route & persistence",
+                  name: "Self-hosted — bring your own provider and self-manage the entire backend",
                 },
               ],
             },
