@@ -1,16 +1,16 @@
-import type { CloudAuthMethod, ResolvedAuthMethod } from "../auth/mint";
+import type { ResolvedAuthMethod } from "../auth/mint";
 
 export type TemplateName = "openui-self-hosted" | "openui-cloud";
 
 export interface CreateAppOptions {
   name?: string;
-  template?: TemplateName;
+  template?: string;
   skill?: boolean;
   noInteractive?: boolean;
   noInstall?: boolean;
   immediate?: boolean;
   apiKey?: string;
-  auth?: CloudAuthMethod;
+  auth?: string;
 }
 
 export type AiSetup = "openui_cloud" | "openai_compatible_provider";
