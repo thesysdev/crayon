@@ -1,5 +1,6 @@
 export const VIEWPORT_PRESETS = [
   { id: "mobile", label: "Mobile" },
+  { id: "tablet", label: "Tablet" },
   { id: "desktop", label: "Desktop" },
 ] as const;
 

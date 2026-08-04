@@ -8,6 +8,7 @@ import { CloudModelSwitcher } from "./agent-surfaces/cloud-model-switcher";
 import {
   getDemoConversation,
   getDemoFirstUserMessage,
+  getDemoTurnCount,
   type DemoConversation,
 } from "./demo-conversations";
 import type { DemoForkRegistry } from "./demo-fork-registry";
@@ -66,6 +67,8 @@ function ReadOnlyDemoComposer({ demo, forkRegistry, onNavigate }: ReadOnlyDemoCo
   const selectThread = useThreadList((state) => state.selectThread);
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState("");
+  const turnCount = getDemoTurnCount(demo);
+  const artifactLabel = demo.artifact.type === "slides" ? "Presentation" : "Report";
 
   const continueInNewChat = async () => {
     if (isCreating) return;
@@ -89,19 +92,24 @@ function ReadOnlyDemoComposer({ demo, forkRegistry, onNavigate }: ReadOnlyDemoCo
   return (
     <div className={styles.demoComposerState}>
       <div className={styles.demoComposerNotice} role="note">
-        <strong>Read-only demo</strong>
-        <span>The example messages and model are fixed.</span>
+        <div className={styles.demoComposerNoticeCopy}>
+          <strong>Explore this example</strong>
+          <span>Messages and model are fixed. Continue privately to add your own prompts.</span>
+        </div>
+        <span className={styles.demoComposerMeta}>
+          {turnCount} turns · {artifactLabel}
+        </span>
       </div>
       <textarea
         className={styles.demoComposerInput}
         aria-label="Demo conversation is read-only"
         value=""
-        placeholder="Demo conversation is read-only"
+        placeholder="Continue this example to add your own prompt"
         disabled
         readOnly
       />
       <Button variant="primary" size="small" onClick={continueInNewChat} disabled={isCreating}>
-        {isCreating ? "Creating chat…" : "Continue in a new chat"}
+        {isCreating ? "Creating chat…" : "Continue this conversation"}
       </Button>
       {error && (
         <p className={styles.demoComposerError} role="alert">

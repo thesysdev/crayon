@@ -3,7 +3,7 @@
 import { BuildForFreeMenu } from "@/app/_components/build-for-free-menu";
 import { ToggleGroup } from "@openuidev/react-ui/ToggleGroup";
 import { ToggleItem } from "@openuidev/react-ui/ToggleItem";
-import { ArrowLeft, Monitor, Smartphone } from "lucide-react";
+import { ArrowLeft, Monitor, Smartphone, Tablet } from "lucide-react";
 import Link from "next/link";
 import styles from "../chat-page.module.css";
 import { isViewportPreset, type ViewportPreset } from "./viewport-presets";
@@ -40,6 +40,16 @@ export function ChatPageHeader({ viewport, onViewportChange }: ChatPageHeaderPro
             >
               <Smartphone aria-hidden="true" size={15} />
               <span className={styles.viewportItemLabel}>Mobile</span>
+            </ToggleItem>
+            <ToggleItem
+              id="chat-viewport-tablet"
+              value="tablet"
+              className={styles.viewportItem}
+              aria-label="Preview tablet width"
+              title="Tablet preview"
+            >
+              <Tablet aria-hidden="true" size={15} />
+              <span className={styles.viewportItemLabel}>Tablet</span>
             </ToggleItem>
             <ToggleItem
               id="chat-viewport-desktop"

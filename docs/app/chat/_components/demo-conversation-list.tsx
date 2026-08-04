@@ -19,14 +19,18 @@ export function DemoConversationList() {
 
   return (
     <div className={styles.demoThreadGroup} aria-label="Demo threads">
-      <div className={styles.demoThreadGroupLabel}>Demo threads</div>
+      <div className={styles.demoThreadGroupLabel}>Featured demos</div>
       {DEMO_CONVERSATIONS.map((conversation) => (
         <AgentInterface.SidebarItem
           key={conversation.id}
           path={`demo/${conversation.id}`}
           icon={ICONS[conversation.icon]}
-          trailing={<span className={styles.demoThreadBadge}>Demo</span>}
-          aria-label={`${conversation.title}, read-only demo thread`}
+          trailing={
+            <span className={styles.demoThreadBadge}>
+              {conversation.artifact.type === "slides" ? "Deck" : "Report"}
+            </span>
+          }
+          aria-label={`${conversation.title}, ${conversation.description}, read-only demo thread`}
           onClick={() => selectThread(conversation.id)}
         >
           {conversation.title}

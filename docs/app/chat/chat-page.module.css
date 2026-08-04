@@ -62,7 +62,7 @@
   width: auto !important;
   min-width: 0;
   flex-wrap: nowrap !important;
-  gap: 4px !important;
+  gap: 2px !important;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -151,6 +151,13 @@
   box-shadow: var(--openui-shadow-m);
 }
 
+.agentFrame[data-viewport="tablet"] {
+  width: min(820px, 100%);
+  border: 1px solid var(--openui-border-default);
+  border-radius: 14px;
+  box-shadow: var(--openui-shadow-m);
+}
+
 .agentFrame > * {
   width: 100%;
   height: 100%;
@@ -169,6 +176,7 @@
 .agentViewport :global(.openui-agent-container) {
   width: 100% !important;
   height: 100% !important;
+  overflow: clip !important;
 }
 
 .agentViewport :global(.openui-agent-sidebar-header__logo) {
@@ -324,13 +332,14 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding-block: 4px 10px;
+  padding-block: 6px 12px;
 }
 
 .demoThreadGroupLabel {
-  padding: 4px 12px 6px;
+  padding: 4px 12px 7px;
   color: var(--openui-text-neutral-tertiary);
   font: var(--openui-text-label-xs);
+  letter-spacing: 0.01em;
 }
 
 .demoThreadBadge {
@@ -338,9 +347,9 @@
   align-items: center;
   border: 1px solid var(--openui-border-default);
   border-radius: 999px;
-  background: var(--openui-sunk);
+  background: var(--openui-highlight);
   padding: 1px 6px;
-  color: var(--openui-text-neutral-secondary);
+  color: var(--openui-text-neutral-primary);
   font-size: 10px;
   font-weight: 600;
   line-height: 16px;
@@ -365,15 +374,36 @@
 .demoComposerNotice {
   display: flex;
   grid-column: 1 / -1;
-  align-items: baseline;
-  gap: 8px;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
   color: var(--openui-text-neutral-secondary);
   font: var(--openui-text-body-sm);
 }
 
+.demoComposerNoticeCopy {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 8px;
+}
+
 .demoComposerNotice strong {
+  flex: none;
   color: var(--openui-text-neutral-primary);
   font: var(--openui-text-label-sm);
+}
+
+.demoComposerMeta {
+  flex: none;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 999px;
+  background: var(--openui-sunk);
+  padding: 2px 8px;
+  color: var(--openui-text-neutral-secondary);
+  font: var(--openui-text-label-xs);
+  white-space: nowrap;
 }
 
 .demoComposerInput {
@@ -453,7 +483,7 @@
     padding: 0;
   }
 
-  .agentFrame[data-viewport="mobile"] {
+  .agentFrame:is([data-viewport="mobile"], [data-viewport="tablet"]) {
     border: 0;
     border-radius: 0;
     box-shadow: none;
@@ -467,6 +497,19 @@
   .demoComposerNotice,
   .demoComposerError {
     grid-column: 1;
+  }
+
+  .demoComposerNotice {
+    align-items: flex-start;
+  }
+
+  .demoComposerNoticeCopy {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .demoComposerNoticeCopy span {
+    display: none;
   }
 }
 
