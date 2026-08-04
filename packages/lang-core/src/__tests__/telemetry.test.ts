@@ -197,9 +197,6 @@ describe("system prompt telemetry", () => {
     process.env.OPENUI_TELEMETRY_DISABLED = "true";
     generateSystemPrompt(makeSpec({ preamble: "disabled" }));
     delete process.env.OPENUI_TELEMETRY_DISABLED;
-    process.env.NODE_ENV = "test";
-    generateSystemPrompt(makeSpec({ preamble: "test" }));
-    process.env.NODE_ENV = "production";
     vi.stubGlobal("window", {});
     vi.stubGlobal("document", {});
     generateSystemPrompt(makeSpec({ preamble: "browser" }));
@@ -212,6 +209,19 @@ describe("system prompt telemetry", () => {
 
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("captures in a test environment when not opted out", async () => {
+    const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    process.env.NODE_ENV = "test";
+
+    generateSystemPrompt(makeSpec());
+    await waitForCaptures(fetchMock, 1);
+
+    const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const payload = JSON.parse(String(init.body)) as { properties: Record<string, unknown> };
+    expect(payload.properties.environment).toBe("test");
   });
 
   it("caps distinct configuration attempts at sixteen per runtime", async () => {

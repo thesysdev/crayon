@@ -471,11 +471,7 @@ export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: Input
 
     const env = runtime.env;
     const environment = getEnvironment(env);
-    if (
-      environment === "test" ||
-      isTruthyOptOut(env?.DO_NOT_TRACK) ||
-      isTruthyOptOut(env?.OPENUI_TELEMETRY_DISABLED)
-    ) {
+    if (isTruthyOptOut(env?.DO_NOT_TRACK) || isTruthyOptOut(env?.OPENUI_TELEMETRY_DISABLED)) {
       return;
     }
 
