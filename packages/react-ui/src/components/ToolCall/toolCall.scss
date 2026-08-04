@@ -39,8 +39,7 @@
     display: flex;
     align-items: center;
     gap: cssUtils.$space-s;
-    // Flush with the message content: the tray carries no chrome of its own,
-    // so the label lines up with the tool rows and the answer below it.
+    // Flush with the message content — the tray carries no chrome of its own.
     padding: 0;
     @include cssUtils.typography(body, small);
     color: cssUtils.$text-neutral-secondary;
@@ -53,15 +52,16 @@
       outline: 2px solid cssUtils.$border-interactive-emphasis;
       outline-offset: cssUtils.$space-3xs;
     }
+
+    &:hover .openui-behind-the-scenes__toggle-label {
+      color: cssUtils.$text-neutral-primary;
+    }
   }
 
   &__toggle-label {
     -webkit-text-fill-color: currentColor;
   }
 
-  // Same clipped-gradient sweep the running tool rows use, so the tray header
-  // and the step it is summarizing animate as one: tertiary at rest, brightening
-  // to secondary as the highlight passes through.
   &__toggle-label--shimmer {
     @include text-shimmer(cssUtils.$text-neutral-tertiary, cssUtils.$text-neutral-secondary);
   }
@@ -81,11 +81,10 @@
     // Long runs must not push the conversation far down the page: past this
     // height the timeline scrolls internally. Overridable per app via the
     // custom property.
-    max-height: var(--openui-tool-timeline-max-height, 20rem);
+    max-height: var(--openui-tool-timeline-max-height, 24rem);
     overflow-y: auto;
     overscroll-behavior: contain;
-    // Scrolls, but silently: the edge fades already signal there's more, and a
-    // bar over the rows would fight them.
+    // Scrolls silently — the edge fades already signal there's more.
     scrollbar-width: none;
     -ms-overflow-style: none;
 
@@ -93,8 +92,6 @@
       display: none;
     }
 
-    // Breathing room so right-aligned content (e.g. the row chevron) isn't
-    // flush against the edge.
     padding-inline-end: cssUtils.$space-s;
 
     // Each edge dissolves only while a row is hidden behind it. Widths come from
@@ -140,8 +137,7 @@
     min-height: 0;
   }
 
-  // Staggered reveal: each newly mounted step fades in where it lands. Opacity
-  // only — the list already slides as it follows the newest row, and adding a
+  // Opacity only: the list already slides as it follows the newest row, and a
   // rise on top of that reads as two competing motions.
   &__reveal-item {
     animation: openui-behind-the-scenes-reveal 0.25s ease;
@@ -165,7 +161,6 @@
   width: 100%;
   padding-inline-start: 0;
 
-  // The row is the collapsible trigger for the request/response block.
   &__title-row {
     @include cssUtils.button-reset;
     display: flex;
@@ -176,9 +171,7 @@
     color: cssUtils.$text-neutral-secondary;
     background-color: transparent;
     cursor: pointer;
-    // The row is a <button>, whose UA default centers text; the label is a
-    // stretched flex item, so without this it floats mid-row instead of
-    // sitting against the glyph.
+    // The row is a <button>, whose UA default centers the stretched label.
     text-align: start;
     // Allow the name to shrink/ellipsize instead of overflowing the row.
     min-width: 0;
@@ -188,14 +181,17 @@
       outline-offset: cssUtils.$space-3xs;
     }
 
+    &:hover .openui-tool-call__name {
+      color: cssUtils.$text-neutral-primary;
+    }
+
     &[aria-expanded="true"] .openui-tool-call__chevron {
       transform: rotate(180deg);
     }
   }
 
-  // Everything a row reveals — the sources list, then the request/response
-  // block. No explicit width: the flex column stretches it, so the left indent
-  // eats into its own width instead of pushing it past the container's edge.
+  // No explicit width: the flex column stretches it, so the indent eats into
+  // its own width instead of pushing it past the container's edge.
   &__content {
     display: flex;
     flex-direction: column;
@@ -204,12 +200,14 @@
     margin-inline-start: cssUtils.$space-s;
   }
 
-  // Request + response in ONE block.
   &__block {
     padding: cssUtils.$space-s cssUtils.$space-m;
-    border: 1px solid cssUtils.$border-interactive;
-    border-radius: cssUtils.$radius-m;
-    background-color: cssUtils.$foreground;
+    // Same frame as __sources: a row expands into one or the other, so they
+    // can't read as different kinds of container. The tint separates raw
+    // payloads from the sources list, which stays on the plain surface.
+    border: 1px solid cssUtils.$border-default;
+    border-radius: cssUtils.$radius-xl;
+    background-color: cssUtils.$highlight-subtle;
     max-height: 250px;
     overflow: auto;
   }
@@ -219,8 +217,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    // Knocked back as a whole rather than using a lighter text token, so the
-    // glyph keeps the hue of the copy around it.
     opacity: 0.3;
   }
 
@@ -245,7 +241,6 @@
     min-width: 0;
   }
 
-  // Tertiary at rest, brightening to secondary as the highlight sweeps through.
   &__name--shimmer {
     @include text-shimmer(cssUtils.$text-neutral-tertiary, cssUtils.$text-neutral-secondary);
   }
@@ -414,9 +409,8 @@
   }
 
   // ── Status tints (driven by the Root `--{status}` modifier) ──
-  // A failure reads as one through its glyph + label alone, keeping the rhythm
-  // of the rows around it. The one status to skip the muted icon — it has to be
-  // legible.
+  // Glyph + label alone, no border or fill. The one status to skip the muted
+  // icon — a failure has to be legible.
   &--error {
     .openui-tool-call__icon-wrapper {
       opacity: 1;
@@ -435,11 +429,11 @@
 // ── Expandable code block (request / response) ──
 
 .openui-tool-code-block {
-  border: 1px solid cssUtils.$border-interactive;
-  border-radius: cssUtils.$radius-m;
+  border: 1px solid cssUtils.$border-default;
+  border-radius: cssUtils.$radius-xl;
   overflow: hidden;
   width: 100%;
-  background-color: cssUtils.$foreground;
+  background-color: cssUtils.$highlight-subtle;
   transition: border-color 0.15s ease;
 
   &:hover {
@@ -540,14 +534,15 @@
   }
 }
 
-// Compounds with the wrapper's 0.3, so the trough stops short of vanishing.
+// Shares an element with the wrapper's resting 0.3, so it replaces that rather
+// than compounding — these are the running glyph's real opacity.
 @keyframes openui-tool-call-icon-blink {
   0%,
   100% {
-    opacity: 1;
+    opacity: 0.6;
   }
   50% {
-    opacity: 0.4;
+    opacity: 0.2;
   }
 }
 
@@ -570,8 +565,7 @@
     display: flex;
     align-items: flex-start;
     gap: cssUtils.$space-s;
-    // Flush with the tool rows' glyph column — the prose is a peer of the
-    // steps around it, not an indented aside.
+    // Flush with the tool rows: prose is their peer, not an indented aside.
     padding-inline-start: 0;
     // Breathing room against the neighboring timeline entries.
     margin-block: cssUtils.$space-s;
@@ -583,14 +577,14 @@
   // p/strong/…) regardless of which stylesheet lands later in the build.
   &__text-step &__text-step-body {
     @include cssUtils.typography(body, small);
-    color: cssUtils.$text-neutral-secondary;
+    color: cssUtils.$text-neutral-primary;
     min-width: 0;
     flex: 1;
 
-    // Neutralize the markdown wrapper's own tag sizing/coloring so every
-    // piece of thinking prose shares this step's small muted look. `strong`
-    // keeps its heavy weight — only its size/color are pinned; default
-    // margins would break the single-line alignment with the icon.
+    // Neutralize the markdown wrapper's own tag sizing/coloring so every piece
+    // of thinking prose shares this step's look. `strong` keeps its heavy
+    // weight — only its size/color are pinned; default margins would break the
+    // single-line alignment with the icon.
     p,
     li {
       margin: 0;
