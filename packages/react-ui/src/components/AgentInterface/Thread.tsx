@@ -382,7 +382,8 @@ const InterleavedTurn = ({
   // only a Lang-looking last segment closes the turn; settled: always the last.
   const lastContent = separateContentAndContext(last.content ?? "").content;
   const lastIsLang =
-    !!lastContent && (lastContent.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(lastContent));
+    !!lastContent &&
+    (lastContent.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(lastContent));
   const answer = !turnLive ? last : lastIsLang ? last : null;
 
   // One id-keyed pairing across every segment's tool calls (synthetic message).
@@ -432,7 +433,12 @@ const InterleavedTurn = ({
         />
       )}
       {matched.map((activity) => (
-        <TimelineEntry key={activity.id} activity={activity} isLast={turnLive} fallbackToDefault={false} />
+        <TimelineEntry
+          key={activity.id}
+          activity={activity}
+          isLast={turnLive}
+          fallbackToDefault={false}
+        />
       ))}
       {answer && (
         <MessageProvider key={answer.id} message={answer}>

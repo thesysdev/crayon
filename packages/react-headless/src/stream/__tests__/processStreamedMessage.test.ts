@@ -124,7 +124,11 @@ describe("processStreamedMessage — interleaved output message items", () => {
         role: "tool",
       },
       { type: EventType.TEXT_MESSAGE_START, messageId: "item-2", role: "assistant" },
-      { type: EventType.TEXT_MESSAGE_CONTENT, messageId: "item-2", delta: "Found it. Final answer." },
+      {
+        type: EventType.TEXT_MESSAGE_CONTENT,
+        messageId: "item-2",
+        delta: "Found it. Final answer.",
+      },
     ]);
 
     const created: Message[] = [];
