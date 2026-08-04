@@ -34,7 +34,7 @@ export interface WelcomePrefillChipsProps {
  * Chip row + grid-stacked starters layers for the prefill-chips welcome.
  * Layer 1 (chips + default starters) hides via `visibility` while drafting so
  * the layout doesn't jump; layer 2 shows the selected chip's contextual
- * starters, which append to the draft (see WelcomeScreen).
+ * starters, which submit the completed prompt (see WelcomeScreen).
  */
 export const WelcomePrefillChips = ({
   chips,
