@@ -32,8 +32,14 @@ interface RuntimeInfo {
 
 interface TelemetryState {
   attemptedConfigurations: Set<string>;
+  configurationsByInput: WeakMap<object, CachedConfiguration>;
   projectHash?: Promise<string | undefined>;
   runtimeId: string;
+}
+
+interface CachedConfiguration {
+  hash?: Promise<string>;
+  reservationKey: string;
 }
 
 interface CaptureProperties {
@@ -309,6 +315,8 @@ function getState(): TelemetryState {
   const registry = globalThis as typeof globalThis & { [STATE_KEY]?: TelemetryState };
   registry[STATE_KEY] ??= {
     attemptedConfigurations: new Set<string>(),
+    // Weak keys avoid extending the lifetime of application-owned prompt specs.
+    configurationsByInput: new WeakMap<object, CachedConfiguration>(),
     runtimeId: randomUuid(),
   };
   return registry[STATE_KEY];
@@ -355,32 +363,46 @@ function normalizeRepositoryIdentifier(rawValue: string): string | undefined {
   return value.replace(/\\/g, "/").replace(/\/+$/g, "");
 }
 
-function readGitOrigin(processLike: ProcessLike): string | undefined {
-  try {
-    const childProcess = processLike.getBuiltinModule?.("node:child_process") as
-      | {
-          execFileSync?: (file: string, args: string[], options: Record<string, unknown>) => string;
-        }
-      | undefined;
-    return childProcess?.execFileSync?.(
-      "git",
-      ["config", "--local", "--get", "remote.origin.url"],
-      {
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "ignore"],
-        timeout: 500,
-      },
-    );
-  } catch {
-    return undefined;
-  }
+function readGitOrigin(processLike: ProcessLike): Promise<string | undefined> {
+  const childProcess = processLike.getBuiltinModule?.("node:child_process") as
+    | {
+        execFile?: (
+          file: string,
+          args: string[],
+          options: Record<string, unknown>,
+          callback: (error: unknown, stdout?: string) => void,
+        ) => unknown;
+      }
+    | undefined;
+  const execFile = childProcess?.execFile;
+  if (!execFile) return Promise.resolve(undefined);
+
+  // Repository discovery happens at most once and must never block the event loop.
+  return new Promise((resolve) => {
+    try {
+      execFile(
+        "git",
+        ["config", "--local", "--get", "remote.origin.url"],
+        {
+          encoding: "utf8",
+          timeout: 500,
+          windowsHide: true,
+        },
+        (error, stdout) => resolve(error ? undefined : stdout),
+      );
+    } catch {
+      resolve(undefined);
+    }
+  });
 }
 
-function getRepositoryIdentifier(processLike: ProcessLike | undefined): string | undefined {
+async function getRepositoryIdentifier(
+  processLike: ProcessLike | undefined,
+): Promise<string | undefined> {
   if (!processLike) return undefined;
 
   const rawValue =
-    readGitOrigin(processLike) ?? processLike.env?.REPOSITORY_URL ?? processLike.cwd?.();
+    (await readGitOrigin(processLike)) ?? processLike.env?.REPOSITORY_URL ?? processLike.cwd?.();
   return rawValue ? normalizeRepositoryIdentifier(rawValue) : undefined;
 }
 
@@ -403,13 +425,13 @@ function getProjectHash(state: TelemetryState, runtime: RuntimeInfo): Promise<st
 async function sendCapture(
   state: TelemetryState,
   spec: PromptSpec,
-  canonicalJson: string,
+  configHash: Promise<string>,
   inputShape: InputShape,
   runtime: RuntimeInfo,
   environment: Environment,
 ): Promise<void> {
   const [systemPromptConfigHash, projectHash] = await Promise.all([
-    sha256(`${HASH_DOMAIN}\0${canonicalJson}`),
+    configHash,
     getProjectHash(state, runtime),
   ]);
 
@@ -462,7 +484,11 @@ async function sendCapture(
   }
 }
 
-export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: InputShape): void {
+export function recordSystemPromptGeneration(
+  spec: PromptSpec,
+  inputShape: InputShape,
+  inputIdentity: object = spec,
+): void {
   try {
     if (!CAPTURE_URL || !POSTHOG_KEY) return;
 
@@ -475,19 +501,34 @@ export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: Input
       return;
     }
 
-    const canonicalJson = stableJson(buildSystemPromptConfigProjection(spec));
-    const reservationKey = getReservationKey(canonicalJson);
     const state = getState();
+    // Once the cap is reached, avoid all further projection and hashing work.
+    if (state.attemptedConfigurations.size >= MAX_CONFIGURATIONS_PER_RUNTIME) return;
+
+    // Prompt inputs are treated as immutable. Reusing the same input object becomes O(1).
+    let cached = state.configurationsByInput.get(inputIdentity);
+    let canonicalJson: string | undefined;
+    if (!cached) {
+      canonicalJson = stableJson(buildSystemPromptConfigProjection(spec));
+      cached = { reservationKey: getReservationKey(canonicalJson) };
+      state.configurationsByInput.set(inputIdentity, cached);
+    }
+
     if (
-      state.attemptedConfigurations.has(reservationKey) ||
+      state.attemptedConfigurations.has(cached.reservationKey) ||
       state.attemptedConfigurations.size >= MAX_CONFIGURATIONS_PER_RUNTIME
     ) {
       return;
     }
-    state.attemptedConfigurations.add(reservationKey);
+    state.attemptedConfigurations.add(cached.reservationKey);
+
+    if (!cached.hash) {
+      if (canonicalJson === undefined) return;
+      cached.hash = sha256(`${HASH_DOMAIN}\0${canonicalJson}`);
+    }
 
     void Promise.resolve()
-      .then(() => sendCapture(state, spec, canonicalJson, inputShape, runtime, environment))
+      .then(() => sendCapture(state, spec, cached.hash!, inputShape, runtime, environment))
       .catch(() => undefined);
   } catch {
     // Telemetry must never affect prompt generation.

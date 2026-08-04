@@ -717,7 +717,8 @@ export function generateSystemPrompt(spec: SystemPromptSpec | PromptSpec): strin
   }
   const merged: PromptSpec = { ...spec.library, ...spec.promptOptions };
   const prompt = generatePrompt(merged);
-  recordSystemPromptGeneration(merged, "library_spec");
+  // Use the caller's object as the internal cache key; the public API remains unchanged.
+  recordSystemPromptGeneration(merged, "library_spec", spec);
   return prompt;
 }
 

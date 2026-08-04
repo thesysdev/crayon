@@ -4,6 +4,7 @@ import {
   calculateProjectHash,
   calculateSystemPromptConfigHash,
   getToolCountBucket,
+  recordSystemPromptGeneration,
   resetTelemetryStateForTests,
 } from "../telemetry";
 
@@ -109,6 +110,38 @@ describe("system prompt telemetry", () => {
     await expect(calculateProjectHash("C:\\work\\openui")).resolves.toBe(
       await calculateProjectHash("C:/work/openui/"),
     );
+  });
+
+  it("memoizes configuration work for a reused prompt input", async () => {
+    const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    let schemaReads = 0;
+    const inputSchema: Record<string, unknown> = {};
+    Object.defineProperty(inputSchema, "type", {
+      enumerable: true,
+      get: () => {
+        schemaReads += 1;
+        return "object";
+      },
+    });
+    const spec = makeSpec({
+      tools: [
+        {
+          name: "search",
+          inputSchema,
+          outputSchema: { type: "object" },
+        },
+      ],
+    });
+
+    recordSystemPromptGeneration(spec, "legacy_prompt_spec");
+    await waitForCaptures(fetchMock, 1);
+    const readsAfterFirstCapture = schemaReads;
+
+    recordSystemPromptGeneration(spec, "legacy_prompt_spec");
+
+    expect(schemaReads).toBe(readsAfterFirstCapture);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it("captures once for concurrent and repeated uses of one configuration", async () => {
