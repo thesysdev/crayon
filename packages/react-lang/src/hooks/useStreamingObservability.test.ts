@@ -53,9 +53,36 @@ describe("streaming observability lifecycle", () => {
       advanceStreamingObservability(state, false, "root = Car", "[]", idFactory),
     ).not.toBeNull();
     expect(advanceStreamingObservability(state, false, "root = Car", "[]", idFactory)).toBeNull();
-    expect(
-      advanceStreamingObservability(state, true, "a second stream", null, idFactory),
-    ).toBeNull();
+  });
+
+  it("starts a new id when a settled Renderer streams again", () => {
+    const state = createStreamingObservabilityState();
+    const idFactory = vi
+      .fn<() => string>()
+      .mockReturnValueOnce("stream-1")
+      .mockReturnValueOnce("stream-2");
+
+    expect(advanceStreamingObservability(state, true, "first", null, idFactory)).toEqual({
+      streamId: "stream-1",
+      phase: "streaming",
+      updateIndex: 1,
+    });
+    expect(advanceStreamingObservability(state, false, "first", "[]", idFactory)).toEqual({
+      streamId: "stream-1",
+      phase: "settled",
+      updateIndex: 1,
+    });
+    expect(advanceStreamingObservability(state, true, "second", null, idFactory)).toEqual({
+      streamId: "stream-2",
+      phase: "streaming",
+      updateIndex: 1,
+    });
+    expect(advanceStreamingObservability(state, false, "second", "[]", idFactory)).toEqual({
+      streamId: "stream-2",
+      phase: "settled",
+      updateIndex: 1,
+    });
+    expect(idFactory).toHaveBeenCalledTimes(2);
   });
 
   it("republishes settled when the error snapshot changes", () => {

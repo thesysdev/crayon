@@ -48,10 +48,7 @@ export function createStreamingObservabilityState(): StreamingObservabilityState
   };
 }
 
-/**
- * Advances one Renderer instance through its single stream lifecycle.
- * Returning null means the current render does not represent a new stream update.
- */
+/** Advances a Renderer through successive stream lifecycles. */
 export function advanceStreamingObservability(
   state: StreamingObservabilityState,
   isStreaming: boolean,
@@ -60,7 +57,10 @@ export function advanceStreamingObservability(
   idFactory: () => string = createStreamId,
 ): StreamingObservabilityUpdate | null {
   if (isStreaming) {
-    if (state.settled) return null;
+    // A mounted Renderer can be reused for another message. Once the previous
+    // stream has settled, the next streaming transition starts a new identity.
+    if (state.settled) Object.assign(state, createStreamingObservabilityState());
+
     state.id ??= idFactory();
     if (state.hasPublishedStreamingSnapshot && state.lastResponse === response) return null;
 

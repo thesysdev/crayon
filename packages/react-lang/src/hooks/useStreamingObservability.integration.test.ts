@@ -38,9 +38,11 @@ const library = {
 function Harness({
   isStreaming,
   queryErrors,
+  currentResponse = response,
 }: {
   isStreaming: boolean;
   queryErrors: OpenUIError[];
+  currentResponse?: string;
 }) {
   const parseExceptionRef = useRef<OpenUIError | null>(null);
   const runtimeErrorsRef = useRef<OpenUIError[]>([]);
@@ -52,7 +54,7 @@ function Harness({
   } satisfies QuerySnapshot;
 
   const { errorsRef, errorRevision } = useOpenUIErrors({
-    response,
+    response: currentResponse,
     isStreaming,
     result,
     evaluatedResult: result,
@@ -63,7 +65,13 @@ function Harness({
     renderErrorsRef,
   });
 
-  useStreamingObservability({ response, isStreaming, result, errorsRef, errorRevision });
+  useStreamingObservability({
+    response: currentResponse,
+    isStreaming,
+    result,
+    errorsRef,
+    errorRevision,
+  });
   return null;
 }
 
@@ -82,6 +90,62 @@ afterEach(() => {
 });
 
 describe("streaming observability integration", () => {
+  it("uses a new id when the mounted Renderer starts another stream", () => {
+    const events: ObservabilityEvent[] = [];
+    const removeListener = observability.listenAll((event) => {
+      if (event.detail.kind === "react-lang:stream") events.push(event);
+    });
+
+    act(() =>
+      root.render(
+        createElement(Harness, {
+          isStreaming: true,
+          queryErrors: [],
+          currentResponse: "first",
+        }),
+      ),
+    );
+    act(() =>
+      root.render(
+        createElement(Harness, {
+          isStreaming: false,
+          queryErrors: [],
+          currentResponse: "first",
+        }),
+      ),
+    );
+    act(() =>
+      root.render(
+        createElement(Harness, {
+          isStreaming: true,
+          queryErrors: [],
+          currentResponse: "second",
+        }),
+      ),
+    );
+    act(() =>
+      root.render(
+        createElement(Harness, {
+          isStreaming: false,
+          queryErrors: [],
+          currentResponse: "second",
+        }),
+      ),
+    );
+    removeListener();
+
+    const streamIds = events.map((event) => event.detail["streamId"]);
+    expect(events.map((event) => event.detail["phase"])).toEqual([
+      "streaming",
+      "settled",
+      "streaming",
+      "settled",
+    ]);
+    expect(streamIds[0]).toBe(streamIds[1]);
+    expect(streamIds[2]).toBe(streamIds[3]);
+    expect(streamIds[2]).not.toBe(streamIds[0]);
+  });
+
   it("republishes settled with the same id when a query error arrives later", () => {
     const events: ObservabilityEvent[] = [];
     const removeListener = observability.listenAll((event) => {
