@@ -146,15 +146,14 @@ const TOOL_ICONS: { match: RegExp; icon: typeof SquareCode }[] = [
   { match: /artifact|generate[_-]?report/i, icon: Blocks },
 ];
 
-/** Anything the app defines itself — no family to recognise, so it reads as a
- *  generic call rather than borrowing a built-in tool's meaning. */
+/** App-defined tools have no family to recognise, so they read as a generic
+ *  call rather than borrowing a built-in tool's meaning. */
 const CUSTOM_TOOL_ICON = SquareCode;
 
 /**
  * The glyph for a tool call: a failure always reads as an alert, otherwise the
- * tool family decides, and a custom tool falls back to {@link CUSTOM_TOOL_ICON}.
- * Status no longer swaps in a spinner — a running call is signalled by the
- * blinking glyph + shimmering label instead.
+ * tool family decides. Status no longer swaps in a spinner — a running call is
+ * signalled by the blinking glyph + shimmering label instead.
  *
  * @category Functions
  */

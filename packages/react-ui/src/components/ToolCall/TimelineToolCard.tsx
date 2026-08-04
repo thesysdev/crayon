@@ -33,10 +33,10 @@ const ToolSources = ({ sources }: { sources: ToolResultSource[] }) => {
  * Timeline-shaped composition of the compound {@link ToolCall} parts: one row —
  * tool glyph, status label, chevron — that expands into either the result's
  * sources or a SINGLE block holding the request and the response together. The
- * running affordances (glyph blink,
- * label shimmer) are `(streaming|executing) && isLast`, derived from the
- * lifecycle status rather than a separate `isThinking` flag. `ToolCall.Root` is
- * the single `.openui-tool-call` container, so we compose *inside* it.
+ * running affordances (glyph blink, label shimmer) are
+ * `(streaming|executing) && isLast`, derived from the lifecycle status rather
+ * than a separate `isThinking` flag. `ToolCall.Root` is the single
+ * `.openui-tool-call` container, so we compose *inside* it.
  *
  * @category Components
  */
@@ -54,9 +54,8 @@ export const TimelineToolCard = memo(function TimelineToolCard({
   const Icon = toolIcon(activity.toolName, activity.status);
   const running =
     (activity.status === "streaming" || activity.status === "executing") && isLast && isRunning;
-  // A result we can turn into links speaks for itself — the raw request/response
-  // would only repeat it. A failure always falls back to the raw block, since
-  // that's where the error text lives.
+  // Links speak for themselves; the raw block would only repeat them. A failure
+  // always falls back to it, since that's where the error text lives.
   const sources =
     typeof activity.result === "string" && !activity.isError
       ? extractToolSources(activity.toolName, activity.result)

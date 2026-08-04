@@ -1,24 +1,16 @@
 @use "../../cssUtils" as cssUtils;
 
-// A highlight travelling across the glyphs to mark work still in flight: the
-// text is painted by two stacked gradients clipped to its shape — a moving
-// window of $bright over a flat bed of $base.
-//
-// The fill MUST be transparent. `background-clip: text` only clips the
-// background; an opaque -webkit-text-fill-color paints the glyphs on top of it
-// and the gradient never shows, which is why this looked completely static.
+// A $bright highlight sweeping across a $base bed of text, both clipped to the
+// glyphs. The transparent fill is required: `background-clip: text` only clips
+// the background, so an opaque -webkit-text-fill-color hides it entirely.
 @mixin text-shimmer($base, $bright, $duration: 3s) {
   display: inline-block;
-  // Every length here is relative to the label, so the highlight stays the same
-  // fraction of "Working" as it is of a long tool name. Sized in px it came out
-  // wider than a short label — the whole word lit at once and read as a flash
-  // rather than a sweep.
   background-image:
     linear-gradient(90deg, transparent 40%, $bright 50%, transparent 60%),
     linear-gradient($base, $base);
-  // 3x the label, so the 20%-wide band spans 60% of it and — the part that
-  // matters — sits fully off both edges at the ends of its travel. A band still
-  // on screen when the animation loops back reads as a jump.
+  // Keep these relative to the label: at 3x, the 20%-wide band is 60% of it at
+  // any length and clears both edges at the ends of its travel — a band still
+  // on screen when the animation loops reads as a jump.
   background-size:
     300% 100%,
     100% 100%;
@@ -105,10 +97,8 @@
     // flush against the edge.
     padding-inline-end: cssUtils.$space-s;
 
-    // Each edge dissolves only while a row is actually hidden behind it, so the
-    // first row isn't dimmed at rest and the last isn't dimmed once scrolled to.
-    // The widths are driven from JS (CSS can't ask about overflow or scroll
-    // position); at 0 the stops collapse and the mask is a no-op.
+    // Each edge dissolves only while a row is hidden behind it. Widths come from
+    // JS (CSS can't ask about scroll position); at 0 the mask is a no-op.
     --openui-timeline-fade-top: 0px;
     --openui-timeline-fade-bottom: 0px;
     $edges: linear-gradient(
@@ -229,9 +219,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    // Full-strength primary knocked back as a whole, rather than a lighter text
-    // token: keeps the glyph the same hue as the surrounding copy while sitting
-    // clearly behind it.
+    // Knocked back as a whole rather than using a lighter text token, so the
+    // glyph keeps the hue of the copy around it.
     opacity: 0.3;
   }
 
@@ -425,9 +414,9 @@
   }
 
   // ── Status tints (driven by the Root `--{status}` modifier) ──
-  // A failed call reads as failed through its glyph + label alone — no border
-  // or fill, so it keeps the same rhythm as the rows around it. It's also the
-  // one status that opts out of the muted icon: a warning has to be legible.
+  // A failure reads as one through its glyph + label alone, keeping the rhythm
+  // of the rows around it. The one status to skip the muted icon — it has to be
+  // legible.
   &--error {
     .openui-tool-call__icon-wrapper {
       opacity: 1;
@@ -551,8 +540,7 @@
   }
 }
 
-// Compounds with the wrapper's 0.3, so the trough stops well short of 0 —
-// otherwise the running glyph disappears entirely mid-pulse.
+// Compounds with the wrapper's 0.3, so the trough stops short of vanishing.
 @keyframes openui-tool-call-icon-blink {
   0%,
   100% {

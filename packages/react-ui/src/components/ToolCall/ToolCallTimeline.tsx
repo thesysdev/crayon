@@ -145,10 +145,8 @@ export function ToolCallTimeline({
   const followRef = useRef(true);
   const distanceFromBottom = (el: HTMLElement) => el.scrollHeight - el.scrollTop - el.clientHeight;
 
-  // Each edge fades only while content is actually hidden past it, so the first
-  // row isn't dimmed at the top of the list and the last isn't dimmed at the
-  // bottom. Measured every render (rows stream in), on scroll, and on resize —
-  // the capped element's own box doesn't change when its content grows.
+  // Re-measured every render as well as on scroll/resize: the capped element's
+  // own box doesn't change as rows stream into it.
   const [fade, setFade] = useState(NO_FADE);
   const measureEdges = useCallback(() => {
     const el = itemsRef.current;
