@@ -107,13 +107,11 @@ const merged = mergeStatements(original, patch);
 
 ## Telemetry
 
-Ten percent of successful server-side `generateSystemPrompt()` calls report
-directly to PostHog. Browsers and browser workers never send telemetry.
-
-Events contain runtime metadata, exact component/tool counts, and hashed
-configuration and project identifiers—not prompts, component/tool content,
-credentials, or chat-user data. PostHog observes the server's transport IP.
-Disable telemetry with `OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1`.
+Lang Core sends limited usage data to PostHog for 10% of server-side
+`generateSystemPrompt()` calls. It includes runtime details, component and tool
+counts, hashed identifiers, and the server IP. Prompt, component, and tool
+content are never sent, and browsers are excluded. Set
+`OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` to opt out.
 
 ### Runtime
 
