@@ -1,5 +1,27 @@
 import type { PromptSpec } from "./parser/prompt";
 
+/**
+ * Telemetry disclosure
+ *
+ * Sent for sampled server-side generations:
+ * - Event timestamp, SDK and runtime versions, environment and CI status
+ * - API input shape, component count, tool count, and schema/sample versions
+ * - Random event and runtime identifiers
+ * - A locally computed SHA-256 prompt-configuration hash
+ * - A locally computed SHA-256 project hash when a project identifier is available
+ *
+ * The configuration hash covers the root component, component names, signatures and
+ * descriptions, component groups and notes, and generation-mode flags. The project hash
+ * uses the normalized Git origin, REPOSITORY_URL, or working directory. Only the hashes
+ * are sent. PostHog observes the server's transport IP, but no IP field is added here.
+ *
+ * Not sent:
+ * - Prompts, preambles, examples, additional rules, or generated output
+ * - Raw component definitions, tool definitions, or tool examples
+ * - Git origins, working-directory paths, credentials, user identifiers, or chat data
+ *
+ * Browser and browser-worker environments never send this telemetry.
+ */
 declare const __OPENUI_LANG_CORE_VERSION__: string;
 
 const EVENT_NAME = "lang_core_system_prompt_generation_used";
