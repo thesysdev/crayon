@@ -396,8 +396,3 @@ export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: Input
     // Telemetry must never affect prompt generation.
   }
 }
-
-export function resetTelemetryStateForTests(): void {
-  const registry = globalThis as typeof globalThis & { [STATE_KEY]?: TelemetryState };
-  delete registry[STATE_KEY];
-}
