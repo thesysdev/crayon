@@ -1,4 +1,4 @@
-import { createLangChainStreamResponse } from "@/lib/langchain-stream-response";
+import { createLangChainStreamResponse } from "@openuidev/langchain";
 import { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
@@ -19,5 +19,7 @@ export async function POST(req: NextRequest) {
   return createLangChainStreamResponse(req, {
     apiUrl: API_URL,
     assistantId: ASSISTANT_ID,
+    apiKey: process.env.LANGSMITH_API_KEY,
+    debug: process.env.NODE_ENV !== "production",
   });
 }
