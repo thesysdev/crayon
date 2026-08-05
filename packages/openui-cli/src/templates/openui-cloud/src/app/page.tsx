@@ -1,7 +1,7 @@
 import "@openuidev/react-ui/components.css";
 import "@openuidev/thesys/styles.css";
 
-import { CloudChat } from "@/components/cloud-chat";
+import CloudChat from "@/components/cloud-chat";
 
 export const dynamic = "force-dynamic";
 

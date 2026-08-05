@@ -54,10 +54,13 @@
 
 /* Each feature is a card with a subtle fill (no stroke). */
 .feature {
+  /* Named so the artwork panel can cancel it and run to the card's edges. */
+  --card-pad: clamp(1.5rem, 2vw, 2rem);
+
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
-  padding: clamp(1.5rem, 2vw, 2rem);
+  padding: var(--card-pad);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.05);
 }
@@ -66,6 +69,56 @@
   display: inline-flex;
   margin-bottom: 1rem;
   color: rgba(255, 255, 255, 0.24);
+}
+
+/* Artwork panel for the cards that lead the grid. Off by default: on a phone
+   the card collapses to an icon + title row, which a panel would break. It is
+   switched on with the wide layout below. */
+.shot {
+  display: none;
+}
+
+.shotImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* This band runs opposite to the page: black by default, light in dark mode. So
+   the tile is chosen to suit the CARD, which means the pairing reads inverted
+   against every other light/dark swap on the site. */
+.shotOnLight {
+  display: none;
+}
+
+[data-theme="dark"] .shotOnDark {
+  display: none;
+}
+
+[data-theme="dark"] .shotOnLight {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .shot {
+    position: relative;
+    display: block;
+    /* Pulled most of the way out to the card's edges, keeping a slim inset. The
+       full card padding read as a second frame around a tile that already has
+       its own margins; none at all read as a banner. */
+    margin: calc(0.75rem - var(--card-pad)) calc(0.75rem - var(--card-pad)) 1.25rem;
+    /* The tiles' own ratio, so nothing is cropped. */
+    aspect-ratio: 720 / 400;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  /* The panel already says what the glyph would, so the glyph steps aside. */
+  .feature:has(.shot) .icon {
+    display: none;
+  }
 }
 
 .featureTitle {
@@ -97,20 +150,8 @@
   margin-top: clamp(1.25rem, 3vw, 2rem);
   padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 3%,
-    #000 97%,
-    transparent
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 3%,
-    #000 97%,
-    transparent
-  );
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
 }
 
 .tickerTrack {
@@ -231,11 +272,7 @@
     top: 0;
     inset-inline: -1.25rem;
     height: 1px;
-    background: linear-gradient(
-      to right,
-      transparent,
-      var(--home-border-on-dark) 15%
-    );
+    background: linear-gradient(to right, transparent, var(--home-border-on-dark) 15%);
   }
 
   /* Icon tile (dark variant of the stepper tile). */
@@ -397,11 +434,7 @@
   }
 
   [data-theme="dark"] .feature:not(:first-child)::before {
-    background: linear-gradient(
-      to right,
-      transparent,
-      rgba(0, 0, 0, 0.09) 15%
-    );
+    background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.09) 15%);
   }
 
   [data-theme="dark"] .icon {

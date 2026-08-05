@@ -4,7 +4,6 @@ import {
   ArrowRight,
   ArrowUp,
   FileText,
-  ListChecks,
   Moon,
   Plane,
   Presentation,
@@ -12,6 +11,7 @@ import {
   Square,
   Sun,
   TrendingUp,
+  Trophy,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useLayoutEffect, useRef, useState } from "react";
@@ -21,28 +21,23 @@ import { useHasMounted } from "./use-has-mounted";
 
 const COMPARISON_SUGGESTIONS = [
   {
-    label: "Exciting stocks to look out for this year",
-    prompt:
-      "Show me a chart of the top 5 US stocks outperforming the market in 2025 with key trendlines.",
+    label: "Compare stock growth of MAANG companies",
+    prompt: "Compare stock growth of MAANG companies?",
     icon: TrendingUp,
     color: "#067647",
     hiddenForPair: "oss-cloud",
   },
   {
     label: "Hidden travel gems to explore",
-    prompt:
-      "Give me travel ideas for underrated destinations with notable landmarks and cultural highlights.",
+    prompt: "Hidden travel gems to explore",
     icon: Plane,
     color: "#dd517b",
   },
   {
-    label: "Create an editable launch plan",
-    prompt:
-      "Create an editable launch plan for a developer tool. Include owner, phase, deadline, status, dependency, and risk. Let me update statuses and show the next three actions.",
-    icon: ListChecks,
+    label: "Relive the FIFA World Cup 2026",
+    prompt: "Relive the FIFA World Cup 2026.",
+    icon: Trophy,
     color: "#175cd3",
-    tag: "Only on Cloud",
-    cloudOnly: true,
     pairOnly: "oss-cloud",
   },
   {

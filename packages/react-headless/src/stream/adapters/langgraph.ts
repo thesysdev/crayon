@@ -113,8 +113,7 @@ export const langGraphAdapter = (options?: LangGraphAdapterOptions): StreamProto
             // Payload is a tuple: [message_chunk, metadata]
             // or just a message object depending on the stream version.
             const tuple = parsed as
-              | [LangGraphAIMessage, LangGraphMessageMetadata]
-              | LangGraphAIMessage;
+              [LangGraphAIMessage, LangGraphMessageMetadata] | LangGraphAIMessage;
 
             const msg: LangGraphAIMessage = Array.isArray(tuple) ? tuple[0] : tuple;
 

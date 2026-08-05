@@ -16,22 +16,6 @@ npm install @openuidev/lang-core
 pnpm add @openuidev/lang-core
 ```
 
-## Telemetry
-
-This package sends pseudonymous installation telemetry during `postinstall`.
-Disable it with either environment variable:
-
-```bash
-OPENUI_TELEMETRY_DISABLED=1
-DO_NOT_TRACK=1
-```
-
-Print the payload to standard output without sending it:
-
-```bash
-OPENUI_TELEMETRY_DEBUG=1
-```
-
 ## What this package does
 
 `@openuidev/lang-core` has no React, Vue, or Svelte dependency. Use it when you need to:
@@ -120,6 +104,19 @@ const merged = mergeStatements(original, patch);
 **`PromptSpec`** includes component signatures, tool definitions (`ToolSpec[]`), feature flags (`toolCalls`, `bindings`, `editMode`, `inlineMode`), examples, and custom rules.
 
 **`ToolSpec`** describes a tool for prompt generation (name, description, inputSchema, outputSchema). Shape inspired by MCP's tool schema.
+
+## Telemetry
+
+Lang Core sends pseudonymous installation telemetry during `postinstall` and
+collects limited usage telemetry from 10% of successful server-side
+`generateSystemPrompt()` calls. It does not collect application-user data,
+prompts, messages, generated output, credentials, or raw component and tool
+definitions. Project identifiers are hashed locally before being sent, and
+browsers do not send telemetry.
+
+Set `OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` to disable telemetry. Set
+`OPENUI_TELEMETRY_DEBUG=1` to print the installation payload to stdout without
+sending it.
 
 ### Runtime
 

@@ -4,9 +4,10 @@ import Image from "next/image";
 import { BevelButton } from "../components/Button/BevelButton";
 import styles from "../page.module.css";
 import { Footer } from "../sections/Footer/Footer";
-import { HeroSection } from "../sections/HeroSection/HeroSection";
+import { HeroSection, Tagline } from "../sections/HeroSection/HeroSection";
 import { LogoStrip } from "../sections/LogoStrip/LogoStrip";
 import { CloudCtaSection } from "./CloudCtaSection";
+import { CloudFeatureMarquee } from "./CloudFeatureMarquee";
 import { CloudIntegrationSection } from "./CloudIntegrationSection";
 import { ComparisonSection } from "./ComparisonSection";
 import { EnterpriseSection } from "./EnterpriseSection";
@@ -129,7 +130,14 @@ export default function OpenUICloudPage() {
             </>
           }
         />
-        <LogoStrip label="Powering AI experiences at:" variant="cloud" />
+        <LogoStrip variant="cloud" />
+        <Tagline>
+          <span className={cloudStyles.taglineText}>
+            OpenUI Cloud is the managed, production-ready version of OpenUI.
+          </span>
+          <span className={cloudStyles.taglineNote}>12 reasons why you should upgrade.</span>
+        </Tagline>
+        <CloudFeatureMarquee />
         <FeaturesSection />
         <CloudIntegrationSection />
         <ComparisonSection />

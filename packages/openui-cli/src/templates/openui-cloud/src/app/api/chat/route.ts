@@ -1,9 +1,9 @@
-import { getBillingCreditsErrorMessage } from "@/lib/billing";
-import { envOr, requiredEnv } from "@/lib/env";
-import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
+import { requiredEnv } from "@/lib/env";
+import { resolveRequestedModel } from "@/lib/models";
 import { runFunctionToolLoop } from "@/lib/tool-loop";
 import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
 import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
+import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import type {
   ResponseCreateParamsNonStreaming,
@@ -12,77 +12,55 @@ import type {
 } from "openai/resources/responses/responses";
 
 /**
- * Generation plane: browser → THIS route → OpenUI Cloud.
- *
- * Calls the hosted Responses API (`POST /v1/embed/responses`) with the stock
- * OpenAI SDK — the endpoint speaks the Responses protocol — and proxies the SSE
- * stream straight to the browser, where `openAIResponsesAdapter` parses it
- * (including the custom `response.artifact_call.delta` events).
- *
- * Cloud's built-in tools (artifacts / web_search / image_search / MCP) run
- * server-side inside OpenUI Cloud. App-owned `type: "function"` tools run HERE
- * via `runFunctionToolLoop` — `get_weather` ships as the reference example.
- * Reads/edits go browser → /v1/* with the fct_ token (see /api/frontend-token
- * + the storage adapter).
+ * Generation plane: browser → this route → OpenUI Cloud's Responses API,
+ * proxying the SSE stream back for `openAIResponsesAdapter` to parse.
+ * Cloud tools (artifacts / search / MCP) run inside Cloud; app-owned
+ * `type: "function"` tools run here via `runFunctionToolLoop`.
  */
 export async function POST(req: Request) {
   const {
     threadId,
-    input,
+    messages,
     model: requestedModel,
   } = (await req.json()) as {
     threadId?: string;
-    input?: ResponseInputItem[];
+    messages?: ResponseInputItem[];
     model?: unknown;
   };
 
-  if (!threadId) {
-    return Response.json(
-      { error: { message: "threadId is required — create the conversation first" } },
-      { status: 400 },
-    );
+  if (!threadId) return badRequest("threadId is required — create the conversation first");
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return badRequest("messages must be a non-empty ResponseInputItem[]");
   }
-  if (!Array.isArray(input) || input.length === 0) {
-    return Response.json(
-      { error: { message: "input must be a non-empty ResponseInputItem[]" } },
-      { status: 400 },
-    );
-  }
+  // History is stored server-side (conversation + store:true)
+  // forward only the latest message upstream.
+  const input = messages.slice(-1);
+  const model = resolveRequestedModel(requestedModel);
+  if (!model) return badRequest("model is not available in this agent");
 
   const client = new OpenAI({
     baseURL: "https://api.thesys.dev/v1/embed",
     apiKey: requiredEnv("THESYS_API_KEY"), // sent as Authorization: Bearer …
   });
 
-  // App-owned function tools, executed in THIS route by runFunctionToolLoop.
-  // The loop runs ONLY the names declared here — Cloud-internal function_call
-  // items (thesys_*) pass through untouched. Add your own tools the same way.
+  // App-owned function tools — the loop runs only the names declared here.
   const functionTools = {
     [getWeatherTool.name]: executeGetWeather,
   };
 
   const createParams: ResponseCreateParamsNonStreaming = {
-    model: resolveRequestedModel(requestedModel, envOr("OPENUI_MODEL", DEFAULT_MODEL)),
+    model,
     conversation: threadId, // store:true persists to the conversation
     input,
     store: true,
     tools: [
-      // artifact/image_search are Cloud extensions of the Responses tools
-      // union — cast those entries only; the rest stays type-checked.
+      // artifact/image_search are Cloud extensions of the Responses tool union.
       artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
-      {
-        type: "web_search",
-      },
+      { type: "web_search" },
       { type: "image_search" } as unknown as Tool,
       getWeatherTool,
-      // Remote MCP servers run server-side inside OpenUI Cloud — no client
-      // loop needed. Uncomment to let the model answer questions about any
-      // public GitHub repo via DeepWiki (no auth required):
-      // {
-      //   type: "mcp",
-      //   server_label: "deepwiki",
-      //   server_url: "https://mcp.deepwiki.com/mcp",
-      // },
+      // Remote MCP servers run inside OpenUI Cloud, e.g.:
+      // { type: "mcp", server_label: "deepwiki", server_url: "https://mcp.deepwiki.com/mcp" },
     ],
     instructions: generateSystemPrompt(),
   };
@@ -94,38 +72,15 @@ export async function POST(req: Request) {
       { signal: req.signal }, // propagate browser aborts (stop button / tab close)
     )) as unknown as AsyncIterable<Record<string, unknown>>;
   } catch (err) {
-    // The SDK surfaces upstream HTTP errors (e.g. 403) as APIError.
+    // Propagate the upstream message and status; the chat store surfaces it.
     const e = err as { status?: number; error?: unknown; message?: string };
-    if (isRateLimitError(e)) {
-      return Response.json(
-        {
-          error: { message: getBillingCreditsErrorMessage() },
-        },
-        { status: 429 },
-      );
-    }
-
-    if (e.status === 401 || e.status === 403) {
-      return Response.json(
-        {
-          error: {
-            code: "invalid_api_key",
-            message:
-              "OpenUI Cloud rejected THESYS_API_KEY. Check the key in .env against the Thesys console → API keys.",
-          },
-        },
-        { status: e.status },
-      );
-    }
-
-    return Response.json(
+    return NextResponse.json(
       { error: e.error ?? { message: e.message ?? "upstream error" } },
       { status: e.status ?? 502 },
     );
   }
 
-  // Re-emit each SDK event as SSE for the browser adapter, executing declared
-  // function tools between model turns.
+  // Re-emit SDK events as SSE, executing function tools between model turns.
   const encoder = new TextEncoder();
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -142,12 +97,10 @@ export async function POST(req: Request) {
           signal: req.signal,
         });
       } catch (err) {
-        const message = isRateLimitError(err)
-          ? getBillingCreditsErrorMessage()
-          : err instanceof Error
-            ? err.message
-            : String(err);
-        enqueue({ type: "error", message });
+        enqueue({
+          type: "error",
+          message: err instanceof Error ? err.message : String(err),
+        });
       } finally {
         controller.close();
       }
@@ -163,6 +116,6 @@ export async function POST(req: Request) {
   });
 }
 
-function isRateLimitError(err: unknown): boolean {
-  return typeof err === "object" && err !== null && "status" in err && err.status === 429;
+function badRequest(message: string): Response {
+  return NextResponse.json({ error: { message } }, { status: 400 });
 }

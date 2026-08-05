@@ -4,10 +4,22 @@ import { loadPostHog } from "@/lib/analytics";
 import { addThesysLinkAttribution } from "@/lib/thesys-link-attribution";
 import { useEffect } from "react";
 
+let reoPromise: Promise<void> | undefined;
+
 export function PHProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let posthogDistinctId: string | undefined;
     let posthogSessionId: string | undefined;
+
+    const clientID = process.env.NEXT_PUBLIC_REO_CLIENT_ID?.trim();
+    if (clientID) {
+      reoPromise ??=
+        // @ts-expect-error reodotdev does not publish TypeScript declarations.
+        import("reodotdev")
+          .then(({ loadReoScript }) => loadReoScript({ clientID }))
+          .then((reo: { init(config: { clientID: string }): void }) => reo.init({ clientID }))
+          .catch(() => {});
+    }
 
     const load = () => {
       void loadPostHog()
