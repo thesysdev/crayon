@@ -1,20 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { evaluateRegisteredArtifacts, shouldAutoOpen } from "../artifactAutoOpenWatcher";
+import { evaluateRegisteredArtifacts } from "../artifactAutoOpenWatcher";
 import { createDetailedViewStore } from "../createDetailedViewStore";
 import type { ArtifactEntry } from "../threadContextTypes";
-
-describe("shouldAutoOpen", () => {
-  it.each([
-    ["open-on-mount", true, true],
-    ["open-on-mount", false, true],
-    ["auto-open", true, true],
-    ["auto-open", false, false],
-    ["overview", true, false],
-    ["overview", false, false],
-  ] as const)("mode %s, streaming %s → %s", (mode, isStreaming, expected) => {
-    expect(shouldAutoOpen(mode, isStreaming)).toBe(expected);
-  });
-});
 
 const entry = (id: string, version = 1): ArtifactEntry => ({
   id,
@@ -30,93 +17,82 @@ const registry = (...entries: ArtifactEntry[]): Record<string, ArtifactEntry[]> 
 };
 
 describe("evaluateRegisteredArtifacts", () => {
-  it("auto-open: a newly registered artifact opens while the thread runs", () => {
+  it("opens a newly registered artifact while the stream runs", () => {
     const store = createDetailedViewStore();
-    evaluateRegisteredArtifacts("auto-open", registry(entry("art")), true, store);
+    const opened = evaluateRegisteredArtifacts(registry(entry("art")), true, store);
+    expect(opened).toBe(true);
     expect(store.getState().activeDetailedViewId).toBe("art:1");
     expect(store.getState()._autoOpenedArtifactKeys.has("art")).toBe(true);
   });
 
-  it("presents once: a user close sticks across re-registrations", () => {
+  it("a user close sticks across re-registrations", () => {
     const store = createDetailedViewStore();
     const arts = registry(entry("art"));
-    evaluateRegisteredArtifacts("auto-open", arts, true, store);
+    evaluateRegisteredArtifacts(arts, true, store);
     store.getState().setActiveDetailedView(null);
-    evaluateRegisteredArtifacts("auto-open", arts, true, store);
+    const opened = evaluateRegisteredArtifacts(arts, true, store);
+    expect(opened).toBe(false);
     expect(store.getState().activeDetailedViewId).toBeNull();
   });
 
   it("edits never re-open: a new version shares the claimed id", () => {
     const store = createDetailedViewStore();
-    evaluateRegisteredArtifacts("auto-open", registry(entry("art", 1)), true, store);
+    evaluateRegisteredArtifacts(registry(entry("art", 1)), true, store);
     store.getState().setActiveDetailedView(null);
-    evaluateRegisteredArtifacts(
-      "auto-open",
+    const opened = evaluateRegisteredArtifacts(
       registry(entry("art", 1), entry("art", 2)),
       true,
       store,
     );
+    expect(opened).toBe(false);
     expect(store.getState().activeDetailedViewId).toBeNull();
   });
 
   it("opens the latest registered version of an id", () => {
     const store = createDetailedViewStore();
-    evaluateRegisteredArtifacts(
-      "open-on-mount",
-      registry(entry("art", 1), entry("art", 3)),
-      false,
-      store,
-    );
+    evaluateRegisteredArtifacts(registry(entry("art", 1), entry("art", 3)), true, store);
     expect(store.getState().activeDetailedViewId).toBe("art:3");
   });
 
-  it("auto-open: historical registrations (thread not running) never open — and stay claimed", () => {
+  it("mayOpen=false (nothing streaming): never opens, still claims", () => {
     const store = createDetailedViewStore();
     const arts = registry(entry("old"));
-    evaluateRegisteredArtifacts("auto-open", arts, false, store);
+    const opened = evaluateRegisteredArtifacts(arts, false, store);
+    expect(opened).toBe(false);
     expect(store.getState().activeDetailedViewId).toBeNull();
-    evaluateRegisteredArtifacts("auto-open", arts, true, store);
+    expect(store.getState()._autoOpenedArtifactKeys.has("old")).toBe(true);
+    evaluateRegisteredArtifacts(arts, true, store);
     expect(store.getState().activeDetailedViewId).toBeNull();
   });
 
-  it("open-on-mount: opens on thread load with nothing running", () => {
+  it("only the first artifact of a pass opens; the second is claimed but ignored", () => {
     const store = createDetailedViewStore();
-    evaluateRegisteredArtifacts("open-on-mount", registry(entry("art")), false, store);
-    expect(store.getState().activeDetailedViewId).toBe("art:1");
-  });
-
-  it("first wins: an open panel is never stolen by another artifact", () => {
-    const store = createDetailedViewStore();
-    evaluateRegisteredArtifacts("auto-open", registry(entry("a1"), entry("a2")), true, store);
+    const arts = registry(entry("a1"), entry("a2"));
+    const opened = evaluateRegisteredArtifacts(arts, true, store);
+    expect(opened).toBe(true);
     expect(store.getState().activeDetailedViewId).toBe("a1:1");
     expect(store.getState()._autoOpenedArtifactKeys.has("a2")).toBe(true);
     store.getState().setActiveDetailedView(null);
-    evaluateRegisteredArtifacts("auto-open", registry(entry("a1"), entry("a2")), true, store);
+    expect(evaluateRegisteredArtifacts(arts, true, store)).toBe(false);
     expect(store.getState().activeDetailedViewId).toBeNull();
   });
 
-  it("first wins: a user-opened panel blocks auto-open the same way", () => {
+  it("a user-opened panel blocks auto-open (first wins)", () => {
     const store = createDetailedViewStore();
     store.getState().setActiveDetailedView("user-panel");
-    evaluateRegisteredArtifacts("auto-open", registry(entry("art")), true, store);
+    const opened = evaluateRegisteredArtifacts(registry(entry("art")), true, store);
+    expect(opened).toBe(false);
     expect(store.getState().activeDetailedViewId).toBe("user-panel");
     expect(store.getState()._autoOpenedArtifactKeys.has("art")).toBe(true);
-  });
-
-  it("overview: never opens and never claims", () => {
-    const store = createDetailedViewStore();
-    evaluateRegisteredArtifacts("overview", registry(entry("art")), true, store);
-    expect(store.getState().activeDetailedViewId).toBeNull();
-    expect(store.getState()._autoOpenedArtifactKeys.size).toBe(0);
   });
 
   it("thread switch (reset) re-arms for the next thread", () => {
     const store = createDetailedViewStore();
     const arts = registry(entry("art"));
-    evaluateRegisteredArtifacts("open-on-mount", arts, false, store);
+    evaluateRegisteredArtifacts(arts, true, store);
     expect(store.getState().activeDetailedViewId).toBe("art:1");
     store.getState().reset();
-    evaluateRegisteredArtifacts("open-on-mount", arts, false, store);
+    evaluateRegisteredArtifacts(arts, true, store);
     expect(store.getState().activeDetailedViewId).toBe("art:1");
   });
 });

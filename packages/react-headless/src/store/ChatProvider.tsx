@@ -7,7 +7,6 @@ import {
   buildArtifactRendererRegistry,
 } from "./ArtifactRenderersContext";
 import { ArtifactStorageContext } from "./ArtifactStorageContext";
-import { DEFAULT_ARTIFACT_VIEW_MODE } from "./artifactViewMode";
 import { ChatContext } from "./ChatContext";
 import { createChatStore } from "./createChatStore";
 import { createDetailedViewStore } from "./createDetailedViewStore";
@@ -24,7 +23,7 @@ export const ChatProvider: FC<ChatProviderProps> = ({
   llm,
   artifactRenderers,
   artifactCategories,
-  artifactViewMode,
+  autoOpenArtifact,
 }) => {
   const [resolvedStorage] = useState(() => storage ?? createDefaultInMemoryStorage());
   const [chatStore] = useState(() => createChatStore({ storage: resolvedStorage, llm }));
@@ -68,7 +67,7 @@ export const ChatProvider: FC<ChatProviderProps> = ({
   }, [chatStore, detailedViewStore, threadContextStore]);
 
   useArtifactAutoOpenWatcher(
-    artifactViewMode ?? DEFAULT_ARTIFACT_VIEW_MODE,
+    autoOpenArtifact ?? false,
     chatStore,
     threadContextStore,
     detailedViewStore,

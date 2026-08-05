@@ -1,53 +1,57 @@
-import { useEffect } from "react";
-import type { ArtifactViewMode } from "./artifactViewMode";
+import { useEffect, useRef } from "react";
 import type { createChatStore } from "./createChatStore";
 import type { createDetailedViewStore } from "./createDetailedViewStore";
 import type { createThreadContextStore } from "./createThreadContextStore";
 import type { ArtifactEntry } from "./threadContextTypes";
 
-export function shouldAutoOpen(mode: ArtifactViewMode, isStreaming: boolean): boolean {
-  return mode === "open-on-mount" || (mode === "auto-open" && isStreaming);
-}
-
 export function evaluateRegisteredArtifacts(
-  viewMode: ArtifactViewMode,
   artifacts: Record<string, ArtifactEntry[]>,
-  isThreadRunning: boolean,
+  mayOpen: boolean,
   detailedViewStore: ReturnType<typeof createDetailedViewStore>,
-): void {
-  if (viewMode === "overview") return;
-  const mayOpen = shouldAutoOpen(viewMode, isThreadRunning);
-
+): boolean {
+  let opened = false;
   for (const versions of Object.values(artifacts)) {
     const latest = versions[versions.length - 1];
     if (!latest) continue;
     const dv = detailedViewStore.getState();
     if (!dv._markAutoOpened(latest.id)) continue;
-    if (!mayOpen) continue;
+    if (!mayOpen || opened) continue;
     if (dv.activeDetailedViewId !== null) continue;
     dv.setActiveDetailedView(`${latest.id}:${latest.version}`);
+    opened = true;
   }
+  return opened;
 }
 
 export function useArtifactAutoOpenWatcher(
-  viewMode: ArtifactViewMode,
+  autoOpenArtifact: boolean,
   chatStore: ReturnType<typeof createChatStore>,
   threadContextStore: ReturnType<typeof createThreadContextStore>,
   detailedViewStore: ReturnType<typeof createDetailedViewStore>,
 ): void {
+  const openedThisRunRef = useRef(false);
+
   useEffect(() => {
-    if (viewMode === "overview") return;
-    return threadContextStore.subscribe(
+    if (!autoOpenArtifact) return;
+    const unsubscribeRun = chatStore.subscribe(
+      (s) => s.isRunning,
+      (isRunning) => {
+        if (isRunning) openedThisRunRef.current = false;
+      },
+    );
+    const unsubscribeArtifacts = threadContextStore.subscribe(
       (s) => s.artifacts,
       (artifacts) => {
-        evaluateRegisteredArtifacts(
-          viewMode,
-          artifacts,
-          chatStore.getState().isRunning,
-          detailedViewStore,
-        );
+        const mayOpen = chatStore.getState().isRunning && !openedThisRunRef.current;
+        if (evaluateRegisteredArtifacts(artifacts, mayOpen, detailedViewStore)) {
+          openedThisRunRef.current = true;
+        }
       },
       { fireImmediately: true },
     );
-  }, [viewMode, chatStore, threadContextStore, detailedViewStore]);
+    return () => {
+      unsubscribeRun();
+      unsubscribeArtifacts();
+    };
+  }, [autoOpenArtifact, chatStore, threadContextStore, detailedViewStore]);
 }
