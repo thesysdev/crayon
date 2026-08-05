@@ -1,3 +1,4 @@
+import { convertToModelMessages, type UIMessage } from "ai";
 import { describe, expect, it } from "vitest";
 import { vercelAIMessageFormat } from "../../../index";
 import type { Message } from "../../../types";
@@ -86,6 +87,60 @@ describe("vercelAIMessageFormat", () => {
           parts: [{ type: "text", text: "The answer is 42." }],
         },
       ]);
+    });
+
+    it("omits an empty text part from a tool-only assistant message", () => {
+      expect(
+        vercelAIMessageFormat.toApi([
+          {
+            id: "assistant-tool-only",
+            role: "assistant",
+            content: "",
+            toolCalls: [
+              {
+                id: "call-1",
+                type: "function",
+                function: { name: "weather", arguments: '{"city":"Delhi"}' },
+              },
+            ],
+          },
+        ]),
+      ).toEqual([
+        {
+          id: "assistant-tool-only",
+          role: "assistant",
+          parts: [
+            {
+              type: "dynamic-tool",
+              toolName: "weather",
+              toolCallId: "call-1",
+              state: "input-available",
+              input: { city: "Delhi" },
+            },
+          ],
+        },
+      ]);
+    });
+
+    it("defensively rejects provider-executed metadata on AG-UI-shaped input", () => {
+      const messages = [
+        {
+          id: "assistant-provider-tool",
+          role: "assistant",
+          toolCalls: [
+            {
+              id: "call-provider",
+              type: "function",
+              function: { name: "web_search", arguments: "{}" },
+              providerExecuted: true,
+            },
+          ],
+        },
+      ] as unknown as Message[];
+
+      expect(() => vercelAIMessageFormat.toApi(messages)).toThrow(
+        "Vercel AI SDK provider-executed tools are not supported because AG-UI messages cannot preserve providerExecuted semantics.",
+      );
     });
 
     it("folds separate AG-UI tool results into dynamic tool parts", () => {
@@ -368,6 +423,83 @@ describe("vercelAIMessageFormat", () => {
         },
       ]);
     });
+
+    it("preserves sequential tool-only step ordering through convertToModelMessages", async () => {
+      const restored = vercelAIMessageFormat.fromApi([
+        {
+          id: "assistant-tool-steps",
+          role: "assistant",
+          parts: [
+            { type: "step-start" },
+            {
+              type: "dynamic-tool",
+              toolName: "lookup",
+              toolCallId: "call-1",
+              state: "output-available",
+              input: { id: "first" },
+              output: { nextId: "second" },
+            },
+            { type: "step-start" },
+            {
+              type: "dynamic-tool",
+              toolName: "lookup",
+              toolCallId: "call-2",
+              state: "output-available",
+              input: { id: "second" },
+              output: { value: "done" },
+            },
+          ],
+        },
+      ]);
+
+      expect(restored.map((message) => message.role)).toEqual([
+        "assistant",
+        "tool",
+        "assistant",
+        "tool",
+      ]);
+
+      const uiMessages = vercelAIMessageFormat.toApi(restored) as UIMessage[];
+      const modelMessages = await convertToModelMessages(uiMessages);
+
+      expect(modelMessages.map((message) => message.role)).toEqual([
+        "assistant",
+        "tool",
+        "assistant",
+        "tool",
+      ]);
+      expect(modelMessages[0]).toMatchObject({
+        role: "assistant",
+        content: [{ type: "tool-call", toolCallId: "call-1" }],
+      });
+      expect(modelMessages[2]).toMatchObject({
+        role: "assistant",
+        content: [{ type: "tool-call", toolCallId: "call-2" }],
+      });
+    });
+
+    it.each(["dynamic-tool", "tool-web_search"])(
+      "rejects provider-executed %s parts instead of changing their model-message role",
+      (type) => {
+        const part = {
+          type,
+          ...(type === "dynamic-tool" ? { toolName: "web_search" } : {}),
+          toolCallId: "call-provider",
+          state: "output-available",
+          input: { query: "OpenUI" },
+          output: { results: [] },
+          providerExecuted: true,
+        };
+
+        expect(() =>
+          vercelAIMessageFormat.fromApi([
+            { id: "assistant-provider-tool", role: "assistant", parts: [part] },
+          ]),
+        ).toThrow(
+          "Vercel AI SDK provider-executed tools are not supported because AG-UI messages cannot preserve providerExecuted semantics.",
+        );
+      },
+    );
 
     it("splits consecutive text parts while grouping consecutive tools with their segment", () => {
       expect(

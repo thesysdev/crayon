@@ -2,6 +2,9 @@ import type { DynamicToolUIPart, UIMessage } from "ai";
 import type { InputContent, Message, ToolCall, ToolMessage, UserMessage } from "../../types";
 import type { MessageFormat } from "../../types/messageFormat";
 
+const PROVIDER_EXECUTED_TOOLS_UNSUPPORTED_MESSAGE =
+  "Vercel AI SDK provider-executed tools are not supported because AG-UI messages cannot preserve providerExecuted semantics.";
+
 type UnknownRecord = Record<string, unknown> & {
   data?: unknown;
   errorText?: unknown;
@@ -12,6 +15,7 @@ type UnknownRecord = Record<string, unknown> & {
   mimeType?: unknown;
   output?: unknown;
   parts?: unknown;
+  providerExecuted?: unknown;
   role?: unknown;
   source?: unknown;
   state?: unknown;
@@ -31,6 +35,10 @@ type ValidUIMessage = UnknownRecord & {
 
 function isRecord(value: unknown): value is UnknownRecord {
   return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function isProviderExecuted(value: unknown): boolean {
+  return isRecord(value) && value.providerExecuted === true;
 }
 
 function serialize(value: unknown): string {
@@ -130,6 +138,10 @@ function toUserParts(content: UserMessage["content"]): UIMessage["parts"] {
 }
 
 function toToolPart(toolCall: ToolCall, result: ToolMessage | undefined): DynamicToolUIPart {
+  if (isProviderExecuted(toolCall) || isProviderExecuted(result)) {
+    throw new Error(PROVIDER_EXECUTED_TOOLS_UNSUPPORTED_MESSAGE);
+  }
+
   const input = parseToolInput(toolCall.function.arguments);
 
   if (result?.error) {
@@ -181,7 +193,7 @@ function toVercelMessages(messages: Message[]): UIMessage[] {
       case "assistant": {
         const parts: UIMessage["parts"] = [];
 
-        if (message.content !== undefined) {
+        if (typeof message.content === "string" && message.content.length > 0) {
           parts.push({ type: "text", text: message.content });
         }
 
@@ -333,6 +345,7 @@ function appendAssistantSegments(message: ValidUIMessage, result: Message[]): vo
   let text = "";
   let toolCalls: ToolCall[] = [];
   let toolResults: ToolMessage[] = [];
+  const hasStepMarkers = message.parts.some((part) => isRecord(part) && part.type === "step-start");
 
   const hasBody = () => text.length > 0 || toolCalls.length > 0;
 
@@ -357,12 +370,15 @@ function appendAssistantSegments(message: ValidUIMessage, result: Message[]): vo
   for (const value of message.parts) {
     if (!isRecord(value)) continue;
 
-    if (value.type === "text" && typeof value.text === "string") {
-      // Each accumulated TextUIPart corresponds to a text-start item in the
-      // native stream. processStreamedMessage starts a new assistant message
-      // when a new text item follows existing text or tool calls, so mirror
-      // that boundary when rebuilding history from a final UIMessage.
+    if (value.type === "step-start") {
       if (hasBody()) flush();
+      continue;
+    }
+
+    if (value.type === "text" && typeof value.text === "string") {
+      // AI SDK step markers are authoritative. Older/custom UIMessage data may
+      // omit them, so retain the previous text-part boundary behavior there.
+      if (!hasStepMarkers && hasBody()) flush();
       segmentStarted = true;
       text += value.text;
       continue;
@@ -370,6 +386,10 @@ function appendAssistantSegments(message: ValidUIMessage, result: Message[]): vo
 
     const name = toolName(value);
     if (!name || typeof value.toolCallId !== "string") continue;
+
+    if (value.providerExecuted === true) {
+      throw new Error(PROVIDER_EXECUTED_TOOLS_UNSUPPORTED_MESSAGE);
+    }
 
     segmentStarted = true;
     toolCalls.push({
@@ -428,6 +448,10 @@ function fromVercelMessages(data: unknown): Message[] {
  *
  * Vercel `UIMessage` has no developer role, so both AG-UI system and developer
  * messages map to its system role.
+ *
+ * Provider-executed tools are rejected because the AG-UI message model has no
+ * execution-provenance field and therefore cannot preserve their requirement
+ * that results remain in the assistant message.
  */
 export const vercelAIMessageFormat: MessageFormat = {
   toApi(messages: Message[]): UIMessage[] {

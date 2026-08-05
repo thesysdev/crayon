@@ -3,6 +3,8 @@ import { AGUIEvent, EventType, StreamProtocolAdapter } from "../../types";
 
 const MISSING_AI_SDK_MESSAGE =
   'vercelAIAdapter requires the optional peer dependency "ai" (Vercel AI SDK v6).';
+const PROVIDER_EXECUTED_TOOLS_UNSUPPORTED_MESSAGE =
+  "Vercel AI SDK provider-executed tools are not supported because AG-UI messages cannot preserve providerExecuted semantics.";
 const TOOL_EXECUTION_DENIED_MESSAGE = "Tool execution was denied";
 
 function serialize(value: unknown): string {
@@ -78,9 +80,37 @@ export const vercelAIAdapter = (): StreamProtocolAdapter => ({
     const startedTools = new Set<string>();
     const streamedToolArgs = new Set<string>();
     const endedTools = new Set<string>();
+    let stepIndex = 0;
+    let activeStepName: string | undefined;
 
     for await (const chunk of readChunks(chunks)) {
+      if ("providerExecuted" in chunk && chunk.providerExecuted === true) {
+        throw new Error(PROVIDER_EXECUTED_TOOLS_UNSUPPORTED_MESSAGE);
+      }
+
       switch (chunk.type) {
+        case "start-step":
+          activeStepName = `vercel-ai-step-${++stepIndex}`;
+          yield {
+            type: EventType.STEP_STARTED,
+            stepName: activeStepName,
+            // AG-UI step events can also describe arbitrary progress. Mark
+            // only AI SDK model-step events as assistant message boundaries.
+            messageBoundary: true,
+          } as AGUIEvent;
+          break;
+
+        case "finish-step": {
+          const stepName = activeStepName ?? `vercel-ai-step-${++stepIndex}`;
+          yield {
+            type: EventType.STEP_FINISHED,
+            stepName,
+            messageBoundary: true,
+          } as AGUIEvent;
+          activeStepName = undefined;
+          break;
+        }
+
         case "text-start":
           yield {
             type: EventType.TEXT_MESSAGE_START,

@@ -35,6 +35,38 @@ async function parse(body: string): Promise<AGUIEvent[]> {
 }
 
 describe("vercelAIAdapter", () => {
+  it("maps AI SDK model step boundaries", async () => {
+    const events = await parse(
+      sse({ type: "start-step" }) +
+        sse({ type: "finish-step" }) +
+        sse({ type: "start-step" }) +
+        sse({ type: "finish-step" }),
+    );
+
+    expect(events).toEqual([
+      {
+        type: EventType.STEP_STARTED,
+        stepName: "vercel-ai-step-1",
+        messageBoundary: true,
+      },
+      {
+        type: EventType.STEP_FINISHED,
+        stepName: "vercel-ai-step-1",
+        messageBoundary: true,
+      },
+      {
+        type: EventType.STEP_STARTED,
+        stepName: "vercel-ai-step-2",
+        messageBoundary: true,
+      },
+      {
+        type: EventType.STEP_FINISHED,
+        stepName: "vercel-ai-step-2",
+        messageBoundary: true,
+      },
+    ]);
+  });
+
   it("maps text start, delta, and end chunks", async () => {
     const events = await parse(
       sse({ type: "text-start", id: "text-1" }) +
@@ -314,6 +346,36 @@ describe("vercelAIAdapter", () => {
         message: "The model stream failed",
       },
     ]);
+  });
+
+  it("rejects provider-executed tools when the flag arrives with the input", async () => {
+    await expect(
+      parse(
+        sse({
+          type: "tool-input-start",
+          toolCallId: "provider-tool-1",
+          toolName: "web_search",
+          providerExecuted: true,
+        }),
+      ),
+    ).rejects.toThrow(
+      "Vercel AI SDK provider-executed tools are not supported because AG-UI messages cannot preserve providerExecuted semantics.",
+    );
+  });
+
+  it("rejects provider-executed tools when the flag first arrives with the output", async () => {
+    await expect(
+      parse(
+        sse({
+          type: "tool-output-available",
+          toolCallId: "provider-tool-2",
+          output: { results: [] },
+          providerExecuted: true,
+        }),
+      ),
+    ).rejects.toThrow(
+      "Vercel AI SDK provider-executed tools are not supported because AG-UI messages cannot preserve providerExecuted semantics.",
+    );
   });
 
   it("rejects invalid UIMessage chunks using the AI SDK parser", async () => {

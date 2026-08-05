@@ -45,6 +45,11 @@ export const processStreamedMessage = async ({
   // The wire message-item id whose text currently streams into currentMessage.
   let currentTextItemId: string | null = null;
 
+  // AI SDK can emit multiple text items inside one stitched model step. When
+  // an adapter marks a step as a message boundary, that step—not each text id—
+  // controls segmentation so live state matches reconstructed UIMessage history.
+  let isInsideMessageBoundaryStep = false;
+
   // Tool messages by toolCallId, so repeated TOOL_CALL_RESULTs for the same
   // call UPDATE one message in place instead of duplicating it.
   const toolMessagesByCallId = new Map<string, ToolMessage>();
@@ -60,6 +65,29 @@ export const processStreamedMessage = async ({
       updateMessage(msg);
       rafId = null;
     });
+  };
+
+  const hasCurrentMessageBody = () =>
+    (currentMessage.content?.length ?? 0) > 0 || (currentMessage.toolCalls?.length ?? 0) > 0;
+
+  const startNewAssistantMessage = () => {
+    if (!hasCurrentMessageBody()) return;
+
+    if (rafId !== null) {
+      // Flush the pending update so the finished segment's final state lands
+      // before the next segment is created.
+      cancelAnimationFrame(rafId);
+      rafId = null;
+      if (!isFirst) updateMessage(currentMessage);
+    }
+
+    currentMessage = {
+      id: crypto.randomUUID(),
+      role: "assistant",
+      content: "",
+      toolCalls: [],
+    };
+    isFirst = true;
   };
 
   for await (const event of adapter.parse(response)) {
@@ -163,26 +191,33 @@ export const processStreamedMessage = async ({
         // message so the live structure matches what reload reconstructs from
         // storage
         const startId = (event as { messageId?: string }).messageId ?? null;
-        const hasBody =
-          (currentMessage.content?.length ?? 0) > 0 || (currentMessage.toolCalls?.length ?? 0) > 0;
-        if (hasBody && startId !== currentTextItemId) {
-          if (rafId !== null) {
-            // Flush the pending update so the finished segment's final state
-            // lands before the next segment is created.
-            cancelAnimationFrame(rafId);
-            rafId = null;
-            if (!isFirst) updateMessage(currentMessage);
-          }
-          currentMessage = {
-            id: crypto.randomUUID(),
-            role: "assistant",
-            content: "",
-            toolCalls: [],
-          };
-          isFirst = true;
+        if (!isInsideMessageBoundaryStep && startId !== currentTextItemId) {
+          startNewAssistantMessage();
         }
         currentTextItemId = startId;
         break;
+      }
+
+      case EventType.STEP_STARTED: {
+        // Vercel AI SDK step markers separate stitched model calls. AG-UI also
+        // uses STEP_STARTED for generic progress, so only split events that an
+        // adapter explicitly identifies as a message boundary.
+        const boundary = event as typeof event & { messageBoundary?: boolean };
+        if (boundary.messageBoundary === true) {
+          startNewAssistantMessage();
+          currentTextItemId = null;
+          isInsideMessageBoundaryStep = true;
+        }
+        // Lifecycle-only events must not create an empty assistant message.
+        continue;
+      }
+
+      case EventType.STEP_FINISHED: {
+        // The next marked STEP_STARTED performs the split. Keeping the current
+        // segment active here also lets the final segment flush normally.
+        const boundary = event as typeof event & { messageBoundary?: boolean };
+        if (boundary.messageBoundary === true) isInsideMessageBoundaryStep = false;
+        continue;
       }
 
       case EventType.TOOL_CALL_RESULT: {

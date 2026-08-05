@@ -199,6 +199,10 @@ const llm = fetchLLM({
 });
 ```
 
+This integration supports app-executed tools. Provider-executed tools
+(`providerExecuted: true`, such as provider-hosted built-ins) throw an error because
+the AG-UI message model cannot preserve their assistant-contained result semantics.
+
 ### Custom adapter
 
 Implement the `StreamProtocolAdapter` interface:
