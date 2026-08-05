@@ -1,8 +1,6 @@
 import type { PromptSpec, ToolSpec } from "./parser/prompt";
 
 const EVENT_NAME = "lang_core_system_prompt_generation_used";
-const HASH_DOMAIN = "openui-system-prompt-config-v1";
-const PROJECT_HASH_DOMAIN = "openui-project-v1";
 const SAMPLE_RATE = 0.1;
 const REQUEST_TIMEOUT_MS = 2_000;
 const SDK_VERSION = "0.2.10";
@@ -157,7 +155,7 @@ async function sha256(value: string): Promise<string> {
 
 export function calculateSystemPromptConfigHash(spec: PromptSpec): Promise<string> {
   const canonicalJson = stableJson(buildSystemPromptConfigProjection(spec));
-  return sha256(`${HASH_DOMAIN}\0${canonicalJson}`);
+  return sha256(canonicalJson);
 }
 
 function getProcess(): ProcessLike | undefined {
@@ -380,7 +378,7 @@ async function getRepositoryIdentifier(
 export function calculateProjectHash(repositoryIdentifier: string): Promise<string> {
   const normalized = normalizeRepositoryIdentifier(repositoryIdentifier);
   if (!normalized) return Promise.reject(new TypeError("Repository identifier is empty"));
-  return sha256(`${PROJECT_HASH_DOMAIN}\0${normalized}`);
+  return sha256(normalized);
 }
 
 function getProjectHash(state: TelemetryState, runtime: RuntimeInfo): Promise<string | undefined> {
