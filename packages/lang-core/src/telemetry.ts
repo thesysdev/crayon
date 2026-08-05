@@ -416,26 +416,18 @@ async function sendCapture(
       : {}),
   };
 
-  const controller = typeof AbortController === "function" ? new AbortController() : undefined;
-  const timeout = controller ? setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS) : undefined;
-  (timeout as unknown as { unref?: () => void } | undefined)?.unref?.();
-
-  try {
-    await globalThis.fetch(CAPTURE_URL, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        api_key: POSTHOG_KEY,
-        event: EVENT_NAME,
-        timestamp: new Date().toISOString(),
-        properties,
-      }),
-      keepalive: true,
-      signal: controller?.signal,
-    });
-  } finally {
-    if (timeout) clearTimeout(timeout);
-  }
+  await globalThis.fetch(CAPTURE_URL, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      api_key: POSTHOG_KEY,
+      event: EVENT_NAME,
+      timestamp: new Date().toISOString(),
+      properties,
+    }),
+    keepalive: true,
+    signal: globalThis.AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  });
 }
 
 export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: InputShape): void {
@@ -445,7 +437,8 @@ export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: Input
       !runtime ||
       typeof globalThis.fetch !== "function" ||
       !globalThis.crypto?.subtle ||
-      typeof globalThis.crypto.randomUUID !== "function"
+      typeof globalThis.crypto.randomUUID !== "function" ||
+      typeof globalThis.AbortSignal?.timeout !== "function"
     ) {
       return;
     }
