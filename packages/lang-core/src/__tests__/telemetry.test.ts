@@ -238,6 +238,17 @@ describe("system prompt telemetry", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("skips telemetry when crypto.randomUUID is unavailable", async () => {
+    const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubGlobal("crypto", { subtle: globalThis.crypto.subtle });
+
+    generateSystemPrompt(makeSpec());
+
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("captures in a test environment when not opted out", async () => {
     const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);

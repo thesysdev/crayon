@@ -281,23 +281,10 @@ const ENVIRONMENT_KEYS = [
   "NETLIFY",
 ] as const;
 
-function randomUuid(): string {
-  if (typeof globalThis.crypto?.randomUUID === "function") return globalThis.crypto.randomUUID();
-
-  const bytes = new Uint8Array(16);
-  globalThis.crypto.getRandomValues(bytes);
-  bytes[6] = (bytes[6] & 0x0f) | 0x40;
-  bytes[8] = (bytes[8] & 0x3f) | 0x80;
-  const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0"));
-  return `${hex.slice(0, 4).join("")}-${hex.slice(4, 6).join("")}-${hex
-    .slice(6, 8)
-    .join("")}-${hex.slice(8, 10).join("")}-${hex.slice(10).join("")}`;
-}
-
 function getState(): TelemetryState {
   const registry = globalThis as typeof globalThis & { [STATE_KEY]?: TelemetryState };
   registry[STATE_KEY] ??= {
-    runtimeId: randomUuid(),
+    runtimeId: globalThis.crypto.randomUUID(),
   };
   return registry[STATE_KEY];
 }
@@ -406,7 +393,7 @@ async function sendCapture(
   const properties: CaptureProperties = {
     distinct_id: state.runtimeId,
     $process_person_profile: false,
-    event_id: randomUuid(),
+    event_id: globalThis.crypto.randomUUID(),
     telemetry_schema_version: 1,
     system_prompt_config_hash_version: 1,
     system_prompt_config_hash: systemPromptConfigHash,
@@ -457,7 +444,14 @@ async function sendCapture(
 export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: InputShape): void {
   try {
     const runtime = detectRuntime();
-    if (!runtime || typeof globalThis.fetch !== "function" || !globalThis.crypto?.subtle) return;
+    if (
+      !runtime ||
+      typeof globalThis.fetch !== "function" ||
+      !globalThis.crypto?.subtle ||
+      typeof globalThis.crypto.randomUUID !== "function"
+    ) {
+      return;
+    }
 
     const env = runtime.env;
     const environment = getEnvironment(env);
