@@ -1,4 +1,4 @@
-import { CreateError } from "./telemetry";
+import { CliCancelledError, CreateError } from "./telemetry";
 
 type InputPromptConfig = {
   type: "input";
@@ -54,7 +54,7 @@ export async function resolveArgs<T extends Record<string, ArgDef<unknown>>>(
     } catch (err) {
       const { ExitPromptError } = await import("@inquirer/core");
       if (err instanceof ExitPromptError) {
-        process.exit(0);
+        throw new CliCancelledError("args_resolution");
       }
       throw err;
     }

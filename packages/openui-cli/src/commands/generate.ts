@@ -1,9 +1,14 @@
-import { execFileSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import { cliErrorProperties, SEPARATION_DELIMITER } from "../lib/utils";
+import { runCommand } from "../lib/process-runner";
+import {
+  cliErrorProperties,
+  createCliError,
+  processErrorProperties,
+  SEPARATION_DELIMITER,
+} from "../lib/utils";
 
-import { CreateError, telemetry } from "../lib/telemetry";
+import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
 
 export interface GenerateOptions {
   out?: string;
@@ -43,21 +48,24 @@ export async function runGenerate(
   if (options.spec) workerArgs.push("--spec");
   if (options.promptOptions) workerArgs.push("--prompt-options", options.promptOptions);
 
-  let output: string;
-  try {
-    output = execFileSync(process.execPath, workerArgs, {
-      encoding: "utf-8",
-      cwd: process.cwd(),
-      stdio: ["inherit", "pipe", "inherit"],
+  const workerResult = await runCommand(process.execPath, workerArgs, process.cwd(), {
+    captureStdout: true,
+  });
+  if (workerResult.error || workerResult.status !== 0) {
+    const properties = processErrorProperties(workerResult, "worker_execution", {
+      error_class: "generation",
+      error_code: "WORKER_FAILED",
     });
-  } catch (err) {
-    throw new CreateError(
-      "worker_execution",
-      err instanceof Error ? err.message : String(err),
-      "generation",
-      "WORKER_FAILED",
-    );
+    if (properties.error_class === "user_cancelled") {
+      throw new CliCancelledError(
+        "worker_execution",
+        properties.cancellation_exit_code ?? 0,
+        properties,
+      );
+    }
+    throw createCliError("generation worker failed", properties);
   }
+  const output = workerResult.stdout ?? "";
 
   try {
     if (options.jsonSchema || options.spec) {
@@ -94,12 +102,7 @@ export async function runGenerate(
       error_class: "filesystem",
       error_code: "WRITE_FAILED",
     });
-    throw new CreateError(
-      properties.failure_stage,
-      error instanceof Error ? error.message : String(error),
-      properties.error_class,
-      properties.error_code,
-    );
+    throw createCliError(error instanceof Error ? error.message : String(error), properties);
   }
 
   telemetry.capture("cli_generate_succeeded", {
