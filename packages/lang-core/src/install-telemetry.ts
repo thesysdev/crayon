@@ -183,6 +183,13 @@ export async function runInstallTelemetry(
     const packageManager = detectPackageManager(env);
     const ci = detectCI(env);
 
+    // Telemetry data contract:
+    // Sent: a random installation ID, salted project ID and its source category,
+    // Lang Core/Node/OS/package-manager metadata, CI provider, Docker status, and
+    // the schema version. The proxy and PostHog also observe the request source IP.
+    // Never sent: raw Git origins, project or repository names, filesystem paths,
+    // branches, commits, credentials, environment values, source code, prompts,
+    // application data, errors, logs, stack traces, routes, or UI interactions.
     payload = {
       distinctId: state.distinctId,
       event: INSTALL_EVENT,
