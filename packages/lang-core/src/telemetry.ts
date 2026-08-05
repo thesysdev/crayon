@@ -1,4 +1,4 @@
-import type { PromptSpec, ToolSpec } from "./parser/prompt";
+import type { PromptSpec } from "./parser/prompt";
 
 const EVENT_NAME = "lang_core_system_prompt_generation_used";
 const SAMPLE_RATE = 0.1;
@@ -84,22 +84,6 @@ function stableJson(value: unknown): string {
   return JSON.stringify(canonicalize(value));
 }
 
-function canonicalTool(tool: string | ToolSpec): Json {
-  if (typeof tool === "string") return { kind: "string", value: tool };
-
-  return canonicalize({
-    kind: "spec",
-    name: tool.name,
-    description: tool.description ?? null,
-    inputSchema: tool.inputSchema,
-    outputSchema: tool.outputSchema,
-    annotations: {
-      readOnlyHint: tool.annotations?.readOnlyHint ?? null,
-      destructiveHint: tool.annotations?.destructiveHint ?? null,
-    },
-  });
-}
-
 export function buildSystemPromptConfigProjection(spec: PromptSpec): Json {
   const hasTools = (spec.tools?.length ?? 0) > 0;
   const toolCalls = spec.toolCalls ?? hasTools;
@@ -121,15 +105,10 @@ export function buildSystemPromptConfigProjection(spec: PromptSpec): Json {
     }))
     .sort((left, right) => left.name.localeCompare(right.name));
 
-  const tools = (spec.tools ?? [])
-    .map(canonicalTool)
-    .sort((left, right) => stableJson(left).localeCompare(stableJson(right)));
-
   return canonicalize({
     root: spec.root ?? "Root",
     components,
     componentGroups,
-    tools,
     modes: {
       toolCalls,
       bindings,
@@ -138,7 +117,6 @@ export function buildSystemPromptConfigProjection(spec: PromptSpec): Json {
     },
     preamble: spec.preamble ?? null,
     examples: [...(spec.examples ?? [])],
-    toolExamples: [...(spec.toolExamples ?? [])],
     additionalRules: [...(spec.additionalRules ?? [])],
   });
 }

@@ -87,6 +87,13 @@ describe("system prompt telemetry", () => {
       await calculateSystemPromptConfigHash(reordered),
     );
     await expect(
+      calculateSystemPromptConfigHash({
+        ...first,
+        tools: ["different-tool(value: number)"],
+        toolExamples: ["private-tool-example"],
+      }),
+    ).resolves.toBe(await calculateSystemPromptConfigHash(first));
+    await expect(
       calculateSystemPromptConfigHash({ ...reordered, preamble: "Different" }),
     ).resolves.not.toBe(await calculateSystemPromptConfigHash(first));
   });
