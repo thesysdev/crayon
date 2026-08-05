@@ -31,7 +31,7 @@ const SDK_VERSION =
   typeof __OPENUI_LANG_CORE_VERSION__ === "string"
     ? __OPENUI_LANG_CORE_VERSION__
     : "0.0.0-development";
-const CAPTURE_URL = "https://us.i.posthog.com/capture/";
+const CAPTURE_URL = "https://dgoeivjus9jfp.cloudfront.net/capture/";
 const POSTHOG_KEY = "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
 
 type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
