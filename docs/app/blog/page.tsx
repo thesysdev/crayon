@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import { blog } from "@/lib/source";
 import { ArrowUpRight, ImageIcon } from "lucide-react";
 import Link from "next/link";
@@ -205,15 +207,20 @@ export default function BlogIndex() {
       featured: Boolean(post.data.featured),
       external: false,
       tag: post.data.featured ? "Featured" : undefined,
-      image: slug ? `/images/blog/${slug}.png` : undefined,
+      image:
+        slug && fs.existsSync(path.join(process.cwd(), "public", "images", "blog", `${slug}.png`))
+          ? `/images/blog/${slug}.png`
+          : undefined,
     };
   });
 
-  const allCards = [...localCards, ...COMMUNITY_CARDS].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
-  const featuredCards = allCards.filter((card) => card.featured);
-  const regularCards = allCards.filter((card) => !card.featured);
+  const byDateDesc = (a: BlogCardData, b: BlogCardData) =>
+    new Date(b.date).getTime() - new Date(a.date).getTime();
+
+  const sortedLocal = [...localCards].sort(byDateDesc);
+  const featuredCards = sortedLocal.filter((card) => card.featured);
+  const regularCards = sortedLocal.filter((card) => !card.featured);
+  const communityCards = [...COMMUNITY_CARDS].sort(byDateDesc);
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--openui-foreground)] [[data-theme=dark]_&]:bg-black">
@@ -241,6 +248,13 @@ export default function BlogIndex() {
                   <RegularCard key={card.href} card={card} />
                 ))}
               </div>
+            </div>
+
+            <h2 className={`${TITLE_CLASS} mt-20 mb-6 max-md:mt-12`}>From the community</h2>
+            <div className="grid grid-cols-1 gap-5 auto-rows-fr md:grid-cols-2">
+              {communityCards.map((card) => (
+                <RegularCard key={card.href} card={card} />
+              ))}
             </div>
           </div>
         </section>

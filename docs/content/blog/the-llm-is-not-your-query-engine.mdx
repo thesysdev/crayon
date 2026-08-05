@@ -1,0 +1,199 @@
+---
+title: "Your LLM is not a query engine"
+description: "An architectural analysis of tool-calling loops in data applications: why routing every interaction through the model scales poorly in tokens, latency, and reliability - and how Generative UI restructures the data path."
+author: "Thesys Engineering Team"
+date: 2026-07-23
+---
+
+import { LiveFilterDemo } from "./components/live-filter-demo";
+
+Conversational data applications assign the model two distinct responsibilities that are usually conflated: **interpreting user intent** and **mediating data access**. The first is what language models are good at. The second is a systems problem that language models solve badly - at a cost that grows with every interaction.
+
+This post examines the dominant architecture for these applications (the tool-calling loop), analyzes where its costs come from, and presents the Generative UI alternative: the model generates an interactive interface once, and all subsequent data access happens outside the model. We compare the two architectures on token consumption, latency, and reliability, and close with the edge cases and limitations of the Generative UI approach.
+
+<LiveFilterDemo />
+
+## Status quo: the tool-calling loop
+
+The standard architecture for an AI data application is a function-calling loop. The application exposes a set of tools (SQL queries, API endpoints, aggregation functions), and the model orchestrates them conversationally. Every interaction - including trivial ones - flows through the model:
+
+{/* TODO(design): replace this ASCII diagram with a real image diagram */}
+
+```
+        TOOL-CALLING LOOP                      GENERATIVE UI
+
+  user ──▶ LLM ──▶ database              user ──▶ LLM        (once)
+    ▲       │ ◀─── rows, as tokens                │
+    └───────┘                                     ▼ widget spec (once)
+     every single                        user ──▶ renderer ◀──▶ database
+     interaction                                every interaction,
+                                                zero tokens
+```
+
+Consider the lifecycle of a single request in this architecture. A user is viewing revenue figures for the last 7 days and wants to see 30 days instead. In the tool loop, that adjustment is a conversational turn:
+
+{/* TODO(design): replace this ASCII diagram with a real image diagram */}
+
+```
+"change it to 30 days"
+  │
+  ├─ send: system prompt + tool schemas + ENTIRE history    (grows every turn)
+  │
+  │        LLM re-generates the query          ← re-derived from scratch
+  │
+  ├─ execute tool, send: history + result rows              (10-20k tokens in)
+  │
+  │        LLM re-narrates the numbers         ← data passes through sampling
+  │
+  └─ prose answer
+```
+
+The model is invoked twice per turn (once to produce the tool call, once to interpret its result), the full conversation history is transmitted both times, and the tool's result set enters the context window - where it remains for the rest of the session.
+
+This architecture is the default for good reasons: it requires no client-side runtime, it handles arbitrary requests, and it maps directly onto the function-calling APIs every model provider ships. For one-off questions, it is the right design. The problems appear when the workload is *interactive* - when the same user iterates on the same data with small adjustments.
+
+## Problem analysis
+
+Three cost structures compound in the tool loop, and all three scale with interaction count rather than with the complexity of the user's request.
+
+**1. History accumulation.** Each turn re-transmits the full conversation, and in a data application the conversation contains every previous tool result. Token cost per turn is therefore not constant - it grows with session length, and cumulative session cost grows superlinearly. The tenth filter adjustment costs more than the first, despite being the same operation.
+
+**2. Data ingestion.** For data-heavy workloads this is the dominant term. A 500-row aggregate serializes to 10-20k tokens. It enters the context once as a tool result and is then re-transmitted as history on every subsequent turn. The model is being used as a data serialization channel - the most expensive one available.
+
+**3. Query re-derivation.** The query is regenerated from scratch on every turn. This has a reliability cost independent of the token cost: each regeneration is a fresh sample from the model. Constraints established earlier in the session (a region filter from turn 3) can be silently dropped in turn 7. There is no mechanism that guarantees consistency between one turn's query and the next.
+
+There is a fourth cost that is harder to quantify but architecturally significant: **every number the user reads has passed through a sampling step.** The model receives rows and re-types them into prose. Transposed digits and mixed-up rows are silent failures - no component of the system can detect that a narrated figure diverges from the underlying data, and an incorrect number is visually indistinguishable from a correct one.
+
+Latency follows the same structure. Each adjustment costs two model invocations with a growing prompt: time-to-first-token plus generation time for the tool call, then again for the narration. The interactive operation with the smallest semantic delta (a dropdown change) pays the full round-trip price.
+
+Note also what the user receives in exchange: a paragraph. The output of each expensive turn is static prose that cannot be adjusted without initiating another turn. The architecture manufactures its own future costs.
+
+## The Generative UI alternative: the model generates the interface
+
+Generative UI restructures the model's role. Instead of answering *with data*, the model emits a declarative specification of an interactive widget - controls, visualizations, and the queries that feed them. Data access moves out of the model entirely and into a client-side runtime.
+
+In OpenUI Lang, the response to "show revenue by region, filterable by date range" is:
+
+```text
+$days = "7"
+root = Stack([filter, chart, tbl])
+filter = Select("days", $days, [SelectItem("7", "Last 7 days"), SelectItem("30", "Last 30 days"), SelectItem("90", "Last 90 days")])
+metrics = Query("query_orders", {days: $days, groupBy: "region"}, {rows: []})
+chart = BarChart(metrics.rows.region, [Series("Revenue", metrics.rows.revenue)])
+tbl = Table([Col("Region", metrics.rows.region), Col("Revenue", metrics.rows.revenue, "currency")])
+```
+
+Six statements, a few hundred output tokens. The specification contains no data. The model emits `metrics.rows.revenue` - a *reference* resolved by the runtime, not a value. The architecture rests on three components:
+
+**Reactive state.** `$days` is a state variable, bound two-way to the `Select` control. State lives in the client runtime, not in the conversation.
+
+**Declared queries.** The `Query` statement names a tool, its parameters, and which state variables parameterize it. The contract: a query re-executes whenever a referenced `$variable` changes. The query is fixed at generation time; only its parameters vary afterward.
+
+**A runtime executor.** The renderer executes queries directly against the application's tool layer - an API route, an MCP endpoint, a database function. The model is not on this path.
+
+The interaction lifecycle that previously cost a full round trip now looks like this:
+
+{/* TODO(design): replace this ASCII diagram with a real image diagram */}
+
+```
+user selects "Last 30 days"
+  │
+  ├─ $days = "30"                              (client-side state change)
+  │
+  └─ runtime re-runs query_orders(days=30)     ── 0 tokens, ~100ms
+        rows flow database ──▶ browser         (never through the model)
+```
+
+The model is never contacted. It does not observe the interaction, does not receive the result rows, and is not asked to re-derive anything. A filter change is deterministic re-execution of a declared query with new parameters - not a fresh sample from a language model.
+
+The division of labor is explicit: **the model handles intent; the runtime handles interaction.**
+
+### Regeneration is also restructured
+
+Interactions that change *intent* rather than parameters - "break this down by category instead" - do return to the model. But the round trip is structurally different from a tool-loop turn, on both sides.
+
+*The input is data-free.* The follow-up request is accompanied by the current widget specification - the six statements above, a few hundred tokens - not by the result sets behind it. Where tool-loop history accumulates data, Generative UI history accumulates specifications: a compact, roughly constant-size representation of application state.
+
+*The output is a delta.* Because the specification language is assignment-based with last-definition-wins semantics, the model redeclares only the statements that changed:
+
+```text
+metrics = Query("query_orders", {days: $days, groupBy: "category"}, {rows: []})
+chart = BarChart(metrics.rows.category, [Series("Revenue", metrics.rows.revenue)])
+tbl = Table([Col("Category", metrics.rows.category), Col("Revenue", metrics.rows.revenue, "currency")])
+```
+
+The runtime merges these into the running program; `$days`, `filter`, and `root` are untouched and remain functional. The new query then executes outside the model, identically to a filter change.
+
+## Trade-off comparison
+
+The cost model separates into two tiers, and both compare favorably to the loop:
+
+| Change type                            | Tool-calling loop                              | Generative UI                                                     |
+| -------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------- |
+| Parameter change (filter, date range)  | Full round trip + result rows through context  | **Zero tokens.** Runtime re-executes the declared query            |
+| Intent change (new breakdown, new viz) | Full round trip + result rows through context  | **Reduced LLM call.** Spec in, delta out; data bypasses the model  |
+
+### **Generative UI can reduce LLM token usage by about 94%**
+
+Consider a representative session with one initial question, five filter changes, and one intent change:
+
+1. “Show revenue for the last 7 days by region.”
+2. Change the range to 30 days.
+3. Select Europe.
+4. Select electronics.
+5. Return to 7 days.
+6. Select all regions.
+7. “Now group it by category.”
+
+For a conservative estimate, assume each tool-loop turn consumes 8k tokens for the query result and 2k tokens for the prompt, tool call, and answer. We deliberately exclude the cost of re-sending earlier results, even though they remain in the conversation history.
+
+```
+Tool-calling loop
+  7 model-assisted turns × 10k tokens                  = 70k tokens
+
+Generative UI
+  Initial widget generation                            = 3.5k tokens
+  5 filter changes × 0 tokens                          =    0 tokens
+  Intent change as a small widget delta                = 0.5k tokens
+                                                        ───────────
+                                                        =   4k tokens
+
+Token reduction
+  (70k - 4k) / 70k                                     = 94.3%
+```
+
+This estimate is intentionally conservative. In a real tool-calling conversation, every turn also re-sends some or all of the previous history, including earlier result sets. That makes later turns more expensive and increases the saving. In the Generative UI path, the five filter changes remain at zero LLM tokens; only the initial widget and the later intent change invoke the model.
+
+Prompt caching attenuates the history term but not the other two: result rows still enter the context window on every turn, and the query is still re-sampled on every turn. Caching reduces the price of the architecture's costs; it does not remove the costs.
+
+**Latency.** A parameter change drops from a two-invocation model round trip (seconds) to a single database query (~100ms). Intent changes are also faster: the model streams a three-statement delta - with the existing interface still rendered - rather than ingesting and re-narrating a result set. The generation-first ordering of the specification (`root` streams first) means the interface shell renders before generation completes.
+
+**Reliability.** This is the comparison we consider most consequential. The architectures differ not in *how often* the model errs but in *what kind* of error is possible.
+
+In the tool loop, the failure modes are in the data plane: fabricated or transposed values in narration, and inconsistent query re-derivation across turns. Both are silent - the system has no oracle against which to check a narrated number.
+
+In Generative UI, there is no path by which a fabricated value reaches the screen. Every displayed value was placed by the runtime from a real query result; the model emitted bindings, not numbers. The model selects among schema-validated tools rather than writing queries, so it cannot reference a nonexistent table or column. What remains is generation-time error - binding a filter to the wrong parameter, or titling a chart misleadingly. These errors are (a) machine-checkable, because unknown components, missing props, and invalid tool references surface as structured parser diagnostics that can be fed back for automatic correction before render, and (b) visible when they do slip through: a chart grouped by the wrong dimension is noticed and corrected in one message, while a wrong number in prose is not noticed at all.
+
+The precise claim is not that the model stops making mistakes. It is that errors move from the data plane, where they are invisible, to the UI plane, where they are schema-validated and observable.
+
+## Edge cases and limitations
+
+Generative UI changes where the model sits, but it does not remove the model or solve every workload.
+
+**The widget only handles interactions it was designed for.** If the generated dashboard includes date and region filters, changing either is free. If the user then asks to compare currencies and no currency control exists, the request returns to the model. The model can update the widget to add that control; after that, currency changes also happen without model calls.
+
+**Some questions require new computation.** A predefined tool such as `query_orders` may cover common filters but not a request like "correlate refund rates with shipping carriers." For advanced use cases, the model can generate a SQL or Python script, bind its output to the widget, and run it outside the LLM. This still avoids sending multiple result sets to the model and asking it to join them in its context. Generated code must, however, run in a sandbox with restricted data access, time limits, and resource limits.
+
+**The generated interface can still be wrong.** The model might connect a filter to the wrong parameter or choose the wrong chart. OpenUI can detect structural problems such as unknown components, invalid props, and missing tools, then send those errors back for correction. Semantic mistakes still require user feedback - for example, "group this by category, not region."
+
+**The largest gains come from repeated interaction.** A dashboard that users filter and explore may avoid dozens of model calls. A one-off question with no follow-up has nothing to amortize, so a simple tool-calling loop may be the better choice. In both cases, genuinely new intent still requires the model; the advantage of Generative UI is that the data continues to execute outside it.
+
+## Summary
+
+The tool-calling loop places the model on the data path, and pays for it on every interaction: superlinear token growth from history accumulation, result sets serialized through the context window, queries re-derived by sampling, and data narrated through a process that can silently corrupt it.
+
+Generative UI removes the model from the data path. The model compiles intent into a declarative interface specification - once - and a client runtime executes parameterized queries directly against the application's tool layer thereafter. Parameter changes cost zero tokens; intent changes cost a small, data-free delta. Fabricated values are structurally impossible rather than statistically unlikely, and the errors that remain are schema-checkable and visible.
+
+We have previously argued that [specification syntax matters](/blog/stop-making-ai-write-json) for token efficiency at the format level. The architectural version of that argument is larger: the dominant token expense in an interactive data application was never the output format. It was routing data through a language model on every interaction.
+
+The model's job is to decide what the interface should be. Executing it is not a language problem.
