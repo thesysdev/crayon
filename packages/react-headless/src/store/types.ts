@@ -91,6 +91,6 @@ export interface ChatProviderProps {
    * artifact browser's pre-applied filters, and workspace section grouping.
    */
   artifactCategories?: ArtifactCategory[];
-  autoOpenArtifact?: boolean;
+  artifactAutoOpen?: boolean;
   children: React.ReactNode;
 }

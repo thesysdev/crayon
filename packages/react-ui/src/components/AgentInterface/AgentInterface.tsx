@@ -183,7 +183,7 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
     llm,
     artifactRenderers,
     artifactCategories,
-    autoOpenArtifact,
+    artifactAutoOpen,
     componentLibrary,
     components,
     theme,
@@ -241,7 +241,7 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
         llm={llm}
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
-        autoOpenArtifact={autoOpenArtifact}
+        artifactAutoOpen={artifactAutoOpen}
       >
         <NavProvider path={path} defaultPath={defaultPath} onNavigate={onNavigate}>
           <StartersProvider starters={starters} starterVariant={starterVariant}>

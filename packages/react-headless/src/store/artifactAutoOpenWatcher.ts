@@ -24,7 +24,7 @@ export function evaluateRegisteredArtifacts(
 }
 
 export function useArtifactAutoOpenWatcher(
-  autoOpenArtifact: boolean,
+  artifactAutoOpen: boolean,
   chatStore: ReturnType<typeof createChatStore>,
   threadContextStore: ReturnType<typeof createThreadContextStore>,
   detailedViewStore: ReturnType<typeof createDetailedViewStore>,
@@ -32,7 +32,7 @@ export function useArtifactAutoOpenWatcher(
   const openedThisRunRef = useRef(false);
 
   useEffect(() => {
-    if (!autoOpenArtifact) return;
+    if (!artifactAutoOpen) return;
     const unsubscribeRun = chatStore.subscribe(
       (s) => s.isRunning,
       (isRunning) => {
@@ -53,5 +53,5 @@ export function useArtifactAutoOpenWatcher(
       unsubscribeRun();
       unsubscribeArtifacts();
     };
-  }, [autoOpenArtifact, chatStore, threadContextStore, detailedViewStore]);
+  }, [artifactAutoOpen, chatStore, threadContextStore, detailedViewStore]);
 }

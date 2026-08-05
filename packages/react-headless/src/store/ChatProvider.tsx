@@ -23,7 +23,7 @@ export const ChatProvider: FC<ChatProviderProps> = ({
   llm,
   artifactRenderers,
   artifactCategories,
-  autoOpenArtifact,
+  artifactAutoOpen,
 }) => {
   const [resolvedStorage] = useState(() => storage ?? createDefaultInMemoryStorage());
   const [chatStore] = useState(() => createChatStore({ storage: resolvedStorage, llm }));
@@ -67,7 +67,7 @@ export const ChatProvider: FC<ChatProviderProps> = ({
   }, [chatStore, detailedViewStore, threadContextStore]);
 
   useArtifactAutoOpenWatcher(
-    autoOpenArtifact ?? false,
+    artifactAutoOpen ?? true,
     chatStore,
     threadContextStore,
     detailedViewStore,
