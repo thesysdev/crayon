@@ -29,11 +29,13 @@ export {
   openAIAdapter,
   openAIReadableStreamAdapter,
   openAIResponsesAdapter,
+  vercelAIAdapter,
 } from "./stream/adapters";
 export {
   langGraphMessageFormat,
   openAIConversationMessageFormat,
   openAIMessageFormat,
+  vercelAIMessageFormat,
 } from "./stream/formats";
 export { processStreamedMessage } from "./stream/processStreamedMessage";
 
