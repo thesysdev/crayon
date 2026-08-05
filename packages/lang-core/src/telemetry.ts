@@ -61,34 +61,6 @@ interface CaptureProperties {
 
 const STATE_KEY = Symbol.for("@openuidev/lang-core/telemetry/v1");
 
-function canonicalize(value: unknown): Json {
-  if (value === null || typeof value === "string" || typeof value === "boolean") {
-    return value;
-  }
-
-  if (typeof value === "number") {
-    if (!Number.isFinite(value)) throw new TypeError("Non-finite number");
-    return value;
-  }
-
-  if (Array.isArray(value)) return value.map(canonicalize);
-
-  if (typeof value === "object") {
-    const result: Record<string, Json> = {};
-    for (const key of Object.keys(value).sort()) {
-      const child = (value as Record<string, unknown>)[key];
-      if (child !== undefined) result[key] = canonicalize(child);
-    }
-    return result;
-  }
-
-  throw new TypeError(`Unsupported value: ${typeof value}`);
-}
-
-function stableJson(value: unknown): string {
-  return JSON.stringify(canonicalize(value));
-}
-
 export function buildSystemPromptConfigProjection(spec: PromptSpec): Json {
   const hasTools = (spec.tools?.length ?? 0) > 0;
   const toolCalls = spec.toolCalls ?? hasTools;
@@ -110,7 +82,7 @@ export function buildSystemPromptConfigProjection(spec: PromptSpec): Json {
     }))
     .sort((left, right) => left.name.localeCompare(right.name));
 
-  return canonicalize({
+  return {
     root: spec.root ?? "Root",
     components,
     componentGroups,
@@ -123,7 +95,7 @@ export function buildSystemPromptConfigProjection(spec: PromptSpec): Json {
     preamble: spec.preamble ?? null,
     examples: [...(spec.examples ?? [])],
     additionalRules: [...(spec.additionalRules ?? [])],
-  });
+  };
 }
 
 async function sha256(value: string): Promise<string> {
@@ -136,7 +108,8 @@ async function sha256(value: string): Promise<string> {
 }
 
 export function calculateSystemPromptConfigHash(spec: PromptSpec): Promise<string> {
-  const canonicalJson = stableJson(buildSystemPromptConfigProjection(spec));
+  // The projection constructs object keys deterministically and sorts unordered collections.
+  const canonicalJson = JSON.stringify(buildSystemPromptConfigProjection(spec));
   return sha256(canonicalJson);
 }
 
