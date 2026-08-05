@@ -1,10 +1,12 @@
-import { useThread } from "@openuidev/react-headless";
+import { useThread, useThreadList } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { ConversationStarterProps } from "../../types/ConversationStarter";
+import { PromptTemplate } from "../../types/PromptTemplate";
 import { useStartersFromContext } from "./_shared/startersContext";
 import { isChatEmpty } from "./_shared/utils";
-import { DesktopWelcomeComposer } from "./components";
+import { submitStarterPrompt } from "./_shared/utils/welcomePrefill";
+import { DesktopWelcomeComposer, WelcomePrefillChips } from "./components";
 import { ConversationStarter, ConversationStarterVariant } from "./ConversationStarter";
 import { WelcomeGlow, WelcomeGlowProvider } from "./WelcomeGlow";
 
@@ -44,6 +46,13 @@ interface WelcomeScreenWithContentProps extends WelcomeScreenBaseProps {
    */
   starterVariant?: ConversationStarterVariant;
   /**
+   * Fill-in-the-blank prompt templates, rendered as chips between the composer
+   * and the starters. Clicking one drops its prompt stem into the composer
+   * (instead of sending) and shows the template's completions. Selecting a
+   * completion sends the completed prompt immediately.
+   */
+  promptTemplates?: PromptTemplate[];
+  /**
    * Children are not allowed when using props-based content
    */
   children?: never;
@@ -60,6 +69,7 @@ interface WelcomeScreenWithChildrenProps extends WelcomeScreenBaseProps {
   image?: never;
   starters?: never;
   starterVariant?: never;
+  promptTemplates?: never;
 }
 
 export type WelcomeScreenProps = WelcomeScreenWithContentProps | WelcomeScreenWithChildrenProps;
@@ -79,9 +89,28 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
   const ownVariant = "starterVariant" in props ? props.starterVariant : undefined;
   const starters = ownStarters ?? fromCtx.starters ?? [];
   const starterVariant = ownVariant ?? fromCtx.starterVariant ?? "long";
+  const promptTemplates = ("promptTemplates" in props ? props.promptTemplates : undefined) ?? [];
+  const hasChips = promptTemplates.length > 0;
 
   const messages = useThread((s) => s.messages);
   const isLoadingMessages = useThread((s) => s.isLoadingMessages);
+  const isRunning = useThread((s) => s.isRunning);
+  const processMessage = useThread((s) => s.processMessage);
+
+  // Prefill-chips draft state — owned here (not in the composer) so chips can
+  // write into the draft. Hooks stay unconditional; unused without chips.
+  const [draft, setDraft] = useState("");
+  const [selectedChip, setSelectedChip] = useState<PromptTemplate | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const selectedThreadId = useThreadList((s) => s.selectedThreadId);
+
+  // The welcome renders unkeyed across thread switches, so a chip-prefilled
+  // draft would otherwise leak into the next empty thread.
+  useEffect(() => {
+    setDraft("");
+    setSelectedChip(null);
+  }, [selectedThreadId]);
 
   // Only show when there are no messages
   if (!isChatEmpty({ isLoadingMessages, messages })) {
@@ -118,6 +147,36 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
     return image;
   };
 
+  const handleDraftChange = (value: string) => {
+    setDraft(value);
+    if (!value) {
+      setSelectedChip(null);
+    }
+  };
+
+  const handleChipClick = (chip: PromptTemplate) => {
+    if (isRunning) return;
+    setDraft(chip.prompt);
+    setSelectedChip(chip);
+    const input = inputRef.current;
+    if (!input) return;
+    input.focus();
+    // Caret to the end once React has applied the new value.
+    requestAnimationFrame(() => {
+      input.setSelectionRange(chip.prompt.length, chip.prompt.length);
+    });
+  };
+
+  const handleContextualSelect = (starter: ConversationStarterProps) => {
+    submitStarterPrompt(processMessage, draft, starter.prompt);
+    // Clear at submit time like the composer's own submit path — the
+    // thread-switch reset above won't fire when selectedThreadId doesn't
+    // change (e.g. thread creation fails on a fresh chat and it stays null),
+    // and the stale stem would resurface if the welcome shows again.
+    setDraft("");
+    setSelectedChip(null);
+  };
+
   return (
     <WelcomeGlowProvider enabled={glowAnimation}>
       <div
@@ -144,17 +203,42 @@ export const WelcomeScreen = (props: WelcomeScreenProps) => {
           )}
         </div>
         {/* Desktop-only welcome composer */}
-        <div className="openui-agent-welcome-screen__composer-starters-container">
+        <div
+          className="openui-agent-welcome-screen__composer-starters-container"
+          data-has-prefill-chips={(hasChips && draft.length === 0) || undefined}
+        >
           <div className="openui-agent-welcome-screen__desktop-composer">
             <WelcomeGlow>
-              <DesktopWelcomeComposer />
+              {hasChips ? (
+                <DesktopWelcomeComposer
+                  value={draft}
+                  onChange={handleDraftChange}
+                  drafting={draft.length > 0 && !selectedChip}
+                  inputRef={inputRef}
+                />
+              ) : (
+                <DesktopWelcomeComposer />
+              )}
             </WelcomeGlow>
           </div>
-          {/* Desktop-only conversation starters */}
-          {starters.length > 0 && (
-            <div className="openui-agent-welcome-screen__desktop-starters">
-              <ConversationStarter starters={starters} variant={starterVariant} />
-            </div>
+          {hasChips ? (
+            <WelcomePrefillChips
+              chips={promptTemplates}
+              starters={starters}
+              starterVariant={starterVariant}
+              draft={draft}
+              selectedChip={selectedChip}
+              onChipClick={handleChipClick}
+              onContextualSelect={handleContextualSelect}
+              disabled={isRunning}
+            />
+          ) : (
+            /* Desktop-only conversation starters */
+            starters.length > 0 && (
+              <div className="openui-agent-welcome-screen__desktop-starters">
+                <ConversationStarter starters={starters} variant={starterVariant} />
+              </div>
+            )
           )}
         </div>
       </div>

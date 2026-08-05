@@ -2,7 +2,6 @@
 
 import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
 import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
-import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import {
   Component,
@@ -77,7 +76,6 @@ interface ComparePageClientProps {
 export function ComparePageClient({
   initialPair = DEFAULT_COMPARISON_PAIR,
 }: ComparePageClientProps) {
-  const { resolvedTheme } = useTheme();
   const [pair, setPair] = useState<ComparisonPair>(initialPair);
   const selectedPair = getComparisonPair(pair);
   const [mobileMode, setMobileMode] = useState<(typeof ALL_MODES)[number]>(selectedPair.modes[0]);
@@ -86,7 +84,6 @@ export function ComparePageClient({
   const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
   const [unavailableModes, setUnavailableModes] = useState<Set<ComparisonMode>>(() => new Set());
   const [registry] = useState(createComparisonControllerRegistry);
-  const themeMode = resolvedTheme === "dark" ? "dark" : "light";
 
   const markdown = useComparisonModeSnapshot(registry, "markdown");
   const oss = useComparisonModeSnapshot(registry, "oss");
@@ -286,14 +283,12 @@ export function ComparePageClient({
                   >
                     {mode === "markdown" && (
                       <MarkdownAgentSurface
-                        themeMode={themeMode}
                         onCreditsExhausted={handleCreditsExhausted}
                         registry={registry}
                       />
                     )}
                     {mode === "oss" && (
                       <OssAgentSurface
-                        themeMode={themeMode}
                         onCreditsExhausted={handleCreditsExhausted}
                         registry={registry}
                       />

@@ -35,11 +35,7 @@ const CLOUD_STARTERS = [
   },
 ];
 
-interface CloudAgentSurfaceProps {
-  themeMode: "light" | "dark";
-}
-
-export function CloudAgentSurface({ themeMode }: CloudAgentSurfaceProps) {
+export function CloudAgentSurface() {
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const [userId] = useState(getOrCreateCloudUserId);
   const [llm] = useState(createCloudChatLLM);
@@ -84,7 +80,6 @@ export function CloudAgentSurface({ themeMode }: CloudAgentSurfaceProps) {
         agentName="OpenUI Cloud"
         scrollVariant="always"
         scrollOnLoad={false}
-        theme={{ mode: themeMode }}
         starterVariant="short"
         starters={CLOUD_STARTERS}
       >

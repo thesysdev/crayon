@@ -8,10 +8,22 @@
 // 2. Mobile: Full-width chat with absolute-positioned detailed-view overlay
 
 .openui-agent-thread-container {
+  position: relative;
   flex: 1;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+// Full-screen loading overlay while a thread's messages load. The container
+// hides its content via inline `visibility: hidden`; visibility is
+// inheritable, so this child opts back in and covers the hidden layout.
+.openui-agent-thread-container__loading {
+  visibility: visible;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: cssUtils.$foreground;
 }
 
 // Hide conversation starters and welcome-screen starters while the user is
@@ -164,6 +176,7 @@ $thread-content-max-width: calc(
   width: 100%;
   height: 100%;
   overflow: auto;
+  scrollbar-gutter: stable;
   padding: cssUtils.$space-m 0 calc($bottom-mask-height + cssUtils.$space-m);
   scroll-padding-top: calc($top-mask-height + cssUtils.$space-3xs);
   scroll-padding-bottom: calc($bottom-mask-height + cssUtils.$space-m);
@@ -217,6 +230,44 @@ $thread-content-max-width: calc(
 }
 
 // =============================================================================
+// Scroll-to-latest affordance
+// =============================================================================
+
+.openui-agent-thread-scroll-latest {
+  position: absolute;
+  bottom: cssUtils.$space-m;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid cssUtils.$border-default;
+  border-radius: cssUtils.$radius-full;
+  background-color: cssUtils.$background;
+  color: cssUtils.$text-neutral-secondary;
+  cursor: pointer;
+  box-shadow: cssUtils.$shadow-m;
+
+  &:hover {
+    color: cssUtils.$text-neutral-primary;
+    border-color: cssUtils.$border-interactive;
+  }
+
+  &:focus-visible {
+    outline: 2px solid cssUtils.$border-interactive-emphasis;
+    outline-offset: 2px;
+  }
+
+  &__arrow {
+    display: block;
+  }
+}
+
+// =============================================================================
 // Messages
 // =============================================================================
 
@@ -237,6 +288,7 @@ $thread-content-max-width: calc(
 .openui-agent-thread-message-assistant {
   width: 100%;
   display: flex;
+  align-items: flex-start;
   gap: cssUtils.$space-s;
   padding-right: $center-align-spacing;
   overflow: hidden;

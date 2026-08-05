@@ -1,24 +1,34 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { ExpandChevron } from "../../components/ExpandChevron";
 import {
   ArrowUpRight,
   Broadcast,
+  ChartLineUp,
+  CloudArrowUp,
   CursorClick,
+  Database,
   Devices,
+  Handshake,
   Plugs,
+  Pulse,
   PuzzlePiece,
   ShieldCheck,
   type Icon,
 } from "@phosphor-icons/react";
+import type { ReactNode } from "react";
 import { BevelButton } from "../../components/Button/BevelButton";
-import { SectionHeader } from "../../components/SectionHeader/SectionHeader";
+import { ExpandChevron } from "../../components/ExpandChevron";
 import { useSingleOpenAccordion } from "../../components/MobileAccordion/useSingleOpenAccordion";
+import { SectionHeader } from "../../components/SectionHeader/SectionHeader";
 import { CompatibilitySection } from "../CompatibilitySection/CompatibilitySection";
 import styles from "./FeatureGridSection.module.css";
 
-export type GridFeature = { Icon: Icon; title: string; description: string };
+export type GridFeature = {
+  Icon?: Icon;
+  icon?: GridFeatureIcon;
+  title: string;
+  description: string;
+};
 
 const FEATURES: GridFeature[] = [
   {
@@ -30,44 +40,60 @@ const FEATURES: GridFeature[] = [
   {
     Icon: Devices,
     title: "Cross-platform",
-    description:
-      "One spec renders natively to React, React Native, Vue, and more.",
+    description: "One spec renders natively to React, React Native, Vue, and more.",
   },
   {
     Icon: Broadcast,
     title: "Streaming-first",
-    description:
-      "UI renders progressively as the model responds, not after the full output.",
+    description: "UI renders progressively as the model responds, not after the full output.",
   },
   {
     Icon: CursorClick,
     title: "Interactive",
-    description:
-      "Reactive state, inputs, and actions wired straight to your tools.",
+    description: "Reactive state, inputs, and actions wired straight to your tools.",
   },
   {
     Icon: ShieldCheck,
     title: "Safe by default",
-    description:
-      "The model only composes your components and never runs arbitrary code.",
+    description: "The model only composes your components and never runs arbitrary code.",
   },
   {
     Icon: PuzzlePiece,
     title: "Bring your own components",
-    description:
-      "Build from the components and design system you already have.",
+    description: "Build from the components and design system you already have.",
   },
 ];
 
+const FEATURE_ICONS = {
+  chart: ChartLineUp,
+  cloud: CloudArrowUp,
+  database: Database,
+  devices: Devices,
+  handshake: Handshake,
+  interaction: CursorClick,
+  pulse: Pulse,
+  shield: ShieldCheck,
+  signal: Broadcast,
+} as const;
+
+export type GridFeatureIcon = keyof typeof FEATURE_ICONS;
+
 export function FeatureGridSection({
   features = FEATURES,
+  lead,
   showHeader = true,
   showCompat = true,
   header,
   showBottomSeparator = true,
   fadeColumnLines = false,
+  showTopSeparator = false,
+  flushOuterCards = false,
+  balanceLastRow = false,
+  desktopColumns = 3,
 }: {
   features?: GridFeature[];
+  /** Optional content rendered as the first cell in the feature grid. */
+  lead?: ReactNode;
   /** The benchmark header + CTA (OpenUI-specific). Off for sub-product pages. */
   showHeader?: boolean;
   /** The "Works with your stack" compatibility band (OpenUI-specific). */
@@ -78,6 +104,14 @@ export function FeatureGridSection({
   showBottomSeparator?: boolean;
   /** Fade the grid's vertical column dividers out toward the bottom. */
   fadeColumnLines?: boolean;
+  /** Show a full-width rule above the grid. */
+  showTopSeparator?: boolean;
+  /** Remove the outside padding from the edge cells in a two-row, three-column grid. */
+  flushOuterCards?: boolean;
+  /** Let the final two cards split the full grid width evenly. */
+  balanceLastRow?: boolean;
+  /** Number of columns used by the feature grid on desktop. */
+  desktopColumns?: 3 | 4;
 } = {}) {
   // Mobile-only: all rows collapsed by default; one expands at a time and the
   // open one can be tapped to collapse. Desktop ignores this (CSS shows all).
@@ -111,23 +145,39 @@ export function FeatureGridSection({
           <div className={styles.separator} />
         </>
       )}
-      <div className={`${styles.grid} ${fadeColumnLines ? styles.gridFadeLines : ""}`.trim()}>
-        {features.map(({ Icon, title, description }, index) => (
-          <div
-            className={styles.feature}
-            key={title}
-            {...accordion.getToggleProps(index)}
-          >
-            <span className={styles.icon} aria-hidden="true">
-              <Icon size={28} weight="light" />
-            </span>
-            <h3 className={styles.featureTitle}>{title}</h3>
-            <ExpandChevron className={styles.chevron} />
-            <p className={styles.featureDescription}>
-              <span className={styles.featureDescriptionInner}>{description}</span>
-            </p>
-          </div>
-        ))}
+      {showTopSeparator && <div className={styles.separator} />}
+      <div
+        className={`${styles.grid} ${fadeColumnLines ? styles.gridFadeLines : ""} ${
+          features.length <= desktopColumns ? styles.gridSingleRow : ""
+        } ${flushOuterCards ? styles.gridFlushOuterCards : ""} ${
+          balanceLastRow ? styles.gridBalancedLastRow : ""
+        } ${desktopColumns === 4 ? styles.gridFourColumns : ""
+        }`.trim()}
+      >
+        {lead && <div className={styles.lead}>{lead}</div>}
+        {features.map(({ Icon, icon, title, description }, index) => {
+          const FeatureIcon = Icon ?? (icon ? FEATURE_ICONS[icon] : undefined);
+
+          return (
+            <div
+              className={`${styles.feature} ${FeatureIcon ? "" : styles.featureWithPlaceholder}`.trim()}
+              key={title}
+              {...accordion.getToggleProps(index)}
+            >
+              <span
+                className={`${styles.icon} ${FeatureIcon ? "" : styles.iconPlaceholder}`.trim()}
+                aria-hidden="true"
+              >
+                {FeatureIcon && <FeatureIcon size={28} weight="light" />}
+              </span>
+              <h3 className={styles.featureTitle}>{title}</h3>
+              <ExpandChevron className={styles.chevron} />
+              <p className={styles.featureDescription}>
+                <span className={styles.featureDescriptionInner}>{description}</span>
+              </p>
+            </div>
+          );
+        })}
       </div>
       {showCompat && (
         <>
@@ -147,9 +197,7 @@ export function FeatureGridSection({
           </div>
         </>
       )}
-      {showBottomSeparator && (
-        <div className={`${styles.separator} ${styles.separatorBottom}`} />
-      )}
+      {showBottomSeparator && <div className={`${styles.separator} ${styles.separatorBottom}`} />}
     </section>
   );
 }

@@ -28,8 +28,15 @@ export function getPageImage(page: InferPageType<typeof source>) {
 
 export async function getLLMText(page: InferPageType<typeof source>) {
   const processed = await page.data.getText("processed");
+  const description = page.data.description || `OpenUI documentation for ${page.data.title}.`;
+  const canonicalUrl = new URL(page.url, BASE_URL);
 
   return `# ${page.data.title}
 
-${processed}`;
+> ${description}
+
+Source: ${canonicalUrl}
+
+${processed.trim()}
+`;
 }

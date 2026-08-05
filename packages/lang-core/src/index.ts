@@ -33,8 +33,15 @@ export { enrichErrors } from "./parser/enrich-errors";
 export { parseExpression } from "./parser/expressions";
 export { tokenize } from "./parser/lexer";
 export { mergeStatements } from "./parser/merge";
-export { generatePrompt } from "./parser/prompt";
-export type { ComponentPromptSpec, LibrarySpec, PromptSpec, ToolSpec } from "./parser/prompt";
+export { generatePrompt, generateSystemPrompt } from "./parser/prompt";
+export type {
+  ComponentPromptSpec,
+  LibrarySpec,
+  PromptSpec,
+  SystemPromptOptions,
+  SystemPromptSpec,
+  ToolSpec,
+} from "./parser/prompt";
 export { jsonToOpenUI } from "./parser/serialize";
 export type { SerializeOptions } from "./parser/serialize";
 export { autoClose, split } from "./parser/statements";

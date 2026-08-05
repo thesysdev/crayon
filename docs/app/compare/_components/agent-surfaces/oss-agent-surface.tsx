@@ -8,12 +8,11 @@ import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";
 import { useComparisonChatLLM } from "./use-comparison-chat-llm";
 
 interface OssAgentSurfaceProps {
-  themeMode: "light" | "dark";
   onCreditsExhausted: () => void;
   registry: ComparisonControllerRegistry;
 }
 
-export function OssAgentSurface({ themeMode, onCreditsExhausted, registry }: OssAgentSurfaceProps) {
+export function OssAgentSurface({ onCreditsExhausted, registry }: OssAgentSurfaceProps) {
   const llm = useComparisonChatLLM("openui", onCreditsExhausted);
 
   return (
@@ -23,7 +22,6 @@ export function OssAgentSurface({ themeMode, onCreditsExhausted, registry }: Oss
         componentLibrary={openuiChatLibrary}
         agentName="OpenUI OSS"
         scrollVariant="always"
-        theme={{ mode: themeMode }}
       >
         <AgentInterface.Sidebar />
         <AgentInterface.Welcome>

@@ -9,17 +9,7 @@
   background: var(--openui-background);
 }
 
-/* The --home-* surface tokens are re-declared locally because the chat page
-   renders outside .homeTheme (same trick as GitHubButton.module.css
-   .glowBtnCompact). Declared on the header so the back button, pair switcher,
-   and CTA dropdown all share them. */
 .header {
-  --home-surface-ink: #0a0a0a;
-  --home-surface-raised: #f7f7f8;
-  --home-bevel:
-    inset 0 2px 1px -0.5px rgba(255, 255, 255, 1), inset 0 -3px 6px -1px rgba(0, 0, 0, 0.1);
-  --home-bevel-on-dark:
-    inset 0 7px 12px -6px rgba(255, 255, 255, 0.16), inset 0 -5px 8px -2px rgba(0, 0, 0, 0.6);
   position: relative;
   z-index: 5;
   flex: none;
@@ -81,8 +71,7 @@
   background: color-mix(in srgb, var(--openui-foreground) 96%, #fff);
 }
 
-.trayChevron,
-.ctaChevron {
+.trayChevron {
   transition: transform 160ms ease;
 }
 
@@ -90,8 +79,7 @@
   transform: rotate(180deg);
 }
 
-.viewComparisonChip:focus-visible,
-.ctaMenuItem:focus-visible {
+.viewComparisonChip:focus-visible {
   outline: 2px solid var(--openui-border-accent-emphasis);
   outline-offset: -2px;
 }
@@ -207,8 +195,7 @@
   transition: opacity 120ms ease;
 }
 
-.comparisonCta:hover,
-.ctaButton:hover {
+.comparisonCta:hover {
   opacity: 0.88;
 }
 
@@ -273,7 +260,7 @@
   justify-self: start;
 }
 
-.headerRow > .ctaWrap {
+.headerRow > .buildForFreeMenu {
   position: absolute;
   right: 8px;
   justify-self: end;
@@ -299,7 +286,6 @@
 .backLink:hover,
 .mobileMenuButton:hover,
 .mobileMenuButton[aria-expanded="true"],
-.ctaMenuItem:hover,
 .resetButton:hover,
 .themeToggle:hover {
   background: var(--openui-highlight);
@@ -317,47 +303,6 @@
 .themeToggle:focus-visible {
   outline: 2px solid var(--openui-border-accent-emphasis);
   outline-offset: 2px;
-}
-
-/* "Build for free" dropdown — same component recipe as the homepage hero's
-   command dropdown (HeroSection.module.css .command*). The --home-* surface
-   tokens are re-declared locally because the chat page renders outside
-   .homeTheme (same trick as GitHubButton.module.css .glowBtnCompact). */
-.ctaWrap {
-  position: relative;
-  flex: none;
-}
-
-/* Text button. */
-.ctaButton {
-  display: flex;
-  box-sizing: border-box;
-  height: 2.25rem;
-  align-items: center;
-  gap: 0.375rem;
-  padding-inline: 0.625rem;
-  border: 0;
-  border-radius: 10px;
-  background: var(--home-surface-ink);
-  box-shadow: var(--home-bevel-on-dark);
-  color: #fff;
-  font-family: "Inter", "Segoe UI", sans-serif;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  line-height: 1;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: opacity 120ms ease;
-}
-
-.ctaButton:focus-visible {
-  outline: 2px solid var(--openui-text-neutral-primary);
-  outline-offset: 2px;
-}
-
-/* Right arrow tips down while the menu is open. */
-.ctaChevron[data-open="true"] {
-  transform: rotate(90deg);
 }
 
 /* Blurs the page beneath the header while a menu is open. Negative z-index
@@ -486,7 +431,6 @@
 }
 
 /* Fade-only reveal, as on the hero. */
-.ctaMenu,
 .pairMenu {
   position: absolute;
   top: calc(100% + 8px);
@@ -499,13 +443,7 @@
     visibility 0s linear 0.18s;
 }
 
-.ctaMenu {
-  right: 0;
-  width: 22.5rem;
-}
-
 /* Shared dropdown card recipe. */
-.ctaMenuCard,
 .pairMenuCard {
   display: flex;
   flex-direction: column;
@@ -513,58 +451,6 @@
   border-radius: 12px;
   background: var(--openui-foreground);
   box-shadow: var(--openui-shadow-l);
-}
-
-.ctaMenuCard {
-  gap: 2px;
-  padding: 0.375rem;
-}
-
-.ctaMenuItem {
-  display: flex;
-  width: 100%;
-  min-height: 40px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 8px 12px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--openui-text-neutral-primary);
-  font-size: 0.8125rem;
-  line-height: 1.25rem;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background-color 120ms ease;
-}
-
-.ctaMenuItemLabel {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ctaMenuItemRunner {
-  font-weight: 600;
-  color: var(--openui-text-neutral-primary);
-}
-
-/* Copy icon: space reserved, revealed on row hover. */
-.ctaMenuItemIcon {
-  display: inline-flex;
-  width: 1.5rem;
-  height: 1.5rem;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  color: var(--openui-text-neutral-secondary);
-  opacity: 0;
-  transition: opacity 0.12s ease;
-}
-
-.ctaMenuItem:hover .ctaMenuItemIcon,
-.ctaMenuItem:focus-visible .ctaMenuItemIcon {
-  opacity: 1;
 }
 
 /* Pair switcher dropdown: absolutely centered on the screen, out of the grid,
@@ -612,7 +498,6 @@
   transform: translateX(-50%);
 }
 
-.ctaMenuOpen,
 .pairMenuOpen {
   opacity: 1;
   visibility: visible;
@@ -815,6 +700,32 @@
   min-width: 0 !important;
   min-height: 0 !important;
   overflow: hidden !important;
+}
+
+/* Artifacts are the primary output in this comparison, so promote an open
+   detailed view above the page chrome instead of confining it to the Cloud
+   half of the comparison grid. AgentInterface uses a desktop split panel and
+   a mobile overlay; both must be fixed to the viewport for consistent
+   behavior at every container width. */
+.panelBody :global(.openui-agent-thread-detailed-view-panel),
+.panelBody :global(.openui-detailed-view-overlay) {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 100;
+  width: 100dvw !important;
+  height: 100dvh !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: none !important;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--openui-foreground);
+}
+
+/* The desktop splitter only controls the now-covered chat pane and should not
+   remain focusable behind the fullscreen artifact. */
+.panelBody :global(.openui-agent-resizable-separator) {
+  display: none;
 }
 
 /* Comparison owns all navigation and input chrome. Both internal desktop and
@@ -1150,7 +1061,7 @@
 }
 
 @media (max-width: 1180px) {
-  .ctaWrap {
+  .buildForFreeMenu {
     display: none;
   }
 }
@@ -1373,10 +1284,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ctaButton,
-  .ctaChevron,
-  .ctaMenu,
-  .ctaMenuItem,
   .menuOverlay,
   .comparisonTray,
   .comparisonTrayCard,

@@ -22,6 +22,8 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 import type { OpenUIContextValue } from "../context";
 import type { Library } from "../library";
+import { useOpenUIErrors } from "./useOpenUIErrors";
+import { useStreamingObservability } from "./useStreamingObservability";
 
 /** Unwrap { value, componentType } wrapper from form field entries. Returns raw value. */
 function unwrapFieldValue(v: unknown): unknown {
@@ -202,8 +204,8 @@ export function useOpenUIState(
   }, [isStreaming, result?.mutationStatements, evaluationContext, queryManager]);
 
   // ─── Ref for stable callbacks ───
-  const propsRef = useRef({ onAction, onStateUpdate, onError });
-  propsRef.current = { onAction, onStateUpdate, onError };
+  const propsRef = useRef({ onAction, onStateUpdate });
+  propsRef.current = { onAction, onStateUpdate };
 
   const resultRef = useRef(result);
   resultRef.current = result;
@@ -436,76 +438,22 @@ export function useOpenUIState(
     }
   }, [result, evaluationContext, library, store, storeSnapshot, querySnapshot]);
 
-  // ─── Collect and fire onError ───
-  const lastErrorKeyRef = useRef<string>("");
-  useEffect(() => {
-    if (isStreaming) {
-      // Clear stale errors from previous session so the correction loop
-      // gets a clean signal when this streaming session completes.
-      if (lastErrorKeyRef.current !== "") {
-        lastErrorKeyRef.current = "";
-        propsRef.current.onError?.([]);
-      }
-      return;
-    }
-    const errors: OpenUIError[] = [];
+  // Keep error collection first: its effect refreshes this ref before the
+  // observability effect publishes the terminal stream event.
+  const { errorsRef, errorRevision } = useOpenUIErrors({
+    response,
+    isStreaming,
+    result,
+    evaluatedResult,
+    library,
+    querySnapshot,
+    parseExceptionRef,
+    runtimeErrorsRef,
+    renderErrorsRef,
+    onError,
+  });
 
-    // Parser exception (parser itself crashed)
-    if (parseExceptionRef.current) {
-      errors.push(parseExceptionRef.current);
-    }
-
-    // Parse failure — response exists but produced no renderable root
-    if (response && !result?.root && !parseExceptionRef.current) {
-      errors.push({
-        source: "parser",
-        code: "parse-failed",
-        message: result
-          ? "Code parsed but produced no renderable root component"
-          : "Response could not be parsed as valid openui-lang",
-        hint: `The entire response must be valid openui-lang code starting with root = ${library.root ?? "Root"}(...)`,
-      });
-    }
-
-    // Parser validation errors → tag source; ValidationError.message is already
-    // humanized (signatures/available components/expected types inlined).
-    if (result?.meta?.errors?.length) {
-      errors.push(
-        ...result.meta.errors.map((e: ValidationError) => ({
-          source: "parser" as const,
-          code: e.code,
-          message: e.message,
-          component: e.component,
-          path: e.path || undefined,
-          statementId: e.statementId,
-        })),
-      );
-    }
-
-    // Runtime eval errors (collected per-prop by evaluateElementProps)
-    errors.push(...runtimeErrorsRef.current);
-
-    // Render errors (collected by error boundary via reportError)
-    errors.push(...renderErrorsRef.current);
-    renderErrorsRef.current = [];
-
-    // Query/mutation tool errors — already OpenUIError, pass through directly
-    errors.push(...(querySnapshot.__openui_errors ?? []));
-
-    // Deduplicate — only fire when errors actually change
-    const key = JSON.stringify(errors);
-    if (key === lastErrorKeyRef.current) return;
-    lastErrorKeyRef.current = key;
-
-    // Fire onError or fall back to console.warn
-    if (propsRef.current.onError) {
-      propsRef.current.onError(errors);
-    } else if (errors.length > 0) {
-      for (const e of errors) {
-        console.warn(`[openui] ${e.source}/${e.code}: ${e.message}`);
-      }
-    }
-  }, [isStreaming, response, result, evaluatedResult, querySnapshot, library]);
+  useStreamingObservability({ response, isStreaming, result, errorsRef, errorRevision });
 
   return { result: evaluatedResult, parseResult: result, contextValue, isQueryLoading };
 }
