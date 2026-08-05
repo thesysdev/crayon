@@ -68,19 +68,7 @@ export function fetchLLM({
             status: response.status,
             ok: response.ok,
             threadId,
-            ...(response.ok
-              ? null
-              : {
-                  error: {
-                    // Thesys API error responses are OpenAI-shaped: { error: { message, type, param } }.
-                    ...(await response
-                      .clone()
-                      .json()
-                      .then((body: { error?: Record<string, unknown> }) => body?.error ?? {})
-                      .catch(() => ({}))),
-                    message: await getResponseErrorMessage(response),
-                  },
-                }),
+            ...(!response.ok ? await buildObservabilityErrorDetail(response) : null),
           });
           return response;
         },
@@ -97,5 +85,15 @@ export function fetchLLM({
       );
     },
     streamProtocol: streamAdapter,
+  };
+}
+
+async function buildObservabilityErrorDetail(response: Response) {
+  const res = await response.clone().json();
+  return {
+    error: res?.error,
+    ...(!res.message
+      ? await getResponseErrorMessage(response).then((message) => ({ message }))
+      : { message: res.message }),
   };
 }
