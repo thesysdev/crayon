@@ -45,8 +45,8 @@ export const processStreamedMessage = async ({
 
   let isFirst = true;
 
-  // First TEXT_MESSAGE_START wins — see that case below.
-  let serverIdAdopted = false;
+  // The wire message-item id whose text currently streams into currentMessage.
+  let currentTextItemId: string | null = null;
 
   // Tool messages by toolCallId, so repeated TOOL_CALL_RESULTs for the same
   // call UPDATE one message in place instead of duplicating it.
@@ -159,35 +159,46 @@ export const processStreamedMessage = async ({
         break;
       }
 
-      case EventType.TEXT_MESSAGE_START:
-        // Adopt the server-generated message id (carried on TEXT_MESSAGE_START)
-        // in place of the optimistic uuid, so a later persist (updateMessage)
-        // keys on the same id the backend stored. Two cases:
-        //
-        //   - Not yet created (isFirst): just relabel currentMessage; the
-        //     trailing isFirst createMessage below writes it with the server id
-        //     — no store swap needed.
-        //   - Already created: swap IN PLACE via replaceMessageId. Deleting +
-        //     re-creating would break ordering when tool messages were appended
-        //     between the create and this event (e.g. from TOOL_CALL_RESULT).
-        //     Without replaceMessageId we can't relabel the caller's store, so
-        //     we keep the optimistic id rather than let currentMessage's id
-        //     drift away from it (which would make later updates miss).
-        //
-        // First TEXT_MESSAGE_START wins: a multi-text-item run emits one per
-        // item, and re-relabeling would remount the message component (keyed by
-        // id) for each.
-        if (!serverIdAdopted && event.messageId && event.messageId !== currentMessage.id) {
+      case EventType.TEXT_MESSAGE_START: {
+        // A DIFFERENT item id after content/tool calls have accumulated means
+        // the model opened a new output message item — interleaving prose with
+        // tool calls (several sections in one run).
+        const startId = (event as { messageId?: string }).messageId ?? null;
+        const hasBody =
+          (currentMessage.content?.length ?? 0) > 0 || (currentMessage.toolCalls?.length ?? 0) > 0;
+        if (hasBody && startId !== currentTextItemId) {
+          if (rafId !== null) {
+            // Flush the pending update so the finished segment's final state
+            // lands before the next segment is created.
+            cancelAnimationFrame(rafId);
+            rafId = null;
+            if (!isFirst) updateMessage(currentMessage);
+          }
+          // Key the new segment by the server id when present (else a uuid) so
+          // it is created already carrying the persistable id.
+          currentMessage = {
+            id: startId ?? crypto.randomUUID(),
+            role: "assistant",
+            content: "",
+            toolCalls: [],
+          };
+          isFirst = true;
+        } else if (startId && startId !== currentMessage.id) {
+          // First (or same) item: adopt the server id in place of the optimistic
+          // uuid. Swap IN PLACE via replaceMessageId — deleting + re-creating
+          // would break ordering when tool messages were appended between
+          // the create and this event. Without replaceMessageId we keep the
+          // optimistic id rather  than desync currentMessage from the store.
           if (isFirst) {
-            serverIdAdopted = true;
-            currentMessage = { ...currentMessage, id: event.messageId };
+            currentMessage = { ...currentMessage, id: startId };
           } else if (replaceMessageId) {
-            serverIdAdopted = true;
-            replaceMessageId(currentMessage.id, event.messageId);
-            currentMessage = { ...currentMessage, id: event.messageId };
+            replaceMessageId(currentMessage.id, startId);
+            currentMessage = { ...currentMessage, id: startId };
           }
         }
+        currentTextItemId = startId;
         break;
+      }
 
       case EventType.TOOL_CALL_RESULT: {
         // Result landed → no longer executing / in flight.
