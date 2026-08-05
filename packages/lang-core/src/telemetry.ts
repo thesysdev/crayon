@@ -164,7 +164,6 @@ function detectRuntime(): RuntimeInfo | undefined {
   const target = globalThis as typeof globalThis & {
     Bun?: { version?: string };
     Deno?: {
-      env?: { get?: (name: string) => string | undefined };
       version?: { deno?: string };
     };
     EdgeRuntime?: unknown;
@@ -182,13 +181,7 @@ function detectRuntime(): RuntimeInfo | undefined {
   }
 
   if (target.Deno && typeof target.Deno === "object") {
-    const env: Record<string, string | undefined> = {};
-    try {
-      for (const name of ENVIRONMENT_KEYS) env[name] = target.Deno.env?.get?.(name);
-    } catch {
-      // Deno may deny environment access. Telemetry remains content-free.
-    }
-    return { name: "deno", version: target.Deno.version?.deno, env };
+    return { name: "deno", version: target.Deno.version?.deno };
   }
 
   if (typeof target.EdgeRuntime === "string") {
@@ -243,21 +236,6 @@ function isCi(env: Record<string, string | undefined> | undefined): boolean {
     return Boolean(value && value !== "0" && value.toLowerCase() !== "false");
   });
 }
-
-const ENVIRONMENT_KEYS = [
-  "NODE_ENV",
-  "DO_NOT_TRACK",
-  "OPENUI_TELEMETRY_DISABLED",
-  "CI",
-  "CONTINUOUS_INTEGRATION",
-  "BUILD_NUMBER",
-  "GITHUB_ACTIONS",
-  "GITLAB_CI",
-  "BUILDKITE",
-  "CIRCLECI",
-  "VERCEL",
-  "NETLIFY",
-] as const;
 
 function getState(): TelemetryState {
   const registry = globalThis as typeof globalThis & { [STATE_KEY]?: TelemetryState };
