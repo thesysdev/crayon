@@ -100,9 +100,10 @@ describe("system prompt telemetry", () => {
     );
   });
 
-  it("memoizes configuration work for a reused sampled prompt input", async () => {
+  it("skips configuration work for unsampled prompt inputs", async () => {
     const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
+    vi.mocked(Math.random).mockReturnValue(0.1);
     let schemaReads = 0;
     const inputSchema: Record<string, unknown> = {};
     Object.defineProperty(inputSchema, "type", {
@@ -123,14 +124,10 @@ describe("system prompt telemetry", () => {
     });
 
     recordSystemPromptGeneration(spec, "legacy_prompt_spec");
-    await waitForCaptures(fetchMock, 1);
-    const readsAfterFirstCapture = schemaReads;
+    await new Promise((resolve) => setTimeout(resolve, 20));
 
-    recordSystemPromptGeneration(spec, "legacy_prompt_spec");
-    await waitForCaptures(fetchMock, 2);
-
-    expect(schemaReads).toBe(readsAfterFirstCapture);
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(schemaReads).toBe(0);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("captures an eligible sampled generation", async () => {

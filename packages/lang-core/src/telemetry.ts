@@ -30,7 +30,6 @@ interface RuntimeInfo {
 }
 
 interface TelemetryState {
-  configurationHashesByInput: WeakMap<object, Promise<string>>;
   projectHash?: Promise<string | undefined>;
   runtimeId: string;
 }
@@ -301,8 +300,6 @@ function randomUuid(): string {
 function getState(): TelemetryState {
   const registry = globalThis as typeof globalThis & { [STATE_KEY]?: TelemetryState };
   registry[STATE_KEY] ??= {
-    // Weak keys avoid extending the lifetime of application-owned prompt specs.
-    configurationHashesByInput: new WeakMap<object, Promise<string>>(),
     runtimeId: randomUuid(),
   };
   return registry[STATE_KEY];
@@ -460,11 +457,7 @@ async function sendCapture(
   }
 }
 
-export function recordSystemPromptGeneration(
-  spec: PromptSpec,
-  inputShape: InputShape,
-  inputIdentity: object = spec,
-): void {
+export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: InputShape): void {
   try {
     const runtime = detectRuntime();
     if (!runtime || typeof globalThis.fetch !== "function" || !globalThis.crypto?.subtle) return;
@@ -479,12 +472,7 @@ export function recordSystemPromptGeneration(
     if (Math.random() >= SAMPLE_RATE) return;
 
     const state = getState();
-    // Prompt inputs are treated as immutable. Reusing the same input object becomes O(1).
-    let configHash = state.configurationHashesByInput.get(inputIdentity);
-    if (!configHash) {
-      configHash = calculateSystemPromptConfigHash(spec);
-      state.configurationHashesByInput.set(inputIdentity, configHash);
-    }
+    const configHash = calculateSystemPromptConfigHash(spec);
 
     void Promise.resolve()
       .then(() => sendCapture(state, spec, configHash, inputShape, runtime, environment))
