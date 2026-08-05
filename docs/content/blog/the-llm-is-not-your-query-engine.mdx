@@ -17,18 +17,7 @@ This post examines the dominant architecture for these applications (the tool-ca
 
 The standard architecture for an AI data application is a function-calling loop. The application exposes a set of tools (SQL queries, API endpoints, aggregation functions), and the model calls them in conversation. Every interaction, including trivial ones, flows through the model:
 
-{/* TODO(design): replace this ASCII diagram with a real image diagram */}
-
-```
-        TOOL-CALLING LOOP                      GENERATIVE UI
-
-  user ──▶ LLM ──▶ database              user ──▶ LLM        (once)
-    ▲       │ ◀─── rows, as tokens                │
-    └───────┘                                     ▼ widget spec (once)
-     every single                        user ──▶ renderer ◀──▶ database
-     interaction                                every interaction,
-                                                zero tokens
-```
+![Architecture comparison: a tool-calling loop routes every interaction and its data through the LLM, while Generative UI calls the LLM once and handles later interactions through a deterministic renderer](./images/tool-calling-loop-vs-generative-ui.png)
 
 Consider the left panel of the demo above. A user is viewing revenue for the last 7 days and wants 30 instead. In the tool loop, that adjustment is a chat turn:
 
@@ -124,10 +113,10 @@ The runtime merges these into the running program ([incremental editing](/docs/o
 
 Both kinds of change compare favorably to the loop:
 
-| Change type                            | Tool-calling loop                              | Generative UI                                                     |
-| -------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------- |
-| Parameter change (filter, date range)  | Full round trip + result rows through context  | **Zero tokens.** Runtime re-executes the declared query            |
-| Intent change (new breakdown, new viz) | Full round trip + result rows through context  | **Reduced LLM call.** Spec in, delta out; data bypasses the model  |
+| Change type                            | Tool-calling loop                             | Generative UI                                                     |
+| -------------------------------------- | --------------------------------------------- | ----------------------------------------------------------------- |
+| Parameter change (filter, date range)  | Full round trip + result rows through context | **Zero tokens.** Runtime re-executes the declared query           |
+| Intent change (new breakdown, new viz) | Full round trip + result rows through context | **Reduced LLM call.** Spec in, delta out; data bypasses the model |
 
 ### **Generative UI can reduce LLM token usage by about 94%**
 
@@ -143,20 +132,7 @@ Consider a representative session with one initial question, five filter changes
 
 For a conservative estimate, assume each tool-loop turn costs 8k tokens for the query result and 2k for the prompt, tool call, and answer. We deliberately leave out re-sending earlier results, even though they stay in the history.
 
-```
-Tool-calling loop
-  7 model-assisted turns × 10k tokens                  = 70k tokens
-
-Generative UI
-  Initial widget generation                            = 3.5k tokens
-  5 filter changes × 0 tokens                          =    0 tokens
-  Intent change as a small widget delta                = 0.5k tokens
-                                                        ───────────
-                                                        =   4k tokens
-
-Token reduction
-  (70k - 4k) / 70k                                     = 94.3%
-```
+![Token comparison showing a 94.3 percent reduction: 70k tokens for a seven-turn tool-calling loop versus 4k tokens for Generative UI](./images/tool-calling-vs-generative-ui-token-reduction.png)
 
 The estimate favors the loop on purpose: in a real conversation, later turns also re-send earlier result sets, which makes them more expensive and the saving larger. Prompt caching narrows the history cost but not the rest. Rows still enter the context on every turn, and the model still rewrites the query on every turn.
 
