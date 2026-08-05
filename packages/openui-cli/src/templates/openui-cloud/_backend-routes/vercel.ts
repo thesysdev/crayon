@@ -1,98 +1,99 @@
 import { requiredEnv } from "@/lib/env";
 import { resolveRequestedModel } from "@/lib/models";
-import { runFunctionToolLoop } from "@/lib/tool-loop";
-import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
-import { createOpenAI } from "@ai-sdk/openai";
+import { runFunctionToolLoop, type FunctionToolExecutor } from "@/lib/tool-loop";
+import { executeGetWeather } from "@/lib/tools/get-weather";
 import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
+import { asSchema, tool, type ToolSet } from "ai";
 import { NextResponse } from "next/server";
-import type OpenAI from "openai";
+import OpenAI from "openai";
 import type {
+  FunctionTool,
   ResponseCreateParamsNonStreaming,
   ResponseInputItem,
   Tool,
 } from "openai/resources/responses/responses";
+import { z } from "zod";
 
 export const runtime = "nodejs";
 
-type CloudCreateParams = Omit<ResponseCreateParamsNonStreaming, "stream"> & {
-  stream?: boolean;
-};
-
-type ProviderChunk = {
-  type: string;
-  rawValue?: unknown;
-};
-
 /**
- * Use the AI SDK's documented custom fetch hook to pass through OpenUI Cloud's
- * Responses extensions. The provider natively handles Responses SSE, while the
- * hook preserves exact ResponseInputItem values plus artifact/image_search tools
- * that are not yet represented by @ai-sdk/openai's typed tool registry.
+ * App-owned tools are defined with the Vercel AI SDK and execute on this
+ * server. Add your own tools here; OpenUI Cloud's built-ins stay separate.
  */
-async function createResponsesStream(
-  createParams: CloudCreateParams,
-  signal?: AbortSignal,
-): Promise<AsyncIterable<Record<string, unknown>>> {
-  const cloud = createOpenAI({
-    name: "openui-cloud",
-    baseURL: "https://api.thesys.dev/v1/embed",
-    apiKey: requiredEnv("THESYS_API_KEY"),
-    fetch: async (input, init) => {
-      if (!init || typeof init.body !== "string") {
-        throw new Error("Expected a JSON Responses request body");
-      }
-      const providerBody = JSON.parse(init.body) as Record<string, unknown>;
-      return fetch(input, {
-        ...init,
-        body: JSON.stringify({ ...providerBody, ...createParams, stream: true }),
-      });
-    },
-  });
+const appTools = {
+  get_weather: tool({
+    description:
+      "Get the current weather for a city or place name. Use whenever the user " +
+      "asks about weather, temperature, rain, or what to wear.",
+    inputSchema: z.object({
+      location: z.string().min(1).describe("City or place name, e.g. Berlin."),
+    }),
+    execute: async ({ location }, { abortSignal }) =>
+      executeGetWeather(JSON.stringify({ location }), { signal: abortSignal }),
+  }),
+} satisfies ToolSet;
 
-  const result = await cloud.responses(String(createParams.model)).doStream({
-    // The transport hook replaces this placeholder with createParams.input.
-    prompt: [{ role: "user", content: [{ type: "text", text: "" }] }],
-    includeRawChunks: true,
-    abortSignal: signal,
-  });
+/**
+ * The AI SDK normally owns the model transport as well as its tool loop. Here
+ * OpenUI Cloud must remain the Responses transport, so this adapter exposes AI
+ * SDK tools as Responses declarations and local executors for our shared loop.
+ */
+async function prepareAppTools(tools: ToolSet): Promise<{
+  definitions: FunctionTool[];
+  executors: Record<string, FunctionToolExecutor>;
+}> {
+  const definitions: FunctionTool[] = [];
+  const executors: Record<string, FunctionToolExecutor> = {};
 
-  return rawResponseEvents(result.stream as ReadableStream<ProviderChunk>);
-}
-
-async function* rawResponseEvents(
-  stream: ReadableStream<ProviderChunk>,
-): AsyncIterable<Record<string, unknown>> {
-  const reader = stream.getReader();
-  let completed = false;
-  try {
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) {
-        completed = true;
-        return;
-      }
-      if (value.type === "raw" && typeof value.rawValue === "object" && value.rawValue !== null) {
-        yield value.rawValue as Record<string, unknown>;
-      }
+  for (const [name, appTool] of Object.entries(tools)) {
+    if (name.startsWith("thesys_")) {
+      throw new Error(`App tool names cannot use the reserved thesys_ prefix: ${name}`);
     }
-  } finally {
-    if (!completed) await reader.cancel().catch(() => undefined);
-    reader.releaseLock();
-  }
-}
+    if (appTool.type && appTool.type !== "function") {
+      throw new Error(`Only application function tools are supported here: ${name}`);
+    }
+    if (appTool.needsApproval) {
+      throw new Error(`Tool approval is not configured for: ${name}`);
+    }
+    const execute = appTool.execute;
+    if (!execute) throw new Error(`Tool ${name} must provide an execute function`);
 
-function createCloudClient(): OpenAI {
-  return {
-    responses: {
-      create: (params: CloudCreateParams, options?: { signal?: AbortSignal }) =>
-        createResponsesStream(params, options?.signal),
-    },
-  } as unknown as OpenAI;
+    const schema = asSchema(appTool.inputSchema);
+    definitions.push({
+      type: "function",
+      name,
+      description: appTool.description,
+      parameters: (await schema.jsonSchema) as Record<string, unknown>,
+      strict: appTool.strict ?? false,
+    });
+
+    executors[name] = async (argsJson, { callId, signal }) => {
+      const input = JSON.parse(argsJson || "{}") as unknown;
+      const validation = schema.validate
+        ? await schema.validate(input)
+        : ({ success: true, value: input } as const);
+      if (!validation.success) throw validation.error;
+
+      const output = await execute(validation.value, {
+        toolCallId: callId,
+        messages: [],
+        abortSignal: signal,
+      });
+      if (output !== null && typeof output === "object" && Symbol.asyncIterator in output) {
+        throw new Error(`Streaming tool results are not supported for: ${name}`);
+      }
+      if (typeof output === "string") return output;
+      return JSON.stringify(output) ?? String(output);
+    };
+  }
+
+  return { definitions, executors };
 }
 
 /**
- * Vercel AI SDK owns the Responses transport; OpenUI Cloud still owns model
- * routing, conversations, server-side tools, artifacts, and billing.
+ * OpenUI Cloud remains the OpenAI-compatible Responses provider and owns its
+ * conversations, artifacts, search, and MCP tools. The Vercel AI SDK is used
+ * only for application-owned function tools declared above.
  */
 export async function POST(req: Request) {
   const {
@@ -117,20 +118,24 @@ export async function POST(req: Request) {
   if (req.signal.aborted) abortFromRequest();
   else req.signal.addEventListener("abort", abortFromRequest, { once: true });
 
-  const client = createCloudClient();
-  const functionTools = {
-    [getWeatherTool.name]: executeGetWeather,
-  };
+  const client = new OpenAI({
+    baseURL: "https://api.thesys.dev/v1/embed",
+    apiKey: requiredEnv("THESYS_API_KEY"),
+  });
+  const { definitions: appToolDefinitions, executors: functionTools } =
+    await prepareAppTools(appTools);
   const createParams: ResponseCreateParamsNonStreaming = {
     model,
     conversation: threadId,
     input: messages.slice(-1),
     store: true,
     tools: [
+      // These tools execute inside OpenUI Cloud.
       artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
       { type: "web_search" },
       { type: "image_search" } as unknown as Tool,
-      getWeatherTool,
+      // These tools execute in this application through the Vercel AI SDK.
+      ...appToolDefinitions,
     ],
     instructions: generateSystemPrompt(),
   };
@@ -151,7 +156,7 @@ export async function POST(req: Request) {
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
       const enqueue = (event: Record<string, unknown>) => {
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+        if (!cancelled) controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
       };
       try {
         await runFunctionToolLoop({
@@ -175,6 +180,7 @@ export async function POST(req: Request) {
     },
     cancel(reason) {
       cancelled = true;
+      req.signal.removeEventListener("abort", abortFromRequest);
       abortController.abort(reason);
     },
   });
@@ -196,11 +202,11 @@ function upstreamError(err: unknown): Response {
   const e = err as {
     status?: number;
     statusCode?: number;
-    data?: unknown;
+    error?: unknown;
     message?: string;
   };
   return NextResponse.json(
-    { error: e.data ?? { message: e.message ?? "upstream error" } },
+    { error: e.error ?? { message: e.message ?? "upstream error" } },
     { status: e.status ?? e.statusCode ?? 502 },
   );
 }

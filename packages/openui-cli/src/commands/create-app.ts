@@ -38,7 +38,8 @@ const backendDependencies: Record<
       "@langchain/langgraph": "^1.4.5",
     },
     vercel: {
-      "@ai-sdk/openai": "^3.0.65",
+      ai: "^6.0.191",
+      zod: "^4.3.6",
     },
   },
   "openui-self-hosted": {
@@ -639,9 +640,13 @@ function getStartedMessage(o: {
 
   const frameworkNote =
     o.backendFramework === "langgraph"
-      ? "The generated API route uses LangGraph."
+      ? o.template === "openui-cloud"
+        ? "The generated route keeps OpenUI Cloud as the Responses backend and uses LangGraph for app-owned tools."
+        : "The generated API route uses LangGraph."
       : o.backendFramework === "vercel"
-        ? "The generated API route uses the Vercel AI SDK."
+        ? o.template === "openui-cloud"
+          ? "The generated route keeps OpenUI Cloud as the Responses backend and uses the Vercel AI SDK for app-owned tools."
+          : "The generated API route uses the Vercel AI SDK."
         : "";
 
   return `${skillMessage}

@@ -78,8 +78,8 @@ Templates:
 
 Backend frameworks:
   none       Direct OpenAI SDK route (default).
-  langgraph  LangGraph orchestration around the selected backend.
-  vercel     Vercel AI SDK integration with the selected backend.
+  langgraph  LangGraph tools with the selected backend.
+  vercel     Vercel AI SDK tools with the selected backend.
 `,
   )
   .action(

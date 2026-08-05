@@ -1,83 +1,99 @@
 import { requiredEnv } from "@/lib/env";
 import { resolveRequestedModel } from "@/lib/models";
-import { runFunctionToolLoop } from "@/lib/tool-loop";
-import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
-import {
-  Annotation,
-  END,
-  START,
-  StateGraph,
-  type LangGraphRunnableConfig,
-} from "@langchain/langgraph";
+import { runFunctionToolLoop, type FunctionToolExecutor } from "@/lib/tool-loop";
+import { executeGetWeather } from "@/lib/tools/get-weather";
+import { AIMessage, ToolMessage } from "@langchain/core/messages";
+import { tool } from "@langchain/core/tools";
+import { convertToOpenAIFunction } from "@langchain/core/utils/function_calling";
+import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import type {
+  FunctionTool,
   ResponseCreateParamsNonStreaming,
   ResponseInputItem,
   Tool,
 } from "openai/resources/responses/responses";
+import { z } from "zod";
 
 export const runtime = "nodejs";
 
-const CloudState = Annotation.Root({
-  threadId: Annotation<string>(),
-  input: Annotation<ResponseInputItem[]>(),
-  model: Annotation<string>(),
-});
+/**
+ * App-owned tools are defined with LangChain and executed by LangGraph.
+ * Add your own tools here; OpenUI Cloud's built-in tools stay in createParams.
+ */
+const getWeather = tool(
+  async ({ location }, config) =>
+    executeGetWeather(JSON.stringify({ location }), { signal: config.signal }),
+  {
+    name: "get_weather",
+    description:
+      "Get the current weather for a city or place name. Use whenever the user " +
+      "asks about weather, temperature, rain, or what to wear.",
+    schema: z.object({
+      location: z.string().min(1).describe("City or place name, e.g. Berlin."),
+    }),
+  },
+);
 
-async function callCloud(
-  state: typeof CloudState.State,
-  config: LangGraphRunnableConfig,
-): Promise<Record<string, never>> {
-  if (!config.writer) throw new Error("LangGraph custom stream writer is unavailable");
-
-  const client = new OpenAI({
-    baseURL: "https://api.thesys.dev/v1/embed",
-    apiKey: requiredEnv("THESYS_API_KEY"),
-  });
-  const functionTools = {
-    [getWeatherTool.name]: executeGetWeather,
-  };
-  const createParams: ResponseCreateParamsNonStreaming = {
-    model: state.model,
-    conversation: state.threadId,
-    input: state.input,
-    store: true,
-    tools: [
-      artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
-      { type: "web_search" },
-      { type: "image_search" } as unknown as Tool,
-      getWeatherTool,
-    ],
-    instructions: generateSystemPrompt(),
-  };
-
-  const firstStream = (await client.responses.create(
-    { ...createParams, stream: true },
-    { signal: config.signal },
-  )) as unknown as AsyncIterable<Record<string, unknown>>;
-
-  await runFunctionToolLoop({
-    client,
-    createParams,
-    firstStream,
-    tools: functionTools,
-    enqueue: (event) => config.writer?.(event),
-    signal: config.signal,
-  });
-  return {};
+const appTools = [getWeather];
+const appToolNames = new Set<string>();
+for (const appTool of appTools) {
+  if (appTool.name.startsWith("thesys_")) {
+    throw new Error(`App tool names cannot use the reserved thesys_ prefix: ${appTool.name}`);
+  }
+  if (appToolNames.has(appTool.name)) {
+    throw new Error(`Duplicate app tool name: ${appTool.name}`);
+  }
+  appToolNames.add(appTool.name);
 }
+const appToolNode = new ToolNode(appTools);
+const appToolDefinitions = appTools.map(
+  (appTool) =>
+    ({
+      type: "function",
+      ...convertToOpenAIFunction(appTool, { strict: false }),
+    }) as FunctionTool,
+);
 
-const graph = new StateGraph(CloudState)
-  .addNode("cloud", callCloud)
-  .addEdge(START, "cloud")
-  .addEdge("cloud", END)
-  .compile();
+// Bridge OpenUI Cloud Responses function calls into LangGraph's ToolNode.
+const functionTools = Object.fromEntries(
+  appTools.map((appTool) => [
+    appTool.name,
+    async (argsJson: string, ctx: { callId: string; signal?: AbortSignal }) => {
+      const args = JSON.parse(argsJson || "{}") as Record<string, unknown>;
+      const result = (await appToolNode.invoke(
+        {
+          messages: [
+            new AIMessage({
+              content: "",
+              tool_calls: [
+                {
+                  type: "tool_call",
+                  id: ctx.callId,
+                  name: appTool.name,
+                  args,
+                },
+              ],
+            }),
+          ],
+        },
+        { signal: ctx.signal },
+      )) as { messages?: unknown[] };
+      const output = result.messages?.at(-1);
+      if (!ToolMessage.isInstance(output)) {
+        throw new Error(`LangGraph did not return a result for ${appTool.name}`);
+      }
+      return typeof output.content === "string" ? output.content : JSON.stringify(output.content);
+    },
+  ]),
+) as Record<string, FunctionToolExecutor>;
 
 /**
- * LangGraph owns orchestration; OpenUI Cloud remains the Responses provider.
- * Custom stream mode preserves every Cloud event for openAIResponsesAdapter.
+ * OpenUI Cloud remains the OpenAI-compatible Responses provider and owns its
+ * conversations, artifacts, search, and MCP tools. LangGraph is used only for
+ * application-owned function tools declared above.
  */
 export async function POST(req: Request) {
   const {
@@ -102,49 +118,68 @@ export async function POST(req: Request) {
   if (req.signal.aborted) abortFromRequest();
   else req.signal.addEventListener("abort", abortFromRequest, { once: true });
 
-  let iterator: AsyncIterator<Record<string, unknown>>;
-  let first: IteratorResult<Record<string, unknown>>;
+  const client = new OpenAI({
+    baseURL: "https://api.thesys.dev/v1/embed",
+    apiKey: requiredEnv("THESYS_API_KEY"),
+  });
+  const createParams: ResponseCreateParamsNonStreaming = {
+    model,
+    conversation: threadId,
+    input: messages.slice(-1),
+    store: true,
+    tools: [
+      // These tools execute inside OpenUI Cloud.
+      artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
+      { type: "web_search" },
+      { type: "image_search" } as unknown as Tool,
+      // These tools execute in this application through LangGraph.
+      ...appToolDefinitions,
+    ],
+    instructions: generateSystemPrompt(),
+  };
+
+  let stream: AsyncIterable<Record<string, unknown>>;
   try {
-    const events = (await graph.stream(
-      { threadId, input: messages.slice(-1), model },
-      { streamMode: "custom", signal: abortController.signal },
-    )) as AsyncIterable<Record<string, unknown>>;
-    iterator = events[Symbol.asyncIterator]();
-    // Start the graph before committing a 200 response so upstream HTTP errors
-    // still reach the browser with their original status.
-    first = await iterator.next();
+    stream = (await client.responses.create(
+      { ...createParams, stream: true },
+      { signal: abortController.signal },
+    )) as unknown as AsyncIterable<Record<string, unknown>>;
   } catch (err) {
     req.signal.removeEventListener("abort", abortFromRequest);
     return upstreamError(err);
   }
 
   const encoder = new TextEncoder();
-  const encode = (event: Record<string, unknown>) =>
-    encoder.encode(`data: ${JSON.stringify(event)}\n\n`);
   let cancelled = false;
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
+      const enqueue = (event: Record<string, unknown>) => {
+        if (!cancelled) controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+      };
       try {
-        if (!first.done) controller.enqueue(encode(first.value));
-        for (;;) {
-          const next = await iterator.next();
-          if (next.done) break;
-          controller.enqueue(encode(next.value));
-        }
+        await runFunctionToolLoop({
+          client,
+          createParams,
+          firstStream: stream,
+          tools: functionTools,
+          enqueue,
+          signal: abortController.signal,
+        });
       } catch (err) {
         if (cancelled) return;
-        controller.enqueue(
-          encode({ type: "error", message: err instanceof Error ? err.message : String(err) }),
-        );
+        enqueue({
+          type: "error",
+          message: err instanceof Error ? err.message : String(err),
+        });
       } finally {
         req.signal.removeEventListener("abort", abortFromRequest);
         if (!cancelled) controller.close();
       }
     },
-    async cancel(reason) {
+    cancel(reason) {
       cancelled = true;
+      req.signal.removeEventListener("abort", abortFromRequest);
       abortController.abort(reason);
-      await iterator.return?.();
     },
   });
 

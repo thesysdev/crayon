@@ -106,13 +106,13 @@ What it does:
 
 #### Backend frameworks
 
-| Value       | OpenUI Cloud route                                | Self-hosted route                          |
-| ----------- | ------------------------------------------------- | ------------------------------------------ |
-| `none`      | Direct OpenAI SDK Responses proxy                 | Direct OpenAI SDK Chat Completions proxy   |
-| `langgraph` | LangGraph workflow calling OpenUI Cloud           | LangGraph `StateGraph` using your provider |
-| `vercel`    | Vercel AI SDK Responses transport to OpenUI Cloud | Vercel AI SDK `streamText()` route         |
+| Value       | OpenUI Cloud route                                  | Self-hosted route                          |
+| ----------- | --------------------------------------------------- | ------------------------------------------ |
+| `none`      | Direct OpenAI SDK Responses proxy                   | Direct OpenAI SDK Chat Completions proxy   |
+| `langgraph` | OpenAI SDK proxy + LangGraph app-tool execution     | LangGraph `StateGraph` using your provider |
+| `vercel`    | OpenAI SDK proxy + Vercel AI SDK app-tool execution | Vercel AI SDK `streamText()` route         |
 
-The CLI replaces `src/app/api/chat/route.ts` and adds the dependencies for the selected framework. Cloud combinations still call OpenUI Cloud and preserve its Responses SSE stream, conversation storage, artifacts, and built-in tools. Selecting a Cloud framework changes the orchestration layer; it does not configure a user-owned provider key. Choose `openui-self-hosted` when you want to bring your own provider.
+The CLI replaces `src/app/api/chat/route.ts` and adds the dependencies for the selected framework. Every Cloud combination keeps the OpenAI SDK pointed at OpenUI Cloud, preserving the raw Responses stream and managed conversation storage. Artifacts, web search, image search, and configured MCP tools still execute in Cloud; selecting LangGraph or Vercel AI SDK only changes how application-owned function tools are defined and executed on your server. It does not configure a user-owned model provider. Choose `openui-self-hosted` when you want to bring your own provider.
 
 #### Template-specific `.env`
 
