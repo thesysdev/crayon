@@ -47,12 +47,10 @@ const backendDependencies: Record<
       "@langchain/core": "^1.2.1",
       "@langchain/langgraph": "^1.4.5",
       "@langchain/openai": "^1.5.2",
-      zod: "^4.0.0",
     },
     "vercel-ai-sdk": {
       "@ai-sdk/openai": "^3.0.65",
       ai: "^6.0.191",
-      zod: "^4.3.6",
     },
   },
 };
@@ -162,20 +160,42 @@ function rewritePackageJson(
   }
 }
 
-function applyBackendRoute(projectDir: string, backendFramework: BackendFramework) {
+function applyBackendFiles(projectDir: string, backendFramework: BackendFramework) {
   const routeOptionsDir = path.join(projectDir, "_backend-routes");
+  const pageOptionsDir = path.join(projectDir, "_backend-pages");
   if (backendFramework !== "none") {
-    const source = path.join(routeOptionsDir, `${backendFramework}.ts`);
-    const destination = path.join(projectDir, "src", "app", "api", "chat", "route.ts");
-    if (!fs.existsSync(source)) {
+    const routeSource = path.join(routeOptionsDir, `${backendFramework}.ts`);
+    const routeDestination = path.join(projectDir, "src", "app", "api", "chat", "route.ts");
+    if (!fs.existsSync(routeSource)) {
       throw new CreateError(
         "template_missing",
         `Backend route "${backendFramework}" not found. Rebuild the CLI with \`pnpm build\`.`,
       );
     }
-    fs.copyFileSync(source, destination);
+    fs.copyFileSync(routeSource, routeDestination);
+
+    // Self-hosted framework routes speak their native wire protocols, so their
+    // matching stream adapter and message format are selected on the frontend.
+    // Cloud keeps the Responses adapter because Responses remains its transport.
+    if (fs.existsSync(pageOptionsDir)) {
+      const pageSource = path.join(pageOptionsDir, `${backendFramework}.tsx`);
+      if (!fs.existsSync(pageSource)) {
+        throw new CreateError(
+          "template_missing",
+          `Backend page "${backendFramework}" not found. Rebuild the CLI with \`pnpm build\`.`,
+        );
+      }
+      fs.copyFileSync(pageSource, path.join(projectDir, "src", "app", "page.tsx"));
+
+      const adapterName = `${backendFramework}-adapter.ts`;
+      const adapterSource = path.join(pageOptionsDir, adapterName);
+      if (fs.existsSync(adapterSource)) {
+        fs.copyFileSync(adapterSource, path.join(projectDir, "src", "app", adapterName));
+      }
+    }
   }
   fs.rmSync(routeOptionsDir, { recursive: true, force: true });
+  fs.rmSync(pageOptionsDir, { recursive: true, force: true });
 }
 
 export async function runCreateApp(options: CreateAppOptions): Promise<void> {
@@ -334,7 +354,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
     restoreDotfiles(targetDir);
-    applyBackendRoute(targetDir, backendFramework);
+    applyBackendFiles(targetDir, backendFramework);
     rewritePackageJson(targetDir, name, packageManager.name, template, backendFramework);
     // npm ci requires the copied package-lock; other managers resolve from package.json.
     // Framework routes add dependencies at scaffold time, so their npm lock

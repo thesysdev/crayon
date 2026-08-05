@@ -57,7 +57,7 @@ openui create [options]
 | --------------------------------- | ---------------------------------------------------------------- |
 | `-n, --name <string>`             | Project name (interactive default: `openui-agent`)               |
 | `-t, --template <template>`       | AI backend: `openui-cloud` (recommended) or `openui-self-hosted` |
-| `--backend-framework <framework>` | API route: `none`, `langgraph`, or `vercel`                      |
+| `--backend-framework <framework>` | Backend integration: `none`, `langgraph`, or `vercel-ai-sdk`     |
 | `--api-key <key>`                 | OpenUI Cloud API key; skips sign-in for the Cloud setup          |
 | `--auth <method>`                 | Cloud auth method: `oauth` or `skip`; `manual` is deprecated     |
 | `--skill`                         | Install the OpenUI agent skill for AI coding assistants          |
@@ -84,13 +84,13 @@ In non-interactive mode, dependencies are installed without starting the long-ru
 
 **Backend frameworks**
 
-| Value       | OpenUI Cloud route                                  | Self-hosted route                          |
-| ----------- | --------------------------------------------------- | ------------------------------------------ |
-| `none`      | Direct OpenAI SDK Responses proxy                   | Direct OpenAI SDK Chat Completions proxy   |
-| `langgraph` | OpenAI SDK proxy + LangGraph app-tool execution     | LangGraph `StateGraph` using your provider |
-| `vercel`    | OpenAI SDK proxy + Vercel AI SDK app-tool execution | Vercel AI SDK `streamText()` route         |
+| Value           | OpenUI Cloud route                                  | Self-hosted route                          |
+| --------------- | --------------------------------------------------- | ------------------------------------------ |
+| `none`          | Direct OpenAI SDK Responses proxy                   | Direct OpenAI SDK Chat Completions proxy   |
+| `langgraph`     | OpenAI SDK proxy + LangGraph app-tool execution     | LangGraph `StateGraph` using your provider |
+| `vercel-ai-sdk` | OpenAI SDK proxy + Vercel AI SDK app-tool execution | Vercel AI SDK `streamText()` route         |
 
-The CLI replaces `src/app/api/chat/route.ts` and adds the selected framework's dependencies. Every Cloud route keeps the OpenAI SDK pointed at OpenUI Cloud, preserving the raw Responses stream and managed conversation storage. Artifacts, web search, image search, and configured MCP tools still execute in Cloud; selecting LangGraph or Vercel AI SDK only changes how application-owned function tools are defined and executed on your server. Choose self-hosted to use your own model provider key.
+The CLI replaces `src/app/api/chat/route.ts` and adds the selected framework's dependencies. Self-hosted framework selections also switch `src/app/page.tsx` to the framework's frontend message format and stream adapter, so the route can return the native LangGraph or Vercel AI SDK stream. Every Cloud route keeps the OpenAI SDK pointed at OpenUI Cloud, preserving the raw Responses stream and managed conversation storage. Artifacts, web search, image search, and configured MCP tools still execute in Cloud; selecting LangGraph or Vercel AI SDK only changes how application-owned function tools are defined and executed on your server. Choose self-hosted to use your own model provider key.
 
 **Agent skill**
 
@@ -112,6 +112,7 @@ pnpx @openuidev/cli@latest create --name my-app --template openui-cloud --immedi
 # Select a backend framework explicitly
 pnpx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework langgraph
 pnpx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework langgraph
+pnpx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
 
 # Non-interactive
 pnpx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip
@@ -132,6 +133,7 @@ bunx @openuidev/cli@latest create --name my-app --template openui-self-hosted
 # Select a backend framework explicitly
 bunx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework langgraph
 bunx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework langgraph
+bunx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
 
 # Non-interactive
 bunx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip
@@ -152,6 +154,7 @@ yarn dlx @openuidev/cli@latest create --name my-app --template openui-self-hoste
 # Select a backend framework explicitly
 yarn dlx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework langgraph
 yarn dlx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework langgraph
+yarn dlx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
 
 # Non-interactive
 yarn dlx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip
@@ -172,6 +175,7 @@ npx @openuidev/cli@latest create --name my-app --template openui-self-hosted
 # Select a backend framework explicitly
 npx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework langgraph
 npx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework langgraph
+npx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
 
 # Non-interactive
 npx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip
