@@ -107,8 +107,34 @@ const merged = mergeStatements(original, patch);
 
 ## Telemetry
 
-Lang Core collects limited usage telemetry to help improve OpenUI. Set
-`OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` to opt out.
+Lang Core collects limited usage telemetry to help improve OpenUI. Telemetry is
+sent for 10% of successful server-side `generateSystemPrompt()` calls. Browser
+and browser-worker calls do not send telemetry.
+
+Each event contains:
+
+- Event name and timestamp
+- Lang Core name and version
+- Runtime name and version, environment, and CI status
+- API surface, input shape, and exact component and tool counts
+- Random event and runtime identifiers
+- Telemetry and hash-schema versions, plus the sample rate
+- A prompt-configuration hash and, when available, a project hash
+
+Lang Core does not collect application-user data. It does not send prompts,
+generated output, component or tool definitions, credentials, user identifiers,
+messages, or other chat data. PostHog receives the server's transport IP as part
+of the HTTP request; Lang Core does not add an IP address to the event payload.
+
+The prompt-configuration hash is SHA-256 of a deterministic projection containing
+the root component, component names, signatures and descriptions, component
+groups and notes, and generation-mode flags. Preambles, examples, additional
+rules, tool definitions, and tool examples are excluded. The project hash is
+SHA-256 of the normalized Git origin, `REPOSITORY_URL`, or working directory,
+using the first available value. Hash inputs are processed locally, and only the
+resulting hashes are sent.
+
+Set `OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` to disable telemetry.
 
 ### Runtime
 
