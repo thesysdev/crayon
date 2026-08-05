@@ -290,7 +290,6 @@ async function getRepositoryIdentifier(
 ): Promise<string | undefined> {
   if (!processLike) return undefined;
 
-  // Match Next.js's project identity precedence: Git origin, CI repository URL, then cwd.
   const rawValue =
     (await readGitOrigin(processLike)) || processLike.env?.REPOSITORY_URL || processLike.cwd?.();
   return rawValue ? normalizeRepositoryIdentifier(rawValue) : undefined;
