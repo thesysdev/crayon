@@ -107,10 +107,7 @@ const merged = mergeStatements(original, patch);
 
 ## Telemetry
 
-Lang Core sends limited usage data to PostHog for 10% of server-side
-`generateSystemPrompt()` calls. It includes runtime details, component and tool
-counts, hashed identifiers, and the server IP. Prompt, component, and tool
-content are never sent, and browsers are excluded. Set
+Lang Core collects limited usage telemetry to help improve OpenUI. Set
 `OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` to opt out.
 
 ### Runtime
