@@ -94,8 +94,13 @@ describe("system prompt telemetry", () => {
       }),
     ).resolves.toBe(await calculateSystemPromptConfigHash(first));
     await expect(
-      calculateSystemPromptConfigHash({ ...reordered, preamble: "Different" }),
-    ).resolves.not.toBe(await calculateSystemPromptConfigHash(first));
+      calculateSystemPromptConfigHash({
+        ...reordered,
+        preamble: "Different",
+        examples: ["Different example"],
+        additionalRules: ["Different rule"],
+      }),
+    ).resolves.toBe(await calculateSystemPromptConfigHash(first));
   });
 
   it("normalizes common repository origin forms before hashing", async () => {

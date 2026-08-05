@@ -92,9 +92,6 @@ export function buildSystemPromptConfigProjection(spec: PromptSpec): Json {
       editMode: spec.editMode === true,
       inlineMode: spec.inlineMode === true,
     },
-    preamble: spec.preamble ?? null,
-    examples: [...(spec.examples ?? [])],
-    additionalRules: [...(spec.additionalRules ?? [])],
   };
 }
 
