@@ -1,7 +1,7 @@
 "use client";
 
 import { useThreadList } from "@openuidev/react-headless";
-import { AgentInterface, Button } from "@openuidev/react-ui";
+import { AgentInterface } from "@openuidev/react-ui";
 import { useEffect, useState } from "react";
 import styles from "../chat-page.module.css";
 import { CloudModelSwitcher } from "./agent-surfaces/cloud-model-switcher";
@@ -75,7 +75,7 @@ function ReadOnlyDemoComposer({ demo, forkRegistry, onNavigate }: ReadOnlyDemoCo
     try {
       const firstMessage = getDemoFirstUserMessage(demo);
       const thread = await createThread({ ...firstMessage, id: crypto.randomUUID() });
-      const continuation = { ...thread, title: `${demo.title} — continuation` };
+      const continuation = { ...thread, title: `${demo.title} continuation` };
       forkRegistry.register(thread.id, demo.id);
       updateThread(continuation);
       selectThread(thread.id);
@@ -88,23 +88,14 @@ function ReadOnlyDemoComposer({ demo, forkRegistry, onNavigate }: ReadOnlyDemoCo
 
   return (
     <div className={styles.demoComposerState}>
-      <div className={styles.demoComposerNotice} role="note">
-        <div className={styles.demoComposerNoticeCopy}>
-          <strong>Explore this example</strong>
-          <span>Messages and model are fixed. Continue privately to add your own prompts.</span>
-        </div>
-      </div>
-      <textarea
-        className={styles.demoComposerInput}
-        aria-label="Demo conversation is read-only"
-        value=""
-        placeholder="Continue this example to add your own prompt"
-        disabled
-        readOnly
-      />
-      <Button variant="primary" size="small" onClick={continueInNewChat} disabled={isCreating}>
-        {isCreating ? "Creating chat…" : "Continue this conversation"}
-      </Button>
+      <button
+        type="button"
+        className={styles.demoComposerCta}
+        onClick={continueInNewChat}
+        disabled={isCreating}
+      >
+        {isCreating ? "Creating chat…" : "Continue conversation"}
+      </button>
       {error && (
         <p className={styles.demoComposerError} role="alert">
           {error}

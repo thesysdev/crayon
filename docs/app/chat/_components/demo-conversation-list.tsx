@@ -4,14 +4,14 @@ import type { ReactNode } from "react";
 
 import { useThreadList } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
-import { ChartNoAxesCombined, Columns3, Map } from "lucide-react";
+import { ChartNoAxesCombined, Film, Flower } from "lucide-react";
 import styles from "../chat-page.module.css";
 import { DEMO_CONVERSATIONS, type DemoConversationIcon } from "./demo-conversations";
 
 const ICONS: Record<DemoConversationIcon, ReactNode> = {
   analytics: <ChartNoAxesCombined aria-hidden="true" size={15} />,
-  travel: <Map aria-hidden="true" size={15} />,
-  compare: <Columns3 aria-hidden="true" size={15} />,
+  travel: <Flower aria-hidden="true" size={15} />,
+  compare: <Film aria-hidden="true" size={15} />,
 };
 
 export function DemoConversationList() {

@@ -202,6 +202,51 @@
   flex: 1 1 0% !important;
 }
 
+/* Source citation cards: compact equal-width tiles in a single row, with a
+   small logo beside the title and the article name below. Scoped to snippet
+   cards that contain an image (the demo's source cards); icon-based stock
+   cards are unaffected. The library wraps items in row divs, so the rows are
+   flattened with display: contents to let all cards share one flex line. */
+.agentViewport :global(.c1-small-card-block__grid:has(.c1-image-text__image)) {
+  display: flex;
+  flex-direction: row !important;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.agentViewport :global(.c1-small-card-block__row:has(.c1-image-text__image)) {
+  display: contents;
+}
+
+.agentViewport :global(.c1-small-card-block__item:has(.c1-image-text__image)) {
+  width: 260px;
+  flex: 0 0 auto;
+}
+
+.agentViewport :global(.c1-value-card:has(.c1-image-text__image)) {
+  padding: 10px 12px;
+}
+
+.agentViewport :global(.c1-value-card .c1-image-text__image-container) {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.agentViewport :global(.c1-value-card__rhs:empty) {
+  display: none;
+}
+
+.sidebarBuiltWith {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  margin-bottom: 10px;
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-label-xs);
+  white-space: nowrap;
+}
+
 .centeredState {
   display: flex;
   width: 100%;
@@ -347,58 +392,53 @@
 }
 
 .demoComposerState {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 10px 12px;
-  border-top: 1px solid var(--openui-border-default);
-  background: var(--openui-foreground);
-  padding: 12px 16px 16px;
-}
-
-.demoComposerNotice {
+  position: relative;
   display: flex;
-  grid-column: 1 / -1;
-  min-width: 0;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px 16px;
-  color: var(--openui-text-neutral-secondary);
-  font: var(--openui-text-body-sm);
-}
-
-.demoComposerNoticeCopy {
-  display: flex;
-  min-width: 0;
-  align-items: baseline;
   gap: 8px;
+  background: var(--openui-foreground);
+  padding: 6px 16px 18px;
 }
 
-.demoComposerNotice strong {
-  flex: none;
-  color: var(--openui-text-neutral-primary);
-  font: var(--openui-text-label-sm);
+.demoComposerState::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: linear-gradient(to top, var(--openui-foreground), transparent);
+  pointer-events: none;
 }
 
-.demoComposerInput {
-  width: 100%;
-  min-width: 0;
-  min-height: 38px;
-  resize: none;
-  border: 1px solid var(--openui-border-default);
-  border-radius: var(--openui-radius-m);
-  outline: none;
-  background: var(--openui-sunk);
-  padding: 9px 11px;
-  color: var(--openui-text-neutral-tertiary);
-  font: var(--openui-text-body-sm);
-  cursor: not-allowed;
-  opacity: 0.8;
+.demoComposerCta {
+  display: inline-flex;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  background: var(--openui-inverted-background);
+  box-shadow:
+    inset 0 2px 1px -0.5px color-mix(in srgb, var(--openui-inverted-background) 84%, white),
+    inset 0 -3px 6px -1px color-mix(in srgb, var(--openui-inverted-background) 90%, black);
+  padding-inline: 1rem;
+  color: var(--openui-background);
+  font-family: "Inter", "Segoe UI", sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 120ms ease;
 }
 
-.demoComposerInput::placeholder {
-  color: var(--openui-text-neutral-tertiary);
-  opacity: 1;
+.demoComposerCta:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.demoComposerCta:disabled {
+  opacity: 0.65;
+  cursor: default;
 }
 
 .demoComposerError {
@@ -409,25 +449,7 @@
 }
 
 .agentFrame[data-viewport="mobile"] .demoComposerState {
-  grid-template-columns: 1fr;
-  padding: 10px 12px 12px;
-}
-
-.agentFrame[data-viewport="mobile"] :is(.demoComposerNotice, .demoComposerError) {
-  grid-column: 1;
-}
-
-.agentFrame[data-viewport="mobile"] .demoComposerNotice {
-  align-items: flex-start;
-}
-
-.agentFrame[data-viewport="mobile"] .demoComposerNoticeCopy {
-  flex-direction: column;
-  gap: 2px;
-}
-
-.agentFrame[data-viewport="mobile"] .demoComposerNoticeCopy span {
-  display: none;
+  padding: 6px 12px 14px;
 }
 
 .srOnly {
@@ -529,5 +551,271 @@
 
   .loadingIndicator {
     animation: none;
+  }
+}
+
+/* Sidebar footer: powered-by label plus the "Why upgrade?" trigger for the
+   12-reasons bottom sheet. */
+.sidebarUpgradeFooter {
+  /* The sidebar container pads 16px 12px; these negative offsets even the
+     visible gap out to about 10px on every side. */
+  margin: auto -2px -6px;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 12px;
+  background: var(--openui-foreground);
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+}
+
+.sidebarBuiltWith {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  margin-bottom: 10px;
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-label-xs);
+  white-space: nowrap;
+}
+
+.sidebarCloudChip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--openui-inverted-background);
+  border-radius: 6px;
+  background: transparent;
+  padding: 1px 7px;
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-label-xs);
+}
+
+.sidebarUpgradeButton {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 9px;
+  background: var(--openui-background);
+  padding: 8px 14px;
+  color: var(--openui-text-neutral-primary);
+  font: var(--openui-text-label-xs);
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.sidebarUpgradeButton:hover {
+  background: var(--openui-highlight);
+}
+
+.sidebarUpgradeButton:focus-visible {
+  outline: 2px solid var(--openui-border-accent-emphasis);
+  outline-offset: -2px;
+}
+
+/* Bottom sheet with the Cloud page's 12-reasons feature marquee. */
+.upgradeSheetOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(0, 0, 0, 0.42);
+  animation: upgradeSheetFade 160ms ease;
+}
+
+.upgradeSheet {
+  width: 100%;
+  max-height: 85dvh;
+  overflow-y: auto;
+  border-radius: 18px 18px 0 0;
+  background: var(--openui-foreground);
+  padding: 16px 24px 20px;
+  animation: upgradeSheetRise 260ms ease;
+}
+
+.upgradeSheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.upgradeSheetTitle {
+  margin: 0;
+  color: var(--openui-text-neutral-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.upgradeSheetActions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.upgradeSheetCta {
+  display: inline-flex;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 10px;
+  background: var(--openui-inverted-background);
+  padding-inline: 1rem;
+  color: var(--openui-background);
+  font: var(--openui-text-label-sm);
+  text-decoration: none;
+  transition: opacity 120ms ease;
+}
+
+.upgradeSheetCta:hover {
+  opacity: 0.9;
+}
+
+.upgradeSheetCtaMobile {
+  display: none;
+}
+
+.upgradeSheetClose {
+  display: inline-flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 10px;
+  background: var(--openui-foreground);
+  color: var(--openui-text-neutral-primary);
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.upgradeSheetClose:hover {
+  background: var(--openui-highlight);
+}
+
+@keyframes upgradeSheetFade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes upgradeSheetRise {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+/* The marquee section ships with the marketing page's tall vertical padding
+   and card size; flatten and shrink it about 15% inside the sheet. */
+.upgradeSheet > :global(section) {
+  --card-w: clamp(11rem, 17vw, 15.3rem);
+
+  padding-block: 0 !important;
+}
+
+/* The scroller centers itself to the marketing page's 75rem container, which
+   leaves a large leading gap inside the sheet; keep just a small inset. */
+.upgradeSheet :global(div[role="group"]) {
+  padding-inline: 0.5rem !important;
+}
+
+/* On mobile the drawer's floating New Chat button overlaps the sidebar
+   footer, so the powered-by banner moves to the top of the drawer, above
+   the Presentations nav, with wider side insets. The sidebar container is a
+   flex column, so ordering the header before the banner slots it in place. */
+.agentFrame[data-viewport="mobile"] :global(.openui-agent-sidebar-header) {
+  order: -2;
+}
+
+.agentFrame[data-viewport="mobile"] .sidebarUpgradeFooter {
+  order: -1;
+  margin: 4px 12px 10px;
+}
+
+@media (max-width: 767px) {
+  .agentViewport :global(.openui-agent-sidebar-header) {
+    order: -2;
+  }
+
+  .agentViewport .sidebarUpgradeFooter {
+    order: -1;
+    margin: 4px 12px 10px;
+  }
+}
+
+/* Mobile-only refinements: tighter sidebar section rhythm, a stacked sheet
+   header with a smaller title, and a more compact marquee. */
+@media (max-width: 767px) {
+  .agentViewport :global(.openui-agent-sidebar-container) {
+    gap: 14px;
+  }
+
+  .upgradeSheet {
+    position: relative;
+  }
+
+  .upgradeSheetHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .upgradeSheetTitle {
+    padding-right: 3rem;
+    font-size: 1.05rem;
+  }
+
+  .upgradeSheetCtaDesktop {
+    display: none;
+  }
+
+  .upgradeSheetCtaMobile {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 28px;
+  }
+
+  .upgradeSheetClose {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+
+  .upgradeSheet > :global(section) {
+    --card-w: 9rem;
+  }
+
+  .upgradeSheet :global(h3) {
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+  }
+
+  .upgradeSheet :global(button[aria-label="Show previous features"]),
+  .upgradeSheet :global(button[aria-label="Show next features"]) {
+    display: none !important;
+  }
+
+  .upgradeSheet :global(div[role="group"]) {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 2%,
+      #000 98%,
+      transparent 100%
+    ) !important;
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 2%,
+      #000 98%,
+      transparent 100%
+    ) !important;
   }
 }

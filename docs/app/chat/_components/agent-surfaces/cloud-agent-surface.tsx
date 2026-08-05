@@ -26,7 +26,17 @@ import {
 import { DemoConversationList } from "../demo-conversation-list";
 import { createDemoConversationStorage } from "../demo-conversation-storage";
 import { DemoForkRegistry } from "../demo-fork-registry";
+import { SidebarUpgradeFooter } from "../sidebar-upgrade-sheet";
 import { getPersistedCloudModel, usePersistedCloudModel } from "../use-persisted-cloud-model";
+
+// Blue-to-pink spectrum colors for the stock-comparison demo's line chart,
+// matching the OpenUI Cloud default chart look while keeping every series
+// clearly distinguishable. In series order: META light periwinkle, MSFT dark
+// indigo, NFLX saturated pink, GOOGL deep raspberry, S&P 500 gray.
+// The chart distributes palette colors starting from the middle of the array
+// (see getDistributedColors in @openuidev/react-ui); with five series and five
+// colors the slots resolve back to identity order.
+const STOCK_LINE_PALETTE = ["#91A7FF", "#364FC7", "#F06595", "#A61E4D", "#868E96"];
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   {
@@ -98,7 +108,7 @@ export function CloudAgentSurface() {
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
         logoUrl={OPENUI_CLOUD_LOGO_URL}
-        theme={{ mode }}
+        theme={{ mode, lightTheme: { lineChartPalette: STOCK_LINE_PALETTE } }}
         starters={OPENUI_CLOUD_STARTERS}
         path={path}
         onNavigate={setPath}
@@ -114,6 +124,7 @@ export function CloudAgentSurface() {
             <AgentInterface.SidebarSeparator />
             <AgentInterface.ThreadList />
           </AgentInterface.SidebarContent>
+          <SidebarUpgradeFooter />
         </AgentInterface.Sidebar>
         <AgentInterface.MobileHeader
           className={styles.cloudMobileHeader}
