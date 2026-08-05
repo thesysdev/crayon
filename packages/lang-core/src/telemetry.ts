@@ -466,8 +466,6 @@ export function recordSystemPromptGeneration(
   inputIdentity: object = spec,
 ): void {
   try {
-    if (!CAPTURE_URL || !POSTHOG_KEY) return;
-
     const runtime = detectRuntime();
     if (!runtime || typeof globalThis.fetch !== "function" || !globalThis.crypto?.subtle) return;
 
