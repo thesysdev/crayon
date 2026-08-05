@@ -2,7 +2,6 @@
 
 import { Renderer } from "@openuidev/react-lang";
 import { ThemeProvider, openuiLibrary } from "@openuidev/react-ui";
-import { useRef, useState } from "react";
 
 // The spec "the model wrote". No data in it; the runtime resolves the references.
 const SPEC = `$days = "7"
@@ -118,17 +117,6 @@ function Panel({
 // ─── The demo ────────────────────────────────────────────────────────────────
 
 export const LiveFilterDemo = () => {
-  const [filterChanges, setFilterChanges] = useState(0);
-  const lastDays = useRef("7");
-
-  const handleStateUpdate = (state: Record<string, unknown>) => {
-    const days = state["$days"];
-    if (typeof days === "string" && days !== lastDays.current) {
-      lastDays.current = days;
-      setFilterChanges((c) => c + 1);
-    }
-  };
-
   return (
     // Scoped light theme: the widget's --openui-* tokens stay light even when the site
     // is dark, so the demo matches the post's light diagrams. The explicit cssSelector
@@ -197,12 +185,10 @@ export const LiveFilterDemo = () => {
               response={SPEC}
               isStreaming={false}
               toolProvider={toolProvider}
-              onStateUpdate={handleStateUpdate}
             />
           </div>
           <span className={TOKEN_NOTE}>
-            ~3.5k tokens, once · {filterChanges} filter{" "}
-            {filterChanges === 1 ? "change" : "changes"} at 0 tokens, ~350ms each
+            ~3.5k tokens, once · filter changes: 0 tokens, ~350ms each
           </span>
         </div>
       </Panel>
