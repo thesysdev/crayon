@@ -11,6 +11,8 @@ stdio mode for persistent coding sessions, live reasoning, tool activity, and ca
 - One long-lived `grok agent --no-leader stdio` process hosting an isolated Grok session for each
   OpenUI thread.
 - ACP text, reasoning, and tool-call updates translated to AG-UI SSE events.
+- Blocking Grok Q&A and plan-approval requests rendered as browser dialogs, with responses sent
+  back over ACP so the same agent turn can continue.
 - Retry-safe OpenUI output buffering: valid candidates are checkpointed across retries, the final
   candidate is validated against the generated component schema, then revealed in paced chunks.
 - One bounded, parser-guided correction turn when Grok's final OpenUI has syntax errors or unresolved
@@ -23,7 +25,7 @@ stdio mode for persistent coding sessions, live reasoning, tool activity, and ca
 ## Prerequisites
 
 - Node.js 22 and pnpm 9
-- The released `grok` CLI on `PATH`
+- The latest stable `grok` CLI on `PATH`
 - A Grok login or `XAI_API_KEY`
 
 Install Grok Build by following the
@@ -45,16 +47,19 @@ Install dependencies from the OpenUI repository root:
 pnpm install
 ```
 
-Then start the example:
+Then start the example and choose the project Grok Build should work in:
 
 ```bash
 cd examples/harnesses/grok-build
 cp .env.example .env.local
-pnpm dev
+pnpm dev -- /absolute/path/to/your/project
 ```
 
-Open [http://localhost:3000](http://localhost:3000). To let Grok work on a different project, set
-`GROK_BUILD_CWD` in `.env.local` before starting the server.
+Running `pnpm dev` without a path prompts for the workspace in an interactive terminal. You can
+also set `GROK_BUILD_CWD=/absolute/path` in `.env.local` or the shell to skip the prompt. The
+launcher validates the directory and prints the resolved workspace before starting Next.js.
+
+Open [http://localhost:3000](http://localhost:3000) after the server starts.
 
 ## How it works
 
@@ -62,6 +67,7 @@ Open [http://localhost:3000](http://localhost:3000). To let Grok work on a diffe
 Browser / OpenUI AgentInterface
   |  localStorage threads + transcript
   |  POST /api/chat { threadId, messages }
+  |  GET/POST /api/interactions (questions + plan decisions)
   v
 Next.js route
   |  latest user turn
@@ -98,6 +104,12 @@ retry_state          -> checkpoint valid output + rotate Thinking state
 prompt response      -> validate, optionally correct once, then paced TEXT_MESSAGE_CONTENT + END
 ```
 
+Grok's `x.ai/ask_user_question` and `x.ai/exit_plan_mode` extension requests block the current ACP
+turn until the user responds. The server registers each request in a short-lived in-memory broker;
+the active browser thread polls `/api/interactions`, presents either the structured question form or
+plan review, and posts the selected outcome. Cancelling the browser turn resolves any outstanding
+interaction with a safe fallback so the ACP process cannot remain parked indefinitely.
+
 Grok Build may emit progress prose and multiple full answers during one ACP prompt when an xAI
 request is retried. AG-UI text deltas are append-only, so sending those candidates immediately
 would concatenate them into invalid OpenUI Lang. This harness keeps only the latest line-start
@@ -113,28 +125,33 @@ The browser transcript persists user and assistant text, matching the lightweigh
 Reasoning and tool cards are streamed live but are not restored after a page reload. Deleting an
 OpenUI browser thread removes its local transcript; it does not delete Grok Build's on-disk session.
 
-Grok's interactive ask-user and exit-plan-mode ACP extension requests are cancelled immediately
-because this demo does not implement their dedicated response UI. Normal tool permissions are
-auto-approved when `GROK_BUILD_ALWAYS_APPROVE=true`.
+Normal tool permissions are auto-approved when `GROK_BUILD_ALWAYS_APPROVE=true`. This is separate
+from conversational questions and plan approval: those always require an explicit answer in the
+browser dialog.
 
 ## Configuration
 
-| Environment variable          | Default                  | Purpose                                             |
-| ----------------------------- | ------------------------ | --------------------------------------------------- |
-| `XAI_API_KEY`                 | existing `grok login`    | Non-interactive Grok authentication                 |
-| `GROK_BUILD_BIN`              | `grok`                   | Grok Build executable                               |
-| `GROK_BUILD_CWD`              | this example's directory | Workspace the coding agent can inspect and modify   |
-| `GROK_BUILD_MODEL`            | CLI-configured default   | Optional model override                             |
-| `GROK_BUILD_REASONING_EFFORT` | CLI-configured default   | Optional reasoning-effort override                  |
-| `GROK_BUILD_ALWAYS_APPROVE`   | `true`                   | Auto-approve Grok tool execution in the web harness |
+| Environment variable          | Default                | Purpose                                             |
+| ----------------------------- | ---------------------- | --------------------------------------------------- |
+| `XAI_API_KEY`                 | existing `grok login`  | Non-interactive Grok authentication                 |
+| `GROK_BUILD_BIN`              | `grok`                 | Grok Build executable                               |
+| `GROK_BUILD_CWD`              | launch prompt / cwd    | Workspace the coding agent can inspect and modify   |
+| `GROK_BUILD_MODEL`            | CLI-configured default | Optional model override                             |
+| `GROK_BUILD_REASONING_EFFORT` | CLI-configured default | Optional reasoning-effort override                  |
+| `GROK_BUILD_ALWAYS_APPROVE`   | `true`                 | Auto-approve Grok tool execution in the web harness |
 
 ## Project layout
 
 ```text
 examples/harnesses/grok-build/
+|- scripts/launch.mjs               # Launch-time workspace selector + validation
 |- src/app/page.tsx                 # OpenUI AgentInterface
 |- src/app/api/chat/route.ts        # AG-UI SSE route
+|- src/app/api/interactions/route.ts # Pending-interaction read/response route
+|- src/components/grok-build-interaction-dialog.tsx # Question + plan UI
+|- src/hooks/use-grok-build-interaction.ts # Active-thread interaction polling
 |- src/lib/grok-build-acp.ts        # Grok ACP process, auth, sessions, prompts, cancellation
+|- src/lib/grok-build-interactions.ts # ACP reverse-request broker and validation
 |- src/lib/grok-build-stream.ts     # ACP session updates to AG-UI events
 |- src/lib/openui-output.ts         # Retry-safe validation, fallback, and paced output chunks
 |- src/lib/grok-build-chat.ts       # AgentInterface LLM + storage adapters
@@ -152,4 +169,4 @@ Do not expose this server to a network as-is. Add authentication and authorizati
 inside an OS-level sandbox or container, restrict network access and credentials, and configure
 Grok's permission policy for the deployment. Setting `GROK_BUILD_ALWAYS_APPROVE=false` makes this
 demo cancel permission requests because `AgentInterface` does not currently provide a Grok-specific
-approval/resume UI.
+tool-permission approval UI; question and plan dialogs continue to work independently.
