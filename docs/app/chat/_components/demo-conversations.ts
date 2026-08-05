@@ -18,7 +18,7 @@ export interface DemoConversation {
   icon: DemoConversationIcon;
   sourcePrompt: string;
   recordedModel: string;
-  artifact: DemoArtifact;
+  linkedArtifactId?: DemoArtifact["id"];
   messages: Message[];
 }
 
@@ -44,19 +44,71 @@ cities = Slide("cities", ContentClassic("Where to base yourself", ["Tokyo for en
 tips = Slide("tips", HeroMetric("7 to 10 days", "The sweet spot for a first Japan trip covering Tokyo, Kyoto, and Osaka", "horizontal"))
 closing = Slide("closing", HeadlineStatement("Recommendation", "Fly into Tokyo, out of Osaka, and let the rail pass do the rest.", "title-bottom"))`;
 
-const BLOCKBUSTER_REPORT_PROGRAM = `root = ReportView("Blockbuster Report", "The three highest-grossing films of all time · Worldwide box office", [cover, summary, breakdown, takeaways])
-cover = Page("cover", MinimalFrontPage("Blockbuster Report", coverCopy, "All-time worldwide box office", "title-bottom"))
-coverCopy = TextContent("How Avatar, Avengers: Endgame, and Avatar: The Way of Water earned a combined $8.05B, and what their runs reveal about global moviegoing.")
-summary = Page("summary", ContentPage([summaryHeader, metrics, summaryStatement]))
-summaryHeader = InlineHeader("The podium", "Two James Cameron films bookend the all-time list.")
-metrics = KeyMetrics("row", [{title: "Avatar", text: "$2.92B"}, {title: "Endgame", text: "$2.80B"}, {title: "Way of Water", text: "$2.33B"}, {title: "Combined", text: "$8.05B"}])
-summaryStatement = HeadlineStatement("Event cinema still rules", "Thirteen years separate the oldest and newest films on the podium, yet all three won the same way: global releases that made the theater the event.", "default")
-breakdown = Page("breakdown", ContentPage([breakdownHeader, splitChart]))
-breakdownHeader = InlineHeader("Where the money came from", "Domestic vs. international gross in USD billions.")
-splitChart = BarChartV2({data: {labels: ["Avatar", "Endgame", "Way of Water"], series: [{category: "Domestic (US)", values: [0.79, 0.86, 0.68]}, {category: "International", values: [2.13, 1.94, 1.65]}]}, unit: "B"}, "Film", "Gross")
-takeaways = Page("takeaways", ContentPage([takeawaysHeader, takeawaysPoints]))
-takeawaysHeader = InlineHeader("Three takeaways", "What the all-time list rewards.")
-takeawaysPoints = NumberedKeyPoint("column", [{title: "International pull", body: "Roughly seven of every ten dollars came from outside the US across the top three."}, {title: "Rereleases compound", body: "Avatar reclaimed the record after a 2021 China rerelease pushed it past Endgame."}, {title: "Spectacle premium", body: "All three sold the big screen itself: 3D, IMAX, and effects that demand a theater."}])`;
+const BLOCKBUSTER_DECK_PROGRAM = `root = SlideShow("Blockbuster Box Office", "What the all-time top three reveal about event cinema", [cover, podium, global, franchises, playbook, close])
+cover = Slide("cover", StandardTitle("Blockbuster Box Office", "Avatar, Avengers: Endgame, and Avatar: The Way of Water", "Worldwide box office · Illustrative demo"))
+podium = Slide("podium", KeyInfoWithTitle("The all-time podium", [{title: "#1 · Avatar", description: "$2.92B worldwide · 2009"}, {title: "#2 · Avengers: Endgame", description: "$2.80B worldwide · 2019"}, {title: "#3 · Avatar: The Way of Water", description: "$2.33B worldwide · 2022"}], "horizontal-grid"))
+global = Slide("global", ContentClassic("A global box-office story", ["About seven of every ten dollars came from outside the United States", "Premium formats made the theater itself part of the product", "Coordinated worldwide releases turned opening weekends into cultural events"], "title-left"))
+franchises = Slide("franchises", HeroMetric("$8.05B", "Combined worldwide gross across the three films", "horizontal"))
+playbook = Slide("playbook", TextBody("The blockbuster playbook", ["Build a visual proposition that rewards the largest screen", "Create characters and worlds that travel across languages", "Use rereleases and premium formats to compound a long theatrical run", "Make the release feel scarce, social, and unmissable"], "title-left"))
+close = Slide("close", HeadlineStatement("Event cinema still rules", "The biggest films do more than sell a story—they make the theater the event.", "title-bottom"))`;
+
+const BUSINESS_HEALTH_REPORT_PROGRAM = `root = ReportView("Q2 Business Health", "Executive operating review · Illustrative data", [cover, executive, performance, actions])
+cover = Page("cover", MinimalFrontPage("Q2 Business Health", coverCopy, "April–June 2026", "title-bottom"))
+coverCopy = TextContent("A decision-ready view of growth, efficiency, customer health, and the priorities leadership should carry into Q3.")
+executive = Page("executive", ContentPage([executiveHeader, metrics, executiveStatement]))
+executiveHeader = InlineHeader("Executive summary", "Growth finished ahead of plan without weakening retention or gross margin.")
+metrics = KeyMetrics("row", [{title: "Revenue", text: "$1.40M"}, {title: "Gross margin", text: "72%"}, {title: "Retention", text: "94%"}, {title: "Pipeline", text: "3.2×"}])
+executiveStatement = HeadlineStatement("The quarter closed 6% above plan", "Expansion revenue offset a slower enterprise sales cycle while the company preserved pricing discipline.", "default")
+performance = Page("performance", ContentPage([performanceHeader, revenueChart]))
+performanceHeader = InlineHeader("Revenue versus target", "Actual monthly revenue accelerated through the quarter.")
+revenueChart = BarChartV2({data: {labels: ["April", "May", "June"], series: [{category: "Actual", values: [420, 468, 515]}, {category: "Target", values: [400, 445, 490]}]}, unit: "k"}, "Month", "Revenue")
+actions = Page("actions", ContentPage([actionsHeader, actionPoints]))
+actionsHeader = InlineHeader("Decisions for Q3", "Three actions protect the plan while preserving efficient growth.")
+actionPoints = NumberedKeyPoint("column", [{title: "Shorten enterprise cycles", body: "Add executive sponsorship to the largest late-stage opportunities."}, {title: "Protect pricing", body: "Require finance review for discounts above the operating threshold."}, {title: "Expand healthy accounts", body: "Prioritize customers with strong adoption and renewals inside 120 days."}])`;
+
+const PRODUCT_DECISION_REPORT_PROGRAM = `root = ReportView("Project Platform Decision Brief", "Recommendation for a 25-person product organization", [cover, recommendation, comparison, rollout])
+cover = Page("cover", MinimalFrontPage("Project Platform Decision Brief", coverCopy, "Prepared for product and engineering leadership", "title-bottom"))
+coverCopy = TextContent("A concise comparison of Starter, Growth, and Enterprise plans using collaboration, governance, automation, and operating-cost criteria.")
+recommendation = Page("recommendation", ContentPage([recommendationHeader, recommendationMetric, recommendationStatement]))
+recommendationHeader = InlineHeader("Recommendation", "Choose Growth now and define explicit triggers for a future Enterprise migration.")
+recommendationMetric = HeroMetric("Growth", "Best balance of cross-team planning, automation, and manageable administration", "row")
+recommendationStatement = KeyStatement("Enterprise controls are valuable, but the current team size does not justify the added cost and governance overhead.")
+comparison = Page("comparison", ContentPage([comparisonHeader, comparisonTable]))
+comparisonHeader = InlineHeader("Plan comparison", "Scored against the needs of five collaborating product squads.")
+comparisonTable = Table([Column("Capability"), Column("Starter"), Column("Growth"), Column("Enterprise")], [["Roadmaps", "Basic", "Advanced", "Advanced"], ["Automation", "5 rules", "Unlimited", "Unlimited"], ["Permissions", "Workspace", "Team", "Organization"], ["Audit history", "None", "90 days", "1 year"], ["Relative cost", "Low", "Medium", "High"]])
+rollout = Page("rollout", ContentPage([rolloutHeader, rolloutSteps]))
+rolloutHeader = InlineHeader("30-day rollout", "Adopt the plan without importing process debt.")
+rolloutSteps = NumberedKeyPoint("column", [{title: "Week 1 · Define the model", body: "Agree on issue types, ownership, and required fields."}, {title: "Week 2 · Pilot", body: "Test the workflow with two squads before scaling."}, {title: "Week 3 · Migrate", body: "Move active-quarter initiatives and archive stale projects."}, {title: "Week 4 · Measure", body: "Review cycle time, automation use, and reporting completeness."}])`;
+
+const COFFEE_TRENDS_REPORT_PROGRAM = `root = ReportView("Global Coffee Trends", "Consumer behavior and category opportunities · Illustrative 2026 outlook", [cover, signals, segments, actions])
+cover = Page("cover", MinimalFrontPage("Global Coffee Trends", coverCopy, "Illustrative market outlook", "title-bottom"))
+coverCopy = TextContent("Four demand shifts shaping the next wave of café, retail, and ready-to-drink growth.")
+signals = Page("signals", ContentPage([signalsHeader, signalMetrics, signalStatement]))
+signalsHeader = InlineHeader("Category signals", "Convenience is growing without displacing premium experiences.")
+signalMetrics = KeyMetrics("row", [{title: "Cold formats", text: "+18%"}, {title: "At-home premium", text: "+12%"}, {title: "Functional blends", text: "+9%"}, {title: "Traceability", text: "Top 3"}])
+signalStatement = HeadlineStatement("Coffee is splitting into rituals and utilities", "Consumers pay for craft when the moment is social and choose speed, portability, and function when it is not.", "default")
+segments = Page("segments", ContentPage([segmentsHeader, segmentTable]))
+segmentsHeader = InlineHeader("Where demand is moving", "Illustrative opportunity by occasion.")
+segmentTable = Table([Column("Occasion"), Column("Winning format"), Column("Primary need")], [["Morning commute", "Ready to drink", "Speed"], ["Home ritual", "Whole bean", "Craft"], ["Afternoon reset", "Cold coffee", "Refreshment"], ["Social visit", "Signature beverage", "Discovery"]])
+actions = Page("actions", ContentPage([actionsHeader, actionsList]))
+actionsHeader = InlineHeader("Three moves for operators", "Translate the signals into a focused portfolio.")
+actionsList = NumberedKeyPoint("column", [{title: "Design by occasion", body: "Give each format a clear job instead of stretching one menu across every need."}, {title: "Make sourcing visible", body: "Use concise origin and impact proof at the point of choice."}, {title: "Prototype cold and functional", body: "Test in limited markets before adding permanent complexity."}])`;
+
+const WORLD_CUP_DECK_PROGRAM = `root = SlideShow("World Cup 2026 Viewing Guide", "A host-city-first way to experience the tournament", [cover, scale, regions, matchday, itinerary, close])
+cover = Slide("cover", StandardTitle("World Cup 2026 Viewing Guide", "Three countries, sixteen host cities, one summer", "Illustrative trip-planning deck"))
+scale = Slide("scale", HeroMetric("16 host cities", "Across Canada, Mexico, and the United States", "horizontal"))
+regions = Slide("regions", KeyInfoWithTitle("Choose your tournament base", [{title: "Northeast", description: "Dense rail and flight links with several nearby venues"}, {title: "West Coast", description: "Major cities paired with longer travel distances"}, {title: "Mexico", description: "Historic football culture and high-energy host cities"}], "horizontal-grid"))
+matchday = Slide("matchday", TextBody("Build a resilient matchday", ["Stay close to rapid transit rather than the stadium itself", "Leave a recovery day between cities", "Book refundable travel until match allocations are final", "Keep official ticketing as the single source of truth"], "title-left"))
+itinerary = Slide("itinerary", ContentClassic("A balanced seven-day shape", ["Day 1 · Arrive and explore the host city", "Day 2 · Fan zone and neighborhood food", "Day 3 · Matchday", "Day 4 · Recovery and transfer", "Days 5–7 · Repeat in a second city"], "title-left"))
+close = Slide("close", HeadlineStatement("Plan the route, not just the match", "The best tournament trip leaves enough room for the cities around the football.", "title-bottom"))`;
+
+const PRODUCT_LAUNCH_DECK_PROGRAM = `root = SlideShow("AI Product Launch Plan", "From beta signal to repeatable adoption", [cover, goal, audiences, sequence, scorecard, close])
+cover = Slide("cover", StandardTitle("AI Product Launch Plan", "A focused six-week go-to-market motion", "Illustrative operating plan"))
+goal = Slide("goal", HeroMetric("1,000 activated teams", "Primary six-week launch objective", "horizontal"))
+audiences = Slide("audiences", KeyInfoWithTitle("Three launch audiences", [{title: "Design partners", description: "Validate workflows and produce credible proof"}, {title: "Power users", description: "Create repeatable templates and community momentum"}, {title: "Team leads", description: "Convert individual use into team adoption"}], "horizontal-grid"))
+sequence = Slide("sequence", TextBody("The launch sequence", ["Weeks 1–2 · Proof, onboarding, and reference stories", "Weeks 3–4 · Public launch and guided templates", "Weeks 5–6 · Team expansion and lifecycle automation"], "title-left"))
+scorecard = Slide("scorecard", ContentClassic("What the team reviews weekly", ["Activated teams and time to first value", "Second-week retention", "Templates reused across teammates", "Expansion from individual to team plans"], "title-left"))
+close = Slide("close", HeadlineStatement("Launch for repeat use", "Reach creates the first session; a clear workflow earns the second.", "title-bottom"))`;
 
 const STOCK_ARTIFACT = createDemoArtifact({
   id: "demo_artifact_big_tech_2025",
@@ -71,19 +123,75 @@ const TRAVEL_ARTIFACT = createDemoArtifact({
   id: "demo_artifact_japan_highlights",
   title: "Must-See Japan",
   type: "slides",
-  threadId: "demo_travel_planner",
+  threadId: "demo_catalog_japan_highlights",
   updatedAt: "2026-06-28T12:00:00.000Z",
   program: TRAVEL_DECK_PROGRAM,
 });
 
 const BLOCKBUSTER_ARTIFACT = createDemoArtifact({
-  id: "demo_artifact_blockbuster_report",
-  title: "Blockbuster Report",
-  type: "report",
+  id: "demo_artifact_blockbuster_box_office",
+  title: "Blockbuster Box Office",
+  type: "slides",
   threadId: "demo_blockbusters",
   updatedAt: "2026-06-26T12:00:00.000Z",
-  program: BLOCKBUSTER_REPORT_PROGRAM,
+  program: BLOCKBUSTER_DECK_PROGRAM,
 });
+
+const BUSINESS_HEALTH_ARTIFACT = createDemoArtifact({
+  id: "demo_artifact_q2_business_health",
+  title: "Q2 Business Health",
+  type: "report",
+  threadId: "demo_catalog_q2_business_health",
+  updatedAt: "2026-06-30T12:00:00.000Z",
+  program: BUSINESS_HEALTH_REPORT_PROGRAM,
+});
+
+const PRODUCT_DECISION_ARTIFACT = createDemoArtifact({
+  id: "demo_artifact_project_platform_brief",
+  title: "Project Platform Decision Brief",
+  type: "report",
+  threadId: "demo_catalog_project_platform_brief",
+  updatedAt: "2026-06-29T12:00:00.000Z",
+  program: PRODUCT_DECISION_REPORT_PROGRAM,
+});
+
+const COFFEE_TRENDS_ARTIFACT = createDemoArtifact({
+  id: "demo_artifact_global_coffee_trends",
+  title: "Global Coffee Trends",
+  type: "report",
+  threadId: "demo_catalog_global_coffee_trends",
+  updatedAt: "2026-06-27T12:00:00.000Z",
+  program: COFFEE_TRENDS_REPORT_PROGRAM,
+});
+
+const WORLD_CUP_ARTIFACT = createDemoArtifact({
+  id: "demo_artifact_world_cup_2026_guide",
+  title: "World Cup 2026 Viewing Guide",
+  type: "slides",
+  threadId: "demo_catalog_world_cup_2026_guide",
+  updatedAt: "2026-06-25T12:00:00.000Z",
+  program: WORLD_CUP_DECK_PROGRAM,
+});
+
+const PRODUCT_LAUNCH_ARTIFACT = createDemoArtifact({
+  id: "demo_artifact_ai_product_launch",
+  title: "AI Product Launch Plan",
+  type: "slides",
+  threadId: "demo_catalog_ai_product_launch",
+  updatedAt: "2026-06-24T12:00:00.000Z",
+  program: PRODUCT_LAUNCH_DECK_PROGRAM,
+});
+
+export const DEMO_ARTIFACTS: readonly DemoArtifact[] = [
+  STOCK_ARTIFACT,
+  BUSINESS_HEALTH_ARTIFACT,
+  PRODUCT_DECISION_ARTIFACT,
+  COFFEE_TRENDS_ARTIFACT,
+  BLOCKBUSTER_ARTIFACT,
+  TRAVEL_ARTIFACT,
+  WORLD_CUP_ARTIFACT,
+  PRODUCT_LAUNCH_ARTIFACT,
+];
 
 export const DEMO_CONVERSATIONS: readonly DemoConversation[] = [
   {
@@ -94,7 +202,7 @@ export const DEMO_CONVERSATIONS: readonly DemoConversation[] = [
     sourcePrompt:
       "Compare Meta, Microsoft, Netflix, and Google for 2025. How did they do against the S&P 500?",
     recordedModel: DEFAULT_MODEL,
-    artifact: STOCK_ARTIFACT,
+    linkedArtifactId: STOCK_ARTIFACT.id,
     messages: [
       {
         id: "demo_stock_comparison_user_1",
@@ -210,7 +318,6 @@ perfIcon = Icon("trending-down")`,
     icon: "travel",
     sourcePrompt: "Suggest must-see places in Japan.",
     recordedModel: DEFAULT_MODEL,
-    artifact: TRAVEL_ARTIFACT,
     messages: [
       {
         id: "demo_travel_planner_user_1",
@@ -372,7 +479,7 @@ sapporoChipIcon = Icon("snowflake")`,
     icon: "compare",
     sourcePrompt: "What are the top 3 highest-grossing movies of all time?",
     recordedModel: DEFAULT_MODEL,
-    artifact: BLOCKBUSTER_ARTIFACT,
+    linkedArtifactId: BLOCKBUSTER_ARTIFACT.id,
     messages: [
       {
         id: "demo_blockbusters_user_1",
@@ -404,38 +511,36 @@ splitHeader = InlineHeader("Domestic vs. International Breakdown", "How each fil
 splitChart = HorizontalBarChart(["Avatar (2009)", "Avengers: Endgame (2019)", "Avatar: Way of Water (2022)"], [{category: "Domestic (US)", values: [0.79, 0.86, 0.68]}, {category: "International", values: [2.13, 1.94, 1.65]}], "Revenue Split by Market", "Worldwide gross in USD billions", "Gross (USD Billions)", "Film", "B", "grouped")
 spotlightsHeader = InlineHeader("Film Spotlights", "The three films that define modern event cinema")
 filmCards = VisualCardBlock([avatarCard, endgameCard, wowCard], "grid")
-avatarCard = VisualCardItem(avatarBody, "avatar", "https://media.snl.no/media/55860/standard_24150166553_ffc44a2cec_o.jpg", avatarTag, "Avatar film artwork")
+avatarCard = VisualCardItem(avatarBody, "avatar", "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1200&q=80&auto=format&fit=crop", avatarTag, "Luminous forest representing Avatar")
 avatarBody = BoldText("text", "Avatar", "$2.92B · 2009", "text", "md")
 avatarTag = Tag("#1 All-Time Record", "neutral")
-endgameCard = VisualCardItem(endgameBody, "endgame", "https://source.roboflow.com/YoxtNZPyyIPc3gHirQr71WOBORJ2/5ZMROjXhgtot7B1Fgjud/original.jpg", endgameTag, "Avengers: Endgame artwork")
+endgameCard = VisualCardItem(endgameBody, "endgame", "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1200&q=80&auto=format&fit=crop", endgameTag, "Cinema auditorium representing Avengers: Endgame")
 endgameBody = BoldText("text", "Avengers: Endgame", "$2.80B · 2019", "text", "md")
 endgameTag = Tag("#2 · MCU Peak", "neutral")
-wowCard = VisualCardItem(wowBody, "wow", "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/d96bb958-4e6c-4ce0-9447-fbe226fbbecf/dfk66m9-e2a63b7d-a175-40d4-b80a-8d8a2e5fc082.jpg/v1/fill/w_1192,h_670,q_70,strp/avatar_2_the_way_of_water_animated_wallpaper_by_favorisxp_dfk66m9-pre.jpg", wowTag, "Avatar: The Way of Water artwork")
+wowCard = VisualCardItem(wowBody, "wow", "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80&auto=format&fit=crop", wowTag, "Ocean scene representing Avatar: The Way of Water")
 wowBody = BoldText("text", "Avatar: The Way of Water", "$2.33B · 2022", "text", "md")
 wowTag = Tag("#3 · Most Expensive Ever", "neutral")`,
       },
       {
         id: "demo_blockbusters_user_2",
         role: "user",
-        content: "Package this into a shareable report.",
+        content: "Package this into a shareable slide deck.",
       },
       ...createArtifactTurn(
         "demo_blockbusters",
         BLOCKBUSTER_ARTIFACT,
-        "I turned the box-office breakdown into a four-page report covering the podium, the market split, and three takeaways.",
+        "I turned the box-office breakdown into a six-slide deck covering the podium, global appeal, and the event-cinema playbook.",
       ),
     ],
   },
 ];
 
-export const DEMO_ARTIFACTS: readonly DemoArtifact[] = DEMO_CONVERSATIONS.map(
-  (conversation) => conversation.artifact,
-);
-
 const DEMO_CONVERSATIONS_BY_ID = new Map(
   DEMO_CONVERSATIONS.map((conversation) => [conversation.id, conversation]),
 );
 const DEMO_ARTIFACTS_BY_ID = new Map(DEMO_ARTIFACTS.map((artifact) => [artifact.id, artifact]));
+
+if (process.env.NODE_ENV !== "production") validateDemoContent();
 
 export function getDemoConversation(id: string | null | undefined): DemoConversation | undefined {
   if (!id) return undefined;
@@ -462,16 +567,64 @@ export function cloneDemoMessages(conversation: DemoConversation): Message[] {
   return structuredClone(conversation.messages);
 }
 
+function validateDemoContent() {
+  const artifactIds = new Set<string>();
+  const counts: Record<DemoArtifactKind, number> = { report: 0, slides: 0 };
+
+  for (const artifact of DEMO_ARTIFACTS) {
+    if (artifactIds.has(artifact.id)) {
+      throw new Error(`Duplicate demo artifact ID: ${artifact.id}`);
+    }
+    artifactIds.add(artifact.id);
+    counts[artifact.type] += 1;
+  }
+
+  if (counts.report !== 4 || counts.slides !== 4) {
+    throw new Error(
+      `Expected four reports and four slide decks; found ${counts.report} reports and ${counts.slides} slide decks.`,
+    );
+  }
+
+  const expectedLinks = new Map<DemoConversation["id"], DemoArtifact["id"]>([
+    ["demo_stock_comparison", STOCK_ARTIFACT.id],
+    ["demo_blockbusters", BLOCKBUSTER_ARTIFACT.id],
+  ]);
+  const linkedConversations = DEMO_CONVERSATIONS.filter(
+    (conversation) => conversation.linkedArtifactId !== undefined,
+  );
+
+  if (linkedConversations.length !== expectedLinks.size) {
+    throw new Error("Only Stock comparison and Blockbuster report may link thread artifacts.");
+  }
+
+  for (const conversation of DEMO_CONVERSATIONS) {
+    const expectedArtifactId = expectedLinks.get(conversation.id);
+    if (conversation.linkedArtifactId !== expectedArtifactId) {
+      throw new Error(`Unexpected demo artifact link for ${conversation.id}.`);
+    }
+    if (!expectedArtifactId) continue;
+
+    const artifact = DEMO_ARTIFACTS_BY_ID.get(expectedArtifactId);
+    if (!artifact || artifact.threadId !== conversation.id) {
+      throw new Error(`Invalid demo artifact thread link for ${conversation.id}.`);
+    }
+    if (!JSON.stringify(conversation.messages).includes(expectedArtifactId)) {
+      throw new Error(`Demo thread ${conversation.id} is missing its artifact turn.`);
+    }
+  }
+}
+
 function createDemoArtifact(artifact: Omit<DemoArtifact, "content">): DemoArtifact {
+  const carrierHeader = JSON.stringify({
+    artifact_id: artifact.id,
+    type: artifact.type,
+    name: artifact.title,
+    version: "1",
+  });
+
   return {
     ...artifact,
-    content: JSON.stringify({
-      artifact_id: artifact.id,
-      type: artifact.type,
-      name: artifact.title,
-      version: "1",
-      content: artifact.program,
-    }),
+    content: `]]>openui:artifact ${carrierHeader}\n${artifact.program}`,
   };
 }
 
