@@ -98,6 +98,7 @@ interface RendererProps {
   response: string | null;
   library: Library;
   isStreaming?: boolean;
+  revealRate?: boolean | { targetMs?: number; minMsPerChar?: number; minTotalMs?: number };
   onAction?: (event: ActionEvent) => void;
   onStateUpdate?: (state: Record<string, unknown>) => void;
   initialState?: Record<string, any>;
@@ -110,6 +111,23 @@ interface RendererProps {
   onError?: (errors: OpenUIError[]) => void;
 }
 ```
+
+## Reveal pacing
+
+The Renderer renders progressively as the response arrives, so the arrival rate is the reveal pace. When the response arrives bursty or whole — a fast tool-call generation, or a transport that coalesces writes — the components pop in all at once instead of assembling.
+
+`revealRate` decouples paint from arrival: while `isStreaming`, the Renderer feeds the streaming parser a growing prefix of the response on a clock, so completed statements stay stable while the pending one fills in, and the UI assembles the way it would over a smooth stream.
+
+```tsx
+<Renderer response={dsl} isStreaming revealRate />
+<Renderer response={dsl} isStreaming revealRate={{ targetMs: 1100 }} />
+```
+
+- `true` — enable with the defaults (`targetMs: 1000`, `minMsPerChar: 1.2`, `minTotalMs: 400`).
+- object — enable, overriding individual knobs.
+- `false` / omitted — no pacing (render as the response arrives, the default).
+
+Settled content (not streaming, e.g. hydrated on load) and `prefers-reduced-motion` render immediately — no fake assembly over stable content.
 
 ## Tool Provider
 

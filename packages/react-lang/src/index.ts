@@ -16,6 +16,8 @@ export type {
 // openui-lang renderer
 export { Renderer } from "./Renderer";
 export type { RendererProps } from "./Renderer";
+export { DEFAULT_REVEAL_RATE } from "./reveal";
+export type { RevealRate, RevealRateOptions } from "./reveal";
 
 // openui-lang action types
 export { ACTION_STEPS, BuiltinActionType } from "@openuidev/lang-core";
