@@ -13,7 +13,7 @@ import type { PromptSpec } from "./parser/prompt";
  * The configuration hash covers the root component, component names, signatures and
  * descriptions, component groups and notes, and generation-mode flags. The project hash
  * uses the normalized Git origin, REPOSITORY_URL, or working directory. Only the hashes
- * are sent. PostHog observes the server's transport IP, but no IP field is added here.
+ * are sent.
  *
  * Not sent:
  * - Prompts, preambles, examples, additional rules, or generated output
