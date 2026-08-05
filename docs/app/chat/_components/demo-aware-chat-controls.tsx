@@ -2,7 +2,7 @@
 
 import { useThreadList } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "../chat-page.module.css";
 import { CloudModelSwitcher } from "./agent-surfaces/cloud-model-switcher";
 import {
@@ -52,6 +52,60 @@ export function DemoAwareComposer({ forkRegistry, onNavigate }: DemoAwareCompose
       onNavigate={onNavigate}
     />
   );
+}
+
+/**
+ * Keep recorded GenUI responses inert without disabling artifact previews or
+ * the explicit continuation CTA. The published renderer does not expose a
+ * read-only prop, so mark only its direct response roots while a fixture thread
+ * is selected. Private continuations immediately regain normal interactivity.
+ */
+export function DemoResponseInteractionGuard() {
+  const selectedThreadId = useThreadList((state) => state.selectedThreadId);
+  const isDemo = getDemoConversation(selectedThreadId) !== undefined;
+  const markerRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const surface = markerRef.current?.closest(".chat-agent-surface");
+    if (!(surface instanceof HTMLElement)) return;
+
+    const markedRoots = new Set<HTMLElement>();
+    const clearMarkedRoots = () => {
+      for (const root of markedRoots) {
+        root.removeAttribute("inert");
+        root.removeAttribute("aria-disabled");
+        root.removeAttribute("data-openui-demo-readonly-renderer");
+      }
+      markedRoots.clear();
+    };
+    const markResponseRoots = () => {
+      clearMarkedRoots();
+      if (!isDemo) return;
+
+      for (const content of surface.querySelectorAll(
+        ".openui-shell-thread-message-assistant__content",
+      )) {
+        const root = content.lastElementChild;
+        if (!(root instanceof HTMLElement) || root.style.position !== "relative") continue;
+
+        root.setAttribute("inert", "");
+        root.setAttribute("aria-disabled", "true");
+        root.setAttribute("data-openui-demo-readonly-renderer", "true");
+        markedRoots.add(root);
+      }
+    };
+
+    markResponseRoots();
+    const observer = new MutationObserver(markResponseRoots);
+    observer.observe(surface, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      clearMarkedRoots();
+    };
+  }, [isDemo]);
+
+  return <span ref={markerRef} className={styles.demoReadOnlyMarker} aria-hidden="true" />;
 }
 
 interface ReadOnlyDemoComposerProps {

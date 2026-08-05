@@ -22,6 +22,7 @@ import {
   DemoAwareComposer,
   DemoAwareModelSwitcher,
   DemoPathSynchronizer,
+  DemoResponseInteractionGuard,
 } from "../demo-aware-chat-controls";
 import { DemoConversationList } from "../demo-conversation-list";
 import { createDemoConversationStorage } from "../demo-conversation-storage";
@@ -149,6 +150,7 @@ export function CloudAgentSurface() {
           <DemoAwareComposer forkRegistry={forkRegistry} onNavigate={setPath} />
         </AgentInterface.Composer>
         <DemoPathSynchronizer path={path} onNavigate={setPath} />
+        <DemoResponseInteractionGuard />
       </AgentInterface>
     </div>
   );
