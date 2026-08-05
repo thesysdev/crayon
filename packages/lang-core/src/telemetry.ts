@@ -1,9 +1,14 @@
 import type { PromptSpec } from "./parser/prompt";
 
+declare const __OPENUI_LANG_CORE_VERSION__: string;
+
 const EVENT_NAME = "lang_core_system_prompt_generation_used";
 const SAMPLE_RATE = 0.1;
 const REQUEST_TIMEOUT_MS = 2_000;
-const SDK_VERSION = "0.2.10";
+const SDK_VERSION =
+  typeof __OPENUI_LANG_CORE_VERSION__ === "string"
+    ? __OPENUI_LANG_CORE_VERSION__
+    : "0.0.0-development";
 const CAPTURE_URL = "https://us.i.posthog.com/capture/";
 const POSTHOG_KEY = "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
 
@@ -296,10 +301,13 @@ function readGitOrigin(processLike: ProcessLike): Promise<string | undefined> {
         ["config", "--local", "--get", "remote.origin.url"],
         {
           encoding: "utf8",
-          timeout: 500,
+          timeout: 1_000,
           windowsHide: true,
         },
-        (error, stdout) => resolve(error ? undefined : stdout),
+        (error, stdout) => {
+          const origin = stdout?.trim();
+          resolve(error || !origin ? undefined : origin);
+        },
       );
     } catch {
       resolve(undefined);
@@ -312,8 +320,9 @@ async function getRepositoryIdentifier(
 ): Promise<string | undefined> {
   if (!processLike) return undefined;
 
+  // Match Next.js's project identity precedence: Git origin, CI repository URL, then cwd.
   const rawValue =
-    (await readGitOrigin(processLike)) ?? processLike.env?.REPOSITORY_URL ?? processLike.cwd?.();
+    (await readGitOrigin(processLike)) || processLike.env?.REPOSITORY_URL || processLike.cwd?.();
   return rawValue ? normalizeRepositoryIdentifier(rawValue) : undefined;
 }
 
