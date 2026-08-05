@@ -2,8 +2,10 @@ import clsx from "clsx";
 import React, { forwardRef } from "react";
 import { useFormControlContext } from "../FormControl/context";
 
-export interface TextAreaProps
-  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "size"> {
+export interface TextAreaProps extends Omit<
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  "size"
+> {
   className?: string;
   placeholder?: string;
   rows?: number;

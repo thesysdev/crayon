@@ -1,6 +1,12 @@
-import { ThemeProvider } from "@/hooks/use-system-theme";
+import { isDevelopment } from "@/lib/env";
+import { OpenUIDevtools } from "@openuidev/devtools";
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
+
+const inter = Inter({
+  weight: ["400", "500", "600"],
+});
 
 export const metadata: Metadata = {
   title: "OpenUI Cloud",
@@ -14,8 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className={inter.className}>
+        {children}
+        {isDevelopment() && <OpenUIDevtools />}
       </body>
     </html>
   );

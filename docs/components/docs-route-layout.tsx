@@ -5,6 +5,7 @@ import { baseOptions, siteConfig } from "@/lib/layout.shared";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import { Play, Plug } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 function SidebarBannerLink({
@@ -39,14 +40,17 @@ type DocsRouteLayoutProps = {
 };
 
 export function DocsRouteLayout({ tree, children }: DocsRouteLayoutProps) {
+  const pathname = usePathname();
+  const isOverview = pathname === "/docs/overview";
+
   return (
     <DocsLayout
       tree={tree}
       {...baseOptions()}
-      nav={{ component: <DocsNavbar showSidebarToggle /> }}
+      nav={{ component: <DocsNavbar showSidebarToggle={!isOverview} /> }}
       sidebar={{
         tabs: false,
-        enabled: true,
+        enabled: !isOverview,
         collapsible: false,
         banner: (
           <div className="flex flex-col mb-2">

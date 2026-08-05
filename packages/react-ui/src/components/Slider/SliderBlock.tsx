@@ -9,6 +9,8 @@ import { Slider, SliderProps } from "./Slider";
 export interface SliderBlockProps extends Omit<SliderProps, "value" | "defaultValue"> {
   label: string;
   defaultValue?: number[];
+  /** Props are still arriving; step-derived UI is suppressed until they settle. */
+  isStreaming?: boolean;
 }
 
 const ValueInput = ({
@@ -65,6 +67,7 @@ export const SliderBlock = (props: SliderBlockProps) => {
     step,
     defaultValue,
     disabled,
+    isStreaming,
     ...sliderProps
   } = props;
 
@@ -120,6 +123,10 @@ export const SliderBlock = (props: SliderBlockProps) => {
   const effectiveStep = isDiscrete ? (step ?? 1) : Math.max(1, step ?? 1);
 
   const controlElements = useMemo(() => {
+    // `step` arrives last, so a discrete 500–10000 slider briefly reads as
+    // step 1 — thousands of SelectItems, for a control that is disabled while
+    // streaming anyway. No value control until the props settle.
+    if (isStreaming) return null;
     if (isDiscrete) {
       const allOptions = Array.from(
         { length: Math.floor((max - min) / effectiveStep) + 1 },
@@ -233,6 +240,7 @@ export const SliderBlock = (props: SliderBlockProps) => {
       );
     }
   }, [
+    isStreaming,
     isDiscrete,
     isRange,
     value,
@@ -245,7 +253,8 @@ export const SliderBlock = (props: SliderBlockProps) => {
     setValueAndCommit,
   ]);
 
-  const hasError = !isDiscrete && (isRange ? Boolean(minError || maxError) : Boolean(minError));
+  const hasError =
+    !isStreaming && !isDiscrete && (isRange ? Boolean(minError || maxError) : Boolean(minError));
 
   return (
     <div className="openui-slider-block">
@@ -267,7 +276,9 @@ export const SliderBlock = (props: SliderBlockProps) => {
           min={min}
           max={max}
           step={effectiveStep}
-          variant={variant}
+          // Dots are the only thing `variant` drives; `step` still reaches the
+          // primitive, so suppressing them mid-stream keeps snapping intact.
+          variant={isStreaming ? "continuous" : variant}
           name={name}
           disabled={disabled}
         />

@@ -293,7 +293,7 @@ export async function POST(req: NextRequest) {
     apiKey,
     baseURL: "https://openrouter.ai/api/v1",
   });
-  const MODEL = "openai/gpt-5.4";
+  const MODEL = "google/gemini-3.6-flash";
 
   const cleanMessages = (messages as any[])
     .filter(

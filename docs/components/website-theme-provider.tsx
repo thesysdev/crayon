@@ -1,6 +1,6 @@
 "use client";
 
-import { ThemeProvider } from "@openuidev/react-ui/ThemeProvider";
+import { ThemeProvider } from "@openuidev/react-ui";
 import { useTheme } from "next-themes";
 import { useEffect, type ReactNode } from "react";
 

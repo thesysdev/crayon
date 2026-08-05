@@ -3,13 +3,17 @@ import {
   MessageProvider,
   useActiveDetailedView,
   useArtifactList,
+  useArtifactRendererRegistry,
   useThread,
   useToolActivities,
 } from "@openuidev/react-headless";
 import clsx from "clsx";
-import React, { memo, useId, useRef } from "react";
+import React, { memo, useId, useMemo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
+import { getLastAssistantMessageId, getMatchedRendererActivities } from "../../utils/messages";
+import { hasLangSyntax, separateContentAndContext } from "../../utils/sentinelParser";
+import { ToolCallTimeline, type TimelineStep } from "../ToolCall";
 import {
   DetailedViewOverlay,
   DetailedViewPanel,
@@ -27,6 +31,7 @@ import { MarkDownRenderer } from "../MarkDownRenderer";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { GalleryHorizontalEndIcon } from "./_shared/GalleryHorizontalEndIcon";
 import { AmbientLoader } from "./components/AmbientLoader";
+import { ScrollToLatest } from "./components/ScrollToLatest";
 import { ResizableSeparator } from "./ResizableSeparator";
 import { useDetailedViewResize } from "./useDetailedViewResize";
 import { UserMessageContent } from "./UserMessageContent";
@@ -180,6 +185,7 @@ export const ScrollArea = ({
       >
         {children}
       </div>
+      <ScrollToLatest scrollRef={ref} />
     </div>
   );
 };
@@ -319,6 +325,179 @@ export const ThreadError = () => {
   );
 };
 
+/**
+ * Groups a message list into turns: a run of consecutive assistant/tool
+ * messages becomes ONE group; every other message (user, system, …) stands alone.
+ * `startIndex` is the group's position in the original list.
+ */
+function groupIntoTurns(messages: Message[]): { messages: Message[]; startIndex: number }[] {
+  const groups: { messages: Message[]; startIndex: number }[] = [];
+  let current: { messages: Message[]; startIndex: number } | null = null;
+  messages.forEach((message, i) => {
+    if (message.role === "assistant" || message.role === "tool") {
+      if (!current) {
+        current = { messages: [], startIndex: i };
+        groups.push(current);
+      }
+      current.messages.push(message);
+    } else {
+      current = null;
+      groups.push({ messages: [message], startIndex: i });
+    }
+  });
+  return groups;
+}
+
+/**
+ * A whole turn as one unit. Owned here rather than per-message
+ * so the tray is a single element keyed by the turn's first segment ({@link Messages})
+ */
+const InterleavedTurn = ({
+  segments,
+  allMessages,
+  assistantMessage: CustomAssistantMessage,
+  className,
+  isRunning,
+  lastAssistantId,
+}: {
+  segments: AssistantMessage[];
+  allMessages: Message[];
+  assistantMessage?: AssistantMessageComponent;
+  className?: string;
+  isRunning: boolean;
+  lastAssistantId: string | null;
+}) => {
+  const last = segments[segments.length - 1]!;
+  const turnLive = isRunning && lastAssistantId === last.id;
+
+  // One id-keyed pairing across every segment's tool calls (synthetic message).
+  const turnMessage = useMemo(
+    () => ({ ...segments[0]!, toolCalls: segments.flatMap((s) => s.toolCalls ?? []) }),
+    [segments],
+  );
+  const turnActivities = useToolActivities(turnMessage, allMessages);
+
+  const lastContent = separateContentAndContext(last.content ?? "").content;
+  const answer =
+    !turnLive || turnActivities.length === 0 || hasLangSyntax(lastContent) ? last : null;
+  const answerMessage = useMemo(() => (answer ? { ...answer, toolCalls: [] } : null), [answer]);
+
+  // Rows in run order: each non-answer segment's thinking prose, then its tools.
+  const steps = useMemo<TimelineStep[]>(() => {
+    const byCallId = new Map(turnActivities.map((a) => [a.toolCall.id, a]));
+    const rows: TimelineStep[] = [];
+    for (const seg of segments) {
+      if (seg.id !== answer?.id) {
+        const prose = separateContentAndContext(seg.content ?? "").content;
+        if (prose) rows.push({ type: "text", id: seg.id, text: prose });
+      }
+      for (const tc of seg.toolCalls ?? []) {
+        const activity = byCallId.get(tc.id);
+        if (activity) rows.push({ type: "activity", activity });
+      }
+    }
+    return rows;
+  }, [segments, turnActivities, answer?.id]);
+
+  // Matched renderers (artifact/search previews) render OUTSIDE the tray so
+  // they stay visible after it collapses.
+  const registry = useArtifactRendererRegistry();
+  const matched = getMatchedRendererActivities(registry, turnActivities);
+
+  // Hold the tray open until the answer's first tokens arrive. `answer` is
+  // `last` or null, so reuse the already-parsed `lastContent`.
+  const answerStarted = !!answer && lastContent.length > 0;
+
+  return (
+    <>
+      {turnActivities.length > 0 && (
+        <ToolCallTimeline
+          activities={turnActivities}
+          steps={steps}
+          isLast={turnLive}
+          forceDefault
+          awaitingResponse={turnLive && !answerStarted}
+        />
+      )}
+      {matched.map((activity) => (
+        <TimelineEntry
+          key={activity.id}
+          activity={activity}
+          isLast={turnLive}
+          fallbackToDefault={false}
+        />
+      ))}
+      {answer && answerMessage && (
+        <MessageProvider key={answer.id} message={answerMessage}>
+          {CustomAssistantMessage ? (
+            <CustomAssistantMessage
+              message={answerMessage}
+              isStreaming={isRunning && lastAssistantId === answer.id}
+            />
+          ) : (
+            <AssistantMessageContainer className={className}>
+              <AssistantMessageContent
+                message={answerMessage}
+                allMessages={allMessages}
+                isLast={isRunning && lastAssistantId === answer.id}
+              />
+            </AssistantMessageContainer>
+          )}
+        </MessageProvider>
+      )}
+    </>
+  );
+};
+
+/** Renders one turn (a group from {@link groupIntoTurns}). */
+const RenderGroup = ({
+  group,
+  allMessages,
+  assistantMessage: CustomAssistantMessage,
+  userMessage,
+  className,
+  isRunning,
+  lastAssistantId,
+}: {
+  group: Message[];
+  allMessages: Message[];
+  assistantMessage?: AssistantMessageComponent;
+  userMessage?: UserMessageComponent;
+  className?: string;
+  isRunning: boolean;
+  lastAssistantId: string | null;
+}) => {
+  // A group is either a run of assistant/tool messages or one standalone
+  // non-assistant message (user/system/…). The former is always one interleaved
+  // turn, which owns the tool-call timeline (it reads `last` for the answer, so
+  // a length-one assistant group works too); the latter renders on its own.
+  const assistants = group.filter((m): m is AssistantMessage => m.role === "assistant");
+  const message = group[0]!;
+
+  return assistants.length > 0 ? (
+    <InterleavedTurn
+      segments={assistants}
+      allMessages={allMessages}
+      assistantMessage={CustomAssistantMessage}
+      className={className}
+      isRunning={isRunning}
+      lastAssistantId={lastAssistantId}
+    />
+  ) : (
+    <MessageProvider key={message.id} message={message}>
+      <RenderMessage
+        message={message}
+        allMessages={allMessages}
+        assistantMessage={CustomAssistantMessage}
+        userMessage={userMessage}
+        isStreaming={isRunning && message.id === lastAssistantId}
+        isLast={message.id === lastAssistantId}
+        className={className}
+      />
+    </MessageProvider>
+  );
+};
+
 export const Messages = ({
   className,
   loader,
@@ -334,32 +513,28 @@ export const Messages = ({
   const isRunning = useThread((s) => s.isRunning);
   const threadError = useThread((s) => s.threadError);
 
-  // Scan for the last *assistant* message (not the last message index) so the
-  // running shimmer survives trailing tool messages.
-  let lastAssistantIndex = -1;
-  for (let i = messages.length - 1; i >= 0; i--) {
-    if (messages[i]?.role === "assistant") {
-      lastAssistantIndex = i;
-      break;
-    }
-  }
+  // Group the flat message list into turns ONCE per change; the arrays keep
+  // their identity across unrelated re-renders.
+  const groups = useMemo(() => groupIntoTurns(messages), [messages]);
+
+  // Id of the last *assistant* message (not the last message) so the running
+  // shimmer survives trailing tool messages.
+  const lastAssistantId = useMemo(() => getLastAssistantMessageId(messages), [messages]);
 
   return (
     <div className={clsx("openui-agent-thread-messages", className)}>
-      {messages.map((message, i) => {
-        return (
-          <MessageProvider key={message.id} message={message}>
-            <RenderMessage
-              message={message}
-              allMessages={messages}
-              assistantMessage={assistantMessage}
-              userMessage={userMessage}
-              isStreaming={isRunning && i === lastAssistantIndex}
-              isLast={i === lastAssistantIndex}
-            />
-          </MessageProvider>
-        );
-      })}
+      {groups.map((group) => (
+        <RenderGroup
+          key={group.messages[0]!.id}
+          group={group.messages}
+          allMessages={messages}
+          assistantMessage={assistantMessage}
+          userMessage={userMessage}
+          className={className}
+          isRunning={isRunning}
+          lastAssistantId={lastAssistantId}
+        />
+      ))}
       {isRunning && <div>{loader}</div>}
       {!isRunning && threadError && <ThreadError />}
     </div>
