@@ -19,23 +19,9 @@ The standard architecture for an AI data application is a function-calling loop.
 
 ![Architecture comparison: a tool-calling loop routes every interaction and its data through the LLM, while Generative UI calls the LLM once and handles later interactions through a deterministic renderer](./images/tool-calling-loop-vs-generative-ui.png)
 
-Consider the left panel of the demo above. A user is viewing revenue for the last 7 days and wants 30 instead. In the tool loop, that adjustment is a chat turn:
+Consider the left panel of the demo above. A user is viewing revenue for the last 7 days and wants 30 instead. Here is that adjustment through both architectures:
 
-{/* TODO(design): replace this ASCII diagram with a real image diagram */}
-
-```
-"change it to 30 days"
-  │
-  ├─ send: system prompt + tool schemas + ENTIRE history    (grows every turn)
-  │
-  │        LLM re-generates the query          ← re-derived from scratch
-  │
-  ├─ execute tool, send: history + result rows              (10-20k tokens in)
-  │
-  │        LLM re-narrates the numbers         ← data passes through sampling
-  │
-  └─ prose answer
-```
+![The same filter change through both architectures: the tool-calling loop takes five steps including two LLM passes that rewrite the query and retype the numbers, while Generative UI takes three deterministic steps at zero tokens in about 100ms](./images/tool-calling-loop-vs-generative-ui-filter-change.png)
 
 The model is called twice per turn: once to write the tool call, once to interpret its result. Both calls carry the full conversation history, and the result rows enter the context window, where they stay for the rest of the session.
 
@@ -78,20 +64,7 @@ Six statements, a few hundred output tokens, and no data anywhere in them. `metr
 
 **A runtime executor.** The renderer runs queries directly against the application's tool layer (an API route, an MCP endpoint, a database function). The model is not on this path.
 
-This is what the right panel of the demo does. A filter change is now:
-
-{/* TODO(design): replace this ASCII diagram with a real image diagram */}
-
-```
-user selects "Last 30 days"
-  │
-  ├─ $days = "30"                              (client-side state change)
-  │
-  └─ runtime re-runs query_orders(days=30)     ── 0 tokens, ~100ms
-        rows flow database ──▶ browser         (never through the model)
-```
-
-The model is never contacted: a filter change is deterministic re-execution of a declared query with new parameters. The model handles intent; the runtime handles interaction.
+This is what the right panel of the demo does, and the right half of the diagram above: `$days` becomes `"30"`, the runtime re-runs `query_orders(days=30)` in about 100ms at zero tokens, and the rows flow from the database straight to the browser. The model is never contacted: a filter change is deterministic re-execution of a declared query with new parameters. The model handles intent; the runtime handles interaction.
 
 ### Regeneration is also restructured
 
@@ -142,7 +115,7 @@ The estimate favors the loop on purpose: in a real conversation, later turns als
 
 Tool-loop failures live in the data: made-up or miscopied values in narration, inconsistent query rewrites across turns. Both are silent; nothing exists to check a narrated number against.
 
-Generative UI failures live in the interface. **Every displayed number comes from a real query result**: the model writes references that the runtime resolves, so an invented value would have to appear as a literal in the spec, where it is easy to catch. What remains is a filter bound to the wrong parameter or a misleading chart title. The parser catches the structural cases before render and sends them back for correction; the rest are visible on screen. A chart grouped by the wrong dimension gets fixed in one message. A wrong number in prose is never noticed.
+In Generative UI, **every displayed number comes from a real query result**: the model writes references that the runtime resolves, so an invented value would have to appear as a literal in the spec, where it is easy to catch. What can still go wrong is small and visible: a filter bound to the wrong parameter, a misleading chart title. The parser catches the structural cases before render and sends them back for correction, and the rest show up on screen, where a chart grouped by the wrong dimension gets fixed in one message. A wrong number in prose is never noticed.
 
 ## Edge cases and limitations
 

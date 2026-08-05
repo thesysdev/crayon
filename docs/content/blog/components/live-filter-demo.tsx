@@ -1,7 +1,7 @@
 "use client";
 
 import { Renderer } from "@openuidev/react-lang";
-import { openuiLibrary } from "@openuidev/react-ui";
+import { ThemeProvider, openuiLibrary } from "@openuidev/react-ui";
 import { useRef, useState } from "react";
 
 // The spec "the model wrote". No data in it; the runtime resolves the references.
@@ -68,13 +68,18 @@ const LOOP_TURNS = [
   { user: "Now show 90 days.", days: 90 },
 ];
 
+// Token figures mirror the article's worked example: ~10k per tool-loop turn
+// (8k result rows + 2k prompt, tool call, and answer) and ~3.5k for the one-time
+// widget generation.
+
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
+// The demo is always light, matching the post's light diagrams even in dark mode.
 const USER_BUBBLE =
-  "self-end max-w-[85%] rounded-xl bg-slate-800 px-3 py-2 text-[13px] leading-relaxed text-white dark:bg-slate-200 dark:text-slate-900";
+  "self-end max-w-[85%] rounded-xl bg-slate-800 px-3 py-2 text-[13px] leading-relaxed text-white";
 const ASSISTANT_BUBBLE =
-  "rounded-xl border border-slate-200 bg-white px-3 py-2 text-[13px] leading-relaxed dark:border-slate-700 dark:bg-slate-900";
-const TOKEN_NOTE = "text-[11px] text-slate-400 dark:text-slate-500";
+  "rounded-xl border border-slate-200 bg-white px-3 py-2 text-[13px] leading-relaxed text-slate-900";
+const TOKEN_NOTE = "text-[11px] text-slate-400";
 
 function Panel({
   title,
@@ -90,8 +95,8 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-[480px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-950">
-      <div className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900">
+    <div className="flex h-[480px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-50 text-slate-900">
+      <div className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-3 py-2.5">
         <span className="flex items-center gap-2 text-[13px] font-medium">
           <span className={`h-1.5 w-1.5 rounded-full ${dotClass}`} />
           {title}
@@ -125,22 +130,27 @@ export const LiveFilterDemo = () => {
   };
 
   return (
-    <div className="not-prose my-8 grid grid-cols-1 gap-3 lg:grid-cols-2">
-      {/* The Select menu portals to <body>, escaping the widget's zoom. This page's only
-          Select is the demo's, so scale the portal to match; min-width is divided back up
-          so the menu still spans the trigger. */}
-      <style>{`
-        .openui-select-content {
-          zoom: 0.7;
-          min-width: calc(var(--radix-select-trigger-width) / 0.7);
-        }
-      `}</style>
+    // Scoped light theme: the widget's --openui-* tokens stay light even when the site
+    // is dark, so the demo matches the post's light diagrams. The explicit cssSelector
+    // keeps the override inside the demo; the provider's portal class carries it to the
+    // Select menu, which portals to <body>.
+    <ThemeProvider mode="light" cssSelector=".openui-demo-light">
+      <div className="openui-demo-light not-prose my-8 grid grid-cols-1 gap-3 lg:grid-cols-2">
+        {/* The Select menu portals to <body>, escaping the widget's zoom. This page's only
+            Select is the demo's, so scale the portal to match; min-width is divided back up
+            so the menu still spans the trigger. */}
+        <style>{`
+          .openui-select-content {
+            zoom: 0.7;
+            min-width: calc(var(--radix-select-trigger-width) / 0.7);
+          }
+        `}</style>
       {/* Tool-calling loop: the same three date changes, each a full model round trip */}
       <Panel
         title="Tool-calling loop"
         dotClass="bg-red-500"
         badge={`~${LOOP_TURNS.length * 10}k tokens · ~30s`}
-        badgeClass="border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
+        badgeClass="border-red-500/30 bg-red-500/10 text-red-600"
       >
         {LOOP_TURNS.map((turn, i) => {
           const rows = computeRows(turn.days);
@@ -172,14 +182,14 @@ export const LiveFilterDemo = () => {
       <Panel
         title="Generative UI"
         dotClass="bg-emerald-500"
-        badge="~350 output tokens · ~3s"
-        badgeClass="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+        badge="~3.5k tokens · ~3s"
+        badgeClass="border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
       >
         <div className={USER_BUBBLE}>Show daily revenue by region for the last 7 days.</div>
         <div className="flex flex-col items-start gap-1">
           {/* 0.8 (panel) × 0.875 ≈ 0.7 effective */}
           <div
-            className="w-full rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900"
+            className="w-full rounded-xl border border-slate-200 bg-white p-3"
             style={{ zoom: 0.875 }}
           >
             <Renderer
@@ -191,11 +201,12 @@ export const LiveFilterDemo = () => {
             />
           </div>
           <span className={TOKEN_NOTE}>
-            {filterChanges} filter {filterChanges === 1 ? "change" : "changes"} · 0 tokens ·
-            ~350ms each
+            ~3.5k tokens, once · {filterChanges} filter{" "}
+            {filterChanges === 1 ? "change" : "changes"} at 0 tokens, ~350ms each
           </span>
         </div>
       </Panel>
-    </div>
+      </div>
+    </ThemeProvider>
   );
 };
