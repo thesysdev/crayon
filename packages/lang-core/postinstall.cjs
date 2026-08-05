@@ -1,7 +1,7 @@
 "use strict";
 
 try {
-  process.env.OPENUI_DEVTOOLS_PACKAGE_VERSION = require("./package.json").version;
+  process.env.OPENUI_LANG_CORE_PACKAGE_VERSION = require("./package.json").version;
   require("./dist/postinstall.cjs");
 } catch {
   // Telemetry must never fail installation, including a clean source checkout

@@ -29,19 +29,3 @@ The widget renders nothing in production builds (`NODE_ENV === "production"`) un
 | `errorsOnly`      | `true`           | Capture only error/warning events, or all.                       |
 | `autoOpenOnError` | `true`           | Initial state of the drawer's "auto-open on error" checkbox.     |
 | `bus`             | shared singleton | An `Observability` instance to listen to.                        |
-
-## Telemetry
-
-This package sends pseudonymous installation telemetry during `postinstall`.
-Disable it with either environment variable:
-
-```bash
-OPENUI_TELEMETRY_DISABLED=1
-DO_NOT_TRACK=1
-```
-
-Print the payload to standard output without sending it:
-
-```bash
-OPENUI_TELEMETRY_DEBUG=1
-```

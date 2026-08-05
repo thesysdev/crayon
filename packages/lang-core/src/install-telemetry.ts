@@ -10,7 +10,7 @@ const POSTHOG_HOST = process.env["OPENUI_POSTHOG_HOST"] ?? "https://us.i.posthog
 const REQUEST_TIMEOUT_MS = 2000;
 const TELEMETRY_SCHEMA_VERSION = 1;
 
-export const INSTALL_EVENT = "openui_devtools_installed";
+export const INSTALL_EVENT = "openui_lang_core_installed";
 
 export type ProjectIdSource = "git_origin" | "repository_url" | "install_root";
 export type PackageManagerName = "npm" | "pnpm" | "yarn" | "bun" | "unknown";
@@ -28,7 +28,7 @@ export interface InstallTelemetryProperties extends Record<string, unknown> {
   telemetry_schema_version: number;
   project_id: string;
   project_id_source: ProjectIdSource;
-  devtools_version: string;
+  lang_core_version: string;
   node_version: string;
   system_platform: string;
   system_release: string;
@@ -83,7 +83,7 @@ export type RunInstallTelemetryResult =
 interface StoredTelemetryState extends Record<string, unknown> {
   distinctId: string;
   projectSalt: string;
-  devtoolsPostinstallNoticeShown?: boolean;
+  langCorePostinstallNoticeShown?: boolean;
 }
 
 interface ProjectIdentity {
@@ -92,7 +92,7 @@ interface ProjectIdentity {
 }
 
 const INSTALL_NOTICE =
-  "\n◆ OpenUI Devtools sends pseudonymous installation telemetry to PostHog.\n" +
+  "\n◆ OpenUI Lang Core sends pseudonymous installation telemetry to PostHog.\n" +
   "  It includes a salted project ID, OpenUI/Node/OS/package-manager metadata, and the network IP observed by PostHog.\n" +
   "  It does not send repository URLs, paths, source code, prompts, errors, or application data.\n" +
   "  Disable it with OPENUI_TELEMETRY_DISABLED=1 or DO_NOT_TRACK=1.\n\n";
@@ -190,8 +190,8 @@ export async function runInstallTelemetry(
         telemetry_schema_version: TELEMETRY_SCHEMA_VERSION,
         project_id: hashProjectIdentity(state.projectSalt, projectIdentity.value),
         project_id_source: projectIdentity.source,
-        devtools_version:
-          env["OPENUI_DEVTOOLS_PACKAGE_VERSION"] || env["npm_package_version"] || "unknown",
+        lang_core_version:
+          env["OPENUI_LANG_CORE_PACKAGE_VERSION"] || env["npm_package_version"] || "unknown",
         node_version: process.version,
         system_platform: io.platform,
         system_release: io.release(),
@@ -204,9 +204,9 @@ export async function runInstallTelemetry(
       },
     };
 
-    if (!state.devtoolsPostinstallNoticeShown) {
+    if (!state.langCorePostinstallNoticeShown) {
       io.stderr(INSTALL_NOTICE);
-      state.devtoolsPostinstallNoticeShown = true;
+      state.langCorePostinstallNoticeShown = true;
     }
     persistState(stateFile, state, io);
 
@@ -279,7 +279,7 @@ function loadOrCreateState(stateFile: string, io: InstallTelemetryIO): StoredTel
       typeof stored["projectSalt"] === "string" && stored["projectSalt"]
         ? stored["projectSalt"]
         : io.randomHex(16),
-    devtoolsPostinstallNoticeShown: stored["devtoolsPostinstallNoticeShown"] === true,
+    langCorePostinstallNoticeShown: stored["langCorePostinstallNoticeShown"] === true,
   };
 }
 

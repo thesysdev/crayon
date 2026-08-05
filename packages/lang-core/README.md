@@ -16,6 +16,22 @@ npm install @openuidev/lang-core
 pnpm add @openuidev/lang-core
 ```
 
+## Telemetry
+
+This package sends pseudonymous installation telemetry during `postinstall`.
+Disable it with either environment variable:
+
+```bash
+OPENUI_TELEMETRY_DISABLED=1
+DO_NOT_TRACK=1
+```
+
+Print the payload to standard output without sending it:
+
+```bash
+OPENUI_TELEMETRY_DEBUG=1
+```
+
 ## What this package does
 
 `@openuidev/lang-core` has no React, Vue, or Svelte dependency. Use it when you need to:
