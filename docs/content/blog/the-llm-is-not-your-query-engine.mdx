@@ -60,7 +60,7 @@ Six statements, a few hundred output tokens, and no data anywhere in them. `metr
 
 **Reactive state.** `$days` is a [state variable](/docs/openui-lang/reactive-state), bound two-way to the `Select`. State lives in the client runtime, not in the conversation.
 
-**Declared queries.** [`Query`](/docs/openui-lang/queries-mutations) names a tool, its parameters, and which state variables feed it. Whenever a referenced `$variable` changes, the query re-runs. The query itself is fixed at generation time; only its parameters change afterward.
+**Declared queries.** [`Query`](/docs/openui-lang/queries-mutations) names a tool, its parameters, and which state variables feed it. Whenever a referenced `$variable` changes, the query re-runs. The query itself is fixed at generation time; only its parameters change afterward.[^1]
 
 **A runtime executor.** The renderer runs queries directly against the application's tool layer (an API route, an MCP endpoint, a database function). The model is not on this path.
 
@@ -136,3 +136,6 @@ The tool-calling loop puts the model on the data path and pays for it on every i
 Generative UI takes the model off that path. It compiles intent into an interface spec once, and a client runtime executes parameterized queries directly against the application's tool layer from then on. Parameter changes cost zero tokens; intent changes cost a small, data-free delta; and the remaining errors are schema-checkable and visible.
 
 We have argued before that [specification syntax matters](/blog/stop-making-ai-write-json) for token efficiency at the format level. The architectural version of that argument is larger: the dominant token expense in an interactive data application was never the output format. It was routing data through a language model on every interaction. The model decides what the interface should be. The runtime does the rest.
+
+[^1]:
+    Complex questions follow the same pattern. If the answer is a join, the model can declare one richer SQL query. If it does not fit a single SQL statement, the model can generate a small ephemeral script, bind the widget's filters to its parameters, and the runtime executes it on later interactions without the model, the way a dashboard binds its controls to a saved query.
