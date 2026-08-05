@@ -6,7 +6,7 @@ import path from "node:path";
 
 const POSTHOG_KEY =
   process.env["OPENUI_POSTHOG_KEY"] ?? "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
-const POSTHOG_HOST = process.env["OPENUI_POSTHOG_HOST"] ?? "https://us.i.posthog.com";
+const POSTHOG_HOST = process.env["OPENUI_POSTHOG_HOST"] ?? "https://dgoeivjus9jfp.cloudfront.net";
 const REQUEST_TIMEOUT_MS = 2000;
 const TELEMETRY_SCHEMA_VERSION = 1;
 
