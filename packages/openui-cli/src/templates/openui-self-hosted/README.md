@@ -23,6 +23,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `src/app/api/chat/route.ts` and improving your agent
 by adding system prompts or tools.
 
+If you selected LangGraph or the Vercel AI SDK, the generated route includes a `get_weather`
+example. Ask “What’s the weather in Berlin?” to exercise its native tool loop.
+
 ## Learn More
 
 To learn more about OpenUI, take a look at the following resources:

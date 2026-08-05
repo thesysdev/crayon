@@ -47,11 +47,14 @@ const backendDependencies: Record<
       "@langchain/core": "^1.2.1",
       "@langchain/langgraph": "^1.4.5",
       "@langchain/openai": "^1.5.2",
+      "@openuidev/react-headless": "^0.9.6",
+      zod: "^4.3.6",
     },
     "vercel-ai-sdk": {
       "@ai-sdk/openai": "^3.0.65",
       "@openuidev/react-headless": "^0.9.6",
       ai: "^6.0.191",
+      zod: "^4.3.6",
     },
   },
 };
@@ -683,11 +686,11 @@ function getStartedMessage(o: {
     o.backendFramework === "langgraph"
       ? o.template === "openui-cloud"
         ? 'The generated route keeps OpenUI Cloud as the Responses backend and uses LangGraph for app-owned tools.\nAsk "What\'s the weather in Berlin?" to exercise the included app-owned weather tool.'
-        : "The generated API route uses LangGraph."
+        : 'The generated API route uses LangGraph.\nAsk "What\'s the weather in Berlin?" to exercise its native tool loop.'
       : o.backendFramework === "vercel-ai-sdk"
         ? o.template === "openui-cloud"
           ? 'The generated route keeps OpenUI Cloud as the Responses backend and uses the Vercel AI SDK for app-owned tools.\nAsk "What\'s the weather in Berlin?" to exercise the included app-owned weather tool.'
-          : "The generated API route uses the Vercel AI SDK."
+          : 'The generated API route uses the Vercel AI SDK.\nAsk "What\'s the weather in Berlin?" to exercise its native tool loop.'
         : "";
 
   return `${[skillMessage.trim(), "Done!", envNote, frameworkNote, nextStep]

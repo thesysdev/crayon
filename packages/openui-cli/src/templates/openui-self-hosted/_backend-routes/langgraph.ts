@@ -1,9 +1,13 @@
 import librarySpec from "@/generated/spec.json";
 import { promptOptions } from "@/lib/prompt-options";
+import { getWeather, WEATHER_TOOL_DESCRIPTION } from "@/lib/tools/get-weather";
 import type { BaseMessageLike } from "@langchain/core/messages";
+import { tool } from "@langchain/core/tools";
 import { END, MessagesAnnotation, START, StateGraph } from "@langchain/langgraph";
+import { ToolNode, toolsCondition } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import { generateSystemPrompt } from "@openuidev/lang-core";
+import { z } from "zod";
 
 export const runtime = "nodejs";
 
@@ -13,14 +17,31 @@ const model = new ChatOpenAI({
   configuration: process.env.OPENAI_BASE_URL ? { baseURL: process.env.OPENAI_BASE_URL } : undefined,
 });
 
+const getWeatherTool = tool(
+  async ({ location }, config) =>
+    JSON.stringify(await getWeather(location, { signal: config.signal })),
+  {
+    name: "get_weather",
+    description: WEATHER_TOOL_DESCRIPTION,
+    schema: z.object({
+      location: z.string().trim().min(1).describe("City or place name, e.g. Berlin."),
+    }),
+  },
+);
+
+const tools = [getWeatherTool];
+const modelWithTools = model.bindTools(tools);
+
 async function callModel(state: typeof MessagesAnnotation.State) {
-  return { messages: [await model.invoke(state.messages)] };
+  return { messages: [await modelWithTools.invoke(state.messages)] };
 }
 
 const graph = new StateGraph(MessagesAnnotation)
   .addNode("model", callModel)
+  .addNode("tools", new ToolNode(tools))
   .addEdge(START, "model")
-  .addEdge("model", END)
+  .addConditionalEdges("model", toolsCondition, ["tools", END])
+  .addEdge("tools", "model")
   .compile();
 
 export async function POST(req: Request) {
