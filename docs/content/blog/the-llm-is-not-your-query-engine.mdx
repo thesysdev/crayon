@@ -70,7 +70,7 @@ Latency has the same shape. Each adjustment pays two model calls with a growing 
 
 Generative UI changes the model's role. Instead of answering with data, the model writes a short declarative spec for an interactive widget: controls, visualizations, and the queries that feed them. Data access moves out of the model entirely and into a client-side runtime.
 
-In OpenUI Lang, the response to "show revenue by region, filterable by date range" is:
+In [OpenUI Lang](/docs/openui-lang/overview), the response to "show revenue by region, filterable by date range" is:
 
 ```text
 $days = "7"
@@ -83,9 +83,9 @@ tbl = Table([Col("Region", metrics.rows.region), Col("Revenue", metrics.rows.rev
 
 Six statements, a few hundred output tokens, and no data anywhere in them. `metrics.rows.revenue` is a reference the runtime resolves, not a value the model typed. Three pieces make it work:
 
-**Reactive state.** `$days` is a state variable, bound two-way to the `Select`. State lives in the client runtime, not in the conversation.
+**Reactive state.** `$days` is a [state variable](/docs/openui-lang/reactive-state), bound two-way to the `Select`. State lives in the client runtime, not in the conversation.
 
-**Declared queries.** `Query` names a tool, its parameters, and which state variables feed it. Whenever a referenced `$variable` changes, the query re-runs. The query itself is fixed at generation time; only its parameters change afterward.
+**Declared queries.** [`Query`](/docs/openui-lang/queries-mutations) names a tool, its parameters, and which state variables feed it. Whenever a referenced `$variable` changes, the query re-runs. The query itself is fixed at generation time; only its parameters change afterward.
 
 **A runtime executor.** The renderer runs queries directly against the application's tool layer (an API route, an MCP endpoint, a database function). The model is not on this path.
 
@@ -118,7 +118,7 @@ chart = BarChart(metrics.rows.category, [Series("Revenue", metrics.rows.revenue)
 tbl = Table([Col("Category", metrics.rows.category), Col("Revenue", metrics.rows.revenue, "number")])
 ```
 
-The runtime merges these into the running program. `$days`, `filter`, and `root` are untouched and keep working, and the new query runs outside the model, same as a filter change.
+The runtime merges these into the running program ([incremental editing](/docs/openui-lang/incremental-editing)). `$days`, `filter`, and `root` are untouched and keep working, and the new query runs outside the model, same as a filter change.
 
 ## Trade-off comparison
 

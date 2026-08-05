@@ -162,7 +162,8 @@ export const LiveFilterDemo = () => {
                   </ul>
                 </div>
                 <span className={TOKEN_NOTE}>
-                  ~10k tokens (history + result rows + reply) · total so far ~{(i + 1) * 10}k
+                  ~10k tokens (history + result rows + reply) · seconds of latency · total so
+                  far ~{(i + 1) * 10}k
                 </span>
               </div>
             </div>
@@ -174,7 +175,7 @@ export const LiveFilterDemo = () => {
       <Panel
         title="Generative UI"
         dotClass="bg-emerald-500"
-        badge="~350 tokens"
+        badge="~350 output tokens"
         badgeClass="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
       >
         <div className={USER_BUBBLE}>Show daily revenue by region for the last 7 days.</div>
@@ -193,8 +194,9 @@ export const LiveFilterDemo = () => {
             />
           </div>
           <span className={TOKEN_NOTE}>
-            ~350 tokens, once · {filterChanges} filter{" "}
-            {filterChanges === 1 ? "change" : "changes"} since, at 0 tokens · total still ~350
+            ~350 output tokens, once · {filterChanges} filter{" "}
+            {filterChanges === 1 ? "change" : "changes"} since, 0 tokens · ~350ms each, no
+            model call
           </span>
         </div>
       </Panel>
