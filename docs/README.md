@@ -155,7 +155,7 @@ Active component-preview specific modules are located under `app/components/` an
 
 ### Navigation
 
-A custom `DocsNavbar` component (`components/docs-navbar.tsx`) provides top-level horizontal tabs: OpenUI, Agent Interface, API Reference. It replaces Fumadocs' default nav and is used across the docs pages.
+A custom `DocsNavbar` component (`components/docs-navbar.tsx`) provides top-level horizontal tabs: Overview, OpenUI, Agent Interface, OpenUI Cloud, and API Reference. It replaces Fumadocs' default nav and is used across the docs pages.
 
 ## Path aliases
 

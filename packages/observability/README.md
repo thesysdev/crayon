@@ -36,6 +36,9 @@ observability("error", { kind: "renderer:error", component: "Chart", error: toEr
 observability.error({ kind: "llm:timeout", requestId, message: "timed out" });
 observability.warn({ kind: "chart:overflow", component: "Chart", points: 1200 });
 observability.info({ kind: "route:change", to: "/settings" });
+
+// Reuse an id when publishing successive snapshots of one logical event.
+observability.info({ id: streamId, kind: "llm:stream", response });
 ```
 
 ## The event envelope
@@ -56,6 +59,7 @@ interface ObservabilityEvent {
 
 ```ts
 interface ObservabilityDetail {
+  id?: string; //                    stable identity shared by successive snapshots
   kind: string; //                  required descriptor, e.g. "fetch:error"
   message?: string; //              optional human-readable message
   error?: ObservabilityErrorInfo; // present on failures; build with toErrorInfo()
