@@ -19,27 +19,24 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, type WriteFileOptions } from "node:fs";
 import { homedir, release } from "node:os";
 import path from "node:path";
+import {
+  detectCI,
+  getPostHogConfig,
+  isTelemetryDisabled,
+  isTruthyEnv,
+  normalizeProjectIdentity,
+  TELEMETRY_REQUEST_TIMEOUT_MS,
+  TELEMETRY_SCHEMA_VERSION,
+  type CiName,
+} from "./telemetry/telemetry-shared";
 
-const POSTHOG_KEY =
-  process.env["OPENUI_POSTHOG_KEY"] ?? "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
-const POSTHOG_HOST = process.env["OPENUI_POSTHOG_HOST"] ?? "https://dgoeivjus9jfp.cloudfront.net";
-const REQUEST_TIMEOUT_MS = 2000;
-const TELEMETRY_SCHEMA_VERSION = 1;
+export { detectCI, isTelemetryDisabled, isTruthyEnv, normalizeProjectIdentity };
+export type { CiName };
 
 export const INSTALL_EVENT = "openui_lang_core_installed";
 
 export type ProjectIdSource = "git_origin" | "repository_url" | "install_root";
 export type PackageManagerName = "npm" | "pnpm" | "yarn" | "bun" | "unknown";
-export type CiName =
-  | "github_actions"
-  | "gitlab_ci"
-  | "buildkite"
-  | "circleci"
-  | "vercel"
-  | "netlify"
-  | "jenkins"
-  | "travis";
-
 export interface InstallTelemetryProperties extends Record<string, unknown> {
   telemetry_schema_version: number;
   project_id: string;
@@ -113,38 +110,6 @@ const INSTALL_NOTICE =
   "  It does not send repository URLs, paths, source code, prompts, errors, or application data.\n" +
   "  Disable it with OPENUI_TELEMETRY_DISABLED=1 or DO_NOT_TRACK=1.\n\n";
 
-export function isTruthyEnv(value?: string): boolean {
-  return value === "1" || value?.toLowerCase() === "true";
-}
-
-export function isTelemetryDisabled(env: NodeJS.ProcessEnv): boolean {
-  return isTruthyEnv(env["OPENUI_TELEMETRY_DISABLED"]) || isTruthyEnv(env["DO_NOT_TRACK"]);
-}
-
-export function normalizeProjectIdentity(raw: string): string {
-  const trimmed = raw.trim();
-  if (!trimmed) return trimmed;
-
-  if (/^[a-z][a-z\d+.-]*:\/\//i.test(trimmed)) {
-    try {
-      const url = new URL(trimmed);
-      if (url.protocol === "file:") {
-        return `file:${normalizeRepositoryPath(url.pathname)}`;
-      }
-      return normalizeHostAndPath(url.host, url.pathname);
-    } catch {
-      return trimmed.replace(/\/+$/, "").replace(/\.git$/i, "");
-    }
-  }
-
-  const scpLike = trimmed.match(/^(?:[^@/\s]+@)?([^:/\s]+):(.+)$/);
-  if (scpLike) {
-    return normalizeHostAndPath(scpLike[1]!, scpLike[2]!);
-  }
-
-  return trimmed.replace(/\/+$/, "").replace(/\.git$/i, "");
-}
-
 export function hashProjectIdentity(salt: string, projectIdentity: string): string {
   return createHash("sha256").update(salt).update("\0").update(projectIdentity).digest("hex");
 }
@@ -160,27 +125,6 @@ export function detectPackageManager(env: NodeJS.ProcessEnv): {
   const name = match[1]!.toLowerCase() as Exclude<PackageManagerName, "unknown">;
   const version = match[2]!.slice(0, 64);
   return version ? { name, version } : { name };
-}
-
-export function detectCI(env: NodeJS.ProcessEnv): { ci: boolean; name?: CiName } {
-  const providers: Array<[string, CiName]> = [
-    ["GITHUB_ACTIONS", "github_actions"],
-    ["GITLAB_CI", "gitlab_ci"],
-    ["BUILDKITE", "buildkite"],
-    ["CIRCLECI", "circleci"],
-    ["VERCEL", "vercel"],
-    ["NETLIFY", "netlify"],
-    ["JENKINS_URL", "jenkins"],
-    ["TRAVIS", "travis"],
-  ];
-  const provider = providers.find(([key]) => {
-    const value = env[key];
-    return isTruthyEnv(value) || (typeof value === "string" && value.length > 0);
-  });
-  return {
-    ci: Boolean(provider) || isTruthyEnv(env["CI"]),
-    ...(provider ? { name: provider[1] } : {}),
-  };
 }
 
 export async function runInstallTelemetry(
@@ -236,19 +180,6 @@ export async function runInstallTelemetry(
   } catch {
     return { status: "failed", ...(payload ? { payload } : {}) };
   }
-}
-
-function normalizeHostAndPath(host: string, repositoryPath: string): string {
-  const normalizedHost = host.trim().toLowerCase();
-  const normalizedPath = normalizeRepositoryPath(repositoryPath);
-  return normalizedPath ? `${normalizedHost}/${normalizedPath}` : normalizedHost;
-}
-
-function normalizeRepositoryPath(repositoryPath: string): string {
-  return repositoryPath
-    .trim()
-    .replace(/^\/+|\/+$/g, "")
-    .replace(/\.git$/i, "");
 }
 
 function createInstallTelemetryIO(overrides: Partial<InstallTelemetryIO> = {}): InstallTelemetryIO {
@@ -362,18 +293,19 @@ async function sendToPostHog(
   payload: InstallTelemetryPayload,
   env: NodeJS.ProcessEnv,
 ): Promise<void> {
-  const response = await fetch(new URL("/capture/", env["OPENUI_POSTHOG_HOST"] ?? POSTHOG_HOST), {
+  const postHog = getPostHogConfig(env);
+  const response = await fetch(postHog.captureUrl, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
-      api_key: env["OPENUI_POSTHOG_KEY"] ?? POSTHOG_KEY,
+      api_key: postHog.apiKey,
       event: payload.event,
       properties: {
         distinct_id: payload.distinctId,
         ...payload.properties,
       },
     }),
-    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    signal: AbortSignal.timeout(TELEMETRY_REQUEST_TIMEOUT_MS),
   });
 
   if (!response.ok) throw new Error(`PostHog capture failed: ${response.status}`);

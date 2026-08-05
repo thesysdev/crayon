@@ -1,4 +1,12 @@
 import type { PromptSpec } from "./parser/prompt";
+import {
+  detectCI,
+  getPostHogConfig,
+  isTelemetryDisabled,
+  normalizeProjectIdentity,
+  TELEMETRY_REQUEST_TIMEOUT_MS,
+  TELEMETRY_SCHEMA_VERSION,
+} from "./telemetry/telemetry-shared";
 
 /**
  * Telemetry disclosure
@@ -26,13 +34,10 @@ declare const __OPENUI_LANG_CORE_VERSION__: string;
 
 const EVENT_NAME = "lang_core_system_prompt_generation_used";
 const SAMPLE_RATE = 0.1;
-const REQUEST_TIMEOUT_MS = 2_000;
 const SDK_VERSION =
   typeof __OPENUI_LANG_CORE_VERSION__ === "string"
     ? __OPENUI_LANG_CORE_VERSION__
     : "0.0.0-development";
-const CAPTURE_URL = "https://dgoeivjus9jfp.cloudfront.net/capture/";
-const POSTHOG_KEY = "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
 
 type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 type InputShape = "library_spec" | "legacy_prompt_spec";
@@ -63,7 +68,7 @@ interface CaptureProperties {
   distinct_id: string;
   $process_person_profile: false;
   event_id: string;
-  telemetry_schema_version: 1;
+  telemetry_schema_version: typeof TELEMETRY_SCHEMA_VERSION;
   system_prompt_config_hash_version: 1;
   system_prompt_config_hash: string;
   project_hash_version?: 1;
@@ -212,63 +217,12 @@ function getEnvironment(env: Record<string, string | undefined> | undefined): En
   return "unknown";
 }
 
-function isTruthyOptOut(value: string | undefined): boolean {
-  return value === "1" || value?.toLowerCase() === "true";
-}
-
-function isCi(env: Record<string, string | undefined> | undefined): boolean {
-  if (!env) return false;
-  return [
-    "CI",
-    "CONTINUOUS_INTEGRATION",
-    "BUILD_NUMBER",
-    "GITHUB_ACTIONS",
-    "GITLAB_CI",
-    "BUILDKITE",
-    "CIRCLECI",
-    "VERCEL",
-    "NETLIFY",
-  ].some((name) => {
-    const value = env[name];
-    return Boolean(value && value !== "0" && value.toLowerCase() !== "false");
-  });
-}
-
 function getState(): TelemetryState {
   const registry = globalThis as typeof globalThis & { [STATE_KEY]?: TelemetryState };
   registry[STATE_KEY] ??= {
     runtimeId: globalThis.crypto.randomUUID(),
   };
   return registry[STATE_KEY];
-}
-
-function normalizeRepositoryIdentifier(rawValue: string): string | undefined {
-  const value = rawValue.trim();
-  if (!value) return undefined;
-
-  try {
-    const url = new URL(value);
-    const pathname = decodeURIComponent(url.pathname)
-      .replace(/^\/+|\/+$/g, "")
-      .replace(/\.git$/i, "");
-    if (url.hostname && pathname) return `${url.hostname.toLowerCase()}/${pathname}`;
-  } catch {
-    // SCP-style Git origins and local paths are handled below.
-  }
-
-  if (/^[A-Za-z]:[\\/]/.test(value)) {
-    return value.replace(/\\/g, "/").replace(/\/+$/g, "");
-  }
-
-  const scpMatch = /^(?:[^@/\s]+@)?([^:/\s]+):(.+)$/.exec(value);
-  if (scpMatch) {
-    const host = scpMatch[1]?.toLowerCase();
-    const pathname = scpMatch[2]?.replace(/^\/+|\/+$/g, "").replace(/\.git$/i, "");
-    if (host && pathname) return `${host}/${pathname}`;
-  }
-
-  // Local paths are still useful as a last-resort, deployment-local identifier.
-  return value.replace(/\\/g, "/").replace(/\/+$/g, "");
 }
 
 function readGitOrigin(processLike: ProcessLike): Promise<string | undefined> {
@@ -314,11 +268,11 @@ async function getRepositoryIdentifier(
 
   const rawValue =
     (await readGitOrigin(processLike)) || processLike.env?.REPOSITORY_URL || processLike.cwd?.();
-  return rawValue ? normalizeRepositoryIdentifier(rawValue) : undefined;
+  return rawValue ? normalizeProjectIdentity(rawValue) || undefined : undefined;
 }
 
 export function calculateProjectHash(repositoryIdentifier: string): Promise<string> {
-  const normalized = normalizeRepositoryIdentifier(repositoryIdentifier);
+  const normalized = normalizeProjectIdentity(repositoryIdentifier);
   if (!normalized) return Promise.reject(new TypeError("Repository identifier is empty"));
   return sha256(normalized);
 }
@@ -346,11 +300,12 @@ async function sendCapture(
     getProjectHash(state, runtime),
   ]);
 
+  const postHog = getPostHogConfig(runtime.env);
   const properties: CaptureProperties = {
     distinct_id: state.runtimeId,
     $process_person_profile: false,
     event_id: globalThis.crypto.randomUUID(),
-    telemetry_schema_version: 1,
+    telemetry_schema_version: TELEMETRY_SCHEMA_VERSION,
     system_prompt_config_hash_version: 1,
     system_prompt_config_hash: systemPromptConfigHash,
     component_count: Object.keys(spec.components).length,
@@ -362,7 +317,7 @@ async function sendCapture(
     runtime: runtime.name,
     runtime_version: runtime.version,
     environment,
-    ci: isCi(runtime.env),
+    ci: detectCI(runtime.env).ci,
     sample_rate: SAMPLE_RATE,
     ...(projectHash
       ? {
@@ -372,17 +327,17 @@ async function sendCapture(
       : {}),
   };
 
-  await globalThis.fetch(CAPTURE_URL, {
+  await globalThis.fetch(postHog.captureUrl, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
-      api_key: POSTHOG_KEY,
+      api_key: postHog.apiKey,
       event: EVENT_NAME,
       timestamp: new Date().toISOString(),
       properties,
     }),
     keepalive: true,
-    signal: globalThis.AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    signal: globalThis.AbortSignal.timeout(TELEMETRY_REQUEST_TIMEOUT_MS),
   });
 }
 
@@ -401,9 +356,7 @@ export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: Input
 
     const env = runtime.env;
     const environment = getEnvironment(env);
-    if (isTruthyOptOut(env?.DO_NOT_TRACK) || isTruthyOptOut(env?.OPENUI_TELEMETRY_DISABLED)) {
-      return;
-    }
+    if (isTelemetryDisabled(env)) return;
 
     // Reject 90% of calls before projection, hashing, repository lookup, or payload allocation.
     if (Math.random() >= SAMPLE_RATE) return;
