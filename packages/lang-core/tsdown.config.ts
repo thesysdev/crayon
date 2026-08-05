@@ -2,7 +2,7 @@ import { defineConfig } from "tsdown";
 import packageJson from "./package.json" with { type: "json" };
 
 export default defineConfig({
-  entry: ["src/index.ts"],
+  entry: ["src/index.ts", "src/postinstall.ts"],
   format: ["esm", "cjs"],
   dts: true,
   sourcemap: true,
