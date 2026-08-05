@@ -9,6 +9,8 @@ import type {
 import { ToolNotFoundError, extractToolResult } from "@openuidev/lang-core";
 import React, { Component, Fragment, useEffect, useInsertionEffect, useRef } from "react";
 import { OpenUIContext, useOpenUI, useRenderNode } from "./context";
+// Side-effect import: auto-mounts the OpenUI devtools widget in development.
+import "./devtoolsBootstrap";
 import { useOpenUIState } from "./hooks/useOpenUIState";
 import type { ComponentRenderer, Library } from "./library";
 
