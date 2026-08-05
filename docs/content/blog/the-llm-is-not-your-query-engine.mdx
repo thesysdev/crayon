@@ -64,7 +64,7 @@ Six statements, a few hundred output tokens, and no data anywhere in them. `metr
 
 **A runtime executor.** The renderer runs queries directly against the application's tool layer (an API route, an MCP endpoint, a database function). The model is not on this path.
 
-This is what the right panel of the demo does, and the right half of the diagram above: `$days` becomes `"30"`, the runtime re-runs `query_orders(days=30)` in about 100ms at zero tokens, and the rows flow from the database straight to the browser. The model is never contacted: a filter change is deterministic re-execution of a declared query with new parameters. The model handles intent; the runtime handles interaction.
+This is what the right panel of the demo does, and the right half of the diagram above: the state variable updates, the runtime re-runs the declared query in about 100ms at zero tokens, and the rows flow from the database straight to the browser. The model is never contacted: a filter change is deterministic re-execution of a declared query with new parameters. The model handles intent; the runtime handles interaction.
 
 ### Regeneration is also restructured
 
@@ -95,23 +95,23 @@ Both kinds of change compare favorably to the loop:
 
 Consider a representative session with one initial question, five filter changes, and one intent change:
 
-1. “Show revenue for the last 7 days by region.”
+1. "Show revenue for the last 7 days by region."
 2. Change the range to 30 days.
 3. Select Europe.
 4. Select electronics.
 5. Return to 7 days.
 6. Select all regions.
-7. “Now group it by category.”
+7. "Now group it by category."
 
 For a conservative estimate, assume each tool-loop turn costs 8k tokens for the query result and 2k for the prompt, tool call, and answer. We deliberately leave out re-sending earlier results, even though they stay in the history.
 
 ![Token comparison showing a 94.3 percent reduction: 70k tokens for a seven-turn tool-calling loop versus 4k tokens for Generative UI](./images/tool-calling-vs-generative-ui-token-reduction.png)
 
-The estimate favors the loop on purpose: in a real conversation, later turns also re-send earlier result sets, which makes them more expensive and the saving larger. Prompt caching narrows the history cost but not the rest. Rows still enter the context on every turn, and the model still rewrites the query on every turn.
+The estimate favors the loop on purpose: in a real conversation, later turns also re-send earlier result sets, which makes them more expensive and the savings larger. Prompt caching narrows the history cost but not the rest. Rows still enter the context on every turn, and the model still rewrites the query on every turn.
 
-**Latency.** A parameter change drops from a two-call model round trip (seconds) to a single database query (~100ms). Intent changes are faster too: the model streams a three-statement delta while the existing interface stays rendered, and because `root` streams first, the interface shell renders before generation completes.
+**Latency.** A parameter change drops from a two-call model round trip (seconds) to a single database query (~100ms). Intent changes are faster too: the model streams a three-statement delta while the existing interface stays rendered, and because the `root` statement streams early, the interface shell renders before generation completes.
 
-**Reliability.** The two architectures make different kinds of errors, not different amounts.
+**Reliability.** The two architectures differ in what kind of error they make.
 
 Tool-loop failures live in the data: made-up or miscopied values in narration, inconsistent query rewrites across turns. Both are silent; nothing exists to check a narrated number against.
 
@@ -135,4 +135,4 @@ The tool-calling loop puts the model on the data path and pays for it on every i
 
 Generative UI takes the model off that path. It compiles intent into an interface spec once, and a client runtime executes parameterized queries directly against the application's tool layer from then on. Parameter changes cost zero tokens; intent changes cost a small, data-free delta; and the remaining errors are schema-checkable and visible.
 
-We have argued before that [specification syntax matters](/blog/stop-making-ai-write-json) for token efficiency at the format level. The architectural version of that argument is larger: the dominant token expense in an interactive data application was never the output format. It was routing data through a language model on every interaction. The model decides what the interface should be; the runtime runs it.
+We have argued before that [specification syntax matters](/blog/stop-making-ai-write-json) for token efficiency at the format level. The architectural version of that argument is larger: the dominant token expense in an interactive data application was never the output format. It was routing data through a language model on every interaction. The model decides what the interface should be. The runtime does the rest.
