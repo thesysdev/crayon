@@ -421,12 +421,13 @@ async function sendCapture(
     environment,
     ci: isCi(runtime.env),
     sample_rate: SAMPLE_RATE,
+    ...(projectHash
+      ? {
+          project_hash_version: 1 as const,
+          project_hash: projectHash,
+        }
+      : {}),
   };
-
-  if (projectHash) {
-    properties.project_hash_version = 1;
-    properties.project_hash = projectHash;
-  }
 
   const controller = typeof AbortController === "function" ? new AbortController() : undefined;
   const timeout = controller ? setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS) : undefined;
