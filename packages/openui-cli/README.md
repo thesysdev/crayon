@@ -79,7 +79,7 @@ Options:
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
-- `-i, --immediate`: Start the development server after installing dependencies
+- `-i, --immediate`: Start the development server after installing dependencies; the CLI refuses to start when the template's required API key is unavailable
 - `--no-immediate`: Install dependencies without starting the development server
 - `--no-interactive`: Fail instead of prompting for missing required input
 - `--api-key <key>`: (cloud template) OpenUI Cloud API key; skips sign-in
@@ -96,6 +96,7 @@ What it does:
 - asks whether to start the development server after dependency installation (default: yes); answering no preserves the install-and-exit behavior
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
 - in non-interactive mode, installs dependencies without starting the server unless overridden with `--immediate`
+- before an immediate start, requires `THESYS_API_KEY` for OpenUI Cloud or `OPENAI_API_KEY` for self-hosted to be available
 - optionally installs the OpenUI agent skill for AI coding assistants
 - writes a `.env` file tailored to the template (see below)
 
