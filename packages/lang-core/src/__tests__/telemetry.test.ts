@@ -169,7 +169,6 @@ describe("system prompt telemetry", () => {
       runtime: "node",
       environment: "production",
       sample_rate: 0.1,
-      telemetry_mode: "server_generation_10_percent_sample",
     });
     expect(Object.keys(payload.properties).sort()).toEqual(
       [
@@ -190,7 +189,6 @@ describe("system prompt telemetry", () => {
         "sdk_version",
         "system_prompt_config_hash",
         "system_prompt_config_hash_version",
-        "telemetry_mode",
         "telemetry_schema_version",
         "tool_count",
       ].sort(),

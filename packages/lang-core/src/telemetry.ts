@@ -52,7 +52,6 @@ interface CaptureProperties {
   environment: Environment;
   ci: boolean;
   sample_rate: 0.1;
-  telemetry_mode: "server_generation_10_percent_sample";
 }
 
 const STATE_KEY = Symbol.for("@openuidev/lang-core/telemetry/v1");
@@ -422,7 +421,6 @@ async function sendCapture(
     environment,
     ci: isCi(runtime.env),
     sample_rate: SAMPLE_RATE,
-    telemetry_mode: "server_generation_10_percent_sample",
   };
 
   if (projectHash) {
