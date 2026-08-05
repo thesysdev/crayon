@@ -3,7 +3,6 @@ import { generatePrompt, generateSystemPrompt, type PromptSpec } from "../index"
 import {
   calculateProjectHash,
   calculateSystemPromptConfigHash,
-  getCountBucket,
   recordSystemPromptGeneration,
   resetTelemetryStateForTests,
 } from "../telemetry";
@@ -49,10 +48,6 @@ describe("system prompt telemetry", () => {
     else process.env.DO_NOT_TRACK = originalDoNotTrack;
     if (originalDisabled === undefined) delete process.env.OPENUI_TELEMETRY_DISABLED;
     else process.env.OPENUI_TELEMETRY_DISABLED = originalDisabled;
-  });
-
-  it("uses numeric powers-of-four count buckets", () => {
-    expect([0, 1, 3, 4, 15, 16, 63, 64].map(getCountBucket)).toEqual([0, 1, 1, 4, 4, 16, 16, 64]);
   });
 
   it("hashes canonical prompt configuration, independent of declaration order", async () => {
@@ -142,7 +137,15 @@ describe("system prompt telemetry", () => {
     const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
     const spec = makeSpec({
-      tools: ["private-tool(query: string)"],
+      components: {
+        Root: {
+          signature: "Root(children: Component[])",
+          description: "private-component-description",
+        },
+        Card: { signature: "Card(title: string)" },
+        Button: { signature: "Button(label: string)" },
+      },
+      tools: ["private-tool(query: string)", "private-second-tool(value: string)"],
       examples: ["private-example"],
     });
 
@@ -159,24 +162,24 @@ describe("system prompt telemetry", () => {
     expect(payload.event).toBe("lang_core_system_prompt_generation_used");
     expect(payload.properties).toMatchObject({
       $process_person_profile: false,
-      component_count_bucket: 1,
+      component_count: 3,
       telemetry_schema_version: 1,
       system_prompt_config_hash_version: 1,
-      tool_count_bucket: 1,
+      tool_count: 2,
       sdk_name: "@openuidev/lang-core",
       api_surface: "generate_system_prompt",
       input_shape: "legacy_prompt_spec",
       runtime: "node",
       environment: "production",
-      sample_rate: 0.01,
-      telemetry_mode: "server_generation_1_percent_sample",
+      sample_rate: 0.1,
+      telemetry_mode: "server_generation_10_percent_sample",
     });
     expect(Object.keys(payload.properties).sort()).toEqual(
       [
         "$process_person_profile",
         "api_surface",
         "ci",
-        "component_count_bucket",
+        "component_count",
         "distinct_id",
         "environment",
         "event_id",
@@ -192,7 +195,7 @@ describe("system prompt telemetry", () => {
         "system_prompt_config_hash_version",
         "telemetry_mode",
         "telemetry_schema_version",
-        "tool_count_bucket",
+        "tool_count",
       ].sort(),
     );
     expect(String(init.body)).not.toContain("private-library-id");
@@ -253,10 +256,10 @@ describe("system prompt telemetry", () => {
     expect(payload.properties.environment).toBe("test");
   });
 
-  it("captures only calls inside the one-percent sample", async () => {
+  it("captures only calls inside the ten-percent sample", async () => {
     const fetchMock = vi.fn(async () => new Response(null, { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
-    vi.mocked(Math.random).mockReturnValueOnce(0.009).mockReturnValueOnce(0.01);
+    vi.mocked(Math.random).mockReturnValueOnce(0.099).mockReturnValueOnce(0.1);
 
     generateSystemPrompt(makeSpec({ preamble: "sampled" }));
     generateSystemPrompt(makeSpec({ preamble: "not-sampled" }));

@@ -3,7 +3,7 @@ import type { PromptSpec, ToolSpec } from "./parser/prompt";
 const EVENT_NAME = "lang_core_system_prompt_generation_used";
 const HASH_DOMAIN = "openui-system-prompt-config-v1";
 const PROJECT_HASH_DOMAIN = "openui-project-v1";
-const SAMPLE_RATE = 0.01;
+const SAMPLE_RATE = 0.1;
 const REQUEST_TIMEOUT_MS = 2_000;
 const SDK_VERSION = "0.2.10";
 const CAPTURE_URL = "https://us.i.posthog.com/capture/";
@@ -11,7 +11,6 @@ const POSTHOG_KEY = "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
 
 type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 type InputShape = "library_spec" | "legacy_prompt_spec";
-type CountBucket = 0 | 1 | 4 | 16 | 64;
 type Environment = "production" | "development" | "test" | "unknown";
 type RuntimeName = "node" | "bun" | "deno" | "edge";
 
@@ -45,8 +44,8 @@ interface CaptureProperties {
   system_prompt_config_hash: string;
   project_hash_version?: 1;
   project_hash?: string;
-  component_count_bucket: CountBucket;
-  tool_count_bucket: CountBucket;
+  component_count: number;
+  tool_count: number;
   sdk_name: "@openuidev/lang-core";
   sdk_version: string;
   api_surface: "generate_system_prompt";
@@ -55,8 +54,8 @@ interface CaptureProperties {
   runtime_version?: string;
   environment: Environment;
   ci: boolean;
-  sample_rate: 0.01;
-  telemetry_mode: "server_generation_1_percent_sample";
+  sample_rate: 0.1;
+  telemetry_mode: "server_generation_10_percent_sample";
 }
 
 const STATE_KEY = Symbol.for("@openuidev/lang-core/telemetry/v1");
@@ -160,15 +159,6 @@ async function sha256(value: string): Promise<string> {
 export function calculateSystemPromptConfigHash(spec: PromptSpec): Promise<string> {
   const canonicalJson = stableJson(buildSystemPromptConfigProjection(spec));
   return sha256(`${HASH_DOMAIN}\0${canonicalJson}`);
-}
-
-export function getCountBucket(count: number): CountBucket {
-  // Numeric lower bounds keep the powers-of-four ranges usable on histogram axes.
-  if (count === 0) return 0;
-  if (count < 4) return 1;
-  if (count < 16) return 4;
-  if (count < 64) return 16;
-  return 64;
 }
 
 function getProcess(): ProcessLike | undefined {
@@ -426,8 +416,8 @@ async function sendCapture(
     telemetry_schema_version: 1,
     system_prompt_config_hash_version: 1,
     system_prompt_config_hash: systemPromptConfigHash,
-    component_count_bucket: getCountBucket(Object.keys(spec.components).length),
-    tool_count_bucket: getCountBucket(spec.tools?.length ?? 0),
+    component_count: Object.keys(spec.components).length,
+    tool_count: spec.tools?.length ?? 0,
     sdk_name: "@openuidev/lang-core",
     sdk_version: SDK_VERSION,
     api_surface: "generate_system_prompt",
@@ -437,7 +427,7 @@ async function sendCapture(
     environment,
     ci: isCi(runtime.env),
     sample_rate: SAMPLE_RATE,
-    telemetry_mode: "server_generation_1_percent_sample",
+    telemetry_mode: "server_generation_10_percent_sample",
   };
 
   if (projectHash) {
@@ -487,7 +477,7 @@ export function recordSystemPromptGeneration(
       return;
     }
 
-    // Reject 99% of calls before projection, hashing, repository lookup, or payload allocation.
+    // Reject 90% of calls before projection, hashing, repository lookup, or payload allocation.
     if (Math.random() >= SAMPLE_RATE) return;
 
     const state = getState();

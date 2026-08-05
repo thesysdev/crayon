@@ -107,14 +107,13 @@ const merged = mergeStatements(original, patch);
 
 ## Telemetry
 
-One percent of successful server-side `generateSystemPrompt()` calls report
+Ten percent of successful server-side `generateSystemPrompt()` calls report
 directly to PostHog. Browsers and browser workers never send telemetry.
 
-Events contain runtime metadata, numeric powers-of-four component/tool-count
-buckets, and hashed configuration and project identifiers—not prompts,
-component/tool content, credentials, or chat-user data. PostHog observes the
-server's transport IP. Disable telemetry with `OPENUI_TELEMETRY_DISABLED=1` or
-`DO_NOT_TRACK=1`.
+Events contain runtime metadata, exact component/tool counts, and hashed
+configuration and project identifiers—not prompts, component/tool content,
+credentials, or chat-user data. PostHog observes the server's transport IP.
+Disable telemetry with `OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1`.
 
 ### Runtime
 
