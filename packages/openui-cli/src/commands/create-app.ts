@@ -37,7 +37,7 @@ const backendDependencies: Record<
       "@langchain/core": "^1.2.1",
       "@langchain/langgraph": "^1.4.5",
     },
-    vercel: {
+    "vercel-ai-sdk": {
       ai: "^6.0.191",
       zod: "^4.3.6",
     },
@@ -49,7 +49,7 @@ const backendDependencies: Record<
       "@langchain/openai": "^1.5.2",
       zod: "^4.0.0",
     },
-    vercel: {
+    "vercel-ai-sdk": {
       "@ai-sdk/openai": "^3.0.65",
       ai: "^6.0.191",
       zod: "^4.3.6",
@@ -239,7 +239,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
                     name: "No framework — OpenAI SDK (default)",
                   },
                   { value: "langgraph", name: "LangGraph" },
-                  { value: "vercel", name: "Vercel AI SDK" },
+                  { value: "vercel-ai-sdk", name: "Vercel AI SDK" },
                 ],
               },
               required: true,
@@ -641,11 +641,11 @@ function getStartedMessage(o: {
   const frameworkNote =
     o.backendFramework === "langgraph"
       ? o.template === "openui-cloud"
-        ? 'The generated route keeps OpenUI Cloud as the Responses backend and uses LangGraph for app-owned tools.\nAsk "Can you test the backend?" to run the included diagnostic tool.'
+        ? 'The generated route keeps OpenUI Cloud as the Responses backend and uses LangGraph for app-owned tools.\nAsk "What\'s the weather in Berlin?" to exercise the included app-owned weather tool.'
         : "The generated API route uses LangGraph."
-      : o.backendFramework === "vercel"
+      : o.backendFramework === "vercel-ai-sdk"
         ? o.template === "openui-cloud"
-          ? 'The generated route keeps OpenUI Cloud as the Responses backend and uses the Vercel AI SDK for app-owned tools.\nAsk "Can you test the backend?" to run the included diagnostic tool.'
+          ? 'The generated route keeps OpenUI Cloud as the Responses backend and uses the Vercel AI SDK for app-owned tools.\nAsk "What\'s the weather in Berlin?" to exercise the included app-owned weather tool.'
           : "The generated API route uses the Vercel AI SDK."
         : "";
 

@@ -2,7 +2,7 @@ import type { CloudAuthMethod, ResolvedAuthMethod } from "../auth/mint";
 
 export type TemplateName = "openui-self-hosted" | "openui-cloud";
 
-export type BackendFramework = "none" | "langgraph" | "vercel";
+export type BackendFramework = "none" | "langgraph" | "vercel-ai-sdk";
 
 export interface CreateAppOptions {
   name?: string;

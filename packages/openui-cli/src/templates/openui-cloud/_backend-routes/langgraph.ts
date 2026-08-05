@@ -1,6 +1,7 @@
 import { requiredEnv } from "@/lib/env";
 import { resolveRequestedModel } from "@/lib/models";
 import { runFunctionToolLoop, type FunctionToolExecutor } from "@/lib/tool-loop";
+import { executeGetWeather } from "@/lib/tools/get-weather";
 import { AIMessage, ToolMessage } from "@langchain/core/messages";
 import { tool } from "@langchain/core/tools";
 import { convertToOpenAIFunction } from "@langchain/core/utils/function_calling";
@@ -22,27 +23,21 @@ export const runtime = "nodejs";
  * App-owned tools are defined with LangChain and executed by LangGraph.
  * Add your own tools here; OpenUI Cloud's built-in tools stay in createParams.
  */
-const testBackend = tool(
-  async () =>
-    JSON.stringify({
-      ok: true,
-      tool: "test_backend",
-      framework: "langgraph",
-      execution: "app-owned",
-      verificationCode: "OPENUI_APP_TOOL_EXECUTION_OK",
-      checkedAt: new Date().toISOString(),
-      message: "The app-owned LangGraph ToolNode executed successfully.",
-    }),
+const getWeather = tool(
+  async ({ location }, config) =>
+    executeGetWeather(JSON.stringify({ location }), { signal: config.signal }),
   {
-    name: "test_backend",
+    name: "get_weather",
     description:
-      'Call whenever the user asks "Can you test the backend?" or asks to verify app-owned ' +
-      "tool execution. This tool must be called; do not answer from memory.",
-    schema: z.object({}),
+      "Get the current weather for a city or place name. Use whenever the user " +
+      "asks about weather, temperature, rain, or what to wear.",
+    schema: z.object({
+      location: z.string().min(1).describe("City or place name, e.g. Berlin."),
+    }),
   },
 );
 
-const appTools = [testBackend];
+const appTools = [getWeather];
 const appToolNames = new Set<string>();
 for (const appTool of appTools) {
   if (appTool.name.startsWith("thesys_")) {

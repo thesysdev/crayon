@@ -44,9 +44,9 @@ Choose a backend framework directly (the default is `none`, which uses the OpenA
 
 ```bash
 npx @openuidev/cli@latest create --template openui-cloud --backend-framework langgraph
-npx @openuidev/cli@latest create --template openui-cloud --backend-framework vercel
+npx @openuidev/cli@latest create --template openui-cloud --backend-framework vercel-ai-sdk
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework langgraph
-npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel
+npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel-ai-sdk
 ```
 
 Generate a prompt from a library file:
@@ -75,7 +75,7 @@ Options:
 
 - `-n, --name <string>`: Project name (interactive default: `openui-agent`)
 - `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
-- `--backend-framework <framework>`: API route implementation — `none`, `langgraph`, or `vercel`
+- `--backend-framework <framework>`: API route implementation — `none`, `langgraph`, or `vercel-ai-sdk`
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
@@ -110,9 +110,11 @@ What it does:
 | ----------- | --------------------------------------------------- | ------------------------------------------ |
 | `none`      | Direct OpenAI SDK Responses proxy                   | Direct OpenAI SDK Chat Completions proxy   |
 | `langgraph` | OpenAI SDK proxy + LangGraph app-tool execution     | LangGraph `StateGraph` using your provider |
-| `vercel`    | OpenAI SDK proxy + Vercel AI SDK app-tool execution | Vercel AI SDK `streamText()` route         |
+| `vercel-ai-sdk` | OpenAI SDK proxy + Vercel AI SDK app-tool execution | Vercel AI SDK `streamText()` route         |
 
 The CLI replaces `src/app/api/chat/route.ts` and adds the dependencies for the selected framework. Every Cloud combination keeps the OpenAI SDK pointed at OpenUI Cloud, preserving the raw Responses stream and managed conversation storage. Artifacts, web search, image search, and configured MCP tools still execute in Cloud; selecting LangGraph or Vercel AI SDK only changes how application-owned function tools are defined and executed on your server. It does not configure a user-owned model provider. Choose `openui-self-hosted` when you want to bring your own provider.
+
+Every Cloud route includes `get_weather` as its example app-owned function tool. The LangGraph and Vercel AI SDK variants define and execute that tool through the selected framework while leaving Cloud-owned tools unchanged.
 
 #### Template-specific `.env`
 
@@ -131,10 +133,10 @@ Examples:
 openui create
 openui create --name my-app --template openui-self-hosted
 openui create --name my-app --template openui-self-hosted --backend-framework langgraph
-openui create --name my-app --template openui-self-hosted --backend-framework vercel
+openui create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
 openui create --name my-app --template openui-cloud --auth oauth
 openui create --name my-app --template openui-cloud --backend-framework langgraph --auth oauth
-openui create --name my-app --template openui-cloud --backend-framework vercel --auth oauth
+openui create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk --auth oauth
 openui create --name my-app --template openui-cloud --api-key tk_your_key
 openui create --name my-app --template openui-self-hosted
 openui create --name my-app --template openui-cloud --immediate

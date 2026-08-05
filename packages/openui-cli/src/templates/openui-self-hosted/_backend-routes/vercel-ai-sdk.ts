@@ -14,7 +14,7 @@ const openai = createOpenAI({
 
 function sseChunk(delta: Record<string, unknown>, finishReason: string | null = null) {
   return `data: ${JSON.stringify({
-    id: "vercel-ai-chat",
+    id: "vercel-ai-sdk-chat",
     object: "chat.completion.chunk",
     model: modelName,
     choices: [{ index: 0, delta, finish_reason: finishReason }],

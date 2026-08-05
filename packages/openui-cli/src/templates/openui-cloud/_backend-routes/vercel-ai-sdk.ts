@@ -1,6 +1,7 @@
 import { requiredEnv } from "@/lib/env";
 import { resolveRequestedModel } from "@/lib/models";
 import { runFunctionToolLoop, type FunctionToolExecutor } from "@/lib/tool-loop";
+import { executeGetWeather } from "@/lib/tools/get-weather";
 import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
 import { asSchema, tool, type ToolSet } from "ai";
 import { NextResponse } from "next/server";
@@ -20,20 +21,15 @@ export const runtime = "nodejs";
  * server. Add your own tools here; OpenUI Cloud's built-ins stay separate.
  */
 const appTools = {
-  test_backend: tool({
+  get_weather: tool({
     description:
-      'Call whenever the user asks "Can you test the backend?" or asks to verify app-owned ' +
-      "tool execution. This tool must be called; do not answer from memory.",
-    inputSchema: z.object({}),
-    execute: async () => ({
-      ok: true,
-      tool: "test_backend",
-      framework: "vercel-ai-sdk",
-      execution: "app-owned",
-      verificationCode: "OPENUI_APP_TOOL_EXECUTION_OK",
-      checkedAt: new Date().toISOString(),
-      message: "The app-owned Vercel AI SDK tool executor ran successfully.",
+      "Get the current weather for a city or place name. Use whenever the user " +
+      "asks about weather, temperature, rain, or what to wear.",
+    inputSchema: z.object({
+      location: z.string().min(1).describe("City or place name, e.g. Berlin."),
     }),
+    execute: async ({ location }, { abortSignal }) =>
+      executeGetWeather(JSON.stringify({ location }), { signal: abortSignal }),
   }),
 } satisfies ToolSet;
 
