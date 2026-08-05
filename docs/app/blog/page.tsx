@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import { blog } from "@/lib/source";
 import { ArrowUpRight, ImageIcon } from "lucide-react";
 import Link from "next/link";
@@ -207,10 +205,7 @@ export default function BlogIndex() {
       featured: Boolean(post.data.featured),
       external: false,
       tag: post.data.featured ? "Featured" : undefined,
-      image:
-        slug && fs.existsSync(path.join(process.cwd(), "public", "images", "blog", `${slug}.png`))
-          ? `/images/blog/${slug}.png`
-          : undefined,
+      image: slug ? `/images/blog/${slug}.png` : undefined,
     };
   });
 
