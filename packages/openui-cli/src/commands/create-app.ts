@@ -50,6 +50,7 @@ const backendDependencies: Record<
     },
     "vercel-ai-sdk": {
       "@ai-sdk/openai": "^3.0.65",
+      "@openuidev/react-headless": "^0.9.6",
       ai: "^6.0.191",
     },
   },
@@ -186,12 +187,6 @@ function applyBackendFiles(projectDir: string, backendFramework: BackendFramewor
         );
       }
       fs.copyFileSync(pageSource, path.join(projectDir, "src", "app", "page.tsx"));
-
-      const adapterName = `${backendFramework}-adapter.ts`;
-      const adapterSource = path.join(pageOptionsDir, adapterName);
-      if (fs.existsSync(adapterSource)) {
-        fs.copyFileSync(adapterSource, path.join(projectDir, "src", "app", adapterName));
-      }
     }
   }
   fs.rmSync(routeOptionsDir, { recursive: true, force: true });
