@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { ArtifactViewMode } from "./ArtifactViewModeContext";
+import type { ArtifactViewMode } from "./artifactViewMode";
 import type { createChatStore } from "./createChatStore";
 import type { createDetailedViewStore } from "./createDetailedViewStore";
 import type { createThreadContextStore } from "./createThreadContextStore";

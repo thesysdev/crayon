@@ -1,7 +1,7 @@
 import type { ArtifactCategory, ChatLLM, ChatStorage } from "../adapters/types";
 import type { Message, UserMessage } from "../types/message";
 import type { ArtifactRendererConfig } from "./artifactRendererTypes";
-import type { ArtifactViewMode } from "./ArtifactViewModeContext";
+import type { ArtifactViewMode } from "./artifactViewMode";
 
 export type { Message, UserMessage } from "../types/message";
 export type CreateMessage = Omit<UserMessage, "id">;
