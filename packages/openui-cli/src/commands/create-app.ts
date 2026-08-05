@@ -641,11 +641,11 @@ function getStartedMessage(o: {
   const frameworkNote =
     o.backendFramework === "langgraph"
       ? o.template === "openui-cloud"
-        ? "The generated route keeps OpenUI Cloud as the Responses backend and uses LangGraph for app-owned tools."
+        ? 'The generated route keeps OpenUI Cloud as the Responses backend and uses LangGraph for app-owned tools.\nAsk "Can you test the backend?" to run the included diagnostic tool.'
         : "The generated API route uses LangGraph."
       : o.backendFramework === "vercel"
         ? o.template === "openui-cloud"
-          ? "The generated route keeps OpenUI Cloud as the Responses backend and uses the Vercel AI SDK for app-owned tools."
+          ? 'The generated route keeps OpenUI Cloud as the Responses backend and uses the Vercel AI SDK for app-owned tools.\nAsk "Can you test the backend?" to run the included diagnostic tool.'
           : "The generated API route uses the Vercel AI SDK."
         : "";
 
