@@ -82,29 +82,20 @@ const TOKEN_NOTE = "text-xs text-slate-500";
 
 function Panel({
   title,
-  dotClass,
-  badge,
-  badgeClass,
+  metric,
+  metricClass,
   children,
 }: {
   title: string;
-  dotClass: string;
-  badge: string;
-  badgeClass: string;
+  metric: string;
+  metricClass: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex h-[480px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-50 text-slate-900">
       <div className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-3 py-2.5">
-        <span className="flex items-center gap-2 text-[13px] font-medium">
-          <span className={`h-1.5 w-1.5 rounded-full ${dotClass}`} />
-          {title}
-        </span>
-        <span
-          className={`rounded-full border px-2 py-0.5 text-[11px] font-medium tabular-nums ${badgeClass}`}
-        >
-          {badge}
-        </span>
+        <span className="text-[13px] font-medium">{title}</span>
+        <span className={`text-[13px] font-medium tabular-nums ${metricClass}`}>{metric}</span>
       </div>
       {/* Chat text renders at 0.8; the widget card compensates to land at 0.7 overall.
           tabIndex makes the overflowing transcript keyboard-scrollable in Safari. */}
@@ -141,9 +132,8 @@ export const LiveFilterDemo = () => {
         {/* Tool-calling loop: the same three date changes, each a full model round trip */}
         <Panel
           title="Tool-calling loop"
-          dotClass="bg-red-500"
-          badge={`~${LOOP_TURNS.length * 10}k tokens · ~30s`}
-          badgeClass="border-red-500/30 bg-red-500/10 text-red-700"
+          metric={`~${LOOP_TURNS.length * 10}k tokens · ~30s`}
+          metricClass="text-red-700"
         >
           {LOOP_TURNS.map((turn, i) => {
             const rows = computeRows(turn.days);
@@ -172,12 +162,7 @@ export const LiveFilterDemo = () => {
         </Panel>
 
         {/* Generative UI: one model call, then the dropdown re-queries for free */}
-        <Panel
-          title="Generative UI"
-          dotClass="bg-emerald-500"
-          badge="~3.5k tokens · ~3s"
-          badgeClass="border-emerald-500/30 bg-emerald-500/10 text-emerald-700"
-        >
+        <Panel title="Generative UI" metric="~3.5k tokens · ~3s" metricClass="text-emerald-700">
           <div className={USER_BUBBLE}>Show daily revenue by region for the last 7 days.</div>
           <div className="flex flex-col items-start gap-1">
             {/* 0.8 (panel) × 0.875 ≈ 0.7 effective */}
