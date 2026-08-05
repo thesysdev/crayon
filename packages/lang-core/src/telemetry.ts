@@ -421,12 +421,9 @@ async function sendCapture(
   (timeout as unknown as { unref?: () => void } | undefined)?.unref?.();
 
   try {
-    const headers: Record<string, string> = { "content-type": "application/json" };
-    if (runtime.name !== "edge") headers["user-agent"] = `@openuidev/lang-core/${SDK_VERSION}`;
-
     await globalThis.fetch(CAPTURE_URL, {
       method: "POST",
-      headers,
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
         api_key: POSTHOG_KEY,
         event: EVENT_NAME,
