@@ -1,3 +1,19 @@
+/**
+ * Installation telemetry disclosure
+ *
+ * Sent during package postinstall unless telemetry is disabled:
+ * - A random installation ID and a salted SHA-256 project ID
+ * - Lang Core, Node.js, OS, architecture, and package-manager versions
+ * - CI provider category, Docker status, project-ID source category, and schema version
+ *
+ * The JSON payload contains no direct PII or application-user data. It never includes
+ * names, email addresses, usernames, raw Git origins, repository or project names,
+ * filesystem paths, branches, commits, credentials, environment values, source code,
+ * prompts, messages, generated output, component or tool definitions, errors, logs,
+ * stack traces, routes, or UI interactions. As with any HTTP request, the telemetry
+ * proxy and PostHog can observe the source IP as transport metadata; the script does
+ * not read it or add it to the payload.
+ */
 import { execFileSync } from "node:child_process";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, type WriteFileOptions } from "node:fs";
@@ -183,13 +199,6 @@ export async function runInstallTelemetry(
     const packageManager = detectPackageManager(env);
     const ci = detectCI(env);
 
-    // Telemetry data contract:
-    // Sent: a random installation ID, salted project ID and its source category,
-    // Lang Core/Node/OS/package-manager metadata, CI provider, Docker status, and
-    // the schema version. The proxy and PostHog also observe the request source IP.
-    // Never sent: raw Git origins, project or repository names, filesystem paths,
-    // branches, commits, credentials, environment values, source code, prompts,
-    // application data, errors, logs, stack traces, routes, or UI interactions.
     payload = {
       distinctId: state.distinctId,
       event: INSTALL_EVENT,
