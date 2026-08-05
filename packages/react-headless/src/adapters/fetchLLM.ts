@@ -68,7 +68,19 @@ export function fetchLLM({
             status: response.status,
             ok: response.ok,
             threadId,
-            ...(response.ok ? null : { message: await getResponseErrorMessage(response) }),
+            ...(response.ok
+              ? null
+              : {
+                  error: {
+                    // Thesys API error responses are OpenAI-shaped: { error: { message, type, param } }.
+                    ...(await response
+                      .clone()
+                      .json()
+                      .then((body: { error?: Record<string, unknown> }) => body?.error ?? {})
+                      .catch(() => ({}))),
+                    message: await getResponseErrorMessage(response),
+                  },
+                }),
           });
           return response;
         },
