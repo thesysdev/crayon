@@ -68,7 +68,7 @@ export function fetchLLM({
             status: response.status,
             ok: response.ok,
             threadId,
-            ...(!response.ok ? await buildObservabilityErrorDetail(response) : null),
+            ...(await buildObservabilityErrorDetail(response)),
           });
           return response;
         },
@@ -89,6 +89,7 @@ export function fetchLLM({
 }
 
 async function buildObservabilityErrorDetail(response: Response) {
+  if (response.ok) return {};
   const res = await response.clone().json();
   return {
     error: res?.error,
