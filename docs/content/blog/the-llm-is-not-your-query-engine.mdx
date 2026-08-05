@@ -162,11 +162,11 @@ The estimate favors the loop on purpose: in a real conversation, later turns als
 
 **Latency.** A parameter change drops from a two-call model round trip (seconds) to a single database query (~100ms). Intent changes are faster too: the model streams a three-statement delta while the existing interface stays rendered, and because `root` streams first, the interface shell renders before generation completes.
 
-**Reliability.** This is the comparison we consider most consequential. The two architectures make different kinds of errors, not different amounts.
+**Reliability.** The two architectures make different kinds of errors, not different amounts.
 
-In the tool loop, the failures live in the data: made-up or miscopied values in narration, and inconsistent query rewrites across turns. Both are silent, because nothing exists to check a narrated number against.
+Tool-loop failures live in the data: made-up or miscopied values in narration, inconsistent query rewrites across turns. Both are silent; nothing exists to check a narrated number against.
 
-In Generative UI, every displayed value was placed by the runtime from a real query result. The model writes references, not values, so an invented number would have to appear as a literal in the spec, where it is easy to catch. Within the declared-tool path it also cannot reference a nonexistent table or column, because it selects among schema-validated tools instead of writing queries. What remains is generation-time error: a filter bound to the wrong parameter, a misleading chart title. These are machine-checkable, since unknown components, missing props, and invalid tool references surface as structured parser errors that can be sent back for automatic correction before render. And when one slips through, it is visible: a chart grouped by the wrong dimension gets noticed and fixed in one message, while a wrong number in prose is not noticed at all. The model still makes mistakes; they just move from the data, where they are invisible, to the interface, where they are checked and seen.
+Generative UI failures live in the interface. **Every displayed number comes from a real query result**: the model writes references that the runtime resolves, so an invented value would have to appear as a literal in the spec, where it is easy to catch. What remains is a filter bound to the wrong parameter or a misleading chart title. The parser catches the structural cases before render and sends them back for correction; the rest are visible on screen. A chart grouped by the wrong dimension gets fixed in one message. A wrong number in prose is never noticed.
 
 ## Edge cases and limitations
 

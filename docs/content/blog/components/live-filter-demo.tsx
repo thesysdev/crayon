@@ -139,7 +139,7 @@ export const LiveFilterDemo = () => {
       <Panel
         title="Tool-calling loop"
         dotClass="bg-red-500"
-        badge={`~${LOOP_TURNS.length * 10}k tokens`}
+        badge={`~${LOOP_TURNS.length * 10}k tokens · ~30s`}
         badgeClass="border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
       >
         {LOOP_TURNS.map((turn, i) => {
@@ -161,10 +161,7 @@ export const LiveFilterDemo = () => {
                     ))}
                   </ul>
                 </div>
-                <span className={TOKEN_NOTE}>
-                  ~10k tokens (history + result rows + reply) · seconds of latency · total so
-                  far ~{(i + 1) * 10}k
-                </span>
+                <span className={TOKEN_NOTE}>~10k tokens</span>
               </div>
             </div>
           );
@@ -175,7 +172,7 @@ export const LiveFilterDemo = () => {
       <Panel
         title="Generative UI"
         dotClass="bg-emerald-500"
-        badge="~350 output tokens"
+        badge="~350 output tokens · ~3s"
         badgeClass="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
       >
         <div className={USER_BUBBLE}>Show daily revenue by region for the last 7 days.</div>
@@ -194,9 +191,8 @@ export const LiveFilterDemo = () => {
             />
           </div>
           <span className={TOKEN_NOTE}>
-            ~350 output tokens, once · {filterChanges} filter{" "}
-            {filterChanges === 1 ? "change" : "changes"} since, 0 tokens · ~350ms each, no
-            model call
+            {filterChanges} filter {filterChanges === 1 ? "change" : "changes"} · 0 tokens ·
+            ~350ms each
           </span>
         </div>
       </Panel>
