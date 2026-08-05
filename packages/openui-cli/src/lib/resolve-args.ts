@@ -1,4 +1,4 @@
-import { CliCancelledError, CreateError } from "./telemetry";
+import { CreateError } from "./telemetry";
 
 type InputPromptConfig = {
   type: "input";
@@ -41,12 +41,12 @@ export async function resolveArgs<T extends Record<string, ArgDef<unknown>>>(
     }
 
     if (!interactive) {
-      throw new CreateError("args_resolution", `Missing required argument --${key}`, {
-        telemetryProperties: {
-          failure_category: "invalid_input",
-          failure_code: "MISSING_REQUIRED_ARG",
-        },
-      });
+      throw new CreateError(
+        "args_resolution",
+        `Missing required argument --${key}`,
+        "invalid_input",
+        "MISSING_REQUIRED_ARG",
+      );
     }
 
     try {
@@ -54,7 +54,7 @@ export async function resolveArgs<T extends Record<string, ArgDef<unknown>>>(
     } catch (err) {
       const { ExitPromptError } = await import("@inquirer/core");
       if (err instanceof ExitPromptError) {
-        throw new CliCancelledError("args_resolution");
+        process.exit(0);
       }
       throw err;
     }

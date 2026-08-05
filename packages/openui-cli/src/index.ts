@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -9,8 +8,9 @@ import { Command } from "commander";
 import { runCreateApp } from "./commands/create-app";
 import { GenerateOptions, runGenerate } from "./commands/generate";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
+import { resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
-import { handleCliError } from "./lib/utils"; // Ensure utils.ts is included for type declarations
+import { handleCliError, normalizeAuth, normalizeTemplate } from "./lib/utils"; // Ensure utils.ts is included for type declarations
 
 const program = new Command();
 
@@ -35,8 +35,6 @@ program.hook("preAction", (_thisCommand, actionCommand) => {
   const globalOptions = program.opts<{ agentName: string; telemetry?: boolean }>();
   telemetry.init({ cliVersion, flagEnabled: globalOptions.telemetry !== false });
   telemetry.register({
-    cli_run_id: randomUUID(),
-    command: actionCommand.name(),
     agent_name: globalOptions.agentName,
     detected_agent_name: detectAgent(),
   });
@@ -87,9 +85,9 @@ Templates:
       try {
         await runCreateApp({
           name: options.name,
-          template: options.template,
+          template: normalizeTemplate(options.template),
           apiKey: options.apiKey,
-          auth: options.auth,
+          auth: normalizeAuth(options.auth),
           skill: options.skill,
           noInteractive: !options.interactive,
           noInstall: !options.install,
@@ -124,7 +122,19 @@ program
   .option("--no-interactive", "Fail with error if required args are missing")
   .action(async (entry: string | undefined, options: GenerateOptions) => {
     try {
-      await runGenerate(entry, options);
+      const args = await resolveArgs(
+        {
+          entry: entry
+            ? { value: entry }
+            : {
+                prompt: { type: "input", message: "Entry file path?" },
+                required: true,
+              },
+        },
+        options.interactive,
+      );
+
+      await runGenerate((args as { entry: string }).entry, options);
     } catch (e) {
       handleCliError(e, "cli_generate_failed");
     } finally {

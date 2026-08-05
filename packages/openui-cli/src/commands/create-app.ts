@@ -1,42 +1,28 @@
+import spawn from "cross-spawn";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 
-import {
-  classifyCloudAuthFailure,
-  resolveCloudApiKey,
-  THESYS_KEYS_URL,
-  type CloudAuthMethod,
-} from "../auth/mint";
-import {
-  aiSetupFromTemplate,
-  captureCreateStageSkipped,
-  createFunnelProps,
-  instrumentCreateStage,
-  type CreateStageTerminalStatus,
-} from "../lib/create-telemetry";
+import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
+import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
 import {
   resolveInstallPackageManager,
   type PackageManagerName,
 } from "../lib/detect-package-manager";
-import {
-  classifyProcessFailure,
-  classifyUnknownFailure,
-  getProcessCancellationExitCode,
-  withFailureFallback,
-} from "../lib/error-telemetry";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
-import { runCommand, type CommandResult } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
-import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
-import { normalizeAuth, normalizeTemplate } from "../lib/utils";
+import { CreateError, telemetry } from "../lib/telemetry";
+import { cliErrorProperties } from "../lib/utils";
 
-const errorMessage = (error: unknown) => (error instanceof Error ? error.message : String(error));
-const commandStageStatus = (result: CommandResult): CreateStageTerminalStatus =>
-  result.succeeded ? "succeeded" : getProcessCancellationExitCode(result) ? "cancelled" : "failed";
-const commandStageProperties = (result: CommandResult): Record<string, unknown> =>
-  result.succeeded ? {} : classifyProcessFailure(result);
+function runCommand(command: string, args: string[], cwd: string) {
+  return spawn.sync(command, args, { cwd, stdio: "inherit" });
+}
+
+function errorCode(error: Error): string {
+  const code = (error as NodeJS.ErrnoException).code;
+  return typeof code === "string" ? code : "UNKNOWN";
+}
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
@@ -130,8 +116,9 @@ function rewritePackageJson(projectDir: string, name: string, packageManager: Pa
 
 export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   const interactive = !options.noInteractive;
+  const packageManager = resolveInstallPackageManager();
   const t0 = Date.now();
-  telemetry.register({ interactive });
+  telemetry.register({ interactive, package_manager: packageManager.name });
   telemetry.capture("cli_create_started", {
     ...createFunnelProps("create_started"),
     interactive,
@@ -143,53 +130,39 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     immediate_arg: options.immediate,
   });
 
-  const args = await instrumentCreateStage(
-    "args_resolution",
-    async () => {
-      const template = normalizeTemplate(options.template);
-      const auth = normalizeAuth(options.auth);
-      const resolved = await resolveArgs(
-        {
-          name: options.name
-            ? { value: options.name }
-            : {
-                prompt: { type: "input", message: "Project name?", default: "openui-agent" },
-                required: true,
-              },
-          template: template
-            ? { value: template }
-            : {
-                prompt: {
-                  type: "select",
-                  message: "Choose your agent backend",
-                  choices: [
-                    {
-                      value: "openui-cloud",
-                      name: "OpenUI Cloud — free hosted models, managed history, tools & artifacts; fastest setup (recommended)",
-                    },
-                    {
-                      value: "openui-self-hosted",
-                      name: "Self-hosted — bring your own provider and self-manage the entire backend",
-                    },
-                  ],
+  const args = await resolveArgs(
+    {
+      name: options.name
+        ? { value: options.name }
+        : {
+            prompt: { type: "input", message: "Project name?", default: "openui-agent" },
+            required: true,
+          },
+      template: options.template
+        ? { value: options.template }
+        : {
+            prompt: {
+              type: "select",
+              message: "Choose your agent backend",
+              choices: [
+                {
+                  value: "openui-cloud",
+                  name: "OpenUI Cloud — free hosted models, managed history, tools & artifacts; fastest setup (recommended)",
                 },
-                required: true,
-              },
-        },
-        interactive,
-      );
-      return { ...resolved, auth };
+                {
+                  value: "openui-self-hosted",
+                  name: "Self-hosted — bring your own provider and self-manage the entire backend",
+                },
+              ],
+            },
+            required: true,
+          },
     },
-    { properties: { interactive } },
+    interactive,
   );
 
-  const { name, template, auth } = args as {
-    name: string;
-    template: TemplateName;
-    auth?: CloudAuthMethod;
-  };
+  const { name, template } = args as { name: string; template: TemplateName };
   const aiSetup = aiSetupFromTemplate(template);
-  const stageContext = { template, ai_setup: aiSetup };
   telemetry.register({ template, ai_setup: aiSetup });
   telemetry.capture("cli_ai_setup_selected", {
     ...createFunnelProps("ai_setup_selected"),
@@ -197,106 +170,46 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     ai_setup: aiSetup,
   });
 
-  const { targetDir, packageManager, templateDir } = await instrumentCreateStage(
-    "preflight",
-    () => {
-      const resolvedTargetDir = path.resolve(process.cwd(), name);
-      if (fs.existsSync(resolvedTargetDir)) {
-        throw new CreateError("preflight", `Directory "${name}" already exists.`, {
-          telemetryProperties: {
-            failure_category: "filesystem",
-            failure_code: "TARGET_EXISTS",
-          },
-        });
-      }
+  const targetDir = path.resolve(process.cwd(), name);
+  if (fs.existsSync(targetDir)) {
+    throw new CreateError(
+      "preflight",
+      `Directory "${name}" already exists.`,
+      "filesystem",
+      "TARGET_EXISTS",
+    );
+  }
 
-      const resolvedTemplateDir = path.join(__dirname, "..", "templates", template);
-      if (!fs.existsSync(resolvedTemplateDir)) {
-        throw new CreateError(
-          "preflight",
-          `Template "${template}" not found. Rebuild the CLI with \`pnpm build\`.`,
-          {
-            telemetryProperties: {
-              failure_category: "filesystem",
-              failure_code: "TEMPLATE_MISSING",
-            },
-          },
-        );
-      }
-      return {
-        targetDir: resolvedTargetDir,
-        packageManager: resolveInstallPackageManager(),
-        templateDir: resolvedTemplateDir,
-      };
-    },
-    {
-      properties: stageContext,
-      resultProperties: (result) => ({ package_manager: result.packageManager.name }),
-    },
-  );
-  telemetry.register({ package_manager: packageManager.name });
-
-  const captureScaffoldFailed = (error: unknown) => {
-    telemetry.capture("cli_scaffold_failed", {
-      ...createFunnelProps("scaffold_failed"),
-      ...stageContext,
-      ...withFailureFallback(classifyUnknownFailure(error), {
-        failure_category: "filesystem",
-        failure_code: "SCAFFOLD_FAILED",
-      }),
-    });
-  };
+  const templateDir = path.join(__dirname, "..", "templates", template);
+  if (!fs.existsSync(templateDir)) {
+    throw new CreateError(
+      "preflight",
+      `Template "${template}" not found. Rebuild the CLI with \`pnpm build\`.`,
+      "filesystem",
+      "TEMPLATE_MISSING",
+    );
+  }
 
   telemetry.capture("cli_env_resolution_started", {
     ...createFunnelProps("env_resolution_started"),
     template,
     ai_setup: aiSetup,
   });
-  const envResult = await instrumentCreateStage(
-    "environment_resolution",
-    () => {
-      if (template === "openui-self-hosted") {
-        captureCreateStageSkipped("cloud_auth", "not_cloud_template", stageContext);
-        return resolveChatEnv(interactive);
-      }
-      return resolveCloudEnv(name, options.apiKey, auth, interactive, stageContext);
-    },
-    {
-      properties: stageContext,
-      resultProperties: (result) => ({
-        env_written: result.envWritten,
-        auth_method: result.authMethod,
-        auth_succeeded: result.authSucceeded,
-      }),
-    },
-  );
+  const envResult =
+    template === "openui-self-hosted"
+      ? await resolveChatEnv(interactive)
+      : await resolveCloudEnv(name, options, interactive);
 
-  const installSkill = await instrumentCreateStage(
-    "skill_prompt",
-    () => shouldInstallSkill(options.skill, interactive),
-    {
-      properties: stageContext,
-      resultProperties: (requested) => ({ skill_install_requested: requested }),
-    },
-  );
+  const installSkill = await shouldInstallSkill(options.skill, interactive);
   telemetry.capture("cli_skill_installed", {
     ...createFunnelProps("skill_prompt_resolved"),
     skill_installed: installSkill,
-    skill_install_requested: installSkill,
-    event_semantics: "legacy_install_decision",
   });
 
-  const immediateResolution = await instrumentCreateStage(
-    "immediate_prompt",
-    () => resolveImmediate(options.immediate, options.noInstall, interactive),
-    {
-      properties: stageContext,
-      resultProperties: (result) => ({
-        immediate: result.immediate,
-        dependency_install_requested: result.installDependencies,
-        selection_source: result.source,
-      }),
-    },
+  const immediateResolution = await resolveImmediate(
+    options.immediate,
+    options.noInstall,
+    interactive,
   );
   telemetry.capture("cli_immediate_selected", {
     immediate: immediateResolution.immediate,
@@ -305,66 +218,73 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   });
 
   console.info(`\nScaffolding ${template} into "${name}"...\n`);
-  await instrumentCreateStage(
-    "scaffold",
-    () => {
-      telemetry.capture("cli_scaffold_started", {
-        ...createFunnelProps("scaffold_started"),
-        ...stageContext,
-      });
-      try {
-        fs.cpSync(templateDir, targetDir, {
-          recursive: true,
-          filter: (src) => shouldCopyTemplatePath(templateDir, src),
-        });
-        restoreDotfiles(targetDir);
-        rewritePackageJson(targetDir, name, packageManager.name);
-        // npm ci requires the copied package-lock; other managers resolve from package.json.
-        if (packageManager.name !== "npm") {
-          fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
-        }
-        // Keep pnpm-only install metadata out of npm/yarn/bun scaffolds.
-        if (packageManager.name !== "pnpm") {
-          fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
-          fs.rmSync(path.join(targetDir, "pnpm-workspace.yaml"), { force: true });
-        }
-      } catch (error) {
-        captureScaffoldFailed(error);
-        throw error;
-      }
-      telemetry.capture("cli_scaffold_succeeded", {
-        ...createFunnelProps("scaffold_succeeded"),
-        ...stageContext,
-      });
-    },
-    {
-      properties: stageContext,
-      errorProperties: (error) =>
-        withFailureFallback(classifyUnknownFailure(error), {
-          failure_category: "filesystem",
-          failure_code: "SCAFFOLD_FAILED",
-        }),
-    },
-  );
+  telemetry.capture("cli_scaffold_started", {
+    ...createFunnelProps("scaffold_started"),
+    template,
+    ai_setup: aiSetup,
+  });
+  try {
+    fs.cpSync(templateDir, targetDir, {
+      recursive: true,
+      filter: (src) => shouldCopyTemplatePath(templateDir, src),
+    });
+    restoreDotfiles(targetDir);
+    rewritePackageJson(targetDir, name, packageManager.name);
+    // npm ci requires the copied package-lock; other managers resolve from package.json.
+    if (packageManager.name !== "npm") {
+      fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
+    }
+    // The Cloud template ships pnpm's lock/workspace files for reproducible pnpm
+    // installs and native-build policy. They are irrelevant to npm/yarn/bun and
+    // can confuse workspace-root detection, so keep them only for pnpm scaffolds.
+    if (packageManager.name !== "pnpm") {
+      fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
+      fs.rmSync(path.join(targetDir, "pnpm-workspace.yaml"), { force: true });
+    }
+  } catch (err) {
+    const properties = cliErrorProperties(err, {
+      failure_stage: "scaffold",
+      error_class: "filesystem",
+      error_code: "SCAFFOLD_FAILED",
+    });
+    telemetry.capture("cli_scaffold_failed", {
+      ...createFunnelProps("scaffold_failed"),
+      template,
+      ai_setup: aiSetup,
+      ...properties,
+    });
+    throw new CreateError(
+      properties.failure_stage,
+      err instanceof Error ? err.message : String(err),
+      properties.error_class,
+      properties.error_code,
+    );
+  }
+  telemetry.capture("cli_scaffold_succeeded", {
+    ...createFunnelProps("scaffold_succeeded"),
+    template,
+    ai_setup: aiSetup,
+  });
 
-  await instrumentCreateStage(
-    "environment_write",
-    () =>
-      writeEnv(targetDir, envResult, template === "openui-cloud" ? buildAppId(name) : undefined),
-    {
-      properties: stageContext,
-      resultProperties: () => ({
-        env_written: envResult.envWritten,
-        auth_method: envResult.authMethod,
-        auth_succeeded: envResult.authSucceeded,
-      }),
-      errorProperties: (error) =>
-        withFailureFallback(classifyUnknownFailure(error), {
-          failure_category: "filesystem",
-          failure_code: "WRITE_FAILED",
-        }),
-    },
-  );
+  try {
+    await writeEnv(
+      targetDir,
+      envResult,
+      template === "openui-cloud" ? buildAppId(name) : undefined,
+    );
+  } catch (err) {
+    const properties = cliErrorProperties(err, {
+      failure_stage: "environment_write",
+      error_class: "filesystem",
+      error_code: "WRITE_FAILED",
+    });
+    throw new CreateError(
+      properties.failure_stage,
+      err instanceof Error ? err.message : String(err),
+      properties.error_class,
+      properties.error_code,
+    );
+  }
   telemetry.capture("cli_env_resolved", {
     ...createFunnelProps("env_written"),
     template,
@@ -374,78 +294,29 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     auth_succeeded: envResult.authSucceeded,
   });
 
-  let skillInstalled = false;
   if (installSkill) {
     telemetry.capture("cli_skill_install_started", {
       ...createFunnelProps("skill_install_started"),
-      skill_install_requested: true,
-      installer: "npx",
+      skill_installed: installSkill,
     });
-    const result = await instrumentCreateStage("skill_install", () => runSkillInstall(targetDir), {
-      properties: { ...stageContext, installer: "npx" },
-      resultStatus: commandStageStatus,
-      resultProperties: commandStageProperties,
+    const skillInstalled = runSkillInstall(targetDir);
+    telemetry.capture(skillInstalled ? "cli_skill_install_finished" : "cli_skill_install_failed", {
+      ...createFunnelProps(skillInstalled ? "skill_install_finished" : "skill_install_failed"),
+      skill_installed: skillInstalled,
+      ...(skillInstalled
+        ? {}
+        : {
+            failure_stage: "skill_install",
+            error_class: "dependency",
+            error_code: "SKILL_INSTALL_FAILED",
+          }),
     });
-    if (result.succeeded) {
-      skillInstalled = true;
-      const successProps = {
-        skill_installed: true,
-        installer: "npx",
-        duration_ms: result.durationMs,
-      };
-      telemetry.capture("cli_skill_install_succeeded", {
-        ...createFunnelProps("skill_install_succeeded"),
-        ...successProps,
-      });
-      telemetry.capture("cli_skill_install_finished", {
-        ...createFunnelProps("skill_install_finished"),
-        ...successProps,
-      });
-    } else {
-      const failure = classifyProcessFailure(result);
-      const cancellationExitCode = getProcessCancellationExitCode(result);
-      if (cancellationExitCode) {
-        telemetry.capture("cli_skill_install_cancelled", {
-          ...createFunnelProps("skill_install_cancelled"),
-          ...failure,
-          skill_installed: false,
-          installer: "npx",
-          duration_ms: result.durationMs,
-        });
-        throw new CliCancelledError("skill_install", cancellationExitCode);
-      }
-      telemetry.capture("cli_skill_install_failed", {
-        ...createFunnelProps("skill_install_failed"),
-        ...failure,
-        skill_installed: false,
-        installer: "npx",
-        duration_ms: result.durationMs,
-      });
-      telemetry.capture("cli_skill_install_finished", {
-        ...createFunnelProps("skill_install_finished"),
-        ...failure,
-        skill_installed: false,
-        installer: "npx",
-        duration_ms: result.durationMs,
-      });
-      console.warn(
-        "\nCould not install the OpenUI agent skill automatically.\n" +
-          "You can install it manually later with:\n\n" +
-          "  npx skills add thesysdev/skills --skill openui\n",
-      );
-    }
-  } else {
-    captureCreateStageSkipped("skill_install", "not_requested", stageContext);
   }
 
   const installCmd = packageManager.installCmd;
   let dependencyInstalled = false;
 
   if (!immediateResolution.installDependencies) {
-    captureCreateStageSkipped("dependency_install", "no_install_flag", {
-      ...stageContext,
-      package_manager: packageManager.name,
-    });
     telemetry.capture("cli_dependency_install_skipped", {
       skip_reason: "no_install_flag",
     });
@@ -457,47 +328,34 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       template,
       ai_setup: aiSetup,
     });
-    const installResult = await instrumentCreateStage(
-      "dependency_install",
-      () => runCommand(packageManager.runCmd, packageManager.installArgs, targetDir),
-      {
-        properties: { ...stageContext, package_manager: packageManager.name },
-        resultStatus: commandStageStatus,
-        resultProperties: commandStageProperties,
-      },
-    );
-    if (installResult.succeeded) {
+    const installResult = runCommand(packageManager.runCmd, packageManager.installArgs, targetDir);
+    if (!installResult.error && installResult.status === 0) {
       dependencyInstalled = true;
       telemetry.capture("cli_dependency_install_succeeded", {
         ...createFunnelProps("dependency_install_succeeded"),
         template,
         ai_setup: aiSetup,
         dependency_installed: dependencyInstalled,
-        duration_ms: installResult.durationMs,
       });
     } else {
-      const failure = classifyProcessFailure(installResult);
-      const cancellationExitCode = getProcessCancellationExitCode(installResult);
-      if (cancellationExitCode) {
-        telemetry.capture("cli_dependency_install_cancelled", {
-          ...createFunnelProps("dependency_install_cancelled"),
-          ...stageContext,
-          ...failure,
-          dependency_installed: false,
-          duration_ms: installResult.durationMs,
-        });
-        throw new CliCancelledError("dependency_install", cancellationExitCode);
-      }
+      const properties = cliErrorProperties(installResult.error, {
+        failure_stage: "dependency_install",
+        error_class: "dependency",
+        error_code: installResult.error ? "COMMAND_FAILED" : "NONZERO_EXIT",
+      });
       telemetry.capture("cli_dependency_install_failed", {
         ...createFunnelProps("dependency_install_failed"),
-        ...stageContext,
-        ...failure,
+        template,
+        ai_setup: aiSetup,
         dependency_installed: dependencyInstalled,
-        duration_ms: installResult.durationMs,
+        ...properties,
       });
-      throw new CreateError("dependency_install", "dependency install failed", {
-        telemetryProperties: failure,
-      });
+      throw new CreateError(
+        properties.failure_stage,
+        "dependency install failed",
+        properties.error_class,
+        properties.error_code,
+      );
     }
   }
 
@@ -509,7 +367,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     template,
     ai_setup: aiSetup,
     duration_ms: Date.now() - t0,
-    skill_installed: skillInstalled,
+    skill_installed: installSkill,
     env_written: envResult.envWritten,
     dependency_installed: dependencyInstalled,
   });
@@ -518,7 +376,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       name,
       devCmd,
       template,
-      skillInstalled,
+      skillInstalled: installSkill,
       envWritten: envResult.envWritten,
       startDev,
       installCmd,
@@ -537,12 +395,12 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   telemetry.capture("cli_dev_command_started", {
     package_manager: packageManager.name,
   });
-  const devResult = await runCommand(devCmd, ["run", "dev"], targetDir);
-  const durationMs = Math.max(devResult.durationMs, Date.now() - devStartedAt);
+  const devResult = runCommand(devCmd, ["run", "dev"], targetDir);
+  const durationMs = Math.max(0, Date.now() - devStartedAt);
   const stoppedNormally =
-    devResult.exitCode === 0 ||
-    devResult.exitCode === 130 ||
-    devResult.exitCode === 143 ||
+    devResult.status === 0 ||
+    devResult.status === 130 ||
+    devResult.status === 143 ||
     devResult.signal === "SIGINT" ||
     devResult.signal === "SIGTERM";
 
@@ -550,19 +408,21 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     telemetry.capture("cli_dev_command_stopped", {
       package_manager: packageManager.name,
       duration_ms: durationMs,
-      exit_code: devResult.exitCode,
-      failure_signal: devResult.signal,
+      exit_code: devResult.status,
+      signal: devResult.signal,
     });
   } else {
-    const exitCode = devResult.exitCode ?? 1;
-    const failure = classifyProcessFailure(devResult);
+    const exitCode = devResult.status ?? 1;
     telemetry.capture("cli_dev_command_failed", {
       package_manager: packageManager.name,
-      stage: "dev_server",
-      failure_stage: "dev_server",
       duration_ms: durationMs,
-      failure_reason: devResult.spawnErrorCode ? "spawn_error" : "nonzero_exit",
-      ...failure,
+      failure_stage: "dev_server",
+      error_class: "process",
+      error_code: devResult.error ? "COMMAND_FAILED" : "NONZERO_EXIT",
+      failure_reason: devResult.error ? "spawn_error" : "nonzero_exit",
+      exit_code: exitCode,
+      signal: devResult.signal,
+      ...(devResult.error ? { error_code: errorCode(devResult.error) } : {}),
     });
     console.error(
       `\nDevelopment server exited. Retry with:\n\n> cd ${name}\n> ${devCmd} run dev\n`,
@@ -613,7 +473,7 @@ async function resolveImmediate(
     };
   } catch (error) {
     const { ExitPromptError } = await import("@inquirer/core");
-    if (error instanceof ExitPromptError) throw new CliCancelledError("immediate_prompt");
+    if (error instanceof ExitPromptError) process.exit(0);
     throw error;
   }
 }
@@ -630,62 +490,34 @@ async function writeEnv(targetDir: string, result: EnvResult, appId?: string): P
 
 async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
   if (!interactive) return { envWritten: false };
-  try {
-    const { input } = await import("@inquirer/prompts");
-    const apiKey = (
-      await input({
-        message: "Enter your OpenAI-compatible provider API key (leave blank to skip):",
-      })
-    ).trim();
-    if (!apiKey) return { envWritten: false };
-    return { envWritten: true, envContent: `OPENAI_API_KEY=${apiKey}\n` };
-  } catch (error) {
-    const { ExitPromptError } = await import("@inquirer/core");
-    if (error instanceof ExitPromptError) {
-      throw new CliCancelledError("environment_resolution");
-    }
-    throw error;
-  }
+  const { input } = await import("@inquirer/prompts");
+  const apiKey = (
+    await input({
+      message: "Enter your OpenAI-compatible provider API key (leave blank to skip):",
+    })
+  ).trim();
+  if (!apiKey) return { envWritten: false };
+  return { envWritten: true, envContent: `OPENAI_API_KEY=${apiKey}\n` };
 }
 
 async function resolveCloudEnv(
   name: string,
-  apiKeyOption: string | undefined,
-  auth: CloudAuthMethod | undefined,
+  options: CreateAppOptions,
   interactive: boolean,
-  stageContext: Record<string, unknown>,
 ): Promise<EnvResult> {
   let apiKey: string | null = null;
   let authMethod: EnvResult["authMethod"];
-  const requestedAuthMethod = auth ?? (apiKeyOption ? "apikey-flag" : undefined);
   try {
     telemetry.capture("cli_cloud_auth_started", {
       ...createFunnelProps("cloud_auth_started"),
-      auth_method: requestedAuthMethod,
+      auth_method: options.auth ?? (options.apiKey ? "apikey-flag" : undefined),
     });
-    const resolved = await instrumentCreateStage(
-      "cloud_auth",
-      () =>
-        resolveCloudApiKey({
-          apiKey: apiKeyOption,
-          auth,
-          projectName: name,
-          interactive,
-        }),
-      {
-        properties: {
-          ...stageContext,
-          ...(requestedAuthMethod ? { auth_method_requested: requestedAuthMethod } : {}),
-        },
-        resultStatus: (result) => (result.key == null ? "skipped" : "succeeded"),
-        resultProperties: (result) => ({
-          auth_method: result.method,
-          auth_succeeded: result.key != null,
-          ...(result.key == null ? { skip_reason: `${result.method}_without_key` } : {}),
-        }),
-        errorProperties: classifyCloudAuthFailure,
-      },
-    );
+    const resolved = await resolveCloudApiKey({
+      apiKey: options.apiKey,
+      auth: options.auth,
+      projectName: name,
+      interactive,
+    });
     apiKey = resolved.key;
     authMethod = resolved.method;
     telemetry.capture("cli_cloud_auth_method", {
@@ -694,15 +526,19 @@ async function resolveCloudEnv(
       auth_succeeded: apiKey != null,
     });
   } catch (err) {
-    if (err instanceof CliCancelledError) throw err;
-    const failure = classifyCloudAuthFailure(err);
-    telemetry.capture("cli_cloud_auth_failed", {
-      ...createFunnelProps("cloud_auth_failed"),
-      ...failure,
-      auth_method: failure["auth_method"] ?? requestedAuthMethod,
-      auth_succeeded: false,
+    const msg = err instanceof Error ? err.message : String(err);
+    const properties = cliErrorProperties(err, {
+      failure_stage: "cloud_auth",
+      error_class: "authentication",
+      error_code: "AUTH_FAILED",
     });
-    console.error(`\n⚠ Could not obtain an API key: ${errorMessage(err)}`);
+    telemetry.capture("cli_cloud_auth_failed", {
+      ...createFunnelProps("cloud_auth_resolved"),
+      auth_method: options.auth ?? (options.apiKey ? "apikey-flag" : undefined),
+      auth_succeeded: false,
+      ...properties,
+    });
+    console.error(`\n⚠ Could not obtain an API key: ${msg}`);
     console.error(`  Add THESYS_API_KEY to .env later (keys: ${THESYS_KEYS_URL}).\n`);
   }
   const lines = [`THESYS_API_KEY=${apiKey ?? ""}`, `DEMO_USER_ID=demo-user`];

@@ -54,38 +54,25 @@ function writeState(file: string, s: Stored) {
   }
 }
 
-export interface SafeFailureTelemetry {
-  failure_category: string;
-  failure_code: string;
-  exit_code?: number;
-  failure_signal?: NodeJS.Signals;
-  http_status?: number;
-  cancellation_exit_code?: number;
-}
-
 /** Thrown by command funnels so the index wrapper can attribute the failure stage + drain once. */
-export class CreateError extends Error {
-  public readonly telemetryProperties?: SafeFailureTelemetry;
+export type CliErrorClass =
+  | "invalid_input"
+  | "filesystem"
+  | "authentication"
+  | "dependency"
+  | "process"
+  | "generation"
+  | "unknown";
 
+export class CreateError extends Error {
   constructor(
     public stage: string,
     message: string,
-    options?: { cause?: unknown; telemetryProperties?: SafeFailureTelemetry },
+    public errorClass: CliErrorClass = "unknown",
+    public errorCode = "UNKNOWN",
   ) {
-    super(message, { cause: options?.cause });
+    super(message);
     this.name = "CreateError";
-    this.telemetryProperties = options?.telemetryProperties;
-  }
-}
-
-/** A user intentionally cancelled an interactive operation. */
-export class CliCancelledError extends Error {
-  constructor(
-    public stage: string,
-    public exitCode = 0,
-  ) {
-    super("Operation cancelled.");
-    this.name = "CliCancelledError";
   }
 }
 
