@@ -1,4 +1,4 @@
-import { recordSystemPromptGeneration } from "../telemetry";
+import { recordSystemPromptGeneration } from "../telemetry/runtime";
 import { BUILTINS, LAZY_BUILTIN_DEFS } from "./builtins";
 import type { LibraryJSONSchema } from "./types";
 

@@ -1,3 +1,4 @@
+// Browser-safe primitives shared by runtime and installation telemetry.
 export const POSTHOG_KEY = "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
 export const POSTHOG_HOST = "https://dgoeivjus9jfp.cloudfront.net";
 export const TELEMETRY_REQUEST_TIMEOUT_MS = 2_000;

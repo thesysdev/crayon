@@ -28,7 +28,7 @@ import {
   TELEMETRY_REQUEST_TIMEOUT_MS,
   TELEMETRY_SCHEMA_VERSION,
   type CiName,
-} from "./telemetry/telemetry-shared";
+} from "./shared";
 
 export { detectCI, isTelemetryDisabled, isTruthyEnv, normalizeProjectIdentity };
 export type { CiName };

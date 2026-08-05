@@ -1,4 +1,4 @@
-import type { PromptSpec } from "./parser/prompt";
+import type { PromptSpec } from "../parser/prompt";
 import {
   detectCI,
   getPostHogConfig,
@@ -6,7 +6,7 @@ import {
   normalizeProjectIdentity,
   TELEMETRY_REQUEST_TIMEOUT_MS,
   TELEMETRY_SCHEMA_VERSION,
-} from "./telemetry/telemetry-shared";
+} from "./shared";
 
 /**
  * Telemetry disclosure
