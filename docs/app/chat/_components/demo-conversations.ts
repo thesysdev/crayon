@@ -462,7 +462,7 @@ perfIcon = Icon("trending-down")`,
       ...createArtifactTurn(
         "demo_stock_comparison",
         STOCK_ARTIFACT,
-        "I turned the four-stock comparison into a four-page report covering returns, drivers, and what to watch in 2026.",
+        "I turned the four-stock comparison into a nine-page report covering benchmark-relative returns, company drivers, a Netflix deep dive, risks, and the 2026 watchlist.",
       ),
     ],
   },
