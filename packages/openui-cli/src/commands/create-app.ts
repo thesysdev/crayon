@@ -13,7 +13,7 @@ import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
-import { cliErrorProperties, createCliError, processErrorProperties } from "../lib/utils";
+import { cliErrorProperties, processErrorProperties } from "../lib/utils";
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
@@ -384,7 +384,14 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
         dependency_installed: dependencyInstalled,
         ...properties,
       });
-      throw createCliError("dependency install failed", properties);
+      const { failure_stage, error_class, error_code, ...metadata } = properties;
+      throw new CreateError(
+        failure_stage,
+        "dependency install failed",
+        error_class,
+        error_code,
+        metadata,
+      );
     }
   }
 

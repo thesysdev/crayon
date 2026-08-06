@@ -137,11 +137,6 @@ export function processErrorProperties(
   return { failure_stage: failureStage, ...fallback, ...metadata };
 }
 
-export function createCliError(message: string, properties: CliErrorProperties): CreateError {
-  const { failure_stage, error_class, error_code, ...metadata } = properties;
-  return new CreateError(failure_stage, message, error_class, error_code, metadata);
-}
-
 export function handleCliError(
   e: unknown,
   event: string,

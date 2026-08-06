@@ -1,12 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { runCommand } from "../lib/process-runner";
-import {
-  cliErrorProperties,
-  createCliError,
-  processErrorProperties,
-  SEPARATION_DELIMITER,
-} from "../lib/utils";
+import { cliErrorProperties, processErrorProperties, SEPARATION_DELIMITER } from "../lib/utils";
 
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
 
@@ -63,7 +58,14 @@ export async function runGenerate(
         properties,
       );
     }
-    throw createCliError("generation worker failed", properties);
+    const { failure_stage, error_class, error_code, ...metadata } = properties;
+    throw new CreateError(
+      failure_stage,
+      "generation worker failed",
+      error_class,
+      error_code,
+      metadata,
+    );
   }
   const output = workerResult.stdout ?? "";
 
@@ -102,7 +104,14 @@ export async function runGenerate(
       error_class: "filesystem",
       error_code: "WRITE_FAILED",
     });
-    throw createCliError(error instanceof Error ? error.message : String(error), properties);
+    const { failure_stage, error_class, error_code, ...metadata } = properties;
+    throw new CreateError(
+      failure_stage,
+      error instanceof Error ? error.message : String(error),
+      error_class,
+      error_code,
+      metadata,
+    );
   }
 
   telemetry.capture("cli_generate_succeeded", {
