@@ -16,7 +16,10 @@ export function evaluateRegisteredArtifacts(
   detailedViewStore: ReturnType<typeof createDetailedViewStore>,
 ): boolean {
   let opened = false;
-  for (const versions of Object.values(artifacts)) {
+  const allVersionLists = Object.values(artifacts);
+  for (let i = 0; i < allVersionLists.length; i++) {
+    const versions = allVersionLists[i];
+    if (!versions) continue;
     // versions are sorted ascending, so the last entry is the newest one
     const latest = versions[versions.length - 1];
     if (!latest) continue;
