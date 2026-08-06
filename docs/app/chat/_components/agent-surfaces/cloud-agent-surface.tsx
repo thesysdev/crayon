@@ -25,6 +25,7 @@ import { FileText, Presentation, SquarePen } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "../../chat-page.module.css";
+import { DemoAuthoringTools } from "../demo-authoring-tools";
 import {
   DemoAwareComposer,
   DemoAwareModelSwitcher,
@@ -147,12 +148,14 @@ export function CloudAgentSurface() {
         onNavigate={setPath}
       >
         <AgentInterface.Sidebar>
-          <AgentInterface.SidebarHeader />
-          <div className={styles.cloudSidebarPrimaryActions}>
-            <div className={styles.analyticsContents} data-attribute-element="new-chat">
-              <AgentInterface.NewChatButton />
+          <div className="openui-agent-sidebar-actions">
+            <AgentInterface.SidebarHeader />
+            <div className="openui-agent-sidebar-primary-actions">
+              <div className={styles.analyticsContents} data-attribute-element="new-chat">
+                <AgentInterface.NewChatButton />
+              </div>
+              <AgentInterface.ArtifactNav className="openui-agent-sidebar-artifact-nav" />
             </div>
-            <AgentInterface.ArtifactNav />
           </div>
           <AgentInterface.SidebarContent>
             <DemoConversationList onNavigate={setPath} />
@@ -189,6 +192,7 @@ export function CloudAgentSurface() {
         <DemoPathSynchronizer path={path} onNavigate={setPath} />
         <DemoRouteSynchronizer onNavigate={setPath} />
         <DemoResponseInteractionGuard />
+        <DemoAuthoringTools />
       </AgentInterface>
     </div>
   );
