@@ -8,6 +8,8 @@ import type { ResponseInputItem } from "openai/resources/responses/responses";
 
 const MAX_INPUT_ITEMS = 16;
 const MAX_THREAD_ID_LENGTH = 256;
+const SLIDES_ARTIFACT_INSTRUCTION = `Create a polished visual story, not a text document split into slides. Use varied presentation layouts, concise copy, and image_search-sourced absolute image URLs when visuals improve the narrative. Include a chart for quantitative topics when the available data supports one; never invent factual data. Favor one clear idea per slide and finish with a decisive takeaway.`;
+const REPORT_ARTIFACT_INSTRUCTION = `Create an executive-ready visual report with a strong cover, clear hierarchy, and a deliberate mix of metrics, charts, tables, imagery, and concise analysis. Use image_search-sourced absolute image URLs when visuals add context. Visualize quantitative source data when useful, but never fabricate factual data. End with specific decisions or next steps.`;
 
 interface CloudChatRequest {
   threadId: string;
@@ -44,11 +46,16 @@ export async function POST(request: Request): Promise<Response> {
       stream: true,
       store: true,
       tools: [
-        artifactTool({ artifacts: ["slides", "report"] }),
+        artifactTool({
+          artifacts: [
+            { type: "slides", instruction: SLIDES_ARTIFACT_INSTRUCTION },
+            { type: "report", instruction: REPORT_ARTIFACT_INSTRUCTION },
+          ],
+        }),
         { type: "web_search" },
         { type: "image_search" },
       ],
-      instructions: createResponsesInstructions(),
+      instructions: `${createResponsesInstructions()}\n\nWhen creating an artifact, actively use the available web and image search tools to ground its content and visual choices.`,
       // The Cloud Responses endpoint extends the stock OpenAI tool union.
     } as any,
     { signal: request.signal },

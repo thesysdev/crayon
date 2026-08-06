@@ -22,38 +22,74 @@ export interface DemoConversation {
   messages: Message[];
 }
 
-const STOCK_REPORT_PROGRAM = `root = ReportView("Big Tech 2025 Report Card", "Meta, Microsoft, Netflix, and Google vs. the S&P 500 · Data as of Dec 31, 2025", [cover, summary, performance, watchlist])
-cover = Page("cover", MinimalFrontPage("Big Tech 2025 Report Card", coverCopy, "Full-year 2025 review", "title-bottom"))
-coverCopy = TextContent("How Meta, Microsoft, Netflix, and Google performed against the S&P 500 in 2025, and the themes that drove each result. For demonstration, not investment advice.")
+const DEMO_IMAGES = {
+  ai: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1600&q=82",
+  cinema:
+    "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=82",
+  cinemaScreen:
+    "https://images.unsplash.com/photo-1688678004647-945d5aaf91c1?auto=format&fit=crop&w=1600&q=82",
+  coffee:
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1600&q=82",
+  coffeeBeans:
+    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1600&q=82",
+  collaboration:
+    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=82",
+  dashboard:
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=82",
+  japan:
+    "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=82",
+  japanLandscape:
+    "https://images.unsplash.com/photo-1509023464722-18d996393ca8?auto=format&fit=crop&w=1600&q=82",
+  japanStreet:
+    "https://images.unsplash.com/photo-1624253321171-1be53e12f5f4?auto=format&fit=crop&w=1600&q=82",
+  office:
+    "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=82",
+  planning:
+    "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=82",
+  stadium:
+    "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1600&q=82",
+  stock:
+    "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1600&q=82",
+  technology:
+    "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=82",
+} as const;
+
+const STOCK_REPORT_PROGRAM = `root = ReportView("Big Tech 2025 Report Card", "Meta, Microsoft, Netflix, and Google vs. the S&P 500 · Data as of Dec 31, 2025", [cover, summary, performance, drivers, watchlist])
+cover = Page("cover", StandardFrontPage("Big Tech 2025 Report Card", "${DEMO_IMAGES.stock}", coverCopy, "Full-year 2025 review", "title-left"))
+coverCopy = TextContent("How four technology leaders performed against the benchmark, what drove the spread, and which signals matter next. For demonstration, not investment advice.")
 summary = Page("summary", ContentPage([summaryHeader, metrics, summaryStatement]))
 summaryHeader = InlineHeader("The year in one view", "One clear leader, two steady compounders, and one reset.")
 metrics = KeyMetrics("row", [{title: "GOOGL", text: "+66%"}, {title: "MSFT", text: "+21%"}, {title: "NFLX", text: "+14%"}, {title: "META", text: "+9%"}])
 summaryStatement = HeadlineStatement("Alphabet set the pace in 2025", "Gemini adoption and Cloud growth powered the group's standout return, while Microsoft compounded steadily and Meta's heavy AI capex kept its stock close to the index.", "default")
-performance = Page("performance", ContentPage([perfHeader, ytdChart]))
-perfHeader = InlineHeader("Full-year returns vs. the benchmark", "Final 2025 total return for each stock, in percent.")
-ytdChart = BarChartV2({data: {labels: ["META", "MSFT", "NFLX", "GOOGL", "S&P 500"], series: [{category: "2025 return", values: [9, 21, 14, 66, 17]}]}, unit: "%"}, "Stock", "Return")
+performance = Page("performance", ContentPage([perfHeader, ytdChart, trajectoryChart]))
+perfHeader = InlineHeader("Returns versus the benchmark", "Illustrative full-year return and indexed quarterly trajectory.")
+ytdChart = BarChartV2({data: {labels: ["META", "MSFT", "NFLX", "GOOGL", "S&P 500"], series: [{category: "2025 return (%)", values: [9, 21, 14, 66, 17]}]}}, "grouped", false, "Stock", "Return (%)")
+trajectoryChart = LineChartV2({data: {labels: ["Q1", "Q2", "Q3", "Q4"], series: [{category: "GOOGL", values: [96, 111, 139, 166]}, {category: "S&P 500", values: [96, 106, 112, 117]}]}}, "Quarter", "Indexed value")
+drivers = Page("drivers", ContentPage([driversHeader, driverCards]))
+driversHeader = InlineHeader("Why the returns diverged", "The market rewarded visible monetization and discounted uncertain payback.")
+driverCards = VisualCards([{title: "AI monetization", body: "Cloud and product adoption made the growth path easier to underwrite.", imageSrc: "${DEMO_IMAGES.technology}"}, {title: "Execution at scale", body: "Distribution and operating leverage supported the steadier compounders.", imageSrc: "${DEMO_IMAGES.office}"}, {title: "Capital intensity", body: "Record infrastructure spending raised the bar for future revenue proof.", imageSrc: "${DEMO_IMAGES.dashboard}"}])
 watchlist = Page("watchlist", ContentPage([watchHeader, watchPoints]))
 watchHeader = InlineHeader("What to watch in 2026", "Three signals that would change the picture.")
-watchPoints = NumberedKeyPoint("column", [{title: "AI capex payoff", body: "Meta and Google are spending record amounts on infrastructure. Watch whether revenue growth keeps pace with depreciation."}, {title: "Copilot monetization", body: "Microsoft's next leg depends on turning Copilot seats into durable per-user revenue."}, {title: "Streaming engagement", body: "Netflix needs the ads tier and live events to reignite growth after a cooling second half."}])`;
+watchPoints = NumberedKeyPoint("column", [{title: "AI capex payoff", body: "Watch whether revenue growth keeps pace with infrastructure depreciation."}, {title: "Copilot monetization", body: "Microsoft's next leg depends on durable per-user revenue."}, {title: "Streaming engagement", body: "Netflix needs ads and live events to reignite growth."}])`;
 
-const TRAVEL_DECK_PROGRAM = `root = SlideShow("Must-See Japan", "A first-timer's highlight tour", [cover, why, route, cities, tips, closing])
-cover = Slide("cover", StandardTitle("Must-See Japan", "Cities, temples, mountains, and food", "A first-timer's highlight tour"))
-why = Slide("why", KeyInfoWithTitle("Why Japan", [{title: "Contrast", description: "Neon cities and quiet shrines within the same afternoon."}, {title: "Ease", description: "World-class rail makes multi-city trips simple."}, {title: "Food", description: "From street takoyaki to omakase counters."}], "horizontal-grid"))
-route = Slide("route", TextBody("The classic route", ["Days 1 to 3 · Tokyo", "Day 4 · Hakone and Mount Fuji views", "Days 5 to 7 · Kyoto with a Nara day trip", "Day 8 · Osaka food crawl"], "title-left"))
-cities = Slide("cities", ContentClassic("Where to base yourself", ["Tokyo for energy, tech, and nightlife", "Kyoto for temples, gardens, and ryokan stays", "Osaka for food and easy Kansai day trips"], "title-left"))
-tips = Slide("tips", HeroMetric("7 to 10 days", "The sweet spot for a first Japan trip covering Tokyo, Kyoto, and Osaka", "horizontal"))
-closing = Slide("closing", HeadlineStatement("Recommendation", "Fly into Tokyo, out of Osaka, and let the rail pass do the rest.", "title-bottom"))`;
+const TRAVEL_DECK_PROGRAM = `root = SlideShow("Must-See Japan", "A first-timer's highlight tour", [cover, contrast, cities, route, rhythm, closing])
+cover = Slide("cover", DramaticTitle("Must-See Japan", "Cities, temples, mountains, and food", "An eight-day first-timer's route", null, "title-bottom", "${DEMO_IMAGES.japanLandscape}"))
+contrast = Slide("contrast", ContentWithImage("Old meets new", ["${DEMO_IMAGES.japan}", "${DEMO_IMAGES.japanStreet}"], "Move from neon districts to quiet shrines in a single afternoon, then connect the trip by fast, reliable rail.", "image-center"))
+cities = Slide("cities", VisualCards("Three essential bases", [{title: "Tokyo", body: "Energy, design, food, and late-night neighborhoods.", imageSrc: "${DEMO_IMAGES.japanStreet}"}, {title: "Kyoto", body: "Temples, gardens, craft, and early-morning calm.", imageSrc: "${DEMO_IMAGES.japan}"}, {title: "Osaka", body: "A relaxed base for street food and Kansai day trips.", imageSrc: "${DEMO_IMAGES.japanLandscape}"}]))
+route = Slide("route", ChartWithContext("Eight-day route", BarChartV2({data: {labels: ["Tokyo", "Hakone", "Kyoto", "Osaka"], series: [{category: "Nights", values: [3, 1, 3, 1]}]}}, "City", "Nights"), "Keep transfers light and give Kyoto enough unhurried mornings.", "title-body-top"))
+rhythm = Slide("rhythm", MetricsWithImage("A trip with room to breathe", [{metric: "8 days", description: "Enough for four bases"}, {metric: "3 cities", description: "The cultural spine"}, {metric: "1 bag", description: "Use luggage forwarding"}], ["${DEMO_IMAGES.japan}", "${DEMO_IMAGES.japanLandscape}"]))
+closing = Slide("closing", HeroMetric("Tokyo → Osaka", "Fly into Tokyo, out of Osaka, and let the route unfold in one direction.", "vertical", "${DEMO_IMAGES.japanStreet}"))`;
 
-const BLOCKBUSTER_DECK_PROGRAM = `root = SlideShow("Blockbuster Box Office", "What the all-time top three reveal about event cinema", [cover, podium, global, franchises, playbook, close])
-cover = Slide("cover", StandardTitle("Blockbuster Box Office", "Avatar, Avengers: Endgame, and Avatar: The Way of Water", "Worldwide box office · Illustrative demo"))
-podium = Slide("podium", KeyInfoWithTitle("The all-time podium", [{title: "#1 · Avatar", description: "$2.92B worldwide · 2009"}, {title: "#2 · Avengers: Endgame", description: "$2.80B worldwide · 2019"}, {title: "#3 · Avatar: The Way of Water", description: "$2.33B worldwide · 2022"}], "horizontal-grid"))
-global = Slide("global", ContentClassic("A global box-office story", ["About seven of every ten dollars came from outside the United States", "Premium formats made the theater itself part of the product", "Coordinated worldwide releases turned opening weekends into cultural events"], "title-left"))
-franchises = Slide("franchises", HeroMetric("$8.05B", "Combined worldwide gross across the three films", "horizontal"))
-playbook = Slide("playbook", TextBody("The blockbuster playbook", ["Build a visual proposition that rewards the largest screen", "Create characters and worlds that travel across languages", "Use rereleases and premium formats to compound a long theatrical run", "Make the release feel scarce, social, and unmissable"], "title-left"))
-close = Slide("close", HeadlineStatement("Event cinema still rules", "The biggest films do more than sell a story—they make the theater the event.", "title-bottom"))`;
+const BLOCKBUSTER_DECK_PROGRAM = `root = SlideShow("Blockbuster Box Office", "What the all-time top three reveal about event cinema", [cover, experience, podium, global, formats, close])
+cover = Slide("cover", DramaticTitle("Blockbuster Box Office", "The visual economics of event cinema", "Worldwide box office · Illustrative demo", null, "title-bottom", "${DEMO_IMAGES.cinema}"))
+experience = Slide("experience", VisualCards("The theater is the product", [{title: "Scale", body: "Spectacle gives audiences a reason to choose the largest screen.", imageSrc: "${DEMO_IMAGES.cinemaScreen}"}, {title: "Community", body: "A synchronized release turns opening weekend into a shared event.", imageSrc: "${DEMO_IMAGES.cinema}"}, {title: "Longevity", body: "Premium formats and rereleases compound a theatrical run.", imageSrc: "${DEMO_IMAGES.cinemaScreen}"}]))
+podium = Slide("podium", ChartWithContext("The all-time podium", BarChartV2({data: {labels: ["Avatar", "Endgame", "Way of Water"], series: [{category: "Worldwide gross", values: [2.92, 2.8, 2.33]}]}, unit: "b"}, "Film", "Worldwide gross"), "The top three generated more than $8B worldwide.", "title-body-top"))
+global = Slide("global", PieRadialWithContext("Revenue travels", PieChartV2({data: [{category: "International", value: 70}, {category: "Domestic", value: 30}]})))
+formats = Slide("formats", MetricsWithImage("Premium formats amplify demand", [{metric: "$8.05B", description: "Combined worldwide gross"}, {metric: "70%", description: "International mix"}, {metric: "3D + IMAX", description: "A premium-screen engine"}], ["${DEMO_IMAGES.cinema}", "${DEMO_IMAGES.cinemaScreen}"]))
+close = Slide("close", HeroMetric("Make it unmissable", "The biggest films sell a story and make the theater itself the event.", "vertical", "${DEMO_IMAGES.cinema}"))`;
 
-const BUSINESS_HEALTH_REPORT_PROGRAM = `root = ReportView("Q2 Business Health", "Executive operating review · Illustrative data", [cover, executive, performance, actions])
-cover = Page("cover", MinimalFrontPage("Q2 Business Health", coverCopy, "April–June 2026", "title-bottom"))
+const BUSINESS_HEALTH_REPORT_PROGRAM = `root = ReportView("Q2 Business Health", "Executive operating review · Illustrative data", [cover, executive, performance, customers, actions])
+cover = Page("cover", StandardFrontPage("Q2 Business Health", "${DEMO_IMAGES.dashboard}", coverCopy, "April–June 2026", "title-left"))
 coverCopy = TextContent("A decision-ready view of growth, efficiency, customer health, and the priorities leadership should carry into Q3.")
 executive = Page("executive", ContentPage([executiveHeader, metrics, executiveStatement]))
 executiveHeader = InlineHeader("Executive summary", "Growth finished ahead of plan without weakening retention or gross margin.")
@@ -61,54 +97,65 @@ metrics = KeyMetrics("row", [{title: "Revenue", text: "$1.40M"}, {title: "Gross 
 executiveStatement = HeadlineStatement("The quarter closed 6% above plan", "Expansion revenue offset a slower enterprise sales cycle while the company preserved pricing discipline.", "default")
 performance = Page("performance", ContentPage([performanceHeader, revenueChart]))
 performanceHeader = InlineHeader("Revenue versus target", "Actual monthly revenue accelerated through the quarter.")
-revenueChart = BarChartV2({data: {labels: ["April", "May", "June"], series: [{category: "Actual", values: [420, 468, 515]}, {category: "Target", values: [400, 445, 490]}]}, unit: "k"}, "Month", "Revenue")
+revenueChart = BarChartV2({data: {labels: ["April", "May", "June"], series: [{category: "Actual", values: [420, 468, 515]}, {category: "Target", values: [400, 445, 490]}]}, unit: "k"}, "grouped", false, "Month", "Revenue")
+customers = Page("customers", ContentPage([customerHeader, customerMix, customerImage]))
+customerHeader = InlineHeader("A durable revenue base", "Existing customers still contribute most of the quarter's recurring revenue.")
+customerMix = PieChartV2({data: [{category: "Renewal", value: 58}, {category: "Expansion", value: 24}, {category: "New logo", value: 18}]})
+customerImage = Image("${DEMO_IMAGES.collaboration}", "Team reviewing business performance")
 actions = Page("actions", ContentPage([actionsHeader, actionPoints]))
 actionsHeader = InlineHeader("Decisions for Q3", "Three actions protect the plan while preserving efficient growth.")
-actionPoints = NumberedKeyPoint("column", [{title: "Shorten enterprise cycles", body: "Add executive sponsorship to the largest late-stage opportunities."}, {title: "Protect pricing", body: "Require finance review for discounts above the operating threshold."}, {title: "Expand healthy accounts", body: "Prioritize customers with strong adoption and renewals inside 120 days."}])`;
+actionPoints = NumberedKeyPoint("column", [{title: "Shorten enterprise cycles", body: "Add executive sponsorship to the largest late-stage opportunities."}, {title: "Protect pricing", body: "Review discounts above the operating threshold."}, {title: "Expand healthy accounts", body: "Prioritize strong adoption and near-term renewals."}])`;
 
-const PRODUCT_DECISION_REPORT_PROGRAM = `root = ReportView("Project Platform Decision Brief", "Recommendation for a 25-person product organization", [cover, recommendation, comparison, rollout])
-cover = Page("cover", MinimalFrontPage("Project Platform Decision Brief", coverCopy, "Prepared for product and engineering leadership", "title-bottom"))
+const PRODUCT_DECISION_REPORT_PROGRAM = `root = ReportView("Project Platform Decision Brief", "Recommendation for a 25-person product organization", [cover, recommendation, comparison, scoring, rollout])
+cover = Page("cover", StandardFrontPage("Project Platform Decision Brief", "${DEMO_IMAGES.planning}", coverCopy, "Prepared for product and engineering leadership", "title-left"))
 coverCopy = TextContent("A concise comparison of Starter, Growth, and Enterprise plans using collaboration, governance, automation, and operating-cost criteria.")
 recommendation = Page("recommendation", ContentPage([recommendationHeader, recommendationMetric, recommendationStatement]))
 recommendationHeader = InlineHeader("Recommendation", "Choose Growth now and define explicit triggers for a future Enterprise migration.")
-recommendationMetric = HeroMetric("Growth", "Best balance of cross-team planning, automation, and manageable administration", "row")
+recommendationMetric = HeroMetric("Growth", "Best balance of cross-team planning, automation, and manageable administration", "row", "${DEMO_IMAGES.office}")
 recommendationStatement = KeyStatement("Enterprise controls are valuable, but the current team size does not justify the added cost and governance overhead.")
 comparison = Page("comparison", ContentPage([comparisonHeader, comparisonTable]))
 comparisonHeader = InlineHeader("Plan comparison", "Scored against the needs of five collaborating product squads.")
 comparisonTable = Table([Column("Capability"), Column("Starter"), Column("Growth"), Column("Enterprise")], [["Roadmaps", "Basic", "Advanced", "Advanced"], ["Automation", "5 rules", "Unlimited", "Unlimited"], ["Permissions", "Workspace", "Team", "Organization"], ["Audit history", "None", "90 days", "1 year"], ["Relative cost", "Low", "Medium", "High"]])
-rollout = Page("rollout", ContentPage([rolloutHeader, rolloutSteps]))
+scoring = Page("scoring", ContentPage([scoringHeader, scoreChart]))
+scoringHeader = InlineHeader("Weighted decision score", "Illustrative score across fit, governance, automation, and cost.")
+scoreChart = BarChartV2({data: {labels: ["Starter", "Growth", "Enterprise"], series: [{category: "Score", values: [62, 86, 78]}]}}, "grouped", true, "Plan", "Score")
+rollout = Page("rollout", ContentPage([rolloutHeader, rolloutCards]))
 rolloutHeader = InlineHeader("30-day rollout", "Adopt the plan without importing process debt.")
-rolloutSteps = NumberedKeyPoint("column", [{title: "Week 1 · Define the model", body: "Agree on issue types, ownership, and required fields."}, {title: "Week 2 · Pilot", body: "Test the workflow with two squads before scaling."}, {title: "Week 3 · Migrate", body: "Move active-quarter initiatives and archive stale projects."}, {title: "Week 4 · Measure", body: "Review cycle time, automation use, and reporting completeness."}])`;
+rolloutCards = VisualCards([{title: "Define", body: "Agree on issue types, ownership, and required fields.", imageSrc: "${DEMO_IMAGES.planning}"}, {title: "Pilot", body: "Test the workflow with two squads before scaling.", imageSrc: "${DEMO_IMAGES.collaboration}"}, {title: "Measure", body: "Review cycle time, automation, and reporting completeness.", imageSrc: "${DEMO_IMAGES.dashboard}"}])`;
 
-const COFFEE_TRENDS_REPORT_PROGRAM = `root = ReportView("Global Coffee Trends", "Consumer behavior and category opportunities · Illustrative 2026 outlook", [cover, signals, segments, actions])
-cover = Page("cover", MinimalFrontPage("Global Coffee Trends", coverCopy, "Illustrative market outlook", "title-bottom"))
+const COFFEE_TRENDS_REPORT_PROGRAM = `root = ReportView("Global Coffee Trends", "Consumer behavior and category opportunities · Illustrative 2026 outlook", [cover, signals, growth, occasions, actions])
+cover = Page("cover", StandardFrontPage("Global Coffee Trends", "${DEMO_IMAGES.coffee}", coverCopy, "Illustrative market outlook", "title-left"))
 coverCopy = TextContent("Four demand shifts shaping the next wave of café, retail, and ready-to-drink growth.")
-signals = Page("signals", ContentPage([signalsHeader, signalMetrics, signalStatement]))
+signals = Page("signals", ContentPage([signalsHeader, signalMetrics, signalImage]))
 signalsHeader = InlineHeader("Category signals", "Convenience is growing without displacing premium experiences.")
 signalMetrics = KeyMetrics("row", [{title: "Cold formats", text: "+18%"}, {title: "At-home premium", text: "+12%"}, {title: "Functional blends", text: "+9%"}, {title: "Traceability", text: "Top 3"}])
-signalStatement = HeadlineStatement("Coffee is splitting into rituals and utilities", "Consumers pay for craft when the moment is social and choose speed, portability, and function when it is not.", "default")
-segments = Page("segments", ContentPage([segmentsHeader, segmentTable]))
-segmentsHeader = InlineHeader("Where demand is moving", "Illustrative opportunity by occasion.")
-segmentTable = Table([Column("Occasion"), Column("Winning format"), Column("Primary need")], [["Morning commute", "Ready to drink", "Speed"], ["Home ritual", "Whole bean", "Craft"], ["Afternoon reset", "Cold coffee", "Refreshment"], ["Social visit", "Signature beverage", "Discovery"]])
+signalImage = Image("${DEMO_IMAGES.coffeeBeans}", "Roasted coffee beans")
+growth = Page("growth", ContentPage([growthHeader, growthChart]))
+growthHeader = InlineHeader("Cold coffee is the growth engine", "Illustrative category index, 2023 baseline = 100.")
+growthChart = LineChartV2({data: {labels: ["2023", "2024", "2025", "2026"], series: [{category: "Cold coffee", values: [100, 118, 139, 160]}, {category: "Total coffee", values: [100, 105, 111, 117]}]}}, "Year", "Category index")
+occasions = Page("occasions", ContentPage([occasionHeader, occasionMix, occasionCards]))
+occasionHeader = InlineHeader("Demand is organized by occasion", "Formats win when they have a clear job to do.")
+occasionMix = PieChartV2({data: [{category: "Morning utility", value: 38}, {category: "Home ritual", value: 27}, {category: "Afternoon reset", value: 21}, {category: "Social discovery", value: 14}]})
+occasionCards = VisualCards([{title: "Cold and portable", body: "Speed and refreshment lead the commuting occasion.", imageSrc: "${DEMO_IMAGES.coffee}"}, {title: "Craft at home", body: "Whole bean and equipment turn preparation into ritual.", imageSrc: "${DEMO_IMAGES.coffeeBeans}"}, {title: "Signature café", body: "Distinctive drinks make social visits feel discoverable.", imageSrc: "${DEMO_IMAGES.coffee}"}])
 actions = Page("actions", ContentPage([actionsHeader, actionsList]))
 actionsHeader = InlineHeader("Three moves for operators", "Translate the signals into a focused portfolio.")
-actionsList = NumberedKeyPoint("column", [{title: "Design by occasion", body: "Give each format a clear job instead of stretching one menu across every need."}, {title: "Make sourcing visible", body: "Use concise origin and impact proof at the point of choice."}, {title: "Prototype cold and functional", body: "Test in limited markets before adding permanent complexity."}])`;
+actionsList = NumberedKeyPoint("column", [{title: "Design by occasion", body: "Give each format a clear job."}, {title: "Make sourcing visible", body: "Use concise origin proof at the point of choice."}, {title: "Prototype cold and functional", body: "Test before adding permanent complexity."}])`;
 
-const WORLD_CUP_DECK_PROGRAM = `root = SlideShow("World Cup 2026 Viewing Guide", "A host-city-first way to experience the tournament", [cover, scale, regions, matchday, itinerary, close])
-cover = Slide("cover", StandardTitle("World Cup 2026 Viewing Guide", "Three countries, sixteen host cities, one summer", "Illustrative trip-planning deck"))
-scale = Slide("scale", HeroMetric("16 host cities", "Across Canada, Mexico, and the United States", "horizontal"))
-regions = Slide("regions", KeyInfoWithTitle("Choose your tournament base", [{title: "Northeast", description: "Dense rail and flight links with several nearby venues"}, {title: "West Coast", description: "Major cities paired with longer travel distances"}, {title: "Mexico", description: "Historic football culture and high-energy host cities"}], "horizontal-grid"))
-matchday = Slide("matchday", TextBody("Build a resilient matchday", ["Stay close to rapid transit rather than the stadium itself", "Leave a recovery day between cities", "Book refundable travel until match allocations are final", "Keep official ticketing as the single source of truth"], "title-left"))
-itinerary = Slide("itinerary", ContentClassic("A balanced seven-day shape", ["Day 1 · Arrive and explore the host city", "Day 2 · Fan zone and neighborhood food", "Day 3 · Matchday", "Day 4 · Recovery and transfer", "Days 5–7 · Repeat in a second city"], "title-left"))
-close = Slide("close", HeadlineStatement("Plan the route, not just the match", "The best tournament trip leaves enough room for the cities around the football.", "title-bottom"))`;
+const WORLD_CUP_DECK_PROGRAM = `root = SlideShow("World Cup 2026 Viewing Guide", "A host-city-first way to experience the tournament", [cover, scale, bases, matchday, itinerary, close])
+cover = Slide("cover", DramaticTitle("World Cup 2026", "A host-city-first viewing guide", "Three countries. Sixteen cities. One summer.", null, "title-bottom", "${DEMO_IMAGES.stadium}"))
+scale = Slide("scale", ChartWithContext("Sixteen host cities", BarChartV2({data: {labels: ["United States", "Mexico", "Canada"], series: [{category: "Host cities", values: [11, 3, 2]}]}}, "Country", "Host cities"), "Most routes work best as one regional cluster rather than a cross-continent sprint.", "title-body-top"))
+bases = Slide("bases", VisualCards("Choose a tournament base", [{title: "Northeast", body: "Dense connections and several nearby venues.", imageSrc: "${DEMO_IMAGES.stadium}"}, {title: "West Coast", body: "Iconic cities paired with longer travel distances.", imageSrc: "${DEMO_IMAGES.stadium}"}, {title: "Mexico", body: "Historic football culture and high-energy hosts.", imageSrc: "${DEMO_IMAGES.stadium}"}]))
+matchday = Slide("matchday", ListWithImage("Build a resilient matchday", [{iconName: "Train", primaryText: "Stay on rapid transit", body: "Optimize for the full day, not stadium proximity alone."}, {iconName: "Calendar", primaryText: "Protect recovery time", body: "Leave a buffer between cities."}, {iconName: "Ticket", primaryText: "Use official sources", body: "Keep ticketing as the single source of truth."}], ["${DEMO_IMAGES.stadium}"]))
+itinerary = Slide("itinerary", MetricsWithImage("A balanced seven-day shape", [{metric: "2 cities", description: "One regional cluster"}, {metric: "2 matches", description: "With recovery time"}, {metric: "3 open days", description: "For the host cities"}], ["${DEMO_IMAGES.stadium}"]))
+close = Slide("close", HeroMetric("Plan the route", "The best tournament trip leaves room for the cities around the football.", "vertical", "${DEMO_IMAGES.stadium}"))`;
 
-const PRODUCT_LAUNCH_DECK_PROGRAM = `root = SlideShow("AI Product Launch Plan", "From beta signal to repeatable adoption", [cover, goal, audiences, sequence, scorecard, close])
-cover = Slide("cover", StandardTitle("AI Product Launch Plan", "A focused six-week go-to-market motion", "Illustrative operating plan"))
-goal = Slide("goal", HeroMetric("1,000 activated teams", "Primary six-week launch objective", "horizontal"))
-audiences = Slide("audiences", KeyInfoWithTitle("Three launch audiences", [{title: "Design partners", description: "Validate workflows and produce credible proof"}, {title: "Power users", description: "Create repeatable templates and community momentum"}, {title: "Team leads", description: "Convert individual use into team adoption"}], "horizontal-grid"))
-sequence = Slide("sequence", TextBody("The launch sequence", ["Weeks 1–2 · Proof, onboarding, and reference stories", "Weeks 3–4 · Public launch and guided templates", "Weeks 5–6 · Team expansion and lifecycle automation"], "title-left"))
-scorecard = Slide("scorecard", ContentClassic("What the team reviews weekly", ["Activated teams and time to first value", "Second-week retention", "Templates reused across teammates", "Expansion from individual to team plans"], "title-left"))
-close = Slide("close", HeadlineStatement("Launch for repeat use", "Reach creates the first session; a clear workflow earns the second.", "title-bottom"))`;
+const PRODUCT_LAUNCH_DECK_PROGRAM = `root = SlideShow("AI Product Launch Plan", "From beta signal to repeatable adoption", [cover, audiences, sequence, scorecard, proof, close])
+cover = Slide("cover", DramaticTitle("AI Product Launch", "From beta signal to repeatable adoption", "A focused six-week go-to-market motion", null, "title-bottom", "${DEMO_IMAGES.ai}"))
+audiences = Slide("audiences", VisualCards("Three launch audiences", [{title: "Design partners", body: "Validate workflows and produce credible proof.", imageSrc: "${DEMO_IMAGES.collaboration}"}, {title: "Power users", body: "Create repeatable templates and community momentum.", imageSrc: "${DEMO_IMAGES.technology}"}, {title: "Team leads", body: "Convert individual use into team adoption.", imageSrc: "${DEMO_IMAGES.office}"}]))
+sequence = Slide("sequence", ListWithImage("The six-week sequence", [{iconName: "Sparkles", primaryText: "Weeks 1–2 · Prove", body: "Onboarding and reference stories."}, {iconName: "Megaphone", primaryText: "Weeks 3–4 · Launch", body: "Public release and guided templates."}, {iconName: "Users", primaryText: "Weeks 5–6 · Expand", body: "Team adoption and lifecycle automation."}], ["${DEMO_IMAGES.ai}", "${DEMO_IMAGES.planning}"]))
+scorecard = Slide("scorecard", ChartWithMetrics("Activation path", [{metric: "1,000", description: "Activated-team goal"}, {metric: "35%", description: "Week-two retention"}], LineChartV2({data: {labels: ["Week 1", "Week 2", "Week 4", "Week 6"], series: [{category: "Activated teams", values: [180, 420, 730, 1000]}]}}, "Launch week", "Teams")))
+proof = Slide("proof", ContentWithImage("Build proof loops", ["${DEMO_IMAGES.dashboard}", "${DEMO_IMAGES.collaboration}"], "Turn design-partner outcomes into templates, stories, and onboarding guidance that shorten time to first value.", "image-right"))
+close = Slide("close", HeroMetric("Earn the second session", "Reach creates awareness; a repeatable workflow creates adoption.", "vertical", "${DEMO_IMAGES.technology}"))`;
 
 const STOCK_ARTIFACT = createDemoArtifact({
   id: "demo_artifact_big_tech_2025",
