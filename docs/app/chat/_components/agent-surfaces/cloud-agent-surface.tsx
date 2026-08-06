@@ -24,7 +24,6 @@ import {
 } from "@openuidev/thesys";
 import { FileText, Presentation, SquarePen } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "../../chat-page.module.css";
 import { DemoAuthoringTools } from "../demo-authoring-tools";
@@ -37,6 +36,7 @@ import {
 } from "../demo-aware-chat-controls";
 import { DemoConversationList } from "../demo-conversation-list";
 import { createDemoConversationStorage } from "../demo-conversation-storage";
+import { getDemoConversation } from "../demo-conversations";
 import { DemoForkRegistry } from "../demo-fork-registry";
 import { SidebarUpgradeFooter } from "../sidebar-upgrade-sheet";
 import { getPersistedCloudModel, usePersistedCloudModel } from "../use-persisted-cloud-model";
@@ -63,18 +63,20 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   },
 ]);
 
-export function CloudAgentSurface() {
+interface CloudAgentSurfaceProps {
+  authoringMode?: boolean;
+}
+
+export function CloudAgentSurface({ authoringMode = false }: CloudAgentSurfaceProps) {
   const { resolvedTheme } = useTheme();
-  const searchParams = useSearchParams();
   const mode = resolvedTheme === "dark" ? "dark" : "light";
   const [selectedModel, setSelectedModel] = usePersistedCloudModel();
-  const isDemoAuthoring = searchParams.get("author") === "1";
-  const generationModel = isDemoAuthoring ? DEMO_AUTHORING_MODEL : selectedModel;
+  const generationModel = authoringMode ? DEMO_AUTHORING_MODEL : selectedModel;
   const [userId] = useState(getOrCreateCloudUserId);
   const [forkRegistry] = useState(() => new DemoForkRegistry(userId));
   const [llm] = useState(() =>
     createCloudChatLLM({
-      initialModel: isDemoAuthoring ? DEMO_AUTHORING_MODEL : getPersistedCloudModel(),
+      initialModel: authoringMode ? DEMO_AUTHORING_MODEL : getPersistedCloudModel(),
       shouldSendFullHistory: (threadId) => forkRegistry.shouldSeed(threadId),
       onFullHistoryAccepted: (threadId) => forkRegistry.markSeeded(threadId),
       onPromptSubmitted: ({ threadId, model }) => {
@@ -139,7 +141,11 @@ export function CloudAgentSurface() {
   );
 
   return (
-    <div className="chat-agent-surface" data-chat-mode="cloud">
+    <div
+      className={`chat-agent-surface ${authoringMode ? styles.demoAuthoringSurface : ""}`}
+      data-chat-mode="cloud"
+      data-authoring-mode={authoringMode ? "true" : undefined}
+    >
       <AgentInterface
         storage={storage}
         llm={llm}
@@ -163,11 +169,11 @@ export function CloudAgentSurface() {
             </div>
           </div>
           <AgentInterface.SidebarContent>
-            <DemoConversationList onNavigate={setPath} />
-            <AgentInterface.SidebarSeparator />
+            {!authoringMode && <DemoConversationList onNavigate={setPath} />}
+            {!authoringMode && <AgentInterface.SidebarSeparator />}
             <AgentInterface.ThreadList />
           </AgentInterface.SidebarContent>
-          <SidebarUpgradeFooter forkRegistry={forkRegistry} />
+          {!authoringMode && <SidebarUpgradeFooter forkRegistry={forkRegistry} />}
         </AgentInterface.Sidebar>
         <AgentInterface.MobileHeader
           className={styles.cloudMobileHeader}
@@ -177,7 +183,7 @@ export function CloudAgentSurface() {
             <DemoAwareModelSwitcher
               selectedModel={selectedModel}
               onModelChange={handleModelChange}
-              forcedModel={isDemoAuthoring ? DEMO_AUTHORING_MODEL : undefined}
+              forcedModel={authoringMode ? DEMO_AUTHORING_MODEL : undefined}
             />
           }
         />
@@ -185,7 +191,7 @@ export function CloudAgentSurface() {
           <DemoAwareModelSwitcher
             selectedModel={selectedModel}
             onModelChange={handleModelChange}
-            forcedModel={isDemoAuthoring ? DEMO_AUTHORING_MODEL : undefined}
+            forcedModel={authoringMode ? DEMO_AUTHORING_MODEL : undefined}
           />
         </AgentInterface.ThreadHeader>
         <AgentInterface.Welcome
@@ -196,16 +202,41 @@ export function CloudAgentSurface() {
         />
         <AgentInterface.Composer>
           <div className={styles.analyticsContents} data-attribute-element="composer-submit">
-            <DemoAwareComposer forkRegistry={forkRegistry} onNavigate={setPath} />
+            {authoringMode ? (
+              <AgentInterface.Composer />
+            ) : (
+              <DemoAwareComposer forkRegistry={forkRegistry} onNavigate={setPath} />
+            )}
           </div>
         </AgentInterface.Composer>
-        <DemoPathSynchronizer path={path} onNavigate={setPath} />
-        <DemoRouteSynchronizer onNavigate={setPath} />
-        <DemoResponseInteractionGuard />
-        <DemoAuthoringTools />
+        {authoringMode ? (
+          <>
+            <AuthoringThreadGuard onNavigate={setPath} />
+            <DemoAuthoringTools />
+          </>
+        ) : (
+          <>
+            <DemoPathSynchronizer path={path} onNavigate={setPath} />
+            <DemoRouteSynchronizer onNavigate={setPath} />
+            <DemoResponseInteractionGuard />
+          </>
+        )}
       </AgentInterface>
     </div>
   );
+}
+
+function AuthoringThreadGuard({ onNavigate }: { onNavigate: (path: string | undefined) => void }) {
+  const selectedThreadId = useThreadList((state) => state.selectedThreadId);
+  const switchToNewThread = useThreadList((state) => state.switchToNewThread);
+
+  useEffect(() => {
+    if (!getDemoConversation(selectedThreadId)) return;
+    switchToNewThread();
+    onNavigate(undefined);
+  }, [onNavigate, selectedThreadId, switchToNewThread]);
+
+  return null;
 }
 
 function AnalyticsMobileNewChatButton({
