@@ -17,7 +17,9 @@ export function PHProvider({ children }: { children: React.ReactNode }) {
         // @ts-expect-error reodotdev does not publish TypeScript declarations.
         import("reodotdev")
           .then(({ loadReoScript }) => loadReoScript({ clientID }))
-          .then((reo: { init(config: { clientID: string }): void }) => reo.init({ clientID }))
+          .then((reo: { init(config: { clientID: string; dnt: string[] }): void }) =>
+            reo.init({ clientID, dnt: ["copy"] }),
+          )
           .catch(() => {});
     }
 
