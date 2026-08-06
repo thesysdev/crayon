@@ -1,5 +1,6 @@
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
 import type { Artifact, Message, UserMessage } from "@openuidev/react-headless";
+import { STOCK_REPORT_PROGRAM } from "./stock-report-program";
 
 export type DemoConversationIcon = "analytics" | "travel" | "compare";
 export type DemoArtifactKind = "report" | "slides";
@@ -59,24 +60,6 @@ const DEMO_IMAGES = {
   technology:
     "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=82",
 } as const;
-
-const STOCK_REPORT_PROGRAM = `root = ReportView("Big Tech 2025 Report Card", "Meta, Microsoft, Netflix, and Google vs. the S&P 500 · Data as of Dec 31, 2025", [cover, summary, performance, drivers, watchlist])
-cover = Page("cover", StandardFrontPage("Big Tech 2025 Report Card", "${DEMO_IMAGES.stock}", coverCopy, "Full-year 2025 review", "title-left"))
-coverCopy = TextContent("How four technology leaders performed against the benchmark, what drove the spread, and which signals matter next. For demonstration, not investment advice.")
-summary = Page("summary", ContentPage([summaryHeader, metrics, summaryStatement]))
-summaryHeader = InlineHeader("The year in one view", "One clear leader, two steady compounders, and one reset.")
-metrics = KeyMetrics("row", [{title: "GOOGL", text: "+66%"}, {title: "MSFT", text: "+21%"}, {title: "NFLX", text: "+14%"}, {title: "META", text: "+9%"}])
-summaryStatement = HeadlineStatement("Alphabet set the pace in 2025", "Gemini adoption and Cloud growth powered the group's standout return, while Microsoft compounded steadily and Meta's heavy AI capex kept its stock close to the index.", "default")
-performance = Page("performance", ContentPage([perfHeader, ytdChart, trajectoryChart]))
-perfHeader = InlineHeader("Returns versus the benchmark", "Illustrative full-year return and indexed quarterly trajectory.")
-ytdChart = BarChartV2({data: {labels: ["META", "MSFT", "NFLX", "GOOGL", "S&P 500"], series: [{category: "2025 return (%)", values: [9, 21, 14, 66, 17]}]}}, "grouped", false, "Stock", "Return (%)")
-trajectoryChart = LineChartV2({data: {labels: ["Q1", "Q2", "Q3", "Q4"], series: [{category: "GOOGL", values: [96, 111, 139, 166]}, {category: "S&P 500", values: [96, 106, 112, 117]}]}}, "Quarter", "Indexed value")
-drivers = Page("drivers", ContentPage([driversHeader, driverCards]))
-driversHeader = InlineHeader("Why the returns diverged", "The market rewarded visible monetization and discounted uncertain payback.")
-driverCards = VisualCards([{title: "AI monetization", body: "Cloud and product adoption made the growth path easier to underwrite.", imageSrc: "${DEMO_IMAGES.technology}"}, {title: "Execution at scale", body: "Distribution and operating leverage supported the steadier compounders.", imageSrc: "${DEMO_IMAGES.office}"}, {title: "Capital intensity", body: "Record infrastructure spending raised the bar for future revenue proof.", imageSrc: "${DEMO_IMAGES.dashboard}"}])
-watchlist = Page("watchlist", ContentPage([watchHeader, watchPoints]))
-watchHeader = InlineHeader("What to watch in 2026", "Three signals that would change the picture.")
-watchPoints = NumberedKeyPoint("column", [{title: "AI capex payoff", body: "Watch whether revenue growth keeps pace with infrastructure depreciation."}, {title: "Copilot monetization", body: "Microsoft's next leg depends on durable per-user revenue."}, {title: "Streaming engagement", body: "Netflix needs ads and live events to reignite growth."}])`;
 
 const TRAVEL_DECK_PROGRAM = `root = SlideShow("Must-See Japan", "A first-timer's highlight tour", [cover, contrast, cities, route, rhythm, closing])
 cover = Slide("cover", DramaticTitle("Must-See Japan", "Cities, temples, mountains, and food", "An eight-day first-timer's route", null, "title-bottom", "${DEMO_IMAGES.japanLandscape}"))
