@@ -5,8 +5,6 @@ import { useMemo, useState } from "react";
 import styles from "../chat-page.module.css";
 import { getDemoConversation } from "./demo-conversations";
 
-type AuthoringOutput = "artifact-program" | "artifact-raw" | "response" | "messages";
-
 const ARTIFACT_PREFIX = "]]>openui:artifact ";
 const EMPTY_MESSAGES: Message[] = [];
 
@@ -16,12 +14,10 @@ export function DemoAuthoringTools() {
   const isLoadingMessages = useThread((state) => state.isLoadingMessages);
   const processMessage = useThread((state) => state.processMessage);
   const selectedThreadId = useThreadList((state) => state.selectedThreadId);
-  const [outputType, setOutputType] = useState<AuthoringOutput>("artifact-program");
   const [copied, setCopied] = useState(false);
   const [prompt, setPrompt] = useState("");
-  const outputs = useMemo(() => getAuthoringOutputs(messages), [messages]);
+  const output = useMemo(() => getArtifactProgram(messages), [messages]);
 
-  const output = outputs[outputType];
   const isDemoThread = getDemoConversation(selectedThreadId) !== undefined;
   const canGenerate = prompt.trim().length > 0 && !isRunning && !isLoadingMessages && !isDemoThread;
   const generate = async () => {
@@ -74,20 +70,6 @@ export function DemoAuthoringTools() {
         </button>
       </form>
       <div className={styles.demoAuthoringControls}>
-        <select
-          className={styles.demoAuthoringSelect}
-          value={outputType}
-          onChange={(event) => {
-            setOutputType(event.target.value as AuthoringOutput);
-            setCopied(false);
-          }}
-          aria-label="Raw output type"
-        >
-          <option value="artifact-program">OpenUI Lang — artifact</option>
-          <option value="artifact-raw">Raw artifact message</option>
-          <option value="response">Latest assistant OpenUI</option>
-          <option value="messages">Complete fixture messages</option>
-        </select>
         <button
           type="button"
           className={styles.demoAuthoringCopy}
@@ -129,17 +111,9 @@ async function copyText(value: string) {
   }
 }
 
-function getAuthoringOutputs(messages: Message[]): Record<AuthoringOutput, string> {
-  const latestAssistant = findLatestAssistant(messages);
+function getArtifactProgram(messages: Message[]): string {
   const rawArtifact = findLatestArtifactCarrier(messages);
-  const artifactProgram = findLatestArtifactProgram(messages);
-
-  return {
-    "artifact-program": artifactProgram || stripArtifactCarrier(rawArtifact),
-    "artifact-raw": rawArtifact,
-    response: toText(latestAssistant?.content),
-    messages: messages.length > 0 ? JSON.stringify(messages, null, 2) : "",
-  };
+  return findLatestArtifactProgram(messages) || stripArtifactCarrier(rawArtifact);
 }
 
 function findLatestArtifactProgram(messages: Message[]): string {
@@ -158,13 +132,6 @@ function findLatestArtifactProgram(messages: Message[]): string {
   }
 
   return "";
-}
-
-function findLatestAssistant(messages: Message[]): Message | undefined {
-  for (let index = messages.length - 1; index >= 0; index -= 1) {
-    if (messages[index]?.role === "assistant") return messages[index];
-  }
-  return undefined;
 }
 
 function findLatestArtifactCarrier(messages: Message[]): string {
