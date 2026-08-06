@@ -378,8 +378,9 @@ const InterleavedTurn = ({
   const turnActivities = useToolActivities(turnMessage, allMessages);
 
   const lastContent = separateContentAndContext(last.content ?? "").content;
-  const answer =
-    !turnLive || turnActivities.length === 0 || hasLangSyntax(lastContent) ? last : null;
+  // Show the last segment as the answer once it looks like Lang, or once the run
+  // settles.
+  const answer = !turnLive || hasLangSyntax(lastContent) ? last : null;
   const answerMessage = useMemo(() => (answer ? { ...answer, toolCalls: [] } : null), [answer]);
 
   // Rows in run order: each non-answer segment's thinking prose, then its tools.
