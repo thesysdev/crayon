@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { artifactViewId } from "./artifactViewId";
 import type { createChatStore } from "./createChatStore";
 import type { createDetailedViewStore } from "./createDetailedViewStore";
 import type { createThreadContextStore } from "./createThreadContextStore";
@@ -43,7 +44,7 @@ export function evaluateRegisteredArtifacts(
     // never steal a panel that is already open
     const dv = detailedViewStore.getState();
     if (dv.activeDetailedViewId !== null) continue;
-    dv.setActiveDetailedView(`${latest.id}:${latest.version}`);
+    dv.setActiveDetailedView(artifactViewId(latest.id, latest.version));
     opened = true;
   }
   return opened;
