@@ -3,7 +3,7 @@ const test = require("node:test");
 
 const { CloudAuthError } = require("../dist/auth/mint.js");
 const { runCommand } = require("../dist/lib/process-runner.js");
-const { CliCancelledError, CreateError } = require("../dist/lib/telemetry.js");
+const { CliCancelledError, CreateError, Telemetry } = require("../dist/lib/telemetry.js");
 const {
   cliErrorProperties,
   handleCliError,
@@ -39,6 +39,20 @@ test("returns bounded stage, class, and code values", () => {
       error_code: "DISK_FULL",
     },
   );
+});
+
+test("registered run context is attached to every event", () => {
+  const payloads = [];
+  const telemetry = new Telemetry();
+  telemetry.enabled = true;
+  telemetry.distinctId = "test-person";
+  telemetry.client = { capture: (payload) => payloads.push(payload) };
+  telemetry.register({ cli_run_id: "run-123", command: "create" });
+
+  telemetry.capture("cli_dependency_install_failed", { error_code: "ERESOLVE" });
+
+  assert.equal(payloads[0].properties.cli_run_id, "run-123");
+  assert.equal(payloads[0].properties.command, "create");
 });
 
 test("classifies dependency, workspace, and package failures with process metadata", () => {
