@@ -86,21 +86,131 @@ route = Slide("route", ChartWithContext("Eight-day route", BarChartV2({data: {la
 rhythm = Slide("rhythm", MetricsWithImage("A trip with room to breathe", [{metric: "8 days", description: "Enough for four bases"}, {metric: "3 cities", description: "The cultural spine"}, {metric: "1 bag", description: "Use luggage forwarding"}], ["${DEMO_IMAGES.japan}", "${DEMO_IMAGES.japanLandscape}"]))
 closing = Slide("closing", HeroMetric("Tokyo → Osaka", "Fly into Tokyo, out of Osaka, and let the route unfold in one direction.", "vertical", "${DEMO_IMAGES.japanStreet}"))`;
 
-const BLOCKBUSTER_DECK_PROGRAM = `root = SlideShow("Blockbuster Box Office", "What the all-time top three reveal about event cinema", slides)
-slides = [cover, experience, films, podium, global, formats, close]
-cover = Slide("cover", DramaticTitle("Blockbuster Box Office", "The visual economics of event cinema", "Worldwide box office · Illustrative data", null, "title-bottom", "${DEMO_IMAGES.cinema}"))
-experienceCards = [{title: "Scale", body: "Spectacle gives audiences a reason to choose the largest screen available.", imageSrc: "${DEMO_IMAGES.cinema}"}, {title: "Community", body: "A synchronized global release turns opening weekend into a shared cultural event.", imageSrc: "${DEMO_IMAGES.cinemaAudience}"}, {title: "Longevity", body: "Premium formats and strategic rereleases compound a theatrical run for years.", imageSrc: "${DEMO_IMAGES.cinemaProjector}"}]
-experience = Slide("theater-product", VisualCards("The Theater Is the Product", experienceCards))
-filmCards = [{title: "Avatar (2009) — $2.92B", body: "James Cameron's groundbreaking visual spectacle remains the highest-grossing film of all time.", imageSrc: "${DEMO_IMAGES.posterAvatar}"}, {title: "Avengers: Endgame (2019) — $2.80B", body: "The culmination of an unprecedented 22-film narrative arc drew worldwide record crowds.", imageSrc: "${DEMO_IMAGES.posterEndgame}"}, {title: "Avatar: The Way of Water (2022) — $2.32B", body: "Premium high-frame-rate 3D formats sustained an extended theatrical window.", imageSrc: "${DEMO_IMAGES.posterWayOfWater}"}]
-films = Slide("film-spotlights", VisualCards("The Films Behind the Numbers", filmCards))
-grossSeries = {category: "Worldwide Gross ($B)", values: [2.92, 2.8, 2.32]}
-grossChart = BarChartV2({data: {labels: ["Avatar", "Endgame", "Way of Water"], series: [grossSeries]}, unit: "b"}, "Film", "Worldwide gross")
-podium = Slide("all-time-podium", ChartWithContext("The All-Time Podium", grossChart, "The top three generated more than $8B worldwide.", "title-body-top"))
-marketChart = RadialChartV2({data: [{category: "International", value: 70}, {category: "Domestic", value: 30}]})
-global = Slide("revenue-travels", PieRadialWithContext("Revenue Travels: 70% International", marketChart))
-formatMetrics = [{metric: "$8.05B", description: "Combined worldwide gross"}, {metric: "70%", description: "International revenue mix"}, {metric: "3D + IMAX", description: "Premium-screen engine"}]
-formats = Slide("premium-formats", MetricsWithImage("Premium Formats Amplify Demand", formatMetrics, ["${DEMO_IMAGES.cinema}", "${DEMO_IMAGES.cinemaProjector}"]))
-close = Slide("closing-hero", SectionBreakDramatic("Make It Unmissable", "The biggest films sell a story — and make the theater itself the event.", "vertical", "${DEMO_IMAGES.cinema}"))`;
+const BLOCKBUSTER_DECK_PROGRAM = `root = SlideShow("Blockbuster Box Office", "The Economics of Event Cinema", slides)
+slides = [slide1, slide2, slide3, slide4, slide5, slide6, slide7]
+
+slide1 = Slide("slide-1", content1)
+content1 = DramaticTitle("Blockbuster Box Office", "What the three highest-grossing films reveal about event cinema", "WORLDWIDE BOX OFFICE · $8.06B across three films", null, "title-center", "https://cdn.celluloidjunkie.com/wp-content/uploads/2025/12/10015609/UAE-Vox-Mall-of-Emirates-IMAX-Oma-Cinema-Ferco-Seating.jpg")
+
+slide2 = Slide("slide-2", content2)
+content2 = VisualCards("Meet the All-Time Podium", cards2)
+cards2 = [card2a, card2b, card2c]
+card2a = {
+  title: "#1 · Avatar (2009) — $2.92B",
+  body: "#1 All-Time Record. Theatrical spectacle with extraordinary international reach.",
+  imageSrc: "https://m.media-amazon.com/images/M/MV5BMDEzMmQwZjctZWU2My00MWNlLWE0NjItMDJlYTRlNGJiZjcyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+}
+card2b = {
+  title: "#2 · Avengers: Endgame (2019) — $2.80B",
+  body: "#2 MCU Peak. The payoff to an unprecedented connected-film narrative.",
+  imageSrc: "https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_FMjpg_UX1000_.jpg"
+}
+card2c = {
+  title: "#3 · Avatar: The Way of Water (2022) — $2.33B",
+  body: "#3 Cameron Returns. Premium formats and a sustained long theatrical run.",
+  imageSrc: "https://m.media-amazon.com/images/M/MV5BNWI0Y2NkOWEtMmM2OC00MjQ3LWI1YzItZGQxYzQ3NzI4NWZmXkEyXkFqcGc@._V1_.jpg"
+}
+
+slide3 = Slide("slide-3", content3)
+content3 = ChartWithMetrics("Three Films. $8.06 Billion.", metrics3, chart3)
+metrics3 = [metric3a, metric3b, metric3c, metric3d]
+metric3a = {
+  metric: "$8.06B",
+  description: "Combined gross across top 3 films"
+}
+metric3b = {
+  metric: "$2.69B",
+  description: "Average gross per film"
+}
+metric3c = {
+  metric: "3 Films",
+  description: "Holding the all-time podium"
+}
+metric3d = {
+  metric: "13 Years",
+  description: "2009 to 2022 timeline span"
+}
+
+chart3 = BarChartV2(chartData3, "Film", "USD Billions")
+chartData3 = {
+  data: {
+    labels: ["Avatar", "Avengers: Endgame", "Avatar: Way of Water"],
+    series: [series3]
+  },
+  unit: "b"
+}
+series3 = {
+  category: "Worldwide Gross",
+  values: [2.92, 2.80, 2.33]
+}
+
+slide4 = Slide("slide-4", content4)
+content4 = ChartWithContext("Domestic Is Not the Story", chart4, "Global theatrical reach separates these films from ordinary blockbusters. ~71% of revenue came from international markets, earning more abroad than any domestic release in the same year.", "title-body-left")
+
+chart4 = BarChartV2(chartData4, "Film", "USD Billions")
+chartData4 = {
+  data: {
+    labels: ["Avatar", "Avengers: Endgame", "Avatar: Way of Water"],
+    series: [series4a, series4b]
+  },
+  unit: "b"
+}
+series4a = {
+  category: "Domestic",
+  values: [0.79, 0.86, 0.69]
+}
+series4b = {
+  category: "International",
+  values: [2.14, 1.94, 1.65]
+}
+
+slide5 = Slide("slide-5", content5)
+content5 = KeyInfoWithTitle("One Director. Two Records.", infoItems5, "horizontal-grid")
+infoItems5 = [item5a, item5b, item5c, item5d]
+item5a = {
+  title: "2 of Top 3",
+  description: "James Cameron holds two positions on the all-time worldwide podium."
+}
+item5b = {
+  title: "$5.25 Billion",
+  description: "Combined gross of the Avatar franchise from just two releases."
+}
+item5c = {
+  title: "≈ 65% Share",
+  description: "Cameron's portion of total revenue generated by the top three films."
+}
+item5d = {
+  title: "13 Years Gap",
+  description: "Between Avatar releases, proving long-term brand equity and anticipation."
+}
+
+slide6 = Slide("slide-6", content6)
+content6 = ChartWithMetrics("Volume vs. Efficiency", metrics6, chart6)
+metrics6 = [metric6a, metric6b]
+metric6a = {
+  metric: "$2.63B / film",
+  description: "Avatar average efficiency"
+}
+metric6b = {
+  metric: "3.0x",
+  description: "Efficiency vs next closest franchise"
+}
+
+chart6 = BarChartV2(chartData6, "Franchise", "USD Billions")
+chartData6 = {
+  data: {
+    labels: ["MCU (~38 films)", "Star Wars (~12 films)", "Wizarding World (~10)", "James Bond (~25)", "Avatar (2 films)"],
+    series: [series6]
+  },
+  unit: "b"
+}
+series6 = {
+  category: "Total Franchise Gross",
+  values: [33.4, 10.3, 8.8, 7.9, 5.25]
+}
+
+slide7 = Slide("slide-7", content7)
+content7 = SectionBreakDramatic("Make It Unmissable", "Spectacle creates a reason to choose the largest screen. Global releases turn opening weekend into a shared cultural event, while premium formats extend lifetime value.", "vertical", "https://www.nseled.com/wp-content/uploads/2026/02/Immersive-cinema-experience-with-ultra-wide-curved-LED-display.jpg")`;
 
 const BUSINESS_HEALTH_REPORT_PROGRAM = `root = ReportView("Q2 Business Health", "Executive operating review · Illustrative data", [cover, executive, performance, customers, actions])
 cover = Page("cover", StandardFrontPage("Q2 Business Health", "${DEMO_IMAGES.dashboard}", coverCopy, "April–June 2026", "title-left"))
@@ -191,10 +301,10 @@ const TRAVEL_ARTIFACT = createDemoArtifact({
 
 const BLOCKBUSTER_ARTIFACT = createDemoArtifact({
   id: "demo_artifact_blockbuster_box_office",
-  title: "Blockbuster Box Office",
+  title: "Blockbuster Box Office: Event Cinema Economics",
   type: "slides",
   threadId: "demo_blockbusters",
-  updatedAt: "2026-06-26T12:00:00.000Z",
+  updatedAt: "2026-08-07T12:00:00.000Z",
   program: BLOCKBUSTER_DECK_PROGRAM,
 });
 
