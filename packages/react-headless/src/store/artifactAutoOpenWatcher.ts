@@ -6,12 +6,13 @@ import type { ArtifactEntry } from "./threadContextTypes";
 
 /**
  * One pass over every artifact registered in the thread. Each artifact id
- * gets a single lifetime chance to auto-open — claimed the first time we see
- * it, whether or not it opens. Returns true when a panel was opened.
+ * gets a single chance to auto-open — recorded in `claimedIds` the first
+ * time we see it, whether or not it opens. Returns true when a panel opened.
  */
 export function evaluateRegisteredArtifacts(
   artifacts: Record<string, ArtifactEntry[]>, // all artifacts in the thread context: id → versions, ascending
   mayOpen: boolean, // "is opening allowed right now" — streaming and nothing opened yet this stream
+  claimedIds: Set<string>, // artifact ids that already used their chance (cleared per thread)
   detailedViewStore: ReturnType<typeof createDetailedViewStore>,
 ): boolean {
   let opened = false;
@@ -19,12 +20,13 @@ export function evaluateRegisteredArtifacts(
     // versions are sorted ascending, so the last entry is the newest one
     const latest = versions[versions.length - 1];
     if (!latest) continue;
-    const dv = detailedViewStore.getState();
-    // claim this id's one chance; false = already claimed before, skip it
-    if (!dv._markAutoOpened(latest.id)) continue;
+    // claim this id's one chance; already claimed = skip it
+    if (claimedIds.has(latest.id)) continue;
+    claimedIds.add(latest.id);
     // allowed to open right now? and only one open per pass
     if (!mayOpen || opened) continue;
     // never steal a panel that is already open
+    const dv = detailedViewStore.getState();
     if (dv.activeDetailedViewId !== null) continue;
     dv.setActiveDetailedView(`${latest.id}:${latest.version}`);
     opened = true;
@@ -44,9 +46,18 @@ export function useArtifactAutoOpenWatcher(
 ): void {
   // "did this stream already auto-open something" — re-armed on each new stream
   const openedThisRunRef = useRef(false);
+  // artifact ids that used their one auto-open chance — cleared on thread switch
+  const claimedIdsRef = useRef(new Set<string>());
 
   useEffect(() => {
     if (!artifactAutoOpen) return;
+    const unsubscribeThread = chatStore.subscribe(
+      (s) => s.selectedThreadId,
+      () => {
+        claimedIdsRef.current.clear();
+        openedThisRunRef.current = false;
+      },
+    );
     const unsubscribeRun = chatStore.subscribe(
       (s) => s.isRunning,
       (isRunning) => {
@@ -57,7 +68,9 @@ export function useArtifactAutoOpenWatcher(
       (s) => s.artifacts,
       (artifacts) => {
         const mayOpen = chatStore.getState().isRunning && !openedThisRunRef.current;
-        if (evaluateRegisteredArtifacts(artifacts, mayOpen, detailedViewStore)) {
+        if (
+          evaluateRegisteredArtifacts(artifacts, mayOpen, claimedIdsRef.current, detailedViewStore)
+        ) {
           openedThisRunRef.current = true;
         }
       },
@@ -65,6 +78,7 @@ export function useArtifactAutoOpenWatcher(
       { fireImmediately: true },
     );
     return () => {
+      unsubscribeThread();
       unsubscribeRun();
       unsubscribeArtifacts();
     };

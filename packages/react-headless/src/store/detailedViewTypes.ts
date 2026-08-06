@@ -35,10 +35,6 @@ export type DetailedViewInternals = {
   _detailedViewPanelNode: HTMLElement | null;
   /** @internal */
   _setDetailedViewPanelNode: (node: HTMLElement | null) => void;
-  /** @internal */
-  _autoOpenedArtifactKeys: ReadonlySet<string>;
-  /** @internal */
-  _markAutoOpened: (key: string) => boolean;
 };
 
 /** Combined detailed-view store type (state + actions + internals). */
