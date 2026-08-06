@@ -12,6 +12,7 @@ import {
   OPENUI_CLOUD_STARTERS,
 } from "@/lib/openui-cloud/chat-constants";
 import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
+import { DEMO_AUTHORING_MODEL } from "@/lib/openui-cloud/models";
 import { CLOUD_USER_ID_HEADER, getOrCreateCloudUserId } from "@/lib/openui-cloud/user-id";
 import { useThreadList } from "@openuidev/react-headless";
 import { AgentInterface, defineArtifactCategories, IconButton } from "@openuidev/react-ui";
@@ -23,6 +24,7 @@ import {
 } from "@openuidev/thesys";
 import { FileText, Presentation, SquarePen } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "../../chat-page.module.css";
 import { DemoAuthoringTools } from "../demo-authoring-tools";
@@ -63,13 +65,16 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
 
 export function CloudAgentSurface() {
   const { resolvedTheme } = useTheme();
+  const searchParams = useSearchParams();
   const mode = resolvedTheme === "dark" ? "dark" : "light";
   const [selectedModel, setSelectedModel] = usePersistedCloudModel();
+  const isDemoAuthoring = searchParams.get("author") === "1";
+  const generationModel = isDemoAuthoring ? DEMO_AUTHORING_MODEL : selectedModel;
   const [userId] = useState(getOrCreateCloudUserId);
   const [forkRegistry] = useState(() => new DemoForkRegistry(userId));
   const [llm] = useState(() =>
     createCloudChatLLM({
-      initialModel: getPersistedCloudModel(),
+      initialModel: isDemoAuthoring ? DEMO_AUTHORING_MODEL : getPersistedCloudModel(),
       shouldSendFullHistory: (threadId) => forkRegistry.shouldSeed(threadId),
       onFullHistoryAccepted: (threadId) => forkRegistry.markSeeded(threadId),
       onPromptSubmitted: ({ threadId, model }) => {
@@ -110,8 +115,8 @@ export function CloudAgentSurface() {
   );
 
   useEffect(() => {
-    llm.setSelectedModel(selectedModel);
-  }, [llm, selectedModel]);
+    llm.setSelectedModel(generationModel);
+  }, [generationModel, llm]);
 
   useEffect(() => {
     const artifactId = getArtifactIdFromPath(path);
@@ -172,11 +177,16 @@ export function CloudAgentSurface() {
             <DemoAwareModelSwitcher
               selectedModel={selectedModel}
               onModelChange={handleModelChange}
+              forcedModel={isDemoAuthoring ? DEMO_AUTHORING_MODEL : undefined}
             />
           }
         />
         <AgentInterface.ThreadHeader className={styles.cloudThreadHeader}>
-          <DemoAwareModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+          <DemoAwareModelSwitcher
+            selectedModel={selectedModel}
+            onModelChange={handleModelChange}
+            forcedModel={isDemoAuthoring ? DEMO_AUTHORING_MODEL : undefined}
+          />
         </AgentInterface.ThreadHeader>
         <AgentInterface.Welcome
           title="Good to see you"

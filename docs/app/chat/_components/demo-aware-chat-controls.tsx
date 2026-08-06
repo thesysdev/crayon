@@ -20,20 +20,28 @@ import { preserveCurrentUrlSearch } from "./viewport-presets";
 interface DemoAwareModelSwitcherProps {
   selectedModel: string;
   onModelChange: (model: string) => void;
+  forcedModel?: string;
 }
 
 export function DemoAwareModelSwitcher({
   selectedModel,
   onModelChange,
+  forcedModel,
 }: DemoAwareModelSwitcherProps) {
   const selectedThreadId = useThreadList((state) => state.selectedThreadId);
   const demo = getDemoConversation(selectedThreadId);
+  const disabledReason = demo
+    ? "This read-only demo uses a fixed recorded model."
+    : forcedModel
+      ? "Demo authoring uses Claude Sonnet 4.6 for consistent artifact generation."
+      : undefined;
 
   return (
     <CloudModelSwitcher
-      selectedModel={demo?.recordedModel ?? selectedModel}
+      selectedModel={demo?.recordedModel ?? forcedModel ?? selectedModel}
       onModelChange={onModelChange}
-      disabled={demo !== undefined}
+      disabled={disabledReason !== undefined}
+      disabledReason={disabledReason}
     />
   );
 }

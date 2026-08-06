@@ -1,4 +1,5 @@
 export const DEFAULT_MODEL = "google/gemini-3.6-flash";
+export const DEMO_AUTHORING_MODEL = "anthropic/claude-sonnet-4.6";
 
 export interface ModelOption {
   id: string;

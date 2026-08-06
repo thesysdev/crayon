@@ -11,12 +11,14 @@ interface CloudModelSwitcherProps {
   selectedModel: string;
   onModelChange: (model: string) => void;
   disabled?: boolean;
+  disabledReason?: string;
 }
 
 export function CloudModelSwitcher({
   selectedModel,
   onModelChange,
   disabled = false,
+  disabledReason,
 }: CloudModelSwitcherProps) {
   const models = useMemo(() => createModelOptions(MODEL_OPTIONS), []);
 
@@ -25,7 +27,7 @@ export function CloudModelSwitcher({
       <fieldset
         className={styles.modelSwitcherFieldset}
         disabled={disabled}
-        title={disabled ? "This read-only demo uses a fixed recorded model." : undefined}
+        title={disabled ? disabledReason : undefined}
       >
         <ModelSwitcher models={models} value={selectedModel} onValueChange={onModelChange} />
       </fieldset>
