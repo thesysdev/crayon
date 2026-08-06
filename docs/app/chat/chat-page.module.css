@@ -394,10 +394,30 @@
 
 .agentViewport
   :global([data-openui-demo-readonly-renderer])
-  :is(button, input, textarea, select, [role="button"], [role="combobox"], [role="radio"]) {
+  :is(
+    a[href],
+    button,
+    input,
+    textarea,
+    select,
+    [contenteditable="true"],
+    [role="button"],
+    [role="checkbox"],
+    [role="combobox"],
+    [role="link"],
+    [role="menuitem"],
+    [role="option"],
+    [role="radio"],
+    [role="slider"],
+    [role="spinbutton"],
+    [role="switch"],
+    [role="tab"]
+  ) {
   cursor: not-allowed !important;
-  opacity: 0.55;
-  pointer-events: none;
+}
+
+.agentViewport :global([data-openui-demo-readonly-renderer]) {
+  user-select: text;
 }
 
 .demoComposerState {
@@ -624,14 +644,29 @@
   background: var(--openui-highlight);
 }
 
-:global(.dark) .sidebarUpgradeButton {
+:global(.dark) .sidebarUpgradeFooter {
   border-color: var(--openui-inverted-background);
   background: var(--openui-inverted-background);
   color: var(--openui-background);
 }
 
+:global(.dark) .sidebarBuiltWith,
+:global(.dark) .sidebarCloudChip {
+  color: var(--openui-background);
+}
+
+:global(.dark) .sidebarCloudChip {
+  border-color: var(--openui-background);
+}
+
+:global(.dark) .sidebarUpgradeButton {
+  border-color: var(--openui-background);
+  background: var(--openui-background);
+  color: var(--openui-inverted-background);
+}
+
 :global(.dark) .sidebarUpgradeButton:hover {
-  background: color-mix(in srgb, var(--openui-inverted-background) 90%, transparent);
+  background: color-mix(in srgb, var(--openui-background) 90%, transparent);
 }
 
 .sidebarUpgradeButton:focus-visible {
@@ -649,6 +684,7 @@
   max-height: min(560px, calc(100% - 24px));
   flex-direction: column;
   gap: 10px;
+  overflow: auto;
   border: 1px solid var(--openui-border-default);
   border-radius: 12px;
   background: var(--openui-foreground);
@@ -690,7 +726,29 @@
   gap: 8px;
 }
 
+.demoAuthoringPrompt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+}
+
+.demoAuthoringPromptInput {
+  min-height: 76px;
+  resize: vertical;
+  padding: 9px 10px;
+}
+
+.demoAuthoringGenerate {
+  min-width: 86px;
+  min-height: 34px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
 .demoAuthoringSelect,
+.demoAuthoringPromptInput,
+.demoAuthoringGenerate,
 .demoAuthoringOutput,
 .demoAuthoringCopy {
   border: 1px solid var(--openui-border-default);
@@ -712,6 +770,12 @@
 }
 
 .demoAuthoringCopy:disabled {
+  color: var(--openui-text-neutral-tertiary);
+  cursor: default;
+}
+
+.demoAuthoringGenerate:disabled,
+.demoAuthoringPromptInput:disabled {
   color: var(--openui-text-neutral-tertiary);
   cursor: default;
 }

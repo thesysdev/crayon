@@ -74,10 +74,19 @@ export function DemoResponseInteractionGuard() {
     if (!(surface instanceof HTMLElement)) return;
 
     const markedRoots = new Set<HTMLElement>();
+    const markedControls = new Map<
+      HTMLElement,
+      { ariaDisabled: string | null; inert: string | null; tabIndex: string | null }
+    >();
     const clearMarkedRoots = () => {
+      for (const [control, previous] of markedControls) {
+        restoreAttribute(control, "aria-disabled", previous.ariaDisabled);
+        restoreAttribute(control, "inert", previous.inert);
+        restoreAttribute(control, "tabindex", previous.tabIndex);
+      }
+      markedControls.clear();
+
       for (const root of markedRoots) {
-        root.removeAttribute("inert");
-        root.removeAttribute("aria-disabled");
         root.removeAttribute("data-openui-demo-readonly-renderer");
       }
       markedRoots.clear();
@@ -92,10 +101,19 @@ export function DemoResponseInteractionGuard() {
         const root = content.lastElementChild;
         if (!(root instanceof HTMLElement) || root.style.position !== "relative") continue;
 
-        root.setAttribute("inert", "");
-        root.setAttribute("aria-disabled", "true");
         root.setAttribute("data-openui-demo-readonly-renderer", "true");
         markedRoots.add(root);
+
+        for (const control of root.querySelectorAll<HTMLElement>(READ_ONLY_CONTROL_SELECTOR)) {
+          markedControls.set(control, {
+            ariaDisabled: control.getAttribute("aria-disabled"),
+            inert: control.getAttribute("inert"),
+            tabIndex: control.getAttribute("tabindex"),
+          });
+          control.setAttribute("aria-disabled", "true");
+          control.setAttribute("inert", "");
+          control.setAttribute("tabindex", "-1");
+        }
       }
     };
 
@@ -110,6 +128,14 @@ export function DemoResponseInteractionGuard() {
   }, [isDemo]);
 
   return <span ref={markerRef} className={styles.demoReadOnlyMarker} aria-hidden="true" />;
+}
+
+const READ_ONLY_CONTROL_SELECTOR =
+  'a[href], button, input, textarea, select, [contenteditable="true"], [role="button"], [role="checkbox"], [role="combobox"], [role="link"], [role="menuitem"], [role="option"], [role="radio"], [role="slider"], [role="spinbutton"], [role="switch"], [role="tab"]';
+
+function restoreAttribute(element: HTMLElement, name: string, value: string | null) {
+  if (value === null) element.removeAttribute(name);
+  else element.setAttribute(name, value);
 }
 
 interface ReadOnlyDemoComposerProps {

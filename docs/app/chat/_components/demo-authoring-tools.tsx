@@ -1,9 +1,10 @@
 "use client";
 
-import { useThread, type Message } from "@openuidev/react-headless";
+import { useThread, useThreadList, type Message } from "@openuidev/react-headless";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import styles from "../chat-page.module.css";
+import { getDemoConversation } from "./demo-conversations";
 
 type AuthoringOutput = "artifact-program" | "artifact-raw" | "response" | "messages";
 
@@ -14,9 +15,13 @@ export function DemoAuthoringTools() {
   const searchParams = useSearchParams();
   const messages = useThread((state) => state.messages) ?? EMPTY_MESSAGES;
   const isRunning = useThread((state) => state.isRunning);
+  const isLoadingMessages = useThread((state) => state.isLoadingMessages);
+  const processMessage = useThread((state) => state.processMessage);
+  const selectedThreadId = useThreadList((state) => state.selectedThreadId);
   const [outputType, setOutputType] = useState<AuthoringOutput>("artifact-program");
   const [copied, setCopied] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
+  const [prompt, setPrompt] = useState("");
   const outputs = useMemo(() => getAuthoringOutputs(messages), [messages]);
 
   if (searchParams.get("author") !== "1") return null;
@@ -34,6 +39,14 @@ export function DemoAuthoringTools() {
   }
 
   const output = outputs[outputType];
+  const isDemoThread = getDemoConversation(selectedThreadId) !== undefined;
+  const canGenerate = prompt.trim().length > 0 && !isRunning && !isLoadingMessages && !isDemoThread;
+  const generate = async () => {
+    const content = prompt.trim();
+    if (!content || !canGenerate) return;
+    setPrompt("");
+    await processMessage({ role: "user", content });
+  };
   const copyOutput = async () => {
     if (!output) return;
     await navigator.clipboard.writeText(output);
@@ -58,6 +71,29 @@ export function DemoAuthoringTools() {
           </button>
         </div>
       </div>
+      <form
+        className={styles.demoAuthoringPrompt}
+        onSubmit={(event) => {
+          event.preventDefault();
+          void generate();
+        }}
+      >
+        <textarea
+          className={styles.demoAuthoringPromptInput}
+          value={prompt}
+          onChange={(event) => setPrompt(event.target.value)}
+          placeholder={
+            isDemoThread
+              ? "Start a new chat before generating an artifact."
+              : "Describe the report or slide deck you want to generate…"
+          }
+          disabled={isDemoThread || isLoadingMessages}
+          aria-label="Artifact prompt"
+        />
+        <button type="submit" className={styles.demoAuthoringGenerate} disabled={!canGenerate}>
+          {isRunning ? "Generating…" : "Generate"}
+        </button>
+      </form>
       <div className={styles.demoAuthoringControls}>
         <select
           className={styles.demoAuthoringSelect}
@@ -91,7 +127,7 @@ export function DemoAuthoringTools() {
         placeholder="Create an artifact or generate a response to see its raw OpenUI output."
       />
       <p className={styles.demoAuthoringHint}>
-        Use a new chat, generate the artifact, then copy the program directly into the demo fixture.
+        Generate in a new chat, then copy the program directly into the demo fixture.
       </p>
     </aside>
   );
