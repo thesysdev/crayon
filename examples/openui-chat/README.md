@@ -38,6 +38,14 @@ OPENAI_BASE_URL=https://openrouter.ai/api/v1
 OPENAI_MODEL=openai/gpt-5.5
 ```
 
+Example using [Pokee AI](https://console.pokee.ai/docs) (`pokee-isaac`, 10M-token context):
+
+```env
+OPENAI_API_KEY=pk-...
+OPENAI_BASE_URL=https://api.pokee.ai/v1
+OPENAI_MODEL=pokee-isaac
+```
+
 This also works with other OpenAI-compatible providers.
 
 ## Learn More
