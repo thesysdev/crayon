@@ -30,6 +30,7 @@ import {
   DemoAwareModelSwitcher,
   DemoPathSynchronizer,
   DemoResponseInteractionGuard,
+  DemoRouteSynchronizer,
 } from "../demo-aware-chat-controls";
 import { DemoConversationList } from "../demo-conversation-list";
 import { createDemoConversationStorage } from "../demo-conversation-storage";
@@ -154,7 +155,7 @@ export function CloudAgentSurface() {
             <AgentInterface.ArtifactNav />
           </div>
           <AgentInterface.SidebarContent>
-            <DemoConversationList />
+            <DemoConversationList onNavigate={setPath} />
             <AgentInterface.SidebarSeparator />
             <AgentInterface.ThreadList />
           </AgentInterface.SidebarContent>
@@ -186,6 +187,7 @@ export function CloudAgentSurface() {
           </div>
         </AgentInterface.Composer>
         <DemoPathSynchronizer path={path} onNavigate={setPath} />
+        <DemoRouteSynchronizer onNavigate={setPath} />
         <DemoResponseInteractionGuard />
       </AgentInterface>
     </div>

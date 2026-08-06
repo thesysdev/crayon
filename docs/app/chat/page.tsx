@@ -1,5 +1,4 @@
 import { createPageMetadata } from "@/lib/page-metadata";
-import { ChatPageClient } from "./_components/chat-page-client";
 
 export const metadata = createPageMetadata({
   pathname: "/chat",
@@ -10,5 +9,5 @@ export const metadata = createPageMetadata({
 });
 
 export default function ChatPage() {
-  return <ChatPageClient />;
+  return null;
 }

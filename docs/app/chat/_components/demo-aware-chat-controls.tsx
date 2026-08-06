@@ -3,11 +3,14 @@
 import { CHAT_DEMO_EVENTS, captureChatDemoEvent, getChatDemoId } from "@/lib/chat-demo-analytics";
 import { useThreadList } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import styles from "../chat-page.module.css";
 import { CloudModelSwitcher } from "./agent-surfaces/cloud-model-switcher";
 import {
   getDemoConversation,
+  getDemoConversationBySlug,
+  getDemoConversationPath,
   getDemoFirstUserMessage,
   type DemoConversation,
 } from "./demo-conversations";
@@ -180,4 +183,78 @@ export function DemoPathSynchronizer({ path, onNavigate }: DemoPathSynchronizerP
   }, [onNavigate, path, selectedThreadId]);
 
   return null;
+}
+
+/**
+ * Keep public demo URLs and the selected fixture thread in sync. Browser
+ * navigation wins when the pathname changes; otherwise thread selection owns
+ * the URL. Private continuations and ordinary chats intentionally use /chat.
+ */
+export function DemoRouteSynchronizer({
+  onNavigate,
+}: {
+  onNavigate: (path: string | undefined) => void;
+}) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const selectedThreadId = useThreadList((state) => state.selectedThreadId);
+  const selectThread = useThreadList((state) => state.selectThread);
+  const switchToNewThread = useThreadList((state) => state.switchToNewThread);
+  const previousPathname = useRef(pathname);
+  const previousThreadId = useRef(selectedThreadId);
+  const isInitialized = useRef(false);
+  const selectionDrivenPathnames = useRef(new Set<string>());
+  const lastCapturedDemoId = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    const pathnameChanged = previousPathname.current !== pathname;
+    const threadChanged = previousThreadId.current !== selectedThreadId;
+    previousPathname.current = pathname;
+    previousThreadId.current = selectedThreadId;
+
+    if (pathnameChanged && selectionDrivenPathnames.current.delete(pathname)) {
+      return;
+    }
+
+    if (!isInitialized.current || pathnameChanged) {
+      isInitialized.current = true;
+      const routeDemo = getDemoConversationFromPathname(pathname);
+
+      if (routeDemo && selectedThreadId !== routeDemo.id) {
+        onNavigate(undefined);
+        selectThread(routeDemo.id);
+      } else if (pathname === "/chat" && selectedThreadId !== null) {
+        switchToNewThread();
+      }
+      return;
+    }
+
+    if (!threadChanged) return;
+
+    const selectedDemo = getDemoConversation(selectedThreadId);
+    const nextPathname = selectedDemo ? getDemoConversationPath(selectedDemo) : "/chat";
+    if (pathname !== nextPathname) {
+      selectionDrivenPathnames.current.add(nextPathname);
+      router.push(nextPathname);
+    }
+  }, [onNavigate, pathname, router, selectThread, selectedThreadId, switchToNewThread]);
+
+  useEffect(() => {
+    const demoId = getChatDemoId(getDemoConversation(selectedThreadId)?.id);
+    if (!demoId) {
+      lastCapturedDemoId.current = undefined;
+      return;
+    }
+    if (lastCapturedDemoId.current === demoId) return;
+
+    lastCapturedDemoId.current = demoId;
+    captureChatDemoEvent(CHAT_DEMO_EVENTS.threadView, { demo_id: demoId });
+  }, [selectedThreadId]);
+
+  return null;
+}
+
+function getDemoConversationFromPathname(pathname: string): DemoConversation | undefined {
+  const match = /^\/chat\/demo\/([^/]+)$/.exec(pathname);
+  return match ? getDemoConversationBySlug(match[1]) : undefined;
 }

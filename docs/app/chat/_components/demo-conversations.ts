@@ -13,6 +13,7 @@ export interface DemoArtifact extends Artifact {
 
 export interface DemoConversation {
   id: `demo_${string}`;
+  slug: string;
   title: string;
   description: string;
   icon: DemoConversationIcon;
@@ -256,6 +257,7 @@ export const DEMO_ARTIFACTS: readonly DemoArtifact[] = [
 export const DEMO_CONVERSATIONS: readonly DemoConversation[] = [
   {
     id: "demo_stock_comparison",
+    slug: "stock-comparison",
     title: "Stock comparison",
     description: "Meta, Microsoft, Netflix, and Google versus the S&P 500 in 2025",
     icon: "analytics",
@@ -373,6 +375,7 @@ perfIcon = Icon("trending-down")`,
   },
   {
     id: "demo_travel_planner",
+    slug: "japan-travel-guide",
     title: "Japan travel guide",
     description: "Must-see places in Japan with photos, highlights, and tips",
     icon: "travel",
@@ -534,6 +537,7 @@ sapporoChipIcon = Icon("snowflake")`,
   },
   {
     id: "demo_blockbusters",
+    slug: "blockbuster-report",
     title: "Blockbuster report",
     description: "The three highest-grossing films of all time, visualized",
     icon: "compare",
@@ -598,6 +602,9 @@ wowTag = Tag("#3 · Most Expensive Ever", "neutral")`,
 const DEMO_CONVERSATIONS_BY_ID = new Map(
   DEMO_CONVERSATIONS.map((conversation) => [conversation.id, conversation]),
 );
+const DEMO_CONVERSATIONS_BY_SLUG = new Map(
+  DEMO_CONVERSATIONS.map((conversation) => [conversation.slug, conversation]),
+);
 const DEMO_ARTIFACTS_BY_ID = new Map(DEMO_ARTIFACTS.map((artifact) => [artifact.id, artifact]));
 
 if (process.env.NODE_ENV !== "production") validateDemoContent();
@@ -605,6 +612,14 @@ if (process.env.NODE_ENV !== "production") validateDemoContent();
 export function getDemoConversation(id: string | null | undefined): DemoConversation | undefined {
   if (!id) return undefined;
   return DEMO_CONVERSATIONS_BY_ID.get(id as DemoConversation["id"]);
+}
+
+export function getDemoConversationBySlug(slug: string): DemoConversation | undefined {
+  return DEMO_CONVERSATIONS_BY_SLUG.get(slug);
+}
+
+export function getDemoConversationPath(conversation: DemoConversation): string {
+  return `/chat/demo/${conversation.slug}`;
 }
 
 export function getDemoArtifact(id: string): DemoArtifact | undefined {
@@ -629,6 +644,7 @@ export function cloneDemoMessages(conversation: DemoConversation): Message[] {
 
 function validateDemoContent() {
   const artifactIds = new Set<string>();
+  const conversationSlugs = new Set<string>();
   const counts: Record<DemoArtifactKind, number> = { report: 0, slides: 0 };
 
   for (const artifact of DEMO_ARTIFACTS) {
@@ -658,6 +674,14 @@ function validateDemoContent() {
   }
 
   for (const conversation of DEMO_CONVERSATIONS) {
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(conversation.slug)) {
+      throw new Error(`Invalid demo conversation slug: ${conversation.slug}`);
+    }
+    if (conversationSlugs.has(conversation.slug)) {
+      throw new Error(`Duplicate demo conversation slug: ${conversation.slug}`);
+    }
+    conversationSlugs.add(conversation.slug);
+
     const expectedArtifactId = expectedLinks.get(conversation.id);
     if (conversation.linkedArtifactId !== expectedArtifactId) {
       throw new Error(`Unexpected demo artifact link for ${conversation.id}.`);
