@@ -20,13 +20,13 @@ export function evaluateRegisteredArtifacts(
   //   "report-abc": [ {id:"report-abc", version:1, …}, {id:"report-abc", version:2, …} ],
   //   "deck-xyz":   [ {id:"deck-xyz",  version:1, …} ],
   // }
-  // allVersionLists = [
+  // artifactsWithVersions = [
   //   [ {id:"report-abc", version:1, …}, {id:"report-abc", version:2, …} ],
   //   [ {id:"deck-xyz",  version:1, …} ],
   // ]
-  const allVersionLists = Object.values(artifacts);
-  for (let i = 0; i < allVersionLists.length; i++) {
-    const versions = allVersionLists[i];
+  const artifactsWithVersions = Object.values(artifacts);
+  for (let i = 0; i < artifactsWithVersions.length; i++) {
+    const versions = artifactsWithVersions[i];
     // versions = [ {id:"report-abc", version:1, …}, {id:"report-abc", version:2, …} ]
     // no list at this index (can't happen; strict TS guard)
     if (!versions) continue;
