@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -38,12 +39,15 @@ program.configureHelp({ showGlobalOptions: true });
 // Init telemetry once, just before any command runs (honors --no-telemetry / DO_NOT_TRACK).
 program.hook("preAction", (_thisCommand, actionCommand) => {
   const globalOptions = program.opts<{ agentName: string; telemetry?: boolean }>();
+  const command = actionCommand.name();
   telemetry.init({ cliVersion, flagEnabled: globalOptions.telemetry !== false });
   telemetry.register({
     agent_name: globalOptions.agentName,
     detected_agent_name: detectAgent(),
+    cli_run_id: randomUUID(),
+    command,
   });
-  telemetry.capture("cli_invoked", { command: actionCommand.name() });
+  telemetry.capture("cli_invoked");
 });
 
 program

@@ -11,6 +11,7 @@ import { getQuotaError, QuotaErrorRow } from "./QuotaErrorRow";
 import { getReactLangStreamDetail, ReactLangStreamEventRow } from "./ReactLangStreamEventRow";
 import { ShiroLogo } from "./ShiroLogo";
 import { addOrReplaceEvent } from "./eventBuffer";
+import { useDevtoolsSingleton } from "./singleton";
 
 export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
@@ -26,6 +27,11 @@ export interface OpenUIDevtoolsProps {
   errorsOnly?: boolean;
   /** Initial state of the drawer's "auto-open on error" checkbox. Defaults to true. */
   autoOpenOnError?: boolean;
+  /**
+   * @internal Set by react-lang's auto-mount. Auto-mounted instances yield to
+   * any manually rendered <OpenUIDevtools /> so host-provided props win.
+   */
+  __autoMounted?: boolean;
 }
 
 /**
@@ -41,9 +47,13 @@ export function OpenUIDevtools({
   maxEvents = 50,
   errorsOnly = false,
   autoOpenOnError = true,
+  __autoMounted = false,
 }: OpenUIDevtoolsProps) {
   const isEnabled =
     enabled ?? (typeof process === "undefined" || process.env["NODE_ENV"] !== "production");
+  // Only one instance renders even when several are mounted (e.g. react-lang's
+  // auto-mount plus a manual <OpenUIDevtools /> in the host's layout).
+  const isSingleton = useDevtoolsSingleton(__autoMounted);
   const [events, setEvents] = useState<ObservabilityEvent[]>([]);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<ObservabilityEvent | null>(null);
@@ -76,7 +86,7 @@ export function OpenUIDevtools({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open, selected]);
 
-  if (!isEnabled) return null;
+  if (!isEnabled || !isSingleton) return null;
 
   const errorCount = events.filter((event) => event.level === "error").length;
   const visibleEvents = onlyErrors ? events.filter((event) => event.level !== "info") : events;

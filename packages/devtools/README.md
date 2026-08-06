@@ -19,6 +19,8 @@ function App() {
 
 The widget renders nothing in production builds (`NODE_ENV === "production"`) unless `enabled` is passed explicitly.
 
+`@openuidev/react-lang` ships with this package and auto-mounts the widget in development — no manual `<OpenUIDevtools />` needed. Mounting it manually still works (e.g. to customize props): only one instance ever renders, and a manually mounted instance takes precedence over the auto-mounted one.
+
 ## Props
 
 | Prop              | Default          | Description                                                      |

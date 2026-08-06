@@ -2,12 +2,8 @@
 import "@openuidev/react-ui/components.css";
 import "@openuidev/react-ui/styles/index.css";
 
-import {
-  AgentInterface,
-  fetchLLM,
-  vercelAIAdapter,
-  vercelAIMessageFormat,
-} from "@openuidev/react-ui";
+import { vercelAIAdapter, vercelAIMessageFormat } from "@openuidev/react-headless";
+import { AgentInterface, fetchLLM } from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 
 const llm = fetchLLM({

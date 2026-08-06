@@ -15,15 +15,21 @@ const createFunnelSteps = {
   env_resolution_started: "0400",
   cloud_auth_started: "0410",
   cloud_auth_resolved: "0420",
+  cloud_auth_failed: "0425",
+  cloud_auth_cancelled: "0426",
   env_written: "0430",
   skill_prompt_resolved: "0500",
   skill_install_started: "0510",
   skill_install_finished: "0520",
+  skill_install_failed: "0525",
+  skill_install_cancelled: "0526",
   dependency_install_started: "0600",
   dependency_install_succeeded: "0610",
   dependency_install_failed: "0620",
+  dependency_install_cancelled: "0625",
   create_succeeded: "0700",
   create_failed: "9000",
+  create_cancelled: "9010",
 } as const;
 
 type CreateFunnelStep = keyof typeof createFunnelSteps;
