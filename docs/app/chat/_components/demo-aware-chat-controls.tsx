@@ -23,13 +23,13 @@ export function DemoAwareModelSwitcher({
   onModelChange,
 }: DemoAwareModelSwitcherProps) {
   const selectedThreadId = useThreadList((state) => state.selectedThreadId);
-  const isDemo = getDemoConversation(selectedThreadId) !== undefined;
+  const demo = getDemoConversation(selectedThreadId);
 
   return (
     <CloudModelSwitcher
-      selectedModel={selectedModel}
+      selectedModel={demo?.recordedModel ?? selectedModel}
       onModelChange={onModelChange}
-      disabled={isDemo}
+      disabled={demo !== undefined}
     />
   );
 }

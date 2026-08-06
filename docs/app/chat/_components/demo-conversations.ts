@@ -26,8 +26,10 @@ const DEMO_IMAGES = {
   ai: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1600&q=82",
   cinema:
     "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=82",
-  cinemaScreen:
-    "https://images.unsplash.com/photo-1688678004647-945d5aaf91c1?auto=format&fit=crop&w=1600&q=82",
+  cinemaAudience:
+    "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1600&q=82",
+  cinemaProjector:
+    "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1600&q=82",
   coffee:
     "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1600&q=82",
   coffeeBeans:
@@ -46,6 +48,9 @@ const DEMO_IMAGES = {
     "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=82",
   planning:
     "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=82",
+  posterAvatar: "https://image.tmdb.org/t/p/w1280/kyeqWdyUXW608qlYkRqosgbbJyK.jpg",
+  posterEndgame: "https://image.tmdb.org/t/p/w1280/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
+  posterWayOfWater: "https://image.tmdb.org/t/p/w1280/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg",
   stadium:
     "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1600&q=82",
   stock:
@@ -80,13 +85,21 @@ route = Slide("route", ChartWithContext("Eight-day route", BarChartV2({data: {la
 rhythm = Slide("rhythm", MetricsWithImage("A trip with room to breathe", [{metric: "8 days", description: "Enough for four bases"}, {metric: "3 cities", description: "The cultural spine"}, {metric: "1 bag", description: "Use luggage forwarding"}], ["${DEMO_IMAGES.japan}", "${DEMO_IMAGES.japanLandscape}"]))
 closing = Slide("closing", HeroMetric("Tokyo → Osaka", "Fly into Tokyo, out of Osaka, and let the route unfold in one direction.", "vertical", "${DEMO_IMAGES.japanStreet}"))`;
 
-const BLOCKBUSTER_DECK_PROGRAM = `root = SlideShow("Blockbuster Box Office", "What the all-time top three reveal about event cinema", [cover, experience, podium, global, formats, close])
-cover = Slide("cover", DramaticTitle("Blockbuster Box Office", "The visual economics of event cinema", "Worldwide box office · Illustrative demo", null, "title-bottom", "${DEMO_IMAGES.cinema}"))
-experience = Slide("experience", VisualCards("The theater is the product", [{title: "Scale", body: "Spectacle gives audiences a reason to choose the largest screen.", imageSrc: "${DEMO_IMAGES.cinemaScreen}"}, {title: "Community", body: "A synchronized release turns opening weekend into a shared event.", imageSrc: "${DEMO_IMAGES.cinema}"}, {title: "Longevity", body: "Premium formats and rereleases compound a theatrical run.", imageSrc: "${DEMO_IMAGES.cinemaScreen}"}]))
-podium = Slide("podium", ChartWithContext("The all-time podium", BarChartV2({data: {labels: ["Avatar", "Endgame", "Way of Water"], series: [{category: "Worldwide gross", values: [2.92, 2.8, 2.33]}]}, unit: "b"}, "Film", "Worldwide gross"), "The top three generated more than $8B worldwide.", "title-body-top"))
-global = Slide("global", PieRadialWithContext("Revenue travels", PieChartV2({data: [{category: "International", value: 70}, {category: "Domestic", value: 30}]})))
-formats = Slide("formats", MetricsWithImage("Premium formats amplify demand", [{metric: "$8.05B", description: "Combined worldwide gross"}, {metric: "70%", description: "International mix"}, {metric: "3D + IMAX", description: "A premium-screen engine"}], ["${DEMO_IMAGES.cinema}", "${DEMO_IMAGES.cinemaScreen}"]))
-close = Slide("close", HeroMetric("Make it unmissable", "The biggest films sell a story and make the theater itself the event.", "vertical", "${DEMO_IMAGES.cinema}"))`;
+const BLOCKBUSTER_DECK_PROGRAM = `root = SlideShow("Blockbuster Box Office", "What the all-time top three reveal about event cinema", slides)
+slides = [cover, experience, films, podium, global, formats, close]
+cover = Slide("cover", DramaticTitle("Blockbuster Box Office", "The visual economics of event cinema", "Worldwide box office · Illustrative data", null, "title-bottom", "${DEMO_IMAGES.cinema}"))
+experienceCards = [{title: "Scale", body: "Spectacle gives audiences a reason to choose the largest screen available.", imageSrc: "${DEMO_IMAGES.cinema}"}, {title: "Community", body: "A synchronized global release turns opening weekend into a shared cultural event.", imageSrc: "${DEMO_IMAGES.cinemaAudience}"}, {title: "Longevity", body: "Premium formats and strategic rereleases compound a theatrical run for years.", imageSrc: "${DEMO_IMAGES.cinemaProjector}"}]
+experience = Slide("theater-product", VisualCards("The Theater Is the Product", experienceCards))
+filmCards = [{title: "Avatar (2009) — $2.92B", body: "James Cameron's groundbreaking visual spectacle remains the highest-grossing film of all time.", imageSrc: "${DEMO_IMAGES.posterAvatar}"}, {title: "Avengers: Endgame (2019) — $2.80B", body: "The culmination of an unprecedented 22-film narrative arc drew worldwide record crowds.", imageSrc: "${DEMO_IMAGES.posterEndgame}"}, {title: "Avatar: The Way of Water (2022) — $2.32B", body: "Premium high-frame-rate 3D formats sustained an extended theatrical window.", imageSrc: "${DEMO_IMAGES.posterWayOfWater}"}]
+films = Slide("film-spotlights", VisualCards("The Films Behind the Numbers", filmCards))
+grossSeries = {category: "Worldwide Gross ($B)", values: [2.92, 2.8, 2.32]}
+grossChart = BarChartV2({data: {labels: ["Avatar", "Endgame", "Way of Water"], series: [grossSeries]}, unit: "b"}, "Film", "Worldwide gross")
+podium = Slide("all-time-podium", ChartWithContext("The All-Time Podium", grossChart, "The top three generated more than $8B worldwide.", "title-body-top"))
+marketChart = RadialChartV2({data: [{category: "International", value: 70}, {category: "Domestic", value: 30}]})
+global = Slide("revenue-travels", PieRadialWithContext("Revenue Travels: 70% International", marketChart))
+formatMetrics = [{metric: "$8.05B", description: "Combined worldwide gross"}, {metric: "70%", description: "International revenue mix"}, {metric: "3D + IMAX", description: "Premium-screen engine"}]
+formats = Slide("premium-formats", MetricsWithImage("Premium Formats Amplify Demand", formatMetrics, ["${DEMO_IMAGES.cinema}", "${DEMO_IMAGES.cinemaProjector}"]))
+close = Slide("closing-hero", SectionBreakDramatic("Make It Unmissable", "The biggest films sell a story — and make the theater itself the event.", "vertical", "${DEMO_IMAGES.cinema}"))`;
 
 const BUSINESS_HEALTH_REPORT_PROGRAM = `root = ReportView("Q2 Business Health", "Executive operating review · Illustrative data", [cover, executive, performance, customers, actions])
 cover = Page("cover", StandardFrontPage("Q2 Business Health", "${DEMO_IMAGES.dashboard}", coverCopy, "April–June 2026", "title-left"))
@@ -525,7 +538,7 @@ sapporoChipIcon = Icon("snowflake")`,
     description: "The three highest-grossing films of all time, visualized",
     icon: "compare",
     sourcePrompt: "What are the top 3 highest-grossing movies of all time?",
-    recordedModel: DEFAULT_MODEL,
+    recordedModel: "anthropic/claude-sonnet-4.6",
     linkedArtifactId: BLOCKBUSTER_ARTIFACT.id,
     messages: [
       {
@@ -558,13 +571,13 @@ splitHeader = InlineHeader("Domestic vs. International Breakdown", "How each fil
 splitChart = HorizontalBarChart(["Avatar (2009)", "Avengers: Endgame (2019)", "Avatar: Way of Water (2022)"], [{category: "Domestic (US)", values: [0.79, 0.86, 0.68]}, {category: "International", values: [2.13, 1.94, 1.65]}], "Revenue Split by Market", "Worldwide gross in USD billions", "Gross (USD Billions)", "Film", "B", "grouped")
 spotlightsHeader = InlineHeader("Film Spotlights", "The three films that define modern event cinema")
 filmCards = VisualCardBlock([avatarCard, endgameCard, wowCard], "grid")
-avatarCard = VisualCardItem(avatarBody, "avatar", "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1200&q=80&auto=format&fit=crop", avatarTag, "Luminous forest representing Avatar")
+avatarCard = VisualCardItem(avatarBody, "avatar", "${DEMO_IMAGES.posterAvatar}", avatarTag, "Avatar (2009) poster")
 avatarBody = BoldText("text", "Avatar", "$2.92B · 2009", "text", "md")
 avatarTag = Tag("#1 All-Time Record", "neutral")
-endgameCard = VisualCardItem(endgameBody, "endgame", "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1200&q=80&auto=format&fit=crop", endgameTag, "Cinema auditorium representing Avengers: Endgame")
+endgameCard = VisualCardItem(endgameBody, "endgame", "${DEMO_IMAGES.posterEndgame}", endgameTag, "Avengers: Endgame (2019) poster")
 endgameBody = BoldText("text", "Avengers: Endgame", "$2.80B · 2019", "text", "md")
 endgameTag = Tag("#2 · MCU Peak", "neutral")
-wowCard = VisualCardItem(wowBody, "wow", "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80&auto=format&fit=crop", wowTag, "Ocean scene representing Avatar: The Way of Water")
+wowCard = VisualCardItem(wowBody, "wow", "${DEMO_IMAGES.posterWayOfWater}", wowTag, "Avatar: The Way of Water (2022) poster")
 wowBody = BoldText("text", "Avatar: The Way of Water", "$2.33B · 2022", "text", "md")
 wowTag = Tag("#3 · Most Expensive Ever", "neutral")`,
       },
@@ -576,7 +589,7 @@ wowTag = Tag("#3 · Most Expensive Ever", "neutral")`,
       ...createArtifactTurn(
         "demo_blockbusters",
         BLOCKBUSTER_ARTIFACT,
-        "I turned the box-office breakdown into a six-slide deck covering the podium, global appeal, and the event-cinema playbook.",
+        "I turned the box-office breakdown into a seven-slide deck covering the films, podium, global appeal, and the event-cinema playbook.",
       ),
     ],
   },

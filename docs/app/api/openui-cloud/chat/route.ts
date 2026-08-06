@@ -8,8 +8,8 @@ import type { ResponseInputItem } from "openai/resources/responses/responses";
 
 const MAX_INPUT_ITEMS = 16;
 const MAX_THREAD_ID_LENGTH = 256;
-const SLIDES_ARTIFACT_INSTRUCTION = `Create a polished visual story, not a text document split into slides. Use varied presentation layouts, concise copy, and image_search-sourced absolute image URLs when visuals improve the narrative. Include a chart for quantitative topics when the available data supports one; never invent factual data. Favor one clear idea per slide and finish with a decisive takeaway.`;
-const REPORT_ARTIFACT_INSTRUCTION = `Create an executive-ready visual report with a strong cover, clear hierarchy, and a deliberate mix of metrics, charts, tables, imagery, and concise analysis. Use image_search-sourced absolute image URLs when visuals add context. Visualize quantitative source data when useful, but never fabricate factual data. End with specific decisions or next steps.`;
+const SLIDES_ARTIFACT_INSTRUCTION = `Create a premium 5–7 slide visual story, not a text document split into slides. Use a strong cover, varied editorial layouts, concise copy, and image_search-sourced absolute image URLs. Every image must depict the exact film, product, person, or location named beside it—never use a metaphorical substitute or generic filler. Do not reuse one image for distinct entities. Include a chart when supplied quantitative data supports one, never invent factual data, avoid repetitive card grids, and finish with a decisive visual takeaway.`;
+const REPORT_ARTIFACT_INSTRUCTION = `Create a premium executive report with a visual cover, clear hierarchy, and a deliberate mix of metrics, charts, tables, imagery, and concise analysis. Use image_search-sourced absolute image URLs only when each image accurately matches its label; never use metaphorical substitutes, unrelated stock photos, or one repeated image for distinct entities. Visualize supplied quantitative data when useful without fabricating facts, vary page composition, and end with specific decisions or next steps.`;
 
 interface CloudChatRequest {
   threadId: string;
