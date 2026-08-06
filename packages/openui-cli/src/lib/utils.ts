@@ -51,40 +51,101 @@ export function cliErrorProperties(
   return classified ? { ...fallback, ...classified } : fallback;
 }
 
-type ProcessFailureRule = [RegExp, CliErrorClass, string];
+type ProcessFailureRule = {
+  fingerprints: readonly string[];
+  prefixes?: readonly string[];
+  errorClass: CliErrorClass;
+  errorCode: string;
+};
 
-const processFailureRules: ProcessFailureRule[] = [
-  [
-    /ERR_PNPM_PEER_DEP_ISSUES|\bYN0002\b|\bYN0060\b|\bERESOLVE\b/i,
-    "peer_dependency",
-    "PEER_DEPENDENCY",
-  ],
-  [/ERR_PNPM_FETCH_401|\bE401\b|\bENEEDAUTH\b/, "registry_auth", "REGISTRY_401"],
-  [/ERR_PNPM_FETCH_403|\bE403\b/, "registry_auth", "REGISTRY_403"],
-  [/ERR_PNPM_FETCH_404|\bE404\b/, "dependency", "PACKAGE_NOT_FOUND"],
-  [/\bENOTFOUND\b|\bEAI_AGAIN\b/, "network", "DNS_FAILED"],
-  [/\bETIMEDOUT\b|\bESOCKETTIMEDOUT\b|\bERR_SOCKET_TIMEOUT\b/, "network", "NETWORK_TIMEOUT"],
-  [/\bECONNRESET\b|\bECONNREFUSED\b|\bEHOSTUNREACH\b|\bENETUNREACH\b/, "network", "NETWORK_FAILED"],
-  [
-    /ERR_PNPM_UNSUPPORTED_ENGINE|ERR_PNPM_BAD_PM_VERSION|\bEBADENGINE\b|\bYN0009\b/,
-    "package_compatibility",
-    "ENGINE_MISMATCH",
-  ],
-  [/ERR_PNPM_NO_MATCHING_VERSION|\bETARGET\b/, "package_compatibility", "NO_MATCHING_VERSION"],
-  [
-    /ERR_PNPM_OUTDATED_LOCKFILE|ERR_PNPM_LOCKFILE_BREAKING_CHANGE/,
-    "workspace_config",
-    "LOCKFILE_INCOMPATIBLE",
-  ],
-  [
-    /ERR_PNPM_WORKSPACE_[A-Z0-9_]+|ERR_PNPM_NO_MATCHING_VERSION_INSIDE_WORKSPACE/,
-    "workspace_config",
-    "WORKSPACE_CONFIG_INVALID",
-  ],
-  [/ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL|\bELIFECYCLE\b/, "install_script", "INSTALL_SCRIPT_FAILED"],
-  [/\bEACCES\b|\bEPERM\b/, "filesystem", "PERMISSION_DENIED"],
-  [/\bENOSPC\b|\bEDQUOT\b/, "filesystem", "DISK_FULL"],
-];
+const processFailureRules = [
+  {
+    fingerprints: ["ERR_PNPM_PEER_DEP_ISSUES", "YN0002", "YN0060", "ERESOLVE"],
+    errorClass: "peer_dependency",
+    errorCode: "PEER_DEPENDENCY",
+  },
+  {
+    fingerprints: ["ERR_PNPM_FETCH_401", "E401", "ENEEDAUTH"],
+    errorClass: "registry_auth",
+    errorCode: "REGISTRY_401",
+  },
+  {
+    fingerprints: ["ERR_PNPM_FETCH_403", "E403"],
+    errorClass: "registry_auth",
+    errorCode: "REGISTRY_403",
+  },
+  {
+    fingerprints: ["ERR_PNPM_FETCH_404", "E404"],
+    errorClass: "dependency",
+    errorCode: "PACKAGE_NOT_FOUND",
+  },
+  {
+    fingerprints: ["ENOTFOUND", "EAI_AGAIN"],
+    errorClass: "network",
+    errorCode: "DNS_FAILED",
+  },
+  {
+    fingerprints: ["ETIMEDOUT", "ESOCKETTIMEDOUT", "ERR_SOCKET_TIMEOUT"],
+    errorClass: "network",
+    errorCode: "NETWORK_TIMEOUT",
+  },
+  {
+    fingerprints: ["ECONNRESET", "ECONNREFUSED", "EHOSTUNREACH", "ENETUNREACH"],
+    errorClass: "network",
+    errorCode: "NETWORK_FAILED",
+  },
+  {
+    fingerprints: [
+      "ERR_PNPM_UNSUPPORTED_ENGINE",
+      "ERR_PNPM_BAD_PM_VERSION",
+      "EBADENGINE",
+      "YN0009",
+    ],
+    errorClass: "package_compatibility",
+    errorCode: "ENGINE_MISMATCH",
+  },
+  {
+    fingerprints: ["ERR_PNPM_NO_MATCHING_VERSION", "ETARGET"],
+    errorClass: "package_compatibility",
+    errorCode: "NO_MATCHING_VERSION",
+  },
+  {
+    fingerprints: ["ERR_PNPM_OUTDATED_LOCKFILE", "ERR_PNPM_LOCKFILE_BREAKING_CHANGE"],
+    errorClass: "workspace_config",
+    errorCode: "LOCKFILE_INCOMPATIBLE",
+  },
+  {
+    fingerprints: ["ERR_PNPM_NO_MATCHING_VERSION_INSIDE_WORKSPACE"],
+    prefixes: ["ERR_PNPM_WORKSPACE_"],
+    errorClass: "workspace_config",
+    errorCode: "WORKSPACE_CONFIG_INVALID",
+  },
+  {
+    fingerprints: ["ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL", "ELIFECYCLE"],
+    errorClass: "install_script",
+    errorCode: "INSTALL_SCRIPT_FAILED",
+  },
+  {
+    fingerprints: ["EACCES", "EPERM"],
+    errorClass: "filesystem",
+    errorCode: "PERMISSION_DENIED",
+  },
+  {
+    fingerprints: ["ENOSPC", "EDQUOT"],
+    errorClass: "filesystem",
+    errorCode: "DISK_FULL",
+  },
+] satisfies readonly ProcessFailureRule[];
+
+function classifyProcessDiagnostic(diagnostic: string): ProcessFailureRule | undefined {
+  const tokens = diagnostic.toUpperCase().match(/\b[A-Z][A-Z0-9_]{2,}\b/g) ?? [];
+  const tokenSet = new Set(tokens);
+  return processFailureRules.find(
+    ({ fingerprints, prefixes }) =>
+      fingerprints.some((fingerprint) => tokenSet.has(fingerprint)) ||
+      prefixes?.some((prefix) => tokens.some((token) => token.startsWith(prefix))),
+  );
+}
 
 export function processErrorProperties(
   result: CommandResult,
@@ -113,13 +174,12 @@ export function processErrorProperties(
   }
 
   const diagnostic = `${result.error?.message ?? ""}\n${result.diagnosticTail}`;
-  const rule = processFailureRules.find(([pattern]) => pattern.test(diagnostic));
+  const rule = classifyProcessDiagnostic(diagnostic);
   if (rule) {
-    const [, errorClass, errorCode] = rule;
     return {
       failure_stage: failureStage,
-      error_class: errorClass,
-      error_code: errorCode,
+      error_class: rule.errorClass,
+      error_code: rule.errorCode,
       ...metadata,
     };
   }

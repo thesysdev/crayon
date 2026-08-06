@@ -6,18 +6,20 @@ export type CommandResult = {
   durationMs: number;
   status: number | null;
   signal: NodeJS.Signals | null;
-  stdout?: string;
   error?: Error;
   diagnosticTail: string;
 };
 
-/** Stream child output normally while retaining only a bounded tail for classification. */
-export function runCommand(
-  command: string,
-  args: string[],
-  cwd: string,
-  options: { captureStdout?: boolean } = {},
-): Promise<CommandResult> {
+/**
+ * `spawn.sync(..., { stdio: "inherit" })` exposes exit status but not the output
+ * needed to distinguish dependency, workspace, and package-compatibility failures.
+ * This runner preserves normal terminal streaming while retaining only a bounded
+ * local tail for allowlisted classification. The tail must never be sent to telemetry.
+ *
+ * Running asynchronously also lets the parent forward SIGINT/SIGTERM, wait for the
+ * child to close, and return cancellation metadata before telemetry is flushed.
+ */
+export function runCommand(command: string, args: string[], cwd: string): Promise<CommandResult> {
   return new Promise((resolve) => {
     const startedAt = Date.now();
     const child = spawn(command, args, {
@@ -25,7 +27,6 @@ export function runCommand(
       stdio: ["inherit", "pipe", "pipe"],
     });
     let diagnosticTail = "";
-    let capturedStdout = "";
     let settled = false;
     let forwardedSignal: NodeJS.Signals | null = null;
     let forceKillTimer: NodeJS.Timeout | undefined;
@@ -34,11 +35,8 @@ export function runCommand(
       diagnosticTail = (diagnosticTail + chunk.toString("utf8")).slice(-DIAGNOSTIC_TAIL_LIMIT);
     };
     child.stdout?.on("data", (chunk: Buffer) => {
-      if (options.captureStdout) capturedStdout += chunk.toString("utf8");
-      else {
-        process.stdout.write(chunk);
-        observe(chunk);
-      }
+      process.stdout.write(chunk);
+      observe(chunk);
     });
     child.stderr?.on("data", (chunk: Buffer) => {
       process.stderr.write(chunk);
@@ -55,10 +53,10 @@ export function runCommand(
         ...result,
         diagnosticTail,
         durationMs: Math.max(0, Date.now() - startedAt),
-        ...(options.captureStdout ? { stdout: capturedStdout } : {}),
       });
     };
 
+    // Prevent the parent from exiting before the child reports which signal stopped it.
     const forwardSignal = (signal: NodeJS.Signals) => {
       if (forwardedSignal) {
         child.kill("SIGKILL");
@@ -66,6 +64,7 @@ export function runCommand(
       }
       forwardedSignal = signal;
       child.kill(signal);
+      // Do not hang indefinitely when a child ignores the forwarded signal.
       forceKillTimer = setTimeout(() => child.kill("SIGKILL"), 5000);
       forceKillTimer.unref();
     };
