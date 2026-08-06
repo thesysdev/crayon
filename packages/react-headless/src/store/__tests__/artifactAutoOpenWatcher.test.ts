@@ -83,14 +83,13 @@ describe("evaluateRegisteredArtifacts", () => {
     expect(store.getState().activeDetailedViewId).toBeNull();
   });
 
-  it("a user-opened panel blocks auto-open (first wins)", () => {
+  it("a new artifact takes over an already-open panel", () => {
     const store = createDetailedViewStore();
     const claimed = new Set<string>();
     store.getState().setActiveDetailedView("user-panel");
     const opened = evaluateRegisteredArtifacts(registry(entry("art")), true, claimed, store);
-    expect(opened).toBe(false);
-    expect(store.getState().activeDetailedViewId).toBe("user-panel");
-    expect(claimed.has("art")).toBe(true);
+    expect(opened).toBe(true);
+    expect(store.getState().activeDetailedViewId).toBe("art:1");
   });
 
   it("thread switch (fresh claim set) re-arms for the next thread", () => {

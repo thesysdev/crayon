@@ -41,10 +41,9 @@ export function evaluateRegisteredArtifacts(
     claimedIds.add(latest.id);
     // allowed to open right now? and only one open per pass
     if (!mayOpen || opened) continue;
-    // never steal a panel that is already open
-    const dv = detailedViewStore.getState();
-    if (dv.activeDetailedViewId !== null) continue;
-    dv.setActiveDetailedView(artifactViewId(latest.id, latest.version));
+    // takes over the panel even if it is already open: a new stream's first
+    // artifact re-points an open panel to itself
+    detailedViewStore.getState().setActiveDetailedView(artifactViewId(latest.id, latest.version));
     opened = true;
   }
   return opened;
