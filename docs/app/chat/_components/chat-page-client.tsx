@@ -12,13 +12,18 @@ import {
   useCallback,
   useEffect,
   useRef,
-  useState,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
 import styles from "../chat-page.module.css";
 import { ChatPageHeader } from "./chat-page-header";
-import type { ViewportPreset } from "./viewport-presets";
+import {
+  getCurrentUrlFormFactor,
+  getServerUrlFormFactor,
+  setCurrentUrlFormFactor,
+  subscribeToCurrentUrlFormFactor,
+  type ViewportPreset,
+} from "./viewport-presets";
 
 type HostViewport = "mobile" | "tablet" | "desktop";
 
@@ -56,6 +61,18 @@ function subscribeToHostViewport(onStoreChange: () => void) {
   };
 }
 
+function subscribeToBrowserState() {
+  return () => undefined;
+}
+
+function getBrowserState() {
+  return true;
+}
+
+function getServerBrowserState() {
+  return false;
+}
+
 function constrainViewport(viewport: ViewportPreset, hostViewport: HostViewport): ViewportPreset {
   if (hostViewport === "mobile") return "mobile";
   if (hostViewport === "tablet" && viewport === "desktop") return "tablet";
@@ -91,8 +108,18 @@ class CloudSurfaceErrorBoundary extends Component<
 }
 
 export function ChatPageClient() {
-  const [preferredViewport, setPreferredViewport] = useState<ViewportPreset>("desktop");
   const hasCapturedExperience = useRef(false);
+  const isBrowserStateReady = useSyncExternalStore(
+    subscribeToBrowserState,
+    getBrowserState,
+    getServerBrowserState,
+  );
+  const preferredViewport =
+    useSyncExternalStore(
+      subscribeToCurrentUrlFormFactor,
+      getCurrentUrlFormFactor,
+      getServerUrlFormFactor,
+    ) ?? "desktop";
   const hostViewport = useSyncExternalStore(
     subscribeToHostViewport,
     getHostViewport,
@@ -102,7 +129,12 @@ export function ChatPageClient() {
   const viewport = constrainViewport(preferredViewport, hostViewport);
 
   useEffect(() => {
-    if (hasCapturedExperience.current) return;
+    if (!isBrowserStateReady) return;
+    setCurrentUrlFormFactor(viewport);
+  }, [isBrowserStateReady, viewport]);
+
+  useEffect(() => {
+    if (!isBrowserStateReady || hasCapturedExperience.current) return;
     hasCapturedExperience.current = true;
 
     captureChatDemoEvent(CHAT_DEMO_EVENTS.experienceView, {
@@ -110,18 +142,18 @@ export function ChatPageClient() {
       available_preview_count: availableViewports.length as 1 | 2 | 3,
       initial_preview: viewport,
     });
-  }, [availableViewports.length, hostViewport, viewport]);
+  }, [availableViewports.length, hostViewport, isBrowserStateReady, viewport]);
 
   const handleViewportChange = useCallback(
     (nextViewport: ViewportPreset) => {
       if (nextViewport === viewport) return;
 
+      setCurrentUrlFormFactor(nextViewport);
       captureChatDemoEvent(CHAT_DEMO_EVENTS.previewChange, {
         from_preview: viewport,
         to_preview: nextViewport,
         host_breakpoint: HOST_BREAKPOINTS[hostViewport],
       });
-      setPreferredViewport(nextViewport);
     },
     [hostViewport, viewport],
   );

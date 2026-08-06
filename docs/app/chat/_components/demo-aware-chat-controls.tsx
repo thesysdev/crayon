@@ -15,6 +15,7 @@ import {
   type DemoConversation,
 } from "./demo-conversations";
 import type { DemoForkRegistry } from "./demo-fork-registry";
+import { preserveCurrentUrlSearch } from "./viewport-presets";
 
 interface DemoAwareModelSwitcherProps {
   selectedModel: string;
@@ -261,7 +262,7 @@ export function DemoRouteSynchronizer({
     const nextPathname = selectedDemo ? getDemoConversationPath(selectedDemo) : "/chat";
     if (pathname !== nextPathname) {
       selectionDrivenPathnames.current.add(nextPathname);
-      router.push(nextPathname);
+      router.push(preserveCurrentUrlSearch(nextPathname));
     }
   }, [onNavigate, pathname, router, selectThread, selectedThreadId, switchToNewThread]);
 
