@@ -81,7 +81,33 @@ export const vercelAIAdapter = (): StreamProtocolAdapter => ({
     const streamedToolArgs = new Set<string>();
     const endedTools = new Set<string>();
     let stepIndex = 0;
-    let activeStepName: string | undefined;
+
+    // AG-UI step events are lifecycle-only. Normalize each AI SDK model step
+    // into one assistant message lifecycle here so downstream consumers do not
+    // need provider-specific step handling. Open it lazily to avoid producing
+    // empty messages for steps whose only chunks are ignored by this adapter.
+    let activeStep:
+      | {
+          stepName: string;
+          messageId?: string;
+          messageStarted: boolean;
+        }
+      | undefined;
+
+    const startStepMessage = (preferredMessageId?: string): AGUIEvent | undefined => {
+      if (!activeStep || activeStep.messageStarted) return;
+
+      activeStep.messageId ??= preferredMessageId ?? `vercel-ai-message-${stepIndex}`;
+      activeStep.messageStarted = true;
+      return {
+        type: EventType.TEXT_MESSAGE_START,
+        messageId: activeStep.messageId,
+        role: "assistant",
+      };
+    };
+
+    const toolParent = () =>
+      activeStep?.messageId ? { parentMessageId: activeStep.messageId } : {};
 
     for await (const chunk of readChunks(chunks)) {
       if ("providerExecuted" in chunk && chunk.providerExecuted === true) {
@@ -89,58 +115,75 @@ export const vercelAIAdapter = (): StreamProtocolAdapter => ({
       }
 
       switch (chunk.type) {
-        case "start-step":
-          activeStepName = `vercel-ai-step-${++stepIndex}`;
+        case "start-step": {
+          const stepName = `vercel-ai-step-${++stepIndex}`;
+          activeStep = { stepName, messageStarted: false };
           yield {
             type: EventType.STEP_STARTED,
-            stepName: activeStepName,
-            // AG-UI step events can also describe arbitrary progress. Mark
-            // only AI SDK model-step events as assistant message boundaries.
-            messageBoundary: true,
-          } as AGUIEvent;
-          break;
-
-        case "finish-step": {
-          const stepName = activeStepName ?? `vercel-ai-step-${++stepIndex}`;
-          yield {
-            type: EventType.STEP_FINISHED,
             stepName,
-            messageBoundary: true,
-          } as AGUIEvent;
-          activeStepName = undefined;
+          };
           break;
         }
 
-        case "text-start":
+        case "finish-step": {
+          const stepName = activeStep?.stepName ?? `vercel-ai-step-${++stepIndex}`;
+          if (activeStep?.messageStarted && activeStep.messageId) {
+            yield {
+              type: EventType.TEXT_MESSAGE_END,
+              messageId: activeStep.messageId,
+            };
+          }
           yield {
-            type: EventType.TEXT_MESSAGE_START,
-            messageId: chunk.id,
-            role: "assistant",
+            type: EventType.STEP_FINISHED,
+            stepName,
           };
+          activeStep = undefined;
           break;
+        }
 
-        case "text-delta":
+        case "text-start": {
+          const event = startStepMessage(chunk.id);
+          if (event) yield event;
+          if (!activeStep) {
+            yield {
+              type: EventType.TEXT_MESSAGE_START,
+              messageId: chunk.id,
+              role: "assistant",
+            };
+          }
+          break;
+        }
+
+        case "text-delta": {
+          const event = startStepMessage(chunk.id);
+          if (event) yield event;
           yield {
             type: EventType.TEXT_MESSAGE_CONTENT,
-            messageId: chunk.id,
+            messageId: activeStep?.messageId ?? chunk.id,
             delta: chunk.delta,
           };
           break;
+        }
 
         case "text-end":
-          yield {
-            type: EventType.TEXT_MESSAGE_END,
-            messageId: chunk.id,
-          };
+          if (!activeStep) {
+            yield {
+              type: EventType.TEXT_MESSAGE_END,
+              messageId: chunk.id,
+            };
+          }
           break;
 
         case "tool-input-start":
           if (!startedTools.has(chunk.toolCallId)) {
+            const event = startStepMessage();
+            if (event) yield event;
             startedTools.add(chunk.toolCallId);
             yield {
               type: EventType.TOOL_CALL_START,
               toolCallId: chunk.toolCallId,
               toolCallName: chunk.toolName,
+              ...toolParent(),
             };
           }
           break;
@@ -159,11 +202,14 @@ export const vercelAIAdapter = (): StreamProtocolAdapter => ({
         case "tool-input-available":
         case "tool-input-error": {
           if (!startedTools.has(chunk.toolCallId)) {
+            const event = startStepMessage();
+            if (event) yield event;
             startedTools.add(chunk.toolCallId);
             yield {
               type: EventType.TOOL_CALL_START,
               toolCallId: chunk.toolCallId,
               toolCallName: chunk.toolName,
+              ...toolParent(),
             };
           }
 
@@ -211,8 +257,15 @@ export const vercelAIAdapter = (): StreamProtocolAdapter => ({
             type: EventType.RUN_ERROR,
             message: chunk.errorText,
           };
-          break;
+          return;
       }
+    }
+
+    if (activeStep?.messageStarted && activeStep.messageId) {
+      yield {
+        type: EventType.TEXT_MESSAGE_END,
+        messageId: activeStep.messageId,
+      };
     }
   },
 });

@@ -47,22 +47,109 @@ describe("vercelAIAdapter", () => {
       {
         type: EventType.STEP_STARTED,
         stepName: "vercel-ai-step-1",
-        messageBoundary: true,
       },
       {
         type: EventType.STEP_FINISHED,
         stepName: "vercel-ai-step-1",
-        messageBoundary: true,
       },
       {
         type: EventType.STEP_STARTED,
         stepName: "vercel-ai-step-2",
-        messageBoundary: true,
       },
       {
         type: EventType.STEP_FINISHED,
         stepName: "vercel-ai-step-2",
-        messageBoundary: true,
+      },
+    ]);
+  });
+
+  it("normalizes all text parts in a model step into one AG-UI message", async () => {
+    const events = await parse(
+      sse({ type: "start-step" }) +
+        sse({ type: "text-start", id: "text-1" }) +
+        sse({ type: "text-delta", id: "text-1", delta: "one" }) +
+        sse({ type: "text-end", id: "text-1" }) +
+        sse({ type: "text-start", id: "text-2" }) +
+        sse({ type: "text-delta", id: "text-2", delta: "two" }) +
+        sse({ type: "text-end", id: "text-2" }) +
+        sse({ type: "finish-step" }),
+    );
+
+    expect(events).toEqual([
+      {
+        type: EventType.STEP_STARTED,
+        stepName: "vercel-ai-step-1",
+      },
+      {
+        type: EventType.TEXT_MESSAGE_START,
+        messageId: "text-1",
+        role: "assistant",
+      },
+      {
+        type: EventType.TEXT_MESSAGE_CONTENT,
+        messageId: "text-1",
+        delta: "one",
+      },
+      {
+        type: EventType.TEXT_MESSAGE_CONTENT,
+        messageId: "text-1",
+        delta: "two",
+      },
+      {
+        type: EventType.TEXT_MESSAGE_END,
+        messageId: "text-1",
+      },
+      {
+        type: EventType.STEP_FINISHED,
+        stepName: "vercel-ai-step-1",
+      },
+    ]);
+  });
+
+  it("assigns a standard AG-UI parent message to a tool-only model step", async () => {
+    const events = await parse(
+      sse({ type: "start-step" }) +
+        sse({
+          type: "tool-input-available",
+          toolCallId: "tool-step-1",
+          toolName: "search",
+          input: { query: "OpenUI" },
+        }) +
+        sse({ type: "finish-step" }),
+    );
+
+    expect(events).toEqual([
+      {
+        type: EventType.STEP_STARTED,
+        stepName: "vercel-ai-step-1",
+      },
+      {
+        type: EventType.TEXT_MESSAGE_START,
+        messageId: "vercel-ai-message-1",
+        role: "assistant",
+      },
+      {
+        type: EventType.TOOL_CALL_START,
+        toolCallId: "tool-step-1",
+        toolCallName: "search",
+        parentMessageId: "vercel-ai-message-1",
+      },
+      {
+        type: EventType.TOOL_CALL_ARGS,
+        toolCallId: "tool-step-1",
+        delta: '{"query":"OpenUI"}',
+      },
+      {
+        type: EventType.TOOL_CALL_END,
+        toolCallId: "tool-step-1",
+      },
+      {
+        type: EventType.TEXT_MESSAGE_END,
+        messageId: "vercel-ai-message-1",
+      },
+      {
+        type: EventType.STEP_FINISHED,
+        stepName: "vercel-ai-step-1",
       },
     ]);
   });
@@ -339,6 +426,22 @@ describe("vercelAIAdapter", () => {
 
   it("maps AI SDK error chunks to RUN_ERROR", async () => {
     const events = await parse(sse({ type: "error", errorText: "The model stream failed" }));
+
+    expect(events).toEqual([
+      {
+        type: EventType.RUN_ERROR,
+        message: "The model stream failed",
+      },
+    ]);
+  });
+
+  it("does not emit chunks after the terminal RUN_ERROR event", async () => {
+    const events = await parse(
+      sse({ type: "error", errorText: "The model stream failed" }) +
+        sse({ type: "text-start", id: "text-after-error" }) +
+        sse({ type: "text-delta", id: "text-after-error", delta: "ignored" }) +
+        sse({ type: "text-end", id: "text-after-error" }),
+    );
 
     expect(events).toEqual([
       {
