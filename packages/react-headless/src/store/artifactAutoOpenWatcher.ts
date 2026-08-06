@@ -16,12 +16,24 @@ export function evaluateRegisteredArtifacts(
   detailedViewStore: ReturnType<typeof createDetailedViewStore>,
 ): boolean {
   let opened = false;
+  //  artifacts = {
+  //   "report-abc": [ {id:"report-abc", version:1, …}, {id:"report-abc", version:2, …} ],
+  //   "deck-xyz":   [ {id:"deck-xyz",  version:1, …} ],
+  // }
+  // allVersionLists = [
+  //   [ {id:"report-abc", version:1, …}, {id:"report-abc", version:2, …} ],
+  //   [ {id:"deck-xyz",  version:1, …} ],
+  // ]
   const allVersionLists = Object.values(artifacts);
   for (let i = 0; i < allVersionLists.length; i++) {
     const versions = allVersionLists[i];
+    // versions = [ {id:"report-abc", version:1, …}, {id:"report-abc", version:2, …} ]
+    // no list at this index (can't happen; strict TS guard)
     if (!versions) continue;
     // versions are sorted ascending, so the last entry is the newest one
+    // latest = {id:"report-abc", version:2, …}
     const latest = versions[versions.length - 1];
+    // no versions at all (can't happen in practice; keeps strict TS happy)
     if (!latest) continue;
     // claim this id's one chance; already claimed = skip it
     if (claimedIds.has(latest.id)) continue;
