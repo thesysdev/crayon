@@ -23,7 +23,7 @@ describe("evaluateRegisteredArtifacts", () => {
     const opened = evaluateRegisteredArtifacts(registry(entry("art")), true, claimed, store);
     expect(opened).toBe(true);
     expect(store.getState().activeDetailedViewId).toBe("art:1");
-    expect(claimed.has("art")).toBe(true);
+    expect(claimed.has("art:1")).toBe(true);
   });
 
   it("a user close sticks across re-registrations", () => {
@@ -37,7 +37,7 @@ describe("evaluateRegisteredArtifacts", () => {
     expect(store.getState().activeDetailedViewId).toBeNull();
   });
 
-  it("edits never re-open: a new version shares the claimed id", () => {
+  it("an edit re-opens: a new version gets a fresh chance, even after a close", () => {
     const store = createDetailedViewStore();
     const claimed = new Set<string>();
     evaluateRegisteredArtifacts(registry(entry("art", 1)), true, claimed, store);
@@ -48,7 +48,18 @@ describe("evaluateRegisteredArtifacts", () => {
       claimed,
       store,
     );
-    expect(opened).toBe(false);
+    expect(opened).toBe(true);
+    expect(store.getState().activeDetailedViewId).toBe("art:2");
+  });
+
+  it("the same version never re-opens after a close", () => {
+    const store = createDetailedViewStore();
+    const claimed = new Set<string>();
+    const arts = registry(entry("art", 2));
+    evaluateRegisteredArtifacts(arts, true, claimed, store);
+    expect(store.getState().activeDetailedViewId).toBe("art:2");
+    store.getState().setActiveDetailedView(null);
+    expect(evaluateRegisteredArtifacts(arts, true, claimed, store)).toBe(false);
     expect(store.getState().activeDetailedViewId).toBeNull();
   });
 
@@ -65,7 +76,7 @@ describe("evaluateRegisteredArtifacts", () => {
     const opened = evaluateRegisteredArtifacts(arts, false, claimed, store);
     expect(opened).toBe(false);
     expect(store.getState().activeDetailedViewId).toBeNull();
-    expect(claimed.has("old")).toBe(true);
+    expect(claimed.has("old:1")).toBe(true);
     evaluateRegisteredArtifacts(arts, true, claimed, store);
     expect(store.getState().activeDetailedViewId).toBeNull();
   });
@@ -77,7 +88,7 @@ describe("evaluateRegisteredArtifacts", () => {
     const opened = evaluateRegisteredArtifacts(arts, true, claimed, store);
     expect(opened).toBe(true);
     expect(store.getState().activeDetailedViewId).toBe("a1:1");
-    expect(claimed.has("a2")).toBe(true);
+    expect(claimed.has("a2:1")).toBe(true);
     store.getState().setActiveDetailedView(null);
     expect(evaluateRegisteredArtifacts(arts, true, claimed, store)).toBe(false);
     expect(store.getState().activeDetailedViewId).toBeNull();

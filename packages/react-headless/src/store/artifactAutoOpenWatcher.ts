@@ -6,14 +6,15 @@ import type { createThreadContextStore } from "./createThreadContextStore";
 import type { ArtifactEntry } from "./threadContextTypes";
 
 /**
- * One pass over every artifact registered in the thread. Each artifact id
- * gets a single chance to auto-open — recorded in `claimedIds` the first
- * time we see it, whether or not it opens. Returns true when a panel opened.
+ * One pass over every artifact registered in the thread. Each artifact
+ * version (`id:version`) gets a single chance to auto-open — recorded in
+ * `claimedIds` the first time we see it, whether or not it opens — so an
+ * edit's new version qualifies again. Returns true when a panel opened.
  */
 export function evaluateRegisteredArtifacts(
   artifacts: Record<string, ArtifactEntry[]>, // all artifacts in the thread context: id → versions, ascending
   mayOpen: boolean, // "is opening allowed right now" — streaming and nothing opened yet this stream
-  claimedIds: Set<string>, // artifact ids that already used their chance (cleared per thread)
+  claimedIds: Set<string>, // "id:version" keys that already used their chance (cleared per thread)
   detailedViewStore: ReturnType<typeof createDetailedViewStore>,
 ): boolean {
   let opened = false;
@@ -36,14 +37,17 @@ export function evaluateRegisteredArtifacts(
     const latest = versions[versions.length - 1];
     // no versions at all (can't happen in practice; keeps strict TS happy)
     if (!latest) continue;
-    // claim this id's one chance; already claimed = skip it
-    if (claimedIds.has(latest.id)) continue;
-    claimedIds.add(latest.id);
+    // claim keyed by id:version so an EDIT (new version, same id) gets a
+    // fresh chance to open, while re-registrations of the same version are
+    // ignored (a user's close sticks)
+    const key = artifactViewId(latest.id, latest.version);
+    if (claimedIds.has(key)) continue;
+    claimedIds.add(key);
     // allowed to open right now? and only one open per pass
     if (!mayOpen || opened) continue;
     // takes over the panel even if it is already open: a new stream's first
-    // artifact re-points an open panel to itself
-    detailedViewStore.getState().setActiveDetailedView(artifactViewId(latest.id, latest.version));
+    // artifact (or a streaming edit) re-points an open panel to itself
+    detailedViewStore.getState().setActiveDetailedView(key);
     opened = true;
   }
   return opened;
@@ -61,7 +65,7 @@ export function useArtifactAutoOpenWatcher(
 ): void {
   // "did this stream already auto-open something" — re-armed on each new stream
   const openedThisRunRef = useRef(false);
-  // artifact ids that used their one auto-open chance — cleared on thread switch
+  // id:version keys that used their one auto-open chance — cleared on thread switch
   const claimedIdsRef = useRef(new Set<string>());
 
   useEffect(() => {
