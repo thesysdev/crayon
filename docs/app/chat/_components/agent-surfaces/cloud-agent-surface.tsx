@@ -1,20 +1,27 @@
 "use client";
 
 import {
+  captureChatDemoEvent,
+  CHAT_DEMO_EVENTS,
+  getChatDemoArtifactAnalytics,
+  getChatDemoId,
+} from "@/lib/chat-demo-analytics";
+import {
   OPENUI_CLOUD_LOGO_URL,
   OPENUI_CLOUD_PROMPT_TEMPLATES,
   OPENUI_CLOUD_STARTERS,
 } from "@/lib/openui-cloud/chat-constants";
 import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
 import { CLOUD_USER_ID_HEADER, getOrCreateCloudUserId } from "@/lib/openui-cloud/user-id";
-import { AgentInterface, defineArtifactCategories } from "@openuidev/react-ui";
+import { useThreadList } from "@openuidev/react-headless";
+import { AgentInterface, defineArtifactCategories, IconButton } from "@openuidev/react-ui";
 import {
   chatLibrary,
   presentationArtifactRenderer,
   reportArtifactRenderer,
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
-import { FileText, Presentation } from "lucide-react";
+import { FileText, Presentation, SquarePen } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "../../chat-page.module.css";
@@ -63,6 +70,18 @@ export function CloudAgentSurface() {
       initialModel: getPersistedCloudModel(),
       shouldSendFullHistory: (threadId) => forkRegistry.shouldSeed(threadId),
       onFullHistoryAccepted: (threadId) => forkRegistry.markSeeded(threadId),
+      onPromptSubmitted: ({ threadId, model }) => {
+        captureChatDemoEvent(
+          CHAT_DEMO_EVENTS.promptSubmit,
+          getGenerationAnalyticsContext(forkRegistry, threadId, model),
+        );
+      },
+      onGenerationEnd: ({ threadId, model, outcome }) => {
+        captureChatDemoEvent(CHAT_DEMO_EVENTS.generationEnd, {
+          ...getGenerationAnalyticsContext(forkRegistry, threadId, model),
+          generation_outcome: outcome,
+        });
+      },
     }),
   );
   const [path, setPath] = useState<string>();
@@ -92,6 +111,18 @@ export function CloudAgentSurface() {
     llm.setSelectedModel(selectedModel);
   }, [llm, selectedModel]);
 
+  useEffect(() => {
+    const artifactId = getArtifactIdFromPath(path);
+    const artifact = getChatDemoArtifactAnalytics(artifactId);
+    if (!artifact) return;
+
+    captureChatDemoEvent(CHAT_DEMO_EVENTS.artifactView, {
+      artifact_id: artifact.artifactId,
+      artifact_type: artifact.artifactType,
+      ...(artifact.demoId ? { demo_id: artifact.demoId } : {}),
+    });
+  }, [path]);
+
   const handleModelChange = useCallback(
     (model: string) => {
       llm.setSelectedModel(model);
@@ -117,7 +148,9 @@ export function CloudAgentSurface() {
         <AgentInterface.Sidebar>
           <AgentInterface.SidebarHeader />
           <div className={styles.cloudSidebarPrimaryActions}>
-            <AgentInterface.NewChatButton />
+            <div className={styles.analyticsContents} data-attribute-element="new-chat">
+              <AgentInterface.NewChatButton />
+            </div>
             <AgentInterface.ArtifactNav />
           </div>
           <AgentInterface.SidebarContent>
@@ -125,11 +158,12 @@ export function CloudAgentSurface() {
             <AgentInterface.SidebarSeparator />
             <AgentInterface.ThreadList />
           </AgentInterface.SidebarContent>
-          <SidebarUpgradeFooter />
+          <SidebarUpgradeFooter forkRegistry={forkRegistry} />
         </AgentInterface.Sidebar>
         <AgentInterface.MobileHeader
           className={styles.cloudMobileHeader}
           agentName=""
+          newChatButton={<AnalyticsMobileNewChatButton onNavigate={setPath} />}
           actions={
             <DemoAwareModelSwitcher
               selectedModel={selectedModel}
@@ -147,11 +181,61 @@ export function CloudAgentSurface() {
           glowAnimation
         />
         <AgentInterface.Composer>
-          <DemoAwareComposer forkRegistry={forkRegistry} onNavigate={setPath} />
+          <div className={styles.analyticsContents} data-attribute-element="composer-submit">
+            <DemoAwareComposer forkRegistry={forkRegistry} onNavigate={setPath} />
+          </div>
         </AgentInterface.Composer>
         <DemoPathSynchronizer path={path} onNavigate={setPath} />
         <DemoResponseInteractionGuard />
       </AgentInterface>
     </div>
   );
+}
+
+function AnalyticsMobileNewChatButton({
+  onNavigate,
+}: {
+  onNavigate: (path: string | undefined) => void;
+}) {
+  const switchToNewThread = useThreadList((state) => state.switchToNewThread);
+
+  return (
+    <div className={styles.analyticsContents} data-attribute-element="new-chat">
+      <IconButton
+        size="medium"
+        icon={<SquarePen size="1em" />}
+        onClick={() => {
+          switchToNewThread();
+          onNavigate(undefined);
+        }}
+        variant="secondary"
+        aria-label="New chat"
+      />
+    </div>
+  );
+}
+
+function getGenerationAnalyticsContext(
+  forkRegistry: DemoForkRegistry,
+  threadId: string,
+  model: string,
+) {
+  const demoId = getChatDemoId(forkRegistry.getDemoId(threadId));
+  return {
+    conversation_origin: demoId ? ("demo_continuation" as const) : ("new_chat" as const),
+    model,
+    ...(demoId ? { demo_id: demoId } : {}),
+  };
+}
+
+function getArtifactIdFromPath(path: string | undefined): string | undefined {
+  if (!path?.startsWith("artifacts/")) return undefined;
+  const segments = path.split("/");
+  if (segments.length !== 3 || !segments[2]) return undefined;
+
+  try {
+    return decodeURIComponent(segments[2]);
+  } catch {
+    return undefined;
+  }
 }

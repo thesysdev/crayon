@@ -1,5 +1,6 @@
 "use client";
 
+import { CHAT_DEMO_EVENTS, captureChatDemoEvent, getChatDemoId } from "@/lib/chat-demo-analytics";
 import { useThreadList } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
 import { useEffect, useRef, useState } from "react";
@@ -134,6 +135,10 @@ function ReadOnlyDemoComposer({ demo, forkRegistry, onNavigate }: ReadOnlyDemoCo
       updateThread(continuation);
       selectThread(thread.id);
       onNavigate(undefined);
+      const demoId = getChatDemoId(demo.id);
+      if (demoId) {
+        captureChatDemoEvent(CHAT_DEMO_EVENTS.continuationCreate, { demo_id: demoId });
+      }
     } catch {
       setError("Could not create a continuation. Please try again.");
       setIsCreating(false);
@@ -145,6 +150,7 @@ function ReadOnlyDemoComposer({ demo, forkRegistry, onNavigate }: ReadOnlyDemoCo
       <button
         type="button"
         className={styles.demoComposerCta}
+        data-attribute-element="continue-conversation"
         onClick={continueInNewChat}
         disabled={isCreating}
       >

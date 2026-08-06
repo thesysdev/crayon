@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { CHAT_DEMO_EVENTS, captureChatDemoEvent, getChatDemoId } from "@/lib/chat-demo-analytics";
 import { useThreadList } from "@openuidev/react-headless";
 import { AgentInterface } from "@openuidev/react-ui";
 import { ChartNoAxesCombined, Film, Flower } from "lucide-react";
@@ -25,8 +26,13 @@ export function DemoConversationList() {
           key={conversation.id}
           path={`demo/${conversation.id}`}
           icon={ICONS[conversation.icon]}
+          data-attribute-element="featured-demo"
           aria-label={`${conversation.title}, ${conversation.description}, read-only demo thread`}
-          onClick={() => selectThread(conversation.id)}
+          onClick={() => {
+            const demoId = getChatDemoId(conversation.id);
+            if (demoId) captureChatDemoEvent(CHAT_DEMO_EVENTS.threadView, { demo_id: demoId });
+            selectThread(conversation.id);
+          }}
         >
           {conversation.title}
         </AgentInterface.SidebarItem>

@@ -1,6 +1,7 @@
 "use client";
 
 import { BuildForFreeMenu } from "@/app/_components/build-for-free-menu";
+import { CHAT_DEMO_EVENTS, captureChatDemoEvent } from "@/lib/chat-demo-analytics";
 import { ToggleGroup } from "@openuidev/react-ui/ToggleGroup";
 import { ToggleItem } from "@openuidev/react-ui/ToggleItem";
 import { ArrowLeft, Monitor, Smartphone, Tablet } from "lucide-react";
@@ -51,6 +52,7 @@ export function ChatPageHeader({
                     key={id}
                     id={`chat-viewport-${id}`}
                     value={id}
+                    data-attribute-element="preview-option"
                     className={
                       id === "desktop"
                         ? `${styles.viewportItem} ${styles.desktopViewportItem}`
@@ -68,7 +70,12 @@ export function ChatPageHeader({
           ) : null}
         </div>
 
-        <BuildForFreeMenu analyticsSource="chat_navbar" className={styles.buildForFreeMenu} />
+        <BuildForFreeMenu
+          analyticsSource="chat_navbar"
+          className={styles.buildForFreeMenu}
+          dataAttributeElement="build-for-free"
+          onOpen={() => captureChatDemoEvent(CHAT_DEMO_EVENTS.buildMenuOpen, {})}
+        />
       </div>
     </header>
   );

@@ -1,8 +1,21 @@
 "use client";
 
+import {
+  CHAT_DEMO_EVENTS,
+  captureChatDemoEvent,
+  type ChatDemoHostBreakpoint,
+} from "@/lib/chat-demo-analytics";
 import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import dynamic from "next/dynamic";
-import { Component, useState, useSyncExternalStore, type ReactNode } from "react";
+import {
+  Component,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import styles from "../chat-page.module.css";
 import { ChatPageHeader } from "./chat-page-header";
 import type { ViewportPreset } from "./viewport-presets";
@@ -13,6 +26,12 @@ const HOST_VIEWPORT_PRESETS: Record<HostViewport, readonly ViewportPreset[]> = {
   mobile: ["mobile"],
   tablet: ["mobile", "tablet"],
   desktop: ["mobile", "tablet", "desktop"],
+};
+
+const HOST_BREAKPOINTS: Record<HostViewport, ChatDemoHostBreakpoint> = {
+  mobile: "mobile_host",
+  tablet: "tablet_host",
+  desktop: "desktop_host",
 };
 
 function getHostViewport(): HostViewport {
@@ -73,6 +92,7 @@ class CloudSurfaceErrorBoundary extends Component<
 
 export function ChatPageClient() {
   const [preferredViewport, setPreferredViewport] = useState<ViewportPreset>("desktop");
+  const hasCapturedExperience = useRef(false);
   const hostViewport = useSyncExternalStore(
     subscribeToHostViewport,
     getHostViewport,
@@ -81,13 +101,38 @@ export function ChatPageClient() {
   const availableViewports = HOST_VIEWPORT_PRESETS[hostViewport];
   const viewport = constrainViewport(preferredViewport, hostViewport);
 
+  useEffect(() => {
+    if (hasCapturedExperience.current) return;
+    hasCapturedExperience.current = true;
+
+    captureChatDemoEvent(CHAT_DEMO_EVENTS.experienceView, {
+      host_breakpoint: HOST_BREAKPOINTS[hostViewport],
+      available_preview_count: availableViewports.length as 1 | 2 | 3,
+      initial_preview: viewport,
+    });
+  }, [availableViewports.length, hostViewport, viewport]);
+
+  const handleViewportChange = useCallback(
+    (nextViewport: ViewportPreset) => {
+      if (nextViewport === viewport) return;
+
+      captureChatDemoEvent(CHAT_DEMO_EVENTS.previewChange, {
+        from_preview: viewport,
+        to_preview: nextViewport,
+        host_breakpoint: HOST_BREAKPOINTS[hostViewport],
+      });
+      setPreferredViewport(nextViewport);
+    },
+    [hostViewport, viewport],
+  );
+
   return (
     <main className={styles.page}>
       <h1 className={styles.srOnly}>OpenUI Cloud Chat</h1>
       <ChatPageHeader
         viewport={viewport}
         availableViewports={availableViewports}
-        onViewportChange={setPreferredViewport}
+        onViewportChange={handleViewportChange}
       />
 
       <section

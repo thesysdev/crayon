@@ -1,15 +1,48 @@
 "use client";
 
 import { CloudFeatureMarquee } from "@/app/(home)/cloud/CloudFeatureMarquee";
+import { CHAT_DEMO_EVENTS, captureChatDemoEvent, getChatDemoId } from "@/lib/chat-demo-analytics";
+import { useThreadList } from "@openuidev/react-headless";
 import { ArrowRight, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "../chat-page.module.css";
+import { getDemoConversation } from "./demo-conversations";
+import type { DemoForkRegistry } from "./demo-fork-registry";
 
 // Sidebar footer: "Demo powered by OpenUI Cloud" label plus a "Why upgrade?"
 // button that opens a bottom sheet with the Cloud page's 12-reasons marquee.
-export function SidebarUpgradeFooter() {
+interface SidebarUpgradeFooterProps {
+  forkRegistry: DemoForkRegistry;
+}
+
+export function SidebarUpgradeFooter({ forkRegistry }: SidebarUpgradeFooterProps) {
   const [open, setOpen] = useState(false);
+  const selectedThreadId = useThreadList((state) => state.selectedThreadId);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const hasCapturedPromptView = useRef(false);
+
+  const sourceDemoId =
+    getDemoConversation(selectedThreadId)?.id ??
+    (selectedThreadId ? forkRegistry.getDemoId(selectedThreadId) : undefined);
+  const demoId = getChatDemoId(sourceDemoId);
+
+  useEffect(() => {
+    const button = buttonRef.current;
+    if (!button || hasCapturedPromptView.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting || entry.intersectionRatio < 0.5) return;
+        hasCapturedPromptView.current = true;
+        captureChatDemoEvent(CHAT_DEMO_EVENTS.upgradePromptView, {});
+        observer.disconnect();
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(button);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -27,7 +60,18 @@ export function SidebarUpgradeFooter() {
           Demo powered by OpenUI
           <span className={styles.sidebarCloudChip}>Cloud</span>
         </div>
-        <button type="button" className={styles.sidebarUpgradeButton} onClick={() => setOpen(true)}>
+        <button
+          ref={buttonRef}
+          type="button"
+          className={styles.sidebarUpgradeButton}
+          data-attribute-element="why-upgrade"
+          onClick={() => {
+            captureChatDemoEvent(CHAT_DEMO_EVENTS.upgradePromptClick, {
+              ...(demoId ? { demo_id: demoId } : {}),
+            });
+            setOpen(true);
+          }}
+        >
           Why upgrade?
         </button>
       </div>
@@ -51,6 +95,14 @@ export function SidebarUpgradeFooter() {
                   href="/docs/agent/getting-started/openui-cloud"
                   prefetch={false}
                   className={`${styles.upgradeSheetCta} ${styles.upgradeSheetCtaDesktop}`}
+                  data-attribute-element="upgrade-cta"
+                  onClick={() =>
+                    captureChatDemoEvent(CHAT_DEMO_EVENTS.upgradeCtaClick, {
+                      placement: "desktop",
+                      destination: "getting_started_docs",
+                      ...(demoId ? { demo_id: demoId } : {}),
+                    })
+                  }
                 >
                   Build for free
                   <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
@@ -70,6 +122,14 @@ export function SidebarUpgradeFooter() {
               href="/docs/agent/getting-started/openui-cloud"
               prefetch={false}
               className={`${styles.upgradeSheetCta} ${styles.upgradeSheetCtaMobile}`}
+              data-attribute-element="upgrade-cta"
+              onClick={() =>
+                captureChatDemoEvent(CHAT_DEMO_EVENTS.upgradeCtaClick, {
+                  placement: "mobile",
+                  destination: "getting_started_docs",
+                  ...(demoId ? { demo_id: demoId } : {}),
+                })
+              }
             >
               Build for free
               <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />

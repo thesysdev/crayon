@@ -7,10 +7,15 @@ export function loadPostHog(): Promise<PostHog> {
     posthog.init("phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D", {
       api_host: "https://dgoeivjus9jfp.cloudfront.net",
       capture_pageview: "history_change",
+      person_profiles: "identified_only",
       advanced_disable_flags: true,
+      autocapture: {
+        url_ignorelist: [/\/chat(?:[/?#]|$)/],
+      },
       disable_session_recording: false,
       session_recording: {
         sampleRate: 0.1,
+        maskTextSelector: ".chat-agent-surface",
       },
       disable_surveys: true,
     });
