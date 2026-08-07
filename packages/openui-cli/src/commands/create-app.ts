@@ -30,7 +30,7 @@ const backendDependencies: Record<
       "@langchain/langgraph": "^1.4.9",
     },
     "vercel-ai-sdk": {
-      ai: "^6.0.244",
+      ai: "^6.0.246",
       zod: "^4.4.3",
     },
   },
@@ -43,9 +43,9 @@ const backendDependencies: Record<
       zod: "^4.4.3",
     },
     "vercel-ai-sdk": {
-      "@ai-sdk/openai": "^3.0.90",
+      "@ai-sdk/openai": "^3.0.91",
       "@openuidev/react-headless": "^0.9.6",
-      ai: "^6.0.244",
+      ai: "^6.0.246",
       zod: "^4.4.3",
     },
   },
