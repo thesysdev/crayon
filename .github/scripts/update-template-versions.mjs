@@ -10,14 +10,15 @@ import fs from "node:fs";
 import path from "node:path";
 
 const TEMPLATES_DIR = "packages/openui-cli/src/templates";
+const SCOPE = "@openuidev/";
 
-// name -> version for every publishable workspace package.
+// name -> version for every publishable @openuidev/* workspace package.
 const workspaceVersions = new Map();
 for (const dir of fs.readdirSync("packages")) {
   const pkgPath = path.join("packages", dir, "package.json");
   if (!fs.existsSync(pkgPath)) continue;
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-  if (!pkg.name || !pkg.version || pkg.private) continue;
+  if (!pkg.name?.startsWith(SCOPE) || !pkg.version || pkg.private) continue;
   workspaceVersions.set(pkg.name, pkg.version);
 }
 
