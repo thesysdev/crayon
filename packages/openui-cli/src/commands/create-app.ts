@@ -9,6 +9,7 @@ import {
   resolveInstallPackageManager,
   type PackageManagerName,
 } from "../lib/detect-package-manager";
+import { fetchTemplate, type FetchedTemplate } from "../lib/fetch-template";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
@@ -171,16 +172,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     );
   }
 
-  const templateDir = path.join(__dirname, "..", "templates", template);
-  if (!fs.existsSync(templateDir)) {
-    throw new CreateError(
-      "preflight",
-      `Template "${template}" not found. Rebuild the CLI with \`pnpm build\`.`,
-      "filesystem",
-      "TEMPLATE_MISSING",
-    );
-  }
-
   telemetry.capture("cli_env_resolution_started", {
     ...createFunnelProps("env_resolution_started"),
     template,
@@ -214,7 +205,11 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     template,
     ai_setup: aiSetup,
   });
+
+  let fetchedTemplate: FetchedTemplate | undefined;
   try {
+    fetchedTemplate = await fetchTemplate(template);
+    const templateDir = fetchedTemplate.dir;
     fs.cpSync(templateDir, targetDir, {
       recursive: true,
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
@@ -250,6 +245,8 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       properties.error_class,
       properties.error_code,
     );
+  } finally {
+    fetchedTemplate?.cleanup();
   }
   telemetry.capture("cli_scaffold_succeeded", {
     ...createFunnelProps("scaffold_succeeded"),

@@ -1,0 +1,40 @@
+name: Update CLI Template Versions
+
+# After a package publish, sync the CLI templates' @openuidev/* versions
+on:
+  workflow_run:
+    workflows: ["Publish NPM packages"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump-template-versions:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Sync template versions to npm latest
+        run: node .github/scripts/update-template-versions.mjs
+
+      - name: Open PR with template bumps
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: bot/update-template-versions
+          title: "chore(cli): bump template versions to latest published packages"
+          commit-message: "chore(cli): bump template versions to latest published packages"
+          body: |
+            Automated follow-up to a package publish.
+
+            - Syncs `@openuidev/*` versions in the CLI templates to npm latest
+            - Regenerates template `package-lock.json` files
+            - Merging this ships the new versions to `openui create` (templates are fetched from main)
+          delete-branch: true
