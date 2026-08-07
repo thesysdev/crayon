@@ -12,7 +12,6 @@ import {
   OPENUI_CLOUD_STARTERS,
 } from "@/lib/openui-cloud/chat-constants";
 import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
-import { DEMO_AUTHORING_MODEL } from "@/lib/openui-cloud/models";
 import { CLOUD_USER_ID_HEADER, getOrCreateCloudUserId } from "@/lib/openui-cloud/user-id";
 import { useThreadList } from "@openuidev/react-headless";
 import { AgentInterface, defineArtifactCategories, IconButton } from "@openuidev/react-ui";
@@ -26,7 +25,6 @@ import { FileText, Presentation, SquarePen } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "../../chat-page.module.css";
-import { DemoAuthoringTools } from "../demo-authoring-tools";
 import {
   DemoAwareComposer,
   DemoAwareModelSwitcher,
@@ -36,7 +34,6 @@ import {
 } from "../demo-aware-chat-controls";
 import { DemoConversationList } from "../demo-conversation-list";
 import { createDemoConversationStorage } from "../demo-conversation-storage";
-import { getDemoConversation } from "../demo-conversations";
 import { DemoForkRegistry } from "../demo-fork-registry";
 import { SidebarUpgradeFooter } from "../sidebar-upgrade-sheet";
 import { getPersistedCloudModel, usePersistedCloudModel } from "../use-persisted-cloud-model";
@@ -63,20 +60,15 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   },
 ]);
 
-interface CloudAgentSurfaceProps {
-  authoringMode?: boolean;
-}
-
-export function CloudAgentSurface({ authoringMode = false }: CloudAgentSurfaceProps) {
+export function CloudAgentSurface() {
   const { resolvedTheme } = useTheme();
   const mode = resolvedTheme === "dark" ? "dark" : "light";
   const [selectedModel, setSelectedModel] = usePersistedCloudModel();
-  const generationModel = authoringMode ? DEMO_AUTHORING_MODEL : selectedModel;
   const [userId] = useState(getOrCreateCloudUserId);
   const [forkRegistry] = useState(() => new DemoForkRegistry(userId));
   const [llm] = useState(() =>
     createCloudChatLLM({
-      initialModel: authoringMode ? DEMO_AUTHORING_MODEL : getPersistedCloudModel(),
+      initialModel: getPersistedCloudModel(),
       shouldSendFullHistory: (threadId) => forkRegistry.shouldSeed(threadId),
       onFullHistoryAccepted: (threadId) => forkRegistry.markSeeded(threadId),
       onPromptSubmitted: ({ threadId, model }) => {
@@ -117,8 +109,8 @@ export function CloudAgentSurface({ authoringMode = false }: CloudAgentSurfacePr
   );
 
   useEffect(() => {
-    llm.setSelectedModel(generationModel);
-  }, [generationModel, llm]);
+    llm.setSelectedModel(selectedModel);
+  }, [llm, selectedModel]);
 
   useEffect(() => {
     const artifactId = getArtifactIdFromPath(path);
@@ -141,11 +133,7 @@ export function CloudAgentSurface({ authoringMode = false }: CloudAgentSurfacePr
   );
 
   return (
-    <div
-      className={`chat-agent-surface ${authoringMode ? styles.demoAuthoringSurface : ""}`}
-      data-chat-mode="cloud"
-      data-authoring-mode={authoringMode ? "true" : undefined}
-    >
+    <div className="chat-agent-surface" data-chat-mode="cloud">
       <AgentInterface
         storage={storage}
         llm={llm}
@@ -169,11 +157,11 @@ export function CloudAgentSurface({ authoringMode = false }: CloudAgentSurfacePr
             </div>
           </div>
           <AgentInterface.SidebarContent>
-            {!authoringMode && <DemoConversationList onNavigate={setPath} />}
-            {!authoringMode && <AgentInterface.SidebarSeparator />}
+            <DemoConversationList onNavigate={setPath} />
+            <AgentInterface.SidebarSeparator />
             <AgentInterface.ThreadList />
           </AgentInterface.SidebarContent>
-          {!authoringMode && <SidebarUpgradeFooter forkRegistry={forkRegistry} />}
+          <SidebarUpgradeFooter forkRegistry={forkRegistry} />
         </AgentInterface.Sidebar>
         <AgentInterface.MobileHeader
           className={styles.cloudMobileHeader}
@@ -183,16 +171,11 @@ export function CloudAgentSurface({ authoringMode = false }: CloudAgentSurfacePr
             <DemoAwareModelSwitcher
               selectedModel={selectedModel}
               onModelChange={handleModelChange}
-              forcedModel={authoringMode ? DEMO_AUTHORING_MODEL : undefined}
             />
           }
         />
         <AgentInterface.ThreadHeader className={styles.cloudThreadHeader}>
-          <DemoAwareModelSwitcher
-            selectedModel={selectedModel}
-            onModelChange={handleModelChange}
-            forcedModel={authoringMode ? DEMO_AUTHORING_MODEL : undefined}
-          />
+          <DemoAwareModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
         </AgentInterface.ThreadHeader>
         <AgentInterface.Welcome
           title="Good to see you"
@@ -202,41 +185,15 @@ export function CloudAgentSurface({ authoringMode = false }: CloudAgentSurfacePr
         />
         <AgentInterface.Composer>
           <div className={styles.analyticsContents} data-attribute-element="composer-submit">
-            {authoringMode ? (
-              <AgentInterface.Composer />
-            ) : (
-              <DemoAwareComposer forkRegistry={forkRegistry} onNavigate={setPath} />
-            )}
+            <DemoAwareComposer forkRegistry={forkRegistry} onNavigate={setPath} />
           </div>
         </AgentInterface.Composer>
-        {authoringMode ? (
-          <>
-            <AuthoringThreadGuard onNavigate={setPath} />
-            <DemoAuthoringTools />
-          </>
-        ) : (
-          <>
-            <DemoPathSynchronizer path={path} onNavigate={setPath} />
-            <DemoRouteSynchronizer onNavigate={setPath} />
-            <DemoResponseInteractionGuard />
-          </>
-        )}
+        <DemoPathSynchronizer path={path} onNavigate={setPath} />
+        <DemoRouteSynchronizer onNavigate={setPath} />
+        <DemoResponseInteractionGuard />
       </AgentInterface>
     </div>
   );
-}
-
-function AuthoringThreadGuard({ onNavigate }: { onNavigate: (path: string | undefined) => void }) {
-  const selectedThreadId = useThreadList((state) => state.selectedThreadId);
-  const switchToNewThread = useThreadList((state) => state.switchToNewThread);
-
-  useEffect(() => {
-    if (!getDemoConversation(selectedThreadId)) return;
-    switchToNewThread();
-    onNavigate(undefined);
-  }, [onNavigate, selectedThreadId, switchToNewThread]);
-
-  return null;
 }
 
 function AnalyticsMobileNewChatButton({

@@ -6,10 +6,7 @@ import {
   type ChatDemoHostBreakpoint,
 } from "@/lib/chat-demo-analytics";
 import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
-import { ArrowLeft } from "lucide-react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   Component,
   useCallback,
@@ -111,13 +108,6 @@ class CloudSurfaceErrorBoundary extends Component<
 }
 
 export function ChatPageClient() {
-  const pathname = usePathname();
-
-  if (pathname === "/chat/author") return <ChatAuthoringPageClient />;
-  return <ChatDemoPageClient />;
-}
-
-function ChatDemoPageClient() {
   const hasCapturedExperience = useRef(false);
   const isBrowserStateReady = useSyncExternalStore(
     subscribeToBrowserState,
@@ -187,29 +177,6 @@ function ChatDemoPageClient() {
             <CloudAgentSurface />
           </CloudSurfaceErrorBoundary>
         </div>
-      </section>
-    </main>
-  );
-}
-
-function ChatAuthoringPageClient() {
-  return (
-    <main className={`${styles.page} ${styles.authoringPage}`}>
-      <header className={styles.authoringPageHeader}>
-        <Link href="/chat" className={styles.authoringBackLink}>
-          <ArrowLeft size={18} aria-hidden="true" />
-          Back to demo
-        </Link>
-        <div className={styles.authoringPageHeading}>
-          <h1>Artifact authoring</h1>
-          <p>Generate and preview artifacts while keeping their OpenUI Lang visible.</p>
-        </div>
-        <span className={styles.authoringModelBadge}>Claude Sonnet 4.6</span>
-      </header>
-      <section className={styles.authoringViewport} aria-label="OpenUI artifact authoring">
-        <CloudSurfaceErrorBoundary>
-          <CloudAgentSurface authoringMode />
-        </CloudSurfaceErrorBoundary>
       </section>
     </main>
   );
