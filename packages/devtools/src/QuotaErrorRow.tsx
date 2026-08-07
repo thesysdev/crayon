@@ -120,7 +120,6 @@ const styles = {
     marginTop: 2,
   },
   action: {
-    alignSelf: "flex-start",
     display: "inline-flex",
     alignItems: "center",
     gap: 6,
@@ -133,11 +132,10 @@ const styles = {
     fontSize: 12,
     fontWeight: 500,
     cursor: "pointer",
-    marginTop: 2,
   },
   actionSecondary: {
     background: "#ffffff",
     color: "#18181b",
-    border: "1px solid #d4d4d8",
+    border: "1px solid #e4e4e7",
   },
 } satisfies Record<string, CSSProperties>;
