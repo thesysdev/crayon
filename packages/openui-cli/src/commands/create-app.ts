@@ -28,9 +28,13 @@ const backendDependencies: Record<
     langgraph: {
       "@langchain/core": "^1.2.5",
       "@langchain/langgraph": "^1.4.9",
+      "@langchain/openai": "^1.5.6",
+      "@openuidev/react-headless": "^0.9.7",
     },
     "vercel-ai-sdk": {
-      ai: "^6.0.246",
+      "@ai-sdk/openai": "3.0.90",
+      "@openuidev/react-headless": "^0.9.6",
+      ai: "6.0.244",
       zod: "^4.4.3",
     },
   },
@@ -43,9 +47,9 @@ const backendDependencies: Record<
       zod: "^4.4.3",
     },
     "vercel-ai-sdk": {
-      "@ai-sdk/openai": "^3.0.91",
+      "@ai-sdk/openai": "3.0.90",
       "@openuidev/react-headless": "^0.9.6",
-      ai: "^6.0.246",
+      ai: "6.0.244",
       zod: "^4.4.3",
     },
   },
@@ -170,9 +174,8 @@ function applyBackendFiles(projectDir: string, backendFramework: BackendFramewor
     }
     fs.copyFileSync(routeSource, routeDestination);
 
-    // Self-hosted framework routes speak their native wire protocols, so their
-    // matching stream adapter and message format are selected on the frontend.
-    // Cloud keeps the Responses adapter because Responses remains its transport.
+    // Framework routes speak their native wire protocols, so select the
+    // matching frontend stream adapter and message format too.
     if (fs.existsSync(pageOptionsDir)) {
       const pageSource = path.join(pageOptionsDir, `${backendFramework}.tsx`);
       if (!fs.existsSync(pageSource)) {
@@ -183,6 +186,9 @@ function applyBackendFiles(projectDir: string, backendFramework: BackendFramewor
       }
       fs.copyFileSync(pageSource, path.join(projectDir, "src", "app", "page.tsx"));
     }
+
+    // Native framework routes own their tool loop and stream encoding.
+    fs.rmSync(path.join(projectDir, "src", "lib", "tool-loop.ts"), { force: true });
   }
   fs.rmSync(routeOptionsDir, { recursive: true, force: true });
   fs.rmSync(pageOptionsDir, { recursive: true, force: true });

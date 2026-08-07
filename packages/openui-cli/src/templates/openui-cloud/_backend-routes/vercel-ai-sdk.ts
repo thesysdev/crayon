@@ -1,100 +1,113 @@
 import { requiredEnv } from "@/lib/env";
 import { resolveRequestedModel } from "@/lib/models";
-import { runFunctionToolLoop, type FunctionToolExecutor } from "@/lib/tool-loop";
-import { executeGetWeather } from "@/lib/tools/get-weather";
+import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
+import { createOpenAI } from "@ai-sdk/openai";
 import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
-import { asSchema, tool, type ToolSet } from "ai";
-import { NextResponse } from "next/server";
-import OpenAI from "openai";
-import type {
-  FunctionTool,
-  ResponseCreateParamsNonStreaming,
-  ResponseInputItem,
-  Tool,
-} from "openai/resources/responses/responses";
+import {
+  convertToModelMessages,
+  stepCountIs,
+  streamText,
+  tool,
+  wrapLanguageModel,
+  type LanguageModelMiddleware,
+  type UIMessage,
+} from "ai";
 import { z } from "zod";
 
 export const runtime = "nodejs";
 
-/**
- * App-owned tools are defined with the Vercel AI SDK and execute on this
- * server. Add your own tools here; OpenUI Cloud's built-ins stay separate.
- */
 const appTools = {
   get_weather: tool({
-    description:
-      "Get the current weather for a city or place name. Use whenever the user " +
-      "asks about weather, temperature, rain, or what to wear.",
+    description: getWeatherTool.description,
     inputSchema: z.object({
-      location: z.string().min(1).describe("City or place name, e.g. Berlin."),
+      location: z.string().trim().min(1).describe("City or place name, e.g. Berlin."),
     }),
-    execute: async ({ location }, { abortSignal }) =>
+    execute: ({ location }, { abortSignal }) =>
       executeGetWeather(JSON.stringify({ location }), { signal: abortSignal }),
   }),
-} satisfies ToolSet;
+};
 
-/**
- * The AI SDK normally owns the model transport as well as its tool loop. Here
- * OpenUI Cloud must remain the Responses transport, so this adapter exposes AI
- * SDK tools as Responses declarations and local executors for our shared loop.
- */
-async function prepareAppTools(tools: ToolSet): Promise<{
-  definitions: FunctionTool[];
-  executors: Record<string, FunctionToolExecutor>;
-}> {
-  const definitions: FunctionTool[] = [];
-  const executors: Record<string, FunctionToolExecutor> = {};
-
-  for (const [name, appTool] of Object.entries(tools)) {
-    if (name.startsWith("thesys_")) {
-      throw new Error(`App tool names cannot use the reserved thesys_ prefix: ${name}`);
-    }
-    if (appTool.type && appTool.type !== "function") {
-      throw new Error(`Only application function tools are supported here: ${name}`);
-    }
-    if (appTool.needsApproval) {
-      throw new Error(`Tool approval is not configured for: ${name}`);
-    }
-    const execute = appTool.execute;
-    if (!execute) throw new Error(`Tool ${name} must provide an execute function`);
-
-    const schema = asSchema(appTool.inputSchema);
-    definitions.push({
-      type: "function",
-      name,
-      description: appTool.description,
-      parameters: (await schema.jsonSchema) as Record<string, unknown>,
-      strict: appTool.strict ?? false,
-    });
-
-    executors[name] = async (argsJson, { callId, signal }) => {
-      const input = JSON.parse(argsJson || "{}") as unknown;
-      const validation = schema.validate
-        ? await schema.validate(input)
-        : ({ success: true, value: input } as const);
-      if (!validation.success) throw validation.error;
-
-      const output = await execute(validation.value, {
-        toolCallId: callId,
-        messages: [],
-        abortSignal: signal,
-      });
-      if (output !== null && typeof output === "object" && Symbol.asyncIterator in output) {
-        throw new Error(`Streaming tool results are not supported for: ${name}`);
-      }
-      if (typeof output === "string") return output;
-      return JSON.stringify(output) ?? String(output);
-    };
+const appToolNames = new Set(Object.keys(appTools));
+for (const appToolName of appToolNames) {
+  if (appToolName.startsWith("thesys_")) {
+    throw new Error(`App tool names cannot use the reserved thesys_ prefix: ${appToolName}`);
   }
-
-  return { definitions, executors };
 }
 
+type WrapStreamArgs = Parameters<NonNullable<LanguageModelMiddleware["wrapStream"]>>[0];
+type ModelStreamResult = Awaited<ReturnType<WrapStreamArgs["doStream"]>>;
+type ModelStreamPart =
+  ModelStreamResult["stream"] extends ReadableStream<infer Part> ? Part : never;
+
 /**
- * OpenUI Cloud remains the OpenAI-compatible Responses provider and owns its
- * conversations, artifacts, search, and MCP tools. The Vercel AI SDK is used
- * only for application-owned function tools declared above.
+ * OpenUI Cloud runs artifacts, search, and MCP calls itself. Keep those calls
+ * out of the AI SDK's local tool runner; only appTools are executed here.
  */
+const appToolsOnly: LanguageModelMiddleware = {
+  specificationVersion: "v3",
+  wrapStream: async ({ doStream }) => {
+    const result = await doStream();
+    const cloudToolCallIds = new Set<string>();
+
+    return {
+      ...result,
+      stream: result.stream.pipeThrough(
+        new TransformStream<ModelStreamPart, ModelStreamPart>({
+          transform(part, controller) {
+            if (part.type === "tool-input-start") {
+              if (part.providerExecuted === true || !appToolNames.has(part.toolName)) {
+                cloudToolCallIds.add(part.id);
+                return;
+              }
+            }
+
+            if (
+              (part.type === "tool-input-delta" || part.type === "tool-input-end") &&
+              cloudToolCallIds.has(part.id)
+            ) {
+              return;
+            }
+
+            if (part.type === "tool-call") {
+              if (
+                part.providerExecuted === true ||
+                cloudToolCallIds.has(part.toolCallId) ||
+                !appToolNames.has(part.toolName)
+              ) {
+                cloudToolCallIds.add(part.toolCallId);
+                return;
+              }
+            }
+
+            if (part.type === "tool-result" && cloudToolCallIds.has(part.toolCallId)) {
+              return;
+            }
+
+            controller.enqueue(part);
+          },
+        }),
+      ),
+    };
+  },
+};
+
+/** Add Cloud-managed tool declarations after the AI SDK prepares its request. */
+const cloudFetch: typeof fetch = async (input, init) => {
+  const url = input instanceof Request ? input.url : String(input);
+  if (!url.endsWith("/responses") || typeof init?.body !== "string") {
+    return fetch(input, init);
+  }
+
+  const body = JSON.parse(init.body) as { tools?: unknown[] };
+  body.tools = [
+    artifactTool({ artifacts: ["slides", "report"] }),
+    { type: "image_search" },
+    ...(body.tools ?? []),
+  ];
+
+  return fetch(input, { ...init, body: JSON.stringify(body) });
+};
+
 export async function POST(req: Request) {
   const {
     threadId,
@@ -102,111 +115,50 @@ export async function POST(req: Request) {
     model: requestedModel,
   } = (await req.json()) as {
     threadId?: string;
-    messages?: ResponseInputItem[];
+    messages?: UIMessage[];
     model?: unknown;
   };
 
   if (!threadId) return badRequest("threadId is required — create the conversation first");
   if (!Array.isArray(messages) || messages.length === 0) {
-    return badRequest("messages must be a non-empty ResponseInputItem[]");
+    return badRequest("messages must be a non-empty UIMessage[]");
   }
   const model = resolveRequestedModel(requestedModel);
   if (!model) return badRequest("model is not available in this agent");
 
-  const abortController = new AbortController();
-  const abortFromRequest = () => abortController.abort(req.signal.reason);
-  if (req.signal.aborted) abortFromRequest();
-  else req.signal.addEventListener("abort", abortFromRequest, { once: true });
-
-  const client = new OpenAI({
+  const openai = createOpenAI({
     baseURL: "https://api.thesys.dev/v1/embed",
     apiKey: requiredEnv("THESYS_API_KEY"),
+    fetch: cloudFetch,
   });
-  const { definitions: appToolDefinitions, executors: functionTools } =
-    await prepareAppTools(appTools);
-  const createParams: ResponseCreateParamsNonStreaming = {
-    model,
-    conversation: threadId,
-    input: messages.slice(-1),
-    store: true,
-    tools: [
-      // These tools execute inside OpenUI Cloud.
-      artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
-      { type: "web_search" },
-      { type: "image_search" } as unknown as Tool,
-      // These tools execute in this application through the Vercel AI SDK.
-      ...appToolDefinitions,
-    ],
-    instructions: generateSystemPrompt(),
-  };
-
-  let stream: AsyncIterable<Record<string, unknown>>;
-  try {
-    stream = (await client.responses.create(
-      { ...createParams, stream: true },
-      { signal: abortController.signal },
-    )) as unknown as AsyncIterable<Record<string, unknown>>;
-  } catch (err) {
-    req.signal.removeEventListener("abort", abortFromRequest);
-    return upstreamError(err);
-  }
-
-  const encoder = new TextEncoder();
-  let cancelled = false;
-  const body = new ReadableStream<Uint8Array>({
-    async start(controller) {
-      const enqueue = (event: Record<string, unknown>) => {
-        if (!cancelled) controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
-      };
-      try {
-        await runFunctionToolLoop({
-          client,
-          createParams,
-          firstStream: stream,
-          tools: functionTools,
-          enqueue,
-          signal: abortController.signal,
-        });
-      } catch (err) {
-        if (cancelled) return;
-        enqueue({
-          type: "error",
-          message: err instanceof Error ? err.message : String(err),
-        });
-      } finally {
-        req.signal.removeEventListener("abort", abortFromRequest);
-        if (!cancelled) controller.close();
-      }
-    },
-    cancel(reason) {
-      cancelled = true;
-      req.signal.removeEventListener("abort", abortFromRequest);
-      abortController.abort(reason);
-    },
+  const cloudModel = wrapLanguageModel({
+    model: openai.responses(model),
+    middleware: appToolsOnly,
   });
 
-  return new Response(body, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache, no-transform",
-      Connection: "keep-alive",
+  const result = streamText({
+    model: cloudModel,
+    messages: await convertToModelMessages(messages.slice(-1)),
+    tools: {
+      ...appTools,
+      web_search: openai.tools.webSearch({}),
     },
+    stopWhen: stepCountIs(5),
+    prepareStep: ({ messages: stepMessages }) => ({ messages: stepMessages.slice(-1) }),
+    providerOptions: {
+      openai: {
+        conversation: threadId,
+        store: true,
+        instructions: generateSystemPrompt(),
+      },
+    },
+    abortSignal: req.signal,
   });
+
+  // The AI SDK owns UIMessage SSE encoding for this variant.
+  return result.toUIMessageStreamResponse();
 }
 
 function badRequest(message: string): Response {
-  return NextResponse.json({ error: { message } }, { status: 400 });
-}
-
-function upstreamError(err: unknown): Response {
-  const e = err as {
-    status?: number;
-    statusCode?: number;
-    error?: unknown;
-    message?: string;
-  };
-  return NextResponse.json(
-    { error: e.error ?? { message: e.message ?? "upstream error" } },
-    { status: e.status ?? e.statusCode ?? 502 },
-  );
+  return Response.json({ error: { message } }, { status: 400 });
 }
