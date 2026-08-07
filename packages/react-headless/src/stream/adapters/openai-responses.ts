@@ -16,6 +16,8 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
     const decoder = new TextDecoder();
     // Map item_id → call_id so TOOL_CALL_ARGS can reference the correct toolCallId
     const itemIdToCallId: Record<string, string> = {};
+    // The text output-item currently streaming.
+    let textItemId: string | null = null;
 
     let buffer = "";
     while (true) {
@@ -44,6 +46,7 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
               // not declare it. Widen the type so we can branch on it below.
               const item = event.item as typeof event.item | ResponseFunctionToolCallOutputItem;
               if (item.type === "message" && item.role === "assistant") {
+                textItemId = item.id;
                 yield {
                   type: EventType.TEXT_MESSAGE_START,
                   messageId: item.id,
@@ -68,7 +71,7 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                 yield {
                   type: EventType.TOOL_CALL_START,
                   toolCallId: item.id,
-                  toolCallName: "thesys_web_search",
+                  toolCallName: "web_search",
                 };
               } else if (item.type === "mcp_call") {
                 yield {
@@ -96,6 +99,17 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
             }
 
             case "response.output_text.delta":
+              // A delta for a not-yet-seen item id opens its message — covers
+              // backends that switch item id on the delta without a preceding
+              // `output_item.added` (idempotent when that event did fire).
+              if (event.item_id !== textItemId) {
+                textItemId = event.item_id;
+                yield {
+                  type: EventType.TEXT_MESSAGE_START,
+                  messageId: event.item_id,
+                  role: "assistant",
+                };
+              }
               yield {
                 type: EventType.TEXT_MESSAGE_CONTENT,
                 messageId: event.item_id,
