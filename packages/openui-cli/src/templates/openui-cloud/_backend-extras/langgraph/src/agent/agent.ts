@@ -25,6 +25,14 @@ const getWeather = tool(
 
 const appTools = [getWeather];
 const appToolNames = new Set<string>(appTools.map(({ name }) => name));
+const TOOL_CALL_BLOCK_TYPES = new Set(["tool_call", "tool_call_chunk", "tool_use"]);
+
+function keepAppToolCallBlocks(block: unknown) {
+  if (typeof block !== "object" || block === null) return true;
+  const { type, name } = block as { type?: unknown; name?: unknown };
+  if (typeof type !== "string" || !TOOL_CALL_BLOCK_TYPES.has(type)) return true;
+  return typeof name === "string" && appToolNames.has(name);
+}
 
 // These are provider-executed tools. LangGraph sends their declarations to
 // OpenUI Cloud, while Cloud runs them and stores their outputs/artifacts.
@@ -57,6 +65,7 @@ function cloudModel(model: string, conversationId?: string) {
 
 const cloudConversation = createMiddleware({
   name: "OpenUICloudConversation",
+  stateSchema: CloudAgentState,
   wrapModelCall: async (request, handler) => {
     const { conversationId, model } = request.state as unknown as {
       conversationId: string;
@@ -73,12 +82,21 @@ const cloudConversation = createMiddleware({
 
     // Cloud has already executed its provider tools. Keep only app-owned
     // calls in graph state so LangGraph's ToolNode executes exactly those.
+    // ChatOpenAI also derives tool_calls from standard content blocks, so
+    // remove Cloud-owned call blocks as well as filtering response.tool_calls.
     const localToolCalls = response.tool_calls?.filter(({ name }) => appToolNames.has(name));
-    if (localToolCalls?.length === response.tool_calls?.length) return response;
+    const localContent = Array.isArray(response.content)
+      ? response.content.filter(keepAppToolCallBlocks)
+      : response.content;
+    const contentChanged =
+      Array.isArray(response.content) && localContent.length !== response.content.length;
+    if (localToolCalls?.length === response.tool_calls?.length && !contentChanged) {
+      return response;
+    }
 
     return new AIMessage({
       id: response.id,
-      content: response.content,
+      content: localContent,
       additional_kwargs: response.additional_kwargs,
       response_metadata: response.response_metadata,
       tool_calls: localToolCalls,
