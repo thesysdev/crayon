@@ -19,6 +19,7 @@ export {
 } from "./store/ArtifactRenderersContext";
 export { defineArtifactRenderer } from "./store/artifactRendererTypes";
 export { useArtifactStorage } from "./store/ArtifactStorageContext";
+export { artifactViewId, parseArtifactViewId } from "./store/artifactViewId";
 export { ChatProvider } from "./store/ChatProvider";
 export { DetailedViewContext, useDetailedViewStore } from "./store/DetailedViewContext";
 export { ThreadContextContext, useThreadContextStore } from "./store/ThreadContextContext";

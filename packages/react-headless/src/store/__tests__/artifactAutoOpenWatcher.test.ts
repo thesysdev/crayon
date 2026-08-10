@@ -1,0 +1,115 @@
+import { describe, expect, it } from "vitest";
+import { evaluateRegisteredArtifacts } from "../artifactAutoOpenWatcher";
+import { createDetailedViewStore } from "../createDetailedViewStore";
+import type { ArtifactEntry } from "../threadContextTypes";
+
+const entry = (id: string, version = 1): ArtifactEntry => ({
+  id,
+  version,
+  heading: `${id} v${version}`,
+  type: "test_artifact",
+});
+
+const registry = (...entries: ArtifactEntry[]): Record<string, ArtifactEntry[]> => {
+  const out: Record<string, ArtifactEntry[]> = {};
+  for (const e of entries) (out[e.id] ??= []).push(e);
+  return out;
+};
+
+describe("evaluateRegisteredArtifacts", () => {
+  it("opens a newly registered artifact while the stream runs", () => {
+    const store = createDetailedViewStore();
+    const claimed = new Set<string>();
+    const opened = evaluateRegisteredArtifacts(registry(entry("art")), true, claimed, store);
+    expect(opened).toBe(true);
+    expect(store.getState().activeDetailedViewId).toBe("art:1");
+    expect(claimed.has("art:1")).toBe(true);
+  });
+
+  it("a user close sticks across re-registrations", () => {
+    const store = createDetailedViewStore();
+    const claimed = new Set<string>();
+    const arts = registry(entry("art"));
+    evaluateRegisteredArtifacts(arts, true, claimed, store);
+    store.getState().setActiveDetailedView(null);
+    const opened = evaluateRegisteredArtifacts(arts, true, claimed, store);
+    expect(opened).toBe(false);
+    expect(store.getState().activeDetailedViewId).toBeNull();
+  });
+
+  it("an edit re-opens: a new version gets a fresh chance, even after a close", () => {
+    const store = createDetailedViewStore();
+    const claimed = new Set<string>();
+    evaluateRegisteredArtifacts(registry(entry("art", 1)), true, claimed, store);
+    store.getState().setActiveDetailedView(null);
+    const opened = evaluateRegisteredArtifacts(
+      registry(entry("art", 1), entry("art", 2)),
+      true,
+      claimed,
+      store,
+    );
+    expect(opened).toBe(true);
+    expect(store.getState().activeDetailedViewId).toBe("art:2");
+  });
+
+  it("the same version never re-opens after a close", () => {
+    const store = createDetailedViewStore();
+    const claimed = new Set<string>();
+    const arts = registry(entry("art", 2));
+    evaluateRegisteredArtifacts(arts, true, claimed, store);
+    expect(store.getState().activeDetailedViewId).toBe("art:2");
+    store.getState().setActiveDetailedView(null);
+    expect(evaluateRegisteredArtifacts(arts, true, claimed, store)).toBe(false);
+    expect(store.getState().activeDetailedViewId).toBeNull();
+  });
+
+  it("opens the latest registered version of an id", () => {
+    const store = createDetailedViewStore();
+    evaluateRegisteredArtifacts(registry(entry("art", 1), entry("art", 3)), true, new Set(), store);
+    expect(store.getState().activeDetailedViewId).toBe("art:3");
+  });
+
+  it("mayOpen=false (nothing streaming): never opens, still claims", () => {
+    const store = createDetailedViewStore();
+    const claimed = new Set<string>();
+    const arts = registry(entry("old"));
+    const opened = evaluateRegisteredArtifacts(arts, false, claimed, store);
+    expect(opened).toBe(false);
+    expect(store.getState().activeDetailedViewId).toBeNull();
+    expect(claimed.has("old:1")).toBe(true);
+    evaluateRegisteredArtifacts(arts, true, claimed, store);
+    expect(store.getState().activeDetailedViewId).toBeNull();
+  });
+
+  it("only the first artifact of a pass opens; the second is claimed but ignored", () => {
+    const store = createDetailedViewStore();
+    const claimed = new Set<string>();
+    const arts = registry(entry("a1"), entry("a2"));
+    const opened = evaluateRegisteredArtifacts(arts, true, claimed, store);
+    expect(opened).toBe(true);
+    expect(store.getState().activeDetailedViewId).toBe("a1:1");
+    expect(claimed.has("a2:1")).toBe(true);
+    store.getState().setActiveDetailedView(null);
+    expect(evaluateRegisteredArtifacts(arts, true, claimed, store)).toBe(false);
+    expect(store.getState().activeDetailedViewId).toBeNull();
+  });
+
+  it("a new artifact takes over an already-open panel", () => {
+    const store = createDetailedViewStore();
+    const claimed = new Set<string>();
+    store.getState().setActiveDetailedView("user-panel");
+    const opened = evaluateRegisteredArtifacts(registry(entry("art")), true, claimed, store);
+    expect(opened).toBe(true);
+    expect(store.getState().activeDetailedViewId).toBe("art:1");
+  });
+
+  it("thread switch (fresh claim set) re-arms for the next thread", () => {
+    const store = createDetailedViewStore();
+    const arts = registry(entry("art"));
+    evaluateRegisteredArtifacts(arts, true, new Set(), store);
+    expect(store.getState().activeDetailedViewId).toBe("art:1");
+    store.getState().reset();
+    evaluateRegisteredArtifacts(arts, true, new Set(), store);
+    expect(store.getState().activeDetailedViewId).toBe("art:1");
+  });
+});
