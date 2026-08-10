@@ -1,10 +1,5 @@
 // Syncs the CLI templates' dependency versions to the versions declared in
-// this repo's packages/*/package.json — the source of truth for what was just
-// published (npm's registry metadata can lag right after a publish).
-// Regenerates template lockfiles. Run by the update-template-versions
-// workflow after a package publish; the resulting diff (if any) is opened as
-// a PR. Templates are fetched from main at scaffold time, so merging that PR
-// is what ships the new versions to users.
+// this repo's packages/*/package.json
 import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
