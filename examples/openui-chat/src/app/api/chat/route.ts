@@ -165,6 +165,35 @@ function sseToolCallArgs(
   );
 }
 
+function getFriendlyError(err: unknown): string {
+  const status =
+    typeof err === "object" &&
+    err !== null &&
+    "status" in err &&
+    typeof (err as { status?: unknown }).status === "number"
+      ? (err as { status: number }).status
+      : undefined;
+
+  const message =
+    err instanceof Error
+      ? err.message
+      : typeof err === "string"
+        ? err
+        : "";
+
+  const messageStatus = message.match(/\b(401|402|429|5\d{2})\b/);
+  const code = status ?? (messageStatus ? Number(messageStatus[1]) : undefined);
+
+  if (code === 401) return "Invalid API key. Set OPENAI_API_KEY in your environment and try again.";
+  if (code === 402) return "You're out of credits. Top up your account or switch providers.";
+  if (code === 429) return "Rate limit reached. Wait a moment and try again.";
+  if (code && code >= 500 && code < 600) {
+    return "The model provider is temporarily unavailable. Try again in a bit.";
+  }
+
+  return "Something went wrong contacting the model. Please try again.";
+}
+
 // ── Route handler ──
 
 export async function POST(req: NextRequest) {
@@ -234,12 +263,30 @@ export async function POST(req: NextRequest) {
       let resultIdx = 0;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const runner = (client.chat.completions as any).runTools({
-        model: MODEL,
-        messages: chatMessages,
-        tools,
-        stream: true,
-      });
+      let runner: any;
+
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        runner = (client.chat.completions as any).runTools({
+          model: MODEL,
+          messages: chatMessages,
+          tools,
+          stream: true,
+        });
+      } catch (err) {
+        const msg = getFriendlyError(err);
+
+        console.error("Chat route error:", msg);
+
+        enqueue(
+          encoder.encode(
+            `data: ${JSON.stringify({ error: msg })}\n\n`,
+          ),
+        );
+
+        close();
+        return;
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       runner.on("functionToolCall", (fc: any) => {
@@ -320,10 +367,7 @@ export async function POST(req: NextRequest) {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       runner.on("error", (err: any) => {
-        const msg =
-          err instanceof Error
-            ? err.message
-            : "Stream error";
+        const msg = getFriendlyError(err);
 
         console.error("Chat route error:", msg);
 
