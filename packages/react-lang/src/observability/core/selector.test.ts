@@ -1,0 +1,150 @@
+import type { ObservabilityEvent } from "@openuidev/observability";
+import { describe, expect, it, vi } from "vitest";
+import { selectEvent } from "./selector";
+
+function settledEvent(overrides: Record<string, unknown> = {}): ObservabilityEvent {
+  return {
+    level: "info",
+    timestamp: 1_700_000_000_000,
+    detail: {
+      id: "stream-1",
+      kind: "react-lang:stream",
+      phase: "settled",
+      updateIndex: 2,
+      errorCount: 0,
+      response: "hello",
+      message: "OpenUI Lang settled",
+      errors: [],
+      parser: {
+        incomplete: false,
+        unresolved: [],
+        orphaned: [],
+        statementCount: 1,
+      },
+      ...overrides,
+    },
+  };
+}
+
+describe("selectEvent", () => {
+  it("accepts settled react-lang:stream events only", () => {
+    const selected = selectEvent(settledEvent(), {
+      capture: "full",
+      sampleRate: 1,
+      debug: false,
+    });
+
+    expect(selected).toMatchObject({
+      id: "stream-1",
+      kind: "react-lang:stream",
+      level: "info",
+      timestamp: 1_700_000_000_000,
+      updateIndex: 2,
+      errorCount: 0,
+      response: "hello",
+      message: "OpenUI Lang settled",
+      errors: [],
+    });
+  });
+
+  it("rejects streaming and other kinds", () => {
+    const streaming = settledEvent({ phase: "streaming" });
+    const otherKind = settledEvent({ kind: "other", phase: "settled" });
+
+    expect(selectEvent(streaming, { capture: "full", sampleRate: 1, debug: false })).toBeNull();
+    expect(selectEvent(otherKind, { capture: "full", sampleRate: 1, debug: false })).toBeNull();
+  });
+
+  it("truncates full-mode response and sets responseTruncated", () => {
+    const longResponse = "x".repeat(16_385);
+    const selected = selectEvent(settledEvent({ response: longResponse }), {
+      capture: "full",
+      sampleRate: 1,
+      debug: false,
+    });
+
+    expect(selected?.response).toHaveLength(16_384);
+    expect(selected?.responseTruncated).toBe(true);
+  });
+
+  it("minimal mode contains only allowed keys", () => {
+    const selected = selectEvent(settledEvent(), {
+      capture: "minimal",
+      sampleRate: 1,
+      debug: false,
+    });
+
+    expect(selected).toEqual({
+      id: "stream-1",
+      kind: "react-lang:stream",
+      level: "info",
+      timestamp: 1_700_000_000_000,
+      updateIndex: 2,
+      errorCount: 0,
+      parser: {
+        incomplete: false,
+        unresolved: [],
+        orphaned: [],
+        statementCount: 1,
+      },
+    });
+    expect(selected).not.toHaveProperty("response");
+    expect(selected).not.toHaveProperty("responseTruncated");
+    expect(selected).not.toHaveProperty("message");
+    expect(selected).not.toHaveProperty("errors");
+  });
+
+  it("samples deterministically per id and respects rate 0 and 1", () => {
+    const id = "deterministic-id-a";
+    const options = { capture: "full" as const, sampleRate: 0.5, debug: false };
+
+    const first = selectEvent(settledEvent({ id }), options);
+    const second = selectEvent(settledEvent({ id }), options);
+    expect(Boolean(first)).toBe(Boolean(second));
+
+    const decisions = Array.from({ length: 100 }, (_, index) =>
+      Boolean(selectEvent(settledEvent({ id: `sample-id-${index}` }), options)),
+    );
+    expect(decisions.some(Boolean)).toBe(true);
+    expect(decisions.some((kept) => !kept)).toBe(true);
+
+    expect(selectEvent(settledEvent({ id }), { ...options, sampleRate: 1 })).not.toBeNull();
+    expect(selectEvent(settledEvent({ id }), { ...options, sampleRate: 0 })).toBeNull();
+  });
+
+  it("beforeSend can mutate or drop events", () => {
+    const mutated = selectEvent(settledEvent(), {
+      capture: "full",
+      sampleRate: 1,
+      debug: false,
+      beforeSend: (event) => ({ ...event, message: "mutated" }),
+    });
+    const dropped = selectEvent(settledEvent(), {
+      capture: "full",
+      sampleRate: 1,
+      debug: false,
+      beforeSend: () => null,
+    });
+
+    expect(mutated?.message).toBe("mutated");
+    expect(dropped).toBeNull();
+  });
+
+  it("drops when beforeSend throws without propagating", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    expect(
+      selectEvent(settledEvent(), {
+        capture: "full",
+        sampleRate: 1,
+        debug: true,
+        beforeSend: () => {
+          throw new Error("boom");
+        },
+      }),
+    ).toBeNull();
+
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
+  });
+});
