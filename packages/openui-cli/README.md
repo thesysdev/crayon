@@ -107,13 +107,17 @@ What it does:
 
 #### Backend frameworks
 
-| Value           | OpenUI Cloud route                             | Self-hosted route                          |
-| --------------- | ---------------------------------------------- | ------------------------------------------ |
-| `none`          | Direct OpenAI SDK Responses proxy              | Direct OpenAI SDK Chat Completions proxy   |
-| `langgraph`     | LangGraph + ChatOpenAI Responses route         | LangGraph `StateGraph` using your provider |
-| `vercel-ai-sdk` | Vercel AI SDK Responses + `streamText()` route | Vercel AI SDK `streamText()` route         |
+| Value           | OpenUI Cloud route                                 | Self-hosted route                          |
+| --------------- | -------------------------------------------------- | ------------------------------------------ |
+| `none`          | Direct OpenAI SDK Responses proxy                  | Direct OpenAI SDK Chat Completions proxy   |
+| `langgraph`     | Deployable LangGraph Agent Server + Cloud provider | LangGraph `StateGraph` using your provider |
+| `vercel-ai-sdk` | Vercel AI SDK `streamText()` + Cloud provider      | Vercel AI SDK `streamText()` route         |
 
-The CLI replaces `src/app/api/chat/route.ts` and `src/app/page.tsx`, and adds the dependencies for the selected framework. LangGraph selections return LangGraph's named-event SSE and use `langGraphAdapter()`; Vercel AI SDK selections return `toUIMessageStreamResponse()` and use `vercelAIAdapter()`. Cloud variants still point their framework's Responses client at OpenUI Cloud and keep managed conversation storage. Artifacts, web search, image search, and configured MCP tools execute in Cloud; the selected framework executes only application-owned function tools on your server. Choosing a Cloud framework does not configure a user-owned model provider. Choose `openui-self-hosted` when you want to bring your own provider.
+The CLI replaces `src/app/api/chat/route.ts` and `src/app/page.tsx`, and adds the dependencies and deployment files for the selected framework. The Cloud Vercel AI SDK variant is a normal Next.js `streamText()` backend, returns `toUIMessageStreamResponse()`, and uses `vercelAIAdapter()`. The Cloud LangGraph variant adds `langgraph.json` and an exported `src/agent/agent.ts`; its Next route proxies to the Agent Server with `@openuidev/langchain`, and the browser consumes the resulting AG-UI stream with `agUIAdapter()`. The self-hosted LangGraph variant keeps the smaller inline `StateGraph` route and `langGraphAdapter()`.
+
+In both Cloud framework variants, the selected framework owns the agent orchestration and application tool loop. OpenUI Cloud is attached as the Responses model provider and conversation store. Reports, presentations, web search, image search, and configured MCP tools remain provider-executed Cloud tools, while application tools such as `get_weather` execute inside LangGraph or the Vercel AI SDK. Choosing a Cloud framework does not configure a user-owned model provider; choose `openui-self-hosted` for that.
+
+For a generated Cloud LangGraph app, `pnpm dev` starts both Next.js and the local Agent Server. Deploy the graph described by `langgraph.json` to LangSmith, deploy the Next.js frontend separately (for example to Vercel), and set `LANGGRAPH_API_URL` plus `LANGSMITH_API_KEY` in the frontend deployment.
 
 Every Cloud route includes `get_weather` as its example app-owned function tool. The LangGraph and Vercel AI SDK variants define and execute that tool through the selected framework while leaving Cloud-owned tools unchanged. The two self-hosted framework routes include the same weather example and run it through their native multi-step tool loops, making the selected backend directly testable after scaffolding.
 

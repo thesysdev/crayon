@@ -29,12 +29,12 @@ const backendDependencies: Record<
       "@langchain/core": "^1.2.5",
       "@langchain/langgraph": "^1.4.9",
       "@langchain/openai": "^1.5.6",
-      "@openuidev/react-headless": "^0.9.7",
+      "@openuidev/langchain": "latest",
+      langchain: "^1.5.5",
     },
     "vercel-ai-sdk": {
-      "@ai-sdk/openai": "3.0.90",
-      "@openuidev/react-headless": "^0.9.6",
-      ai: "6.0.244",
+      "@ai-sdk/openai": "^3.0.91",
+      ai: "^6.0.246",
       zod: "^4.4.3",
     },
   },
@@ -51,6 +51,17 @@ const backendDependencies: Record<
       "@openuidev/react-headless": "^0.9.6",
       ai: "6.0.244",
       zod: "^4.4.3",
+    },
+  },
+};
+
+const backendDevDependencies: Partial<
+  Record<TemplateName, Partial<Record<Exclude<BackendFramework, "none">, Record<string, string>>>>
+> = {
+  "openui-cloud": {
+    langgraph: {
+      "@langchain/langgraph-cli": "^1.4.4",
+      "npm-run-all2": "^9.0.2",
     },
   },
 };
@@ -102,6 +113,7 @@ function rewritePackageJson(
   const pkgPath = path.join(projectDir, "package.json");
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8")) as {
     name: string;
+    scripts?: Record<string, string>;
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
     pnpm?: unknown;
@@ -112,6 +124,18 @@ function rewritePackageJson(
     pkg.dependencies ??= {};
     if (template === "openui-self-hosted") delete pkg.dependencies["openai"];
     Object.assign(pkg.dependencies, backendDependencies[template][backendFramework]);
+    Object.assign(
+      (pkg.devDependencies ??= {}),
+      backendDevDependencies[template]?.[backendFramework] ?? {},
+    );
+  }
+  if (template === "openui-cloud" && backendFramework === "langgraph") {
+    pkg.scripts = {
+      ...(pkg.scripts ?? {}),
+      dev: "run-p dev:langgraph dev:next",
+      "dev:langgraph": "langgraphjs dev",
+      "dev:next": "next dev",
+    };
   }
   for (const section of ["dependencies", "devDependencies"] as const) {
     const deps = pkg[section];
@@ -163,6 +187,7 @@ function rewritePackageJson(
 function applyBackendFiles(projectDir: string, backendFramework: BackendFramework) {
   const routeOptionsDir = path.join(projectDir, "_backend-routes");
   const pageOptionsDir = path.join(projectDir, "_backend-pages");
+  const extrasOptionsDir = path.join(projectDir, "_backend-extras");
   if (backendFramework !== "none") {
     const routeSource = path.join(routeOptionsDir, `${backendFramework}.ts`);
     const routeDestination = path.join(projectDir, "src", "app", "api", "chat", "route.ts");
@@ -187,11 +212,21 @@ function applyBackendFiles(projectDir: string, backendFramework: BackendFramewor
       fs.copyFileSync(pageSource, path.join(projectDir, "src", "app", "page.tsx"));
     }
 
-    // Native framework routes own their tool loop and stream encoding.
+    const extrasSource = path.join(extrasOptionsDir, backendFramework);
+    if (fs.existsSync(extrasSource)) {
+      for (const entry of fs.readdirSync(extrasSource)) {
+        fs.cpSync(path.join(extrasSource, entry), path.join(projectDir, entry), {
+          recursive: true,
+        });
+      }
+    }
+
+    // The selected framework backend owns its tool loop and stream encoding.
     fs.rmSync(path.join(projectDir, "src", "lib", "tool-loop.ts"), { force: true });
   }
   fs.rmSync(routeOptionsDir, { recursive: true, force: true });
   fs.rmSync(pageOptionsDir, { recursive: true, force: true });
+  fs.rmSync(extrasOptionsDir, { recursive: true, force: true });
 }
 
 export async function runCreateApp(options: CreateAppOptions): Promise<void> {
@@ -796,11 +831,11 @@ function getStartedMessage(o: {
   const frameworkNote =
     o.backendFramework === "langgraph"
       ? o.template === "openui-cloud"
-        ? 'The generated route keeps OpenUI Cloud as the Responses backend and uses LangGraph for app-owned tools.\nAsk "What\'s the weather in Berlin?" to exercise the included app-owned weather tool.'
+        ? `The generated LangGraph agent uses OpenUI Cloud as its Responses provider. \`${o.devCmd} run dev\` starts both the Agent Server and Next.js; deploy \`langgraph.json\` to LangSmith and point LANGGRAPH_API_URL at it in your frontend deployment.\nAsk "What's the weather in Berlin?" to exercise the included LangGraph tool.`
         : 'The generated API route uses LangGraph.\nAsk "What\'s the weather in Berlin?" to exercise its native tool loop.'
       : o.backendFramework === "vercel-ai-sdk"
         ? o.template === "openui-cloud"
-          ? 'The generated route keeps OpenUI Cloud as the Responses backend and uses the Vercel AI SDK for app-owned tools.\nAsk "What\'s the weather in Berlin?" to exercise the included app-owned weather tool.'
+          ? 'The generated Vercel AI SDK route uses OpenUI Cloud as its Responses provider and is deployable as a normal Next.js app on Vercel.\nAsk "What\'s the weather in Berlin?" to exercise the included AI SDK tool.'
           : 'The generated API route uses the Vercel AI SDK.\nAsk "What\'s the weather in Berlin?" to exercise its native tool loop.'
         : "";
 

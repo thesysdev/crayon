@@ -2,11 +2,8 @@ This is an [OpenUI](https://openui.com) Cloud project bootstrapped with [`openui
 
 ## Setup
 
-```bash
-cp .env.example .env.local   # fill THESYS_API_KEY and point the base URLs at your API
-```
-
-Required env: `THESYS_API_KEY`, `DEMO_USER_ID`.
+The CLI writes `.env` for you. If you cloned the generated project elsewhere,
+create `.env` with `THESYS_API_KEY`, `DEMO_USER_ID`, and `APP_ID`.
 
 ## Getting Started
 
@@ -19,7 +16,23 @@ pnpm dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `src/app/api/chat/route.ts` and improving your agent
-by adding system prompts or tools.
+by adding system prompts or tools. A LangGraph scaffold puts the deployable agent in
+`src/agent/agent.ts` instead.
+
+## Framework deployments
+
+The Vercel AI SDK scaffold is a standard Next.js app: `streamText()` owns the
+agent loop and UIMessage stream, so the whole project can be deployed to Vercel.
+
+The LangGraph scaffold contains two deployables. `pnpm dev` runs Next.js and the
+local Agent Server together. Deploy `langgraph.json` to LangSmith, deploy the
+Next.js frontend separately, then set `LANGGRAPH_API_URL` and
+`LANGSMITH_API_KEY` on the frontend deployment. Set `THESYS_API_KEY` on the
+LangSmith deployment because the graph uses OpenUI Cloud as its model provider.
+
+In both variants, your framework executes application tools. OpenUI Cloud
+provides managed conversation storage and executes its provider tools: reports,
+presentations, web search, image search, and configured MCP servers.
 
 ## Switching Models
 

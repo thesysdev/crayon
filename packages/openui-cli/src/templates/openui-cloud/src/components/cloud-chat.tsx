@@ -6,10 +6,9 @@ import { OPENUI_LOGOS, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
 import {
   AgentInterface,
   ModelSwitcher,
+  agUIAdapter,
   defineArtifactCategories,
   fetchLLM,
-  langGraphAdapter,
-  langGraphMessageFormat,
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
   useSystemThemeMode,
@@ -43,8 +42,8 @@ const transports = {
     messageFormat: openAIConversationMessageFormat,
   },
   langgraph: {
-    streamAdapter: langGraphAdapter(),
-    messageFormat: langGraphMessageFormat,
+    streamAdapter: agUIAdapter(),
+    messageFormat: undefined,
   },
   "vercel-ai-sdk": {
     streamAdapter: vercelAIAdapter(),
@@ -63,7 +62,7 @@ export default function CloudChat({
   const llm = fetchLLM({
     url: "/api/chat",
     streamAdapter,
-    messageFormat,
+    ...(messageFormat ? { messageFormat } : {}),
     body: { model: selectedModel },
   });
 

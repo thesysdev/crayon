@@ -1,0 +1,102 @@
+import { AIMessage } from "@langchain/core/messages";
+import { type ServerTool, tool } from "@langchain/core/tools";
+import { StateSchema } from "@langchain/langgraph";
+import { ChatOpenAI } from "@langchain/openai";
+import { openUIStreamTransformer } from "@openuidev/langchain/transformer";
+import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
+import { createAgent, createMiddleware } from "langchain";
+import { z } from "zod";
+
+import { requiredEnv } from "../lib/env";
+import { DEFAULT_MODEL } from "../lib/models";
+import { executeGetWeather, getWeatherTool } from "../lib/tools/get-weather";
+
+const getWeather = tool(
+  async ({ location }, config) =>
+    executeGetWeather(JSON.stringify({ location }), { signal: config.signal }),
+  {
+    name: "get_weather",
+    description: getWeatherTool.description,
+    schema: z.object({
+      location: z.string().trim().min(1).describe("City or place name, e.g. Berlin."),
+    }),
+  },
+);
+
+const appTools = [getWeather];
+const appToolNames = new Set<string>(appTools.map(({ name }) => name));
+
+// These are provider-executed tools. LangGraph sends their declarations to
+// OpenUI Cloud, while Cloud runs them and stores their outputs/artifacts.
+const cloudTools = [
+  artifactTool({ artifacts: ["slides", "report"] }),
+  { type: "web_search" },
+  { type: "image_search" },
+  // Add provider-executed MCP servers here, for example:
+  // { type: "mcp", server_label: "deepwiki", server_url: "https://mcp.deepwiki.com/mcp" },
+] as ServerTool[];
+
+const CloudAgentState = new StateSchema({
+  conversationId: z.string(),
+  model: z.string().default(DEFAULT_MODEL),
+});
+
+function cloudModel(model: string, conversationId?: string) {
+  return new ChatOpenAI({
+    model,
+    apiKey: requiredEnv("THESYS_API_KEY"),
+    streaming: true,
+    useResponsesApi: true,
+    configuration: { baseURL: "https://api.thesys.dev/v1/embed" },
+    modelKwargs: {
+      store: true,
+      ...(conversationId ? { conversation: conversationId } : {}),
+    },
+  });
+}
+
+const cloudConversation = createMiddleware({
+  name: "OpenUICloudConversation",
+  wrapModelCall: async (request, handler) => {
+    const { conversationId, model } = request.state as unknown as {
+      conversationId: string;
+      model: string;
+    };
+
+    const response = await handler({
+      ...request,
+      model: cloudModel(model, conversationId),
+      // Cloud has the earlier turns. Within a LangGraph run this becomes the
+      // latest user message first, then each locally produced ToolMessage.
+      messages: request.messages.slice(-1),
+    });
+
+    // Cloud has already executed its provider tools. Keep only app-owned
+    // calls in graph state so LangGraph's ToolNode executes exactly those.
+    const localToolCalls = response.tool_calls?.filter(({ name }) => appToolNames.has(name));
+    if (localToolCalls?.length === response.tool_calls?.length) return response;
+
+    return new AIMessage({
+      id: response.id,
+      content: response.content,
+      additional_kwargs: response.additional_kwargs,
+      response_metadata: response.response_metadata,
+      tool_calls: localToolCalls,
+      invalid_tool_calls: response.invalid_tool_calls,
+      usage_metadata: response.usage_metadata,
+    });
+  },
+});
+
+/**
+ * A normal deployable LangGraph agent: LangGraph owns orchestration and local
+ * tool execution; OpenUI Cloud is the attached Responses provider.
+ */
+export const graph = createAgent({
+  model: cloudModel(DEFAULT_MODEL),
+  tools: [...cloudTools, ...appTools],
+  systemPrompt: generateSystemPrompt(),
+  stateSchema: CloudAgentState,
+  middleware: [cloudConversation],
+  streamTransformers: [openUIStreamTransformer],
+});

@@ -102,6 +102,8 @@ const cloudFetch: typeof fetch = async (input, init) => {
   body.tools = [
     artifactTool({ artifacts: ["slides", "report"] }),
     { type: "image_search" },
+    // Add provider-executed MCP servers here, for example:
+    // { type: "mcp", server_label: "deepwiki", server_url: "https://mcp.deepwiki.com/mcp" },
     ...(body.tools ?? []),
   ];
 
