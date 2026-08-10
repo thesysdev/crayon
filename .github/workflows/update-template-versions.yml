@@ -18,23 +18,36 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      # Templates live in their own repo; the bot bumps them there. Needs a
+      # token with write access to openui-templates (default GITHUB_TOKEN is
+      # scoped to this repo only).
+      - uses: actions/checkout@v6
+        with:
+          repository: thesysdev/openui-templates
+          token: ${{ secrets.TEMPLATES_REPO_TOKEN }}
+          path: openui-templates
+
       - uses: actions/setup-node@v6
         with:
           node-version: 22
 
-      - name: Sync template versions to npm latest
+      - name: Sync template versions to workspace versions
+        env:
+          TEMPLATES_DIR: openui-templates
         run: node .github/scripts/update-template-versions.mjs
 
-      - name: Open PR with template bumps
+      - name: Open PR on openui-templates with the bumps
         uses: peter-evans/create-pull-request@v7
         with:
+          path: openui-templates
+          token: ${{ secrets.TEMPLATES_REPO_TOKEN }}
           branch: bot/update-template-versions
-          title: "chore(cli): bump template versions to latest published packages"
-          commit-message: "chore(cli): bump template versions to latest published packages"
+          title: "chore: bump template versions to latest published packages"
+          commit-message: "chore: bump template versions to latest published packages"
           body: |
-            Automated follow-up to a package publish.
+            Automated follow-up to a package publish in thesysdev/openui.
 
-            - Syncs `@openuidev/*` versions in the CLI templates to npm latest
+            - Syncs `@openuidev/*` versions in the templates to the published workspace versions
             - Regenerates template `package-lock.json` files
             - Merging this ships the new versions to `openui create` (templates are fetched from main)
           delete-branch: true

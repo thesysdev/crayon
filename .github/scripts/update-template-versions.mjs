@@ -1,10 +1,24 @@
-// Syncs the CLI templates' dependency versions to the versions declared in
-// this repo's packages/*/package.json
+// Syncs the CLI templates (in the openui-templates checkout at TEMPLATES_DIR)
+// to the versions declared in this repo's packages/*/package.json
 import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
-const TEMPLATES_DIR = "packages/openui-cli/src/templates";
+// True when a > b, comparing plain x.y.z triples.
+function isNewer(a, b) {
+  const pa = a.split(".").map(Number);
+  const pb = b.split(".").map(Number);
+  for (let i = 0; i < 3; i++) {
+    if ((pa[i] ?? 0) !== (pb[i] ?? 0)) return (pa[i] ?? 0) > (pb[i] ?? 0);
+  }
+  return false;
+}
+
+const templatesRoot = process.env.TEMPLATES_DIR;
+if (!templatesRoot) {
+  console.error("TEMPLATES_DIR env var is required (path to the openui-templates checkout).");
+  process.exit(1);
+}
 
 // map of every @openuidev/* workspace package.
 const workspaceVersions = new Map();
@@ -18,9 +32,12 @@ for (const dir of fs.readdirSync("packages")) {
   workspaceVersions.set(pkg.name, pkg.version);
 }
 
+// index.json is the templates repo's source of truth for what exists.
+const index = JSON.parse(fs.readFileSync(path.join(templatesRoot, "index.json"), "utf8"));
+
 const changes = [];
-for (const template of fs.readdirSync(TEMPLATES_DIR)) {
-  const templateDir = path.join(TEMPLATES_DIR, template);
+for (const { name: template } of index.templates) {
+  const templateDir = path.join(templatesRoot, template);
   const pkgPath = path.join(templateDir, "package.json");
   if (!fs.existsSync(pkgPath)) continue;
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
@@ -37,6 +54,10 @@ for (const template of fs.readdirSync(TEMPLATES_DIR)) {
       const prefix = /^[\^~]/.test(range) ? range[0] : "";
       const current = range.replace(/^[\^~]/, "");
       if (current === target) continue;
+      // Never downgrade: a template can be deliberately ahead of the
+      // workspace (hotfix landed here first) — syncing it backwards would
+      // open noise PRs.
+      if (!isNewer(target, current)) continue;
       deps[name] = `${prefix}${target}`;
       templateChanged = true;
       changes.push(`${template}: ${name} ${range} -> ${deps[name]}`);

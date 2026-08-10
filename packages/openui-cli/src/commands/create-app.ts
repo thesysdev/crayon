@@ -9,12 +9,28 @@ import {
   resolveInstallPackageManager,
   type PackageManagerName,
 } from "../lib/detect-package-manager";
-import { fetchTemplate, type FetchedTemplate } from "../lib/fetch-template";
+import {
+  fetchTemplate,
+  getTemplateIndex,
+  prefetchTemplate,
+  type FetchedTemplate,
+} from "../lib/fetch-template";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
 import { cliErrorProperties, processErrorProperties } from "../lib/utils";
+
+const FALLBACK_TEMPLATE_CHOICES = [
+  {
+    value: "openui-cloud",
+    name: "OpenUI Cloud — free hosted models, managed history, tools & artifacts; fastest setup (recommended)",
+  },
+  {
+    value: "openui-self-hosted",
+    name: "Self-hosted — bring your own provider and self-manage the entire backend",
+  },
+];
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
@@ -122,6 +138,14 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     immediate_arg: options.immediate,
   });
 
+  // Prefetched at CLI startup; falls back to the built-in list when the
+  // index.json fetch fails (offline, GitHub down).
+  let templateChoices = FALLBACK_TEMPLATE_CHOICES;
+  if (!options.template && interactive) {
+    const index = await getTemplateIndex();
+    if (index) templateChoices = index.map((t) => ({ value: t.name, name: t.description }));
+  }
+
   const args = await resolveArgs(
     {
       name: options.name
@@ -133,20 +157,10 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       template: options.template
         ? { value: options.template }
         : {
-            // The list can be loaded dynamically in the future, but for now we only support these two.
             prompt: {
               type: "select",
               message: "Choose your agent backend",
-              choices: [
-                {
-                  value: "openui-cloud",
-                  name: "OpenUI Cloud — free hosted models, managed history, tools & artifacts; fastest setup (recommended)",
-                },
-                {
-                  value: "openui-self-hosted",
-                  name: "Self-hosted — bring your own provider and self-manage the entire backend",
-                },
-              ],
+              choices: templateChoices,
             },
             required: true,
           },
@@ -155,6 +169,9 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   );
 
   const { name, template } = args as { name: string; template: TemplateName };
+  // Start the template download now so it runs while the user answers the
+  // remaining prompts (auth, skill, dev-server).
+  prefetchTemplate(template);
   const aiSetup = aiSetupFromTemplate(template);
   telemetry.register({ template, ai_setup: aiSetup });
   telemetry.capture("cli_ai_setup_selected", {
