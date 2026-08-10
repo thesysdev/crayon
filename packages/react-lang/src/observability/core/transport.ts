@@ -32,6 +32,8 @@ function envelopeBody(envelope: WireEnvelope): string {
 }
 
 function retryAfterMs(response: Response): number {
+  // Retry-After may also be an HTTP-date; parseInt fails on those, which
+  // intentionally falls through to the default backoff.
   const header = response.headers.get("Retry-After");
   if (!header) return BACKOFF_MS[0];
   const seconds = Number.parseInt(header, 10);

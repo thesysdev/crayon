@@ -10,11 +10,15 @@ export interface StreamParserMetadata {
   statementCount: number;
 }
 
-export interface WireEvent {
+export interface WireEventBase {
   id: string;
-  kind: "react-lang:stream";
+  kind: string;
   level: ObservabilityLevel;
   timestamp: number;
+}
+
+export interface StreamWireEvent extends WireEventBase {
+  kind: "react-lang:stream";
   updateIndex: number;
   errorCount: number;
   parser?: StreamParserMetadata;
@@ -23,6 +27,9 @@ export interface WireEvent {
   message?: string;
   errors?: unknown;
 }
+
+/** Currently a single member; will widen to a union as more kinds ship. */
+export type WireEvent = StreamWireEvent;
 
 export interface WireEnvelope {
   v: 1;

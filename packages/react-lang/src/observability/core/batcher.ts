@@ -20,6 +20,8 @@ type BatchSendResult = { accepted: boolean; timedOut: boolean };
 
 export class Batcher {
   private readonly queue = new EventQueue();
+  private readonly inFlight = new Set<Promise<BatchSendResult>>();
+  private droppedEvents = 0;
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private closed = false;
   private readonly onPageHide: () => void;
@@ -35,7 +37,7 @@ export class Batcher {
       }
     };
 
-    if (typeof document !== "undefined") {
+    if (typeof window !== "undefined" && typeof document !== "undefined") {
       window.addEventListener("pagehide", this.onPageHide);
       document.addEventListener("visibilitychange", this.onVisibilityChange);
     }
@@ -51,7 +53,7 @@ export class Batcher {
   }
 
   async flush(timeoutMs = DEFAULT_FLUSH_TIMEOUT_MS): Promise<boolean> {
-    if (this.closed && this.queue.size === 0) return true;
+    if (this.closed && this.queue.size === 0 && this.inFlight.size === 0) return true;
 
     const deadline = Date.now() + timeoutMs;
     let allAccepted = true;
@@ -60,6 +62,18 @@ export class Batcher {
       if (Date.now() >= deadline) return false;
 
       const result = await this.flushNextBatch(deadline);
+      if (result.timedOut) return false;
+      if (!result.accepted) allAccepted = false;
+    }
+
+    while (this.inFlight.size > 0) {
+      if (Date.now() >= deadline) return false;
+
+      const pending = Promise.all([...this.inFlight]).then((results): BatchSendResult => ({
+        accepted: results.every((result) => result.accepted),
+        timedOut: false,
+      }));
+      const result = await this.raceDeadline(pending, deadline);
       if (result.timedOut) return false;
       if (!result.accepted) allAccepted = false;
     }
@@ -93,14 +107,14 @@ export class Batcher {
   }
 
   private detachPageListeners(): void {
-    if (typeof document === "undefined") return;
+    if (typeof window === "undefined" || typeof document === "undefined") return;
     window.removeEventListener("pagehide", this.onPageHide);
     document.removeEventListener("visibilitychange", this.onVisibilityChange);
   }
 
   private flushBeaconSync(): void {
     while (this.queue.size > 0) {
-      const droppedEvents = this.queue.readAndResetDropped();
+      const droppedEvents = this.takeDroppedEvents();
       const events = this.queue.drain(BATCH_SIZE);
       if (events.length === 0) break;
       sendEnvelopeBeacon(buildEnvelope(events, droppedEvents), this.transport);
@@ -108,24 +122,43 @@ export class Batcher {
     this.stopInterval();
   }
 
+  private takeDroppedEvents(): number {
+    const count = this.droppedEvents + this.queue.readAndResetDropped();
+    this.droppedEvents = 0;
+    return count;
+  }
+
   private async flushNextBatch(deadline?: number): Promise<BatchSendResult> {
     if (this.queue.size === 0) return { accepted: true, timedOut: false };
 
-    const droppedEvents = this.queue.readAndResetDropped();
+    const droppedEvents = this.takeDroppedEvents();
     const events = this.queue.drain(BATCH_SIZE);
-    if (events.length === 0) return { accepted: true, timedOut: false };
+    if (events.length === 0) {
+      this.droppedEvents += droppedEvents;
+      return { accepted: true, timedOut: false };
+    }
 
-    return this.sendWithDeadline(buildEnvelope(events, droppedEvents), deadline);
+    const sendPromise = sendEnvelope(buildEnvelope(events, droppedEvents), this.transport)
+      .catch(() => false)
+      .then((accepted): BatchSendResult => {
+        if (!accepted) this.droppedEvents += events.length + droppedEvents;
+        return { accepted, timedOut: false };
+      });
+
+    this.inFlight.add(sendPromise);
+    void sendPromise.then(() => {
+      this.inFlight.delete(sendPromise);
+    });
+
+    return this.raceDeadline(sendPromise, deadline);
   }
 
-  private async sendWithDeadline(
-    envelope: WireEnvelope,
+  private async raceDeadline(
+    sendPromise: Promise<BatchSendResult>,
     deadline?: number,
   ): Promise<BatchSendResult> {
-    const sendPromise = sendEnvelope(envelope, this.transport).catch(() => false);
-
     if (deadline === undefined) {
-      return { accepted: await sendPromise, timedOut: false };
+      return sendPromise;
     }
 
     const remainingMs = deadline - Date.now();
@@ -139,10 +172,7 @@ export class Batcher {
     });
 
     try {
-      return await Promise.race([
-        sendPromise.then((accepted) => ({ accepted, timedOut: false })),
-        timeoutPromise,
-      ]);
+      return await Promise.race([sendPromise, timeoutPromise]);
     } finally {
       if (timeoutId !== undefined) clearTimeout(timeoutId);
     }

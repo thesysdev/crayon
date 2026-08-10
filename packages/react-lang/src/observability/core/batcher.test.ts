@@ -121,6 +121,85 @@ describe("Batcher", () => {
     await batcher.close();
   });
 
+  it("flush awaits a threshold-initiated in-flight send and reflects its failure", async () => {
+    let resolveSend!: (accepted: boolean) => void;
+    vi.mocked(transport.sendEnvelope).mockImplementation(
+      () => new Promise<boolean>((resolve) => (resolveSend = resolve)),
+    );
+    const batcher = new Batcher(transportConfig);
+    for (let index = 0; index < 50; index++) {
+      batcher.enqueue(wireEvent(index));
+    }
+    expect(transport.sendEnvelope).toHaveBeenCalledTimes(1);
+
+    let settled = false;
+    const flushPromise = batcher.flush();
+    void flushPromise.then(() => {
+      settled = true;
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(settled).toBe(false);
+
+    resolveSend(false);
+    await expect(flushPromise).resolves.toBe(false);
+    vi.mocked(transport.sendEnvelope).mockResolvedValue(true);
+    await batcher.close();
+  });
+
+  it("flush resolves false within timeoutMs when the in-flight send is stuck", async () => {
+    vi.useFakeTimers();
+    vi.mocked(transport.sendEnvelope).mockImplementation(() => new Promise<boolean>(() => {}));
+    const batcher = new Batcher(transportConfig);
+    for (let index = 0; index < 50; index++) {
+      batcher.enqueue(wireEvent(index));
+    }
+
+    const flushPromise = batcher.flush(100);
+    await vi.advanceTimersByTimeAsync(100);
+    await expect(flushPromise).resolves.toBe(false);
+
+    const closePromise = batcher.close();
+    await vi.runAllTimersAsync();
+    await expect(closePromise).resolves.toBe(false);
+  });
+
+  it("stamps droppedEvents from a transport-dropped batch on the next accepted envelope", async () => {
+    vi.mocked(transport.sendEnvelope).mockResolvedValueOnce(false);
+    const batcher = new Batcher(transportConfig);
+    batcher.enqueue(wireEvent(1));
+    batcher.enqueue(wireEvent(2));
+    await expect(batcher.flush()).resolves.toBe(false);
+
+    batcher.enqueue(wireEvent(3));
+    await expect(batcher.flush()).resolves.toBe(true);
+
+    const envelopes = vi.mocked(transport.sendEnvelope).mock.calls.map(([payload]) => payload);
+    expect(envelopes[0]?.droppedEvents).toBeUndefined();
+    expect(envelopes[1]?.droppedEvents).toBe(2);
+    await batcher.close();
+  });
+
+  it("re-stamps queue-overflow drops carried by a failed envelope on the next accepted one", async () => {
+    const flushSpy = vi.spyOn(Batcher.prototype, "flushNextBatch").mockResolvedValue({
+      accepted: true,
+      timedOut: false,
+    });
+    const batcher = new Batcher(transportConfig);
+    for (let index = 0; index < 501; index++) {
+      batcher.enqueue(wireEvent(index));
+    }
+    flushSpy.mockRestore();
+
+    vi.mocked(transport.sendEnvelope).mockResolvedValueOnce(false);
+    await expect(batcher.flush()).resolves.toBe(false);
+
+    const envelopes = vi.mocked(transport.sendEnvelope).mock.calls.map(([payload]) => payload);
+    expect(envelopes[0]?.droppedEvents).toBe(1);
+    expect(envelopes[1]?.droppedEvents).toBe(51);
+    await batcher.close();
+  });
+
   it("pagehide flushes through the beacon path", () => {
     const batcher = new Batcher(transportConfig);
     batcher.enqueue(wireEvent(1));

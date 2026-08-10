@@ -1,5 +1,6 @@
 import type { ObservabilityEvent } from "@openuidev/observability";
-import type { StreamParserMetadata, WireEvent } from "./wire";
+import { STREAM_EVENT_KIND, STREAM_PHASE_SETTLED } from "../streamEventContract";
+import type { StreamParserMetadata, StreamWireEvent, WireEvent } from "./wire";
 
 const MAX_RESPONSE_LENGTH = 16_384;
 
@@ -39,27 +40,34 @@ function isStreamParserMetadata(value: unknown): value is StreamParserMetadata {
   );
 }
 
-export function selectEvent(event: ObservabilityEvent, options: SelectorOptions): WireEvent | null {
+interface ShapedEvent {
+  wireEvent: WireEvent;
+  /** Stable key the shared pipeline hashes for the sampling decision. */
+  sampleKey: string;
+}
+
+/** Kind-specific stage: filtering, field validation, and full/minimal shaping. */
+function shapeStreamEvent(
+  event: ObservabilityEvent,
+  capture: SelectorOptions["capture"],
+): ShapedEvent | null {
   const { detail } = event;
-  if (detail.kind !== "react-lang:stream" || detail.phase !== "settled") return null;
+  if (detail.kind !== STREAM_EVENT_KIND || detail.phase !== STREAM_PHASE_SETTLED) return null;
 
   const id = detail.id;
-  if (typeof id === "string" && options.sampleRate < 1) {
-    if (hashToUnitInterval(id) >= options.sampleRate) return null;
-  }
+  if (typeof id !== "string") return null;
 
   const updateIndex = detail.updateIndex;
   const errorCount = detail.errorCount;
   if (typeof updateIndex !== "number" || typeof errorCount !== "number") return null;
-  if (typeof id !== "string") return null;
 
   const parser = isStreamParserMetadata(detail.parser) ? detail.parser : undefined;
 
-  let shaped: WireEvent;
-  if (options.capture === "minimal") {
+  let shaped: StreamWireEvent;
+  if (capture === "minimal") {
     shaped = {
       id,
-      kind: "react-lang:stream",
+      kind: STREAM_EVENT_KIND,
       level: event.level,
       timestamp: event.timestamp,
       updateIndex,
@@ -77,7 +85,7 @@ export function selectEvent(event: ObservabilityEvent, options: SelectorOptions)
 
     shaped = {
       id,
-      kind: "react-lang:stream",
+      kind: STREAM_EVENT_KIND,
       level: event.level,
       timestamp: event.timestamp,
       updateIndex,
@@ -90,6 +98,19 @@ export function selectEvent(event: ObservabilityEvent, options: SelectorOptions)
     };
   }
 
+  return { wireEvent: shaped, sampleKey: id };
+}
+
+/** Shared pipeline: kind-specific shaping, then sampling and beforeSend. */
+export function selectEvent(event: ObservabilityEvent, options: SelectorOptions): WireEvent | null {
+  const result = shapeStreamEvent(event, options.capture);
+  if (!result) return null;
+
+  if (options.sampleRate < 1 && hashToUnitInterval(result.sampleKey) >= options.sampleRate) {
+    return null;
+  }
+
+  const shaped = result.wireEvent;
   if (!options.beforeSend) return shaped;
 
   try {

@@ -1,4 +1,4 @@
-import { observability, type Remove } from "@openuidev/observability";
+import { observability, type Observability, type Remove } from "@openuidev/observability";
 import { Batcher } from "./batcher";
 import { selectEvent, type SelectorOptions } from "./selector";
 import type { TransportConfig } from "./transport";
@@ -9,14 +9,14 @@ export class CloudObservabilityClient {
   private readonly removeListener: Remove;
   private readonly batcher: Batcher;
 
-  constructor(options: CloudClientOptions) {
+  constructor(options: CloudClientOptions, bus: Observability = observability) {
     this.batcher = new Batcher({
       endpoint: options.endpoint,
       apiKey: options.apiKey,
       debug: options.debug,
     });
 
-    this.removeListener = observability.listenAll((event) => {
+    this.removeListener = bus.listenAll((event) => {
       try {
         const wireEvent = selectEvent(event, options);
         if (wireEvent) this.batcher.enqueue(wireEvent);
