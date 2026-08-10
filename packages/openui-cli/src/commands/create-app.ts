@@ -133,6 +133,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       template: options.template
         ? { value: options.template }
         : {
+            // The list can be loaded dynamically in the future, but for now we only support these two.
             prompt: {
               type: "select",
               message: "Choose your agent backend",
