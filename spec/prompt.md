@@ -60,7 +60,7 @@ The LibrarySpec drives prompt generation and validation. It does not drive rende
 
 - Component names MUST start with an uppercase letter and match the identifier rule; other declared names MUST start lowercase.
 - Required props MUST precede optional props in schema key order.
-- Key order is part of the public contract; a reorder is a breaking change to every stored program and prompt.
+- Key order is part of the public contract. A reorder changes the meaning of every generated prompt and of every stored program that lacks its meta line (section 7), so authors SHOULD add new props at the end of the key order and treat reorders and removals as version-bumping changes. A publish-time compatibility check *(proposed)* classifies these changes mechanically (section 7.6).
 - Libraries MUST NOT define components named `Query`, `Mutation`, or `Action`, and MUST NOT register functions shadowing built-ins.
 - Every component in `root` and in `componentGroups` MUST exist in `components`.
 - Argument constraints *(proposed)* are limited to the JSON-Schema-mappable keywords, so any platform can enforce them from the schema document alone: `minLength`, `maxLength`, `pattern`, `format` (`uri`, `email`) on strings; `minimum`, `maximum`, integer type on numbers; `minItems`, `maxItems` on arrays; `default` on any prop. A violation renders the value as-is and reports a warning diagnostic; it MUST NOT drop the component. Custom-function refinements do not serialize and are unsupported; implementations SHOULD ignore them with a definition-time warning.
@@ -109,7 +109,7 @@ JSDoc is chosen because models require no teaching to read it, and because it co
 
 ### 6.1 Assistant history
 
-The model's earlier responses appear in history as the OpenUI Lang text it generated (with surrounding prose when inline mode is on). History is the strongest style signal the model gets: whatever form its earlier messages use is the form it will continue to use, so the stored form of history matters (a wire and storage split for stored history is under exploration and not part of this specification).
+The model's earlier responses appear in history as the OpenUI Lang text it generated (with surrounding prose when inline mode is on). History is the strongest style signal the model gets: whatever form its earlier messages use is the form it will continue to use, so the stored form of history matters. Section 7 *(proposed)* defines the storage protocol: stored responses carry a metadata line naming the library and key orders they were written against, and hosts re-serialize history into the current dialect, with every metadata line stripped, before the model sees it.
 
 ### 6.2 Error feedback
 
@@ -123,8 +123,65 @@ A `continue_conversation` event becomes the next user-side turn: the human-frien
 
 With `editMode` on, the host sends the current program with the request, and the prompt teaches the model to respond with only the changed statements. Without it, every response is a complete program.
 
+## 7. Stored messages and the sentinel protocol *(proposed)*
+
+OpenUI Lang is a positional format: argument meaning depends on schema key order, and a stored message can outlive the key order it was written against. This is the schema-evolution problem Avro solves for positional binary data, and this section adopts Avro's solution: the writer's schema travels with the data, either embedded (the `orders` attribute below) or by reference to a registry (slim mode). OpenUI needs far less than Avro carries, because the text encodes its own value types; the only writer knowledge a stored message loses is the prop names for its argument positions.
+
+### 7.1 The sentinel line
+
+A sentinel line is a line beginning with `]]>openui:` followed by a kind identifier and, optionally, a single space and space-separated `key=value` attributes. Values contain no spaces (identifiers, `id@semver`, or compact JSON), so the line splits on spaces. Sentinel lines MUST be line-anchored; the byte sequence mid-line is content, not a marker.
+
+Sentinel lines are host-authored. The prompt MUST NOT teach the syntax, and hosts MUST strip every sentinel line before text reaches the model or a display surface, including kinds and attributes they do not recognize; unknown attributes on a recognized kind are ignored. During streaming, a client SHOULD withhold from display an incomplete final line that is a prefix of `]]>openui:`, so a marker split across chunks never flashes as text.
+
+### 7.2 Kinds
+
+| kind | channel | position | payload | status |
+| --- | --- | --- | --- | --- |
+| `meta` | assistant message | trailing block, one line per library | `library=id@semver`, `orders={...}` (absent in slim mode) | proposed, defined here |
+| `context` | user and assistant messages | opens a section; body runs to the next marker or end of message | JSON (form state, action event context) | normative |
+| `content` | assistant message | opens a section | attributes | legacy; parsers MUST keep accepting it |
+| `end` | assistant message | standalone line, anywhere | none; attributes reserved | optional, storage liveness only |
+
+A message's trailing block is the maximal run of sentinel lines at its end; `meta` lines are read only there. If a legacy `content` header and a `meta` line disagree, `meta` wins. Managed backends define additional kinds on other channels (an artifact carrier on tool results, a configuration block on request instructions); they are profile extensions and impose nothing on clients of this specification.
+
+### 7.3 The meta line
+
+When a host stores an assistant response containing OpenUI Lang, it SHOULD append one `meta` line per library used (this is the storage half of the versioning guarantee; without it, messages degrade as described in 7.4):
+
+```
+]]>openui:meta library=support@1.2.0 orders={"Card":["children","sources"],"Button":["label","action","variant"],"@ApproveInvoice":["id"]}
+```
+
+`library` is the library id and version the prompt was generated from. `orders` is the key-order projection of the LibrarySpec, restricted to names the message uses: each component (uppercase), registered function (lowercase), and declared action (`@`-prefixed) mapped to its params in schema key order. Arrays make the order explicit, so any JSON parser reads the projection correctly; the order-preserving requirement of section 2 does not apply here. In slim mode `orders` is absent and the reader resolves the same projection from a registry by `library`; embedded orders keep the message self-contained where no registry exists.
+
+Writers MUST be idempotent: an existing trailing `meta` line for the same library id is replaced, never duplicated. A blank line before the trailing block is RECOMMENDED for readability; parsers accept both.
+
+### 7.4 Reading stored messages
+
+Before a stored message is rendered or resent as history, the host normalizes it:
+
+1. If the stored orders equal the current projection for every name used, strip the sentinel lines and use the text as-is. Equality of orders, not of version numbers, is the fast path: a schema change that shipped without a version bump is still caught. The version attribute remains useful as a skew diagnostic.
+2. Otherwise, parse the text binding argument positions to prop names through the stored orders, then re-serialize each statement in the current library's key order: repositioned props move, gaps before a later argument are filled with `null`, props absent from the current schema are dropped, and trailing unwritten props are omitted. Renames resolve through the library's alias mapping; a name with no alias and no current entry is dropped with a diagnostic.
+
+Normalization is textual, statement-level rewriting: expressions, state declarations, and hoisted references re-serialize as written, values are never evaluated or coerced, and line comments are not preserved. The model MUST NOT receive sentinel bytes, and SHOULD receive history in the current dialect, since history is the strongest style signal (section 6.1).
+
+A message without a meta line (never enriched, or truncated in storage) is read as-is against the current library, which is exactly the pre-protocol behavior. The append-only discipline of section 3 exists for this case: additions at the end of the key order keep even degraded messages correct, so the meta line only has to earn its keep for reorders and removals.
+
+### 7.5 The storage boundary
+
+The reference implementation ships the protocol as two functions: one wraps a completed response with its meta lines, one normalizes a stored message and strips every sentinel for the model. Where they run depends on who owns the prompt. A managed backend that generated the prompt runs both server-side, on the response stream and on incoming history, so clients store and echo plain strings. A self-hosted backend calls the wrap function where it already handles the stream; a client-side stack calls the normalize function at its API boundary before resending history. A client that persists messages itself MAY wrap on the client; such a stamp reflects the client's library, not necessarily the prompt's, and SHOULD be marked so skew warnings can weigh it accordingly.
+
+### 7.6 Compatibility checking *(proposed)*
+
+Schema registries for positional formats reject incompatible schemas at publish time rather than letting readers fail later, and the same check applies here. When a new library version is published or a prompt is generated, diff its key-order projection against the previous version and classify each component: additions at the end of the key order are compatible even for messages without a meta line; reorders and removals are compatible only through the meta line; a removed name alongside a new name suggests a rename and warrants a warning when no alias covers it; an unchanged version with a changed projection is an error, the forgotten version bump. A registry MAY reject on these classes; a generator SHOULD warn.
+
+### 7.7 Security
+
+In-band metadata is forgeable in principle: model output or third-party text could contain a marker-shaped line. The mitigations are structural. The syntax is never taught, so the model does not produce it in practice; display parsers strip every sentinel line regardless of kind, so forged lines never render; `meta` is only read from the trailing block, and the blast radius of a forged projection is one message re-binding incorrectly. Hosts MUST NOT derive trust decisions from sentinel attributes.
+
 ## Appendix A. Changelog
 
+- **2026-08-07**: Added section 7, the proposed storage protocol: sentinel line grammar and kind registry, the meta line carrying the key-order projection, normalization with an orders-equality fast path, slim mode, the storage boundary, and publish-time compatibility checking. Section 3's key-order rule gains the append-only guidance and section 6.1 references the protocol.
 - **2026-08-05**: Draft renamed from 0.9 to 1.0-beta; earlier entries keep the old name.
 - **2026-08-04**: Argument constraints limited to the JSON-Schema-mappable keywords with warn-and-render recovery, rendered as deterministic `@param` suffixes; `example` documented as string or array; CLI section updated to PR #811 behavior (default generate emits prompt plus `.spec.json`, `--json-schema` prints the validation schema, `generateSystemPrompt` canonical); unified LibrarySpec standardized as schema-only with signatures derived by the prompt template.
 - **2026-08-03**: Split out of the 0.9 draft as its own document; added the conversation contract and the proposed JSDoc form for per-prop descriptions and examples. Review fixes: determinism scoped to a tagged prompt template, the validation-schema half of the LibrarySpec documented with the order-preserving requirement, CLI output described as shipped, tool descriptor input defined, signature format and the em dash separator documented as emitted.

@@ -16,7 +16,7 @@ v0.1 covered the static core (syntax, positional mapping, streaming, hoisting) a
 
 - **Extending a library.** `library.extend({ add, remove, override })` derives a new library from a base: add your own components to the default library, remove what your product does not use, or override a component with your own. Added components can appear anywhere general content goes, with no extra wiring (section 4.5).
 - **Multiple libraries in one response.** Fenced blocks tagged with `library=<id>` let one generation carry programs from different libraries: a chat answer and a slides artifact in one response, each routed to its own surface through the segments API (section 4.6).
-- **Library versioning and backward compatibility.** Libraries carry a stable `id` and a `version`, and generated UIs outlive library changes: props can be reordered, added, renamed, or removed and stored pages still render; a component can be deprecated or replaced with a successor without breaking old conversations; clients on older bundles (mobile apps, long-lived browser tabs, multiple frontends on one backend) are served a library they can render. 1.0-beta states these guarantees; the mechanism behind them is still being finalized.
+- **Library versioning and backward compatibility.** Libraries carry a stable `id` and a `version`, and generated UIs outlive library changes: props can be reordered, added, renamed, or removed and stored pages still render; a component can be deprecated or replaced with a successor without breaking old conversations; clients on older bundles (mobile apps, long-lived browser tabs, multiple frontends on one backend) are served a library they can render. The mechanism is one metadata line appended to stored messages, carrying the key orders the message was written against, the same writer-schema idea Avro uses for positional data (section 4.7; full protocol in [prompt.md](./prompt.md), section 7).
 - **Registered functions.** Libraries declare pure, typed functions the model calls like built-ins: `price = TextContent(@FormatCurrency(total, "USD"))`. Declared with `defineFunction`, advertised in the prompt, implemented in each client (sections 4.1 and 4.2).
 - **Named validators.** Custom validation checks join the built-in rules object as their own keys, with no new syntax: `{ required: true, corporateEmail: true }`. Declared with `defineValidator` (section 4.3).
 - **Custom actions.** `defineAction` declares the name, params schema, and description; the model invokes it as a named step like any built-in, `@ApproveInvoice("inv_42")`; the host handles it in the existing `onAction` callback, whose event becomes typed over the declared set (section 4.4).
@@ -514,7 +514,7 @@ root = Deck([intro, numbers])
 
 Untagged blocks bind to the first library the app passed, so single-library apps and forgetful models keep working unchanged. Every block is its own program with its own state: a response can interleave prose and UI freely (text, chart, more text, form), each block renders independently in document order, and cross-block references are not allowed.
 
-This is what lets one generation produce chat and artifact together. The user asks for a revenue deck; one model call answers with prose, a chart for the conversation, and the slides content, each in its own tagged block. The host renders the prose and chart in the message and lifts the slides segment into the artifact panel. The routing key is the same tag everywhere: it picks the library that validates and renders the segment, and it tells the host which surface the segment belongs to. Persisted messages keep the tag in their storage header, so a reload routes every segment the same way.
+This is what lets one generation produce chat and artifact together. The user asks for a revenue deck; one model call answers with prose, a chart for the conversation, and the slides content, each in its own tagged block. The host renders the prose and chart in the message and lifts the slides segment into the artifact panel. The routing key is the same tag everywhere: it picks the library that validates and renders the segment, and it tells the host which surface the segment belongs to. Fence tags live in the message text itself, so a persisted message routes every segment the same way on reload.
 
 Under every layer sits one engine, `parseMessage(text, libraries)`, and one separation rule: a fence whose info string starts with `openui-lang` is a UI segment, and everything else, including any other code fences the model writes, stays prose. The scanner is string-aware (a backtick inside an OpenUI string cannot close a fence), and an unterminated fence during streaming is already a UI segment instead of leaking into the prose. To show OpenUI Lang as an example rather than render it, the model tags the fence `text`; the prompt teaches that rule. The response above parses to:
 
@@ -546,6 +546,30 @@ The hook is the React binding of the engine: it parses incrementally as chunks a
 
 Segmentation also improves streaming: a program whose fence has closed is complete, so its queries fire and its inputs go live while the rest of the message is still arriving.
 
+### 4.7 Stored messages and the meta line *(proposed)*
+
+OpenUI Lang is a positional wire: `Button("Save", saveAction, "primary")` carries no prop names, and its meaning depends on the key order of the schema it was written against. Avro's binary encoding makes the same trade, and it forces the same solution: data that outlives its schema must travel with the schema it was written under. For OpenUI the traveling part is tiny. The text already identifies its own values (strings are quoted, numbers are bare), so the only knowledge a stored message loses is the names for its positions.
+
+When a response is stored, the host appends one metadata line per library used:
+
+````markdown
+Here is the ticket view:
+
+```openui-lang
+root = Card([title, closeBtn])
+title = Header("Ticket #4821")
+closeBtn = Button("Close ticket", closeAction, "primary")
+```
+
+]]>openui:meta library=support@1.2.0 orders={"Card":["children","sources"],"Header":["title","subtitle"],"Button":["label","action","variant"]}
+````
+
+The `orders` attribute is a projection of the LibrarySpec: each component, function, and action used in the message, mapped to its key order at generation time. Reading the message later, the client parses the text with the stored orders, binds every argument to its prop name, and re-serializes in the current library's order before rendering it or resending it as history. Reorders and removals resolve mechanically; added props need nothing; renames use an explicit alias mapping. When the stored orders match the current projection, the line is stripped and nothing else runs. Equality of orders, not of version numbers, is the fast path, so a schema change that forgot to bump the version is still caught.
+
+The line is host-authored. The model never writes it (the prompt does not teach the syntax) and never reads it (hosts strip it before the model sees history). A message that loses its meta line degrades to today's behavior: the text renders as-is against the current library. Library authors keep that degraded case safe by adding new props at the end of the key order instead of reordering, the same discipline Protobuf codifies as "never reuse field numbers."
+
+The full sentinel grammar, the storage utilities, and publish-time compatibility checking live in [prompt.md](./prompt.md), section 7.
+
 ## 5. Security considerations
 
 - **The library is the capability boundary.** The model can only invoke components, tools, functions, and actions the library declares. Hosts MUST treat tool implementations and action handlers as the security perimeter and validate their inputs; the model chooses the arguments.
@@ -553,4 +577,4 @@ Segmentation also improves streaming: a program whose fence has closed is comple
 - **URLs.** `@OpenUrl` payloads are model-authored. Hosts SHOULD restrict schemes to https and validate targets before navigation.
 - **Prompt injection shows up as UI.** Injected instructions can produce misleading interfaces (a button labeled "Cancel" that submits, a fake login form). Hosts rendering third-party or multi-agent content SHOULD attribute UI to its source and keep sensitive actions behind their own confirmation surfaces.
 - **Form state travels to the model.** `@ToAssistant` events carry form contents into the conversation. Hosts MUST NOT place secrets in form defaults and SHOULD scrub sensitive fields before forwarding.
-- **Persisted programs replay.** Stored UIs re-render later, possibly against a changed library. The recovery rules of the [language spec](./language.md) apply; hosts MUST NOT execute stored mutations without a fresh user gesture.
+- **Persisted programs replay.** Stored UIs re-render later, possibly against a changed library. The recovery rules of the [language spec](./language.md) apply; hosts MUST NOT execute stored mutations without a fresh user gesture. Stored messages may also carry host-authored metadata lines ([prompt.md](./prompt.md), section 7); clients MUST strip every such line from display, including kinds they do not recognize.
