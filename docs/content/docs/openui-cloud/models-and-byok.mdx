@@ -1,9 +1,9 @@
 ---
 title: Models and BYOK
-description: "Configure provider keys, choose supported models, and call OpenUI Cloud with the Responses API."
+description: "Configure provider keys and choose supported models in OpenUI Cloud."
 ---
 
-OpenUI Cloud supports both managed model access and bring your own key (BYOK). Both use the same `provider/model` identifiers and OpenAI-compatible Responses API.
+OpenUI Cloud supports both managed model access and bring your own key (BYOK). Both use the same `provider/model` identifiers.
 
 ## Bring your own key
 
@@ -33,28 +33,3 @@ Model identifiers follow the `provider/model` convention. For example, use `open
 | OpenAI    | GPT-5.2                | `openai/gpt-5.2`                |
 | OpenAI    | GPT-5.1                | `openai/gpt-5.1`                |
 | OpenAI    | GPT-5                  | `openai/gpt-5`                  |
-
-## Use with the Responses API
-
-OpenUI Cloud exposes an OpenAI-compatible Responses endpoint at `POST https://api.thesys.dev/v1/embed/responses`. Use the OpenAI SDK with the Cloud base URL and authenticate with your server-side `THESYS_API_KEY`.
-
-Provider keys stay in the Thesys console and are never sent by your application. The provider prefix in `model` selects the matching BYOK key when one is configured.
-
-```ts
-import { generateSystemPrompt } from "@openuidev/thesys-server";
-import OpenAI from "openai";
-
-const cloud = new OpenAI({
-  apiKey: process.env.THESYS_API_KEY,
-  baseURL: "https://api.thesys.dev/v1/embed",
-});
-
-const stream = await cloud.responses.create({
-  model: "openai/gpt-5.5",
-  input: "Create a quarterly sales dashboard.",
-  instructions: generateSystemPrompt(),
-  stream: true,
-});
-```
-
-The generated Cloud app adds conversation persistence, artifacts, built-in tools, and stream handling around this request. See [How it works](/docs/openui-cloud/how-it-works) for the complete request lifecycle.
