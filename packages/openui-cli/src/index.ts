@@ -9,11 +9,19 @@ import { Command } from "commander";
 import { runCreateApp } from "./commands/create-app";
 import { GenerateOptions, runGenerate } from "./commands/generate";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
+import { prefetchTemplateIndex } from "./lib/fetch-template";
 import { resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
 import { handleCliError, normalizeAuth, normalizeTemplate } from "./lib/utils"; // Ensure utils.ts is included for type declarations
 
 const program = new Command();
+
+// Kick off the template index download the moment the process starts, so it
+// runs in the background while commander parses and prompts render. The
+// template folder itself prefetches once its name is known (see create-app).
+if (process.argv[2] === "create") {
+  prefetchTemplateIndex();
+}
 
 const cliVersion = (
   JSON.parse(fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8")) as {
