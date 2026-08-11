@@ -11,6 +11,14 @@ export interface LangChainInputMessage {
   [key: string]: unknown;
 }
 
+/** Values available when customizing the input sent to a LangGraph run. */
+export interface PrepareLangChainRunInputContext {
+  /** The validated, tool-history-safe messages converted from the AG-UI request. */
+  messages: LangChainInputMessage[];
+  /** The complete incoming JSON body, including fields such as `threadId`. */
+  requestBody: Record<string, unknown>;
+}
+
 /** Configuration for {@link createLangChainStreamResponse}. */
 export interface CreateLangChainStreamResponseOptions {
   /** LangGraph agent-protocol-v2 base URL, for example `http://localhost:2024`. */
@@ -25,6 +33,11 @@ export interface CreateLangChainStreamResponseOptions {
   cleanupThread?: boolean;
   /** Register thread cleanup with a serverless execution context such as `waitUntil`. */
   waitUntil?: (task: Promise<void>) => void;
+  /**
+   * Customize the graph input. Use this to forward application fields such as
+   * a provider conversation id or selected model alongside `messages`.
+   */
+  prepareInput?: (context: PrepareLangChainRunInputContext) => unknown | Promise<unknown>;
 }
 
 type AssistantMessage = Extract<Message, { role: "assistant" }>;
@@ -51,19 +64,28 @@ export async function createLangChainStreamResponse(
     return badRequest("Expected a JSON request body containing a non-empty messages array");
   }
 
-  const messages = parseChatRequestBody(body);
+  const requestBody = asRecord(body);
+  const messages = parseChatRequestBody(requestBody);
   if (!messages) {
     return badRequest("Expected a JSON request body containing a non-empty messages array");
   }
 
   const langChainMessages = toLangChainMessages(messages);
   const visibleMessages = sanitizeToolHistory(langChainMessages);
+  let input: unknown;
+  try {
+    input = options.prepareInput
+      ? await options.prepareInput({ messages: visibleMessages, requestBody })
+      : { messages: visibleMessages };
+  } catch (error) {
+    return badRequest(error instanceof Error ? error.message : "Unable to prepare LangGraph input");
+  }
 
   const readable = streamOpenUI({
     apiUrl: options.apiUrl,
     assistantId: options.assistantId,
     apiKey: options.apiKey,
-    input: { messages: visibleMessages },
+    input,
     signal: request.signal,
     debug: options.debug,
     cleanupThread: options.cleanupThread,
@@ -236,4 +258,8 @@ function parseChatRequestBody(value: unknown): Message[] | undefined {
   if (typeof value !== "object" || value === null || !("messages" in value)) return undefined;
   const parsed = MessageSchema.array().safeParse(value.messages);
   return parsed.success && parsed.data.length > 0 ? parsed.data : undefined;
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
 }

@@ -178,6 +178,68 @@ describe("createLangChainStreamResponse", () => {
     });
   });
 
+  it("lets callers forward request fields into the graph input", async () => {
+    let commandInput: unknown;
+    const fetchMock = vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
+      if (String(input).endsWith("/stream/events")) {
+        return new Response(
+          `event: lifecycle\ndata: ${JSON.stringify({ type: "event", params: { namespace: [], data: { event: "completed" } } })}\n\n`,
+        );
+      }
+      commandInput = JSON.parse(String(init?.body)).params.input;
+      return Response.json({ type: "success", id: 1, result: { run_id: "run-3" } });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const request = new Request("https://app.example/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        threadId: "conversation-1",
+        model: "gpt-5.5",
+        messages: [{ id: "user-1", role: "user", content: "Hello" }],
+      }),
+    });
+
+    const response = await createLangChainStreamResponse(request, {
+      apiUrl: "https://langgraph.example",
+      assistantId: "agent",
+      cleanupThread: false,
+      prepareInput: ({ messages, requestBody }) => ({
+        messages: messages.slice(-1),
+        conversationId: requestBody.threadId,
+        model: requestBody.model,
+      }),
+    });
+    await response.text();
+
+    expect(commandInput).toEqual({
+      messages: [{ type: "human", content: "Hello" }],
+      conversationId: "conversation-1",
+      model: "gpt-5.5",
+    });
+  });
+
+  it("returns 400 when custom input validation fails", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await createLangChainStreamResponse(
+      chatRequest([{ id: "user-1", role: "user", content: "Hello" }]),
+      {
+        apiUrl: "https://langgraph.example",
+        assistantId: "agent",
+        prepareInput: () => {
+          throw new Error("threadId is required");
+        },
+      },
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({ error: "threadId is required" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it.each([
     ["malformed JSON", "{"],
     ["a missing messages property", JSON.stringify({})],
