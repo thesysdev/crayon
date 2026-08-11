@@ -20,58 +20,30 @@ import { resolveArgs } from "../lib/resolve-args";
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
 import { cliErrorProperties, processErrorProperties } from "../lib/utils";
 
-const backendDependencies: Record<
-  TemplateName,
-  Record<Exclude<BackendFramework, "none">, Record<string, string>>
-> = {
-  "openui-cloud": {
-    langgraph: {
-      "@langchain/core": "^1.2.5",
-      "@langchain/langgraph": "^1.4.9",
-      "@langchain/openai": "^1.5.6",
-      "@openuidev/langchain": "latest",
-      langchain: "^1.5.5",
-    },
-    "vercel-ai-sdk": {
-      "@ai-sdk/openai": "^3.0.91",
-      ai: "^6.0.246",
-      zod: "^4.4.3",
-    },
-  },
-  "openui-self-hosted": {
-    langgraph: {
-      "@langchain/core": "^1.2.5",
-      "@langchain/langgraph": "^1.4.9",
-      "@langchain/openai": "^1.5.6",
-      "@openuidev/react-headless": "^0.9.7",
-      zod: "^4.4.3",
-    },
-    "vercel-ai-sdk": {
-      "@ai-sdk/openai": "3.0.90",
-      "@openuidev/react-headless": "^0.9.6",
-      ai: "6.0.244",
-      zod: "^4.4.3",
-    },
-  },
+const BACKENDS_DIR = "backends";
+const BACKEND_MANIFEST = "manifest.json";
+
+type BackendManifest = {
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  scripts?: Record<string, string>;
+  removeDependencies?: string[];
+  removeFiles?: string[];
+  gettingStarted?: string;
 };
 
-const backendDevDependencies: Partial<
-  Record<TemplateName, Partial<Record<Exclude<BackendFramework, "none">, Record<string, string>>>>
-> = {
-  "openui-cloud": {
-    langgraph: {
-      "@langchain/langgraph-cli": "^1.4.4",
-      "npm-run-all2": "^9.0.2",
-    },
-  },
+type BackendOverlay = {
+  dir: string;
+  manifest: BackendManifest;
 };
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
   if (!rel) return true;
   const top = rel.split(path.sep)[0] ?? "";
-  // never copy install/build artifacts that may sit in a template dir
-  return !["node_modules", ".next", ".turbo", "dist"].includes(top);
+  // Copy the base template only; selected backend overlays are applied later.
+  // Also exclude install/build artifacts that may sit in a template directory.
+  return ![BACKENDS_DIR, "node_modules", ".next", ".turbo", "dist"].includes(top);
 }
 
 function restoreDotfiles(projectDir: string) {
@@ -101,8 +73,7 @@ function rewritePackageJson(
   projectDir: string,
   name: string,
   packageManager: PackageManagerName,
-  template: TemplateName,
-  backendFramework: BackendFramework,
+  backendManifest?: BackendManifest,
 ) {
   // package.json: set the project name and de-vendor monorepo-local deps
   // (workspace:* / file: / catalog:) to the published "latest". link: deps are
@@ -120,22 +91,14 @@ function rewritePackageJson(
   };
   pkg.name = name;
   if (packageManager !== "pnpm") delete pkg.pnpm;
-  if (backendFramework !== "none") {
+  if (backendManifest) {
     pkg.dependencies ??= {};
-    if (template === "openui-self-hosted") delete pkg.dependencies["openai"];
-    Object.assign(pkg.dependencies, backendDependencies[template][backendFramework]);
-    Object.assign(
-      (pkg.devDependencies ??= {}),
-      backendDevDependencies[template]?.[backendFramework] ?? {},
-    );
-  }
-  if (template === "openui-cloud" && backendFramework === "langgraph") {
-    pkg.scripts = {
-      ...(pkg.scripts ?? {}),
-      dev: "run-p dev:langgraph dev:next",
-      "dev:langgraph": "langgraphjs dev",
-      "dev:next": "next dev",
-    };
+    for (const dependency of backendManifest.removeDependencies ?? []) {
+      delete pkg.dependencies[dependency];
+    }
+    Object.assign(pkg.dependencies, backendManifest.dependencies ?? {});
+    Object.assign((pkg.devDependencies ??= {}), backendManifest.devDependencies ?? {});
+    Object.assign((pkg.scripts ??= {}), backendManifest.scripts ?? {});
   }
   for (const section of ["dependencies", "devDependencies"] as const) {
     const deps = pkg[section];
@@ -184,49 +147,40 @@ function rewritePackageJson(
   }
 }
 
-function applyBackendFiles(projectDir: string, backendFramework: BackendFramework) {
-  const routeOptionsDir = path.join(projectDir, "_backend-routes");
-  const pageOptionsDir = path.join(projectDir, "_backend-pages");
-  const extrasOptionsDir = path.join(projectDir, "_backend-extras");
-  if (backendFramework !== "none") {
-    const routeSource = path.join(routeOptionsDir, `${backendFramework}.ts`);
-    const routeDestination = path.join(projectDir, "src", "app", "api", "chat", "route.ts");
-    if (!fs.existsSync(routeSource)) {
-      throw new CreateError(
-        "template_missing",
-        `Backend route "${backendFramework}" not found. Rebuild the CLI with \`pnpm build\`.`,
-      );
-    }
-    fs.copyFileSync(routeSource, routeDestination);
+function resolveBackendOverlay(
+  templateDir: string,
+  backendFramework: BackendFramework,
+): BackendOverlay | undefined {
+  if (backendFramework === "default") return undefined;
 
-    // Framework routes speak their native wire protocols, so select the
-    // matching frontend stream adapter and message format too.
-    if (fs.existsSync(pageOptionsDir)) {
-      const pageSource = path.join(pageOptionsDir, `${backendFramework}.tsx`);
-      if (!fs.existsSync(pageSource)) {
-        throw new CreateError(
-          "template_missing",
-          `Backend page "${backendFramework}" not found. Rebuild the CLI with \`pnpm build\`.`,
-        );
-      }
-      fs.copyFileSync(pageSource, path.join(projectDir, "src", "app", "page.tsx"));
-    }
-
-    const extrasSource = path.join(extrasOptionsDir, backendFramework);
-    if (fs.existsSync(extrasSource)) {
-      for (const entry of fs.readdirSync(extrasSource)) {
-        fs.cpSync(path.join(extrasSource, entry), path.join(projectDir, entry), {
-          recursive: true,
-        });
-      }
-    }
-
-    // The selected framework backend owns its tool loop and stream encoding.
-    fs.rmSync(path.join(projectDir, "src", "lib", "tool-loop.ts"), { force: true });
+  const overlayDir = path.join(templateDir, BACKENDS_DIR, backendFramework);
+  const manifestPath = path.join(overlayDir, BACKEND_MANIFEST);
+  if (!fs.existsSync(manifestPath)) {
+    throw new CreateError(
+      "template_missing",
+      `Backend overlay "${backendFramework}" not found. Rebuild the CLI with \`pnpm build\`.`,
+    );
   }
-  fs.rmSync(routeOptionsDir, { recursive: true, force: true });
-  fs.rmSync(pageOptionsDir, { recursive: true, force: true });
-  fs.rmSync(extrasOptionsDir, { recursive: true, force: true });
+
+  return {
+    dir: overlayDir,
+    manifest: JSON.parse(fs.readFileSync(manifestPath, "utf8")) as BackendManifest,
+  };
+}
+
+function applyBackendOverlay(projectDir: string, backendOverlay?: BackendOverlay) {
+  if (!backendOverlay) return;
+
+  for (const entry of fs.readdirSync(backendOverlay.dir)) {
+    if (entry === BACKEND_MANIFEST) continue;
+    fs.cpSync(path.join(backendOverlay.dir, entry), path.join(projectDir, entry), {
+      recursive: true,
+    });
+  }
+
+  for (const relativePath of backendOverlay.manifest.removeFiles ?? []) {
+    fs.rmSync(path.join(projectDir, relativePath), { recursive: true, force: true });
+  }
 }
 
 export async function runCreateApp(options: CreateAppOptions): Promise<void> {
@@ -259,7 +213,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
         : {
             prompt: {
               type: "select",
-              message: "Choose your agent backend",
+              message: "Choose where your agent infrastructure should run",
               choices: [
                 {
                   value: "openui-cloud",
@@ -283,18 +237,18 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     {
       backendFramework:
         options.backendFramework || !interactive
-          ? { value: options.backendFramework ?? "none" }
+          ? { value: options.backendFramework ?? "default" }
           : {
               prompt: {
                 type: "select",
                 message: "Choose your backend framework",
                 choices: [
                   {
-                    value: "none",
-                    name: "No framework — OpenAI SDK (default)",
+                    value: "default",
+                    name: "Default — minimal SDK route",
                   },
-                  { value: "langgraph", name: "LangGraph" },
                   { value: "vercel-ai-sdk", name: "Vercel AI SDK" },
+                  { value: "langgraph", name: "LangGraph" },
                 ],
               },
               required: true,
@@ -341,6 +295,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       "TEMPLATE_MISSING",
     );
   }
+  const backendOverlay = resolveBackendOverlay(templateDir, backendFramework);
 
   telemetry.capture("cli_env_resolution_started", {
     ...createFunnelProps("env_resolution_started"),
@@ -384,18 +339,18 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
     restoreDotfiles(targetDir);
-    applyBackendFiles(targetDir, backendFramework);
-    rewritePackageJson(targetDir, name, packageManager.name, template, backendFramework);
+    applyBackendOverlay(targetDir, backendOverlay);
+    rewritePackageJson(targetDir, name, packageManager.name, backendOverlay?.manifest);
     // npm ci requires the copied package-lock; other managers resolve from package.json.
     // Framework routes add dependencies at scaffold time, so their npm lock
     // cannot remain frozen; npm install creates a fresh lock for that variant.
-    if (packageManager.name !== "npm" || backendFramework !== "none") {
+    if (packageManager.name !== "npm" || backendFramework !== "default") {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
     }
     // The Cloud template ships pnpm's lock/workspace files for reproducible pnpm
     // installs and native-build policy. A framework changes dependencies, so
     // regenerate its lock; non-pnpm scaffolds do not need either pnpm file.
-    if (packageManager.name !== "pnpm" || backendFramework !== "none") {
+    if (packageManager.name !== "pnpm" || backendFramework !== "default") {
       fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
     }
     if (packageManager.name !== "pnpm") {
@@ -499,7 +454,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     }
   }
 
-  const frameworkInstall = backendFramework !== "none";
+  const frameworkInstall = backendFramework !== "default";
   const installCmd =
     frameworkInstall && packageManager.name === "npm"
       ? "npm install --prefer-offline --no-audit --no-fund --progress=false"
@@ -590,7 +545,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       name,
       devCmd,
       template,
-      backendFramework,
+      backendGettingStarted: backendOverlay?.manifest.gettingStarted,
       skillInstalled,
       envWritten: envResult.envWritten,
       startDev,
@@ -797,7 +752,7 @@ function getStartedMessage(o: {
   name: string;
   devCmd: string;
   template: TemplateName;
-  backendFramework: BackendFramework;
+  backendGettingStarted?: string;
   skillInstalled: boolean;
   envWritten: boolean;
   startDev: boolean;
@@ -828,16 +783,7 @@ function getStartedMessage(o: {
           `> ${o.devCmd} run dev`,
         ].join("\n");
 
-  const frameworkNote =
-    o.backendFramework === "langgraph"
-      ? o.template === "openui-cloud"
-        ? `The generated LangGraph agent uses OpenUI Cloud as its Responses provider. \`${o.devCmd} run dev\` starts both the Agent Server and Next.js; deploy \`langgraph.json\` to LangSmith and point LANGGRAPH_API_URL at it in your frontend deployment.\nAsk "What's the weather in Berlin?" to exercise the included LangGraph tool.`
-        : 'The generated API route uses LangGraph.\nAsk "What\'s the weather in Berlin?" to exercise its native tool loop.'
-      : o.backendFramework === "vercel-ai-sdk"
-        ? o.template === "openui-cloud"
-          ? 'The generated Vercel AI SDK route uses OpenUI Cloud as its Responses provider and is deployable as a normal Next.js app on Vercel.\nAsk "What\'s the weather in Berlin?" to exercise the included AI SDK tool.'
-          : 'The generated API route uses the Vercel AI SDK.\nAsk "What\'s the weather in Berlin?" to exercise its native tool loop.'
-        : "";
+  const frameworkNote = o.backendGettingStarted?.replaceAll("{{packageManager}}", o.devCmd) ?? "";
 
   return `${[skillMessage.trim(), "Done!", envNote, frameworkNote, nextStep]
     .filter(Boolean)

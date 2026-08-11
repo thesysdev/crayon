@@ -238,14 +238,14 @@ export function normalizeTemplate(t?: string): TemplateName | undefined {
 export function normalizeBackendFramework(framework?: string): BackendFramework | undefined {
   if (!framework) return undefined;
   const value = framework.toLowerCase();
-  if (value === "none" || value === "no-framework") return "none";
+  if (value === "default" || value === "none" || value === "no-framework") return "default";
   if (value === "langgraph" || value === "lang-graph") return "langgraph";
   if (value === "vercel" || value === "vercel-ai-sdk" || value === "ai-sdk") {
     return "vercel-ai-sdk";
   }
   throw new CreateError(
     "bad_args",
-    `unknown backend framework "${framework}". Use: none | langgraph | vercel-ai-sdk.`,
+    `unknown backend framework "${framework}". Use: default | langgraph | vercel-ai-sdk.`,
   );
 }
 

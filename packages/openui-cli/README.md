@@ -12,7 +12,7 @@ It currently supports two workflows:
 - scaffolding a new OpenUI app from one of two templates:
   - **OpenUI Cloud (recommended)** — hosted models with managed conversations, streaming, built-in tools, and ready-to-use report and presentation artifacts
   - **Self-hosted** — bring an OpenAI-compatible model key and own the AI route and persistence
-- choosing the direct OpenAI SDK route, LangGraph, or Vercel AI SDK for either template
+- keeping the default minimal SDK route or adding a LangGraph or Vercel AI SDK backend to either template
 - generating a system prompt or JSON Schema from a `createLibrary()` export
 
 ## Install
@@ -40,7 +40,7 @@ npx @openuidev/cli@latest create --template openui-cloud
 npx @openuidev/cli@latest create --template openui-self-hosted
 ```
 
-Choose a backend framework directly (the default is `none`, which uses the OpenAI SDK):
+Choose a backend framework directly (the default is `default`, the template's minimal SDK route):
 
 ```bash
 npx @openuidev/cli@latest create --template openui-cloud --backend-framework langgraph
@@ -75,7 +75,7 @@ Options:
 
 - `-n, --name <string>`: Project name (interactive default: `openui-agent`)
 - `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
-- `--backend-framework <framework>`: API route implementation — `none`, `langgraph`, or `vercel-ai-sdk`
+- `--backend-framework <framework>`: API route implementation — `default`, `langgraph`, or `vercel-ai-sdk`
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
@@ -90,7 +90,7 @@ What it does:
 
 - prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
 - prompts for the template if you do not pass `--template`
-- prompts for a backend framework after the template; non-interactive usage defaults to `none`
+- prompts for a backend framework after the template; non-interactive usage defaults to `default`
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
 - asks whether to start the development server after dependency installation (default: yes); answering no preserves the install-and-exit behavior
@@ -109,11 +109,11 @@ What it does:
 
 | Value           | OpenUI Cloud route                                 | Self-hosted route                          |
 | --------------- | -------------------------------------------------- | ------------------------------------------ |
-| `none`          | Direct OpenAI SDK Responses proxy                  | Direct OpenAI SDK Chat Completions proxy   |
+| `default`       | Direct OpenAI SDK Responses proxy                  | Direct OpenAI SDK Chat Completions proxy   |
 | `langgraph`     | Deployable LangGraph Agent Server + Cloud provider | LangGraph `StateGraph` using your provider |
 | `vercel-ai-sdk` | Vercel AI SDK `streamText()` + Cloud provider      | Vercel AI SDK `streamText()` route         |
 
-The CLI replaces `src/app/api/chat/route.ts` and `src/app/page.tsx`, and adds the dependencies and deployment files for the selected framework. The Cloud Vercel AI SDK variant is a normal Next.js `streamText()` backend, returns `toUIMessageStreamResponse()`, and uses `vercelAIAdapter()`. The Cloud LangGraph variant adds `langgraph.json` and an exported `src/agent/agent.ts`; its Next route proxies to the Agent Server with `@openuidev/langchain`, and the browser consumes the resulting AG-UI stream with `agUIAdapter()`. The self-hosted LangGraph variant keeps the smaller inline `StateGraph` route and `langGraphAdapter()`.
+The default implementation is part of each base template. For LangGraph or Vercel AI SDK, the CLI applies one backend overlay containing the final files plus a manifest for its dependencies, scripts, removals, and onboarding text. The Cloud Vercel AI SDK variant is a normal Next.js `streamText()` backend, returns `toUIMessageStreamResponse()`, and uses `vercelAIAdapter()`. The Cloud LangGraph variant adds `langgraph.json` and an exported `src/agent/agent.ts`; its Next route proxies to the Agent Server with `@openuidev/langchain`, and the browser consumes the resulting AG-UI stream with `agUIAdapter()`. The self-hosted LangGraph variant keeps the smaller inline `StateGraph` route and `langGraphAdapter()`.
 
 In both Cloud framework variants, the selected framework owns the agent orchestration and application tool loop. OpenUI Cloud is attached as the Responses model provider and conversation store. Reports, presentations, web search, image search, and configured MCP tools remain provider-executed Cloud tools, while application tools such as `get_weather` execute inside LangGraph or the Vercel AI SDK. Choosing a Cloud framework does not configure a user-owned model provider; choose `openui-self-hosted` for that.
 

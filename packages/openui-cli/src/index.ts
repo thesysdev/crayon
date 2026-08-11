@@ -60,7 +60,10 @@ program
     "-t, --template <template>",
     "AI backend: openui-cloud (recommended default) | openui-self-hosted (infrastructure control)",
   )
-  .option("--backend-framework <framework>", "Backend framework: none | langgraph | vercel-ai-sdk")
+  .option(
+    "--backend-framework <framework>",
+    "Backend framework: default | langgraph | vercel-ai-sdk",
+  )
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
@@ -81,7 +84,7 @@ Templates:
                       and persistence is a requirement.
 
 Backend frameworks:
-  none           Direct OpenAI SDK route (default).
+  default        Minimal SDK route.
   langgraph      LangGraph agent with the selected model backend.
   vercel-ai-sdk  Vercel AI SDK agent with the selected model backend.
 `,
