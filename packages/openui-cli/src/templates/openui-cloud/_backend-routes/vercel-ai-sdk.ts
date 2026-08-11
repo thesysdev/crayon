@@ -5,12 +5,14 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
 import {
   convertToModelMessages,
+  createUIMessageStreamResponse,
   stepCountIs,
   streamText,
   tool,
   wrapLanguageModel,
   type LanguageModelMiddleware,
   type UIMessage,
+  type UIMessageChunk,
 } from "ai";
 import { z } from "zod";
 
@@ -39,33 +41,72 @@ type ModelStreamResult = Awaited<ReturnType<WrapStreamArgs["doStream"]>>;
 type ModelStreamPart =
   ModelStreamResult["stream"] extends ReadableStream<infer Part> ? Part : never;
 
+type CloudFunctionCallOutput = {
+  type: "response.output_item.done";
+  item: {
+    type: "function_call_output";
+    call_id: string;
+    output: string;
+  };
+};
+
+function isCloudFunctionCallOutput(value: unknown): value is CloudFunctionCallOutput {
+  if (typeof value !== "object" || value === null) return false;
+  const event = value as { type?: unknown; item?: unknown };
+  if (event.type !== "response.output_item.done") return false;
+  if (typeof event.item !== "object" || event.item === null) return false;
+  const item = event.item as { type?: unknown; call_id?: unknown; output?: unknown };
+  return (
+    item.type === "function_call_output" &&
+    typeof item.call_id === "string" &&
+    typeof item.output === "string"
+  );
+}
+
 /**
- * OpenUI Cloud runs artifacts, search, and MCP calls itself. Keep those calls
- * out of the AI SDK's local tool runner; only appTools are executed here.
+ * OpenUI Cloud runs artifacts, search, and MCP calls itself. Mark those calls
+ * as provider-executed dynamic tools so the AI SDK includes them in its stream
+ * without dispatching them through the local appTools executor.
  */
-const appToolsOnly: LanguageModelMiddleware = {
+const cloudToolsAsProviderExecuted: LanguageModelMiddleware = {
   specificationVersion: "v3",
   wrapStream: async ({ doStream }) => {
     const result = await doStream();
     const cloudToolCallIds = new Set<string>();
+    const cloudToolNames = new Map<string, string>();
 
     return {
       ...result,
       stream: result.stream.pipeThrough(
         new TransformStream<ModelStreamPart, ModelStreamPart>({
           transform(part, controller) {
+            if (part.type === "raw") {
+              if (
+                isCloudFunctionCallOutput(part.rawValue) &&
+                cloudToolCallIds.has(part.rawValue.item.call_id)
+              ) {
+                const toolCallId = part.rawValue.item.call_id;
+                const toolName = cloudToolNames.get(toolCallId);
+                if (toolName) {
+                  controller.enqueue({
+                    type: "tool-result",
+                    toolCallId,
+                    toolName,
+                    result: part.rawValue.item.output,
+                    dynamic: true,
+                  });
+                }
+              }
+              return;
+            }
+
             if (part.type === "tool-input-start") {
               if (part.providerExecuted === true || !appToolNames.has(part.toolName)) {
                 cloudToolCallIds.add(part.id);
+                cloudToolNames.set(part.id, part.toolName);
+                controller.enqueue({ ...part, providerExecuted: true, dynamic: true });
                 return;
               }
-            }
-
-            if (
-              (part.type === "tool-input-delta" || part.type === "tool-input-end") &&
-              cloudToolCallIds.has(part.id)
-            ) {
-              return;
             }
 
             if (part.type === "tool-call") {
@@ -75,11 +116,14 @@ const appToolsOnly: LanguageModelMiddleware = {
                 !appToolNames.has(part.toolName)
               ) {
                 cloudToolCallIds.add(part.toolCallId);
+                cloudToolNames.set(part.toolCallId, part.toolName);
+                controller.enqueue({ ...part, providerExecuted: true, dynamic: true });
                 return;
               }
             }
 
             if (part.type === "tool-result" && cloudToolCallIds.has(part.toolCallId)) {
+              controller.enqueue({ ...part, dynamic: true });
               return;
             }
 
@@ -90,6 +134,26 @@ const appToolsOnly: LanguageModelMiddleware = {
     };
   },
 };
+
+/**
+ * `providerExecuted` controls the AI SDK's backend tool loop. Once a completed
+ * Cloud tool reaches the browser it is display-only; removing that flag from
+ * the outgoing UI chunk lets OpenUI render the activity while the generic
+ * adapter keeps rejecting unscoped provider-executed streams by default.
+ */
+function displayOnlyProviderTools() {
+  return new TransformStream<UIMessageChunk, UIMessageChunk>({
+    transform(chunk, controller) {
+      if ("providerExecuted" in chunk && chunk.providerExecuted === true) {
+        const { providerExecuted: _providerExecuted, ...displayChunk } = chunk;
+        controller.enqueue(displayChunk as UIMessageChunk);
+        return;
+      }
+
+      controller.enqueue(chunk);
+    },
+  });
+}
 
 /** Add Cloud-managed tool declarations after the AI SDK prepares its request. */
 const cloudFetch: typeof fetch = async (input, init) => {
@@ -135,7 +199,7 @@ export async function POST(req: Request) {
   });
   const cloudModel = wrapLanguageModel({
     model: openai.responses(model),
-    middleware: appToolsOnly,
+    middleware: cloudToolsAsProviderExecuted,
   });
 
   const result = streamText({
@@ -155,10 +219,15 @@ export async function POST(req: Request) {
       },
     },
     abortSignal: req.signal,
+    // Cloud-specific function_call_output items are currently exposed by the
+    // OpenAI provider as raw chunks, which the middleware maps to tool results.
+    includeRawChunks: true,
   });
 
   // The AI SDK owns UIMessage SSE encoding for this variant.
-  return result.toUIMessageStreamResponse();
+  return createUIMessageStreamResponse({
+    stream: result.toUIMessageStream().pipeThrough(displayOnlyProviderTools()),
+  });
 }
 
 function badRequest(message: string): Response {
