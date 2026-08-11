@@ -29,7 +29,7 @@ const backendDependencies: Record<
       "@langchain/core": "^1.2.5",
       "@langchain/langgraph": "^1.4.9",
       "@langchain/openai": "^1.5.6",
-      "@openuidev/langchain": "latest",
+      "@openuidev/langchain": "^0.0.2",
       langchain: "^1.5.5",
     },
     "vercel-ai-sdk": {
