@@ -79,21 +79,6 @@ export async function POST(request: Request) {
 }
 ```
 
-Use `prepareInput` when the graph needs additional fields from the browser
-request, such as a provider-managed conversation id or model selection:
-
-```ts
-return createLangChainStreamResponse(request, {
-  apiUrl: process.env.LANGGRAPH_API_URL ?? "http://localhost:2024",
-  assistantId: "agent",
-  prepareInput: ({ messages, requestBody }) => ({
-    messages: messages.slice(-1),
-    conversationId: requestBody.threadId,
-    model: requestBody.model,
-  }),
-});
-```
-
 The route expects a non-empty `{ messages: Message[] }` body in AG-UI format and
 returns a JSON `400` response for malformed input. It converts text and
 multimodal user content to LangChain messages. Complete assistant tool-call and
@@ -157,9 +142,8 @@ upstream LangGraph requests.
   LangGraph response path for stateless chat routes.
 - `streamOpenUI(options)` — lower-level protocol-v2 runner and custom-channel
   relay.
-- `CreateLangChainStreamResponseOptions`, `PrepareLangChainRunInputContext`,
-  `StreamOpenUIOptions`, and `LangChainInputMessage` — exported TypeScript
-  types.
+- `CreateLangChainStreamResponseOptions`, `StreamOpenUIOptions`, and
+  `LangChainInputMessage` — exported TypeScript types.
 
 See the repository's
 [`examples/langchain-chat`](https://github.com/thesysdev/openui/tree/main/examples/langchain-chat)
