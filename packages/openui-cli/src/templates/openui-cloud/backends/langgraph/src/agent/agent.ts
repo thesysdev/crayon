@@ -107,7 +107,7 @@ const cloudConversation = createMiddleware({
 });
 
 /**
- * A normal deployable LangGraph agent: LangGraph owns orchestration and local
+ * A normal LangGraph agent: LangGraph owns orchestration and local
  * tool execution; OpenUI Cloud is the attached Responses provider.
  */
 export const graph = createAgent({

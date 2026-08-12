@@ -26,6 +26,13 @@ by adding system prompts or tools.
 If you selected LangGraph or the Vercel AI SDK, the generated route includes a `get_weather`
 example. Ask “What’s the weather in Berlin?” to exercise its native tool loop.
 
+## Conversation storage
+
+This starter does not configure durable conversation storage. `AgentInterface`
+keeps messages in memory for the current page session and sends that history to
+`/api/chat`; refreshing the page loses it. To persist conversations, pass a
+storage implementation to `AgentInterface` and back it with your own database.
+
 ## Learn More
 
 To learn more about OpenUI, take a look at the following resources:

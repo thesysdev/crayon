@@ -16,7 +16,7 @@ pnpm dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `src/app/api/chat/route.ts` and improving your agent
-by adding system prompts or tools. A LangGraph scaffold puts the deployable agent in
+by adding system prompts or tools. A LangGraph scaffold puts the Agent Server implementation in
 `src/agent/agent.ts` instead.
 
 ## Framework deployments
@@ -33,6 +33,21 @@ LangSmith deployment because the graph uses OpenUI Cloud as its model provider.
 In both variants, your framework executes application tools. OpenUI Cloud
 provides managed conversation storage and executes its provider tools: reports,
 presentations, web search, image search, and configured MCP servers.
+
+## Conversation storage
+
+OpenUI Cloud is the only durable conversation and artifact store in every Cloud
+variant. The browser connects directly through `useOpenuiCloudStorage()` with a
+short-lived token from `/api/frontend-token`. The `threadId` sent to `/api/chat`
+is the Cloud conversation id, and the route appends each model turn to it with
+`conversation: threadId` and `store: true`.
+Browser `localStorage` holds only the selected model, not conversation messages.
+
+The Vercel AI SDK route does not create a second store. The LangGraph relay uses
+a temporary Agent Server thread for each run and deletes it afterward, so
+LangGraph/LangSmith is not the persistent chat-history store. Add a LangGraph
+checkpointer separately only if the graph needs durable state, interrupts, or
+resumable runs.
 
 ## Switching Models
 
