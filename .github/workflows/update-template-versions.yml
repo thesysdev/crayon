@@ -1,0 +1,29 @@
+name: Update CLI Template Versions
+
+# After a package publish, ping openui-templates to sync its template
+# versions. The sync over there reads this repo's packages/*/package.json —
+# not the npm registry, whose metadata lags right after a publish — and the
+# bump PR is opened on openui-templates.
+on:
+  workflow_run:
+    workflows: ["Publish NPM packages"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trigger-template-sync:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      # head_sha pins the openui-templates checkout of this repo to exactly
+      # the commit that was published.
+      - name: Send package-published dispatch to openui-templates
+        env:
+          GH_TOKEN: ${{ secrets.TEMPLATES_REPO_TOKEN }}
+        run: |
+          gh api repos/thesysdev/openui-templates/dispatches \
+            -f event_type=package-published \
+            -F 'client_payload[sha]=${{ github.event.workflow_run.head_sha || github.sha }}'
