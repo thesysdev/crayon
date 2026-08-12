@@ -16,7 +16,7 @@ The grammar is given in EBNF. `=` defines a production, `|` separates alternativ
 
 Before parsing, the input text is preprocessed in order:
 
-1. **Fence extraction.** If the input contains fenced code blocks (three backticks, with or without a language tag), the contents of all fences are extracted and joined with newlines; text outside fences is ignored by the parser (in inline mode, where the model mixes prose with fenced code, it is treated as prose for the conversation). Backtick sequences inside double-quoted strings do not open or close fences; single-quoted strings do not shield them. Comment stripping runs after extraction, so backtick runs inside comments do open and close fences. An unterminated fence extends to the end of the input, which keeps extraction stable while a fence is still streaming.
+1. **Fence extraction.** If the input contains fenced code blocks (three backticks, with or without a language tag), the contents of all fences are extracted and joined with newlines; text outside fences is ignored by the parser (in inline mode, where the model mixes prose with fenced code, it is treated as prose for the conversation). Backtick sequences inside double-quoted strings do not open or close fences; single-quoted strings do not shield them. Comment stripping runs after extraction, so backtick runs inside comments do open and close fences. An unterminated fence extends to the end of the input, which keeps extraction stable while a fence is still streaming. *(proposed)* A host that adopts the multi-library segments engine ([overview.md](./overview.md), section 4.6) supersedes this joined extraction: only fences whose info string starts with `openui-lang` are programs, each fence is its own program, and a fence tagged `text` stays prose. Single-segment hosts keep the joined behavior above.
 2. **Comment stripping.** `//` and `#` begin a comment that runs to the end of the line. Comment markers inside string literals are not comments, and string state carries across lines, so a marker inside a multi-line string is preserved.
 3. Leading and trailing whitespace of the whole extracted text is trimmed.
 
@@ -70,7 +70,7 @@ Numbers match `-?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?`. An `e` or `E` after the d
 
 #### Whitespace and other characters
 
-Spaces and tabs separate tokens. A newline ends a statement when it occurs at bracket depth zero (section 1.4). Any character that matches no rule is skipped as if it were whitespace (`a;b` lexes as the two tokens `a`, `b`); lexing never fails.
+Spaces and tabs separate tokens. The `newline` token is `\n`; an immediately preceding `\r` is consumed with it, so CRLF input lexes identically. A newline ends a statement when it occurs at bracket depth zero (section 1.4). Any character that matches no rule is skipped as if it were whitespace (`a;b` lexes as the two tokens `a`, `b`); lexing never fails.
 
 ### 1.4 Statements
 
@@ -87,7 +87,7 @@ A statement continues past a newline in three cases:
 
 1. The newline occurs inside unclosed `(`, `[`, or `{`.
 2. The newline occurs inside an unterminated string literal; strings may contain raw newlines.
-3. The newline occurs while a ternary is open at bracket depth zero, or the first non-whitespace token of the following line is `?`. This lets a ternary span lines.
+3. The newline occurs while a ternary is open at bracket depth zero, or the first non-whitespace token of the following line is `?`. This lets a ternary span lines. A ternary is **open** from its `?` until the first complete operand after its matching `:` has been consumed; a newline arriving while either branch is still empty continues the statement.
 
 These three rules are the complete definition of a statement boundary. Both the batch parser and the streaming parser MUST agree on them byte for byte. Because rule 3 depends on the following line, a statement boundary at a newline is provisional during streaming: the statement is complete only once the first non-whitespace character of the next line has arrived and is known not to be `?` (section 4, rule 1).
 
@@ -100,21 +100,21 @@ primary = literal | array | object | call | reference | "(" expression ")" ;
 literal = string | number | "true" | "false" | "null" ;
 array   = "[" [ arguments ] "]" ;
 object  = "{" [ key ":" expression { [ "," ] key ":" expression } ] "}" ;
-reference = name | "$" name ;
+reference = identifier | state_name ;
 ```
 
-Object keys may be names, strings, numbers, component names, or `$`-prefixed names (the `$` is stripped), and are read as strings; any other token is read as the key `?`. `name` denotes a lowercase-initial identifier; `ComponentName` an uppercase-initial one.
+Object keys may be names, strings, numbers, component names, or `$`-prefixed names (the `$` is stripped), and are read as strings; any other token is read as the key `?`. `name` denotes a lowercase-initial identifier; `ComponentName` an uppercase-initial one. A bare identifier of either case in operand position is a reference: hoisting is case-blind, and only the call-head position gives an uppercase identifier component meaning.
 
 Inside an expression, `$name = expression` parses as a binding assignment, the form the runtime uses for two-way binding. Generators are not taught this form and SHOULD NOT produce it.
 
 #### Calls
 
 ```ebnf
-call      = ( ComponentName | "@" name ) "(" [ arguments ] ")" ;
+call      = ( ComponentName | function_name ) "(" [ arguments ] ")" ;
 arguments = expression { [ "," ] expression } ;
 ```
 
-Commas between call arguments, array elements, and object entries are optional separators, and trailing commas are ignored. Built-ins require the `@` prefix: `Count(x)` without `@` is not a call, it parses as the bare reference `Count`, and the arguments are lost. Generators are taught the prefix; clients SHOULD surface a diagnostic *(proposed)* when an uppercase call matches a built-in name without `@`.
+Commas between call arguments, array elements, and object entries are optional separators, and trailing commas are ignored. `function_name` is defined in section 1.3; the identifier after `@` is conventionally uppercase, matching the built-ins, and the grammar accepts either case. Built-ins require the `@` prefix: `Count(x)` without `@` is not a call, it parses as the bare reference `Count`, and the arguments are lost. Generators are taught the prefix; clients SHOULD surface a diagnostic *(proposed)* when an uppercase call matches a built-in name without `@`.
 
 #### Member access and indexing
 
@@ -155,12 +155,12 @@ unary          = { "!" | "-" } postfix ;
 postfix        = primary { "." field | "[" expression "]" } ;
 primary        = literal | array | object | call | reference
                | "(" expression ")" ;
-call           = ( ComponentName | "@" name ) "(" [ arguments ] ")" ;
+call           = ( ComponentName | function_name ) "(" [ arguments ] ")" ;
 arguments      = expression { [ "," ] expression } ;
 array          = "[" [ arguments ] "]" ;
 object         = "{" [ key ":" expression { [ "," ] key ":" expression } ] "}" ;
 literal        = string | number | "true" | "false" | "null" ;
-reference      = name | "$" name ;
+reference      = identifier | state_name ;
 ```
 
 The lexical tokens and the token sets for `key` and `field` are defined in sections 1.3 and 1.5.
@@ -194,6 +194,8 @@ When no statement is named `root`, clients MUST recover by choosing the entry in
 If the chosen entry does not resolve to a component, nothing renders and the client reports it once the stream is complete (a dedicated `no-root` code is proposed; the reference client currently reports `parse-failed`). During streaming, an absent root is not an error; the program may not have arrived yet.
 
 *(proposed)* 1.0-beta simplifies recovery to a pure function of the program text: steps 1 and 2 are dropped, so the chosen entry never depends on which library renders the text, and the fallback is the first value statement that is a component call. A program recovered this way renders and reports a non-fatal `no-root`, teaching the generator to name its entry. A program with no component statement at all reports `no-root` with nothing rendered, and a `root` bound to a non-component recovers the same way, with a hint that `root` must be a component.
+
+*(proposed)* `createLibrary` requires the `root` field, and it accepts one component name or several (`root: ["Card", "Dashboard"]`), letting the model pick the right top level per request. The field guides prompt generation only; under the simplified recovery above, entry resolution never consults it, so what renders is always decided by the program text.
 
 ### 2.3 Reference resolution and hoisting
 
@@ -275,7 +277,7 @@ A client MUST accept input incrementally and produce a valid render after every 
 4. **Reconciliation.** If preprocessing of the fuller text no longer begins with the previously completed prefix (for example, a fence opener arrives and retroactively changes what the program text is), the client MUST discard its cache and reparse from the start.
 5. **No placeholders.** An array element that is an unresolved reference is omitted, not rendered as a hole or skeleton. The element appears when its statement arrives.
 6. **Interactive features wait.** Queries and mutations MUST NOT execute while streaming is in progress. State declarations initialize as they arrive, but a default value recovered from a truncated statement MUST be replaced when the full statement arrives, unless the user has already edited that state. *(The reference client does not yet implement this replacement; it is a known defect.)*
-7. **The host ends the stream.** The language has no in-band terminator; the host signals end of stream to the client (in the React client, the `isStreaming` prop). Chunks arriving after the signal are a new stream.
+7. **The host ends the stream.** The language has no in-band terminator; the host signals end of stream to the client (in the React client, the `isStreaming` prop). The signal finalizes the pending tail: implicit closing applies, and the resulting statements become completed, including a redefinition of an earlier name, which then wins per section 2.4. After finalization the streaming parser's result MUST equal the batch parse of the same bytes. *(The reference streaming parser currently drops a final-line redefinition; known defect.)* Chunks arriving after the signal are a new stream.
 
 ```mermaid
 sequenceDiagram
@@ -416,6 +418,7 @@ The invariant behind every rule in this section: **a mistake removes the smalles
 | `unknown-function` *(proposed)* | parser | `@Name` in expression position is neither built-in nor registered | Statement dropped |
 | `unknown-action` *(proposed)* | parser | Step name in an action plan is neither built-in nor declared | Only that step skipped; remaining steps run |
 | `unknown-validator` *(proposed)* | parser | Rule key is neither a built-in rule nor a declared validator | That rule ignored; remaining rules apply |
+| `constraint-violation` *(proposed)* | parser | Argument violates a schema constraint ([prompt.md](./prompt.md), section 3) | Value renders as-is; warning-level diagnostic, MUST NOT drop the component |
 
 ### 8.3 The error object
 
@@ -484,7 +487,7 @@ Parse: one completed statement (`root`); the pending tail parses as `header` bou
 **Chunk 2**: `er("Tickets", "Today")\nkpis = Stack([open`
 Parse: `header` completes. Pending: `kpis = Stack([open` autocloses to `Stack([open])`; `open` unresolved, omitted. Render: Card with Header, empty Stack.
 
-**Chunk 3**: `, closed])\nopen = Metric("Open", @Count(@Filter(tickets, "status", "==", "open")))\n`
+**Chunk 3**: `, closed])\nopen = Metric("Open", @Count(@Filter(tickets.rows, "status", "==", "open")))\n`
 Parse: `kpis` and `open` complete. `closed` and `tickets` unresolved. Render: Card, Header, Stack with one Metric (its count is 0 until `tickets` arrives).
 
 **Chunk 4**: `closed = Metric("Closed", 8)\ntickets = Query("listTickets", {}, { rows: [] })\n`
@@ -498,6 +501,7 @@ A conformance fixture suite is planned to accompany this specification: pairs of
 
 ## Appendix C. Changelog
 
+- **2026-08-12**: Fixes from three independent review passes. Grammar: the call production uses `function_name` (either case after `@`), `reference` admits bare identifiers of either case, matching the prose and Appendix A. Streaming: end-of-stream finalizes the pending tail with batch-parse equality required (rule 7); "open ternary" defined precisely (1.4). Entry: the required `root` field and its array form stated (2.2). Fence extraction gains the segments-engine supersession note (1.2); `newline` pinned with CRLF tolerance (1.3); `constraint-violation` added to the error table (8.2); Appendix A example corrected to `tickets.rows`.
 - **2026-08-05**: Draft renamed from 0.9 to 1.0-beta; earlier entries keep the old name.
 - **2026-08-04**: Proposed designs sharpened after a second review round: entry recovery proposed as a pure function of the program text with a non-fatal `no-root` (2.2); custom actions became direct named steps dispatched through the existing action-event channel (6.4); named validators became rules-object keys (5.4); the `unsupported-feature` code was withdrawn; error-table recoveries made per-code (8.2).
 - **2026-08-03**: Grammar restructured with notation, lexical elements, and predeclared names up front; conformance profiles removed (the parse-everything rule moved into the client checklist); draft split into overview, language, and prompt documents. Review fixes from four review passes: grammar corrections (state-name statements, stacked unary, underscore in identifiers, binding assignments), streaming boundary made precise for ternary continuation, unresolved-reference evaluation specified, orphan and event wire shapes corrected to shipped behavior, validator list completed, terminology defined (value position, computed expression, page-level state).
