@@ -1,8 +1,8 @@
 import { createLibrary, defineComponent } from "@openuidev/react-lang";
 import { describe, expect, it } from "vitest";
 import { z } from "zod/v4";
-import { createOpenUIInstructions } from "./instructions";
-import { createOpenUIToolkit, openuiToolkit, openuiToolParameters } from "./toolkit";
+import { createOpenUIInstructions } from "../instructions";
+import { createOpenUIToolkit, openuiToolkit, openuiToolParameters } from "../toolkit";
 
 describe("assistant-ui OpenUI toolkit", () => {
   it("registers separate display and human tools", async () => {

@@ -4,7 +4,7 @@ import { ThemeProvider } from "@openuidev/react-ui";
 import { act, type ComponentProps } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { OpenUIPrompt } from "./renderers";
+import { OpenUIPrompt } from "../renderers";
 
 const FORM = `root = Card([title, form])
 title = TextContent("Contact Us", "large-heavy")

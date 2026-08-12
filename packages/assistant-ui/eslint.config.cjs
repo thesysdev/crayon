@@ -6,8 +6,24 @@ const eslintPluginPrettier = require("eslint-plugin-prettier");
 
 module.exports = [
   {
+    files: ["**/__tests__/**/*.{ts,tsx}", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+    languageOptions: {
+      parser: typescript,
+      parserOptions: {
+        project: "./tsconfig.test.json",
+        sourceType: "module",
+      },
+    },
+  },
+  {
     files: ["**/*.{ts,tsx}"],
-    ignores: ["*.config.ts"],
+    ignores: [
+      "**/*.stories.tsx",
+      "**/__tests__/**/*.{ts,tsx}",
+      "**/*.test.{ts,tsx}",
+      "**/*.spec.{ts,tsx}",
+      "*.config.ts",
+    ],
     languageOptions: {
       parser: typescript,
       parserOptions: {
@@ -29,13 +45,27 @@ module.exports = [
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
-          "vars": "all",
-          "varsIgnorePattern": "^_",
-          "args": "after-used",
-          "argsIgnorePattern": "^_"
-        }
+          vars: "all",
+          varsIgnorePattern: "^_",
+          args: "after-used",
+          argsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/no-use-before-define": [
+        "error",
+        {
+          functions: false,
+          classes: false,
+          variables: false,
+        },
       ],
       "unused-imports/no-unused-imports": "error",
+      "no-console": [
+        "error",
+        {
+          allow: ["error", "warn", "info"],
+        },
+      ],
       ...eslintPluginPrettier.configs.recommended.rules,
     },
   },
