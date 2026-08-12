@@ -1,25 +1,28 @@
 import { type ObservabilityEvent } from "@openuidev/observability";
-import { CreditCard } from "lucide-react";
+import { CreditCard, KeyRound } from "lucide-react";
 import type { CSSProperties } from "react";
 
 export interface QuotaErrorInfo {
   title: string;
   message: string;
   showPurchaseCta: boolean;
+  showByokCta: boolean;
 }
 
 const QUOTA_ERROR_MESSAGES: Record<string, QuotaErrorInfo> = {
   ERR_BILLING_THRESHOLD_EXCEEDED: {
     title: "Add credits to keep going",
     message:
-      "Looks like this workspace is out of OpenUI Cloud credits. Purchase credits to keep testing, then try your request again. This notice is only shown in development.",
+      "Looks like this workspace is out of OpenUI Cloud credits. Purchase credits, or bring your own OpenAI, Anthropic, or Google key (BYOK) at no extra cost, then try your request again. This notice is only shown in development.",
     showPurchaseCta: true,
+    showByokCta: true,
   },
   ERR_QUOTA_EXCEEDED: {
     title: "Rate limit reached",
     message:
       "This workspace has hit a rate limit, usually from sending requests too quickly, or exceeding the per-model token/request limit for the current plan. Wait a moment and try again. This notice is only shown in development.",
     showPurchaseCta: false,
+    showByokCta: false,
   },
 };
 
@@ -37,17 +40,33 @@ export function QuotaErrorRow({ info }: { info: QuotaErrorInfo }) {
       <div style={styles.creditsNote}>
         <div style={styles.creditsTitle}>{info.title}</div>
         <p style={styles.creditsMessage}>{info.message}</p>
-        {info.showPurchaseCta ? (
-          <button
-            type="button"
-            style={styles.action}
-            onClick={() =>
-              window.open("https://console.thesys.dev/billing", "_blank", "noopener,noreferrer")
-            }
-          >
-            <CreditCard size={13} />
-            Purchase Credits
-          </button>
+        {info.showPurchaseCta || info.showByokCta ? (
+          <div style={styles.actions}>
+            {info.showPurchaseCta ? (
+              <button
+                type="button"
+                style={styles.action}
+                onClick={() =>
+                  window.open("https://console.thesys.dev/billing", "_blank", "noopener,noreferrer")
+                }
+              >
+                <CreditCard size={13} />
+                Purchase Credits
+              </button>
+            ) : null}
+            {info.showByokCta ? (
+              <button
+                type="button"
+                style={{ ...styles.action, ...styles.actionSecondary }}
+                onClick={() =>
+                  window.open("https://console.thesys.dev/byok", "_blank", "noopener,noreferrer")
+                }
+              >
+                <KeyRound size={13} />
+                Add your own key
+              </button>
+            ) : null}
+          </div>
         ) : null}
       </div>
     </div>
@@ -95,8 +114,12 @@ const styles = {
     lineHeight: 1.55,
     color: "#52525b",
   },
+  actions: {
+    display: "flex",
+    gap: 8,
+    marginTop: 2,
+  },
   action: {
-    alignSelf: "flex-start",
     display: "inline-flex",
     alignItems: "center",
     gap: 6,
@@ -109,6 +132,10 @@ const styles = {
     fontSize: 12,
     fontWeight: 500,
     cursor: "pointer",
-    marginTop: 2,
+  },
+  actionSecondary: {
+    background: "#ffffff",
+    color: "#18181b",
+    border: "1px solid #e4e4e7",
   },
 } satisfies Record<string, CSSProperties>;

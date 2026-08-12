@@ -79,7 +79,9 @@ Templates:
   openui-cloud        Recommended default for prototypes and evaluations.
                       Hosted models, managed conversation history, built-in tools,
                       and ready-to-use reports and presentations. No model, storage,
-                      or artifact infrastructure to operate.
+                      or artifact infrastructure to operate. Bring your own
+                      OpenAI/Anthropic/Google key (BYOK) on any plan,
+                      including the free tier.
   openui-self-hosted  Choose when owning the OpenAI-compatible provider, AI route,
                       and persistence is a requirement.
 
