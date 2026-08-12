@@ -4,19 +4,22 @@ import { defineToolkit, type Toolkit } from "@assistant-ui/react";
 import { openuiChatLibrary } from "@openuidev/react-ui";
 import { z } from "zod/v4";
 import {
+  OPENUI_PRESENT_TOOL_NAME,
+  OPENUI_PROMPT_TOOL_NAME,
+  openuiToolDescriptions,
+} from "./constants";
+import {
   createOpenUIPresent,
   createOpenUIPrompt,
   type OpenUIPresentResult,
   type OpenUIToolUIOptions,
 } from "./renderers";
 
-export const OPENUI_PRESENT_TOOL_NAME = "present_openui";
-export const OPENUI_PROMPT_TOOL_NAME = "prompt_openui";
-
-export const openuiToolDescriptions = {
-  present: "Render a display-only interface from an OpenUI Lang program.",
-  prompt: "Render an interactive OpenUI Lang form or choice and wait for the user to submit it.",
-} as const;
+export {
+  OPENUI_PRESENT_TOOL_NAME,
+  OPENUI_PROMPT_TOOL_NAME,
+  openuiToolDescriptions,
+} from "./constants";
 
 export function createOpenUIToolParameters(root = "Card") {
   return z.object({

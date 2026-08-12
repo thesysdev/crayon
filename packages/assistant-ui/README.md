@@ -19,54 +19,109 @@ Import the OpenUI styles once in your app:
 ```tsx
 "use client";
 
-import { AssistantRuntimeProvider, Tools, useAui } from "@assistant-ui/react";
-import { OpenUIInstructions, openuiToolkit } from "@openuidev/assistant-ui";
+import {
+  AssistantRuntimeProvider,
+  AuiConfig,
+  AuiProvider,
+  Tools,
+  useAui,
+  useAssistantInstructions,
+} from "@assistant-ui/react";
+import { openuiIntegration } from "@openuidev/assistant-ui";
 
-export function OpenUIRuntimeProvider({ runtime, children }) {
-  const aui = useAui({
-    tools: Tools({ toolkit: openuiToolkit }),
+function OpenUIModelInstructions() {
+  useAssistantInstructions(openuiIntegration.instructions);
+  return null;
+}
+
+function OpenUIConfigProvider({ children }) {
+  const aui = useAui();
+  const config = AuiConfig({
+    tools: Tools({ toolkit: openuiIntegration.toolkit }),
   });
 
   return (
-    <AssistantRuntimeProvider aui={aui} runtime={runtime}>
-      <OpenUIInstructions />
+    <AuiProvider extends={aui} config={config}>
+      <OpenUIModelInstructions />
       {children}
+    </AuiProvider>
+  );
+}
+
+export function OpenUIRuntimeProvider({ runtime, children }) {
+  return (
+    <AssistantRuntimeProvider runtime={runtime}>
+      <OpenUIConfigProvider>{children}</OpenUIConfigProvider>
     </AssistantRuntimeProvider>
   );
 }
 ```
+
+Mount the OpenUI config inside `AssistantRuntimeProvider`. This keeps the tool
+schemas, renderers, and instructions on the runtime's model-context client so
+`AssistantChatTransport` can forward both tools to the backend.
 
 The default toolkit registers two standalone tools:
 
 - `present_openui` is a frontend tool for display-only cards, tables, charts, and other interfaces. It completes as soon as the streamed `ui` argument is available.
 - `prompt_openui` is a human tool for forms and choices. It completes only when an OpenUI `@ToAssistant(...)` action submits a result.
 
-`OpenUIInstructions` generates model instructions from the same `openuiChatLibrary` used by both renderers, so the model and renderer share one component vocabulary.
+`openuiIntegration` contains a toolkit and instruction string created from the
+same `openuiChatLibrary`, so the model and renderer share one component
+vocabulary. `openuiToolkit`, `openuiInstructions`, and the
+`OpenUIInstructions` component remain available as default conveniences.
 
 ## Customize the component library
 
-Create the toolkit and instruction string from the same library:
+Use the integration factory to keep custom libraries and tool names aligned:
 
 ```tsx
-import { createOpenUIInstructions, createOpenUIToolkit } from "@openuidev/assistant-ui";
-import { useAssistantInstructions } from "@assistant-ui/react";
+import { createOpenUIIntegration } from "@openuidev/assistant-ui";
 import { library } from "./library";
 
-const toolkit = createOpenUIToolkit({ library });
-const instructions = createOpenUIInstructions({ library });
-
-function Instructions() {
-  useAssistantInstructions(instructions);
-  return null;
-}
+const openui = createOpenUIIntegration({
+  library,
+  presentToolName: "show_panel",
+  promptToolName: "ask_panel",
+});
 ```
 
-`createOpenUIToolkit` also accepts custom tool names, descriptions, renderer props, error handling, and an error fallback. Pass the same custom tool names to `createOpenUIInstructions`.
+The result exposes `toolkit`, `instructions`, and the resolved `toolNames`.
+`createOpenUIIntegration` also accepts custom descriptions, prompt options,
+renderer props, error handling, and an error fallback.
 
 ## Human-tool continuation
 
 OpenUI returns the submitted action, message, parameters, and form state through assistant-ui's `addResult`. Replayed messages hydrate the submitted form state automatically.
 
-If the runtime has an automatic tool-continuation predicate, continue only after a completed `prompt_openui` call. A completed `present_openui` call is already the final display response and should not start another model step.
+For a Vercel AI SDK runtime, install `ai` and use the optional helper subpath:
+
+```tsx
+import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
+import { shouldContinueAfterOpenUIPrompt } from "@openuidev/assistant-ui/ai-sdk";
+
+const runtime = useChatRuntime({
+  sendAutomaticallyWhen: shouldContinueAfterOpenUIPrompt,
+});
+```
+
+The predicate waits for every tool in the latest step to finish, then continues
+only when that step contains a completed `prompt_openui` call. A completed
+`present_openui` call is already the final display response and does not start
+another model step.
+
+Match a custom integration's prompt tool name with a custom predicate:
+
+```tsx
+import { createOpenUIIntegration } from "@openuidev/assistant-ui";
+import { createShouldContinueAfterOpenUIPrompt } from "@openuidev/assistant-ui/ai-sdk";
+
+const openui = createOpenUIIntegration({
+  promptToolName: "ask_panel",
+});
+const shouldContinue = createShouldContinueAfterOpenUIPrompt({
+  promptToolName: openui.toolNames.prompt,
+});
+```
 
 Parser errors can be transient while the `ui` argument is streaming. The default error fallback appears only after streaming finishes. Use `onError` to observe the structured OpenUI errors or set `ErrorFallback: null` to suppress the fallback.

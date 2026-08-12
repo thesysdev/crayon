@@ -8,6 +8,9 @@ export {
 } from "./instructions";
 export type { CreateOpenUIInstructionsOptions, UseOpenUIInstructionsOptions } from "./instructions";
 
+export { createOpenUIIntegration, openuiIntegration } from "./integration";
+export type { CreateOpenUIIntegrationOptions, OpenUIIntegration } from "./integration";
+
 export {
   DefaultOpenUIErrorFallback,
   OpenUIContent,
