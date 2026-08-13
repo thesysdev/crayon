@@ -1,5 +1,7 @@
 import spawn from "cross-spawn";
 import * as fs from "node:fs";
+import * as http from "node:http";
+import * as net from "node:net";
 import * as os from "node:os";
 import * as path from "node:path";
 
@@ -16,6 +18,126 @@ import { CreateError, telemetry } from "../lib/telemetry";
 
 function runCommand(command: string, args: string[], cwd: string) {
   return spawn.sync(command, args, { cwd, stdio: "inherit" });
+}
+
+function canListenOn(port: number): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.unref();
+    server.once("error", (error: NodeJS.ErrnoException) => {
+      if (error.code === "EADDRINUSE") {
+        resolve(false);
+        return;
+      }
+      reject(error);
+    });
+    server.listen({ host: "127.0.0.1", port, exclusive: true }, () => {
+      server.close((error) => {
+        if (error) reject(error);
+        else resolve(true);
+      });
+    });
+  });
+}
+
+async function resolveDevPort(): Promise<number> {
+  if (await canListenOn(3000)) return 3000;
+
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.unref();
+    server.once("error", reject);
+    server.listen({ host: "127.0.0.1", port: 0, exclusive: true }, () => {
+      const address = server.address();
+      if (!address || typeof address === "string") {
+        server.close();
+        reject(new Error("Could not allocate a local development port."));
+        return;
+      }
+      const { port } = address;
+      server.close((error) => {
+        if (error) reject(error);
+        else resolve(port);
+      });
+    });
+  });
+}
+
+function isServerReady(url: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const request = http.get(url, { timeout: 1_000 }, (response) => {
+      response.resume();
+      resolve(true);
+    });
+    request.once("timeout", () => request.destroy());
+    request.once("error", () => resolve(false));
+  });
+}
+
+async function openWhenReady(
+  url: string,
+  didExit: () => boolean,
+  didAdvertiseUrl: () => boolean,
+): Promise<void> {
+  const timeoutAt = Date.now() + 60_000;
+  while (!didExit() && Date.now() < timeoutAt) {
+    if (didAdvertiseUrl() && (await isServerReady(url))) {
+      console.info(`\n\ud83c\udf10 Opening ${url} in your browser...`);
+      try {
+        const { default: open } = await import("open");
+        await open(url);
+      } catch {
+        console.info(`Could not open a browser automatically. Visit ${url}`);
+      }
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+}
+
+async function runDevCommand(command: string, cwd: string, url: string) {
+  let spawnError: Error | undefined;
+  let exited = false;
+  let advertisedUrl = false;
+  let outputBuffer = "";
+  const child = spawn(command, ["run", "dev"], {
+    cwd,
+    // Next reads PORT directly; using the environment avoids package-manager-specific
+    // argument forwarding on npm, pnpm, yarn, and bun.
+    env: { ...process.env, PORT: new URL(url).port },
+    stdio: ["inherit", "pipe", "pipe"],
+  });
+  const inspectOutput = (chunk: Buffer) => {
+    outputBuffer = `${outputBuffer}${chunk.toString()}`.slice(-4_096);
+    if (outputBuffer.includes(url)) advertisedUrl = true;
+  };
+  child.stdout?.on("data", (chunk: Buffer) => {
+    process.stdout.write(chunk);
+    inspectOutput(chunk);
+  });
+  child.stderr?.on("data", (chunk: Buffer) => {
+    process.stderr.write(chunk);
+    inspectOutput(chunk);
+  });
+  child.once("error", (error) => {
+    spawnError = error;
+  });
+  void openWhenReady(
+    url,
+    () => exited,
+    () => advertisedUrl,
+  );
+
+  return new Promise<{
+    error?: Error;
+    status: number | null;
+    signal: NodeJS.Signals | null;
+  }>((resolve) => {
+    child.once("close", (status, signal) => {
+      exited = true;
+      resolve({ error: spawnError, status, signal });
+    });
+  });
 }
 
 function errorCode(error: Error): string {
@@ -206,11 +328,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     skill_installed: installSkill,
   });
 
-  const immediateResolution = await resolveImmediate(
-    options.immediate,
-    options.noInstall,
-    interactive,
-  );
+  const immediateResolution = resolveImmediate(options.immediate, options.noInstall, interactive);
   telemetry.capture("cli_immediate_selected", {
     immediate: immediateResolution.immediate,
     dependency_install_requested: immediateResolution.installDependencies,
@@ -344,7 +462,9 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   telemetry.capture("cli_dev_command_started", {
     package_manager: packageManager.name,
   });
-  const devResult = runCommand(devCmd, ["run", "dev"], targetDir);
+  const devPort = await resolveDevPort();
+  const devUrl = `http://127.0.0.1:${devPort}`;
+  const devResult = await runDevCommand(devCmd, targetDir, devUrl);
   const durationMs = Math.max(0, Date.now() - devStartedAt);
   const stoppedNormally =
     devResult.status === 0 ||
@@ -379,15 +499,15 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
 
 const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
 
-async function resolveImmediate(
+function resolveImmediate(
   immediate: boolean | undefined,
   noInstall: boolean | undefined,
   interactive: boolean,
-): Promise<{
+): {
   immediate: boolean;
   installDependencies: boolean;
-  source: "flag" | "interactive_prompt" | "no_install" | "noninteractive_default";
-}> {
+  source: "flag" | "interactive_default" | "no_install" | "noninteractive_default";
+} {
   if (noInstall) {
     return { immediate: false, installDependencies: false, source: "no_install" };
   }
@@ -405,23 +525,7 @@ async function resolveImmediate(
       source: "noninteractive_default",
     };
   }
-
-  try {
-    const { confirm } = await import("@inquirer/prompts");
-    const selected = await confirm({
-      message: "Start dev server after install?",
-      default: true,
-    });
-    return {
-      immediate: selected,
-      installDependencies: true,
-      source: "interactive_prompt",
-    };
-  } catch (error) {
-    const { ExitPromptError } = await import("@inquirer/core");
-    if (error instanceof ExitPromptError) process.exit(0);
-    throw error;
-  }
+  return { immediate: true, installDependencies: true, source: "interactive_default" };
 }
 
 async function writeEnv(targetDir: string, result: EnvResult, appId?: string): Promise<void> {
