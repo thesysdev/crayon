@@ -99,6 +99,15 @@ describe("observability bus", () => {
     expect(received?.detail).toMatchObject({ kind: "shape", extra: 1 });
   });
 
+  it("preserves an optional stable event id in the detail", () => {
+    let received: ObservabilityEvent | undefined;
+    track(observability.listenAll((event) => (received = event)));
+
+    observability.info({ id: "event-1", kind: "stream:update" });
+
+    expect(received?.detail.id).toBe("event-1");
+  });
+
   it("a throwing listener does not break the others", () => {
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
     const good = vi.fn();

@@ -3,6 +3,7 @@
 import { ClipboardCommandButton } from "@/app/(home)/components/Button/Button";
 import { captureCreateCliCommandCopied } from "@/lib/analytics";
 import { ArrowRight } from "lucide-react";
+import { useEffect, useRef } from "react";
 import styles from "./build-for-free-menu.module.css";
 import { useHeaderDropdown } from "./use-header-dropdown";
 
@@ -16,11 +17,29 @@ export const CLI_COMMANDS = [
 interface BuildForFreeMenuProps {
   analyticsSource: "chat_navbar" | "compare_navbar";
   className?: string;
+  dataAttributeElement?: string;
+  onOpen?: () => void;
 }
 
-export function BuildForFreeMenu({ analyticsSource, className }: BuildForFreeMenuProps) {
+export function BuildForFreeMenu({
+  analyticsSource,
+  className,
+  dataAttributeElement,
+  onOpen,
+}: BuildForFreeMenuProps) {
   const { open, setOpen, wrapRef, triggerRef, handleHoverOpen, handleHoverClose } =
     useHeaderDropdown();
+  const onOpenRef = useRef(onOpen);
+  const wasOpenRef = useRef(open);
+
+  useEffect(() => {
+    onOpenRef.current = onOpen;
+  }, [onOpen]);
+
+  useEffect(() => {
+    if (open && !wasOpenRef.current) onOpenRef.current?.();
+    wasOpenRef.current = open;
+  }, [open]);
 
   return (
     <div
@@ -35,7 +54,8 @@ export function BuildForFreeMenu({ analyticsSource, className }: BuildForFreeMen
         className={styles.button}
         aria-haspopup="menu"
         aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
+        data-attribute-element={dataAttributeElement}
+        onClick={() => setOpen(!open)}
       >
         <span>Build for free</span>
         <ArrowRight

@@ -1,0 +1,100 @@
+{
+  "name": "@openuidev/langchain",
+  "version": "0.0.2",
+  "description": "LangChain and LangGraph integration primitives for streaming OpenUI generative interfaces",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.cts",
+  "typesVersions": {
+    "*": {
+      "transformer": [
+        "dist/transformer.d.cts"
+      ]
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./transformer": {
+      "import": {
+        "types": "./dist/transformer.d.mts",
+        "default": "./dist/transformer.mjs"
+      },
+      "require": {
+        "types": "./dist/transformer.d.cts",
+        "default": "./dist/transformer.cjs"
+      }
+    }
+  },
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsdown",
+    "watch": "tsdown --watch",
+    "typecheck": "tsc --noEmit",
+    "lint:check": "eslint ./src",
+    "lint:fix": "eslint ./src --fix",
+    "format:fix": "prettier --write ./src README.md",
+    "format:check": "prettier --check ./src README.md",
+    "check:publint": "publint",
+    "check:attw": "attw --pack .",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run check:publint && pnpm run check:attw",
+    "ci": "pnpm run typecheck && pnpm run test && pnpm run lint:check && pnpm run format:check"
+  },
+  "keywords": [
+    "openui",
+    "langchain",
+    "langgraph",
+    "deepagents",
+    "ag-ui",
+    "generative-ui",
+    "streaming",
+    "sse"
+  ],
+  "homepage": "https://openui.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thesysdev/openui.git",
+    "directory": "packages/langchain"
+  },
+  "bugs": {
+    "url": "https://github.com/thesysdev/openui/issues"
+  },
+  "author": "engineering@thesys.dev",
+  "dependencies": {
+    "@ag-ui/core": "^0.0.57"
+  },
+  "peerDependencies": {
+    "@langchain/langgraph": "^1.4.5"
+  },
+  "peerDependenciesMeta": {
+    "@langchain/langgraph": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@langchain/core": "^1.2.1",
+    "@langchain/langgraph": "^1.4.5",
+    "@langchain/protocol": "^0.0.18",
+    "vitest": "^4.1.0",
+    "zod": "^4.2.0"
+  }
+}

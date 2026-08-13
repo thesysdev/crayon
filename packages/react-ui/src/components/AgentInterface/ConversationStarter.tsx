@@ -89,7 +89,7 @@ export interface ConversationStarterContainerProps {
   /**
    * Optional click override. When provided, replaces the default
    * send-to-thread behavior (still guarded by `isRunning`). The prefill-chips
-   * welcome uses it to append contextual-starter prompts into the draft.
+   * welcome uses it to submit contextual starters with the prefilled draft.
    */
   onSelect?: (starter: ConversationStarterProps) => void;
 }
