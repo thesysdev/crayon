@@ -3,8 +3,6 @@ import * as fs from "node:fs";
 import * as http from "node:http";
 import * as os from "node:os";
 import * as path from "node:path";
-import { createInterface } from "node:readline";
-import { stripVTControlCharacters } from "node:util";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
@@ -32,29 +30,6 @@ function isServerReady(url: string): Promise<boolean> {
   });
 }
 
-function parseLocalDevUrl(line: string): string | undefined {
-  const candidate = stripVTControlCharacters(line).match(
-    /^\s*-\s*Local:\s+(http:\/\/\S+)\s*$/,
-  )?.[1];
-  if (!candidate) return undefined;
-
-  try {
-    const url = new URL(candidate);
-    const hostname = url.hostname.toLowerCase();
-    if (
-      url.protocol !== "http:" ||
-      url.username ||
-      url.password ||
-      !["localhost", "127.0.0.1", "::1", "[::1]"].includes(hostname)
-    ) {
-      return undefined;
-    }
-    return url.toString();
-  } catch {
-    return undefined;
-  }
-}
-
 async function openWhenReady(url: string, didExit: () => boolean): Promise<void> {
   const timeoutAt = Date.now() + 60_000;
   while (!didExit() && Date.now() < timeoutAt) {
@@ -73,31 +48,20 @@ async function openWhenReady(url: string, didExit: () => boolean): Promise<void>
 }
 
 async function runDevCommand(command: string, cwd: string) {
+  const { default: getPort, portNumbers } = await import("get-port");
+  const port = await getPort({ port: portNumbers(3000, 3100) });
+  const url = `http://localhost:${port}`;
   let spawnError: Error | undefined;
   let exited = false;
-  let openingStarted = false;
   const child = spawn(command, ["run", "dev"], {
     cwd,
-    stdio: ["inherit", "pipe", "pipe"],
+    env: { ...process.env, PORT: String(port) },
+    stdio: "inherit",
   });
-  const inspectLine = (line: string) => {
-    if (openingStarted) return;
-    const localUrl = parseLocalDevUrl(line);
-    if (!localUrl) return;
-    openingStarted = true;
-    void openWhenReady(localUrl, () => exited);
-  };
-  child.stdout?.on("data", (chunk: Buffer) => {
-    process.stdout.write(chunk);
-  });
-  child.stderr?.on("data", (chunk: Buffer) => {
-    process.stderr.write(chunk);
-  });
-  if (child.stdout) createInterface({ input: child.stdout }).on("line", inspectLine);
-  if (child.stderr) createInterface({ input: child.stderr }).on("line", inspectLine);
   child.once("error", (error) => {
     spawnError = error;
   });
+  void openWhenReady(url, () => exited);
 
   return new Promise<{
     error?: Error;
