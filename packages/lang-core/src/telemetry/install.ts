@@ -14,31 +14,95 @@
  * proxy and PostHog can observe the source IP as transport metadata; the script does
  * not read it or add it to the payload.
  */
+import { id as ciInfoId, isCI as ciInfoIsCI } from "ci-info";
 import { execFileSync } from "node:child_process";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, type WriteFileOptions } from "node:fs";
 import { homedir, release } from "node:os";
 import path from "node:path";
 import {
-  detectCI,
+  CI_DETECTION_VERSION,
   getPostHogConfig,
   isTelemetryDisabled,
   isTruthyEnv,
   normalizeProjectIdentity,
   TELEMETRY_REQUEST_TIMEOUT_MS,
   TELEMETRY_SCHEMA_VERSION,
-  type CiName,
 } from "./shared";
 
-export { detectCI, isTelemetryDisabled, isTruthyEnv, normalizeProjectIdentity };
-export type { CiName };
+export { isTelemetryDisabled, isTruthyEnv, normalizeProjectIdentity };
 
 export const INSTALL_EVENT = "openui_lang_core_installed";
 
 export type ProjectIdSource = "git_origin" | "repository_url" | "install_root";
 export type PackageManagerName = "npm" | "pnpm" | "yarn" | "bun" | "unknown";
+const CI_PROVIDER_NAMES = {
+  AGOLA: "agola",
+  ALPIC: "alpic",
+  APPCIRCLE: "appcircle",
+  APPVEYOR: "appveyor",
+  CODEBUILD: "aws_codebuild",
+  AZURE_PIPELINES: "azure_pipelines",
+  BAMBOO: "bamboo",
+  BITBUCKET: "bitbucket_pipelines",
+  BITRISE: "bitrise",
+  BUDDY: "buddy",
+  BUILDKITE: "buildkite",
+  CIRCLE: "circleci",
+  CIRRUS: "cirrus_ci",
+  CLOUDFLARE_PAGES: "cloudflare_pages",
+  CLOUDFLARE_WORKERS: "cloudflare_workers",
+  CODEFRESH: "codefresh",
+  CODEMAGIC: "codemagic",
+  CODESHIP: "codeship",
+  DRONE: "drone",
+  DSARI: "dsari",
+  EARTHLY: "earthly",
+  EAS: "expo_application_services",
+  GERRIT: "gerrit",
+  GITEA_ACTIONS: "gitea_actions",
+  GITHUB_ACTIONS: "github_actions",
+  GITLAB: "gitlab_ci",
+  GOCD: "gocd",
+  GOOGLE_CLOUD_BUILD: "google_cloud_build",
+  HARNESS: "harness",
+  HEROKU: "heroku",
+  HUDSON: "hudson",
+  JENKINS: "jenkins",
+  LAYERCI: "layerci",
+  MAGNUM: "magnum",
+  NETLIFY: "netlify",
+  NEVERCODE: "nevercode",
+  PROW: "prow",
+  RELEASEHUB: "releasehub",
+  RENDER: "render",
+  SAIL: "sail",
+  SCREWDRIVER: "screwdriver",
+  SEMAPHORE: "semaphore",
+  SOURCEHUT: "sourcehut",
+  STRIDER: "strider",
+  TASKCLUSTER: "taskcluster",
+  TEAMCITY: "teamcity",
+  TRAVIS: "travis",
+  VELA: "vela",
+  VERCEL: "vercel",
+  APPCENTER: "appcenter",
+  WOODPECKER: "woodpecker",
+  XCODE_CLOUD: "xcode_cloud",
+  XCODE_SERVER: "xcode_server",
+} as const;
+
+export type CiName =
+  (typeof CI_PROVIDER_NAMES)[keyof typeof CI_PROVIDER_NAMES] | "unknown" | "other";
+
+export interface CiInfoSnapshot {
+  id: string | null;
+  isCI: boolean;
+}
+
 export interface InstallTelemetryProperties extends Record<string, unknown> {
   telemetry_schema_version: number;
+  ci_detection_version: typeof CI_DETECTION_VERSION;
   project_id: string;
   project_id_source: ProjectIdSource;
   lang_core_version: string;
@@ -85,6 +149,7 @@ export interface RunInstallTelemetryOptions {
   env?: NodeJS.ProcessEnv;
   io?: Partial<InstallTelemetryIO>;
   send?: InstallTelemetrySender;
+  ciInfo?: CiInfoSnapshot;
 }
 
 export type RunInstallTelemetryResult =
@@ -127,6 +192,14 @@ export function detectPackageManager(env: NodeJS.ProcessEnv): {
   return version ? { name, version } : { name };
 }
 
+export function detectInstallCI(snapshot: CiInfoSnapshot): { ci: boolean; name?: CiName } {
+  if (!snapshot.isCI) return { ci: false };
+  if (!snapshot.id) return { ci: true, name: "unknown" };
+
+  const name = CI_PROVIDER_NAMES[snapshot.id as keyof typeof CI_PROVIDER_NAMES] ?? "other";
+  return { ci: true, name };
+}
+
 export async function runInstallTelemetry(
   options: RunInstallTelemetryOptions = {},
 ): Promise<RunInstallTelemetryResult> {
@@ -141,13 +214,14 @@ export async function runInstallTelemetry(
     const projectRoot = path.resolve(env["INIT_CWD"] || io.cwd());
     const projectIdentity = resolveProjectIdentity(projectRoot, env, io);
     const packageManager = detectPackageManager(env);
-    const ci = detectCI(env);
+    const ci = detectInstallCI(options.ciInfo ?? { id: ciInfoId, isCI: ciInfoIsCI });
 
     payload = {
       distinctId: state.distinctId,
       event: INSTALL_EVENT,
       properties: {
         telemetry_schema_version: TELEMETRY_SCHEMA_VERSION,
+        ci_detection_version: CI_DETECTION_VERSION,
         project_id: hashProjectIdentity(state.projectSalt, projectIdentity.value),
         project_id_source: projectIdentity.source,
         lang_core_version:

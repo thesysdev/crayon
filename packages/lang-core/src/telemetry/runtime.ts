@@ -1,18 +1,20 @@
 import type { PromptSpec } from "../parser/prompt";
 import {
-  detectCI,
+  CI_DETECTION_VERSION,
+  detectRuntimeCI,
   getPostHogConfig,
   isTelemetryDisabled,
   normalizeProjectIdentity,
   TELEMETRY_REQUEST_TIMEOUT_MS,
   TELEMETRY_SCHEMA_VERSION,
+  type RuntimeCiName,
 } from "./shared";
 
 /**
  * Telemetry disclosure
  *
  * Sent for sampled server-side generations:
- * - Event timestamp, SDK and runtime versions, environment and CI status
+ * - Event timestamp, SDK and runtime versions, environment, CI status, and CI provider category
  * - API input shape, component count, tool count, and schema/sample versions
  * - Random event and runtime identifiers
  * - A locally computed SHA-256 prompt-configuration hash
@@ -83,6 +85,8 @@ interface CaptureProperties {
   runtime_version?: string;
   environment: Environment;
   ci: boolean;
+  ci_name?: RuntimeCiName;
+  ci_detection_version: typeof CI_DETECTION_VERSION;
   sample_rate: 0.1;
 }
 
@@ -301,6 +305,7 @@ async function sendCapture(
   ]);
 
   const postHog = getPostHogConfig(runtime.env);
+  const ci = detectRuntimeCI(runtime.env);
   const properties: CaptureProperties = {
     distinct_id: state.runtimeId,
     $process_person_profile: false,
@@ -317,7 +322,9 @@ async function sendCapture(
     runtime: runtime.name,
     runtime_version: runtime.version,
     environment,
-    ci: detectCI(runtime.env).ci,
+    ci: ci.ci,
+    ...(ci.name ? { ci_name: ci.name } : {}),
+    ci_detection_version: CI_DETECTION_VERSION,
     sample_rate: SAMPLE_RATE,
     ...(projectHash
       ? {
