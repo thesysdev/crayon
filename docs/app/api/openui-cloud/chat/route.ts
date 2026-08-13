@@ -2,12 +2,14 @@ import { readOpenuiCloudConfig } from "@/lib/openui-cloud/config";
 import { unavailableResponse } from "@/lib/openui-cloud/errors";
 import { resolveRequestedModel } from "@/lib/openui-cloud/models";
 import { hasAllowedOrigin, hasJsonContentType, readLimitedJson } from "@/lib/openui-cloud/request";
-import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
+import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
 import OpenAI from "openai";
 import type { ResponseInputItem } from "openai/resources/responses/responses";
 
 const MAX_INPUT_ITEMS = 16;
 const MAX_THREAD_ID_LENGTH = 256;
+const SLIDES_ARTIFACT_INSTRUCTION = `Create a premium 5–7 slide visual story, not a text document split into slides. Use a strong cover, varied editorial layouts, concise copy, and image_search-sourced absolute image URLs. Every image must depict the exact film, product, person, or location named beside it—never use a metaphorical substitute or generic filler. Do not reuse one image for distinct entities. Include a chart when supplied quantitative data supports one, never invent factual data, avoid repetitive card grids, and finish with a decisive visual takeaway.`;
+const REPORT_ARTIFACT_INSTRUCTION = `Create a premium executive report with a visual cover, clear hierarchy, and a deliberate mix of metrics, charts, tables, imagery, and concise analysis. Use image_search-sourced absolute image URLs only when each image accurately matches its label; never use metaphorical substitutes, unrelated stock photos, or one repeated image for distinct entities. Visualize supplied quantitative data when useful without fabricating facts, vary page composition, and end with specific decisions or next steps.`;
 
 interface CloudChatRequest {
   threadId: string;
@@ -44,11 +46,19 @@ export async function POST(request: Request): Promise<Response> {
       stream: true,
       store: true,
       tools: [
-        artifactTool({ artifacts: ["slides", "report"] }),
+        artifactTool({
+          artifacts: [
+            { type: "slides", instruction: SLIDES_ARTIFACT_INSTRUCTION },
+            { type: "report", instruction: REPORT_ARTIFACT_INSTRUCTION },
+          ],
+        }),
         { type: "web_search" },
         { type: "image_search" },
       ],
-      instructions: createResponsesInstructions(),
+      instructions: generateSystemPrompt({
+        instructions:
+          "When creating an artifact, actively use the available web and image search tools to ground its content and visual choices.",
+      }),
       // The Cloud Responses endpoint extends the stock OpenAI tool union.
     } as any,
     { signal: request.signal },
