@@ -9,10 +9,20 @@ import { runCreateApp } from "./commands/create-app";
 import { GenerateOptions, runGenerate } from "./commands/generate";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
 import { resolveArgs } from "./lib/resolve-args";
-import { telemetry } from "./lib/telemetry";
+import { CreateError, telemetry } from "./lib/telemetry";
 import { handleCliError, normalizeAuth, normalizeTemplate } from "./lib/utils"; // Ensure utils.ts is included for type declarations
 
 const program = new Command();
+
+function rejectConflictingImmediateFlags(args: string[]): void {
+  const separatorIndex = args.indexOf("--");
+  const optionArgs = separatorIndex === -1 ? args : args.slice(0, separatorIndex);
+  const hasImmediate = optionArgs.some((arg) => arg === "--immediate" || arg === "-i");
+  const hasNoImmediate = optionArgs.includes("--no-immediate");
+  if (hasImmediate && hasNoImmediate) {
+    throw new CreateError("bad_args", "--immediate and --no-immediate cannot be used together.");
+  }
+}
 
 const cliVersion = (
   JSON.parse(fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8")) as {
@@ -83,6 +93,7 @@ Templates:
       immediate?: boolean;
     }) => {
       try {
+        rejectConflictingImmediateFlags(process.argv.slice(2));
         await runCreateApp({
           name: options.name,
           template: normalizeTemplate(options.template),

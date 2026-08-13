@@ -75,6 +75,8 @@ Options:
 - `--auth <method>`: (cloud template) How to obtain the key — `oauth` or `skip`; `manual` remains available for backward compatibility but is deprecated
 - `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
+`--immediate` and `--no-immediate` are mutually exclusive; passing both exits with an error.
+
 What it does:
 
 - prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
