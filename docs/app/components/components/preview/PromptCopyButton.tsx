@@ -1,6 +1,6 @@
 "use client";
 
-import { IconButton } from "@openuidev/react-ui";
+import { IconButton } from "@openuidev/react-ui/IconButton";
 import { Check, Copy } from "lucide-react";
 import { useEffect, useState } from "react";
 

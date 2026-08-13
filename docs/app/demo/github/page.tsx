@@ -3,7 +3,7 @@
 import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
 import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { mergeStatements } from "@openuidev/react-lang";
-import { Button } from "@openuidev/react-ui";
+import { Button } from "@openuidev/react-ui/Button";
 import { encode } from "gpt-tokenizer";
 import {
   Activity,
@@ -18,12 +18,12 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import dynamic from "next/dynamic";
 import { Highlight, themes } from "prism-react-renderer";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ConversationPanel } from "./components/ConversationPanel/ConversationPanel";
 import { GitHubConnect } from "./components/GitHubConnect/GitHubConnect";
 import { Header } from "./components/Header/Header";
-import { PreviewPanel } from "./components/PreviewPanel/PreviewPanel";
 import { SavedSidebar } from "./components/SavedSidebar/SavedSidebar";
 import {
   GITHUB_DEMO_MODEL_LABEL,
@@ -43,6 +43,11 @@ import {
   upsertDashboard,
   type SavedDashboard,
 } from "./saved/store";
+
+const PreviewPanel = dynamic(
+  () => import("./components/PreviewPanel/PreviewPanel").then((module) => module.PreviewPanel),
+  { ssr: false },
+);
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 

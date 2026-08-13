@@ -4,11 +4,16 @@ import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
 import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { Send, Square } from "lucide-react";
 import { useTheme } from "next-themes";
+import dynamic from "next/dynamic";
 import { useCallback, useRef, useState } from "react";
 import { CodePanel } from "./components/CodePanel/CodePanel";
 import { Header } from "./components/Header/Header";
-import { PreviewPanel } from "./components/PreviewPanel/PreviewPanel";
 import { MODELS, STARTER_PROMPTS, type Model, type Status, type Theme } from "./constants";
+
+const PreviewPanel = dynamic(
+  () => import("./components/PreviewPanel/PreviewPanel").then((module) => module.PreviewPanel),
+  { ssr: false },
+);
 
 export default function DemosPage() {
   const { theme, setTheme } = useTheme();

@@ -1,12 +1,8 @@
 "use client";
 
 import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
-import {
-  AgentInterface,
-  openAIAdapter,
-  openAIMessageFormat,
-  type ChatLLM,
-} from "@openuidev/react-ui";
+import { openAIAdapter, openAIMessageFormat, type ChatLLM } from "@openuidev/react-headless";
+import { AgentInterface } from "@openuidev/react-ui/AgentInterface";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 import { useMemo } from "react";
 

@@ -1,7 +1,8 @@
 "use client";
 
 import BlocksDocPage from "@components/blocks/_components/BlocksDocPage";
-import { CheckBoxGroup, CheckBoxItem } from "@openuidev/react-ui";
+import { CheckBoxGroup } from "@openuidev/react-ui/CheckBoxGroup";
+import { CheckBoxItem } from "@openuidev/react-ui/CheckBoxItem";
 
 function CheckboxGroupPreview() {
   return (

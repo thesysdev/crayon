@@ -7,8 +7,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  TextCallout,
-} from "@openuidev/react-ui";
+} from "@openuidev/react-ui/Select";
+import { TextCallout } from "@openuidev/react-ui/TextCallout";
 import { useState } from "react";
 
 type CalloutVariant = "neutral" | "info" | "warning" | "success" | "danger";

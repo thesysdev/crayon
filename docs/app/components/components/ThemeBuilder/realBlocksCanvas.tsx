@@ -5,35 +5,37 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-  Button,
-  Buttons,
-  CheckBoxGroup,
-  CheckBoxItem,
-  DatePicker,
-  IconButton,
-  ImageBlock,
-  Input,
-  RadioGroup,
-  RadioItem,
+} from "@openuidev/react-ui/Accordion";
+import { Button } from "@openuidev/react-ui/Button";
+import { Buttons } from "@openuidev/react-ui/Buttons";
+import { CheckBoxGroup } from "@openuidev/react-ui/CheckBoxGroup";
+import { CheckBoxItem } from "@openuidev/react-ui/CheckBoxItem";
+import { DatePicker } from "@openuidev/react-ui/DatePicker";
+import { IconButton } from "@openuidev/react-ui/IconButton";
+import { ImageBlock } from "@openuidev/react-ui/ImageBlock";
+import { Input } from "@openuidev/react-ui/Input";
+import { RadioGroup } from "@openuidev/react-ui/RadioGroup";
+import { RadioItem } from "@openuidev/react-ui/RadioItem";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SwitchGroup,
-  SwitchItem,
+} from "@openuidev/react-ui/Select";
+import { SwitchGroup } from "@openuidev/react-ui/SwitchGroup";
+import { SwitchItem } from "@openuidev/react-ui/SwitchItem";
+import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  Tag,
-  TextCallout,
-} from "@openuidev/react-ui";
+} from "@openuidev/react-ui/Table";
+import { Tabs, TabsList, TabsTrigger } from "@openuidev/react-ui/Tabs";
+import { Tag } from "@openuidev/react-ui/Tag";
+import { TextCallout } from "@openuidev/react-ui/TextCallout";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import styles from "./realBlocksCanvas.module.css";

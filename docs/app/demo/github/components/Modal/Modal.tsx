@@ -1,4 +1,4 @@
-import { IconButton } from "@openuidev/react-ui";
+import { IconButton } from "@openuidev/react-ui/IconButton";
 import { X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback, useEffect } from "react";

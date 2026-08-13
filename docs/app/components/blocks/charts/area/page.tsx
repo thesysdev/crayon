@@ -2,7 +2,16 @@
 
 import ClientOnly from "@components/blocks/_components/ClientOnly";
 import { BlockVariantPreview, PreviewPage, PreviewSection } from "@components/components/preview";
-import { AreaChart, AreaChartCondensed } from "@openuidev/react-ui";
+import dynamic from "next/dynamic";
+
+const AreaChart = dynamic(
+  () => import("@openuidev/react-ui/Charts").then((module) => module.AreaChart),
+  { ssr: false },
+);
+const AreaChartCondensed = dynamic(
+  () => import("@openuidev/react-ui/Charts").then((module) => module.AreaChartCondensed),
+  { ssr: false },
+);
 
 const areaData = [
   { month: "Jan", desktop: 150, mobile: 90 },

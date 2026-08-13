@@ -6,7 +6,7 @@ import {
   PreviewSection,
   SegmentedToggle,
 } from "@components/components/preview";
-import { Tabs, TabsList, TabsTrigger } from "@openuidev/react-ui";
+import { Tabs, TabsList, TabsTrigger } from "@openuidev/react-ui/Tabs";
 import { useState } from "react";
 import styles from "./page.module.css";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { AgentInterface } from "@openuidev/react-ui";
+import { AgentInterface } from "@openuidev/react-ui/AgentInterface";
 import type { ComparisonControllerRegistry } from "../comparison-mode-controller";
 import { ComparisonModeControllerBridge } from "../comparison-mode-controller";
 import { ComparisonSurfaceWelcome } from "./comparison-surface-welcome";

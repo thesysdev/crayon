@@ -1,7 +1,7 @@
 "use client";
 
 import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
-import { openAIAdapter, openAIMessageFormat, type ChatLLM } from "@openuidev/react-ui";
+import { openAIAdapter, openAIMessageFormat, type ChatLLM } from "@openuidev/react-headless";
 import { useMemo } from "react";
 
 type ComparisonResponseMode = "markdown" | "openui";

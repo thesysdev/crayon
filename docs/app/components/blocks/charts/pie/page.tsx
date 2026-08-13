@@ -2,7 +2,12 @@
 
 import BlocksDocPage from "@components/blocks/_components/BlocksDocPage";
 import ClientOnly from "@components/blocks/_components/ClientOnly";
-import { PieChart } from "@openuidev/react-ui";
+import dynamic from "next/dynamic";
+
+const PieChart = dynamic(
+  () => import("@openuidev/react-ui/Charts").then((module) => module.PieChart),
+  { ssr: false },
+);
 
 const pieData = [
   { category: "January", value: 1250 },

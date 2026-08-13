@@ -1,7 +1,7 @@
 "use client";
 
 import BlocksDocPage from "@components/blocks/_components/BlocksDocPage";
-import { DatePicker } from "@openuidev/react-ui";
+import { DatePicker } from "@openuidev/react-ui/DatePicker";
 
 function DatePickerPreview() {
   return <DatePicker mode="single" style={{ width: "360px" }} />;
