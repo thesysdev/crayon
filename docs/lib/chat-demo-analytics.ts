@@ -11,7 +11,6 @@ export const CHAT_DEMO_EVENTS = {
   buildMenuOpen: "chat_demo:build_menu_open",
   continuationCreate: "chat_demo:continuation_create",
   promptSubmit: "chat_demo:prompt_submit",
-  generationEnd: "chat_demo:generation_end",
 } as const;
 
 export type ChatDemoId = "stock_comparison" | "japan_travel_guide" | "blockbuster_report";
@@ -55,9 +54,6 @@ interface ChatDemoEventProperties {
     demo_id: ChatDemoId;
   };
   [CHAT_DEMO_EVENTS.promptSubmit]: ChatDemoGenerationContext;
-  [CHAT_DEMO_EVENTS.generationEnd]: ChatDemoGenerationContext & {
-    generation_outcome: "success" | "failure" | "cancelled";
-  };
 }
 
 export interface ChatDemoGenerationContext {

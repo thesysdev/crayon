@@ -77,12 +77,6 @@ export function CloudAgentSurface() {
           getGenerationAnalyticsContext(forkRegistry, threadId, model),
         );
       },
-      onGenerationEnd: ({ threadId, model, outcome }) => {
-        captureChatDemoEvent(CHAT_DEMO_EVENTS.generationEnd, {
-          ...getGenerationAnalyticsContext(forkRegistry, threadId, model),
-          generation_outcome: outcome,
-        });
-      },
     }),
   );
   const [path, setPath] = useState<string>();
