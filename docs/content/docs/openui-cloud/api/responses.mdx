@@ -42,34 +42,7 @@ console.log(response.output_text);
 
 The returned `output_text` is an OpenUI Lang program that can be rendered with the Cloud `chatLibrary`.
 
-## Use a custom component library
-
-Generate a serializable library spec at build time:
-
-```bash
-npx @openuidev/cli@latest generate --spec ./src/library.tsx --out ./src/generated/library.spec.json
-```
-
-Send the spec through the server helper. OpenUI Cloud uses it to assemble the prompt and validate the streamed output against your components.
-
-```ts
-import { generateSystemPrompt } from "@openuidev/thesys-server";
-import library from "./generated/library.spec.json";
-
-const response = await client.responses.create({
-  model: "openai/gpt-5",
-  input: "Show revenue by region as an interactive dashboard.",
-  instructions: generateSystemPrompt({
-    library,
-    promptOptions: {
-      additionalRules: ["Prefer compact layouts and concise labels."],
-    },
-  }),
-  stream: true,
-});
-```
-
-Render the response with the same component library used to generate the spec.
+To use the built-in library on the client or bring your own components, see [Component Library](/docs/openui-cloud/build/component-library).
 
 ## Stream and render responses
 
