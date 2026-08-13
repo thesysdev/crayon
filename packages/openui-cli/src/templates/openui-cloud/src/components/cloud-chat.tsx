@@ -6,11 +6,14 @@ import { OPENUI_LOGOS, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
 import {
   AgentInterface,
   ModelSwitcher,
+  agUIAdapter,
   defineArtifactCategories,
   fetchLLM,
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
   useSystemThemeMode,
+  vercelAIAdapter,
+  vercelAIMessageFormat,
 } from "@openuidev/react-ui";
 import {
   chatLibrary,
@@ -33,13 +36,33 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
   },
 ]);
 
-export default function CloudChat() {
-  const mode = useSystemThemeMode();
-  const [selectedModel, setSelectedModel] = usePersistedModel();
-  const llm = fetchLLM({
-    url: "/api/chat",
+const transports = {
+  responses: {
     streamAdapter: openAIResponsesAdapter(),
     messageFormat: openAIConversationMessageFormat,
+  },
+  langgraph: {
+    streamAdapter: agUIAdapter(),
+    messageFormat: undefined,
+  },
+  "vercel-ai-sdk": {
+    streamAdapter: vercelAIAdapter(),
+    messageFormat: vercelAIMessageFormat,
+  },
+} as const;
+
+export default function CloudChat({
+  backend = "responses",
+}: {
+  backend?: keyof typeof transports;
+}) {
+  const mode = useSystemThemeMode();
+  const [selectedModel, setSelectedModel] = usePersistedModel();
+  const { streamAdapter, messageFormat } = transports[backend];
+  const llm = fetchLLM({
+    url: "/api/chat",
+    streamAdapter,
+    ...(messageFormat ? { messageFormat } : {}),
     body: { model: selectedModel },
   });
 

@@ -12,6 +12,7 @@ It currently supports two workflows:
 - scaffolding a new OpenUI app from one of two templates:
   - **OpenUI Cloud (recommended)** — hosted models with managed conversations, streaming, built-in tools, and ready-to-use report and presentation artifacts
   - **Self-hosted** — bring an OpenAI-compatible model key and own the AI route and persistence
+- keeping the default minimal SDK route or adding a LangGraph or Vercel AI SDK backend to either template
 - generating a system prompt or JSON Schema from a `createLibrary()` export
 
 ## Install
@@ -37,6 +38,15 @@ Skip the prompt and pick a template directly:
 ```bash
 npx @openuidev/cli@latest create --template openui-cloud
 npx @openuidev/cli@latest create --template openui-self-hosted
+```
+
+Choose a backend framework directly (the default is `default`, the template's minimal SDK route):
+
+```bash
+npx @openuidev/cli@latest create --template openui-cloud --backend-framework langgraph
+npx @openuidev/cli@latest create --template openui-cloud --backend-framework vercel-ai-sdk
+npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework langgraph
+npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel-ai-sdk
 ```
 
 Generate a prompt from a library file:
@@ -65,10 +75,11 @@ Options:
 
 - `-n, --name <string>`: Project name (interactive default: `openui-agent`)
 - `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
+- `--backend-framework <framework>`: API route implementation — `default`, `langgraph`, or `vercel-ai-sdk`
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
-- `-i, --immediate`: Start the development server after installing dependencies
+- `-i, --immediate`: Start the development server after installing dependencies; the CLI refuses to start when the template's required API key is unavailable
 - `--no-immediate`: Install dependencies without starting the development server
 - `--no-interactive`: Fail instead of prompting for missing required input
 - `--api-key <key>`: (cloud template) OpenUI Cloud API key; skips sign-in
@@ -79,11 +90,13 @@ What it does:
 
 - prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
 - prompts for the template if you do not pass `--template`
+- prompts for a backend framework after the template; non-interactive usage defaults to `default`
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
 - asks whether to start the development server after dependency installation (default: yes); answering no preserves the install-and-exit behavior
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
 - in non-interactive mode, installs dependencies without starting the server unless overridden with `--immediate`
+- before an immediate start, requires `THESYS_API_KEY` for OpenUI Cloud or `OPENAI_API_KEY` for self-hosted to be available
 - optionally installs the OpenUI agent skill for AI coding assistants
 - writes a `.env` file tailored to the template (see below)
 
@@ -91,6 +104,28 @@ What it does:
 
 - **OpenUI Cloud (recommended default)** — start here for prototypes and evaluations. You get hosted models, managed conversation history and streaming, built-in tools, and ready-to-use report and presentation artifacts without operating the model, storage, or artifact infrastructure.
 - **Self-hosted** — choose this when owning the OpenAI-compatible provider integration, AI route, and persistence is a requirement.
+
+#### Backend frameworks
+
+| Value           | OpenUI Cloud route                           | Self-hosted route                        |
+| --------------- | -------------------------------------------- | ---------------------------------------- |
+| `default`       | Direct OpenAI SDK Responses proxy            | Direct OpenAI SDK Chat Completions proxy |
+| `langgraph`     | LangGraph Agent Server + Cloud provider      | LangGraph Agent Server + your provider   |
+| `vercel-ai-sdk` | Vercel AI SDK Next.js agent + Cloud provider | Vercel AI SDK `streamText()` route       |
+
+The default implementation is part of each base template. For LangGraph or Vercel AI SDK, the CLI applies one backend overlay containing the final files plus a manifest for its dependencies, scripts, removals, and onboarding text. Both Vercel AI SDK variants are standard Next.js deployments whose `streamText()` result returns `toUIMessageStreamResponse()` for `vercelAIAdapter()`. Both LangGraph variants separate the Agent Server described by `langgraph.json` from the Next.js frontend/proxy. The proxy uses `@openuidev/langchain`, and the browser consumes its AG-UI stream with `agUIAdapter()`.
+
+In both Cloud framework variants, the selected framework owns the agent orchestration and application tool loop. OpenUI Cloud is attached as the Responses model provider and conversation store. Reports, presentations, web search, image search, and configured MCP tools remain provider-executed Cloud tools, while application tools such as `get_weather` execute inside LangGraph or the Vercel AI SDK. Choosing a Cloud framework does not configure a user-owned model provider; choose `openui-self-hosted` for that.
+
+For either generated LangGraph app, `pnpm dev` starts both Next.js and the local Agent Server. `pnpm run deploy:langgraph` deploys only the backend, after which you set `LANGGRAPH_API_URL` plus `LANGSMITH_API_KEY` wherever the Next.js frontend runs. The Cloud graph needs `THESYS_API_KEY`; the self-hosted graph needs the selected provider credentials such as `OPENAI_API_KEY`.
+
+Every Cloud route includes `get_weather` as its example app-owned function tool. The LangGraph and Vercel AI SDK variants define and execute that tool through the selected framework while leaving Cloud-owned tools unchanged. The two self-hosted framework routes include the same weather example and run it through their native multi-step tool loops, making the selected backend directly testable after scaffolding.
+
+#### Conversation storage
+
+Every OpenUI Cloud variant uses OpenUI Cloud as its only durable conversation and artifact store. The browser connects directly through `useOpenuiCloudStorage()` with a short-lived frontend token, and `/api/chat` appends each turn to the same Cloud conversation with `conversation: threadId` and `store: true`. Vercel does not add a second store. The Cloud LangGraph relay creates a temporary Agent Server thread for each run and deletes it afterward; that thread is not the chat-history store. Configure a LangGraph checkpointer separately only when the graph itself needs durable state, interrupts, or resumable runs.
+
+The self-hosted variants do not configure durable storage. `AgentInterface` keeps the conversation in memory for the current page session and sends that history to `/api/chat`; refreshing the page loses it. The self-hosted LangGraph relay also creates and deletes a temporary Agent Server thread for each run. Pass a storage implementation to `AgentInterface` and back it with your own database when persistence is required; add a LangGraph checkpointer only for graph-specific durable state.
 
 #### Template-specific `.env`
 
@@ -107,7 +142,12 @@ Examples:
 
 ```bash
 openui create
+openui create --name my-app --template openui-self-hosted
+openui create --name my-app --template openui-self-hosted --backend-framework langgraph
+openui create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
 openui create --name my-app --template openui-cloud --auth oauth
+openui create --name my-app --template openui-cloud --backend-framework langgraph --auth oauth
+openui create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk --auth oauth
 openui create --name my-app --template openui-cloud --api-key tk_your_key
 openui create --name my-app --template openui-self-hosted
 openui create --name my-app --template openui-cloud --immediate

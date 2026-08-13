@@ -1,6 +1,6 @@
 import type { CloudAuthMethod } from "../auth/mint";
 import { createFunnelProps } from "./create-telemetry";
-import type { TemplateName } from "./create-types";
+import type { BackendFramework, TemplateName } from "./create-types";
 import type { CommandResult } from "./process-runner";
 import {
   CliCancelledError,
@@ -232,6 +232,20 @@ export function normalizeTemplate(t?: string): TemplateName | undefined {
     `unknown template "${t}". Use: openui-self-hosted | openui-cloud.`,
     "invalid_input",
     "INVALID_TEMPLATE",
+  );
+}
+
+export function normalizeBackendFramework(framework?: string): BackendFramework | undefined {
+  if (!framework) return undefined;
+  const value = framework.toLowerCase();
+  if (value === "default" || value === "none" || value === "no-framework") return "default";
+  if (value === "langgraph" || value === "lang-graph") return "langgraph";
+  if (value === "vercel" || value === "vercel-ai-sdk" || value === "ai-sdk") {
+    return "vercel-ai-sdk";
+  }
+  throw new CreateError(
+    "bad_args",
+    `unknown backend framework "${framework}". Use: default | langgraph | vercel-ai-sdk.`,
   );
 }
 
