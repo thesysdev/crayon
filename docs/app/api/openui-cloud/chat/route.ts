@@ -55,7 +55,10 @@ export async function POST(request: Request): Promise<Response> {
         { type: "web_search" },
         { type: "image_search" },
       ],
-      instructions: `${generateSystemPrompt()}\n\nWhen creating an artifact, actively use the available web and image search tools to ground its content and visual choices.`,
+      instructions: generateSystemPrompt({
+        instructions:
+          "When creating an artifact, actively use the available web and image search tools to ground its content and visual choices.",
+      }),
       // The Cloud Responses endpoint extends the stock OpenAI tool union.
     } as any,
     { signal: request.signal },
