@@ -94,7 +94,15 @@ renderer props, error handling, and an error fallback.
 
 OpenUI returns the submitted action, message, parameters, and form state through assistant-ui's `addResult`. Replayed messages hydrate the submitted form state automatically.
 
-For a Vercel AI SDK runtime, install `ai` and use the optional helper subpath:
+The core integration is not tied to the Vercel AI SDK. Its toolkit, renderers,
+and instructions can be used with any assistant-ui runtime that forwards tool
+schemas and results. A runtime adapter only needs to continue the conversation
+after `prompt_openui` receives its result, while leaving a completed
+`present_openui` call as the final display response. Runtime-specific helpers
+can implement that policy using the runtime's continuation API.
+
+For a Vercel AI SDK runtime, the package provides that policy as an optional
+convenience helper. Install `ai` and import it from the `/ai-sdk` subpath:
 
 ```tsx
 import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
