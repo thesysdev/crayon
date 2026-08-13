@@ -1,13 +1,10 @@
 import type { PromptSpec } from "../parser/prompt";
 import {
-  CI_DETECTION_VERSION,
-  detectRuntimeCI,
   getPostHogConfig,
   isTelemetryDisabled,
   normalizeProjectIdentity,
   TELEMETRY_REQUEST_TIMEOUT_MS,
   TELEMETRY_SCHEMA_VERSION,
-  type RuntimeCiName,
 } from "./shared";
 
 /**
@@ -85,9 +82,13 @@ interface CaptureProperties {
   runtime_version?: string;
   environment: Environment;
   ci: boolean;
-  ci_name?: RuntimeCiName;
-  ci_detection_version: typeof CI_DETECTION_VERSION;
+  ci_name?: string;
   sample_rate: 0.1;
+}
+
+interface CiInfoSnapshot {
+  id: string | null;
+  isCI: boolean;
 }
 
 const STATE_KEY = Symbol.for("@openuidev/lang-core/telemetry/v1");
@@ -291,6 +292,17 @@ function getProjectHash(state: TelemetryState, runtime: RuntimeInfo): Promise<st
   return state.projectHash;
 }
 
+async function getCIInfo(runtime: RuntimeInfo): Promise<CiInfoSnapshot> {
+  if (!runtime.env) return { id: null, isCI: false };
+
+  try {
+    const ciInfo = await import("ci-info");
+    return { id: ciInfo.id, isCI: ciInfo.isCI };
+  } catch {
+    return { id: null, isCI: false };
+  }
+}
+
 async function sendCapture(
   state: TelemetryState,
   spec: PromptSpec,
@@ -299,13 +311,13 @@ async function sendCapture(
   runtime: RuntimeInfo,
   environment: Environment,
 ): Promise<void> {
-  const [systemPromptConfigHash, projectHash] = await Promise.all([
+  const [systemPromptConfigHash, projectHash, ciInfo] = await Promise.all([
     configHash,
     getProjectHash(state, runtime),
+    getCIInfo(runtime),
   ]);
 
   const postHog = getPostHogConfig(runtime.env);
-  const ci = detectRuntimeCI(runtime.env);
   const properties: CaptureProperties = {
     distinct_id: state.runtimeId,
     $process_person_profile: false,
@@ -322,9 +334,8 @@ async function sendCapture(
     runtime: runtime.name,
     runtime_version: runtime.version,
     environment,
-    ci: ci.ci,
-    ...(ci.name ? { ci_name: ci.name } : {}),
-    ci_detection_version: CI_DETECTION_VERSION,
+    ci: ciInfo.isCI,
+    ...(ciInfo.id ? { ci_name: ciInfo.id } : {}),
     sample_rate: SAMPLE_RATE,
     ...(projectHash
       ? {
