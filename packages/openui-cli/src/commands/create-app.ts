@@ -31,6 +31,8 @@ function isServerReady(url: string): Promise<boolean> {
 }
 
 async function openWhenReady(url: string, didExit: () => boolean): Promise<void> {
+  // A free port is not necessarily accepting connections yet. Wait for the dev
+  // server to respond so the browser does not open to a connection-refused page.
   const timeoutAt = Date.now() + 60_000;
   while (!didExit() && Date.now() < timeoutAt) {
     if (await isServerReady(url)) {
