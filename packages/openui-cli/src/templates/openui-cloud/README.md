@@ -25,8 +25,8 @@ The Vercel AI SDK scaffold is a standard Next.js app: `streamText()` owns the
 agent loop and UIMessage stream, so the whole project can be deployed to Vercel.
 
 The LangGraph scaffold contains two deployables. `pnpm dev` runs Next.js and the
-local Agent Server together. Deploy `langgraph.json` to LangSmith, deploy the
-Next.js frontend separately, then set `LANGGRAPH_API_URL` and
+local Agent Server together. `pnpm run deploy:langgraph` deploys only the Agent
+Server to LangSmith. Deploy the Next.js frontend separately, then set `LANGGRAPH_API_URL` and
 `LANGSMITH_API_KEY` on the frontend deployment. Set `THESYS_API_KEY` on the
 LangSmith deployment because the graph uses OpenUI Cloud as its model provider.
 

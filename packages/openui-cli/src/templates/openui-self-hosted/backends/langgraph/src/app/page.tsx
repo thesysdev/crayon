@@ -2,18 +2,12 @@
 import "@openuidev/react-ui/components.css";
 import "@openuidev/react-ui/styles/index.css";
 
-import {
-  AgentInterface,
-  fetchLLM,
-  langGraphAdapter,
-  langGraphMessageFormat,
-} from "@openuidev/react-ui";
+import { AgentInterface, agUIAdapter, fetchLLM } from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 
 const llm = fetchLLM({
   url: "/api/chat",
-  streamAdapter: langGraphAdapter(),
-  messageFormat: langGraphMessageFormat,
+  streamAdapter: agUIAdapter(),
 });
 
 export default function Home() {

@@ -84,15 +84,15 @@ In non-interactive mode, dependencies are installed without starting the long-ru
 
 **Backend frameworks**
 
-| Value           | OpenUI Cloud route                           | Self-hosted route                          |
-| --------------- | -------------------------------------------- | ------------------------------------------ |
-| `default`       | Direct OpenAI SDK Responses proxy            | Direct OpenAI SDK Chat Completions proxy   |
-| `langgraph`     | LangGraph Agent Server + Cloud provider      | LangGraph `StateGraph` using your provider |
-| `vercel-ai-sdk` | Vercel AI SDK Next.js agent + Cloud provider | Vercel AI SDK `streamText()` route         |
+| Value           | OpenUI Cloud route                           | Self-hosted route                        |
+| --------------- | -------------------------------------------- | ---------------------------------------- |
+| `default`       | Direct OpenAI SDK Responses proxy            | Direct OpenAI SDK Chat Completions proxy |
+| `langgraph`     | LangGraph Agent Server + Cloud provider      | LangGraph Agent Server + your provider   |
+| `vercel-ai-sdk` | Vercel AI SDK Next.js agent + Cloud provider | Vercel AI SDK `streamText()` route       |
 
-The CLI applies the selected framework's final route/page files, dependencies, and deployment configuration over the base template. Both Cloud framework variants are deployable: the Vercel AI SDK variant is one standard Next.js deployment with `streamText()`, `toUIMessageStreamResponse()`, and `vercelAIAdapter()`, while the LangGraph variant separates the Agent Server described by `langgraph.json` from the Next.js frontend/proxy. The proxy uses `@openuidev/langchain`, and the browser consumes its AG-UI stream with `agUIAdapter()`. The self-hosted LangGraph variant remains an inline `StateGraph` route using `langGraphAdapter()`.
+The CLI applies the selected framework's final route/page files, dependencies, and deployment configuration over the base template. Both Vercel AI SDK variants are standard Next.js deployments with `streamText()`, `toUIMessageStreamResponse()`, and `vercelAIAdapter()`. Both LangGraph variants separate the Agent Server described by `langgraph.json` from the Next.js frontend/proxy. The proxy uses `@openuidev/langchain`, and the browser consumes its AG-UI stream with `agUIAdapter()`.
 
-For both Cloud variants, the framework owns orchestration and application tool execution. OpenUI Cloud is attached as the Responses model provider and conversation store. Reports, presentations, web search, image search, and configured MCP tools remain provider-executed Cloud tools. For LangGraph, `pnpm dev` starts the local Agent Server and Next.js together; production can deploy `langgraph.json` to LangSmith and the Next.js frontend to Vercel, with `LANGGRAPH_API_URL` and `LANGSMITH_API_KEY` connecting them.
+For both Cloud variants, the framework owns orchestration and application tool execution. OpenUI Cloud is attached as the Responses model provider and conversation store. Reports, presentations, web search, image search, and configured MCP tools remain provider-executed Cloud tools. For either LangGraph template, `pnpm dev` starts the local Agent Server and Next.js together. Run `pnpm run deploy:langgraph` to deploy only the backend, then set `LANGGRAPH_API_URL` and `LANGSMITH_API_KEY` wherever the frontend runs.
 
 All four framework routes include a `get_weather` example backed by Open-Meteo. Ask “What’s the weather in Berlin?” to verify the selected framework’s native multi-step tool loop.
 
@@ -100,7 +100,7 @@ All four framework routes include a `get_weather` example backed by Open-Meteo. 
 
 Every OpenUI Cloud variant uses OpenUI Cloud as its only durable conversation and artifact store. The browser connects directly through `useOpenuiCloudStorage()` with a short-lived frontend token. The `threadId` sent to `/api/chat` is the Cloud conversation id, and each backend appends model turns to it with `conversation: threadId` and `store: true`. The Vercel AI SDK route does not create a second store. The Cloud LangGraph relay creates and deletes a temporary Agent Server thread for each run; configure a separate LangGraph checkpointer only when graph state, interrupts, or resumable runs must persist independently.
 
-The self-hosted variants do not configure durable storage. `AgentInterface` keeps messages in memory for the current page session and sends that history to `/api/chat`; refreshing the page loses it. Pass a storage implementation to `AgentInterface` and back it with your own database when persistence is required.
+The self-hosted variants do not configure durable storage. `AgentInterface` keeps messages in memory for the current page session and sends that history to `/api/chat`; refreshing the page loses it. The self-hosted LangGraph relay also creates and deletes a temporary Agent Server thread for each run. Pass a storage implementation to `AgentInterface` and back it with your own database when persistence is required; add a LangGraph checkpointer only for graph-specific durable state.
 
 **Agent skill**
 
