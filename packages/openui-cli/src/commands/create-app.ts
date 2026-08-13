@@ -12,6 +12,7 @@ import {
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
+import { resolveAvailableTarget } from "../lib/target-dir";
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
 import { cliErrorProperties, processErrorProperties } from "../lib/utils";
 
@@ -121,7 +122,8 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     immediate_arg: options.immediate,
   });
 
-  const args = await resolveArgs(
+  // Resolved on its own, and validated before anything else is asked
+  const nameArgs = await resolveArgs(
     {
       name: options.name
         ? { value: options.name }
@@ -129,6 +131,16 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
             prompt: { type: "input", message: "Project name?", default: "openui-agent" },
             required: true,
           },
+    },
+    interactive,
+  );
+  const { name, targetDir } = await resolveAvailableTarget(
+    (nameArgs as { name: string }).name,
+    interactive,
+  );
+
+  const args = await resolveArgs(
+    {
       template: options.template
         ? { value: options.template }
         : {
@@ -152,7 +164,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     interactive,
   );
 
-  const { name, template } = args as { name: string; template: TemplateName };
+  const { template } = args as { template: TemplateName };
   const aiSetup = aiSetupFromTemplate(template);
   telemetry.register({ template, ai_setup: aiSetup });
   telemetry.capture("cli_ai_setup_selected", {
@@ -160,16 +172,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     template,
     ai_setup: aiSetup,
   });
-
-  const targetDir = path.resolve(process.cwd(), name);
-  if (fs.existsSync(targetDir)) {
-    throw new CreateError(
-      "preflight",
-      `Directory "${name}" already exists.`,
-      "filesystem",
-      "TARGET_EXISTS",
-    );
-  }
 
   const templateDir = path.join(__dirname, "..", "templates", template);
   if (!fs.existsSync(templateDir)) {
