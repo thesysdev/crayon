@@ -1,0 +1,44 @@
+name: Model Consistency
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "config/model-policy.json"
+      - "scripts/models/**"
+      - "docs/content/docs/openui-lang/examples/**"
+      - "examples/**"
+      - "packages/langchain/README.md"
+      - "packages/openui-cli/src/templates/openui-self-hosted/**"
+      - "package.json"
+      - ".github/workflows/model-consistency.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "config/model-policy.json"
+      - "scripts/models/**"
+      - "docs/content/docs/openui-lang/examples/**"
+      - "examples/**"
+      - "packages/langchain/README.md"
+      - "packages/openui-cli/src/templates/openui-self-hosted/**"
+      - "package.json"
+      - ".github/workflows/model-consistency.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  model-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Test model policy tooling
+        run: node --test scripts/models/model-policy.test.mjs
+
+      - name: Check managed model references
+        run: node scripts/models/sync.mjs --check
