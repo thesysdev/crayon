@@ -1,6 +1,7 @@
 import type { CloudAuthMethod } from "../auth/mint";
 import { createFunnelProps } from "./create-telemetry";
 import type { TemplateName } from "./create-types";
+import { BackendFramework } from "./create-types";
 import type { CommandResult } from "./process-runner";
 import {
   CliCancelledError,
@@ -244,5 +245,19 @@ export function normalizeAuth(a?: string): CloudAuthMethod | undefined {
     `unknown --auth "${a}". Use: oauth | skip (manual is deprecated).`,
     "invalid_input",
     "INVALID_AUTH",
+  );
+}
+
+export function normalizeBackendFramework(framework?: string): BackendFramework | undefined {
+  if (!framework) return undefined;
+  const value = framework.toLowerCase();
+  if (value === "default" || value === "none" || value === "no-framework") return "default";
+  if (value === "langgraph" || value === "lang-graph") return "langgraph";
+  if (value === "vercel" || value === "vercel-ai-sdk" || value === "ai-sdk") {
+    return "vercel-ai-sdk";
+  }
+  throw new CreateError(
+    "bad_args",
+    `unknown backend framework "${framework}". Use: default | langgraph | vercel-ai-sdk.`,
   );
 }

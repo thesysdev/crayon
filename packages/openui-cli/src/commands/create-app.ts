@@ -3,8 +3,19 @@ import * as os from "node:os";
 import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
+import {
+  applyBackendOverlay,
+  BACKENDS_DIR,
+  resolveBackendOverlay,
+  type BackendManifest,
+} from "../lib/backends";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
-import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
+import type {
+  BackendFramework,
+  CreateAppOptions,
+  EnvResult,
+  TemplateName,
+} from "../lib/create-types";
 import {
   resolveInstallPackageManager,
   type PackageManagerName,
@@ -21,8 +32,9 @@ function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
   if (!rel) return true;
   const top = rel.split(path.sep)[0] ?? "";
-  // never copy install/build artifacts that may sit in a template dir
-  return !["node_modules", ".next", ".turbo", "dist"].includes(top);
+  // Copy the base template only; selected backend overlays are applied later.
+  // Also exclude install/build artifacts that may sit in a template directory.
+  return ![BACKENDS_DIR, "node_modules", ".next", ".turbo", "dist"].includes(top);
 }
 
 function restoreDotfiles(projectDir: string) {
@@ -44,7 +56,16 @@ function buildAppId(name: string): string {
   return `${slug}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function rewritePackageJson(projectDir: string, name: string, packageManager: PackageManagerName) {
+function requiredApiKeyEnv(template: TemplateName): "THESYS_API_KEY" | "OPENAI_API_KEY" {
+  return template === "openui-cloud" ? "THESYS_API_KEY" : "OPENAI_API_KEY";
+}
+
+function rewritePackageJson(
+  projectDir: string,
+  name: string,
+  packageManager: PackageManagerName,
+  backendPackageJson?: BackendManifest["packageJson"],
+) {
   // package.json: set the project name and de-vendor monorepo-local deps
   // (workspace:* / file: / catalog:) to the published "latest". link: deps are
   // rewritten to an absolute file: path so locally-linked packages (e.g.
@@ -54,12 +75,24 @@ function rewritePackageJson(projectDir: string, name: string, packageManager: Pa
   const pkgPath = path.join(projectDir, "package.json");
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8")) as {
     name: string;
+    scripts?: Record<string, string>;
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
     pnpm?: unknown;
   };
   pkg.name = name;
   if (packageManager !== "pnpm") delete pkg.pnpm;
+
+  if (backendPackageJson) {
+    pkg.dependencies ??= {};
+    for (const dependency of backendPackageJson.removeDependencies ?? []) {
+      delete pkg.dependencies[dependency];
+    }
+    Object.assign(pkg.dependencies, backendPackageJson.dependencies ?? {});
+    Object.assign((pkg.devDependencies ??= {}), backendPackageJson.devDependencies ?? {});
+    Object.assign((pkg.scripts ??= {}), backendPackageJson.scripts ?? {});
+  }
+
   for (const section of ["dependencies", "devDependencies"] as const) {
     const deps = pkg[section];
     if (!deps) continue;
@@ -117,6 +150,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     interactive,
     has_name_arg: Boolean(options.name),
     has_template_arg: Boolean(options.template),
+    has_backend_framework_arg: Boolean(options.backendFramework),
     has_api_key_arg: Boolean(options.apiKey),
     has_auth_arg: Boolean(options.auth),
     no_install: Boolean(options.noInstall),
@@ -151,12 +185,48 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     );
   }
   const template: TemplateName = options.template ?? "openui-cloud";
+
+  const frameworkArgs = await resolveArgs(
+    {
+      backendFramework:
+        options.backendFramework || !interactive
+          ? { value: options.backendFramework ?? "default" }
+          : {
+              prompt: {
+                type: "select",
+                message: "Choose your backend framework",
+                choices: [
+                  {
+                    value: "default",
+                    name: "Default — minimal SDK route",
+                  },
+                  { value: "vercel-ai-sdk", name: "Vercel AI SDK" },
+                  { value: "langgraph", name: "LangGraph" },
+                ],
+              },
+              required: true,
+            },
+    },
+    interactive,
+  );
+  const backendFramework = (frameworkArgs as { backendFramework: BackendFramework })
+    .backendFramework;
+
   const aiSetup = aiSetupFromTemplate(template);
-  telemetry.register({ template, ai_setup: aiSetup });
+  telemetry.register({ template, ai_setup: aiSetup, backend_framework: backendFramework });
   telemetry.capture("cli_ai_setup_selected", {
     ...createFunnelProps("ai_setup_selected"),
     template,
     ai_setup: aiSetup,
+  });
+  telemetry.capture("cli_backend_framework_selected", {
+    ...createFunnelProps("backend_framework_selected"),
+    backend_framework: backendFramework,
+    backend_framework_source: options.backendFramework
+      ? "flag"
+      : interactive
+        ? "prompt"
+        : "default",
   });
 
   const templateDir = path.join(__dirname, "..", "templates", template);
@@ -168,6 +238,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       "TEMPLATE_MISSING",
     );
   }
+  const backendOverlay = resolveBackendOverlay(templateDir, backendFramework);
 
   telemetry.capture("cli_env_resolution_started", {
     ...createFunnelProps("env_resolution_started"),
@@ -186,6 +257,9 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   });
 
   const immediateResolution = resolveImmediate(options.immediate, options.noInstall, interactive);
+  const apiKeyEnv = requiredApiKeyEnv(template);
+  const apiKeyAvailable = envResult.envWritten || Boolean(process.env[apiKeyEnv]?.trim());
+  const devStartBlockedByMissingApiKey = immediateResolution.immediate && !apiKeyAvailable;
   telemetry.capture("cli_immediate_selected", {
     immediate: immediateResolution.immediate,
     dependency_install_requested: immediateResolution.installDependencies,
@@ -204,16 +278,21 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
     restoreDotfiles(targetDir);
-    rewritePackageJson(targetDir, name, packageManager.name);
+    applyBackendOverlay(targetDir, backendOverlay);
+    rewritePackageJson(targetDir, name, packageManager.name, backendOverlay?.manifest.packageJson);
     // npm ci requires the copied package-lock; other managers resolve from package.json.
-    if (packageManager.name !== "npm") {
+    // Framework routes add dependencies at scaffold time, so their npm lock
+    // cannot remain frozen; npm install creates a fresh lock for that variant.
+    if (packageManager.name !== "npm" || backendFramework !== "default") {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
     }
     // The Cloud template ships pnpm's lock/workspace files for reproducible pnpm
-    // installs and native-build policy. They are irrelevant to npm/yarn/bun and
-    // can confuse workspace-root detection, so keep them only for pnpm scaffolds.
-    if (packageManager.name !== "pnpm") {
+    // installs and native-build policy. A framework changes dependencies, so
+    // regenerate its lock; non-pnpm scaffolds do not need either pnpm file.
+    if (packageManager.name !== "pnpm" || backendFramework !== "default") {
       fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
+    }
+    if (packageManager.name !== "pnpm") {
       fs.rmSync(path.join(targetDir, "pnpm-workspace.yaml"), { force: true });
     }
   } catch (err) {
@@ -314,7 +393,24 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     }
   }
 
-  const installCmd = packageManager.installCmd;
+  // A framework scaffold has no lockfile, so npm must resolve version ranges
+  // against the registry. --prefer-offline is only safe for `npm ci`, where the
+  // lockfile pins exact versions and cache hits are content-addressed; here it
+  // lets a stale packument fail the install with ETARGET whenever a transitive
+  // dependency was published more recently than the local cache.
+  const frameworkInstall = backendFramework !== "default";
+  const installCmd =
+    frameworkInstall && packageManager.name === "npm"
+      ? "npm install --no-audit --no-fund --progress=false"
+      : frameworkInstall && packageManager.name === "pnpm"
+        ? "pnpm install --no-frozen-lockfile"
+        : packageManager.installCmd;
+  const installArgs =
+    frameworkInstall && packageManager.name === "npm"
+      ? ["install", "--no-audit", "--no-fund", "--progress=false"]
+      : frameworkInstall && packageManager.name === "pnpm"
+        ? ["install", "--no-frozen-lockfile"]
+        : packageManager.installArgs;
   let dependencyInstalled = false;
 
   if (!immediateResolution.installDependencies) {
@@ -329,11 +425,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       template,
       ai_setup: aiSetup,
     });
-    const installResult = await runCommand(
-      packageManager.runCmd,
-      packageManager.installArgs,
-      targetDir,
-    );
+    const installResult = await runCommand(packageManager.runCmd, installArgs, targetDir);
     if (!installResult.error && installResult.status === 0) {
       dependencyInstalled = true;
       telemetry.capture("cli_dependency_install_succeeded", {
@@ -380,7 +472,8 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   }
 
   const devCmd = packageManager.runCmd;
-  const startDev = immediateResolution.immediate && dependencyInstalled;
+  const startDev =
+    immediateResolution.immediate && dependencyInstalled && !devStartBlockedByMissingApiKey;
 
   telemetry.capture("cli_create_succeeded", {
     ...createFunnelProps("create_succeeded"),
@@ -396,13 +489,29 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       name,
       devCmd,
       template,
+      backendGettingStarted: backendOverlay?.manifest.gettingStarted,
       skillInstalled,
       envWritten: envResult.envWritten,
       startDev,
+      devStartBlockedByMissingApiKey,
       installCmd,
       dependencyInstalled,
     }),
   );
+
+  if (devStartBlockedByMissingApiKey) {
+    telemetry.capture("cli_dev_command_skipped", {
+      skip_reason: "missing_api_key",
+      required_env: apiKeyEnv,
+    });
+    console.error(
+      `Error: Development server not started because ${apiKeyEnv} is missing.\n` +
+        `Set ${apiKeyEnv}=… in ${name}/.env, then run:\n\n` +
+        `> cd ${name}\n> ${devCmd} run dev\n`,
+    );
+    process.exitCode = 1;
+    return;
+  }
 
   if (!startDev) {
     telemetry.capture("cli_dev_command_skipped", {
@@ -571,9 +680,11 @@ function getStartedMessage(o: {
   name: string;
   devCmd: string;
   template: TemplateName;
+  backendGettingStarted?: string;
   skillInstalled: boolean;
   envWritten: boolean;
   startDev: boolean;
+  devStartBlockedByMissingApiKey: boolean;
   installCmd: string;
   dependencyInstalled: boolean;
 }): string {
@@ -592,17 +703,17 @@ function getStartedMessage(o: {
 
   const nextStep = o.startDev
     ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
-    : [
-        `> cd ${o.name}`,
-        ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
-        `> ${o.devCmd} run dev`,
-      ].join("\n");
+    : o.devStartBlockedByMissingApiKey
+      ? ""
+      : [
+          `> cd ${o.name}`,
+          ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
+          `> ${o.devCmd} run dev`,
+        ].join("\n");
 
-  return `${skillMessage}
-Done!
+  const frameworkNote = o.backendGettingStarted?.replaceAll("{{packageManager}}", o.devCmd) ?? "";
 
-${envNote}
-
-${nextStep}
-`;
+  return `${[skillMessage.trim(), "Done!", envNote, frameworkNote, nextStep]
+    .filter(Boolean)
+    .join("\n\n")}\n`;
 }
