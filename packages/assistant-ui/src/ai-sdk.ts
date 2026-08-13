@@ -10,7 +10,17 @@ export interface CreateShouldContinueAfterOpenUIPromptOptions {
   promptToolName?: string;
 }
 
-export type OpenUIContinuationPredicate = (options: { messages: UIMessage[] }) => boolean;
+export interface OpenUIContinuationMessage {
+  role: string;
+  parts: Array<{
+    type: string;
+    state?: string;
+  }>;
+}
+
+export type OpenUIContinuationPredicate = (options: {
+  messages: OpenUIContinuationMessage[];
+}) => boolean;
 
 export function createShouldContinueAfterOpenUIPrompt({
   promptToolName = OPENUI_PROMPT_TOOL_NAME,
@@ -20,11 +30,12 @@ export function createShouldContinueAfterOpenUIPrompt({
   }
 
   return ({ messages }) => {
-    if (!lastAssistantMessageIsCompleteWithToolCalls({ messages })) {
+    const aiMessages = messages as UIMessage[];
+    if (!lastAssistantMessageIsCompleteWithToolCalls({ messages: aiMessages })) {
       return false;
     }
 
-    const message = messages.at(-1);
+    const message = aiMessages.at(-1);
     if (!message || message.role !== "assistant") {
       return false;
     }
