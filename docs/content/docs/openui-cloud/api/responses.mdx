@@ -1,0 +1,157 @@
+---
+title: Responses API
+description: "Use the OpenAI-compatible Responses API for managed generative UI, persistent conversations, hosted tools, and artifacts."
+---
+
+The Responses API is the recommended OpenUI Cloud endpoint for new agent applications. It combines managed generative UI with persistent conversations, hosted tools, and editable slide and report artifacts.
+
+**Endpoint:** `POST https://api.thesys.dev/v1/embed/responses`
+
+It uses the stock OpenAI SDK. Keep the Thesys API key and the request on your server.
+
+## Make a request
+
+Create an API key in the [Thesys console](https://console.thesys.dev/keys), set it as `THESYS_API_KEY`, and point the OpenAI client at the OpenUI Cloud base URL.
+
+```ts title="server.ts"
+import { generateSystemPrompt } from "@openuidev/thesys-server";
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.THESYS_API_KEY,
+  baseURL: "https://api.thesys.dev/v1/embed",
+});
+
+const response = await client.responses.create({
+  model: "openai/gpt-5",
+  input: "Compare quarterly revenue by region.",
+  instructions: generateSystemPrompt(),
+});
+
+console.log(response.output_text);
+```
+
+`generateSystemPrompt()` tells OpenUI Cloud to assemble the managed system prompt for its built-in component library. The returned `output_text` is an OpenUI Lang program that can be rendered with the Cloud `chatLibrary`.
+
+For progressive rendering, set `stream: true`. The OpenUI Cloud scaffold already relays this event stream to `AgentInterface` with `openAIResponsesAdapter()`.
+
+<Callout type="info">
+  The fastest complete integration is `npx @openuidev/cli@latest create --template openui-cloud`.
+  See [Get Started](/docs/openui-cloud/get-started) for the generated application structure.
+</Callout>
+
+## Use a custom component library
+
+Generate a serializable library spec at build time:
+
+```bash
+npx @openuidev/cli@latest generate --spec ./src/library.tsx --out ./src/generated/library.spec.json
+```
+
+Send the spec through the server helper. OpenUI Cloud uses it to assemble the prompt and validate the streamed output against your components.
+
+```ts
+import { generateSystemPrompt } from "@openuidev/thesys-server";
+import library from "./generated/library.spec.json";
+
+const response = await client.responses.create({
+  model: "openai/gpt-5",
+  input: "Show revenue by region as an interactive dashboard.",
+  instructions: generateSystemPrompt({
+    library,
+    promptOptions: {
+      additionalRules: ["Prefer compact layouts and concise labels."],
+    },
+  }),
+  stream: true,
+});
+```
+
+## Manage conversation state
+
+The Responses API supports three history patterns:
+
+| Pattern                          | Use it when                                                                             |
+| -------------------------------- | --------------------------------------------------------------------------------------- |
+| Send the full history in `input` | Your application owns all message storage.                                              |
+| Set `previous_response_id`       | You want to chain turns without creating a named conversation. Use `store: true`.       |
+| Set `conversation`               | You want a persistent thread that can be loaded by `AgentInterface`. Use `store: true`. |
+
+Chain a follow-up to an earlier response:
+
+```ts
+const first = await client.responses.create({
+  model: "openai/gpt-5",
+  input: "Compare quarterly revenue by region.",
+  instructions: generateSystemPrompt(),
+  store: true,
+});
+
+const followUp = await client.responses.create({
+  model: "openai/gpt-5",
+  input: "Focus on Europe and explain the change.",
+  instructions: generateSystemPrompt(),
+  previous_response_id: first.id,
+  store: true,
+});
+```
+
+For a named Cloud conversation, send only the new turn on each request:
+
+```ts
+const response = await client.responses.create({
+  model: "openai/gpt-5",
+  conversation: threadId,
+  input: latestMessage,
+  instructions: generateSystemPrompt(),
+  store: true,
+  stream: true,
+});
+```
+
+## Add tools and artifacts
+
+OpenUI Cloud runs hosted tools inside the platform. App-owned function tools still run on your server.
+
+| Capability           | Tool declaration                                    | Runs on      |
+| -------------------- | --------------------------------------------------- | ------------ |
+| Slides and reports   | `artifactTool({ artifacts: ["slides", "report"] })` | OpenUI Cloud |
+| Web search           | `{ type: "web_search" }`                            | OpenUI Cloud |
+| Image search         | `{ type: "image_search" }`                          | OpenUI Cloud |
+| Remote MCP server    | `{ type: "mcp", server_label, server_url }`         | OpenUI Cloud |
+| Application function | `{ type: "function", name, parameters }`            | Your server  |
+
+```ts
+import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
+import type { Tool } from "openai/resources/responses/responses";
+
+const response = await client.responses.create({
+  model: "openai/gpt-5",
+  input: "Research the market and create a three-slide summary.",
+  instructions: generateSystemPrompt(),
+  tools: [
+    artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
+    { type: "web_search" },
+    { type: "image_search" } as unknown as Tool,
+    {
+      type: "mcp",
+      server_label: "deepwiki",
+      server_url: "https://mcp.deepwiki.com/mcp",
+    } as unknown as Tool,
+  ],
+  stream: true,
+  store: true,
+});
+```
+
+The casts are needed because artifacts, image search, and MCP are OpenUI Cloud extensions to the stock OpenAI tool union. Artifacts are stored and can be edited automatically on follow-up turns in the same conversation.
+
+For a `function` tool, execute each returned `function_call` on your server and continue with a `function_call_output`. The Cloud scaffold includes a complete tool loop; see [Tools](/docs/agent/core-concepts/tools) for the execution model.
+
+## Bring your own provider key
+
+Add an OpenAI, Anthropic, or Google key on the [BYOK page in the Thesys console](https://console.thesys.dev/byok). When the requested model matches that provider, OpenUI Cloud uses the configured key automatically. The request body does not change.
+
+## When to use Chat Completions
+
+Use the [Chat Completions API](/docs/openui-cloud/api/chat-completions) when an existing application already speaks that protocol, when you want a plain model passthrough, or when your application owns its conversation history and function-tool loop. Use Responses for Cloud-managed conversations, hosted search or MCP tools, and artifacts inside the agent stream.

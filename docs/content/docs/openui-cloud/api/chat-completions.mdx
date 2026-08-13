@@ -1,0 +1,214 @@
+---
+title: Chat Completions API
+description: "Use the OpenAI-compatible Chat Completions and artifact endpoints for text, OpenUI Lang, tools, slides, and reports."
+---
+
+The Chat Completions API is a drop-in OpenAI-compatible endpoint for applications that already use `chat.completions.create()`. It supports plain text, self-hosted generative UI, and managed generative UI without changing the application's message format.
+
+**Endpoint:** `POST https://api.thesys.dev/v1/embed/chat/completions`
+
+Use the [Responses API](/docs/openui-cloud/api/responses) instead when you need Cloud-managed conversations, hosted search or MCP tools, or artifacts inside the same agent stream.
+
+## Configure the client
+
+Create an API key in the [Thesys console](https://console.thesys.dev/keys), set it as `THESYS_API_KEY`, and change the OpenAI client configuration:
+
+```diff
+ const client = new OpenAI({
+-  apiKey: process.env.OPENAI_API_KEY,
++  apiKey: process.env.THESYS_API_KEY,
++  baseURL: "https://api.thesys.dev/v1/embed",
+ });
+```
+
+Both streaming and non-streaming requests are supported.
+
+## Plain text passthrough
+
+Use a `{provider}/{model}` model ID. OpenUI Cloud forwards the messages, including your system prompt, without injecting a generative UI prompt or component schema.
+
+```ts
+const completion = await client.chat.completions.create({
+  model: "openai/gpt-5",
+  messages: [
+    { role: "system", content: "You are a concise product analyst." },
+    { role: "user", content: "Summarize the risks in this launch plan." },
+  ],
+});
+
+console.log(completion.choices[0].message.content);
+```
+
+OpenAI, Anthropic, and Google model IDs route to those providers. Unknown providers route through OpenRouter.
+
+## Generate UI with your component library
+
+Compile the system prompt in your application from a generated OpenUI library spec. The endpoint forwards that prompt verbatim; the model returns OpenUI Lang for your client-side `Renderer`.
+
+```ts
+import { generateSystemPrompt } from "@openuidev/lang-core";
+import library from "./generated/library.spec.json";
+
+const completion = await client.chat.completions.create({
+  model: "openai/gpt-5",
+  messages: [
+    {
+      role: "system",
+      content: generateSystemPrompt({
+        library,
+        promptOptions,
+      }),
+    },
+    ...messages,
+  ],
+  stream: true,
+});
+```
+
+Create `library.spec.json` with `openui generate --spec`, and render the streamed content with the same library. In this mode, prompt assembly and rendering are owned by your application.
+
+## Use managed generative UI
+
+Use the server helper to send the OpenUI Cloud configuration sentinel. OpenUI Cloud assembles the prompt and can use either its built-in component library or the custom library you send.
+
+```ts
+import { generateSystemPrompt } from "@openuidev/thesys-server";
+
+const completion = await client.chat.completions.create({
+  model: "openai/gpt-5",
+  messages: [{ role: "system", content: generateSystemPrompt() }, ...messages],
+  stream: true,
+});
+```
+
+For a custom library:
+
+```ts
+const completion = await client.chat.completions.create({
+  model: "openai/gpt-5",
+  messages: [
+    {
+      role: "system",
+      content: generateSystemPrompt({
+        library,
+        promptOptions: {
+          additionalRules: ["Prefer compact layouts and concise labels."],
+        },
+      }),
+    },
+    ...messages,
+  ],
+  stream: true,
+});
+```
+
+<Callout type="warn">
+  Managed generative UI requires a bare provider model such as `openai/gpt-5`. Do not combine the
+  `generateSystemPrompt()` sentinel with a versioned `c1/...` model; that request returns a 400.
+</Callout>
+
+## Manage conversation history
+
+Chat Completions requests are message-based. Keep the conversation in your application and include the system message plus the relevant `user`, `assistant`, and `tool` messages on every turn.
+
+Use the [Responses API](/docs/openui-cloud/api/responses#manage-conversation-state) if you want to reference `previous_response_id` or a persistent Cloud conversation instead.
+
+## Use function tools
+
+Chat Completions accepts `function` tools only. The endpoint does not execute them. Run the standard loop in your application:
+
+1. Send the messages and function declarations.
+2. Read `tool_calls` from the assistant message.
+3. Execute each function in your application.
+4. Append the assistant tool-call message and each `role: "tool"` result.
+5. Repeat until the model returns a final response.
+
+Hosted `web_search`, `image_search`, remote MCP, and artifacts-as-tool are available on the [Responses API](/docs/openui-cloud/api/responses#add-tools-and-artifacts), not Chat Completions.
+
+## Generate slides and reports
+
+Artifacts have a separate Chat Completions-compatible endpoint:
+
+**Endpoint:** `POST https://api.thesys.dev/v1/artifact/chat/completions`
+
+Point another OpenAI client at the artifact base URL. Every request must include `metadata.thesys` as a JSON string with your artifact `id` and a `c1_artifact_type` of `"slides"` or `"report"`.
+
+```ts
+import OpenAI from "openai";
+
+const artifactClient = new OpenAI({
+  apiKey: process.env.THESYS_API_KEY,
+  baseURL: "https://api.thesys.dev/v1/artifact",
+});
+
+const artifact = await artifactClient.chat.completions.create({
+  model: "openai/gpt-5",
+  messages: [{ role: "user", content: "Create a three-slide deck on Q4 results." }],
+  metadata: {
+    thesys: JSON.stringify({
+      id: "art_1",
+      c1_artifact_type: "slides",
+    }),
+  },
+});
+
+const program = artifact.choices[0].message.content;
+```
+
+Provider models use the same native routing and BYOK behavior as the embed endpoint. The response content is a raw OpenUI Lang program rooted at `SlideShow` or `ReportView`. It is validated and repaired before being returned. Set `stream: true` to receive it progressively.
+
+### Render an artifact
+
+Render the returned program with the matching managed viewer:
+
+```tsx
+import { Presentation, Report } from "@openuidev/thesys";
+import "@openuidev/thesys/styles.css";
+
+export function Artifact({ kind, program }: { kind: "slides" | "report"; program: string }) {
+  return kind === "slides" ? (
+    <Presentation response={program} preview={false} />
+  ) : (
+    <Report response={program} preview={false} />
+  );
+}
+```
+
+Pass `isStreaming` while accumulating a streamed program.
+
+### Edit an artifact
+
+Send the current OpenUI Lang program as an assistant message, describe the change in the next user message, and set `is_edit: true`.
+
+```ts
+const edited = await artifactClient.chat.completions.create({
+  model: "openai/gpt-5",
+  messages: [
+    { role: "assistant", content: previousProgram },
+    { role: "user", content: "Make slide 2 about European revenue." },
+  ],
+  metadata: {
+    thesys: JSON.stringify({
+      id: "art_1",
+      c1_artifact_type: "slides",
+      is_edit: true,
+    }),
+  },
+  stream: true,
+});
+```
+
+The response is a patch-mode OpenUI Lang program merged against the assistant-message base.
+
+## Bring your own provider key
+
+For OpenUI Cloud, add the provider key on the [BYOK page in the Thesys console](https://console.thesys.dev/byok). When the model's provider matches, the configured key is selected automatically and nothing changes in the request.
+
+For a self-hosted key flow, encrypt the key with `POST /encryption/encrypt`, then include this object in the request body:
+
+```ts
+byok: {
+  provider,
+  encryptedApiKey,
+}
+```
