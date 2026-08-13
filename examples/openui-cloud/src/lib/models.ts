@@ -38,6 +38,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
   { provider: "OpenAI", id: "openai/gpt-5", name: "GPT-5" },
   { provider: "Anthropic", id: "anthropic/claude-sonnet-5", name: "Claude Sonnet 5" },
   { provider: "Anthropic", id: "anthropic/claude-sonnet-4.6", name: "Claude Sonnet 4.6" },
+  { provider: "Anthropic", id: "anthropic/claude-opus-5", name: "Claude Opus 5" },
   { provider: "Anthropic", id: "anthropic/claude-opus-4-7", name: "Claude Opus 4.7" },
 ];
 
