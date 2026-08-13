@@ -6,29 +6,6 @@ export const TELEMETRY_SCHEMA_VERSION = 1;
 
 export type TelemetryEnvironment = Readonly<Record<string, string | undefined>>;
 
-export type CiName =
-  | "github_actions"
-  | "gitlab_ci"
-  | "buildkite"
-  | "circleci"
-  | "vercel"
-  | "netlify"
-  | "jenkins"
-  | "travis";
-
-const CI_PROVIDERS: ReadonlyArray<readonly [string, CiName]> = [
-  ["GITHUB_ACTIONS", "github_actions"],
-  ["GITLAB_CI", "gitlab_ci"],
-  ["BUILDKITE", "buildkite"],
-  ["CIRCLECI", "circleci"],
-  ["VERCEL", "vercel"],
-  ["NETLIFY", "netlify"],
-  ["JENKINS_URL", "jenkins"],
-  ["TRAVIS", "travis"],
-];
-
-const GENERIC_CI_ENV_VARS = ["CI", "CONTINUOUS_INTEGRATION", "BUILD_NUMBER"] as const;
-
 export function getPostHogConfig(env?: TelemetryEnvironment): {
   apiKey: string;
   captureUrl: string;
@@ -46,16 +23,6 @@ export function isTruthyEnv(value?: string): boolean {
 
 export function isTelemetryDisabled(env?: TelemetryEnvironment): boolean {
   return isTruthyEnv(env?.["OPENUI_TELEMETRY_DISABLED"]) || isTruthyEnv(env?.["DO_NOT_TRACK"]);
-}
-
-export function detectCI(env?: TelemetryEnvironment): { ci: boolean; name?: CiName } {
-  if (!env) return { ci: false };
-
-  const provider = CI_PROVIDERS.find(([key]) => isEnabledEnvValue(env[key]));
-  return {
-    ci: Boolean(provider) || GENERIC_CI_ENV_VARS.some((key) => isEnabledEnvValue(env[key])),
-    ...(provider ? { name: provider[1] } : {}),
-  };
 }
 
 export function normalizeProjectIdentity(rawValue: string): string {
@@ -77,12 +44,6 @@ export function normalizeProjectIdentity(rawValue: string): string {
   if (scpMatch) return joinHostAndPath(scpMatch[1]!, scpMatch[2]!);
 
   return normalizeRepositoryPath(value);
-}
-
-function isEnabledEnvValue(value: string | undefined): boolean {
-  if (!value) return false;
-  const normalized = value.toLowerCase();
-  return normalized !== "0" && normalized !== "false";
 }
 
 function joinHostAndPath(host: string, repositoryPath: string): string {
