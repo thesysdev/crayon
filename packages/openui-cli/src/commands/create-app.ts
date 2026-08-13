@@ -3,6 +3,7 @@ import * as fs from "node:fs";
 import * as http from "node:http";
 import * as os from "node:os";
 import * as path from "node:path";
+import { createInterface } from "node:readline";
 import { stripVTControlCharacters } from "node:util";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
@@ -31,12 +32,10 @@ function isServerReady(url: string): Promise<boolean> {
   });
 }
 
-function parseLocalDevUrl(output: string): string | undefined {
-  const matches = stripVTControlCharacters(output).matchAll(
-    /(?:^|\r?\n)\s*-\s*Local:\s+(http:\/\/\S+)/g,
-  );
-  let candidate: string | undefined;
-  for (const match of matches) candidate = match[1];
+function parseLocalDevUrl(line: string): string | undefined {
+  const candidate = stripVTControlCharacters(line).match(
+    /^\s*-\s*Local:\s+(http:\/\/\S+)\s*$/,
+  )?.[1];
   if (!candidate) return undefined;
 
   try {
@@ -56,14 +55,10 @@ function parseLocalDevUrl(output: string): string | undefined {
   }
 }
 
-async function openWhenReady(
-  getLocalUrl: () => string | undefined,
-  didExit: () => boolean,
-): Promise<void> {
+async function openWhenReady(url: string, didExit: () => boolean): Promise<void> {
   const timeoutAt = Date.now() + 60_000;
   while (!didExit() && Date.now() < timeoutAt) {
-    const url = getLocalUrl();
-    if (url && (await isServerReady(url))) {
+    if (await isServerReady(url)) {
       console.info(`\n\ud83c\udf10 Opening ${url} in your browser...`);
       try {
         const { default: open } = await import("open");
@@ -80,31 +75,29 @@ async function openWhenReady(
 async function runDevCommand(command: string, cwd: string) {
   let spawnError: Error | undefined;
   let exited = false;
-  let localUrl: string | undefined;
-  let outputBuffer = "";
+  let openingStarted = false;
   const child = spawn(command, ["run", "dev"], {
     cwd,
     stdio: ["inherit", "pipe", "pipe"],
   });
-  const inspectOutput = (chunk: Buffer) => {
-    outputBuffer = `${outputBuffer}${chunk.toString()}`.slice(-8_192);
-    localUrl = parseLocalDevUrl(outputBuffer) ?? localUrl;
+  const inspectLine = (line: string) => {
+    if (openingStarted) return;
+    const localUrl = parseLocalDevUrl(line);
+    if (!localUrl) return;
+    openingStarted = true;
+    void openWhenReady(localUrl, () => exited);
   };
   child.stdout?.on("data", (chunk: Buffer) => {
     process.stdout.write(chunk);
-    inspectOutput(chunk);
   });
   child.stderr?.on("data", (chunk: Buffer) => {
     process.stderr.write(chunk);
-    inspectOutput(chunk);
   });
+  if (child.stdout) createInterface({ input: child.stdout }).on("line", inspectLine);
+  if (child.stderr) createInterface({ input: child.stderr }).on("line", inspectLine);
   child.once("error", (error) => {
     spawnError = error;
   });
-  void openWhenReady(
-    () => localUrl,
-    () => exited,
-  );
 
   return new Promise<{
     error?: Error;
