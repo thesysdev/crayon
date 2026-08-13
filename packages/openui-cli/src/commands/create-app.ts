@@ -1,9 +1,9 @@
 import spawn from "cross-spawn";
 import * as fs from "node:fs";
 import * as http from "node:http";
-import * as net from "node:net";
 import * as os from "node:os";
 import * as path from "node:path";
+import { stripVTControlCharacters } from "node:util";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
@@ -20,49 +20,6 @@ function runCommand(command: string, args: string[], cwd: string) {
   return spawn.sync(command, args, { cwd, stdio: "inherit" });
 }
 
-function canListenOn(port: number): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    const server = net.createServer();
-    server.unref();
-    server.once("error", (error: NodeJS.ErrnoException) => {
-      if (error.code === "EADDRINUSE") {
-        resolve(false);
-        return;
-      }
-      reject(error);
-    });
-    server.listen({ host: "127.0.0.1", port, exclusive: true }, () => {
-      server.close((error) => {
-        if (error) reject(error);
-        else resolve(true);
-      });
-    });
-  });
-}
-
-async function resolveDevPort(): Promise<number> {
-  if (await canListenOn(3000)) return 3000;
-
-  return new Promise((resolve, reject) => {
-    const server = net.createServer();
-    server.unref();
-    server.once("error", reject);
-    server.listen({ host: "127.0.0.1", port: 0, exclusive: true }, () => {
-      const address = server.address();
-      if (!address || typeof address === "string") {
-        server.close();
-        reject(new Error("Could not allocate a local development port."));
-        return;
-      }
-      const { port } = address;
-      server.close((error) => {
-        if (error) reject(error);
-        else resolve(port);
-      });
-    });
-  });
-}
-
 function isServerReady(url: string): Promise<boolean> {
   return new Promise((resolve) => {
     const request = http.get(url, { timeout: 1_000 }, (response) => {
@@ -74,14 +31,39 @@ function isServerReady(url: string): Promise<boolean> {
   });
 }
 
+function parseLocalDevUrl(output: string): string | undefined {
+  const matches = stripVTControlCharacters(output).matchAll(
+    /(?:^|\r?\n)\s*-\s*Local:\s+(http:\/\/\S+)/g,
+  );
+  let candidate: string | undefined;
+  for (const match of matches) candidate = match[1];
+  if (!candidate) return undefined;
+
+  try {
+    const url = new URL(candidate);
+    const hostname = url.hostname.toLowerCase();
+    if (
+      url.protocol !== "http:" ||
+      url.username ||
+      url.password ||
+      !["localhost", "127.0.0.1", "::1", "[::1]"].includes(hostname)
+    ) {
+      return undefined;
+    }
+    return url.toString();
+  } catch {
+    return undefined;
+  }
+}
+
 async function openWhenReady(
-  url: string,
+  getLocalUrl: () => string | undefined,
   didExit: () => boolean,
-  didAdvertiseUrl: () => boolean,
 ): Promise<void> {
   const timeoutAt = Date.now() + 60_000;
   while (!didExit() && Date.now() < timeoutAt) {
-    if (didAdvertiseUrl() && (await isServerReady(url))) {
+    const url = getLocalUrl();
+    if (url && (await isServerReady(url))) {
       console.info(`\n\ud83c\udf10 Opening ${url} in your browser...`);
       try {
         const { default: open } = await import("open");
@@ -95,21 +77,18 @@ async function openWhenReady(
   }
 }
 
-async function runDevCommand(command: string, cwd: string, url: string) {
+async function runDevCommand(command: string, cwd: string) {
   let spawnError: Error | undefined;
   let exited = false;
-  let advertisedUrl = false;
+  let localUrl: string | undefined;
   let outputBuffer = "";
   const child = spawn(command, ["run", "dev"], {
     cwd,
-    // Next reads PORT directly; using the environment avoids package-manager-specific
-    // argument forwarding on npm, pnpm, yarn, and bun.
-    env: { ...process.env, PORT: new URL(url).port },
     stdio: ["inherit", "pipe", "pipe"],
   });
   const inspectOutput = (chunk: Buffer) => {
-    outputBuffer = `${outputBuffer}${chunk.toString()}`.slice(-4_096);
-    if (outputBuffer.includes(url)) advertisedUrl = true;
+    outputBuffer = `${outputBuffer}${chunk.toString()}`.slice(-8_192);
+    localUrl = parseLocalDevUrl(outputBuffer) ?? localUrl;
   };
   child.stdout?.on("data", (chunk: Buffer) => {
     process.stdout.write(chunk);
@@ -123,9 +102,8 @@ async function runDevCommand(command: string, cwd: string, url: string) {
     spawnError = error;
   });
   void openWhenReady(
-    url,
+    () => localUrl,
     () => exited,
-    () => advertisedUrl,
   );
 
   return new Promise<{
@@ -462,9 +440,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   telemetry.capture("cli_dev_command_started", {
     package_manager: packageManager.name,
   });
-  const devPort = await resolveDevPort();
-  const devUrl = `http://127.0.0.1:${devPort}`;
-  const devResult = await runDevCommand(devCmd, targetDir, devUrl);
+  const devResult = await runDevCommand(devCmd, targetDir);
   const durationMs = Math.max(0, Date.now() - devStartedAt);
   const stoppedNormally =
     devResult.status === 0 ||

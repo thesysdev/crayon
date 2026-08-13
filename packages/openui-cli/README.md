@@ -84,7 +84,7 @@ What it does:
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
-- in interactive sessions, starts the development server on a loopback-only URL and opens it in the default browser; pass `--no-immediate` to install and exit instead
+- in interactive sessions, starts the development server and opens its local URL in the default browser; pass `--no-immediate` to install and exit instead
 - in non-interactive sessions, installs and exits unless `--immediate` is passed
 - optionally installs the OpenUI agent skill for AI coding assistants
 - writes a `.env` file tailored to the template (see below)
