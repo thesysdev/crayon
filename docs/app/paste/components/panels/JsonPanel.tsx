@@ -3,6 +3,7 @@
 import { Button } from "@openuidev/react-ui";
 import { useMemo, useState } from "react";
 import type { ParseResult } from "@paste/lib/versions/types";
+import styles from "@paste/paste.module.css";
 
 const COLLAPSE_BYTES = 200 * 1024;
 
@@ -21,10 +22,10 @@ export function JsonPanel({ result }: { result: ParseResult | null }) {
     }
   }, [result]);
 
-  if (!json) return <div className="panel-empty">No parse result yet.</div>;
+  if (!json) return <div className={styles.panelEmpty}>No parse result yet.</div>;
   if (json.length > COLLAPSE_BYTES && !forceExpand) {
     return (
-      <div className="panel-scroll">
+      <div className={styles.panelScroll}>
         <p>
           Result is {(json.length / 1024).toFixed(0)} KB.{" "}
           <Button variant="secondary" size="extra-small" onClick={() => setForceExpand(true)}>
@@ -35,8 +36,8 @@ export function JsonPanel({ result }: { result: ParseResult | null }) {
     );
   }
   return (
-    <div className="panel-scroll">
-      <pre className="tree-json">{json}</pre>
+    <div className={styles.panelScroll}>
+      <pre className={styles.treeJson}>{json}</pre>
     </div>
   );
 }

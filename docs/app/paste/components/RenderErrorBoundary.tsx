@@ -2,6 +2,7 @@
 
 import { Button } from "@openuidev/react-ui";
 import { Component, type ReactNode } from "react";
+import styles from "@paste/paste.module.css";
 
 interface Props {
   /** Bump to clear the error state (e.g. when the code or version changes). */
@@ -35,7 +36,7 @@ export class RenderErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.error) {
       return (
-        <div className="render-crash">
+        <div className={styles.renderCrash}>
           <strong>{this.props.title ?? "Renderer crashed"}</strong>
           <pre>{this.state.error.message}</pre>
           {this.props.hint && <p>{this.props.hint}</p>}

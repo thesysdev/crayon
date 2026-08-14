@@ -1,18 +1,16 @@
-/* paste playground — ported from the standalone app. Every rule is scoped
-   under .playground (same convention as app/playground/layout.css) so nothing
-   leaks into other docs routes after navigation. Colors/spacing come from the
-   --openui-* token sheet already loaded by app/global.css. */
+/* Paste page styles. Root `.paste` replaces the old global `.playground`
+   scope; other names are local to this module. */
 
-:where(.playground, .playground *, .playground *::before, .playground *::after) {
+:where(.paste, .paste *, .paste *::before, .paste *::after) {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-.playground {
+.paste {
   --paste-border: 1px solid var(--openui-border-default, rgba(128, 128, 128, 0.25));
   --paste-mono: var(--openui-font-code, ui-monospace, SFMono-Regular, Menlo, monospace);
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   background: var(--openui-background, #fff);
@@ -20,9 +18,42 @@
   font-size: 16px;
 }
 
+/* Hover signature tooltip (VSCode-style). CodeMirror sets these class names
+   in JS, so they stay global and are scoped by the paste root. */
+.paste :global(.cm-signature-tooltip) {
+  /* popover token is fully opaque; --openui-elevated is a translucent tint */
+  background: var(--openui-popover-background, var(--openui-background, #fff));
+  border: var(--paste-border);
+  border-radius: var(--openui-radius-m, 8px);
+  box-shadow: var(--openui-shadow-l, 0 6px 24px rgba(0, 0, 0, 0.12));
+  padding: var(--openui-space-xs, 8px) var(--openui-space-s, 10px);
+  max-width: 480px;
+}
+
+.paste :global(.cm-signature-code) {
+  font-family: var(--paste-mono);
+  font-size: var(--openui-font-size-xs, 12px);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.paste :global(.cm-signature-doc) {
+  margin-top: var(--openui-space-2xs, 6px);
+  color: var(--openui-text-neutral-secondary, #666);
+  font-size: var(--openui-font-size-xs, 12px);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--openui-text-neutral-secondary);
+  height: 100vh;
+}
+
 /* ── toolbar ───────────────────────────────────────────────────────────── */
 
-.playground .toolbar {
+.toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -32,41 +63,41 @@
   flex-wrap: wrap;
 }
 
-.playground .toolbar-brand {
+.toolbarBrand {
   display: flex;
   align-items: baseline;
   gap: var(--openui-space-s, 10px);
 }
 
-.playground .toolbar-logo {
+.toolbarLogo {
   font-weight: 600;
   font-size: var(--openui-font-size-xl, 20px);
 }
 
-.playground .toolbar-tagline {
+.toolbarTagline {
   color: var(--openui-text-neutral-secondary, #666);
   font-size: var(--openui-font-size-xl, 14px);
 }
 
-.playground .toolbar-controls {
+.toolbarControls {
   display: flex;
   align-items: center;
   gap: var(--openui-space-m, 16px);
   flex-wrap: wrap;
 }
 
-.playground .toolbar-field {
+.toolbarField {
   display: flex;
   align-items: center;
   gap: var(--openui-space-2xs, 6px);
 }
 
-.playground .toolbar-label {
+.toolbarLabel {
   color: var(--openui-text-neutral-secondary, #666);
   font-size: var(--openui-font-size-xs, 12px);
 }
 
-.playground .toolbar-divider {
+.toolbarDivider {
   width: 1px;
   height: 22px;
   background: var(--openui-border-default, rgba(128, 128, 128, 0.25));
@@ -74,7 +105,7 @@
 
 /* ── help dialog ───────────────────────────────────────────────────────── */
 
-.playground .help-overlay {
+.helpOverlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
@@ -85,7 +116,7 @@
   padding: var(--openui-space-l, 24px);
 }
 
-.playground .help-dialog {
+.helpDialog {
   background: var(--openui-background, #fff);
   border: var(--paste-border);
   border-radius: var(--openui-radius-l, 12px);
@@ -98,7 +129,7 @@
   overflow: hidden;
 }
 
-.playground .help-header {
+.helpHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -106,12 +137,12 @@
   border-bottom: var(--paste-border);
 }
 
-.playground .help-header h2 {
+.helpHeader h2 {
   font-size: var(--openui-font-size-lg, 18px);
   font-weight: 700;
 }
 
-.playground .help-body {
+.helpBody {
   padding: var(--openui-space-l, 24px);
   overflow-y: auto;
   display: flex;
@@ -121,21 +152,34 @@
   line-height: 1.55;
 }
 
-.playground .help-body h3 {
+.helpBody h3 {
   font-size: var(--openui-font-size-m, 14px);
   font-weight: 700;
   margin-top: var(--openui-space-s, 10px);
 }
 
-.playground .help-body ol,
-.playground .help-body ul {
+.helpBody ol,
+.helpBody ul {
   padding-left: var(--openui-space-l, 24px);
   display: flex;
   flex-direction: column;
   gap: var(--openui-space-2xs, 6px);
 }
 
-.playground .help-body code {
+/* Tailwind preflight strips list-style from ul/ol — restore markers. */
+.helpBody ul {
+  list-style: disc;
+}
+
+.helpBody ol {
+  list-style: decimal;
+}
+
+.helpBody li {
+  display: list-item;
+}
+
+.helpBody code {
   font-family: var(--paste-mono);
   font-size: 0.9em;
   background: var(--openui-sunk, rgba(0, 0, 0, 0.05));
@@ -145,18 +189,18 @@
 
 /* ── stream controls ───────────────────────────────────────────────────── */
 
-.playground .stream-controls {
+.streamControls {
   display: flex;
   align-items: center;
   gap: var(--openui-space-s, 10px);
   flex-wrap: wrap;
 }
 
-.playground .seed-input {
+.seedInput {
   width: 70px;
 }
 
-.playground .stream-progress {
+.streamProgress {
   color: var(--openui-text-neutral-secondary, #666);
   font-size: var(--openui-font-size-xs, 12px);
   font-family: var(--paste-mono);
@@ -164,40 +208,45 @@
 
 /* ── split layout ──────────────────────────────────────────────────────── */
 
-.playground .main-split {
+.mainSplit {
   flex: 1;
   min-height: 0;
 }
 
-.playground .resize-handle {
+.resizeHandle {
   width: 5px;
   background: transparent;
   border-left: var(--paste-border);
   transition: background 0.15s;
 }
 
-.playground .resize-handle:hover,
-.playground .resize-handle:active {
+.resizeHandle:hover,
+.resizeHandle:active {
   background: var(--openui-interactive-accent-default, #4467f6);
 }
 
 /* react-resizable-panels v4 applies Panel className to a nested div */
-.playground .split-panel {
+.splitPanel {
   height: 100%;
   min-width: 0;
 }
 
-.playground .editor-pane {
+.editorPane {
   height: 100%;
   position: relative;
   overflow: hidden;
 }
 
-.playground .editor-pane .cm-editor {
+.editorPane :global(.cm-editor) {
   height: 100%;
 }
 
-.playground .editor-lock {
+.editorPane :global(.cm-tooltip) {
+  border: none;
+  background: transparent;
+}
+
+.editorLock {
   position: absolute;
   bottom: var(--openui-space-s, 10px);
   right: var(--openui-space-s, 10px);
@@ -211,7 +260,7 @@
 
 /* ── output tabs ───────────────────────────────────────────────────────── */
 
-.playground .output-pane {
+.outputPane {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -219,7 +268,12 @@
   position: relative;
 }
 
-.playground .tab-panels {
+.outputPane.isLoading .tabPanels {
+  pointer-events: none;
+  user-select: none;
+}
+
+.tabPanels {
   flex: 1;
   min-height: 0;
   display: flex;
@@ -227,12 +281,7 @@
   position: relative;
 }
 
-.playground .output-pane.is-loading .tab-panels {
-  pointer-events: none;
-  user-select: none;
-}
-
-.playground .panel-loading {
+.panelLoading {
   position: absolute;
   inset: 0;
   display: flex;
@@ -245,14 +294,14 @@
   background: color-mix(in srgb, var(--openui-background, #fff) 72%, transparent);
 }
 
-.playground .output-tabs {
+.outputTabs {
   display: flex;
   flex-direction: column;
   height: 100%;
   min-height: 0;
 }
 
-.playground .tab-strip {
+.tabStrip {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -261,17 +310,16 @@
   border-bottom: var(--paste-border);
 }
 
-/* Our .tab-strip border spans the full pane width — drop the library's own
-   list underline so there aren't two stacked horizontal rules. */
-.playground .tab-strip .openui-tabs-list-container::after {
+/* Our border spans the full pane width — drop the library's own list underline. */
+.tabStrip :global(.openui-tabs-list-container)::after {
   display: none;
 }
 
-.playground .banner-slot {
+.bannerSlot {
   padding: var(--openui-space-xs, 8px) var(--openui-space-m, 16px) 0;
 }
 
-.playground .tab-body {
+.tabBody {
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -281,15 +329,15 @@
 
 /* Radix keeps inactive TabsContent in the DOM with [hidden]; display rules
    would otherwise override it and stack every pane below the active one. */
-.playground .tab-body[hidden],
-.playground .tab-body[data-state="inactive"] {
+.tabBody[hidden],
+.tabBody[data-state="inactive"] {
   display: none;
 }
 
 /* The library's TabsContent wraps children in .openui-tabs-content-inner,
-   which is height-unconstrained — without this, .panel-scroll grows to its
-   content and nothing ever scrolls. */
-.playground .tab-body > .openui-tabs-content-inner {
+   which is height-unconstrained — without this, .panelScroll grows to
+   its content and nothing ever scrolls. */
+.tabBody > :global(.openui-tabs-content-inner) {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -297,29 +345,32 @@
   overflow: hidden;
 }
 
-.playground .panel-scroll {
+.panelScroll {
   overflow: auto;
   padding: var(--openui-space-m, 16px);
   flex: 1;
 }
 
-.playground .panel-empty {
+.panelEmpty {
   padding: var(--openui-space-xl, 32px);
   color: var(--openui-text-neutral-tertiary, #999);
   text-align: center;
   margin: auto;
+  /* Guards against the docs bundle's unscoped .panel-empty rule. */
+  display: block;
+  height: auto;
 }
 
 /* ── validation panel ──────────────────────────────────────────────────── */
 
-.playground .meta-strip {
+.metaStrip {
   display: flex;
   gap: var(--openui-space-2xs, 6px);
   flex-wrap: wrap;
   margin-bottom: var(--openui-space-m, 16px);
 }
 
-.playground .all-clear {
+.allClear {
   color: var(--openui-text-success-primary, #171);
   font-weight: 500;
   display: flex;
@@ -327,52 +378,52 @@
   gap: var(--openui-space-2xs, 6px);
 }
 
-.playground .error-group {
+.errorGroup {
   margin-bottom: var(--openui-space-l, 24px);
 }
 
-.playground .error-group h3 {
+.errorGroup h3 {
   font-size: var(--openui-font-size-s, 13px);
   margin-bottom: var(--openui-space-xs, 8px);
 }
 
-.playground .error-group .count {
+.errorGroup .count {
   color: var(--openui-text-neutral-tertiary, #999);
   font-weight: 400;
 }
 
-.playground .error-group ul {
+.errorGroup ul {
   list-style: none;
 }
 
-.playground .error-row {
+.errorRow {
   padding: var(--openui-space-xs, 8px);
   border: var(--paste-border);
   border-radius: var(--openui-radius-s, 6px);
   margin-bottom: var(--openui-space-xs, 8px);
 }
 
-.playground .err-head {
+.errHead {
   display: flex;
   align-items: center;
   gap: var(--openui-space-xs, 8px);
 }
 
-.playground .err-component {
+.errComponent {
   font-weight: 600;
   font-family: var(--paste-mono);
 }
 
-.playground .err-path {
+.errPath {
   color: var(--openui-text-neutral-secondary, #666);
   font-family: var(--paste-mono);
 }
 
-.playground .err-message {
+.errMessage {
   margin-top: var(--openui-space-3xs, 2px);
 }
 
-.playground .err-hint {
+.errHint {
   margin-top: var(--openui-space-3xs, 2px);
   color: var(--openui-text-info-primary, #147);
   font-size: var(--openui-font-size-s, 13px);
@@ -381,14 +432,14 @@
   gap: var(--openui-space-2xs, 6px);
 }
 
-.playground .fatal-card {
+.fatalCard {
   border: 1px solid var(--openui-text-danger-primary, #a11);
   border-radius: var(--openui-radius-m, 8px);
   padding: var(--openui-space-m, 16px);
   color: var(--openui-text-danger-primary, #a11);
 }
 
-.playground .fatal-card pre {
+.fatalCard pre {
   margin: var(--openui-space-xs, 8px) 0;
   font-family: var(--paste-mono);
   white-space: pre-wrap;
@@ -396,7 +447,7 @@
 
 /* ── render panel ──────────────────────────────────────────────────────── */
 
-.playground .render-panel {
+.renderPanel {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -404,42 +455,42 @@
   overflow: auto;
 }
 
-.playground .render-seam {
+.renderSeam {
   padding: var(--openui-space-2xs, 6px) var(--openui-space-m, 16px);
   color: var(--openui-text-neutral, #999);
   font-size: var(--openui-font-size-xs, 10px);
   margin-bottom: var(--openui-space-xs);
 }
 
-.playground .render-canvas {
+.renderCanvas {
   padding: var(--openui-space-l, 24px);
   flex: 1;
 }
 
-.playground .render-details {
+.renderDetails {
   border-top: var(--paste-border);
   padding: var(--openui-space-xs, 8px) var(--openui-space-m, 16px);
   font-size: var(--openui-font-size-s, 13px);
 }
 
-.playground .render-details summary {
+.renderDetails summary {
   cursor: pointer;
   color: var(--openui-text-neutral-secondary, #666);
 }
 
-.playground .render-details ul {
+.renderDetails ul {
   list-style: none;
   margin-top: var(--openui-space-xs, 8px);
 }
 
-.playground .render-crash {
+.renderCrash {
   border: 1px solid var(--openui-text-danger-primary, #a11);
   border-radius: var(--openui-radius-m, 8px);
   padding: var(--openui-space-m, 16px);
   color: var(--openui-text-danger-primary, #a11);
 }
 
-.playground .render-crash pre {
+.renderCrash pre {
   margin: var(--openui-space-xs, 8px) 0;
   white-space: pre-wrap;
   font-family: var(--paste-mono);
@@ -447,11 +498,11 @@
 
 /* ── tree panel ────────────────────────────────────────────────────────── */
 
-.playground .tree-node {
+.treeNode {
   margin-bottom: var(--openui-space-3xs, 2px);
 }
 
-.playground .tree-header {
+.treeHeader {
   display: inline-flex;
   align-items: center;
   gap: var(--openui-space-2xs, 6px);
@@ -463,64 +514,64 @@
   padding: var(--openui-space-3xs, 2px) 0;
 }
 
-.playground .tree-caret {
+.treeCaret {
   color: var(--openui-text-neutral-tertiary, #999);
   display: inline-flex;
   width: 1em;
 }
 
-.playground .tree-type {
+.treeType {
   font-family: var(--paste-mono);
   font-weight: 600;
 }
 
-.playground .tree-props {
+.treeProps {
   margin-left: var(--openui-space-l, 24px);
   border-left: var(--paste-border);
   padding-left: var(--openui-space-s, 10px);
 }
 
-.playground .tree-prop {
+.treeProp {
   display: flex;
   gap: var(--openui-space-s, 10px);
   align-items: baseline;
   padding: 1px 0;
 }
 
-.playground .tree-prop dt {
+.treeProp dt {
   color: var(--openui-text-neutral-secondary, #666);
   font-family: var(--paste-mono);
   font-size: var(--openui-font-size-xs, 12px);
   min-width: 80px;
 }
 
-.playground .tree-children {
+.treeChildren {
   display: flex;
   flex-direction: column;
 }
 
-.playground .tree-scalar {
+.treeScalar {
   font-family: var(--paste-mono);
   font-size: var(--openui-font-size-xs, 12px);
   word-break: break-word;
 }
 
-.playground .tree-expr {
+.treeExpr {
   font-family: var(--paste-mono);
   font-size: var(--openui-font-size-xs, 12px);
   color: var(--openui-text-info-primary, #147);
 }
 
-.playground .tree-extra {
+.treeExtra {
   margin-top: var(--openui-space-l, 24px);
 }
 
-.playground .tree-extra h3 {
+.treeExtra h3 {
   font-size: var(--openui-font-size-s, 13px);
   margin-bottom: var(--openui-space-xs, 8px);
 }
 
-.playground .tree-json {
+.treeJson {
   font-family: var(--paste-mono);
   font-size: var(--openui-font-size-xs, 12px);
   white-space: pre-wrap;
@@ -529,7 +580,7 @@
 
 /* ── toasts ────────────────────────────────────────────────────────────── */
 
-.playground .toast-stack {
+.toastStack {
   position: fixed;
   bottom: var(--openui-space-l, 24px);
   right: var(--openui-space-l, 24px);
@@ -539,22 +590,22 @@
   z-index: 100;
 }
 
-.playground .toast-body {
+.toastBody {
   display: inline-flex;
   align-items: center;
   gap: var(--openui-space-xs, 8px);
 }
 
-.playground .toast-spinner {
+.toastSpinner {
   width: 12px;
   height: 12px;
   border-radius: 50%;
   border: 2px solid var(--openui-border-default, #ccc);
   border-top-color: var(--openui-interactive-accent-default, #4467f6);
-  animation: paste-toast-spin 0.8s linear infinite;
+  animation: pasteToastSpin 0.8s linear infinite;
 }
 
-@keyframes paste-toast-spin {
+@keyframes pasteToastSpin {
   to {
     transform: rotate(360deg);
   }
@@ -562,7 +613,7 @@
 
 /* ── stream timeline ───────────────────────────────────────────────────── */
 
-.playground .convergence {
+.convergence {
   padding: var(--openui-space-xs, 8px) var(--openui-space-m, 16px);
   border-radius: var(--openui-radius-s, 6px);
   margin-bottom: var(--openui-space-m, 16px);
@@ -572,23 +623,25 @@
   gap: var(--openui-space-2xs, 6px);
 }
 
-.playground .convergence-converged {
+.convergenceConverged {
   background: var(--openui-success-background, #e7f7ea);
   color: var(--openui-text-success-primary, #171);
 }
 
-.playground .convergence-diverged {
+.convergenceDiverged {
   background: var(--openui-danger-background, #ffecec);
   color: var(--openui-text-danger-primary, #a11);
 }
 
-.playground .trace-table {
+.traceTable {
   width: 100%;
   border-collapse: collapse;
   font-size: var(--openui-font-size-xs, 12px);
+  /* Fixed layout so columns don't re-expand as rows stream in. */
+  table-layout: fixed;
 }
 
-.playground .trace-table th {
+.traceTable th {
   text-align: left;
   color: var(--openui-text-neutral-secondary, #666);
   font-weight: 500;
@@ -599,69 +652,68 @@
   background: var(--openui-background, #fff);
 }
 
-.playground .trace-table td {
+.traceTable th:nth-child(1) {
+  width: 36px;
+}
+
+.traceTable th:nth-child(3) {
+  width: 60px;
+}
+
+.traceTable th:nth-child(4) {
+  width: 96px;
+}
+
+.traceTable th:nth-child(5) {
+  width: 52px;
+}
+
+.traceTable th:nth-child(6) {
+  width: 88px;
+}
+
+.traceTable th:nth-child(7) {
+  width: 52px;
+}
+
+.traceTable th:nth-child(8) {
+  width: 46px;
+}
+
+.traceTable td {
   padding: var(--openui-space-3xs, 2px) var(--openui-space-xs, 8px);
   border-bottom: var(--paste-border);
   font-family: var(--paste-mono);
-  content-visibility: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.playground .root-cell {
+.rootCell {
   display: flex;
   align-items: center;
   gap: var(--openui-space-2xs, 6px);
 }
 
-.playground .row-appeared td {
+.rowAppeared td {
   background: var(--openui-success-background, #e7f7ea);
 }
 
-.playground .row-dropped td {
+.rowDropped td {
   background: var(--openui-danger-background, #ffecec);
 }
 
-.playground .chunk-preview {
+.chunkPreview {
   white-space: pre;
-  max-width: 260px;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
   vertical-align: bottom;
 }
 
-/* ── hover signature tooltip (VSCode-style) ────────────────────────────── */
-
-.playground .editor-pane .cm-tooltip {
-  border: none;
-  background: transparent;
-}
-
-.playground .cm-signature-tooltip {
-  /* popover token is fully opaque; --openui-elevated is a translucent tint */
-  background: var(--openui-popover-background, var(--openui-background, #fff));
-  border: var(--paste-border);
-  border-radius: var(--openui-radius-m, 8px);
-  box-shadow: var(--openui-shadow-l, 0 6px 24px rgba(0, 0, 0, 0.12));
-  padding: var(--openui-space-xs, 8px) var(--openui-space-s, 10px);
-  max-width: 480px;
-}
-
-.playground .cm-signature-code {
-  font-family: var(--paste-mono);
-  font-size: var(--openui-font-size-xs, 12px);
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.playground .cm-signature-doc {
-  margin-top: var(--openui-space-2xs, 6px);
-  color: var(--openui-text-neutral-secondary, #666);
-  font-size: var(--openui-font-size-xs, 12px);
-}
-
 /* ── back to docs link ─────────────────────────────────────────────────── */
 
-.playground .back-link {
+.backLink {
   display: inline-flex;
   align-items: center;
   gap: var(--openui-space-2xs, 6px);
@@ -671,13 +723,13 @@
   margin-right: var(--openui-space-s, 10px);
 }
 
-.playground .back-link:hover {
+.backLink:hover {
   color: var(--openui-text-neutral-primary, #111);
 }
 
 /* ── two-row header ────────────────────────────────────────────────────── */
 
-.playground .topbar {
+.topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -685,49 +737,19 @@
   border-bottom: var(--paste-border);
 }
 
-.playground .topbar .toolbar-brand {
+.topbar .toolbarBrand {
   gap: var(--openui-space-s, 10px);
 }
 
-/* Streaming trace: fixed table layout so columns don't re-expand as rows
-   stream in (auto layout + content-visibility made widths jump until a
-   tab-switch forced a full re-layout). */
-.playground .trace-table {
-  table-layout: fixed;
-}
-.playground .trace-table th:nth-child(1) {
-  width: 36px;
-}
-.playground .trace-table th:nth-child(3) {
-  width: 60px;
-}
-.playground .trace-table th:nth-child(4) {
-  width: 96px;
-}
-.playground .trace-table th:nth-child(5) {
-  width: 52px;
-}
-.playground .trace-table th:nth-child(6) {
-  width: 88px;
-}
-.playground .trace-table th:nth-child(7) {
-  width: 52px;
-}
-.playground .trace-table th:nth-child(8) {
-  width: 46px;
-}
-.playground .trace-table td {
-  content-visibility: visible;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.playground .chunk-preview {
-  max-width: 100%;
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-s, 10px);
 }
 
 /* ── mock tools note ───────────────────────────────────────────────────── */
 
-.playground .mock-note {
+.mockNote {
   display: flex;
   align-items: flex-start;
   gap: var(--openui-space-2xs, 6px);
@@ -738,96 +760,36 @@
   border-radius: var(--openui-space-s);
 }
 
-.playground .mock-note svg {
+.mockNote svg {
   flex-shrink: 0;
   margin-top: 2px;
 }
 
-/* ── topbar right cluster (title + theme toggle) ───────────────────────── */
-
-.playground .topbar-right {
-  display: flex;
-  align-items: center;
-  gap: var(--openui-space-s, 10px);
-}
-
 /* ── playback button group (icon-only, joined) ─────────────────────────── */
 
-.playground .btn-group {
+.btnGroup {
   display: inline-flex;
   align-items: stretch;
 }
 
-/* Collapse inner radii/borders so the three buttons read as one control. */
-.playground .btn-group > button {
+.btnGroup > button {
   padding-inline: var(--openui-space-s, 10px);
 }
 
-.playground .btn-group > button:not(:first-child) {
+.btnGroup > button:not(:first-child) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   margin-left: -1px;
 }
 
-.playground .btn-group > button:not(:last-child) {
+.btnGroup > button:not(:last-child) {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
-/* ── responsive ────────────────────────────────────────────────────────── */
-
-.playground {
-  /* dvh keeps the layout inside the visible viewport under mobile browser chrome */
-  height: 100dvh;
-}
-
-@media (max-width: 860px) {
-  .playground .topbar,
-  .playground .toolbar {
-    padding: var(--openui-space-xs, 8px) var(--openui-space-s, 10px);
-  }
-
-  .playground .toolbar-controls {
-    gap: var(--openui-space-s, 10px);
-  }
-
-  /* Vertical split: the separator becomes a horizontal grab bar. */
-  .playground .resize-handle {
-    width: auto;
-    height: 5px;
-    border-left: none;
-    border-top: var(--paste-border);
-  }
-
-  .playground .split-panel {
-    height: 100%;
-    width: 100%;
-  }
-
-  .playground .help-dialog {
-    max-width: 100%;
-    max-height: 92dvh;
-  }
-
-  .playground .help-header,
-  .playground .help-body {
-    padding: var(--openui-space-s, 10px) var(--openui-space-m, 16px);
-  }
-
-  .playground .toast-stack {
-    left: var(--openui-space-s, 10px);
-    right: var(--openui-space-s, 10px);
-    bottom: var(--openui-space-s, 10px);
-  }
-
-  .playground .render-canvas {
-    padding: var(--openui-space-s, 10px);
-  }
-}
-
 /* ── mobile settings drawer ────────────────────────────────────────────── */
 
-.playground .drawer-overlay {
+.drawerOverlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
@@ -836,7 +798,7 @@
   z-index: 200;
 }
 
-.playground .drawer {
+.drawer {
   background: var(--openui-background, #fff);
   border-top: var(--paste-border);
   border-radius: var(--openui-radius-l, 12px) var(--openui-radius-l, 12px) 0 0;
@@ -847,7 +809,7 @@
   flex-direction: column;
 }
 
-.playground .drawer-header {
+.drawerHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -855,12 +817,12 @@
   border-bottom: var(--paste-border);
 }
 
-.playground .drawer-header h2 {
+.drawerHeader h2 {
   font-size: var(--openui-font-size-m, 14px);
   font-weight: 700;
 }
 
-.playground .drawer-body {
+.drawerBody {
   padding: var(--openui-space-m, 16px);
   overflow-y: auto;
   display: flex;
@@ -868,30 +830,52 @@
   gap: var(--openui-space-m, 16px);
 }
 
-/* Fields become full-width label/control rows inside the drawer. */
-.playground .drawer-body .toolbar-field {
+.drawerBody .toolbarField {
   justify-content: space-between;
   width: 100%;
 }
 
-/* Empty states are prose, never flex. Guards against the docs bundle's own
-   unscoped .panel-empty rule (display:flex + height:100vh) that collides
-   with this class name and split the text into separate flex boxes. */
-.playground .panel-empty {
-  display: block;
-  height: auto;
-}
+/* ── responsive ────────────────────────────────────────────────────────── */
 
-/* Tailwind preflight (docs-global) strips list-style from ul/ol — restore
-   markers inside the help dialog's prose lists. */
-.playground .help-body ul {
-  list-style: disc;
-}
+@media (max-width: 860px) {
+  .topbar,
+  .toolbar {
+    padding: var(--openui-space-xs, 8px) var(--openui-space-s, 10px);
+  }
 
-.playground .help-body ol {
-  list-style: decimal;
-}
+  .toolbarControls {
+    gap: var(--openui-space-s, 10px);
+  }
 
-.playground .help-body li {
-  display: list-item;
+  .resizeHandle {
+    width: auto;
+    height: 5px;
+    border-left: none;
+    border-top: var(--paste-border);
+  }
+
+  .splitPanel {
+    height: 100%;
+    width: 100%;
+  }
+
+  .helpDialog {
+    max-width: 100%;
+    max-height: 92dvh;
+  }
+
+  .helpHeader,
+  .helpBody {
+    padding: var(--openui-space-s, 10px) var(--openui-space-m, 16px);
+  }
+
+  .toastStack {
+    left: var(--openui-space-s, 10px);
+    right: var(--openui-space-s, 10px);
+    bottom: var(--openui-space-s, 10px);
+  }
+
+  .renderCanvas {
+    padding: var(--openui-space-s, 10px);
+  }
 }

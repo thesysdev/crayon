@@ -8,6 +8,7 @@ import { createMockToolProvider, type MockToolCall } from "@paste/lib/mockTools"
 import { BUNDLED_LANG_CORE_VERSION } from "@paste/lib/versions/loader";
 import type { OpenUIError } from "@paste/lib/versions/types";
 import { RenderErrorBoundary } from "../RenderErrorBoundary";
+import styles from "@paste/paste.module.css";
 
 const TOOL_CALL_LOG_CAP = 20;
 
@@ -51,15 +52,15 @@ export function RenderPanel({
   const usesTools = /\b(Query|Mutation)\s*\(/.test(code);
 
   return (
-    <div className="render-panel">
+    <div className={styles.renderPanel}>
       {selectedVersion !== BUNDLED_LANG_CORE_VERSION && (
-        <p className="render-seam">
+        <p className={styles.renderSeam}>
           Rendered with bundled lang-core {BUNDLED_LANG_CORE_VERSION} — validation uses v
           {selectedVersion}.
         </p>
       )}
       {usesTools && (
-        <p className="mock-note">
+        <p className={styles.mockNote}>
           <FlaskConical size={13} aria-hidden />
           <span>
             <code>Query()</code> and <code>Mutation()</code> run against a{" "}
@@ -68,7 +69,7 @@ export function RenderPanel({
           </span>
         </p>
       )}
-      <div className="render-canvas">
+      <div className={styles.renderCanvas}>
         <RenderErrorBoundary resetKey={`${libraryId}:${code}`}>
           <Renderer
             response={code || null}
@@ -82,11 +83,11 @@ export function RenderPanel({
         </RenderErrorBoundary>
       </div>
       {toolCalls.length > 0 && (
-        <details className="render-details" open>
+        <details className={styles.renderDetails} open>
           <summary>Mock tool calls ({toolCalls.length})</summary>
           <ul>
             {toolCalls.map((c, i) => (
-              <li key={`${c.at}-${i}`} className="error-row">
+              <li key={`${c.at}-${i}`} className={styles.errorRow}>
                 <code>{c.tool}</code>({safeDescribe(c.args)}) → sample data
               </li>
             ))}
@@ -94,28 +95,28 @@ export function RenderPanel({
         </details>
       )}
       {runtimeErrors.length > 0 && (
-        <details className="render-details" open>
+        <details className={styles.renderDetails} open>
           <summary>Runtime errors ({runtimeErrors.length})</summary>
           <ul>
             {runtimeErrors.map((e, i) => (
-              <li key={i} className="error-row">
+              <li key={i} className={styles.errorRow}>
                 <code>{e.code}</code> {e.message}
-                {e.hint && <p className="err-hint">{e.hint}</p>}
+                {e.hint && <p className={styles.errHint}>{e.hint}</p>}
               </li>
             ))}
           </ul>
         </details>
       )}
       {actionLog.length > 0 && (
-        <details className="render-details">
+        <details className={styles.renderDetails}>
           <summary>Actions ({actionLog.length})</summary>
-          <pre className="tree-json">{actionLog.join("\n")}</pre>
+          <pre className={styles.treeJson}>{actionLog.join("\n")}</pre>
         </details>
       )}
       {Object.keys(formState).length > 0 && (
-        <details className="render-details">
+        <details className={styles.renderDetails}>
           <summary>Form state</summary>
-          <pre className="tree-json">{JSON.stringify(formState, null, 2)}</pre>
+          <pre className={styles.treeJson}>{JSON.stringify(formState, null, 2)}</pre>
         </details>
       )}
     </div>

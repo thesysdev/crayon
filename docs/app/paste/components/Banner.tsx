@@ -1,6 +1,7 @@
 "use client";
 
 import { Callout } from "@openuidev/react-ui";
+import styles from "@paste/paste.module.css";
 
 export function Banner({
   tone,
@@ -10,7 +11,7 @@ export function Banner({
   children: React.ReactNode;
 }) {
   return (
-    <div className="banner-slot">
+    <div className={styles.bannerSlot}>
       <Callout variant={tone} description={children} />
     </div>
   );

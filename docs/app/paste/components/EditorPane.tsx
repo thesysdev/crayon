@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { useTheme } from "next-themes";
 import { componentHoverTooltip, type ComponentDefs } from "@paste/lib/editor/hover";
 import { openuiLang } from "@paste/lib/editor/openui-lang";
+import styles from "@paste/paste.module.css";
 
 const editorTheme = EditorView.theme({
   "&": {
@@ -51,7 +52,7 @@ export function EditorPane({
   // Docs theming is class-based via next-themes, not prefers-color-scheme.
   const dark = useTheme().resolvedTheme === "dark";
   return (
-    <div className="editor-pane">
+    <div className={styles.editorPane}>
       <CodeMirror
         value={code}
         onChange={onChange}
@@ -70,7 +71,7 @@ export function EditorPane({
         }}
         placeholder={'Paste OpenUI Lang code, e.g.\n\nroot = Stack([title])\ntitle = TextContent("Hello")'}
       />
-      {readOnly && <div className="editor-lock">read-only during playback</div>}
+      {readOnly && <div className={styles.editorLock}>read-only during playback</div>}
     </div>
   );
 }

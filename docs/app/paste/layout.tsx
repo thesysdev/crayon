@@ -1,7 +1,6 @@
 import { WebsiteThemeProvider } from "@/components/website-theme-provider";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import "./paste.css";
 
 export const metadata: Metadata = {
   title: "OpenUI Paste",

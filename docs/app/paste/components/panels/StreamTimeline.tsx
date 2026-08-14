@@ -2,20 +2,27 @@
 
 import type { PlaybackState } from "@paste/lib/streaming/usePlayback";
 import { CheckCircle2, Circle, CircleDot, CircleMinus, CirclePlus, XCircle } from "lucide-react";
+import styles from "@paste/paste.module.css";
 
 export function StreamTimeline({ state }: { state: PlaybackState }) {
   if (state.status === "idle") {
     return (
-      <div className="panel-empty">
+      <div className={styles.panelEmpty}>
         Press <strong>Stream</strong> to replay the current code as simulated LLM output and watch
         the parser converge chunk by chunk.
       </div>
     );
   }
   return (
-    <div className="panel-scroll">
+    <div className={styles.panelScroll}>
       {state.convergence && (
-        <div className={`convergence convergence-${state.convergence}`}>
+        <div
+          className={`${styles.convergence} ${
+            state.convergence === "converged"
+              ? styles.convergenceConverged
+              : styles.convergenceDiverged
+          }`}
+        >
           {state.convergence === "converged" ? (
             <>
               <CheckCircle2 size={15} /> Streaming result converged with one-shot parse
@@ -28,7 +35,7 @@ export function StreamTimeline({ state }: { state: PlaybackState }) {
         </div>
       )}
       {state.fatal && (
-        <div className="fatal-card">
+        <div className={styles.fatalCard}>
           <strong>Streaming parse threw</strong>
           <pre>{state.fatal}</pre>
         </div>
@@ -36,7 +43,7 @@ export function StreamTimeline({ state }: { state: PlaybackState }) {
       {state.traceTruncated && (
         <p className="toolbar-hint">Trace capped at 5,000 rows — remaining chunks not logged.</p>
       )}
-      <table className="trace-table">
+      <table className={styles.traceTable}>
         <thead>
           <tr>
             <th>#</th>
@@ -53,14 +60,20 @@ export function StreamTimeline({ state }: { state: PlaybackState }) {
           {state.trace.map((row) => (
             <tr
               key={row.i}
-              className={row.rootAppeared ? "row-appeared" : row.rootDropped ? "row-dropped" : ""}
+              className={
+                row.rootAppeared
+                  ? styles.rowAppeared
+                  : row.rootDropped
+                    ? styles.rowDropped
+                    : ""
+              }
             >
               <td>{row.i}</td>
               <td>
-                <code className="chunk-preview">{visualize(row.chunkPreview)}</code>
+                <code className={styles.chunkPreview}>{visualize(row.chunkPreview)}</code>
               </td>
               <td>{row.delayMs}ms</td>
-              <td className="root-cell">
+              <td className={styles.rootCell}>
                 {row.rootAppeared ? (
                   <>
                     <CirclePlus size={12} /> appeared

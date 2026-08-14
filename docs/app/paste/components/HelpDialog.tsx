@@ -3,6 +3,7 @@
 import { Button } from "@openuidev/react-ui";
 import { HelpCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import styles from "@paste/paste.module.css";
 
 export function HelpDialog() {
   const [open, setOpen] = useState(false);
@@ -29,15 +30,15 @@ export function HelpDialog() {
         <HelpCircle size={16} />
       </Button>
       {open && (
-        <div className="help-overlay" onClick={() => setOpen(false)}>
+        <div className={styles.helpOverlay} onClick={() => setOpen(false)}>
           <div
-            className="help-dialog"
+            className={styles.helpDialog}
             role="dialog"
             aria-modal="true"
             aria-label="How to use paste"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="help-header">
+            <div className={styles.helpHeader}>
               <h2>How to use Paste</h2>
               <Button
                 variant="tertiary"
@@ -48,7 +49,7 @@ export function HelpDialog() {
               />
             </div>
 
-            <div className="help-body">
+            <div className={styles.helpBody}>
               <p>
                 Paste is a playground for <strong>OpenUI Lang</strong>. Paste code on the left; the
                 panels on the right show what the parser and renderer make of it.

@@ -13,6 +13,7 @@ import {
 import { Pause, Play, RotateCcw, StepForward } from "lucide-react";
 import { CHUNK_STRATEGIES, type ChunkStrategy } from "@paste/lib/streaming/chunker";
 import type { PlaybackControls } from "@paste/lib/streaming/usePlayback";
+import styles from "@paste/paste.module.css";
 
 const SPEEDS = ["0.25", "0.5", "1", "2", "4", "8"];
 const ICON = { size: 14 };
@@ -41,7 +42,7 @@ export function PlaybackButtons({
   const { state, start, pause, resume, step, reset } = playback;
   return (
     <>
-      <div className="btn-group" role="group" aria-label="Playback controls">
+      <div className={styles.btnGroup} role="group" aria-label="Playback controls">
         {state.status === "playing" ? (
           <Button
             variant="primary"
@@ -98,7 +99,7 @@ export function PlaybackButtons({
         </Button>
       </div>
       {state.totalChunks > 0 && (
-        <span className="stream-progress">
+        <span className={styles.streamProgress}>
           {state.chunkIndex}/{state.totalChunks}
           {state.emulated && " · emulated"}
         </span>
@@ -124,8 +125,8 @@ export function StreamSettingsFields({
 
   return (
     <>
-      <div className="toolbar-field">
-        <Label className="toolbar-label">Chunks</Label>
+      <div className={styles.toolbarField}>
+        <Label className={styles.toolbarLabel}>Chunks</Label>
         <Select
           value={strategy}
           onValueChange={(v) => onStrategyChange(v as ChunkStrategy)}
@@ -146,8 +147,8 @@ export function StreamSettingsFields({
         </Select>
       </div>
 
-      <div className="toolbar-field">
-        <Label className="toolbar-label">Speed</Label>
+      <div className={styles.toolbarField}>
+        <Label className={styles.toolbarLabel}>Speed</Label>
         <Select
           value={String(speed)}
           onValueChange={(v) => setSpeed(Number(v))}
@@ -167,12 +168,12 @@ export function StreamSettingsFields({
         </Select>
       </div>
 
-      <div className="toolbar-field">
-        <Label className="toolbar-label">Seed</Label>
+      <div className={styles.toolbarField}>
+        <Label className={styles.toolbarLabel}>Seed</Label>
         <Input
           type="number"
           size="small"
-          className="seed-input"
+          className={styles.seedInput}
           value={seed}
           onChange={(e) => onSeedChange(Number(e.target.value) || 0)}
           disabled={active || strategy !== "llm"}

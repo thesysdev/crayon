@@ -5,6 +5,7 @@ import { groupByCode } from "@paste/lib/groupErrors";
 import type { ValidationOutcome } from "@paste/lib/parse";
 import type { OpenUIError } from "@paste/lib/versions/types";
 import { CheckCircle2, Lightbulb } from "lucide-react";
+import styles from "@paste/paste.module.css";
 
 function hintFor(enriched: OpenUIError[] | null, code: string, path: string, component: string) {
   return enriched?.find((e) => e.code === code && e.path === path && e.component === component)
@@ -16,8 +17,8 @@ export function ValidationPanel({ outcome }: { outcome: ValidationOutcome }) {
 
   if (fatal) {
     return (
-      <div className="panel-scroll">
-        <div className="fatal-card">
+      <div className={styles.panelScroll}>
+        <div className={styles.fatalCard}>
           <strong>Parser threw</strong>
           <pre>{fatal}</pre>
           <p>This can happen on old lang-core versions with a different API surface.</p>
@@ -26,14 +27,14 @@ export function ValidationPanel({ outcome }: { outcome: ValidationOutcome }) {
     );
   }
   if (!result)
-    return <div className="panel-empty">Paste some OpenUI Lang code to validate it.</div>;
+    return <div className={styles.panelEmpty}>Paste some OpenUI Lang code to validate it.</div>;
 
   const { meta } = result;
   const groups = groupByCode(meta.errors);
 
   return (
-    <div className="panel-scroll">
-      <div className="meta-strip">
+    <div className={styles.panelScroll}>
+      <div className={styles.metaStrip}>
         <Tag size="sm" variant="neutral" text={`Statements: ${meta.statementCount}`} />
         <Tag
           size="sm"
@@ -54,28 +55,28 @@ export function ValidationPanel({ outcome }: { outcome: ValidationOutcome }) {
       </div>
 
       {meta.errors.length === 0 ? (
-        <div className="all-clear">
+        <div className={styles.allClear}>
           <CheckCircle2 size={16} /> No validation errors
         </div>
       ) : (
         [...groups.entries()].map(([code, errors]) => (
-          <section key={code} className="error-group">
+          <section key={code} className={styles.errorGroup}>
             <h3>
-              <code>{code}</code> <span className="count">({errors.length})</span>
+              <code>{code}</code> <span className={styles.count}>({errors.length})</span>
             </h3>
             <ul>
               {errors.map((e, i) => {
                 const hint = hintFor(enriched, e.code, e.path, e.component);
                 return (
-                  <li key={`${e.path}-${i}`} className="error-row">
-                    <div className="err-head">
-                      <code className="err-component">{e.component}</code>
-                      <code className="err-path">{e.path}</code>
+                  <li key={`${e.path}-${i}`} className={styles.errorRow}>
+                    <div className={styles.errHead}>
+                      <code className={styles.errComponent}>{e.component}</code>
+                      <code className={styles.errPath}>{e.path}</code>
                       {e.statementId && <Tag size="sm" variant="neutral" text={e.statementId} />}
                     </div>
-                    <p className="err-message">{e.message}</p>
+                    <p className={styles.errMessage}>{e.message}</p>
                     {hint && (
-                      <p className="err-hint">
+                      <p className={styles.errHint}>
                         <Lightbulb size={13} className="err-hint-icon" /> {hint}
                       </p>
                     )}

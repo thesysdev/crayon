@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@openuidev/react-ui";
 import type { VersionListState } from "@paste/hooks/useVersionList";
+import styles from "@paste/paste.module.css";
 
 export function VersionPicker({
   value,
@@ -26,8 +27,8 @@ export function VersionPicker({
 }) {
   const { list, loading, error, retry } = versions;
   return (
-    <div className="toolbar-field">
-      <Label className="toolbar-label">lang-core</Label>
+    <div className={styles.toolbarField}>
+      <Label className={styles.toolbarLabel}>lang-core</Label>
       <Select value={value} onValueChange={onChange} disabled={disabled || loading} size="sm">
         <SelectTrigger size="sm" aria-label="lang-core version">
           <SelectValue placeholder="version" />

@@ -1,6 +1,7 @@
 "use client";
 
 import { Callout } from "@openuidev/react-ui";
+import styles from "@paste/paste.module.css";
 
 export interface ToastItem {
   id: string;
@@ -16,14 +17,14 @@ export interface ToastItem {
 export function Toasts({ items }: { items: ToastItem[] }) {
   if (items.length === 0) return null;
   return (
-    <div className="toast-stack" role="status" aria-live="polite">
+    <div className={styles.toastStack} role="status" aria-live="polite">
       {items.map((t) => (
         <Callout
           key={t.id}
           variant="info"
           description={
-            <span className="toast-body">
-              {t.spinning && <span className="toast-spinner" aria-hidden />}
+            <span className={styles.toastBody}>
+              {t.spinning && <span className={styles.toastSpinner} aria-hidden />}
               {t.text}
             </span>
           }

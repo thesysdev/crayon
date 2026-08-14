@@ -10,6 +10,7 @@ import { DEFAULT_EXAMPLE } from "@paste/lib/examples";
 import { getRootName, getSchema, type LibraryId } from "@paste/lib/libraries";
 import { usePlayback } from "@paste/lib/streaming/usePlayback";
 import { BUNDLED_LANG_CORE_VERSION } from "@paste/lib/versions/loader";
+import styles from "@paste/paste.module.css";
 import { Banner } from "./Banner";
 import { EditorPane } from "./EditorPane";
 import { RenderErrorBoundary } from "./RenderErrorBoundary";
@@ -80,7 +81,7 @@ export function Playground() {
     toasts.push({ id: "load", text: `Loading lang-core ${version} from CDN…`, spinning: true });
 
   return (
-    <div className="playground">
+    <div className={styles.paste}>
       <Toolbar
         libraryId={libraryId}
         onLibraryChange={(id) => {
@@ -118,9 +119,9 @@ export function Playground() {
         </Banner>
       )}
 
-      <Group orientation={narrow ? "vertical" : "horizontal"} className="main-split">
+      <Group orientation={narrow ? "vertical" : "horizontal"} className={styles.mainSplit}>
         {/* v4: unitless strings are percentages; numbers would mean pixels */}
-        <Panel defaultSize="45%" minSize="25%" className="split-panel">
+        <Panel defaultSize="45%" minSize="25%" className={styles.splitPanel}>
           <EditorPane
             code={code}
             onChange={changeCode}
@@ -128,15 +129,19 @@ export function Playground() {
             componentDefs={componentDefs}
           />
         </Panel>
-        <Separator className="resize-handle" />
-        <Panel minSize="30%" className="split-panel">
+        <Separator className={styles.resizeHandle} />
+        <Panel minSize="30%" className={styles.splitPanel}>
           <RenderErrorBoundary
             resetKey={`${version}:${libraryId}:${code}`}
             title="Output panel crashed"
             hint="This is usually an incompatibility with the selected lang-core version — pick a different version or edit the code to recover."
           >
             <div
-              className={loadingVersion ? "output-pane is-loading" : "output-pane"}
+              className={
+                loadingVersion
+                  ? `${styles.outputPane} ${styles.isLoading}`
+                  : styles.outputPane
+              }
               aria-busy={loadingVersion}
             >
             <Tabs
@@ -144,10 +149,10 @@ export function Playground() {
               onValueChange={(v) => {
                 if (!loadingVersion) setTab(v as Tab);
               }}
-              className="output-tabs"
+              className={styles.outputTabs}
               variant="clear"
             >
-              <div className="tab-strip">
+              <div className={styles.tabStrip}>
                 <TabsList variant="title">
                   {TABS.map((t) => (
                     <TabsTrigger
@@ -163,8 +168,8 @@ export function Playground() {
                   ))}
                 </TabsList>
               </div>
-              <div className="tab-panels" inert={loadingVersion}>
-              <TabsContent value="render" className="tab-body">
+              <div className={styles.tabPanels} inert={loadingVersion}>
+              <TabsContent value="render" className={styles.tabBody}>
                 <RenderPanel
                   key={libraryId}
                   code={renderedCode}
@@ -173,16 +178,16 @@ export function Playground() {
                   selectedVersion={loaded?.version ?? version}
                 />
               </TabsContent>
-              <TabsContent value="validation" className="tab-body">
+              <TabsContent value="validation" className={styles.tabBody}>
                 <ValidationPanel outcome={displayed} />
               </TabsContent>
-              <TabsContent value="tree" className="tab-body">
+              <TabsContent value="tree" className={styles.tabBody}>
                 <TreePanel result={displayed.result} />
               </TabsContent>
-              <TabsContent value="json" className="tab-body">
+              <TabsContent value="json" className={styles.tabBody}>
                 <JsonPanel result={displayed.result} />
               </TabsContent>
-              <TabsContent value="stream" className="tab-body">
+              <TabsContent value="stream" className={styles.tabBody}>
                 <StreamTimeline state={playback.state} />
               </TabsContent>
               </div>

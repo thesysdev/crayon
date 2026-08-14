@@ -26,6 +26,7 @@ import { PlaybackButtons, StreamSettingsFields } from "./StreamControls";
 // as the homepage header, so /paste matches the rest of the site.
 import { ThemeToggle } from "@/components/theme-toggle";
 import { VersionPicker } from "./VersionPicker";
+import styles from "@paste/paste.module.css";
 
 export function Toolbar({
   libraryId,
@@ -76,8 +77,8 @@ export function Toolbar({
   }, [drawerOpen]);
 
   const libraryField = (
-    <div className="toolbar-field">
-      <Label className="toolbar-label">Library</Label>
+    <div className={styles.toolbarField}>
+      <Label className={styles.toolbarLabel}>Library</Label>
       <Select
         value={libraryId}
         onValueChange={(v) => onLibraryChange(v as LibraryId)}
@@ -99,8 +100,8 @@ export function Toolbar({
   );
 
   const examplesField = (
-    <div className="toolbar-field">
-      {!narrow && <Label className="toolbar-label">Examples</Label>}
+    <div className={styles.toolbarField}>
+      {!narrow && <Label className={styles.toolbarLabel}>Examples</Label>}
       {/* value stays "" so the same example can be re-selected */}
       <Select
         value=""
@@ -132,18 +133,18 @@ export function Toolbar({
 
   return (
     <>
-      <header className="topbar">
-        <Link className="back-link" href="/" prefetch={false}>
+      <header className={styles.topbar}>
+        <Link className={styles.backLink} href="/" prefetch={false}>
           <ArrowLeft aria-hidden size={16} />
           <span>Back to docs</span>
         </Link>
-        <div className="topbar-right">
-          <span className="toolbar-logo">OpenUI Paste</span>
+        <div className={styles.topbarRight}>
+          <span className={styles.toolbarLogo}>OpenUI Paste</span>
           <ThemeToggle />
         </div>
       </header>
-      <div className="toolbar">
-        <div className="toolbar-controls">
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarControls}>
           <PlaybackButtons playback={playback} settings={settings} disabled={versionLoading} />
           {narrow ? (
             <>
@@ -167,7 +168,7 @@ export function Toolbar({
                 settings={settings}
                 disabled={versionLoading}
               />
-              <span className="toolbar-divider" aria-hidden />
+              <span className={styles.toolbarDivider} aria-hidden />
               {libraryField}
               <VersionPicker
                 value={version}
@@ -183,15 +184,15 @@ export function Toolbar({
         </div>
       </div>
       {narrow && drawerOpen && (
-        <div className="drawer-overlay" onClick={() => setDrawerOpen(false)}>
+        <div className={styles.drawerOverlay} onClick={() => setDrawerOpen(false)}>
           <div
-            className="drawer"
+            className={styles.drawer}
             role="dialog"
             aria-modal="true"
             aria-label="Playground settings"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="drawer-header">
+            <div className={styles.drawerHeader}>
               <h2>Settings</h2>
               <Button
                 variant="tertiary"
@@ -202,7 +203,7 @@ export function Toolbar({
                 <X size={16} />
               </Button>
             </div>
-            <div className="drawer-body">
+            <div className={styles.drawerBody}>
               <StreamSettingsFields
                 playback={playback}
                 bigInput={bigInput}
