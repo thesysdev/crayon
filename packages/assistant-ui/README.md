@@ -11,8 +11,15 @@ pnpm add @openuidev/assistant-ui @assistant-ui/react @openuidev/react-ui @openui
 Import the OpenUI styles once in your app:
 
 ```css
+@layer theme, base, openui, components, utilities;
+
 @import "@openuidev/react-ui/layered/styles/index.css";
 ```
+
+The layer declaration keeps OpenUI above Tailwind's reset and below application
+components and utilities. The tool renderers include OpenUI's light
+`ThemeProvider` by default so their design tokens match a light assistant-ui
+shell.
 
 ## Register the tools and instructions
 
@@ -88,7 +95,17 @@ const openui = createOpenUIIntegration({
 
 The result exposes `toolkit`, `instructions`, and the resolved `toolNames`.
 `createOpenUIIntegration` also accepts custom descriptions, prompt options,
-renderer props, error handling, and an error fallback.
+renderer props, theming, error handling, and an error fallback. Pass theme props
+through the integration factory to customize the rendered tools:
+
+```tsx
+const openui = createOpenUIIntegration({
+  theme: { mode: "dark" },
+});
+```
+
+If the application already wraps assistant-ui in an OpenUI `ThemeProvider`, set
+`disableThemeProvider: true` and let the host provider own the theme.
 
 ## Human-tool continuation
 

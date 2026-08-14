@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
 
-import { ThemeProvider } from "@openuidev/react-ui";
 import { act, type ComponentProps } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -54,13 +53,21 @@ describe("OpenUIPrompt", () => {
 
   const renderPrompt = async (props: PromptProps) => {
     await act(async () => {
-      root.render(
-        <ThemeProvider mode="light">
-          <OpenUIPrompt {...props} />
-        </ThemeProvider>,
-      );
+      root.render(<OpenUIPrompt {...props} />);
     });
   };
+
+  it("provides OpenUI theme tokens by default", async () => {
+    await renderPrompt(makeProps());
+
+    expect(document.head.querySelector("style[data-openui-theme]")).not.toBeNull();
+  });
+
+  it("can defer theming to a host provider", async () => {
+    await renderPrompt(makeProps({ disableThemeProvider: true }));
+
+    expect(document.head.querySelector("style[data-openui-theme]")).toBeNull();
+  });
 
   it("submits once and restores the completed form state", async () => {
     const addResult = vi.fn();
