@@ -24,7 +24,7 @@ export function createOpenUIInstructions({
 }: CreateOpenUIInstructionsOptions = {}): string {
   const defaultPreamble = [
     `Render requested interfaces by calling ${presentToolName} or ${promptToolName}.`,
-    `Use ${presentToolName} for display-only responses and ${promptToolName} when the user must submit a choice or form.`,
+    `Use ${presentToolName} for complete responses that may include optional follow-up suggestions, and ${promptToolName} when the current response requires the user to submit a choice or form.`,
     "Set the ui argument to valid OpenUI Lang without markdown fences.",
     "Make the tool call the entire response and never return OpenUI Lang as assistant text.",
   ].join(" ");
@@ -34,7 +34,7 @@ export function createOpenUIInstructions({
     preamble: preamble ?? defaultPreamble,
     additionalRules: [
       ...(promptOptions.additionalRules ?? []),
-      `When using ${presentToolName}, do not include actions that continue the conversation.`,
+      `When using ${presentToolName}, FollowUpBlock and ListBlock clicks may start a new user turn, but do not include terminal @ToAssistant actions.`,
       `When using ${promptToolName}, include exactly one terminal @ToAssistant action that submits the form or choice.`,
       ...additionalRules,
     ],

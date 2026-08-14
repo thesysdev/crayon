@@ -70,7 +70,7 @@ schemas, renderers, and instructions on the runtime's model-context client so
 
 The default toolkit registers two standalone tools:
 
-- `present_openui` is a frontend tool for display-only cards, tables, charts, and other interfaces. It completes as soon as the streamed `ui` argument is available.
+- `present_openui` is a frontend tool for complete cards, tables, charts, and other interfaces. Follow-up suggestions and clickable list items start a new user turn. The tool completes as soon as the streamed `ui` argument is available.
 - `prompt_openui` is a human tool for forms and choices. It completes only when an OpenUI `@ToAssistant(...)` action submits a result.
 
 `openuiIntegration` contains a toolkit and instruction string created from the

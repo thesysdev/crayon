@@ -50,6 +50,17 @@ describe("assistant-ui OpenUI toolkit", () => {
     expect(instructions).toContain("Panel(title: string)");
   });
 
+  it("allows present-tool follow-ups to start a new user turn", () => {
+    const instructions = createOpenUIInstructions();
+
+    expect(instructions).toContain(
+      "When using present_openui, FollowUpBlock and ListBlock clicks may start a new user turn",
+    );
+    expect(instructions).toContain(
+      "When using prompt_openui, include exactly one terminal @ToAssistant action",
+    );
+  });
+
   it("rejects ambiguous tool names", () => {
     expect(() =>
       createOpenUIToolkit({
