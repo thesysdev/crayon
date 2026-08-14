@@ -9,6 +9,7 @@ import {
   resolveInstallPackageManager,
   type PackageManagerName,
 } from "../lib/detect-package-manager";
+import { runDevCommand } from "../lib/dev-server";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
@@ -199,11 +200,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     skill_installed: installSkill,
   });
 
-  const immediateResolution = await resolveImmediate(
-    options.immediate,
-    options.noInstall,
-    interactive,
-  );
+  const immediateResolution = resolveImmediate(options.immediate, options.noInstall, interactive);
   telemetry.capture("cli_immediate_selected", {
     immediate: immediateResolution.immediate,
     dependency_install_requested: immediateResolution.installDependencies,
@@ -432,7 +429,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   telemetry.capture("cli_dev_command_started", {
     package_manager: packageManager.name,
   });
-  const devResult = await runCommand(devCmd, ["run", "dev"], targetDir);
+  const devResult = await runDevCommand(devCmd, targetDir);
   const stoppedNormally =
     devResult.status === 0 ||
     devResult.status === 130 ||
@@ -467,15 +464,15 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
 
 const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
 
-async function resolveImmediate(
+function resolveImmediate(
   immediate: boolean | undefined,
   noInstall: boolean | undefined,
   interactive: boolean,
-): Promise<{
+): {
   immediate: boolean;
   installDependencies: boolean;
-  source: "flag" | "interactive_prompt" | "no_install" | "noninteractive_default";
-}> {
+  source: "flag" | "interactive_default" | "no_install" | "noninteractive_default";
+} {
   if (noInstall) {
     return { immediate: false, installDependencies: false, source: "no_install" };
   }
@@ -493,23 +490,7 @@ async function resolveImmediate(
       source: "noninteractive_default",
     };
   }
-
-  try {
-    const { confirm } = await import("@inquirer/prompts");
-    const selected = await confirm({
-      message: "Start dev server after install?",
-      default: true,
-    });
-    return {
-      immediate: selected,
-      installDependencies: true,
-      source: "interactive_prompt",
-    };
-  } catch (error) {
-    const { ExitPromptError } = await import("@inquirer/core");
-    if (error instanceof ExitPromptError) throw new CliCancelledError("immediate_prompt");
-    throw error;
-  }
+  return { immediate: true, installDependencies: true, source: "interactive_default" };
 }
 
 async function writeEnv(targetDir: string, result: EnvResult, appId?: string): Promise<void> {
