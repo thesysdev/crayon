@@ -34,7 +34,7 @@ export function createOpenUIInstructions({
     preamble: preamble ?? defaultPreamble,
     additionalRules: [
       ...(promptOptions.additionalRules ?? []),
-      `When using ${presentToolName}, FollowUpBlock and ListBlock clicks may start a new user turn, but do not include terminal @ToAssistant actions.`,
+      `When using ${presentToolName}, FollowUpBlock clicks start a new user turn automatically, and ListBlock items may use @ToAssistant for optional drill-down actions. Do not use ${presentToolName} for a required form or choice submission.`,
       `When using ${promptToolName}, include exactly one terminal @ToAssistant action that submits the form or choice.`,
       ...additionalRules,
     ],

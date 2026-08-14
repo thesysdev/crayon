@@ -25,6 +25,10 @@ followUps = FollowUpBlock([first, second])
 first = FollowUpItem("Tell me more")
 second = FollowUpItem("Show another example")`;
 
+const CLICKABLE_LIST = `root = Card([list])
+list = ListBlock([item])
+item = ListItem("Compare regions", "See the regional breakdown", null, "Explore", Action([@ToAssistant("Compare regions")]))`;
+
 const OPEN_URL = `root = Card([buttons])
 buttons = Buttons([Button("Open docs", Action([@OpenUrl("https://openui.com/docs")]), "primary")])`;
 
@@ -99,6 +103,34 @@ describe("OpenUIPresent", () => {
     expect(appendToThread).toHaveBeenCalledWith({
       role: "user",
       content: [{ type: "text", text: "Tell me more" }],
+    });
+  });
+
+  it("starts a new user turn when a clickable list item is selected", async () => {
+    const args = { ui: CLICKABLE_LIST };
+
+    await act(async () => {
+      root.render(
+        <OpenUIPresent
+          {...makePresentProps({
+            args,
+            argsText: JSON.stringify(args),
+          })}
+        />,
+      );
+    });
+
+    const item = Array.from(container.querySelectorAll<HTMLElement>('[role="button"]')).find(
+      (element) => element.textContent?.includes("Compare regions"),
+    );
+    expect(item).toBeDefined();
+
+    await act(async () => item!.click());
+
+    expect(appendToThread).toHaveBeenCalledOnce();
+    expect(appendToThread).toHaveBeenCalledWith({
+      role: "user",
+      content: [{ type: "text", text: "Compare regions" }],
     });
   });
 
