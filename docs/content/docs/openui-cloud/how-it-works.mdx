@@ -76,6 +76,10 @@ Each response is checked against the component library it was generated for. By 
 
 Slides and reports are generated through the Responses API. A request declares which artifact types are allowed, and the model produces them inside the same stream as the conversation. Slides and reports are stored and versioned automatically, and both support manual editing in their viewers. Slides can be exported to PowerPoint, and reports can be exported to PDF.
 
+## Built-in tools
+
+Web search and image search run inside Cloud. A request declares them in its `tools` array, and when the model calls one, Cloud executes it with its own provider keys and returns the result into the same stream. The application backend implements nothing and stores no search credentials. Search results also feed artifact generation, so slides and reports can be grounded in current information and real imagery. See [Web and image search](/docs/openui-cloud/build/search).
+
 ## Conversation persistence
 
 Conversations are stored server-side. Each turn's messages, actions, and outputs attach to a conversation thread, and generation calls reference the thread instead of resending its history. The application backend stores no chat history and runs no database. On load, AgentInterface reads threads and artifacts from the Persistence API.
