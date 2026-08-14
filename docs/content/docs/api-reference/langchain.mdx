@@ -1,0 +1,239 @@
+---
+title: "@openuidev/langchain"
+description: API reference for streaming LangChain and LangGraph agents to OpenUI over AG-UI.
+---
+
+Use this package to transform LangGraph protocol-v2 message and tool events into AG-UI and relay
+them to an OpenUI frontend over Server-Sent Events.
+
+The package is framework-independent at the HTTP boundary. Its server APIs use Web-standard
+`Request`, `Response`, `fetch`, and `ReadableStream` rather than depending on Next.js or
+DeepAgents.
+
+## Install
+
+Install the package for the Web-standard server helpers:
+
+```bash tab="pnpm" tab-group="pkg"
+pnpm add @openuidev/langchain
+```
+
+```bash tab="bun" tab-group="pkg"
+bun add @openuidev/langchain
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn add @openuidev/langchain
+```
+
+```bash tab="npm" tab-group="pkg"
+npm install @openuidev/langchain
+```
+
+Applications that run the agent-side transformer also install the optional LangGraph peer:
+
+```bash
+npm install @openuidev/langchain @langchain/langgraph
+```
+
+The integration requires an agent-protocol-v2 server with both the `custom:*` and root `lifecycle`
+event channels. The tested local-server baseline is `@langchain/langgraph-cli` 1.4.x.
+
+## Data flow
+
+1. `openUIStreamTransformer()` converts LangGraph `messages` and `tools` events to AG-UI events on
+   the remote `custom:openui` channel.
+2. `createLangChainStreamResponse()` starts a stateless LangGraph run, adds the AG-UI run lifecycle,
+   and relays that channel as SSE.
+3. OpenUI's `agUIAdapter()` consumes the response without LangChain-specific frontend code.
+
+## `openUIStreamTransformer()`
+
+Import the transformer from the `/transformer` subpath and register it with any agent that accepts
+LangGraph `streamTransformers`:
+
+```ts
+import { openUIStreamTransformer } from "@openuidev/langchain/transformer";
+import { createDeepAgent } from "deepagents";
+
+export const graph = createDeepAgent({
+  model: "openai:gpt-5.5",
+  tools: [getWeather, getStockPrice, searchWeb],
+  systemPrompt: SYSTEM_PROMPT,
+  streamTransformers: [openUIStreamTransformer],
+});
+```
+
+```ts
+function openUIStreamTransformer(): StreamTransformer<{
+  openui: StreamChannel<AGUIEvent>;
+}>;
+```
+
+The transformer handles assistant text, tool-call deltas, tool results, and run errors. LangGraph
+publishes the resulting events remotely under `custom:openui`. The transformer subpath is the only
+entrypoint that loads `@langchain/langgraph`; the root server helpers communicate with LangGraph
+over HTTP.
+
+## `createLangChainStreamResponse(request, options)`
+
+Creates the complete AG-UI-request-to-LangGraph-response path for a stateless chat route:
+
+```ts
+function createLangChainStreamResponse(
+  request: Request,
+  options: CreateLangChainStreamResponseOptions,
+): Promise<Response>;
+```
+
+```ts
+interface CreateLangChainStreamResponseOptions {
+  apiUrl: string;
+  assistantId: string;
+  apiKey?: string;
+  debug?: boolean;
+  cleanupThread?: boolean;
+  waitUntil?: (task: Promise<void>) => void;
+  prepareInput?: (context: PrepareLangChainRunInputContext) => unknown | Promise<unknown>;
+}
+```
+
+The request body must contain a non-empty `{ messages: Message[] }` value in AG-UI format. Invalid
+JSON or messages return a JSON `400` response without starting a LangGraph run.
+
+The helper:
+
+- Converts text and multimodal user content to LangChain input messages.
+- Preserves complete assistant tool-call and tool-result pairs.
+- Removes incomplete calls and orphaned tool results before starting the run.
+- Returns AG-UI SSE with `RUN_STARTED` and `RUN_FINISHED` or `RUN_ERROR` lifecycle events.
+- Creates a temporary LangGraph thread and attempts bounded cleanup after the response completes.
+- Redacts upstream response details and registered graph ids unless trusted development code enables
+  `debug`.
+
+It can be returned directly from a Next.js route or any other Web-standard route handler:
+
+```ts
+import { createLangChainStreamResponse } from "@openuidev/langchain";
+
+export const runtime = "nodejs";
+
+export async function POST(request: Request) {
+  return createLangChainStreamResponse(request, {
+    apiUrl: process.env.LANGGRAPH_API_URL ?? "http://localhost:2024",
+    assistantId: process.env.LANGGRAPH_ASSISTANT_ID ?? "agent",
+    apiKey: process.env.LANGSMITH_API_KEY,
+    debug: process.env.NODE_ENV !== "production",
+  });
+}
+```
+
+### `prepareInput(context)`
+
+Use `prepareInput` when the graph needs fields from the browser request in addition to converted
+messages:
+
+```ts
+interface PrepareLangChainRunInputContext {
+  messages: LangChainInputMessage[];
+  requestBody: Record<string, unknown>;
+}
+```
+
+```ts
+return createLangChainStreamResponse(request, {
+  apiUrl: process.env.LANGGRAPH_API_URL ?? "http://localhost:2024",
+  assistantId: "agent",
+  prepareInput: ({ messages, requestBody }) => ({
+    messages: messages.slice(-1),
+    conversationId: requestBody.threadId,
+    model: requestBody.model,
+  }),
+});
+```
+
+If `prepareInput` throws, the helper returns its error message in a `400` response and does not
+start a run.
+
+### Cleanup on serverless platforms
+
+Temporary-thread cleanup defaults to enabled. Pass the platform's `waitUntil`-style registration
+function when cleanup should survive a client disconnect:
+
+```ts
+return createLangChainStreamResponse(request, {
+  apiUrl,
+  assistantId,
+  waitUntil: (task) => executionContext.waitUntil(task),
+});
+```
+
+Set `cleanupThread: false` only when the temporary thread must remain available for local debugging.
+
+## `streamOpenUI(options)`
+
+Use the lower-level relay when the route builds the LangGraph input itself:
+
+```ts
+interface StreamOpenUIOptions {
+  apiUrl: string;
+  assistantId: string;
+  apiKey?: string;
+  input: unknown;
+  signal?: AbortSignal;
+  debug?: boolean;
+  cleanupThread?: boolean;
+  waitUntil?: (task: Promise<void>) => void;
+}
+
+function streamOpenUI(options: StreamOpenUIOptions): ReadableStream<Uint8Array>;
+```
+
+```ts
+import { streamOpenUI } from "@openuidev/langchain";
+
+const body = streamOpenUI({
+  apiUrl: "http://localhost:2024",
+  assistantId: "agent",
+  input: { messages: [{ type: "human", content: "Hello" }] },
+  signal: request.signal,
+});
+
+return new Response(body, {
+  headers: { "Content-Type": "text/event-stream" },
+});
+```
+
+Cancelling the returned stream or aborting `signal` aborts both upstream LangGraph requests.
+
+## Connect the OpenUI frontend
+
+The route returns standard AG-UI SSE, so the browser uses OpenUI's normal adapter:
+
+```tsx
+import { AgentInterface, agUIAdapter, fetchLLM } from "@openuidev/react-ui";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: agUIAdapter(),
+});
+
+export function Chat() {
+  return <AgentInterface llm={llm} />;
+}
+```
+
+## Exports
+
+| Entry point                        | Export                                 | Description                                    |
+| :--------------------------------- | :------------------------------------- | :--------------------------------------------- |
+| `@openuidev/langchain`             | `createLangChainStreamResponse`        | Complete Web-standard request/response helper  |
+| `@openuidev/langchain`             | `streamOpenUI`                         | Lower-level protocol-v2 runner and AG-UI relay |
+| `@openuidev/langchain`             | `CreateLangChainStreamResponseOptions` | Request helper configuration                   |
+| `@openuidev/langchain`             | `PrepareLangChainRunInputContext`      | Values passed to `prepareInput`                |
+| `@openuidev/langchain`             | `LangChainInputMessage`                | Converted graph input message shape            |
+| `@openuidev/langchain`             | `StreamOpenUIOptions`                  | Lower-level relay configuration                |
+| `@openuidev/langchain/transformer` | `openUIStreamTransformer`              | Agent-side protocol-v2 to AG-UI transformer    |
+
+See the complete [`langchain-chat`](https://github.com/thesysdev/openui/tree/main/examples/langchain-chat)
+example for local and LangGraph Platform setups.
