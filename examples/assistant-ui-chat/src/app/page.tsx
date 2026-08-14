@@ -1,17 +1,21 @@
 "use client";
 
 import { Thread } from "@/components/thread";
-import { AssistantRuntimeProvider, AuiConfig, Suggestions, Tools } from "@assistant-ui/react";
+import {
+  AssistantRuntimeProvider,
+  AuiConfig,
+  AuiProvider,
+  Suggestions,
+  Tools,
+  useAui,
+} from "@assistant-ui/react";
 import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
 import { OpenUIInstructions, openuiIntegration } from "@openuidev/assistant-ui";
 import { shouldContinueAfterOpenUIPrompt } from "@openuidev/assistant-ui/ai-sdk";
 import { ThemeProvider } from "@openuidev/react-ui";
 
-export default function Home() {
-  const runtime = useChatRuntime({
-    sendAutomaticallyWhen: shouldContinueAfterOpenUIPrompt,
-  });
-
+function OpenUIThread() {
+  const aui = useAui();
   const config = AuiConfig({
     tools: Tools({ toolkit: openuiIntegration.toolkit }),
     suggestions: Suggestions([
@@ -30,11 +34,23 @@ export default function Home() {
   });
 
   return (
-    <AssistantRuntimeProvider config={config} runtime={runtime}>
+    <AuiProvider extends={aui} config={config}>
       <OpenUIInstructions />
+      <Thread />
+    </AuiProvider>
+  );
+}
+
+export default function Home() {
+  const runtime = useChatRuntime({
+    sendAutomaticallyWhen: shouldContinueAfterOpenUIPrompt,
+  });
+
+  return (
+    <AssistantRuntimeProvider runtime={runtime}>
       <ThemeProvider mode="light">
         <main className="h-full">
-          <Thread />
+          <OpenUIThread />
         </main>
       </ThemeProvider>
     </AssistantRuntimeProvider>
