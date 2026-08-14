@@ -492,7 +492,7 @@ describe("vercelAIAdapter", () => {
 
     try {
       await expect(collect(vercelAIAdapter().parse(makeResponse("")))).rejects.toThrow(
-        'vercelAIAdapter requires the optional peer dependency "ai" (Vercel AI SDK v6).',
+        'vercelAIAdapter requires the optional peer dependency "ai" (Vercel AI SDK v6 or v7).',
       );
     } finally {
       vi.doUnmock("ai");

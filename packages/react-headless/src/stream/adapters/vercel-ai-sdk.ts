@@ -2,7 +2,7 @@ import type { UIMessage, UIMessageChunk } from "ai";
 import { AGUIEvent, EventType, StreamProtocolAdapter } from "../../types";
 
 const MISSING_AI_SDK_MESSAGE =
-  'vercelAIAdapter requires the optional peer dependency "ai" (Vercel AI SDK v6).';
+  'vercelAIAdapter requires the optional peer dependency "ai" (Vercel AI SDK v6 or v7).';
 const PROVIDER_EXECUTED_TOOLS_UNSUPPORTED_MESSAGE =
   "Vercel AI SDK provider-executed tools are not supported because AG-UI messages cannot preserve providerExecuted semantics.";
 const TOOL_EXECUTION_DENIED_MESSAGE = "Tool execution was denied";
@@ -64,8 +64,7 @@ function toolResult(toolCallId: string, content: string, error?: string): AGUIEv
 }
 
 /**
- * Adapter for Vercel AI SDK v6 UIMessage streams, such as responses returned by
- * `toUIMessageStreamResponse()`.
+ * Adapter for Vercel AI SDK v6 and v7 UIMessage streams.
  *
  * The AI SDK is loaded only when parsing begins so it can remain an optional
  * peer dependency for consumers that use other stream adapters. Its
