@@ -10,6 +10,10 @@ export type CommandResult = {
   diagnosticTail: string;
 };
 
+export type RunCommandOptions = {
+  env?: NodeJS.ProcessEnv;
+};
+
 /**
  * `spawn.sync(..., { stdio: "inherit" })` exposes exit status but not the output
  * needed to distinguish dependency, workspace, and package-compatibility failures.
@@ -19,11 +23,17 @@ export type CommandResult = {
  * Running asynchronously also lets the parent forward SIGINT/SIGTERM, wait for the
  * child to close, and return cancellation metadata before telemetry is flushed.
  */
-export function runCommand(command: string, args: string[], cwd: string): Promise<CommandResult> {
+export function runCommand(
+  command: string,
+  args: string[],
+  cwd: string,
+  options: RunCommandOptions = {},
+): Promise<CommandResult> {
   return new Promise((resolve) => {
     const startedAt = Date.now();
     const child = spawn(command, args, {
       cwd,
+      env: options.env,
       stdio: ["inherit", "pipe", "pipe"],
     });
     let diagnosticTail = "";

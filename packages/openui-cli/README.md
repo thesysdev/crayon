@@ -75,15 +75,17 @@ Options:
 - `--auth <method>`: (cloud template) How to obtain the key — `oauth` or `skip`; `manual` remains available for backward compatibility but is deprecated
 - `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
+`--immediate` and `--no-immediate` are mutually exclusive; passing both exits with an error.
+
 What it does:
 
 - prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
 - prompts for the template if you do not pass `--template`
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
-- asks whether to start the development server after dependency installation (default: yes); answering no preserves the install-and-exit behavior
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
-- in non-interactive mode, installs dependencies without starting the server unless overridden with `--immediate`
+- in interactive sessions, starts the development server and opens its local URL in the default browser; pass `--no-immediate` to install and exit instead
+- in non-interactive sessions, installs and exits unless `--immediate` is passed
 - optionally installs the OpenUI agent skill for AI coding assistants
 - writes a `.env` file tailored to the template (see below)
 
