@@ -10,6 +10,7 @@ import {
   useLocalRuntime,
 } from "@assistant-ui/react";
 import { openuiIntegration } from "@openuidev/assistant-ui";
+import { ThemeProvider } from "@openuidev/react-ui";
 
 const fixtureUI = `root = Card([title, description, followups])
 title = CardHeader("Tokyo trip")
@@ -62,9 +63,11 @@ export default function FollowUpFixture() {
 
   return (
     <AssistantRuntimeProvider config={config} runtime={runtime}>
-      <main className="h-dvh">
-        <Thread />
-      </main>
+      <ThemeProvider mode="light">
+        <main className="h-full">
+          <Thread />
+        </main>
+      </ThemeProvider>
     </AssistantRuntimeProvider>
   );
 }
