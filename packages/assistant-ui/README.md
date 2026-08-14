@@ -104,6 +104,9 @@ can implement that policy using the runtime's continuation API.
 For a Vercel AI SDK runtime, the package provides that policy as an optional
 convenience helper. Install `ai` and import it from the `/ai-sdk` subpath:
 
+The helper supports AI SDK 6 and 7. AI SDK 7 requires Node.js 22 or later and
+an ESM application.
+
 ```tsx
 import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
 import { shouldContinueAfterOpenUIPrompt } from "@openuidev/assistant-ui/ai-sdk";

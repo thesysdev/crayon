@@ -1,0 +1,77 @@
+name: AI SDK 7 Compatibility
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/scripts/verify-ai-sdk-v7.mjs"
+      - ".github/workflows/ai-sdk-v7-compat.yml"
+      - "packages/assistant-ui/**"
+      - "packages/react-headless/**"
+      - "pnpm-lock.yaml"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/scripts/verify-ai-sdk-v7.mjs"
+      - ".github/workflows/ai-sdk-v7-compat.yml"
+      - "packages/assistant-ui/**"
+      - "packages/react-headless/**"
+      - "pnpm-lock.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.15.4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: "pnpm-lock.yaml"
+
+      - name: Install package dependencies
+        run: >-
+          pnpm install --frozen-lockfile
+          --filter @openuidev/react-headless...
+          --filter @openuidev/react-lang...
+          --filter @openuidev/react-ui...
+          --filter @openuidev/assistant-ui
+
+      - name: Test package sources with AI SDK 7
+        run: |
+          pnpm --filter @openuidev/react-headless add --save-dev "ai@^7" --lockfile=false
+          pnpm --filter @openuidev/assistant-ui add --save-dev "ai@^7" --lockfile=false
+          pnpm --filter @openuidev/react-headless run build
+          pnpm --filter @openuidev/react-headless run test
+          pnpm --filter @openuidev/assistant-ui run typecheck
+          pnpm --filter @openuidev/assistant-ui run test
+
+      - name: Pack OpenUI packages
+        env:
+          PACKAGE_DIR: ${{ runner.temp }}/openui-packages
+        run: |
+          mkdir -p "${PACKAGE_DIR}"
+          pnpm --dir packages/react-headless pack --pack-destination "${PACKAGE_DIR}"
+          pnpm --dir packages/assistant-ui pack --pack-destination "${PACKAGE_DIR}"
+
+      - name: Verify an npm consumer installation
+        env:
+          CONSUMER_DIR: ${{ runner.temp }}/ai-sdk-v7-consumer
+          PACKAGE_DIR: ${{ runner.temp }}/openui-packages
+        run: |
+          mkdir -p "${CONSUMER_DIR}"
+          cd "${CONSUMER_DIR}"
+          npm install --ignore-scripts --no-audit --no-fund \
+            "ai@^7" \
+            "${PACKAGE_DIR}"/openuidev-react-headless-*.tgz \
+            "${PACKAGE_DIR}"/openuidev-assistant-ui-*.tgz
+          cp "${GITHUB_WORKSPACE}/.github/scripts/verify-ai-sdk-v7.mjs" ./verify-ai-sdk-v7.mjs
+          node ./verify-ai-sdk-v7.mjs

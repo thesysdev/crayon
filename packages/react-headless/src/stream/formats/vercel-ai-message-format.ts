@@ -438,7 +438,7 @@ function fromVercelMessages(data: unknown): Message[] {
 }
 
 /**
- * Converts messages between AG-UI and Vercel AI SDK v6 `UIMessage` format.
+ * Converts messages between AG-UI and Vercel AI SDK v6 and v7 `UIMessage` format.
  *
  * AG-UI tool-result messages are folded into the matching assistant tool part,
  * because `UIMessage` represents a tool invocation and its result as one part.

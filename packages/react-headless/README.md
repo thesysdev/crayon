@@ -22,7 +22,12 @@ The Vercel AI SDK integration has one optional peer dependency:
 
 ```bash
 npm install ai@^6
+# or, on Node.js 22+ with ESM
+npm install ai@^7
 ```
+
+Both AI SDK 6 and 7 are supported. AI SDK 7 requires Node.js 22 or later and
+is ESM-only.
 
 ## Overview
 
@@ -185,7 +190,7 @@ const llm = fetchLLM({ url: "/api/chat", streamAdapter: openAIAdapter() });
 | `openAIAdapter()` | Parses OpenAI Chat Completions streaming (`ChatCompletionChunk`) |
 | `openAIResponsesAdapter()` | Parses OpenAI Responses API streaming (`ResponseStreamEvent`) |
 | `openAIReadableStreamAdapter()` | Parses OpenAI SDK's `Stream.toReadableStream()` NDJSON output |
-| `vercelAIAdapter()` | Parses Vercel AI SDK v6 UIMessage streams from `toUIMessageStreamResponse()` |
+| `vercelAIAdapter()` | Parses Vercel AI SDK v6 and v7 UIMessage streams |
 
 For a Vercel AI SDK route, use its stream adapter and message format together:
 
@@ -236,7 +241,7 @@ const llm = fetchLLM({
 | `identityMessageFormat` | Default format when messages are already AG-UI shaped |
 | `openAIMessageFormat` | Converts to/from OpenAI `ChatCompletionMessageParam[]` |
 | `openAIConversationMessageFormat` | Converts to/from OpenAI Responses API `ResponseInputItem[]` |
-| `vercelAIMessageFormat` | Converts to/from Vercel AI SDK v6 `UIMessage[]` |
+| `vercelAIMessageFormat` | Converts to/from Vercel AI SDK v6 and v7 `UIMessage[]` |
 
 ### Custom format
 
