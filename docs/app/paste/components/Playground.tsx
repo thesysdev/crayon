@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger, Tag } from "@openuidev/react-ui";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@openuidev/react-ui";
 import { useMemo, useState } from "react";
 import { Group, Panel, Separator } from "react-resizable-panels";
 import { useMediaQuery } from "@paste/hooks/useMediaQuery";
@@ -97,6 +97,7 @@ export function Playground() {
         onLoadExample={loadExample}
         playback={playback}
         bigInput={code.length > CHAR_STRATEGY_LIMIT}
+        versionLoading={loadingVersion}
       />
 
       {loaded && !loaded.compatible && (
@@ -134,10 +135,15 @@ export function Playground() {
             title="Output panel crashed"
             hint="This is usually an incompatibility with the selected lang-core version — pick a different version or edit the code to recover."
           >
-            <div className="output-pane">
+            <div
+              className={loadingVersion ? "output-pane is-loading" : "output-pane"}
+              aria-busy={loadingVersion}
+            >
             <Tabs
               value={tab}
-              onValueChange={(v) => setTab(v as Tab)}
+              onValueChange={(v) => {
+                if (!loadingVersion) setTab(v as Tab);
+              }}
               className="output-tabs"
               variant="clear"
             >
@@ -147,6 +153,7 @@ export function Playground() {
                     <TabsTrigger
                       key={t.id}
                       value={t.id}
+                      disabled={loadingVersion}
                       text={
                         t.id === "validation" && displayed.result
                           ? `${t.label} (${displayed.result.meta.errors.length})`
@@ -155,8 +162,8 @@ export function Playground() {
                     />
                   ))}
                 </TabsList>
-                {loadingVersion && <Tag size="sm" variant="neutral" text="loading lang-core…" />}
               </div>
+              <div className="tab-panels" inert={loadingVersion}>
               <TabsContent value="render" className="tab-body">
                 <RenderPanel
                   key={libraryId}
@@ -178,6 +185,7 @@ export function Playground() {
               <TabsContent value="stream" className="tab-body">
                 <StreamTimeline state={playback.state} />
               </TabsContent>
+              </div>
             </Tabs>
           </div>
           </RenderErrorBoundary>

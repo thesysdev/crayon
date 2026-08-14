@@ -37,6 +37,7 @@ export function Toolbar({
   onLoadExample,
   playback,
   bigInput,
+  versionLoading,
 }: {
   libraryId: LibraryId;
   onLibraryChange: (id: LibraryId) => void;
@@ -47,6 +48,7 @@ export function Toolbar({
   onLoadExample: (code: string) => void;
   playback: PlaybackControls;
   bigInput: boolean;
+  versionLoading: boolean;
 }) {
   const playbackActive =
     playback.state.status === "playing" || playback.state.status === "paused";
@@ -142,7 +144,7 @@ export function Toolbar({
       </header>
       <div className="toolbar">
         <div className="toolbar-controls">
-          <PlaybackButtons playback={playback} settings={settings} />
+          <PlaybackButtons playback={playback} settings={settings} disabled={versionLoading} />
           {narrow ? (
             <>
               {examplesField}
@@ -159,7 +161,12 @@ export function Toolbar({
             </>
           ) : (
             <>
-              <StreamSettingsFields playback={playback} bigInput={bigInput} settings={settings} />
+              <StreamSettingsFields
+                playback={playback}
+                bigInput={bigInput}
+                settings={settings}
+                disabled={versionLoading}
+              />
               <span className="toolbar-divider" aria-hidden />
               {libraryField}
               <VersionPicker
@@ -196,7 +203,12 @@ export function Toolbar({
               </Button>
             </div>
             <div className="drawer-body">
-              <StreamSettingsFields playback={playback} bigInput={bigInput} settings={settings} />
+              <StreamSettingsFields
+                playback={playback}
+                bigInput={bigInput}
+                settings={settings}
+                disabled={versionLoading}
+              />
               {libraryField}
               <VersionPicker
                 value={version}

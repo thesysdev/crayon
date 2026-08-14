@@ -1,7 +1,9 @@
 import * as bundled from "@openuidev/lang-core";
+import { version as workspaceLangCoreVersion } from "../../../../../packages/lang-core/package.json";
 import type { LangCoreModule, LoadedLangCore, ParseResult } from "./types";
 
-export const BUNDLED_LANG_CORE_VERSION = "0.2.9";
+/** Workspace `@openuidev/lang-core` version — stays in sync with the local package. */
+export const BUNDLED_LANG_CORE_VERSION: string = workspaceLangCoreVersion;
 
 // Both webpack and Turbopack rewrite `import(expr)`; magic comments differ
 // between them and drift across Next versions. `new Function` is the one

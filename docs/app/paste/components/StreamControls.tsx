@@ -32,16 +32,25 @@ export interface StreamSettings {
 export function PlaybackButtons({
   playback,
   settings,
+  disabled,
 }: {
   playback: PlaybackControls;
   settings: StreamSettings;
+  disabled?: boolean;
 }) {
   const { state, start, pause, resume, step, reset } = playback;
   return (
     <>
       <div className="btn-group" role="group" aria-label="Playback controls">
         {state.status === "playing" ? (
-          <Button variant="primary" size="small" onClick={pause} aria-label="Pause" title="Pause">
+          <Button
+            variant="primary"
+            size="small"
+            onClick={pause}
+            disabled={disabled}
+            aria-label="Pause"
+            title="Pause"
+          >
             <Pause {...ICON} />
           </Button>
         ) : state.status === "paused" ? (
@@ -49,6 +58,7 @@ export function PlaybackButtons({
             variant="primary"
             size="small"
             onClick={resume}
+            disabled={disabled}
             aria-label="Resume"
             title="Resume"
           >
@@ -59,6 +69,7 @@ export function PlaybackButtons({
             variant="primary"
             size="small"
             onClick={() => start({ strategy: settings.strategy, seed: settings.seed })}
+            disabled={disabled}
             aria-label="Stream"
             title="Stream (replay as simulated LLM output)"
           >
@@ -69,7 +80,7 @@ export function PlaybackButtons({
           variant="secondary"
           size="small"
           onClick={step}
-          disabled={state.status !== "paused"}
+          disabled={disabled || state.status !== "paused"}
           aria-label="Step one chunk"
           title="Step one chunk"
         >
@@ -79,7 +90,7 @@ export function PlaybackButtons({
           variant="secondary"
           size="small"
           onClick={reset}
-          disabled={state.status === "idle"}
+          disabled={disabled || state.status === "idle"}
           aria-label="Reset playback"
           title="Reset playback"
         >
@@ -100,13 +111,15 @@ export function StreamSettingsFields({
   playback,
   bigInput,
   settings,
+  disabled,
 }: {
   playback: PlaybackControls;
   bigInput: boolean;
   settings: StreamSettings;
+  disabled?: boolean;
 }) {
   const { state, setSpeed, speed } = playback;
-  const active = state.status === "playing" || state.status === "paused";
+  const active = disabled || state.status === "playing" || state.status === "paused";
   const { strategy, onStrategyChange, seed, onSeedChange } = settings;
 
   return (
@@ -135,7 +148,12 @@ export function StreamSettingsFields({
 
       <div className="toolbar-field">
         <Label className="toolbar-label">Speed</Label>
-        <Select value={String(speed)} onValueChange={(v) => setSpeed(Number(v))} size="sm">
+        <Select
+          value={String(speed)}
+          onValueChange={(v) => setSpeed(Number(v))}
+          disabled={disabled}
+          size="sm"
+        >
           <SelectTrigger size="sm" aria-label="Playback speed">
             <SelectValue />
           </SelectTrigger>

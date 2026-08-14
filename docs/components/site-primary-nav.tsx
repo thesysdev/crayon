@@ -74,11 +74,6 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
           dark: "/nav/vsjson-dark.webp",
         },
       },
-      {
-        title: "Paste",
-        description: "Validate and stream OpenUI Lang.",
-        href: "/paste",
-      },
     ],
   },
   {
@@ -110,6 +105,15 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         preview: {
           light: "/nav/community-light.webp",
           dark: "/nav/community-dark.webp",
+        },
+      },
+      {
+        title: "Paste",
+        description: "Validate and stream OpenUI Lang.",
+        href: "/paste",
+        preview: {
+          light: "/nav/paste-light.webp",
+          dark: "/nav/paste-dark.webp",
         },
       },
     ],

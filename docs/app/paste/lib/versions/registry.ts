@@ -1,4 +1,4 @@
-import { rcompare, valid } from "semver";
+import { gte, rcompare, valid } from "semver";
 import type { VersionList } from "./types";
 import { BUNDLED_LANG_CORE_VERSION } from "./loader";
 
@@ -49,14 +49,23 @@ function group(versions: string[], latest: string | null): VersionList {
   };
 }
 
+/** Always expose the workspace package, and prefer it as latest when it is newer than npm. */
+function resolveList(versions: string[], npmLatest: string | null): VersionList {
+  const bundled = BUNDLED_LANG_CORE_VERSION;
+  const all = versions.includes(bundled) ? versions : [...versions, bundled];
+  const latest =
+    npmLatest && valid(npmLatest) && !gte(bundled, npmLatest) ? npmLatest : bundled;
+  return group(all, latest);
+}
+
 /** Fallback entry so the picker always works even when the registry is down. */
 export function bundledOnlyList(): VersionList {
-  return group([BUNDLED_LANG_CORE_VERSION], BUNDLED_LANG_CORE_VERSION);
+  return resolveList([], null);
 }
 
 export async function fetchVersionList(): Promise<VersionList> {
   const cached = readCache();
-  if (cached) return group(cached.versions, cached.latest);
+  if (cached) return resolveList(cached.versions, cached.latest);
 
   const res = await fetch(REGISTRY_URL, {
     // Corgi doc: much smaller than the full packument, still has versions + dist-tags.
@@ -72,5 +81,5 @@ export async function fetchVersionList(): Promise<VersionList> {
   const latest = doc["dist-tags"]?.latest ?? null;
   if (versions.length === 0) throw new Error("npm registry returned no versions");
   writeCache({ fetchedAt: Date.now(), versions, latest });
-  return group(versions, latest);
+  return resolveList(versions, latest);
 }
