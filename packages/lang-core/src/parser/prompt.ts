@@ -455,7 +455,8 @@ function renderToolSignature(tool: ToolSpec): string {
   let args = "";
   if (tool.inputSchema) {
     const props = (tool.inputSchema as any).properties as
-      Record<string, Record<string, unknown>> | undefined;
+      | Record<string, Record<string, unknown>>
+      | undefined;
     const required = ((tool.inputSchema as any).required as string[]) ?? [];
     if (props && Object.keys(props).length > 0) {
       args = Object.entries(props)

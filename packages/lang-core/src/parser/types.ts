@@ -70,7 +70,11 @@ export function isElementNode(value: unknown): value is ElementNode {
  * Validation error codes for schema-related issues.
  */
 export type ValidationErrorCode =
-  "missing-required" | "null-required" | "unknown-component" | "inline-reserved" | "excess-args";
+  | "missing-required"
+  | "null-required"
+  | "unknown-component"
+  | "inline-reserved"
+  | "excess-args";
 
 /**
  * A prop validation error. Components with missing required props are
