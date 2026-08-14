@@ -9,7 +9,7 @@ import {
   type OpenUIError,
   type RendererProps,
 } from "@openuidev/react-lang";
-import { openuiChatLibrary } from "@openuidev/react-ui";
+import { openuiChatLibrary, ThemeProvider, type ThemeProps } from "@openuidev/react-ui";
 import { useCallback, useRef, useState, type ComponentType } from "react";
 
 export interface OpenUIToolArgs extends Record<string, unknown> {
@@ -40,6 +40,10 @@ export type OpenUIRendererProps = Omit<
 export interface OpenUIToolUIOptions {
   library?: Library;
   rendererProps?: OpenUIRendererProps;
+  /** Theme props passed to <ThemeProvider>. */
+  theme?: ThemeProps;
+  /** When true, skips wrapping in <ThemeProvider>. */
+  disableThemeProvider?: boolean;
   ErrorFallback?: OpenUIErrorFallback | null;
   onError?: (errors: OpenUIError[]) => void;
 }
@@ -62,6 +66,8 @@ export function OpenUIContent({
   onAction,
   library = openuiChatLibrary,
   rendererProps,
+  theme,
+  disableThemeProvider,
   ErrorFallback = DefaultOpenUIErrorFallback,
   onError,
 }: OpenUIContentProps) {
@@ -74,7 +80,7 @@ export function OpenUIContent({
     [onError],
   );
 
-  return (
+  const content = (
     <>
       <Renderer
         {...rendererProps}
@@ -90,6 +96,8 @@ export function OpenUIContent({
       )}
     </>
   );
+
+  return disableThemeProvider ? content : <ThemeProvider {...theme}>{content}</ThemeProvider>;
 }
 
 export type OpenUIPresentProps = ToolCallMessagePartProps<OpenUIToolArgs, OpenUIPresentResult> &
