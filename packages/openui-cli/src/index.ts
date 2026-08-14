@@ -9,7 +9,7 @@ import { Command } from "commander";
 import { runCreateApp } from "./commands/create-app";
 import { GenerateOptions, runGenerate } from "./commands/generate";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
-import { resolveArgs } from "./lib/resolve-args";
+import { rejectConflictingImmediateFlags, resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
 import { handleCliError, normalizeAuth, normalizeTemplate } from "./lib/utils"; // Ensure utils.ts is included for type declarations
 
@@ -89,6 +89,7 @@ Templates:
       immediate?: boolean;
     }) => {
       try {
+        rejectConflictingImmediateFlags(process.argv.slice(2));
         await runCreateApp({
           name: options.name,
           template: normalizeTemplate(options.template),
