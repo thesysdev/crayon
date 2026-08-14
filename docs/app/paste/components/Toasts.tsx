@@ -1,6 +1,6 @@
 "use client";
 
-import { Callout } from "@openuidev/react-ui";
+import { Callout, DotMatrixLoader } from "@openuidev/react-ui";
 import styles from "@paste/paste.module.css";
 
 export interface ToastItem {
@@ -22,9 +22,10 @@ export function Toasts({ items }: { items: ToastItem[] }) {
         <Callout
           key={t.id}
           variant="info"
-          description={
+          className={styles.toast}
+          title={
             <span className={styles.toastBody}>
-              {t.spinning && <span className={styles.toastSpinner} aria-hidden />}
+              {t.spinning && <DotMatrixLoader variant="compact" size={16} />}
               {t.text}
             </span>
           }
