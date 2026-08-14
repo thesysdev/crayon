@@ -23,12 +23,12 @@ function OpenUIThread() {
         title: "Build a dashboard",
         label: "for quarterly revenue",
         prompt:
-          "Show a compact quarterly revenue dashboard with four regions and a chart. End with a FollowUpBlock offering to compare regions or inspect the forecast.",
+          "How are our four regions doing this quarter? Show me a quick revenue dashboard with a chart, and let me dig into regional comparisons or the forecast.",
       },
       {
         title: "Plan a team offsite",
         label: "with an interactive form",
-        prompt: "Ask me for the details you need to plan a team offsite using an interactive form.",
+        prompt: "I'm planning our next team offsite. Can you collect the details you need in a quick form?",
       },
     ]),
   });
