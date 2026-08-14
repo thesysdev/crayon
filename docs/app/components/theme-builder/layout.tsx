@@ -1,7 +1,6 @@
 import {
   DM_Sans,
   Lato,
-  Merriweather,
   Montserrat,
   Nunito,
   Playfair_Display,
@@ -43,12 +42,6 @@ const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
 });
 
-const merriweather = Merriweather({
-  variable: "--font-merriweather",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
-
 const sourceSans3 = Source_Sans_3({
   variable: "--font-source-sans-3",
   subsets: ["latin"],
@@ -66,7 +59,6 @@ const fontClassName = [
   montserrat.variable,
   nunito.variable,
   playfairDisplay.variable,
-  merriweather.variable,
   sourceSans3.variable,
   dmSans.variable,
 ].join(" ");
