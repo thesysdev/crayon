@@ -1,115 +1,92 @@
 "use client";
 
-import { useTheme } from "@/hooks/use-system-theme";
-import { shouldShowBillingCreditsNotice } from "@/lib/billing";
-import { createCloudChatLLM } from "@/lib/cloud-chat-llm";
-import { DEFAULT_MODEL } from "@/lib/models";
-import { defineArtifactCategories } from "@openuidev/react-headless";
-import { AgentInterface } from "@openuidev/react-ui";
+import { usePersistedModel } from "@/hooks/use-persisted-model";
+import { MODEL_OPTIONS } from "@/lib/models";
+import { OPENUI_LOGOS, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
+import {
+  AgentInterface,
+  ModelSwitcher,
+  defineArtifactCategories,
+  fetchLLM,
+  openAIConversationMessageFormat,
+  openAIResponsesAdapter,
+  useSystemThemeMode,
+} from "@openuidev/react-ui";
 import {
   chatLibrary,
   presentationArtifactRenderer,
   reportArtifactRenderer,
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
-import { useCallback, useEffect, useState } from "react";
-import { BillingCreditsDialog } from "./billing-credits-dialog";
-import { ModelSwitcher } from "./model-switcher";
+import { FileText, Presentation } from "lucide-react";
 
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
-  { name: "Presentations", renderers: [presentationArtifactRenderer] },
-  { name: "Reports", renderers: [reportArtifactRenderer] },
+  {
+    name: "Presentations",
+    renderers: [presentationArtifactRenderer],
+    icon: <Presentation size="1em" />,
+  },
+  {
+    name: "Reports",
+    renderers: [reportArtifactRenderer],
+    icon: <FileText size="1em" />,
+  },
 ]);
 
-const showBillingCreditsNotice = shouldShowBillingCreditsNotice();
+export default function CloudChat() {
+  const mode = useSystemThemeMode();
+  const [selectedModel, setSelectedModel] = usePersistedModel();
+  const llm = fetchLLM({
+    url: "/api/chat",
+    streamAdapter: openAIResponsesAdapter(),
+    messageFormat: openAIConversationMessageFormat,
+    body: { model: selectedModel },
+  });
 
-export function CloudChat() {
-  const mode = useTheme();
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
-  const [billingDialogOpen, setBillingDialogOpen] = useState(false);
-  const [billingCreditsRequired, setBillingCreditsRequired] = useState(false);
-  const [llm] = useState(() =>
-    createCloudChatLLM({
-      initialModel: selectedModel,
-      showBillingCreditsNotice,
-      onRequestStart: () => {
-        if (showBillingCreditsNotice) setBillingCreditsRequired(false);
-      },
-      onBillingCreditsRequired: () => {
-        setBillingCreditsRequired(true);
-        setBillingDialogOpen(true);
-      },
-    }),
-  );
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",
     features: { artifact: true },
   });
 
-  useEffect(() => {
-    llm.setSelectedModel(selectedModel);
-  }, [llm, selectedModel]);
-
-  const handleModelChange = useCallback((model: string) => {
-    llm.setSelectedModel(model);
-    setSelectedModel(model);
-  }, [llm]);
+  const logoPath = mode === "dark" ? OPENUI_LOGOS.DARK : OPENUI_LOGOS.LIGHT;
 
   return (
-    <div
-      className={`h-screen w-screen overflow-hidden relative${
-        billingCreditsRequired ? " openui-cloud-root--billing-credits-required" : ""
-      }`}
-    >
+    <div className="openui-cloud-page">
       <AgentInterface
         storage={storage}
         llm={llm}
         componentLibrary={chatLibrary}
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
-        agentName="OpenUI Cloud"
-        scrollVariant="always"
-        scrollOnLoad={false}
+        logoUrl={logoPath}
         theme={{ mode }}
-        starters={[
-          {
-            displayText: "Flagship store tour",
-            prompt:
-              "Put together retail design inspiration. Use photos of Apple Fifth Avenue, Nike House of Innovation, and Gentle Monster's Seoul flagship, with a visual card for each highlighting one design idea worth borrowing.",
-          },
-          {
-            displayText: "Summarize EV trends",
-            prompt: "In a few sentences, summarize the biggest EV market trends this quarter.",
-          },
-          {
-            displayText: "Pricing strategy tips",
-            prompt: "List five quick tips for pricing a new electric vehicle competitively.",
-          },
-          {
-            displayText: "Quarterly deck",
-            prompt: "Create a short presentation about our Q2 results with three slides.",
-          },
-          {
-            displayText: "Market report",
-            prompt: "Write a brief market-analysis report on the EV sector.",
-          },
-        ]}
+        starters={STARTERS}
       >
         <AgentInterface.MobileHeader
-          className="openui-cloud-mobile-header"
           agentName=""
           actions={
-            <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+            <ModelSwitcher
+              models={MODEL_OPTIONS}
+              value={selectedModel}
+              onValueChange={setSelectedModel}
+            />
           }
         />
         <AgentInterface.ThreadHeader className="openui-cloud-thread-header">
-          <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+          <ModelSwitcher
+            models={MODEL_OPTIONS}
+            value={selectedModel}
+            onValueChange={setSelectedModel}
+          />
         </AgentInterface.ThreadHeader>
+        <AgentInterface.Welcome
+          title="Good to see you"
+          description="What's on your mind today?"
+          promptTemplates={PROMPT_TEMPLATES}
+          glowAnimation
+        />
       </AgentInterface>
-      {showBillingCreditsNotice ? (
-        <BillingCreditsDialog open={billingDialogOpen} onOpenChange={setBillingDialogOpen} />
-      ) : null}
     </div>
   );
 }

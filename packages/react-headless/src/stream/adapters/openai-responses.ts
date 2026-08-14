@@ -16,6 +16,8 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
     const decoder = new TextDecoder();
     // Map item_id → call_id so TOOL_CALL_ARGS can reference the correct toolCallId
     const itemIdToCallId: Record<string, string> = {};
+    // The text output-item currently streaming.
+    let textItemId: string | null = null;
 
     let buffer = "";
     while (true) {
@@ -44,6 +46,7 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
               // not declare it. Widen the type so we can branch on it below.
               const item = event.item as typeof event.item | ResponseFunctionToolCallOutputItem;
               if (item.type === "message" && item.role === "assistant") {
+                textItemId = item.id;
                 yield {
                   type: EventType.TEXT_MESSAGE_START,
                   messageId: item.id,
@@ -68,13 +71,45 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
                 yield {
                   type: EventType.TOOL_CALL_START,
                   toolCallId: item.id,
-                  toolCallName: "thesys_web_search",
+                  toolCallName: "web_search",
+                };
+              } else if (item.type === "mcp_call") {
+                yield {
+                  type: EventType.TOOL_CALL_START,
+                  toolCallId: item.id,
+                  toolCallName: item.name,
+                };
+              } else if (item.type === "mcp_list_tools") {
+                yield {
+                  type: EventType.TOOL_CALL_START,
+                  toolCallId: item.id,
+                  toolCallName: "mcp_list_tools",
+                };
+                yield {
+                  type: EventType.TOOL_CALL_ARGS,
+                  toolCallId: item.id,
+                  delta: JSON.stringify({ server_label: item.server_label }),
+                };
+                yield {
+                  type: EventType.TOOL_CALL_END,
+                  toolCallId: item.id,
                 };
               }
               break;
             }
 
             case "response.output_text.delta":
+              // A delta for a not-yet-seen item id opens its message — covers
+              // backends that switch item id on the delta without a preceding
+              // `output_item.added` (idempotent when that event did fire).
+              if (event.item_id !== textItemId) {
+                textItemId = event.item_id;
+                yield {
+                  type: EventType.TEXT_MESSAGE_START,
+                  messageId: event.item_id,
+                  role: "assistant",
+                };
+              }
               yield {
                 type: EventType.TEXT_MESSAGE_CONTENT,
                 messageId: event.item_id,
@@ -108,11 +143,61 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
               break;
             }
 
+            case "response.mcp_call_arguments.delta":
+              yield {
+                type: EventType.TOOL_CALL_ARGS,
+                toolCallId: event.item_id,
+                delta: event.delta,
+              };
+              break;
+
+            case "response.mcp_call_arguments.done":
+              yield {
+                type: EventType.TOOL_CALL_END,
+                toolCallId: event.item_id,
+              };
+              break;
+
             case "response.output_item.done": {
-              // web_search delivers its result on the done item — there's no
-              // function_call_output for it. Every other item type closes via its
-              // own event (function_call → function_call_arguments.done, message →
-              // output_text.done), so this case handles web_search only.
+              // Server-executed tools deliver their result on the done item —
+              // there's no function_call_output for them: mcp_call carries
+              // output/error, web_search carries output/action. Every other item
+              // type closes via its own event (function_call →
+              // function_call_arguments.done, message → output_text.done).
+              if (event.item.type === "mcp_call") {
+                const mcp = event.item;
+                const errorText =
+                  typeof mcp.error === "string" && mcp.error.length > 0 ? mcp.error : undefined;
+                yield {
+                  type: EventType.TOOL_CALL_RESULT,
+                  messageId: mcp.id,
+                  toolCallId: mcp.id,
+                  content: stringifyOutput(mcp.output),
+                  ...(errorText ? { isError: true, error: errorText } : {}),
+                };
+                break;
+              }
+
+              if (event.item.type === "mcp_list_tools") {
+                const list = event.item;
+                // Summarize to names only
+                const toolNames = list.tools.map((t) => t.name);
+                const listError =
+                  typeof list.error === "string" && list.error.length > 0 ? list.error : undefined;
+                yield {
+                  type: EventType.TOOL_CALL_RESULT,
+                  messageId: list.id,
+                  toolCallId: list.id,
+                  content: JSON.stringify({
+                    server_label: list.server_label,
+                    tool_count: toolNames.length,
+                    tools: toolNames,
+                  }),
+                  ...(listError ? { isError: true, error: listError } : {}),
+                };
+                break;
+              }
+
               const item = event.item as {
                 type?: string;
                 id?: string;
@@ -164,10 +249,12 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
 
             // Intentionally unhandled — these are lifecycle/metadata events:
             // response.created, response.in_progress, response.completed,
-            // response.content_part.added, response.content_part.done, and
-            // web_search's *.in_progress/searching/completed status events (the
-            // web_search_call output_item.added/.done handling above covers it),
-            // etc.
+            // response.content_part.added, response.content_part.done,
+            // web_search's *.in_progress/searching/completed status events,
+            // response.mcp_call.in_progress/.completed/.failed and
+            // response.mcp_list_tools.* (the respective output_item.added/.done
+            // handling above covers all three), and the mcp_approval_request
+            // output item (HITL approval flow — no tray), etc.
             default:
               break;
           }

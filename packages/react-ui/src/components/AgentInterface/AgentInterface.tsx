@@ -54,6 +54,7 @@ import { SidebarItem } from "./SidebarItem";
 import { SidebarSlot } from "./SidebarSlot";
 import { MessageLoading, Messages, ScrollArea, ThreadContainer, ThreadHeader } from "./Thread";
 import { ThreadList } from "./ThreadList";
+import { WelcomeGlow } from "./WelcomeGlow";
 import { WelcomeScreen } from "./WelcomeScreen";
 import { Workspace } from "./Workspace";
 
@@ -167,6 +168,7 @@ interface AgentInterfaceComponent extends FC<AgentInterfaceProps> {
   MobileHeader: typeof MobileHeader;
   ThreadHeader: typeof ThreadHeader;
   Welcome: typeof WelcomeScreen;
+  WelcomeGlow: typeof WelcomeGlow;
   Composer: typeof Composer;
   NewChatButton: typeof NewChatButton;
   ThreadList: typeof ThreadList;
@@ -181,6 +183,7 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
     llm,
     artifactRenderers,
     artifactCategories,
+    artifactAutoOpen,
     componentLibrary,
     components,
     theme,
@@ -238,6 +241,7 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
         llm={llm}
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
+        artifactAutoOpen={artifactAutoOpen}
       >
         <NavProvider path={path} defaultPath={defaultPath} onNavigate={onNavigate}>
           <StartersProvider starters={starters} starterVariant={starterVariant}>
@@ -415,7 +419,13 @@ const AgentInterfaceBody = ({
               <MobileHeader />
             ))}
           {artifactPath.kind === "list" ? (
-            <ArtifactBrowserPage categoryName={artifactPath.categoryName} />
+            // Keyed on category so switching categories remounts with fresh
+            // state instead of rendering the previous category's list while the
+            // new one loads.
+            <ArtifactBrowserPage
+              key={artifactPath.categoryName ?? "__all__"}
+              categoryName={artifactPath.categoryName}
+            />
           ) : (
             <ArtifactViewPage
               artifactId={artifactPath.artifactId}
@@ -462,6 +472,7 @@ AgentInterface.Route = Route;
 AgentInterface.MobileHeader = MobileHeader;
 AgentInterface.ThreadHeader = ThreadHeader;
 AgentInterface.Welcome = WelcomeScreen;
+AgentInterface.WelcomeGlow = WelcomeGlow;
 AgentInterface.Composer = Composer;
 AgentInterface.NewChatButton = NewChatButton;
 AgentInterface.ThreadList = ThreadList;

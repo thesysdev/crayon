@@ -1,3 +1,4 @@
+import { recordSystemPromptGeneration } from "../telemetry/runtime";
 import { BUILTINS, LAZY_BUILTIN_DEFS } from "./builtins";
 import type { LibraryJSONSchema } from "./types";
 
@@ -454,8 +455,7 @@ function renderToolSignature(tool: ToolSpec): string {
   let args = "";
   if (tool.inputSchema) {
     const props = (tool.inputSchema as any).properties as
-      | Record<string, Record<string, unknown>>
-      | undefined;
+      Record<string, Record<string, unknown>> | undefined;
     const required = ((tool.inputSchema as any).required as string[]) ?? [];
     if (props && Object.keys(props).length > 0) {
       args = Object.entries(props)
@@ -593,6 +593,7 @@ function generateComponentSignatures(
 
 // ─── Prompt assembly ────────────────────────────────────────────────────────
 
+/** @deprecated Use {@link generateSystemPrompt}. */
 export function generatePrompt(spec: PromptSpec): string {
   const rootName = spec.root ?? "Root";
   const hasTools = !!spec.tools?.length;
@@ -690,4 +691,36 @@ export function generatePrompt(spec: PromptSpec): string {
   }
 
   return parts.join("\n");
+}
+
+// ─── System prompt (library + options + instructions) ───────────────────────
+
+/** Prompt options for {@link generateSystemPrompt} */
+export type SystemPromptOptions = Omit<PromptSpec, keyof BaseSpec>;
+
+/** Object input for {@link generateSystemPrompt}. */
+export interface SystemPromptSpec {
+  library: LibrarySpec;
+  promptOptions?: SystemPromptOptions;
+}
+
+/** Render the full system prompt for a library. */
+export function generateSystemPrompt(spec: SystemPromptSpec): string;
+/** @deprecated Pass `{ library, promptOptions, instructions }` instead. Removed at the next major. */
+export function generateSystemPrompt(spec: PromptSpec): string;
+export function generateSystemPrompt(spec: SystemPromptSpec | PromptSpec): string {
+  if (!isSystemPromptSpec(spec)) {
+    const prompt = generatePrompt(spec);
+    recordSystemPromptGeneration(spec, "legacy_prompt_spec");
+    return prompt;
+  }
+  const merged: PromptSpec = { ...spec.library, ...spec.promptOptions };
+  const prompt = generatePrompt(merged);
+  recordSystemPromptGeneration(merged, "library_spec");
+  return prompt;
+}
+
+// use `library` to discriminate SystemPromptSpec from the deprecated base-PromptSpec
+function isSystemPromptSpec(spec: SystemPromptSpec | PromptSpec): spec is SystemPromptSpec {
+  return "library" in spec && typeof (spec as SystemPromptSpec).library === "object";
 }

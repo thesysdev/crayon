@@ -1,14 +1,13 @@
-import type { Metadata } from "next";
-import { ChatPageClient } from "./_components/chat-page-client";
+import { createPageMetadata } from "@/lib/page-metadata";
 
-export const metadata: Metadata = {
-  title: "OpenUI Chat",
-  description: "Try OpenUI OSS and OpenUI Cloud in a live generative UI chat.",
-  alternates: {
-    canonical: "/chat",
-  },
-};
+export const metadata = createPageMetadata({
+  pathname: "/chat",
+  title: "OpenUI Cloud Chat",
+  description: "Explore OpenUI Cloud through live and curated generative UI conversations.",
+  image: "/nav/chat-light.webp",
+  imageAlt: "OpenUI Chat preview",
+});
 
 export default function ChatPage() {
-  return <ChatPageClient />;
+  return null;
 }

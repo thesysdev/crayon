@@ -1,107 +1,106 @@
-import { getBillingCreditsErrorMessage } from "@/lib/billing";
-import { envOr, requiredEnv } from "@/lib/env";
-import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
-import { artifactTool, createResponsesInstructions } from "@openuidev/thesys-server";
+import { requiredEnv } from "@/lib/env";
+import { resolveRequestedModel } from "@/lib/models";
+import { runFunctionToolLoop } from "@/lib/tool-loop";
+import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
+import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
+import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import type { ResponseInputItem } from "openai/resources/responses/responses";
+import type {
+  ResponseCreateParamsNonStreaming,
+  ResponseInputItem,
+  Tool,
+} from "openai/resources/responses/responses";
 
 /**
- * Generation plane: browser → THIS route → OpenUI Cloud.
- *
- * Calls the hosted Responses API (`POST /v1/embed/responses`) with the stock
- * OpenAI SDK — the endpoint speaks the Responses protocol — and proxies the SSE
- * stream straight to the browser, where `openAIResponsesAdapter` parses it
- * (including the custom `response.artifact_call.delta` events).
- *
- * The artifact tool runs **server-side** inside OpenUI Cloud, so this route is a
- * pure pipe: there is no client-side tool loop. Reads/edits go browser → /v1/*
- * with the fct_ token (see /api/frontend-token + the storage adapter).
+ * Generation plane: browser → this route → OpenUI Cloud's Responses API,
+ * proxying the SSE stream back for `openAIResponsesAdapter` to parse.
+ * Cloud tools (artifacts / search / MCP) run inside Cloud; app-owned
+ * `type: "function"` tools run here via `runFunctionToolLoop`.
  */
 export async function POST(req: Request) {
-  const { threadId, input, model: requestedModel } = (await req.json()) as {
+  const {
+    threadId,
+    messages,
+    model: requestedModel,
+  } = (await req.json()) as {
     threadId?: string;
-    input?: ResponseInputItem[];
+    messages?: ResponseInputItem[];
     model?: unknown;
   };
 
-  if (!threadId) {
-    return Response.json(
-      { error: { message: "threadId is required — create the conversation first" } },
-      { status: 400 },
-    );
+  if (!threadId) return badRequest("threadId is required — create the conversation first");
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return badRequest("messages must be a non-empty ResponseInputItem[]");
   }
-  if (!Array.isArray(input) || input.length === 0) {
-    return Response.json(
-      { error: { message: "input must be a non-empty ResponseInputItem[]" } },
-      { status: 400 },
-    );
-  }
+  // History is stored server-side (conversation + store:true)
+  // forward only the latest message upstream.
+  const input = messages.slice(-1);
+  const model = resolveRequestedModel(requestedModel);
+  if (!model) return badRequest("model is not available in this agent");
 
   const client = new OpenAI({
     baseURL: "https://api.thesys.dev/v1/embed",
     apiKey: requiredEnv("THESYS_API_KEY"), // sent as Authorization: Bearer …
   });
 
+  // App-owned function tools — the loop runs only the names declared here.
+  const functionTools = {
+    [getWeatherTool.name]: executeGetWeather,
+  };
+
+  const createParams: ResponseCreateParamsNonStreaming = {
+    model,
+    conversation: threadId, // store:true persists to the conversation
+    input,
+    store: true,
+    tools: [
+      // artifact/image_search are Cloud extensions of the Responses tool union.
+      artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
+      { type: "web_search" },
+      { type: "image_search" } as unknown as Tool,
+      getWeatherTool,
+      // Remote MCP servers run inside OpenUI Cloud, e.g.:
+      // { type: "mcp", server_label: "deepwiki", server_url: "https://mcp.deepwiki.com/mcp" },
+    ],
+    instructions: generateSystemPrompt(),
+  };
+
   let stream: AsyncIterable<Record<string, unknown>>;
   try {
-    const model = resolveRequestedModel(requestedModel, envOr("OPENUI_MODEL", DEFAULT_MODEL));
-
     stream = (await client.responses.create(
-      {
-        model,
-        conversation: threadId, // store:true persists to the conversation
-        input,
-        stream: true,
-        store: true,
-        tools: [
-          artifactTool({ artifacts: ["slides", "report"] }),
-          {
-            type: "web_search",
-          },
-          {
-            type: "image_search",
-          },
-        ],
-        instructions: createResponsesInstructions(),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
+      { ...createParams, stream: true },
       { signal: req.signal }, // propagate browser aborts (stop button / tab close)
     )) as unknown as AsyncIterable<Record<string, unknown>>;
   } catch (err) {
-    // The SDK surfaces upstream HTTP errors (e.g. 403) as APIError.
+    // Propagate the upstream message and status; the chat store surfaces it.
     const e = err as { status?: number; error?: unknown; message?: string };
-    if (isRateLimitError(e)) {
-      return Response.json(
-        {
-          error: { message: getBillingCreditsErrorMessage() },
-        },
-        { status: 429 },
-      );
-    }
-
-    return Response.json(
+    return NextResponse.json(
       { error: e.error ?? { message: e.message ?? "upstream error" } },
       { status: e.status ?? 502 },
     );
   }
 
-  // Re-emit each SDK event as SSE for the browser adapter.
+  // Re-emit SDK events as SSE, executing function tools between model turns.
   const encoder = new TextEncoder();
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
+      const enqueue = (event: Record<string, unknown>) => {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+      };
       try {
-        for await (const event of stream) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
-        }
+        await runFunctionToolLoop({
+          client,
+          createParams,
+          firstStream: stream,
+          tools: functionTools,
+          enqueue,
+          signal: req.signal,
+        });
       } catch (err) {
-        const message = isRateLimitError(err)
-          ? getBillingCreditsErrorMessage()
-          : err instanceof Error
-            ? err.message
-            : String(err);
-        controller.enqueue(
-          encoder.encode(`data: ${JSON.stringify({ type: "error", message })}\n\n`),
-        );
+        enqueue({
+          type: "error",
+          message: err instanceof Error ? err.message : String(err),
+        });
       } finally {
         controller.close();
       }
@@ -117,6 +116,6 @@ export async function POST(req: Request) {
   });
 }
 
-function isRateLimitError(err: unknown): boolean {
-  return typeof err === "object" && err !== null && "status" in err && err.status === 429;
+function badRequest(message: string): Response {
+  return NextResponse.json({ error: { message } }, { status: 400 });
 }

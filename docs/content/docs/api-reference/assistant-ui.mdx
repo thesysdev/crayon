@@ -1,0 +1,243 @@
+---
+title: "@openuidev/assistant-ui"
+description: API reference for rendering OpenUI Lang tool calls in assistant-ui applications.
+---
+
+Use this package when assistant-ui owns the conversation and tool lifecycle and OpenUI should render
+streaming, interactive interfaces inside assistant messages.
+
+## Install
+
+```bash tab="pnpm" tab-group="pkg"
+pnpm add @openuidev/assistant-ui @assistant-ui/react @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless react react-dom zod zustand@^4.5.5
+```
+
+```bash tab="bun" tab-group="pkg"
+bun add @openuidev/assistant-ui @assistant-ui/react @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless react react-dom zod zustand@^4.5.5
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn add @openuidev/assistant-ui @assistant-ui/react @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless react react-dom zod zustand@^4.5.5
+```
+
+```bash tab="npm" tab-group="pkg"
+npm install @openuidev/assistant-ui @assistant-ui/react @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless react react-dom zod zustand@^4.5.5
+```
+
+Import the OpenUI styles once in the application:
+
+```css
+@import "@openuidev/react-ui/layered/styles/index.css";
+```
+
+## `openuiIntegration`
+
+The default integration combines a toolkit and model instructions generated from the same
+`openuiChatLibrary` component vocabulary:
+
+```ts
+interface OpenUIIntegration {
+  toolkit: Toolkit;
+  instructions: string;
+  toolNames: {
+    present: string;
+    prompt: string;
+  };
+}
+
+const openuiIntegration: OpenUIIntegration;
+```
+
+Register both values inside the assistant runtime's model-context client:
+
+```tsx
+"use client";
+
+import {
+  AssistantRuntimeProvider,
+  AuiConfig,
+  AuiProvider,
+  Tools,
+  useAui,
+  useAssistantInstructions,
+} from "@assistant-ui/react";
+import { openuiIntegration } from "@openuidev/assistant-ui";
+
+function OpenUIModelInstructions() {
+  useAssistantInstructions(openuiIntegration.instructions);
+  return null;
+}
+
+function OpenUIConfigProvider({ children }: { children: React.ReactNode }) {
+  const aui = useAui();
+  const config = AuiConfig({
+    tools: Tools({ toolkit: openuiIntegration.toolkit }),
+  });
+
+  return (
+    <AuiProvider extends={aui} config={config}>
+      <OpenUIModelInstructions />
+      {children}
+    </AuiProvider>
+  );
+}
+
+export function OpenUIRuntimeProvider({ runtime, children }) {
+  return (
+    <AssistantRuntimeProvider runtime={runtime}>
+      <OpenUIConfigProvider>{children}</OpenUIConfigProvider>
+    </AssistantRuntimeProvider>
+  );
+}
+```
+
+The default toolkit registers two standalone tools:
+
+| Tool             | assistant-ui type | Behavior                                                                                 |
+| :--------------- | :---------------- | :--------------------------------------------------------------------------------------- |
+| `present_openui` | `frontend`        | Renders display-only OpenUI Lang and completes when the streamed `ui` argument is ready. |
+| `prompt_openui`  | `human`           | Waits for an OpenUI `@ToAssistant` action, then submits its message and form state.      |
+
+## `createOpenUIIntegration(options)`
+
+Creates an aligned toolkit and instruction string for a custom library, tool names, renderer, or
+prompt configuration.
+
+```ts
+interface CreateOpenUIIntegrationOptions extends OpenUIToolUIOptions {
+  promptOptions?: PromptOptions;
+  presentToolName?: string;
+  promptToolName?: string;
+  presentDescription?: string;
+  promptDescription?: string;
+  preamble?: string;
+  additionalRules?: string[];
+}
+
+function createOpenUIIntegration(options?: CreateOpenUIIntegrationOptions): OpenUIIntegration;
+```
+
+```ts
+import { createOpenUIIntegration } from "@openuidev/assistant-ui";
+import { library } from "./library";
+
+const openui = createOpenUIIntegration({
+  library,
+  presentToolName: "show_panel",
+  promptToolName: "ask_panel",
+});
+```
+
+## Toolkit APIs
+
+```ts
+function createOpenUIToolkit(options?: CreateOpenUIToolkitOptions): Toolkit;
+function createOpenUIToolParameters(root?: string): z.ZodObject;
+
+const openuiToolkit: Toolkit;
+const openuiToolParameters: z.ZodObject;
+const OPENUI_PRESENT_TOOL_NAME = "present_openui";
+const OPENUI_PROMPT_TOOL_NAME = "prompt_openui";
+```
+
+`CreateOpenUIToolkitOptions` accepts the library, tool names and descriptions, plus the renderer
+options described below. Display and prompt tools must use different, non-empty names.
+
+## Renderer APIs
+
+```ts
+function OpenUIContent(props: OpenUIContentProps): React.ReactNode;
+function OpenUIPresent(props: OpenUIPresentProps): React.ReactNode;
+function OpenUIPrompt(props: OpenUIPromptProps): React.ReactNode;
+
+function createOpenUIPresent(options?: OpenUIToolUIOptions): ToolCallMessagePartComponent;
+
+function createOpenUIPrompt(options?: OpenUIToolUIOptions): ToolCallMessagePartComponent;
+```
+
+Shared configuration:
+
+```ts
+interface OpenUIToolUIOptions {
+  library?: Library;
+  rendererProps?: OpenUIRendererProps;
+  ErrorFallback?: OpenUIErrorFallback | null;
+  onError?: (errors: OpenUIError[]) => void;
+}
+```
+
+`OpenUIContent` forwards supported props to the OpenUI `Renderer`. Parser errors may be transient
+while `ui` is streaming, so the default error fallback appears only after streaming finishes. Set
+`ErrorFallback: null` to suppress it.
+
+`OpenUIPrompt` calls assistant-ui's `addResult` once for a terminal `@ToAssistant` action. Its result
+contains the action type, message, parameters, optional form name, and form state. Replayed messages
+use the saved form state as the renderer's initial state.
+
+## Instruction APIs
+
+```ts
+function createOpenUIInstructions(options?: CreateOpenUIInstructionsOptions): string;
+function useOpenUIInstructions(options?: UseOpenUIInstructionsOptions): void;
+function OpenUIInstructions(options: UseOpenUIInstructionsOptions): null;
+
+const openuiInstructions: string;
+```
+
+The generated instructions tell the model when to use each tool, include the selected library's
+OpenUI Lang prompt, and keep the display and interactive tool contracts distinct.
+
+## Runtime support and continuation
+
+The core `@openuidev/assistant-ui` entrypoint is runtime-agnostic. Its toolkit, renderers, and
+instructions work with any assistant-ui runtime that forwards tool schemas and results.
+
+After `prompt_openui` receives a result, a runtime adapter should continue the conversation once all
+tools in the current step are complete. A completed `present_openui` call remains the final display
+response and should not automatically start another model step.
+
+### Vercel AI SDK
+
+The optional `/ai-sdk` subpath implements that continuation policy for Vercel AI SDK runtimes. The
+`ai` package is an optional peer dependency and is not required by the core entrypoint.
+
+```tsx
+import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
+import { shouldContinueAfterOpenUIPrompt } from "@openuidev/assistant-ui/ai-sdk";
+
+const runtime = useChatRuntime({
+  sendAutomaticallyWhen: shouldContinueAfterOpenUIPrompt,
+});
+```
+
+For custom tool names:
+
+```ts
+import { createShouldContinueAfterOpenUIPrompt } from "@openuidev/assistant-ui/ai-sdk";
+
+const shouldContinue = createShouldContinueAfterOpenUIPrompt({
+  promptToolName: "ask_panel",
+});
+```
+
+Other runtimes can implement the same policy through their continuation API. Additional
+runtime-specific helpers can be published as separate subpath exports without coupling the core
+integration to one transport or model SDK.
+
+## Exports
+
+| Export                                  | Description                                                     |
+| :-------------------------------------- | :-------------------------------------------------------------- |
+| `openuiIntegration`                     | Default aligned toolkit and instructions                        |
+| `createOpenUIIntegration`               | Integration factory for custom libraries and tool names         |
+| `openuiToolkit` / `createOpenUIToolkit` | Default toolkit and toolkit factory                             |
+| `openuiInstructions`                    | Default generated model instructions                            |
+| `createOpenUIInstructions`              | Instruction factory                                             |
+| `OpenUIInstructions`                    | Component that registers generated instructions                 |
+| `useOpenUIInstructions`                 | Hook that registers generated instructions                      |
+| `OpenUIContent`                         | OpenUI renderer wrapper for streamed tool arguments             |
+| `OpenUIPresent` / `createOpenUIPresent` | Display-tool renderer and factory                               |
+| `OpenUIPrompt` / `createOpenUIPrompt`   | Human-tool renderer and factory                                 |
+| `DefaultOpenUIErrorFallback`            | Default post-stream renderer error message                      |
+| `shouldContinueAfterOpenUIPrompt`       | Vercel AI SDK continuation predicate from the `/ai-sdk` subpath |
+| `createShouldContinueAfterOpenUIPrompt` | Vercel AI SDK predicate factory from the `/ai-sdk` subpath      |

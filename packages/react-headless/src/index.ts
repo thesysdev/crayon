@@ -19,6 +19,7 @@ export {
 } from "./store/ArtifactRenderersContext";
 export { defineArtifactRenderer } from "./store/artifactRendererTypes";
 export { useArtifactStorage } from "./store/ArtifactStorageContext";
+export { artifactViewId, parseArtifactViewId } from "./store/artifactViewId";
 export { ChatProvider } from "./store/ChatProvider";
 export { DetailedViewContext, useDetailedViewStore } from "./store/DetailedViewContext";
 export { ThreadContextContext, useThreadContextStore } from "./store/ThreadContextContext";
@@ -29,16 +30,18 @@ export {
   openAIAdapter,
   openAIReadableStreamAdapter,
   openAIResponsesAdapter,
+  vercelAIAdapter,
 } from "./stream/adapters";
 export {
   langGraphMessageFormat,
   openAIConversationMessageFormat,
   openAIMessageFormat,
+  vercelAIMessageFormat,
 } from "./stream/formats";
 export { processStreamedMessage } from "./stream/processStreamedMessage";
 
 // ── Adapter interfaces + factories ──
-export { fetchLLM, restStorage } from "./adapters";
+export { fetchLLM, getResponseErrorMessage, restStorage } from "./adapters";
 export type {
   Artifact,
   ArtifactCategory,

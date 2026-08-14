@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FC } from "react";
 import { createDefaultInMemoryStorage } from "../adapters/_defaultStorage";
+import { useArtifactAutoOpenWatcher } from "./artifactAutoOpenWatcher";
 import { ArtifactCategoriesContext } from "./ArtifactCategoriesContext";
 import {
   ArtifactRenderersContext,
@@ -22,9 +23,12 @@ export const ChatProvider: FC<ChatProviderProps> = ({
   llm,
   artifactRenderers,
   artifactCategories,
+  artifactAutoOpen,
 }) => {
   const [resolvedStorage] = useState(() => storage ?? createDefaultInMemoryStorage());
-  const [chatStore] = useState(() => createChatStore({ storage: resolvedStorage, llm }));
+  const config = useRef({ storage: resolvedStorage, llm });
+  config.current.llm = llm;
+  const [chatStore] = useState(() => createChatStore(config));
   const [detailedViewStore] = useState(() => createDetailedViewStore());
   const [threadContextStore] = useState(() => createThreadContextStore());
   const [artifactRendererRegistry] = useState(() =>
@@ -63,6 +67,13 @@ export const ChatProvider: FC<ChatProviderProps> = ({
     );
     return unsubscribe;
   }, [chatStore, detailedViewStore, threadContextStore]);
+
+  useArtifactAutoOpenWatcher(
+    artifactAutoOpen ?? true,
+    chatStore,
+    threadContextStore,
+    detailedViewStore,
+  );
 
   return (
     <ChatContext.Provider value={chatStore}>

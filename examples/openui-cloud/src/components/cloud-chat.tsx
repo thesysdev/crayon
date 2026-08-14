@@ -6,12 +6,16 @@ import {
   openAIResponsesAdapter,
   type ChatLLM,
 } from "@openuidev/react-headless";
-import { AgentInterface } from "@openuidev/react-ui";
+import { AgentInterface, type PromptTemplate } from "@openuidev/react-ui";
+import { FileText, Presentation } from "lucide-react";
+import { useCallback, useEffect } from "react";
 // chatLibrary, useOpenuiCloudStorage, and the artifact renderers all come from the
 // migrated SDK (@openuidev/thesys). Its artifact parser now reads the program from
 // the tool INPUT channel (args.artifact_content), so the rich preview renders live
 // during/after generation without a refresh.
+import { usePersistedModel } from "@/hooks/use-persisted-model";
 import { useTheme } from "@/hooks/use-system-theme";
+import { DEFAULT_MODEL } from "@/lib/models";
 import {
   chatLibrary,
   presentationArtifactRenderer,
@@ -19,15 +23,74 @@ import {
   useOpenuiCloudStorage,
 } from "@openuidev/thesys";
 
-// Categories are consumer-owned (the SDK exports each renderer separately). One
-// category per genui artifact kind; `defineArtifactCategories` returns both the
-// deduped `artifactRenderers` and the `artifactCategories` (each `filter.type`
-// derived from the renderers' types). Presentation is listed first — it owns the
-// artifact tool names (the renderer registry is first-wins per toolName).
+import { ModelSwitcher } from "./model-switcher";
+
+const LIGHT_LOGO_URL = "/openui-cloud-logo-light.svg";
+const DARK_LOGO_URL = "/openui-cloud-logo-dark.svg";
+
+const PROMPT_TEMPLATES: PromptTemplate[] = [
+  {
+    displayText: "Create a presentation",
+    prompt: "Create a presentation about ",
+    icon: <Presentation size={16} />,
+    completions: [
+      {
+        displayText: "The rise of reusable rockets and commercial spaceflight",
+        prompt: "the rise of reusable rockets and commercial spaceflight",
+        icon: <></>,
+      },
+      {
+        displayText: "How Formula 1 became a global business",
+        prompt: "how Formula 1 became a global business",
+        icon: <></>,
+      },
+      {
+        displayText: "Why electric vehicles are changing transportation",
+        prompt: "why electric vehicles are changing transportation",
+        icon: <></>,
+      },
+    ],
+  },
+  {
+    displayText: "Write a report",
+    prompt: "Write a report on ",
+    icon: <FileText size={16} />,
+    completions: [
+      {
+        displayText: "Global coffee market trends and consumer preferences",
+        prompt: "global coffee market trends and consumer preferences",
+        icon: <></>,
+      },
+      {
+        displayText: "The state of the electric vehicle market in 2026",
+        prompt: "the state of the electric vehicle market in 2026",
+        icon: <></>,
+      },
+      {
+        displayText: "Global travel trends and emerging destinations",
+        prompt: "global travel trends and emerging destinations",
+        icon: <></>,
+      },
+    ],
+  },
+];
+
 const { artifactRenderers, artifactCategories } = defineArtifactCategories([
-  { name: "Presentations", renderers: [presentationArtifactRenderer] },
-  { name: "Reports", renderers: [reportArtifactRenderer] },
+  {
+    name: "Presentations",
+    renderers: [presentationArtifactRenderer],
+    icon: <Presentation size="1em" />,
+  },
+  {
+    name: "Reports",
+    renderers: [reportArtifactRenderer],
+    icon: <FileText size="1em" />,
+  },
 ]);
+
+// Read at send-time (mutated by the ModelSwitcher) so the static llm always
+// posts the current selection. Kept in sync with the persisted model below.
+let currentModel = DEFAULT_MODEL;
 
 const llm: ChatLLM = {
   send: async ({ threadId, messages, signal }) => {
@@ -37,7 +100,11 @@ const llm: ChatLLM = {
     return fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ threadId, input: openAIConversationMessageFormat.toApi(latest) }),
+      body: JSON.stringify({
+        threadId,
+        input: openAIConversationMessageFormat.toApi(latest),
+        model: currentModel,
+      }),
       signal,
     });
   },
@@ -46,6 +113,8 @@ const llm: ChatLLM = {
 
 export function CloudChat() {
   const mode = useTheme();
+  const [selectedModel, setSelectedModel] = usePersistedModel();
+
   // useOpenuiCloudStorage: browser ChatStorage over /v1, fct_-authenticated. As a
   // hook the storage + its fct_ token manager are created on mount (not at module
   // load), so the token fetch follows this component's lifecycle.
@@ -58,6 +127,19 @@ export function CloudChat() {
     features: { artifact: true },
   });
 
+  // Keep the module-level model (read by llm.send) in sync with the selection.
+  useEffect(() => {
+    currentModel = selectedModel;
+  }, [selectedModel]);
+
+  const handleModelChange = useCallback(
+    (model: string) => {
+      currentModel = model;
+      setSelectedModel(model);
+    },
+    [setSelectedModel],
+  );
+
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       <AgentInterface
@@ -66,26 +148,45 @@ export function CloudChat() {
         componentLibrary={chatLibrary}
         artifactRenderers={artifactRenderers}
         artifactCategories={artifactCategories}
-        agentName="OpenUI Cloud"
+        logoUrl={mode === "dark" ? DARK_LOGO_URL : LIGHT_LOGO_URL}
         scrollVariant="always"
         scrollOnLoad={false}
         theme={{ mode }}
         starters={[
           {
-            displayText: "Flagship store tour",
-            prompt:
-              "Put together retail design inspiration. Use photos of Apple Fifth Avenue, Nike House of Innovation, and Gentle Monster's Seoul flagship, with a visual card for each highlighting one design idea worth borrowing.",
+            displayText: "Relive the FIFA World Cup 2026",
+            prompt: "Relive the FIFA World Cup 2026.",
+            icon: <></>,
           },
           {
-            displayText: "Quarterly deck",
-            prompt: "Create a short presentation about our Q2 results with three slides.",
+            displayText: "Create a report on global coffee trends",
+            prompt: "Create a report on global coffee trends.",
+            icon: <></>,
           },
           {
-            displayText: "Market report",
-            prompt: "Write a brief market-analysis report on the EV sector.",
+            displayText: "Help me plan my next vacation",
+            prompt: "Help me plan my next vacation.",
+            icon: <></>,
           },
         ]}
-      />
+      >
+        <AgentInterface.MobileHeader
+          className="openui-cloud-mobile-header"
+          agentName=""
+          actions={
+            <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+          }
+        />
+        <AgentInterface.ThreadHeader className="openui-cloud-thread-header">
+          <ModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
+        </AgentInterface.ThreadHeader>
+        <AgentInterface.Welcome
+          title="Good to see you"
+          description="What's on your mind today?"
+          promptTemplates={PROMPT_TEMPLATES}
+          glowAnimation
+        />
+      </AgentInterface>
     </div>
   );
 }

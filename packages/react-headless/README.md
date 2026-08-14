@@ -18,30 +18,36 @@ pnpm add @openuidev/react-headless
 
 **Peer dependencies:** `react >=19.0.0`, `react-dom >=19.0.0`, `zustand ^4.5.5`
 
+The Vercel AI SDK integration has one optional peer dependency:
+
+```bash
+npm install ai@^6
+```
+
 ## Overview
 
 Use `@openuidev/react-headless` when you want OpenUI's chat behavior without OpenUI's visual components:
 
 - **`ChatProvider`** manages threads, messages, and streaming state through a Zustand store.
 - **Selector hooks** expose thread and thread-list state without coupling you to a layout.
-- **Streaming adapters** parse SSE or SDK responses from OpenAI, AG-UI, or custom backends.
+- **Streaming adapters** parse SSE or SDK responses from OpenAI, Vercel AI SDK, AG-UI, or custom backends.
 - **Message formats** convert between your API shape and OpenUI's internal AG-UI shape.
 
 ## Quick Start
 
 ### URL-based setup
 
-The simplest configuration points to your API and lets the provider handle REST calls and streaming automatically:
+The simplest configuration points to your API and lets the provider handle the requests and streaming automatically:
 
 ```tsx
-import { ChatProvider } from "@openuidev/react-headless";
+import { agUIAdapter, ChatProvider, fetchLLM, restStorage } from "@openuidev/react-headless";
+
+const llm = fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() });
+const storage = restStorage({ baseUrl: "/api/threads" });
 
 function App() {
   return (
-    <ChatProvider
-      apiUrl="/api/chat"
-      threadApiUrl="/api/threads"
-    >
+    <ChatProvider llm={llm} storage={storage}>
       <YourChatUI />
     </ChatProvider>
   );
@@ -50,31 +56,21 @@ function App() {
 
 ### Custom functions
 
-For full control, provide your own functions instead of URLs:
+For full control, implement the `ChatLLM` interface instead:
 
 ```tsx
-<ChatProvider
-  processMessage={async ({ threadId, messages, abortController }) => {
-    return fetch("/api/chat", {
+import { openAIAdapter, openAIMessageFormat, type ChatLLM } from "@openuidev/react-headless";
+
+const llm: ChatLLM = {
+  send: ({ threadId, messages, signal }) =>
+    fetch("/api/chat", {
       method: "POST",
-      body: JSON.stringify({ threadId, messages }),
-      signal: abortController.signal,
-    });
-  }}
-  fetchThreadList={async () => {
-    const res = await fetch("/api/threads");
-    return res.json();
-  }}
-  createThread={async (firstMessage) => {
-    const res = await fetch("/api/threads", {
-      method: "POST",
-      body: JSON.stringify({ message: firstMessage }),
-    });
-    return res.json();
-  }}
->
-  <YourChatUI />
-</ChatProvider>
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId, messages: openAIMessageFormat.toApi(messages) }),
+      signal,
+    }),
+  streamProtocol: openAIAdapter(),
+};
 ```
 
 ## Hooks
@@ -175,22 +171,37 @@ function MessageBubble() {
 
 ## Streaming Adapters
 
-Adapters transform HTTP responses into the internal event stream. Pass one to `ChatProvider` via `streamProtocol`:
+Adapters transform HTTP responses into the internal event stream. They are factories — call one and pass the result to `fetchLLM` via `streamAdapter`:
 
 ```tsx
-import { ChatProvider, openAIAdapter } from "@openuidev/react-headless";
+import { fetchLLM, openAIAdapter } from "@openuidev/react-headless";
 
-<ChatProvider apiUrl="/api/chat" streamProtocol={openAIAdapter}>
-  {children}
-</ChatProvider>
+const llm = fetchLLM({ url: "/api/chat", streamAdapter: openAIAdapter() });
 ```
 
 | Adapter | Description |
 | :--- | :--- |
-| `agUIAdapter` | Default adapter for AG-UI SSE events (`data: {json}\n`) |
-| `openAIAdapter` | Parses OpenAI Chat Completions streaming (`ChatCompletionChunk`) |
-| `openAIResponsesAdapter` | Parses OpenAI Responses API streaming (`ResponseStreamEvent`) |
-| `openAIReadableStreamAdapter` | Parses OpenAI SDK's `Stream.toReadableStream()` NDJSON output |
+| `agUIAdapter()` | Parses AG-UI SSE events (`data: {json}\n`) |
+| `openAIAdapter()` | Parses OpenAI Chat Completions streaming (`ChatCompletionChunk`) |
+| `openAIResponsesAdapter()` | Parses OpenAI Responses API streaming (`ResponseStreamEvent`) |
+| `openAIReadableStreamAdapter()` | Parses OpenAI SDK's `Stream.toReadableStream()` NDJSON output |
+| `vercelAIAdapter()` | Parses Vercel AI SDK v6 UIMessage streams from `toUIMessageStreamResponse()` |
+
+For a Vercel AI SDK route, use its stream adapter and message format together:
+
+```tsx
+import { fetchLLM, vercelAIAdapter, vercelAIMessageFormat } from "@openuidev/react-headless";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: vercelAIAdapter(),
+  messageFormat: vercelAIMessageFormat,
+});
+```
+
+This integration supports app-executed tools. Provider-executed tools
+(`providerExecuted: true`, such as provider-hosted built-ins) throw an error because
+the AG-UI message model cannot preserve their assistant-contained result semantics.
 
 ### Custom adapter
 
@@ -208,14 +219,16 @@ const myAdapter: StreamProtocolAdapter = {
 
 ## Message Formats
 
-Message formats convert between your API's message shape and the internal AG-UI format. Pass one to `ChatProvider` via `messageFormat`:
+Message formats convert between your API's message shape and the internal AG-UI format. Pass one to `fetchLLM` via the `messageFormat` option:
 
 ```tsx
-import { ChatProvider, openAIMessageFormat } from "@openuidev/react-headless";
+import { fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-headless";
 
-<ChatProvider apiUrl="/api/chat" messageFormat={openAIMessageFormat}>
-  {children}
-</ChatProvider>
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIAdapter(),
+  messageFormat: openAIMessageFormat,
+});
 ```
 
 | Format | Description |
@@ -223,6 +236,7 @@ import { ChatProvider, openAIMessageFormat } from "@openuidev/react-headless";
 | `identityMessageFormat` | Default format when messages are already AG-UI shaped |
 | `openAIMessageFormat` | Converts to/from OpenAI `ChatCompletionMessageParam[]` |
 | `openAIConversationMessageFormat` | Converts to/from OpenAI Responses API `ResponseInputItem[]` |
+| `vercelAIMessageFormat` | Converts to/from Vercel AI SDK v6 `UIMessage[]` |
 
 ### Custom format
 

@@ -50,6 +50,12 @@ pnpm --filter @openuidev/react-lang build
 
 Use the package name that matches the area you are changing.
 
+## OpenUI Agent Skill
+
+The OpenUI agent skill is maintained in the [thesysdev/skills repository](https://github.com/thesysdev/skills/tree/main/skills/openui), which is its source of truth.
+
+To propose changes to the skill or its supporting references, open a pull request in `thesysdev/skills`.
+
 ## Before Opening a Pull Request
 
 Before opening a pull request, please make sure that:

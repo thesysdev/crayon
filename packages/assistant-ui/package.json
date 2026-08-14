@@ -1,0 +1,107 @@
+{
+  "name": "@openuidev/assistant-ui",
+  "version": "0.0.1",
+  "description": "OpenUI Lang tool renderers and instruction wiring for assistant-ui",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.cts",
+  "typesVersions": {
+    "*": {
+      "ai-sdk": [
+        "dist/ai-sdk.d.cts"
+      ]
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./ai-sdk": {
+      "import": {
+        "types": "./dist/ai-sdk.d.mts",
+        "default": "./dist/ai-sdk.mjs"
+      },
+      "require": {
+        "types": "./dist/ai-sdk.d.cts",
+        "default": "./dist/ai-sdk.cjs"
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "watch": "tsdown --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint:check": "eslint ./src",
+    "lint:fix": "eslint ./src --fix",
+    "format:fix": "prettier --write ./src README.md",
+    "format:check": "prettier --check ./src README.md",
+    "check:publint": "publint",
+    "check:attw": "attw --pack .",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run check:publint && pnpm run check:attw",
+    "ci": "pnpm run typecheck && pnpm run test && pnpm run lint:check && pnpm run format:check"
+  },
+  "keywords": [
+    "openui",
+    "assistant-ui",
+    "generative-ui",
+    "tool-ui",
+    "react",
+    "streaming"
+  ],
+  "homepage": "https://openui.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thesysdev/openui.git",
+    "directory": "packages/assistant-ui"
+  },
+  "bugs": {
+    "url": "https://github.com/thesysdev/openui/issues"
+  },
+  "author": "engineering@thesys.dev",
+  "peerDependencies": {
+    "@assistant-ui/react": "^0.15.0",
+    "@openuidev/react-headless": "workspace:^",
+    "@openuidev/react-lang": "workspace:^",
+    "@openuidev/react-ui": "workspace:^",
+    "ai": "^6.0.0 || ^7.0.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "zod": "catalog:",
+    "zustand": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "ai": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@assistant-ui/react": "^0.15.13",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "ai": "^6.0.236",
+    "jsdom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "^4.1.0"
+  }
+}

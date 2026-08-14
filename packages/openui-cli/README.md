@@ -10,8 +10,8 @@ Command-line tools for starting OpenUI projects and generating model instruction
 It currently supports two workflows:
 
 - scaffolding a new OpenUI app from one of two templates:
-  - **OpenUI Chat** — a Next.js app where you bring your own model key (OpenAI)
-  - **OpenUI Cloud** — a Next.js app backed by OpenUI Cloud for managed conversations, artifacts, and streaming
+  - **OpenUI Cloud (recommended)** — hosted models with managed conversations, streaming, built-in tools, and ready-to-use report and presentation artifacts
+  - **Self-hosted** — bring an OpenAI-compatible model key and own the AI route and persistence
 - generating a system prompt or JSON Schema from a `createLibrary()` export
 
 ## Install
@@ -35,8 +35,8 @@ npx @openuidev/cli@latest create
 Skip the prompt and pick a template directly:
 
 ```bash
-npx @openuidev/cli@latest create --template openui-self-hosted
 npx @openuidev/cli@latest create --template openui-cloud
+npx @openuidev/cli@latest create --template openui-self-hosted
 ```
 
 Generate a prompt from a library file:
@@ -55,7 +55,7 @@ npx @openuidev/cli@latest generate ./src/library.ts --json-schema
 
 ### `openui create`
 
-Scaffolds a new Next.js app from the **OpenUI Chat** or **OpenUI Cloud** template.
+Scaffolds a new Next.js agent app from the recommended managed **OpenUI Cloud** template or the **self-hosted** template.
 
 ```bash
 openui create [options]
@@ -63,50 +63,62 @@ openui create [options]
 
 Options:
 
-- `-n, --name <string>`: Project name
-- `-t, --template <template>`: Template to scaffold — `openui-self-hosted` or `openui-cloud`
+- `-n, --name <string>`: Project name (interactive default: `openui-agent`)
+- `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
+- `-i, --immediate`: Start the development server after installing dependencies
+- `--no-immediate`: Install dependencies without starting the development server
 - `--no-interactive`: Fail instead of prompting for missing required input
 - `--api-key <key>`: (cloud template) OpenUI Cloud API key; skips sign-in
-- `--auth <method>`: (cloud template) How to obtain the key — `oauth`, `manual`, or `skip`
+- `--auth <method>`: (cloud template) How to obtain the key — `oauth` or `skip`; `manual` remains available for backward compatibility but is deprecated
+- `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
 What it does:
 
-- prompts for the project name if you do not pass `--name`
+- prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
 - prompts for the template if you do not pass `--template`
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
+- asks whether to start the development server after dependency installation (default: yes); answering no preserves the install-and-exit behavior
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
+- in non-interactive mode, installs dependencies without starting the server unless overridden with `--immediate`
 - optionally installs the OpenUI agent skill for AI coding assistants
 - writes a `.env` file tailored to the template (see below)
 
+#### Choose a backend
+
+- **OpenUI Cloud (recommended default)** — start here for prototypes and evaluations. You get hosted models, managed conversation history and streaming, built-in tools, and ready-to-use report and presentation artifacts without operating the model, storage, or artifact infrastructure.
+- **Self-hosted** — choose this when owning the OpenAI-compatible provider integration, AI route, and persistence is a requirement.
+
 #### Template-specific `.env`
 
-- **OpenUI Chat** — prompts for your OpenAI API key and writes `OPENAI_API_KEY` to `.env` (interactive mode only). Leave blank to skip.
 - **OpenUI Cloud** — obtains an OpenUI Cloud API key and writes `THESYS_API_KEY` plus `DEMO_USER_ID=demo-user` to `.env`. The key is resolved by, in order:
   - `--api-key <key>` if provided
   - the `--auth` method, otherwise an interactive prompt offering:
     - `oauth` — sign in with Thesys in the browser and mint a key for your org
-    - `manual` — paste an existing key
     - `skip` — leave `THESYS_API_KEY` empty and add it later (get one at <https://console.thesys.dev/keys>)
+  - `--auth manual` is deprecated but remains available for backward compatibility; use `--api-key` for scripted setup instead
   - in non-interactive mode without `--api-key`, the cloud template fails because a key is required
+- **Self-hosted** — prompts for your OpenAI-compatible provider API key and writes `OPENAI_API_KEY` to `.env` (interactive mode only). Leave blank to skip.
 
 Examples:
 
 ```bash
 openui create
-openui create --name my-app --template openui-self-hosted
 openui create --name my-app --template openui-cloud --auth oauth
 openui create --name my-app --template openui-cloud --api-key tk_your_key
+openui create --name my-app --template openui-self-hosted
+openui create --name my-app --template openui-cloud --immediate
+openui create --name my-app --template openui-cloud --no-immediate
 openui create --name my-app --no-skill --no-install
 openui create --no-interactive --name my-app --template openui-cloud --api-key tk_your_key
 ```
 
 ### `openui generate`
 
-Generates a system prompt or JSON Schema from a file that exports a `createLibrary()` result.
+Generates a system prompt and serialized library spec from a file that exports a `createLibrary()` result. Use the spec with `generateSystemPrompt` in backend routes; the prompt file remains available for static or legacy integrations.
 
 ```bash
 openui generate [options] [entry]
@@ -118,11 +130,13 @@ Arguments:
 
 Options:
 
-- `-o, --out <file>`: Write output to a file instead of stdout
-- `--json-schema`: Output JSON Schema instead of the system prompt
+- `-o, --out <file>`: Write the prompt to a file and the spec alongside it with the extension replaced by `.spec.json`
+- `--json-schema`: Output only JSON Schema instead of the prompt and spec
+- `--spec`: Output only the serialized library spec
 - `--export <name>`: Use a specific export name instead of auto-detecting the library export
 - `--prompt-options <name>`: Use a specific `PromptOptions` export name (auto-detected by default)
 - `--no-interactive`: Fail instead of prompting for a missing `entry`
+- `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
 What it does:
 
@@ -138,6 +152,7 @@ Examples:
 ```bash
 openui generate ./src/library.ts
 openui generate ./src/library.ts --json-schema
+openui generate ./src/library.ts --spec
 openui generate ./src/library.ts --export library
 openui generate ./src/library.ts --out ./artifacts/system-prompt.txt
 openui generate ./src/library.ts --prompt-options myPromptOptions
@@ -146,7 +161,7 @@ openui generate --no-interactive ./src/library.ts
 
 ## How `generate` resolves exports
 
-`openui generate` expects the target module to export a library object with both `prompt()` and `toJSONSchema()` methods.
+`openui generate` expects the target module to export a library object with `prompt()`, `toSpec()`, and `toJSONSchema()` methods.
 
 If `--export` is not provided, it looks for exports in this order:
 
@@ -182,7 +197,11 @@ node dist/index.js generate --help
 
 ## Telemetry
 
-The CLI sends usage analytics; OAuth sign-ins may link usage to your OIDC account ID. It does not send code, prompts, API keys, email, or name. Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
+The CLI sends usage analytics; OAuth sign-ins may link usage to your OIDC account ID. It does not send code, prompts, API keys, email, or personal names.
+
+When a coding agent invokes the CLI, it should pass `--agent-name` using its stable, lowercase kebab-case product slug—for example, `codex`, `claude-code`, `cline`, `factory-droid`, or `pi`. Do not pass a model/version, user name, session ID, or other unique value. Humans can omit the flag; it defaults to `unknown`.
+
+Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. Every invocation gets an ephemeral, unpersisted `cli_run_id` so its events can be correlated. Failure events include bounded `failure_stage`, `error_class`, and `error_code` values, never raw error messages. Dependency failures distinguish peer, registry, network, install-script, workspace, and package-compatibility errors. Process failures include duration, exit code, and signal; Cloud-auth failures include a bounded auth substage and HTTP status when known; cancellations use separate events. For `create`, telemetry also includes `package_manager`, the immediate-start selection, and best-effort dev-command start and result events. Dev-command events contain status, duration, exit code, and signal—not project paths, command output, code, or environment values. Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
 
 ```bash
 openui create --no-telemetry

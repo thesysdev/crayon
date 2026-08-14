@@ -5,12 +5,7 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import {
-  AgentInterface,
-  openAIAdapter,
-  openAIMessageFormat,
-  type ChatLLM,
-} from "@openuidev/react-ui";
+import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 import { useMemo } from "react";
 
 import { useColorMode } from "@/hooks/use-system-theme";
@@ -19,17 +14,13 @@ import { muiChatLibrary } from "@/lib/mui-genui";
 export default function Page() {
   const { mode, toggle } = useColorMode();
 
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: ({ messages, signal }) =>
-        fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: openAIMessageFormat.toApi(messages) }),
-          signal,
-        }),
-      streamProtocol: openAIAdapter(),
-    }),
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: openAIAdapter(),
+        messageFormat: openAIMessageFormat,
+      }),
     [],
   );
 
