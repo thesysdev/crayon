@@ -327,6 +327,27 @@ const LineInBarShape: FunctionComponent<LineInBarShapeProps> = React.memo((props
     };
   }, [x, y, adjustedX, adjustedY, width, height, adjustedWidth, adjustedHeight, isVertical]);
 
+  const hasFiniteGeometry = [
+    x,
+    y,
+    width,
+    height,
+    adjustedX,
+    adjustedY,
+    adjustedWidth,
+    adjustedHeight,
+    rTL,
+    rTR,
+    rBL,
+    rBR,
+  ].every(Number.isFinite);
+
+  // Recharts can briefly provide NaN dimensions while a responsive chart is
+  // being measured (for example, inside an inactive tab). Rendering those
+  // values produces invalid SVG coordinates and React warnings. The chart will
+  // render normally once Recharts supplies valid geometry on a later pass.
+  if (!hasFiniteGeometry) return null;
+
   return (
     <g>
       <path d={path} fill={fill} stroke={stroke} strokeWidth={strokeWidth} opacity={opacity} />
