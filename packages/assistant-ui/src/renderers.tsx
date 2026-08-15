@@ -1,6 +1,10 @@
 "use client";
 
-import type { ToolCallMessagePartComponent, ToolCallMessagePartProps } from "@assistant-ui/react";
+import {
+  useAui,
+  type ToolCallMessagePartComponent,
+  type ToolCallMessagePartProps,
+} from "@assistant-ui/react";
 import {
   BuiltinActionType,
   Renderer,
@@ -104,8 +108,31 @@ export type OpenUIPresentProps = ToolCallMessagePartProps<OpenUIToolArgs, OpenUI
   OpenUIToolUIOptions;
 
 export function OpenUIPresent({ args, status, ...options }: OpenUIPresentProps) {
+  const aui = useAui();
+  const onAction = useCallback(
+    (event: ActionEvent) => {
+      if (event.type === BuiltinActionType.ContinueConversation) {
+        aui.thread.append({
+          role: "user",
+          content: [{ type: "text", text: event.humanFriendlyMessage }],
+        });
+      } else if (event.type === BuiltinActionType.OpenUrl) {
+        const url = event.params?.["url"];
+        if (typeof window !== "undefined" && typeof url === "string") {
+          window.open(url, "_blank", "noopener,noreferrer");
+        }
+      }
+    },
+    [aui],
+  );
+
   return (
-    <OpenUIContent {...options} response={args.ui ?? ""} isStreaming={status.type === "running"} />
+    <OpenUIContent
+      {...options}
+      response={args.ui ?? ""}
+      isStreaming={status.type === "running"}
+      onAction={onAction}
+    />
   );
 }
 

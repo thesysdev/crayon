@@ -10,6 +10,7 @@ describe("assistant-ui OpenUI toolkit", () => {
     expect(openuiToolkit["prompt_openui"]?.type).toBe("human");
     expect(openuiToolkit["present_openui"]?.display).toBe("standalone");
     expect(openuiToolkit["prompt_openui"]?.display).toBe("standalone");
+    expect(openuiToolkit["present_openui"]?.description).toContain("optional follow-up actions");
 
     const execute = openuiToolkit["present_openui"]?.execute;
     expect(execute).toBeTypeOf("function");
@@ -48,6 +49,20 @@ describe("assistant-ui OpenUI toolkit", () => {
     expect(instructions).toContain("show_panel");
     expect(instructions).toContain("ask_panel");
     expect(instructions).toContain("Panel(title: string)");
+  });
+
+  it("allows optional present-tool actions to start a new user turn", () => {
+    const instructions = createOpenUIInstructions();
+
+    expect(instructions).toContain(
+      "When using present_openui, FollowUpBlock clicks start a new user turn automatically",
+    );
+    expect(instructions).toContain(
+      "ListBlock items may use @ToAssistant for optional drill-down actions",
+    );
+    expect(instructions).toContain(
+      "When using prompt_openui, include exactly one terminal @ToAssistant action",
+    );
   });
 
   it("rejects ambiguous tool names", () => {
