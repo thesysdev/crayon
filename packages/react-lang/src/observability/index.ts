@@ -3,10 +3,11 @@ import type { WireEvent } from "./core/wire";
 
 export type { StreamWireEvent, WireEnvelope, WireEvent } from "./core/wire";
 
-const DEFAULT_ENDPOINT = "https://ingest.openui.com/v1/events";
+const DEFAULT_ENDPOINT = "https://ingest.thesys.dev/v1/events";
 const GLOBAL_KEY = Symbol.for("openui.cloudObservability");
 
 export interface CloudObservabilityOptions {
+  /** Your publishable API key from the Thesys console (`pk-th-…`). */
   apiKey: string;
   endpoint?: string;
   capture?: "full" | "minimal";
