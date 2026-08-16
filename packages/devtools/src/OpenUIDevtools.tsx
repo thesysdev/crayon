@@ -5,11 +5,13 @@ import {
   type ObservabilityErrorInfo,
   type ObservabilityEvent,
 } from "@openuidev/observability";
-import { ArrowLeft, Check, Copy, CreditCard, WrapText, X } from "lucide-react";
+import { ArrowLeft, Check, Copy, WrapText, X } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { getQuotaError, QuotaErrorRow } from "./QuotaErrorRow";
 import { getReactLangStreamDetail, ReactLangStreamEventRow } from "./ReactLangStreamEventRow";
 import { ShiroLogo } from "./ShiroLogo";
 import { addOrReplaceEvent } from "./eventBuffer";
+import { useDevtoolsSingleton } from "./singleton";
 
 export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
@@ -25,6 +27,11 @@ export interface OpenUIDevtoolsProps {
   errorsOnly?: boolean;
   /** Initial state of the drawer's "auto-open on error" checkbox. Defaults to true. */
   autoOpenOnError?: boolean;
+  /**
+   * @internal Set by react-lang's auto-mount. Auto-mounted instances yield to
+   * any manually rendered <OpenUIDevtools /> so host-provided props win.
+   */
+  __autoMounted?: boolean;
 }
 
 /**
@@ -40,9 +47,13 @@ export function OpenUIDevtools({
   maxEvents = 50,
   errorsOnly = false,
   autoOpenOnError = true,
+  __autoMounted = false,
 }: OpenUIDevtoolsProps) {
   const isEnabled =
     enabled ?? (typeof process === "undefined" || process.env["NODE_ENV"] !== "production");
+  // Only one instance renders even when several are mounted (e.g. react-lang's
+  // auto-mount plus a manual <OpenUIDevtools /> in the host's layout).
+  const isSingleton = useDevtoolsSingleton(__autoMounted);
   const [events, setEvents] = useState<ObservabilityEvent[]>([]);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<ObservabilityEvent | null>(null);
@@ -75,7 +86,7 @@ export function OpenUIDevtools({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open, selected]);
 
-  if (!isEnabled) return null;
+  if (!isEnabled || !isSingleton) return null;
 
   const errorCount = events.filter((event) => event.level === "error").length;
   const visibleEvents = onlyErrors ? events.filter((event) => event.level !== "info") : events;
@@ -218,7 +229,8 @@ export function OpenUIDevtools({
                       typeof event.detail["id"] === "string"
                         ? event.detail["id"]
                         : `${event.timestamp}-${index}`;
-                    if (isCreditsExhausted(event)) return <CreditsEventRow key={key} />;
+                    const quotaError = getQuotaError(event);
+                    if (quotaError) return <QuotaErrorRow key={key} info={quotaError} />;
                     const stream = getReactLangStreamDetail(event);
                     if (stream) {
                       return <ReactLangStreamEventRow key={key} event={event} stream={stream} />;
@@ -277,36 +289,6 @@ export function OpenUIDevtools({
 
 function asRecord(detail: unknown): Record<string, unknown> {
   return typeof detail === "object" && detail !== null ? (detail as Record<string, unknown>) : {};
-}
-
-// A 429 from the LLM plane means the workspace is out of credits.
-function isCreditsExhausted(event: ObservabilityEvent): boolean {
-  return event.level === "error" && asRecord(event.detail)["status"] === 429;
-}
-
-/** Out-of-credits list entry — the highlighted card a 429 event renders as. */
-function CreditsEventRow() {
-  return (
-    <div style={{ ...styles.row, ...styles.rowCredits }}>
-      <div style={styles.creditsNote}>
-        <div style={styles.creditsTitle}>Add credits to keep going</div>
-        <p style={styles.creditsMessage}>
-          Looks like this workspace is out of OpenUI Cloud credits. Purchase credits to keep
-          testing, then try your request again. This notice is only shown in development.
-        </p>
-        <button
-          type="button"
-          style={styles.action}
-          onClick={() =>
-            window.open("https://console.thesys.dev/billing", "_blank", "noopener,noreferrer")
-          }
-        >
-          <CreditCard size={13} />
-          Purchase Credits
-        </button>
-      </div>
-    </div>
-  );
 }
 
 function asString(value: unknown): string | undefined {
@@ -548,46 +530,10 @@ const styles = {
     background: "#ffffff",
     boxShadow: "0 1px 2px rgba(24, 24, 27, 0.04)",
   },
-  rowCredits: {
-    border: "1px solid #fde68a",
-    background: "linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%)",
-  },
   badgeCredits: {
     background: "#fef3c7",
     color: "#92400e",
     borderColor: "#fde68a",
-  },
-  creditsNote: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 6,
-  },
-  creditsTitle: {
-    fontSize: 13,
-    fontWeight: 600,
-    color: "#18181b",
-  },
-  creditsMessage: {
-    margin: 0,
-    fontSize: 12,
-    lineHeight: 1.55,
-    color: "#52525b",
-  },
-  action: {
-    alignSelf: "flex-start",
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 6,
-    border: "none",
-    borderRadius: 8,
-    background: "#18181b",
-    color: "#ffffff",
-    padding: "6px 12px",
-    fontFamily: FONT,
-    fontSize: 12,
-    fontWeight: 500,
-    cursor: "pointer",
-    marginTop: 2,
   },
   rowHeader: {
     display: "flex",

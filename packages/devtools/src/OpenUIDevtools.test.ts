@@ -280,6 +280,40 @@ describe("OpenUIDevtools", () => {
     expect(container.textContent).toContain("root = Second()");
   });
 
+  it("renders only one widget when multiple instances are mounted", () => {
+    const second = document.createElement("div");
+    document.body.appendChild(second);
+    const secondRoot = createRoot(second);
+
+    render({ enabled: true });
+    act(() => secondRoot.render(createElement(OpenUIDevtools, { enabled: true })));
+
+    expect(document.querySelectorAll('button[aria-label="Open OpenUI devtools"]')).toHaveLength(1);
+
+    act(() => secondRoot.unmount());
+    second.remove();
+  });
+
+  it("lets a manual instance win over an auto-mounted one", () => {
+    // Auto-mounted instance first (as react-lang's bootstrap would do) …
+    render({ enabled: true, __autoMounted: true });
+    expect(container.querySelector('button[aria-label="Open OpenUI devtools"]')).not.toBeNull();
+
+    // … then a manual instance mounts and takes over.
+    const manual = document.createElement("div");
+    document.body.appendChild(manual);
+    const manualRoot = createRoot(manual);
+    act(() => manualRoot.render(createElement(OpenUIDevtools, { enabled: true })));
+
+    expect(container.querySelector('button[aria-label="Open OpenUI devtools"]')).toBeNull();
+    expect(manual.querySelector('button[aria-label="Open OpenUI devtools"]')).not.toBeNull();
+
+    // When the manual instance unmounts, the auto instance takes back over.
+    act(() => manualRoot.unmount());
+    manual.remove();
+    expect(container.querySelector('button[aria-label="Open OpenUI devtools"]')).not.toBeNull();
+  });
+
   it("removes a resolved stream from the errors-only view", () => {
     render({ enabled: true, errorsOnly: true, autoOpenOnError: false });
 

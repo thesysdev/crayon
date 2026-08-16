@@ -75,15 +75,17 @@ Options:
 - `--auth <method>`: (cloud template) How to obtain the key — `oauth` or `skip`; `manual` remains available for backward compatibility but is deprecated
 - `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
+`--immediate` and `--no-immediate` are mutually exclusive; passing both exits with an error.
+
 What it does:
 
 - prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
 - prompts for the template if you do not pass `--template`
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
-- asks whether to start the development server after dependency installation (default: yes); answering no preserves the install-and-exit behavior
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
-- in non-interactive mode, installs dependencies without starting the server unless overridden with `--immediate`
+- in interactive sessions, starts the development server and opens its local URL in the default browser; pass `--no-immediate` to install and exit instead
+- in non-interactive sessions, installs and exits unless `--immediate` is passed
 - optionally installs the OpenUI agent skill for AI coding assistants
 - writes a `.env` file tailored to the template (see below)
 
@@ -201,7 +203,7 @@ The CLI sends usage analytics; OAuth sign-ins may link usage to your OIDC accoun
 
 When a coding agent invokes the CLI, it should pass `--agent-name` using its stable, lowercase kebab-case product slug—for example, `codex`, `claude-code`, `cline`, `factory-droid`, or `pi`. Do not pass a model/version, user name, session ID, or other unique value. Humans can omit the flag; it defaults to `unknown`.
 
-Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. For `create`, telemetry also includes `package_manager`, the immediate-start selection, and best-effort dev-command start and result events. Dev-command events contain status, duration, exit code, and signal—not project paths, command output, code, or environment values. Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
+Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. Every invocation gets an ephemeral, unpersisted `cli_run_id` so its events can be correlated. Failure events include bounded `failure_stage`, `error_class`, and `error_code` values, never raw error messages. Dependency failures distinguish peer, registry, network, install-script, workspace, and package-compatibility errors. Process failures include duration, exit code, and signal; Cloud-auth failures include a bounded auth substage and HTTP status when known; cancellations use separate events. For `create`, telemetry also includes `package_manager`, the immediate-start selection, and best-effort dev-command start and result events. Dev-command events contain status, duration, exit code, and signal—not project paths, command output, code, or environment values. Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
 
 ```bash
 openui create --no-telemetry

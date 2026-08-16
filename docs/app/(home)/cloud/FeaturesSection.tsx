@@ -27,10 +27,10 @@ const SUPPORTING_FEATURES: GridFeature[] = [
       "Understand how models and rendered interfaces behave in production from a single operational view.",
   },
   {
-    icon: "shield",
-    title: "Secure by default",
+    icon: "key",
+    title: "Bring your own LLM key",
     description:
-      "Protect production workloads with enterprise-grade security, compliance, and data controls.",
+      "Use your own provider API keys and keep full control over model access and spend.",
   },
 ];
 
@@ -88,7 +88,7 @@ export function FeaturesSection() {
                 One reliable API.
               </>
             }
-            description="Access leading models across providers through a single API. OpenUI Cloud handles fallbacks when a model or provider becomes unavailable."
+            description="Access leading models across providers through a single API, or bring your own provider keys. OpenUI Cloud handles fallbacks when a model or provider becomes unavailable."
             docsHref="https://www.openui.com/docs/openui-cloud/production-readiness"
           />
         </article>

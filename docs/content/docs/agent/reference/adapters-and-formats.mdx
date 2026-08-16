@@ -34,15 +34,17 @@ import {
   openAIAdapter,
   openAIReadableStreamAdapter,
   openAIResponsesAdapter,
+  vercelAIAdapter,
   langGraphAdapter,
   openAIMessageFormat,
   openAIConversationMessageFormat,
+  vercelAIMessageFormat,
   langGraphMessageFormat,
   identityMessageFormat,
 } from "@openuidev/react-ui";
 ```
 
-<Callout type="warn">All five stream adapters are **factory functions** — always call them with `()`. `streamAdapter: openAIAdapter()` is correct; a bare `streamAdapter: openAIAdapter` is wrong.</Callout>
+<Callout type="warn">All six stream adapters are **factory functions** — always call them with `()`. `streamAdapter: openAIAdapter()` is correct; a bare `streamAdapter: openAIAdapter` is wrong.</Callout>
 
 ## The two channels
 
@@ -349,9 +351,9 @@ interface StreamProtocolAdapter {
 }
 ```
 
-`fetchLLM` calls `parse` on the `Response` your route returns and consumes the yielded AG-UI events. All five bundled adapters are factories you call to get an instance — `agUIAdapter()`, `openAIAdapter()`, `openAIReadableStreamAdapter()`, `openAIResponsesAdapter()`, `langGraphAdapter()`; only `langGraphAdapter()` accepts options.
+`fetchLLM` calls `parse` on the `Response` your route returns and consumes the yielded AG-UI events. All six bundled adapters are factories you call to get an instance — `agUIAdapter()`, `openAIAdapter()`, `openAIReadableStreamAdapter()`, `openAIResponsesAdapter()`, `vercelAIAdapter()`, `langGraphAdapter()`; only `langGraphAdapter()` accepts options.
 
-<Callout type="info">A malformed line in the stream is logged to the console and skipped — it does not abort the whole stream. Provider-level failures should be surfaced as a `RUN_ERROR` event (the OpenAI Responses and LangGraph adapters do this for their error events).</Callout>
+<Callout type="info">The line-oriented adapters log and skip malformed lines. `vercelAIAdapter()` delegates validation to the Vercel AI SDK and rejects invalid UIMessage chunks. Provider-level failures should be surfaced as a `RUN_ERROR` event (the OpenAI Responses, Vercel AI SDK, and LangGraph adapters do this for their error events).</Callout>
 
 ### Selection guide
 
@@ -362,6 +364,7 @@ Start from your provider and how the route streams its reply. The stream adapter
 | OpenAI **Chat Completions** SSE (`data: {…}` lines)                     | `openAIAdapter()`               | `openAIMessageFormat`                |
 | OpenAI SDK `stream.toReadableStream()` (NDJSON, no `data:` prefix)      | `openAIReadableStreamAdapter()` | `openAIMessageFormat`                |
 | OpenAI **Responses / Conversations** API SSE                           | `openAIResponsesAdapter()`      | `openAIConversationMessageFormat`    |
+| **Vercel AI SDK v6** UIMessage SSE (`toUIMessageStreamResponse()`)      | `vercelAIAdapter()`             | `vercelAIMessageFormat`              |
 | **LangGraph** named-event SSE (`event: messages\ndata: …`)             | `langGraphAdapter()`            | `langGraphMessageFormat`             |
 | Already AG-UI events (your route emits AG-UI SSE directly)             | `agUIAdapter()`                 | `identityMessageFormat` (default)    |
 
@@ -426,6 +429,25 @@ const llm = fetchLLM({
 - **Wire shape:** OpenAI **Responses API** (and Conversations API) streaming SSE — the item-based `ResponseStreamEvent` stream from `responses.create({ stream: true })`.
 - **What it handles:** `response.output_item.added` (assistant message start, `function_call` start, and server-side `function_call_output` → `TOOL_CALL_RESULT`), `response.output_text.delta` / `.done` for text, `response.function_call_arguments.delta` / `.done` for tool-call arguments (mapping `item_id` → `call_id`), and `error` / `response.failed` → `RUN_ERROR`. Lifecycle/metadata events (`response.created`, `response.completed`, etc.) are ignored.
 - **When to use:** You call the newer Responses or Conversations API rather than Chat Completions. Pair with `openAIConversationMessageFormat`.
+
+### `vercelAIAdapter`
+
+```ts
+import { fetchLLM, vercelAIAdapter, vercelAIMessageFormat } from "@openuidev/react-ui";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: vercelAIAdapter(),
+  messageFormat: vercelAIMessageFormat,
+});
+```
+
+- **Wire shape:** Vercel AI SDK v6 UIMessage SSE, as returned by `result.toUIMessageStreamResponse()`.
+- **What it handles:** streamed text, streamed or complete tool input, successful, failed, or denied tool output, and SDK error chunks. The adapter delegates SSE decoding and chunk validation to the Vercel AI SDK, then projects the validated chunks into AG-UI events.
+- **Current scope:** reasoning, sources, assistant files, custom data, metadata, and tool-approval-request chunks have no equivalent in the current AgentInterface stream processor and are ignored. Approval-gated tools therefore need a custom flow today. Provider-executed tool chunks (`providerExecuted: true`) are rejected because AG-UI cannot preserve their assistant-contained result semantics.
+- **When to use:** Your route uses Vercel AI SDK `streamText()` and returns its UIMessage stream response. Pair with `vercelAIMessageFormat` so the route receives `UIMessage[]` that can be passed to `convertToModelMessages()`.
+
+<Callout type="info">Install `ai@^6` alongside `@openuidev/react-ui` or `@openuidev/react-headless` when using this integration. It is an optional peer dependency, so apps using other adapters do not need the Vercel AI SDK.</Callout>
 
 ### `langGraphAdapter`
 
@@ -517,6 +539,17 @@ import { openAIConversationMessageFormat } from "@openuidev/react-ui";
 - **Shape:** OpenAI's item-based format for the **Responses API** and **Conversations API**. `toApi` returns `ResponseInputItem[]` (accepted by both `responses.create({ input })` and `conversations.items.create({ items })`); `fromApi` reads `ConversationItem[]` / `ResponseItem[]`.
 - **Conversions:** assistant messages are *flattened* into sibling items — a text `message` plus one `function_call` item per tool call; tool results become `function_call_output` items. Inbound, adjacent assistant `message` + `function_call` items are regrouped into one `AssistantMessage`, and Conversations-specific content parts (`reasoning_text`, `summary_text`, `refusal`, …) are folded into text.
 - **When to use:** Pair with `openAIResponsesAdapter()`.
+
+### `vercelAIMessageFormat`
+
+```ts
+import { vercelAIMessageFormat } from "@openuidev/react-ui";
+```
+
+- **Shape:** Vercel AI SDK v6 `UIMessage[]`, whose content is represented as typed `parts`.
+- **Conversions:** text and file inputs become UIMessage parts; AG-UI tool calls become `dynamic-tool` parts; separate AG-UI tool-result messages are folded into the matching tool part as an available or errored output. Inbound conversion accepts both `dynamic-tool` and statically named `tool-*` parts and expands completed outputs back into separate tool messages. (`developer` maps to `system`.)
+- **Unsupported and lossy fields:** this integration does not currently preserve reasoning, sources, custom data, assistant files, or approvals when converting stored messages. Provider-executed tool parts (`providerExecuted: true`) are rejected rather than converted; other provider metadata is not preserved.
+- **When to use:** Pair with `vercelAIAdapter()` and pass the received messages to Vercel AI SDK's `convertToModelMessages()` in your route.
 
 ### `langGraphMessageFormat`
 
