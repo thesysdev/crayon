@@ -1,6 +1,10 @@
 "use client";
 
-import type { ToolCallMessagePartComponent, ToolCallMessagePartProps } from "@assistant-ui/react";
+import {
+  useAui,
+  type ToolCallMessagePartComponent,
+  type ToolCallMessagePartProps,
+} from "@assistant-ui/react";
 import {
   BuiltinActionType,
   Renderer,
@@ -9,7 +13,7 @@ import {
   type OpenUIError,
   type RendererProps,
 } from "@openuidev/react-lang";
-import { openuiChatLibrary } from "@openuidev/react-ui";
+import { openuiChatLibrary, ThemeProvider, type ThemeProps } from "@openuidev/react-ui";
 import { useCallback, useRef, useState, type ComponentType } from "react";
 
 export interface OpenUIToolArgs extends Record<string, unknown> {
@@ -40,6 +44,10 @@ export type OpenUIRendererProps = Omit<
 export interface OpenUIToolUIOptions {
   library?: Library;
   rendererProps?: OpenUIRendererProps;
+  /** Theme props passed to <ThemeProvider>. */
+  theme?: ThemeProps;
+  /** When true, skips wrapping in <ThemeProvider>. */
+  disableThemeProvider?: boolean;
   ErrorFallback?: OpenUIErrorFallback | null;
   onError?: (errors: OpenUIError[]) => void;
 }
@@ -62,6 +70,8 @@ export function OpenUIContent({
   onAction,
   library = openuiChatLibrary,
   rendererProps,
+  theme,
+  disableThemeProvider,
   ErrorFallback = DefaultOpenUIErrorFallback,
   onError,
 }: OpenUIContentProps) {
@@ -74,7 +84,7 @@ export function OpenUIContent({
     [onError],
   );
 
-  return (
+  const content = (
     <>
       <Renderer
         {...rendererProps}
@@ -90,14 +100,39 @@ export function OpenUIContent({
       )}
     </>
   );
+
+  return disableThemeProvider ? content : <ThemeProvider {...theme}>{content}</ThemeProvider>;
 }
 
 export type OpenUIPresentProps = ToolCallMessagePartProps<OpenUIToolArgs, OpenUIPresentResult> &
   OpenUIToolUIOptions;
 
 export function OpenUIPresent({ args, status, ...options }: OpenUIPresentProps) {
+  const aui = useAui();
+  const onAction = useCallback(
+    (event: ActionEvent) => {
+      if (event.type === BuiltinActionType.ContinueConversation) {
+        aui.thread.append({
+          role: "user",
+          content: [{ type: "text", text: event.humanFriendlyMessage }],
+        });
+      } else if (event.type === BuiltinActionType.OpenUrl) {
+        const url = event.params?.["url"];
+        if (typeof window !== "undefined" && typeof url === "string") {
+          window.open(url, "_blank", "noopener,noreferrer");
+        }
+      }
+    },
+    [aui],
+  );
+
   return (
-    <OpenUIContent {...options} response={args.ui ?? ""} isStreaming={status.type === "running"} />
+    <OpenUIContent
+      {...options}
+      response={args.ui ?? ""}
+      isStreaming={status.type === "running"}
+      onAction={onAction}
+    />
   );
 }
 

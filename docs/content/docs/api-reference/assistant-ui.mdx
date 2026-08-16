@@ -93,10 +93,10 @@ export function OpenUIRuntimeProvider({ runtime, children }) {
 
 The default toolkit registers two standalone tools:
 
-| Tool             | assistant-ui type | Behavior                                                                                 |
-| :--------------- | :---------------- | :--------------------------------------------------------------------------------------- |
-| `present_openui` | `frontend`        | Renders display-only OpenUI Lang and completes when the streamed `ui` argument is ready. |
-| `prompt_openui`  | `human`           | Waits for an OpenUI `@ToAssistant` action, then submits its message and form state.      |
+| Tool             | assistant-ui type | Behavior                                                                                                                                              |
+| :--------------- | :---------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `present_openui` | `frontend`        | Renders a complete OpenUI Lang response. Follow-ups and optional list drill-down actions start new user turns; the tool completes when `ui` is ready. |
+| `prompt_openui`  | `human`           | Waits for the required OpenUI `@ToAssistant` action, then submits its message and form state.                                                         |
 
 ## `createOpenUIIntegration(options)`
 
@@ -169,6 +169,9 @@ interface OpenUIToolUIOptions {
 `OpenUIContent` forwards supported props to the OpenUI `Renderer`. Parser errors may be transient
 while `ui` is streaming, so the default error fallback appears only after streaming finishes. Set
 `ErrorFallback: null` to suppress it.
+
+`OpenUIPresent` appends `FollowUpBlock` clicks and optional `ListBlock` `@ToAssistant` actions to the
+assistant-ui thread as new user messages. OpenUI `@OpenUrl` actions open in a new isolated tab.
 
 `OpenUIPrompt` calls assistant-ui's `addResult` once for a terminal `@ToAssistant` action. Its result
 contains the action type, message, parameters, optional form name, and form state. Replayed messages

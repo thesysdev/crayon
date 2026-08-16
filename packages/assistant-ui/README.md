@@ -11,8 +11,15 @@ pnpm add @openuidev/assistant-ui @assistant-ui/react @openuidev/react-ui @openui
 Import the OpenUI styles once in your app:
 
 ```css
+@layer theme, base, openui, components, utilities;
+
 @import "@openuidev/react-ui/layered/styles/index.css";
 ```
+
+The layer declaration keeps OpenUI above Tailwind's reset and below application
+components and utilities. The tool renderers include OpenUI's light
+`ThemeProvider` by default so their design tokens match a light assistant-ui
+shell.
 
 ## Register the tools and instructions
 
@@ -63,7 +70,7 @@ schemas, renderers, and instructions on the runtime's model-context client so
 
 The default toolkit registers two standalone tools:
 
-- `present_openui` is a frontend tool for display-only cards, tables, charts, and other interfaces. It completes as soon as the streamed `ui` argument is available.
+- `present_openui` is a frontend tool for complete cards, tables, charts, and other interfaces. Follow-up suggestions start a new user turn automatically, and list items can use optional `@ToAssistant` actions for drill-downs. The tool completes as soon as the streamed `ui` argument is available.
 - `prompt_openui` is a human tool for forms and choices. It completes only when an OpenUI `@ToAssistant(...)` action submits a result.
 
 `openuiIntegration` contains a toolkit and instruction string created from the
@@ -88,7 +95,17 @@ const openui = createOpenUIIntegration({
 
 The result exposes `toolkit`, `instructions`, and the resolved `toolNames`.
 `createOpenUIIntegration` also accepts custom descriptions, prompt options,
-renderer props, error handling, and an error fallback.
+renderer props, theming, error handling, and an error fallback. Pass theme props
+through the integration factory to customize the rendered tools:
+
+```tsx
+const openui = createOpenUIIntegration({
+  theme: { mode: "dark" },
+});
+```
+
+If the application already wraps assistant-ui in an OpenUI `ThemeProvider`, set
+`disableThemeProvider: true` and let the host provider own the theme.
 
 ## Human-tool continuation
 
@@ -103,6 +120,9 @@ can implement that policy using the runtime's continuation API.
 
 For a Vercel AI SDK runtime, the package provides that policy as an optional
 convenience helper. Install `ai` and import it from the `/ai-sdk` subpath:
+
+The helper supports AI SDK 6 and 7. AI SDK 7 requires Node.js 22 or later and
+an ESM application.
 
 ```tsx
 import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
