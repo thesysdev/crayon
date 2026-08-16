@@ -16,7 +16,6 @@ import {
   type QuerySnapshot,
   type Store,
   type ToolProvider,
-  type ValidationError,
 } from "@openuidev/lang-core";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
