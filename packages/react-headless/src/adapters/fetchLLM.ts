@@ -68,7 +68,7 @@ export function fetchLLM({
             status: response.status,
             ok: response.ok,
             threadId,
-            ...(response.ok ? null : { message: await getResponseErrorMessage(response) }),
+            ...(await buildObservabilityErrorDetail(response)),
           });
           return response;
         },
@@ -85,5 +85,16 @@ export function fetchLLM({
       );
     },
     streamProtocol: streamAdapter,
+  };
+}
+
+async function buildObservabilityErrorDetail(response: Response) {
+  if (response.ok) return {};
+  const res = await response.clone().json();
+  return {
+    error: res?.error,
+    ...(!res.message
+      ? await getResponseErrorMessage(response).then((message) => ({ message }))
+      : { message: res.message }),
   };
 }

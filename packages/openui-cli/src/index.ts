@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -8,7 +9,7 @@ import { Command } from "commander";
 import { runCreateApp } from "./commands/create-app";
 import { GenerateOptions, runGenerate } from "./commands/generate";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
-import { resolveArgs } from "./lib/resolve-args";
+import { rejectConflictingImmediateFlags, resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
 import { handleCliError, normalizeAuth, normalizeTemplate } from "./lib/utils"; // Ensure utils.ts is included for type declarations
 
@@ -33,12 +34,15 @@ program.configureHelp({ showGlobalOptions: true });
 // Init telemetry once, just before any command runs (honors --no-telemetry / DO_NOT_TRACK).
 program.hook("preAction", (_thisCommand, actionCommand) => {
   const globalOptions = program.opts<{ agentName: string; telemetry?: boolean }>();
+  const command = actionCommand.name();
   telemetry.init({ cliVersion, flagEnabled: globalOptions.telemetry !== false });
   telemetry.register({
     agent_name: globalOptions.agentName,
     detected_agent_name: detectAgent(),
+    cli_run_id: randomUUID(),
+    command,
   });
-  telemetry.capture("cli_invoked", { command: actionCommand.name() });
+  telemetry.capture("cli_invoked");
 });
 
 program
@@ -66,7 +70,9 @@ Templates:
   openui-cloud        Recommended default for prototypes and evaluations.
                       Hosted models, managed conversation history, built-in tools,
                       and ready-to-use reports and presentations. No model, storage,
-                      or artifact infrastructure to operate.
+                      or artifact infrastructure to operate. Bring your own
+                      OpenAI/Anthropic/Google key (BYOK) on any plan,
+                      including the free tier.
   openui-self-hosted  Choose when owning the OpenAI-compatible provider, AI route,
                       and persistence is a requirement.
 `,
@@ -83,6 +89,7 @@ Templates:
       immediate?: boolean;
     }) => {
       try {
+        rejectConflictingImmediateFlags(process.argv.slice(2));
         await runCreateApp({
           name: options.name,
           template: normalizeTemplate(options.template),

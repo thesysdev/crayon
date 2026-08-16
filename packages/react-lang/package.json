@@ -1,19 +1,34 @@
 {
   "name": "@openuidev/react-lang",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "Define component libraries, generate LLM system prompts, and render streaming OpenUI Lang output in React — the core runtime for OpenUI generative UI",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.cts",
-  "sideEffects": false,
+  "sideEffects": [
+    "./dist/index.mjs",
+    "./dist/index.cjs",
+    "./src/index.ts",
+    "./src/devtoolsBootstrap.ts"
+  ],
   "files": [
     "dist",
     "README.md"
   ],
   "exports": {
     ".": {
+      "react-native": {
+        "import": {
+          "types": "./dist/index.native.d.mts",
+          "default": "./dist/index.native.mjs"
+        },
+        "require": {
+          "types": "./dist/index.native.d.cts",
+          "default": "./dist/index.native.cjs"
+        }
+      },
       "import": {
         "types": "./dist/index.d.mts",
         "default": "./dist/index.mjs"
@@ -24,6 +39,7 @@
       }
     }
   },
+  "react-native": "./dist/index.native.cjs",
   "scripts": {
     "test": "vitest run --passWithNoTests",
     "build": "tsdown",
@@ -66,21 +82,27 @@
   },
   "author": "engineering@thesys.dev",
   "dependencies": {
+    "@openuidev/devtools": "workspace:^",
     "@openuidev/lang-core": "workspace:^",
     "@openuidev/observability": "workspace:^"
   },
   "peerDependencies": {
     "@modelcontextprotocol/sdk": ">=1.0.0",
-    "react": "catalog:",
+    "react": "*",
+    "react-dom": "*",
     "zod": "catalog:"
   },
   "peerDependenciesMeta": {
     "@modelcontextprotocol/sdk": {
       "optional": true
+    },
+    "react-dom": {
+      "optional": true
     }
   },
   "devDependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
+    "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "jsdom": "catalog:",
