@@ -6,12 +6,13 @@ import {
   type ObservabilityEvent,
 } from "@openuidev/observability";
 import { ArrowLeft, Check, Copy, WrapText, X } from "lucide-react";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { getQuotaError, QuotaErrorRow } from "./QuotaErrorRow";
 import { getReactLangStreamDetail, ReactLangStreamEventRow } from "./ReactLangStreamEventRow";
 import { ShiroLogo } from "./ShiroLogo";
 import { addOrReplaceEvent } from "./eventBuffer";
 import { useDevtoolsSingleton } from "./singleton";
+import { useDevtoolsConfig } from "./useDevtoolsConfig";
 
 export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
@@ -59,20 +60,19 @@ export function OpenUIDevtools({
   const [selected, setSelected] = useState<ObservabilityEvent | null>(null);
   const [wrapStack, setWrapStack] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [autoOpen, setAutoOpen] = useState(autoOpenOnError);
-  const [onlyErrors, setOnlyErrors] = useState(errorsOnly);
+  const { autoOpen, onlyErrors, setAutoOpen, setOnlyErrors, autoOpenRef } = useDevtoolsConfig({
+    autoOpen: autoOpenOnError,
+    onlyErrors: errorsOnly,
+  });
 
-  // Read the live checkbox values inside the (stable) subscription without re-subscribing.
-  const autoOpenRef = useRef(autoOpen);
-  autoOpenRef.current = autoOpen;
-
+  // Read autoOpenRef inside the (stable) subscription without re-subscribing.
   useEffect(() => {
     if (!isEnabled) return;
     return observability.listenAll((event) => {
       setEvents((prev) => addOrReplaceEvent(prev, event, maxEvents));
       if (event.level === "error" && autoOpenRef.current) setOpen(true);
     });
-  }, [isEnabled, maxEvents]);
+  }, [isEnabled, maxEvents, autoOpenRef]);
 
   // Escape steps back: stack view → list, list → closed.
   useEffect(() => {
