@@ -10,7 +10,7 @@ import {
 /**
  * Telemetry disclosure
  *
- * Opt-in: nothing is sent unless OPENUI_TELEMETRY_ENABLED=1 is set.
+ * Opt-in: nothing is sent unless OPENUI_RUNTIME_TELEMETRY_ENABLED=1 is set.
  *
  * Sent for sampled server-side generations:
  * - Event timestamp, SDK and runtime versions, environment, CI status, and CI provider category

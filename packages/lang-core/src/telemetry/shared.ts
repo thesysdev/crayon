@@ -27,7 +27,7 @@ export function isTelemetryDisabled(env?: TelemetryEnvironment): boolean {
 
 /** Runtime telemetry is opt-in: it requires explicit consent and honors the disable flags. */
 export function isRuntimeTelemetryEnabled(env?: TelemetryEnvironment): boolean {
-  return isTruthyEnv(env?.["OPENUI_TELEMETRY_ENABLED"]) && !isTelemetryDisabled(env);
+  return isTruthyEnv(env?.["OPENUI_RUNTIME_TELEMETRY_ENABLED"]) && !isTelemetryDisabled(env);
 }
 
 export function normalizeProjectIdentity(rawValue: string): string {
