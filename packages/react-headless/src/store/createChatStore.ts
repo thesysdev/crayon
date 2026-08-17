@@ -237,9 +237,9 @@ export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig
         }));
         const threadId = get().selectedThreadId;
         if (threadId !== null) {
-          threadStorage
-            .updateMessage?.(threadId, message)
-            .catch((e) => set(() => ({ threadError: e })));
+          // Fire-and-forget: a backend that hasn't implemented updateMessage yet
+          // (or a transient failure) shouldn't surface a thread-level error.
+          threadStorage.updateMessage?.(threadId, message).catch(() => {});
         }
       },
 
