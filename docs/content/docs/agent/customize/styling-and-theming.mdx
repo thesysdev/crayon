@@ -1,0 +1,56 @@
+---
+title: Styling & theming
+description: Brand AgentInterface with theme tokens and integrate React UI styles with Tailwind or other CSS layers.
+---
+
+`AgentInterface` uses two complementary styling systems:
+
+- A built-in `ThemeProvider` maps theme values to `--openui-*` custom properties.
+- The `@openuidev/react-ui` stylesheet supplies the component rules that consume those properties.
+
+Theme configuration does not replace the component stylesheet. Import one complete stylesheet once in the application's global entry point.
+
+```ts
+import "@openuidev/react-ui/styles/index.css";
+```
+
+## Customize theme tokens
+
+Pass a `ThemeProps` object to the `theme` prop. Use `createTheme()` so misspelled or unsupported keys are reported during development.
+
+```tsx
+import { AgentInterface, createTheme, type ThemeProps } from "@openuidev/react-ui";
+
+const agentTheme: ThemeProps = {
+  mode: "light",
+  lightTheme: createTheme({
+    background: "oklch(0.98 0.01 250)",
+    interactiveAccentDefault: "oklch(0.55 0.18 255)",
+    radiusM: "10px",
+  }),
+  darkTheme: createTheme({
+    background: "oklch(0.16 0.02 255)",
+    interactiveAccentDefault: "oklch(0.72 0.14 255)",
+  }),
+};
+
+export function App() {
+  return <AgentInterface llm={llm} theme={agentTheme} />;
+}
+```
+
+When the surrounding application already provides a compatible OpenUI `ThemeProvider`, set `disableThemeProvider` on `AgentInterface` to avoid nesting another provider.
+
+## Use Tailwind v4
+
+React UI includes an opt-in stylesheet wrapped in `@layer openui`. Declare its position between Tailwind's `base` and `components` layers in the application's global stylesheet:
+
+```css
+@layer theme, base, openui, components, utilities;
+@import "tailwindcss";
+@import "@openuidev/react-ui/layered/styles/index.css";
+```
+
+Import only this layered variant. Do not also import the default `styles/index.css` or `components.css`; their unlayered rules would override all named layers. Keep app-wide resets in a lower named layer such as `base`.
+
+See the [`@openuidev/react-ui` styling reference](/docs/api-reference/react-ui#styling) for stylesheet variants, per-component imports, Tailwind v3 guidance, bundler ordering rules, and browser support.
