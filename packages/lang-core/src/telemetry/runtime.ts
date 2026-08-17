@@ -539,7 +539,7 @@ async function sendParserParseCapture(
   await postCapture(PARSER_PARSE_EVENT_NAME, properties, runtime);
 }
 
-export function beginParserParseCapture(): ParserParseCaptureContext | undefined {
+export function prepareParserParseTelemetry(): ParserParseCaptureContext | undefined {
   try {
     const runtime = detectRuntime();
     if (
@@ -567,7 +567,7 @@ export function beginParserParseCapture(): ParserParseCaptureContext | undefined
   }
 }
 
-export function recordParserParse(
+export function captureParserParseResult(
   context: ParserParseCaptureContext | undefined,
   result: ParseResult,
 ): void {
@@ -583,7 +583,7 @@ export function recordParserParse(
   }
 }
 
-export function recordParserParseThrow(context: ParserParseCaptureContext | undefined): void {
+export function captureParserParseException(context: ParserParseCaptureContext | undefined): void {
   if (!context) return;
 
   try {
