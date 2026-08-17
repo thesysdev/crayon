@@ -37,7 +37,7 @@ describe("cloud observability SSR guard", () => {
     cloud.init(baseOptions);
 
     expect(debug).toHaveBeenCalledWith(
-      "[@openuidev/react-lang/observability]",
+      "[@openuidev/observability-cloud]",
       "init skipped in non-browser environment",
     );
     expect((globalThis as Record<symbol, { client: unknown }>)[GLOBAL_KEY]?.client).toBeNull();

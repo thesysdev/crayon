@@ -10,7 +10,7 @@ function buildEnvelope(events: WireEvent[], droppedEvents: number): WireEnvelope
   return {
     v: 1,
     sentAt: Date.now(),
-    sdk: { name: "react-lang", version: SDK_VERSION },
+    sdk: { name: "observability-cloud", version: SDK_VERSION },
     ...(droppedEvents > 0 ? { droppedEvents } : {}),
     events,
   };

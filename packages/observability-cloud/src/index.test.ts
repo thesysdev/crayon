@@ -67,7 +67,7 @@ describe("cloud observability lifecycle", () => {
     cloud.init({ ...baseOptions, debug: true });
 
     expect(debug).toHaveBeenCalledWith(
-      "[@openuidev/react-lang/observability]",
+      "[@openuidev/observability-cloud]",
       "init skipped; already initialized with equivalent options",
     );
   });
@@ -131,7 +131,7 @@ describe("cloud observability lifecycle", () => {
     cloud.init({ ...baseOptions, debug: true, sampleRate: 1.5 });
 
     expect(warn).toHaveBeenCalledWith(
-      "[@openuidev/react-lang/observability]",
+      "[@openuidev/observability-cloud]",
       "sampleRate 1.5 is outside [0, 1] and was clamped to 1",
     );
   });

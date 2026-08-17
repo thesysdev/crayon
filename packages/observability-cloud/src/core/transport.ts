@@ -12,9 +12,9 @@ export interface TransportConfig {
 function debugLog(debug: boolean, message: string, detail?: unknown): void {
   if (!debug) return;
   // eslint-disable-next-line no-console -- gated debug diagnostics for cloud sink
-  if (detail === undefined) console.debug("[@openuidev/react-lang/observability]", message);
+  if (detail === undefined) console.debug("[@openuidev/observability-cloud]", message);
   // eslint-disable-next-line no-console -- gated debug diagnostics for cloud sink
-  else console.debug("[@openuidev/react-lang/observability]", message, detail);
+  else console.debug("[@openuidev/observability-cloud]", message, detail);
 }
 
 function sleep(ms: number): Promise<void> {

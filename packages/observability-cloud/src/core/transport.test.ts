@@ -12,7 +12,7 @@ function envelope(events = 1): WireEnvelope {
   return {
     v: 1,
     sentAt: Date.now(),
-    sdk: { name: "react-lang", version: SDK_VERSION },
+    sdk: { name: "observability-cloud", version: SDK_VERSION },
     events: Array.from({ length: events }, (_, index) => ({
       id: `event-${index}`,
       kind: "react-lang:stream" as const,

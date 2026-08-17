@@ -24,10 +24,10 @@ function hashToUnitInterval(input: string): number {
 function debugWarn(debug: boolean, message: string, error?: unknown): void {
   if (!debug) return;
   if (error === undefined) {
-    console.warn("[@openuidev/react-lang/observability]", message);
+    console.warn("[@openuidev/observability-cloud]", message);
     return;
   }
-  console.warn("[@openuidev/react-lang/observability]", message, error);
+  console.warn("[@openuidev/observability-cloud]", message, error);
 }
 
 function shapeEvent(

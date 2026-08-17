@@ -1,8 +1,8 @@
 import type { ObservabilityLevel } from "@openuidev/observability";
 import type { StreamWireEvent } from "../events/stream";
 
-/** Must be kept in sync with packages/react-lang/package.json on release. */
-export const SDK_VERSION = "0.2.11";
+/** Must be kept in sync with packages/observability-cloud/package.json on release. */
+export const SDK_VERSION = "0.0.1";
 
 export interface WireEventBase {
   id: string;
@@ -19,7 +19,7 @@ export type { StreamWireEvent } from "../events/stream";
 export interface WireEnvelope {
   v: 1;
   sentAt: number;
-  sdk: { name: "react-lang"; version: string };
+  sdk: { name: "observability-cloud"; version: string };
   droppedEvents?: number;
   events: WireEvent[];
 }

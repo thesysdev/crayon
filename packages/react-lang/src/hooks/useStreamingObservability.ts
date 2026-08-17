@@ -7,7 +7,7 @@ import {
   STREAM_PHASE_STREAMING,
   type SettledStreamEventDetail,
   type StreamPhase,
-} from "../observability/events/stream";
+} from "./streamEvent";
 
 type CurrentRef<T> = { current: T };
 

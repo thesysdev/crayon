@@ -53,10 +53,10 @@ function isStreamParserMetadata(value: unknown): value is StreamParserMetadata {
   if (!value || typeof value !== "object") return false;
   const record = value as Record<string, unknown>;
   return (
-    typeof record.incomplete === "boolean" &&
+    typeof record["incomplete"] === "boolean" &&
     "unresolved" in record &&
     "orphaned" in record &&
-    typeof record.statementCount === "number"
+    typeof record["statementCount"] === "number"
   );
 }
 
@@ -70,16 +70,16 @@ export function selectStreamEvent(
   capture: "full" | "minimal",
 ): StreamWireEvent | null {
   const { detail } = event;
-  if (detail.kind !== STREAM_EVENT_KIND || detail.phase !== STREAM_PHASE_SETTLED) return null;
+  if (detail["kind"] !== STREAM_EVENT_KIND || detail["phase"] !== STREAM_PHASE_SETTLED) return null;
 
-  const id = detail.id;
+  const id = detail["id"];
   if (typeof id !== "string") return null;
 
-  const updateIndex = detail.updateIndex;
-  const errorCount = detail.errorCount;
+  const updateIndex = detail["updateIndex"];
+  const errorCount = detail["errorCount"];
   if (typeof updateIndex !== "number" || typeof errorCount !== "number") return null;
 
-  const parser = isStreamParserMetadata(detail.parser) ? detail.parser : undefined;
+  const parser = isStreamParserMetadata(detail["parser"]) ? detail["parser"] : undefined;
 
   if (capture === "minimal") {
     return {
@@ -93,7 +93,7 @@ export function selectStreamEvent(
     };
   }
 
-  const response = typeof detail.response === "string" ? detail.response : undefined;
+  const response = typeof detail["response"] === "string" ? detail["response"] : undefined;
   let responseTruncated: true | undefined;
   let truncatedResponse = response;
   if (response && response.length > MAX_RESPONSE_LENGTH) {
@@ -111,7 +111,7 @@ export function selectStreamEvent(
     ...(parser ? { parser } : {}),
     ...(truncatedResponse !== undefined ? { response: truncatedResponse } : {}),
     ...(responseTruncated ? { responseTruncated } : {}),
-    ...(typeof detail.message === "string" ? { message: detail.message } : {}),
-    ...(detail.errors !== undefined ? { errors: detail.errors } : {}),
+    ...(typeof detail["message"] === "string" ? { message: detail["message"] } : {}),
+    ...(detail["errors"] !== undefined ? { errors: detail["errors"] } : {}),
   };
 }

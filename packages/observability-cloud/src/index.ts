@@ -32,12 +32,12 @@ function getGlobalState(): CloudObservabilityGlobal {
 function debugLog(options: CloudObservabilityOptions | null | undefined, message: string): void {
   if (!options?.debug) return;
   // eslint-disable-next-line no-console -- gated debug diagnostics for cloud sink
-  console.debug("[@openuidev/react-lang/observability]", message);
+  console.debug("[@openuidev/observability-cloud]", message);
 }
 
 function debugWarn(options: CloudObservabilityOptions, message: string): void {
   if (!options.debug) return;
-  console.warn("[@openuidev/react-lang/observability]", message);
+  console.warn("[@openuidev/observability-cloud]", message);
 }
 
 function resolvedEndpoint(options: CloudObservabilityOptions): string {
@@ -110,12 +110,12 @@ export function init(options: CloudObservabilityOptions): void {
       state.client = priorClient;
       state.options = priorOptions;
       if (options.debug) {
-        console.warn("[@openuidev/react-lang/observability]", "init failed", error);
+        console.warn("[@openuidev/observability-cloud]", "init failed", error);
       }
     }
   } catch (error) {
     if (options.debug) {
-      console.warn("[@openuidev/react-lang/observability]", "init failed", error);
+      console.warn("[@openuidev/observability-cloud]", "init failed", error);
     }
   }
 }
@@ -128,7 +128,7 @@ export async function flush(timeoutMs?: number): Promise<boolean> {
   } catch (error) {
     const options = getGlobalState().options;
     if (options?.debug) {
-      console.warn("[@openuidev/react-lang/observability]", "flush failed", error);
+      console.warn("[@openuidev/observability-cloud]", "flush failed", error);
     }
     return false;
   }
@@ -144,7 +144,7 @@ export async function close(): Promise<void> {
   } catch (error) {
     const options = getGlobalState().options;
     if (options?.debug) {
-      console.warn("[@openuidev/react-lang/observability]", "close failed", error);
+      console.warn("[@openuidev/observability-cloud]", "close failed", error);
     }
     getGlobalState().client = null;
     getGlobalState().options = null;

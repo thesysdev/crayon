@@ -22,11 +22,7 @@ export class CloudObservabilityClient {
         if (wireEvent) this.batcher.enqueue(wireEvent);
       } catch (error) {
         if (options.debug) {
-          console.warn(
-            "[@openuidev/react-lang/observability]",
-            "listener threw; dropping event",
-            error,
-          );
+          console.warn("[@openuidev/observability-cloud]", "listener threw; dropping event", error);
         }
       }
     });
