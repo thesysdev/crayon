@@ -11,7 +11,8 @@ export function JsonPanel({ result }: { result: ParseResult | null }) {
     try {
       return JSON.stringify(
         result,
-        (_key, value) => (typeof value === "function" ? `[function]` : value === undefined ? null : value),
+        (_key, value) =>
+          typeof value === "function" ? `[function]` : value === undefined ? null : value,
         2,
       );
     } catch (err) {

@@ -98,9 +98,7 @@ export function usePlayback(
         result = normalizeResult(s.getFinal());
         const oneShot = normalizeResult(module.createParser(schema, rootName).parse(s.source));
         convergence =
-          JSON.stringify(result?.root) === JSON.stringify(oneShot?.root)
-            ? "converged"
-            : "diverged";
+          JSON.stringify(result?.root) === JSON.stringify(oneShot?.root) ? "converged" : "diverged";
       } catch (err) {
         fatal = err instanceof Error ? err.message : String(err);
       }

@@ -5,7 +5,13 @@ import type { ParseResult } from "../types";
 
 function isElementNode(
   value: unknown,
-): value is { type: "element"; typeName: string; props: Record<string, unknown>; partial?: boolean; statementId?: string } {
+): value is {
+  type: "element";
+  typeName: string;
+  props: Record<string, unknown>;
+  partial?: boolean;
+  statementId?: string;
+} {
   return !!value && typeof value === "object" && (value as { type?: unknown }).type === "element";
 }
 
@@ -47,7 +53,12 @@ function PropValue({ value }: { value: unknown }) {
 function NodeView({
   node,
 }: {
-  node: { typeName: string; props: Record<string, unknown>; partial?: boolean; statementId?: string };
+  node: {
+    typeName: string;
+    props: Record<string, unknown>;
+    partial?: boolean;
+    statementId?: string;
+  };
 }) {
   const [open, setOpen] = useState(true);
   const entries = Object.entries(node.props ?? {});

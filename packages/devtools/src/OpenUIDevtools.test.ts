@@ -106,8 +106,10 @@ function buttonByText(text: string): HTMLButtonElement | undefined {
 }
 
 function openPasteButton(): HTMLButtonElement | undefined {
-  return container.querySelector<HTMLButtonElement>('button[aria-label="Open OpenUI Paste"]') ??
-    undefined;
+  return (
+    container.querySelector<HTMLButtonElement>('button[aria-label="Open OpenUI Paste"]') ??
+    undefined
+  );
 }
 
 function checkboxLabeled(text: string): HTMLInputElement {
@@ -351,7 +353,9 @@ describe("OpenUIDevtools", () => {
     );
     click(container.querySelector('button[aria-label="Open in Paste"]')!);
 
-    const editor = container.querySelector<HTMLTextAreaElement>('textarea[aria-label="OpenUI Lang"]');
+    const editor = container.querySelector<HTMLTextAreaElement>(
+      'textarea[aria-label="OpenUI Lang"]',
+    );
     expect(container.querySelector('[aria-label="OpenUI Paste"]')).not.toBeNull();
     expect(editor?.value).toBe('root = Card("from stream")');
   });

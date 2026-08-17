@@ -46,6 +46,7 @@ export function splitChunks(source: string, spec: ChunkStrategy, rng: () => numb
   }
   const n = spec === "char" ? 1 : Math.max(1, parseInt(spec, 10) || 24);
   const chunks: StreamChunk[] = [];
-  for (let i = 0; i < source.length; i += n) chunks.push({ text: source.slice(i, i + n), delayMs: 0 });
+  for (let i = 0; i < source.length; i += n)
+    chunks.push({ text: source.slice(i, i + n), delayMs: 0 });
   return chunks;
 }

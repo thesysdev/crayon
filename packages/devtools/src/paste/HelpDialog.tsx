@@ -52,8 +52,8 @@ export function HelpDialog() {
               <h3 style={heading}>Panels</h3>
               <ul>
                 <li>
-                  <strong>Render</strong>: live output. <code>Query()</code> / <code>Mutation()</code>{" "}
-                  resolve with mocked data.
+                  <strong>Render</strong>: live output. <code>Query()</code> /{" "}
+                  <code>Mutation()</code> resolve with mocked data.
                 </li>
                 <li>
                   <strong>Validation</strong>: parse errors grouped by code, plus unresolved refs

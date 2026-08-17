@@ -14,7 +14,12 @@ export interface StreamSettings {
   onSeedChange: (n: number) => void;
 }
 
-function groupStyle(primary: boolean, disabled: boolean, first: boolean, last: boolean): CSSProperties {
+function groupStyle(
+  primary: boolean,
+  disabled: boolean,
+  first: boolean,
+  last: boolean,
+): CSSProperties {
   return {
     ...s.groupButton,
     ...(primary ? s.groupButtonPrimary : null),

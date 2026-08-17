@@ -10,7 +10,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { addOrReplaceEvent } from "./eventBuffer";
 import { isLibraryEvent, useRegisteredLibraries } from "./libraryRegistry";
-import { openPasteWindow, pasteMountNode, PasteModal, PasteUI } from "./paste";
+import { openPasteWindow, PasteModal, pasteMountNode, PasteUI } from "./paste";
 import { getQuotaError, QuotaErrorRow } from "./QuotaErrorRow";
 import { getReactLangStreamDetail, ReactLangStreamEventRow } from "./ReactLangStreamEventRow";
 import { ShiroLogo } from "./ShiroLogo";
