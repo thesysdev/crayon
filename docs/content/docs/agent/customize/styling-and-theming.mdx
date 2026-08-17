@@ -1,6 +1,6 @@
 ---
 title: Styling & theming
-description: Brand AgentInterface with theme tokens and integrate React UI styles with Tailwind or other CSS layers.
+description: Brand AgentInterface with theme tokens and find the package-level styling guidance for your application.
 ---
 
 `AgentInterface` uses two complementary styling systems:
@@ -13,6 +13,8 @@ Theme configuration does not replace the component stylesheet. Import one comple
 ```ts
 import "@openuidev/react-ui/styles/index.css";
 ```
+
+If the application uses Tailwind or other CSS cascade layers, follow the [`@openuidev/react-ui` styling reference](/docs/api-reference/react-ui#styling) to choose the appropriate stylesheet and ordering.
 
 ## Customize theme tokens
 
@@ -40,17 +42,3 @@ export function App() {
 ```
 
 When the surrounding application already provides a compatible OpenUI `ThemeProvider`, set `disableThemeProvider` on `AgentInterface` to avoid nesting another provider.
-
-## Use Tailwind v4
-
-React UI includes an opt-in stylesheet wrapped in `@layer openui`. Declare its position between Tailwind's `base` and `components` layers in the application's global stylesheet:
-
-```css
-@layer theme, base, openui, components, utilities;
-@import "tailwindcss";
-@import "@openuidev/react-ui/layered/styles/index.css";
-```
-
-Import only this layered variant. Do not also import the default `styles/index.css` or `components.css`; their unlayered rules would override all named layers. Keep app-wide resets in a lower named layer such as `base`.
-
-See the [`@openuidev/react-ui` styling reference](/docs/api-reference/react-ui#styling) for stylesheet variants, per-component imports, Tailwind v3 guidance, bundler ordering rules, and browser support.
