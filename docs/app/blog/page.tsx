@@ -209,11 +209,13 @@ export default function BlogIndex() {
     };
   });
 
-  const allCards = [...localCards, ...COMMUNITY_CARDS].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
-  const featuredCards = allCards.filter((card) => card.featured);
-  const regularCards = allCards.filter((card) => !card.featured);
+  const byDateDesc = (a: BlogCardData, b: BlogCardData) =>
+    new Date(b.date).getTime() - new Date(a.date).getTime();
+
+  const sortedLocal = [...localCards].sort(byDateDesc);
+  const featuredCards = sortedLocal.filter((card) => card.featured);
+  const regularCards = sortedLocal.filter((card) => !card.featured);
+  const communityCards = [...COMMUNITY_CARDS].sort(byDateDesc);
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--openui-foreground)] [[data-theme=dark]_&]:bg-black">
@@ -241,6 +243,13 @@ export default function BlogIndex() {
                   <RegularCard key={card.href} card={card} />
                 ))}
               </div>
+            </div>
+
+            <h2 className={`${TITLE_CLASS} mt-20 mb-6 max-md:mt-12`}>From the community</h2>
+            <div className="grid grid-cols-1 gap-5 auto-rows-fr md:grid-cols-2">
+              {communityCards.map((card) => (
+                <RegularCard key={card.href} card={card} />
+              ))}
             </div>
           </div>
         </section>

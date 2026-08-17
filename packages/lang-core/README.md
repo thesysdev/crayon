@@ -105,6 +105,20 @@ const merged = mergeStatements(original, patch);
 
 **`ToolSpec`** describes a tool for prompt generation (name, description, inputSchema, outputSchema). Shape inspired by MCP's tool schema.
 
+## Telemetry
+
+Lang Core sends pseudonymous installation telemetry during `postinstall`.
+Runtime usage telemetry is opt-in: set `OPENUI_RUNTIME_TELEMETRY_ENABLED=1` to allow
+limited telemetry from 10% of successful server-side `generateSystemPrompt()`
+calls. It does not collect application-user data, prompts, messages, generated
+output, credentials, or raw component and tool definitions. Project identifiers
+are hashed locally before being sent, and browsers do not send telemetry.
+
+Set `OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` to disable telemetry
+(these also override `OPENUI_RUNTIME_TELEMETRY_ENABLED`). Set
+`OPENUI_TELEMETRY_DEBUG=1` to print the installation payload to stdout without
+sending it.
+
 ### Runtime
 
 | Export | Description |

@@ -107,6 +107,15 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
           dark: "/nav/community-dark.webp",
         },
       },
+      {
+        title: "Paste",
+        description: "Validate and stream OpenUI Lang.",
+        href: "/paste",
+        preview: {
+          light: "/nav/paste-light.webp",
+          dark: "/nav/paste-dark.webp",
+        },
+      },
     ],
   },
   // Temporarily hidden — Agent Interface isn't ready to share yet. Restore when ready:

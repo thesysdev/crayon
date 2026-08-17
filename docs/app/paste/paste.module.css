@@ -1,0 +1,902 @@
+/* Paste page styles. Root `.paste` replaces the old global `.playground`
+   scope; other names are local to this module. */
+
+:where(.paste, .paste *, .paste *::before, .paste *::after) {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.paste {
+  --paste-border: 1px solid var(--openui-border-default, rgba(128, 128, 128, 0.25));
+  --paste-mono: var(--openui-font-code, ui-monospace, SFMono-Regular, Menlo, monospace);
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--openui-background, #fff);
+  color: var(--openui-text-neutral-primary, #171717);
+  font-size: 16px;
+}
+
+/* Hover signature tooltip (VSCode-style). CodeMirror sets these class names
+   in JS, so they stay global and are scoped by the paste root. */
+.paste :global(.cm-signature-tooltip) {
+  /* popover token is fully opaque; --openui-elevated is a translucent tint */
+  background: var(--openui-popover-background, var(--openui-background, #fff));
+  border: var(--paste-border);
+  border-radius: var(--openui-radius-m, 8px);
+  box-shadow: var(--openui-shadow-l, 0 6px 24px rgba(0, 0, 0, 0.12));
+  padding: var(--openui-space-xs, 8px) var(--openui-space-s, 10px);
+  max-width: 480px;
+}
+
+.paste :global(.cm-signature-code) {
+  font-family: var(--paste-mono);
+  font-size: var(--openui-font-size-xs, 12px);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.paste :global(.cm-signature-doc) {
+  margin-top: var(--openui-space-2xs, 6px);
+  color: var(--openui-text-neutral-secondary, #666);
+  font-size: var(--openui-font-size-xs, 12px);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--openui-text-neutral-secondary);
+  height: 100vh;
+}
+
+/* ── toolbar ───────────────────────────────────────────────────────────── */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--openui-space-m, 16px);
+  padding: var(--openui-space-m, 16px);
+  border-bottom: var(--paste-border);
+  flex-wrap: wrap;
+}
+
+.toolbarBrand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--openui-space-s, 10px);
+}
+
+.toolbarLogo {
+  font-weight: 600;
+  font-size: var(--openui-font-size-xl, 20px);
+}
+
+.toolbarTagline {
+  color: var(--openui-text-neutral-secondary, #666);
+  font-size: var(--openui-font-size-xl, 14px);
+}
+
+.toolbarControls {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-m, 16px);
+  flex-wrap: wrap;
+}
+
+.toolbarField {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+}
+
+.toolbarLabel {
+  color: var(--openui-text-neutral-secondary, #666);
+  font-size: var(--openui-font-size-xs, 12px);
+}
+
+.toolbarDivider {
+  width: 1px;
+  height: 22px;
+  background: var(--openui-border-default, rgba(128, 128, 128, 0.25));
+}
+
+/* ── help dialog ───────────────────────────────────────────────────────── */
+
+.helpOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: var(--openui-space-l, 24px);
+}
+
+.helpDialog {
+  background: var(--openui-background, #fff);
+  border: var(--paste-border);
+  border-radius: var(--openui-radius-l, 12px);
+  box-shadow: var(--openui-shadow-2xl, 0 24px 64px rgba(0, 0, 0, 0.25));
+  max-width: 640px;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.helpHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--openui-space-m, 16px) var(--openui-space-l, 24px);
+  border-bottom: var(--paste-border);
+}
+
+.helpHeader h2 {
+  font-size: var(--openui-font-size-lg, 18px);
+  font-weight: 700;
+}
+
+.helpBody {
+  padding: var(--openui-space-l, 24px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--openui-space-s, 10px);
+  font-size: var(--openui-font-size-m, 14px);
+  line-height: 1.55;
+}
+
+.helpBody h3 {
+  font-size: var(--openui-font-size-m, 14px);
+  font-weight: 700;
+  margin-top: var(--openui-space-s, 10px);
+}
+
+.helpBody ol,
+.helpBody ul {
+  padding-left: var(--openui-space-l, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--openui-space-2xs, 6px);
+}
+
+/* Tailwind preflight strips list-style from ul/ol — restore markers. */
+.helpBody ul {
+  list-style: disc;
+}
+
+.helpBody ol {
+  list-style: decimal;
+}
+
+.helpBody li {
+  display: list-item;
+}
+
+.helpBody code {
+  font-family: var(--paste-mono);
+  font-size: 0.9em;
+  background: var(--openui-sunk, rgba(0, 0, 0, 0.05));
+  border-radius: var(--openui-radius-xs, 4px);
+  padding: 1px var(--openui-space-2xs, 6px);
+}
+
+/* ── stream controls ───────────────────────────────────────────────────── */
+
+.streamControls {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-s, 10px);
+  flex-wrap: wrap;
+}
+
+.seedInput {
+  width: 70px;
+}
+
+.streamProgress {
+  color: var(--openui-text-neutral-secondary, #666);
+  font-size: var(--openui-font-size-xs, 12px);
+  font-family: var(--paste-mono);
+}
+
+/* ── split layout ──────────────────────────────────────────────────────── */
+
+.mainSplit {
+  flex: 1;
+  min-height: 0;
+}
+
+.resizeHandle {
+  width: 5px;
+  background: transparent;
+  border-left: var(--paste-border);
+  transition: background 0.15s;
+}
+
+.resizeHandle:hover,
+.resizeHandle:active {
+  background: var(--openui-interactive-accent-default, #4467f6);
+}
+
+/* react-resizable-panels v4 applies Panel className to a nested div */
+.splitPanel {
+  height: 100%;
+  min-width: 0;
+}
+
+.editorPane {
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.editorPane :global(.cm-editor) {
+  height: 100%;
+}
+
+.editorPane :global(.cm-tooltip) {
+  border: none;
+  background: transparent;
+}
+
+.editorLock {
+  position: absolute;
+  bottom: var(--openui-space-s, 10px);
+  right: var(--openui-space-s, 10px);
+  background: var(--openui-elevated, #f5f5f5);
+  border: var(--paste-border);
+  border-radius: var(--openui-radius-full, 999px);
+  padding: var(--openui-space-3xs, 2px) var(--openui-space-s, 10px);
+  font-size: var(--openui-font-size-2xs, 10px);
+  color: var(--openui-text-neutral-secondary, #666);
+}
+
+/* ── output tabs ───────────────────────────────────────────────────────── */
+
+.outputPane {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+}
+
+.outputPane.isLoading .tabPanels {
+  pointer-events: none;
+  user-select: none;
+}
+
+.tabPanels {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.panelLoading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--openui-space-s, 10px);
+  z-index: 2;
+  color: var(--openui-text-neutral-secondary, #666);
+  font-size: var(--openui-font-size-m, 14px);
+  background: color-mix(in srgb, var(--openui-background, #fff) 72%, transparent);
+}
+
+.outputTabs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.tabStrip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--openui-space-s, 10px);
+  padding: var(--openui-space-2xs, 6px) var(--openui-space-s, 10px);
+  border-bottom: var(--paste-border);
+}
+
+/* Our border spans the full pane width — drop the library's own list underline. */
+.tabStrip :global(.openui-tabs-list-container)::after {
+  display: none;
+}
+
+.bannerSlot {
+  padding: var(--openui-space-xs, 8px) var(--openui-space-m, 16px) 0;
+}
+
+.tabBody {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Radix keeps inactive TabsContent in the DOM with [hidden]; display rules
+   would otherwise override it and stack every pane below the active one. */
+.tabBody[hidden],
+.tabBody[data-state="inactive"] {
+  display: none;
+}
+
+/* The library's TabsContent wraps children in .openui-tabs-content-inner,
+   which is height-unconstrained — without this, .panelScroll grows to
+   its content and nothing ever scrolls. */
+.tabBody > :global(.openui-tabs-content-inner) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.panelScroll {
+  overflow: auto;
+  padding: var(--openui-space-m, 16px);
+  flex: 1;
+}
+
+.panelEmpty {
+  padding: var(--openui-space-xl, 32px);
+  color: var(--openui-text-neutral-tertiary, #999);
+  text-align: center;
+  margin: auto;
+  /* Guards against the docs bundle's unscoped .panel-empty rule. */
+  display: block;
+  height: auto;
+}
+
+/* ── validation panel ──────────────────────────────────────────────────── */
+
+.metaStrip {
+  display: flex;
+  gap: var(--openui-space-2xs, 6px);
+  flex-wrap: wrap;
+  margin-bottom: var(--openui-space-m, 16px);
+}
+
+.allClear {
+  color: var(--openui-text-success-primary, #171);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+}
+
+.errorGroup {
+  margin-bottom: var(--openui-space-l, 24px);
+}
+
+.errorGroup h3 {
+  font-size: var(--openui-font-size-s, 13px);
+  margin-bottom: var(--openui-space-xs, 8px);
+}
+
+.errorGroup .count {
+  color: var(--openui-text-neutral-tertiary, #999);
+  font-weight: 400;
+}
+
+.errorGroup ul {
+  list-style: none;
+}
+
+.errorRow {
+  padding: var(--openui-space-xs, 8px);
+  border: var(--paste-border);
+  border-radius: var(--openui-radius-s, 6px);
+  margin-bottom: var(--openui-space-xs, 8px);
+}
+
+.errHead {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-xs, 8px);
+}
+
+.errComponent {
+  font-weight: 600;
+  font-family: var(--paste-mono);
+}
+
+.errPath {
+  color: var(--openui-text-neutral-secondary, #666);
+  font-family: var(--paste-mono);
+}
+
+.errMessage {
+  margin-top: var(--openui-space-3xs, 2px);
+}
+
+.errHint {
+  margin-top: var(--openui-space-3xs, 2px);
+  color: var(--openui-text-info-primary, #147);
+  font-size: var(--openui-font-size-s, 13px);
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+}
+
+.fatalCard {
+  border: 1px solid var(--openui-text-danger-primary, #a11);
+  border-radius: var(--openui-radius-m, 8px);
+  padding: var(--openui-space-m, 16px);
+  color: var(--openui-text-danger-primary, #a11);
+}
+
+.fatalCard pre {
+  margin: var(--openui-space-xs, 8px) 0;
+  font-family: var(--paste-mono);
+  white-space: pre-wrap;
+}
+
+/* ── render panel ──────────────────────────────────────────────────────── */
+
+.renderPanel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.renderSeam {
+  padding: var(--openui-space-2xs, 6px) var(--openui-space-m, 16px);
+  color: var(--openui-text-neutral, #999);
+  font-size: var(--openui-font-size-xs, 10px);
+  margin-bottom: var(--openui-space-xs);
+}
+
+.renderCanvas {
+  padding: var(--openui-space-l, 24px);
+  flex: 1;
+}
+
+.renderDetails {
+  border-top: var(--paste-border);
+  padding: var(--openui-space-xs, 8px) var(--openui-space-m, 16px);
+  font-size: var(--openui-font-size-s, 13px);
+}
+
+.renderDetails summary {
+  cursor: pointer;
+  color: var(--openui-text-neutral-secondary, #666);
+}
+
+.renderDetails ul {
+  list-style: none;
+  margin-top: var(--openui-space-xs, 8px);
+}
+
+.renderCrash {
+  border: 1px solid var(--openui-text-danger-primary, #a11);
+  border-radius: var(--openui-radius-m, 8px);
+  padding: var(--openui-space-m, 16px);
+  color: var(--openui-text-danger-primary, #a11);
+}
+
+.renderCrash pre {
+  margin: var(--openui-space-xs, 8px) 0;
+  white-space: pre-wrap;
+  font-family: var(--paste-mono);
+}
+
+/* ── tree panel ────────────────────────────────────────────────────────── */
+
+.treeNode {
+  margin-bottom: var(--openui-space-3xs, 2px);
+}
+
+.treeHeader {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  padding: var(--openui-space-3xs, 2px) 0;
+}
+
+.treeCaret {
+  color: var(--openui-text-neutral-tertiary, #999);
+  display: inline-flex;
+  width: 1em;
+}
+
+.treeType {
+  font-family: var(--paste-mono);
+  font-weight: 600;
+}
+
+.treeProps {
+  margin-left: var(--openui-space-l, 24px);
+  border-left: var(--paste-border);
+  padding-left: var(--openui-space-s, 10px);
+}
+
+.treeProp {
+  display: flex;
+  gap: var(--openui-space-s, 10px);
+  align-items: baseline;
+  padding: 1px 0;
+}
+
+.treeProp dt {
+  color: var(--openui-text-neutral-secondary, #666);
+  font-family: var(--paste-mono);
+  font-size: var(--openui-font-size-xs, 12px);
+  min-width: 80px;
+}
+
+.treeChildren {
+  display: flex;
+  flex-direction: column;
+}
+
+.treeScalar {
+  font-family: var(--paste-mono);
+  font-size: var(--openui-font-size-xs, 12px);
+  word-break: break-word;
+}
+
+.treeExpr {
+  font-family: var(--paste-mono);
+  font-size: var(--openui-font-size-xs, 12px);
+  color: var(--openui-text-info-primary, #147);
+}
+
+.treeExtra {
+  margin-top: var(--openui-space-l, 24px);
+}
+
+.treeExtra h3 {
+  font-size: var(--openui-font-size-s, 13px);
+  margin-bottom: var(--openui-space-xs, 8px);
+}
+
+.treeJson {
+  font-family: var(--paste-mono);
+  font-size: var(--openui-font-size-xs, 12px);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── toasts ────────────────────────────────────────────────────────────── */
+
+.toastStack {
+  position: fixed;
+  bottom: var(--openui-space-l, 24px);
+  right: var(--openui-space-l, 24px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--openui-space-s, 10px);
+  z-index: 100;
+}
+
+.toast {
+  min-width: 280px;
+  max-width: min(360px, calc(100vw - 48px));
+  background: var(--openui-popover-background);
+  border-top: 1px solid var(--openui-border-default);
+  border-right: 1px solid var(--openui-border-default);
+  border-bottom: 1px solid var(--openui-border-default);
+  border-radius: var(--openui-radius-xl, 12px);
+  box-shadow: var(--openui-shadow-m);
+  padding: var(--openui-space-s, 10px) var(--openui-space-m, 16px);
+  animation: pasteToastIn 0.18s ease-out;
+}
+
+.toast :global(.openui-callout-title) {
+  display: flex;
+  width: 100%;
+}
+
+.toastBody {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--openui-space-s, 10px);
+}
+
+@keyframes pasteToastIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── stream timeline ───────────────────────────────────────────────────── */
+
+.convergence {
+  padding: var(--openui-space-xs, 8px) var(--openui-space-m, 16px);
+  border-radius: var(--openui-radius-s, 6px);
+  margin-bottom: var(--openui-space-m, 16px);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+}
+
+.convergenceConverged {
+  background: var(--openui-success-background, #e7f7ea);
+  color: var(--openui-text-success-primary, #171);
+}
+
+.convergenceDiverged {
+  background: var(--openui-danger-background, #ffecec);
+  color: var(--openui-text-danger-primary, #a11);
+}
+
+.traceTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--openui-font-size-xs, 12px);
+  /* Fixed layout so columns don't re-expand as rows stream in. */
+  table-layout: fixed;
+}
+
+.traceTable th {
+  text-align: left;
+  color: var(--openui-text-neutral-secondary, #666);
+  font-weight: 500;
+  padding: var(--openui-space-3xs, 2px) var(--openui-space-xs, 8px);
+  border-bottom: var(--paste-border);
+  position: sticky;
+  top: calc(-1 * var(--openui-space-m, 16px));
+  background: var(--openui-background, #fff);
+}
+
+.traceTable th:nth-child(1) {
+  width: 36px;
+}
+
+.traceTable th:nth-child(3) {
+  width: 60px;
+}
+
+.traceTable th:nth-child(4) {
+  width: 96px;
+}
+
+.traceTable th:nth-child(5) {
+  width: 52px;
+}
+
+.traceTable th:nth-child(6) {
+  width: 88px;
+}
+
+.traceTable th:nth-child(7) {
+  width: 52px;
+}
+
+.traceTable th:nth-child(8) {
+  width: 46px;
+}
+
+.traceTable td {
+  padding: var(--openui-space-3xs, 2px) var(--openui-space-xs, 8px);
+  border-bottom: var(--paste-border);
+  font-family: var(--paste-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rootCell {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+}
+
+.rowAppeared td {
+  background: var(--openui-success-background, #e7f7ea);
+}
+
+.rowDropped td {
+  background: var(--openui-danger-background, #ffecec);
+}
+
+.chunkPreview {
+  white-space: pre;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+/* ── back to docs link ─────────────────────────────────────────────────── */
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--openui-space-2xs, 6px);
+  color: var(--openui-text-neutral-secondary, #666);
+  text-decoration: none;
+  font-size: var(--openui-font-size-s, 13px);
+  margin-right: var(--openui-space-s, 10px);
+}
+
+.backLink:hover {
+  color: var(--openui-text-neutral-primary, #111);
+}
+
+/* ── two-row header ────────────────────────────────────────────────────── */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--openui-space-s, 10px) var(--openui-space-m, 16px);
+  border-bottom: var(--paste-border);
+}
+
+.topbar .toolbarBrand {
+  gap: var(--openui-space-s, 10px);
+}
+
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: var(--openui-space-s, 10px);
+}
+
+/* ── mock tools note ───────────────────────────────────────────────────── */
+
+.mockNote {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--openui-space-2xs, 6px);
+  padding: var(--openui-space-2xs, 6px) var(--openui-space-m, 16px);
+  color: var(--openui-text-info-primary, #147);
+  background: var(--openui-info-background, #e8f2ff);
+  font-size: var(--openui-font-size-xs, 12px);
+  border-radius: var(--openui-space-s);
+}
+
+.mockNote svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── playback button group (icon-only, joined) ─────────────────────────── */
+
+.btnGroup {
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.btnGroup > button {
+  padding-inline: var(--openui-space-s, 10px);
+}
+
+.btnGroup > button:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: -1px;
+}
+
+.btnGroup > button:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* ── mobile settings drawer ────────────────────────────────────────────── */
+
+.drawerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: flex-end;
+  z-index: 200;
+}
+
+.drawer {
+  background: var(--openui-background, #fff);
+  border-top: var(--paste-border);
+  border-radius: var(--openui-radius-l, 12px) var(--openui-radius-l, 12px) 0 0;
+  box-shadow: var(--openui-shadow-2xl, 0 -12px 48px rgba(0, 0, 0, 0.25));
+  width: 100%;
+  max-height: 80dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--openui-space-s, 10px) var(--openui-space-m, 16px);
+  border-bottom: var(--paste-border);
+}
+
+.drawerHeader h2 {
+  font-size: var(--openui-font-size-m, 14px);
+  font-weight: 700;
+}
+
+.drawerBody {
+  padding: var(--openui-space-m, 16px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--openui-space-m, 16px);
+}
+
+.drawerBody .toolbarField {
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* ── responsive ────────────────────────────────────────────────────────── */
+
+@media (max-width: 860px) {
+  .topbar,
+  .toolbar {
+    padding: var(--openui-space-xs, 8px) var(--openui-space-s, 10px);
+  }
+
+  .toolbarControls {
+    gap: var(--openui-space-s, 10px);
+  }
+
+  .resizeHandle {
+    width: auto;
+    height: 5px;
+    border-left: none;
+    border-top: var(--paste-border);
+  }
+
+  .splitPanel {
+    height: 100%;
+    width: 100%;
+  }
+
+  .helpDialog {
+    max-width: 100%;
+    max-height: 92dvh;
+  }
+
+  .helpHeader,
+  .helpBody {
+    padding: var(--openui-space-s, 10px) var(--openui-space-m, 16px);
+  }
+
+  .toastStack {
+    left: var(--openui-space-s, 10px);
+    right: var(--openui-space-s, 10px);
+    bottom: var(--openui-space-s, 10px);
+    align-items: stretch;
+  }
+
+  .toast {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .renderCanvas {
+    padding: var(--openui-space-s, 10px);
+  }
+}

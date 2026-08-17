@@ -1,6 +1,12 @@
 import { WebsiteThemeProvider } from "@/components/website-theme-provider";
 import type { ReactNode } from "react";
+import { ChatPageClient } from "./_components/chat-page-client";
 
 export default function ChatLayout({ children }: { children: ReactNode }) {
-  return <WebsiteThemeProvider>{children}</WebsiteThemeProvider>;
+  return (
+    <WebsiteThemeProvider>
+      <ChatPageClient />
+      {children}
+    </WebsiteThemeProvider>
+  );
 }

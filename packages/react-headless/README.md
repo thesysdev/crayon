@@ -18,13 +18,24 @@ pnpm add @openuidev/react-headless
 
 **Peer dependencies:** `react >=19.0.0`, `react-dom >=19.0.0`, `zustand ^4.5.5`
 
+The Vercel AI SDK integration has one optional peer dependency:
+
+```bash
+npm install ai@^6
+# or, on Node.js 22+ with ESM
+npm install ai@^7
+```
+
+Both AI SDK 6 and 7 are supported. AI SDK 7 requires Node.js 22 or later and
+is ESM-only.
+
 ## Overview
 
 Use `@openuidev/react-headless` when you want OpenUI's chat behavior without OpenUI's visual components:
 
 - **`ChatProvider`** manages threads, messages, and streaming state through a Zustand store.
 - **Selector hooks** expose thread and thread-list state without coupling you to a layout.
-- **Streaming adapters** parse SSE or SDK responses from OpenAI, AG-UI, or custom backends.
+- **Streaming adapters** parse SSE or SDK responses from OpenAI, Vercel AI SDK, AG-UI, or custom backends.
 - **Message formats** convert between your API shape and OpenUI's internal AG-UI shape.
 
 ## Quick Start
@@ -179,6 +190,23 @@ const llm = fetchLLM({ url: "/api/chat", streamAdapter: openAIAdapter() });
 | `openAIAdapter()` | Parses OpenAI Chat Completions streaming (`ChatCompletionChunk`) |
 | `openAIResponsesAdapter()` | Parses OpenAI Responses API streaming (`ResponseStreamEvent`) |
 | `openAIReadableStreamAdapter()` | Parses OpenAI SDK's `Stream.toReadableStream()` NDJSON output |
+| `vercelAIAdapter()` | Parses Vercel AI SDK v6 and v7 UIMessage streams |
+
+For a Vercel AI SDK route, use its stream adapter and message format together:
+
+```tsx
+import { fetchLLM, vercelAIAdapter, vercelAIMessageFormat } from "@openuidev/react-headless";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: vercelAIAdapter(),
+  messageFormat: vercelAIMessageFormat,
+});
+```
+
+This integration supports app-executed tools. Provider-executed tools
+(`providerExecuted: true`, such as provider-hosted built-ins) throw an error because
+the AG-UI message model cannot preserve their assistant-contained result semantics.
 
 ### Custom adapter
 
@@ -213,6 +241,7 @@ const llm = fetchLLM({
 | `identityMessageFormat` | Default format when messages are already AG-UI shaped |
 | `openAIMessageFormat` | Converts to/from OpenAI `ChatCompletionMessageParam[]` |
 | `openAIConversationMessageFormat` | Converts to/from OpenAI Responses API `ResponseInputItem[]` |
+| `vercelAIMessageFormat` | Converts to/from Vercel AI SDK v6 and v7 `UIMessage[]` |
 
 ### Custom format
 

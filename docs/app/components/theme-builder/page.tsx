@@ -30,7 +30,6 @@ type FontOption =
   | "montserrat"
   | "nunito"
   | "playfair-display"
-  | "merriweather"
   | "source-sans-3"
   | "dm-sans";
 
@@ -87,11 +86,6 @@ const FONT_OPTIONS: Array<{ value: FontOption; label: string; family: string }> 
     value: "playfair-display",
     label: "Playfair Display",
     family: 'var(--font-playfair-display), "Playfair Display", serif',
-  },
-  {
-    value: "merriweather",
-    label: "Merriweather",
-    family: 'var(--font-merriweather), "Merriweather", serif',
   },
   {
     value: "source-sans-3",

@@ -5,7 +5,7 @@ import { type ModelOption } from "@/lib/models";
 // Order the paid provider groups the way the console lists them.
 export const PROVIDER_ORDER: ModelOption["provider"][] = ["Anthropic", "OpenAI", "Google"];
 // The model highlighted with a "Recommended" chip.
-export const RECOMMENDED_MODEL_ID = "anthropic/claude-sonnet-5";
+export const RECOMMENDED_MODEL_ID = "anthropic/claude-opus-4-8";
 
 // Group paid models by provider (in PROVIDER_ORDER) and pull the free models
 // into their own list so the dropdown can render a dedicated "Free" section.
