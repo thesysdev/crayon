@@ -7,17 +7,19 @@ description: "Learn how OpenUI Cloud handles model access, automatic fallbacks, 
 
 Generative UI puts model output directly in front of users, and raw model output is not reliable enough for that. OpenUI Cloud sits between the application and the model. It can act as a compatible model gateway or assemble and validate renderable OpenUI Lang for generative UI.
 
-OpenUI Cloud exposes three API surfaces:
+OpenUI Cloud exposes four API surfaces, summarized in the [API overview](/docs/openui-cloud/api/overview):
 
-- **Responses API:** The recommended generation endpoint for new agent applications. It accepts a conversation turn and streams validated UI as **OpenUI Lang**, with persistent conversations, hosted tools, and slide and report generation in the same API.
-- **Chat Completions API:** A drop-in endpoint for applications that already use the OpenAI Chat Completions message format. It supports plain text passthrough, self-hosted or managed generative UI, application-run function tools, and a dedicated Chat Completions-compatible artifact endpoint.
-- **Persistence API:** Provides read and write access to stored conversations, slides, and reports. The browser calls it directly using short-lived session tokens.
+- **[Responses API](/docs/openui-cloud/api/responses):** The recommended generation endpoint for new agent applications. It accepts a conversation turn and streams validated UI as **OpenUI Lang**, with persistent conversations, hosted tools, and slide and report generation in the same API.
+- **[Chat Completions (Embed)](/docs/openui-cloud/api/chat-completions):** A drop-in endpoint for applications that already use the OpenAI Chat Completions message format. It supports plain text passthrough, self-hosted or managed generative UI, and application-run function tools.
+- **[Chat Completions (Artifacts)](/docs/openui-cloud/api/artifacts):** A standalone endpoint for generating and explicitly editing slide and report programs.
+- **[Conversations API](/docs/openui-cloud/api/conversations):** Provides read and write access to stored conversation threads and items. The browser calls it directly using short-lived frontend tokens.
 
-The generation APIs integrate with AgentInterface through their matching stream adapters, while the Persistence API supplies thread history and stored artifacts. Applications with their own UI consume the same OpenUI Lang stream with the open-source renderer.
+The generation APIs integrate with AgentInterface through their matching stream adapters, while the Conversations API and artifact storage endpoints supply thread history and stored artifacts. Applications with their own UI consume the same OpenUI Lang stream with the open-source renderer.
 
 Rendering stays in the browser: responses render client-side with the application's component library, exactly as in open-source OpenUI.
 
-<Mermaid chart={`
+<Mermaid
+  chart={`
 flowchart LR
     subgraph App[The application]
         P[Product code] --> A[AgentInterface]
@@ -25,9 +27,9 @@ flowchart LR
     end
     subgraph Cloud[OpenUI Cloud]
         R[Responses API]
-        C[Chat Completions API]
-        AR[Artifact endpoint]
-        PA[Persistence API]
+        C["Chat Completions (Embed)"]
+        AR["Chat Completions (Artifacts)"]
+        PA[Conversations API]
         M["Model routing and fallbacks"]
         V["Output validation and correction"]
         G[Artifact generation]
@@ -37,7 +39,7 @@ flowchart LR
     B --> R
     B --> C
     B --> AR
-    A -->|session token| PA
+    A -->|frontend token| PA
     R --> M
     R --> V
     R --> G
@@ -48,7 +50,8 @@ flowchart LR
     AR --> V
     AR --> G
     PA --> S
-`} />
+`}
+/>
 
 The application consists of product code, AgentInterface or a custom UI, and a backend route that holds the API key. OpenUI Cloud runs model routing, managed output validation, artifact generation, and storage.
 
@@ -69,6 +72,7 @@ sequenceDiagram
     Cloud-->>App: Stream of renderable UI
     App-->>Browser: Stream relayed, interface renders progressively
     Note over Cloud: Turn persisted to the conversation
+
 `} />
 
 1. The user sends a message. AgentInterface posts it to the application backend.
@@ -84,7 +88,7 @@ Chat Completions uses the application's existing `messages` array. The applicati
 
 Plain passthrough requests receive no injected generative UI prompt. For managed generative UI, a server helper places an OpenUI configuration sentinel in the system message so Cloud can assemble the prompt and validate the generated program. Function tools are returned to the application for execution; hosted search and MCP tools remain on the Responses API.
 
-Slides and reports use `POST /v1/artifact/chat/completions`. The application sends artifact metadata with a prompt and receives a raw OpenUI Lang artifact program. Editing sends the current program back as an assistant message with `is_edit: true`.
+Standalone slides and reports use [Chat Completions for artifacts](/docs/openui-cloud/api/artifacts). The application sends artifact metadata with a prompt and receives a raw OpenUI Lang artifact program. Editing sends the current program back as an assistant message with `is_edit: true`.
 
 ## Output validation
 
@@ -100,7 +104,7 @@ With Chat Completions, the dedicated artifact endpoint returns a raw OpenUI Lang
 
 ## Conversation persistence
 
-Responses API conversations can be stored server-side. Each turn's messages, actions, and outputs attach to a conversation thread, and generation calls reference the thread instead of resending its history. The application backend stores no chat history and runs no database. On load, AgentInterface reads threads and artifacts from the Persistence API.
+Responses API conversations can be stored server-side. Each turn's messages, actions, and outputs attach to a conversation thread, and generation calls reference the thread instead of resending its history. The application backend stores no chat history and runs no database. On load, AgentInterface reads threads from the Conversations API and artifacts from the storage plane.
 
 Chat Completions applications own their message history and resend the relevant messages on each turn. Choose the Responses API when Cloud-managed conversation persistence is required.
 
@@ -108,8 +112,8 @@ Chat Completions applications own their message history and resend the relevant 
 
 Two credentials with different scopes:
 
-- **API key:** Authorizes generation calls and session-token minting. It is held by the application backend and is never sent to the browser.
-- **Session tokens:** Short-lived tokens that the application backend requests from Cloud and returns to the browser. The browser uses them to read conversations and artifacts from the Persistence API without the backend proxying each read. Tokens expire within minutes, and AgentInterface requests a fresh token from the backend before expiry.
+- **API key:** Authorizes generation calls and frontend-token minting. It is held by the application backend and is never sent to the browser.
+- **Frontend tokens:** Short-lived tokens that the application backend requests from Cloud and returns to the browser. The browser uses them to read conversations and artifacts without the backend proxying each read. Tokens expire within minutes, and AgentInterface requests a fresh token from the backend before expiry.
 
 <Mermaid chart={`
 sequenceDiagram
@@ -117,9 +121,10 @@ sequenceDiagram
     participant App as Application backend
     participant Cloud as OpenUI Cloud
 
-    Browser->>App: Session token request
+    Browser->>App: Frontend token request
     App->>Cloud: Mint request, authorized with the API key
-    Cloud-->>App: Short-lived session token
-    App-->>Browser: Session token
+    Cloud-->>App: Short-lived frontend token
+    App-->>Browser: Frontend token
     Browser->>Cloud: Reads conversations and artifacts
+
 `} />

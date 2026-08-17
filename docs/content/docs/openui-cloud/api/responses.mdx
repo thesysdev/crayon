@@ -1,28 +1,13 @@
 ---
 title: Responses API
-description: "Use the OpenAI-compatible Responses API for managed generative UI, persistent conversations, hosted tools, and artifacts."
+description: "Generate managed UI with persistent conversations, hosted tools, and artifacts in the agent stream."
 ---
 
-The Responses API is the recommended OpenUI Cloud endpoint for new agent applications. It combines managed generative UI with persistent conversations, hosted tools, and editable slide and report artifacts.
+The Responses API is the recommended generation endpoint for new OpenUI Cloud agent applications.
 
 **Endpoint:** `POST https://api.thesys.dev/v1/embed/responses`
 
-It uses the stock OpenAI SDK. Keep the Thesys API key and the request on your server.
-
-## Configure the client
-
-Create an API key in the [Thesys console](https://console.thesys.dev/keys), set it as `THESYS_API_KEY`, and point the OpenAI client at the OpenUI Cloud base URL.
-
-```ts title="server.ts"
-import OpenAI from "openai";
-
-const client = new OpenAI({
-  apiKey: process.env.THESYS_API_KEY,
-  baseURL: "https://api.thesys.dev/v1/embed",
-});
-```
-
-Both streaming and non-streaming requests are supported.
+Use the `embedClient` from the [API overview](/docs/openui-cloud/api/overview), which covers authentication, base URLs, models, and shared configuration.
 
 ## Make a request
 
@@ -31,7 +16,7 @@ Use the server helper to have OpenUI Cloud assemble the system prompt for its bu
 ```ts title="server.ts"
 import { generateSystemPrompt } from "@openuidev/thesys-server";
 
-const response = await client.responses.create({
+const response = await embedClient.responses.create({
   model: "openai/gpt-5",
   input: "Compare quarterly revenue by region.",
   instructions: generateSystemPrompt(),
@@ -40,9 +25,7 @@ const response = await client.responses.create({
 console.log(response.output_text);
 ```
 
-The returned `output_text` is an OpenUI Lang program that can be rendered with the Cloud `chatLibrary`.
-
-To use the built-in library on the client or bring your own components, see [Component Library](/docs/openui-cloud/build/component-library).
+The returned `output_text` is an OpenUI Lang program. See [Component Library](/docs/openui-cloud/build/component-library) for the built-in client library and custom component workflow.
 
 ## Stream and render responses
 
@@ -77,23 +60,23 @@ Your `/api/chat` route should forward the OpenUI Cloud response stream without c
 
 The Responses API supports three history patterns:
 
-| Pattern                          | Use it when                                                                             |
-| -------------------------------- | --------------------------------------------------------------------------------------- |
-| Send the full history in `input` | Your application owns all message storage.                                              |
-| Set `previous_response_id`       | You want to chain turns without creating a named conversation. Use `store: true`.       |
-| Set `conversation`               | You want a persistent thread that can be loaded by `AgentInterface`. Use `store: true`. |
+| Pattern                          | Use it when                                                                       |
+| -------------------------------- | --------------------------------------------------------------------------------- |
+| Send the full history in `input` | Your application owns all message storage.                                        |
+| Set `previous_response_id`       | You want to chain turns without a named conversation. Use `store: true`.          |
+| Set `conversation`               | You want a persistent thread managed by the Conversations API. Use `store: true`. |
 
 Chain a follow-up to an earlier response:
 
 ```ts
-const first = await client.responses.create({
+const first = await embedClient.responses.create({
   model: "openai/gpt-5",
   input: "Compare quarterly revenue by region.",
   instructions: generateSystemPrompt(),
   store: true,
 });
 
-const followUp = await client.responses.create({
+const followUp = await embedClient.responses.create({
   model: "openai/gpt-5",
   input: "Focus on Europe and explain the change.",
   instructions: generateSystemPrompt(),
@@ -102,18 +85,7 @@ const followUp = await client.responses.create({
 });
 ```
 
-For a named Cloud conversation, send only the new turn on each request:
-
-```ts
-const response = await client.responses.create({
-  model: "openai/gpt-5",
-  conversation: threadId,
-  input: latestMessage,
-  instructions: generateSystemPrompt(),
-  store: true,
-  stream: true,
-});
-```
+For persistent named threads, see the [Conversations API](/docs/openui-cloud/api/conversations).
 
 ## Use tools
 
@@ -130,7 +102,7 @@ OpenUI Cloud runs hosted tools inside the platform. App-owned function tools sti
 ```ts
 import type { Tool } from "openai/resources/responses/responses";
 
-const response = await client.responses.create({
+const response = await embedClient.responses.create({
   model: "openai/gpt-5",
   input: "Research the market and summarize the most important changes.",
   instructions: generateSystemPrompt(),
@@ -160,7 +132,7 @@ Add `artifactTool()` to generate editable slides or reports inside the agent str
 import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
 import type { Tool } from "openai/resources/responses/responses";
 
-const response = await client.responses.create({
+const response = await embedClient.responses.create({
   model: "openai/gpt-5",
   conversation: threadId,
   input: "Create a three-slide deck on Q4 results.",
@@ -171,32 +143,6 @@ const response = await client.responses.create({
 });
 ```
 
-Artifacts are stored separately from the chat messages. Register `presentationArtifactRenderer`, `reportArtifactRenderer`, and `useOpenuiCloudStorage()` with `AgentInterface` to render and persist them. The [OpenUI Cloud scaffold](https://github.com/thesysdev/openui/blob/main/packages/openui-cli/src/templates/openui-cloud/src/components/cloud-chat.tsx) contains the complete client setup.
+Artifacts are stored separately from chat messages. Register `presentationArtifactRenderer`, `reportArtifactRenderer`, and `useOpenuiCloudStorage()` with `AgentInterface` to render and persist them. The [OpenUI Cloud scaffold](https://github.com/thesysdev/openui/blob/main/packages/openui-cli/src/templates/openui-cloud/src/components/cloud-chat.tsx) contains the complete client setup.
 
-### Render an artifact
-
-`AgentInterface` opens artifacts returned by the tool with the registered presentation or report renderer. The renderer receives the stored artifact state and updates progressively while the response is streaming.
-
-### Edit an artifact
-
-Send the requested change in the same stored conversation. OpenUI Cloud associates the follow-up with the existing artifact and applies the edit:
-
-```ts
-const edited = await client.responses.create({
-  model: "openai/gpt-5",
-  conversation: threadId,
-  input: "Make slide 2 about European revenue.",
-  instructions: generateSystemPrompt(),
-  tools: [artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool],
-  store: true,
-  stream: true,
-});
-```
-
-## Bring your own provider key
-
-Follow [Models and BYOK](/docs/openui-cloud/models-and-byok) to add an OpenAI, Anthropic, or Google key in the [Thesys console](https://console.thesys.dev/byok). When the requested model matches that provider, OpenUI Cloud selects the configured key automatically. The request body does not change.
-
-## When to use Chat Completions
-
-Use the [Chat Completions API](/docs/openui-cloud/api/chat-completions) when an existing application already speaks that protocol, when you want plain model passthrough or self-hosted prompt assembly, or when your application owns its conversation history and function-tool loop. Use Responses for Cloud-managed conversations, hosted search or MCP tools, and artifacts inside the agent stream.
+Follow-up requests in the same stored conversation edit the existing artifact automatically. Use [Chat Completions for artifacts](/docs/openui-cloud/api/artifacts) when you need standalone generation or explicitly managed edits outside an agent stream.
