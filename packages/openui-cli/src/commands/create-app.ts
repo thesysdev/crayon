@@ -140,32 +140,17 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     interactive,
   );
 
-  const args = await resolveArgs(
-    {
-      template: options.template
-        ? { value: options.template }
-        : {
-            prompt: {
-              type: "select",
-              message: "Choose your agent backend",
-              choices: [
-                {
-                  value: "openui-cloud",
-                  name: "OpenUI Cloud — free hosted models or bring your own key, managed history, tools & artifacts; fastest setup (recommended)",
-                },
-                {
-                  value: "openui-self-hosted",
-                  name: "Self-hosted — bring your own provider and self-manage the entire backend",
-                },
-              ],
-            },
-            required: true,
-          },
-    },
-    interactive,
-  );
-
-  const { template } = args as { template: TemplateName };
+  // Interactive runs always scaffold the Cloud backend; openui-self-hosted stays
+  // available, but only when requested explicitly with --template.
+  if (!options.template && !interactive) {
+    throw new CreateError(
+      "args_resolution",
+      "Missing required argument --template",
+      "invalid_input",
+      "MISSING_REQUIRED_ARG",
+    );
+  }
+  const template: TemplateName = options.template ?? "openui-cloud";
   const aiSetup = aiSetupFromTemplate(template);
   telemetry.register({ template, ai_setup: aiSetup });
   telemetry.capture("cli_ai_setup_selected", {

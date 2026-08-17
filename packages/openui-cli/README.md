@@ -80,7 +80,7 @@ Options:
 What it does:
 
 - prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
-- prompts for the template if you do not pass `--template`
+- uses the `openui-cloud` template when you do not pass `--template` (interactive runs no longer ask; `--template openui-self-hosted` still works)
 - copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
@@ -92,7 +92,7 @@ What it does:
 #### Choose a backend
 
 - **OpenUI Cloud (recommended default)** — start here for prototypes and evaluations. You get hosted models, managed conversation history and streaming, built-in tools, and ready-to-use report and presentation artifacts without operating the model, storage, or artifact infrastructure.
-- **Self-hosted** — choose this when owning the OpenAI-compatible provider integration, AI route, and persistence is a requirement.
+- **Self-hosted** — choose this when owning the OpenAI-compatible provider integration, AI route, and persistence is a requirement. It is not offered as an interactive choice; request it with `--template openui-self-hosted`.
 
 #### Template-specific `.env`
 
