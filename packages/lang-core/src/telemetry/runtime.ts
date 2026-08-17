@@ -1,7 +1,7 @@
 import type { PromptSpec } from "../parser/prompt";
 import {
   getPostHogConfig,
-  isTelemetryDisabled,
+  isRuntimeTelemetryEnabled,
   normalizeProjectIdentity,
   TELEMETRY_REQUEST_TIMEOUT_MS,
   TELEMETRY_SCHEMA_VERSION,
@@ -9,6 +9,8 @@ import {
 
 /**
  * Telemetry disclosure
+ *
+ * Opt-in: nothing is sent unless OPENUI_TELEMETRY_ENABLED=1 is set.
  *
  * Sent for sampled server-side generations:
  * - Event timestamp, SDK and runtime versions, environment, CI status, and CI provider category
@@ -374,7 +376,7 @@ export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: Input
 
     const env = runtime.env;
     const environment = getEnvironment(env);
-    if (isTelemetryDisabled(env)) return;
+    if (!isRuntimeTelemetryEnabled(env)) return;
 
     // Reject 90% of calls before projection, hashing, repository lookup, or payload allocation.
     if (Math.random() >= SAMPLE_RATE) return;
