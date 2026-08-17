@@ -7,10 +7,13 @@ import {
 } from "@openuidev/observability";
 import { ArrowLeft, Check, Copy, WrapText, X } from "lucide-react";
 import { useEffect, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
+import { addOrReplaceEvent } from "./eventBuffer";
+import { isLibraryEvent, useRegisteredLibraries } from "./libraryRegistry";
+import { openPasteWindow, pasteMountNode, PasteModal, PasteUI } from "./paste";
 import { getQuotaError, QuotaErrorRow } from "./QuotaErrorRow";
 import { getReactLangStreamDetail, ReactLangStreamEventRow } from "./ReactLangStreamEventRow";
 import { ShiroLogo } from "./ShiroLogo";
-import { addOrReplaceEvent } from "./eventBuffer";
 import { useDevtoolsSingleton } from "./singleton";
 import { useDevtoolsConfig } from "./useDevtoolsConfig";
 
@@ -60,6 +63,11 @@ export function OpenUIDevtools({
   const [selected, setSelected] = useState<ObservabilityEvent | null>(null);
   const [wrapStack, setWrapStack] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [pasteOpen, setPasteOpen] = useState(false);
+  const [popup, setPopup] = useState<Window | null>(null);
+  const [popupBlocked, setPopupBlocked] = useState(false);
+  const [code, setCode] = useState("");
+  const libraries = useRegisteredLibraries();
   const { config, setConfig, configRef } = useDevtoolsConfig({
     autoOpen: autoOpenOnError,
     onlyErrors: errorsOnly,
@@ -70,22 +78,31 @@ export function OpenUIDevtools({
   useEffect(() => {
     if (!isEnabled) return;
     return observability.listenAll((event) => {
+      if (isLibraryEvent(event)) return;
       setEvents((prev) => addOrReplaceEvent(prev, event, maxEvents));
       if (event.level === "error" && configRef.current.autoOpen) setOpen(true);
     });
   }, [isEnabled, maxEvents, configRef]);
 
-  // Escape steps back: stack view → list, list → closed.
+  // Escape steps back: paste → stack view → list → closed.
   useEffect(() => {
-    if (!open) return;
+    if (!open && !pasteOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      if (selected) setSelected(null);
+      if (pasteOpen) setPasteOpen(false);
+      else if (selected) setSelected(null);
       else setOpen(false);
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, selected]);
+  }, [open, selected, pasteOpen]);
+
+  useEffect(() => {
+    if (!popup) return;
+    const onGone = () => setPopup(null);
+    popup.addEventListener("pagehide", onGone);
+    return () => popup.removeEventListener("pagehide", onGone);
+  }, [popup]);
 
   if (!isEnabled || !isSingleton) return null;
 
@@ -114,6 +131,49 @@ export function OpenUIDevtools({
   };
 
   const selectedStack = selected ? (getErrorInfo(selected)?.stack ?? "") : "";
+
+  const closePaste = () => {
+    if (popup) {
+      popup.close();
+      setPopup(null);
+    }
+    setPasteOpen(false);
+    setPopupBlocked(false);
+  };
+
+  const ejectPaste = () => {
+    const next = openPasteWindow();
+    if (!next) {
+      setPopupBlocked(true);
+      return;
+    }
+    setPopupBlocked(false);
+    setPopup(next);
+    setPasteOpen(false);
+  };
+
+  const openPaste = () => {
+    setPopupBlocked(false);
+    if (popup && !popup.closed) {
+      popup.focus();
+      return;
+    }
+    if (popup) setPopup(null);
+    setPasteOpen(true);
+  };
+
+  const paste = (
+    <PasteUI
+      libraries={libraries}
+      code={code}
+      onCodeChange={setCode}
+      ejected={Boolean(popup)}
+      onEject={ejectPaste}
+      onClose={closePaste}
+      popupBlocked={popupBlocked}
+    />
+  );
+  const popupRoot = popup ? pasteMountNode(popup) : null;
 
   return (
     <>
@@ -221,6 +281,31 @@ export function OpenUIDevtools({
                   Errors only
                 </label>
               </div>
+              <div style={styles.pasteRow}>
+                <span style={styles.pasteHint}>
+                  {libraries.length === 0
+                    ? "Paste previews OpenUI Lang with this app’s components once a library is registered."
+                    : "Paste OpenUI Lang to preview it with this app’s components."}
+                </span>
+                <button
+                  style={{
+                    ...styles.pasteLink,
+                    ...(libraries.length === 0 ? styles.textButtonDisabled : null),
+                  }}
+                  disabled={libraries.length === 0}
+                  title={
+                    libraries.length === 0
+                      ? "No createLibrary() call detected"
+                      : popup && !popup.closed
+                        ? "Switch to OpenUI Paste window"
+                        : "Open OpenUI Paste"
+                  }
+                  aria-label="Open OpenUI Paste"
+                  onClick={openPaste}
+                >
+                  Open
+                </button>
+              </div>
               <div style={styles.list}>
                 {visibleEvents.length === 0 ? (
                   <div style={styles.empty}>No events captured yet.</div>
@@ -234,7 +319,18 @@ export function OpenUIDevtools({
                     if (quotaError) return <QuotaErrorRow key={key} info={quotaError} />;
                     const stream = getReactLangStreamDetail(event);
                     if (stream) {
-                      return <ReactLangStreamEventRow key={key} event={event} stream={stream} />;
+                      return (
+                        <ReactLangStreamEventRow
+                          key={key}
+                          event={event}
+                          stream={stream}
+                          canOpenInPaste={libraries.length > 0}
+                          onOpenInPaste={(response) => {
+                            setCode(response);
+                            openPaste();
+                          }}
+                        />
+                      );
                     }
 
                     const error = getErrorInfo(event);
@@ -284,6 +380,12 @@ export function OpenUIDevtools({
           )}
         </aside>
       </div>
+      {popupRoot ? createPortal(paste, popupRoot) : null}
+      {!popup ? (
+        <PasteModal open={pasteOpen} onClose={() => setPasteOpen(false)}>
+          {paste}
+        </PasteModal>
+      ) : null}
     </>
   );
 }
@@ -480,6 +582,10 @@ const styles = {
     borderColor: "#18181b",
     color: "#ffffff",
   },
+  textButtonDisabled: {
+    opacity: 0.45,
+    cursor: "not-allowed",
+  },
   iconButton: {
     display: "inline-flex",
     alignItems: "center",
@@ -508,6 +614,33 @@ const styles = {
     fontSize: 12,
     cursor: "pointer",
     accentColor: "#18181b",
+  },
+  pasteRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    padding: "10px 16px",
+    borderBottom: "1px solid #f4f4f5",
+  },
+  pasteHint: {
+    color: "#52525b",
+    fontSize: 12,
+    lineHeight: 1.4,
+    minWidth: 0,
+  },
+  pasteLink: {
+    flexShrink: 0,
+    border: "none",
+    background: "transparent",
+    color: "#18181b",
+    cursor: "pointer",
+    fontFamily: FONT,
+    fontSize: 12,
+    fontWeight: 600,
+    padding: 0,
+    textDecoration: "underline",
+    textUnderlineOffset: 2,
   },
   list: {
     overflowY: "auto",

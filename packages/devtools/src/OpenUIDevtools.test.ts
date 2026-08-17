@@ -2,17 +2,77 @@
 import { observability, toErrorInfo } from "@openuidev/observability";
 import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { OpenUIDevtools, type OpenUIDevtoolsProps } from "./index";
 
-// React's act() requires this flag to flush effects/state synchronously in tests.
-(globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+vi.mock("@openuidev/react-lang", async () => {
+  const { createElement: el } = await import("react");
+  const parse = (src: string) => ({
+    root: /\broot\s*=/.test(src)
+      ? { type: "element" as const, typeName: "Card", props: {}, partial: false }
+      : null,
+    meta: {
+      incomplete: false,
+      unresolved: [] as string[],
+      orphaned: [] as string[],
+      statementCount: src.trim() ? 1 : 0,
+      errors: [] as unknown[],
+    },
+  });
+  return {
+    LANG_CORE_VERSION: "9.9.9",
+    Renderer: (props: { response: string | null }) =>
+      el("div", { "data-testid": "openui-renderer" }, props.response ?? ""),
+    createParser: () => ({ parse }),
+    createStreamingParser: () => {
+      let buf = "";
+      return {
+        push: (chunk: string) => {
+          buf += chunk;
+          return parse(buf);
+        },
+        getResult: () => parse(buf),
+      };
+    },
+  };
+});
+
+const LIBRARIES_KEY = Symbol.for("openui.devtools.libraries");
+
+function seedLibrary(): void {
+  (
+    globalThis as {
+      [LIBRARIES_KEY]?: {
+        key: string;
+        library: {
+          root: string;
+          components: Record<string, unknown>;
+          toJSONSchema: () => unknown;
+        };
+      }[];
+    }
+  )[LIBRARIES_KEY] = [
+    {
+      key: "Card",
+      library: {
+        root: "Card",
+        components: { Card: {} },
+        toJSONSchema: () => ({ $defs: { Card: { type: "object", properties: {} } } }),
+      },
+    },
+  ];
+}
+
+function clearLibraries(): void {
+  delete (globalThis as { [LIBRARIES_KEY]?: unknown })[LIBRARIES_KEY];
+}
 
 let container: HTMLDivElement;
 let root: Root;
 
 beforeEach(() => {
   window.localStorage.clear();
+  clearLibraries();
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
@@ -43,6 +103,11 @@ function click(el: Element): void {
 function buttonByText(text: string): HTMLButtonElement | undefined {
   return [...container.querySelectorAll("button")].find((b) => b.textContent === text) as
     HTMLButtonElement | undefined;
+}
+
+function openPasteButton(): HTMLButtonElement | undefined {
+  return container.querySelector<HTMLButtonElement>('button[aria-label="Open OpenUI Paste"]') ??
+    undefined;
 }
 
 function checkboxLabeled(text: string): HTMLInputElement {
@@ -265,6 +330,32 @@ describe("OpenUIDevtools", () => {
     expect(toggle().textContent).toContain("1");
   });
 
+  it("opens a stream response in OpenUI Paste", () => {
+    seedLibrary();
+    render({ enabled: true, errorsOnly: false });
+    act(() =>
+      observability.info({
+        kind: "react-lang:stream",
+        id: "stream-1",
+        phase: "settled",
+        response: 'root = Card("from stream")',
+        parser: { statementCount: 1, orphaned: [] },
+        errors: [],
+      }),
+    );
+
+    click(
+      container.querySelector<HTMLButtonElement>(
+        'button[aria-label="Toggle OpenUI Lang stream details"]',
+      )!,
+    );
+    click(container.querySelector('button[aria-label="Open in Paste"]')!);
+
+    const editor = container.querySelector<HTMLTextAreaElement>('textarea[aria-label="OpenUI Lang"]');
+    expect(container.querySelector('[aria-label="OpenUI Paste"]')).not.toBeNull();
+    expect(editor?.value).toBe('root = Card("from stream")');
+  });
+
   it("hides provisional errors while the stream is still running", () => {
     render({ enabled: true, errorsOnly: false });
 
@@ -382,5 +473,135 @@ describe("OpenUIDevtools", () => {
 
     expect(container.textContent).not.toContain("OpenUI Lang stream");
     expect(container.textContent).toContain("No events captured yet.");
+  });
+
+  it("disables OpenUI Paste until a library is registered", () => {
+    render({ enabled: true });
+    expect(openPasteButton()?.disabled).toBe(true);
+  });
+
+  it("opens OpenUI Paste from a late-mounted registry entry", () => {
+    seedLibrary();
+    render({ enabled: true });
+    const paste = openPasteButton();
+    expect(paste?.disabled).toBe(false);
+    click(paste!);
+    expect(container.querySelector('[aria-label="OpenUI Paste"]')).not.toBeNull();
+    expect(container.querySelector('textarea[aria-label="OpenUI Lang"]')).not.toBeNull();
+  });
+
+  it("shows paste panels and stream controls", () => {
+    seedLibrary();
+    render({ enabled: true });
+    click(openPasteButton()!);
+    expect(container.querySelector('[aria-label="Playback controls"]')).not.toBeNull();
+    expect(container.querySelector('button[aria-label="Stream"]')).not.toBeNull();
+    const tabs = container.querySelector('[role="tablist"]')?.textContent ?? "";
+    expect(tabs).toContain("Render");
+    expect(tabs).toContain("Validation");
+    expect(tabs).toContain("Tree");
+    expect(tabs).toContain("JSON");
+    expect(tabs).toContain("Stream");
+  });
+
+  it("shows the installed lang-core version in OpenUI Paste", async () => {
+    seedLibrary();
+    render({ enabled: true });
+    click(openPasteButton()!);
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(container.textContent).toContain("lang-core 9.9.9");
+  });
+
+  it("switches to the validation panel", async () => {
+    seedLibrary();
+    render({ enabled: true });
+    click(openPasteButton()!);
+    await act(async () => {
+      await Promise.resolve();
+    });
+    const validation = [...container.querySelectorAll('[role="tab"]')].find((tab) =>
+      tab.textContent?.startsWith("Validation"),
+    );
+    click(validation!);
+    expect(container.textContent).toContain("Paste some OpenUI Lang to validate it.");
+  });
+
+  it("does not list library registration pings as events", () => {
+    render({ enabled: true, errorsOnly: false });
+    act(() =>
+      observability.info({
+        kind: "react-lang:library",
+        root: "Card",
+        components: ["Card"],
+        message: "Library registered (root: Card)",
+      }),
+    );
+    click(toggle());
+    expect(container.textContent).not.toContain("Library registered");
+    expect(container.textContent).toContain("No events captured yet.");
+  });
+
+  it("ejects OpenUI Paste into a separate window", () => {
+    seedLibrary();
+    const popupDoc = document.implementation.createHTMLDocument("paste");
+    const popup = {
+      document: popupDoc,
+      focus: vi.fn(),
+      close: vi.fn(),
+      closed: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    };
+    const open = vi.spyOn(window, "open").mockReturnValue(popup as unknown as Window);
+
+    render({ enabled: true });
+    click(openPasteButton()!);
+    click(container.querySelector('button[aria-label="Open OpenUI Paste in a new window"]')!);
+
+    expect(open).toHaveBeenCalled();
+    expect(container.querySelector('[aria-label="OpenUI Paste"]')).toBeNull();
+    expect(popupDoc.getElementById("openui-paste-root")).not.toBeNull();
+    expect(popupDoc.body.textContent).toContain("OpenUI Paste");
+    open.mockRestore();
+  });
+
+  it("focuses the ejected window when OpenUI Paste is clicked again", () => {
+    seedLibrary();
+    const popupDoc = document.implementation.createHTMLDocument("paste");
+    const popup = {
+      document: popupDoc,
+      focus: vi.fn(),
+      close: vi.fn(),
+      closed: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    };
+    const open = vi.spyOn(window, "open").mockReturnValue(popup as unknown as Window);
+
+    render({ enabled: true });
+    click(openPasteButton()!);
+    click(container.querySelector('button[aria-label="Open OpenUI Paste in a new window"]')!);
+    popup.focus.mockClear();
+
+    click(openPasteButton()!);
+
+    expect(popup.focus).toHaveBeenCalled();
+    expect(container.querySelector('[aria-label="OpenUI Paste"]')).toBeNull();
+    open.mockRestore();
+  });
+
+  it("stays in the modal when the popup is blocked", () => {
+    seedLibrary();
+    const open = vi.spyOn(window, "open").mockReturnValue(null);
+
+    render({ enabled: true });
+    click(openPasteButton()!);
+    click(container.querySelector('button[aria-label="Open OpenUI Paste in a new window"]')!);
+
+    expect(container.querySelector('[aria-label="OpenUI Paste"]')).not.toBeNull();
+    expect(container.textContent).toContain("Allow popups for this origin");
+    open.mockRestore();
   });
 });

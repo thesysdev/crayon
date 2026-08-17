@@ -21,6 +21,8 @@ The widget renders nothing in production builds (`NODE_ENV === "production"`) un
 
 `@openuidev/react-lang` ships with this package and auto-mounts the widget in development — no manual `<OpenUIDevtools />` needed. Mounting it manually still works (e.g. to customize props): only one instance ever renders, and a manually mounted instance takes precedence over the auto-mounted one.
 
+In development, `createLibrary()` registers the live library with the widget. A row in the drawer opens **OpenUI Paste** — an editor against that library (host CSS included), with Render / Validation / Tree / JSON / Stream panels and simulated stream playback. Eject moves the same view into a separate window.
+
 ## Props
 
 | Prop              | Default          | Description                                                      |

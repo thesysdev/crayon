@@ -1,5 +1,5 @@
 import { type ObservabilityEvent } from "@openuidev/observability";
-import { Check, ChevronDown, ChevronRight, Copy } from "lucide-react";
+import { Check, ChevronDown, ChevronRight, ClipboardPaste, Copy } from "lucide-react";
 import { useState, type CSSProperties } from "react";
 
 export interface ReactLangStreamDetail {
@@ -49,9 +49,13 @@ export function getReactLangStreamDetail(event: ObservabilityEvent): ReactLangSt
 export function ReactLangStreamEventRow({
   event,
   stream,
+  onOpenInPaste,
+  canOpenInPaste = false,
 }: {
   event: ObservabilityEvent;
   stream: ReactLangStreamDetail;
+  onOpenInPaste?: (response: string) => void;
+  canOpenInPaste?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [responseCopied, setResponseCopied] = useState(false);
@@ -77,6 +81,8 @@ export function ReactLangStreamEventRow({
       })
       .catch(() => {});
   };
+
+  const openInPasteDisabled = isStreaming || !stream.response || !canOpenInPaste;
 
   return (
     <div style={styles.row}>
@@ -143,10 +149,37 @@ export function ReactLangStreamEventRow({
           <section style={styles.streamSection}>
             <div style={styles.responseHeader}>
               <div style={styles.streamSectionTitle}>Response</div>
-              <button type="button" style={styles.copyResponseButton} onClick={copyResponse}>
-                {responseCopied ? <Check size={12} /> : <Copy size={12} />}
-                {responseCopied ? "Copied" : "Copy"}
-              </button>
+              <div style={styles.responseActions}>
+                <button
+                  type="button"
+                  style={{
+                    ...styles.copyResponseButton,
+                    ...(openInPasteDisabled ? styles.copyResponseButtonDisabled : null),
+                  }}
+                  onClick={() => {
+                    if (isStreaming || !stream.response || !onOpenInPaste) return;
+                    onOpenInPaste(stream.response);
+                  }}
+                  disabled={openInPasteDisabled}
+                  title={
+                    isStreaming
+                      ? "Wait until the stream finishes"
+                      : !stream.response
+                        ? "Empty response"
+                        : !canOpenInPaste
+                          ? "No createLibrary() call detected"
+                          : "Open this response in OpenUI Paste"
+                  }
+                  aria-label="Open in Paste"
+                >
+                  <ClipboardPaste size={12} />
+                  Open in Paste
+                </button>
+                <button type="button" style={styles.copyResponseButton} onClick={copyResponse}>
+                  {responseCopied ? <Check size={12} /> : <Copy size={12} />}
+                  {responseCopied ? "Copied" : "Copy"}
+                </button>
+              </div>
             </div>
             <pre style={styles.responseCode}>{stream.response || "(empty response)"}</pre>
           </section>
@@ -298,6 +331,12 @@ const styles = {
     justifyContent: "space-between",
     gap: 8,
   },
+  responseActions: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    flexShrink: 0,
+  },
   copyResponseButton: {
     display: "inline-flex",
     alignItems: "center",
@@ -309,6 +348,10 @@ const styles = {
     fontFamily: FONT,
     fontSize: 11,
     padding: 0,
+  },
+  copyResponseButtonDisabled: {
+    opacity: 0.45,
+    cursor: "not-allowed",
   },
   responseCode: {
     maxHeight: 260,

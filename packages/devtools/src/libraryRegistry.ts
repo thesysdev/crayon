@@ -1,0 +1,49 @@
+import { observability, type ObservabilityEvent } from "@openuidev/observability";
+import { useEffect, useState } from "react";
+
+/**
+ * Shared with `@openuidev/react-lang` via `Symbol.for`. Not a public API.
+ * Keep the string in sync with `packages/react-lang/src/publishLibrary.ts`.
+ */
+const DEVTOOLS_LIBRARIES_KEY = Symbol.for("openui.devtools.libraries");
+
+export const LIBRARY_EVENT_KIND = "react-lang:library";
+
+/** Structural slice of a `createLibrary()` result — enough to label, parse, and render. */
+export interface PasteLibrary {
+  id?: string;
+  root?: string;
+  components: Record<string, unknown>;
+  toJSONSchema?: () => unknown;
+}
+
+export interface RegisteredLibrary {
+  key: string;
+  library: PasteLibrary;
+}
+
+interface RegistryStore {
+  [DEVTOOLS_LIBRARIES_KEY]?: RegisteredLibrary[];
+}
+
+export function isLibraryEvent(event: ObservabilityEvent): boolean {
+  return event.detail.kind === LIBRARY_EVENT_KIND;
+}
+
+export function readRegisteredLibraries(): RegisteredLibrary[] {
+  return (globalThis as RegistryStore)[DEVTOOLS_LIBRARIES_KEY] ?? [];
+}
+
+/** Live `createLibrary()` results, seeded from the stash and refreshed on ping. */
+export function useRegisteredLibraries(): RegisteredLibrary[] {
+  const [libraries, setLibraries] = useState(readRegisteredLibraries);
+
+  useEffect(() => {
+    setLibraries(readRegisteredLibraries());
+    return observability.listenAll((event) => {
+      if (isLibraryEvent(event)) setLibraries(readRegisteredLibraries());
+    });
+  }, []);
+
+  return libraries;
+}

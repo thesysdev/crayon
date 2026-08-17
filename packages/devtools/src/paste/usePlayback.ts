@@ -1,0 +1,262 @@
+import { useCallback, useRef, useState } from "react";
+import { type ChunkStrategy, type StreamChunk, mulberry32, splitChunks } from "./chunker";
+import { normalizeResult } from "./parse";
+import type { LangModule, ParseResult, StreamParserLike } from "./types";
+
+export interface TraceRow {
+  i: number;
+  chunkPreview: string;
+  delayMs: number;
+  rootPresent: boolean;
+  rootAppeared: boolean;
+  rootDropped: boolean;
+  statementCount: number;
+  incomplete: boolean;
+  unresolvedCount: number;
+  errorCount: number;
+}
+
+export type PlaybackStatus = "idle" | "playing" | "paused" | "done";
+
+export interface PlaybackState {
+  status: PlaybackStatus;
+  prefix: string;
+  chunkIndex: number;
+  totalChunks: number;
+  trace: TraceRow[];
+  traceTruncated: boolean;
+  result: ParseResult | null;
+  convergence: "converged" | "diverged" | null;
+  emulated: boolean;
+  fatal: string | null;
+}
+
+const IDLE: PlaybackState = {
+  status: "idle",
+  prefix: "",
+  chunkIndex: 0,
+  totalChunks: 0,
+  trace: [],
+  traceTruncated: false,
+  result: null,
+  convergence: null,
+  emulated: false,
+  fatal: null,
+};
+
+const TRACE_CAP = 5000;
+const BASE_INTERVAL_MS = 40;
+
+interface Session {
+  source: string;
+  chunks: StreamChunk[];
+  strategy: ChunkStrategy;
+  emulated: boolean;
+  push: (chunk: string, prefix: string) => ParseResult | null;
+  getFinal: () => ParseResult | null;
+  prefix: string;
+  index: number;
+  lastRootPresent: boolean;
+  rows: TraceRow[];
+  truncated: boolean;
+}
+
+export interface PlaybackControls {
+  state: PlaybackState;
+  start: (opts: { strategy: ChunkStrategy; seed: number }) => void;
+  pause: () => void;
+  resume: () => void;
+  step: () => void;
+  reset: () => void;
+  setSpeed: (speed: number) => void;
+  speed: number;
+}
+
+export function usePlayback(
+  code: string,
+  lang: LangModule | null | undefined,
+  schema: unknown,
+  rootName: string | undefined,
+): PlaybackControls {
+  const [state, setState] = useState<PlaybackState>(IDLE);
+  const [speed, setSpeedState] = useState(1);
+  const speedRef = useRef(1);
+  const generation = useRef(0);
+  const session = useRef<Session | null>(null);
+
+  const setSpeed = useCallback((s: number) => {
+    speedRef.current = s;
+    setSpeedState(s);
+  }, []);
+
+  const finish = useCallback(
+    (s: Session, module: LangModule) => {
+      let convergence: PlaybackState["convergence"] = null;
+      let fatal: string | null = null;
+      let result: ParseResult | null = null;
+      try {
+        result = normalizeResult(s.getFinal());
+        const oneShot = normalizeResult(module.createParser(schema, rootName).parse(s.source));
+        convergence =
+          JSON.stringify(result?.root) === JSON.stringify(oneShot?.root)
+            ? "converged"
+            : "diverged";
+      } catch (err) {
+        fatal = err instanceof Error ? err.message : String(err);
+      }
+      setState((prev) => ({
+        ...prev,
+        status: "done",
+        result: result ?? prev.result,
+        convergence,
+        fatal,
+      }));
+    },
+    [schema, rootName],
+  );
+
+  const advance = useCallback((s: Session, status: PlaybackStatus): boolean => {
+    const chunk = s.chunks[s.index];
+    if (!chunk) return false;
+    s.prefix += chunk.text;
+    let result: ParseResult | null = null;
+    let fatal: string | null = null;
+    try {
+      result = normalizeResult(s.push(chunk.text, s.prefix));
+    } catch (err) {
+      fatal = err instanceof Error ? err.message : String(err);
+    }
+    const rootPresent = !!result?.root;
+    if (result) {
+      if (s.rows.length >= TRACE_CAP) {
+        s.truncated = true;
+      } else {
+        s.rows.push({
+          i: s.index,
+          chunkPreview: chunk.text.length > 40 ? `${chunk.text.slice(0, 40)}…` : chunk.text,
+          delayMs: chunk.delayMs,
+          rootPresent,
+          rootAppeared: rootPresent && !s.lastRootPresent,
+          rootDropped: !rootPresent && s.lastRootPresent,
+          statementCount: result.meta.statementCount,
+          incomplete: result.meta.incomplete,
+          unresolvedCount: result.meta.unresolved.length,
+          errorCount: result.meta.errors.length,
+        });
+      }
+    }
+    s.lastRootPresent = rootPresent;
+    s.index += 1;
+    setState({
+      status: fatal ? "done" : status,
+      prefix: s.prefix,
+      chunkIndex: s.index,
+      totalChunks: s.chunks.length,
+      trace: [...s.rows],
+      traceTruncated: s.truncated,
+      result,
+      convergence: null,
+      emulated: s.emulated,
+      fatal,
+    });
+    return !fatal;
+  }, []);
+
+  const play = useCallback(
+    (s: Session, module: LangModule) => {
+      const gen = generation.current;
+      const tick = () => {
+        if (generation.current !== gen || session.current !== s) return;
+        if (s.index >= s.chunks.length) {
+          finish(s, module);
+          return;
+        }
+        if (!advance(s, "playing")) return;
+        if (s.index >= s.chunks.length) {
+          finish(s, module);
+          return;
+        }
+        schedule();
+      };
+      const schedule = () => {
+        const next = s.chunks[s.index];
+        const base = s.strategy === "llm" && next ? next.delayMs : BASE_INTERVAL_MS;
+        setTimeout(tick, Math.max(0, base / speedRef.current));
+      };
+      schedule();
+    },
+    [advance, finish],
+  );
+
+  const start = useCallback(
+    ({ strategy, seed }: { strategy: ChunkStrategy; seed: number }) => {
+      if (!lang || !code.trim() || schema == null) return;
+      generation.current += 1;
+
+      const emulated = typeof lang.createStreamingParser !== "function";
+      let push: Session["push"];
+      let getFinal: Session["getFinal"];
+      if (emulated) {
+        let last: ParseResult | null = null;
+        push = (_chunk, prefix) => {
+          last = normalizeResult(lang.createParser(schema, rootName).parse(prefix));
+          return last;
+        };
+        getFinal = () => last ?? normalizeResult(lang.createParser(schema, rootName).parse(code));
+      } else {
+        const sp: StreamParserLike = lang.createStreamingParser!(schema, rootName);
+        push = (chunk) => normalizeResult(sp.push(chunk));
+        getFinal = () => normalizeResult(sp.getResult());
+      }
+
+      const s: Session = {
+        source: code,
+        chunks: splitChunks(code, strategy, mulberry32(seed)),
+        strategy,
+        emulated,
+        push,
+        getFinal,
+        prefix: "",
+        index: 0,
+        lastRootPresent: false,
+        rows: [],
+        truncated: false,
+      };
+      session.current = s;
+      setState({ ...IDLE, status: "playing", totalChunks: s.chunks.length, emulated });
+      play(s, lang);
+    },
+    [code, lang, schema, rootName, play],
+  );
+
+  const pause = useCallback(() => {
+    generation.current += 1;
+    setState((prev) => (prev.status === "playing" ? { ...prev, status: "paused" } : prev));
+  }, []);
+
+  const resume = useCallback(() => {
+    const s = session.current;
+    if (!s || !lang) return;
+    generation.current += 1;
+    setState((prev) => (prev.status === "paused" ? { ...prev, status: "playing" } : prev));
+    play(s, lang);
+  }, [lang, play]);
+
+  const step = useCallback(() => {
+    const s = session.current;
+    if (!s || !lang) return;
+    if (s.index >= s.chunks.length) {
+      finish(s, lang);
+      return;
+    }
+    if (advance(s, "paused") && s.index >= s.chunks.length) finish(s, lang);
+  }, [advance, finish, lang]);
+
+  const reset = useCallback(() => {
+    generation.current += 1;
+    session.current = null;
+    setState(IDLE);
+  }, []);
+
+  return { state, start, pause, resume, step, reset, setSpeed, speed };
+}
