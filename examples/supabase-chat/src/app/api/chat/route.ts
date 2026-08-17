@@ -3,7 +3,15 @@ import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
 
-const MODEL = process.env.OPENROUTER_MODEL ?? "openai/gpt-5.5";
+// Gateway selection. OpenRouter (https://openrouter.ai/api/v1) is the default;
+// setting ORCAROUTER_API_KEY routes the example through OrcaRouter
+// (https://api.orcarouter.ai/v1) — an Anthropic-compatible AI gateway — using
+// the same OpenAI-compatible client. See .env.local.example for both options.
+const ORCAROUTER_ENABLED = Boolean(process.env.ORCAROUTER_API_KEY);
+
+const MODEL = ORCAROUTER_ENABLED
+  ? process.env.ORCAROUTER_MODEL ?? "anthropic/claude-haiku-4.5"
+  : process.env.OPENROUTER_MODEL ?? "openai/gpt-5.5";
 
 /**
  * POST /api/chat
@@ -24,8 +32,12 @@ export async function POST(req: NextRequest) {
   const supabase = await createSupabaseServer();
 
   const client = new OpenAI({
-    apiKey: process.env.OPENROUTER_API_KEY,
-    baseURL: "https://openrouter.ai/api/v1",
+    apiKey: ORCAROUTER_ENABLED
+      ? process.env.ORCAROUTER_API_KEY
+      : process.env.OPENROUTER_API_KEY,
+    baseURL: ORCAROUTER_ENABLED
+      ? "https://api.orcarouter.ai/v1"
+      : "https://openrouter.ai/api/v1",
   });
 
   const stream = await client.chat.completions.create({

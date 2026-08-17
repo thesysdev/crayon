@@ -68,6 +68,10 @@ cp .env.local.example .env.local
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase dashboard → Settings → API → anon/public key |
 | `OPENROUTER_API_KEY` | [openrouter.ai/keys](https://openrouter.ai/keys) |
 | `OPENROUTER_MODEL` _(optional)_ | Defaults to `openai/gpt-5.5` |
+| `ORCAROUTER_API_KEY` _(optional)_ | Setting this routes the example through [OrcaRouter](https://www.orcarouter.ai) instead of OpenRouter |
+| `ORCAROUTER_MODEL` _(optional)_ | Defaults to `anthropic/claude-haiku-4.5` |
+
+> Using [OrcaRouter](https://www.orcarouter.ai)? Set `ORCAROUTER_API_KEY` (and optionally `ORCAROUTER_MODEL`) and the example streams Claude models through the same OpenAI-compatible client — no code changes needed.
 
 ### 5. Install and run
 
