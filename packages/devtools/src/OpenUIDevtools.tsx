@@ -60,19 +60,20 @@ export function OpenUIDevtools({
   const [selected, setSelected] = useState<ObservabilityEvent | null>(null);
   const [wrapStack, setWrapStack] = useState(false);
   const [copied, setCopied] = useState(false);
-  const { autoOpen, onlyErrors, setAutoOpen, setOnlyErrors, autoOpenRef } = useDevtoolsConfig({
+  const { config, setConfig, configRef } = useDevtoolsConfig({
     autoOpen: autoOpenOnError,
     onlyErrors: errorsOnly,
   });
+  const { autoOpen, onlyErrors } = config;
 
-  // Read autoOpenRef inside the (stable) subscription without re-subscribing.
+  // Read configRef inside the (stable) subscription without re-subscribing.
   useEffect(() => {
     if (!isEnabled) return;
     return observability.listenAll((event) => {
       setEvents((prev) => addOrReplaceEvent(prev, event, maxEvents));
-      if (event.level === "error" && autoOpenRef.current) setOpen(true);
+      if (event.level === "error" && configRef.current.autoOpen) setOpen(true);
     });
-  }, [isEnabled, maxEvents, autoOpenRef]);
+  }, [isEnabled, maxEvents, configRef]);
 
   // Escape steps back: stack view → list, list → closed.
   useEffect(() => {
@@ -207,7 +208,7 @@ export function OpenUIDevtools({
                   <input
                     type="checkbox"
                     checked={autoOpen}
-                    onChange={(event) => setAutoOpen(event.target.checked)}
+                    onChange={(event) => setConfig({ autoOpen: event.target.checked })}
                   />
                   Auto-open on error
                 </label>
@@ -215,7 +216,7 @@ export function OpenUIDevtools({
                   <input
                     type="checkbox"
                     checked={onlyErrors}
-                    onChange={(event) => setOnlyErrors(event.target.checked)}
+                    onChange={(event) => setConfig({ onlyErrors: event.target.checked })}
                   />
                   Errors only
                 </label>
