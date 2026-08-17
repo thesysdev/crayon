@@ -12,6 +12,7 @@ let container: HTMLDivElement;
 let root: Root;
 
 beforeEach(() => {
+  window.localStorage.clear();
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
@@ -42,6 +43,21 @@ function click(el: Element): void {
 function buttonByText(text: string): HTMLButtonElement | undefined {
   return [...container.querySelectorAll("button")].find((b) => b.textContent === text) as
     HTMLButtonElement | undefined;
+}
+
+function checkboxLabeled(text: string): HTMLInputElement {
+  const label = [...container.querySelectorAll("label")].find((el) =>
+    el.textContent?.includes(text),
+  );
+  const input = label?.querySelector<HTMLInputElement>('input[type="checkbox"]');
+  if (!input) throw new Error(`checkbox "${text}" not found`);
+  return input;
+}
+
+function remount(props: OpenUIDevtoolsProps): void {
+  act(() => root.unmount());
+  root = createRoot(container);
+  render(props);
 }
 
 describe("OpenUIDevtools", () => {
@@ -79,6 +95,34 @@ describe("OpenUIDevtools", () => {
     render({ enabled: true, autoOpenOnError: false });
     act(() => observability.error({ kind: "boom" }));
     expect(toggle().getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("restores auto-open on error from a previous session", () => {
+    render({ enabled: true, autoOpenOnError: true });
+    expect(checkboxLabeled("Auto-open on error").checked).toBe(true);
+
+    act(() => checkboxLabeled("Auto-open on error").click());
+    expect(checkboxLabeled("Auto-open on error").checked).toBe(false);
+
+    remount({ enabled: true, autoOpenOnError: true });
+    expect(checkboxLabeled("Auto-open on error").checked).toBe(false);
+
+    act(() => observability.error({ kind: "boom" }));
+    expect(toggle().getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("restores the errors-only filter from a previous session", () => {
+    render({ enabled: true, errorsOnly: false });
+    act(() => checkboxLabeled("Errors only").click());
+    expect(checkboxLabeled("Errors only").checked).toBe(true);
+
+    remount({ enabled: true, errorsOnly: false });
+    expect(checkboxLabeled("Errors only").checked).toBe(true);
+
+    act(() => observability.info({ kind: "just-info" }));
+    act(() => observability.error({ kind: "real-error" }));
+    expect(container.textContent).not.toContain("just-info");
+    expect(container.textContent).toContain("real-error");
   });
 
   it("filters out info events when errorsOnly is set", () => {

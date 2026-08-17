@@ -6,12 +6,13 @@ import {
   type ObservabilityEvent,
 } from "@openuidev/observability";
 import { ArrowLeft, Check, Copy, WrapText, X } from "lucide-react";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { getQuotaError, QuotaErrorRow } from "./QuotaErrorRow";
 import { getReactLangStreamDetail, ReactLangStreamEventRow } from "./ReactLangStreamEventRow";
 import { ShiroLogo } from "./ShiroLogo";
 import { addOrReplaceEvent } from "./eventBuffer";
 import { useDevtoolsSingleton } from "./singleton";
+import { useDevtoolsConfig } from "./useDevtoolsConfig";
 
 export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
@@ -59,20 +60,20 @@ export function OpenUIDevtools({
   const [selected, setSelected] = useState<ObservabilityEvent | null>(null);
   const [wrapStack, setWrapStack] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [autoOpen, setAutoOpen] = useState(autoOpenOnError);
-  const [onlyErrors, setOnlyErrors] = useState(errorsOnly);
+  const { config, setConfig, configRef } = useDevtoolsConfig({
+    autoOpen: autoOpenOnError,
+    onlyErrors: errorsOnly,
+  });
+  const { autoOpen, onlyErrors } = config;
 
-  // Read the live checkbox values inside the (stable) subscription without re-subscribing.
-  const autoOpenRef = useRef(autoOpen);
-  autoOpenRef.current = autoOpen;
-
+  // Read configRef inside the (stable) subscription without re-subscribing.
   useEffect(() => {
     if (!isEnabled) return;
     return observability.listenAll((event) => {
       setEvents((prev) => addOrReplaceEvent(prev, event, maxEvents));
-      if (event.level === "error" && autoOpenRef.current) setOpen(true);
+      if (event.level === "error" && configRef.current.autoOpen) setOpen(true);
     });
-  }, [isEnabled, maxEvents]);
+  }, [isEnabled, maxEvents, configRef]);
 
   // Escape steps back: stack view → list, list → closed.
   useEffect(() => {
@@ -207,7 +208,7 @@ export function OpenUIDevtools({
                   <input
                     type="checkbox"
                     checked={autoOpen}
-                    onChange={(event) => setAutoOpen(event.target.checked)}
+                    onChange={(event) => setConfig({ autoOpen: event.target.checked })}
                   />
                   Auto-open on error
                 </label>
@@ -215,7 +216,7 @@ export function OpenUIDevtools({
                   <input
                     type="checkbox"
                     checked={onlyErrors}
-                    onChange={(event) => setOnlyErrors(event.target.checked)}
+                    onChange={(event) => setConfig({ onlyErrors: event.target.checked })}
                   />
                   Errors only
                 </label>
