@@ -5,7 +5,13 @@
 import type { ASTNode } from "./ast";
 import { isASTNode, isRuntimeExpr } from "./ast";
 import { isBuiltin, isReservedCall, LAZY_BUILTINS, RESERVED_CALLS } from "./builtins";
-import { isElementNode, type ParamMap, type ValidationError } from "./types";
+import { isElementNode, type MaterializeCtx } from "./types";
+import {
+  buildParamsSignature,
+  pushValidationIssue,
+  resolveInvalidValue,
+  validateSchemaValue,
+} from "./validation";
 
 /**
  * Recursively check if a prop value contains any AST nodes that need runtime
@@ -20,19 +26,6 @@ export function containsDynamicValue(v: unknown): boolean {
   }
   const obj = v as Record<string, unknown>;
   return Object.values(obj).some(containsDynamicValue);
-}
-
-export interface MaterializeCtx {
-  syms: Map<string, ASTNode>;
-  cat: ParamMap | undefined;
-  errors: ValidationError[];
-  unres: string[];
-  visited: Set<string>;
-  partial: boolean;
-  /** Tracks which statement is currently being materialized (for error attribution). */
-  currentStatementId?: string;
-  /** Statement IDs not yet reached — delete as they're touched. Remaining = orphaned. */
-  unreached?: Set<string>;
 }
 
 /**
@@ -126,12 +119,9 @@ function materializeExprInternal(
         return { ...node, args: recursedArgs, mappedProps };
       }
       // Unknown component in expression: push error (same as value path)
-      ctx.errors.push({
+      pushValidationIssue(ctx, node.name, "", {
         code: "unknown-component",
-        component: node.name,
-        path: "",
-        message: `Unknown component "${node.name}" — not found in catalog or builtins`,
-        statementId: ctx.currentStatementId,
+        available: ctx.cat && [...ctx.cat.keys()],
       });
       return { ...node, args: recursedArgs };
     }
@@ -248,13 +238,7 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
 
       // Inline Query/Mutation (not from a statement-level declaration) → validation error
       if (isReservedCall(name)) {
-        ctx.errors.push({
-          code: "inline-reserved",
-          component: name,
-          path: "",
-          message: `${name}() must be declared as a top-level statement, not used inline as a value`,
-          statementId: ctx.currentStatementId,
-        });
+        pushValidationIssue(ctx, name, "", { code: "inline-reserved" });
         return null;
       }
 
@@ -262,20 +246,34 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
       const props: Record<string, unknown> = {};
 
       if (def) {
+        // Set when a REQUIRED prop holds invalid data with no default to fall
+        // back on — the only case where invalidity reaches the component itself.
+        let dropComponent = false;
         // Catalog component: map positional args → named props
         for (let i = 0; i < def.params.length && i < args.length; i++) {
-          props[def.params[i].name] = materializeValue(args[i], ctx);
+          const param = def.params[i];
+          const value = materializeValue(args[i], ctx);
+          props[param.name] = value;
+          // Single validation entry point: scalar leaf type/enum for simple
+          // props, recursive key/type checks (with pruning) for nested shapes.
+          if (
+            param.schema !== undefined &&
+            validateSchemaValue(value, param.schema, name, `/${param.name}`, ctx)
+          ) {
+            // Invalid prop value (error already reported). Same resolution rule as
+            // every nested edge; propagation here means dropping the component.
+            if (resolveInvalidValue(props, param.name, param.required, param.defaultValue)) {
+              dropComponent = true;
+            }
+          }
         }
 
         // Report excess positional args (extra args are silently dropped)
         if (args.length > def.params.length) {
-          const excessCount = args.length - def.params.length;
-          ctx.errors.push({
+          pushValidationIssue(ctx, name, "", {
             code: "excess-args",
-            component: name,
-            path: "",
-            message: `${name} takes ${def.params.length} arg(s), got ${args.length} (${excessCount} excess dropped)`,
-            statementId: ctx.currentStatementId,
+            declared: def.params.length,
+            got: args.length,
           });
         }
 
@@ -293,28 +291,23 @@ export function materializeValue(node: ASTNode, ctx: MaterializeCtx): unknown {
           });
           if (stillInvalid.length) {
             for (const p of stillInvalid) {
-              const isNull = p.name in props;
-              ctx.errors.push({
-                code: isNull ? "null-required" : "missing-required",
-                component: name,
-                path: `/${p.name}`,
-                message: isNull
-                  ? `required field "${p.name}" cannot be null`
-                  : `missing required field "${p.name}"`,
-                statementId: ctx.currentStatementId,
+              pushValidationIssue(ctx, name, `/${p.name}`, {
+                code: p.name in props ? "null-required" : "missing-required",
+                signature: buildParamsSignature(name, def.params),
               });
             }
             return null;
           }
         }
+
+        // A required prop with unsalvageable data (no default) drops the
+        // component — its error was already reported during validation.
+        if (dropComponent) return null;
       } else if (!isBuiltin(name) && !isReservedCall(name)) {
         // Unknown component: error and drop from tree
-        ctx.errors.push({
+        pushValidationIssue(ctx, name, "", {
           code: "unknown-component",
-          component: name,
-          path: "",
-          message: `Unknown component "${name}" — not found in catalog or builtins`,
-          statementId: ctx.currentStatementId,
+          available: ctx.cat && [...ctx.cat.keys()],
         });
         return null;
       }
