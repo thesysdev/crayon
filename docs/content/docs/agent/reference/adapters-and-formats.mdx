@@ -272,7 +272,7 @@ const storage = restStorage({
 
 ### Endpoint contract
 
-Each `ThreadStorage` operation maps to exactly one HTTP call under `baseUrl`. The paths are literal — these are the exact five endpoints you implement.
+Each `ThreadStorage` operation maps to exactly one HTTP call under `baseUrl`. The paths are literal — these are the exact endpoints you implement.
 
 | Operation | Method | Path | Request body | Response |
 |-----------|--------|------|--------------|----------|
@@ -281,14 +281,18 @@ Each `ThreadStorage` operation maps to exactly one HTTP call under `baseUrl`. Th
 | Get messages | `GET` | `{baseUrl}/get/{threadId}` | — | `Message[]` (run through `messageFormat.fromApi`) |
 | Update thread | `PATCH` | `{baseUrl}/update/{thread.id}` | the `Thread` | the updated `Thread` |
 | Delete thread | `DELETE` | `{baseUrl}/delete/{id}` | — | — |
+| Update message | `PATCH` | `{baseUrl}/messages/{threadId}/{message.id}` | `{ messages: messageFormat.toApi([message]) }` | — |
 
-With `baseUrl: "/api/threads"` the concrete paths are `/api/threads/get`, `/api/threads/create`, `/api/threads/get/{threadId}`, `/api/threads/update/{thread.id}`, and `/api/threads/delete/{id}`.
+With `baseUrl: "/api/threads"` the concrete paths are `/api/threads/get`, `/api/threads/create`, `/api/threads/get/{threadId}`, `/api/threads/update/{thread.id}`, `/api/threads/delete/{id}`, and `/api/threads/messages/{threadId}/{message.id}`.
+
+`updateMessage` is fire-and-forget on the client: a 404 from a backend that hasn't added this route yet is swallowed and does not surface as a thread error.
 
 ### Message format application
 
-`messageFormat` applies at exactly two points:
+`messageFormat` applies at these points:
 
 - **Create** — the request body's `messages` is `messageFormat.toApi([firstMessage])`.
+- **Update message** — the request body's `messages` is `messageFormat.toApi([message])`. One AG-UI message can expand to several wire items; the array is the full conversion, not a single item.
 - **Get messages** — the `{baseUrl}/get/{threadId}` response is run through `messageFormat.fromApi` on the way back.
 
 With the default `identityMessageFormat`, messages cross the wire as the canonical `Message` type unchanged. Pass a provider-specific format (e.g. `openAIMessageFormat`) when your backend stores messages in that provider's shape.

@@ -66,7 +66,11 @@ export const langGraphAdapter = (options?: LangGraphAdapterOptions): StreamProto
     if (!reader) throw new Error("No response body");
 
     const decoder = new TextDecoder();
-    const messageId = crypto.randomUUID();
+    // Prefer the LangChain message id (`msg.id`, stable across all chunks of
+    // the same AI message and known to the backend) so a persisted edit keys
+    // on an id the backend agrees on. Fall back to a client uuid only if the
+    // stream omits it. Set from the first "messages" chunk below.
+    let messageId = "";
     const toolCallIds: Record<number, string> = {};
     let messageStarted = false;
     let buffer = "";
@@ -121,6 +125,8 @@ export const langGraphAdapter = (options?: LangGraphAdapterOptions): StreamProto
             if (msg.type !== "ai" && msg.type !== "AIMessageChunk" && msg.type !== "AIMessage") {
               break;
             }
+
+            if (!messageId) messageId = msg.id || crypto.randomUUID();
 
             // Emit TEXT_MESSAGE_START on first AI message chunk
             if (!messageStarted) {

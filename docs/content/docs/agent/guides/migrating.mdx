@@ -130,7 +130,7 @@ const storage = restStorage({ baseUrl: "/api/threads" }); // was threadApiUrl
 <AgentInterface llm={llm} storage={storage} />;
 ```
 
-`restStorage` hits the exact endpoints the old `threadApiUrl` prop did — `GET {baseUrl}/get`, `POST {baseUrl}/create`, `GET {baseUrl}/get/{threadId}`, `PATCH {baseUrl}/update/{id}`, `DELETE {baseUrl}/delete/{id}` — so an existing backend keeps working. Pass `messageFormat` here too if your backend stores messages in a provider shape.
+`restStorage` hits the exact endpoints the old `threadApiUrl` prop did — `GET {baseUrl}/get`, `POST {baseUrl}/create`, `GET {baseUrl}/get/{threadId}`, `PATCH {baseUrl}/update/{id}`, `DELETE {baseUrl}/delete/{id}` — so an existing backend keeps working. It also PATCHes `{baseUrl}/messages/{threadId}/{messageId}` on in-message edits (`{ messages: messageFormat.toApi([message]) }`); a missing route is swallowed and does not break the UI. Pass `messageFormat` here too if your backend stores messages in a provider shape.
 
 <Callout type="info">If you pass no `storage` at all, `AgentInterface` uses an internal in-memory store — fine for prototyping, but wiped on reload.</Callout>
 
