@@ -74,7 +74,8 @@ Templates:
                       OpenAI/Anthropic/Google key (BYOK) on any plan,
                       including the free tier.
   openui-self-hosted  Choose when owning the OpenAI-compatible provider, AI route,
-                      and persistence is a requirement.
+                      and persistence is a requirement. Available only via
+                      --template; interactive runs default to openui-cloud.
 `,
   )
   .action(
