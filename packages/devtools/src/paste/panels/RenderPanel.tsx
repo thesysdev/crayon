@@ -15,9 +15,7 @@ function safeDescribe(event: unknown): string {
   }
 }
 
-function isOpenUIError(
-  error: unknown,
-): error is {
+function isOpenUIError(error: unknown): error is {
   code?: string;
   message?: string;
   hint?: string;
