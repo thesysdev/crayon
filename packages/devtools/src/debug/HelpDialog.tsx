@@ -1,11 +1,11 @@
-import { ArrowDown, ClipboardPaste, ListChecks, MonitorPlay, Play, X } from "lucide-react";
+import { ArrowDown, FileCode, ListChecks, MonitorPlay, Play, X } from "lucide-react";
 import { useEffect, useState, type CSSProperties } from "react";
-import { pasteStyles as s } from "./styles";
+import { debugStyles as s } from "./styles";
 
 const STEPS: { icon: typeof Play; title: string; text: string }[] = [
   {
-    icon: ClipboardPaste,
-    title: "Paste OpenUI Lang",
+    icon: FileCode,
+    title: "Load OpenUI Lang",
     text: "Drop in a model response, or write Lang by hand, in the editor on the left.",
   },
   {
@@ -60,7 +60,7 @@ export function HelpDialog({
         style={styles.trigger}
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        aria-label="How to use OpenUI Paste"
+        aria-label="How to use OpenUI Debug"
       >
         Help
       </button>
@@ -70,11 +70,11 @@ export function HelpDialog({
             style={s.helpDialog}
             role="dialog"
             aria-modal="true"
-            aria-label="How to use OpenUI Paste"
+            aria-label="How to use OpenUI Debug"
             onClick={(event) => event.stopPropagation()}
           >
             <div style={s.helpHeader}>
-              <span>How to use OpenUI Paste</span>
+              <span>How to use OpenUI Debug</span>
               <button style={styles.closeButton} onClick={close} aria-label="Close help">
                 <X size={14} />
               </button>

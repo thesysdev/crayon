@@ -1,7 +1,7 @@
 import { Pause, Play, RotateCcw, StepForward } from "lucide-react";
 import type { CSSProperties } from "react";
 import { CHUNK_STRATEGIES, type ChunkStrategy } from "./chunker";
-import { pasteStyles as s } from "./styles";
+import { debugStyles as s } from "./styles";
 import type { PlaybackControls } from "./usePlayback";
 
 const SPEEDS = ["0.25", "0.5", "1", "2", "4", "8"];

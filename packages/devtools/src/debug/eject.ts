@@ -1,7 +1,7 @@
-const WINDOW_NAME = "openui-paste";
-const ROOT_ID = "openui-paste-root";
+const WINDOW_NAME = "openui-debug";
+const ROOT_ID = "openui-debug-root";
 
-export function pasteMountNode(popup: Window): HTMLElement | null {
+export function debugMountNode(popup: Window): HTMLElement | null {
   return popup.document.getElementById(ROOT_ID);
 }
 
@@ -9,21 +9,21 @@ export function pasteMountNode(popup: Window): HTMLElement | null {
  * Open (or focus) a named same-origin window and copy host styles into it.
  * Must run inside a click handler. Do not pass `noopener` — we need the Window.
  */
-export function openPasteWindow(): Window | null {
+export function openDebugWindow(): Window | null {
   if (typeof window === "undefined") return null;
   const width = Math.max(640, Math.min(window.screen?.availWidth ?? 1280, 1600));
   const height = Math.max(480, Math.min(window.screen?.availHeight ?? 800, 1000));
   const popup = window.open("", WINDOW_NAME, `popup=yes,width=${width},height=${height}`);
   if (!popup) return null;
-  preparePasteDocument(document, popup.document);
+  prepareDebugDocument(document, popup.document);
   popup.focus();
   return popup;
 }
 
-function preparePasteDocument(from: Document, to: Document): void {
-  if (to.documentElement.dataset["openuiPaste"] === "true") return;
-  to.documentElement.dataset["openuiPaste"] = "true";
-  to.title = "OpenUI Paste";
+function prepareDebugDocument(from: Document, to: Document): void {
+  if (to.documentElement.dataset["openuiDebug"] === "true") return;
+  to.documentElement.dataset["openuiDebug"] = "true";
+  to.title = "OpenUI Debug";
   // Mirror the host's root classes/attrs/color-scheme so the rendered preview
   // resolves the same CSS it would in the app. Devtools chrome is unaffected —
   // it uses the scheme chosen in Settings.

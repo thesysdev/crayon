@@ -12,7 +12,7 @@ import { TreePanel } from "./panels/TreePanel";
 import { ValidationPanel } from "./panels/ValidationPanel";
 import { librarySchema } from "./parse";
 import { StreamToolbar, type StreamSettings } from "./StreamToolbar";
-import { FONT, pasteStyles as paste } from "./styles";
+import { FONT, debugStyles as debug } from "./styles";
 import { usePlayback } from "./usePlayback";
 import { useReactLang } from "./useReactLang";
 import { useValidation } from "./useValidation";
@@ -29,7 +29,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "stream", label: "Stream" },
 ];
 
-class PasteErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+class DebugErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   constructor(props: { children: ReactNode }) {
     super(props);
     this.state = { error: null };
@@ -53,7 +53,7 @@ class PasteErrorBoundary extends Component<{ children: ReactNode }, { error: Err
   }
 }
 
-export interface PasteUIProps {
+export interface DebugUIProps {
   libraries: RegisteredLibrary[];
   code: string;
   onCodeChange: (code: string) => void;
@@ -78,7 +78,7 @@ function pickLibrary(libraries: RegisteredLibrary[], code: string): RegisteredLi
   return libraries[0];
 }
 
-export function PasteUI({
+export function DebugUI({
   libraries,
   code,
   onCodeChange,
@@ -89,7 +89,7 @@ export function PasteUI({
   helpSeen = true,
   onHelpSeen,
   popupBlocked = false,
-}: PasteUIProps) {
+}: DebugUIProps) {
   const selected = pickLibrary(libraries, code);
   const lang = useReactLang();
   const schema = useMemo(() => librarySchema(selected?.library), [selected]);
@@ -134,7 +134,7 @@ export function PasteUI({
               <ArrowLeft size={14} />
             </button>
           ) : null}
-          <span style={styles.title}>OpenUI Paste</span>
+          <span style={styles.title}>OpenUI Debug</span>
         </div>
         <div style={styles.headerActions}>
           <HelpDialog defaultOpen={!helpSeen} onSeen={onHelpSeen} />
@@ -142,7 +142,7 @@ export function PasteUI({
             <button
               style={styles.iconButton}
               onClick={onEject}
-              aria-label="Open OpenUI Paste in a new window"
+              aria-label="Open OpenUI Debug in a new window"
             >
               <Maximize2 size={14} />
             </button>
@@ -150,14 +150,14 @@ export function PasteUI({
           <button
             style={styles.iconButton}
             onClick={onClose}
-            aria-label={ejected ? "Close OpenUI Paste window" : "Close OpenUI devtools"}
+            aria-label={ejected ? "Close OpenUI Debug window" : "Close OpenUI devtools"}
           >
             <X size={15} />
           </button>
         </div>
       </div>
       {popupBlocked ? (
-        <div style={styles.banner}>Allow popups for this origin to eject OpenUI Paste.</div>
+        <div style={styles.banner}>Allow popups for this origin to eject OpenUI Debug.</div>
       ) : null}
       <StreamToolbar
         playback={playback}
@@ -168,10 +168,10 @@ export function PasteUI({
       <div style={styles.body}>
         <div style={styles.editorWrap}>
           <LangEditor value={code} onChange={changeCode} readOnly={playbackActive} />
-          {playbackActive ? <span style={paste.editorLock}>Streaming…</span> : null}
+          {playbackActive ? <span style={debug.editorLock}>Streaming…</span> : null}
         </div>
         <div style={styles.output}>
-          <div style={paste.tabStrip} role="tablist" aria-label="Paste panels">
+          <div style={debug.tabStrip} role="tablist" aria-label="Debug panels">
             {TABS.map((item) => {
               const label =
                 item.id === "validation" && displayed.result
@@ -183,7 +183,7 @@ export function PasteUI({
                   key={item.id}
                   role="tab"
                   aria-selected={active}
-                  style={{ ...paste.tab, ...(active ? paste.tabActive : null) }}
+                  style={{ ...debug.tab, ...(active ? debug.tabActive : null) }}
                   onClick={() => setTab(item.id)}
                 >
                   {label}
@@ -196,19 +196,19 @@ export function PasteUI({
               <div style={styles.missing}>Loading renderer…</div>
             ) : lang === null ? (
               <div style={styles.missing}>
-                Install <code>@openuidev/react-lang</code> to use OpenUI Paste.
+                Install <code>@openuidev/react-lang</code> to use OpenUI Debug.
               </div>
             ) : selected ? (
               <>
                 <div style={{ ...styles.tabPanel, display: tab === "render" ? "flex" : "none" }}>
-                  <PasteErrorBoundary>
+                  <DebugErrorBoundary>
                     <RenderPanel
                       Renderer={lang.Renderer}
                       library={selected.library}
                       code={renderedCode}
                       isStreaming={isStreaming}
                     />
-                  </PasteErrorBoundary>
+                  </DebugErrorBoundary>
                 </div>
                 {tab === "validation" ? <ValidationPanel outcome={displayed} /> : null}
                 {tab === "tree" ? <TreePanel result={displayed.result} /> : null}

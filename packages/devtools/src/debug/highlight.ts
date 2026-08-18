@@ -15,7 +15,7 @@ export interface Token {
   value: string;
 }
 
-/** Shared by the Paste editor and the devtools stream log. */
+/** Shared by the Debug editor and the devtools stream log. */
 export const TOKEN_COLOR: Record<TokenKind, string> = {
   string: "var(--oui-dt-syntax-string)",
   state: "var(--oui-dt-syntax-state)",
@@ -58,7 +58,7 @@ export function toTokenLines(tokens: Token[]): Token[][] {
   return lines;
 }
 
-/** Same token rules as the docs Paste highlighter, without CodeMirror. */
+/** Same token rules as the docs highlighter, without CodeMirror. */
 export function tokenizeLang(source: string): Token[] {
   const tokens: Token[] = [];
   // Runs of one kind collapse into a single token — the fallback below matches a

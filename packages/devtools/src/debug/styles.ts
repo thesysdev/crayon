@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 export const FONT = '"Inter", system-ui, sans-serif';
 export const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
 
-export const pasteStyles = {
+export const debugStyles = {
   toolbar: {
     display: "flex",
     alignItems: "center",

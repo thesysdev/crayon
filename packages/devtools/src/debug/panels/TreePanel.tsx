@@ -1,6 +1,6 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { pasteStyles as s } from "../styles";
+import { debugStyles as s } from "../styles";
 import type { ParseResult } from "../types";
 
 function isElementNode(value: unknown): value is {

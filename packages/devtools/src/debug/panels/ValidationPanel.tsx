@@ -1,6 +1,6 @@
 import { CheckCircle2 } from "lucide-react";
 import { groupByCode } from "../parse";
-import { pasteStyles as s } from "../styles";
+import { debugStyles as s } from "../styles";
 import type { ValidationOutcome } from "../types";
 
 export function ValidationPanel({ outcome }: { outcome: ValidationOutcome }) {
@@ -17,7 +17,7 @@ export function ValidationPanel({ outcome }: { outcome: ValidationOutcome }) {
     );
   }
   if (!result) {
-    return <div style={s.panelEmpty}>Paste some OpenUI Lang to validate it.</div>;
+    return <div style={s.panelEmpty}>Add some OpenUI Lang to validate it.</div>;
   }
 
   const { meta } = result;

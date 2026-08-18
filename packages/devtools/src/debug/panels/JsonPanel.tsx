@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { pasteStyles as s } from "../styles";
+import { debugStyles as s } from "../styles";
 import type { ParseResult } from "../types";
 
 const COLLAPSE_BYTES = 200 * 1024;

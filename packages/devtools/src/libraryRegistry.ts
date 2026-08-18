@@ -10,7 +10,7 @@ const DEVTOOLS_LIBRARIES_KEY = Symbol.for("openui.devtools.libraries");
 export const LIBRARY_EVENT_KIND = "react-lang:library";
 
 /** Structural slice of a `createLibrary()` result — enough to label, parse, and render. */
-export interface PasteLibrary {
+export interface LibraryLike {
   id?: string;
   root?: string;
   components: Record<string, unknown>;
@@ -19,7 +19,7 @@ export interface PasteLibrary {
 
 export interface RegisteredLibrary {
   key: string;
-  library: PasteLibrary;
+  library: LibraryLike;
 }
 
 interface RegistryStore {

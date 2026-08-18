@@ -6,18 +6,18 @@ import { MONO } from "./styles";
 const PLACEHOLDER = 'root = TextContent("Hello")';
 
 const SELECTION_CSS = `
-.openui-paste-lang-editor textarea::selection {
+.openui-debug-lang-editor textarea::selection {
   background: var(--oui-dt-selection);
   color: transparent;
 }
-.openui-paste-lang-editor textarea::-moz-selection {
+.openui-debug-lang-editor textarea::-moz-selection {
   background: var(--oui-dt-selection);
   color: transparent;
 }
-.openui-paste-lang-editor pre {
+.openui-debug-lang-editor pre {
   scrollbar-width: none;
 }
-.openui-paste-lang-editor pre::-webkit-scrollbar {
+.openui-debug-lang-editor pre::-webkit-scrollbar {
   display: none;
 }
 `;
@@ -66,7 +66,7 @@ export function LangEditor({
   };
 
   return (
-    <div className="openui-paste-lang-editor" style={styles.wrap}>
+    <div className="openui-debug-lang-editor" style={styles.wrap}>
       <style>{SELECTION_CSS}</style>
       <pre ref={highlightRef} style={styles.highlight} aria-hidden>
         {value ? (

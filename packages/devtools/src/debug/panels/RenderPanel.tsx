@@ -1,8 +1,8 @@
 import { FlaskConical } from "lucide-react";
 import { useMemo, useState, type ComponentType } from "react";
-import type { PasteLibrary } from "../../libraryRegistry";
+import type { LibraryLike } from "../../libraryRegistry";
 import { createMockToolProvider, type MockToolCall } from "../mockTools";
-import { pasteStyles as s } from "../styles";
+import { debugStyles as s } from "../styles";
 import type { LangModule } from "../types";
 
 const TOOL_CALL_LOG_CAP = 20;
@@ -51,7 +51,7 @@ export function RenderPanel({
   isStreaming,
 }: {
   Renderer: LangModule["Renderer"] | ComponentType<{ response: string | null; library: unknown }>;
-  library: PasteLibrary;
+  library: LibraryLike;
   code: string;
   isStreaming: boolean;
 }) {
