@@ -27,7 +27,7 @@ for (const fmt of ["openui", "jsonrender", "a2ui"]) {
   let sum = 0;
   let n = 0;
   for (const m of MODELS) {
-    const dir = join(ROOT, "raw", `${m}-${fmt === "openui" ? "native" : "official"}`);
+    const dir = join(ROOT, "raw", m);
     if (!existsSync(dir)) continue;
     for (const f of readdirSync(dir)) {
       const match = f.match(new RegExp(`^${fmt}__.+__r(\\d+)\\.txt$`));

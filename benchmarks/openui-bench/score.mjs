@@ -19,9 +19,12 @@ const RAW = join(__dirname, "raw");
 const briefByName = new Map(SCENARIOS.map((s) => [s.name, s]));
 const MAXREP = Number(process.env.BENCH_MAX_REP) || 4;
 
-const labels = process.argv.slice(2).length
-  ? process.argv.slice(2)
-  : [...new Set(readdirSync(RAW).filter((d) => d.endsWith("-native")).map((d) => d.replace(/-native$/, "")))];
+const labels = process.argv.slice(2).length ? process.argv.slice(2) : readdirSync(RAW).sort();
+
+// Row order in the results files: openui, a2ui, jsonrender, each sorted by
+// filename. Keep stable so rescoring committed raws reproduces the committed
+// results byte for byte.
+const FMT_RANK = { openui: 0, a2ui: 1, jsonrender: 2 };
 
 for (const label of labels) {
   const rows = [];
@@ -35,40 +38,39 @@ for (const label of labels) {
     }
   }
 
-  for (const kind of ["native", "official"]) {
-    const dir = join(RAW, `${label}-${kind}`);
-    if (!existsSync(dir)) continue;
-    const truncPath = join(dir, "truncated.json");
-    const truncated = new Set(existsSync(truncPath) ? JSON.parse(readFileSync(truncPath, "utf8")) : []);
-    for (const f of readdirSync(dir).sort()) {
-      const m = f.match(/^(openui|jsonrender|a2ui)__(.+)__r(\d+)\.txt$/);
-      if (!m) continue;
-      const [, fmt, scn, r] = m;
-      if (Number(r) > MAXREP) continue;
-      if (!briefByName.has(scn)) continue;
-      const id = `${fmt}__${scn}__r${r}`;
-      const reqs = briefByName.get(scn)?.reqs ?? 0;
-      const path = join(dir, f);
-      const text = readFileSync(path, "utf8");
-      const res =
-        fmt === "openui"
-          ? evalOpenui(text, { truncated: truncated.has(id), reqs })
-          : fmt === "jsonrender"
-            ? evalJr(text, { reqs })
-            : evalA2ui(path, { reqs });
-      rows.push({
-        fmt,
-        scenario: scn,
-        axis: briefByName.get(scn)?.axis ?? "",
-        repeat: Number(r),
-        tokens: prevTokens.get(id) ?? null,
-        renderable: res.renderable,
-        complete: res.complete,
-        errs: res.errs,
-        classes: res.classes ?? [...new Set(res.errs.map((e) => e.cls))],
-        ...(res.n !== undefined ? { n: res.n } : {}),
-      });
-    }
+  const dir = join(RAW, label);
+  const truncPath = join(dir, "truncated.json");
+  const truncated = new Set(existsSync(truncPath) ? JSON.parse(readFileSync(truncPath, "utf8")) : []);
+  const files = readdirSync(dir)
+    .map((f) => ({ f, m: f.match(/^(openui|jsonrender|a2ui)__(.+)__r(\d+)\.txt$/) }))
+    .filter((x) => x.m)
+    .sort((a, b) => FMT_RANK[a.m[1]] - FMT_RANK[b.m[1]] || a.f.localeCompare(b.f));
+  for (const { f, m } of files) {
+    const [, fmt, scn, r] = m;
+    if (Number(r) > MAXREP) continue;
+    if (!briefByName.has(scn)) continue;
+    const id = `${fmt}__${scn}__r${r}`;
+    const reqs = briefByName.get(scn)?.reqs ?? 0;
+    const path = join(dir, f);
+    const text = readFileSync(path, "utf8");
+    const res =
+      fmt === "openui"
+        ? evalOpenui(text, { truncated: truncated.has(id), reqs })
+        : fmt === "jsonrender"
+          ? evalJr(text, { reqs })
+          : evalA2ui(path, { reqs });
+    rows.push({
+      fmt,
+      scenario: scn,
+      axis: briefByName.get(scn)?.axis ?? "",
+      repeat: Number(r),
+      tokens: prevTokens.get(id) ?? null,
+      renderable: res.renderable,
+      complete: res.complete,
+      errs: res.errs,
+      classes: res.classes ?? [...new Set(res.errs.map((e) => e.cls))],
+      ...(res.n !== undefined ? { n: res.n } : {}),
+    });
   }
 
   writeFileSync(resultsPath, JSON.stringify(rows, null, 1));

@@ -47,7 +47,7 @@ raw model output, and the scored verdicts.
 | `run.mjs` | Generation runner (any OpenAI-compatible provider, Anthropic, Google). |
 | `score.mjs` | Offline scorer: replays every raw through the validators, no API keys needed. |
 | `tools/` | Token counts, cost estimates, blank-screen floor. |
-| `raw/` | Every scored model output, verbatim. `<label>-native/` holds openui runs, `<label>-official/` holds json-render and A2UI runs. |
+| `raw/` | Every scored model output, verbatim: `raw/<label>/<format>__<brief>__r<repeat>.txt`. |
 | `results/` | Scored verdicts per model, one row per run. |
 
 ## Reproduce the scores (no API keys)

@@ -41,7 +41,7 @@ for (const label of LABELS) {
   let stillBlank = 0;
   const details = [];
   for (const row of blanks) {
-    const s = scoreRaw(join(RAW_ROOT, `${label}-official`, `a2ui__${row.scenario}__r${row.repeat}.txt`));
+    const s = scoreRaw(join(RAW_ROOT, label, `a2ui__${row.scenario}__r${row.repeat}.txt`));
     const rend = evalA2uiRenderer(explode(s.messages ?? []));
     const paints = Boolean(rend.rootPresent && rend.componentCount > 0);
     if (!paints) stillBlank += 1;

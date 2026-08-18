@@ -39,7 +39,7 @@ for (const model of Object.keys(PRICE)) {
   let modelTotal = 0;
   const parts = [];
   for (const fmt of ["openui", "jsonrender", "a2ui"]) {
-    const dir = join(ROOT, "raw", `${model}-${fmt === "openui" ? "native" : "official"}`);
+    const dir = join(ROOT, "raw", model);
     const files = readdirSync(dir).filter((f) => f.startsWith(`${fmt}__`));
     let inTok = 0;
     let outTok = 0;

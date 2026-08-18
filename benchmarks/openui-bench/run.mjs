@@ -43,17 +43,17 @@ if (!MODEL || !LABEL) {
 
 const FORMATS = {
   openui: {
-    dir: `${LABEL}-native`,
+    dir: LABEL,
     system: () => openuiSystemPrompt(),
     user: (brief) => brief.prompt,
   },
   jsonrender: {
-    dir: `${LABEL}-official`,
+    dir: LABEL,
     system: () => jrSystemPrompt(),
     user: (brief) => jrUserPrompt(brief.prompt),
   },
   a2ui: {
-    dir: `${LABEL}-official`,
+    dir: LABEL,
     system: () => readFileSync(join(__dirname, "protocols/a2ui/system-prompt.txt"), "utf8"),
     user: (brief) => brief.prompt,
   },
