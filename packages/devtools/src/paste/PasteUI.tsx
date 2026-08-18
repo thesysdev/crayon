@@ -12,7 +12,7 @@ import { TreePanel } from "./panels/TreePanel";
 import { ValidationPanel } from "./panels/ValidationPanel";
 import { librarySchema } from "./parse";
 import { StreamToolbar, type StreamSettings } from "./StreamToolbar";
-import { FONT, MONO, pasteStyles as paste } from "./styles";
+import { FONT, pasteStyles as paste } from "./styles";
 import { usePlayback } from "./usePlayback";
 import { useReactLang } from "./useReactLang";
 import { useValidation } from "./useValidation";
@@ -135,11 +135,6 @@ export function PasteUI({
             </button>
           ) : null}
           <span style={styles.title}>OpenUI Paste</span>
-          {lang?.langCoreVersion ? (
-            <span style={styles.version} title="Installed @openuidev/lang-core">
-              lang-core {lang.langCoreVersion}
-            </span>
-          ) : null}
         </div>
         <div style={styles.headerActions}>
           <HelpDialog defaultOpen={!helpSeen} onSeen={onHelpSeen} />
@@ -260,16 +255,6 @@ const styles = {
   title: {
     overflow: "hidden",
     textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-  },
-  version: {
-    color: "var(--oui-dt-fg-muted)",
-    fontWeight: 500,
-    fontSize: 11,
-    fontFamily: MONO,
-    background: "var(--oui-dt-bg-subtle)",
-    borderRadius: 999,
-    padding: "2px 8px",
     whiteSpace: "nowrap",
   },
   headerActions: {
