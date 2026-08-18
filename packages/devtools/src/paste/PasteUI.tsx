@@ -1,8 +1,10 @@
-import { Maximize2, X } from "lucide-react";
+import { ArrowLeft, Maximize2, X } from "lucide-react";
 import { Component, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { type RegisteredLibrary } from "../libraryRegistry";
+import { themeVars, useDevtoolsScheme } from "../theme";
 import type { ChunkStrategy } from "./chunker";
 import { HelpDialog } from "./HelpDialog";
+import { LangEditor } from "./LangEditor";
 import { JsonPanel } from "./panels/JsonPanel";
 import { RenderPanel } from "./panels/RenderPanel";
 import { StreamTimeline } from "./panels/StreamTimeline";
@@ -57,7 +59,13 @@ export interface PasteUIProps {
   onCodeChange: (code: string) => void;
   ejected?: boolean;
   onEject?: () => void;
+  /** Dismisses the whole widget (or the ejected window). */
   onClose: () => void;
+  /** Narrows the drawer back to the event list. Omitted when ejected. */
+  onBack?: () => void;
+  /** False on the first ever visit, which opens the help guide unprompted. */
+  helpSeen?: boolean;
+  onHelpSeen?: () => void;
   popupBlocked?: boolean;
 }
 
@@ -77,6 +85,9 @@ export function PasteUI({
   ejected = false,
   onEject,
   onClose,
+  onBack,
+  helpSeen = true,
+  onHelpSeen,
   popupBlocked = false,
 }: PasteUIProps) {
   const selected = pickLibrary(libraries, code);
@@ -88,6 +99,7 @@ export function PasteUI({
   const [tab, setTab] = useState<Tab>("render");
   const [strategy, setStrategy] = useState<ChunkStrategy>("llm");
   const [seed, setSeed] = useState(42);
+  const scheme = useDevtoolsScheme();
   const settings: StreamSettings = {
     strategy,
     onStrategyChange: setStrategy,
@@ -110,9 +122,18 @@ export function PasteUI({
   };
 
   return (
-    <div style={styles.shell}>
+    <div style={{ ...styles.shell, ...themeVars(scheme) }}>
       <div style={styles.header}>
         <div style={styles.headerLeft}>
+          {onBack ? (
+            <button
+              style={{ ...styles.iconButton, ...styles.iconButtonOutlined }}
+              onClick={onBack}
+              aria-label="Back to event list"
+            >
+              <ArrowLeft size={14} />
+            </button>
+          ) : null}
           <span style={styles.title}>OpenUI Paste</span>
           {lang?.langCoreVersion ? (
             <span style={styles.version} title="Installed @openuidev/lang-core">
@@ -121,7 +142,7 @@ export function PasteUI({
           ) : null}
         </div>
         <div style={styles.headerActions}>
-          <HelpDialog />
+          <HelpDialog defaultOpen={!helpSeen} onSeen={onHelpSeen} />
           {!ejected && onEject ? (
             <button
               style={styles.iconButton}
@@ -134,7 +155,7 @@ export function PasteUI({
           <button
             style={styles.iconButton}
             onClick={onClose}
-            aria-label={ejected ? "Close OpenUI Paste window" : "Close OpenUI Paste"}
+            aria-label={ejected ? "Close OpenUI Paste window" : "Close OpenUI devtools"}
           >
             <X size={15} />
           </button>
@@ -151,14 +172,7 @@ export function PasteUI({
       />
       <div style={styles.body}>
         <div style={styles.editorWrap}>
-          <textarea
-            style={styles.editor}
-            value={code}
-            onChange={(event) => changeCode(event.target.value)}
-            spellCheck={false}
-            readOnly={playbackActive}
-            aria-label="OpenUI Lang"
-          />
+          <LangEditor value={code} onChange={changeCode} readOnly={playbackActive} />
           {playbackActive ? <span style={paste.editorLock}>Streaming…</span> : null}
         </div>
         <div style={styles.output}>
@@ -222,8 +236,8 @@ const styles = {
     flexDirection: "column",
     height: "100%",
     minHeight: 0,
-    background: "#ffffff",
-    color: "#18181b",
+    background: "var(--oui-dt-bg)",
+    color: "var(--oui-dt-fg)",
     fontFamily: FONT,
     fontSize: 13,
     position: "relative",
@@ -234,7 +248,6 @@ const styles = {
     alignItems: "center",
     gap: 8,
     padding: "12px 16px",
-    borderBottom: "1px solid #f4f4f5",
     fontWeight: 600,
     fontSize: 14,
   },
@@ -250,11 +263,11 @@ const styles = {
     whiteSpace: "nowrap",
   },
   version: {
-    color: "#71717a",
+    color: "var(--oui-dt-fg-muted)",
     fontWeight: 500,
     fontSize: 11,
     fontFamily: MONO,
-    background: "#f4f4f5",
+    background: "var(--oui-dt-bg-subtle)",
     borderRadius: 999,
     padding: "2px 8px",
     whiteSpace: "nowrap",
@@ -274,16 +287,21 @@ const styles = {
     border: "none",
     borderRadius: 8,
     background: "transparent",
-    color: "#71717a",
+    color: "var(--oui-dt-fg-muted)",
     cursor: "pointer",
     padding: 0,
   },
+  iconButtonOutlined: {
+    boxSizing: "border-box",
+    border: "1px solid var(--oui-dt-border)",
+    background: "var(--oui-dt-bg)",
+  },
   banner: {
     padding: "8px 16px",
-    background: "#fffbeb",
-    color: "#92400e",
+    background: "var(--oui-dt-warning-bg)",
+    color: "var(--oui-dt-warning-strong)",
     fontSize: 12,
-    borderBottom: "1px solid #fde68a",
+    borderBottom: "1px solid var(--oui-dt-warning-border)",
   },
   body: {
     flex: 1,
@@ -296,27 +314,12 @@ const styles = {
     minWidth: 0,
     minHeight: 0,
   },
-  editor: {
-    boxSizing: "border-box",
-    width: "100%",
-    height: "100%",
-    border: "none",
-    borderRight: "1px solid #f4f4f5",
-    resize: "none",
-    padding: 16,
-    fontFamily: MONO,
-    fontSize: 12,
-    lineHeight: 1.5,
-    color: "#18181b",
-    background: "#fafafa",
-    outline: "none",
-  },
   output: {
     display: "flex",
     flexDirection: "column",
     minWidth: 0,
     minHeight: 0,
-    background: "#ffffff",
+    background: "var(--oui-dt-bg)",
   },
   tabBody: {
     flex: 1,
@@ -332,7 +335,7 @@ const styles = {
     flexDirection: "column",
   },
   missing: {
-    color: "#a1a1aa",
+    color: "var(--oui-dt-fg-faint)",
     padding: 16,
     fontSize: 12,
   },

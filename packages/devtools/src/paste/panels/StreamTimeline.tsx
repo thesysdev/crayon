@@ -38,7 +38,7 @@ export function StreamTimeline({ state }: { state: PlaybackState }) {
         </div>
       ) : null}
       {state.traceTruncated ? (
-        <p style={{ color: "#71717a", fontSize: 12 }}>
+        <p style={{ color: "var(--oui-dt-fg-muted)", fontSize: 12 }}>
           Trace capped at 5,000 rows — remaining chunks not logged.
         </p>
       ) : null}

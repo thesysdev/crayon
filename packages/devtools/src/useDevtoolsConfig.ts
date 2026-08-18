@@ -1,11 +1,28 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { ColorScheme } from "./theme";
 
 const STORAGE_KEY = "openui.devtools.config";
 
-/** Add a boolean here when a new drawer setting should persist. */
-const BOOLEAN_KEYS = ["autoOpen", "onlyErrors"] as const;
+export type DevtoolsConfig = {
+  autoOpen: boolean;
+  onlyErrors: boolean;
+  theme: ColorScheme;
+  /** Set once the Paste help dialog has been dismissed, so it only greets once. */
+  helpSeen: boolean;
+};
 
-export type DevtoolsConfig = { [K in (typeof BOOLEAN_KEYS)[number]]: boolean };
+function isColorScheme(value: unknown): value is ColorScheme {
+  return value === "light" || value === "dark";
+}
+
+function sanitize(patch: Partial<DevtoolsConfig>): Partial<DevtoolsConfig> {
+  const next: Partial<DevtoolsConfig> = {};
+  if (typeof patch.autoOpen === "boolean") next.autoOpen = patch.autoOpen;
+  if (typeof patch.onlyErrors === "boolean") next.onlyErrors = patch.onlyErrors;
+  if (isColorScheme(patch.theme)) next.theme = patch.theme;
+  if (typeof patch.helpSeen === "boolean") next.helpSeen = patch.helpSeen;
+  return next;
+}
 
 function readStored(): Partial<DevtoolsConfig> {
   if (typeof window === "undefined") return {};
@@ -14,12 +31,7 @@ function readStored(): Partial<DevtoolsConfig> {
     if (!raw) return {};
     const parsed: unknown = JSON.parse(raw);
     if (typeof parsed !== "object" || parsed === null) return {};
-    const record = parsed as Record<string, unknown>;
-    const config: Partial<DevtoolsConfig> = {};
-    for (const key of BOOLEAN_KEYS) {
-      if (typeof record[key] === "boolean") config[key] = record[key];
-    }
-    return config;
+    return sanitize(parsed as Partial<DevtoolsConfig>);
   } catch {
     return {};
   }
@@ -28,25 +40,22 @@ function readStored(): Partial<DevtoolsConfig> {
 function writeStored(patch: Partial<DevtoolsConfig>): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...readStored(), ...patch }));
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...readStored(), ...sanitize(patch) }),
+    );
   } catch {
     // private mode / quota / disabled storage
   }
 }
 
 function merge(base: DevtoolsConfig, patch: Partial<DevtoolsConfig>): DevtoolsConfig {
-  const next = { ...base };
-  for (const key of BOOLEAN_KEYS) {
-    const value = patch[key];
-    if (typeof value === "boolean") next[key] = value;
-  }
-  return next;
+  return { ...base, ...sanitize(patch) };
 }
 
 /**
- * Drawer checkbox state as one object, restored from localStorage.
- * `setConfig({ autoOpen: false })` patches and persists; add keys to
- * `BOOLEAN_KEYS` when a new setting should survive refresh.
+ * Drawer settings as one object, restored from localStorage.
+ * `setConfig({ autoOpen: false })` patches and persists.
  */
 export function useDevtoolsConfig(defaults: DevtoolsConfig) {
   const [config, setConfigState] = useState(() => merge(defaults, readStored()));
@@ -54,7 +63,7 @@ export function useDevtoolsConfig(defaults: DevtoolsConfig) {
   configRef.current = config;
 
   // After SSR hydration the lazy initializer reused the server snapshot
-  // (prop defaults). Re-read storage so a previous session's checkboxes win.
+  // (prop defaults). Re-read storage so a previous session's settings win.
   useEffect(() => {
     const stored = readStored();
     setConfigState((prev) => {

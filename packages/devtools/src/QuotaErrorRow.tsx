@@ -85,18 +85,17 @@ const FONT = '"Inter", system-ui, sans-serif';
 
 const styles = {
   row: {
-    border: "1px solid #e4e4e7",
+    border: "1px solid var(--oui-dt-border)",
     borderRadius: 12,
     padding: 12,
     display: "flex",
     flexDirection: "column",
     gap: 6,
-    background: "#ffffff",
-    boxShadow: "0 1px 2px rgba(24, 24, 27, 0.04)",
+    background: "var(--oui-dt-bg)",
   },
   rowCredits: {
-    border: "1px solid #fde68a",
-    background: "linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%)",
+    border: "1px solid var(--oui-dt-credits-border)",
+    background: "var(--oui-dt-credits-gradient)",
   },
   creditsNote: {
     display: "flex",
@@ -106,13 +105,13 @@ const styles = {
   creditsTitle: {
     fontSize: 13,
     fontWeight: 600,
-    color: "#18181b",
+    color: "var(--oui-dt-fg)",
   },
   creditsMessage: {
     margin: 0,
     fontSize: 12,
     lineHeight: 1.55,
-    color: "#52525b",
+    color: "var(--oui-dt-fg-secondary)",
   },
   actions: {
     display: "flex",
@@ -125,8 +124,8 @@ const styles = {
     gap: 6,
     border: "none",
     borderRadius: 8,
-    background: "#18181b",
-    color: "#ffffff",
+    background: "var(--oui-dt-inverted)",
+    color: "var(--oui-dt-inverted-fg)",
     padding: "6px 12px",
     fontFamily: FONT,
     fontSize: 12,
@@ -134,8 +133,8 @@ const styles = {
     cursor: "pointer",
   },
   actionSecondary: {
-    background: "#ffffff",
-    color: "#18181b",
-    border: "1px solid #e4e4e7",
+    background: "var(--oui-dt-bg)",
+    color: "var(--oui-dt-fg)",
+    border: "1px solid var(--oui-dt-border)",
   },
 } satisfies Record<string, CSSProperties>;

@@ -112,6 +112,15 @@ function openPasteButton(): HTMLButtonElement | undefined {
   );
 }
 
+/** The display filters live behind the header settings button. */
+function openSettings(): void {
+  const button = container.querySelector<HTMLButtonElement>(
+    'button[aria-label="Devtools settings"]',
+  );
+  if (!button) throw new Error("settings button not found");
+  click(button);
+}
+
 function checkboxLabeled(text: string): HTMLInputElement {
   const label = [...container.querySelectorAll("label")].find((el) =>
     el.textContent?.includes(text),
@@ -166,12 +175,14 @@ describe("OpenUIDevtools", () => {
 
   it("restores auto-open on error from a previous session", () => {
     render({ enabled: true, autoOpenOnError: true });
+    openSettings();
     expect(checkboxLabeled("Auto-open on error").checked).toBe(true);
 
     act(() => checkboxLabeled("Auto-open on error").click());
     expect(checkboxLabeled("Auto-open on error").checked).toBe(false);
 
     remount({ enabled: true, autoOpenOnError: true });
+    openSettings();
     expect(checkboxLabeled("Auto-open on error").checked).toBe(false);
 
     act(() => observability.error({ kind: "boom" }));
@@ -180,10 +191,12 @@ describe("OpenUIDevtools", () => {
 
   it("restores the errors-only filter from a previous session", () => {
     render({ enabled: true, errorsOnly: false });
+    openSettings();
     act(() => checkboxLabeled("Errors only").click());
     expect(checkboxLabeled("Errors only").checked).toBe(true);
 
     remount({ enabled: true, errorsOnly: false });
+    openSettings();
     expect(checkboxLabeled("Errors only").checked).toBe(true);
 
     act(() => observability.info({ kind: "just-info" }));
@@ -262,7 +275,7 @@ describe("OpenUIDevtools", () => {
     );
 
     expect(container.textContent?.match(/OpenUI Lang stream/g)).toHaveLength(1);
-    expect(container.textContent).toContain("info");
+    expect(container.querySelector('[aria-label="info"]')).not.toBeNull();
     expect(container.textContent).toContain("Streaming");
     expect(container.textContent).toContain("2 statements");
     expect(container.textContent).toContain("1 orphaned statement");
@@ -332,7 +345,7 @@ describe("OpenUIDevtools", () => {
     expect(toggle().textContent).toContain("1");
   });
 
-  it("opens a stream response in OpenUI Paste", () => {
+  it("debugs a stream response in OpenUI Paste", () => {
     seedLibrary();
     render({ enabled: true, errorsOnly: false });
     act(() =>
@@ -351,7 +364,7 @@ describe("OpenUIDevtools", () => {
         'button[aria-label="Toggle OpenUI Lang stream details"]',
       )!,
     );
-    click(container.querySelector('button[aria-label="Open in Paste"]')!);
+    click(container.querySelector('button[aria-label="Debug"]')!);
 
     const editor = container.querySelector<HTMLTextAreaElement>(
       'textarea[aria-label="OpenUI Lang"]',
@@ -596,7 +609,7 @@ describe("OpenUIDevtools", () => {
     open.mockRestore();
   });
 
-  it("stays in the modal when the popup is blocked", () => {
+  it("stays in the drawer when the popup is blocked", () => {
     seedLibrary();
     const open = vi.spyOn(window, "open").mockReturnValue(null);
 

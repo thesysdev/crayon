@@ -24,10 +24,15 @@ function preparePasteDocument(from: Document, to: Document): void {
   if (to.documentElement.dataset["openuiPaste"] === "true") return;
   to.documentElement.dataset["openuiPaste"] = "true";
   to.title = "OpenUI Paste";
+  // Mirror the host's root classes/attrs/color-scheme so the rendered preview
+  // resolves the same CSS it would in the app. Devtools chrome is unaffected —
+  // it uses the scheme chosen in Settings.
   to.documentElement.className = from.documentElement.className;
   to.body.className = from.body.className;
-  const rootStyle = from.documentElement.getAttribute("style");
-  if (rootStyle) to.documentElement.setAttribute("style", rootStyle);
+  copyAttributes(from.documentElement, to.documentElement);
+  copyAttributes(from.body, to.body);
+  const colorScheme = getComputedStyle(from.documentElement).colorScheme;
+  if (colorScheme) to.documentElement.style.colorScheme = colorScheme;
 
   for (const node of from.head.querySelectorAll("link[rel='stylesheet'], style")) {
     to.head.appendChild(node.cloneNode(true));
@@ -50,4 +55,11 @@ function preparePasteDocument(from: Document, to: Document): void {
   root.id = ROOT_ID;
   root.style.height = "100%";
   to.body.appendChild(root);
+}
+
+function copyAttributes(from: Element, to: Element): void {
+  for (const attr of from.attributes) {
+    if (attr.name === "class") continue;
+    to.setAttribute(attr.name, attr.value);
+  }
 }
