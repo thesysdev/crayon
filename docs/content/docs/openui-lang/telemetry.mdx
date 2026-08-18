@@ -3,41 +3,31 @@ title: Telemetry
 description: What OpenUI Lang collects, why it is collected, and how to control installation and runtime telemetry.
 ---
 
-OpenUI Lang Core has two separate telemetry flows. Installation telemetry is enabled by default and runs during the package's `postinstall` lifecycle. Runtime telemetry is disabled by default and requires explicit opt-in.
+OpenUI Lang Core has two types of telemetry:
 
-| Flow         | Default  | When it can run                                                   | Control                                               |
-| ------------ | -------- | ----------------------------------------------------------------- | ----------------------------------------------------- |
-| Installation | Enabled  | When `@openuidev/lang-core` runs its `postinstall` script         | Set `OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` |
-| Runtime      | Disabled | On sampled, successful server-side `generateSystemPrompt()` calls | Set `OPENUI_RUNTIME_TELEMETRY_ENABLED=1` to opt in    |
-
-The disable flags take precedence. If `OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` is set, runtime telemetry remains off even when `OPENUI_RUNTIME_TELEMETRY_ENABLED=1` is also set.
+- **Installation telemetry** is on by default. You can turn it off.
+- **Runtime telemetry** is off by default. You can choose to turn it on.
 
 ## Why we collect it
 
-We use telemetry to understand how OpenUI Lang is adopted and which environments we need to support. Installation data gives us aggregate compatibility signals across package managers, Node.js versions, operating systems, CI providers, and containers. Opt-in runtime data helps us understand use of system-prompt generation and the broad size and shape of component libraries, so we can prioritize reliability, compatibility, and performance work.
+Telemetry helps us understand how OpenUI Lang is used, which environments we should support, and where to focus reliability and performance work.
 
-Telemetry is best-effort, has a two-second request timeout, and never blocks installation or prompt generation if collection fails.
+Telemetry is optional and never blocks installation or prompt generation if it fails.
 
 ## Installation telemetry
 
-The `@openuidev/lang-core` package sends one `openui_lang_core_installed` event from its `postinstall` script. This is installation-time telemetry; it is not emitted by an application build unless that build also installs dependencies and runs package lifecycle scripts.
+Installation telemetry runs when `@openuidev/lang-core` is installed. It does not run during your application build unless that build also installs dependencies.
 
 ### What we collect
 
-- A random installation ID
-- A salted SHA-256 project ID and the source category used to derive it (`git_origin`, `repository_url`, or `install_root`)
-- The OpenUI Lang Core and Node.js versions
-- Operating system platform, release, and architecture
-- Package manager name and version
-- Whether installation runs in CI, plus the CI provider category when detected
-- Whether installation runs in Docker
-- Telemetry schema version
-
-The installation ID is generated randomly and stored in `${XDG_CONFIG_HOME:-~/.config}/openui/telemetry.json`, so later installations can reuse it. It is not calculated from your machine or project. The project ID is salted and hashed locally; the raw Git origin, repository URL, or installation path is not sent.
+- A random ID for the installation
+- A project identifier created locally so the original repository URL or path is not sent
+- OpenUI Lang Core, Node.js, operating system, and package manager versions
+- Whether the installation is running in CI or Docker
 
 ### Opt out
 
-Set either disable variable in the environment that runs your package installation:
+Set either variable when installing dependencies:
 
 ```bash
 OPENUI_TELEMETRY_DISABLED=1 pnpm install
@@ -49,30 +39,19 @@ or:
 DO_NOT_TRACK=1 pnpm install
 ```
 
-The same variables work with npm, Yarn, and Bun. In CI, configure one of them before the dependency-install step. They are checked before telemetry reads or creates its local state, resolves a project identifier, or makes a network request.
-
-To inspect the installation payload locally without sending it, use:
-
-```bash
-OPENUI_TELEMETRY_DEBUG=1 pnpm install
-```
+These variables also work with npm, Yarn, and Bun. In CI, set one before the dependency-install step.
 
 ## Runtime telemetry
 
-Runtime telemetry is off unless you explicitly enable it. When enabled, OpenUI Lang samples 10% of successful server-side `generateSystemPrompt()` calls and sends a `lang_core_system_prompt_generation_used` event. Calls from browsers and browser workers never send this telemetry.
+Runtime telemetry is off by default. When enabled, OpenUI Lang collects data for about 1 in 10 successful prompt generations on your server. Browser calls never send runtime telemetry.
 
 ### What we collect
 
-- Event timestamp, random event ID, and random process/runtime ID
-- OpenUI Lang Core and server runtime names and versions
-- Environment category (`production`, `development`, `test`, or `unknown`)
-- CI status and CI provider category when detected
-- API input shape, component count, and tool count
-- Sampling and telemetry schema versions
-- A locally computed SHA-256 hash of the prompt configuration
-- A locally computed SHA-256 project hash when a project identifier is available
-
-The prompt-configuration hash represents component names, signatures and descriptions, component groups and notes, the root component, and generation-mode flags. Only the hash is sent. Preambles, examples, additional rules, tool definitions, and tool examples are excluded from the hash.
+- OpenUI Lang Core and server runtime versions
+- Environment and CI information
+- The number of components and tools in the prompt setup
+- Random IDs used to group related events
+- Project and prompt-setup identifiers created locally; the original values are not sent
 
 ### Opt in
 
@@ -82,26 +61,28 @@ Set the opt-in variable in the server environment where `generateSystemPrompt()`
 OPENUI_RUNTIME_TELEMETRY_ENABLED=1 pnpm dev
 ```
 
-For a deployed application, set `OPENUI_RUNTIME_TELEMETRY_ENABLED=1` in the runtime environment for the server process or function. Do not expose it as a public/browser environment variable.
+For a deployed application, set this variable in the server environment where `generateSystemPrompt()` runs.
 
-To opt out again, remove `OPENUI_RUNTIME_TELEMETRY_ENABLED` or set either global disable flag:
+To turn runtime telemetry off again, remove `OPENUI_RUNTIME_TELEMETRY_ENABLED` or set a global disable flag:
 
 ```bash
 OPENUI_TELEMETRY_DISABLED=1
 ```
 
-## What we do not collect
+The disable flags always win. Runtime telemetry stays off if `OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` is set, even when the runtime opt-in is also set.
+
+## What we never collect
 
 Neither telemetry flow sends:
 
 - Prompts, messages, preambles, examples, additional rules, or generated output
-- Source code or raw component, tool, or schema definitions
-- Repository URLs, project names, filesystem paths, branches, or commits
-- Names, email addresses, usernames, application-user IDs, or chat data
-- Credentials, API keys, environment-variable values, errors, logs, or stack traces
+- Source code or full component, tool, or schema definitions
+- Repository URLs, project names, file paths, branches, or commits
+- Names, email addresses, usernames, user IDs, or chat data
+- Credentials, API keys, environment values, errors, logs, or stack traces
 - Routes, DOM data, or UI interactions
 
-By default, events are sent through an OpenUI telemetry endpoint to PostHog. As with any HTTP request, the endpoint and PostHog can observe the source IP as transport metadata; OpenUI Lang does not read the IP or add it to the event payload.
+Telemetry is sent through an OpenUI endpoint to PostHog. Like any web request, the endpoint and PostHog can see the source IP, but OpenUI Lang does not add it to the telemetry data.
 
 <Callout type="info">
   This page covers telemetry in `@openuidev/lang-core`. The OpenUI CLI has separate command
