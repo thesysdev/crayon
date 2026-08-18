@@ -1,3 +1,8 @@
+import {
+  captureParserParseException,
+  captureParserParseResult,
+  prepareParserParseTelemetry,
+} from "../telemetry/runtime";
 import type { ASTNode, Statement } from "./ast";
 import { isASTNode, walkAST } from "./ast";
 import { isBuiltin, RESERVED_CALLS } from "./builtins";
@@ -665,7 +670,15 @@ export function createParser(schema: LibraryJSONSchema, rootName?: string): Pars
   const paramMap = compileSchema(schema);
   return {
     parse(input: string): ParseResult {
-      return parse(input, paramMap, rootName);
+      const telemetry = prepareParserParseTelemetry();
+      try {
+        const result = parse(input, paramMap, rootName);
+        captureParserParseResult(telemetry, result);
+        return result;
+      } catch (error) {
+        captureParserParseException(telemetry);
+        throw error;
+      }
     },
   };
 }

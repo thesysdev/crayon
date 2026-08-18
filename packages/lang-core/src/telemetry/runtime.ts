@@ -1,4 +1,5 @@
 import type { PromptSpec } from "../parser/prompt";
+import type { ParseResult, ValidationErrorCode } from "../parser/types";
 import {
   getPostHogConfig,
   isRuntimeTelemetryEnabled,
@@ -12,12 +13,16 @@ import {
  *
  * Opt-in: nothing is sent unless OPENUI_RUNTIME_TELEMETRY_ENABLED=1 is set.
  *
- * Sent for sampled server-side generations:
+ * Sent for sampled server-side system-prompt generations:
  * - Event timestamp, SDK and runtime versions, environment, CI status, and CI provider category
  * - API input shape, component count, tool count, and schema/sample versions
  * - Random event and runtime identifiers
  * - A locally computed SHA-256 prompt-configuration hash
  * - A locally computed SHA-256 project hash when a project identifier is available
+ *
+ * Sent for sampled server-side createParser().parse() calls:
+ * - The same event/runtime metadata and optional locally computed project hash
+ * - Outcome, incomplete/root booleans, structural counts, and fixed validation-code counts
  *
  * The configuration hash covers the root component, component names, signatures and
  * descriptions, component groups and notes, and generation-mode flags. The project hash
@@ -25,16 +30,19 @@ import {
  * are sent.
  *
  * Not sent:
- * - Prompts, preambles, examples, additional rules, or generated output
+ * - Prompts, preambles, examples, additional rules, OpenUI Lang source, or generated output
  * - Raw component definitions, tool definitions, or tool examples
+ * - Component/prop/statement names, error messages/paths, unresolved/orphaned names, or exceptions
  * - Git origins, working-directory paths, credentials, user identifiers, or chat data
  *
  * Browser and browser-worker environments never send this telemetry.
  */
 declare const __OPENUI_LANG_CORE_VERSION__: string;
 
-const EVENT_NAME = "lang_core_system_prompt_generation_used";
-const SAMPLE_RATE = 0.1;
+const SYSTEM_PROMPT_EVENT_NAME = "lang_core_system_prompt_generation_used";
+const PARSER_PARSE_EVENT_NAME = "lang_core_parser_parse_used";
+const SYSTEM_PROMPT_SAMPLE_RATE = 0.1;
+const PARSER_PARSE_SAMPLE_RATE = 0.1;
 const SDK_VERSION =
   typeof __OPENUI_LANG_CORE_VERSION__ === "string"
     ? __OPENUI_LANG_CORE_VERSION__
@@ -65,7 +73,7 @@ interface TelemetryState {
   runtimeId: string;
 }
 
-interface CaptureProperties {
+interface SystemPromptCaptureProperties {
   distinct_id: string;
   $process_person_profile: false;
   event_id: string;
@@ -85,7 +93,54 @@ interface CaptureProperties {
   environment: Environment;
   ci: boolean;
   ci_name?: string;
-  sample_rate: 0.1;
+  sample_rate: typeof SYSTEM_PROMPT_SAMPLE_RATE;
+}
+
+type ParserParseOutcome = "valid" | "invalid" | "no_renderable_root" | "threw";
+
+interface ParserParseResultProperties {
+  outcome: Exclude<ParserParseOutcome, "threw">;
+  incomplete: boolean;
+  has_renderable_root: boolean;
+  statement_count: number;
+  unresolved_count: number;
+  orphaned_count: number;
+  validation_error_count: number;
+  unknown_component_count: number;
+  missing_required_count: number;
+  null_required_count: number;
+  inline_reserved_count: number;
+  excess_args_count: number;
+}
+
+interface ParserParseThrownProperties {
+  outcome: "threw";
+}
+
+type ParserParseOutcomeProperties = ParserParseResultProperties | ParserParseThrownProperties;
+
+interface ParserParseCaptureProperties {
+  distinct_id: string;
+  $process_person_profile: false;
+  event_id: string;
+  telemetry_schema_version: typeof TELEMETRY_SCHEMA_VERSION;
+  project_hash_version?: 1;
+  project_hash?: string;
+  sdk_name: "@openuidev/lang-core";
+  sdk_version: string;
+  api_surface: "parser.parse";
+  runtime: RuntimeName;
+  runtime_version?: string;
+  environment: Environment;
+  ci: boolean;
+  ci_name?: string;
+  sample_rate: typeof PARSER_PARSE_SAMPLE_RATE;
+}
+
+export interface ParserParseCaptureContext {
+  state: TelemetryState;
+  runtime: RuntimeInfo;
+  environment: Environment;
 }
 
 interface CiInfoSnapshot {
@@ -305,7 +360,28 @@ async function getCIInfo(runtime: RuntimeInfo): Promise<CiInfoSnapshot> {
   }
 }
 
-async function sendCapture(
+async function postCapture(
+  event: string,
+  properties:
+    SystemPromptCaptureProperties | (ParserParseCaptureProperties & ParserParseOutcomeProperties),
+  runtime: RuntimeInfo,
+): Promise<void> {
+  const postHog = getPostHogConfig(runtime.env);
+  await globalThis.fetch(postHog.captureUrl, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      api_key: postHog.apiKey,
+      event,
+      timestamp: new Date().toISOString(),
+      properties,
+    }),
+    keepalive: true,
+    signal: globalThis.AbortSignal.timeout(TELEMETRY_REQUEST_TIMEOUT_MS),
+  });
+}
+
+async function sendSystemPromptCapture(
   state: TelemetryState,
   spec: PromptSpec,
   configHash: Promise<string>,
@@ -319,8 +395,7 @@ async function sendCapture(
     getCIInfo(runtime),
   ]);
 
-  const postHog = getPostHogConfig(runtime.env);
-  const properties: CaptureProperties = {
+  const properties: SystemPromptCaptureProperties = {
     distinct_id: state.runtimeId,
     $process_person_profile: false,
     event_id: globalThis.crypto.randomUUID(),
@@ -338,7 +413,7 @@ async function sendCapture(
     environment,
     ci: ciInfo.isCI,
     ...(ciInfo.id ? { ci_name: ciInfo.id } : {}),
-    sample_rate: SAMPLE_RATE,
+    sample_rate: SYSTEM_PROMPT_SAMPLE_RATE,
     ...(projectHash
       ? {
           project_hash_version: 1 as const,
@@ -347,18 +422,7 @@ async function sendCapture(
       : {}),
   };
 
-  await globalThis.fetch(postHog.captureUrl, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      api_key: postHog.apiKey,
-      event: EVENT_NAME,
-      timestamp: new Date().toISOString(),
-      properties,
-    }),
-    keepalive: true,
-    signal: globalThis.AbortSignal.timeout(TELEMETRY_REQUEST_TIMEOUT_MS),
-  });
+  await postCapture(SYSTEM_PROMPT_EVENT_NAME, properties, runtime);
 }
 
 export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: InputShape): void {
@@ -379,15 +443,154 @@ export function recordSystemPromptGeneration(spec: PromptSpec, inputShape: Input
     if (!isRuntimeTelemetryEnabled(env)) return;
 
     // Reject 90% of calls before projection, hashing, repository lookup, or payload allocation.
-    if (Math.random() >= SAMPLE_RATE) return;
+    if (Math.random() >= SYSTEM_PROMPT_SAMPLE_RATE) return;
 
     const state = getState();
     const configHash = calculateSystemPromptConfigHash(spec);
 
     void Promise.resolve()
-      .then(() => sendCapture(state, spec, configHash, inputShape, runtime, environment))
+      .then(() =>
+        sendSystemPromptCapture(state, spec, configHash, inputShape, runtime, environment),
+      )
       .catch(() => undefined);
   } catch {
     // Telemetry must never affect prompt generation.
+  }
+}
+
+function getValidationErrorCounts(
+  result: ParseResult,
+): Omit<
+  ParserParseResultProperties,
+  | "outcome"
+  | "incomplete"
+  | "has_renderable_root"
+  | "statement_count"
+  | "unresolved_count"
+  | "orphaned_count"
+  | "validation_error_count"
+> {
+  const counts: Record<ValidationErrorCode, number> = {
+    "unknown-component": 0,
+    "missing-required": 0,
+    "null-required": 0,
+    "inline-reserved": 0,
+    "excess-args": 0,
+  };
+
+  for (const error of result.meta.errors) counts[error.code] += 1;
+
+  return {
+    unknown_component_count: counts["unknown-component"],
+    missing_required_count: counts["missing-required"],
+    null_required_count: counts["null-required"],
+    inline_reserved_count: counts["inline-reserved"],
+    excess_args_count: counts["excess-args"],
+  };
+}
+
+function summarizeParserParse(result: ParseResult): ParserParseResultProperties {
+  return {
+    outcome:
+      result.meta.errors.length > 0 ? "invalid" : result.root ? "valid" : "no_renderable_root",
+    incomplete: result.meta.incomplete,
+    has_renderable_root: result.root !== null,
+    statement_count: result.meta.statementCount,
+    unresolved_count: result.meta.unresolved.length,
+    orphaned_count: result.meta.orphaned.length,
+    validation_error_count: result.meta.errors.length,
+    ...getValidationErrorCounts(result),
+  };
+}
+
+async function sendParserParseCapture(
+  context: ParserParseCaptureContext,
+  outcome: ParserParseOutcomeProperties,
+): Promise<void> {
+  const { state, runtime, environment } = context;
+  const [projectHash, ciInfo] = await Promise.all([
+    getProjectHash(state, runtime),
+    getCIInfo(runtime),
+  ]);
+
+  const properties: ParserParseCaptureProperties & ParserParseOutcomeProperties = {
+    distinct_id: state.runtimeId,
+    $process_person_profile: false,
+    event_id: globalThis.crypto.randomUUID(),
+    telemetry_schema_version: TELEMETRY_SCHEMA_VERSION,
+    sdk_name: "@openuidev/lang-core",
+    sdk_version: SDK_VERSION,
+    api_surface: "parser.parse",
+    runtime: runtime.name,
+    runtime_version: runtime.version,
+    environment,
+    ci: ciInfo.isCI,
+    ...(ciInfo.id ? { ci_name: ciInfo.id } : {}),
+    sample_rate: PARSER_PARSE_SAMPLE_RATE,
+    ...outcome,
+    ...(projectHash
+      ? {
+          project_hash_version: 1 as const,
+          project_hash: projectHash,
+        }
+      : {}),
+  };
+
+  await postCapture(PARSER_PARSE_EVENT_NAME, properties, runtime);
+}
+
+export function prepareParserParseTelemetry(): ParserParseCaptureContext | undefined {
+  try {
+    const runtime = detectRuntime();
+    if (
+      !runtime ||
+      typeof globalThis.fetch !== "function" ||
+      typeof globalThis.crypto?.randomUUID !== "function" ||
+      typeof globalThis.AbortSignal?.timeout !== "function"
+    ) {
+      return undefined;
+    }
+
+    const env = runtime.env;
+    if (!isRuntimeTelemetryEnabled(env)) return undefined;
+
+    // Reject 90% of calls before telemetry state, project lookup, or payload allocation.
+    if (Math.random() >= PARSER_PARSE_SAMPLE_RATE) return undefined;
+
+    return {
+      state: getState(),
+      runtime,
+      environment: getEnvironment(env),
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+export function captureParserParseResult(
+  context: ParserParseCaptureContext | undefined,
+  result: ParseResult,
+): void {
+  if (!context) return;
+
+  try {
+    const outcome = summarizeParserParse(result);
+    void Promise.resolve()
+      .then(() => sendParserParseCapture(context, outcome))
+      .catch(() => undefined);
+  } catch {
+    // Telemetry must never affect parsing.
+  }
+}
+
+export function captureParserParseException(context: ParserParseCaptureContext | undefined): void {
+  if (!context) return;
+
+  try {
+    void Promise.resolve()
+      .then(() => sendParserParseCapture(context, { outcome: "threw" }))
+      .catch(() => undefined);
+  } catch {
+    // Telemetry must never affect parsing or replace the original thrown value.
   }
 }
