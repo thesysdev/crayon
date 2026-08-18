@@ -19,14 +19,12 @@ function optionalExport<T>(read: () => T | undefined): T | undefined {
 export function loadReactLang(): Promise<LangModule | null> {
   pending ??= import("@openuidev/react-lang")
     .then((mod) => {
-      const loaded = mod as unknown as Partial<LangModule> & { LANG_CORE_VERSION?: string };
+      const loaded = mod as unknown as Partial<LangModule>;
       if (typeof loaded.createParser !== "function" || !loaded.Renderer) return null;
       return {
         Renderer: loaded.Renderer,
         createParser: loaded.createParser,
         createStreamingParser: optionalExport(() => loaded.createStreamingParser),
-        langCoreVersion:
-          typeof loaded.LANG_CORE_VERSION === "string" ? loaded.LANG_CORE_VERSION : null,
       };
     })
     .catch(() => null);

@@ -50,7 +50,6 @@ export interface LangModule {
   }>;
   createParser: (schema: unknown, rootName?: string) => ParserLike;
   createStreamingParser?: (schema: unknown, rootName?: string) => StreamParserLike;
-  langCoreVersion?: string | null;
 }
 
 export interface ValidationOutcome {

@@ -20,7 +20,6 @@ vi.mock("@openuidev/react-lang", async () => {
     },
   });
   return {
-    LANG_CORE_VERSION: "9.9.9",
     Renderer: (props: { response: string | null }) =>
       el("div", { "data-testid": "openui-renderer" }, props.response ?? ""),
     createParser: () => ({ parse }),
@@ -527,16 +526,6 @@ describe("OpenUIDevtools", () => {
     expect(tabs).toContain("Tree");
     expect(tabs).toContain("JSON");
     expect(tabs).toContain("Stream");
-  });
-
-  it("shows the installed lang-core version in OpenUI Paste", async () => {
-    seedLibrary();
-    render({ enabled: true });
-    click(openPasteButton()!);
-    await act(async () => {
-      await Promise.resolve();
-    });
-    expect(container.textContent).toContain("lang-core 9.9.9");
   });
 
   it("switches to the validation panel", async () => {
