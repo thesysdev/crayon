@@ -1,37 +1,43 @@
 # @openuidev/observability-cloud
 
-Cloud sink for [`@openuidev/observability`](../observability). Listens to the shared event bus, selects the events worth keeping (today: settled `react-lang:stream` events), batches them, and ships them to Thesys ingest with your publishable API key. Browser-only; `init` is a no-op on the server.
+Official SDK for OpenUI observability. Sends render events from your app to the Thesys console so you can track request volume, errors and reliability.
 
-## Usage
+## Install
 
-```ts
-import { init } from "@openuidev/observability-cloud";
-
-init({ apiKey: "pk-th-…" });
+```bash
+npm i @openuidev/observability-cloud
 ```
 
-Call `init` once, as early as possible (before the first render). Re-calling with equivalent options is a no-op; different options replace the client.
+## Setup
 
-### Options
+Generate a publishable API key at [console.thesys.dev/client-api-keys](https://console.thesys.dev/client-api-keys), then initialise the SDK once at your app's entry point:
 
-| option       | default                                | notes                                                              |
-| ------------ | -------------------------------------- | ------------------------------------------------------------------ |
-| `apiKey`     | —                                      | Publishable key from the Thesys console.                           |
-| `endpoint`   | `https://ingest.thesys.dev/v1/events`  |                                                                    |
-| `capture`    | `"full"`                               | `"minimal"` drops `response`, `message`, `errors` from each event. |
-| `sampleRate` | `1`                                    | `[0, 1]`; deterministic per stream id.                             |
-| `beforeSend` | —                                      | Return a modified event, or `null` to drop it.                     |
-| `debug`      | `false`                                | Console diagnostics.                                               |
+```ts
+import * as Observability from "@openuidev/observability-cloud";
 
-### Lifecycle
+Observability.init({ apiKey: "pk-th-…" });
+```
 
-- `flush(timeoutMs?)` — send everything queued; resolves `true` when accepted.
-- `close()` — flush and detach.
+`init` is safe to call from shared client/server code — it is a no-op when `window` is not defined.
 
-Batches flush every 5 s or 50 events, and on `pagehide` / hidden `visibilitychange` via `sendBeacon`. 429 honours `Retry-After`; other 4xx are dropped; 5xx/network retried up to 3 times. Dropped counts are reported in the next envelope's `droppedEvents`.
+## API reference
 
-## Wire contract
+### `Observability.init(options)`
 
-`WireEnvelope` / `WireEvent` / `StreamWireEvent` are exported for `beforeSend` typing and server-side validation. `sdk.version` in the envelope is `SDK_VERSION` in `src/core/wire.ts` — keep it in sync with `package.json` on release (there is a test for it).
+| option       | type                    | default                               | description                                                                                                                                                                     |
+| ------------ | ----------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apiKey`     | `string`                | —                                     | Your publishable API key (`pk-th-…`). Required.                                                                                                                                 |
+| `capture`    | `"full"` \| `"minimal"` | `"full"`                              | `"full"` includes the rendered response text and error details with each event; `"minimal"` sends only counts and metadata (stream id, update index, error count, parser info). |
+| `sampleRate` | `number`                | `1`                                   | Fraction of renders to send, `0`–`1`. Sampling is deterministic per render, so all events for one render are kept or dropped together.                                          |
+| `endpoint`   | `string`                | `https://ingest.thesys.dev/v1/events` | Override the ingest URL (testing).                                                                                                                                              |
+| `debug`      | `boolean`               | `false`                               | Log SDK diagnostics to the console.                                                                                                                                             |
 
-The `react-lang:stream` event constants are duplicated between this package (`src/events/stream.ts`) and `@openuidev/react-lang` (`src/hooks/streamEvent.ts`) on purpose so neither depends on the other; change both together.
+Calling `init` again with the same options is a no-op; calling it with different options replaces the previous configuration.
+
+### `Observability.flush(timeoutMs?)`
+
+Events are batched and sent in the background. Call `flush` to send everything queued now — for example before a hard navigation. Resolves to `true` once the batch is accepted, or `false` if it could not be sent within `timeoutMs` (default 10 s).
+
+### `Observability.close()`
+
+Flushes queued events and stops sending. Call `init` again to resume.
