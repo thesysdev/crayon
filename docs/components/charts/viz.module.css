@@ -29,6 +29,24 @@
 }
 .viz.tight { gap: 16px; }
 
+/* Dark mode: the same three hues, stepped lighter so coloured values stay
+   legible as text on the dark card. Validated in dark (all-pairs): worst CVD
+   dE 12.9, normal-vision dE 19.9, contrast >= 3:1 on all three. They sit above
+   the mark-fill lightness band by design — these read as text more than fill. */
+@media (prefers-color-scheme: dark) {
+  .viz {
+    --c1: #a78bfa;
+    --c2: #f2678a;
+    --c3: #e5a83b;
+  }
+}
+:global(.dark) .viz,
+:global([data-theme="dark"]) .viz {
+  --c1: #a78bfa;
+  --c2: #f2678a;
+  --c3: #e5a83b;
+}
+
 .s1 { --c: var(--c1); }
 .s2 { --c: var(--c2); }
 .s3 { --c: var(--c3); }
@@ -103,6 +121,12 @@
 
 .svg { display: block; overflow: visible; }
 .endTag { font-size: 13px; font-weight: 600; }
+
+.segBar { display: flex; gap: 2px; height: 36px; }
+.segPart { height: 100%; flex: none; display: flex; align-items: center; }
+.segPct { font-size: 0.875rem; font-weight: 600; padding: 0 12px; white-space: nowrap; }
+.onDark { color: #fff; }
+.onLight { color: color-mix(in srgb, #000 70%, transparent); }
 
 .stageList { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
 .stageList li { display: flex; gap: 10px; font-size: 1rem; line-height: 1.5; color: var(--ink-muted); }

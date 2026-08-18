@@ -79,9 +79,20 @@ export function CompletionByModel() {
             })}
             <tr className={s.avgRow}>
               <th scope="row">Average</th>
-              {FORMAT_ORDER.map((id) => (
-                <td key={id}>{completionMean(id).toFixed(1)}</td>
-              ))}
+              {FORMAT_ORDER.map((id) => {
+                const bestMean = FORMAT_ORDER.reduce((a, b) =>
+                  completionMean(b) > completionMean(a) ? b : a,
+                );
+                return (
+                  <td key={id} className={slotClass(slotOf(id))}>
+                    {id === bestMean ? (
+                      <span className={s.best}>{completionMean(id).toFixed(1)}</span>
+                    ) : (
+                      completionMean(id).toFixed(1)
+                    )}
+                  </td>
+                );
+              })}
             </tr>
           </tbody>
         </table>
@@ -265,25 +276,25 @@ export function RepairFunnel() {
     "color-mix(in srgb, var(--c1) 45%, var(--surface))",
     "color-mix(in srgb, var(--ink) 20%, var(--surface))",
   ];
-  const max = Math.max(...repairFunnel.stages.map((st) => st.count));
   return (
     <Chart
       title="Repair outcomes for failed generations"
       sub={`What it took to fix the ${repairFunnel.failed} generations that failed validation in a recent production window.`}
       note="Most repairs are rule-based and add no LLM latency; the single-pass retry receives the parser's exact error."
     >
-      <div className={s.rows}>
+      <div className={s.segBar}>
         {repairFunnel.stages.map((st, i) => (
-          <div key={st.id} className={s.row}>
-            <span className={s.rowName} style={{ width: 232 }}>
-              <span className={s.rowLabel}>{st.label}</span>
-            </span>
-            <span className={s.rowBody}>
-              <span className={s.bar} style={{ width: `${(st.count / max) * 68}%`, background: fills[i] }} />
-              <span className={s.value}>
-                {repairShare(st.count).toFixed(0)}% · {st.count}
+          <div
+            key={st.id}
+            className={s.segPart}
+            style={{ width: `${repairShare(st.count)}%`, background: fills[i] }}
+            title={`${st.label} · ${st.count} of ${repairFunnel.failed}`}
+          >
+            {repairShare(st.count) >= 15 ? (
+              <span className={`${s.segPct} ${i === 0 ? s.onDark : s.onLight}`}>
+                {repairShare(st.count).toFixed(0)}%
               </span>
-            </span>
+            ) : null}
           </div>
         ))}
       </div>
