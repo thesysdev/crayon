@@ -1,4 +1,4 @@
-import { ArrowLeft, Maximize2, Minimize2, X } from "lucide-react";
+import { Maximize2, Minimize2, X } from "lucide-react";
 import { Component, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { IconButton } from "../IconButton";
 import { type RegisteredLibrary } from "../libraryRegistry";
@@ -71,8 +71,6 @@ export interface PasteUIProps {
   onMinimize?: () => void;
   /** Dismisses the whole widget (or the ejected window). */
   onClose: () => void;
-  /** Narrows the drawer back to the event list. Omitted when ejected. */
-  onBack?: () => void;
   theme: ColorScheme;
   onThemeChange: (theme: ColorScheme) => void;
   /** False on the first ever visit, which opens the help guide unprompted. */
@@ -98,7 +96,6 @@ export function PasteUI({
   onEject,
   onMinimize,
   onClose,
-  onBack,
   theme,
   onThemeChange,
   helpSeen = true,
@@ -174,11 +171,6 @@ export function PasteUI({
     <div style={{ ...styles.shell, ...themeVars(scheme) }}>
       <div style={styles.header}>
         <div style={styles.headerLeft}>
-          {onBack ? (
-            <IconButton outlined onClick={onBack} aria-label="Back to event list">
-              <ArrowLeft size={14} />
-            </IconButton>
-          ) : null}
           <span style={styles.title}>OpenUI Debug</span>
           {lang?.langCoreVersion ? (
             <span style={styles.version} title="Installed @openuidev/lang-core">
