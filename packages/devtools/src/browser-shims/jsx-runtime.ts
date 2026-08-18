@@ -10,10 +10,7 @@ const react = requireReact();
 export const Fragment = react.Fragment;
 
 export function jsx(type: unknown, props: Record<string, unknown>, key?: string) {
-  return react.createElement(
-    type as never,
-    key === undefined ? props : { ...props, key },
-  );
+  return react.createElement(type as never, key === undefined ? props : { ...props, key });
 }
 
 export const jsxs = jsx;
