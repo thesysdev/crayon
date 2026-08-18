@@ -239,15 +239,23 @@ describe("OpenUIDevtools", () => {
     expect(container.textContent).toContain("Needs attention");
   });
 
-  it("drills into the stack trace when a row's Stack Trace is clicked", () => {
+  it("expands the stack trace on the error card", () => {
     render({ enabled: true, errorsOnly: false });
-    act(() => observability.error({ kind: "boom", error: toErrorInfo(new Error("kaboom")) }));
+    const err = new Error("kaboom");
+    err.stack = "Error: kaboom\n    at boom (app.ts:1:1)";
+    act(() => observability.error({ kind: "boom", error: toErrorInfo(err) }));
 
-    const stackButton = buttonByText("Stack Trace");
-    expect(stackButton).toBeDefined();
-    click(stackButton!);
+    expect(container.textContent).toContain("kaboom");
+    expect(container.textContent).not.toContain("at boom (app.ts:1:1)");
 
-    expect(container.textContent).toContain("stack trace");
+    const expand = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="Toggle stack trace"]',
+    );
+    expect(expand).not.toBeNull();
+    click(expand!);
+
+    expect(container.textContent).toContain("at boom (app.ts:1:1)");
+    expect(buttonByText("Copy")).toBeDefined();
   });
 
   it("coalesces react-lang stream updates by their stable event id", () => {
