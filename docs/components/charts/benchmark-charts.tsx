@@ -289,8 +289,11 @@ export function RepairFunnel() {
             style={{ width: `${repairShare(st.count)}%`, background: fills[i] }}
             title={`${st.label} · ${st.count} of ${repairFunnel.failed}`}
           >
+            {repairShare(st.count) < 15 ? (
+              <span className={s.segPctOut}>{repairShare(st.count).toFixed(0)}%</span>
+            ) : null}
             {repairShare(st.count) >= 15 ? (
-              <span className={`${s.segPct} ${i === 0 ? s.onDark : s.onLight}`}>
+              <span className={`${s.segPct} ${s.onDark}`}>
                 {repairShare(st.count).toFixed(0)}%
               </span>
             ) : null}
