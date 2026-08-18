@@ -1,3 +1,5 @@
+export { VERSION } from "./version";
+
 // ── Library (framework-generic) ──
 export { buildSignature, createLibrary, defineComponent, tagSchemaId } from "./library";
 export type {

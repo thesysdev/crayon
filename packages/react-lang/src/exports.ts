@@ -1,5 +1,5 @@
 // define library
-export { tagSchemaId } from "@openuidev/lang-core";
+export { VERSION as LANG_CORE_VERSION, tagSchemaId } from "@openuidev/lang-core";
 export { createLibrary, defineComponent } from "./library";
 export type {
   ComponentGroup,
