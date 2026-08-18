@@ -1,0 +1,31 @@
+const CANNED_RESULT = {
+  status: "ok",
+  note: "Mock response from OpenUI Paste — tools are not connected.",
+  items: [
+    { id: 1, label: "Alpha", value: 42 },
+    { id: 2, label: "Beta", value: 17 },
+    { id: 3, label: "Gamma", value: 8 },
+  ],
+};
+
+export interface MockToolCall {
+  tool: string;
+  args: Record<string, unknown>;
+  at: number;
+}
+
+const RESERVED = new Set(["callTool", "then", "toJSON", "constructor"]);
+
+export function createMockToolProvider(onCall?: (call: MockToolCall) => void) {
+  return new Proxy({} as Record<string, (args: Record<string, unknown>) => Promise<unknown>>, {
+    get: (_target, prop) => {
+      if (typeof prop !== "string" || RESERVED.has(prop)) return undefined;
+      return async (args: Record<string, unknown>) => {
+        onCall?.({ tool: prop, args, at: Date.now() });
+        await new Promise((r) => setTimeout(r, 400));
+        return { ...CANNED_RESULT, tool: prop, receivedArgs: args };
+      };
+    },
+    has: (_target, prop) => typeof prop === "string" && !RESERVED.has(prop),
+  });
+}
