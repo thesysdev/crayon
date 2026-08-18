@@ -1,6 +1,6 @@
 # @openuidev/devtools
 
-Development-only UI widget for OpenUI apps. Renders a floating button that opens a side drawer listing the events captured by [`@openuidev/observability`](../observability) — a severity icon, a one-line summary, and a drill-in stack trace per entry. When errors come in, the button itself turns red and shows the count.
+Development-only UI widget for OpenUI apps. Renders a floating button that opens a side drawer listing the events captured by [`@openuidev/observability`](../observability) — a severity icon, a one-line summary, and an expandable stack trace with copy on the same card. When errors come in, the button itself turns red and shows the count.
 
 ## Usage
 
