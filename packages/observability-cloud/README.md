@@ -24,13 +24,13 @@ Observability.init({ apiKey: "pk-th-…" });
 
 ### `Observability.init(options)`
 
-| option       | type                    | default                               | description                                                                                                                                                                     |
-| ------------ | ----------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `apiKey`     | `string`                | —                                     | Your publishable API key (`pk-th-…`). Required.                                                                                                                                 |
-| `capture`    | `"full"` \| `"minimal"` | `"full"`                              | `"full"` includes the rendered response text and error details with each event; `"minimal"` sends only counts and metadata (stream id, update index, error count, parser info). |
-| `sampleRate` | `number`                | `1`                                   | Fraction of renders to send, `0`–`1`. Sampling is deterministic per render, so all events for one render are kept or dropped together.                                          |
-| `endpoint`   | `string`                | `https://ingest.thesys.dev/v1/events` | Override the ingest URL (testing).                                                                                                                                              |
-| `debug`      | `boolean`               | `false`                               | Log SDK diagnostics to the console.                                                                                                                                             |
+| option       | type                    | default                               | description                                                                                                                                                  |
+| ------------ | ----------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `apiKey`     | `string`                | —                                     | Your publishable API key (`pk-th-…`). Required.                                                                                                              |
+| `capture`    | `"full"` \| `"minimal"` | `"full"`                              | `"full"` logs complete event data for the richest debugging in the console. `"minimal"` is a privacy-first mode that strips event data that may include PII. |
+| `sampleRate` | `number`                | `1`                                   | Fraction of renders to send, `0`–`1`. Sampling is deterministic per render, so all events for one render are kept or dropped together.                       |
+| `endpoint`   | `string`                | `https://ingest.thesys.dev/v1/events` | Override the ingest URL (testing).                                                                                                                           |
+| `debug`      | `boolean`               | `false`                               | Log SDK diagnostics to the console.                                                                                                                          |
 
 Calling `init` again with the same options is a no-op; calling it with different options replaces the previous configuration.
 

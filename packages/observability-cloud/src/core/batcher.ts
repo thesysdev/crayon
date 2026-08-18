@@ -6,14 +6,23 @@ const FLUSH_INTERVAL_MS = 5000;
 const BATCH_SIZE = 50;
 const DEFAULT_FLUSH_TIMEOUT_MS = 10_000;
 
-function buildEnvelope(events: WireEvent[], droppedEvents: number): WireEnvelope {
+function buildEnvelope(
+  events: WireEvent[],
+  droppedEvents: number,
+  capture: "full" | "minimal",
+): WireEnvelope {
   return {
     v: 1,
     sentAt: Date.now(),
     sdk: { name: "observability-cloud", version: SDK_VERSION },
+    capture,
     ...(droppedEvents > 0 ? { droppedEvents } : {}),
     events,
   };
+}
+
+export interface BatcherOptions extends TransportConfig {
+  capture: "full" | "minimal";
 }
 
 type BatchSendResult = { accepted: boolean; timedOut: boolean };
@@ -27,7 +36,12 @@ export class Batcher {
   private readonly onPageHide: () => void;
   private readonly onVisibilityChange: () => void;
 
-  constructor(private readonly transport: TransportConfig) {
+  private readonly transport: TransportConfig;
+  private readonly capture: "full" | "minimal";
+
+  constructor(options: BatcherOptions) {
+    this.transport = { endpoint: options.endpoint, apiKey: options.apiKey, debug: options.debug };
+    this.capture = options.capture;
     this.onPageHide = () => {
       this.flushBeaconSync();
     };
@@ -117,7 +131,7 @@ export class Batcher {
       const droppedEvents = this.takeDroppedEvents();
       const events = this.queue.drain(BATCH_SIZE);
       if (events.length === 0) break;
-      sendEnvelopeBeacon(buildEnvelope(events, droppedEvents), this.transport);
+      sendEnvelopeBeacon(buildEnvelope(events, droppedEvents, this.capture), this.transport);
     }
     this.stopInterval();
   }
@@ -138,7 +152,10 @@ export class Batcher {
       return { accepted: true, timedOut: false };
     }
 
-    const sendPromise = sendEnvelope(buildEnvelope(events, droppedEvents), this.transport)
+    const sendPromise = sendEnvelope(
+      buildEnvelope(events, droppedEvents, this.capture),
+      this.transport,
+    )
       .catch(() => false)
       .then((accepted): BatchSendResult => {
         if (!accepted) this.droppedEvents += events.length + droppedEvents;

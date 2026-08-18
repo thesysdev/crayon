@@ -14,6 +14,7 @@ export class CloudObservabilityClient {
       endpoint: options.endpoint,
       apiKey: options.apiKey,
       debug: options.debug,
+      capture: options.capture,
     });
 
     this.removeListener = bus.listenAll((event) => {

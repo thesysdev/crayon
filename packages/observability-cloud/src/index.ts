@@ -1,7 +1,7 @@
 import { CloudObservabilityClient } from "./core/client";
 import type { WireEvent } from "./core/wire";
 
-export type { StreamWireEvent, WireEnvelope, WireEvent } from "./core/wire";
+export type { StreamWireEvent, WireEnvelope, WireErrorEntry, WireEvent } from "./core/wire";
 
 const DEFAULT_ENDPOINT = "https://ingest.thesys.dev/v1/events";
 const GLOBAL_KEY = Symbol.for("openui.cloudObservability");

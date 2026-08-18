@@ -8,6 +8,7 @@ const transportConfig = {
   endpoint: "https://ingest.example.com/v1/events",
   apiKey: "test-key",
   debug: false,
+  capture: "full" as const,
 };
 
 function wireEvent(index: number): WireEvent {
@@ -53,6 +54,16 @@ describe("Batcher", () => {
     expect(transport.sendEnvelope).toHaveBeenCalledTimes(1);
     const envelope = vi.mocked(transport.sendEnvelope).mock.calls[0]?.[0];
     expect(envelope?.events).toHaveLength(50);
+    expect(envelope?.capture).toBe("full");
+    await batcher.close();
+  });
+
+  it("stamps the client's capture mode on every envelope", async () => {
+    const batcher = new Batcher({ ...transportConfig, capture: "minimal" });
+    batcher.enqueue(wireEvent(0));
+    await batcher.flush();
+    const envelope = vi.mocked(transport.sendEnvelope).mock.calls[0]?.[0];
+    expect(envelope?.capture).toBe("minimal");
     await batcher.close();
   });
 

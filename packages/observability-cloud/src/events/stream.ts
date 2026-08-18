@@ -18,9 +18,25 @@ const MAX_RESPONSE_LENGTH = 16_384;
 
 export interface StreamParserMetadata {
   incomplete: boolean;
-  unresolved: unknown;
-  orphaned: unknown;
+  /** Identifiers referenced but never defined in the generated program. */
+  unresolved: string[];
+  /** Identifiers defined but not reachable from root. */
+  orphaned: string[];
   statementCount: number;
+}
+
+/**
+ * One error from a settled render, as shipped to ingest. `code`/`source` are
+ * required and enum-like; the rest are optional identifiers. `message` is
+ * free text and is stripped in minimal capture.
+ */
+export interface WireErrorEntry {
+  code: string;
+  source: string;
+  component?: string;
+  statementId?: string;
+  toolName?: string;
+  message?: string;
 }
 
 /** Detail payload the producer emits when a stream settles. */
@@ -46,7 +62,7 @@ export interface StreamWireEvent extends WireEventBase {
   response?: string;
   responseTruncated?: true;
   message?: string;
-  errors?: unknown;
+  errors?: WireErrorEntry[];
 }
 
 function isStreamParserMetadata(value: unknown): value is StreamParserMetadata {
@@ -54,10 +70,39 @@ function isStreamParserMetadata(value: unknown): value is StreamParserMetadata {
   const record = value as Record<string, unknown>;
   return (
     typeof record["incomplete"] === "boolean" &&
-    "unresolved" in record &&
-    "orphaned" in record &&
+    Array.isArray(record["unresolved"]) &&
+    Array.isArray(record["orphaned"]) &&
     typeof record["statementCount"] === "number"
   );
+}
+
+const OPTIONAL_ERROR_KEYS = ["component", "statementId", "toolName"] as const;
+
+/**
+ * Projects the producer's error list onto the wire shape. Entries without a
+ * string `code` and `source` are dropped; `errorCount` on the wire is the
+ * length of the result, so the count always matches the list.
+ */
+function projectErrors(raw: unknown, capture: "full" | "minimal"): WireErrorEntry[] {
+  if (!Array.isArray(raw)) return [];
+  const projected: WireErrorEntry[] = [];
+  for (const entry of raw) {
+    if (!entry || typeof entry !== "object") continue;
+    const record = entry as Record<string, unknown>;
+    const code = record["code"];
+    const source = record["source"];
+    if (typeof code !== "string" || typeof source !== "string") continue;
+    const wire: WireErrorEntry = { code, source };
+    for (const key of OPTIONAL_ERROR_KEYS) {
+      const value = record[key];
+      if (typeof value === "string") wire[key] = value;
+    }
+    if (capture === "full" && typeof record["message"] === "string") {
+      wire.message = record["message"];
+    }
+    projected.push(wire);
+  }
+  return projected;
 }
 
 /**
@@ -76,10 +121,11 @@ export function selectStreamEvent(
   if (typeof id !== "string") return null;
 
   const updateIndex = detail["updateIndex"];
-  const errorCount = detail["errorCount"];
-  if (typeof updateIndex !== "number" || typeof errorCount !== "number") return null;
+  if (typeof updateIndex !== "number" || typeof detail["errorCount"] !== "number") return null;
 
   const parser = isStreamParserMetadata(detail["parser"]) ? detail["parser"] : undefined;
+  const errors = projectErrors(detail["errors"], capture);
+  const errorCount = errors.length;
 
   if (capture === "minimal") {
     return {
@@ -90,6 +136,7 @@ export function selectStreamEvent(
       updateIndex,
       errorCount,
       ...(parser ? { parser } : {}),
+      ...(errors.length > 0 ? { errors } : {}),
     };
   }
 
@@ -112,6 +159,6 @@ export function selectStreamEvent(
     ...(truncatedResponse !== undefined ? { response: truncatedResponse } : {}),
     ...(responseTruncated ? { responseTruncated } : {}),
     ...(typeof detail["message"] === "string" ? { message: detail["message"] } : {}),
-    ...(detail["errors"] !== undefined ? { errors: detail["errors"] } : {}),
+    ...(errors.length > 0 ? { errors } : {}),
   };
 }

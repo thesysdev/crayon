@@ -37,8 +37,8 @@ describe("selectStreamEvent", () => {
       errorCount: 0,
       response: "hello",
       message: "OpenUI Lang settled",
-      errors: [],
     });
+    expect(selectStreamEvent(settledEvent(), "full")).not.toHaveProperty("errors");
   });
 
   it("rejects streaming and other kinds", () => {
@@ -74,5 +74,75 @@ describe("selectStreamEvent", () => {
     expect(selected).not.toHaveProperty("responseTruncated");
     expect(selected).not.toHaveProperty("message");
     expect(selected).not.toHaveProperty("errors");
+  });
+
+  const twoErrors = [
+    {
+      code: "unknown-component",
+      source: "materialize",
+      component: "Fancy",
+      statementId: "card",
+      message: "Unknown component Fancy",
+      extra: "ignored",
+    },
+    { code: "unknown-tool", source: "tool", toolName: "search", message: "No tool search" },
+  ];
+
+  it("full mode ships typed error entries with messages", () => {
+    const selected = selectStreamEvent(
+      settledEvent({ level: "error", errors: twoErrors, errorCount: 2 }),
+      "full",
+    );
+
+    expect(selected?.errorCount).toBe(2);
+    expect(selected?.errors).toEqual([
+      {
+        code: "unknown-component",
+        source: "materialize",
+        component: "Fancy",
+        statementId: "card",
+        message: "Unknown component Fancy",
+      },
+      { code: "unknown-tool", source: "tool", toolName: "search", message: "No tool search" },
+    ]);
+  });
+
+  it("minimal mode keeps error codes and identifiers but strips messages", () => {
+    const selected = selectStreamEvent(
+      settledEvent({ errors: twoErrors, errorCount: 2 }),
+      "minimal",
+    );
+
+    expect(selected?.errorCount).toBe(2);
+    expect(selected?.errors).toEqual([
+      { code: "unknown-component", source: "materialize", component: "Fancy", statementId: "card" },
+      { code: "unknown-tool", source: "tool", toolName: "search" },
+    ]);
+    expect(selected).not.toHaveProperty("message");
+    expect(selected).not.toHaveProperty("response");
+  });
+
+  it("drops malformed error entries and reports the shipped count", () => {
+    const selected = selectStreamEvent(
+      settledEvent({
+        errors: [{ code: "incomplete", source: "parser" }, { code: "no-source" }, "junk", null],
+        errorCount: 4,
+      }),
+      "full",
+    );
+
+    expect(selected?.errorCount).toBe(1);
+    expect(selected?.errors).toEqual([{ code: "incomplete", source: "parser" }]);
+  });
+
+  it("drops parser metadata whose identifier lists are not arrays", () => {
+    const selected = selectStreamEvent(
+      settledEvent({
+        parser: { incomplete: false, unresolved: "a", orphaned: [], statementCount: 1 },
+      }),
+      "full",
+    );
+
+    expect(selected).not.toHaveProperty("parser");
   });
 });
