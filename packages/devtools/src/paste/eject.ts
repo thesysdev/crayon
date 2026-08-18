@@ -23,7 +23,7 @@ export function openPasteWindow(): Window | null {
 function preparePasteDocument(from: Document, to: Document): void {
   if (to.documentElement.dataset["openuiPaste"] === "true") return;
   to.documentElement.dataset["openuiPaste"] = "true";
-  to.title = "OpenUI Paste";
+  to.title = "OpenUI Debug";
   // Mirror the host's root classes/attrs/color-scheme so the rendered preview
   // resolves the same CSS it would in the app. Devtools chrome is unaffected —
   // it uses the scheme chosen in Settings.

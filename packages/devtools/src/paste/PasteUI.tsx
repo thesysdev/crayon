@@ -1,7 +1,9 @@
-import { ArrowLeft, Maximize2, X } from "lucide-react";
-import { Component, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { ArrowLeft, Maximize2, Minimize2, X } from "lucide-react";
+import { Component, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { IconButton } from "../IconButton";
 import { type RegisteredLibrary } from "../libraryRegistry";
-import { themeVars, useDevtoolsScheme } from "../theme";
+import { themeVars, useDevtoolsScheme, type ColorScheme } from "../theme";
+import { ThemeToggle } from "../ThemeToggle";
 import type { ChunkStrategy } from "./chunker";
 import { HelpDialog } from "./HelpDialog";
 import { LangEditor } from "./LangEditor";
@@ -18,6 +20,12 @@ import { useReactLang } from "./useReactLang";
 import { useValidation } from "./useValidation";
 
 const CHAR_STRATEGY_LIMIT = 50 * 1024;
+
+/** Editor's share of the split, as a percentage. The panels get the rest. */
+const DEFAULT_EDITOR_PCT = 25;
+const MIN_EDITOR_PCT = 12;
+const MAX_EDITOR_PCT = 75;
+const SPLITTER = 14;
 
 type Tab = "render" | "validation" | "tree" | "json" | "stream";
 
@@ -59,10 +67,14 @@ export interface PasteUIProps {
   onCodeChange: (code: string) => void;
   ejected?: boolean;
   onEject?: () => void;
+  /** Returns an ejected window to the tray. */
+  onMinimize?: () => void;
   /** Dismisses the whole widget (or the ejected window). */
   onClose: () => void;
   /** Narrows the drawer back to the event list. Omitted when ejected. */
   onBack?: () => void;
+  theme: ColorScheme;
+  onThemeChange: (theme: ColorScheme) => void;
   /** False on the first ever visit, which opens the help guide unprompted. */
   helpSeen?: boolean;
   onHelpSeen?: () => void;
@@ -84,8 +96,11 @@ export function PasteUI({
   onCodeChange,
   ejected = false,
   onEject,
+  onMinimize,
   onClose,
   onBack,
+  theme,
+  onThemeChange,
   helpSeen = true,
   onHelpSeen,
   popupBlocked = false,
@@ -97,6 +112,10 @@ export function PasteUI({
   const outcome = useValidation(code, lang, schema, rootName);
   const playback = usePlayback(code, lang, schema, rootName);
   const [tab, setTab] = useState<Tab>("render");
+  const [editorPct, setEditorPct] = useState(DEFAULT_EDITOR_PCT);
+  const [resizing, setResizing] = useState(false);
+  const [splitHover, setSplitHover] = useState(false);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const [strategy, setStrategy] = useState<ChunkStrategy>("llm");
   const [seed, setSeed] = useState(42);
   const scheme = useDevtoolsScheme();
@@ -116,6 +135,36 @@ export function PasteUI({
   const renderedCode = playbackActive ? playback.state.prefix : code;
   const streamDisabled = !lang || !code.trim() || schema == null;
 
+  const clampPct = (pct: number) => Math.min(MAX_EDITOR_PCT, Math.max(MIN_EDITOR_PCT, pct));
+
+  // Listeners go on the captured handle, not on `window` — when Debug is
+  // ejected the tray is portaled into the popup's document, and the
+  // module-scope window never sees those pointer events. Pointer capture also
+  // keeps the drag alive once the cursor leaves the handle.
+  const startResize = (event: React.PointerEvent<HTMLDivElement>) => {
+    const body = bodyRef.current;
+    if (!body) return;
+    const handle = event.currentTarget;
+    handle.setPointerCapture(event.pointerId);
+    setResizing(true);
+
+    const onMove = (move: PointerEvent) => {
+      const bounds = body.getBoundingClientRect();
+      if (bounds.width === 0) return;
+      setEditorPct(clampPct(((move.clientX - bounds.left) / bounds.width) * 100));
+    };
+    const onEnd = () => {
+      setResizing(false);
+      handle.removeEventListener("pointermove", onMove);
+      handle.removeEventListener("pointerup", onEnd);
+      handle.removeEventListener("pointercancel", onEnd);
+    };
+
+    handle.addEventListener("pointermove", onMove);
+    handle.addEventListener("pointerup", onEnd);
+    handle.addEventListener("pointercancel", onEnd);
+  };
+
   const changeCode = (next: string) => {
     if (playback.state.status !== "idle") playback.reset();
     onCodeChange(next);
@@ -126,15 +175,11 @@ export function PasteUI({
       <div style={styles.header}>
         <div style={styles.headerLeft}>
           {onBack ? (
-            <button
-              style={{ ...styles.iconButton, ...styles.iconButtonOutlined }}
-              onClick={onBack}
-              aria-label="Back to event list"
-            >
+            <IconButton outlined onClick={onBack} aria-label="Back to event list">
               <ArrowLeft size={14} />
-            </button>
+            </IconButton>
           ) : null}
-          <span style={styles.title}>OpenUI Paste</span>
+          <span style={styles.title}>OpenUI Debug</span>
           {lang?.langCoreVersion ? (
             <span style={styles.version} title="Installed @openuidev/lang-core">
               lang-core {lang.langCoreVersion}
@@ -143,26 +188,27 @@ export function PasteUI({
         </div>
         <div style={styles.headerActions}>
           <HelpDialog defaultOpen={!helpSeen} onSeen={onHelpSeen} />
+          <ThemeToggle value={theme} onChange={onThemeChange} />
           {!ejected && onEject ? (
-            <button
-              style={styles.iconButton}
-              onClick={onEject}
-              aria-label="Open OpenUI Paste in a new window"
-            >
+            <IconButton onClick={onEject} aria-label="Open OpenUI Debug in a new window">
               <Maximize2 size={14} />
-            </button>
+            </IconButton>
           ) : null}
-          <button
-            style={styles.iconButton}
+          {ejected && onMinimize ? (
+            <IconButton onClick={onMinimize} aria-label="Return OpenUI Debug to the tray">
+              <Minimize2 size={14} />
+            </IconButton>
+          ) : null}
+          <IconButton
             onClick={onClose}
-            aria-label={ejected ? "Close OpenUI Paste window" : "Close OpenUI devtools"}
+            aria-label={ejected ? "Close OpenUI Debug window" : "Close OpenUI Debug"}
           >
             <X size={15} />
-          </button>
+          </IconButton>
         </div>
       </div>
       {popupBlocked ? (
-        <div style={styles.banner}>Allow popups for this origin to eject OpenUI Paste.</div>
+        <div style={styles.banner}>Allow popups for this origin to eject OpenUI Debug.</div>
       ) : null}
       <StreamToolbar
         playback={playback}
@@ -170,10 +216,52 @@ export function PasteUI({
         bigInput={code.length > CHAR_STRATEGY_LIMIT}
         disabled={streamDisabled}
       />
-      <div style={styles.body}>
+      <div
+        ref={bodyRef}
+        style={{
+          ...styles.body,
+          gridTemplateColumns: `${editorPct}% ${SPLITTER}px minmax(0, 1fr)`,
+        }}
+      >
         <div style={styles.editorWrap}>
           <LangEditor value={code} onChange={changeCode} readOnly={playbackActive} />
           {playbackActive ? <span style={paste.editorLock}>Streaming…</span> : null}
+        </div>
+        <div
+          style={styles.splitter}
+          onPointerDown={startResize}
+          onMouseEnter={() => setSplitHover(true)}
+          onMouseLeave={() => setSplitHover(false)}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowLeft") setEditorPct((pct) => clampPct(pct - 2));
+            if (event.key === "ArrowRight") setEditorPct((pct) => clampPct(pct + 2));
+          }}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize editor"
+          aria-valuenow={Math.round(editorPct)}
+          aria-valuemin={MIN_EDITOR_PCT}
+          aria-valuemax={MAX_EDITOR_PCT}
+          tabIndex={0}
+        >
+          <span
+            style={{
+              ...styles.splitterLine,
+              ...(splitHover || resizing ? styles.splitterLineOn : null),
+            }}
+            aria-hidden
+          />
+          <span
+            style={{
+              ...styles.splitterGrip,
+              ...(splitHover || resizing ? styles.splitterGripOn : null),
+            }}
+            aria-hidden
+          >
+            <span style={styles.splitterDot} />
+            <span style={styles.splitterDot} />
+            <span style={styles.splitterDot} />
+          </span>
         </div>
         <div style={styles.output}>
           <div style={paste.tabStrip} role="tablist" aria-label="Paste panels">
@@ -201,7 +289,7 @@ export function PasteUI({
               <div style={styles.missing}>Loading renderer…</div>
             ) : lang === null ? (
               <div style={styles.missing}>
-                Install <code>@openuidev/react-lang</code> to use OpenUI Paste.
+                Install <code>@openuidev/react-lang</code> to use OpenUI Debug.
               </div>
             ) : selected ? (
               <>
@@ -278,24 +366,6 @@ const styles = {
     gap: 6,
     flexShrink: 0,
   },
-  iconButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: 26,
-    height: 26,
-    border: "none",
-    borderRadius: 8,
-    background: "transparent",
-    color: "var(--oui-dt-fg-muted)",
-    cursor: "pointer",
-    padding: 0,
-  },
-  iconButtonOutlined: {
-    boxSizing: "border-box",
-    border: "1px solid var(--oui-dt-border)",
-    background: "var(--oui-dt-bg)",
-  },
   banner: {
     padding: "8px 16px",
     background: "var(--oui-dt-warning-bg)",
@@ -303,16 +373,69 @@ const styles = {
     fontSize: 12,
     borderBottom: "1px solid var(--oui-dt-warning-border)",
   },
+  // Columns are set inline so the drag can move them.
   body: {
     flex: 1,
     minHeight: 0,
     display: "grid",
-    gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+  },
+  // A hairline that reads as a divider, inside a wider transparent strip so
+  // it is still easy to grab. The handle only shows once you are on it.
+  splitter: {
+    position: "relative",
+    cursor: "col-resize",
+    background: "transparent",
+    touchAction: "none",
+  },
+  splitterLine: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: 1,
+    background: "var(--oui-dt-border-subtle)",
+    transition: "width 150ms ease, background 150ms ease",
+    pointerEvents: "none",
+  },
+  splitterLineOn: {
+    width: 3,
+    background: "var(--oui-dt-border-strong)",
+  },
+  // Thin rounded chip with three stacked dots, centred on the divider.
+  splitterGrip: {
+    position: "absolute",
+    top: "50%",
+    left: 0,
+    transform: "translate(-50%, -50%)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 3,
+    boxSizing: "border-box",
+    width: 11,
+    height: 30,
+    borderRadius: 999,
+    border: "1px solid var(--oui-dt-control-border)",
+    background: "var(--oui-dt-control-bg)",
+    opacity: 0,
+    transition: "opacity 150ms ease",
+    pointerEvents: "none",
+  },
+  splitterGripOn: {
+    opacity: 1,
+  },
+  splitterDot: {
+    width: 2,
+    height: 2,
+    borderRadius: "50%",
+    background: "var(--oui-dt-fg)",
   },
   editorWrap: {
     position: "relative",
     minWidth: 0,
     minHeight: 0,
+    overflow: "hidden",
   },
   output: {
     display: "flex",

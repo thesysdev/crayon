@@ -1,6 +1,6 @@
 const CANNED_RESULT = {
   status: "ok",
-  note: "Mock response from OpenUI Paste — tools are not connected.",
+  note: "Mock response from OpenUI Debug — tools are not connected.",
   items: [
     { id: 1, label: "Alpha", value: 42 },
     { id: 2, label: "Beta", value: 17 },

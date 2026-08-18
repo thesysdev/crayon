@@ -30,7 +30,9 @@ export const pasteStyles = {
     color: "var(--oui-dt-fg)",
     fontFamily: FONT,
     fontSize: 12,
-    padding: "4px 8px",
+    // The native chevron sits flush against the label otherwise, so the inline
+    // end gets its own gutter; the start is padded to balance it.
+    padding: "4px 24px 4px 12px",
   },
   seedInput: {
     width: 64,
@@ -57,11 +59,6 @@ export const pasteStyles = {
     color: "var(--oui-dt-fg-tertiary)",
     cursor: "pointer",
     padding: 0,
-  },
-  groupButtonPrimary: {
-    background: "var(--oui-dt-inverted)",
-    borderColor: "var(--oui-dt-inverted)",
-    color: "var(--oui-dt-inverted-fg)",
   },
   groupButtonDisabled: {
     opacity: 0.45,
@@ -361,27 +358,29 @@ export const pasteStyles = {
     border: "1px solid var(--oui-dt-border)",
     borderRadius: 12,
     boxShadow: "var(--oui-dt-shadow)",
-    maxWidth: 560,
+    maxWidth: 440,
     width: "100%",
     maxHeight: "80%",
     display: "flex",
     flexDirection: "column",
     overflow: "hidden",
   },
+  // Same treatment as the Inspect tray header, with the dialog's wider gutter.
   helpHeader: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "12px 16px",
-    borderBottom: "1px solid var(--oui-dt-border-subtle)",
-    fontWeight: 700,
+    gap: 8,
+    padding: "14px 20px 0",
+    fontWeight: 600,
     fontSize: 14,
   },
   helpBody: {
-    padding: 16,
+    padding: "20px 20px 24px",
     overflowY: "auto",
     fontSize: 13,
     lineHeight: 1.55,
+    fontWeight: 400,
     color: "var(--oui-dt-fg-tertiary)",
   },
   editorLock: {

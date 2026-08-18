@@ -1,30 +1,32 @@
 import { type ObservabilityEvent } from "@openuidev/observability";
-import { Info, TriangleAlert, X } from "lucide-react";
-import type { CSSProperties } from "react";
+import { X } from "lucide-react";
+import type { CSSProperties, ReactNode } from "react";
 
+// The chip is already the container, so info is a bare letter rather than an
+// icon that draws its own circle around one.
 const BY_LEVEL = {
   info: {
-    Icon: Info,
+    glyph: "i",
     style: {
-      background: "var(--oui-dt-bg-subtle)",
+      background: "var(--oui-dt-level-neutral)",
       color: "var(--oui-dt-fg-muted)",
     },
   },
   warning: {
-    Icon: TriangleAlert,
+    glyph: <X size={11} strokeWidth={2.75} />,
     style: {
-      background: "var(--oui-dt-warning-bg)",
+      background: "var(--oui-dt-level-warning)",
       color: "var(--oui-dt-warning)",
     },
   },
   error: {
-    Icon: X,
+    glyph: <X size={11} strokeWidth={2.75} />,
     style: {
-      background: "var(--oui-dt-danger-bg)",
+      background: "var(--oui-dt-level-danger)",
       color: "var(--oui-dt-danger)",
     },
   },
-} satisfies Record<ObservabilityEvent["level"], { Icon: typeof Info; style: CSSProperties }>;
+} satisfies Record<ObservabilityEvent["level"], { glyph: ReactNode; style: CSSProperties }>;
 
 /**
  * Severity as a colored glyph instead of a word, so the row header has room for
@@ -32,10 +34,10 @@ const BY_LEVEL = {
  * name, which is also what tests and screen readers read.
  */
 export function LevelIcon({ level }: { level: ObservabilityEvent["level"] }) {
-  const { Icon, style } = BY_LEVEL[level];
+  const { glyph, style } = BY_LEVEL[level];
   return (
     <span style={{ ...styles.chip, ...style }} role="img" aria-label={level} title={level}>
-      <Icon size={11} strokeWidth={2.75} />
+      {glyph}
     </span>
   );
 }
@@ -46,8 +48,12 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
+    boxSizing: "border-box",
     width: 18,
     height: 18,
-    borderRadius: 999,
+    borderRadius: 6,
+    fontSize: 11,
+    fontWeight: 700,
+    lineHeight: 1,
   },
 } satisfies Record<string, CSSProperties>;

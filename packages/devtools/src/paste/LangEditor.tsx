@@ -110,7 +110,6 @@ const styles = {
     minHeight: 0,
     height: "100%",
     background: "var(--oui-dt-bg-muted)",
-    borderRight: "1px solid var(--oui-dt-border-subtle)",
   },
   highlight: {
     ...shared,

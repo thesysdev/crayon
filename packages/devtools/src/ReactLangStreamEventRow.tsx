@@ -1,6 +1,6 @@
 import { type ObservabilityEvent } from "@openuidev/observability";
 import { Bug, Check, ChevronDown, ChevronRight, Copy } from "lucide-react";
-import { useMemo, useState, type CSSProperties } from "react";
+import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { LevelIcon } from "./LevelIcon";
 import { TOKEN_COLOR, tokenizeLang } from "./paste/highlight";
 
@@ -60,6 +60,8 @@ export function ReactLangStreamEventRow({
   canOpenInPaste?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [hoveredAction, setHoveredAction] = useState<string | null>(null);
   const [responseCopied, setResponseCopied] = useState(false);
   // Collapsed rows skip tokenizing: a live stream re-renders this on every chunk.
   const responseTokens = useMemo(
@@ -92,7 +94,11 @@ export function ReactLangStreamEventRow({
   const openInPasteDisabled = isStreaming || !stream.response || !canOpenInPaste;
 
   return (
-    <div style={styles.row}>
+    <div
+      style={{ ...styles.row, ...(hovered ? styles.rowHover : null) }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
       <button
         type="button"
         style={styles.streamToggle}
@@ -110,35 +116,82 @@ export function ReactLangStreamEventRow({
           </div>
           <div style={styles.rowHeaderRight}>
             <span style={styles.time}>{new Date(event.timestamp).toLocaleTimeString()}</span>
-            <span style={styles.chevron}>
+            <span style={{ ...styles.chevron, ...(hovered ? styles.chevronHover : null) }}>
               {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </span>
           </div>
         </div>
         <div style={styles.streamOverview}>
+          {visibleErrors.length > 0 ? (
+            <Tally count={visibleErrors.length} danger>
+              error{visibleErrors.length === 1 ? "" : "s"}
+            </Tally>
+          ) : null}
           {statementCount !== undefined ? (
-            <span>
-              {statementCount} statement{statementCount === 1 ? "" : "s"}
-            </span>
+            <Tally count={statementCount}>statement{statementCount === 1 ? "" : "s"}</Tally>
           ) : null}
           {orphaned.length > 0 ? (
-            <span>
-              {orphaned.length} orphaned statement{orphaned.length === 1 ? "" : "s"}
-            </span>
-          ) : null}
-          {visibleErrors.length > 0 ? (
-            <span style={styles.errorSummary}>
-              {visibleErrors.length} error{visibleErrors.length === 1 ? "" : "s"}
-            </span>
+            <Tally count={orphaned.length}>
+              orphaned statement{orphaned.length === 1 ? "" : "s"}
+            </Tally>
           ) : null}
         </div>
       </button>
 
       {expanded ? (
         <div style={styles.streamExpanded}>
+          <section style={styles.responseActions}>
+            <span style={styles.responseActionsLabel}>Actions</span>
+            <div style={styles.responseActionsButtons}>
+              <button
+                type="button"
+                style={{
+                  ...styles.responseButton,
+                  ...(openInPasteDisabled ? styles.responseButtonDisabled : null),
+                  ...(hoveredAction === "debug" ? styles.responseButtonHover : null),
+                }}
+                onMouseEnter={() => setHoveredAction("debug")}
+                onMouseLeave={() => setHoveredAction(null)}
+                onClick={() => {
+                  if (isStreaming || !stream.response || !onOpenInPaste) return;
+                  onOpenInPaste(stream.response);
+                }}
+                disabled={openInPasteDisabled}
+                title={
+                  isStreaming
+                    ? "Wait until the stream finishes"
+                    : !stream.response
+                      ? "Empty response"
+                      : !canOpenInPaste
+                        ? "No createLibrary() call detected"
+                        : "Open this response in OpenUI Debug"
+                }
+                aria-label="Debug"
+              >
+                <Bug size={12} />
+                Debug
+              </button>
+              <button
+                type="button"
+                style={{
+                  ...styles.responseButton,
+                  ...(hoveredAction === "copy" ? styles.responseButtonHover : null),
+                }}
+                onMouseEnter={() => setHoveredAction("copy")}
+                onMouseLeave={() => setHoveredAction(null)}
+                onClick={copyResponse}
+              >
+                {responseCopied ? <Check size={12} /> : <Copy size={12} />}
+                {responseCopied ? "Copied" : "Copy"}
+              </button>
+            </div>
+          </section>
+
           {visibleErrors.length > 0 ? (
             <section style={styles.streamSection}>
-              <div style={styles.streamSectionTitle}>Errors ({visibleErrors.length})</div>
+              <div style={styles.streamSectionTitle}>
+                Errors <span style={styles.streamSectionCount}>{visibleErrors.length}</span>
+              </div>
               <div style={styles.diagnosticList}>
                 {visibleErrors.map((error, index) => (
                   <Diagnostic
@@ -167,41 +220,33 @@ export function ReactLangStreamEventRow({
                   ))
                 : "(empty response)"}
             </pre>
-            <div style={styles.responseActions}>
-              <button
-                type="button"
-                style={{
-                  ...styles.responseButton,
-                  ...(openInPasteDisabled ? styles.responseButtonDisabled : null),
-                }}
-                onClick={() => {
-                  if (isStreaming || !stream.response || !onOpenInPaste) return;
-                  onOpenInPaste(stream.response);
-                }}
-                disabled={openInPasteDisabled}
-                title={
-                  isStreaming
-                    ? "Wait until the stream finishes"
-                    : !stream.response
-                      ? "Empty response"
-                      : !canOpenInPaste
-                        ? "No createLibrary() call detected"
-                        : "Debug this response in OpenUI Paste"
-                }
-                aria-label="Debug"
-              >
-                <Bug size={12} />
-                Debug
-              </button>
-              <button type="button" style={styles.responseButton} onClick={copyResponse}>
-                {responseCopied ? <Check size={12} /> : <Copy size={12} />}
-                {responseCopied ? "Copied" : "Copy"}
-              </button>
-            </div>
           </section>
         </div>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * One overview stat: the number in a circle, then what it counts. Errors get
+ * the danger tint so severity still reads at a glance.
+ */
+function Tally({
+  count,
+  danger = false,
+  children,
+}: {
+  count: number;
+  danger?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <span style={styles.tally}>
+      <span style={{ ...styles.tallyCount, ...(danger ? styles.tallyCountDanger : null) }}>
+        {count}
+      </span>
+      {children}
+    </span>
   );
 }
 
@@ -242,14 +287,24 @@ const FONT = '"Inter", system-ui, sans-serif';
 const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
 
 const styles = {
+  // Longhands, not the `border` shorthand: rowHover overrides borderColor, and
+  // React blanks a shorthand's longhands when a later style touches one of them.
   row: {
-    border: "1px solid var(--oui-dt-border)",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "var(--oui-dt-border)",
     borderRadius: 12,
     padding: 12,
     display: "flex",
     flexDirection: "column",
     gap: 6,
-    background: "var(--oui-dt-bg)",
+    background: "var(--oui-dt-card)",
+    transition: "border-color 150ms ease, box-shadow 150ms ease",
+  },
+  // Only this row expands, so hover is the affordance that says so.
+  rowHover: {
+    borderColor: "var(--oui-dt-border-strong)",
+    boxShadow: "var(--oui-dt-shadow-subtle)",
   },
   rowHeader: {
     display: "flex",
@@ -264,11 +319,23 @@ const styles = {
     flexShrink: 0,
   },
   // Width is fixed to match the empty slot plain rows reserve, so timestamps align.
+  // Sized like an icon button so it can take the same fill; the card's own
+  // hover drives it, since the whole card is the toggle.
   chevron: {
     display: "inline-flex",
-    width: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    boxSizing: "border-box",
+    width: 22,
+    height: 22,
     flexShrink: 0,
+    borderRadius: 6,
     color: "var(--oui-dt-fg-muted)",
+    transition: "background 150ms ease, color 150ms ease",
+  },
+  chevronHover: {
+    background: "var(--oui-dt-bg-subtle)",
+    color: "var(--oui-dt-fg)",
   },
   badgeGroup: {
     display: "flex",
@@ -292,7 +359,7 @@ const styles = {
   kind: {
     color: "var(--oui-dt-fg)",
     fontSize: 12,
-    fontWeight: 700,
+    fontWeight: 600,
   },
   badgeStreaming: {
     background: "var(--oui-dt-success-bg)",
@@ -322,15 +389,33 @@ const styles = {
     marginTop: 7,
     paddingLeft: 24,
   },
-  errorSummary: {
+  tally: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 4,
+  },
+  tallyCount: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxSizing: "border-box",
+    minWidth: 14,
+    height: 14,
+    padding: "0 3px",
+    borderRadius: 999,
+    background: "var(--oui-dt-bg-subtle)",
+    color: "var(--oui-dt-fg-secondary)",
+    fontSize: 10,
+    lineHeight: 1,
+  },
+  tallyCountDanger: {
+    background: "var(--oui-dt-danger-bg)",
     color: "var(--oui-dt-danger)",
-    fontWeight: 600,
   },
   streamExpanded: {
     display: "flex",
     flexDirection: "column",
     gap: 14,
-    borderTop: "1px solid var(--oui-dt-border-subtle)",
     marginTop: 4,
     paddingTop: 12,
   },
@@ -340,31 +425,62 @@ const styles = {
     gap: 6,
   },
   streamSectionTitle: {
-    color: "var(--oui-dt-fg-secondary)",
-    fontSize: 11,
-    fontWeight: 600,
-    textTransform: "uppercase",
-    letterSpacing: "0.04em",
-  },
-  responseActions: {
     display: "flex",
     alignItems: "center",
     gap: 6,
-    marginTop: 2,
+    color: "var(--oui-dt-fg-secondary)",
+    fontSize: 11,
+  },
+  streamSectionCount: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 16,
+    height: 16,
+    borderRadius: 999,
+    padding: "0 5px",
+    boxSizing: "border-box",
+    background: "var(--oui-dt-bg-subtle)",
+    color: "var(--oui-dt-fg-muted)",
+    fontSize: 10,
+    lineHeight: 1,
+  },
+  // Label and buttons share one unstroked panel: label left, buttons right.
+  responseActions: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10,
+    borderRadius: 8,
+    background: "var(--oui-dt-bg-muted)",
+    padding: "8px 8px 8px 14px",
+  },
+  responseActionsLabel: {
+    color: "var(--oui-dt-fg-secondary)",
+    fontSize: 11,
+  },
+  responseActionsButtons: {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
   },
   responseButton: {
     display: "inline-flex",
     alignItems: "center",
     gap: 4,
-    border: "1px solid var(--oui-dt-border)",
+    border: "1px solid var(--oui-dt-control-border)",
     borderRadius: 8,
-    background: "var(--oui-dt-bg)",
-    color: "var(--oui-dt-fg-secondary)",
+    background: "var(--oui-dt-control-bg)",
+    color: "var(--oui-dt-fg)",
     cursor: "pointer",
     fontFamily: FONT,
     fontSize: 11,
-    fontWeight: 500,
     padding: "4px 9px",
+    boxShadow: "var(--oui-dt-shadow-subtle)",
+    transition: "transform 150ms ease",
+  },
+  responseButtonHover: {
+    transform: "scale(0.96)",
   },
   responseButtonDisabled: {
     opacity: 0.45,
@@ -374,7 +490,6 @@ const styles = {
     maxHeight: 260,
     overflow: "auto",
     margin: 0,
-    border: "1px solid var(--oui-dt-border)",
     borderRadius: 8,
     background: "var(--oui-dt-bg-muted)",
     color: "var(--oui-dt-fg-tertiary)",

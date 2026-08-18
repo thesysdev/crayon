@@ -1,6 +1,7 @@
 import { type ObservabilityEvent } from "@openuidev/observability";
 import { CreditCard, KeyRound } from "lucide-react";
-import type { CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
+import { LevelIcon } from "./LevelIcon";
 
 export interface QuotaErrorInfo {
   title: string;
@@ -35,40 +36,56 @@ export function getQuotaError(event: ObservabilityEvent): QuotaErrorInfo | undef
 
 /** Billing/rate-limit list entry — the highlighted card a known 429 code renders as. */
 export function QuotaErrorRow({ info }: { info: QuotaErrorInfo }) {
+  const [hoveredCta, setHoveredCta] = useState<string | null>(null);
+
   return (
-    <div style={{ ...styles.row, ...styles.rowCredits }}>
+    <div style={styles.row}>
       <div style={styles.creditsNote}>
-        <div style={styles.creditsTitle}>{info.title}</div>
+        <div style={styles.creditsHeader}>
+          <LevelIcon level="warning" />
+          <div style={styles.creditsTitle}>{info.title}</div>
+        </div>
         <p style={styles.creditsMessage}>{info.message}</p>
-        {info.showPurchaseCta || info.showByokCta ? (
-          <div style={styles.actions}>
-            {info.showPurchaseCta ? (
-              <button
-                type="button"
-                style={styles.action}
-                onClick={() =>
-                  window.open("https://console.thesys.dev/billing", "_blank", "noopener,noreferrer")
-                }
-              >
-                <CreditCard size={13} />
-                Purchase Credits
-              </button>
-            ) : null}
-            {info.showByokCta ? (
-              <button
-                type="button"
-                style={{ ...styles.action, ...styles.actionSecondary }}
-                onClick={() =>
-                  window.open("https://console.thesys.dev/byok", "_blank", "noopener,noreferrer")
-                }
-              >
-                <KeyRound size={13} />
-                Add your own key
-              </button>
-            ) : null}
-          </div>
-        ) : null}
       </div>
+      {info.showPurchaseCta || info.showByokCta ? (
+        <div style={styles.actions}>
+          {info.showPurchaseCta ? (
+            <button
+              type="button"
+              style={{
+                ...styles.action,
+                ...(hoveredCta === "purchase" ? styles.actionHover : null),
+              }}
+              onMouseEnter={() => setHoveredCta("purchase")}
+              onMouseLeave={() => setHoveredCta(null)}
+              onClick={() =>
+                window.open("https://console.thesys.dev/billing", "_blank", "noopener,noreferrer")
+              }
+            >
+              <CreditCard size={13} />
+              Purchase Credits
+            </button>
+          ) : null}
+          {info.showByokCta ? (
+            <button
+              type="button"
+              style={{
+                ...styles.action,
+                ...styles.actionSecondary,
+                ...(hoveredCta === "byok" ? styles.actionHover : null),
+              }}
+              onMouseEnter={() => setHoveredCta("byok")}
+              onMouseLeave={() => setHoveredCta(null)}
+              onClick={() =>
+                window.open("https://console.thesys.dev/byok", "_blank", "noopener,noreferrer")
+              }
+            >
+              <KeyRound size={13} />
+              Add your own key
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -91,19 +108,25 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: 6,
-    background: "var(--oui-dt-bg)",
+    background: "var(--oui-dt-card)",
   },
-  rowCredits: {
-    border: "1px solid var(--oui-dt-credits-border)",
-    background: "var(--oui-dt-credits-gradient)",
-  },
+  // The card matches every other row; the chip and title colour carry the
+  // billing/rate-limit signal.
   creditsNote: {
     display: "flex",
     flexDirection: "column",
-    gap: 6,
+    gap: 12,
   },
+  creditsHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    minWidth: 0,
+  },
+  // Identical to the `kind` title on every other row; the chip alone carries
+  // the billing/rate-limit signal.
   creditsTitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: 600,
     color: "var(--oui-dt-fg)",
   },
@@ -116,7 +139,7 @@ const styles = {
   actions: {
     display: "flex",
     gap: 8,
-    marginTop: 2,
+    marginTop: 10,
   },
   action: {
     display: "inline-flex",
@@ -131,10 +154,15 @@ const styles = {
     fontSize: 12,
     fontWeight: 500,
     cursor: "pointer",
+    transition: "transform 150ms ease",
+  },
+  actionHover: {
+    transform: "scale(0.96)",
   },
   actionSecondary: {
-    background: "var(--oui-dt-bg)",
+    background: "var(--oui-dt-control-bg)",
     color: "var(--oui-dt-fg)",
-    border: "1px solid var(--oui-dt-border)",
+    border: "1px solid var(--oui-dt-control-border)",
+    boxShadow: "var(--oui-dt-shadow-subtle)",
   },
 } satisfies Record<string, CSSProperties>;

@@ -5,21 +5,11 @@ import {
   type ObservabilityErrorInfo,
   type ObservabilityEvent,
 } from "@openuidev/observability";
-import {
-  ArrowLeft,
-  Check,
-  ChevronRight,
-  Copy,
-  Moon,
-  Settings,
-  Sun,
-  Trash2,
-  WrapText,
-  X,
-} from "lucide-react";
+import { ArrowLeft, Check, Copy, Inbox, RotateCcw, Settings, WrapText, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { addOrReplaceEvent } from "./eventBuffer";
+import { IconButton } from "./IconButton";
 import { LevelIcon } from "./LevelIcon";
 import { isLibraryEvent, useRegisteredLibraries } from "./libraryRegistry";
 import { openPasteWindow, pasteMountNode, PasteUI } from "./paste";
@@ -28,7 +18,26 @@ import { getReactLangStreamDetail, ReactLangStreamEventRow } from "./ReactLangSt
 import { ShiroLogo } from "./ShiroLogo";
 import { useDevtoolsSingleton } from "./singleton";
 import { DEFAULT_COLOR_SCHEME, DevtoolsSchemeProvider, themeVars, type ColorScheme } from "./theme";
+import { ThemeSegmented } from "./ThemeToggle";
 import { useDevtoolsConfig, type DevtoolsConfig } from "./useDevtoolsConfig";
+
+const RELIABILITY_DOCS_URL = "https://www.openui.com/docs/openui-lang/reliability";
+
+/** Uniform row height for the settings menu, set by its tallest control. */
+const MENU_ROW_HEIGHT = 28;
+
+/**
+ * Tray geometry. The two trays together fill a block anchored to the bottom
+ * right — 85% of the viewport, capped so it stops growing on very large
+ * displays. Inspect keeps a fixed width and Debug takes whatever is left,
+ * overlapping Inspect rather than collapsing once it hits its floor.
+ */
+const TRAY_EDGE = 12;
+const TRAY_GAP = 12;
+const INSPECT_WIDTH = 480;
+const DEBUG_MIN_WIDTH = 360;
+const BLOCK_W = `min(85vw, 3456px)`;
+const BLOCK_H = `min(85vh, 2234px)`;
 
 export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
@@ -60,9 +69,11 @@ export interface OpenUIDevtoolsProps {
  * dev-only widget that surfaces events captured by `@openuidev/observability` —
  * a Shiro-logo button (which turns red with the error count) that opens a side
  * drawer listing every captured event; selecting one drills into its stack
- * trace, and the footer banner widens the drawer into OpenUI Paste. Display
- * filters and the theme live in the header settings menu. Renders nothing in
- * production unless `enabled` is set explicitly.
+ * trace. OpenUI Inspect and OpenUI Debug are independent tools on independent
+ * trays: the footer banner opens Debug in its own tray beside Inspect, and
+ * either closes without disturbing the other. Display filters and the theme
+ * live in the header settings menu. Renders nothing in production unless
+ * `enabled` is set explicitly.
  */
 export function OpenUIDevtools({
   enabled,
@@ -86,6 +97,8 @@ export function OpenUIDevtools({
   const [pasteOpen, setPasteOpen] = useState(false);
   const [popup, setPopup] = useState<Window | null>(null);
   const [popupBlocked, setPopupBlocked] = useState(false);
+  const [toggleHovered, setToggleHovered] = useState(false);
+  const [bannerHovered, setBannerHovered] = useState(false);
   const [code, setCode] = useState("");
   const libraries = useRegisteredLibraries();
   const { config, setConfig, configRef } = useDevtoolsConfig({
@@ -108,10 +121,11 @@ export function OpenUIDevtools({
     });
   }, [isEnabled, maxEvents, configRef]);
 
-  // Escape steps back: paste → stack → list → closed. The settings menu handles
-  // its own Escape first (capture phase), so it never falls through to here.
+  // Escape dismisses the top tray first: Debug → stack → list → closed. The
+  // settings menu handles its own Escape first (capture phase), so it never
+  // falls through to here.
   useEffect(() => {
-    if (!open) return;
+    if (!open && !pasteOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       if (pasteOpen) setPasteOpen(false);
@@ -166,10 +180,14 @@ export function OpenUIDevtools({
     setPopupBlocked(false);
   };
 
-  // Dismissing the widget always collapses paste, so it never reopens wide.
-  const closeDrawer = () => {
-    setPasteOpen(false);
+  // Inspect and Debug are independent trays — closing one leaves the other be.
+  const closeDrawer = () => setOpen(false);
+
+  // The scrim is shared, so dismissing it retracts both trays. An ejected Debug
+  // window is its own surface and is left alone.
+  const dismissTrays = () => {
     setOpen(false);
+    setPasteOpen(false);
   };
 
   const ejectPaste = () => {
@@ -181,6 +199,16 @@ export function OpenUIDevtools({
     setPopupBlocked(false);
     setPopup(next);
     setPasteOpen(false);
+  };
+
+  // Ejected -> back into the tray, without losing the editor's contents.
+  const minimizePaste = () => {
+    if (popup) {
+      popup.close();
+      setPopup(null);
+    }
+    setPopupBlocked(false);
+    setPasteOpen(true);
   };
 
   const openPaste = () => {
@@ -200,28 +228,60 @@ export function OpenUIDevtools({
       onCodeChange={setCode}
       ejected={Boolean(popup)}
       onEject={ejectPaste}
-      // In the drawer the cross dismisses the widget and the back arrow returns
-      // to the list; an ejected window only has its own close.
-      onClose={popup ? closePaste : closeDrawer}
-      onBack={popup ? undefined : closePaste}
+      onMinimize={minimizePaste}
+      // Debug owns its own tray, so its cross closes only Debug — in the drawer
+      // and in an ejected window alike. There is no list to step back to.
+      onClose={closePaste}
+      theme={scheme}
+      onThemeChange={(theme) => setConfig({ theme })}
       helpSeen={config.helpSeen}
       onHelpSeen={markHelpSeen}
       popupBlocked={popupBlocked}
     />
   );
   const popupRoot = popup ? pasteMountNode(popup) : null;
-  const headerTitle = selected ? `${selected.level} — stack trace` : "OpenUI Devtools";
+  const headerTitle = selected ? `${selected.level} — stack trace` : "OpenUI Inspect";
+
+  // Inspect is pinned to the right edge; Debug fills the rest of the block and
+  // slides over to reclaim Inspect's slot whenever Inspect is out.
+  const inspectSlot = open ? INSPECT_WIDTH + TRAY_GAP : 0;
+  const inspectTray: CSSProperties = {
+    right: TRAY_EDGE,
+    bottom: TRAY_EDGE,
+    height: BLOCK_H,
+    width: `min(${INSPECT_WIDTH}px, calc(100vw - ${TRAY_EDGE * 2}px))`,
+    transform: open ? "translateX(0)" : `translateX(calc(100% + ${TRAY_EDGE}px))`,
+  };
+  // Debug is a workspace rather than a peek at the app behind it: it fills
+  // everything Inspect leaves (left/right edges rather than a width, so the
+  // inset matches top and bottom) and cuts straight in instead of sliding.
+  // Overrides the shared chrome, so it is spread last.
+  const debugTray: CSSProperties = {
+    right: TRAY_EDGE + inspectSlot,
+    bottom: TRAY_EDGE,
+    height: BLOCK_H,
+    width: `max(${DEBUG_MIN_WIDTH}px, calc(${BLOCK_W} - ${inspectSlot}px))`,
+    transform: "none",
+    transition: "none",
+    visibility: pasteOpen ? "visible" : "hidden",
+  };
 
   return (
     <DevtoolsSchemeProvider scheme={scheme}>
       <div style={{ ...styles.toggleWrap, ...themeVars(scheme), ...positionStyles[position] }}>
         <button
-          style={{ ...styles.toggle, ...(errorCount > 0 ? styles.toggleError : null) }}
+          style={{
+            ...styles.toggle,
+            ...(errorCount > 0 ? styles.toggleError : null),
+            ...(toggleHovered ? styles.toggleHover : null),
+          }}
           onClick={openDrawer}
-          aria-label="Open OpenUI devtools"
+          onMouseEnter={() => setToggleHovered(true)}
+          onMouseLeave={() => setToggleHovered(false)}
+          aria-label="Open OpenUI Inspect"
           aria-expanded={open}
           title={
-            errorCount > 0 ? `${errorCount} error${errorCount === 1 ? "" : "s"}` : "OpenUI devtools"
+            errorCount > 0 ? `${errorCount} error${errorCount === 1 ? "" : "s"}` : "OpenUI Inspect"
           }
         >
           {errorCount > 0 ? (
@@ -237,202 +297,239 @@ export function OpenUIDevtools({
         style={{
           ...styles.backdrop,
           ...themeVars(scheme),
-          ...(open ? styles.backdropOpen : null),
+          ...(open || pasteOpen ? styles.backdropOpen : null),
         }}
-        onClick={closeDrawer}
+        onClick={dismissTrays}
       >
         <aside
           style={{
             ...styles.drawer,
-            ...(pasteOpen ? styles.drawerWide : null),
+            ...inspectTray,
             ...(open ? styles.drawerOpen : null),
           }}
           role="dialog"
-          aria-modal="true"
-          aria-label={pasteOpen ? "OpenUI Paste" : "OpenUI devtools"}
+          aria-modal={!pasteOpen}
+          aria-label="OpenUI Inspect"
+          inert={!open}
           onClick={(event) => event.stopPropagation()}
         >
-          {pasteOpen ? (
-            <div style={styles.pasteHost}>{paste}</div>
-          ) : (
-            <>
-              <div style={styles.header}>
-                <div style={styles.headerLeft}>
-                  {selected ? (
-                    <button
-                      style={{ ...styles.iconButton, ...styles.iconButtonOutlined }}
-                      onClick={() => setSelected(null)}
-                      aria-label="Back to event list"
-                    >
-                      <ArrowLeft size={14} />
-                    </button>
-                  ) : (
-                    <span style={styles.headerLogo}>
-                      <ShiroLogo size={18} />
-                    </span>
-                  )}
-                  <span style={styles.title}>{headerTitle}</span>
-                </div>
-                <div style={styles.headerActions}>
-                  {selected ? (
-                    <>
-                      <button
-                        style={{
-                          ...styles.textButton,
-                          ...(wrapStack ? styles.textButtonActive : null),
-                        }}
-                        onClick={() => setWrapStack((prev) => !prev)}
-                        aria-pressed={wrapStack}
-                      >
-                        <WrapText size={12} />
-                        Wrap
-                      </button>
-                      <button style={styles.textButton} onClick={copyStack}>
-                        {copied ? <Check size={12} /> : <Copy size={12} />}
-                        {copied ? "Copied" : "Copy"}
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        style={styles.iconButton}
-                        onClick={() => setEvents([])}
-                        aria-label="Clear events"
-                        title="Clear events"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                      <SettingsMenu config={config} onChange={setConfig} />
-                    </>
-                  )}
-                  <button
-                    style={styles.iconButton}
-                    onClick={closeDrawer}
-                    aria-label="Close OpenUI devtools"
+          <>
+            <div style={styles.header}>
+              <div style={styles.headerLeft}>
+                {selected ? (
+                  <IconButton
+                    outlined
+                    onClick={() => setSelected(null)}
+                    aria-label="Back to event list"
                   >
-                    <X size={15} />
-                  </button>
-                </div>
+                    <ArrowLeft size={14} />
+                  </IconButton>
+                ) : null}
+                <span style={styles.title}>{headerTitle}</span>
               </div>
+              <div style={styles.headerActions}>
+                {selected ? (
+                  <>
+                    <button
+                      style={{
+                        ...styles.textButton,
+                        ...(wrapStack ? styles.textButtonActive : null),
+                      }}
+                      onClick={() => setWrapStack((prev) => !prev)}
+                      aria-pressed={wrapStack}
+                    >
+                      <WrapText size={12} />
+                      Wrap
+                    </button>
+                    <button style={styles.textButton} onClick={copyStack}>
+                      {copied ? <Check size={12} /> : <Copy size={12} />}
+                      {copied ? "Copied" : "Copy"}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <IconButton
+                      onClick={() => setEvents([])}
+                      aria-label="Reset events"
+                      title="Reset events"
+                    >
+                      <RotateCcw size={14} />
+                    </IconButton>
+                    <SettingsMenu config={config} onChange={setConfig} />
+                  </>
+                )}
+                <IconButton onClick={closeDrawer} aria-label="Close OpenUI Inspect">
+                  <X size={15} />
+                </IconButton>
+              </div>
+            </div>
 
-              {selected ? (
-                <div style={styles.stackBody}>
-                  {selectedStack.split("\n").map((line, index) => (
-                    <div key={index} style={styles.stackLine}>
-                      <span style={styles.lineNumber}>{index + 1}</span>
-                      <span
-                        style={{ ...styles.lineText, ...(wrapStack ? styles.lineTextWrap : null) }}
-                      >
-                        {line || " "}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <>
-                  <div style={styles.list}>
-                    {visibleEvents.length === 0 ? (
-                      <div style={styles.empty}>No events captured yet.</div>
-                    ) : (
-                      visibleEvents.map((event, index) => {
-                        const key =
-                          typeof event.detail["id"] === "string"
-                            ? event.detail["id"]
-                            : `${event.timestamp}-${index}`;
-                        const quotaError = getQuotaError(event);
-                        if (quotaError) return <QuotaErrorRow key={key} info={quotaError} />;
-                        const stream = getReactLangStreamDetail(event);
-                        if (stream) {
-                          return (
-                            <ReactLangStreamEventRow
-                              key={key}
-                              event={event}
-                              stream={stream}
-                              canOpenInPaste={libraries.length > 0}
-                              onOpenInPaste={(response) => {
-                                setCode(response);
-                                openPaste();
-                              }}
-                            />
-                          );
-                        }
-
-                        const error = getErrorInfo(event);
-                        const detail = asRecord(event.detail);
-                        const kind = asString(detail["kind"]);
-                        const status =
-                          typeof detail["status"] === "number"
-                            ? String(detail["status"])
-                            : undefined;
-                        const message = error?.message ?? asString(detail["message"]);
-                        return (
-                          <div key={key} style={styles.row}>
-                            <div style={styles.rowHeader}>
-                              <div style={styles.badgeGroup}>
-                                <LevelIcon level={event.level} />
-                                {kind ? <span style={styles.kind}>{kind}</span> : null}
-                                {status ? (
-                                  <span style={{ ...styles.badge, ...styles.badgeNeutral }}>
-                                    {status}
-                                  </span>
-                                ) : null}
-                              </div>
-                              <div style={styles.rowHeaderRight}>
-                                <span style={styles.time}>
-                                  {new Date(event.timestamp).toLocaleTimeString()}
-                                </span>
-                                <span style={styles.chevronSlot} aria-hidden />
-                              </div>
-                            </div>
-                            {message ? (
-                              <div style={styles.summary}>{message}</div>
-                            ) : kind ? null : (
-                              <div style={styles.summary}>{summarize(event)}</div>
-                            )}
-                            {error?.stack ? (
-                              <button style={styles.stackButton} onClick={() => showStack(event)}>
-                                Stack Trace
-                              </button>
-                            ) : null}
-                          </div>
-                        );
-                      })
-                    )}
+            {selected ? (
+              <div style={styles.stackBody}>
+                {selectedStack.split("\n").map((line, index) => (
+                  <div key={index} style={styles.stackLine}>
+                    <span style={styles.lineNumber}>{index + 1}</span>
+                    <span
+                      style={{ ...styles.lineText, ...(wrapStack ? styles.lineTextWrap : null) }}
+                    >
+                      {line || " "}
+                    </span>
                   </div>
-                  <button
-                    style={{
-                      ...styles.pasteBanner,
-                      ...(libraries.length === 0 ? styles.pasteBannerDisabled : null),
-                    }}
-                    disabled={libraries.length === 0}
-                    title={
-                      libraries.length === 0
-                        ? "No createLibrary() call detected"
-                        : popup && !popup.closed
-                          ? "Switch to OpenUI Paste window"
-                          : "Open OpenUI Paste"
-                    }
-                    aria-label="Open OpenUI Paste"
-                    onClick={openPaste}
+                ))}
+              </div>
+            ) : (
+              <>
+                <div style={styles.bannerGroup}>
+                  <span style={styles.bannerFade} aria-hidden />
+                  <a
+                    style={styles.pasteBanner}
+                    href={RELIABILITY_DOCS_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    title="Learn how to track and fix errors in production"
+                    onMouseEnter={() => setBannerHovered(true)}
+                    onMouseLeave={() => setBannerHovered(false)}
                   >
                     <span style={styles.pasteBannerText}>
-                      <span style={styles.pasteBannerTitle}>OpenUI Paste</span>
-                      <span style={styles.pasteBannerHint}>
-                        Replay OpenUI Lang against your components
+                      <span style={styles.pasteBannerTitle}>
+                        Want to track and fix errors in production?
                       </span>
                     </span>
-                    <span style={styles.pasteBannerChevron}>
-                      <ChevronRight size={15} />
+                    <span
+                      style={{
+                        ...styles.pasteBannerAction,
+                        ...(bannerHovered ? styles.pasteBannerActionHover : null),
+                      }}
+                    >
+                      Learn more
                     </span>
-                  </button>
-                </>
-              )}
-            </>
-          )}
+                  </a>
+                </div>
+                <div style={styles.list}>
+                  {visibleEvents.length === 0 ? (
+                    <div style={styles.empty}>
+                      <span style={styles.emptyIcon}>
+                        <Inbox size={20} />
+                      </span>
+                      No events captured yet.
+                    </div>
+                  ) : (
+                    visibleEvents.map((event, index) => {
+                      const key =
+                        typeof event.detail["id"] === "string"
+                          ? event.detail["id"]
+                          : `${event.timestamp}-${index}`;
+                      const quotaError = getQuotaError(event);
+                      if (quotaError) return <QuotaErrorRow key={key} info={quotaError} />;
+                      const stream = getReactLangStreamDetail(event);
+                      if (stream) {
+                        return (
+                          <ReactLangStreamEventRow
+                            key={key}
+                            event={event}
+                            stream={stream}
+                            canOpenInPaste={libraries.length > 0}
+                            onOpenInPaste={(response) => {
+                              setCode(response);
+                              openPaste();
+                            }}
+                          />
+                        );
+                      }
+
+                      const error = getErrorInfo(event);
+                      const detail = asRecord(event.detail);
+                      const kind = asString(detail["kind"]);
+                      const status =
+                        typeof detail["status"] === "number" ? String(detail["status"]) : undefined;
+                      const message = error?.message ?? asString(detail["message"]);
+                      return (
+                        <div key={key} style={styles.row}>
+                          <div style={styles.rowHeader}>
+                            <div style={styles.badgeGroup}>
+                              <LevelIcon level={event.level} />
+                              {kind ? <span style={styles.kind}>{kind}</span> : null}
+                              {status ? (
+                                <span style={{ ...styles.badge, ...styles.badgeNeutral }}>
+                                  {status}
+                                </span>
+                              ) : null}
+                            </div>
+                            <div style={styles.rowHeaderRight}>
+                              <span style={styles.time}>
+                                {new Date(event.timestamp).toLocaleTimeString()}
+                              </span>
+                              <span style={styles.chevronSlot} aria-hidden />
+                            </div>
+                          </div>
+                          {message ? (
+                            <div style={styles.summary}>{message}</div>
+                          ) : kind ? null : (
+                            <div style={styles.summary}>{summarize(event)}</div>
+                          )}
+                          {error?.stack ? (
+                            <button style={styles.stackButton} onClick={() => showStack(event)}>
+                              Stack Trace
+                            </button>
+                          ) : null}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </>
+            )}
+            <span style={styles.trayFade} aria-hidden />
+          </>
+        </aside>
+
+        <aside
+          style={{
+            ...styles.drawer,
+            ...(pasteOpen ? styles.drawerOpen : null),
+            ...debugTray,
+          }}
+          role="dialog"
+          aria-modal={pasteOpen}
+          aria-label="OpenUI Debug"
+          inert={!pasteOpen}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div style={styles.pasteHost}>{paste}</div>
         </aside>
       </div>
       {popupRoot ? createPortal(paste, popupRoot) : null}
     </DevtoolsSchemeProvider>
+  );
+}
+
+/**
+ * A real checkbox painted as a switch — the input stays in the tree (hidden but
+ * clickable and focusable) so keyboard, form semantics, and screen readers get
+ * the native control rather than a div pretending to be one.
+ */
+function SettingSwitch({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label style={styles.menuCheckbox}>
+      <span style={styles.menuLabel}>{label}</span>
+      <span style={{ ...styles.switchTrack, ...(checked ? styles.switchTrackOn : null) }}>
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(event) => onChange(event.target.checked)}
+          style={styles.switchInput}
+        />
+        <span style={{ ...styles.switchKnob, ...(checked ? styles.switchKnobOn : null) }} />
+      </span>
+    </label>
   );
 }
 
@@ -471,8 +568,8 @@ function SettingsMenu({
 
   return (
     <div ref={wrap} style={styles.menuWrap}>
-      <button
-        style={{ ...styles.iconButton, ...(open ? styles.iconButtonActive : null) }}
+      <IconButton
+        active={open}
         onClick={() => setOpen((current) => !current)}
         aria-label="Devtools settings"
         aria-haspopup="true"
@@ -480,77 +577,29 @@ function SettingsMenu({
         title="Settings"
       >
         <Settings size={14} />
-      </button>
+      </IconButton>
       {open ? (
         <div style={styles.menu} role="group" aria-label="Devtools settings">
-          <label style={styles.menuCheckbox}>
-            <input
-              type="checkbox"
-              checked={config.autoOpen}
-              onChange={(event) => onChange({ autoOpen: event.target.checked })}
-            />
-            Auto-open on error
-          </label>
-          <label style={styles.menuCheckbox}>
-            <input
-              type="checkbox"
-              checked={config.onlyErrors}
-              onChange={(event) => onChange({ onlyErrors: event.target.checked })}
-            />
-            Errors only
-          </label>
+          {/* Every row reads the same way: name on the left, control on the
+              right, hairline between. */}
+          <SettingSwitch
+            label="Auto-open on error"
+            checked={config.autoOpen}
+            onChange={(autoOpen) => onChange({ autoOpen })}
+          />
+          <div style={styles.menuDivider} />
+          <SettingSwitch
+            label="Show errors only"
+            checked={config.onlyErrors}
+            onChange={(onlyErrors) => onChange({ onlyErrors })}
+          />
           <div style={styles.menuDivider} />
           <div style={styles.menuRow}>
-            <div style={styles.menuLabel}>Theme</div>
-            <ThemeToggle value={config.theme} onChange={(theme) => onChange({ theme })} />
+            <span style={styles.menuLabel}>Theme</span>
+            <ThemeSegmented value={config.theme} onChange={(theme) => onChange({ theme })} />
           </div>
         </div>
       ) : null}
-    </div>
-  );
-}
-
-const THEME_OPTIONS: {
-  id: ColorScheme;
-  label: string;
-  icon: typeof Sun;
-}[] = [
-  { id: "light", label: "Light", icon: Sun },
-  { id: "dark", label: "Dark", icon: Moon },
-];
-
-function ThemeToggle({
-  value,
-  onChange,
-}: {
-  value: ColorScheme;
-  onChange: (value: ColorScheme) => void;
-}) {
-  return (
-    <div style={styles.themeToggle} role="radiogroup" aria-label="Theme">
-      {THEME_OPTIONS.map((option, index) => {
-        const active = value === option.id;
-        const Icon = option.icon;
-        return (
-          <button
-            key={option.id}
-            type="button"
-            role="radio"
-            aria-checked={active}
-            style={{
-              ...styles.themeOption,
-              ...(active ? styles.themeOptionActive : null),
-              ...(index === 0 ? styles.themeOptionFirst : null),
-              ...(index === THEME_OPTIONS.length - 1 ? styles.themeOptionLast : null),
-            }}
-            onClick={() => onChange(option.id)}
-            aria-label={option.label}
-            title={option.label}
-          >
-            <Icon size={14} />
-          </button>
-        );
-      })}
     </div>
   );
 }
@@ -633,17 +682,29 @@ const styles = {
     boxShadow: "var(--oui-dt-toggle-shadow)",
     fontFamily: FONT,
     padding: 0,
-    transition: "background 150ms ease, box-shadow 150ms ease",
+    transition: "background 150ms ease, box-shadow 150ms ease, transform 150ms ease",
   },
-  // Errors turn the whole button red and the count replaces the mark, rather
-  // than hiding the number in a corner badge.
+  toggleHover: {
+    transform: "scale(1.08)",
+  },
+  // Errors swap the mark for a count on a red disc, held inside a light puck so
+  // the number reads as a badge rather than flooding the whole button red.
   toggleError: {
-    background: "var(--oui-dt-toggle-error)",
-    borderColor: "var(--oui-dt-toggle-error)",
-    color: "#fff",
+    background: "var(--oui-dt-toggle-error-surface)",
+    borderColor: "var(--oui-dt-toggle-error-ring)",
   },
   toggleCount: {
-    fontSize: 15,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxSizing: "border-box",
+    minWidth: 24,
+    height: 24,
+    padding: "0 6px",
+    borderRadius: 999,
+    background: "var(--oui-dt-toggle-error)",
+    color: "#fff",
+    fontSize: 13,
     fontWeight: 700,
     lineHeight: 1,
   },
@@ -664,33 +725,31 @@ const styles = {
     pointerEvents: "auto",
     transition: "opacity 200ms ease, visibility 0s",
   },
+  // Geometry (right/width/transform) is per-tray and set inline; this is the
+  // shared chrome. Each tray hides itself when closed so the other can be open
+  // over the same scrim without a retracted tray staying focusable.
   drawer: {
     position: "fixed",
-    top: 12,
-    right: 12,
-    bottom: 12,
     boxSizing: "border-box",
-    width: "min(420px, calc(100vw - 24px))",
     display: "flex",
     flexDirection: "column",
-    border: "1px solid var(--oui-dt-border)",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "var(--oui-dt-tray-ring)",
     borderRadius: 16,
     background: "var(--oui-dt-bg)",
     color: "var(--oui-dt-fg)",
     fontFamily: FONT,
     fontSize: 13,
-    boxShadow: "var(--oui-dt-shadow)",
-    transform: "translateX(calc(100% + 12px))",
+    visibility: "hidden",
     transition:
-      "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1)",
+      "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), right 260ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 220ms",
     overflow: "hidden",
   },
   drawerOpen: {
-    transform: "translateX(0)",
-  },
-  // Paste isn't a separate dialog: the same drawer grows into it.
-  drawerWide: {
-    width: "min(1180px, calc(100vw - 24px))",
+    visibility: "visible",
+    transition:
+      "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), right 260ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s",
   },
   pasteHost: {
     flex: 1,
@@ -711,11 +770,6 @@ const styles = {
     gap: 6,
     minWidth: 0,
   },
-  headerLogo: {
-    display: "inline-flex",
-    alignItems: "center",
-    flexShrink: 0,
-  },
   title: {
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -731,10 +785,10 @@ const styles = {
     display: "inline-flex",
     alignItems: "center",
     gap: 4,
-    border: "1px solid var(--oui-dt-border)",
+    border: "1px solid var(--oui-dt-control-border)",
     borderRadius: 8,
-    background: "var(--oui-dt-bg)",
-    color: "var(--oui-dt-fg-tertiary)",
+    background: "var(--oui-dt-control-bg)",
+    color: "var(--oui-dt-fg)",
     cursor: "pointer",
     fontFamily: FONT,
     fontSize: 12,
@@ -746,28 +800,6 @@ const styles = {
     borderColor: "var(--oui-dt-inverted)",
     color: "var(--oui-dt-inverted-fg)",
   },
-  iconButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: 26,
-    height: 26,
-    border: "none",
-    borderRadius: 8,
-    background: "transparent",
-    color: "var(--oui-dt-fg-muted)",
-    cursor: "pointer",
-    padding: 0,
-  },
-  iconButtonActive: {
-    background: "var(--oui-dt-bg-subtle)",
-    color: "var(--oui-dt-fg)",
-  },
-  iconButtonOutlined: {
-    boxSizing: "border-box",
-    border: "1px solid var(--oui-dt-border)",
-    background: "var(--oui-dt-bg)",
-  },
   menuWrap: {
     position: "relative",
     display: "inline-flex",
@@ -776,7 +808,8 @@ const styles = {
     position: "absolute",
     top: "calc(100% + 6px)",
     right: 0,
-    zIndex: 1,
+    // Above the banner group, which lifts itself over the list for its fade.
+    zIndex: 2,
     boxSizing: "border-box",
     width: 236,
     display: "flex",
@@ -789,14 +822,54 @@ const styles = {
     padding: 12,
     fontWeight: 400,
   },
+  // Every row is the height of the tallest control (the theme toggle), so the
+  // dividers land on an even rhythm no matter what each row holds.
   menuCheckbox: {
     display: "flex",
     alignItems: "center",
-    gap: 8,
-    color: "var(--oui-dt-fg-secondary)",
-    fontSize: 12,
+    justifyContent: "space-between",
+    gap: 12,
+    minHeight: MENU_ROW_HEIGHT,
     cursor: "pointer",
-    accentColor: "var(--oui-dt-fg)",
+  },
+  switchTrack: {
+    position: "relative",
+    boxSizing: "border-box",
+    flexShrink: 0,
+    width: 30,
+    height: 18,
+    borderRadius: 999,
+    background: "var(--oui-dt-border)",
+    transition: "background 150ms ease",
+  },
+  switchTrackOn: {
+    background: "var(--oui-dt-inverted)",
+  },
+  // Covers the whole track so the hit area and focus ring stay on the input.
+  switchInput: {
+    position: "absolute",
+    inset: 0,
+    width: "100%",
+    height: "100%",
+    margin: 0,
+    borderRadius: 999,
+    opacity: 0,
+    cursor: "pointer",
+  },
+  switchKnob: {
+    position: "absolute",
+    top: 2,
+    left: 2,
+    width: 14,
+    height: 14,
+    borderRadius: "50%",
+    background: "var(--oui-dt-bg)",
+    boxShadow: "var(--oui-dt-shadow-subtle)",
+    transition: "transform 150ms ease",
+    pointerEvents: "none",
+  },
+  switchKnobOn: {
+    transform: "translateX(12px)",
   },
   menuDivider: {
     height: 1,
@@ -807,68 +880,70 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
     gap: 12,
+    minHeight: MENU_ROW_HEIGHT,
   },
   menuLabel: {
     fontSize: 12,
-    fontWeight: 600,
+    fontWeight: 500,
     color: "var(--oui-dt-fg)",
   },
-  themeToggle: {
-    display: "inline-flex",
-    alignItems: "stretch",
-    flexShrink: 0,
-  },
-  themeOption: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    boxSizing: "border-box",
-    width: 34,
-    height: 28,
-    border: "1px solid var(--oui-dt-border)",
-    background: "var(--oui-dt-bg)",
-    color: "var(--oui-dt-fg-tertiary)",
-    cursor: "pointer",
-    padding: 0,
-    marginLeft: -1,
-  },
-  themeOptionFirst: {
-    marginLeft: 0,
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
-  },
-  themeOptionLast: {
-    borderTopRightRadius: 8,
-    borderBottomRightRadius: 8,
-  },
-  themeOptionActive: {
-    background: "var(--oui-dt-inverted)",
-    borderColor: "var(--oui-dt-inverted)",
-    color: "var(--oui-dt-inverted-fg)",
-    zIndex: 1,
-  },
+  // One border on the track, none on the segments — collapsing per-segment
+  // borders with a negative margin made whichever one was active paint a pixel
+  // wider than its neighbour.
   // Whole card is the button; the chevron only signals where it leads.
+  // Inset from the drawer edges, matching the list's own 12px gutter. The top
+  // margin keeps a clear gap even when the list scrolls right up to the banners.
+  // Padding, not margin, so the tray background travels with the banner and
+  // rows scrolling underneath are hidden rather than peeking through the gap.
+  bannerGroup: {
+    position: "relative",
+    zIndex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    flexShrink: 0,
+    background: "var(--oui-dt-bg)",
+    padding: "12px 12px 18px",
+  },
+  // Mirrors bannerFade at the tray's bottom edge, so rows dissolve into the
+  // drawer instead of meeting the border mid-row. Pinned to the tray rather
+  // than the list, so it covers the stack-trace view too.
+  trayFade: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 28,
+    background: "linear-gradient(to top, var(--oui-dt-bg), transparent)",
+    pointerEvents: "none",
+  },
+  // Hangs below the banner, spanning the tray's full width, so list rows
+  // dissolve as they scroll up under it rather than being clipped mid-row.
+  // Sized to the list's own top padding so it dissolves the gap without
+  // washing over the first card.
+  bannerFade: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: "100%",
+    height: 12,
+    background: "linear-gradient(to bottom, var(--oui-dt-bg), transparent)",
+    pointerEvents: "none",
+  },
   pasteBanner: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     gap: 12,
     flexShrink: 0,
-    // Inset from the drawer edges, matching the list's own 12px gutter. The top
-    // margin keeps a clear gap even when the list scrolls right up to the banner.
-    margin: 12,
-    border: "1px solid var(--oui-dt-border)",
+    textDecoration: "none",
     borderRadius: 12,
-    background: "var(--oui-dt-bg-muted)",
+    background: "var(--oui-dt-promo-bg)",
     color: "var(--oui-dt-fg)",
     cursor: "pointer",
     fontFamily: FONT,
     textAlign: "left",
     padding: "12px 14px",
-  },
-  pasteBannerDisabled: {
-    opacity: 0.5,
-    cursor: "not-allowed",
   },
   pasteBannerText: {
     display: "flex",
@@ -878,26 +953,26 @@ const styles = {
   },
   pasteBannerTitle: {
     fontSize: 12,
-    fontWeight: 600,
+    fontWeight: 500,
   },
-  pasteBannerHint: {
-    color: "var(--oui-dt-fg-muted)",
-    fontSize: 11,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-  },
-  pasteBannerChevron: {
+  // The whole banner is the hit target; this just reads as the button on it, so
+  // it stays a span rather than nesting a control inside a control.
+  pasteBannerAction: {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
-    width: 26,
-    height: 26,
-    border: "1px solid var(--oui-dt-border)",
+    border: "1px solid var(--oui-dt-control-border)",
     borderRadius: 8,
-    background: "var(--oui-dt-bg)",
-    color: "var(--oui-dt-fg-muted)",
+    background: "var(--oui-dt-control-bg)",
+    color: "var(--oui-dt-fg)",
+    boxShadow: "var(--oui-dt-shadow-subtle)",
+    fontSize: 11,
+    padding: "5px 12px",
+    transition: "transform 150ms ease",
+  },
+  pasteBannerActionHover: {
+    transform: "scale(0.96)",
   },
   list: {
     flex: 1,
@@ -908,10 +983,23 @@ const styles = {
     flexDirection: "column",
     gap: 10,
   },
+  // Fills the list so the message sits in the middle of the tray, not pinned
+  // under the header.
   empty: {
+    flex: 1,
+    minHeight: 0,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
     color: "var(--oui-dt-fg-faint)",
-    padding: "32px 0",
     textAlign: "center",
+  },
+  emptyIcon: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   row: {
     border: "1px solid var(--oui-dt-border)",
@@ -920,7 +1008,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: 6,
-    background: "var(--oui-dt-bg)",
+    background: "var(--oui-dt-card)",
   },
   badgeCredits: {
     background: "var(--oui-dt-credits-bg)",
@@ -955,7 +1043,7 @@ const styles = {
   kind: {
     color: "var(--oui-dt-fg)",
     fontSize: 12,
-    fontWeight: 700,
+    fontWeight: 600,
     wordBreak: "break-word",
   },
   badgeNeutral: {

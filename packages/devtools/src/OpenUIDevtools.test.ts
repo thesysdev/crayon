@@ -90,7 +90,7 @@ function render(props: OpenUIDevtoolsProps): void {
 /** The floating toggle button. */
 function toggle(): HTMLButtonElement {
   const button = container.querySelector<HTMLButtonElement>(
-    'button[aria-label="Open OpenUI devtools"]',
+    'button[aria-label="Open OpenUI Inspect"]',
   );
   if (!button) throw new Error("toggle button not found");
   return button;
@@ -105,11 +105,62 @@ function buttonByText(text: string): HTMLButtonElement | undefined {
     HTMLButtonElement | undefined;
 }
 
-function openPasteButton(): HTMLButtonElement | undefined {
-  return (
-    container.querySelector<HTMLButtonElement>('button[aria-label="Open OpenUI Paste"]') ??
-    undefined
+/** Emits a settled stream event and expands its row, exposing the Debug button. */
+function seedStream(response: string): void {
+  act(() =>
+    observability.info({
+      kind: "react-lang:stream",
+      id: "stream-debug-entry",
+      phase: "settled",
+      response,
+      parser: { statementCount: response.trim() ? 1 : 0, orphaned: [] },
+      errors: [],
+    }),
   );
+  const row = container.querySelector<HTMLButtonElement>(
+    'button[aria-label="Toggle OpenUI Lang stream details"]',
+  );
+  if (!row) throw new Error("stream row not found");
+  click(row);
+}
+
+function streamDebugButton(): HTMLButtonElement | undefined {
+  return container.querySelector<HTMLButtonElement>('button[aria-label="Debug"]') ?? undefined;
+}
+
+/**
+ * Debug has no banner of its own — a stream event's Debug button is the way in.
+ * The default response is blank so the editor opens effectively empty (the
+ * button is disabled on a truly empty response).
+ */
+function openDebugTray(response = " "): void {
+  seedStream(response);
+  const debug = streamDebugButton();
+  if (!debug) throw new Error("stream Debug button not found");
+  click(debug);
+}
+
+/**
+ * The stream row's overview stats, each read back as "2 statements" — the count
+ * lives in its own badge, so textContent alone would say "2statements".
+ */
+function overviewStats(): string[] {
+  const row = container.querySelector<HTMLElement>(
+    'button[aria-label="Toggle OpenUI Lang stream details"] > div:last-child',
+  );
+  return [...(row?.children ?? [])].map((stat) => {
+    const count = stat.firstElementChild?.textContent ?? "";
+    return `${count} ${(stat.textContent ?? "").slice(count.length)}`;
+  });
+}
+
+/**
+ * Both trays stay mounted so they can transition; a retracted one carries
+ * `inert`. "Showing" therefore means present and not inert.
+ */
+function trayShown(label: "OpenUI Inspect" | "OpenUI Debug"): boolean {
+  const tray = container.querySelector<HTMLElement>(`aside[aria-label="${label}"]`);
+  return !!tray && !tray.hasAttribute("inert");
 }
 
 /** The display filters live behind the header settings button. */
@@ -192,12 +243,12 @@ describe("OpenUIDevtools", () => {
   it("restores the errors-only filter from a previous session", () => {
     render({ enabled: true, errorsOnly: false });
     openSettings();
-    act(() => checkboxLabeled("Errors only").click());
-    expect(checkboxLabeled("Errors only").checked).toBe(true);
+    act(() => checkboxLabeled("Show errors only").click());
+    expect(checkboxLabeled("Show errors only").checked).toBe(true);
 
     remount({ enabled: true, errorsOnly: false });
     openSettings();
-    expect(checkboxLabeled("Errors only").checked).toBe(true);
+    expect(checkboxLabeled("Show errors only").checked).toBe(true);
 
     act(() => observability.info({ kind: "just-info" }));
     act(() => observability.error({ kind: "real-error" }));
@@ -277,8 +328,8 @@ describe("OpenUIDevtools", () => {
     expect(container.textContent?.match(/OpenUI Lang stream/g)).toHaveLength(1);
     expect(container.querySelector('[aria-label="info"]')).not.toBeNull();
     expect(container.textContent).toContain("Streaming");
-    expect(container.textContent).toContain("2 statements");
-    expect(container.textContent).toContain("1 orphaned statement");
+    expect(overviewStats()).toContain("2 statements");
+    expect(overviewStats()).toContain("1 orphaned statement");
     expect(container.textContent).not.toContain("stream-1");
     expect(container.textContent).not.toContain('root = Card("done")');
 
@@ -328,8 +379,8 @@ describe("OpenUIDevtools", () => {
     expect(container.textContent?.match(/OpenUI Lang stream/g)).toHaveLength(1);
     expect(container.textContent).not.toContain("settled");
     expect(container.textContent).not.toContain("Streaming");
-    expect(container.textContent).toContain("1 statement");
-    expect(container.textContent).toContain("1 error");
+    expect(overviewStats()).toContain("1 statement");
+    expect(overviewStats()).toContain("1 error");
     expect(container.textContent).not.toContain("Unknown component Ghost");
 
     const expand = container.querySelector<HTMLButtonElement>(
@@ -345,7 +396,7 @@ describe("OpenUIDevtools", () => {
     expect(toggle().textContent).toContain("1");
   });
 
-  it("debugs a stream response in OpenUI Paste", () => {
+  it("debugs a stream response in OpenUI Debug", () => {
     seedLibrary();
     render({ enabled: true, errorsOnly: false });
     act(() =>
@@ -369,7 +420,7 @@ describe("OpenUIDevtools", () => {
     const editor = container.querySelector<HTMLTextAreaElement>(
       'textarea[aria-label="OpenUI Lang"]',
     );
-    expect(container.querySelector('[aria-label="OpenUI Paste"]')).not.toBeNull();
+    expect(trayShown("OpenUI Debug")).toBe(true);
     expect(editor?.value).toBe('root = Card("from stream")');
   });
 
@@ -440,7 +491,7 @@ describe("OpenUIDevtools", () => {
     render({ enabled: true });
     act(() => secondRoot.render(createElement(OpenUIDevtools, { enabled: true })));
 
-    expect(document.querySelectorAll('button[aria-label="Open OpenUI devtools"]')).toHaveLength(1);
+    expect(document.querySelectorAll('button[aria-label="Open OpenUI Inspect"]')).toHaveLength(1);
 
     act(() => secondRoot.unmount());
     second.remove();
@@ -449,7 +500,7 @@ describe("OpenUIDevtools", () => {
   it("lets a manual instance win over an auto-mounted one", () => {
     // Auto-mounted instance first (as react-lang's bootstrap would do) …
     render({ enabled: true, __autoMounted: true });
-    expect(container.querySelector('button[aria-label="Open OpenUI devtools"]')).not.toBeNull();
+    expect(container.querySelector('button[aria-label="Open OpenUI Inspect"]')).not.toBeNull();
 
     // … then a manual instance mounts and takes over.
     const manual = document.createElement("div");
@@ -457,13 +508,13 @@ describe("OpenUIDevtools", () => {
     const manualRoot = createRoot(manual);
     act(() => manualRoot.render(createElement(OpenUIDevtools, { enabled: true })));
 
-    expect(container.querySelector('button[aria-label="Open OpenUI devtools"]')).toBeNull();
-    expect(manual.querySelector('button[aria-label="Open OpenUI devtools"]')).not.toBeNull();
+    expect(container.querySelector('button[aria-label="Open OpenUI Inspect"]')).toBeNull();
+    expect(manual.querySelector('button[aria-label="Open OpenUI Inspect"]')).not.toBeNull();
 
     // When the manual instance unmounts, the auto instance takes back over.
     act(() => manualRoot.unmount());
     manual.remove();
-    expect(container.querySelector('button[aria-label="Open OpenUI devtools"]')).not.toBeNull();
+    expect(container.querySelector('button[aria-label="Open OpenUI Inspect"]')).not.toBeNull();
   });
 
   it("removes a resolved stream from the errors-only view", () => {
@@ -492,25 +543,27 @@ describe("OpenUIDevtools", () => {
     expect(container.textContent).toContain("No events captured yet.");
   });
 
-  it("disables OpenUI Paste until a library is registered", () => {
+  it("disables OpenUI Debug until a library is registered", () => {
     render({ enabled: true });
-    expect(openPasteButton()?.disabled).toBe(true);
+    seedStream('root = Card("x")');
+    expect(streamDebugButton()?.disabled).toBe(true);
   });
 
-  it("opens OpenUI Paste from a late-mounted registry entry", () => {
+  it("opens OpenUI Debug from a late-mounted registry entry", () => {
     seedLibrary();
     render({ enabled: true });
-    const paste = openPasteButton();
-    expect(paste?.disabled).toBe(false);
-    click(paste!);
-    expect(container.querySelector('[aria-label="OpenUI Paste"]')).not.toBeNull();
+    seedStream('root = Card("x")');
+    const debug = streamDebugButton();
+    expect(debug?.disabled).toBe(false);
+    click(debug!);
+    expect(trayShown("OpenUI Debug")).toBe(true);
     expect(container.querySelector('textarea[aria-label="OpenUI Lang"]')).not.toBeNull();
   });
 
   it("shows paste panels and stream controls", () => {
     seedLibrary();
     render({ enabled: true });
-    click(openPasteButton()!);
+    openDebugTray();
     expect(container.querySelector('[aria-label="Playback controls"]')).not.toBeNull();
     expect(container.querySelector('button[aria-label="Stream"]')).not.toBeNull();
     const tabs = container.querySelector('[role="tablist"]')?.textContent ?? "";
@@ -521,10 +574,10 @@ describe("OpenUIDevtools", () => {
     expect(tabs).toContain("Stream");
   });
 
-  it("shows the installed lang-core version in OpenUI Paste", async () => {
+  it("shows the installed lang-core version in OpenUI Debug", async () => {
     seedLibrary();
     render({ enabled: true });
-    click(openPasteButton()!);
+    openDebugTray();
     await act(async () => {
       await Promise.resolve();
     });
@@ -534,7 +587,7 @@ describe("OpenUIDevtools", () => {
   it("switches to the validation panel", async () => {
     seedLibrary();
     render({ enabled: true });
-    click(openPasteButton()!);
+    openDebugTray();
     await act(async () => {
       await Promise.resolve();
     });
@@ -560,7 +613,42 @@ describe("OpenUIDevtools", () => {
     expect(container.textContent).toContain("No events captured yet.");
   });
 
-  it("ejects OpenUI Paste into a separate window", () => {
+  it("opens OpenUI Debug on its own tray beside Inspect", () => {
+    seedLibrary();
+    render({ enabled: true });
+    click(toggle());
+    openDebugTray();
+
+    expect(trayShown("OpenUI Inspect")).toBe(true);
+    expect(trayShown("OpenUI Debug")).toBe(true);
+  });
+
+  it("closes only the Debug tray, leaving Inspect open", () => {
+    seedLibrary();
+    render({ enabled: true });
+    click(toggle());
+    openDebugTray();
+
+    click(container.querySelector('button[aria-label="Close OpenUI Debug"]')!);
+
+    expect(trayShown("OpenUI Debug")).toBe(false);
+    expect(trayShown("OpenUI Inspect")).toBe(true);
+    expect(toggle().getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("closes only the Inspect tray, leaving Debug open", () => {
+    seedLibrary();
+    render({ enabled: true });
+    click(toggle());
+    openDebugTray();
+
+    click(container.querySelector('button[aria-label="Close OpenUI Inspect"]')!);
+
+    expect(trayShown("OpenUI Inspect")).toBe(false);
+    expect(trayShown("OpenUI Debug")).toBe(true);
+  });
+
+  it("ejects OpenUI Debug into a separate window", () => {
     seedLibrary();
     const popupDoc = document.implementation.createHTMLDocument("paste");
     const popup = {
@@ -574,17 +662,17 @@ describe("OpenUIDevtools", () => {
     const open = vi.spyOn(window, "open").mockReturnValue(popup as unknown as Window);
 
     render({ enabled: true });
-    click(openPasteButton()!);
-    click(container.querySelector('button[aria-label="Open OpenUI Paste in a new window"]')!);
+    openDebugTray();
+    click(container.querySelector('button[aria-label="Open OpenUI Debug in a new window"]')!);
 
     expect(open).toHaveBeenCalled();
-    expect(container.querySelector('[aria-label="OpenUI Paste"]')).toBeNull();
+    expect(trayShown("OpenUI Debug")).toBe(false);
     expect(popupDoc.getElementById("openui-paste-root")).not.toBeNull();
-    expect(popupDoc.body.textContent).toContain("OpenUI Paste");
+    expect(popupDoc.body.textContent).toContain("OpenUI Debug");
     open.mockRestore();
   });
 
-  it("focuses the ejected window when OpenUI Paste is clicked again", () => {
+  it("focuses the ejected window when OpenUI Debug is clicked again", () => {
     seedLibrary();
     const popupDoc = document.implementation.createHTMLDocument("paste");
     const popup = {
@@ -598,14 +686,40 @@ describe("OpenUIDevtools", () => {
     const open = vi.spyOn(window, "open").mockReturnValue(popup as unknown as Window);
 
     render({ enabled: true });
-    click(openPasteButton()!);
-    click(container.querySelector('button[aria-label="Open OpenUI Paste in a new window"]')!);
+    openDebugTray();
+    click(container.querySelector('button[aria-label="Open OpenUI Debug in a new window"]')!);
     popup.focus.mockClear();
 
-    click(openPasteButton()!);
+    // Same entry point again, with the row still expanded from the first open.
+    click(streamDebugButton()!);
 
     expect(popup.focus).toHaveBeenCalled();
-    expect(container.querySelector('[aria-label="OpenUI Paste"]')).toBeNull();
+    expect(trayShown("OpenUI Debug")).toBe(false);
+    open.mockRestore();
+  });
+
+  it("returns an ejected window to the tray", () => {
+    seedLibrary();
+    const popupDoc = document.implementation.createHTMLDocument("paste");
+    const popup = {
+      document: popupDoc,
+      focus: vi.fn(),
+      close: vi.fn(),
+      closed: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    };
+    const open = vi.spyOn(window, "open").mockReturnValue(popup as unknown as Window);
+
+    render({ enabled: true });
+    openDebugTray();
+    click(container.querySelector('button[aria-label="Open OpenUI Debug in a new window"]')!);
+    expect(trayShown("OpenUI Debug")).toBe(false);
+
+    click(popupDoc.querySelector('button[aria-label="Return OpenUI Debug to the tray"]')!);
+
+    expect(popup.close).toHaveBeenCalled();
+    expect(trayShown("OpenUI Debug")).toBe(true);
     open.mockRestore();
   });
 
@@ -614,10 +728,10 @@ describe("OpenUIDevtools", () => {
     const open = vi.spyOn(window, "open").mockReturnValue(null);
 
     render({ enabled: true });
-    click(openPasteButton()!);
-    click(container.querySelector('button[aria-label="Open OpenUI Paste in a new window"]')!);
+    openDebugTray();
+    click(container.querySelector('button[aria-label="Open OpenUI Debug in a new window"]')!);
 
-    expect(container.querySelector('[aria-label="OpenUI Paste"]')).not.toBeNull();
+    expect(trayShown("OpenUI Debug")).toBe(true);
     expect(container.textContent).toContain("Allow popups for this origin");
     open.mockRestore();
   });

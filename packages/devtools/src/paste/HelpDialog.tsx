@@ -1,25 +1,25 @@
-import { ArrowDown, ClipboardPaste, ListChecks, MonitorPlay, Play, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect, useState, type CSSProperties } from "react";
+import { IconButton } from "../IconButton";
 import { pasteStyles as s } from "./styles";
 
-const STEPS: { icon: typeof Play; title: string; text: string }[] = [
+const SUMMARY =
+  "OpenUI Debug is a scratchpad for OpenUI Lang: paste a model response and see how it parses, validates, and renders against this app's own components.";
+
+const STEPS: { title: string; text: string }[] = [
   {
-    icon: ClipboardPaste,
     title: "Paste OpenUI Lang",
     text: "Drop in a model response, or write Lang by hand, in the editor on the left.",
   },
   {
-    icon: MonitorPlay,
     title: "Watch it render",
     text: "Render uses the host app's real createLibrary() components and CSS. Query() and Mutation() resolve with mocked data.",
   },
   {
-    icon: ListChecks,
     title: "Read the diagnostics",
     text: "Validation groups parse errors by code and lists unresolved refs; Tree and JSON show the parsed result.",
   },
   {
-    icon: Play,
     title: "Replay it as a stream",
     text: "Stream re-emits the editor chunk by chunk with LLM-like jitter. Pause, step, or fix the Seed to reproduce a run.",
   },
@@ -60,7 +60,7 @@ export function HelpDialog({
         style={styles.trigger}
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        aria-label="How to use OpenUI Paste"
+        aria-label="How to use OpenUI Debug"
       >
         Help
       </button>
@@ -70,37 +70,35 @@ export function HelpDialog({
             style={s.helpDialog}
             role="dialog"
             aria-modal="true"
-            aria-label="How to use OpenUI Paste"
+            aria-label="How to use OpenUI Debug"
             onClick={(event) => event.stopPropagation()}
           >
             <div style={s.helpHeader}>
-              <span>How to use OpenUI Paste</span>
-              <button style={styles.closeButton} onClick={close} aria-label="Close help">
-                <X size={14} />
-              </button>
+              <span>How to use OpenUI Debug</span>
+              <IconButton onClick={close} aria-label="Close help">
+                <X size={15} />
+              </IconButton>
             </div>
             <div style={s.helpBody}>
-              {STEPS.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <div key={step.title}>
-                    <div style={styles.step}>
-                      <span style={styles.tile}>
-                        <Icon size={17} />
-                      </span>
-                      <div>
-                        <div style={styles.stepTitle}>{step.title}</div>
-                        <p style={styles.stepText}>{step.text}</p>
-                      </div>
+              <p style={styles.summary}>{SUMMARY}</p>
+              <ol style={styles.steps}>
+                {STEPS.map((step, index) => (
+                  <li key={step.title} style={styles.step}>
+                    <span style={styles.badge} aria-hidden>
+                      {index + 1}
+                    </span>
+                    <div style={styles.stepBody}>
+                      <div style={styles.stepTitle}>{step.title}</div>
+                      <p style={styles.stepText}>{step.text}</p>
                     </div>
-                    {index < STEPS.length - 1 ? (
-                      <div style={styles.arrow} aria-hidden>
-                        <ArrowDown size={14} />
-                      </div>
-                    ) : null}
-                  </div>
-                );
-              })}
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <div style={styles.footer}>
+              <button style={styles.dismiss} onClick={close}>
+                Close
+              </button>
             </div>
           </div>
         </div>
@@ -109,73 +107,96 @@ export function HelpDialog({
   );
 }
 
-const TILE = 38;
+const BADGE = 18;
 
 const styles = {
+  // Matches the Inspect header's text buttons (Wrap / Copy).
   trigger: {
     display: "inline-flex",
     alignItems: "center",
-    height: 26,
-    border: "1px solid var(--oui-dt-border)",
+    gap: 4,
+    border: "1px solid var(--oui-dt-control-border)",
     borderRadius: 8,
-    background: "var(--oui-dt-bg)",
-    color: "var(--oui-dt-fg-tertiary)",
+    background: "var(--oui-dt-control-bg)",
+    color: "var(--oui-dt-fg)",
     cursor: "pointer",
     fontFamily: "inherit",
     fontSize: 12,
     fontWeight: 500,
-    padding: "0 10px",
+    padding: "4px 10px",
   },
-  closeButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: 26,
-    height: 26,
-    border: "1px solid var(--oui-dt-border)",
-    borderRadius: 8,
-    background: "var(--oui-dt-bg)",
-    color: "var(--oui-dt-fg-muted)",
-    cursor: "pointer",
+  // What the tool is, before the how.
+  summary: {
+    margin: "0 0 16px",
+    maxWidth: "62ch",
+    fontSize: 12,
+    fontWeight: 400,
+    lineHeight: 1.55,
+    color: "var(--oui-dt-fg-secondary)",
+  },
+  steps: {
+    listStyle: "none",
+    display: "flex",
+    flexDirection: "column",
+    gap: 20,
+    margin: 0,
     padding: 0,
   },
   step: {
     display: "flex",
     alignItems: "flex-start",
-    gap: 12,
+    gap: 10,
   },
-  tile: {
+  // Same chip proportions as LevelIcon, so the dialog matches the event rows.
+  badge: {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
     boxSizing: "border-box",
-    width: TILE,
-    height: TILE,
-    border: "1px solid var(--oui-dt-border)",
-    borderRadius: 10,
+    width: BADGE,
+    height: BADGE,
+    borderRadius: 6,
     background: "var(--oui-dt-bg-subtle)",
     color: "var(--oui-dt-fg-secondary)",
+    fontSize: 11,
+    fontWeight: 500,
+    lineHeight: 1,
   },
+  stepBody: {
+    minWidth: 0,
+  },
+  // Medium title over regular body.
   stepTitle: {
     color: "var(--oui-dt-fg)",
-    fontSize: 13,
-    fontWeight: 700,
-    // Optically centers the title against the tile's first line.
-    paddingTop: 2,
+    fontSize: 12,
+    fontWeight: 500,
   },
   stepText: {
-    margin: "2px 0 0",
+    margin: "3px 0 0",
+    maxWidth: "52ch",
     fontSize: 12,
-    lineHeight: 1.5,
+    fontWeight: 400,
+    lineHeight: 1.55,
     color: "var(--oui-dt-fg-muted)",
   },
-  // Sits under the tile column so the tiles read as one flow.
-  arrow: {
+  // Second way out, for anyone who reads to the end rather than reaching for
+  // the cross.
+  footer: {
     display: "flex",
-    justifyContent: "center",
-    width: TILE,
-    padding: "6px 0",
-    color: "var(--oui-dt-fg-faint)",
+    justifyContent: "flex-end",
+    padding: "0 20px 16px",
+  },
+  dismiss: {
+    border: "1px solid var(--oui-dt-border)",
+    borderRadius: 8,
+    background: "var(--oui-dt-bg)",
+    color: "var(--oui-dt-fg-secondary)",
+    boxShadow: "var(--oui-dt-shadow-subtle)",
+    cursor: "pointer",
+    fontFamily: "inherit",
+    fontSize: 12,
+    fontWeight: 500,
+    padding: "6px 14px",
   },
 } satisfies Record<string, CSSProperties>;

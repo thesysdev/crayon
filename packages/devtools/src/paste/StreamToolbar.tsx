@@ -5,6 +5,7 @@ import { pasteStyles as s } from "./styles";
 import type { PlaybackControls } from "./usePlayback";
 
 const SPEEDS = ["0.25", "0.5", "1", "2", "4", "8"];
+// Every control in the toolbar draws its icon at one size and one stroke.
 const ICON = { size: 14 };
 
 export interface StreamSettings {
@@ -14,15 +15,9 @@ export interface StreamSettings {
   onSeedChange: (n: number) => void;
 }
 
-function groupStyle(
-  primary: boolean,
-  disabled: boolean,
-  first: boolean,
-  last: boolean,
-): CSSProperties {
+function groupStyle(disabled: boolean, first: boolean, last: boolean): CSSProperties {
   return {
     ...s.groupButton,
-    ...(primary ? s.groupButtonPrimary : null),
     ...(disabled ? s.groupButtonDisabled : null),
     borderTopLeftRadius: first ? 8 : 0,
     borderBottomLeftRadius: first ? 8 : 0,
@@ -53,7 +48,7 @@ export function StreamToolbar({
       <div style={s.btnGroup} role="group" aria-label="Playback controls">
         {state.status === "playing" ? (
           <button
-            style={groupStyle(true, !!disabled, true, false)}
+            style={groupStyle(!!disabled, true, false)}
             onClick={pause}
             disabled={disabled}
             aria-label="Pause"
@@ -63,7 +58,7 @@ export function StreamToolbar({
           </button>
         ) : state.status === "paused" ? (
           <button
-            style={groupStyle(true, !!disabled, true, false)}
+            style={groupStyle(!!disabled, true, false)}
             onClick={resume}
             disabled={disabled}
             aria-label="Resume"
@@ -73,7 +68,7 @@ export function StreamToolbar({
           </button>
         ) : (
           <button
-            style={groupStyle(true, !!disabled, true, false)}
+            style={groupStyle(!!disabled, true, false)}
             onClick={() => start({ strategy, seed })}
             disabled={disabled}
             aria-label="Stream"
@@ -83,7 +78,7 @@ export function StreamToolbar({
           </button>
         )}
         <button
-          style={groupStyle(false, !!disabled || state.status !== "paused", false, false)}
+          style={groupStyle(!!disabled || state.status !== "paused", false, false)}
           onClick={step}
           disabled={disabled || state.status !== "paused"}
           aria-label="Step one chunk"
@@ -92,7 +87,7 @@ export function StreamToolbar({
           <StepForward {...ICON} />
         </button>
         <button
-          style={groupStyle(false, !!disabled || state.status === "idle", false, true)}
+          style={groupStyle(!!disabled || state.status === "idle", false, true)}
           onClick={reset}
           disabled={disabled || state.status === "idle"}
           aria-label="Reset playback"

@@ -21,7 +21,9 @@ The widget renders nothing in production builds (`NODE_ENV === "production"`) un
 
 `@openuidev/react-lang` ships with this package and auto-mounts the widget in development — no manual `<OpenUIDevtools />` needed. Mounting it manually still works (e.g. to customize props): only one instance ever renders, and a manually mounted instance takes precedence over the auto-mounted one.
 
-In development, `createLibrary()` registers the live library with the widget. The **OpenUI Paste** banner at the bottom of the drawer widens the drawer into an editor against that library (host CSS included), with Render / Validation / Tree / JSON / Stream panels and simulated stream playback. A stream event's **Debug** button opens its response the same way. Eject moves the view into a separate window. The first visit opens a short step-by-step guide (also on **Help**); dismissing it is remembered.
+**OpenUI Inspect** (the event drawer) and **OpenUI Debug** are independent tools on independent trays. Debug docks beside Inspect rather than growing out of it, and each closes on its own: dismissing Debug leaves the event list where it was, and vice versa.
+
+In development, `createLibrary()` registers the live library with the widget. The **OpenUI Debug** banner at the bottom of the Inspect tray opens an editor against that library (host CSS included), with Render / Validation / Tree / JSON / Stream panels and simulated stream playback. A stream event's **Debug** button opens its response the same way. Eject moves the view into a separate window. The first visit opens a short step-by-step guide (also on **Help**); dismissing it is remembered.
 
 Display filters ("auto-open on error", "errors only") and the theme live behind the gear in the drawer header. The theme is Light or Dark, chosen manually and remembered across reloads: nothing is auto-detected from the host page or the OS, and it styles the devtools chrome only — never your app. The floating Shiro toggle stays dark so the branded mark stays readable.
 
