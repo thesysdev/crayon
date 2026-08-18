@@ -39,8 +39,11 @@ list](https://models.dev/providers/openrouter/).
   `Report`) used by the client page and artifact renderers.
 - `@openuidev/react-ui` — the chat UI runtime (`AgentInterface`, `fetchLLM`,
   `ModelSwitcher`, storage/stream contracts).
-- `@openuidev/devtools` — dev-only widget surfacing errors and the credits notice
-  (rendered only in development).
+
+A dev-only devtools widget surfacing errors and the credits notice is fetched
+automatically in development — nothing to install. See
+[`@openuidev/devtools`](https://www.npmjs.com/package/@openuidev/devtools) to
+pin a version or customize it.
 
 ## Learn More
 

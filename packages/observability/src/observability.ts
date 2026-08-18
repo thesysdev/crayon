@@ -64,4 +64,6 @@ function createObservability(): Observability {
 }
 
 /** The shared observability bus. Import this everywhere — there is one per app. */
-export const observability: Observability = createObservability();
+const BUS_KEY = Symbol.for("openui.observability");
+const store = globalThis as { [BUS_KEY]?: Observability };
+export const observability: Observability = (store[BUS_KEY] ??= createObservability());
