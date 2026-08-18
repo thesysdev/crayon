@@ -86,6 +86,7 @@ export function advanceStreamingObservability(
     return null;
   }
 
+  state.updateIndex += 1;
   state.settled = true;
   state.lastSettledErrorKey = settledErrorKey;
   return { id: state.id, phase: STREAM_PHASE_SETTLED, updateIndex: state.updateIndex };
